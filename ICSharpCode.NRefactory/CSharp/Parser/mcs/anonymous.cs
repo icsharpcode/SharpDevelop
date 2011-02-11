@@ -10,10 +10,15 @@
 //
 
 using System;
-using System.Text;
 using System.Collections.Generic;
+
+#if STATIC
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+#else
 using System.Reflection;
 using System.Reflection.Emit;
+#endif
 
 namespace Mono.CSharp {
 
@@ -579,13 +584,13 @@ namespace Mono.CSharp {
 
 			public override Expression CreateExpressionTree (ResolveContext ec)
 			{
-				throw new NotSupportedException ("ET");
+				return hv.CreateExpressionTree ();
 			}
 
 			protected override Expression DoResolve (ResolveContext ec)
 			{
 				eclass = ExprClass.Value;
-				type = TypeManager.expression_type_expr.Type;
+				type = ec.Module.PredefinedTypes.Expression.Resolve (Location);
 				return this;
 			}
 

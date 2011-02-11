@@ -9,9 +9,11 @@
 // Copyright 2003-2008 Novell, Inc.
 //
 
-using System;
+#if STATIC
+using IKVM.Reflection;
+#else
 using System.Reflection;
-using System.Reflection.Emit;
+#endif
 
 namespace Mono.CSharp {
 
@@ -86,9 +88,9 @@ namespace Mono.CSharp {
 		{
 			var c = ((ConstSpec) spec).Value as Constant;
 			if (c.Type == TypeManager.decimal_type) {
-				Compiler.PredefinedAttributes.DecimalConstant.EmitAttribute (FieldBuilder, (decimal) c.GetValue (), c.Location);
+				Module.PredefinedAttributes.DecimalConstant.EmitAttribute (FieldBuilder, (decimal) c.GetValue (), c.Location);
 			} else {
-				FieldBuilder.SetConstant (c.GetTypedValue ());
+				FieldBuilder.SetConstant (c.GetValue ());
 			}
 
 			base.Emit ();

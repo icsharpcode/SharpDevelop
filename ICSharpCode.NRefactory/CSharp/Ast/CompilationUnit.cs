@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿// 
 // CompilationUnit.cs
 //  
 // Author:
@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			AstNode node = this;
 			while (node != null) {
 				AstNode next;
-				if (start <= node.StartLocation && node.EndLocation < end) {
+				if (start <= node.StartLocation && node.EndLocation <= end) {
 					// Remember next before yielding node.
 					// This allows iteration to continue when the caller removes/replaces the node.
 					next = node.NextSibling;

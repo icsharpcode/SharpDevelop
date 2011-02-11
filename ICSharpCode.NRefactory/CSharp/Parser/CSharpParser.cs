@@ -1459,7 +1459,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (Constant constant)
 			{
-				var result = new PrimitiveExpression (constant.GetValue (), Convert (constant.Location), constant.AsString ().Length);
+				var result = new PrimitiveExpression (constant.GetValue (), Convert (constant.Location), constant.GetValueAsLiteral ().Length);
 				return result;
 			}
 
@@ -1714,9 +1714,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var result = new BinaryOperatorExpression ();
 				result.Operator = BinaryOperatorType.NullCoalescing;
 				result.AddChild ((Expression)nullCoalescingOperator.Left.Accept (this), BinaryOperatorExpression.LeftRole);
-				var location = LocationsBag.GetLocations (nullCoalescingOperator);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), 2), BinaryOperatorExpression.OperatorRole);
+				result.AddChild (new CSharpTokenNode (Convert (nullCoalescingOperator.Location), 2), BinaryOperatorExpression.OperatorRole);
 				result.AddChild ((Expression)nullCoalescingOperator.Right.Accept (this), BinaryOperatorExpression.RightRole);
 				return result;
 			}

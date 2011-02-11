@@ -137,17 +137,22 @@ namespace Mono.CSharp
 
 		public override SLE.Expression MakeExpression (BuilderContext ctx)
 		{
-#if NET_4_0		
-			if (type.IsStruct && !obj.Expression.Type.IsValueType)
-				return SLE.Expression.Unbox (obj.Expression, type.GetMetaInfo ());
+#if STATIC
+			return base.MakeExpression (ctx);
+#else
 
-			if (obj.Expression.NodeType == SLE.ExpressionType.Parameter) {
-				if (((SLE.ParameterExpression) obj.Expression).IsByRef)
-					return obj.Expression;
-			}
+	#if NET_4_0		
+				if (type.IsStruct && !obj.Expression.Type.IsValueType)
+					return SLE.Expression.Unbox (obj.Expression, type.GetMetaInfo ());
+
+				if (obj.Expression.NodeType == SLE.ExpressionType.Parameter) {
+					if (((SLE.ParameterExpression) obj.Expression).IsByRef)
+						return obj.Expression;
+				}
+	#endif
+
+				return SLE.Expression.Convert (obj.Expression, type.GetMetaInfo ());
 #endif
-
-			return SLE.Expression.Convert (obj.Expression, type.GetMetaInfo ());
 		}
 	}
 
@@ -174,7 +179,11 @@ namespace Mono.CSharp
 #if NET_4_0
 		public override SLE.Expression MakeExpression (BuilderContext ctx)
 		{
+#if STATIC
+			return base.MakeExpression (ctx);
+#else
 			return SLE.Expression.Block (expr.MakeExpression (ctx), SLE.Expression.Default (type.GetMetaInfo ()));
+#endif
 		}
 #endif
 	}
@@ -224,7 +233,7 @@ namespace Mono.CSharp
 			{
 				Child = new IntConstant ((int) (flags | statement.flags), statement.loc).Resolve (ec);
 
-				type = TypeManager.binder_flags;
+				type = ec.Module.PredefinedTypes.BinderFlags.Resolve (loc);
 				eclass = Child.eclass;
 				return this;
 			}
@@ -236,6 +245,8 @@ namespace Mono.CSharp
 
 		// Used by BinderFlags
 		protected CSharpBinderFlags flags;
+
+		TypeSpec binder_type;
 
 		public DynamicExpressionStatement (IDynamicBinder binder, Arguments args, Location loc)
 		{
@@ -273,26 +284,11 @@ namespace Mono.CSharp
 		protected bool DoResolveCore (ResolveContext rc)
 		{
 			int errors = rc.Report.Errors;
+			var pt = rc.Module.PredefinedTypes;
 
-			if (TypeManager.binder_type == null) {
-				var t = TypeManager.CoreLookupType (rc.Compiler,
-					"Microsoft.CSharp.RuntimeBinder", "Binder", MemberKind.Class, true);
-				if (t != null)
-					TypeManager.binder_type = new TypeExpression (t, Location.Null);
-			}
-
-			if (TypeManager.call_site_type == null)
-				TypeManager.call_site_type = TypeManager.CoreLookupType (rc.Compiler,
-					"System.Runtime.CompilerServices", "CallSite", MemberKind.Class, true);
-
-			if (TypeManager.generic_call_site_type == null)
-				TypeManager.generic_call_site_type = TypeManager.CoreLookupType (rc.Compiler,
-					"System.Runtime.CompilerServices", "CallSite", 1, MemberKind.Class, true);
-
-			if (TypeManager.binder_flags == null) {
-				TypeManager.binder_flags = TypeManager.CoreLookupType (rc.Compiler,
-					"Microsoft.CSharp.RuntimeBinder", "CSharpBinderFlags", MemberKind.Enum, true);
-			}
+			binder_type = pt.Binder.Resolve (loc);
+			pt.CallSite.Resolve (loc);
+			pt.CallSiteGeneric.Resolve (loc);
 
 			eclass = ExprClass.Value;
 
@@ -321,8 +317,11 @@ namespace Mono.CSharp
 		{
 			int dyn_args_count = arguments == null ? 0 : arguments.Count;
 			TypeExpr site_type = CreateSiteType (ec, arguments, dyn_args_count, isStatement);
+			var field = CreateSiteField (ec, site_type);
+			if (field == null)
+				return;
 
-			FieldExpr site_field_expr = new FieldExpr (CreateSiteField (ec, site_type), loc);
+			FieldExpr site_field_expr = new FieldExpr (field, loc);
 
 			SymbolWriter.OpenCompilerGeneratedBlock (ec);
 
@@ -363,18 +362,19 @@ namespace Mono.CSharp
 				new QualifiedAliasMember (QualifiedAliasMember.GlobalAlias, "Microsoft", loc), "CSharp", loc), "RuntimeBinder", loc);
 		}
 
-		public static MemberAccess GetBinder (string name, Location loc)
+		protected MemberAccess GetBinder (string name, Location loc)
 		{
-			return new MemberAccess (TypeManager.binder_type, name, loc);
+			return new MemberAccess (new TypeExpression (binder_type, loc), name, loc);
 		}
 
 		TypeExpr CreateSiteType (EmitContext ec, Arguments arguments, int dyn_args_count, bool is_statement)
 		{
 			int default_args = is_statement ? 1 : 2;
+			var module = ec.MemberContext.Module;
 
 			bool has_ref_out_argument = false;
 			var targs = new TypeExpression[dyn_args_count + default_args];
-			targs [0] = new TypeExpression (TypeManager.call_site_type, loc);
+			targs [0] = new TypeExpression (module.PredefinedTypes.CallSite.TypeSpec, loc);
 			for (int i = 0; i < dyn_args_count; ++i) {
 				Argument a = arguments [i];
 				if (a.ArgType == Argument.AType.Out || a.ArgType == Argument.AType.Ref)
@@ -393,12 +393,17 @@ namespace Mono.CSharp
 			if (!has_ref_out_argument) {
 				string d_name = is_statement ? "Action" : "Func";
 
-				TypeSpec t = TypeManager.CoreLookupType (ec.MemberContext.Compiler, "System", d_name, dyn_args_count + default_args, MemberKind.Delegate, false);
-				if (t != null) {
+				TypeExpr te = null;
+				Namespace type_ns = module.GlobalRootNamespace.GetNamespace ("System", true);
+				if (type_ns != null) {
+					te = type_ns.LookupType (module.Compiler, d_name, dyn_args_count + default_args, true, Location.Null);
+				}
+			
+				if (te != null) {
 					if (!is_statement)
 						targs [targs.Length - 1] = new TypeExpression (type, loc);
 
-					del_type = new GenericTypeExpr (t, new TypeArguments (targs), loc);
+					del_type = new GenericTypeExpr (te.Type, new TypeArguments (targs), loc);
 				}
 			}
 
@@ -438,7 +443,7 @@ namespace Mono.CSharp
 				del_type = new TypeExpression (inflated, loc);
 			}
 
-			TypeExpr site_type = new GenericTypeExpr (TypeManager.generic_call_site_type, new TypeArguments (del_type), loc);
+			TypeExpr site_type = new GenericTypeExpr (module.PredefinedTypes.CallSiteGeneric.TypeSpec, new TypeArguments (del_type), loc);
 			return site_type;
 		}
 	}

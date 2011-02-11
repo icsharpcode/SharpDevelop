@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</ProjectGuid>
@@ -36,10 +36,9 @@
     <DefineConstants>TRACE;FULL_AST</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>Full</DebugType>
+    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -323,10 +322,10 @@
     <Compile Include="CSharp\Parser\mcs\assembly.cs" />
     <Compile Include="CSharp\Ast\TypeMembers\EnumMemberDeclaration.cs" />
     <Compile Include="CSharp\Ast\GeneralScope\Comment.cs" />
+    <Compile Include="CSharp\Parser\mcs\reflection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
-    <Folder Include="Documentation" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

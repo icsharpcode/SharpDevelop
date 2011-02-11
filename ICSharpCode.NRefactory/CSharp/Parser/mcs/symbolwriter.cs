@@ -1,99 +1,94 @@
 //
-// symbolwriter.cs: The symbol writer
+// symbolwriter.cs: The debug symbol writer
 //
-// Author:
-//   Martin Baulig (martin@ximian.com)
+// Authors: Martin Baulig (martin@ximian.com)
+//          Marek Safar (marek.safar@gmail.com)
 //
-// Copyright 2003 Ximian, Inc.
-// Copyright 2003-2008 Novell, Inc.
+// Dual licensed under the terms of the MIT X11 or GNU GPL
+//
+// Copyright 2003 Ximian, Inc (http://www.ximian.com)
+// Copyright 2004-2010 Novell, Inc
 //
 
 using System;
+
+#if STATIC
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+#else
 using System.Reflection;
 using System.Reflection.Emit;
+#endif
 
 using Mono.CompilerServices.SymbolWriter;
 
-namespace Mono.CSharp {
-	public static class SymbolWriter
+namespace Mono.CSharp
+{
+	static class SymbolWriter
 	{
+#if !NET_4_0 && !STATIC
+		delegate int GetILOffsetFunc (ILGenerator ig);
+		static GetILOffsetFunc get_il_offset_func;
+
+		delegate Guid GetGuidFunc (ModuleBuilder mb);
+		static GetGuidFunc get_guid_func;
+
+		static void Initialize ()
+		{
+			var mi = typeof (ILGenerator).GetMethod (
+				"Mono_GetCurrentOffset",
+				BindingFlags.Static | BindingFlags.NonPublic);
+			if (mi == null)
+				throw new MissingMethodException ("Mono_GetCurrentOffset");
+
+			get_il_offset_func = (GetILOffsetFunc) System.Delegate.CreateDelegate (
+				typeof (GetILOffsetFunc), mi);
+
+			mi = typeof (ModuleBuilder).GetMethod (
+				"Mono_GetGuid",
+				BindingFlags.Static | BindingFlags.NonPublic);
+			if (mi == null)
+				throw new MissingMethodException ("Mono_GetGuid");
+
+			get_guid_func = (GetGuidFunc) System.Delegate.CreateDelegate (
+				typeof (GetGuidFunc), mi);
+		}
+#endif
+
+		static int GetILOffset (ILGenerator ig)
+		{
+#if NET_4_0 || STATIC
+			return ig.ILOffset;
+#else
+			if (get_il_offset_func == null)
+				Initialize ();
+
+			return get_il_offset_func (ig);
+#endif
+		}
+
+		public static Guid GetGuid (ModuleBuilder module)
+		{
+#if NET_4_0 || STATIC
+			return module.ModuleVersionId;
+#else
+			if (get_guid_func == null)
+				Initialize ();
+
+			return get_guid_func (module);
+#endif
+		}
+
 		public static bool HasSymbolWriter {
 			get { return symwriter != null; }
 		}
 
-		private static SymbolWriterImpl symwriter;
-
-		class SymbolWriterImpl : MonoSymbolWriter {
-#if !NET_4_0
-			delegate int GetILOffsetFunc (ILGenerator ig);
-			GetILOffsetFunc get_il_offset_func;
-
-			delegate Guid GetGuidFunc (ModuleBuilder mb);
-			GetGuidFunc get_guid_func;
-#endif
-
-			ModuleBuilder module_builder;
-
-			public SymbolWriterImpl (ModuleBuilder module_builder, string filename)
-				: base (filename)
-			{
-				this.module_builder = module_builder;
-			}
-
-			public int GetILOffset (ILGenerator ig)
-			{
-#if NET_4_0
-				return ig.ILOffset;
-#else
-				return get_il_offset_func (ig);
-#endif
-			}
-
-			public void WriteSymbolFile ()
-			{
-				Guid guid;
-#if NET_4_0
-				guid = module_builder.ModuleVersionId;
-#else
-				guid = get_guid_func (module_builder);
-#endif
-				WriteSymbolFile (guid);
-			}
-
-			public bool Initialize ()
-			{
-#if !NET_4_0
-				MethodInfo mi;
-
-				mi = typeof (ILGenerator).GetMethod (
-					"Mono_GetCurrentOffset",
-					BindingFlags.Static | BindingFlags.NonPublic);
-				if (mi == null)
-					return false;
-
-				get_il_offset_func = (GetILOffsetFunc) System.Delegate.CreateDelegate (
-					typeof (GetILOffsetFunc), mi);
-
-				mi = typeof (ModuleBuilder).GetMethod (
-					"Mono_GetGuid",
-					BindingFlags.Static | BindingFlags.NonPublic);
-				if (mi == null)
-					return false;
-
-				get_guid_func = (GetGuidFunc) System.Delegate.CreateDelegate (
-					typeof (GetGuidFunc), mi);
-#endif
-
-				Location.DefineSymbolDocuments (this);
-				return true;
-			}
-		}
+		public static MonoSymbolWriter symwriter;
 
 		public static void DefineLocalVariable (string name, LocalBuilder builder)
 		{
 			if (symwriter != null) {
-				int index = MonoDebuggerSupport.GetLocalIndex (builder);
-				symwriter.DefineLocalVariable (index, name);
+				symwriter.DefineLocalVariable (builder.LocalIndex, name);
 			}
 		}
 
@@ -115,7 +110,7 @@ namespace Mono.CSharp {
 		public static int OpenScope (ILGenerator ig)
 		{
 			if (symwriter != null) {
-				int offset = symwriter.GetILOffset (ig);
+				int offset = GetILOffset (ig);
 				return symwriter.OpenScope (offset);
 			} else {
 				return -1;
@@ -125,7 +120,7 @@ namespace Mono.CSharp {
 		public static void CloseScope (ILGenerator ig)
 		{
 			if (symwriter != null) {
-				int offset = symwriter.GetILOffset (ig);
+				int offset = GetILOffset (ig);
 				symwriter.CloseScope (offset);
 			}
 		}
@@ -139,7 +134,6 @@ namespace Mono.CSharp {
 				return -1;
 		}
 
-#region Terrania additions
 		public static void DefineAnonymousScope (int id)
 		{
 			if (symwriter != null)
@@ -149,8 +143,7 @@ namespace Mono.CSharp {
 		public static void DefineScopeVariable (int scope, LocalBuilder builder)
 		{
 			if (symwriter != null) {
-				int index = MonoDebuggerSupport.GetLocalIndex (builder);
-				symwriter.DefineScopeVariable (scope, index);
+				symwriter.DefineScopeVariable (scope, builder.LocalIndex);
 			}
 		}
 
@@ -189,7 +182,7 @@ namespace Mono.CSharp {
 		public static void OpenCompilerGeneratedBlock (EmitContext ec)
 		{
 			if (symwriter != null) {
-				int offset = symwriter.GetILOffset (ec.ig);
+				int offset = GetILOffset (ec.ig);
 				symwriter.OpenCompilerGeneratedBlock (offset);
 			}
 		}
@@ -197,7 +190,7 @@ namespace Mono.CSharp {
 		public static void CloseCompilerGeneratedBlock (EmitContext ec)
 		{
 			if (symwriter != null) {
-				int offset = symwriter.GetILOffset (ec.ig);
+				int offset = GetILOffset (ec.ig);
 				symwriter.CloseCompilerGeneratedBlock (offset);
 			}
 		}
@@ -205,7 +198,7 @@ namespace Mono.CSharp {
 		public static void StartIteratorBody (EmitContext ec)
 		{
 			if (symwriter != null) {
-				int offset = symwriter.GetILOffset (ec.ig);
+				int offset = GetILOffset (ec.ig);
 				symwriter.StartIteratorBody (offset);
 			}
 		}
@@ -213,7 +206,7 @@ namespace Mono.CSharp {
 		public static void EndIteratorBody (EmitContext ec)
 		{
 			if (symwriter != null) {
-				int offset = symwriter.GetILOffset (ec.ig);
+				int offset = GetILOffset (ec.ig);
 				symwriter.EndIteratorBody (offset);
 			}
 		}
@@ -221,7 +214,7 @@ namespace Mono.CSharp {
 		public static void StartIteratorDispatcher (EmitContext ec)
 		{
 			if (symwriter != null) {
-				int offset = symwriter.GetILOffset (ec.ig);
+				int offset = GetILOffset (ec.ig);
 				symwriter.StartIteratorDispatcher (offset);
 			}
 		}
@@ -229,37 +222,19 @@ namespace Mono.CSharp {
 		public static void EndIteratorDispatcher (EmitContext ec)
 		{
 			if (symwriter != null) {
-				int offset = symwriter.GetILOffset (ec.ig);
+				int offset = GetILOffset (ec.ig);
 				symwriter.EndIteratorDispatcher (offset);
 			}
 		}
-#endregion
 
 		public static void MarkSequencePoint (ILGenerator ig, Location loc)
 		{
 			if (symwriter != null) {
 				SourceFileEntry file = loc.SourceFile.SourceFileEntry;
-				int offset = symwriter.GetILOffset (ig);
+				int offset = GetILOffset (ig);
 				symwriter.MarkSequencePoint (
 					offset, file, loc.Row, loc.Column, loc.Hidden);
 			}
-		}
-
-		public static void WriteSymbolFile ()
-		{
-			if (symwriter != null)
-				symwriter.WriteSymbolFile ();
-		}
-
-		public static bool Initialize (ModuleBuilder module, string filename)
-		{
-			symwriter = new SymbolWriterImpl (module, filename);
-			if (!symwriter.Initialize ()) {
-				symwriter = null;
-				return false;
-			}
-
-			return true;
 		}
 
 		public static void Reset ()

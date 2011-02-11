@@ -15,7 +15,6 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
-using System.IO;
 using System.Globalization;
 using System.Diagnostics;
 
@@ -2207,7 +2206,7 @@ namespace Mono.CSharp
 										Report.RegisterWarningRegion (loc).WarningEnable (loc, code, Report);
 									}
 								}
-							} while (code >= 0 && c != '\n');
+							} while (code >= 0 && c != '\n' && c != -1);
 						}
 
 						return;
@@ -2475,7 +2474,7 @@ namespace Mono.CSharp
 					}
 				}
 
-				if (caller_is_taking && eval (arg)) {
+				if (eval (arg) && caller_is_taking) {
 					ifstack.Push (flags | TAKING);
 					return true;
 				}
@@ -2773,10 +2772,19 @@ namespace Mono.CSharp
 			s = new string (id_builder, 0, pos);
 			identifiers_group.Add (chars, s);
 
+#if FULL_AST
+			// Special handling of quoted identifier since md needs them in it's AST
+			if (quoted) {
+				val = LocatedToken.Create ("@" + s, ref_line, column - 1);
+				AddEscapedIdentifier (((LocatedToken) val).Location);
+			} else {
+				val = LocatedToken.Create (s, ref_line, column);
+			}
+#else
 			val = LocatedToken.Create (s, ref_line, column);
 			if (quoted)
 				AddEscapedIdentifier (((LocatedToken) val).Location);
-
+#endif
 			return Token.IDENTIFIER;
 		}
 		

@@ -545,7 +545,7 @@ namespace_body
 	  opt_using_directives
 	  opt_namespace_member_declarations
 	  CLOSE_BRACE {
-		ubag.CloseNamespace (GetLocation ($4));
+		ubag.CloseNamespace (GetLocation ($6));
 	  }
 	;
 
@@ -581,15 +581,9 @@ namespace_member_declaration
 		}
 		current_namespace.DeclarationFound = true;
 	  }
-	| namespace_declaration {
+	| namespace_declaration
+	  {
 		current_namespace.DeclarationFound = true;
-	  }
-
-	| field_declaration {
-		Report.Error (116, ((MemberCore) $1).Location, "A namespace can only contain types and namespace declarations");
-	  }
-	| method_declaration {
-		Report.Error (116, ((MemberCore) $1).Location, "A namespace can only contain types and namespace declarations");
 	  }
 	| error
 	 {
@@ -1243,15 +1237,18 @@ variable_initializer
 	;
 
 method_declaration
-	: method_header {
+	: method_header
+	  {
 		if (RootContext.Documentation != null)
 			Lexer.doc_state = XmlCommentState.NotAllowed;
+
+		// Add it early in the case of body being eof for full aot
+		current_container.AddMethod ((Method) $1);
 	  }
 	  method_body
 	  {
 		Method method = (Method) $1;
 		method.Block = (ToplevelBlock) $3;
-		current_container.AddMethod (method);
 		
 		if (current_container.Kind == MemberKind.Interface && method.Block != null) {
 			Report.Error (531, method.Location, "`{0}': interface members cannot have a definition", method.GetSignatureForError ());
@@ -1574,7 +1571,7 @@ fixed_parameter
 		lbag.AddLocation ($$, parameterModifierLocation, GetLocation ($5)); // parameterModifierLocation should be ignored when mod == NONE
 		
 		if ($7 != null)
-			((Parameter) $$).DefaultValue = (Expression) $7;
+			((Parameter) $$).DefaultValue = new DefaultParameterValueExpression ((Expression) $7);
 	  }
 	;
 
@@ -2668,9 +2665,7 @@ opt_nullable
 	: /* empty */
 	| INTERR_NULLABLE
 	  {
-		if (RootContext.MetadataCompatibilityVersion < MetadataVersion.v2)	  
-	  		Report.FeatureIsNotSupported (GetLocation ($1), "nullable types");
-		else if (RootContext.Version < LanguageVersion.ISO_2)
+		if (RootContext.Version < LanguageVersion.ISO_2)
 			Report.FeatureIsNotAvailable (GetLocation ($1), "nullable types");
 	  
 	  	$$ = ComposedTypeSpecifier.CreateNullable (GetLocation ($1));
@@ -2713,9 +2708,7 @@ opt_type_argument_list
 	: /* empty */
 	| OP_GENERICS_LT type_arguments OP_GENERICS_GT
 	  {
-		if (RootContext.MetadataCompatibilityVersion < MetadataVersion.v2)	  
-	  		Report.FeatureIsNotSupported (GetLocation ($1), "generics");
-		else if (RootContext.Version < LanguageVersion.ISO_2)
+		if (RootContext.Version < LanguageVersion.ISO_2)
 			Report.FeatureIsNotAvailable (GetLocation ($1), "generics");	  
 	  
 		$$ = $2;
@@ -2818,9 +2811,7 @@ opt_type_parameter_list
 	: /* empty */
 	| OP_GENERICS_LT_DECL type_parameters OP_GENERICS_GT
 	  {
-		if (RootContext.MetadataCompatibilityVersion < MetadataVersion.v2)	  
-	  		Report.FeatureIsNotSupported (GetLocation ($1), "generics");
-		else if (RootContext.Version < LanguageVersion.ISO_2)
+		if (RootContext.Version < LanguageVersion.ISO_2)
 			Report.FeatureIsNotAvailable (GetLocation ($1), "generics");
 	  
 		$$ = $2;
@@ -3447,7 +3438,7 @@ array_creation_expression
 
 		$$ = new ArrayCreation ((FullNamedExpression) $2, (ComposedTypeSpecifier) $3, (ArrayInitializer) $4, GetLocation ($1));
 	  }
-	| NEW rank_specifiers array_initializer
+	| NEW rank_specifier array_initializer
 	  {
 		if (RootContext.Version <= LanguageVersion.ISO_2)
 			Report.FeatureIsNotAvailable (GetLocation ($1), "implicitly typed arrays");
@@ -3480,9 +3471,7 @@ new_expr_type
 anonymous_type_expression
 	: NEW OPEN_BRACE anonymous_type_parameters_opt_comma CLOSE_BRACE
 	  {
-		if (RootContext.MetadataCompatibilityVersion < MetadataVersion.v2)	  
-	  		Report.FeatureIsNotSupported (GetLocation ($1), "anonymous types");
-	  	else if (RootContext.Version <= LanguageVersion.ISO_2)
+		if (RootContext.Version <= LanguageVersion.ISO_2)
 	  		Report.FeatureIsNotAvailable (GetLocation ($1), "anonymous types");
 
 		$$ = new NewAnonymousType ((List<AnonymousTypeParameter>) $3, current_container, GetLocation ($1));
@@ -3692,9 +3681,7 @@ unbound_type_name
 generic_dimension
 	: GENERIC_DIMENSION
 	  {
-		if (RootContext.MetadataCompatibilityVersion < MetadataVersion.v2)	  
-	  		Report.FeatureIsNotSupported (GetLocation ($1), "generics");
-		else if (RootContext.Version < LanguageVersion.ISO_2)
+		if (RootContext.Version < LanguageVersion.ISO_2)
 			Report.FeatureIsNotAvailable (GetLocation ($1), "generics");
 
 		$$ = $1;
@@ -4365,6 +4352,11 @@ opt_type_parameter_constraints_clauses
 	  {
 		$$ = $1;
 	  }
+	| error
+	 {
+		Error_SyntaxError (yyToken);
+		$$ = null;
+	 }
 	;
 
 type_parameter_constraints_clauses
@@ -4462,9 +4454,7 @@ opt_type_parameter_variance
 	  }
 	| type_parameter_variance
 	  {
-		if (RootContext.MetadataCompatibilityVersion < MetadataVersion.v2)	  
-	  		Report.FeatureIsNotSupported (lexer.Location, "generic type variance");
-		else if (RootContext.Version <= LanguageVersion.V_3)
+		if (RootContext.Version <= LanguageVersion.V_3)
 			Report.FeatureIsNotAvailable (lexer.Location, "generic type variance");
 
 		$$ = $1;
@@ -5069,20 +5059,33 @@ for_statement
 		start_block (GetLocation ($2));
 		current_block.IsCompilerGenerated = true;
 	  }
-	  opt_for_initializer SEMICOLON
+	  for_statement_cont
+	  {
+		$$ = $4;
+	  }
+	;
+	
+// Has to use be extra rule to recover started block
+for_statement_cont
+	: opt_for_initializer SEMICOLON
 	  opt_for_condition SEMICOLON
-	  opt_for_iterator CLOSE_PARENS 
+	  opt_for_iterator CLOSE_PARENS
 	  embedded_statement
 	  {
-		if ($10 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
-			Warning_EmptyStatement (GetLocation ($10));
+		if ($7 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
+			Warning_EmptyStatement (GetLocation ($7));
 	  
-		For f = new For ((Statement) $4, (BooleanExpression) $6, (Statement) $8, (Statement) $10, GetLocation ($1));
+		For f = new For ((Statement) $1, (BooleanExpression) $3, (Statement) $5, (Statement) $7, GetLocation ($-2));
 		current_block.AddStatement (f);
 		
-		lbag.AddStatement (f, GetLocation ($2), GetLocation ($5), GetLocation ($7), GetLocation ($9));
+		lbag.AddStatement (f, current_block.StartLocation, GetLocation ($2), GetLocation ($4), GetLocation ($6));
 
-		$$ = end_block (GetLocation ($5));
+		$$ = end_block (GetLocation ($2));
+	  }
+	| error
+	  {
+		Error_SyntaxError (yyToken);
+		$$ = end_block (current_block.StartLocation);
 	  }
 	;
 
@@ -5412,6 +5415,7 @@ fixed_statement
 	  
 		Fixed f = new Fixed ((Fixed.VariableDeclaration) $9, (Statement) $10, GetLocation ($1));
 		current_block.AddStatement (f);
+		lbag.AddStatement (f, GetLocation ($2), GetLocation ($8));
 		$$ = end_block (GetLocation ($8));
 	  }
 	;
@@ -5606,6 +5610,11 @@ query_body
 		$$ = head;
 	  }
 	| opt_query_body_clauses COMPLETE_COMPLETION
+	| error
+	  {
+		Error_SyntaxError (yyToken);
+		$$ = null;
+	  }
 	;
 	
 select_or_group_clause
@@ -6301,6 +6310,7 @@ void start_block (Location loc)
 {
 	if (current_block == null) {
 		current_block = new ToplevelBlock (compiler, current_local_parameters, loc);
+		parsing_anonymous_method = false;
 	} else if (parsing_anonymous_method) {
 		current_block = new ParametersBlock (current_block, current_local_parameters, loc);
 		parsing_anonymous_method = false;

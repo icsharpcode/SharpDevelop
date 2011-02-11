@@ -13,9 +13,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+
+#if STATIC
+using MetaType = IKVM.Reflection.Type;
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+#else
+using MetaType = System.Type;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.InteropServices;
+#endif
 
 namespace Mono.CSharp
 {
@@ -218,13 +226,13 @@ namespace Mono.CSharp
 		public override void Emit ()
 		{
 			if (member_type == InternalType.Dynamic) {
-				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (FieldBuilder);
+				Module.PredefinedAttributes.Dynamic.EmitAttribute (FieldBuilder);
 			} else if (!(Parent is CompilerGeneratedClass) && member_type.HasDynamicElement) {
-				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (FieldBuilder, member_type);
+				Module.PredefinedAttributes.Dynamic.EmitAttribute (FieldBuilder, member_type, Location);
 			}
 
 			if ((ModFlags & Modifiers.COMPILER_GENERATED) != 0 && !Parent.IsCompilerGenerated)
-				Compiler.PredefinedAttributes.CompilerGenerated.EmitAttribute (FieldBuilder);
+				Module.PredefinedAttributes.CompilerGenerated.EmitAttribute (FieldBuilder);
 
 			if (OptAttributes != null) {
 				OptAttributes.Emit ();
@@ -334,6 +342,11 @@ namespace Mono.CSharp
 			fs.metaInfo = MemberCache.GetMember (TypeParameterMutator.GetMemberDeclaringType (DeclaringType), this).metaInfo;
 			return fs;
 		}
+
+		public override List<TypeSpec> ResolveMissingDependencies ()
+		{
+			return memberType.ResolveMissingDependencies ();
+		}
 	}
 
 	/// <summary>
@@ -397,7 +410,7 @@ namespace Mono.CSharp
 			
 			// Create nested fixed buffer container
 			string name = String.Format ("<{0}>__FixedBuffer{1}", Name, GlobalCounter++);
-			fixed_buffer_type = Parent.TypeBuilder.DefineNestedType (name, Parent.Module.DefaultCharSetType |
+			fixed_buffer_type = Parent.TypeBuilder.DefineNestedType (name,
 				TypeAttributes.NestedPublic | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit, TypeManager.value_type.GetMetaInfo ());
 
 			fixed_buffer_type.DefineField (FixedElementName, MemberType.GetMetaInfo (), FieldAttributes.Public);
@@ -452,8 +465,13 @@ namespace Mono.CSharp
 
 			EmitFieldSize (buffer_size);
 
-			Compiler.PredefinedAttributes.UnsafeValueType.EmitAttribute (fixed_buffer_type);
-			Compiler.PredefinedAttributes.CompilerGenerated.EmitAttribute (fixed_buffer_type);
+#if STATIC
+			if (Module.HasDefaultCharSet)
+				fixed_buffer_type.__SetAttributes (fixed_buffer_type.Attributes | Module.DefaultCharSetType);
+#endif
+
+			Module.PredefinedAttributes.UnsafeValueType.EmitAttribute (fixed_buffer_type);
+			Module.PredefinedAttributes.CompilerGenerated.EmitAttribute (fixed_buffer_type);
 			fixed_buffer_type.CreateType ();
 
 			base.Emit ();
@@ -464,22 +482,22 @@ namespace Mono.CSharp
 			PredefinedAttribute pa;
 			AttributeEncoder encoder;
 
-			pa = Compiler.PredefinedAttributes.StructLayout;
+			pa = Module.PredefinedAttributes.StructLayout;
 			if (pa.Constructor == null && !pa.ResolveConstructor (Location, TypeManager.short_type))
 				return;
 
-			var interop_charset = TypeManager.CoreLookupType (Compiler, "System.Runtime.InteropServices", "CharSet", MemberKind.Enum, true);
-			if (interop_charset == null)
+			var char_set_type = Module.PredefinedTypes.CharSet.Resolve (Location);
+			if (char_set_type == null)
 				return;
 
 			var field_size = pa.GetField ("Size", TypeManager.int32_type, Location);
-			var field_charset = pa.GetField ("CharSet", interop_charset, Location);
+			var field_charset = pa.GetField ("CharSet", char_set_type, Location);
 			if (field_size == null || field_charset == null)
 				return;
 
-			var char_set = CharSet ?? Module.DefaultCharSet;
+			var char_set = CharSet ?? Module.DefaultCharSet ?? 0;
 
-			encoder = new AttributeEncoder (false);
+			encoder = new AttributeEncoder ();
 			encoder.Encode ((short)LayoutKind.Sequential);
 			encoder.EncodeNamedArguments (
 				new [] { field_size, field_charset },
@@ -494,11 +512,11 @@ namespace Mono.CSharp
 			if ((ModFlags & Modifiers.PRIVATE) != 0)
 				return;
 
-			pa = Compiler.PredefinedAttributes.FixedBuffer;
+			pa = Module.PredefinedAttributes.FixedBuffer;
 			if (pa.Constructor == null && !pa.ResolveConstructor (Location, TypeManager.type_type, TypeManager.int32_type))
 				return;
 
-			encoder = new AttributeEncoder (false);
+			encoder = new AttributeEncoder ();
 			encoder.EncodeTypeName (MemberType);
 			encoder.Encode (buffer_size);
 			encoder.EncodeEmptyNamedArguments ();
@@ -586,14 +604,11 @@ namespace Mono.CSharp
 			if (!base.Define ())
 				return false;
 
-			Type[] required_modifier = null;
+			MetaType[] required_modifier = null;
 			if ((ModFlags & Modifiers.VOLATILE) != 0) {
-				if (TypeManager.isvolatile_type == null)
-					TypeManager.isvolatile_type = TypeManager.CoreLookupType (Compiler,
-						"System.Runtime.CompilerServices", "IsVolatile", MemberKind.Class, true);
-
-				if (TypeManager.isvolatile_type != null)
-					required_modifier = new Type[] { TypeManager.isvolatile_type.GetMetaInfo () };
+				var mod = Module.PredefinedTypes.IsVolatile.Resolve (Location);
+				if (mod != null)
+					required_modifier = new MetaType[] { mod.GetMetaInfo () };
 			}
 
 			FieldBuilder = Parent.TypeBuilder.DefineField (

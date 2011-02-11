@@ -14,13 +14,21 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Security;
 using System.Security.Cryptography;
 using System.Security.Permissions;
-
 using Mono.Security.Cryptography;
+using Mono.CompilerServices.SymbolWriter;
+
+#if STATIC
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+using SecurityType = System.Collections.Generic.List<IKVM.Reflection.Emit.CustomAttributeBuilder>;
+#else
+using SecurityType = System.Collections.Generic.Dictionary<System.Security.Permissions.SecurityAction, System.Security.PermissionSet>;
+using System.Reflection;
+using System.Reflection.Emit;
+#endif
 
 namespace Mono.CSharp
 {
@@ -29,24 +37,27 @@ namespace Mono.CSharp
 		string FullName { get; }
 		bool HasExtensionMethod { get; }
 		bool IsCLSCompliant { get; }
+		bool IsMissing { get; }
 		string Name { get; }
 
 		byte[] GetPublicKeyToken ();
+		bool IsFriendAssemblyTo (IAssemblyDefinition assembly);
 	}
                 
-	public class AssemblyDefinition : IAssemblyDefinition
+	public abstract class AssemblyDefinition : IAssemblyDefinition
 	{
 		// TODO: make it private and move all builder based methods here
 		public AssemblyBuilder Builder;
-		AssemblyBuilderExtension builder_extra;
+		protected AssemblyBuilderExtension builder_extra;
+		MonoSymbolWriter symbol_writer;
 
 		bool is_cls_compliant;
 		bool wrap_non_exception_throws;
 		bool wrap_non_exception_throws_custom;
 
-		ModuleContainer module;
-		string name;
-		string file_name;
+		protected ModuleContainer module;
+		readonly string name;
+		protected readonly string file_name;
 
 		byte[] public_key, public_key_token;
 		bool delay_sign;
@@ -58,15 +69,12 @@ namespace Mono.CSharp
 		Attribute cls_attribute;
 		Method entry_point;
 
-		List<ImportedModuleDefinition> added_modules;
-		Dictionary<SecurityAction, PermissionSet> declarative_security;
+		protected List<ImportedModuleDefinition> added_modules;
+		SecurityType declarative_security;
 		Dictionary<ITypeDefinition, Attribute> emitted_forwarders;
 		AssemblyAttributesPlaceholder module_target_attrs;
 
-		//
-		// In-memory only assembly container
-		//
-		public AssemblyDefinition (ModuleContainer module, string name)
+		protected AssemblyDefinition (ModuleContainer module, string name)
 		{
 			this.module = module;
 			this.name = Path.GetFileNameWithoutExtension (name);
@@ -85,10 +93,7 @@ namespace Mono.CSharp
 			}
 		}
 
-		//
-		// Assembly container with file output
-		//
-		public AssemblyDefinition (ModuleContainer module, string name, string fileName)
+		protected AssemblyDefinition (ModuleContainer module, string name, string fileName)
 			: this (module, name)
 		{
 			this.file_name = fileName;
@@ -138,9 +143,20 @@ namespace Mono.CSharp
 			}
 		}
 
+		// TODO: This should not exist here but will require more changes
+		public MetadataImporter Importer {
+		    get; set;
+		}
+
 		public bool IsCLSCompliant {
 			get {
 				return is_cls_compliant;
+			}
+		}
+
+		bool IAssemblyDefinition.IsMissing {
+			get {
+				return false;
 			}
 		}
 
@@ -156,7 +172,7 @@ namespace Mono.CSharp
 			}
 		}
 
-		Report Report {
+		protected Report Report {
 			get {
 				return Compiler.Report;
 			}
@@ -164,24 +180,18 @@ namespace Mono.CSharp
 
 		#endregion
 
-		public void AddModule (string moduleFile)
+		public void AddModule (ImportedModuleDefinition module)
 		{
-			var mod = builder_extra.AddModule (moduleFile);
-			var imported = Compiler.MetaImporter.ImportModule (mod, module.GlobalRootNamespace);
-
 			if (added_modules == null) {
 				added_modules = new List<ImportedModuleDefinition> ();
-				added_modules.Add (imported);
+				added_modules.Add (module);
 			}
-		}		
+		}
 
 		public void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (a.IsValidSecurityAttribute ()) {
-				if (declarative_security == null)
-					declarative_security = new Dictionary<SecurityAction, PermissionSet> ();
-
-				a.ExtractSecurityPermissionSet (declarative_security);
+				a.ExtractSecurityPermissionSet (ctor, ref declarative_security);
 				return;
 			}
 
@@ -212,7 +222,7 @@ namespace Mono.CSharp
 				if (value == null || value.Length == 0)
 					return;
 
-				var vinfo = IsValidAssemblyVersion (value.Replace ('*', '0'));
+				var vinfo = IsValidAssemblyVersion (value, true);
 				if (vinfo == null) {
 					a.Error_AttributeEmitError (string.Format ("Specified version `{0}' is not valid", value));
 					return;
@@ -294,7 +304,7 @@ namespace Mono.CSharp
 					return;
 				}
 
-				builder_extra.AddTypeForwarder (t, a.Location);
+				builder_extra.AddTypeForwarder (t.GetDefinition (), a.Location);
 				return;
 			}
 
@@ -334,7 +344,15 @@ namespace Mono.CSharp
 				}
 			} else if (a.Type == pa.RuntimeCompatibility) {
 				wrap_non_exception_throws_custom = true;
+			} else if (a.Type == pa.AssemblyFileVersion) {
+				string value = a.GetString ();
+				if (string.IsNullOrEmpty (value) || IsValidAssemblyVersion (value, false) == null) {
+					Report.Warning (1607, 1, a.Location, "The version number `{0}' specified for `{1}' is invalid",
+						value, a.Name);
+					return;
+				}
 			}
+
 
 			SetCustomAttribute (ctor, cdata);
 		}
@@ -348,7 +366,11 @@ namespace Mono.CSharp
 		{
 			// TODO: It should check only references assemblies but there is
 			// no working SRE API
-			foreach (var a in Compiler.MetaImporter.Assemblies) {
+			foreach (var entry in Importer.Assemblies) {
+				var a = entry as ImportedAssemblyDefinition;
+				if (a == null)
+					continue;
+
 				if (public_key != null && !a.HasStrongName) {
 					Report.Error (1577, "Referenced assembly `{0}' does not have a strong name",
 						a.FullName);
@@ -363,19 +385,15 @@ namespace Mono.CSharp
 				if (ArrayComparer.IsEqual (GetPublicKeyToken (), atoken))
 					continue;
 
+				Report.SymbolRelatedToPreviousError (a.Location);
 				Report.Error (281,
 					"Friend access was granted to `{0}', but the output assembly is named `{1}'. Try adding a reference to `{0}' or change the output assembly name to match it",
 					attr.FullName, FullName);
 			}
 		}
 
-		//
-		// Initializes the code generator
-		//
-		public bool Create (AppDomain domain, AssemblyBuilderAccess access)
+		protected AssemblyName CreateAssemblyName ()
 		{
-			ResolveAssemblySecurityAttributes ();
-
 			var an = new AssemblyName (name);
 
 			if (public_key != null && RootContext.Target != Target.Module) {
@@ -392,66 +410,24 @@ namespace Mono.CSharp
 				}
 			}
 
-			try {
-				Builder = file_name == null ?
-					domain.DefineDynamicAssembly (an, access) :
-					domain.DefineDynamicAssembly (an, access, Dirname (file_name));
-			} catch (ArgumentException) {
-				// specified key may not be exportable outside it's container
-				if (RootContext.StrongNameKeyContainer != null) {
-					Report.Error (1548, "Could not access the key inside the container `" +
-						RootContext.StrongNameKeyContainer + "'.");
-				}
-				throw;
-			}
-
-			builder_extra = new AssemblyBuilderExtension (Builder, Compiler);
-
-			return true;
+			return an;
 		}
 
-		public ModuleBuilder CreateModuleBuilder ()
+		public virtual ModuleBuilder CreateModuleBuilder ()
 		{
-			// Creates transient module
 			if (file_name == null)
-				return Builder.DefineDynamicModule (name, false);
+				throw new NotSupportedException ("transient module in static assembly");
 
-			ModuleBuilder mbuilder = null;
+			var module_name = Path.GetFileName (file_name);
 
-			try {
-				var module_name = Path.GetFileName (file_name);
-				mbuilder = Builder.DefineDynamicModule (module_name, module_name, RootContext.GenerateDebugInfo);
-
-#if !MS_COMPATIBLE
-				// TODO: We should use SymbolWriter from DefineDynamicModule
-				if (RootContext.GenerateDebugInfo && !SymbolWriter.Initialize (mbuilder, file_name)) {
-					Report.Error (40, "Unexpected debug information initialization error `{0}'",
-						"Could not find the symbol writer assembly (Mono.CompilerServices.SymbolWriter.dll)");
-				}
-#endif
-			} catch (ExecutionEngineException e) {
-				Report.Error (40, "Unexpected debug information initialization error `{0}'",
-					e.Message);
-			}
-
-			return mbuilder;
+			// Always initialize module without symbolInfo. We could be framework dependent
+			// but returned ISymbolWriter does not have all what we need therefore some
+			// adaptor will be needed for now we alwayas emit MDB format when generating
+			// debug info
+			return Builder.DefineDynamicModule (module_name, module_name, false);
 		}
 
-		static string Dirname (string name)
-		{
-			int pos = name.LastIndexOf ('/');
-
-			if (pos != -1)
-				return name.Substring (0, pos);
-
-			pos = name.LastIndexOf ('\\');
-			if (pos != -1)
-				return name.Substring (0, pos);
-
-			return ".";
-		}
-
-		public void Emit ()
+		public virtual void Emit ()
 		{
 			if (RootContext.Target == Target.Module) {
 				module_target_attrs = new AssemblyAttributesPlaceholder (module, name);
@@ -463,21 +439,29 @@ namespace Mono.CSharp
 				ReadModulesAssemblyAttributes ();
 			}
 
+			if (RootContext.GenerateDebugInfo) {
+				symbol_writer = new MonoSymbolWriter (file_name);
+
+				// TODO: global variables
+				Location.DefineSymbolDocuments (symbol_writer);
+				SymbolWriter.symwriter = symbol_writer;
+			}
+
 			module.Emit ();
 
 			if (module.HasExtensionMethod) {
-				var pa = Compiler.PredefinedAttributes.Extension;
+				var pa = module.PredefinedAttributes.Extension;
 				if (pa.IsDefined) {
 					SetCustomAttribute (pa.Constructor, AttributeEncoder.Empty);
 				}
 			}
 
 			if (!wrap_non_exception_throws_custom) {
-				PredefinedAttribute pa = Compiler.PredefinedAttributes.RuntimeCompatibility;
+				PredefinedAttribute pa = module.PredefinedAttributes.RuntimeCompatibility;
 				if (pa.IsDefined && pa.ResolveBuilder ()) {
 					var prop = pa.GetProperty ("WrapNonExceptionThrows", TypeManager.bool_type, Location.Null);
 					if (prop != null) {
-						AttributeEncoder encoder = new AttributeEncoder (false);
+						AttributeEncoder encoder = new AttributeEncoder ();
 						encoder.EncodeNamedPropertyArgument (prop, new BoolLiteral (true, Location.Null));
 						SetCustomAttribute (pa.Constructor, encoder.ToArray ());
 					}
@@ -485,28 +469,17 @@ namespace Mono.CSharp
 			}
 
 			if (declarative_security != null) {
-
-				MethodInfo add_permission = typeof (AssemblyBuilder).GetMethod ("AddPermissionRequests", BindingFlags.Instance | BindingFlags.NonPublic);
-				object builder_instance = Builder;
-
-				try {
-					// Microsoft runtime hacking
-					if (add_permission == null) {
-						var assembly_builder = typeof (AssemblyBuilder).Assembly.GetType ("System.Reflection.Emit.AssemblyBuilderData");
-						add_permission = assembly_builder.GetMethod ("AddPermissionRequests", BindingFlags.Instance | BindingFlags.NonPublic);
-
-						FieldInfo fi = typeof (AssemblyBuilder).GetField ("m_assemblyData", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.GetField);
-						builder_instance = fi.GetValue (Builder);
-					}
-
-					var args = new PermissionSet [3];
-					declarative_security.TryGetValue (SecurityAction.RequestMinimum, out args [0]);
-					declarative_security.TryGetValue (SecurityAction.RequestOptional, out args [1]);
-					declarative_security.TryGetValue (SecurityAction.RequestRefuse, out args [2]);
-					add_permission.Invoke (builder_instance, args);
-				} catch {
-					Report.RuntimeMissingSupport (Location.Null, "assembly permission setting");
+#if STATIC
+				foreach (var entry in declarative_security) {
+					Builder.__AddDeclarativeSecurity (entry);
 				}
+#else
+				var args = new PermissionSet[3];
+				declarative_security.TryGetValue (SecurityAction.RequestMinimum, out args[0]);
+				declarative_security.TryGetValue (SecurityAction.RequestOptional, out args[1]);
+				declarative_security.TryGetValue (SecurityAction.RequestRefuse, out args[2]);
+				builder_extra.AddPermissionRequests (args);
+#endif
 			}
 
 			CheckReferencesPublicToken ();
@@ -523,7 +496,7 @@ namespace Mono.CSharp
 			byte[] hash = ha.ComputeHash (public_key);
 			// we need the last 8 bytes in reverse order
 			public_key_token = new byte[8];
-			Array.Copy (hash, (hash.Length - 8), public_key_token, 0, 8);
+			Buffer.BlockCopy (hash, hash.Length - 8, public_key_token, 0, 8);
 			Array.Reverse (public_key_token, 0, 8);
 			return public_key_token;
 		}
@@ -582,11 +555,19 @@ namespace Mono.CSharp
 					byte[] publickey = CryptoConvert.ToCapiPublicKeyBlob (rsa);
 
 					// AssemblyName.SetPublicKey requires an additional header
-					byte[] publicKeyHeader = new byte[12] { 0x00, 0x24, 0x00, 0x00, 0x04, 0x80, 0x00, 0x00, 0x94, 0x00, 0x00, 0x00 };
+					byte[] publicKeyHeader = new byte[8] { 0x00, 0x24, 0x00, 0x00, 0x04, 0x80, 0x00, 0x00 };
 
 					// Encode public key
 					public_key = new byte[12 + publickey.Length];
-					Buffer.BlockCopy (publicKeyHeader, 0, public_key, 0, 12);
+					Buffer.BlockCopy (publicKeyHeader, 0, public_key, 0, publicKeyHeader.Length);
+
+					// Length of Public Key (in bytes)
+					int lastPart = public_key.Length - 12;
+					public_key[8] = (byte) (lastPart & 0xFF);
+					public_key[9] = (byte) ((lastPart >> 8) & 0xFF);
+					public_key[10] = (byte) ((lastPart >> 16) & 0xFF);
+					public_key[11] = (byte) ((lastPart >> 24) & 0xFF);
+
 					Buffer.BlockCopy (publickey, 0, public_key, 12, publickey.Length);
 				} catch {
 					Error_AssemblySigning ("The specified key file `" + keyFile + "' has incorrect format");
@@ -617,19 +598,20 @@ namespace Mono.CSharp
 
 		public void Resolve ()
 		{
-			if (RootContext.Unsafe) {
+			if (RootContext.Unsafe && module.PredefinedTypes.SecurityAction.Define ()) {
 				//
 				// Emits [assembly: SecurityPermissionAttribute (SecurityAction.RequestMinimum, SkipVerification = true)]
 				// when -unsafe option was specified
 				//
-				
 				Location loc = Location.Null;
 
 				MemberAccess system_security_permissions = new MemberAccess (new MemberAccess (
 					new QualifiedAliasMember (QualifiedAliasMember.GlobalAlias, "System", loc), "Security", loc), "Permissions", loc);
 
+				var req_min = (ConstSpec) module.PredefinedTypes.SecurityAction.GetField ("RequestMinimum", module.PredefinedTypes.SecurityAction.TypeSpec, loc);
+
 				Arguments pos = new Arguments (1);
-				pos.Add (new Argument (new MemberAccess (new MemberAccess (system_security_permissions, "SecurityAction", loc), "RequestMinimum")));
+				pos.Add (new Argument (req_min.GetConstant (null)));
 
 				Arguments named = new Arguments (1);
 				named.Add (new NamedArgument ("SkipVerification", loc, new BoolLiteral (true, loc)));
@@ -638,10 +620,9 @@ namespace Mono.CSharp
 					new MemberAccess (system_security_permissions, "SecurityPermissionAttribute"),
 					new Arguments[] { pos, named }, loc, false);
 				g.AttachTo (module, module);
-
-				if (g.Resolve () != null) {
-					declarative_security = new Dictionary<SecurityAction, PermissionSet> ();
-					g.ExtractSecurityPermissionSet (declarative_security);
+				var ctor = g.Resolve ();
+				if (ctor != null) {
+					g.ExtractSecurityPermissionSet (ctor, ref declarative_security);
 				}
 			}
 
@@ -652,7 +633,7 @@ namespace Mono.CSharp
 			if (!module.OptAttributes.CheckTargets())
 				return;
 
-			cls_attribute = module.ResolveAssemblyAttribute (Compiler.PredefinedAttributes.CLSCompliant);
+			cls_attribute = module.ResolveAssemblyAttribute (module.PredefinedAttributes.CLSCompliant);
 
 			if (cls_attribute != null) {
 				is_cls_compliant = cls_attribute.GetClsCompliantAttributeValue ();
@@ -668,7 +649,7 @@ namespace Mono.CSharp
 				}
 			}
 
-			Attribute a = module.ResolveAssemblyAttribute (Compiler.PredefinedAttributes.RuntimeCompatibility);
+			Attribute a = module.ResolveAssemblyAttribute (module.PredefinedAttributes.RuntimeCompatibility);
 			if (a != null) {
 				var val = a.GetNamedValue ("WrapNonExceptionThrows") as BoolConstant;
 				if (val != null)
@@ -676,7 +657,7 @@ namespace Mono.CSharp
 			}
 		}
 
-		void ResolveAssemblySecurityAttributes ()
+		protected void ResolveAssemblySecurityAttributes ()
 		{
 			string key_file = null;
 			string key_container = null;
@@ -770,6 +751,7 @@ namespace Mono.CSharp
 				if (RootContext.Target == Target.Module) {
 					Report.Error (1507, "Cannot link resource file when building a module");
 				} else {
+					int counter = 0;
 					foreach (var res in RootContext.Resources) {
 						if (!File.Exists (res.FileName)) {
 							Report.Error (1566, "Error reading resource file `{0}'", res.FileName);
@@ -777,7 +759,16 @@ namespace Mono.CSharp
 						}
 
 						if (res.IsEmbeded) {
-							var stream = File.OpenRead (res.FileName);
+							Stream stream;
+							if (counter++ < 10) {
+								stream = File.OpenRead (res.FileName);
+							} else {
+								// TODO: SRE API requires resource stream to be available during AssemblyBuilder::Save
+								// we workaround it by reading everything into memory to compile projects with
+								// many embedded resource (over 3500) references
+								stream = new MemoryStream (File.ReadAllBytes (res.FileName));
+							}
+
 							module.Builder.DefineManifestResource (res.Name, stream, res.Attributes);
 						} else {
 							Builder.AddResourceFile (res.Name, Path.GetFileName (res.FileName), res.Attributes);
@@ -812,15 +803,30 @@ namespace Mono.CSharp
 				break;
 			}
 
-			if (RootContext.Target == Target.Module) {
-				builder_extra.SetModuleTarget ();
-			}
-
+			Compiler.TimeReporter.Start (TimeReporter.TimerType.OutputSave);
 			try {
-				Builder.Save (module.Builder.ScopeName, pekind, machine);
+				if (RootContext.Target == Target.Module) {
+					SaveModule (pekind, machine);
+				} else {
+					Builder.Save (module.Builder.ScopeName, pekind, machine);
+				}
 			} catch (Exception e) {
 				Report.Error (16, "Could not write to file `" + name + "', cause: " + e.Message);
 			}
+			Compiler.TimeReporter.Stop (TimeReporter.TimerType.OutputSave);
+
+			// Save debug symbols file
+			if (symbol_writer != null) {
+				// TODO: it should run in parallel
+				Compiler.TimeReporter.Start (TimeReporter.TimerType.DebugSave);
+				symbol_writer.WriteSymbolFile (SymbolWriter.GetGuid (module.Builder));
+				Compiler.TimeReporter.Stop (TimeReporter.TimerType.DebugSave);
+			}
+		}
+
+		protected virtual void SaveModule (PortableExecutableKinds pekind, ImageFileMachine machine)
+		{
+			Report.RuntimeMissingSupport (Location.Null, "-target:module");
 		}
 
 		void SetCustomAttribute (MethodSpec ctor, byte[] data)
@@ -898,27 +904,78 @@ namespace Mono.CSharp
 			Report.Error (1548, "Error during assembly signing. " + text);
 		}
 
-		static string IsValidAssemblyVersion (string version)
+		public bool IsFriendAssemblyTo (IAssemblyDefinition assembly)
 		{
-			Version v;
-			try {
-				v = new Version (version);
-			} catch {
-				try {
-					int major = int.Parse (version, CultureInfo.InvariantCulture);
-					v = new Version (major, 0);
-				} catch {
+			return false;
+		}
+
+		static Version IsValidAssemblyVersion (string version, bool allowGenerated)
+		{
+			string[] parts = version.Split ('.');
+			if (parts.Length < 1 || parts.Length > 4)
+				return null;
+
+			var values = new int[4];
+			for (int i = 0; i < parts.Length; ++i) {
+				if (!int.TryParse (parts[i], out values[i])) {
+					if (parts[i].Length == 1 && parts[i][0] == '*' && allowGenerated) {
+						if (i == 2) {
+							// Nothing can follow *
+							if (parts.Length > 3)
+								return null;
+
+							// Generate Build value based on days since 1/1/2000
+							TimeSpan days = DateTime.Today - new DateTime (2000, 1, 1);
+							values[i] = System.Math.Max (days.Days, 0);
+							i = 3;
+						}
+
+						if (i == 3) {
+							// Generate Revision value based on every other second today
+							var seconds = DateTime.Now - DateTime.Today;
+							values[i] = (int) seconds.TotalSeconds / 2;
+							continue;
+						}
+					}
+
 					return null;
 				}
-			}
 
-			foreach (int candidate in new int [] { v.Major, v.Minor, v.Build, v.Revision }) {
-				if (candidate > ushort.MaxValue)
+				if (values[i] > ushort.MaxValue)
 					return null;
 			}
 
-			return new Version (v.Major, System.Math.Max (0, v.Minor), System.Math.Max (0, v.Build), System.Math.Max (0, v.Revision)).ToString (4);
+			return new Version (values[0], values[1], values[2], values[3]);
 		}
+	}
+
+	public class AssemblyResource : IEquatable<AssemblyResource>
+	{
+		public AssemblyResource (string fileName, string name)
+			: this (fileName, name, false)
+		{
+		}
+
+		public AssemblyResource (string fileName, string name, bool isPrivate)
+		{
+			FileName = fileName;
+			Name = name;
+			Attributes = isPrivate ? ResourceAttributes.Private : ResourceAttributes.Public;
+		}
+
+		public ResourceAttributes Attributes { get; private set; }
+		public string Name { get; private set; }
+		public string FileName { get; private set; }
+		public bool IsEmbeded { get; set; }
+
+		#region IEquatable<AssemblyResource> Members
+
+		public bool Equals (AssemblyResource other)
+		{
+			return Name == other.Name;
+		}
+
+		#endregion
 	}
 
 	//
@@ -953,128 +1010,164 @@ namespace Mono.CSharp
 
 	//
 	// Extension to System.Reflection.Emit.AssemblyBuilder to have fully compatible
-	// compiler
+	// compiler. This is a default implementation for framework System.Reflection.Emit
+	// which does not implement any of the methods
 	//
-	class AssemblyBuilderExtension
+	public class AssemblyBuilderExtension
 	{
-		static MethodInfo adder_method;
-		static MethodInfo set_module_only;
-		static MethodInfo add_type_forwarder;
-		static MethodInfo win32_icon_define;
-		static FieldInfo assembly_version;
-		static FieldInfo assembly_algorithm;
-		static FieldInfo assembly_culture;
-		static FieldInfo assembly_flags;
+		readonly CompilerContext ctx;
 
-		AssemblyBuilder builder;
-		CompilerContext ctx;
-
-		public AssemblyBuilderExtension (AssemblyBuilder ab, CompilerContext ctx)
+		public AssemblyBuilderExtension (CompilerContext ctx)
 		{
-			this.builder = ab;
 			this.ctx = ctx;
 		}
 
-		public Module AddModule (string module)
+		public virtual System.Reflection.Module AddModule (string module)
 		{
-			try {
-				if (adder_method == null)
-					adder_method = typeof (AssemblyBuilder).GetMethod ("AddModule", BindingFlags.Instance | BindingFlags.NonPublic);
-
-				return (Module) adder_method.Invoke (builder, new object[] { module });
-			} catch {
-				ctx.Report.RuntimeMissingSupport (Location.Null, "-addmodule");
-				return null;
-			}
+			ctx.Report.RuntimeMissingSupport (Location.Null, "-addmodule");
+			return null;
 		}
 
-		public void AddTypeForwarder (TypeSpec type, Location loc)
+		public virtual void AddPermissionRequests (PermissionSet[] permissions)
 		{
-			try {
-				if (add_type_forwarder == null) {
-					add_type_forwarder = typeof (AssemblyBuilder).GetMethod ("AddTypeForwarder", BindingFlags.NonPublic | BindingFlags.Instance);
+			ctx.Report.RuntimeMissingSupport (Location.Null, "assembly declarative security");
+		}
+
+		public virtual void AddTypeForwarder (TypeSpec type, Location loc)
+		{
+			ctx.Report.RuntimeMissingSupport (loc, "TypeForwardedToAttribute");
+		}
+
+		public virtual void DefineWin32IconResource (string fileName)
+		{
+			ctx.Report.RuntimeMissingSupport (Location.Null, "-win32icon");
+		}
+
+		public virtual void SetAlgorithmId (uint value, Location loc)
+		{
+			ctx.Report.RuntimeMissingSupport (loc, "AssemblyAlgorithmIdAttribute");
+		}
+
+		public virtual void SetCulture (string culture, Location loc)
+		{
+			ctx.Report.RuntimeMissingSupport (loc, "AssemblyCultureAttribute");
+		}
+
+		public virtual void SetFlags (uint flags, Location loc)
+		{
+			ctx.Report.RuntimeMissingSupport (loc, "AssemblyFlagsAttribute");
+		}
+
+		public virtual void SetVersion (Version version, Location loc)
+		{
+			ctx.Report.RuntimeMissingSupport (loc, "AssemblyVersionAttribute");
+		}
+	}
+
+	abstract class AssemblyReferencesLoader<T>
+	{
+		protected readonly CompilerContext compiler;
+
+		protected readonly List<string> paths;
+		readonly string[] default_references;
+
+		public AssemblyReferencesLoader (CompilerContext compiler)
+		{
+			this.compiler = compiler;
+
+			if (RootContext.LoadDefaultReferences)
+				default_references = GetDefaultReferences ();
+			else
+				default_references = new string[0];
+
+			paths = new List<string> ();
+			paths.AddRange (RootContext.ReferencesLookupPaths);
+			paths.Add (Directory.GetCurrentDirectory ());
+		}
+
+		public abstract bool HasObjectType (T assembly);
+		protected abstract string[] GetDefaultReferences ();
+		public abstract T LoadAssemblyFile (string fileName);
+		public abstract T LoadAssemblyDefault (string assembly);
+		public abstract void LoadReferences (ModuleContainer module);
+
+		protected void Error_FileNotFound (string fileName)
+		{
+			compiler.Report.Error (6, "Metadata file `{0}' could not be found", fileName);
+		}
+
+		protected void Error_FileCorrupted (string fileName)
+		{
+			compiler.Report.Error (9, "Metadata file `{0}' does not contain valid metadata", fileName);
+		}
+
+		protected void Error_AssemblyIsModule (string fileName)
+		{
+			compiler.Report.Error (1509,
+				"Referenced assembly file `{0}' is a module. Consider using `-addmodule' option to add the module",
+				fileName);
+		}
+
+		protected void Error_ModuleIsAssembly (string fileName)
+		{
+			compiler.Report.Error (1542,
+				"Added module file `{0}' is an assembly. Consider using `-r' option to reference the file",
+				fileName);
+		}
+
+		protected void LoadReferencesCore (ModuleContainer module, out T corlib_assembly, out List<Tuple<RootNamespace, T>> loaded)
+		{
+			compiler.TimeReporter.Start (TimeReporter.TimerType.ReferencesLoading);
+
+			loaded = new List<Tuple<RootNamespace, T>> ();
+
+			//
+			// Load mscorlib.dll as the first
+			//
+			if (RootContext.StdLib) {
+				corlib_assembly = LoadAssemblyDefault ("mscorlib.dll");
+			} else {
+				corlib_assembly = default (T);
+			}
+
+			T a;
+			foreach (string r in default_references) {
+				a = LoadAssemblyDefault (r);
+				if (a != null)
+					loaded.Add (Tuple.Create (module.GlobalRootNamespace, a));
+			}
+
+			foreach (string r in RootContext.AssemblyReferences) {
+				a = LoadAssemblyFile (r);
+				if (a == null || EqualityComparer<T>.Default.Equals (a, corlib_assembly))
+					continue;
+
+				var key = Tuple.Create (module.GlobalRootNamespace, a);
+				if (loaded.Contains (key))
+					continue;
+
+				// A corlib assembly is the first assembly which contains System.Object
+				if (corlib_assembly == null && HasObjectType (a)) {
+					corlib_assembly = a;
+					continue;
 				}
 
-				add_type_forwarder.Invoke (builder, new object[] { type.GetMetaInfo () });
-			} catch {
-				ctx.Report.RuntimeMissingSupport (loc, "TypeForwardedToAttribute");
-			}
-		}
-
-		public void DefineWin32IconResource (string fileName)
-		{
-			try {
-				if (win32_icon_define == null)
-					win32_icon_define = typeof (AssemblyBuilder).GetMethod ("DefineIconResource", BindingFlags.Instance | BindingFlags.NonPublic);
-
-				win32_icon_define.Invoke (builder, new object[] { fileName });
-			} catch {
-				ctx.Report.RuntimeMissingSupport (Location.Null, "-win32icon");
-			}		
-		}
-
-		public void SetAlgorithmId (uint value, Location loc)
-		{
-			try {
-				if (assembly_algorithm == null)
-					assembly_algorithm = typeof (AssemblyBuilder).GetField ("algid", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField);
-
-				assembly_algorithm.SetValue (builder, value);
-			} catch {
-				ctx.Report.RuntimeMissingSupport (loc, "AssemblyAlgorithmIdAttribute");
-			}
-		}
-
-		public void SetCulture (string culture, Location loc)
-		{
-			try {
-				if (assembly_culture == null)
-					assembly_culture = typeof (AssemblyBuilder).GetField ("culture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField);
-
-				assembly_culture.SetValue (builder, culture);
-			} catch {
-				ctx.Report.RuntimeMissingSupport (loc, "AssemblyCultureAttribute");
-			}
-		}
-
-
-		public void SetFlags (uint flags, Location loc)
-		{
-			try {
-				if (assembly_flags == null)
-					assembly_flags = typeof (AssemblyBuilder).GetField ("flags", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField);
-
-				assembly_flags.SetValue (builder, flags);
-			} catch {
-				ctx.Report.RuntimeMissingSupport (loc, "AssemblyFlagsAttribute");
+				loaded.Add (key);
 			}
 
-		}
+			foreach (var entry in RootContext.AssemblyReferencesAliases) {
+				a = LoadAssemblyFile (entry.Item2);
+				if (a == null)
+					continue;
 
-		public void SetVersion (string version, Location loc)
-		{
-			try {
-				if (assembly_version == null)
-					assembly_version = typeof (AssemblyBuilder).GetField ("version", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField);
+				var key = Tuple.Create (module.CreateRootNamespace (entry.Item1), a);
+				if (loaded.Contains (key))
+					continue;
 
-				assembly_version.SetValue (builder, version);
-			} catch {
-				ctx.Report.RuntimeMissingSupport (loc, "AssemblyVersionAttribute");
+				loaded.Add (key);
 			}
-		}
 
-		public void SetModuleTarget ()
-		{
-			try {
-				if (set_module_only == null) {
-					var module_only = typeof (AssemblyBuilder).GetProperty ("IsModuleOnly", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-					set_module_only = module_only.GetSetMethod (true);
-				}
-
-				set_module_only.Invoke (builder, new object[] { true });
-			} catch {
-				ctx.Report.RuntimeMissingSupport (Location.Null, "-target:module");
-			}
+			compiler.TimeReporter.Stop (TimeReporter.TimerType.ReferencesLoading);
 		}
 	}
 }

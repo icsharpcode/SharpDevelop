@@ -13,22 +13,24 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
-using System.Text;
 using System.Linq;
 
 #if NET_2_1
 using XmlElement = System.Object;
-#else
-using System.Xml;
 #endif
 
-using Mono.CompilerServices.SymbolWriter;
+#if STATIC
+using SecurityType = System.Collections.Generic.List<IKVM.Reflection.Emit.CustomAttributeBuilder>;
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+#else
+using SecurityType = System.Collections.Generic.Dictionary<System.Security.Permissions.SecurityAction, System.Security.PermissionSet>;
+using System.Reflection;
+using System.Reflection.Emit;
+#endif
 
 namespace Mono.CSharp {
 
@@ -83,6 +85,10 @@ namespace Mono.CSharp {
 
 			public bool IsStatic {
 				get { return tc.IsStatic; }
+			}
+
+			public ModuleContainer Module {
+				get { return tc.Module; }
 			}
 
 			public string GetSignatureForError ()
@@ -475,8 +481,7 @@ namespace Mono.CSharp {
 		{
 			orderedAllMembers.Add (c);
 			bool is_static = (c.ModFlags & Modifiers.STATIC) != 0;
-			if (!AddToContainer (c, is_static ?
-				ConstructorBuilder.ConstructorName : ConstructorBuilder.TypeConstructorName))
+			if (!AddToContainer (c, is_static ? Constructor.ConstructorName : Constructor.TypeConstructorName))
 				return;
 			
 			if (is_static && c.ParameterInfo.IsEmpty){
@@ -671,7 +676,7 @@ namespace Mono.CSharp {
 
 		protected override TypeAttributes TypeAttr {
 			get {
-				return ModifiersExtensions.TypeAttr (ModFlags, IsTopLevel) | base.TypeAttr;
+				return ModifiersExtensions.TypeAttr (ModFlags, IsTopLevel);
 			}
 		}
 
@@ -698,7 +703,7 @@ namespace Mono.CSharp {
 				if (OptAttributes == null)
 					return false;
 
-				return OptAttributes.Contains (Compiler.PredefinedAttributes.ComImport);
+				return OptAttributes.Contains (Module.PredefinedAttributes.ComImport);
 			}
 		}
 
@@ -812,7 +817,7 @@ namespace Mono.CSharp {
 			if (OptAttributes == null)
 				return null;
 
-			Attribute a = OptAttributes.Search (Compiler.PredefinedAttributes.CoClass);
+			Attribute a = OptAttributes.Search (Module.PredefinedAttributes.CoClass);
 			if (a == null)
 				return null;
 
@@ -1038,10 +1043,11 @@ namespace Mono.CSharp {
 
 				TypeBuilder = Module.CreateBuilder (Name, TypeAttr, type_size);
 			} else {
-				TypeBuilder builder = Parent.TypeBuilder;
-
-				TypeBuilder = builder.DefineNestedType (Basename, TypeAttr, null, type_size);
+				TypeBuilder = Parent.TypeBuilder.DefineNestedType (Basename, TypeAttr, null, type_size);
 			}
+
+			if (DeclaringAssembly.Importer != null)
+				DeclaringAssembly.Importer.AddCompiledType (TypeBuilder, spec);
 
 			spec.SetMetaInfo (TypeBuilder);
 			spec.MemberCache = new MemberCache (this);
@@ -1096,7 +1102,7 @@ namespace Mono.CSharp {
 				var cloned_params = ParametersCompiled.CreateFullyResolved (base_parameters, method.Parameters.Types);
 				if (method.Parameters.HasArglist) {
 					cloned_params.FixedParameters[0] = new Parameter (null, "__arglist", Parameter.Modifier.NONE, null, Location);
-					cloned_params.Types[0] = TypeManager.runtime_argument_handle_type;
+					cloned_params.Types[0] = Module.PredefinedTypes.RuntimeArgumentHandle.Resolve (Location);
 				}
 
 				GenericMethod generic_method;
@@ -1236,6 +1242,8 @@ namespace Mono.CSharp {
 
 				// Set base type after type creation
 				TypeBuilder.SetParent (base_type.GetMetaInfo ());
+			} else {
+				TypeBuilder.SetParent (null);
 			}
 
 			return true;
@@ -1282,17 +1290,17 @@ namespace Mono.CSharp {
 		//
 		// Defines the type in the appropriate ModuleBuilder or TypeBuilder.
 		//
-		public TypeBuilder CreateType ()
+		public bool CreateType ()
 		{
 			if (TypeBuilder != null)
-				return TypeBuilder;
+				return !error;
 
 			if (error)
-				return null;
+				return false;
 
 			if (!CreateTypeBuilder ()) {
 				error = true;
-				return null;
+				return false;
 			}
 
 			if (partial_parts != null) {
@@ -1305,36 +1313,31 @@ namespace Mono.CSharp {
 
 			if (Types != null) {
 				foreach (TypeContainer tc in Types) {
-					if (tc.CreateType () == null) {
-						error = true;
-						return null;
-					}
+					tc.CreateType ();
 				}
 			}
 
-			return TypeBuilder;
+			return true;
 		}
 
-		public override TypeBuilder DefineType ()
+		public override void DefineType ()
 		{
 			if (error)
-				return null;
+				return;
 			if (type_defined)
-				return TypeBuilder;
+				return;
 
 			type_defined = true;
 
 			if (!DefineBaseTypes ()) {
 				error = true;
-				return null;
+				return;
 			}
 
 			if (!DefineNestedTypes ()) {
 				error = true;
-				return null;
+				return;
 			}
-
-			return TypeBuilder;
 		}
 
 		public override void SetParameterInfo (List<Constraints> constraints_list)
@@ -1366,9 +1369,22 @@ namespace Mono.CSharp {
 		// Replaces normal spec with predefined one when compiling corlib
 		// and this type container defines predefined type
 		//
-		public void SetPredefinedSpec (PredefinedTypeSpec spec)
+		public void SetPredefinedSpec (BuildinTypeSpec spec)
 		{
+			// When compiling build-in types we start with two
+			// version of same type. One is of BuildinTypeSpec and
+			// second one is ordinary TypeSpec. The unification
+			// happens at later stage when we know which type
+			// really matches the buildin type signature. However
+			// that means TypeSpec create during CreateType of this
+			// type has to be replaced with buildin one
+			// 
+			spec.SetMetaInfo (TypeBuilder);
+			spec.MemberCache = this.spec.MemberCache;
+			spec.DeclaringType = this.spec.DeclaringType;
+
 			this.spec = spec;
+			current_type = null;
 		}
 
 		void UpdateTypeParameterConstraints (TypeContainer part)
@@ -1433,8 +1449,7 @@ namespace Mono.CSharp {
 		{
 			if (Types != null) {
 				foreach (TypeContainer tc in Types)
-					if (tc.DefineType () == null)
-						return false;
+					tc.DefineType ();
 			}
 
 			return true;
@@ -1537,6 +1552,11 @@ namespace Mono.CSharp {
 				if (ct != null)
 					ct.CheckConstraints (this);
 
+				if (base_type.Interfaces != null) {
+					foreach (var iface in base_type.Interfaces)
+						spec.AddInterface (iface);
+				}
+
 				var baseContainer = base_type.MemberDefinition as ClassOrStruct;
 				if (baseContainer != null) {
 					baseContainer.Define ();
@@ -1586,6 +1606,10 @@ namespace Mono.CSharp {
 
 			ComputeIndexerName();
 			CheckEqualsAndGetHashCode();
+
+			if (Kind == MemberKind.Interface && iface_exprs != null) {
+				MemberCache.RemoveHiddenMembers (spec);
+			}
 
 			return true;
 		}
@@ -1645,12 +1669,12 @@ namespace Mono.CSharp {
 			if (!seen_normal_indexers)
 				return;
 
-			PredefinedAttribute pa = Compiler.PredefinedAttributes.DefaultMember;
+			PredefinedAttribute pa = Module.PredefinedAttributes.DefaultMember;
 			if (pa.Constructor == null &&
 				!pa.ResolveConstructor (Location, TypeManager.string_type))
 				return;
 
-			var encoder = new AttributeEncoder (false);
+			var encoder = new AttributeEncoder ();
 			encoder.Encode (GetAttributeDefaultMember ());
 			encoder.EncodeEmptyNamedArguments ();
 
@@ -1748,7 +1772,7 @@ namespace Mono.CSharp {
 						
 						Constant c = New.Constantify (f.MemberType, f.Location);
 						Report.Warning (649, 4, f.Location, "Field `{0}' is never assigned to, and will always have its default value `{1}'",
-							f.GetSignatureForError (), c == null ? "null" : c.AsString ());
+							f.GetSignatureForError (), c == null ? "null" : c.GetValueAsLiteral ());
 					}
 				}
 			}
@@ -1787,7 +1811,12 @@ namespace Mono.CSharp {
 			}
 
 			if ((ModFlags & Modifiers.COMPILER_GENERATED) != 0 && !Parent.IsCompilerGenerated)
-				Compiler.PredefinedAttributes.CompilerGenerated.EmitAttribute (TypeBuilder);
+				Module.PredefinedAttributes.CompilerGenerated.EmitAttribute (TypeBuilder);
+
+#if STATIC
+			if ((TypeBuilder.Attributes & TypeAttributes.StringFormatMask) == 0 && Module.HasDefaultCharSet)
+				TypeBuilder.__SetAttributes (TypeBuilder.Attributes | Module.DefaultCharSetType);
+#endif
 
 			base.Emit ();
 		}
@@ -1893,7 +1922,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public void CloseType ()
+		public virtual void CloseType ()
 		{
 			if ((caching_flags & Flags.CloseTypeCreated) != 0)
 				return;
@@ -1901,8 +1930,12 @@ namespace Mono.CSharp {
 			// Close base type container first to avoid TypeLoadException
 			if (spec.BaseType != null) {
 				var btype = spec.BaseType.MemberDefinition as TypeContainer;
-				if (btype != null)
+				if (btype != null) {
 					btype.CloseType ();
+
+					if ((caching_flags & Flags.CloseTypeCreated) != 0)
+						return;
+				}
 			}
 
 			try {
@@ -2223,8 +2256,8 @@ namespace Mono.CSharp {
 
 	public abstract class ClassOrStruct : TypeContainer
 	{
-		Dictionary<SecurityAction, PermissionSet> declarative_security;
-		
+		SecurityType declarative_security;
+
 		public ClassOrStruct (NamespaceEntry ns, DeclSpace parent,
 				      MemberName name, Attributes attrs, MemberKind kind)
 			: base (ns, parent, name, attrs, kind)
@@ -2265,22 +2298,23 @@ namespace Mono.CSharp {
 						Report.Warning (67, 3, e.Location, "The event `{0}' is never used", e.GetSignatureForError ());
 				}
 			}
+
+			if (types != null) {
+				foreach (var t in types)
+					t.VerifyMembers ();
+			}
 		}
 
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (a.IsValidSecurityAttribute ()) {
-				if (declarative_security == null)
-					declarative_security = new Dictionary<SecurityAction, PermissionSet> ();
-
-				a.ExtractSecurityPermissionSet (declarative_security);
+				a.ExtractSecurityPermissionSet (ctor, ref declarative_security);
 				return;
 			}
 
 			if (a.Type == pa.StructLayout) {
 				PartialContainer.HasStructLayout = true;
-
-				if (a.GetLayoutKindValue () == LayoutKind.Explicit)
+				if (a.IsExplicitLayoutKind ())
 					PartialContainer.HasExplicitLayout = true;
 			}
 
@@ -2340,7 +2374,11 @@ namespace Mono.CSharp {
 
 			if (declarative_security != null) {
 				foreach (var de in declarative_security) {
+#if STATIC
+					TypeBuilder.__AddDeclarativeSecurity (de);
+#else
 					TypeBuilder.AddDeclarativeSecurity (de.Key, de.Value);
+#endif
 				}
 			}
 		}
@@ -2516,10 +2554,10 @@ namespace Mono.CSharp {
 			base.Emit ();
 
 			if ((ModFlags & Modifiers.METHOD_EXTENSION) != 0)
-				Compiler.PredefinedAttributes.Extension.EmitAttribute (TypeBuilder);
+				Module.PredefinedAttributes.Extension.EmitAttribute (TypeBuilder);
 
 			if (base_type != null && base_type.HasDynamicElement) {
-				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (TypeBuilder, base_type);
+				Module.PredefinedAttributes.Dynamic.EmitAttribute (TypeBuilder, base_type, Location);
 			}
 		}
 
@@ -2551,7 +2589,7 @@ namespace Mono.CSharp {
 						GetSignatureForError (), base_class.GetSignatureForError ());
 				}
 
-				if (base_type is PredefinedTypeSpec && !(spec is PredefinedTypeSpec) &&
+				if (base_type is BuildinTypeSpec && !(spec is BuildinTypeSpec) &&
 					(base_type == TypeManager.enum_type || base_type == TypeManager.value_type || base_type == TypeManager.multicast_delegate_type ||
 					base_type == TypeManager.delegate_type || base_type == TypeManager.array_type)) {
 					Report.Error (644, Location, "`{0}' cannot derive from special class `{1}'",
@@ -2588,7 +2626,7 @@ namespace Mono.CSharp {
 			if (OptAttributes == null)
 				return null;
 
-			Attribute[] attrs = OptAttributes.SearchMulti (Compiler.PredefinedAttributes.Conditional);
+			Attribute[] attrs = OptAttributes.SearchMulti (Module.PredefinedAttributes.Conditional);
 			if (attrs == null)
 				return null;
 
@@ -2683,7 +2721,7 @@ namespace Mono.CSharp {
 				if (!ftype.IsStruct)
 					continue;
 
-				if (ftype is PredefinedTypeSpec)
+				if (ftype is BuildinTypeSpec)
 					continue;
 
 				foreach (var targ in ftype.TypeArguments) {
@@ -3007,13 +3045,13 @@ namespace Mono.CSharp {
 
 				ObsoleteAttribute oa = base_member.GetAttributeObsolete ();
 				if (oa != null) {
-					if (OptAttributes == null || !OptAttributes.Contains (Compiler.PredefinedAttributes.Obsolete)) {
+					if (OptAttributes == null || !OptAttributes.Contains (Module.PredefinedAttributes.Obsolete)) {
 						Report.SymbolRelatedToPreviousError (base_member);
 						Report.Warning (672, 1, Location, "Member `{0}' overrides obsolete member `{1}'. Add the Obsolete attribute to `{0}'",
 							GetSignatureForError (), TypeManager.GetFullNameSignature (base_member));
 					}
 				} else {
-					if (OptAttributes != null && OptAttributes.Contains (Compiler.PredefinedAttributes.Obsolete)) {
+					if (OptAttributes != null && OptAttributes.Contains (Module.PredefinedAttributes.Obsolete)) {
 						Report.SymbolRelatedToPreviousError (base_member);
 						Report.Warning (809, 1, Location, "Obsolete member `{0}' overrides non-obsolete member `{1}'",
 							GetSignatureForError (), TypeManager.GetFullNameSignature (base_member));
@@ -3111,33 +3149,29 @@ namespace Mono.CSharp {
 
 			if ((base_classp & (Modifiers.PROTECTED | Modifiers.INTERNAL)) == (Modifiers.PROTECTED | Modifiers.INTERNAL)) {
 				//
+				// It must be at least "protected"
+				//
+				if ((thisp & Modifiers.PROTECTED) == 0) {
+					return false;
+				}
+
+				//
 				// when overriding protected internal, the method can be declared
 				// protected internal only within the same assembly or assembly
 				// which has InternalsVisibleTo
 				//
-				if ((thisp & (Modifiers.PROTECTED | Modifiers.INTERNAL)) == (Modifiers.PROTECTED | Modifiers.INTERNAL)) {
+				if ((thisp & Modifiers.INTERNAL) != 0) {
 					return base_member.DeclaringType.MemberDefinition.IsInternalAsPublic (this_member.Module.DeclaringAssembly);
-				} 
-				if ((thisp & Modifiers.PROTECTED) != Modifiers.PROTECTED) {
-					//
-					// if it's not "protected internal", it must be "protected"
-					//
+				}
 
+				//
+				// protected overriding protected internal inside same assembly
+				// requires internal modifier as well
+				//
+				if (base_member.DeclaringType.MemberDefinition.IsInternalAsPublic (this_member.Module.DeclaringAssembly)) {
 					return false;
 				}
-				if (this_member.Parent.PartialContainer.DeclaringAssembly == base_member.DeclaringType.MemberDefinition.DeclaringAssembly) {
-					//
-					// protected within the same assembly - an error
-					//
-					return false;
-				}
-				if ((thisp & ~(Modifiers.PROTECTED | Modifiers.INTERNAL)) !=
-					   (base_classp & ~(Modifiers.PROTECTED | Modifiers.INTERNAL))) {
-					//
-					// protected ok, but other attributes differ - report an error
-					//
-					return false;
-				}
+
 				return true;
 			}
 
@@ -3227,10 +3261,10 @@ namespace Mono.CSharp {
 			// We are more strict than csc and report this as an error because SRE does not allow emit that
 			if ((ModFlags & Modifiers.EXTERN) != 0 && !is_external_implementation) {
 				if (this is Constructor) {
-					Report.Error (824, Location,
+					Report.Warning (824, 1, Location,
 						"Constructor `{0}' is marked `external' but has no external implementation specified", GetSignatureForError ());
 				} else {
-					Report.Error (626, Location,
+					Report.Warning (626, 1, Location,
 						"`{0}' is marked as an external but has no DllImport attribute. Consider adding a DllImport attribute to specify the external implementation",
 						GetSignatureForError ());
 				}
@@ -3258,11 +3292,18 @@ namespace Mono.CSharp {
 
 		protected void Error_CannotChangeAccessModifiers (MemberCore member, MemberSpec base_member)
 		{
+			var base_modifiers = base_member.Modifiers;
+
+			// Remove internal modifier from types which are not internally accessible
+			if ((base_modifiers & Modifiers.AccessibilityMask) == (Modifiers.PROTECTED | Modifiers.INTERNAL) &&
+				!base_member.DeclaringType.MemberDefinition.IsInternalAsPublic (member.Module.DeclaringAssembly))
+				base_modifiers = Modifiers.PROTECTED;
+
 			Report.SymbolRelatedToPreviousError (base_member);
 			Report.Error (507, member.Location,
 				"`{0}': cannot change access modifiers when overriding `{1}' inherited member `{2}'",
 				member.GetSignatureForError (),
-				ModifiersExtensions.AccessibilityName (base_member.Modifiers),
+				ModifiersExtensions.AccessibilityName (base_modifiers),
 				base_member.GetSignatureForError ());
 		}
 

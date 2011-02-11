@@ -11,11 +11,16 @@
 // Copyright 2003-2008 Novell, Inc.
 //
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
+
+#if STATIC
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+#else
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Linq;
+#endif
 
 namespace Mono.CSharp {
 

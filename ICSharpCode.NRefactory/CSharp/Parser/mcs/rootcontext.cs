@@ -11,11 +11,9 @@
 // Copyright 2001 Ximian, Inc (http://www.ximian.com)
 // Copyright 2004-2008 Novell, Inc
 
-using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Diagnostics;
+using System.IO;
+using System.Text;
 
 namespace Mono.CSharp {
 
@@ -30,11 +28,27 @@ namespace Mono.CSharp {
 		Default		= LanguageVersion.V_4,
 	}
 
-	public enum MetadataVersion
+	public enum RuntimeVersion
 	{
 		v1,
 		v2,
 		v4
+	}
+
+	public enum SdkVersion
+	{
+		v2,
+		v4
+	}
+
+	public enum Target
+	{
+		Library, Exe, Module, WinExe
+	}
+
+	public enum Platform
+	{
+		AnyCPU, X86, X64, IA64
 	}
 
 	public class RootContext {
@@ -45,12 +59,12 @@ namespace Mono.CSharp {
 		public static Target Target;
 		public static Platform Platform;
 		public static string TargetExt;
-		public static bool VerifyClsCompliance = true;
-		public static bool Optimize = true;
+		public static bool VerifyClsCompliance;
+		public static bool Optimize;
 		public static LanguageVersion Version;
 		public static bool EnhancedWarnings;
-
-		public static MetadataVersion MetadataCompatibilityVersion;
+		public static bool LoadDefaultReferences;
+		public static SdkVersion SdkVersion;
 
 		//
 		// We keep strongname related info here because
@@ -61,11 +75,50 @@ namespace Mono.CSharp {
 		public static bool StrongNameDelaySign;
 
 		//
+		// Assemblies references to be loaded
+		//
+		public static List<string> AssemblyReferences;
+
+		// 
+		// External aliases for assemblies
+		//
+		public static List<Tuple<string, string>> AssemblyReferencesAliases;
+
+		//
+		// Modules to be embedded
+		//
+		public static List<string> Modules;
+
+		//
+		// Lookup paths for referenced assemblies
+		//
+		public static List<string> ReferencesLookupPaths;
+
+		//
+		// Encoding.
+		//
+		public static Encoding Encoding;
+
+		//
 		// If set, enable XML documentation generation
 		//
 		public static Documentation Documentation;
 
 		static public string MainClass;
+
+		//
+		// Output file
+		//
+		static string output_file;
+		public static string OutputFile {
+			set {
+				output_file = value;
+			}
+			get {
+				return output_file;
+			}
+		}
+
 
 		// 
 		// The default compiler checked state
@@ -101,12 +154,19 @@ namespace Mono.CSharp {
 
 		static public bool GenerateDebugInfo;
 
+		// Compiler debug flags only
+		public static bool ParseOnly, TokenizeOnly, Timestamps;
+
+		public static bool ShowFullPaths;
+
 		//
 		// Whether we are being linked against the standard libraries.
 		// This is only used to tell whether `System.Object' should
 		// have a base class or not.
 		//
 		public static bool StdLib;
+
+		public static RuntimeVersion StdLibRuntimeVersion;
 
 		public static bool NeedsEntryPoint {
 			get { return Target == Target.Exe || Target == Target.WinExe; }
@@ -152,21 +212,30 @@ namespace Mono.CSharp {
 			StrongNameKeyContainer = null;
 			StrongNameDelaySign = false;
 			MainClass = null;
+			OutputFile = null;
 			Target = Target.Exe;
+			SdkVersion = SdkVersion.v4;
 			TargetExt = ".exe";
 			Platform = Platform.AnyCPU;
 			Version = LanguageVersion.Default;
+			VerifyClsCompliance = true;
+			Optimize = true;
+			Encoding = Encoding.Default;
 			Documentation = null;
 			GenerateDebugInfo = false;
+			ParseOnly = false;
+			TokenizeOnly = false;
+			Timestamps = false;
 			Win32IconFile = null;
 			Win32ResourceFile = null;
 			Resources = null;
-
-#if NET_4_0
-			MetadataCompatibilityVersion = MetadataVersion.v4;
-#else
-			MetadataCompatibilityVersion = MetadataVersion.v2;
-#endif
+			LoadDefaultReferences = true;
+			AssemblyReferences = new List<string> ();
+			AssemblyReferencesAliases = new List<Tuple<string, string>> ();
+			Modules = new List<string> ();
+			ReferencesLookupPaths = new List<string> ();
+			StdLibRuntimeVersion = RuntimeVersion.v2;
+			ShowFullPaths = false;
 
 			//
 			// Setup default defines

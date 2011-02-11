@@ -19,8 +19,11 @@
 // and are fully resolved when born.
 //
 
-using System;
+#if STATIC
+using IKVM.Reflection.Emit;
+#else
 using System.Reflection.Emit;
+#endif
 
 namespace Mono.CSharp {
 
@@ -55,6 +58,11 @@ namespace Mono.CSharp {
 			}
 
 			base.Error_ValueCannotBeConverted (ec, loc, t, expl);
+		}
+
+		public override string GetValueAsLiteral ()
+		{
+			return "null";
 		}
 
 		public override bool IsLiteral {

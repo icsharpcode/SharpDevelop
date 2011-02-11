@@ -13,21 +13,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Security.Permissions;
 using System.Text;
 
 #if NET_2_1
 using XmlElement = System.Object;
-#else
-using System.Xml;
 #endif
 
-using Mono.CompilerServices.SymbolWriter;
+#if STATIC
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+#else
+using System.Reflection;
+using System.Reflection.Emit;
+#endif
 
 namespace Mono.CSharp
 {
@@ -184,6 +182,11 @@ namespace Mono.CSharp
 			ps.memberType = inflator.Inflate (memberType);
 			return ps;
 		}
+
+		public override List<TypeSpec> ResolveMissingDependencies ()
+		{
+			return memberType.ResolveMissingDependencies ();
+		}
 	}
 
 	//
@@ -244,7 +247,6 @@ namespace Mono.CSharp
 
 			internal const string Prefix = "set_";
 
-			ImplicitParameter param_attr;
 			protected ParametersCompiled parameters;
 
 			public SetMethod (PropertyBase method, Modifiers modifiers, ParametersCompiled parameters, Attributes attrs, Location loc)
@@ -256,10 +258,7 @@ namespace Mono.CSharp
 			protected override void ApplyToExtraTarget (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 			{
 				if (a.Target == AttributeTargets.Parameter) {
-					if (param_attr == null)
-						param_attr = new ImplicitParameter (method_data.MethodBuilder);
-
-					param_attr.ApplyAttributeBuilder (a, ctor, cdata, pa);
+					parameters[0].ApplyAttributeBuilder (a, ctor, cdata, pa);
 					return;
 				}
 
@@ -325,8 +324,8 @@ namespace Mono.CSharp
 
 			public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 			{
-				if (a.IsInternalMethodImplAttribute) {
-					method.is_external_implementation = true;
+				if (a.Type == pa.MethodImpl) {
+					method.is_external_implementation = a.IsInternalCall ();
 				}
 
 				base.ApplyAttributeBuilder (a, ctor, cdata, pa);
@@ -655,9 +654,9 @@ namespace Mono.CSharp
 				OptAttributes.Emit ();
 
 			if (member_type == InternalType.Dynamic) {
-				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (PropertyBuilder);
+				Module.PredefinedAttributes.Dynamic.EmitAttribute (PropertyBuilder);
 			} else if (member_type.HasDynamicElement) {
-				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (PropertyBuilder, member_type);
+				Module.PredefinedAttributes.Dynamic.EmitAttribute (PropertyBuilder, member_type, Location);
 			}
 
 			first.Emit (Parent);
@@ -900,23 +899,24 @@ namespace Mono.CSharp
 			{
 				var cas = TypeManager.gen_interlocked_compare_exchange;
 				if (cas == null) {
-					TypeSpec t = TypeManager.CoreLookupType (Compiler, "System.Threading", "Interlocked", MemberKind.Class, true);
-					if (t != null) {
-						var p = new ParametersImported (
-							new[] {
+					var t = Module.PredefinedTypes.Interlocked.Resolve (Location);
+					if (t == null)
+						return;
+
+					var p = new ParametersImported (
+						new[] {
 								new ParameterData (null, Parameter.Modifier.REF),
 								new ParameterData (null, Parameter.Modifier.NONE),
 								new ParameterData (null, Parameter.Modifier.NONE)
 							},
-							new [] {
+						new[] {
 								new TypeParameterSpec (0, null, SpecialConstraint.None, Variance.None, null),
 								new TypeParameterSpec (0, null, SpecialConstraint.None, Variance.None, null),
 								new TypeParameterSpec (0, null, SpecialConstraint.None, Variance.None, null),
 							}, false);
 
-						var filter = new MemberFilter ("CompareExchange", 1, MemberKind.Method, p, null);
-						cas = TypeManager.gen_interlocked_compare_exchange = TypeManager.GetPredefinedMethod (t, filter, Location);
-					}
+					var filter = new MemberFilter ("CompareExchange", 1, MemberKind.Method, p, null);
+					cas = TypeManager.gen_interlocked_compare_exchange = TypeManager.GetPredefinedMethod (t, filter, Location);
 				}
 
 				//
@@ -1137,7 +1137,6 @@ namespace Mono.CSharp
 		public abstract class AEventAccessor : AbstractPropertyEventMethod
 		{
 			protected readonly Event method;
-			ImplicitParameter param_attr;
 			ParametersCompiled parameters;
 
 			static readonly string[] attribute_targets = new string [] { "method", "param", "return" };
@@ -1150,7 +1149,7 @@ namespace Mono.CSharp
 			{
 				this.method = method;
 				this.ModFlags = method.ModFlags;
-				this.parameters = ParametersCompiled.CreateImplicitParameter (method.TypeExpression, loc);;
+				this.parameters = ParametersCompiled.CreateImplicitParameter (method.TypeExpression, loc);
 			}
 
 			public bool IsInterfaceImplementation {
@@ -1159,8 +1158,8 @@ namespace Mono.CSharp
 
 			public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 			{
-				if (a.IsInternalMethodImplAttribute) {
-					method.is_external_implementation = true;
+				if (a.Type == pa.MethodImpl) {
+					method.is_external_implementation = a.IsInternalCall ();
 				}
 
 				base.ApplyAttributeBuilder (a, ctor, cdata, pa);
@@ -1169,10 +1168,7 @@ namespace Mono.CSharp
 			protected override void ApplyToExtraTarget (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 			{
 				if (a.Target == AttributeTargets.Parameter) {
-					if (param_attr == null)
-						param_attr = new ImplicitParameter (method_data.MethodBuilder);
-
-					param_attr.ApplyAttributeBuilder (a, ctor, cdata, pa);
+					parameters[0].ApplyAttributeBuilder (a, ctor, cdata, pa);
 					return;
 				}
 
@@ -1319,7 +1315,7 @@ namespace Mono.CSharp
 			if (RemoveBuilder == null)
 				return false;
 
-			EventBuilder = Parent.TypeBuilder.DefineEvent (Name, EventAttributes.None, MemberType.GetMetaInfo ());
+			EventBuilder = Parent.TypeBuilder.DefineEvent (GetFullName (MemberName), EventAttributes.None, MemberType.GetMetaInfo ());
 			EventBuilder.SetAddOnMethod (AddBuilder);
 			EventBuilder.SetRemoveOnMethod (RemoveBuilder);
 
@@ -1410,6 +1406,11 @@ namespace Mono.CSharp
 				es.backing_field = (FieldSpec) backing_field.InflateMember (inflator);
 
 			return es;
+		}
+
+		public override List<TypeSpec> ResolveMissingDependencies ()
+		{
+			return MemberType.ResolveMissingDependencies ();
 		}
 	}
  
@@ -1540,7 +1541,7 @@ namespace Mono.CSharp
 				return false;
 
 			if (OptAttributes != null) {
-				Attribute indexer_attr = OptAttributes.Search (Compiler.PredefinedAttributes.IndexerName);
+				Attribute indexer_attr = OptAttributes.Search (Module.PredefinedAttributes.IndexerName);
 				if (indexer_attr != null) {
 					var compiling = indexer_attr.Type.MemberDefinition as TypeContainer;
 					if (compiling != null)
@@ -1656,6 +1657,23 @@ namespace Mono.CSharp
 			var spec = (IndexerSpec) base.InflateMember (inflator);
 			spec.parameters = parameters.Inflate (inflator);
 			return spec;
+		}
+
+		public override List<TypeSpec> ResolveMissingDependencies ()
+		{
+			var missing = base.ResolveMissingDependencies ();
+			foreach (var pt in parameters.Types) {
+				var m = pt.GetMissingDependencies ();
+				if (m == null)
+					continue;
+
+				if (missing == null)
+					missing = new List<TypeSpec> ();
+
+				missing.AddRange (m);
+			}
+
+			return missing;
 		}
 	}
 }

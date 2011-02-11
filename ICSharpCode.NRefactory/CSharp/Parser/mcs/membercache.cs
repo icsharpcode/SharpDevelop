@@ -12,9 +12,7 @@
 //
 
 using System;
-using System.Text;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Mono.CSharp {
 
@@ -40,6 +38,7 @@ namespace Mono.CSharp {
 		ArrayType = 1 << 19,
 		PointerType = 1 << 20,
 		InternalCompilerType = 1 << 21,
+		MissingType = 1 << 22,
 
 		NestedMask = Class | Struct | Delegate | Enum | Interface,
 		GenericMask = Method | Class | Struct | Delegate | Interface,
@@ -102,7 +101,7 @@ namespace Mono.CSharp {
 
 		public static MemberFilter Constructor (AParametersCollection param)
 		{
-			return new MemberFilter (System.Reflection.ConstructorInfo.ConstructorName, 0, MemberKind.Constructor, param, null);
+			return new MemberFilter (Mono.CSharp.Constructor.ConstructorName, 0, MemberKind.Constructor, param, null);
 		}
 
 		public static MemberFilter Property (string name, TypeSpec type)
@@ -210,6 +209,40 @@ namespace Mono.CSharp {
 		}
 
 		//
+		// For cases where we need to union cache members
+		//
+		public void AddBaseType (TypeSpec baseType)
+		{
+			var cache = baseType.MemberCache;
+
+			IList<MemberSpec> list;
+			foreach (var entry in cache.member_hash) {
+				if (!member_hash.TryGetValue (entry.Key, out list)) {
+					if (entry.Value.Count == 1) {
+						list = entry.Value;
+					} else {
+						list = new List<MemberSpec> (entry.Value);
+					}
+
+					member_hash.Add (entry.Key, list);
+					continue;
+				}
+
+				foreach (var ce in entry.Value) {
+					if (list.Contains (ce))
+						continue;
+
+					if (list is MemberSpec[]) {
+						list = new List<MemberSpec> () { list [0] };
+						member_hash[entry.Key] = list;
+					}
+
+					list.Add (ce);
+				}
+			}
+		}
+
+		//
 		// Member-cache does not contain base members but it does
 		// contain all base interface members, so the Lookup code
 		// can use simple inheritance rules.
@@ -252,7 +285,7 @@ namespace Mono.CSharp {
 			// Explicit names cannot be looked-up but can be used for
 			// collision checking (no name mangling needed)
 			if (imb.IsExplicitImpl)
-				AddMember (exlicitName, ms);
+				AddMember (exlicitName, ms, false);
 			else
 				AddMember (ms);
 		}
@@ -262,10 +295,10 @@ namespace Mono.CSharp {
 		//
 		public void AddMember (MemberSpec ms)
 		{
-			AddMember (GetLookupName (ms), ms);
+			AddMember (GetLookupName (ms), ms, false);
 		}
 
-		void AddMember (string name, MemberSpec member)
+		void AddMember (string name, MemberSpec member, bool removeHiddenMembers)
 		{
 			if (member.Kind == MemberKind.Operator) {
 				var dt = member.DeclaringType;
@@ -288,17 +321,22 @@ namespace Mono.CSharp {
 				return;
 			}
 
-			if (member.DeclaringType.IsInterface) {
+			if (removeHiddenMembers && member.DeclaringType.IsInterface) {
 				if (AddInterfaceMember (member, ref list))
 					member_hash[name] = list;
 			} else {
-				if (list is MemberSpec[]) {
+				if (list.Count == 1) {
 					list = new List<MemberSpec> () { list[0] };
 					member_hash[name] = list;
 				}
 
 				list.Add (member);
 			}
+		}
+
+		public void AddMemberImported (MemberSpec ms)
+		{
+			AddMember (GetLookupName (ms), ms, true);
 		}
 
 		//
@@ -328,7 +366,7 @@ namespace Mono.CSharp {
 				}
 
 				if (member.DeclaringType.ImplementsInterface (entry.DeclaringType, false)) {
-					if (existing is MemberSpec[]) {
+					if (existing.Count == 1) {
 						existing = new MemberSpec[] { member };
 						return true;
 					}
@@ -342,7 +380,7 @@ namespace Mono.CSharp {
 					return false;
 			}
 
-			if (existing is MemberSpec[]) {
+			if (existing.Count == 1) {
 				existing = new List<MemberSpec> () { existing[0], member };
 				return true;
 			}
@@ -517,54 +555,34 @@ namespace Mono.CSharp {
 							continue;
 
 						//
-						// Is the member of same type ?
+						// Isn't the member of same kind ?
 						//
 						if ((entry.Kind & ~MemberKind.Destructor & mkind & MemberKind.MaskType) == 0) {
 							// Destructors are ignored as they cannot be overridden by user
 							if ((entry.Kind & MemberKind.Destructor) != 0)
 								continue;
 
-							// Only different arity methods hide
+							// A method with different arity does not hide base member
 							if (mkind != MemberKind.Method && member.MemberName.Arity != entry.Arity)
 								continue;
-							
-							if ((member_param == null || !(entry is IParametersMember))) {
-								bestCandidate = entry;
-								return null;
-							}
 
+							bestCandidate = entry;
+							return null;
+						}
+
+						//
+						// Same kind of different arity is valid
+						//
+						if (member.MemberName.Arity != entry.Arity) {
 							continue;
 						}
 
-						if (entry.Kind != mkind) {
-							if (bestCandidate == null)
-								bestCandidate = entry;
-
-							continue;
-						}
-
-						if (member_param != null) {
-							// Check arity match
-							int arity = member.MemberName.Arity;
-							if (arity != entry.Arity)
-								continue;
-
-							var pm = entry as IParametersMember;
-							AParametersCollection entry_parameters;
-							if (pm == null) {
-								if (entry.Kind != MemberKind.Delegate)
-									continue;
-
-								// TODO: I don't have DelegateSpec
-								entry_parameters = Delegate.GetParameters (member.Compiler, (TypeSpec) entry);
-							} else {
-								entry_parameters = pm.Parameters;
-							}
-
+						if ((entry.Kind & mkind & (MemberKind.Method | MemberKind.Indexer)) != 0) {
 							if (entry.IsAccessor != member is AbstractPropertyEventMethod)
 								continue;
 
-							if (!TypeSpecComparer.Override.IsEqual (entry_parameters, member_param))
+							var pm = entry as IParametersMember;
+							if (!TypeSpecComparer.Override.IsEqual (pm.Parameters, member_param))
 								continue;
 						}
 
@@ -1023,6 +1041,53 @@ namespace Mono.CSharp {
 		}
 
 		//
+		// Removes hidden base members of an interface. For compiled interfaces we cannot
+		// do name filtering during Add (as we do for import) because we need all base
+		// names to be valid during type definition.
+		// Add replaces hidden base member with current one which means any name collision
+		// (CS0108) of non-first name would be unnoticed because the name was replaced
+		// with the one from compiled type
+		//
+		public void RemoveHiddenMembers (TypeSpec container)
+		{
+			foreach (var entry in member_hash) {
+				var values = entry.Value;
+
+				int container_members_start_at = 0;
+				while (values[container_members_start_at].DeclaringType != container && ++container_members_start_at < entry.Value.Count);
+
+				if (container_members_start_at == 0 || container_members_start_at == values.Count)
+					continue;
+
+				for (int i = 0; i < container_members_start_at; ++i) {
+					var member = values[i];
+
+					if (!container.ImplementsInterface (member.DeclaringType, false))
+						continue;
+
+					var member_param = member is IParametersMember ? ((IParametersMember) member).Parameters : ParametersCompiled.EmptyReadOnlyParameters;
+
+					for (int ii = container_members_start_at; ii < values.Count; ++ii) {
+						var container_entry = values[ii];
+
+						if (container_entry.Arity != member.Arity)
+							continue;
+
+						if (container_entry is IParametersMember) {
+							if (!TypeSpecComparer.Override.IsEqual (((IParametersMember) container_entry).Parameters, member_param))
+								continue;
+						}
+
+						values.RemoveAt (i);
+						--container_members_start_at;
+						--ii;
+						--i;
+					}
+				}
+			}
+		}
+
+		//
 		// Checks all appropriate container members for CLS compliance
 		//
 		public void VerifyClsCompliance (TypeSpec container, Report report)
@@ -1050,7 +1115,7 @@ namespace Mono.CSharp {
 					if ((name_entry.Kind & MemberKind.MaskType) == 0)
 						continue;
 
-					if (name_entry.MemberDefinition.IsNotCLSCompliant ())
+					if (name_entry.MemberDefinition.CLSAttributeValue == false)
 					    continue;
 
 					IParametersMember p_a = name_entry as IParametersMember;

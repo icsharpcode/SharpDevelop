@@ -12,7 +12,12 @@
 //
 
 using System;
+
+#if STATIC
+using IKVM.Reflection.Emit;
+#else
 using System.Reflection.Emit;
+#endif
 	
 namespace Mono.CSharp.Nullable
 {
@@ -34,13 +39,12 @@ namespace Mono.CSharp.Nullable
 
 		protected override TypeExpr DoResolveAsTypeStep (IMemberContext ec)
 		{
-			if (TypeManager.generic_nullable_type == null) {
-				TypeManager.generic_nullable_type = TypeManager.CoreLookupType (ec.Compiler,
-					"System", "Nullable", 1, MemberKind.Struct, true);
-			}
+			var type = ec.Module.PredefinedTypes.Nullable.Resolve (loc);
+			if (type == null)
+				return null;
 
 			TypeArguments args = new TypeArguments (underlying);
-			GenericTypeExpr ctype = new GenericTypeExpr (TypeManager.generic_nullable_type, args, loc);
+			GenericTypeExpr ctype = new GenericTypeExpr (type, args, loc);
 			return ctype.ResolveAsTypeTerminal (ec, false);
 		}
 	}
@@ -610,10 +614,10 @@ namespace Mono.CSharp.Nullable
 
 			if ((Oper & Operator.EqualityMask) != 0) {
 				ec.Report.Warning (472, 2, loc, "The result of comparing value type `{0}' with null is `{1}'",
-					TypeManager.CSharpName (expr.Type), c.AsString ());
+					TypeManager.CSharpName (expr.Type), c.GetValueAsLiteral ());
 			} else {
 				ec.Report.Warning (464, 2, loc, "The result of comparing type `{0}' with null is always `{1}'",
-					TypeManager.CSharpName (expr.Type), c.AsString ());
+					TypeManager.CSharpName (expr.Type), c.GetValueAsLiteral ());
 			}
 
 			return ReducedExpression.Create (c, this);
@@ -1122,7 +1126,7 @@ namespace Mono.CSharp.Nullable
 					// Reduce (left ?? null) to left OR (null-constant ?? right) to right
 					//
 					if (right.IsNull || lc != null)
-						return ReducedExpression.Create (lc != null ? right : left, this);
+						return ReducedExpression.Create (lc != null ? right : left, this).Resolve (ec);
 
 					right = Convert.ImplicitConversion (ec, right, ltype, loc);
 					type = ltype;
@@ -1140,7 +1144,7 @@ namespace Mono.CSharp.Nullable
 			// Reduce (null ?? right) to right
 			//
 			if (left.IsNull)
-				return ReducedExpression.Create (right, this);
+				return ReducedExpression.Create (right, this).Resolve (ec);
 
 			left = Convert.ImplicitConversion (ec, unwrap != null ? unwrap : left, rtype, loc);
 			type = rtype;
