@@ -1,6 +1,6 @@
 ﻿// 
 // AssignmentExpression.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -23,6 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -59,9 +61,39 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return visitor.VisitAssignmentExpression (this, data);
 		}
+		
+		public static string GetOperatorSymbol(AssignmentOperatorType op)
+		{
+			switch (op) {
+				case AssignmentOperatorType.Assign:
+					return "=";
+				case AssignmentOperatorType.Add:
+					return "+=";
+				case AssignmentOperatorType.Subtract:
+					return "-=";
+				case AssignmentOperatorType.Multiply:
+					return "*=";
+				case AssignmentOperatorType.Divide:
+					return "/=";
+				case AssignmentOperatorType.Modulus:
+					return "%=";
+				case AssignmentOperatorType.ShiftLeft:
+					return "<<=";
+				case AssignmentOperatorType.ShiftRight:
+					return ">>=";
+				case AssignmentOperatorType.BitwiseAnd:
+					return "&=";
+				case AssignmentOperatorType.BitwiseOr:
+					return "|=";
+				case AssignmentOperatorType.ExclusiveOr:
+					return "^=";
+				default:
+					throw new NotSupportedException("Invalid value for AssignmentOperatorType");
+			}
+		}
 	}
 	
-	public enum AssignmentOperatorType 
+	public enum AssignmentOperatorType
 	{
 		/// <summary>left = right</summary>
 		Assign,

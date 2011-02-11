@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
@@ -50,6 +52,32 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUnaryOperatorExpression (this, data);
+		}
+		
+		public static string GetOperatorSymbol(UnaryOperatorType op)
+		{
+			switch (op) {
+				case UnaryOperatorType.Not:
+					return "!";
+				case UnaryOperatorType.BitNot:
+					return "~";
+				case UnaryOperatorType.Minus:
+					return "-";
+				case UnaryOperatorType.Plus:
+					return "+";
+				case UnaryOperatorType.Increment:
+				case UnaryOperatorType.PostIncrement:
+					return "++";
+				case UnaryOperatorType.PostDecrement:
+				case UnaryOperatorType.Decrement:
+					return "--";
+				case UnaryOperatorType.Dereference:
+					return "*";
+				case UnaryOperatorType.AddressOf:
+					return "&";
+				default:
+					throw new NotSupportedException("Invalid value for UnaryOperatorType");
+			}
 		}
 	}
 	

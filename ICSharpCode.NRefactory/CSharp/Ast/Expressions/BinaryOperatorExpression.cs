@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
@@ -57,6 +59,52 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitBinaryOperatorExpression (this, data);
+		}
+		
+		public static string GetOperatorSymbol(BinaryOperatorType op)
+		{
+			switch (op) {
+				case BinaryOperatorType.BitwiseAnd:
+					return "&";
+				case BinaryOperatorType.BitwiseOr:
+					return "|";
+				case BinaryOperatorType.LogicalAnd:
+					return "&&";
+				case BinaryOperatorType.LogicalOr:
+					return "||";
+				case BinaryOperatorType.ExclusiveOr:
+					return "^";
+				case BinaryOperatorType.GreaterThan:
+					return ">";
+				case BinaryOperatorType.GreaterThanOrEqual:
+					return ">=";
+				case BinaryOperatorType.Equality:
+					return "==";
+				case BinaryOperatorType.InEquality:
+					return "!=";
+				case BinaryOperatorType.LessThan:
+					return "<";
+				case BinaryOperatorType.LessThanOrEqual:
+					return "<=";
+				case BinaryOperatorType.Add:
+					return "+";
+				case BinaryOperatorType.Subtract:
+					return "-";
+				case BinaryOperatorType.Multiply:
+					return "*";
+				case BinaryOperatorType.Divide:
+					return "/";
+				case BinaryOperatorType.Modulus:
+					return "%";
+				case BinaryOperatorType.ShiftLeft:
+					return "<<";
+				case BinaryOperatorType.ShiftRight:
+					return ">>";
+				case BinaryOperatorType.NullCoalescing:
+					return "??";
+				default:
+					throw new NotSupportedException("Invalid value for BinaryOperatorType");
+			}
 		}
 	}
 	

@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class LambdaExpression : Expression
 	{
-		public readonly static Role<CSharpTokenNode> ArrowRole = new Role<CSharpTokenNode>("Arror", CSharpTokenNode.Null);
+		public readonly static Role<CSharpTokenNode> ArrowRole = new Role<CSharpTokenNode>("Arrow", CSharpTokenNode.Null);
 		public static readonly Role<AstNode> BodyRole = new Role<AstNode>("Body", AstNode.Null);
 		
 		public IEnumerable<ParameterDeclaration> Parameters { 

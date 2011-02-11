@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class TypeDeclaration : AttributedNode
 	{
-		public readonly static Role<CSharpTokenNode> ColonRole = new Role<CSharpTokenNode>("Colon", CSharpTokenNode.Null);
+		public readonly static Role<CSharpTokenNode> ColonRole = Roles.Colon;
 		public readonly static Role<AstType> BaseTypeRole = new Role<AstType>("BaseType", AstType.Null);
 		public readonly static Role<AttributedNode> MemberRole = new Role<AttributedNode>("Member");
 		

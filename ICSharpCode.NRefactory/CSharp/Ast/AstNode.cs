@@ -216,7 +216,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (role == null)
 				throw new ArgumentNullException("role");
-			if (nextSibling == null) {
+			if (nextSibling == null || nextSibling.IsNull) {
 				AddChild(child, role);
 				return;
 			}
@@ -563,6 +563,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public static readonly Role<CSharpTokenNode> LChevron = new Role<CSharpTokenNode>("LChevron", CSharpTokenNode.Null);
 			public static readonly Role<CSharpTokenNode> RChevron = new Role<CSharpTokenNode>("RChevron", CSharpTokenNode.Null);
 			public static readonly Role<CSharpTokenNode> Comma = new Role<CSharpTokenNode>("Comma", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> Dot = new Role<CSharpTokenNode>("Dot", CSharpTokenNode.Null);
 			public static readonly Role<CSharpTokenNode> Semicolon = new Role<CSharpTokenNode>("Semicolon", CSharpTokenNode.Null);
 			public static readonly Role<CSharpTokenNode> Assign = new Role<CSharpTokenNode>("Assign", CSharpTokenNode.Null);
 			public static readonly Role<CSharpTokenNode> Colon = new Role<CSharpTokenNode>("Colon", CSharpTokenNode.Null);

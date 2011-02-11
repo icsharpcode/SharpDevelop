@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get; set;
 		}
 		
-		public string Identifier {
+		public string Name {
 			get {
 				return GetChildByRole (Roles.Identifier).Name;
 			}

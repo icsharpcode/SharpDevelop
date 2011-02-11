@@ -104,6 +104,17 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public int Dimensions {
 			get { return 1 + GetChildrenByRole(Roles.Comma).Count(); }
+			set {
+				int d = this.Dimensions;
+				while (d > value) {
+					GetChildByRole(Roles.Comma).Remove();
+					d--;
+				}
+				while (d < value) {
+					InsertChildBefore(GetChildByRole(Roles.Comma), new CSharpTokenNode(AstLocation.Empty, 1), Roles.Comma);
+					d++;
+				}
+			}
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

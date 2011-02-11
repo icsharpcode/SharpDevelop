@@ -21,6 +21,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetModifiers(this, value); }
 		}
 		
+		public IEnumerable<CSharpModifierToken> ModifierTokens {
+			get { return GetChildrenByRole (ModifierRole); }
+		}
+		
 		internal static Modifiers GetModifiers(AstNode node)
 		{
 			Modifiers m = 0;

@@ -99,6 +99,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return Mono.CSharp.Operator.GetMetadataName((Mono.CSharp.Operator.OpType)type);
 		}
 		
+		public static string GetToken(OperatorType type)
+		{
+			return Mono.CSharp.Operator.GetName((Mono.CSharp.Operator.OpType)type);
+		}
+		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitOperatorDeclaration (this, data);

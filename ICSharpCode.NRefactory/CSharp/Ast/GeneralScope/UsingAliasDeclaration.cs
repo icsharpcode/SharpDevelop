@@ -53,6 +53,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public CSharpTokenNode AssignToken {
+			get { return GetChildByRole (Roles.Assign); }
+		}
+		
 		public AstType Import {
 			get { return GetChildByRole (ImportRole); }
 			set { SetChildByRole (ImportRole, value); }
