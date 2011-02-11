@@ -739,40 +739,40 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override void Visit (EventProperty ep)
 			{
-				EventDeclaration newEvent = new EventDeclaration ();
+				CustomEventDeclaration newEvent = new CustomEventDeclaration ();
 				
 				var location = LocationsBag.GetMemberLocation (ep);
 				AddModifiers (newEvent, location);
 				
 				if (location != null)
-					newEvent.AddChild (new CSharpTokenNode (Convert (location[0]), "event".Length), EventDeclaration.Roles.Keyword);
-				newEvent.AddChild ((AstType)ep.TypeName.Accept (this), EventDeclaration.Roles.Type);
-				newEvent.AddChild (new Identifier (ep.MemberName.Name, Convert (ep.MemberName.Location)), EventDeclaration.Roles.Identifier);
+					newEvent.AddChild (new CSharpTokenNode (Convert (location[0]), "event".Length), CustomEventDeclaration.Roles.Keyword);
+				newEvent.AddChild ((AstType)ep.TypeName.Accept (this), CustomEventDeclaration.Roles.Type);
+				newEvent.AddChild (new Identifier (ep.MemberName.Name, Convert (ep.MemberName.Location)), CustomEventDeclaration.Roles.Identifier);
 				if (location != null && location.Count >= 2)
-					newEvent.AddChild (new CSharpTokenNode (Convert (location[1]), 1), EventDeclaration.Roles.LBrace);
+					newEvent.AddChild (new CSharpTokenNode (Convert (location[1]), 1), CustomEventDeclaration.Roles.LBrace);
 				
 				if (ep.Add != null) {
 					Accessor addAccessor = new Accessor ();
 					var addLocation = LocationsBag.GetMemberLocation (ep.Add);
 					AddModifiers (addAccessor, addLocation);
-					addAccessor.AddChild (new CSharpTokenNode (Convert (ep.Add.Location), "add".Length), EventDeclaration.Roles.Keyword);
+					addAccessor.AddChild (new CSharpTokenNode (Convert (ep.Add.Location), "add".Length), CustomEventDeclaration.Roles.Keyword);
 					if (ep.Add.Block != null)
-						addAccessor.AddChild ((BlockStatement)ep.Add.Block.Accept (this), EventDeclaration.Roles.Body);
-					newEvent.AddChild (addAccessor, EventDeclaration.AddAccessorRole);
+						addAccessor.AddChild ((BlockStatement)ep.Add.Block.Accept (this), CustomEventDeclaration.Roles.Body);
+					newEvent.AddChild (addAccessor, CustomEventDeclaration.AddAccessorRole);
 				}
 				
 				if (ep.Remove != null) {
 					Accessor removeAccessor = new Accessor ();
 					var removeLocation = LocationsBag.GetMemberLocation (ep.Remove);
 					AddModifiers (removeAccessor, removeLocation);
-					removeAccessor.AddChild (new CSharpTokenNode (Convert (ep.Remove.Location), "remove".Length), EventDeclaration.Roles.Keyword);
+					removeAccessor.AddChild (new CSharpTokenNode (Convert (ep.Remove.Location), "remove".Length), CustomEventDeclaration.Roles.Keyword);
 					
 					if (ep.Remove.Block != null)
-						removeAccessor.AddChild ((BlockStatement)ep.Remove.Block.Accept (this), EventDeclaration.Roles.Body);
-					newEvent.AddChild (removeAccessor, EventDeclaration.RemoveAccessorRole);
+						removeAccessor.AddChild ((BlockStatement)ep.Remove.Block.Accept (this), CustomEventDeclaration.Roles.Body);
+					newEvent.AddChild (removeAccessor, CustomEventDeclaration.RemoveAccessorRole);
 				}
 				if (location != null && location.Count >= 3)
-					newEvent.AddChild (new CSharpTokenNode (Convert (location[2]), 1), EventDeclaration.Roles.RBrace);
+					newEvent.AddChild (new CSharpTokenNode (Convert (location[2]), 1), CustomEventDeclaration.Roles.RBrace);
 				
 				typeStack.Peek ().AddChild (newEvent, TypeDeclaration.MemberRole);
 			}

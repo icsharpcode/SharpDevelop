@@ -216,7 +216,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Track CurrentMember
 		public override ResolveResult VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
-			int initializerCount = fieldDeclaration.Variables.Count();
+			return VisitFieldOrEventDeclaration(fieldDeclaration);
+		}
+		
+		public override ResolveResult VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
+		{
+			return VisitFieldOrEventDeclaration(eventDeclaration);
+		}
+		
+		ResolveResult VisitFieldOrEventDeclaration(MemberDeclaration fieldDeclaration)
+		{
+			int initializerCount = fieldDeclaration.GetChildrenByRole(FieldDeclaration.Roles.Variable).Count();
 			ResolveResult result = null;
 			for (AstNode node = fieldDeclaration.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == FieldDeclaration.Roles.Variable) {
@@ -335,7 +345,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return VisitPropertyMember(indexerDeclaration);
 		}
 		
-		public override ResolveResult VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
+		public override ResolveResult VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration, object data)
 		{
 			try {
 				if (resolver.CurrentTypeDefinition != null) {

@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		[Test]
 		public void SimpleEventDeclarationTest()
 		{
-			EventDeclaration ed = ParseUtilCSharp.ParseTypeMember<EventDeclaration>("event System.EventHandler MyEvent;");
+			CustomEventDeclaration ed = ParseUtilCSharp.ParseTypeMember<CustomEventDeclaration>("event System.EventHandler MyEvent;");
 			Assert.AreEqual("MyEvent", ed.Name);
 			//Assert.AreEqual("System.EventHandler", ed.TypeReference.Type);
 			Assert.Ignore(); // check type

@@ -142,6 +142,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (eventDeclaration, data);
 		}
 		
+		public virtual S VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration, T data)
+		{
+			return VisitChildren (eventDeclaration, data);
+		}
+		
 		public virtual S VisitFieldDeclaration (FieldDeclaration fieldDeclaration, T data)
 		{
 			return VisitChildren (fieldDeclaration, data);

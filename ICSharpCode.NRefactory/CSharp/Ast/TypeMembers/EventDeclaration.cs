@@ -24,9 +24,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace ICSharpCode.NRefactory.CSharp
 {
 	public class EventDeclaration : MemberDeclaration
+	{
+		public IEnumerable<VariableInitializer> Variables {
+			get { return GetChildrenByRole (Roles.Variable); }
+			set { SetChildrenByRole (Roles.Variable, value); }
+		}
+		
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitEventDeclaration (this, data);
+		}
+	}
+	
+	public class CustomEventDeclaration : MemberDeclaration
 	{
 		public static readonly Role<Accessor> AddAccessorRole = new Role<Accessor>("AddAccessor", Accessor.Null);
 		public static readonly Role<Accessor> RemoveAccessorRole = new Role<Accessor>("RemoveAccessor", Accessor.Null);
@@ -43,7 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitEventDeclaration (this, data);
+			return visitor.VisitCustomEventDeclaration (this, data);
 		}
 	}
 }

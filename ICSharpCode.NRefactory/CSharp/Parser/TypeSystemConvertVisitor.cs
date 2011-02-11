@@ -438,6 +438,27 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region Events
 		public override IEntity VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
 		{
+			bool isSingleEvent = eventDeclaration.Variables.Count() == 1;
+			Modifiers modifiers = eventDeclaration.Modifiers;
+			DefaultEvent ev = null;
+			foreach (VariableInitializer vi in eventDeclaration.Variables) {
+				ev = new DefaultEvent(currentTypeDefinition, vi.Name);
+				
+				ev.Region = isSingleEvent ? MakeRegion(eventDeclaration) : MakeRegion(vi);
+				ev.BodyRegion = MakeRegion(vi);
+				ConvertAttributes(ev.Attributes, eventDeclaration.Attributes);
+				
+				ApplyModifiers(ev, modifiers);
+				
+				ev.ReturnType = ConvertType(eventDeclaration.ReturnType);
+				
+				currentTypeDefinition.Events.Add(ev);
+			}
+			return isSingleEvent ? ev : null;
+		}
+		
+		public override IEntity VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration, object data)
+		{
 			DefaultEvent e = new DefaultEvent(currentTypeDefinition, eventDeclaration.Name);
 			e.Region = MakeRegion(eventDeclaration);
 			e.BodyRegion = MakeBraceRegion(eventDeclaration);
