@@ -130,7 +130,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			WriteSpecialsUpToRole(AstNode.Roles.Comma, nextNode);
 			Space(policy.SpacesBeforeComma);
-			formatter.WriteToken(","); 
+			formatter.WriteToken(",");
 			lastChar = ',';
 			Space(policy.SpacesAfterComma);
 		}
@@ -196,7 +196,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void WriteToken(string token, Role<CSharpTokenNode> tokenRole)
 		{
 			WriteSpecialsUpToRole(tokenRole);
-			formatter.WriteToken(token); 
+			formatter.WriteToken(token);
 			lastChar = token[token.Length - 1];
 		}
 		
@@ -241,14 +241,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		void OpenBrace(BraceStyle style)
 		{
 			WriteSpecialsUpToRole(AstNode.Roles.LBrace);
-			formatter.OpenBrace();
+			formatter.OpenBrace(style);
 			lastChar = '{';
 		}
 		
 		void CloseBrace(BraceStyle style)
 		{
 			WriteSpecialsUpToRole(AstNode.Roles.RBrace);
-			formatter.CloseBrace();
+			formatter.CloseBrace(style);
 			lastChar = '}';
 		}
 		#endregion
@@ -615,7 +615,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
 			StartNode(primitiveExpression);
-			formatter.WriteToken(ToCSharpString(primitiveExpression)); 
+			formatter.WriteToken(ToCSharpString(primitiveExpression));
 			lastChar = 'a';
 			return EndNode(primitiveExpression);
 		}
@@ -912,7 +912,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			StartNode(usingDeclaration);
 			WriteKeyword("using");
-			usingDeclaration.AcceptVisitor(this, data);
+			usingDeclaration.Import.AcceptVisitor(this, data);
 			Semicolon();
 			return EndNode(usingDeclaration);
 		}
@@ -1588,7 +1588,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteToken("[", ArraySpecifier.Roles.LBracket);
 			foreach (var comma in arraySpecifier.GetChildrenByRole(ArraySpecifier.Roles.Comma)) {
 				WriteSpecialsUpToNode(comma);
-				formatter.WriteToken(","); 
+				formatter.WriteToken(",");
 				lastChar = ',';
 			}
 			WriteToken("]", ArraySpecifier.Roles.RBracket);
@@ -1642,7 +1642,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public object VisitCSharpTokenNode(CSharpTokenNode cSharpTokenNode, object data)
 		{
-			throw new NotSupportedException("Should never visit individual tokens");
+			CSharpModifierToken mod = cSharpTokenNode as CSharpModifierToken;
+			if (mod != null) {
+				StartNode(mod);
+				WriteKeyword(CSharpModifierToken.GetModifierName(mod.Modifier));
+				return EndNode(mod);
+			} else {
+				throw new NotSupportedException("Should never visit individual tokens");
+			}
 		}
 		
 		public object VisitIdentifier(Identifier identifier, object data)

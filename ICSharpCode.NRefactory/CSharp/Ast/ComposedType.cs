@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public bool HasNullableSpecifier {
 			get {
-				return GetChildByRole(NullableRole) != null;
+				return !GetChildByRole(NullableRole).IsNull;
 			}
 			set {
 				SetChildByRole(NullableRole, value ? new CSharpTokenNode(AstLocation.Empty, 1) : null);
@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
-			return default (S);
+			return visitor.VisitArraySpecifier(this, data);
 		}
 		
 		public override string ToString()

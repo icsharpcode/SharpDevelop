@@ -15,8 +15,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		void WriteToken(string token);
 		void Space();
 		
-		void OpenBrace();
-		void CloseBrace();
+		void OpenBrace(BraceStyle style);
+		void CloseBrace(BraceStyle style);
+		
+		void Indent();
+		void Unindent();
 		
 		void NewLine();
 		

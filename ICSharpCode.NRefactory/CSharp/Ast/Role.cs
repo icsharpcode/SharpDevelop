@@ -46,7 +46,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public Role(string name)
 		{
-			
+			if (name == null)
+				throw new ArgumentNullException("name");
+			this.name = name;
 		}
 		
 		public Role(string name, T nullObject = null)

@@ -68,5 +68,47 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			this.Modifier = modifier;
 		}
+		
+		public static string GetModifierName(Modifiers modifier)
+		{
+			switch (modifier) {
+				case Modifiers.Private:
+					return "private";
+				case Modifiers.Internal:
+					return "internal";
+				case Modifiers.Protected:
+					return "protected";
+				case Modifiers.Public:
+					return "public";
+				case Modifiers.Abstract:
+					return "abstract";
+				case Modifiers.Virtual:
+					return "virtual";
+				case Modifiers.Sealed:
+					return "sealed";
+				case Modifiers.Static:
+					return "static";
+				case Modifiers.Override:
+					return "override";
+				case Modifiers.Readonly:
+					return "readonly";
+				case Modifiers.Const:
+					return "const";
+				case Modifiers.New:
+					return "new";
+				case Modifiers.Partial:
+					return "partial";
+				case Modifiers.Extern:
+					return "extern";
+				case Modifiers.Volatile:
+					return "volatile";
+				case Modifiers.Unsafe:
+					return "unsafe";
+				case Modifiers.Fixed:
+					return "fixed";
+				default:
+					throw new NotSupportedException("Invalid value for Modifiers");
+			}
+		}
 	}
 }
