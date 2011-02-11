@@ -40,9 +40,25 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
+		public CSharpTokenNode DoToken {
+			get { return GetChildByRole (DoKeywordRole); }
+		}
+		
+		public CSharpTokenNode WhileToken {
+			get { return GetChildByRole (WhileKeywordRole); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public Expression Condition {
 			get { return GetChildByRole (Roles.Condition); }
 			set { SetChildByRole (Roles.Condition, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public Statement EmbeddedStatement {

@@ -31,9 +31,21 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class LockStatement : Statement
 	{
+		public CSharpTokenNode LockToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public Expression Expression {
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public Statement EmbeddedStatement {

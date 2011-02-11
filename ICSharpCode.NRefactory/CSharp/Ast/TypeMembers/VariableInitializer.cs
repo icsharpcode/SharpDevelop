@@ -43,6 +43,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public CSharpTokenNode AssignToken {
+			get { return GetChildByRole (Roles.Assign); }
+		}
+		
 		public Expression Initializer {
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }

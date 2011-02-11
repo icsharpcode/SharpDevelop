@@ -30,6 +30,17 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public static readonly Role<CSharpTokenNode> TildeRole = new Role<CSharpTokenNode>("Tilde", CSharpTokenNode.Null);
 		
+		public CSharpTokenNode TildeToken {
+			get { return GetChildByRole (TildeRole); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
+		}
 		public BlockStatement Body {
 			get { return GetChildByRole (Roles.Body); }
 			set { SetChildByRole (Roles.Body, value); }

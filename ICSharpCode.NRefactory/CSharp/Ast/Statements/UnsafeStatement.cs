@@ -31,6 +31,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class UnsafeStatement : Statement
 	{
+		public CSharpTokenNode UnsafeToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
 		public BlockStatement Body {
 			get { return GetChildByRole (Roles.Body); }
 			set { SetChildByRole (Roles.Body, value); }

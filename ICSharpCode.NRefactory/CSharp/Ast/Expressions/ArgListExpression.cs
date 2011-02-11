@@ -37,9 +37,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			get; set;
 		}
 		
+		public CSharpTokenNode ArgListToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public IEnumerable<Expression> Arguments {
 			get { return GetChildrenByRole(Roles.Argument); }
 			set { SetChildrenByRole(Roles.Argument, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

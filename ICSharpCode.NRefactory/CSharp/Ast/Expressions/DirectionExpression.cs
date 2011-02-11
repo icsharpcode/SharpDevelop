@@ -43,6 +43,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
+		public CSharpTokenNode FieldDirectionToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
 		public Expression Expression {
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }

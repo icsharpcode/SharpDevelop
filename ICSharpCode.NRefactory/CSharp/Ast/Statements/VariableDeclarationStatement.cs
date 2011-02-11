@@ -48,6 +48,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildrenByRole (Roles.Variable, value); }
 		}
 		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
+		}
+		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitVariableDeclarationStatement (this, data);

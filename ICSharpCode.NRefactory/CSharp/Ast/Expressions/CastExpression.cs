@@ -31,9 +31,17 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class CastExpression : Expression
 	{
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public AstType CastTo {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public Expression Expression {

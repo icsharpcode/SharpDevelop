@@ -38,14 +38,30 @@ namespace ICSharpCode.NRefactory.CSharp
 		public readonly static Role<CSharpTokenNode> ElseKeywordRole = new Role<CSharpTokenNode>("ElseKeyword", CSharpTokenNode.Null);
 		public readonly static Role<Statement> FalseRole = new Role<Statement>("False", Statement.Null);
 		
+		public CSharpTokenNode IfToken {
+			get { return GetChildByRole (IfKeywordRole); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public Expression Condition {
 			get { return GetChildByRole (ConditionRole); }
 			set { SetChildByRole (ConditionRole, value); }
 		}
 		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
+		}
+		
 		public Statement TrueStatement {
 			get { return GetChildByRole (TrueRole); }
 			set { SetChildByRole (TrueRole, value); }
+		}
+		
+		public CSharpTokenNode ElseToken {
+			get { return GetChildByRole (ElseKeywordRole); }
 		}
 		
 		public Statement FalseStatement {

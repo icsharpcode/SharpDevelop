@@ -52,9 +52,17 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 		
+		public CSharpTokenNode LBraceToken {
+			get { return GetChildByRole (Roles.LBrace); }
+		}
+		
 		public IEnumerable<Statement> Statements {
 			get { return GetChildrenByRole (StatementRole); }
 			set { SetChildrenByRole (StatementRole, value); }
+		}
+		
+		public CSharpTokenNode RBraceToken {
+			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

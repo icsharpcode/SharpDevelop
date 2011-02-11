@@ -31,9 +31,21 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class SizeOfExpression : Expression
 	{
+		public CSharpTokenNode SizeOfToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public AstType Type {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole(Roles.Type, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

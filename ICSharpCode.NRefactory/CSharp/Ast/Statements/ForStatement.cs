@@ -36,6 +36,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		public readonly static Role<Statement> InitializerRole = new Role<Statement>("Initializer", Statement.Null);
 		public readonly static Role<Statement> IteratorRole = new Role<Statement>("Iterator", Statement.Null);
 		
+		public CSharpTokenNode ForToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		/// <summary>
 		/// Gets the list of initializer statements.
 		/// Note: this contains multiple statements for "for (a = 2, b = 1; a > b; a--)", but contains
@@ -54,6 +62,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public IEnumerable<Statement> Iterators {
 			get { return GetChildrenByRole (IteratorRole); }
 			set { SetChildrenByRole (IteratorRole, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public Statement EmbeddedStatement {

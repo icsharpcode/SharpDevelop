@@ -32,9 +32,25 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static readonly Role<CSharpTokenNode> ReturnKeywordRole = new Role<CSharpTokenNode>("ReturnKeyword", CSharpTokenNode.Null);
 		public static readonly Role<CSharpTokenNode> BreakKeywordRole = new Role<CSharpTokenNode>("BreakKeyword", CSharpTokenNode.Null);
 		
+		public CSharpTokenNode YieldToken {
+			get { return GetChildByRole (YieldKeywordRole); }
+		}
+		
+		public CSharpTokenNode ReturnToken {
+			get { return GetChildByRole (ReturnKeywordRole); }
+		}
+		
+		public CSharpTokenNode BreakToken {
+			get { return GetChildByRole (BreakKeywordRole); }
+		}
+		
 		public Expression Expression {
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

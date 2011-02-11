@@ -31,6 +31,14 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class ForeachStatement : Statement
 	{
+		public CSharpTokenNode ForeachToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public AstType VariableType {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
@@ -45,9 +53,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public CSharpTokenNode InToken {
+			get { return GetChildByRole (Roles.InKeyword); }
+		}
+		
 		public Expression InExpression {
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public Statement EmbeddedStatement {

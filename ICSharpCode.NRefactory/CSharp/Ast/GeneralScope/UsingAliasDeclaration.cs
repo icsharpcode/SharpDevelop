@@ -40,6 +40,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public CSharpTokenNode UsingToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
 		public string Alias {
 			get {
 				return GetChildByRole (AliasRole).Name;
@@ -52,6 +56,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public AstType Import {
 			get { return GetChildByRole (ImportRole); }
 			set { SetChildByRole (ImportRole, value); }
+		}
+		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

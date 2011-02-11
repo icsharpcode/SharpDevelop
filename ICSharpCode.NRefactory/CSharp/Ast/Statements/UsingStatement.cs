@@ -33,12 +33,24 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public static readonly Role<AstNode> ResourceAcquisitionRole = new Role<AstNode>("ResourceAcquisition", AstNode.Null);
 		
+		public CSharpTokenNode UsingToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		/// <summary>
 		/// Either a VariableDeclarationStatement, or an Expression.
 		/// </summary>
 		public AstNode ResourceAcquisition {
 			get { return GetChildByRole (ResourceAcquisitionRole); }
 			set { SetChildByRole (ResourceAcquisitionRole, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public Statement EmbeddedStatement {

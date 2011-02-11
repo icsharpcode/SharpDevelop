@@ -42,9 +42,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole(ConditionRole, value); }
 		}
 		
+		public CSharpTokenNode QuestionMarkToken {
+			get { return GetChildByRole (QuestionMarkRole); }
+		}
+		
 		public Expression TrueExpression {
 			get { return GetChildByRole(TrueRole); }
 			set { SetChildByRole(TrueRole, value); }
+		}
+		
+		public CSharpTokenNode ColonToken {
+			get { return GetChildByRole (ColonRole); }
 		}
 		
 		public Expression FalseExpression {

@@ -41,6 +41,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
+		public CSharpTokenNode ArrowToken {
+			get { return GetChildByRole (ArrowRole); }
+		}
+		
 		public AstNode Body {
 			get { return GetChildByRole (BodyRole); }
 			set { SetChildByRole (BodyRole, value); }

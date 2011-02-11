@@ -35,14 +35,26 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public readonly static Role<ArrayInitializerExpression> InitializerRole = ArrayCreateExpression.InitializerRole;
 		
+		public CSharpTokenNode NewToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
 		public AstType Type {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
 		}
 		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public IEnumerable<Expression> Arguments {
 			get { return GetChildrenByRole (Roles.Argument); }
 			set { SetChildrenByRole (Roles.Argument, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public ArrayInitializerExpression Initializer {

@@ -47,9 +47,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public CSharpTokenNode LChevronToken {
+			get { return GetChildByRole (Roles.LChevron); }
+		}
+		
 		public IEnumerable<AstType> TypeArguments {
 			get { return GetChildrenByRole (Roles.TypeArgument); }
 			set { SetChildrenByRole (Roles.TypeArgument, value); }
+		}
+		
+		public CSharpTokenNode RChevronToken {
+			get { return GetChildByRole (Roles.RChevron); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

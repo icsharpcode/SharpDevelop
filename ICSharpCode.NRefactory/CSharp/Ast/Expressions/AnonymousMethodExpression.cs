@@ -39,12 +39,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			get; set;
 		}
 		
-		public CSharpTokenNode DelegateKeyword {
-			get { return GetChildrenByRole (Roles.Keyword); }
+		public CSharpTokenNode DelegateToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return GetChildrenByRole (Roles.LPar); }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
 		public IEnumerable<ParameterDeclaration> Parameters {
@@ -52,8 +52,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
-		public CSharpTokenNode RPar {
-			get { return GetChildrenByRole (Roles.RPar); }
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public BlockStatement Body {

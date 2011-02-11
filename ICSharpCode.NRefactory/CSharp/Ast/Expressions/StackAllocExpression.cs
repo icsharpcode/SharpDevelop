@@ -31,14 +31,26 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class StackAllocExpression : Expression
 	{
+		public CSharpTokenNode StackAllocToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
 		public AstType Type {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole(Roles.Type, value); }
 		}
 		
+		public CSharpTokenNode LBracketToken {
+			get { return GetChildByRole (Roles.LBracket); }
+		}
+		
 		public Expression CountExpression {
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode RBracketToken {
+			get { return GetChildByRole (Roles.RBracket); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

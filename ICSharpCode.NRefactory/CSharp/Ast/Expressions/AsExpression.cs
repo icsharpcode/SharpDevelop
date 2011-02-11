@@ -36,8 +36,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole(Roles.Expression, value); }
 		}
 		
-		public CSharpTokenNode AsKeyword {
-			get { return GetChildrenByRole (Roles.Keyword); }
+		public CSharpTokenNode AsToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
 		public AstType Type {

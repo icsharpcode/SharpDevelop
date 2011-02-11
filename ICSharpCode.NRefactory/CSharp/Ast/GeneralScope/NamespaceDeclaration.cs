@@ -75,9 +75,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public CSharpTokenNode LBraceToken {
+			get { return GetChildByRole (Roles.LBrace); }
+		}
+		
 		public IEnumerable<AstNode> Members {
 			get { return GetChildrenByRole(MemberRole); }
 			set { SetChildrenByRole(MemberRole, value); }
+		}
+		
+		public CSharpTokenNode RBraceToken {
+			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
 		public static string BuildQualifiedName (string name1, string name2)

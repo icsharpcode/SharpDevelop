@@ -41,6 +41,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
+		public CSharpTokenNode GotoToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
 		public string Label {
 			get {
 				return GetChildByRole (Roles.Identifier).Name;
@@ -59,6 +63,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public Expression LabelExpression {
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

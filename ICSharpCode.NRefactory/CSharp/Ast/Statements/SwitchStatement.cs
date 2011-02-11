@@ -36,14 +36,34 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public static readonly Role<SwitchSection> SwitchSectionRole = new Role<SwitchSection>("SwitchSection");
 		
+		public CSharpTokenNode SwitchToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public Expression Expression {
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
+		}
+		
+		public CSharpTokenNode LBraceToken {
+			get { return GetChildByRole (Roles.LBrace); }
+		}
+		
 		public IEnumerable<SwitchSection> SwitchSections {
 			get { return GetChildrenByRole (SwitchSectionRole); }
 			set { SetChildrenByRole (SwitchSectionRole, value); }
+		}
+		
+		public CSharpTokenNode RBraceToken {
+			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

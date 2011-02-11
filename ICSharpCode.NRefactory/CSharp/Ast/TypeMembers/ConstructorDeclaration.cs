@@ -33,9 +33,17 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public static readonly Role<ConstructorInitializer> InitializerRole = new Role<ConstructorInitializer>("Initializer", ConstructorInitializer.Null);
 		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public IEnumerable<ParameterDeclaration> Parameters {
 			get { return GetChildrenByRole (Roles.Parameter); }
 			set { SetChildrenByRole (Roles.Parameter, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public ConstructorInitializer Initializer {

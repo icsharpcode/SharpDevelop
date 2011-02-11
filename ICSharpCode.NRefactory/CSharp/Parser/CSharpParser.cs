@@ -2184,7 +2184,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new ArrayInitializerExpression ();
 				var location = LocationsBag.GetLocations (arrayInitializer);
-				result.AddChild (new CSharpTokenNode (Convert (arrayInitializer.Location), "{".Length), ArrayInitializerExpression.Roles.LBracket);
+				result.AddChild (new CSharpTokenNode (Convert (arrayInitializer.Location), "{".Length), ArrayInitializerExpression.Roles.LBrace);
 				var commaLocations = LocationsBag.GetLocations (arrayInitializer.Elements);
 				for (int i = 0; i < arrayInitializer.Count; i++) {
 					result.AddChild ((Expression)arrayInitializer[i].Accept (this), ArrayInitializerExpression.Roles.Expression);
@@ -2195,7 +2195,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null) {
 					if (location.Count == 2) // optional comma
 						result.AddChild (new CSharpTokenNode (Convert (location[1]), ",".Length), ArrayInitializerExpression.Roles.Comma);
-					result.AddChild (new CSharpTokenNode (Convert (location[location.Count - 1]), "}".Length), ArrayInitializerExpression.Roles.RBracket);
+					result.AddChild (new CSharpTokenNode (Convert (location[location.Count - 1]), "}".Length), ArrayInitializerExpression.Roles.RBrace);
 				}
 				return result;
 			}

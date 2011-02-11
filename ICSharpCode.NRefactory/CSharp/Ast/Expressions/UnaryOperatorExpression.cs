@@ -38,6 +38,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
+		public CSharpTokenNode OperatorToken {
+			get { return GetChildByRole (OperatorRole); }
+		}
+		
 		public Expression Expression {
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }

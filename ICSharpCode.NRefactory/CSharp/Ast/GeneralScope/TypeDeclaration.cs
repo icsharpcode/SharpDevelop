@@ -74,9 +74,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildrenByRole (Roles.Constraint, value); }
 		}
 		
+		public CSharpTokenNode LBraceToken {
+			get { return GetChildByRole (Roles.LBrace); }
+		}
+		
 		public IEnumerable<AttributedNode> Members {
 			get { return GetChildrenByRole (MemberRole); }
 			set { SetChildrenByRole (MemberRole, value); }
+		}
+		
+		public CSharpTokenNode RBraceToken {
+			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

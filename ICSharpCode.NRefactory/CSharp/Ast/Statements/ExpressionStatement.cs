@@ -35,7 +35,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }
 		}
-
+		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
+		}
+		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitExpressionStatement (this, data);

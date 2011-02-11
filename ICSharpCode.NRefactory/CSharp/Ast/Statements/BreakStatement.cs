@@ -31,6 +31,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class BreakStatement : Statement
 	{
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
+		}
+		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitBreakStatement (this, data);

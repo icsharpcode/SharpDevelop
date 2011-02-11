@@ -31,9 +31,17 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class ThrowStatement : Statement
 	{
+		public CSharpTokenNode ThrowToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
 		public Expression Expression {
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

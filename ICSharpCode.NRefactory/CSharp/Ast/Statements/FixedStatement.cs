@@ -33,6 +33,14 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class FixedStatement : Statement
 	{
+		public CSharpTokenNode FixedToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public AstType Type {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
@@ -41,6 +49,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public IEnumerable<VariableInitializer> Variables {
 			get { return GetChildrenByRole (Roles.Variable); }
 			set { SetChildrenByRole (Roles.Variable, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public Statement EmbeddedStatement {

@@ -59,9 +59,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildrenByRole (Roles.TypeParameter, value); }
 		}
 		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public IEnumerable<ParameterDeclaration> Parameters {
 			get { return GetChildrenByRole (Roles.Parameter); }
 			set { SetChildrenByRole (Roles.Parameter, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public IEnumerable<Constraint> Constraints {
