@@ -914,6 +914,143 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 		
+		#region Query Expressions
+		public object VisitQueryExpression(QueryExpression queryExpression, object data)
+		{
+			StartNode(queryExpression);
+			bool first = true;
+			foreach (var clause in queryExpression.Clauses) {
+				if (first) {
+					first = false;
+				} else {
+					NewLine();
+				}
+				clause.AcceptVisitor(this, data);
+			}
+			return EndNode(queryExpression);
+		}
+		
+		public object VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause, object data)
+		{
+			StartNode(queryContinuationClause);
+			queryContinuationClause.PrecedingQuery.AcceptVisitor(this, data);
+			Space();
+			WriteKeyword("into", QueryContinuationClause.IntoKeywordRole);
+			Space();
+			WriteIdentifier(queryContinuationClause.Identifier);
+			return EndNode(queryContinuationClause);
+		}
+		
+		public object VisitQueryFromClause(QueryFromClause queryFromClause, object data)
+		{
+			StartNode(queryFromClause);
+			WriteKeyword("from", QueryFromClause.FromKeywordRole);
+			queryFromClause.Type.AcceptVisitor(this, data);
+			Space();
+			WriteIdentifier(queryFromClause.Identifier);
+			WriteKeyword("in", QueryFromClause.InKeywordRole);
+			queryFromClause.Expression.AcceptVisitor(this, data);
+			return EndNode(queryFromClause);
+		}
+		
+		public object VisitQueryLetClause(QueryLetClause queryLetClause, object data)
+		{
+			StartNode(queryLetClause);
+			WriteKeyword("let");
+			Space();
+			WriteIdentifier(queryLetClause.Identifier);
+			Space(policy.AroundAssignmentParentheses);
+			WriteToken("=", QueryLetClause.Roles.Assign);
+			Space(policy.AroundAssignmentParentheses);
+			queryLetClause.Expression.AcceptVisitor(this, data);
+			return EndNode(queryLetClause);
+		}
+		
+		public object VisitQueryWhereClause(QueryWhereClause queryWhereClause, object data)
+		{
+			StartNode(queryWhereClause);
+			WriteKeyword("where");
+			Space();
+			queryWhereClause.Condition.AcceptVisitor(this, data);
+			return EndNode(queryWhereClause);
+		}
+		
+		public object VisitQueryJoinClause(QueryJoinClause queryJoinClause, object data)
+		{
+			StartNode(queryJoinClause);
+			WriteKeyword("join", QueryJoinClause.JoinKeywordRole);
+			queryJoinClause.Type.AcceptVisitor(this, data);
+			Space();
+			WriteIdentifier(queryJoinClause.JoinIdentifier, QueryJoinClause.JoinIdentifierRole);
+			Space();
+			WriteKeyword("in", QueryJoinClause.InKeywordRole);
+			Space();
+			queryJoinClause.InExpression.AcceptVisitor(this, data);
+			Space();
+			WriteKeyword("on", QueryJoinClause.OnKeywordRole);
+			Space();
+			queryJoinClause.OnExpression.AcceptVisitor(this, data);
+			Space();
+			WriteKeyword("equals", QueryJoinClause.EqualsKeywordRole);
+			Space();
+			queryJoinClause.EqualsExpression.AcceptVisitor(this, data);
+			if (queryJoinClause.IsGroupJoin) {
+				Space();
+				WriteKeyword("into", QueryJoinClause.IntoKeywordRole);
+				WriteIdentifier(queryJoinClause.IntoIdentifier, QueryJoinClause.IntoIdentifierRole);
+			}
+			return EndNode(queryJoinClause);
+		}
+		
+		public object VisitQueryOrderClause(QueryOrderClause queryOrderClause, object data)
+		{
+			StartNode(queryOrderClause);
+			WriteKeyword("orderby");
+			Space();
+			WriteCommaSeparatedList(queryOrderClause.Orderings);
+			return EndNode(queryOrderClause);
+		}
+		
+		public object VisitQueryOrdering(QueryOrdering queryOrdering, object data)
+		{
+			StartNode(queryOrdering);
+			queryOrdering.Expression.AcceptVisitor(this, data);
+			switch (queryOrdering.Direction) {
+				case QueryOrderingDirection.Ascending:
+					Space();
+					WriteKeyword("ascending");
+					break;
+				case QueryOrderingDirection.Descending:
+					Space();
+					WriteKeyword("descending");
+					break;
+			}
+			return EndNode(queryOrdering);
+		}
+		
+		public object VisitQuerySelectClause(QuerySelectClause querySelectClause, object data)
+		{
+			StartNode(querySelectClause);
+			WriteKeyword("select");
+			Space();
+			querySelectClause.Expression.AcceptVisitor(this, data);
+			return EndNode(querySelectClause);
+		}
+		
+		public object VisitQueryGroupClause(QueryGroupClause queryGroupClause, object data)
+		{
+			StartNode(queryGroupClause);
+			WriteKeyword("group", QueryGroupClause.GroupKeywordRole);
+			Space();
+			queryGroupClause.Projection.AcceptVisitor(this, data);
+			Space();
+			WriteKeyword("by", QueryGroupClause.ByKeywordRole);
+			Space();
+			queryGroupClause.Key.AcceptVisitor(this, data);
+			return EndNode(queryGroupClause);
+		}
+		#endregion
+		
 		#region GeneralScope
 		public object VisitAttribute(Attribute attribute, object data)
 		{
