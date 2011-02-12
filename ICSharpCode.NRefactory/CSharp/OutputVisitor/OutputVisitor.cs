@@ -463,7 +463,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode(castExpression);
 			LPar();
 			Space(policy.WithinCastParentheses);
-			castExpression.CastTo.AcceptVisitor(this, data);
+			castExpression.Type.AcceptVisitor(this, data);
 			Space(policy.WithinCastParentheses);
 			RPar();
 			Space(policy.SpacesAfterTypecast);

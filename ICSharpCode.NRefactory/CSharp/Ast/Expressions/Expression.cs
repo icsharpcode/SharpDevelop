@@ -107,6 +107,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				Arguments = arguments
 			};
 		}
+		
+		public CastExpression CastTo(AstType type)
+		{
+			return new CastExpression { Type = type,  Expression = this };
+		}
+		
+		public AsExpression CastAs(AstType type)
+		{
+			return new AsExpression { Type = type,  Expression = this };
+		}
 		#endregion
 	}
 }

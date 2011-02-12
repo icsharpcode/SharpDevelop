@@ -147,7 +147,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					Parenthesize(castExpression.Expression);
 			} else {
 				if (uoe != null && !(uoe.Operator == UnaryOperatorType.BitNot || uoe.Operator == UnaryOperatorType.Not)) {
-					if (TypeCanBeMisinterpretedAsExpression(castExpression.CastTo)) {
+					if (TypeCanBeMisinterpretedAsExpression(castExpression.Type)) {
 						Parenthesize(castExpression.Expression);
 					}
 				}

@@ -43,5 +43,49 @@ namespace ICSharpCode.NRefactory.CSharp
 			Assert.AreEqual("cond = a == b", InsertRequired(expr));
 			Assert.AreEqual("cond = (a == b)", InsertReadable(expr));
 		}
+		
+		[Test]
+		public void TrickyCast1()
+		{
+			Expression expr = new UnaryOperatorExpression(
+				UnaryOperatorType.Minus, new IdentifierExpression("a")
+			).CastTo(new PrimitiveType("int"));
+			
+			Assert.AreEqual("(int)-a", InsertRequired(expr));
+			Assert.AreEqual("(int)(-a)", InsertReadable(expr));
+		}
+		
+		[Test]
+		public void TrickyCast2()
+		{
+			Expression expr = new UnaryOperatorExpression(
+				UnaryOperatorType.Minus, new IdentifierExpression("a")
+			).CastTo(new SimpleType("MyType"));
+			
+			Assert.AreEqual("(MyType)(-a)", InsertRequired(expr));
+			Assert.AreEqual("(MyType)(-a)", InsertReadable(expr));
+		}
+		
+		[Test]
+		public void TrickyCast3()
+		{
+			Expression expr = new UnaryOperatorExpression(
+				UnaryOperatorType.Not, new IdentifierExpression("a")
+			).CastTo(new SimpleType("MyType"));
+			
+			Assert.AreEqual("(MyType)!a", InsertRequired(expr));
+			Assert.AreEqual("(MyType)(!a)", InsertReadable(expr));
+		}
+		
+		[Test]
+		public void CastAndInvoke()
+		{
+			Expression expr = new IdentifierExpression("a")
+				.CastTo(new PrimitiveType("string"))
+				.Member("Length");
+			
+			Assert.AreEqual("((string)a).Length", InsertRequired(expr));
+			Assert.AreEqual("((string)a).Length", InsertReadable(expr));
+		}
 	}
 }
