@@ -45,6 +45,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			return (Expression)base.Clone();
 		}
 		
+		public Expression ReplaceWith(Func<Expression, Expression> replaceFunction)
+		{
+			if (replaceFunction == null)
+				throw new ArgumentNullException("replaceFunction");
+			return (Expression)base.ReplaceWith(node => replaceFunction((Expression)node));
+		}
+		
 		#region Builder methods
 		/// <summary>
 		/// Builds an member reference expression using this expression as target.
