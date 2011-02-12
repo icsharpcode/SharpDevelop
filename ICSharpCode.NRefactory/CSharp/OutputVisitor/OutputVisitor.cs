@@ -306,10 +306,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			"using", "virtual", "void", "volatile", "while"
 		};
 		
-//		static readonly HashSet<string> queryKeywords = new HashSet<string> {
-//			"from", "where", "join", "on", "equals", "into", "let", "orderby",
-//			"ascending", "descending", "select", "group", "by"
-//		};
+		static readonly HashSet<string> queryKeywords = new HashSet<string> {
+			"from", "where", "join", "on", "equals", "into", "let", "orderby",
+			"ascending", "descending", "select", "group", "by"
+		};
 		
 		/// <summary>
 		/// Determines whether the specified identifier is a keyword in the given context.
@@ -318,10 +318,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (unconditionalKeywords.Contains(identifier))
 				return true;
-//			if (context.Ancestors.Any(a => a is QueryExpression)) {
-//				if (queryKeywords.Contains(identifier))
-//					return true;
-//			}
+			if (context.Ancestors.Any(a => a is QueryExpression)) {
+				if (queryKeywords.Contains(identifier))
+					return true;
+			}
 			return false;
 		}
 		#endregion
