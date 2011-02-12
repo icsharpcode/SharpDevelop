@@ -182,6 +182,27 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		[Test]
+		public void QueryInTypeTest()
+		{
+			Expression expr = new QueryExpression {
+				Clauses = new QueryClause[] {
+					new QueryFromClause {
+						Identifier = "a",
+						Expression = new IdentifierExpression("b")
+					},
+					new QuerySelectClause {
+						Expression = new IdentifierExpression("a")
+					}
+				}
+			}.IsType(new PrimitiveType("int"));
+			
+			Assert.AreEqual("(from a in b" + Environment.NewLine +
+			                "select a) is int", InsertRequired(expr));
+			Assert.AreEqual("(from a in b" + Environment.NewLine +
+			                "select a) is int", InsertReadable(expr));
+		}
+		
+		[Test]
 		public void PrePost()
 		{
 			Expression expr = new UnaryOperatorExpression(

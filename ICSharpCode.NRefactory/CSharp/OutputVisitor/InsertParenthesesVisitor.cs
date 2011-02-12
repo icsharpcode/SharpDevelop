@@ -257,10 +257,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			// Query expressions are strange beasts:
 			// "var a = -from b in c select d;" is valid, so queries bind stricter than unary expressions.
-			// However, the end of the query is greedy. So their start sort of have a high precedence,
+			// However, the end of the query is greedy. So their start sort of has a high precedence,
 			// while their end has a very low precedence. We handle this by checking whether a query is used
 			// as left part of a binary operator, and parenthesize it if required.
 			if (queryExpression.Role == BinaryOperatorExpression.LeftRole)
+				Parenthesize(queryExpression);
+			if (queryExpression.Parent is IsExpression || queryExpression.Parent is AsExpression)
 				Parenthesize(queryExpression);
 			if (InsertParenthesesForReadability) {
 				// when readability is desired, always parenthesize query expressions within unary or binary operators
