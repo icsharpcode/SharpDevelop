@@ -22,7 +22,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		AstNode currentContainerNode;
 		readonly Stack<AstNode> positionStack = new Stack<AstNode>();
-		char lastChar;
+		
+		/// <summary>
+		/// Used to insert the minimal amount of spaces so that the lexer recognizes the tokens that were written.
+		/// </summary>
+		LastWritten lastWritten;
+		
+		enum LastWritten
+		{
+			Whitespace,
+			Other,
+			KeywordOrIdentifier,
+			Plus,
+			Minus,
+			QuestionMark,
+			Division
+		}
 		
 		public OutputVisitor(TextWriter textWriter, CSharpFormattingPolicy formattingPolicy)
 		{
@@ -131,7 +146,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteSpecialsUpToRole(AstNode.Roles.Comma, nextNode);
 			Space(policy.SpacesBeforeComma);
 			formatter.WriteToken(",");
-			lastChar = ',';
+			lastWritten = LastWritten.Other;
 			Space(policy.SpacesAfterComma);
 		}
 		
@@ -178,26 +193,50 @@ namespace ICSharpCode.NRefactory.CSharp
 		void WriteKeyword(string keyword, Role<CSharpTokenNode> tokenRole = null)
 		{
 			WriteSpecialsUpToRole(tokenRole ?? AstNode.Roles.Keyword);
-			if (lastChar == 'a')
-				Space();
+			if (lastWritten == LastWritten.KeywordOrIdentifier)
+				formatter.Space();
 			formatter.WriteKeyword(keyword);
-			lastChar = 'a';
+			lastWritten = LastWritten.KeywordOrIdentifier;
 		}
 		
 		void WriteIdentifier(string identifier, Role<Identifier> identifierRole = null)
 		{
 			WriteSpecialsUpToRole(identifierRole ?? AstNode.Roles.Identifier);
-			if (lastChar == 'a')
-				Space();
+			if (IsKeyword(identifier, currentContainerNode)) {
+				formatter.WriteToken("@");
+			} else if (lastWritten == LastWritten.KeywordOrIdentifier) {
+				formatter.Space();
+			}
 			formatter.WriteIdentifier(identifier);
-			lastChar = 'a';
+			lastWritten = LastWritten.KeywordOrIdentifier;
 		}
 		
 		void WriteToken(string token, Role<CSharpTokenNode> tokenRole)
 		{
 			WriteSpecialsUpToRole(tokenRole);
+			// Avoid that two +, - or ? tokens are combined into a ++, -- or ?? token.
+			// Note that we don't need to handle tokens like = because there's no valid
+			// C# program that contains the single token twice in a row.
+			// (for + and -, this can happen with unary operators;
+			// and for ?, this can happen in "a is int? ? b : c" or "a as int? ?? 0")
+			if (lastWritten == LastWritten.Plus && token[0] == '+'
+			    || lastWritten == LastWritten.Minus && token[0] == '-'
+			    || lastWritten == LastWritten.QuestionMark && token[0] == '?'
+			    || lastWritten == LastWritten.Division && token[0] == '*')
+			{
+				formatter.Space();
+			}
 			formatter.WriteToken(token);
-			lastChar = token[token.Length - 1];
+			if (token == "+")
+				lastWritten = LastWritten.Plus;
+			else if (token == "-")
+				lastWritten = LastWritten.Minus;
+			else if (token == "?")
+				lastWritten = LastWritten.QuestionMark;
+			else if (token == "/")
+				lastWritten = LastWritten.Division;
+			else
+				lastWritten = LastWritten.Other;
 		}
 		
 		void LPar()
@@ -228,28 +267,62 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (addSpace) {
 				formatter.Space();
-				lastChar = ' ';
+				lastWritten = LastWritten.Whitespace;
 			}
 		}
 		
 		void NewLine()
 		{
 			formatter.NewLine();
-			lastChar = '\n';
+			lastWritten = LastWritten.Whitespace;
 		}
 		
 		void OpenBrace(BraceStyle style)
 		{
 			WriteSpecialsUpToRole(AstNode.Roles.LBrace);
 			formatter.OpenBrace(style);
-			lastChar = '{';
+			lastWritten = LastWritten.Other;
 		}
 		
 		void CloseBrace(BraceStyle style)
 		{
 			WriteSpecialsUpToRole(AstNode.Roles.RBrace);
 			formatter.CloseBrace(style);
-			lastChar = '}';
+			lastWritten = LastWritten.Other;
+		}
+		#endregion
+		
+		#region IsKeyword Test
+		static readonly HashSet<string> unconditionalKeywords = new HashSet<string> {
+			"abstract", "as", "base", "bool", "break", "byte", "case", "catch",
+			"char", "checked", "class", "const", "continue", "decimal", "default", "delegate",
+			"do", "double", "else", "enum", "event", "explicit", "extern", "false",
+			"finally", "fixed", "float", "for", "foreach", "goto", "if", "implicit",
+			"in", "int", "interface", "internal", "is", "lock", "long", "namespace",
+			"new", "null", "object", "operator", "out", "override", "params", "private",
+			"protected", "public", "readonly", "ref", "return", "sbyte", "sealed", "short",
+			"sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw",
+			"true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort",
+			"using", "virtual", "void", "volatile", "while"
+		};
+		
+//		static readonly HashSet<string> queryKeywords = new HashSet<string> {
+//			"from", "where", "join", "on", "equals", "into", "let", "orderby",
+//			"ascending", "descending", "select", "group", "by"
+//		};
+		
+		/// <summary>
+		/// Determines whether the specified identifier is a keyword in the given context.
+		/// </summary>
+		public static bool IsKeyword(string identifier, AstNode context)
+		{
+			if (unconditionalKeywords.Contains(identifier))
+				return true;
+//			if (context.Ancestors.Any(a => a is QueryExpression)) {
+//				if (queryKeywords.Contains(identifier))
+//					return true;
+//			}
+			return false;
 		}
 		#endregion
 		
@@ -285,13 +358,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			foreach (Identifier ident in identifiers) {
 				if (first) {
 					first = false;
+					if (lastWritten == LastWritten.KeywordOrIdentifier)
+						formatter.Space();
 				} else {
 					WriteSpecialsUpToRole(AstNode.Roles.Dot, ident);
 					
 				}
 				WriteSpecialsUpToNode(ident);
 				formatter.WriteIdentifier(ident.Name);
-				lastChar = 'a';
+				lastWritten = LastWritten.KeywordOrIdentifier;
 			}
 		}
 		
@@ -660,7 +735,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			StartNode(primitiveExpression);
 			formatter.WriteToken(ToCSharpString(primitiveExpression));
-			lastChar = 'a';
+			lastWritten = LastWritten.Other;
 			return EndNode(primitiveExpression);
 		}
 		
@@ -1633,7 +1708,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			foreach (var comma in arraySpecifier.GetChildrenByRole(ArraySpecifier.Roles.Comma)) {
 				WriteSpecialsUpToNode(comma);
 				formatter.WriteToken(",");
-				lastChar = ',';
+				lastWritten = LastWritten.Other;
 			}
 			WriteToken("]", ArraySpecifier.Roles.RBracket);
 			return EndNode(arraySpecifier);
@@ -1648,7 +1723,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public object VisitComment(Comment comment, object data)
 		{
+			if (lastWritten == LastWritten.Division) {
+				// When there's a comment starting after a division operator
+				// "1.0 / /*comment*/a", then we need to insert a space in front of the comment.
+				formatter.Space();
+			}
 			formatter.WriteComment(comment.CommentType, comment.Content);
+			lastWritten = LastWritten.Whitespace;
 			return null;
 		}
 		

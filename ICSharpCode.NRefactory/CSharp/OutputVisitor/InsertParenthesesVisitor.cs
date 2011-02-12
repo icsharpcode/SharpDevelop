@@ -132,24 +132,19 @@ namespace ICSharpCode.NRefactory.CSharp
 		// Unary expressions
 		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
-			ParenthesizeIfRequired(unaryOperatorExpression.Expression, Unary);
+			ParenthesizeIfRequired(unaryOperatorExpression.Expression, InsertParenthesesForReadability ? Primary : Unary);
 			return base.VisitUnaryOperatorExpression(unaryOperatorExpression, data);
 		}
 		
 		public override object VisitCastExpression(CastExpression castExpression, object data)
 		{
-			ParenthesizeIfRequired(castExpression.Expression, Unary);
+			ParenthesizeIfRequired(castExpression.Expression, InsertParenthesesForReadability ? Primary : Unary);
 			// There's a nasty issue in the C# grammar: cast expressions including certain operators are ambiguous in some cases
 			// "(int)-1" is fine, but "(A)-b" is not a cast.
 			UnaryOperatorExpression uoe = castExpression.Expression as UnaryOperatorExpression;
-			if (InsertParenthesesForReadability) {
-				if (uoe != null)
+			if (uoe != null && !(uoe.Operator == UnaryOperatorType.BitNot || uoe.Operator == UnaryOperatorType.Not)) {
+				if (TypeCanBeMisinterpretedAsExpression(castExpression.Type)) {
 					Parenthesize(castExpression.Expression);
-			} else {
-				if (uoe != null && !(uoe.Operator == UnaryOperatorType.BitNot || uoe.Operator == UnaryOperatorType.Not)) {
-					if (TypeCanBeMisinterpretedAsExpression(castExpression.Type)) {
-						Parenthesize(castExpression.Expression);
-					}
 				}
 			}
 			return base.VisitCastExpression(castExpression, data);
