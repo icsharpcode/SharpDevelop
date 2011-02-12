@@ -896,8 +896,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		public object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			StartNode(unaryOperatorExpression);
-			WriteToken(UnaryOperatorExpression.GetOperatorSymbol(unaryOperatorExpression.Operator), UnaryOperatorExpression.OperatorRole);
+			UnaryOperatorType opType = unaryOperatorExpression.Operator;
+			string opSymbol = UnaryOperatorExpression.GetOperatorSymbol(opType);
+			if (!(opType == UnaryOperatorType.PostIncrement || opType == UnaryOperatorType.PostDecrement))
+				WriteToken(opSymbol, UnaryOperatorExpression.OperatorRole);
 			unaryOperatorExpression.Expression.AcceptVisitor(this, data);
+			if (opType == UnaryOperatorType.PostIncrement || opType == UnaryOperatorType.PostDecrement)
+				WriteToken(opSymbol, UnaryOperatorExpression.OperatorRole);
 			return EndNode(unaryOperatorExpression);
 		}
 		

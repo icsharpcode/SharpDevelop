@@ -20,12 +20,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		public bool InsertParenthesesForReadability { get; set; }
 		
-		const int Primary = 15;
+		const int Primary = 16;
+		const int QueryOrLambda = 15;
 		const int Unary = 14;
 		const int RelationalAndTypeTesting = 10;
 		const int Equality = 9;
 		const int Conditional = 2;
-		const int AssignmentAndLambda = 1;
+		const int Assignment = 1;
 		
 		/// <summary>
 		/// Gets the row number in the C# 4.0 spec operator precedence table.
@@ -33,6 +34,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		static int GetPrecedence(Expression expr)
 		{
 			// Note: the operator precedence table on MSDN is incorrect
+			if (expr is QueryExpression) {
+				// Not part of the table in the C# spec, but we need to ensure that queries within
+				// primary expressions get parenthesized.
+				return QueryOrLambda;
+			}
 			UnaryOperatorExpression uoe = expr as UnaryOperatorExpression;
 			if (uoe != null) {
 				if (uoe.Operator == UnaryOperatorType.PostDecrement || uoe.Operator == UnaryOperatorType.PostIncrement)
@@ -84,7 +90,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (expr is ConditionalExpression)
 				return Conditional;
 			if (expr is AssignmentExpression || expr is LambdaExpression)
-				return AssignmentAndLambda;
+				return Assignment;
 			// anything else: primary expression
 			return Primary;
 		}
@@ -132,7 +138,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		// Unary expressions
 		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
-			ParenthesizeIfRequired(unaryOperatorExpression.Expression, InsertParenthesesForReadability ? Primary : Unary);
+			ParenthesizeIfRequired(unaryOperatorExpression.Expression, GetPrecedence(unaryOperatorExpression));
+			UnaryOperatorExpression child = unaryOperatorExpression.Expression as UnaryOperatorExpression;
+			if (child != null && InsertParenthesesForReadability)
+				Parenthesize(child);
 			return base.VisitUnaryOperatorExpression(unaryOperatorExpression, data);
 		}
 		
@@ -233,15 +242,32 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			// assignment is right-associative
-			ParenthesizeIfRequired(assignmentExpression.Left, AssignmentAndLambda + 1);
+			ParenthesizeIfRequired(assignmentExpression.Left, Assignment + 1);
 			if (InsertParenthesesForReadability) {
 				ParenthesizeIfRequired(assignmentExpression.Right, RelationalAndTypeTesting + 1);
 			} else {
-				ParenthesizeIfRequired(assignmentExpression.Right, AssignmentAndLambda);
+				ParenthesizeIfRequired(assignmentExpression.Right, Assignment);
 			}
 			return base.VisitAssignmentExpression(assignmentExpression, data);
 		}
 		
 		// don't need to handle lambdas, they have lowest precedence and unambiguous associativity
+		
+		public override object VisitQueryExpression(QueryExpression queryExpression, object data)
+		{
+			// Query expressions are strange beasts:
+			// "var a = -from b in c select d;" is valid, so queries bind stricter than unary expressions.
+			// However, the end of the query is greedy. So their start sort of have a high precedence,
+			// while their end has a very low precedence. We handle this by checking whether a query is used
+			// as left part of a binary operator, and parenthesize it if required.
+			if (queryExpression.Role == BinaryOperatorExpression.LeftRole)
+				Parenthesize(queryExpression);
+			if (InsertParenthesesForReadability) {
+				// when readability is desired, always parenthesize query expressions within unary or binary operators
+				if (queryExpression.Parent is UnaryOperatorExpression || queryExpression.Parent is BinaryOperatorExpression)
+					Parenthesize(queryExpression);
+			}
+			return base.VisitQueryExpression(queryExpression, data);
+		}
 	}
 }

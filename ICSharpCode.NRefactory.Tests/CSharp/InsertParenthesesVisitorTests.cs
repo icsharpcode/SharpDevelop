@@ -133,5 +133,82 @@ namespace ICSharpCode.NRefactory.CSharp
 			Assert.AreEqual("a is int? ?b:c", InsertRequired(expr));
 			Assert.AreEqual("(a is int?)?b:c", InsertReadable(expr));
 		}
+		
+		[Test]
+		public void MethodCallOnQueryExpression()
+		{
+			Expression expr = new QueryExpression {
+				Clauses = new QueryClause[] {
+					new QueryFromClause {
+						Identifier = "a",
+						Expression = new IdentifierExpression("b")
+					},
+					new QuerySelectClause {
+						Expression = new IdentifierExpression("a").Invoke("c")
+					}
+				}
+			}.Invoke("ToArray");
+			
+			Assert.AreEqual("(from a in b" + Environment.NewLine + "select a.c ()).ToArray ()", InsertRequired(expr));
+			Assert.AreEqual("(from a in b" + Environment.NewLine + "select a.c ()).ToArray ()", InsertReadable(expr));
+		}
+		
+		[Test]
+		public void SumOfQueries()
+		{
+			QueryExpression query = new QueryExpression {
+				Clauses = new QueryClause[] {
+					new QueryFromClause {
+						Identifier = "a",
+						Expression = new IdentifierExpression("b")
+					},
+					new QuerySelectClause {
+						Expression = new IdentifierExpression("a")
+					}
+				}
+			};
+			Expression expr = new BinaryOperatorExpression(
+				query,
+				BinaryOperatorType.Add,
+				query.Clone()
+			);
+			
+			Assert.AreEqual("(from a in b" + Environment.NewLine +
+			                "select a) + from a in b" + Environment.NewLine +
+			                "select a", InsertRequired(expr));
+			Assert.AreEqual("(from a in b" + Environment.NewLine +
+			                "select a) + (from a in b" + Environment.NewLine +
+			                "select a)", InsertReadable(expr));
+		}
+		
+		[Test]
+		public void PrePost()
+		{
+			Expression expr = new UnaryOperatorExpression(
+				UnaryOperatorType.Increment,
+				new UnaryOperatorExpression(
+					UnaryOperatorType.PostIncrement,
+					new IdentifierExpression("a")
+				)
+			);
+			
+			Assert.AreEqual("++a++", InsertRequired(expr));
+			Assert.AreEqual("++(a++)", InsertReadable(expr));
+		}
+		
+		[Test]
+		public void PostPre()
+		{
+			Expression expr = new UnaryOperatorExpression(
+				UnaryOperatorType.PostIncrement,
+				new UnaryOperatorExpression(
+					UnaryOperatorType.Increment,
+					new IdentifierExpression("a")
+				)
+			);
+			
+			Assert.AreEqual("(++a)++", InsertRequired(expr));
+			Assert.AreEqual("(++a)++", InsertReadable(expr));
+		}
 	}
 }
