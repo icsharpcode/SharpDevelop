@@ -9,6 +9,7 @@ using System.Linq;
 using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Events;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
@@ -31,8 +32,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		public event EventHandler<GroupFooterEventArgs> GroupFooterRendering;
 		public event EventHandler<RowRenderEventArgs> RowRendering;
 
-		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage,
-		                     ILayouter layouter)
+		
+		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage)		                
 		{
 			if (dataNavigator == null) {
 				throw new ArgumentNullException("dataNavigator");
@@ -41,15 +42,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 				throw new ArgumentNullException("singlePage");
 			}
 
-			if (layouter == null) {
-				throw new ArgumentNullException("layouter");
-			}
+
 			this.SinglePage = singlePage;
 			this.DataNavigator = dataNavigator;
 			SectionBounds = this.SinglePage.SectionBounds;
-			this.Layouter = layouter;
+			this.Layouter =  (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
 			this.Evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.DataNavigator);
 		}
+		
 		
 		
 		#region PageBreak

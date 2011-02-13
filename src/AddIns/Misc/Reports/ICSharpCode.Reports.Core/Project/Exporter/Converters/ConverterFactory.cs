@@ -14,18 +14,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public static class ConverterFactory
 	{
 		
-		
 		public static IBaseConverter CreateConverter (BaseReportItem itemToConvert,IDataNavigator dataNavigator,
-		                                             ExporterPage singlePage,ILayouter layouter)
+		                                             ExporterPage singlePage)
 		{
-
 			Type t = itemToConvert.GetType();
 			if (t.Equals(typeof(BaseTableItem))) {
-				return new GroupedTableConverter(dataNavigator,singlePage,layouter);
+				return new GroupedTableConverter(dataNavigator,singlePage);
 			}
 			
 			if (t.Equals(typeof(BaseRowItem))) {
-				return new GroupedRowConverter (dataNavigator,singlePage,layouter);
+				return new GroupedRowConverter (dataNavigator,singlePage);
 			}
 			
 			return null;

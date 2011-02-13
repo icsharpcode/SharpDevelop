@@ -21,7 +21,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		#region Constructor
 		
 		public static IReportCreator CreateInstance(IReportModel reportModel, IDataManager dataManager)
-//		public static IReportCreator CreateInstance(IReportModel reportModel, IDataManager dataManager,ILayouter layouter)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
@@ -131,9 +130,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 			foreach (BaseReportItem item in section.Items)
 			{
 				IBaseConverter baseConverter = ConverterFactory.CreateConverter(item,dataNavigator,
-				                                                                this.SinglePage,
-				                                                                base.Layouter);
-				
+				                                                                this.SinglePage);
+				                                                                
 				if (baseConverter != null) {
 			
 					baseConverter.SectionRendering += OnSectionRendering;

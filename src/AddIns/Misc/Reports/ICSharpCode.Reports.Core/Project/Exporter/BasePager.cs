@@ -33,10 +33,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
-		
+			
 			this.ReportModel = reportModel;
-			//this.Layouter = layouter;
-			this.Layouter = new Layouter();
+			
+			if (!ServiceContainer.Contains(typeof(ILayouter))) {
+				ServiceContainer.AddService<ILayouter>(new Layouter());
+			}
 			this.Graphics = CreateGraphicObject.FromSize(this.ReportModel.ReportSettings.PageSize);
 		}
 		
@@ -97,7 +99,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 				Point offset = new Point(section.Location.X,section.SectionOffset);
 				
 				// Call layouter only once per section
-				Rectangle desiredRectangle = Layouter.Layout(this.Graphics,section);
+				ILayouter layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
+				var desiredRectangle = layouter.Layout(this.Graphics,section);
+				
 				Rectangle sectionRectangle = new Rectangle(section.Location,section.Size);
 				if (!sectionRectangle.Contains(desiredRectangle)) {
 					section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
@@ -194,7 +198,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				EvaluateRecursive(evaluatorFacade,p.Items);
 			}
 		}
-		 
+		
 		
 		private static void EvaluateRecursive (IExpressionEvaluatorFacade evaluatorFassade,ExporterCollection items)
 		{
@@ -254,7 +258,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			EventHelper.Raise<RowRenderEventArgs>(RowRendering,this,rrea);
 		}
-			
+		
 		protected void FirePageCreated(ExporterPage page)
 		{
 			EventHelper.Raise<PageCreatedEventArgs>(PageCreated,this,
@@ -267,7 +271,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected Graphics Graphics {get; private set;}
 		
-		public ILayouter Layouter {get; private set;}
+		//public ILayouter Layouter {get; private set;}
 		
 		public IReportModel ReportModel {get;set;}
 

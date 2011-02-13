@@ -21,7 +21,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private BaseReportItem parent;
 		
 		public GroupedRowConverter(IDataNavigator dataNavigator,
-		                           ExporterPage singlePage, ILayouter layouter):base(dataNavigator,singlePage,layouter)
+		                           ExporterPage singlePage):base(dataNavigator,singlePage)
 		{
 		}
 		

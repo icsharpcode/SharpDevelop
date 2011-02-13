@@ -22,7 +22,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private ITableContainer table;
 		
 		public GroupedTableConverter(IDataNavigator dataNavigator,
-		                      ExporterPage singlePage, ILayouter layouter ):base(dataNavigator,singlePage,layouter)
+		                      ExporterPage singlePage):base(dataNavigator,singlePage)
 			
 		{
 		}
@@ -40,7 +40,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			ExporterCollection mylist = base.Convert(parent,item);
 			this.table = (BaseTableItem)item ;
 			this.table.Parent = parent;
-//			this.table.DataNavigator = base.DataNavigator;
 			return ConvertInternal(mylist);
 		}
 		
@@ -98,13 +97,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 						childNavigator.Reset();
 						childNavigator.MoveNext();
 
-/*
----- GroupTableConverter.cs Zeile 151:
-FillRow(simpleContainer,base.DataNavigator);
-FireRowRendering(simpleContainer,base.DataNavigator);
-base.PrepareContainerForConverting(section,simpleContainer);
-----
-*/	
 						//Convert children
 						if (childNavigator != null) {
 							do
