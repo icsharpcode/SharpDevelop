@@ -16,17 +16,17 @@ namespace PackageManagement.Tests
 		PackageViewModel viewModel;
 		FakePackage package;
 		FakePackageManagementService packageManagementService;
-		FakePackageRepository packageSourceRepository;
+		FakePackageRepository sourcePackageRepository;
 		FakeLicenseAcceptanceService licenseAcceptanceService;
 		
 		void CreateViewModel()
 		{
 			package = new FakePackage();
-			packageSourceRepository = new FakePackageRepository();
+			sourcePackageRepository = new FakePackageRepository();
 			packageManagementService = new FakePackageManagementService();
 			licenseAcceptanceService = new FakeLicenseAcceptanceService();
 			PackageViewModelFactory factory = new PackageViewModelFactory(packageManagementService, licenseAcceptanceService);
-			packageManagementService.ActivePackageRepository = packageSourceRepository;
+			packageManagementService.ActivePackageRepository = sourcePackageRepository;
 			viewModel = factory.CreatePackageViewModel(package);
 		}
 		
@@ -52,7 +52,7 @@ namespace PackageManagement.Tests
 			var packageDependedUpon = new FakePackage(packageId);
 			packageDependedUpon.RequireLicenseAcceptance = requiresLicenseAcceptance;
 			
-			packageSourceRepository.FakePackages.Add(packageDependedUpon);
+			sourcePackageRepository.FakePackages.Add(packageDependedUpon);
 			
 			return packageDependedUpon;
 		}
@@ -64,7 +64,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackageCommand.Execute(null);
 						
 			Assert.AreEqual(package, packageManagementService.PackagePassedToInstallPackage);
-			Assert.AreEqual(packageSourceRepository, packageManagementService.RepositoryPassedToInstallPackage);
+			Assert.AreEqual(sourcePackageRepository, packageManagementService.RepositoryPassedToInstallPackage);
 		}
 		
 		[Test]
@@ -170,7 +170,7 @@ namespace PackageManagement.Tests
 			viewModel.RemovePackageCommand.Execute(null);
 						
 			Assert.AreEqual(package, packageManagementService.PackagePassedToUninstallPackage);
-			Assert.AreEqual(packageSourceRepository, packageManagementService.RepositoryPassedToUninstallPackage);
+			Assert.AreEqual(sourcePackageRepository, packageManagementService.RepositoryPassedToUninstallPackage);
 		}
 		
 		[Test]
@@ -334,13 +334,13 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			var expectedPackages = new FakePackage[] {
-				package,
-				packageDependedUpon
+				packageDependedUpon,
+				package
 			};
 			
 			var actualPackages = licenseAcceptanceService.PackagesPassedToAcceptLicenses;
 			
-			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+			PackageCollectionAssert.AreEqual(expectedPackages, actualPackages);
 		}
 		
 		[Test]

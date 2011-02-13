@@ -26,5 +26,7 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			IsRemovePackageCalled = true;
 		}
+		
+		public string Source { get; set; }
 	}
 }

@@ -17,7 +17,8 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementService packageManagementService;
 		ILicenseAcceptanceService licenseAcceptanceService;
 		IPackage package;
-		IPackageRepository packageRepository;
+		IPackageRepository sourcePackageRepository;
+		IPackageRepository localPackageRepository;
 		bool? hasDependencies;
 		
 		public PackageViewModel(
@@ -26,7 +27,7 @@ namespace ICSharpCode.PackageManagement
 			ILicenseAcceptanceService licenseAcceptanceService)
 		{
 			this.package = package;
-			this.packageRepository = packageManagementService.ActivePackageRepository;
+			this.sourcePackageRepository = packageManagementService.ActivePackageRepository;
 			this.packageManagementService = packageManagementService;
 			this.licenseAcceptanceService = licenseAcceptanceService;
 			
@@ -39,8 +40,22 @@ namespace ICSharpCode.PackageManagement
 			removePackageCommand = new DelegateCommand(param => RemovePackage());
 		}
 		
-		public IPackageRepository Repository {
-			get { return packageRepository; }
+		public IPackageRepository SourcePackageRepository {
+			get { return sourcePackageRepository; }
+		}
+		
+		public IPackageRepository LocalPackageRepository {
+			get {
+				if (localPackageRepository == null) {
+					GetLocalPackageRepository();
+				}
+				return localPackageRepository;
+			}
+		}
+		
+		void GetLocalPackageRepository()
+		{
+			localPackageRepository = packageManagementService.ActiveProjectManager.LocalRepository;
 		}
 		
 		public ICommand AddPackageCommand { 
@@ -179,8 +194,13 @@ namespace ICSharpCode.PackageManagement
 		
 		IList<IPackage> GetPackagesToBeInstalled()
 		{
-			var resolver = new DependencyResolver(packageRepository);
-			return resolver.GetDependencies(package).ToList();
+			var walker = new InstallWalker(LocalPackageRepository,
+                sourcePackageRepository,
+                NullLogger.Instance,
+                ignoreDependencies: false);
+			
+			IEnumerable<PackageOperation> packageOperations = walker.ResolveOperations(package);
+			return GetPackages(packageOperations);
 		}
 		
 		bool PackageRequiresLicenseAcceptance(IPackage package)
@@ -188,15 +208,24 @@ namespace ICSharpCode.PackageManagement
 			return package.RequireLicenseAcceptance && !IsPackageInstalled(package);
 		}
 		
+		IList<IPackage> GetPackages(IEnumerable<PackageOperation> packageOperations)
+		{
+			List<IPackage> packages = new List<IPackage>();
+			foreach (PackageOperation operation in packageOperations) {
+				packages.Add(operation.Package);
+			}
+			return packages;
+		}
+		
 		void InstallPackage()
 		{
-			packageManagementService.InstallPackage(packageRepository, package);
+			packageManagementService.InstallPackage(sourcePackageRepository, package);
 			OnPropertyChanged(model => model.IsAdded);
 		}
 		
 		public void RemovePackage()
 		{
-			packageManagementService.UninstallPackage(packageRepository, package);
+			packageManagementService.UninstallPackage(sourcePackageRepository, package);
 			OnPropertyChanged(model => model.IsAdded);
 		}
 	}

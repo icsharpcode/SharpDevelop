@@ -91,5 +91,15 @@ namespace PackageManagement.Tests.Helpers
 			PackagePassedToUninstallPackage = package;
 			IsRefreshProjectBrowserCalledWhenUninstallPackageCalled = FakeProjectService.IsRefreshProjectBrowserCalled;
 		}
+		
+		public void UpdatePackage(IPackage oldPackage, IPackage newPackage, bool updateDependencies)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UpdatePackage(string packageId, Version version, bool updateDependencies)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -27,5 +27,13 @@ namespace PackageManagement.Tests.Helpers
 			}
 			return packages;
 		}
+		
+		public static void AreEqual(IEnumerable<IPackage> expectedPackages, IEnumerable<IPackage> actualPackages)
+		{
+			List<IPackage> expectedPackagesAsList = new List<IPackage>(expectedPackages);
+			List<IPackage> actualPackagesAsList = new List<IPackage>(actualPackages);
+			
+			CollectionAssert.AreEqual(expectedPackagesAsList, actualPackagesAsList);			
+		}
 	}
 }
