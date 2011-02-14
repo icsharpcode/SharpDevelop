@@ -102,6 +102,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public CSharpTokenNode LBracketToken {
+			get { return GetChildByRole (Roles.LBracket); }
+		}
+		
 		public int Dimensions {
 			get { return 1 + GetChildrenByRole(Roles.Comma).Count(); }
 			set {
@@ -115,6 +119,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					d++;
 				}
 			}
+		}
+		
+		public CSharpTokenNode RBracketToken {
+			get { return GetChildByRole (Roles.RBracket); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

@@ -46,6 +46,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static readonly Role<Accessor> AddAccessorRole = new Role<Accessor>("AddAccessor", Accessor.Null);
 		public static readonly Role<Accessor> RemoveAccessorRole = new Role<Accessor>("RemoveAccessor", Accessor.Null);
 		
+		public CSharpTokenNode LBraceToken {
+			get { return GetChildByRole (Roles.LBrace); }
+		}
+		
 		public Accessor AddAccessor {
 			get { return GetChildByRole (AddAccessorRole); }
 			set { SetChildByRole (AddAccessorRole, value); }
@@ -54,6 +58,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public Accessor RemoveAccessor {
 			get { return GetChildByRole (RemoveAccessorRole); }
 			set { SetChildByRole (RemoveAccessorRole, value); }
+		}
+		
+		public CSharpTokenNode RBraceToken {
+			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

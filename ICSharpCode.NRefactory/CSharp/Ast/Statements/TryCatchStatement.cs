@@ -30,7 +30,7 @@ using System.Linq;
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
-	/// try { TryBlock } CatchClauses finally { FinallyBlock }
+	/// try TryBlock CatchClauses finally FinallyBlock
 	/// </summary>
 	public class TryCatchStatement : Statement
 	{
@@ -40,6 +40,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static readonly Role<CSharpTokenNode> FinallyKeywordRole = new Role<CSharpTokenNode>("FinallyKeyword", CSharpTokenNode.Null);
 		public static readonly Role<BlockStatement> FinallyBlockRole = new Role<BlockStatement>("FinallyBlock", BlockStatement.Null);
 		
+		public CSharpTokenNode TryToken {
+			get { return GetChildByRole (TryKeywordRole); }
+		}
+		
 		public BlockStatement TryBlock {
 			get { return GetChildByRole (TryBlockRole); }
 			set { SetChildByRole (TryBlockRole, value); }
@@ -48,6 +52,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public IEnumerable<CatchClause> CatchClauses {
 			get { return GetChildrenByRole (CatchClauseRole); }
 			set { SetChildrenByRole (CatchClauseRole, value); }
+		}
+		
+		public CSharpTokenNode FinallyToken {
+			get { return GetChildByRole (FinallyKeywordRole); }
 		}
 		
 		public BlockStatement FinallyBlock {
@@ -72,6 +80,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public CSharpTokenNode CatchToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
 		public AstType Type {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
@@ -85,6 +101,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				else
 					SetChildByRole (Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public BlockStatement Body {
