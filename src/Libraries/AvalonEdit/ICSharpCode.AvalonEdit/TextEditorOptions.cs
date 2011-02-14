@@ -304,5 +304,37 @@ namespace ICSharpCode.AvalonEdit
 				}
 			}
 		}
+		
+		bool enableRectangularSelection = true;
+		
+		/// <summary>
+		/// Enables rectangular selection (press ALT and select a rectangle)
+		/// </summary>
+		[DefaultValue(true)]
+		public bool EnableRectangularSelection {
+			get { return enableRectangularSelection; }
+			set {
+				if (enableRectangularSelection != value) {
+					enableRectangularSelection = value;
+					OnPropertyChanged("AllowRectangularSelection");
+				}
+			}
+		}
+		
+		bool enableTextDragDrop = true;
+		
+		/// <summary>
+		/// Enable dragging text within the text area.
+		/// </summary>
+		[DefaultValue(true)]
+		public bool EnableTextDragDrop {
+			get { return enableTextDragDrop; }
+			set {
+				if (enableTextDragDrop != value) {
+					enableTextDragDrop = value;
+					OnPropertyChanged("EnableTextDrag");
+				}
+			}
+		}
 	}
 }
