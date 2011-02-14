@@ -116,10 +116,14 @@ namespace ICSharpCode.NRefactory.CSharp
 					} else if (cc.Spec.IsPointer) {
 						result.PointerRank++;
 					} else {
+						var location = LocationsBag.GetLocations (cc.Spec);
+						var spec = new ArraySpecifier () { Dimensions = cc.Spec.Dimension - 1 };
+						spec.AddChild (new CSharpTokenNode (Convert (cc.Spec.Location), 1), FieldDeclaration.Roles.LBracket);
+						if (location != null)
+							spec.AddChild (new CSharpTokenNode (Convert (location[0]), 1), FieldDeclaration.Roles.RBracket);
+						
 						result.ArraySpecifiers = new ArraySpecifier[] {
-							new ArraySpecifier () {
-								Dimensions = cc.Spec.Dimension - 1
-							}
+							spec
 						};
 					}
 					return result;
@@ -384,22 +388,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			#region Type members
 			
-			void AddFixedFieldInitializer (VariableInitializer variable, Mono.CSharp.Expression initializer)
-			{
-				if (initializer == null)
-					return;
-				if (initializer is ConstInitializer) {
-					variable.AddChild (new CSharpTokenNode (Convert (initializer.Location), 1), FieldDeclaration.Roles.LBracket);
-					variable.AddChild ((VariableInitializer)initializer.Accept (this), FieldDeclaration.Roles.Variable);
-					var initializerLoc = LocationsBag.GetLocations (initializer);
-					if (initializerLoc != null)
-						variable.AddChild (new CSharpTokenNode (Convert (initializerLoc[0]), 1), FieldDeclaration.Roles.RBracket);
-				} else {
-					variable.AddChild (new CSharpTokenNode (Convert (initializer.Location), 1), FieldDeclaration.Roles.Assign);
-					variable.AddChild ((VariableInitializer)initializer.Accept (this), FieldDeclaration.Roles.Variable);
-				}
-			}
-			
 			public override void Visit (FixedField f)
 			{
 				var location = LocationsBag.GetMemberLocation (f);
@@ -413,7 +401,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				VariableInitializer variable = new VariableInitializer ();
 				variable.AddChild (new Identifier (f.MemberName.Name, Convert (f.MemberName.Location)), FieldDeclaration.Roles.Identifier);
-				AddFixedFieldInitializer (variable, f.Initializer);
+				if (!f.Initializer.IsNull) {
+					variable.AddChild ((Expression)f.Initializer.Accept (this), FieldDeclaration.Roles.Expression);
+				}
 				
 				newField.AddChild (variable, FieldDeclaration.Roles.Variable);
 				if (f.Declarators != null) {
@@ -424,7 +414,9 @@ namespace ICSharpCode.NRefactory.CSharp
 						
 						variable = new VariableInitializer ();
 						variable.AddChild (new Identifier (decl.Name.Value, Convert (decl.Name.Location)), FieldDeclaration.Roles.Identifier);
-						AddFixedFieldInitializer (variable, decl.Initializer);
+						if (!decl.Initializer.IsNull) {
+							variable.AddChild ((Expression)decl.Initializer.Accept (this), FieldDeclaration.Roles.Expression);
+						}
 						newField.AddChild (variable, FieldDeclaration.Roles.Variable);
 					}
 				}
@@ -1242,7 +1234,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					AddBlockChildren (bodyBlock, blockStatement, ref curLocal);
 					foreach (var statement in bodyBlock.Statements) {
 						statement.Remove ();
-						newSection.AddChild (statement, MonoDevelop.CSharp.Ast.SwitchSection.Roles.EmbeddedStatement);
+						newSection.AddChild (statement, SwitchSection.Roles.EmbeddedStatement);
 						
 					}					
 					result.AddChild (newSection, SwitchStatement.SwitchSectionRole);
@@ -2241,7 +2233,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (ConstInitializer constInitializer)
 			{
-				return new Identifier (constInitializer.Name, Convert (constInitializer.Location));
+				return constInitializer.Expr.Accept (this);
 			}
 			
 			public override object Visit (ArrayInitializer arrayInitializer)
