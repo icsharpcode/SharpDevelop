@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Outputs the AST.
 	/// </summary>
-	public class OutputVisitor : AstVisitor<object, object>
+	public class OutputVisitor : IAstVisitor<object, object>
 	{
 		readonly IOutputFormatter formatter;
 		readonly CSharpFormattingPolicy policy;
@@ -1265,6 +1265,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode(continueStatement);
 		}
 		
+		public object VisitDoWhileStatement(DoWhileStatement doWhileStatement, object data)
+		{
+			StartNode(doWhileStatement);
+			WriteKeyword("do", DoWhileStatement.DoKeywordRole);
+			WriteEmbeddedStatement(doWhileStatement.EmbeddedStatement);
+			WriteKeyword("while", DoWhileStatement.WhileKeywordRole);
+			Space(policy.WhileParentheses);
+			LPar();
+			Space(policy.WithinWhileParentheses);
+			doWhileStatement.Condition.AcceptVisitor(this, data);
+			Space(policy.WithinWhileParentheses);
+			RPar();
+			Semicolon();
+			return EndNode(doWhileStatement);
+		}
+		
 		public object VisitEmptyStatement(EmptyStatement emptyStatement, object data)
 		{
 			StartNode(emptyStatement);
@@ -1333,25 +1349,31 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode(forStatement);
 		}
 		
+		public object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
+		{
+			StartNode(gotoCaseStatement);
+			WriteKeyword("goto");
+			WriteKeyword("case", GotoCaseStatement.CaseKeywordRole);
+			Space();
+			gotoCaseStatement.LabelExpression.AcceptVisitor(this, data);
+			Semicolon();
+			return EndNode(gotoCaseStatement);
+		}
+		
+		public object VisitGotoDefaultStatement(GotoDefaultStatement gotoDefaultStatement, object data)
+		{
+			StartNode(gotoDefaultStatement);
+			WriteKeyword("goto");
+			WriteKeyword("default", GotoDefaultStatement.DefaultKeywordRole);
+			Semicolon();
+			return EndNode(gotoDefaultStatement);
+		}
+		
 		public object VisitGotoStatement(GotoStatement gotoStatement, object data)
 		{
 			StartNode(gotoStatement);
 			WriteKeyword("goto");
-			switch (gotoStatement.GotoType) {
-				case GotoType.Label:
-					WriteIdentifier(gotoStatement.Label);
-					break;
-				case GotoType.Case:
-					WriteKeyword("case", GotoStatement.CaseKeywordRole);
-					Space();
-					gotoStatement.LabelExpression.AcceptVisitor(this, data);
-					break;
-				case GotoType.CaseDefault:
-					WriteKeyword("default", GotoStatement.DefaultKeywordRole);
-					break;
-				default:
-					throw new NotSupportedException("Invalid value for GotoType");
-			}
+			WriteIdentifier(gotoStatement.Label);
 			Semicolon();
 			return EndNode(gotoStatement);
 		}
@@ -1539,11 +1561,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		public object VisitWhileStatement(WhileStatement whileStatement, object data)
 		{
 			StartNode(whileStatement);
-			if (whileStatement.WhilePosition == WhilePosition.End) {
-				// do .. while
-				WriteKeyword("do", WhileStatement.DoKeywordRole);
-				WriteEmbeddedStatement(whileStatement.EmbeddedStatement);
-			}
 			WriteKeyword("while", WhileStatement.WhileKeywordRole);
 			Space(policy.WhileParentheses);
 			LPar();
@@ -1551,25 +1568,26 @@ namespace ICSharpCode.NRefactory.CSharp
 			whileStatement.Condition.AcceptVisitor(this, data);
 			Space(policy.WithinWhileParentheses);
 			RPar();
-			if (whileStatement.WhilePosition == WhilePosition.Begin) {
-				WriteEmbeddedStatement(whileStatement.EmbeddedStatement);
-			} else {
-				Semicolon();
-			}
+			WriteEmbeddedStatement(whileStatement.EmbeddedStatement);
 			return EndNode(whileStatement);
+		}
+		
+		public object VisitYieldBreakStatement(YieldBreakStatement yieldBreakStatement, object data)
+		{
+			StartNode(yieldBreakStatement);
+			WriteKeyword("yield", YieldBreakStatement.YieldKeywordRole);
+			WriteKeyword("break", YieldBreakStatement.BreakKeywordRole);
+			Semicolon();
+			return EndNode(yieldBreakStatement);
 		}
 		
 		public object VisitYieldStatement(YieldStatement yieldStatement, object data)
 		{
 			StartNode(yieldStatement);
 			WriteKeyword("yield", YieldStatement.YieldKeywordRole);
-			if (yieldStatement.Expression.IsNull) {
-				WriteKeyword("break", YieldStatement.BreakKeywordRole);
-			} else {
-				WriteKeyword("return", YieldStatement.ReturnKeywordRole);
-				Space();
-				yieldStatement.Expression.AcceptVisitor(this, data);
-			}
+			WriteKeyword("return", YieldStatement.ReturnKeywordRole);
+			Space();
+			yieldStatement.Expression.AcceptVisitor(this, data);
 			Semicolon();
 			return EndNode(yieldStatement);
 		}
