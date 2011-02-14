@@ -1539,17 +1539,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode(whileStatement);
 		}
 		
+		public object VisitYieldBreakStatement(YieldBreakStatement yieldBreakStatement, object data)
+		{
+			StartNode(yieldBreakStatement);
+			WriteKeyword("yield", YieldBreakStatement.YieldKeywordRole);
+			WriteKeyword("break", YieldBreakStatement.BreakKeywordRole);
+			Semicolon();
+			return EndNode(yieldBreakStatement);
+		}
+		
 		public object VisitYieldStatement(YieldStatement yieldStatement, object data)
 		{
 			StartNode(yieldStatement);
 			WriteKeyword("yield", YieldStatement.YieldKeywordRole);
-			if (yieldStatement.Expression.IsNull) {
-				WriteKeyword("break", YieldStatement.BreakKeywordRole);
-			} else {
-				WriteKeyword("return", YieldStatement.ReturnKeywordRole);
-				Space();
-				yieldStatement.Expression.AcceptVisitor(this, data);
-			}
+			WriteKeyword("return", YieldStatement.ReturnKeywordRole);
+			Space();
+			yieldStatement.Expression.AcceptVisitor(this, data);
 			Semicolon();
 			return EndNode(yieldStatement);
 		}

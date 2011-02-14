@@ -1376,12 +1376,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (YieldBreak yieldBreakStatement)
 			{
-				var result = new YieldStatement ();
+				var result = new YieldBreakStatement ();
 				var location = LocationsBag.GetLocations (yieldBreakStatement);
-				result.AddChild (new CSharpTokenNode (Convert (yieldBreakStatement.loc), "yield".Length), YieldStatement.YieldKeywordRole);
+				result.AddChild (new CSharpTokenNode (Convert (yieldBreakStatement.loc), "yield".Length), YieldBreakStatement.YieldKeywordRole);
 				if (location != null) {
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "break".Length), YieldStatement.BreakKeywordRole);
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), ";".Length), YieldStatement.Roles.Semicolon);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), "break".Length), YieldBreakStatement.BreakKeywordRole);
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), ";".Length), YieldBreakStatement.Roles.Semicolon);
 				}
 				return result;
 			}

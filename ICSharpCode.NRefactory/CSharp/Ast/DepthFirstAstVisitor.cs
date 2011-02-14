@@ -330,6 +330,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (whileStatement, data);
 		}
 		
+		public virtual S VisitYieldBreakStatement (YieldBreakStatement yieldBreakStatement, T data)
+		{
+			return VisitChildren (yieldBreakStatement, data);
+		}
+		
 		public virtual S VisitYieldStatement (YieldStatement yieldStatement, T data)
 		{
 			return VisitChildren (yieldStatement, data);

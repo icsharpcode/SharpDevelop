@@ -330,6 +330,7 @@
     <Compile Include="CSharp\Ast\GeneralScope\Comment.cs" />
     <Compile Include="CSharp\Parser\mcs\reflection.cs" />
     <Compile Include="CSharp\Ast\Statements\DoWhileStatement.cs" />
+    <Compile Include="CSharp\Ast\Statements\YieldBreakStatement.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
