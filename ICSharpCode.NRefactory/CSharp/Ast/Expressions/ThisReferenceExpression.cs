@@ -26,6 +26,9 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	/// <summary>
+	/// this
+	/// </summary>
 	public class ThisReferenceExpression : Expression
 	{
 		public AstLocation Location {

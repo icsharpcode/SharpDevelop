@@ -26,6 +26,9 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	/// <summary>
+	/// Represents a literal value.
+	/// </summary>
 	public class PrimitiveExpression : Expression
 	{
 		AstLocation startLocation;

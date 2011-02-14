@@ -27,6 +27,9 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	/// <summary>
+	/// typeof(Type)
+	/// </summary>
 	public class TypeOfExpression : Expression
 	{
 		public CSharpTokenNode TypeOfToken {

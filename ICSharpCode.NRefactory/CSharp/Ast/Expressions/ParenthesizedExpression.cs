@@ -26,6 +26,9 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	/// <summary>
+	/// ( Expression )
+	/// </summary>
 	public class ParenthesizedExpression : Expression
 	{
 		public CSharpTokenNode LParToken {
