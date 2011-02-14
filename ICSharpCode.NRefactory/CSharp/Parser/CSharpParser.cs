@@ -1240,8 +1240,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					var bodyBlock = new BlockStatement ();
 					int curLocal = 0;
 					AddBlockChildren (bodyBlock, blockStatement, ref curLocal);
-					
-					newSection.AddChild (bodyBlock, SwitchSection.Roles.Body);
+					foreach (var statement in bodyBlock.Statements) {
+						statement.Remove ();
+						newSection.AddChild (statement, MonoDevelop.CSharp.Ast.SwitchSection.Roles.EmbeddedStatement);
+						
+					}					
 					result.AddChild (newSection, SwitchStatement.SwitchSectionRole);
 				}
 				
