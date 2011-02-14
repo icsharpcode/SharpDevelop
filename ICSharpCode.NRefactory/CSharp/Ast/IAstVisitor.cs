@@ -8,7 +8,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// AST visitor.
 	/// </summary>
-	public interface AstVisitor<in T, out S>
+	public interface IAstVisitor<in T, out S>
 	{
 		S VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, T data);
 		S VisitArgListExpression(ArgListExpression argListExpression, T data);
