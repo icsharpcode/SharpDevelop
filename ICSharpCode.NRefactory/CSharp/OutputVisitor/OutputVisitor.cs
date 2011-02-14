@@ -35,6 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			KeywordOrIdentifier,
 			Plus,
 			Minus,
+			Ampersand,
 			QuestionMark,
 			Division
 		}
@@ -221,10 +222,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			// Avoid that two +, - or ? tokens are combined into a ++, -- or ?? token.
 			// Note that we don't need to handle tokens like = because there's no valid
 			// C# program that contains the single token twice in a row.
-			// (for + and -, this can happen with unary operators;
-			// and for ?, this can happen in "a is int? ? b : c" or "a as int? ?? 0")
+			// (for +, - and &, this can happen with unary operators;
+			// for ?, this can happen in "a is int? ? b : c" or "a as int? ?? 0";
+			// and for /, this can happen with "1/ *ptr" or "1/ //comment".)
 			if (lastWritten == LastWritten.Plus && token[0] == '+'
 			    || lastWritten == LastWritten.Minus && token[0] == '-'
+			    || lastWritten == LastWritten.Ampersand && token[0] == '&'
 			    || lastWritten == LastWritten.QuestionMark && token[0] == '?'
 			    || lastWritten == LastWritten.Division && token[0] == '*')
 			{
@@ -235,6 +238,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				lastWritten = LastWritten.Plus;
 			else if (token == "-")
 				lastWritten = LastWritten.Minus;
+			else if (token == "&")
+				lastWritten = LastWritten.Ampersand;
 			else if (token == "?")
 				lastWritten = LastWritten.QuestionMark;
 			else if (token == "/")
