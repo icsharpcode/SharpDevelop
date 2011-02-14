@@ -225,6 +225,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (continueStatement, data);
 		}
 		
+		public virtual S VisitDoWhileStatement (DoWhileStatement doWhileStatement, T data)
+		{
+			return VisitChildren (doWhileStatement, data);
+		}
+		
 		public virtual S VisitEmptyStatement (EmptyStatement emptyStatement, T data)
 		{
 			return VisitChildren (emptyStatement, data);

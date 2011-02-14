@@ -1239,6 +1239,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode(continueStatement);
 		}
 		
+		public object VisitDoWhileStatement(DoWhileStatement doWhileStatement, object data)
+		{
+			StartNode(doWhileStatement);
+			WriteKeyword("do", DoWhileStatement.DoKeywordRole);
+			WriteEmbeddedStatement(doWhileStatement.EmbeddedStatement);
+			WriteKeyword("while", DoWhileStatement.WhileKeywordRole);
+			Space(policy.WhileParentheses);
+			LPar();
+			Space(policy.WithinWhileParentheses);
+			doWhileStatement.Condition.AcceptVisitor(this, data);
+			Space(policy.WithinWhileParentheses);
+			RPar();
+			Semicolon();
+			return EndNode(doWhileStatement);
+		}
+		
 		public object VisitEmptyStatement(EmptyStatement emptyStatement, object data)
 		{
 			StartNode(emptyStatement);
@@ -1512,11 +1528,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		public object VisitWhileStatement(WhileStatement whileStatement, object data)
 		{
 			StartNode(whileStatement);
-			if (whileStatement.WhilePosition == WhilePosition.End) {
-				// do .. while
-				WriteKeyword("do", WhileStatement.DoKeywordRole);
-				WriteEmbeddedStatement(whileStatement.EmbeddedStatement);
-			}
 			WriteKeyword("while", WhileStatement.WhileKeywordRole);
 			Space(policy.WhileParentheses);
 			LPar();
@@ -1524,11 +1535,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			whileStatement.Condition.AcceptVisitor(this, data);
 			Space(policy.WithinWhileParentheses);
 			RPar();
-			if (whileStatement.WhilePosition == WhilePosition.Begin) {
-				WriteEmbeddedStatement(whileStatement.EmbeddedStatement);
-			} else {
-				Semicolon();
-			}
+			WriteEmbeddedStatement(whileStatement.EmbeddedStatement);
 			return EndNode(whileStatement);
 		}
 		

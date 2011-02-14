@@ -907,18 +907,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (Do doStatement)
 			{
-				var result = new WhileStatement (WhilePosition.End);
+				var result = new DoWhileStatement ();
 				var location = LocationsBag.GetLocations (doStatement);
-				result.AddChild (new CSharpTokenNode (Convert (doStatement.loc), "do".Length), WhileStatement.DoKeywordRole);
+				result.AddChild (new CSharpTokenNode (Convert (doStatement.loc), "do".Length), DoWhileStatement.DoKeywordRole);
 				result.AddChild ((Statement)doStatement.EmbeddedStatement.Accept (this), WhileStatement.Roles.EmbeddedStatement);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "while".Length), WhileStatement.WhileKeywordRole);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), "while".Length), DoWhileStatement.WhileKeywordRole);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), WhileStatement.Roles.LPar);
-				result.AddChild ((Expression)doStatement.expr.Accept (this), WhileStatement.Roles.Condition);
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), DoWhileStatement.Roles.LPar);
+				result.AddChild ((Expression)doStatement.expr.Accept (this), DoWhileStatement.Roles.Condition);
 				if (location != null) {
-					result.AddChild (new CSharpTokenNode (Convert (location[2]), 1), WhileStatement.Roles.RPar);
-					result.AddChild (new CSharpTokenNode (Convert (location[3]), 1), WhileStatement.Roles.Semicolon);
+					result.AddChild (new CSharpTokenNode (Convert (location[2]), 1), DoWhileStatement.Roles.RPar);
+					result.AddChild (new CSharpTokenNode (Convert (location[3]), 1), DoWhileStatement.Roles.Semicolon);
 				}
 				
 				return result;
@@ -926,7 +926,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (While whileStatement)
 			{
-				var result = new WhileStatement (WhilePosition.Begin);
+				var result = new WhileStatement ();
 				var location = LocationsBag.GetLocations (whileStatement);
 				result.AddChild (new CSharpTokenNode (Convert (whileStatement.loc), "while".Length), WhileStatement.WhileKeywordRole);
 				

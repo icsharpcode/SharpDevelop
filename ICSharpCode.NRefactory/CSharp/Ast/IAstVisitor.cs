@@ -65,6 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitBreakStatement(BreakStatement breakStatement, T data);
 		S VisitCheckedStatement(CheckedStatement checkedStatement, T data);
 		S VisitContinueStatement(ContinueStatement continueStatement, T data);
+		S VisitDoWhileStatement(DoWhileStatement doWhileStatement, T data);
 		S VisitEmptyStatement(EmptyStatement emptyStatement, T data);
 		S VisitExpressionStatement(ExpressionStatement expressionStatement, T data);
 		S VisitFixedStatement(FixedStatement fixedStatement, T data);
