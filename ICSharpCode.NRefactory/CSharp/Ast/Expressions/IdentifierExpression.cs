@@ -38,6 +38,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.Identifier = identifier;
 		}
 		
+		public IdentifierExpression(string identifier, AstLocation location)
+		{
+			SetChildByRole(Roles.Identifier, new Identifier(identifier, location));
+		}
+		
 //		public Identifier IdentifierToken {
 //			get { return GetChildByRole (Roles.Identifier); }
 //		}

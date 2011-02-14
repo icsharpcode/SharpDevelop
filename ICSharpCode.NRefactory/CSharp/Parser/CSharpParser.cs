@@ -1459,40 +1459,39 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (TypeExpression typeExpression)
 			{
-				var result = new PrimitiveType ();
-				result.Location = Convert (typeExpression.Location);
+				string keyword;
 				if (typeExpression.Type == TypeManager.void_type) {
-					result.Keyword = "void";
+					keyword = "void";
 				} else if (typeExpression.Type == TypeManager.string_type) {
-					result.Keyword = "string";
+					keyword = "string";
 				} else if (typeExpression.Type == TypeManager.int32_type) {
-					result.Keyword = "int";
+					keyword = "int";
 				} else if (typeExpression.Type == TypeManager.object_type) {
-					result.Keyword = "object";
+					keyword = "object";
 				} else if (typeExpression.Type == TypeManager.float_type) {
-					result.Keyword = "float";
+					keyword = "float";
 				} else if (typeExpression.Type == TypeManager.double_type) {
-					result.Keyword = "double";
+					keyword = "double";
 				} else if (typeExpression.Type == TypeManager.int64_type) {
-					result.Keyword = "long";
+					keyword = "long";
 				} else if (typeExpression.Type == TypeManager.byte_type) {
-					result.Keyword = "byte";
+					keyword = "byte";
 				} else if (typeExpression.Type == TypeManager.uint32_type) {
-					result.Keyword = "uint";
+					keyword = "uint";
 				} else if (typeExpression.Type == TypeManager.uint64_type) {
-					result.Keyword = "ulong";
+					keyword = "ulong";
 				} else if (typeExpression.Type == TypeManager.short_type) {
-					result.Keyword = "short";
+					keyword = "short";
 				} else if (typeExpression.Type == TypeManager.ushort_type) {
-					result.Keyword = "ushort";
+					keyword = "ushort";
 				} else if (typeExpression.Type == TypeManager.sbyte_type) {
-					result.Keyword = "sbyte";
+					keyword = "sbyte";
 				} else if (typeExpression.Type == TypeManager.decimal_type) {
-					result.Keyword = "decimal";
+					keyword = "decimal";
 				} else {
-					throw new NotImplementedException();
+					keyword = "unknown";
 				}
-				return result;
+				return new IdentifierExpression (keyword, Convert (typeExpression.Location));
 			}
 
 			public override object Visit (LocalVariableReference localVariableReference)
