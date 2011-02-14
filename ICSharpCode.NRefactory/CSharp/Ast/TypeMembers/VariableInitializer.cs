@@ -56,6 +56,5 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return visitor.VisitVariableInitializer (this, data);
 		}
-
 	}
 }

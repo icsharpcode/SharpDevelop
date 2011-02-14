@@ -71,6 +71,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitFixedStatement(FixedStatement fixedStatement, T data);
 		S VisitForeachStatement(ForeachStatement foreachStatement, T data);
 		S VisitForStatement(ForStatement forStatement, T data);
+		S VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, T data);
+		S VisitGotoDefaultStatement(GotoDefaultStatement gotoDefaultStatement, T data);
 		S VisitGotoStatement(GotoStatement gotoStatement, T data);
 		S VisitIfElseStatement(IfElseStatement ifElseStatement, T data);
 		S VisitLabelStatement(LabelStatement labelStatement, T data);

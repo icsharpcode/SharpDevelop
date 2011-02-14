@@ -1009,7 +1009,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (Goto gotoStatement)
 			{
-				var result = new GotoStatement (GotoType.Label);
+				var result = new GotoStatement ();
 				var location = LocationsBag.GetLocations (gotoStatement);
 				result.AddChild (new CSharpTokenNode (Convert (gotoStatement.loc), "goto".Length), GotoStatement.Roles.Keyword);
 				result.AddChild (new Identifier (gotoStatement.Target, Convert (gotoStatement.loc)), GotoStatement.Roles.Identifier);
@@ -1028,12 +1028,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (GotoDefault gotoDefault)
 			{
-				var result = new GotoStatement (GotoType.CaseDefault);
-				result.AddChild (new CSharpTokenNode (Convert (gotoDefault.loc), "goto".Length), GotoStatement.Roles.Keyword);
+				var result = new GotoDefaultStatement ();
+				result.AddChild (new CSharpTokenNode (Convert (gotoDefault.loc), "goto".Length), GotoDefaultStatement.Roles.Keyword);
 				var location = LocationsBag.GetLocations (gotoDefault);
 				if (location != null) {
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "default".Length), GotoStatement.DefaultKeywordRole);
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), GotoStatement.Roles.Semicolon);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), "default".Length), GotoDefaultStatement.DefaultKeywordRole);
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), GotoDefaultStatement.Roles.Semicolon);
 				}
 				
 				return result;
@@ -1041,15 +1041,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (GotoCase gotoCase)
 			{
-				var result = new GotoStatement (GotoType.Case);
-				result.AddChild (new CSharpTokenNode (Convert (gotoCase.loc), "goto".Length), GotoStatement.Roles.Keyword);
+				var result = new GotoCaseStatement ();
+				result.AddChild (new CSharpTokenNode (Convert (gotoCase.loc), "goto".Length), GotoCaseStatement.Roles.Keyword);
 				
 				var location = LocationsBag.GetLocations (gotoCase);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "case".Length), GotoStatement.CaseKeywordRole);
-				result.AddChild ((Expression)gotoCase.Expr.Accept (this), GotoStatement.Roles.Expression);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), "case".Length), GotoCaseStatement.CaseKeywordRole);
+				result.AddChild ((Expression)gotoCase.Expr.Accept (this), GotoCaseStatement.Roles.Expression);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), GotoStatement.Roles.Semicolon);
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), GotoCaseStatement.Roles.Semicolon);
 				return result;
 			}
 			

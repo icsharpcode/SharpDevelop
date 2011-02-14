@@ -31,9 +31,17 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class IndexerDeclaration : PropertyDeclaration
 	{
+		public CSharpTokenNode LBracketToken {
+			get { return GetChildByRole (Roles.LBracket); }
+		}
+		
 		public IEnumerable<ParameterDeclaration> Parameters { 
 			get { return GetChildrenByRole (Roles.Parameter); }
 			set { SetChildrenByRole (Roles.Parameter, value); }
+		}
+		
+		public CSharpTokenNode RBracketToken {
+			get { return GetChildByRole (Roles.RBracket); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

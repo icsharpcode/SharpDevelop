@@ -250,6 +250,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (forStatement, data);
 		}
 		
+		public virtual S VisitGotoCaseStatement (GotoCaseStatement gotoCaseStatement, T data)
+		{
+			return VisitChildren (gotoCaseStatement, data);
+		}
+		
+		public virtual S VisitGotoDefaultStatement (GotoDefaultStatement gotoDefaultStatement, T data)
+		{
+			return VisitChildren (gotoDefaultStatement, data);
+		}
+		
 		public virtual S VisitGotoStatement (GotoStatement gotoStatement, T data)
 		{
 			return VisitChildren (gotoStatement, data);

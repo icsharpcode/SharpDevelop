@@ -56,7 +56,4 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitYieldStatement (this, data);
 		}
 	}
-	
-
-	
 }

@@ -1322,25 +1322,31 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode(forStatement);
 		}
 		
+		public object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
+		{
+			StartNode(gotoCaseStatement);
+			WriteKeyword("goto");
+			WriteKeyword("case", GotoCaseStatement.CaseKeywordRole);
+			Space();
+			gotoCaseStatement.LabelExpression.AcceptVisitor(this, data);
+			Semicolon();
+			return EndNode(gotoCaseStatement);
+		}
+		
+		public object VisitGotoDefaultStatement(GotoDefaultStatement gotoDefaultStatement, object data)
+		{
+			StartNode(gotoDefaultStatement);
+			WriteKeyword("goto");
+			WriteKeyword("default", GotoDefaultStatement.DefaultKeywordRole);
+			Semicolon();
+			return EndNode(gotoDefaultStatement);
+		}
+		
 		public object VisitGotoStatement(GotoStatement gotoStatement, object data)
 		{
 			StartNode(gotoStatement);
 			WriteKeyword("goto");
-			switch (gotoStatement.GotoType) {
-				case GotoType.Label:
-					WriteIdentifier(gotoStatement.Label);
-					break;
-				case GotoType.Case:
-					WriteKeyword("case", GotoStatement.CaseKeywordRole);
-					Space();
-					gotoStatement.LabelExpression.AcceptVisitor(this, data);
-					break;
-				case GotoType.CaseDefault:
-					WriteKeyword("default", GotoStatement.DefaultKeywordRole);
-					break;
-				default:
-					throw new NotSupportedException("Invalid value for GotoType");
-			}
+			WriteIdentifier(gotoStatement.Label);
 			Semicolon();
 			return EndNode(gotoStatement);
 		}
