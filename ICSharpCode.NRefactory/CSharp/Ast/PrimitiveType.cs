@@ -43,6 +43,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.Keyword = keyword;
 		}
 		
+		public PrimitiveType(string keyword, AstLocation location)
+		{
+			this.Keyword = keyword;
+			this.Location = location;
+		}
+		
 		public override AstLocation StartLocation {
 			get {
 				return Location;

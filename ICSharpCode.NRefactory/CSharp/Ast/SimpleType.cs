@@ -42,6 +42,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.Identifier = identifier;
 		}
 		
+		public SimpleType(string identifier, AstLocation location)
+		{
+			SetChildByRole (Roles.Identifier, new Identifier(identifier, location));
+		}
+		
 		public string Identifier {
 			get {
 				return GetChildByRole (Roles.Identifier).Name;
