@@ -264,6 +264,10 @@ namespace ICSharpCode.FormsDesigner.Services
 						 */
 						asm = Assembly.LoadFile(tempPath);
 						MarkFileToDeleteOnReboot(tempPath);
+					} else if (e.Message.Contains("HRESULT: 0x80131019")) {
+						LoggingService.Debug(e.Message);
+						LoggingService.Debug("Attempting to load unverifiable assembly. Ignoring.");
+						return null;
 					} else {
 						throw; // don't ignore other load errors
 					}
