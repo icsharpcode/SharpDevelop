@@ -15,24 +15,24 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public class BaseExportColumn
 	{
 		
-		private IBaseStyleDecorator styleDecorator;
-		private bool isContainer;
-		private ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter;
-		private PdfWriter pdfWriter;
+//		private IBaseStyleDecorator styleDecorator;
+	//	private bool isContainer;
+	//	private ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter;
+//		private PdfWriter pdfWriter;
 		
 		#region Constructors
 		
 		public BaseExportColumn()
 		{
-			this.styleDecorator = new BaseStyleDecorator(System.Drawing.Color.White,
+			this.StyleDecorator = new BaseStyleDecorator(System.Drawing.Color.White,
 			                                             System.Drawing.Color.Black);
 		}
 		
 		
-		public BaseExportColumn(IBaseStyleDecorator itemStyle, bool isContainer)
+		public BaseExportColumn(IBaseStyleDecorator styleDecorator, bool isContainer)
 		{
-			this.styleDecorator = itemStyle;
-			this.isContainer = isContainer;
+			this.StyleDecorator = styleDecorator;
+			this.IsContainer = isContainer;
 		}
 		
 		#endregion
@@ -54,8 +54,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (converter == null) {
 				throw new ArgumentNullException("converter");
 			}
-			this.pdfWriter = pdfWriter;
-			this.converter = converter;
+			this.PdfWriter = pdfWriter;
+			this.PdfUnitConverter = converter;
 		}
 		#endregion
 		
@@ -82,9 +82,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			RectangleShape shape = new RectangleShape();
 	
-			shape.DrawShape(this.pdfWriter.DirectContent,
+			shape.DrawShape(this.PdfWriter.DirectContent,
 			            null,
-			            this.styleDecorator,
+			            this.StyleDecorator,
 			            ConvertToPdfRectangle());        
 			this.DrawFrame();
 			
@@ -111,8 +111,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 			
 			shape.FillShape(graphics,
-			                new SolidFillPattern(this.styleDecorator.BackColor),
-			                this.styleDecorator.DisplayRectangle);
+			                new SolidFillPattern(this.StyleDecorator.BackColor),
+			                this.StyleDecorator.DisplayRectangle);
 			
 		}
 		
@@ -121,10 +121,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected iTextSharp.text.Rectangle ConvertToPdfRectangle ()
 		{
-			ScreenRectToPdfRectConverter rectangleConverter = new ScreenRectToPdfRectConverter(this.converter);
+			ScreenRectToPdfRectConverter rectangleConverter = new ScreenRectToPdfRectConverter(this.PdfUnitConverter);
 			
 			iTextSharp.text.Rectangle r = (iTextSharp.text.Rectangle)rectangleConverter.ConvertTo(null,System.Globalization.CultureInfo.InvariantCulture,
-			                                                                                      this.styleDecorator.DisplayRectangle,
+			                                                                                      this.StyleDecorator.DisplayRectangle,
 			                                                                                      typeof(iTextSharp.text.Rectangle));
 		
 			
@@ -140,51 +140,32 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private Border CreateDefaultBorder()
 		{
-			return new Border(new BaseLine (this.styleDecorator.FrameColor,
+			return new Border(new BaseLine (this.StyleDecorator.FrameColor,
 			                                    System.Drawing.Drawing2D.DashStyle.Solid,1));
 		}
 		
 		
 		private  void DrawFrame ()
 		{
-			if (this.styleDecorator.DrawBorder) {
+			if (this.StyleDecorator.DrawBorder) {
 				Border b = this.CreateDefaultBorder();
-				b.DrawBorder(this.pdfWriter.DirectContent,
+				b.DrawBorder(this.PdfWriter.DirectContent,
 				             ConvertToPdfRectangle(),
-				             this.styleDecorator);
+				             this.StyleDecorator);
 			}
 		}
 
-		
 		
 		#endregion
 		
 
-		public virtual IBaseStyleDecorator StyleDecorator {
-			get {
-				return styleDecorator;
-			}
-			set {
-				this.styleDecorator = value;
-			}
-		}
+		public virtual IBaseStyleDecorator StyleDecorator {get;set;}
 		
-		public bool IsContainer {
-			get {
-				return isContainer;
-			}
-			set {
-				isContainer = value;
-			}
-		}
+		public bool IsContainer {get; protected set;}
+			
+		public ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter PdfUnitConverter {get;private set;}
 		
-		public ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter PdfUnitConverter {
-			get { return converter; }
-		}
-		
-		public PdfWriter PdfWriter {
-			get { return pdfWriter; }
-		}
+		public PdfWriter PdfWriter {get;private set;}
 		
 	}
 }

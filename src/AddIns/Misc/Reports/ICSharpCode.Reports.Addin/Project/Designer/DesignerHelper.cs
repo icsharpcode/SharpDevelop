@@ -11,7 +11,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 	/// <summary>
 	/// Description of DesignerHelper.
 	/// </summary>
-	public sealed class DesignerHelper
+	internal sealed class DesignerHelper
 	{
 		
 		private DesignerHelper()
@@ -84,7 +84,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 		public static void AddTextbasedProperties (List<PropertyDescriptor> allProperties,
 		                                          PropertyDescriptorCollection props)
 		{
-			PropertyDescriptor prop = prop = props.Find("Font",true);
+			PropertyDescriptor prop = props.Find("Font",true);
 			allProperties.Add(prop);
 			
 			prop = props.Find("FormatString",true);
@@ -103,6 +103,20 @@ namespace ICSharpCode.Reports.Addin.Designer
 			allProperties.Add(prop);
 			
 			prop = props.Find("DataType",true);
+			allProperties.Add(prop);
+		}
+		
+		public static void AddGraphicProperties (List<PropertyDescriptor> allProperties,
+		                                         PropertyDescriptorCollection props)
+		{
+			PropertyDescriptor prop = null;
+			prop = props.Find("ForeColor",true);
+			allProperties.Add(prop);
+			
+			prop = props.Find("DashStyle",true);
+			allProperties.Add(prop);
+			
+			prop = props.Find("Thickness",true);
 			allProperties.Add(prop);
 		}
 	}

@@ -145,6 +145,7 @@
     <Compile Include="Project\Exceptions\WrongColumnException.cs" />
     <Compile Include="Project\Exceptions\WrongSectionException.cs" />
     <Compile Include="Project\Exporter\Converters\GroupedTableConverter.cs" />
+    <Compile Include="Project\Exporter\ExportColumns\ExportGraphicContainer.cs" />
     <Compile Include="Project\Expressions\EvaluationHelper.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\FieldReference.cs" />
     <Compile Include="Project\Exporter\BasePager.cs" />
