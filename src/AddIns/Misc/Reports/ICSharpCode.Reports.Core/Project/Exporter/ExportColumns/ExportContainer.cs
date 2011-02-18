@@ -30,7 +30,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 		#region overrides
 
-
 		public override void DrawItem(Graphics graphics)
 		{
 			if (graphics == null) {
@@ -45,7 +44,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.DrawItem(pdfWriter, converter);
 			base.Decorate();
 		}
-
 
 		#endregion
 

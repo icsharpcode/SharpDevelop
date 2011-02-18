@@ -97,15 +97,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (section.Items.Count > 0) {
 				
 				Point offset = new Point(section.Location.X,section.SectionOffset);
+			
+				Rectangle desiredRectangle = LayoutHelper.FixSectionLayout(this.Graphics,section);
 				
-				// Call layouter only once per section
-				ILayouter layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
-				var desiredRectangle = layouter.Layout(this.Graphics,section);
-				
-				Rectangle sectionRectangle = new Rectangle(section.Location,section.Size);
-				if (!sectionRectangle.Contains(desiredRectangle)) {
-					section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
-				}
+				Setlayout( desiredRectangle, section);
 				
 				foreach (BaseReportItem item in section.Items) {
 					
@@ -114,11 +109,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 					if (container != null) {
 
 						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(container,offset);
-						
 						StandardPrinter.AdjustBackColor (container);
-						
-						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(container.Items,offset);
-						
+						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(container.Items,exportContainer.StyleDecorator.Location);
 						exportContainer.Items.AddRange(clist);
 						list.Add(exportContainer);
 						
@@ -128,6 +120,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 				}
 			}
 			return list;
+		}
+
+
+		void Setlayout(Rectangle desiredRectangle, BaseSection section)
+		{
+			Rectangle sectionRectangle = new Rectangle(section.Location, section.Size);
+			if (!sectionRectangle.Contains(desiredRectangle)) {
+				section.Size = new Size(section.Size.Width, 
+				                        desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
+			}
 		}
 		
 		

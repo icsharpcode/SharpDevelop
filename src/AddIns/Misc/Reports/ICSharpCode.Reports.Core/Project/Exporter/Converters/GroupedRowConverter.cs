@@ -40,7 +40,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			simpleContainer.Parent = parent;
 			
-			PrintHelper.AdjustParent(parent,simpleContainer.Items);
+			PrintHelper.AdjustParent(parent as ISimpleContainer,simpleContainer.Items);
 			if (PrintHelper.IsTextOnlyRow(simpleContainer)) {
 				ExporterCollection myList = new ExporterCollection();
 

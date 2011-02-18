@@ -15,8 +15,8 @@ namespace ICSharpCode.Reports.Core.Globals
 	/// Description of .
 	/// </summary>
 	public static class ServiceContainer
-
 	{
+		
 		private static Dictionary<Type, object> services = new Dictionary<Type, object>();
 
 		public static void InitializeServiceContainer()

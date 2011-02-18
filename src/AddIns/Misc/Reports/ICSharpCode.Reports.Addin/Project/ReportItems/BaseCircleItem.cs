@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
+using ICSharpCode.Reports.Addin.TypeProviders;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Globals;
 
@@ -14,8 +15,8 @@ namespace ICSharpCode.Reports.Addin
 	/// <summary>
 	/// Description of BaseCircleItem.
 	/// </summary>
-	
-	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.ShapeDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.ContainerItemDesigner))]
+	//[Designer(typeof(ICSharpCode.Reports.Addin.Designer.ShapeDesigner))]
 	public class BaseCircleItem:AbstractItem
 	{
 		

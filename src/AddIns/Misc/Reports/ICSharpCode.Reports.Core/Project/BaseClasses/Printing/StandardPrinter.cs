@@ -111,8 +111,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			
 			PrintHelper.AdjustChildLocation(item,offset);
 			
-			//BaseTextItem textItem = item as BaseTextItem;
-			
 			IReportExpression epr = item as IReportExpression;
 			
 			string evaluatedValue = String.Empty;
@@ -207,13 +205,14 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static ExportContainer ConvertToContainer (ISimpleContainer item,Point offset) 
+		public static ExportContainer ConvertToContainer (ISimpleContainer container,Point offset) 
 		{
-			if (item == null) {
+			if (container == null) {
 				throw new ArgumentNullException("item");
 			}
 			
-			IExportColumnBuilder lineBuilder = item as IExportColumnBuilder;
+			PrintHelper.AdjustParent(container,container.Items);
+			IExportColumnBuilder lineBuilder = container as IExportColumnBuilder;
 	
 			if (lineBuilder != null) {
 				ExportContainer lineItem = (ExportContainer)lineBuilder.CreateExportColumn();

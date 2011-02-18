@@ -10,7 +10,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 	/// <summary>
 	/// Description of GroupedRowDesigner.
 	/// </summary>
-	public class GroupedRowDesigner:RowItemDesigner
+	public class GroupedRowDesigner:ContainerItemDesigner
 	{
 		private ISelectionService selectionService;
 		private IComponentChangeService componentChangeService;

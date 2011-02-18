@@ -96,7 +96,7 @@
     <Compile Include="Project\Designer\GroupeHeaderDesigner.cs" />
     <Compile Include="Project\Designer\ImageDesigner.cs" />
     <Compile Include="Project\Designer\LineDesigner.cs" />
-    <Compile Include="Project\Designer\RowItemDesigner.cs" />
+    <Compile Include="Project\Designer\ContainerItemDesigner.cs" />
     <Compile Include="Project\Designer\Ruler.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -145,7 +145,6 @@
     <Compile Include="Project\ReportItems\BaseDataItem.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Project\ReportItems\CircleItemTypeProvider.cs" />
     <Compile Include="Project\ReportItems\GroupFooter.cs" />
     <Compile Include="Project\ReportItems\BaseImageItem.cs">
       <SubType>Component</SubType>
@@ -173,6 +172,7 @@
     </Compile>
     <Compile Include="Project\ReportItems\GroupHeader.cs" />
     <Compile Include="Project\ReportItems\TypeProviders\AbstractItemTypeProvider.cs" />
+    <Compile Include="Project\ReportItems\TypeProviders\CircleItemTypeProvider.cs" />
     <Compile Include="Project\ReportItems\TypeProviders\DataItemTypeProvider.cs" />
     <Compile Include="Project\ReportItems\TypeProviders\GroupedRowTypeProvider.cs" />
     <Compile Include="Project\ReportItems\TypeProviders\ImageItemTypeProvider.cs" />

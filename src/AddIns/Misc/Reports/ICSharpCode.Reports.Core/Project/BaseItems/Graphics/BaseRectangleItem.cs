@@ -7,7 +7,8 @@ using System.Drawing.Drawing2D;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Exporter;
-
+using ICSharpCode.Reports.Core.Globals;
+using ICSharpCode.Reports.Core.Interfaces;
 
 /// <summary>
 /// This class draws a Rectangle
@@ -16,16 +17,18 @@ using ICSharpCode.Reports.Core.Exporter;
 /// 	created by - Forstmeier Peter
 /// 	created on - 29.09.2005 11:57:30
 /// </remarks>
-namespace ICSharpCode.Reports.Core {	
+namespace ICSharpCode.Reports.Core
+{
 	
-	public class BaseRectangleItem : BaseGraphicItem,IExportColumnBuilder
+	public class BaseRectangleItem : BaseGraphicItem,IExportColumnBuilder,ISimpleContainer
 	{
-		
-		RectangleShape shape = new RectangleShape();
+		private ReportItemCollection items;
+		private RectangleShape shape = new RectangleShape();
 		
 		#region Constructor
 		
-		public BaseRectangleItem() {
+		public BaseRectangleItem()
+		{
 		}
 		
 		#endregion
@@ -36,8 +39,7 @@ namespace ICSharpCode.Reports.Core {
 		public BaseExportColumn CreateExportColumn(){
 			shape.CornerRadius = CornerRadius;
 			IGraphicStyleDecorator style = base.CreateItemStyle(this.shape);
-			ExportGraphic item = new ExportGraphic(style,false);
-			return item as ExportGraphic;
+			return  new ExportGraphicContainer(style,true);
 		}
 		
 		
@@ -74,5 +76,67 @@ namespace ICSharpCode.Reports.Core {
 			return "BaseRectangleItem";
 		}
 		
+		
+		public ReportItemCollection Items {
+			get {
+				if (this.items == null) {
+					this.items = new ReportItemCollection();
+				}
+				return this.items;
+			}
+		}
+	}
+	
+	public class ExportGraphicContainer :ExportContainer ,IExportContainer
+	{
+		ExporterCollection items;
+		
+		
+		public ExportGraphicContainer (IBaseStyleDecorator itemStyle,bool isContainer):base(itemStyle as BaseStyleDecorator)
+		{
+			
+		}
+		
+		public override void DrawItem(Graphics graphics)
+		{
+			base.DrawItem(graphics);
+			ILineDecorator lineDecorator = base.StyleDecorator as LineDecorator;
+			if (lineDecorator != null) {
+				GraphicsLineDrawer (graphics);
+			}
+			else  {
+				IGraphicStyleDecorator style = base.StyleDecorator as GraphicStyleDecorator;
+				if (style != null) {
+					base.FillShape(graphics,style.Shape);
+					BaseLine baseLine = null;
+					if (style.BackColor == GlobalValues.DefaultBackColor){
+						baseLine = new BaseLine (style.ForeColor,style.DashStyle,style.Thickness);
+					} else {
+						baseLine = new BaseLine (style.BackColor,style.DashStyle,style.Thickness);
+					}
+					style.Shape.DrawShape(graphics,
+					                      baseLine,
+					                      style.DisplayRectangle);
+				}
+			}
+		}
+		
+		
+		private void GraphicsLineDrawer (Graphics graphics)
+		{
+			LineDecorator lineStyle = base.StyleDecorator as LineDecorator;
+			
+			BaseLine baseLine = null;
+			baseLine = new BaseLine (lineStyle.ForeColor,lineStyle.DashStyle,lineStyle.Thickness);
+			
+			Point from = new Point(lineStyle.DisplayRectangle.Left +  lineStyle.From.X,
+			                       lineStyle.DisplayRectangle.Top + lineStyle.From.Y);
+			Point to = new Point(lineStyle.DisplayRectangle.Left +  lineStyle.To.X,
+			                     lineStyle.DisplayRectangle.Top + lineStyle.To.Y);
+			lineStyle.Shape.DrawShape(graphics,
+			                          baseLine,
+			                          from,
+			                          to);
+		}
 	}
 }

@@ -19,40 +19,27 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		{
 		}
 		
-		#region Layout
-		
-		public static void SetLayoutForRow (Graphics graphics, ILayouter layouter,ISimpleContainer row)
-		{
-			Rectangle textRect = layouter.Layout(graphics,row);
-			if (textRect.Height > row.Size.Height) {
-				row.Size = new Size(row.Size.Width,textRect.Height + 5);
-			}
-		}
-		
-		#endregion
-		
-		
 		#region Section's
 		
-		
-		public  static void AdjustParent (BaseReportItem parent,ReportItemCollection items)
+		public  static void AdjustParent (ISimpleContainer parent,ReportItemCollection items)
 		{
-			foreach (BaseReportItem i in items) {
-				i.Parent = parent;
-				ISimpleContainer ic = i as ISimpleContainer;
-				if (ic != null) {
-					AdjustParentInternal(ic.Items,i);
+			foreach (BaseReportItem item in items) {
+				item.Parent = parent as BaseReportItem;
+				ISimpleContainer container = item as ISimpleContainer;
+				if (container != null) {
+					AdjustParentInternal(container.Items,container);
 				} else {
-					AdjustParentInternal(items,parent);
+					AdjustParentInternal(items,parent as ISimpleContainer);
 				}
 			}
 		}
 		
+		private static void AdjustParentInternal (ReportItemCollection items,ISimpleContainer parent)
 		
-		private static void AdjustParentInternal (ReportItemCollection items,BaseReportItem parent)
+		//private static void AdjustParentInternal (ReportItemCollection items,BaseReportItem parent)
 		{
 			foreach(BaseReportItem item in items) {
-				item.Parent = parent;
+				item.Parent = parent as BaseReportItem;
 			}
 		}
 		

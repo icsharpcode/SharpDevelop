@@ -11,7 +11,7 @@ using System.ComponentModel;
 using ICSharpCode.Reports.Addin.Designer;
 
 
-namespace ICSharpCode.Reports.Addin
+namespace ICSharpCode.Reports.Addin.TypeProviders
 {
 	
 	internal class CircleItemTypeProvider : TypeDescriptionProvider
@@ -62,6 +62,8 @@ namespace ICSharpCode.Reports.Addin
 			prop = props.Find("Thickness",true);
 			allProperties.Add(prop);
 			
+			prop = props.Find("Controls",true);
+			allProperties.Add(prop);
 			
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}

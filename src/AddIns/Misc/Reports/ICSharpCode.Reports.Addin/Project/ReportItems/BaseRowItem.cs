@@ -14,7 +14,7 @@ namespace ICSharpCode.Reports.Addin
 	/// <summary>
 	/// Description of BaseRowItem.
 	/// </summary>
-	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.RowItemDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.ContainerItemDesigner))]
 	public class BaseRowItem:AbstractItem
 	{
 

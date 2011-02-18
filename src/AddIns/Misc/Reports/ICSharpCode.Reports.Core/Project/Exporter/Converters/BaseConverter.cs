@@ -243,7 +243,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 			Console.WriteLine("\tPrepareContainerForConverting");
 			
 			FireSectionRendering(section);
-			LayoutRow(simpleContainer);
+			LayoutHelper.SetLayoutForRow(Graphics,Layouter,simpleContainer);
+			//LayoutRow(simpleContainer);
 		}
 		
 		protected  Point ConvertStandardRow(ExporterCollection mylist,  ISimpleContainer simpleContainer)
@@ -261,26 +262,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 		}
 
-		/*
-		protected  Point old_ConvertStandardRow(ExporterCollection mylist,  ISimpleContainer simpleContainer)
-		{
-			var rowSize = simpleContainer.Size;
-Console.WriteLine("ConvertStandardRow");
-		
-			Point curPos = new Point (DefaultLeftPosition,CurrentPosition.Y + simpleContainer.Size.Height);
-			
-			ExporterCollection ml = BaseConverter.ConvertItems (simpleContainer, curPos);
-			//curPos =  new Point (DefaultLeftPosition,curPos.Y + simpleContainer.Size.Height);
-			EvaluationHelper.EvaluateRow(Evaluator,ml);
-			mylist.AddRange(ml);
-			//
-			simpleContainer.Size = rowSize;
-			Console.WriteLine("");
-			return curPos;
-			
-		}
-		
-	*/
 		
 		protected void AfterConverting (ExporterCollection convertedList)
 		{
@@ -302,10 +283,5 @@ Console.WriteLine("ConvertStandardRow");
 			currentNavigator.Fill(row.Items);
 		}
 		
-		
-		private void LayoutRow (ISimpleContainer row)
-		{
-			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
-		}
 	}
 }

@@ -34,6 +34,7 @@ namespace ICSharpCode.Reports.Addin
 			base.BackColor = Color.White;
 			this.contentAlignment = ContentAlignment.TopLeft;
 			TypeDescriptor.AddProvider(new TextItemTypeProvider(), typeof(BaseTextItem));
+			System.Console.WriteLine (this.Font.ToString());
 		}
 		
 		

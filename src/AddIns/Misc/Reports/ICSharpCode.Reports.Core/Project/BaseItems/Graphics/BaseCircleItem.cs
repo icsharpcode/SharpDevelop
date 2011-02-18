@@ -4,6 +4,7 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Interfaces;
 
 /// <summary>
 ///This class drwas a Circle
@@ -14,8 +15,9 @@ using ICSharpCode.Reports.Core.Exporter;
 /// </remarks>
 namespace ICSharpCode.Reports.Core {	
 	
-	public class BaseCircleItem : BaseGraphicItem, IExportColumnBuilder
+	public class BaseCircleItem : BaseGraphicItem, IExportColumnBuilder,ISimpleContainer
 	{
+		private ReportItemCollection items;
 		EllipseShape shape = new EllipseShape();
 		
 		#region Constructor
@@ -28,12 +30,12 @@ namespace ICSharpCode.Reports.Core {
 		
 		#region IExportColumnBuilder
 		
-		public BaseExportColumn CreateExportColumn()
-		{
+		public BaseExportColumn CreateExportColumn(){
+//			shape.CornerRadius = CornerRadius;
 			IGraphicStyleDecorator style = base.CreateItemStyle(this.shape);
-			ExportGraphic item = new ExportGraphic(style,false);
-			return item as ExportGraphic;
+			return  new ExportGraphicContainer(style,true);
 		}
+	
 		
 		#endregion
 		
@@ -52,6 +54,16 @@ namespace ICSharpCode.Reports.Core {
 			shape.DrawShape (rpea.PrintPageEventArgs.Graphics,
 			                 base.Baseline(),
 			                 rect);
+		}
+		
+			
+		public ReportItemCollection Items {
+			get {
+				if (this.items == null) {
+					this.items = new ReportItemCollection();
+				}
+				return this.items;
+			}
 		}
 	}
 }

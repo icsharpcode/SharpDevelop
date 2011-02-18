@@ -59,6 +59,9 @@
     <Reference Include="itextsharp">
       <HintPath>..\Libraries\itextsharp.dll</HintPath>
     </Reference>
+    <Reference Include="NUnit.Framework">
+      <HintPath>$(SharpDevelopBinPath)\Tools\NUnit\NUnit.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -80,6 +83,7 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Project\Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Project\BaseClasses\Printing\LayoutHelper.cs" />
     <Compile Include="Project\BaseClasses\TypeHelpers.cs" />
     <Compile Include="Project\BaseClasses\CurrentItem.cs" />
     <Compile Include="Project\BaseClasses\GroupColumn.cs" />
