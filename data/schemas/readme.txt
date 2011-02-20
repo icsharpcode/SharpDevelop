@@ -27,6 +27,12 @@ NAnt 0.85 schema.
 http://nant.sourceforge.net/release/0.85/nant.xsd
 GNU General Public License.
 
+nuspec.xsd
+----------
+
+NuGet 1.1 schema
+Apache license 2.0 (http://nuget.codeplex.com/license)
+
 WiX schemas
 -----------
 

@@ -667,6 +667,9 @@
 								<Component Guid="CA5C2E97-D332-4FA3-8782-50A3FC09FAC7" Id="WixGamingSchema" DiskId="1">
 									<File Source="..\..\data\schemas\gaming.xsd" Name="gaming.xsd" Id="schemas.wix.gaming.xsd" KeyPath="yes" />
 								</Component>
+								<Component Id="NuGetNuspecSchema" Guid="D45BFB38-1F09-48C2-B5E1-F1B1F073E4D1" DiskId="1">
+									<File Id="nuspec.xsd" Name="nuspec.xsd" Source="..\..\data\schemas\nuspec.xsd" KeyPath="yes" />
+								</Component>
 							</Directory>
 							<Directory Id="TemplatesFolder" Name="templates">
 								<Directory Id="FileTemplatesFolder" Name="file">

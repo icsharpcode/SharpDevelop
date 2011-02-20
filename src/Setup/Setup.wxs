@@ -508,6 +508,7 @@
 				<ComponentRef Id="ITextSharpDll"/>
 			
 				<ComponentRef Id="NuGetCoreDll"/>
+				<ComponentRef Id="NuGetNuspecSchema"/>
 				<ComponentRef Id="NuGetLicenseTxt"/>
 				<ComponentRef Id="PackageManagementAddin"/>
 				<ComponentRef Id="PackageManagementDll"/>
