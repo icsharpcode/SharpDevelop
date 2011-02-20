@@ -101,17 +101,15 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 		
 		private void DrawPage (ExporterCollection items)
 		{
-			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) {
-				if (baseExportColumn != null) {
-
-					IExportContainer container = baseExportColumn as ExportContainer;
-					if (container == null) {
-						baseExportColumn.DrawItem(this.pdfWriter,this.pdfUnitConverter);
-					} else {
-						container.DrawItem(this.pdfWriter,this.pdfUnitConverter);
-						this.DrawPage(container.Items);
-					}
-				}
+			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items)
+			{
+				baseExportColumn.DrawItem(this.pdfWriter,this.pdfUnitConverter);
+//				IExportContainer container = baseExportColumn as ExportContainer;
+//				if (container == null) {
+//					baseExportColumn.DrawItem(this.pdfWriter,this.pdfUnitConverter);
+//				} else {
+//					container.DrawItem(this.pdfWriter,this.pdfUnitConverter);
+//				}
 			}
 		}
 		
@@ -157,7 +155,8 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 	}
 	
 	
-	public class PdfUnitConverter {
+	public class PdfUnitConverter
+	{
 		Rectangle pageSize;
 		float lowerLeftX;
 		float lowerleftY;

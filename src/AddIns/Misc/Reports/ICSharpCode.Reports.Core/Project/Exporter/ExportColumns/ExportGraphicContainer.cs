@@ -15,7 +15,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 {
 	public class ExportGraphicContainer :ExportContainer
 	{
-		//ExporterCollection items;
 		
 		public ExportGraphicContainer (IBaseStyleDecorator itemStyle,bool isContainer):base(itemStyle as BaseStyleDecorator)
 		{
@@ -29,7 +28,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (lineDecorator != null) {
 				GraphicsLineDrawer (graphics);
 			}
-			else  {
+			else
+			{
 				IGraphicStyleDecorator style = base.StyleDecorator as GraphicStyleDecorator;
 				if (style != null) {
 					base.FillShape(graphics,style.Shape);
@@ -43,6 +43,24 @@ namespace ICSharpCode.Reports.Core.Exporter
 					                      baseLine,
 					                      style.DisplayRectangle);
 				}
+			}
+		}
+		
+		
+		public override void DrawItem(PdfWriter pdfWriter, ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
+		{
+			base.PdfWriter = pdfWriter;
+			base.PdfUnitConverter = converter;
+			
+			IGraphicStyleDecorator style = base.StyleDecorator as GraphicStyleDecorator;
+		
+			style.Shape.DrawShape(pdfWriter.DirectContent,
+			                      new BaseLine (style.ForeColor,style.DashStyle,style.Thickness),
+			                      style,
+			                      ConvertToPdfRectangle());
+			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in this.Items)
+			{
+				baseExportColumn.DrawItem(pdfWriter,converter);
 			}
 		}
 		

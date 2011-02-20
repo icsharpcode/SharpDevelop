@@ -39,30 +39,12 @@ namespace ICSharpCode.Reports.Core.Exporter {
 				throw new ArgumentNullException("converter");
 			}
 			base.DrawItem(pdfWriter,converter);
-			
-			iTextSharp.text.Font font = null;
-			
-			if (this.StyleDecorator.Font.Unit == GraphicsUnit.Point) {
-				
-				font = FontFactory.GetFont(this.StyleDecorator.Font.FontFamily.Name,
-				                           BaseFont.IDENTITY_H,
-				                           this.StyleDecorator.Font.Size,
-				                           (int)this.StyleDecorator.Font.Style,
-				                           this.StyleDecorator.PdfForeColor);
-				
-			} else {
-				
-				font = FontFactory.GetFont(this.StyleDecorator.Font.FontFamily.Name,
-				                           BaseFont.IDENTITY_H,
-				                           UnitConverter.FromPixel(this.StyleDecorator.Font.Size).Point,
-				                           (int)this.StyleDecorator.Font.Style,
-				                           this.StyleDecorator.PdfForeColor);
-			}
 
 			base.Decorate();
-			
+	
 			PdfContentByte contentByte = base.PdfWriter.DirectContent;
-		
+			
+			iTextSharp.text.Font font = CreateFontFromFactory(this.StyleDecorator);
 			CalculatePdfFormat pdfFormat = new CalculatePdfFormat(this.StyleDecorator,font);
 			
 			ColumnText columnText = new ColumnText(contentByte);
@@ -82,6 +64,30 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			
 			columnText.Go();
 		}
+		
+	
+		private static iTextSharp.text.Font CreateFontFromFactory(TextStyleDecorator styleDecorator)
+		{
+			iTextSharp.text.Font font = null;
+			if (styleDecorator.Font.Unit == GraphicsUnit.Point) {
+				
+				font = FontFactory.GetFont(styleDecorator.Font.FontFamily.Name,
+				                           BaseFont.IDENTITY_H,
+				                           styleDecorator.Font.Size,
+				                           (int)styleDecorator.Font.Style,
+				                           styleDecorator.PdfForeColor);
+				
+			} else {
+				
+				font = FontFactory.GetFont(styleDecorator.Font.FontFamily.Name,
+				                           BaseFont.IDENTITY_H,
+				                           UnitConverter.FromPixel(styleDecorator.Font.Size).Point,
+				                           (int)styleDecorator.Font.Style,
+				                           styleDecorator.PdfForeColor);
+			}
+			return font;
+		}
+
 		
 		
 		public override void DrawItem(Graphics graphics)

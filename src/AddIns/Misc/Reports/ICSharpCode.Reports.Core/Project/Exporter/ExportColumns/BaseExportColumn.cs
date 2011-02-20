@@ -15,11 +15,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public class BaseExportColumn
 	{
 		
-//		private IBaseStyleDecorator styleDecorator;
-	//	private bool isContainer;
-	//	private ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter;
-//		private PdfWriter pdfWriter;
-		
 		#region Constructors
 		
 		public BaseExportColumn()
@@ -36,7 +31,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		#endregion
-		
 		
 		#region draw item
 		
@@ -163,9 +157,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		public bool IsContainer {get; protected set;}
 			
-		public ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter PdfUnitConverter {get;private set;}
+		public ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter PdfUnitConverter {get;protected set;}
 		
-		public PdfWriter PdfWriter {get;private set;}
+		public PdfWriter PdfWriter {get;protected set;}
 		
 	}
 }

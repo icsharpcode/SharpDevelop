@@ -37,12 +37,22 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 			base.DrawItem(graphics);
 			base.Decorate(graphics);
+			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) 
+			{
+				baseExportColumn.DrawItem(graphics);
+			}
 		}
 
+		
+		
 		public override void DrawItem(PdfWriter pdfWriter, ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
 		{
 			base.DrawItem(pdfWriter, converter);
 			base.Decorate();
+			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in this.Items)
+			{
+				baseExportColumn.DrawItem(pdfWriter,converter);
+			}
 		}
 
 		#endregion
