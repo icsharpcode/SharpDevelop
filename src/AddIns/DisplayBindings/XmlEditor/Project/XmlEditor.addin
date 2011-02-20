@@ -24,19 +24,25 @@
 	<Path name="/AddIns/DefaultTextEditor/CodeCompletion">
 		<CodeCompletionBinding
 			id="Xml"
-			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.nuspec"
+			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj"
 			class="ICSharpCode.XmlEditor.XmlCodeCompletionBinding"/>
 	</Path>
 	
 	<Path name="/AddIns/XmlEditor/DefaultSchemaFileAssociations">
 		<SchemaFileAssociation id=".addin" namespaceUri="http://www.icsharpcode.net/2005/addin"/>
+		<SchemaFileAssociation id=".booproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
 		<SchemaFileAssociation id=".build" namespaceUri="http://nant.sf.net/release/0.85/nant.xsd"/>
 		<SchemaFileAssociation id=".config" namespaceUri="urn:app-config" />
 		<SchemaFileAssociation id=".csproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
+		<SchemaFileAssociation id=".fsproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
 		<SchemaFileAssociation id=".manifest" namespaceUri="urn:schemas-microsoft-com:asm.v1"/>
 		<SchemaFileAssociation id=".nuspec" namespaceUri="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"/>
 		<SchemaFileAssociation id=".proj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
+		<SchemaFileAssociation id=".pyproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
+		<SchemaFileAssociation id=".rbproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
 		<SchemaFileAssociation id=".vbproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
+		<SchemaFileAssociation id=".vcxproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
+		<SchemaFileAssociation id=".wixproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
 		<SchemaFileAssociation id=".wxi" namespaceUri="http://schemas.microsoft.com/wix/2003/01/wi"/>
 		<SchemaFileAssociation id=".wxl" namespaceUri="http://schemas.microsoft.com/wix/2006/localization"/>
 		<SchemaFileAssociation id=".wxs" namespaceUri="http://schemas.microsoft.com/wix/2003/01/wi"/>
@@ -49,7 +55,7 @@
 		<LanguageBinding
 			id="Xml"
 			class="ICSharpCode.XmlEditor.XmlLanguageBinding"
-			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.nuspec" />
+			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/DisplayBindings">
@@ -62,7 +68,7 @@
 	<!-- Extra project browser icons -->
 	<Path name="/Workspace/Icons">
 		<Icon id="ExtraXmlFileIcon"
-			extensions=".manifest;.config;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.xaml;.nuspec"
+			extensions=".manifest;.config;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.xaml;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj"
 			resource="FileIcons.XmlIcon" />
 	</Path>
 	
