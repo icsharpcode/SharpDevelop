@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
@@ -60,6 +61,7 @@ namespace PackageManagement.Tests
 		void CreateTestableProjectManager()
 		{
 			testableProjectManager = new TestableProjectManager();
+			packageManager.ProjectManager = testableProjectManager;
 		}
 		
 		FakePackage CreateFakePackage()
@@ -70,6 +72,88 @@ namespace PackageManagement.Tests
 			return package;
 		}
 		
+		FakePackage InstallPackage()
+		{
+			FakePackage package = CreateFakePackage();
+			packageManager.InstallPackage(package);
+			return package;
+		}
+		
+		FakePackage InstallPackageWithNoPackageOperations()
+		{
+			FakePackage package = CreateFakePackage();
+			var operations = new List<PackageOperation>();
+			packageManager.InstallPackage(package, operations);
+			return package;
+		}
+		
+		FakePackage InstallPackageWithOnePackageOperation(PackageOperation operation)
+		{
+			var operations = new PackageOperation[] {
+				operation
+			};
+			FakePackage package = CreateFakePackage();
+			packageManager.InstallPackage(package, operations);
+			return package;
+		}
+		
+		FakePackage InstallPackageAndIgnoreDependencies()
+		{
+			FakePackage package = CreateFakePackage();
+			packageManager.InstallPackage(package, true);
+			return package;
+		}
+		
+		FakePackage InstallPackageAndDoNotIgnoreDependencies()
+		{
+			FakePackage package = CreateFakePackage();
+			packageManager.InstallPackage(package, false);
+			return package;
+		}
+		
+		FakePackage UninstallPackage()
+		{	
+			FakePackage package = CreateFakePackage();
+			testableProjectManager.FakeLocalRepository.FakePackages.Add(package);
+			
+			packageManager.UninstallPackage(package);
+			return package;
+		}
+
+		FakePackage UninstallPackageAndForceRemove()
+		{
+			FakePackage package = CreateFakePackage();			
+			testableProjectManager.FakeLocalRepository.FakePackages.Add(package);
+			
+			bool removeDependencies = false;
+			bool forceRemove = true;
+			packageManager.UninstallPackage(package, forceRemove, removeDependencies);
+			
+			return package;
+		}
+		
+		FakePackage UninstallPackageAndRemoveDependencies()
+		{
+			FakePackage package = CreateFakePackage();
+			testableProjectManager.FakeLocalRepository.FakePackages.Add(package);
+			
+			bool removeDependencies = true;
+			bool forceRemove = false;
+			packageManager.UninstallPackage(package, forceRemove, removeDependencies);
+			
+			return package;
+		}
+		
+		PackageOperation CreateOneInstallPackageOperation()
+		{
+			var package = CreateFakePackage();
+			package.Id = "PackageToInstall";
+			
+			return new PackageOperation(package, PackageAction.Install);
+		}
+		
+		
+
 		[Test]
 		public void ProjectManager_InstanceCreated_SourceRepositoryIsSharedRepositoryPassedToPackageManager()
 		{
@@ -113,28 +197,51 @@ namespace PackageManagement.Tests
 		public void InstallPackage_PackageInstancePassed_AddsReferenceToProject()
 		{
 			CreatePackageManager();
-			CreateTestableProjectManager();
-			
-			packageManager.ProjectManager = testableProjectManager;
-			FakePackage package = CreateFakePackage();
-			packageManager.InstallPackage(package);
+			var package = InstallPackage();
 			
 			Assert.AreEqual(package, testableProjectManager.PackagePassedToAddPackageReference);
+		}
+		
+		[Test]
+		public void InstallPackage_PackageInstancePassed_DependenciesNotIgnoredWhenAddingReferenceToProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			InstallPackage();
+			
 			Assert.IsFalse(testableProjectManager.IgnoreDependenciesPassedToAddPackageReference);
 		}
 		
 		[Test]
-		public void InstallPackage_PackageDependenciesNotIgnored_IgnoreDependenciesPassedToProjectManager()
+		public void InstallPackage_PackageInstanceAndPackageOperationsPassed_AddsReferenceToProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			FakePackage package = InstallPackageWithNoPackageOperations();
+				
+			Assert.AreEqual(package, testableProjectManager.PackagePassedToAddPackageReference);
+		}
+		
+		[Test]
+		public void InstallPackage_PackageInstanceAndPackageOperationsPassed_DoNotIgnoreDependenciesWhenAddingReferenceToProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			InstallPackageWithNoPackageOperations();
+				
+			Assert.IsFalse(testableProjectManager.IgnoreDependenciesPassedToAddPackageReference);
+		}
+		
+		[Test]
+		public void InstallPackage_PackageInstanceAndOneInstallPackageOperationPassed_PackageDefinedInOperationIsInstalledInLocalRepository()
 		{
 			CreatePackageManager();
 			CreateTestableProjectManager();
 			
-			packageManager.ProjectManager = testableProjectManager;
-			FakePackage package = CreateFakePackage();
-			packageManager.InstallPackage(package, true);
-			
-			Assert.IsTrue(testableProjectManager.IgnoreDependenciesPassedToAddPackageReference);
-			Assert.AreEqual(package, testableProjectManager.PackagePassedToAddPackageReference);
+			PackageOperation operation = CreateOneInstallPackageOperation();
+			InstallPackageWithOnePackageOperation(operation);
+				
+			Assert.AreEqual(operation.Package, fakeSolutionSharedRepository.FirstPackageAdded);
 		}
 		
 		[Test]
@@ -142,12 +249,38 @@ namespace PackageManagement.Tests
 		{
 			CreatePackageManager();
 			CreateTestableProjectManager();
+			InstallPackageAndIgnoreDependencies();
 			
-			packageManager.ProjectManager = testableProjectManager;
-			FakePackage package = CreateFakePackage();
-			packageManager.InstallPackage(package, false);
+			Assert.IsTrue(testableProjectManager.IgnoreDependenciesPassedToAddPackageReference);
+		}
+		
+		[Test]
+		public void InstallPackage_PackageDependenciesIgnored_AddsReferenceToPackage()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			var package = InstallPackageAndIgnoreDependencies();
+			
+			Assert.AreEqual(package, testableProjectManager.PackagePassedToAddPackageReference);
+		}
+		
+		[Test]
+		public void InstallPackage_PackageDependenciesNotIgnored_IgnoreDependenciesPassedToProjectManager()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			InstallPackageAndDoNotIgnoreDependencies();
 			
 			Assert.IsFalse(testableProjectManager.IgnoreDependenciesPassedToAddPackageReference);
+		}
+		
+		[Test]
+		public void InstallPackage_PackageDependenciesNotIgnored_AddsReferenceToPackage()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			var package = InstallPackageAndDoNotIgnoreDependencies();
+			
 			Assert.AreEqual(package, testableProjectManager.PackagePassedToAddPackageReference);
 		}
 		
@@ -156,36 +289,50 @@ namespace PackageManagement.Tests
 		{
 			CreatePackageManager();
 			CreateTestableProjectManager();
-			
-			packageManager.ProjectManager = testableProjectManager;
-			FakePackage package = CreateFakePackage();
-			package.Id = "Test";
-			
-			testableProjectManager.FakeLocalRepository.FakePackages.Add(package);
-			
-			packageManager.UninstallPackage(package);
+			var package = UninstallPackage();
 			
 			Assert.AreEqual(package.Id, testableProjectManager.PackagePassedToRemovePackageReference.Id);
+		}
+		
+		[Test]
+		public void UninstallPackage_PackageInProjectLocalRepository_DoesNotRemoveReferenceForcefullyFromProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			UninstallPackage();
+			
 			Assert.IsFalse(testableProjectManager.ForcePassedToRemovePackageReference);
+		}
+		
+		[Test]
+		public void UninstallPackage_PackageInProjectLocalRepository_DependenciesNotRemovedWhenPackageReferenceRemovedFromProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			UninstallPackage();
+			
 			Assert.IsFalse(testableProjectManager.RemoveDependenciesPassedToRemovePackageReference);
 		}
 		
 		[Test]
-		public void UninstallPackage_PassingForceRemoveAndRemoveDependencyFlags_FlagsPassedToProjectManager()
+		public void UninstallPackage_PassingForceRemove_ReferenceForcefullyRemovedFromProject()
 		{
 			CreatePackageManager();
 			CreateTestableProjectManager();
 			
-			packageManager.ProjectManager = testableProjectManager;
-			FakePackage package = CreateFakePackage();
-			package.Id = "Test";
-			
-			testableProjectManager.FakeLocalRepository.FakePackages.Add(package);
-			bool removeDependencies = true;
-			bool forceRemove = true;
-			packageManager.UninstallPackage(package, forceRemove, removeDependencies);
+			UninstallPackageAndForceRemove();
 			
 			Assert.IsTrue(testableProjectManager.ForcePassedToRemovePackageReference);
+		}
+		
+		[Test]
+		public void UninstallPackage_PassingRemoveDependencies_DependenciesRemovedWhenPackageReferenceRemovedFromProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			
+			UninstallPackageAndRemoveDependencies();
+			
 			Assert.IsTrue(testableProjectManager.RemoveDependenciesPassedToRemovePackageReference);
 		}
 		
@@ -195,7 +342,6 @@ namespace PackageManagement.Tests
 			CreatePackageManager();
 			CreateTestableProjectManager();
 			
-			packageManager.ProjectManager = testableProjectManager;
 			FakePackage package = CreateFakePackage();
 			package.Id = "Test";
 			

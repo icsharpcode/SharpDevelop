@@ -83,10 +83,13 @@ namespace ICSharpCode.PackageManagement
 			return packageManager.ProjectManager;
 		}
 		
-		public void InstallPackage(IPackageRepository packageRepository, IPackage package)
+		public void InstallPackage(
+			IPackageRepository packageRepository,
+			IPackage package,
+			IEnumerable<PackageOperation> operations)
 		{
 			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageRepository);
-			packageManager.InstallPackage(package);
+			packageManager.InstallPackage(package, operations);
 			projectService.RefreshProjectBrowser();
 			OnPackageInstalled();
 		}

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -26,6 +27,7 @@ namespace PackageManagement.Tests.Helpers
 		public struct InstallPackageParameters {
 			public IPackage PackagePassedToInstallPackage;
 			public bool IgnoreDependenciesPassedToInstallPackage;
+			public IEnumerable<PackageOperation> PackageOperationsPassedToInstallPackage;
 			
 			public override string ToString()
 			{
@@ -100,6 +102,17 @@ namespace PackageManagement.Tests.Helpers
 		public void UpdatePackage(string packageId, Version version, bool updateDependencies)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations)
+		{
+			PackagePassedToInstallPackage = package;
+			
+			ParametersPassedToInstallPackage = new InstallPackageParameters();
+			ParametersPassedToInstallPackage.PackagePassedToInstallPackage = package;
+			ParametersPassedToInstallPackage.PackageOperationsPassedToInstallPackage = operations;
+			
+			IsRefreshProjectBrowserCalledWhenInstallPackageCalled = FakeProjectService.IsRefreshProjectBrowserCalled;
 		}
 	}
 }

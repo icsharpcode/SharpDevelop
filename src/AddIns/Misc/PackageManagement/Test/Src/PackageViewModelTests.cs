@@ -13,7 +13,7 @@ namespace PackageManagement.Tests
 	[TestFixture]
 	public class PackageViewModelTests
 	{
-		PackageViewModel viewModel;
+		TestablePackageViewModel viewModel;
 		FakePackage package;
 		FakePackageManagementService packageManagementService;
 		FakePackageRepository sourcePackageRepository;
@@ -21,13 +21,11 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel()
 		{
-			package = new FakePackage();
-			sourcePackageRepository = new FakePackageRepository();
-			packageManagementService = new FakePackageManagementService();
-			licenseAcceptanceService = new FakeLicenseAcceptanceService();
-			PackageViewModelFactory factory = new PackageViewModelFactory(packageManagementService, licenseAcceptanceService);
-			packageManagementService.ActivePackageRepository = sourcePackageRepository;
-			viewModel = factory.CreatePackageViewModel(package);
+			viewModel = new TestablePackageViewModel();
+			package = viewModel.FakePackage;
+			packageManagementService = viewModel.FakePackageManagementService;
+			sourcePackageRepository = packageManagementService.FakeActivePackageRepository;
+			licenseAcceptanceService = viewModel.FakeLicenseAcceptanceService;
 		}
 		
 		FakePackage AddPackageDependencyThatDoesNotRequireLicenseAcceptance(string packageId)
@@ -57,6 +55,19 @@ namespace PackageManagement.Tests
 			return packageDependedUpon;
 		}
 		
+		FakePackage AddPackageUninstallOperation()
+		{
+			var package = new FakePackage();
+			package.Id = "PackageToUninstall";
+			
+			var operation = new PackageOperation(package, PackageAction.Uninstall);
+			var resolver = new FakePackageOperationResolver();
+			resolver.PackageOperations.Add(operation);
+			viewModel.FakePackageOperationResolver = resolver;
+			
+			return package;
+		}
+
 		[Test]
 		public void AddPackageCommand_CommandExecuted_InstallsPackage()
 		{
@@ -64,7 +75,28 @@ namespace PackageManagement.Tests
 			viewModel.AddPackageCommand.Execute(null);
 						
 			Assert.AreEqual(package, packageManagementService.PackagePassedToInstallPackage);
+		}
+		
+		[Test]
+		public void AddPackage_PackageAddedSuccessfully_PackageAddedFromSourcePackageRepository()
+		{
+			CreateViewModel();
+			viewModel.AddPackage();
+						
 			Assert.AreEqual(sourcePackageRepository, packageManagementService.RepositoryPassedToInstallPackage);
+		}
+		
+		[Test]
+		public void AddPackage_PackageAddedSuccessfully_PackageOperationsUsedWhenInstallingPackage()
+		{
+			CreateViewModel();
+			viewModel.AddPackage();
+		
+			PackageOperation[] expectedOperations = new PackageOperation[] {
+				new PackageOperation(package, PackageAction.Install)
+			};
+			
+			CollectionAssert.AreEqual(expectedOperations, packageManagementService.PackageOperationsPassedToInstallPackage);
 		}
 		
 		[Test]
@@ -391,6 +423,18 @@ namespace PackageManagement.Tests
 			packageManagementService.AddPackageToProjectLocalRepository(packageDependedUpon);
 			packageManagementService.FakeActiveProjectManager.IsInstalledReturnValue = true;
 			
+			viewModel.AddPackage();
+			
+			Assert.IsFalse(licenseAcceptanceService.IsAcceptLicensesCalled);
+		}
+		
+		[Test]
+		public void AddPackage_OnePackageOperationIsToUninstallPackageWhichRequiresLicenseAcceptance_UserIsNotAskedToAcceptLicenseAgreementForPackageToBeUninstalled()
+		{
+			CreateViewModel();
+			package.RequireLicenseAcceptance = false;
+			FakePackage packageToUninstall = AddPackageUninstallOperation();
+			packageToUninstall.RequireLicenseAcceptance = true;
 			viewModel.AddPackage();
 			
 			Assert.IsFalse(licenseAcceptanceService.IsAcceptLicensesCalled);

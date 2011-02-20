@@ -14,6 +14,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public event EventHandler PackageInstalled;
 		
 		PackageManagementOptions options = new PackageManagementOptions(new Properties());
+		public List<PackageOperation> PackageOperationsPassedToInstallPackage = new List<PackageOperation>();
 		
 		protected virtual void OnPackageInstalled()
 		{
@@ -63,12 +64,13 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
-		public void InstallPackage(IPackageRepository repository, IPackage package)
+		public void InstallPackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations)
 		{
 			IsInstallPackageCalled = true;
 			RepositoryPassedToInstallPackage = repository;
 			PackagePassedToInstallPackage = package;
-		}		
+			PackageOperationsPassedToInstallPackage.AddRange(operations);
+		}
 		
 		public void UninstallPackage(IPackageRepository repository, IPackage package)
 		{

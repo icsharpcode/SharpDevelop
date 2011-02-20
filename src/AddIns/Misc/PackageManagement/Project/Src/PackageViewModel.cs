@@ -17,6 +17,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementService packageManagementService;
 		ILicenseAcceptanceService licenseAcceptanceService;
 		IPackage package;
+		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
 		IPackageRepository sourcePackageRepository;
 		IPackageRepository localPackageRepository;
 		bool? hasDependencies;
@@ -132,9 +133,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool HasDownloadCount {
-			get {
-				return package.DownloadCount >= 0;
-			}
+			get { return package.DownloadCount >= 0; }
 		}
 		
 		public string Id {
@@ -167,6 +166,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public void AddPackage()
 		{
+			GetPackageOperations();
 			if (CanInstallPackage()) {
 				InstallPackage();
 			}
@@ -194,32 +194,37 @@ namespace ICSharpCode.PackageManagement
 		
 		IList<IPackage> GetPackagesToBeInstalled()
 		{
-			var walker = new InstallWalker(LocalPackageRepository,
+			List<IPackage> packages = new List<IPackage>();
+			foreach (PackageOperation operation in packageOperations) {
+				if (operation.Action == PackageAction.Install) {
+					packages.Add(operation.Package);
+				}
+			}
+			return packages;
+		}
+		
+		void GetPackageOperations()
+		{
+			IPackageOperationResolver resolver = CreatePackageOperationResolver();
+			packageOperations = resolver.ResolveOperations(package);
+		}
+		
+		protected virtual IPackageOperationResolver CreatePackageOperationResolver()
+		{
+			return new InstallWalker(LocalPackageRepository,
                 sourcePackageRepository,
                 NullLogger.Instance,
                 ignoreDependencies: false);
-			
-			IEnumerable<PackageOperation> packageOperations = walker.ResolveOperations(package);
-			return GetPackages(packageOperations);
 		}
-		
+
 		bool PackageRequiresLicenseAcceptance(IPackage package)
 		{
 			return package.RequireLicenseAcceptance && !IsPackageInstalled(package);
 		}
 		
-		IList<IPackage> GetPackages(IEnumerable<PackageOperation> packageOperations)
-		{
-			List<IPackage> packages = new List<IPackage>();
-			foreach (PackageOperation operation in packageOperations) {
-				packages.Add(operation.Package);
-			}
-			return packages;
-		}
-		
 		void InstallPackage()
 		{
-			packageManagementService.InstallPackage(sourcePackageRepository, package);
+			packageManagementService.InstallPackage(sourcePackageRepository, package, packageOperations);
 			OnPropertyChanged(model => model.IsAdded);
 		}
 		

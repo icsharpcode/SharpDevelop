@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -16,6 +18,7 @@ namespace PackageManagement.Tests.Helpers
 		};
 		
 		public FakePackageRepository PackageRepository = new FakePackageRepository();
+		public List<PackageOperation> PackageOperations = new List<PackageOperation>();
 		
 		public InstallPackageHelper(PackageManagementService packageManagementService)
 		{
@@ -24,7 +27,15 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void InstallTestPackage()
 		{
-			packageManagementService.InstallPackage(PackageRepository, TestPackage);
+			packageManagementService.InstallPackage(PackageRepository, TestPackage, PackageOperations);
+		}
+		
+		public FakePackage AddPackageInstallOperation()
+		{
+			var package = new FakePackage("Package to install");
+			var operation = new PackageOperation(package, PackageAction.Install);
+			PackageOperations.Add(operation);
+			return package;
 		}
 	}
 }

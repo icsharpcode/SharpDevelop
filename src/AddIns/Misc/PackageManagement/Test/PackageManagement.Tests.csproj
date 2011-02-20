@@ -73,6 +73,7 @@
     <Compile Include="Src\Helpers\FakeLicenseAcceptanceService.cs" />
     <Compile Include="Src\Helpers\FakePackageManager.cs" />
     <Compile Include="Src\Helpers\FakePackageManagerFactory.cs" />
+    <Compile Include="Src\Helpers\FakePackageOperationResolver.cs" />
     <Compile Include="Src\Helpers\FakePackageRepositoryFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementProjectService.cs" />
     <Compile Include="Src\Helpers\FakePackagePathResolver.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Src\Helpers\PageCollectionAssert.cs" />
     <Compile Include="Src\Helpers\ReferenceProjectItemAssert.cs" />
     <Compile Include="Src\Helpers\TestablePackagesViewModel.cs" />
+    <Compile Include="Src\Helpers\TestablePackageViewModel.cs" />
     <Compile Include="Src\Helpers\TestableProject.cs" />
     <Compile Include="Src\Helpers\TestableProjectManager.cs" />
     <Compile Include="Src\Helpers\FakeProjectSystem.cs" />

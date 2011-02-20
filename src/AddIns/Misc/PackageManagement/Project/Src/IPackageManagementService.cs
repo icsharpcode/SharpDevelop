@@ -16,7 +16,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository ActivePackageRepository { get; }
 		IProjectManager ActiveProjectManager { get; }
 		
-		void InstallPackage(IPackageRepository repository, IPackage package);
+		void InstallPackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations);
 		void UninstallPackage(IPackageRepository repository, IPackage package);
 
 		PackageManagementOptions Options { get; }

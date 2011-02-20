@@ -23,6 +23,7 @@ namespace PackageManagement.Tests
 		FakePackageManagerFactory fakePackageManagerFactory;
 		FakePackageManagementProjectService fakeProjectService;
 		TestableProject testProject;
+		InstallPackageHelper installPackageHelper;
 		
 		void CreatePackageSources()
 		{
@@ -46,20 +47,22 @@ namespace PackageManagement.Tests
 				new PackageManagementService(options,
 					fakePackageRepositoryFactory,
 					fakePackageManagerFactory,
-					fakeProjectService);		
+					fakeProjectService);
+
+			installPackageHelper = new InstallPackageHelper(packageManagementService);
 		}
 		
 		[Test]
 		public void InstallPackage_PackageObjectPassed_CallsPackageManagerInstallPackage()
 		{
 			CreatePackageManagementService();
-			InstallPackageHelper installPackageHelper = new InstallPackageHelper(packageManagementService);
 			installPackageHelper.InstallTestPackage();
 			
 			bool expectedIgnoreDependencies = false;
 			var expectedInstallPackageParameters = new FakePackageManager.InstallPackageParameters() {
 				IgnoreDependenciesPassedToInstallPackage = expectedIgnoreDependencies,
-				PackagePassedToInstallPackage = installPackageHelper.TestPackage
+				PackagePassedToInstallPackage = installPackageHelper.TestPackage,
+				PackageOperationsPassedToInstallPackage = installPackageHelper.PackageOperations
 			};
 			
 			var actualInstallPackageParameters = fakePackageManagerFactory.FakePackageManager.ParametersPassedToInstallPackage;
@@ -71,7 +74,6 @@ namespace PackageManagement.Tests
 		public void InstallPackage_PackageAndPackageRepositoryPassed_CreatesPackageManagerWithPackageRepository()
 		{
 			CreatePackageManagementService();
-			InstallPackageHelper installPackageHelper = new InstallPackageHelper(packageManagementService);
 			installPackageHelper.InstallTestPackage();
 			
 			IPackageRepository expectedRepository = installPackageHelper.PackageRepository;
@@ -87,7 +89,6 @@ namespace PackageManagement.Tests
 			IProject expectedProject = ProjectHelper.CreateTestProject();
 			fakeProjectService.CurrentProject = expectedProject;
 			
-			InstallPackageHelper installPackageHelper = new InstallPackageHelper(packageManagementService);
 			installPackageHelper.InstallTestPackage();
 			
 			IProject actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
@@ -99,7 +100,6 @@ namespace PackageManagement.Tests
 		public void InstallPackage_PackageAndPackageRepositoryPassed_RefreshesProjectBrowserWindow()
 		{
 			CreatePackageManagementService();
-			InstallPackageHelper installPackageHelper = new InstallPackageHelper(packageManagementService);
 			installPackageHelper.InstallTestPackage();
 			
 			Assert.IsTrue(fakeProjectService.IsRefreshProjectBrowserCalled);
@@ -111,7 +111,6 @@ namespace PackageManagement.Tests
 			CreatePackageManagementService();
 			fakePackageManagerFactory.FakePackageManager.FakeProjectService = fakeProjectService;
 			
-			InstallPackageHelper installPackageHelper = new InstallPackageHelper(packageManagementService);
 			installPackageHelper.InstallTestPackage();
 			
 			bool result = fakePackageManagerFactory.FakePackageManager.IsRefreshProjectBrowserCalledWhenInstallPackageCalled;
@@ -209,7 +208,6 @@ namespace PackageManagement.Tests
 			packageManagementService.PackageInstalled += (sender, e) => {
 				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToInstallPackage;
 			};
-			InstallPackageHelper installPackageHelper = new InstallPackageHelper(packageManagementService);
 			installPackageHelper.InstallTestPackage();
 			
 			Assert.AreEqual(installPackageHelper.TestPackage, package);
@@ -381,6 +379,23 @@ namespace PackageManagement.Tests
 			};
 			
 			CollectionAssert.AreEqual(expectedPackages, packages);
+		}
+		
+		[Test]
+		public void InstallPackage_OnePackageOperation_PackageOperationPassedToPackageManagerWhenInstallingPackage()
+		{
+			CreatePackageManagementService();
+			
+			installPackageHelper.AddPackageInstallOperation();
+			installPackageHelper.InstallTestPackage();
+			
+			var actualOperations = 
+				fakePackageManagerFactory
+					.FakePackageManager
+					.ParametersPassedToInstallPackage
+					.PackageOperationsPassedToInstallPackage;
+			
+			CollectionAssert.AreEqual(installPackageHelper.PackageOperations, actualOperations);
 		}
 	}
 }
