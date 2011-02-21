@@ -138,7 +138,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void ConvertGroupFooter (ISimpleContainer container,ExporterCollection exporterCollection)
 		{
-			var footers = BaseConverter.FindGroupFooter(container);
+            var footers = container.Items.FindGroupFooter();
 			if (footers.Count > 0) {
 				
 				Size rowSize = footers[0].Size;
@@ -164,7 +164,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private static bool CheckPageBreakAfterGroupChange(ISimpleContainer container)
 		{
-			var groupedRows  = BaseConverter.FindGroupHeader(container);
+            var groupedRows = container.Items.FindGroupHeader();
+            //var groupedRows  = BaseConverter.FindGroupHeader(container);
 			if (groupedRows.Count > 0) {
 				var groupedRow = groupedRows[0];
 				return groupedRow.PageBreakOnGroupChange;
@@ -172,18 +173,19 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return false;
 		}
 		
-		
+		/*
 		protected static Collection<GroupHeader> FindGroupHeader (ISimpleContainer container)
 		{
 			return new Collection<GroupHeader>(container.Items.OfType<GroupHeader>().ToList());
 		}
+		*/
 		
-		
+        /*
 		protected static Collection<GroupFooter> FindGroupFooter (ISimpleContainer container)
 		{
 			return new Collection<GroupFooter>(container.Items.OfType<GroupFooter>().ToList());
 		}
-		
+		*/
 		
 		protected virtual Point ForcePageBreak(ExporterCollection exporterCollection, BaseSection section)
 		{

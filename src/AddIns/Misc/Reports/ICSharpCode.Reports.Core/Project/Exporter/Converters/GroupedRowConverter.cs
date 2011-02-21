@@ -63,8 +63,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 			DefaultLeftPosition = parent.Location.X;
 			Size groupSize = Size.Empty;
 			Size childSize = Size.Empty;
-			
-			if (section.Items.IsGrouped)
+
+            if (section.Items.FindGroupHeader().Count > 0)
 			{
 				groupSize = section.Items[0].Size;
 				childSize  = section.Items[1].Size;
@@ -76,7 +76,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
 				
 				// did we have GroupedItems at all
-				if (section.Items.IsGrouped)
+                if (section.Items.FindGroupHeader().Count > 0)
 				{
 					// GetType child navigator
 					IDataNavigator childNavigator = base.DataNavigator.GetChildNavigator;
@@ -171,7 +171,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			var retVal = Point.Empty;
 			var rowSize = Size.Empty;
 			ReportItemCollection groupCollection = null;
-			var groupedRows  = BaseConverter.FindGroupHeader(section);
+            var groupedRows = section.Items.FindGroupHeader();
 			if (groupedRows.Count == 0) {
 				groupCollection = section.Items.ExtractGroupedColumns();
 				base.DataNavigator.Fill(groupCollection);

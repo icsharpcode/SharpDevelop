@@ -147,15 +147,19 @@ namespace ICSharpCode.Reports.Core{
 		}
 	
 		#region Grouphandling
-		
-		public bool IsGrouped
-		{
-			get {
-				return (this[0] is GroupHeader) ;
-			}
-		}
-		
-		
+
+        public  Collection<GroupHeader> FindGroupHeader()
+        {
+            return new Collection<GroupHeader>(this.Items.OfType<GroupHeader>().ToList());
+        }
+
+
+        public  Collection<GroupFooter> FindGroupFooter()
+        {
+            return new Collection<GroupFooter>(this.Items.OfType<GroupFooter>().ToList());
+        }
+
+      
 		private Collection<BaseDataItem> CreateGroupedList ()
 		{
 			Collection<BaseDataItem> inheritedReportItems = null;
