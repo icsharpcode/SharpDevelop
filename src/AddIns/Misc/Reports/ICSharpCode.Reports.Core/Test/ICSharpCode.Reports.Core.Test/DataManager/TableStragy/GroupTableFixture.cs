@@ -163,9 +163,9 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 				if (dataNavigator.HasChildren) {
 					DataRow r = dataNavigator.Current as DataRow;
 					
-					
-					IDataNavigator child = dataNavigator.GetChildNavigator;
 					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString() ;
+					IDataNavigator child = dataNavigator.GetChildNavigator;
+					
 					Console.WriteLine(v2);
 					Assert.That (child,Is.Not.Null);
 					RecursiveCall(child);

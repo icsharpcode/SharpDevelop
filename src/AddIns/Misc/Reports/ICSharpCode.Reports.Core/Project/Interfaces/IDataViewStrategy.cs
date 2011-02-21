@@ -18,7 +18,9 @@ namespace ICSharpCode.Reports.Core{
 		
 		IndexList IndexList {get;}
 		//test
+        object myCurrent(int pos);
 		CurrentItemsCollection FillDataRow();
+        CurrentItemsCollection FillDataRow(int pos);
 		//
 		AvailableFieldsCollection AvailableFields {get;}
 	

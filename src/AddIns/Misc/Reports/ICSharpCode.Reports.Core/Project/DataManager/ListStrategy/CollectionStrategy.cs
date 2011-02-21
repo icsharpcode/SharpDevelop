@@ -166,7 +166,7 @@ namespace ICSharpCode.Reports.Core {
 			base.Group();
 			IndexList gl = new IndexList("group");
 			gl = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
-//			ShowIndexList(gl);
+			ShowIndexList(gl);
 			base.BuildGroup(gl);
 		}
 		
@@ -207,71 +207,12 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
-		/*
-		
+	
 		public override void Fill(IDataItem item)
 		{
 			if (item is BaseDataItem)
 			{
-				if (item.ColumnName.Contains(".")) {
-					string[] splittedNames = SplitNames(ref item);
-					
-					// PropDes for SubClass
-					
-					PropertyDescriptor classProperty = this.listProperties.Find(splittedNames[0], true);
-					if (classProperty == null)
-					{
-						WrongColumnName (item);
-					}
-					else
-					{
-						//all Props for SubClass
-						var propCollection = ExtendedTypeDescriptor.GetProperties(classProperty.PropertyType);
-						
-						var subProperty = propCollection.Find(splittedNames[1], true);
-						
-						var classValue = classProperty.GetValue(this.Current);
-						SetReturnValue(subProperty,classValue,item);
-					}
-				}
-				else
-				{
-					PropertyDescriptor p = this.listProperties.Find(item.ColumnName, true);
-					if (p != null) {
-						SetReturnValue(p,this.Current,item);
-					} else {
-						WrongColumnName (item);
-					}
-					
-				}
-				
-				return;
-			}
-			else
-			{
-				
-				//image processing from IList
-				BaseImageItem baseImageItem = item as BaseImageItem;
-				
-				if (baseImageItem != null) {
-					PropertyDescriptor p = this.listProperties.Find(baseImageItem.ColumnName, true);
-					if (p != null) {
-						baseImageItem.Image = p.GetValue(this.Current) as System.Drawing.Image;
-					}
-					return;
-				}
-			}
-		}
-
-		*/
-		
-		public override void Fill(IDataItem item)
-		{
-			if (item is BaseDataItem)
-			{
-				
 				var retVal = FollowPropertyPath(Current,item.ColumnName);
-				//var retVal1 = ResolveValue(Current,item.ColumnName);
 				if (retVal != null) {
 					item.DBValue = retVal.ToString();
 				} else {
@@ -320,27 +261,7 @@ namespace ICSharpCode.Reports.Core {
 			return value;
 		}
 		
-		/*
-		static object ResolveValue(object component, string path) 
-		{   
-			foreach(string segment in path.Split('.'))
-			{   
-				if (component == null) return null; 
-				if(component is IListSource)
-				{  
-					component = ((IListSource)component).GetList();
-				} 
-				if (component is IList)
-				{    
-					component = ((IList)component)[0];
-				} 
-				var r = ExtendedTypeDescriptor.GetProperties(component.GetType());
-				                                             
-				//component = GetValue(component, segment); 
-			}  
-			return component; 
-		}
-		*/
+		
 		#endregion
 			
 		static string  WrongColumnName(string propertyName)
@@ -348,35 +269,16 @@ namespace ICSharpCode.Reports.Core {
 			return String.Format(CultureInfo.InvariantCulture, "Error : <{0}> missing!", propertyName);
 		}
 			
-		/*
-		static void SetReturnValue(PropertyDescriptor p,object component,IDataItem item)
-		{
-			if (p != null)
-			{
-				var o = p.GetValue(component);
-				
-				if (o != null) {
-					item.DBValue = o.ToString();
-				} else {
-					item.DBValue = String.Empty;
-				}
-				
-			} else {
-				WrongColumnName(item);
-			}
-		}
-
 		
-		static string[] SplitNames(ref IDataItem item)
-		{
-			char[] delimiters = new char[] { '.' };
-			var splittedNames = item.ColumnName.Split(delimiters);
-			return splittedNames;
-		}
-		
-		*/
 		#region test
-		
+
+        public override object myCurrent(int pos)
+        {
+           // return this.IndexList[pos];
+            return this.IndexList[this.CurrentPosition];
+        }
+
+
 		public override CurrentItemsCollection FillDataRow()
 		{
 			CurrentItemsCollection ci = base.FillDataRow();
@@ -387,13 +289,47 @@ namespace ICSharpCode.Reports.Core {
 					c = new CurrentItem();
 					c.ColumnName = pd.Name;
 					c.DataType = pd.PropertyType;
-					c.Value = pd.GetValue(this.Current).ToString();
+                    var s = pd.GetValue(this.Current);
+                    if (s != null)
+                    {
+                        c.Value = s.ToString();
+                    }
+                    else
+                    {
+                        c.Value = String.Empty;
+                    }
 					ci.Add(c);
 				}
 			}
 			return ci;
 		}
-		
+
+        public override CurrentItemsCollection FillDataRow(int pos)
+        {
+            CurrentItemsCollection ci = new CurrentItemsCollection();
+               CurrentItem c = null;
+               foreach (PropertyDescriptor pd in this.listProperties)
+				{
+					c = new CurrentItem();
+					c.ColumnName = pd.Name;
+					c.DataType = pd.PropertyType;
+                    
+					var s = pd.GetValue(this.Current);
+                    if (s != null)
+                    {
+                        c.Value = s.ToString();
+                    }
+                    else
+                    {
+                        c.Value = String.Empty;
+                    }
+					ci.Add(c);
+				}
+            
+            return ci;
+        }
+
+
 		#endregion
 		
 		#region IDisposable

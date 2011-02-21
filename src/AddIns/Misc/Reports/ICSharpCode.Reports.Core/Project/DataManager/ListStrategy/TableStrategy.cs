@@ -189,7 +189,7 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		public object myCurrent (int pos)
+		public override object myCurrent (int pos)
 		{
 			return this.table.Rows[pos];
 		}

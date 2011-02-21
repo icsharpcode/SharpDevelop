@@ -12,7 +12,7 @@ namespace ICSharpCode.Reports.Core
 	public class ChildNavigator:IDataNavigator
 	{
 		private IndexList indexList;
-		private IDataViewStrategy store;
+		private IDataViewStrategy dataStore;
 		private System.Collections.Generic.List<BaseComparer>.Enumerator enumerator;
 			
 		public ChildNavigator(IDataViewStrategy dataStore,IndexList indexList)
@@ -20,7 +20,7 @@ namespace ICSharpCode.Reports.Core
 			if (dataStore == null) {
 				throw new ArgumentNullException("dataStore");
 			}
-			this.store = dataStore;
+			this.dataStore = dataStore;
 			this.indexList = indexList;
 			enumerator = this.indexList.GetEnumerator();
 			enumerator.MoveNext();
@@ -70,34 +70,34 @@ namespace ICSharpCode.Reports.Core
 		
 		public object Current {
 			get {
-				TableStrategy t = this.store as TableStrategy;
-//				return t.myCurrent(enumerator.Current.ListIndex);
-				return t.myCurrent(this.indexList[CurrentRow].ListIndex);
+                return dataStore.myCurrent(this.indexList[CurrentRow].ListIndex);
 			}
 		}
 		
 		
 		public AvailableFieldsCollection AvailableFields {
 			get {
-				return store.AvailableFields;
+				return dataStore.AvailableFields;
 			}
 		}
 		
 		
 		public void Fill(ReportItemCollection collection)
 		{
-			TableStrategy tableStrategy =  store as TableStrategy;
-			foreach (var item in collection) {
-				IDataItem dataItem = item as IDataItem;
-				if (dataItem != null) {
-					CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(this.indexList[CurrentRow].ListIndex);
-					CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == dataItem.ColumnName);
-					dataItem.DBValue = s.Value.ToString();
-				}
-				
-			}
+            foreach (var item in collection)
+            {
+                IDataItem dataItem = item as IDataItem;
+                if (dataItem != null)
+                {
+                    CurrentItemsCollection currentItemsCollection = dataStore.FillDataRow(this.indexList[CurrentRow].ListIndex);
+                    CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == dataItem.ColumnName);
+                    dataItem.DBValue = s.Value.ToString();
+                }
+
+            }
 		}
 		
+
 		public bool MoveNext()
 		{
 			this.indexList.CurrentPosition ++;
@@ -113,8 +113,7 @@ namespace ICSharpCode.Reports.Core
 		public CurrentItemsCollection GetDataRow
 		{
 			get {
-				var st= store as TableStrategy;
-				return st.FillDataRow(this.indexList[CurrentRow].ListIndex);
+				return dataStore.FillDataRow(this.indexList[CurrentRow].ListIndex);
 			}
 		}
 		
@@ -126,7 +125,7 @@ namespace ICSharpCode.Reports.Core
 				if ((i == null) || (i.Count == 0)) {
 					return null;
 				}
-				return new ChildNavigator(this.store,i);
+				return new ChildNavigator(this.dataStore,i);
 			}
 		}
 		

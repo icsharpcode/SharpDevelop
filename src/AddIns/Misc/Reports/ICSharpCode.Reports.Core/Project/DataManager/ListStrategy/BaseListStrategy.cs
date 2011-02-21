@@ -110,7 +110,7 @@ namespace ICSharpCode.Reports.Core {
 				}
 				compVal = v;
 			}
-//			ShowIndexList(IndexList);
+			ShowIndexList(IndexList);
 		}
 		
 		
@@ -130,7 +130,7 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		#region Debug Code
-		/*
+		
 		protected  static void ShowIndexList (IndexList list)
 		{
 			
@@ -151,7 +151,7 @@ namespace ICSharpCode.Reports.Core {
 				}
 			}
 		}
-		*/
+		
 		#endregion
 		
 		public  virtual void Reset()
@@ -180,7 +180,17 @@ namespace ICSharpCode.Reports.Core {
 		{
 			return new CurrentItemsCollection();
 		}
-		
+
+        public virtual object myCurrent(int pos)
+        {
+            return null;
+        }
+
+
+        public virtual CurrentItemsCollection FillDataRow(int pos)
+        {
+            return FillDataRow();
+        }
 		#endregion
 		
 		#region SharpReportCore.IDataViewStrategy interface implementation
@@ -231,33 +241,6 @@ namespace ICSharpCode.Reports.Core {
 		
 		public bool IsGrouped {get;set;}
 		
-		/*
-		public bool IsFiltered
-		{
-			get {
-				return this.isFiltered;
-			} set {
-				this.isFiltered = value;
-			}
-		}
-		*/
-		
-		
-		
-		
-		/*
-		protected virtual void Group() 
-		{
-			if (this.indexList != null) {
-				this.isGrouped = true;
-				this.isSorted = true;
-			} else {
-				throw new ReportException ("BaseListStrategy:Group Sorry, no IndexList");
-			}
-		
-		}
-		*/
-		
 		
 		public virtual void Sort() 
 		{
@@ -282,24 +265,6 @@ namespace ICSharpCode.Reports.Core {
 		{
 		}
 		
-		
-		/*
-		public IndexList ChildRows 
-		{
-			get {
-				if (this.IsGrouped == true) {
-					GroupSeparator gs = (GroupSeparator)this.indexList[this.CurrentRow] as GroupSeparator;
-					if (gs != null) {
-						return (gs.GetChildren);
-					} else {
-						return null;
-					}
-				} else {
-					return null;
-				}
-			}
-		}
-		*/
 		
 		public virtual void Dispose()
 		{

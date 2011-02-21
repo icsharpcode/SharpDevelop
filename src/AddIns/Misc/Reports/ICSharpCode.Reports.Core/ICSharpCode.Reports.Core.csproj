@@ -122,13 +122,17 @@
     <Compile Include="Project\DataManager\ListStrategy\CollectionStrategy.cs" />
     <Compile Include="Project\DataManager\DataManager.cs" />
     <Compile Include="Project\Dialogs\EditorDialog.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Project\Dialogs\EditorDialog.Designer.cs" />
     <Compile Include="Project\Dialogs\GroupingCollectionEditor.cs" />
     <Compile Include="Project\Dialogs\IStringBasedEditorDialog.cs" />
     <Compile Include="Project\Dialogs\ParametersCollectionEditor.cs" />
-    <Compile Include="Project\Dialogs\ParameterDialog.cs" />
+    <Compile Include="Project\Dialogs\ParameterDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Project\Dialogs\PreviewControl.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Project\Dialogs\DefaultTextEditor.cs" />
     <Compile Include="Project\Dialogs\SortingCollectionEditor.cs" />
@@ -287,6 +291,7 @@
     </Compile>
     <Compile Include="Project\ReportEngine.cs" />
     <Compile Include="Project\ReportViewer\NumericToolStripTextBox.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Project\ConnectionObject.cs" />
     <Compile Include="Project\ReportModel.cs" />
@@ -323,6 +328,7 @@
     <Compile Include="Project\Exporter\ExportColumns\IExportColumnBuilder .cs" />
     <Compile Include="Project\ReportViewer\PageNavigationEventArgs.cs" />
     <Compile Include="Project\ReportViewer\ReportViewer.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Project\ReportViewer\ReportViewer.Designer.cs">
       <DependentUpon>Project\ReportViewer.cs</DependentUpon>
@@ -358,44 +364,6 @@
     <None Include="Project\ReportViewer\Resources\Icons\Last.bmp" />
     <None Include="Project\ReportViewer\Resources\Icons\Next.bmp" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Project\BaseClasses\Printing" />
-    <Folder Include="Project\BaseItems" />
-    <Folder Include="Project\BaseItems\Graphics" />
-    <Folder Include="Project\Collections" />
-    <Folder Include="Project\DataManager" />
-    <Folder Include="Project\DataManager\Comparer" />
-    <Folder Include="Project\DataManager\ListHandling" />
-    <Folder Include="Project\DataManager\ListStrategy" />
-    <Folder Include="Project\Dialogs" />
-    <Folder Include="Project\Events" />
-    <Folder Include="Project\Exceptions" />
-    <Folder Include="Project\Exporter\Converters" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator" />
-    <Folder Include="Project\Expressions\ReportingLanguage" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Evaluation" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Parser" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Utilities" />
-    <Folder Include="Project\Factories" />
-    <Folder Include="Project\Globals" />
-    <Folder Include="Project\Interfaces" />
-    <Folder Include="Project\Expressions" />
-    <Folder Include="Project\ReportViewer\Resources\Icons" />
-    <Folder Include="Project\Resources" />
-    <Folder Include="Project\Printing" />
-    <Folder Include="Project\Printing\Graphics" />
-    <Folder Include="Project\Xml" />
-    <Folder Include="Project\Configuration" />
-    <Folder Include="Project\BaseClasses" />
-    <Folder Include="Project\Exporter" />
-    <Folder Include="Project\Exporter\ExportColumns" />
-    <Folder Include="Project\ReportViewer" />
-    <Folder Include="Project\ReportViewer\Resources" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
