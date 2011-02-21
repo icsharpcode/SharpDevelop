@@ -189,7 +189,7 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		public override object myCurrent (int pos)
+		public override object CurrentFromPosition (int pos)
 		{
 			return this.table.Rows[pos];
 		}
@@ -246,7 +246,8 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		public override object Current {
+		public override object Current
+		{
 			get {
 				try {
 					int cr = base.CurrentPosition;

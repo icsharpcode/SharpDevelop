@@ -272,9 +272,8 @@ namespace ICSharpCode.Reports.Core {
 		
 		#region test
 
-        public override object myCurrent(int pos)
+        public override object CurrentFromPosition (int pos)
         {
-           // return this.IndexList[pos];
             return this.IndexList[this.CurrentPosition];
         }
 

@@ -70,7 +70,7 @@ namespace ICSharpCode.Reports.Core
 		
 		public object Current {
 			get {
-                return dataStore.myCurrent(this.indexList[CurrentRow].ListIndex);
+                return dataStore.CurrentFromPosition(this.indexList[CurrentRow].ListIndex);
 			}
 		}
 		

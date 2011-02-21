@@ -36,7 +36,8 @@ namespace ICSharpCode.Reports.Core {
 	}
 		
 	
-	internal  abstract class BaseListStrategy :IDataViewStrategy,IEnumerator {
+	internal  abstract class BaseListStrategy :IDataViewStrategy,IEnumerator
+	{
 
 		private IndexList indexList;
 		private AvailableFieldsCollection availableFields;
@@ -181,11 +182,11 @@ namespace ICSharpCode.Reports.Core {
 			return new CurrentItemsCollection();
 		}
 
-        public virtual object myCurrent(int pos)
-        {
-            return null;
-        }
-
+		public virtual object CurrentFromPosition (int pos)
+		{
+			throw new NotImplementedException();
+		}
+		
 
         public virtual CurrentItemsCollection FillDataRow(int pos)
         {
@@ -292,5 +293,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		#endregion
 		
+		
+	
 	}
 }
