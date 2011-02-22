@@ -25,6 +25,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		}
 		
 		
+		#region standard test's
+		
 		[Test]
 		public void GroupingCollection_Contains_IsGrouped_True()
 		{
@@ -43,6 +45,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			Assert.That(availableFieldsCollection,Is.Not.Null);
 			Assert.That(availableFieldsCollection.Count,Is.GreaterThan(0));
 		}
+		
+		#endregion
 		
 		#region group by StringValue
 		
@@ -94,6 +98,60 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		}
 		
 		
+		[Test]
+		[Ignore]
+		public void Collection_Contains_Subclass ()
+		{
+			var modifyedCollection = this.ModifyCollection();
+	
+			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
+			ReportSettings rs = new ReportSettings();
+			rs.GroupColumnsCollection.Add(gc);
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(modifyedCollection,rs);
+			IDataNavigator dataNavigator = dm.GetNavigator;
+			
+			ReportItemCollection searchCol = new ReportItemCollection();
+			searchCol.Add(new BaseDataItem ()
+			              {
+			              	ColumnName ="DummyClass.DummyString"			     
+			              }
+			             );
+			searchCol.Add(new BaseDataItem ()
+			              {
+			              	Name ="GroupItem",			           
+			              	ColumnName ="GroupItem"	
+			              }
+			             );
+			
+			dataNavigator.Reset();
+			dataNavigator.MoveNext();
+
+			while (dataNavigator.MoveNext())
+			{
+				dataNavigator.Fill(searchCol);
+				var a1 = (BaseDataItem)searchCol[0];
+							var b1 = (BaseDataItem)searchCol[1];	
+							Console.WriteLine ("{0} - {1}",a1.DBValue,b1.DBValue);
+							Console.WriteLine("----------------------");
+				if (dataNavigator.HasChildren)
+				{
+					var childNavigator = dataNavigator.GetChildNavigator;
+					do
+					{
+//						
+						childNavigator.Fill(searchCol);
+							var a = (BaseDataItem)searchCol[0];
+							var b = (BaseDataItem)searchCol[1];	
+							Console.WriteLine ("{0} - {1}",a.DBValue,b.DBValue);
+						Contributor c = dataNavigator.Current as Contributor;
+						string v2 = c.Last + " GroupVal :" +  c.GroupItem;
+						Console.WriteLine(v2);
+					}
+					while (childNavigator.MoveNext());
+				}
+			}
+		}
+		
 		#endregion
 		
 		#region GroupbyDataTime
@@ -123,6 +181,22 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		}
 		
 		#endregion
+		private ContributorCollection ModifyCollection ()
+		{
+			var newcol = this.contributorCollection;
+			MyDummyClass dummy;
+			int start = 0;
+			foreach (var element in newcol) 
+			{
+				dummy = new MyDummyClass();
+				dummy.DummyString = "dummy" + start.ToString();
+				dummy.DummyInt = start;
+				element.DummyClass = dummy;
+				start ++;
+			}
+			return newcol;
+		}
+		
 		
 		private IDataNavigator PrepareDateTimeGrouping ()
 		{
