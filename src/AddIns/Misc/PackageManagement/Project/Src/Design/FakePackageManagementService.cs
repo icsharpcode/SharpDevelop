@@ -127,5 +127,11 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public Exception ActiveProjectManagerExeptionToThrow { get; set; }
+		
+		public FakePackageManagementOutputMessagesView FakeOutputMessagesView = new FakePackageManagementOutputMessagesView();
+		
+		public IPackageManagementOutputMessagesView OutputMessagesView {
+			get { return FakeOutputMessagesView; }
+		}
 	}
 }

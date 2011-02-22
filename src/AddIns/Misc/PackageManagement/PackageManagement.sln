@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.1.0.7222-alpha
+# SharpDevelop 4.1.0.7289-alpha
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement", "Project\PackageManagement.csproj", "{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement.Tests", "Test\PackageManagement.Tests.csproj", "{56E98A01-8398-4A08-9578-C7337711A52B}"

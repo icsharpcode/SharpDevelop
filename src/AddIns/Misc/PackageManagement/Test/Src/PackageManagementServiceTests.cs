@@ -24,6 +24,7 @@ namespace PackageManagement.Tests
 		FakePackageManagementProjectService fakeProjectService;
 		TestableProject testProject;
 		InstallPackageHelper installPackageHelper;
+		FakePackageManagementOutputMessagesView fakeOutputMessagesView;
 		
 		void CreatePackageSources()
 		{
@@ -42,12 +43,14 @@ namespace PackageManagement.Tests
 			fakePackageRepositoryFactory = new FakePackageRepositoryFactory();
 			fakePackageManagerFactory = new FakePackageManagerFactory();
 			fakeProjectService = new FakePackageManagementProjectService();
+			fakeOutputMessagesView = new FakePackageManagementOutputMessagesView();
 			fakeProjectService.CurrentProject = testProject;
 			packageManagementService = 
 				new PackageManagementService(options,
 					fakePackageRepositoryFactory,
 					fakePackageManagerFactory,
-					fakeProjectService);
+					fakeProjectService,
+					fakeOutputMessagesView);
 
 			installPackageHelper = new InstallPackageHelper(packageManagementService);
 		}
@@ -396,6 +399,74 @@ namespace PackageManagement.Tests
 					.PackageOperationsPassedToInstallPackage;
 			
 			CollectionAssert.AreEqual(installPackageHelper.PackageOperations, actualOperations);
+		}
+		
+		[Test]
+		public void InstallPackage_OnePackageOperation_LoggerUsedByPackageManagerIsOutputMessagesViewLogger()
+		{
+			CreatePackageManagementService();
+			installPackageHelper.AddPackageInstallOperation();
+			installPackageHelper.InstallTestPackage();
+			
+			ILogger expectedLogger = fakeOutputMessagesView;
+			ILogger actualLogger = fakePackageManagerFactory.FakePackageManager.Logger;
+			
+			Assert.AreEqual(expectedLogger, actualLogger);
+		}
+		
+		[Test]
+		public void InstallPackage_OnePackageOperation_LoggerUsedByPackageManagerIsConfiguredBeforeInstallPackageCalled()
+		{
+			CreatePackageManagementService();
+			installPackageHelper.AddPackageInstallOperation();
+			installPackageHelper.InstallTestPackage();
+			
+			ILogger expectedLogger = fakeOutputMessagesView;
+			ILogger actualLogger = fakePackageManagerFactory.FakePackageManager.LoggerSetBeforeInstallPackageCalled;
+			
+			Assert.AreEqual(expectedLogger, actualLogger);
+		}
+		
+		[Test]
+		public void InstallPackage_OnePackageOperation_ProjectManagerLoggerIsOutputMessagesViewLogger()
+		{
+			CreatePackageManagementService();
+			installPackageHelper.AddPackageInstallOperation();
+			installPackageHelper.InstallTestPackage();
+			
+			ILogger expectedLogger = fakeOutputMessagesView;
+			ILogger actualLogger = fakePackageManagerFactory.FakePackageManager.FakeProjectManager.Logger;
+			
+			Assert.AreEqual(expectedLogger, actualLogger);
+		}
+		
+		[Test]
+		public void InstallPackage_OnePackageOperation_ProjectManagerProjectSystemLoggerIsOutputMessagesViewLogger()
+		{
+			CreatePackageManagementService();
+			var projectSystem = new FakeProjectSystem();
+			FakeProjectManager projectManager = fakePackageManagerFactory.FakePackageManager.FakeProjectManager;
+			projectManager.Project = projectSystem;
+			installPackageHelper.AddPackageInstallOperation();
+			installPackageHelper.InstallTestPackage();
+			
+			ILogger expectedLogger = fakeOutputMessagesView;
+			ILogger actualLogger = projectSystem.Logger;
+			
+			Assert.AreEqual(expectedLogger, actualLogger);
+		}
+		
+		[Test]
+		public void InstallPackage_OnePackageOperation_PackageManagerFileSystemLoggerIsOutputMessagesViewLogger()
+		{
+			CreatePackageManagementService();
+			installPackageHelper.AddPackageInstallOperation();
+			installPackageHelper.InstallTestPackage();
+			
+			ILogger expectedLogger = fakeOutputMessagesView;
+			ILogger actualLogger = fakePackageManagerFactory.FakePackageManager.FileSystem.Logger;
+			
+			Assert.AreEqual(expectedLogger, actualLogger);
 		}
 	}
 }

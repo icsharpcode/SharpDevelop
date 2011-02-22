@@ -6,7 +6,7 @@ using System.IO;
 using System.Runtime.Versioning;
 using NuGet;
 
-namespace PackageManagement.Tests.Helpers
+namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakeProjectSystem : FakeFileSystem, IProjectSystem
 	{

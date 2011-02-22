@@ -90,5 +90,13 @@ namespace PackageManagement.Tests
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageUpdatesViewModel.PackageViewModels);
 		}
+		
+		[Test]
+		public void Constructor_InstanceCreated_OutputMessagesCleared()
+		{
+			CreateViewModel();
+			
+			Assert.IsTrue(fakePackageManagementService.FakeOutputMessagesView.IsClearCalled);
+		}
 	}
 }

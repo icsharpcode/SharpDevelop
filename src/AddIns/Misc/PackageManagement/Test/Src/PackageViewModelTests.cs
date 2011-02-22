@@ -439,5 +439,15 @@ namespace PackageManagement.Tests
 			
 			Assert.IsFalse(licenseAcceptanceService.IsAcceptLicensesCalled);
 		}
+		
+		[Test]
+		public void AddPackage_CheckLoggerUsed_OutputMessagesLoggerUsedWhenResolvingPackageOperations()
+		{
+			CreateViewModel();
+			viewModel.AddPackage();
+			
+			ILogger expectedLogger = packageManagementService.FakeOutputMessagesView;
+			Assert.AreEqual(expectedLogger, viewModel.LoggerUsedWhenCreatingPackageResolver);
+		}
 	}
 }

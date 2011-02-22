@@ -12,6 +12,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementService : IPackageManagementService
 	{
+		IPackageManagementOutputMessagesView outputMessagesView;
 		PackageManagementOptions options;
 		IPackageRepositoryCache packageRepositoryCache;
 		IPackageManagerFactory packageManagerFactory;
@@ -19,23 +20,32 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository activePackageRepository;
 		PackageSource activePackageSource;
 		
-		public PackageManagementService(PackageManagementOptions options,
+		public PackageManagementService(
+			PackageManagementOptions options,
 			IPackageRepositoryCache packageRepositoryCache,
 			IPackageManagerFactory packageManagerFactory,
-			IPackageManagementProjectService projectService)
+			IPackageManagementProjectService projectService,
+			IPackageManagementOutputMessagesView outputMessagesView)
 		{
 			this.options = options;
 			this.packageRepositoryCache = packageRepositoryCache;
 			this.packageManagerFactory = packageManagerFactory;
 			this.projectService = projectService;
+			this.outputMessagesView = outputMessagesView;
 		}
 		
 		public PackageManagementService()
-			: this(new PackageManagementOptions(),
+			: this(
+				new PackageManagementOptions(),
 				new PackageRepositoryCache(),
 				new SharpDevelopPackageManagerFactory(),
-				new PackageManagementProjectService())
+				new PackageManagementProjectService(),
+				new PackageManagementOutputMessagesView())
 		{
+		}
+		
+		public IPackageManagementOutputMessagesView OutputMessagesView {
+			get { return outputMessagesView; }
 		}
 		
 		public PackageManagementOptions Options {
@@ -97,7 +107,19 @@ namespace ICSharpCode.PackageManagement
 		ISharpDevelopPackageManager CreatePackageManager(IPackageRepository packageRepository)
 		{
 			MSBuildBasedProject project = projectService.CurrentProject as MSBuildBasedProject;
-			return packageManagerFactory.CreatePackageManager(packageRepository, project);
+			ISharpDevelopPackageManager packageManager = packageManagerFactory.CreatePackageManager(packageRepository, project);
+			ConfigureLogger(packageManager);
+			return packageManager;
+		}
+		
+		void ConfigureLogger(ISharpDevelopPackageManager packageManager)
+		{
+			packageManager.Logger = outputMessagesView;
+			packageManager.FileSystem.Logger = outputMessagesView;
+			
+			IProjectManager projectManager = packageManager.ProjectManager;
+			projectManager.Logger = outputMessagesView;
+			projectManager.Project.Logger = outputMessagesView;
 		}
 		
 		public void UninstallPackage(IPackageRepository repository, IPackage package)

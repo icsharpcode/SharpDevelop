@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 

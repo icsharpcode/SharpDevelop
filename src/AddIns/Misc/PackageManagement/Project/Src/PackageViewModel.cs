@@ -172,6 +172,29 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
+		void GetPackageOperations()
+		{
+			IPackageOperationResolver resolver = CreatePackageOperationResolver();
+			packageOperations = resolver.ResolveOperations(package);
+		}
+		
+		IPackageOperationResolver CreatePackageOperationResolver()
+		{
+			return CreatePackageOperationResolver(Logger);
+		}
+		
+		ILogger Logger {
+			get { return packageManagementService.OutputMessagesView; }
+		}
+		
+		protected virtual IPackageOperationResolver CreatePackageOperationResolver(ILogger logger)
+		{
+			return new InstallWalker(LocalPackageRepository,
+                sourcePackageRepository,
+                logger,
+                ignoreDependencies: false);
+		}
+		
 		bool CanInstallPackage()
 		{
 			IEnumerable<IPackage> packages = GetPackagesRequiringLicenseAcceptance();
@@ -201,20 +224,6 @@ namespace ICSharpCode.PackageManagement
 				}
 			}
 			return packages;
-		}
-		
-		void GetPackageOperations()
-		{
-			IPackageOperationResolver resolver = CreatePackageOperationResolver();
-			packageOperations = resolver.ResolveOperations(package);
-		}
-		
-		protected virtual IPackageOperationResolver CreatePackageOperationResolver()
-		{
-			return new InstallWalker(LocalPackageRepository,
-                sourcePackageRepository,
-                NullLogger.Instance,
-                ignoreDependencies: false);
 		}
 
 		bool PackageRequiresLicenseAcceptance(IPackage package)

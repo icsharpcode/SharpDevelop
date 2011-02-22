@@ -45,11 +45,18 @@ namespace PackageManagement.Tests.Helpers
 		public event EventHandler<PackageOperationEventArgs> PackageUninstalling;
 		#pragma warning restore 67
 		
-		public IFileSystem FileSystem { get; set; }
+		public IFileSystem FileSystem {
+			get { return FakeFileSystem; }
+			set { FakeFileSystem = value as FakeFileSystem; }
+		}
+		
+		public FakeFileSystem FakeFileSystem = new FakeFileSystem();
+		
 		public IPackageRepository LocalRepository { get; set; }
 		public ILogger Logger { get; set; }
 		public IPackageRepository SourceRepository { get; set; }
 		public ISharpDevelopProjectManager ProjectManager { get; set; }
+		public ILogger LoggerSetBeforeInstallPackageCalled;
 		
 		public FakePackageManager()
 		{
@@ -58,11 +65,15 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void InstallPackage(IPackage package)
 		{
+			LoggerSetBeforeInstallPackageCalled = Logger;
+			
 			InstallPackage(package, false);
 		}
 		
 		public void InstallPackage(IPackage package, bool ignoreDependencies)
 		{
+			LoggerSetBeforeInstallPackageCalled = Logger;
+			
 			PackagePassedToInstallPackage = package;
 			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
 			
@@ -106,6 +117,8 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations)
 		{
+			LoggerSetBeforeInstallPackageCalled = Logger;
+			
 			PackagePassedToInstallPackage = package;
 			
 			ParametersPassedToInstallPackage = new InstallPackageParameters();

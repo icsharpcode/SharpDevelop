@@ -152,8 +152,6 @@ namespace PackageManagement.Tests
 			return new PackageOperation(package, PackageAction.Install);
 		}
 		
-		
-
 		[Test]
 		public void ProjectManager_InstanceCreated_SourceRepositoryIsSharedRepositoryPassedToPackageManager()
 		{

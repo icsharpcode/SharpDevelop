@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using ICSharpCode.PackageManagement.Design;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;

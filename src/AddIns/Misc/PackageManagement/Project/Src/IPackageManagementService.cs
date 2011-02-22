@@ -23,5 +23,7 @@ namespace ICSharpCode.PackageManagement
 		
 		bool HasMultiplePackageSources { get; }
 		PackageSource ActivePackageSource { get; set; }
+		
+		IPackageManagementOutputMessagesView OutputMessagesView { get; }
 	}
 }

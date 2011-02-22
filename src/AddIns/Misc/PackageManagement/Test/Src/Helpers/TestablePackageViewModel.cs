@@ -15,6 +15,7 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackageManagementService	FakePackageManagementService;
 		public FakeLicenseAcceptanceService	FakeLicenseAcceptanceService;
 		public FakePackage FakePackage;
+		public ILogger LoggerUsedWhenCreatingPackageResolver;
 		
 		public TestablePackageViewModel()
 			: this(
@@ -39,12 +40,13 @@ namespace PackageManagement.Tests.Helpers
 			this.FakeSourcePackageRepository = FakePackageManagementService.FakeActivePackageRepository;
 		}
 		
-		protected override IPackageOperationResolver CreatePackageOperationResolver()
+		protected override IPackageOperationResolver CreatePackageOperationResolver(ILogger logger)
 		{
+			LoggerUsedWhenCreatingPackageResolver = logger;
 			if (FakePackageOperationResolver != null) {
 				return FakePackageOperationResolver;
 			}
-			return base.CreatePackageOperationResolver();
+			return base.CreatePackageOperationResolver(logger);
 		}
 	}
 }

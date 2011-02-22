@@ -43,9 +43,15 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IPackageRepository LocalRepository { get; set; }
 		public ILogger Logger { get; set; }
-		public IProjectSystem Project { get; set; }
 		public IPackageRepository SourceRepository { get; set; }
 		public IPackagePathResolver PathResolver { get; set; }
+
+		public IProjectSystem Project {
+			get { return FakeProjectSystem; }
+			set { FakeProjectSystem = value as FakeProjectSystem; }
+		}
+		
+		public FakeProjectSystem FakeProjectSystem = new FakeProjectSystem();
 		
 		public void AddPackageReference(string packageId, Version version, bool ignoreDependencies)
 		{

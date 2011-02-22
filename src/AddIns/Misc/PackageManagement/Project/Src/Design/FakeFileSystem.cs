@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using NuGet;
 
-namespace PackageManagement.Tests.Helpers
+namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakeFileSystem : IFileSystem
 	{
@@ -15,14 +15,7 @@ namespace PackageManagement.Tests.Helpers
 		public string FileToReturnFromOpenFile;
 		public string PathToReturnFromGetFullPath;
 		
-		public ILogger Logger {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
+		public ILogger Logger { get; set; }
 		
 		public string Root {
 			get {

@@ -20,6 +20,8 @@ namespace ICSharpCode.PackageManagement
 			ITaskFactory taskFactory)
 		{
 			this.packageManagementService = packageManagementService;
+			this.packageManagementService.OutputMessagesView.Clear();
+			
 			installedPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, taskFactory);
 			availablePackagesViewModel = new AvailablePackagesViewModel(packageManagementService, taskFactory);
 			packageUpdatesViewModel = new PackageUpdatesViewModel(packageManagementService, taskFactory);

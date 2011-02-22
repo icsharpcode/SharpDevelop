@@ -68,9 +68,10 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\Helpers\FakeCompilerMessageView.cs" />
     <Compile Include="Src\Helpers\FakeFileService.cs" />
-    <Compile Include="Src\Helpers\FakeFileSystem.cs" />
     <Compile Include="Src\Helpers\FakeLicenseAcceptanceService.cs" />
+    <Compile Include="Src\Helpers\FakeMessageCategoryView.cs" />
     <Compile Include="Src\Helpers\FakePackageManager.cs" />
     <Compile Include="Src\Helpers\FakePackageManagerFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageOperationResolver.cs" />
@@ -89,7 +90,6 @@
     <Compile Include="Src\Helpers\TestablePackageViewModel.cs" />
     <Compile Include="Src\Helpers\TestableProject.cs" />
     <Compile Include="Src\Helpers\TestableProjectManager.cs" />
-    <Compile Include="Src\Helpers\FakeProjectSystem.cs" />
     <Compile Include="Src\Helpers\FakeProjectSystemFactory.cs" />
     <Compile Include="Src\Helpers\FakeSharedPackageRepository.cs" />
     <Compile Include="Src\Helpers\InstallPackageHelper.cs" />
@@ -111,6 +111,7 @@
     <Compile Include="Src\OpenHyperlinkCommandTests.cs" />
     <Compile Include="Src\PackageManagementOptionsTests.cs" />
     <Compile Include="Src\PackageManagementOptionsViewModelTests.cs" />
+    <Compile Include="Src\PackageManagementOutputMessagesViewTests.cs" />
     <Compile Include="Src\PackageManagementServiceTests.cs" />
     <Compile Include="Src\PackageRepositoryCacheTests.cs" />
     <Compile Include="Src\PackageRepositoryPathsTests.cs" />
