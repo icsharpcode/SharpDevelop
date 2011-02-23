@@ -443,7 +443,7 @@ namespace PackageManagement.Tests
 			ProjectHelper.AddFile(project, fileName);
 			CreateProjectSystem(project);
 			
-			projectSystem.DeleteFile(fileName);
+			projectSystem.DeleteFile("test.cs");
 			
 			Assert.AreEqual(fileName, projectSystem.FakeFileService.PathPassedToRemoveFile);
 		}
@@ -458,7 +458,7 @@ namespace PackageManagement.Tests
 			ProjectHelper.AddFile(project, fileName);
 			CreateProjectSystem(project);
 			
-			projectSystem.DeleteFile(fileName);
+			projectSystem.DeleteFile("test.cs");
 			
 			Assert.AreEqual(0, project.ItemsWhenSaved.Count);
 		}
@@ -468,12 +468,12 @@ namespace PackageManagement.Tests
 		{
 			CreateTestProject();
 			project.FileName = @"d:\temp\MyProject.csproj";
-			string fileName = @"d:\temp\test.cs";
+			string fileName = @"d:\temp\test\test.cs";
 			ProjectHelper.AddFile(project, fileName);
 			CreateProjectSystem(project);
 			string path = @"d:\temp\test";
 			
-			projectSystem.DeleteDirectory(path);
+			projectSystem.DeleteDirectory("test");
 			
 			Assert.AreEqual(path, projectSystem.FakeFileService.PathPassedToRemoveDirectory);
 		}
@@ -483,13 +483,12 @@ namespace PackageManagement.Tests
 		{
 			CreateTestProject();
 			project.FileName = @"d:\temp\MyProject.csproj";
-			string fileName = @"d:\temp\test.cs";
+			string fileName = @"d:\temp\test\test.cs";
 			ProjectHelper.AddFile(project, fileName);
 			project.IsSaved = false;
 			CreateProjectSystem(project);
-			string path = @"d:\temp";
 			
-			projectSystem.DeleteDirectory(path);
+			projectSystem.DeleteDirectory("test");
 			
 			Assert.AreEqual(0, project.ItemsWhenSaved.Count);
 		}

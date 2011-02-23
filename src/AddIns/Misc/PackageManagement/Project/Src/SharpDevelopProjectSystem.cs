@@ -162,13 +162,15 @@ namespace ICSharpCode.PackageManagement
 		
 		public override void DeleteDirectory(string path, bool recursive)
 		{
-			fileService.RemoveDirectory(path);
+			string directory = GetFullPath(path);
+			fileService.RemoveDirectory(directory);
 			project.Save();
 		}
 		
 		public override void DeleteFile(string path)
 		{
-			fileService.RemoveFile(path);
+			string fileName = GetFullPath(path);
+			fileService.RemoveFile(fileName);
 			project.Save();
 		}
 	}
