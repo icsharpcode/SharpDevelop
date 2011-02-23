@@ -1076,12 +1076,14 @@ VariableDeclarationStatement =
 	( "Dim" | "Static" | "Const" )
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .)
 	Identifier (. PopContext(); .) [ "?" ] { "(" [ Expression ] { "," [ Expression ] } ")" }
+	[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
+	[ "=" Expression ]
 	{ ","
 		(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .)
 		Identifier (. PopContext(); .) [ "?" ] { "(" [ Expression ] { "," [ Expression ] } ")" }
+		[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
+		[ "=" Expression ]
 	}
-	[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
-	[ "=" Expression ]
 .
 
 WithOrLockStatement =
