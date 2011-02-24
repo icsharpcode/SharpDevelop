@@ -79,22 +79,41 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		public void Can_FillChild()
 		{
 			var dataNavigator = PrepareStringGrouping();
-			while (dataNavigator.MoveNext()) {
+			ReportItemCollection searchCol = new ReportItemCollection();
+			
+			searchCol.Add(new BaseDataItem ()
+			              {
+			              	Name ="Last",
+			              	ColumnName ="Last"
+			              }
+			             );
+			dataNavigator.Reset();
+			dataNavigator.MoveNext();
+
+			do
+			{
 				if (dataNavigator.HasChildren)
 				{
+					Console.WriteLine("---");
 					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
 						Assert.That(dataNavigator.HasChildren,Is.True);
 						
 						// we know that current is a 'contributor'
+						childNavigator.Fill(searchCol);
+						var a = (BaseDataItem)searchCol[0];
+						Console.WriteLine ("\t{0}",a.DBValue);
+						/*
 						Contributor c = dataNavigator.Current as Contributor;
 						string v2 = c.Last + " GroupVal :" +  c.GroupItem;
 						Console.WriteLine(v2);
+						 */
 					}
 					while (childNavigator.MoveNext());
 				}
 			}
+			while (dataNavigator.MoveNext());
 		}
 		
 		
@@ -118,21 +137,22 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			             );
 			searchCol.Add(new BaseDataItem ()
 			              {
-			              	Name ="GroupItem",			           
-			              	ColumnName ="GroupItem"	
+			              	Name ="Last",			           
+			              	ColumnName ="Last"	
 			              }
 			             );
 			
 			dataNavigator.Reset();
 			dataNavigator.MoveNext();
 
-			while (dataNavigator.MoveNext())
+			
+			do
 			{
 				dataNavigator.Fill(searchCol);
 				var a1 = (BaseDataItem)searchCol[0];
-							var b1 = (BaseDataItem)searchCol[1];	
-							Console.WriteLine ("{0} - {1}",a1.DBValue,b1.DBValue);
-							Console.WriteLine("----------------------");
+				var b1 = (BaseDataItem)searchCol[1];	
+				Console.WriteLine ("{0} - {1}",a1.DBValue,b1.DBValue);
+							
 				if (dataNavigator.HasChildren)
 				{
 					var childNavigator = dataNavigator.GetChildNavigator;
@@ -140,16 +160,18 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 					{
 //						
 						childNavigator.Fill(searchCol);
+						
 							var a = (BaseDataItem)searchCol[0];
 							var b = (BaseDataItem)searchCol[1];	
 							Console.WriteLine ("{0} - {1}",a.DBValue,b.DBValue);
-						Contributor c = dataNavigator.Current as Contributor;
-						string v2 = c.Last + " GroupVal :" +  c.GroupItem;
-						Console.WriteLine(v2);
+//						Contributor c = dataNavigator.Current as Contributor;
+//						string v2 = c.Last + " GroupVal :" +  c.GroupItem;
+//						Console.WriteLine(v2);
 					}
 					while (childNavigator.MoveNext());
 				}
 			}
+			while (dataNavigator.MoveNext());
 		}
 		
 		#endregion
