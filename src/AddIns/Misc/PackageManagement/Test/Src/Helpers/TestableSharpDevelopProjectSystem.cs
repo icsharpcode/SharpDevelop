@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace PackageManagement.Tests.Helpers
@@ -13,6 +14,13 @@ namespace PackageManagement.Tests.Helpers
 		public string PathPassedToPhysicalFileSystemAddFile;
 		public Stream StreamPassedToPhysicalFileSystemAddFile;
 		public FakeFileService FakeFileService;
+		public FakePackageManagementOutputMessagesView FakeOutputMessagesView;
+		public string FileNamePassedToLogDeletedFile;
+		public FileNameAndDirectory FileNameAndDirectoryPassedToLogDeletedFileFromDirectory;
+		public string DirectoryPassedToLogDeletedDirectory;
+		public ReferenceAndProjectName ReferenceAndProjectNamePassedToLogAddedReferenceToProject;
+		public ReferenceAndProjectName ReferenceAndProjectNamePassedToLogRemovedReferenceFromProject;
+		public FileNameAndProjectName FileNameAndProjectNamePassedToLogAddedFileToProject;
 		
 		public TestableSharpDevelopProjectSystem(MSBuildBasedProject project)
 			: this(project, new FakeFileService(project))
@@ -23,12 +31,46 @@ namespace PackageManagement.Tests.Helpers
 			: base(project, fileService)
 		{
 			FakeFileService = (FakeFileService)fileService;
+			Logger = FakeOutputMessagesView;
 		}
 		
 		protected override void PhysicalFileSystemAddFile(string path, Stream stream)
 		{
 			PathPassedToPhysicalFileSystemAddFile = path;
 			StreamPassedToPhysicalFileSystemAddFile = stream;
+		}
+		
+		protected override void LogDeletedFile(string fileName)
+		{
+			FileNamePassedToLogDeletedFile = fileName;
+		}
+		
+		protected override void LogDeletedFileFromDirectory(string fileName, string directory)
+		{
+			FileNameAndDirectoryPassedToLogDeletedFileFromDirectory = new FileNameAndDirectory(fileName, directory);
+		}
+		
+		protected override void LogDeletedDirectory(string directory)
+		{
+			DirectoryPassedToLogDeletedDirectory = directory;
+		}
+		
+		protected override void LogAddedReferenceToProject(string referenceName, string projectName)
+		{
+			ReferenceAndProjectNamePassedToLogAddedReferenceToProject = 
+				new ReferenceAndProjectName(referenceName, projectName);
+		}
+		
+		protected override void LogRemovedReferenceFromProject(string referenceName, string projectName)
+		{
+			ReferenceAndProjectNamePassedToLogRemovedReferenceFromProject = 
+				new ReferenceAndProjectName(referenceName, projectName);
+		}
+		
+		protected override void LogAddedFileToProject(string fileName, string projectName)
+		{
+			FileNameAndProjectNamePassedToLogAddedFileToProject =
+				new FileNameAndProjectName(fileName, projectName);
 		}
 	}
 }

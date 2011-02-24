@@ -81,10 +81,13 @@
     <Compile Include="Src\Helpers\FakePackageTests.cs" />
     <Compile Include="Src\Helpers\FakeTask.cs" />
     <Compile Include="Src\Helpers\FakeTaskFactory.cs" />
+    <Compile Include="Src\Helpers\FileNameAndDirectory.cs" />
+    <Compile Include="Src\Helpers\FileNameAndProjectName.cs" />
     <Compile Include="Src\Helpers\FileProjectItemAssert.cs" />
     <Compile Include="Src\Helpers\PackageCollectionAssert.cs" />
     <Compile Include="Src\Helpers\PackageSourceCollectionAssert.cs" />
     <Compile Include="Src\Helpers\PageCollectionAssert.cs" />
+    <Compile Include="Src\Helpers\ReferenceAndProjectName.cs" />
     <Compile Include="Src\Helpers\ReferenceProjectItemAssert.cs" />
     <Compile Include="Src\Helpers\TestablePackagesViewModel.cs" />
     <Compile Include="Src\Helpers\TestablePackageViewModel.cs" />

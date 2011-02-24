@@ -28,11 +28,21 @@ namespace PackageManagement.Tests
 			project = ProjectHelper.CreateTestProject();
 		}
 		
+		void CreateTestProject(string fileName)
+		{
+			CreateTestProject();
+			project.FileName = fileName;
+		}
+		
+		void AddFileToProject(string fileName)
+		{
+			ProjectHelper.AddFile(project, fileName);
+		}
+
 		[Test]
 		public void Root_NewInstanceCreated_ReturnsProjectDirectory()
 		{
-			CreateTestProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateTestProject(@"d:\projects\MyProject\MyProject.csproj");
 			CreateProjectSystem(project);
 			
 			string expectedRoot = @"d:\projects\MyProject\";
@@ -232,6 +242,24 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void AddReference_AddReferenceToNUnitFramework_AddingReferenceIsLogged()
+		{
+			CreateTestProject();
+			CreateProjectSystem(project);
+			project.Name = "MyTestProject";
+			
+			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll";
+			projectSystem.AddReference(fileName, null);
+			
+			var expectedReferenceAndProjectName = new ReferenceAndProjectName() {
+				Reference = "nunit.framework",
+				Project = "MyTestProject"
+			};
+			
+			Assert.AreEqual(expectedReferenceAndProjectName, projectSystem.ReferenceAndProjectNamePassedToLogAddedReferenceToProject);
+		}
+		
+		[Test]
 		public void RemoveReference_ReferenceBeingRemovedHasFileExtension_ReferenceRemovedFromProject()
 		{
 			CreateTestProject();
@@ -285,6 +313,25 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void RemoveReference_ReferenceBeingRemovedHasFileExtension_ReferenceRemovalIsLogged()
+		{
+			CreateTestProject();
+			project.Name = "MyTestProject";
+			ProjectHelper.AddReference(project, "nunit.framework");
+			CreateProjectSystem(project);
+			
+			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll";
+			projectSystem.RemoveReference(fileName);
+			
+			var expectedReferenceAndProjectName = new ReferenceAndProjectName {
+				Reference = "nunit.framework",
+				Project = "MyTestProject"
+			};
+			
+			Assert.AreEqual(expectedReferenceAndProjectName, projectSystem.ReferenceAndProjectNamePassedToLogRemovedReferenceFromProject);
+		}
+		
+		[Test]
 		public void AddFile_NewFile_AddsFileToFileSystem()
 		{
 			CreateTestProject();
@@ -301,8 +348,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AddFile_NewFile_AddsFileToProject()
 		{
-			CreateTestProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateTestProject(@"d:\projects\MyProject\MyProject.csproj");
 			project.ItemTypeToReturnFromGetDefaultItemType = ItemType.Compile;
 			CreateProjectSystem(project);
 			
@@ -319,8 +365,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AddFile_NewResxFile_AddsFileToProjectWithCorrectItemType()
 		{
-			CreateTestProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateTestProject(@"d:\projects\MyProject\MyProject.csproj");
 			project.ItemTypeToReturnFromGetDefaultItemType = ItemType.EmbeddedResource;
 			CreateProjectSystem(project);
 			
@@ -337,8 +382,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AddFile_RelativeFileNameUsed_AddsFileToProject()
 		{
-			CreateTestProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateTestProject(@"d:\projects\MyProject\MyProject.csproj");
 			project.ItemTypeToReturnFromGetDefaultItemType = ItemType.Compile;
 			CreateProjectSystem(project);
 			
@@ -356,8 +400,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AddFile_RelativeFileNameWithNoPathUsed_AddsFileToProject()
 		{
-			CreateTestProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateTestProject(@"d:\projects\MyProject\MyProject.csproj");
 			project.ItemTypeToReturnFromGetDefaultItemType = ItemType.Compile;
 			CreateProjectSystem(project);
 			
@@ -375,9 +418,8 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AddFile_NewFile_ProjectIsSavedAfterFileAddedToProject()
 		{
-			CreateTestProject();
+			CreateTestProject(@"d:\projects\MyProject\MyProject.csproj");
 			project.IsSaved = false;
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
 			CreateProjectSystem(project);
 			
 			string fileName = @"d:\projects\MyProject\src\NewFile.cs";
@@ -389,8 +431,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AddFile_NewFileToBeAddedInBinFolder_FileIsNotAddedToProject()
 		{
-			CreateTestProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateTestProject(@"d:\projects\MyProject\MyProject.csproj");
 			CreateProjectSystem(project);
 			
 			string fileName = @"bin\NewFile.dll";
@@ -404,8 +445,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AddFile_NewFileToBeAddedInBinFolderWithBinFolderNameInUpperCase_FileIsNotAddedToProject()
 		{
-			CreateTestProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateTestProject(@"d:\projects\MyProject\MyProject.csproj");
 			CreateProjectSystem(project);
 			
 			string fileName = @"BIN\NewFile.dll";
@@ -419,43 +459,70 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AddFile_FileAlreadyExistsInProject_FileIsNotAddedToProject()
 		{
-			CreateTestProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			CreateTestProject(@"d:\projects\MyProject\MyProject.csproj");
 			project.ItemTypeToReturnFromGetDefaultItemType = ItemType.Compile;
-			CreateProjectSystem(project);
+			CreateProjectSystem(project);			
+			AddFileToProject(@"d:\projects\MyProject\src\NewFile.cs");
 			
-			string relativeFileName = @"src\NewFile.cs";
-			string fileName = @"d:\projects\MyProject\src\NewFile.cs";
-			ProjectHelper.AddFile(project, fileName);
-			
-			projectSystem.AddFile(relativeFileName, null);
+			projectSystem.AddFile(@"src\NewFile.cs", null);
 			
 			int projectItemsCount = project.Items.Count;
 			Assert.AreEqual(1, projectItemsCount);
 		}
 		
 		[Test]
+		public void AddFile_NewFile_FileAddedToProjectIsLogged()
+		{
+			CreateTestProject(@"d:\temp\MyProject.csproj");
+			project.Name = "MyTestProject";
+			CreateProjectSystem(project);
+			
+			projectSystem.AddFile(@"src\files\abc.cs", null);
+			
+			var expectedFileNameAndProjectName = new FileNameAndProjectName {
+				FileName = @"src\files\abc.cs",
+				ProjectName = "MyTestProject"
+			};
+			
+			Assert.AreEqual(expectedFileNameAndProjectName, projectSystem.FileNameAndProjectNamePassedToLogAddedFileToProject);
+		}
+		
+		[Test]
+		public void AddFile_NewFileAlreadyExistsInProject_FileIsStillLogged()
+		{
+			CreateTestProject(@"d:\temp\MyProject.csproj");
+			project.Name = "MyTestProject";
+			AddFileToProject(@"src\files\abc.cs");
+			CreateProjectSystem(project);
+			
+			projectSystem.AddFile(@"src\files\abc.cs", null);
+			
+			var expectedFileNameAndProjectName = new FileNameAndProjectName {
+				FileName = @"src\files\abc.cs",
+				ProjectName = "MyTestProject"
+			};
+			
+			Assert.AreEqual(expectedFileNameAndProjectName, projectSystem.FileNameAndProjectNamePassedToLogAddedFileToProject);
+		}
+		
+		[Test]
 		public void DeleteFile_DeletesFileFromFileSystem_CallsFileServiceRemoveFile()
 		{
-			CreateTestProject();
-			project.FileName = @"d:\temp\MyProject.csproj";
-			string fileName = @"d:\temp\test.cs";
-			ProjectHelper.AddFile(project, fileName);
+			CreateTestProject(@"d:\temp\MyProject.csproj");
+			AddFileToProject(@"d:\temp\test.cs");
 			CreateProjectSystem(project);
 			
 			projectSystem.DeleteFile("test.cs");
 			
-			Assert.AreEqual(fileName, projectSystem.FakeFileService.PathPassedToRemoveFile);
+			Assert.AreEqual(@"d:\temp\test.cs", projectSystem.FakeFileService.PathPassedToRemoveFile);
 		}
 		
 		[Test]
 		public void DeleteFile_DeletesFileFromFileSystem_ProjectIsSavedAfterFileRemoved()
 		{
-			CreateTestProject();
-			project.FileName = @"d:\temp\MyProject.csproj";
+			CreateTestProject(@"d:\temp\MyProject.csproj");
 			project.IsSaved = false;
-			string fileName = @"d:\temp\test.cs";
-			ProjectHelper.AddFile(project, fileName);
+			AddFileToProject(@"d:\temp\test.cs");
 			CreateProjectSystem(project);
 			
 			projectSystem.DeleteFile("test.cs");
@@ -464,33 +531,97 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void DeleteFile_DeletesFileFromFileSystem_FileDeletionLogged()
+		{
+			CreateTestProject(@"d:\temp\MyProject.csproj");
+			AddFileToProject(@"d:\temp\test.cs");
+			CreateProjectSystem(project);
+			
+			projectSystem.DeleteFile("test.cs");
+			
+			Assert.AreEqual("test.cs", projectSystem.FileNamePassedToLogDeletedFile);
+		}
+		
+		[Test]
+		public void DeleteFile_DeletesFileFromFileSystem_FolderInformationNotLogged()
+		{
+			CreateTestProject(@"d:\temp\MyProject.csproj");
+			AddFileToProject(@"d:\temp\test.cs");
+			CreateProjectSystem(project);
+			
+			projectSystem.DeleteFile("test.cs");
+			
+			Assert.IsNull(projectSystem.FileNameAndDirectoryPassedToLogDeletedFileFromDirectory);
+		}
+		
+		[Test]
+		public void DeleteFile_DeletesFileFromSubFolder_FileDeletionLogged()
+		{
+			CreateTestProject(@"d:\temp\MyProject.csproj");
+			AddFileToProject(@"d:\temp\src\Files\test.cs");
+			CreateProjectSystem(project);
+			
+			projectSystem.DeleteFile(@"src\Files\test.cs");
+			
+			var expectedFileNameAndFolder = new FileNameAndDirectory() {
+				FileName = "test.cs",
+				Folder = @"src\Files"
+			};
+			
+			var actualFileNameAndFolder = projectSystem.FileNameAndDirectoryPassedToLogDeletedFileFromDirectory;
+			
+			Assert.AreEqual(expectedFileNameAndFolder, actualFileNameAndFolder);
+		}
+		
+		[Test]
+		public void DeleteFile_DeletesFileFromSubFolder_FileDeletionWithoutFolderInformationIsNotLogged()
+		{
+			CreateTestProject(@"d:\temp\MyProject.csproj");
+			AddFileToProject(@"d:\temp\src\Files\test.cs");
+			CreateProjectSystem(project);
+			
+			projectSystem.DeleteFile(@"src\Files\test.cs");
+			
+			Assert.IsNull(projectSystem.FileNamePassedToLogDeletedFile);
+		}
+
+		[Test]
 		public void DeleteDirectory_DeletesDirectoryFromFileSystem_CallsFileServiceRemoveDirectory()
 		{
-			CreateTestProject();
-			project.FileName = @"d:\temp\MyProject.csproj";
-			string fileName = @"d:\temp\test\test.cs";
-			ProjectHelper.AddFile(project, fileName);
+			CreateTestProject(@"d:\temp\MyProject.csproj");
+			AddFileToProject(@"d:\temp\test\test.cs");
 			CreateProjectSystem(project);
-			string path = @"d:\temp\test";
 			
 			projectSystem.DeleteDirectory("test");
 			
+			string path = @"d:\temp\test";
 			Assert.AreEqual(path, projectSystem.FakeFileService.PathPassedToRemoveDirectory);
 		}
 		
 		[Test]
 		public void DeleteDirectory_DeletesDirectoryFromFileSystem_ProjectIsSavedAfterDirectoryDeleted()
 		{
-			CreateTestProject();
-			project.FileName = @"d:\temp\MyProject.csproj";
-			string fileName = @"d:\temp\test\test.cs";
-			ProjectHelper.AddFile(project, fileName);
+			CreateTestProject(@"d:\temp\MyProject.csproj");
 			project.IsSaved = false;
+			AddFileToProject(@"d:\temp\test\test.cs");
 			CreateProjectSystem(project);
 			
 			projectSystem.DeleteDirectory("test");
 			
 			Assert.AreEqual(0, project.ItemsWhenSaved.Count);
+		}
+		
+		[Test]
+		public void DeleteDirectory_DeletesDirectoryFromFileSystem_DirectoryIsLogged()
+		{
+			CreateTestProject(@"d:\temp\MyProject.csproj");
+			project.IsSaved = false;
+			AddFileToProject(@"d:\temp\test\test.cs");
+			CreateProjectSystem(project);
+			
+			projectSystem.DeleteDirectory("test");
+			
+			Assert.AreEqual("test", projectSystem.DirectoryPassedToLogDeletedDirectory);
 		}
 	}
 }

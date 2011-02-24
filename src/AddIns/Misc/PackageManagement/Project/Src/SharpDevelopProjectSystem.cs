@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Versioning;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
@@ -60,6 +61,7 @@ namespace ICSharpCode.PackageManagement
 			ReferenceProjectItem assemblyReference = CreateReference(referencePath);
 			ProjectService.AddProjectItem(project, assemblyReference);
 			project.Save();
+			LogAddedReferenceToProject(assemblyReference);
 		}
 		
 		ReferenceProjectItem CreateReference(string referencePath)
@@ -68,6 +70,21 @@ namespace ICSharpCode.PackageManagement
 			assemblyReference.Include = Path.GetFileNameWithoutExtension(referencePath);
 			assemblyReference.HintPath = referencePath;
 			return assemblyReference;
+		}
+		
+		void LogAddedReferenceToProject(ReferenceProjectItem referenceProjectItem)
+		{
+			LogAddedReferenceToProject(referenceProjectItem.Include, ProjectName);
+		}
+		
+		protected virtual void LogAddedReferenceToProject(string referenceName, string projectName)
+		{
+			DebugLogFormat("Added reference '{0}' to project '{1}'.", referenceName, projectName);
+		}
+		
+		void DebugLogFormat(string format, params object[] args)
+		{
+			Logger.Log(MessageLevel.Debug, format, args);
 		}
 		
 		public bool ReferenceExists(string name)
@@ -101,7 +118,18 @@ namespace ICSharpCode.PackageManagement
 			if (referenceProjectItem != null) {
 				ProjectService.RemoveProjectItem(project, referenceProjectItem);
 				project.Save();
+				LogRemovedReferenceFromProject(referenceProjectItem);
 			}
+		}
+		
+		void LogRemovedReferenceFromProject(ReferenceProjectItem referenceProjectItem)
+		{
+			LogRemovedReferenceFromProject(referenceProjectItem.Include, ProjectName);
+		}
+		
+		protected virtual void LogRemovedReferenceFromProject(string referenceName, string projectName)
+		{
+			DebugLogFormat("Removed reference '{0}' from project '{1}'.", referenceName, projectName);
 		}
 		
 		public bool IsSupportedFile(string path)
@@ -121,26 +149,12 @@ namespace ICSharpCode.PackageManagement
 			if (ShouldAddFileToProject(path)) {
 				AddFileToProject(path);
 			}
+			LogAddedFileToProject(path);
 		}
 		
 		protected virtual void PhysicalFileSystemAddFile(string path, Stream stream)
 		{
 			base.AddFile(path, stream);
-		}
-		
-		void AddFileToProject(string path)
-		{
-			FileProjectItem fileItem = CreateFileProjectItem(path);
-			ProjectService.AddProjectItem(project, fileItem);
-			project.Save();
-		}
-		
-		FileProjectItem CreateFileProjectItem(string path)
-		{
-			ItemType itemType = project.GetDefaultItemType(path);
-			FileProjectItem fileItem = new FileProjectItem(project, itemType);
-			fileItem.FileName = path;
-			return fileItem;
 		}
 		
 		bool ShouldAddFileToProject(string path)
@@ -160,11 +174,37 @@ namespace ICSharpCode.PackageManagement
 			return project.IsFileInProject(fullPath);
 		}
 		
+		void AddFileToProject(string path)
+		{
+			FileProjectItem fileItem = CreateFileProjectItem(path);
+			ProjectService.AddProjectItem(project, fileItem);
+			project.Save();
+		}
+		
+		FileProjectItem CreateFileProjectItem(string path)
+		{
+			ItemType itemType = project.GetDefaultItemType(path);
+			FileProjectItem fileItem = new FileProjectItem(project, itemType);
+			fileItem.FileName = path;
+			return fileItem;
+		}
+		
+		void LogAddedFileToProject(string fileName)
+		{
+			LogAddedFileToProject(fileName, ProjectName);
+		}
+		
+		protected virtual void LogAddedFileToProject(string fileName, string projectName)
+		{
+			DebugLogFormat("Added file '{0}' to project '{1}'.", fileName, projectName);
+		}
+		
 		public override void DeleteDirectory(string path, bool recursive)
 		{
 			string directory = GetFullPath(path);
 			fileService.RemoveDirectory(directory);
 			project.Save();
+			LogDeletedDirectory(path);
 		}
 		
 		public override void DeleteFile(string path)
@@ -172,6 +212,33 @@ namespace ICSharpCode.PackageManagement
 			string fileName = GetFullPath(path);
 			fileService.RemoveFile(fileName);
 			project.Save();
+			LogDeletedFileInfo(path);
+		}
+		
+		protected virtual void LogDeletedDirectory(string folder)
+		{
+			DebugLogFormat("Removed folder '{0}'.", folder);
+		}
+		
+		void LogDeletedFileInfo(string path)
+		{
+			string fileName = Path.GetFileName(path);
+			string directory = Path.GetDirectoryName(path);
+			if (String.IsNullOrEmpty(directory)) {
+				LogDeletedFile(fileName);
+			} else {
+				LogDeletedFileFromDirectory(fileName, directory);
+			}
+		}
+		
+		protected virtual void LogDeletedFile(string fileName)
+		{
+			DebugLogFormat("Removed file '{0}'.", fileName);
+		}
+		
+		protected virtual void LogDeletedFileFromDirectory(string fileName, string directory)
+		{
+			DebugLogFormat("Removed file '{0}' from folder '{1}'.", fileName, directory);
 		}
 	}
 }
