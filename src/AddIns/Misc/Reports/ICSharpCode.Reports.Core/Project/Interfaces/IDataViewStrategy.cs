@@ -16,7 +16,7 @@ namespace ICSharpCode.Reports.Core{
 		
 		void Fill (IDataItem item);
 		
-		IndexList IndexList {get;}
+		IndexList IndexList {get;set;}
 		//test
         object CurrentFromPosition(int pos);
         
@@ -28,12 +28,6 @@ namespace ICSharpCode.Reports.Core{
 		int Count {get;}
 	
  		int CurrentPosition {get;set;}
- 	
- 		bool HasMoreData  {get;}
- 		
- 		bool IsSorted {get;}
- 		
- 		bool IsGrouped {get;set;}
  	
 	}
 }

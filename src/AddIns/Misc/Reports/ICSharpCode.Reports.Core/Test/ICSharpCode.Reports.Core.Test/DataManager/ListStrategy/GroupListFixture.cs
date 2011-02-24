@@ -15,25 +15,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		ContributorCollection contributorCollection;
 		
 		
-		[Test]
-		public void GroupingCollection_Empty_IsGrouped_False()
-		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,new ReportSettings());
-			DataNavigator dataNav = dm.GetNavigator;
-			
-			Assert.That(dataNav.IsGrouped == false);
-		}
-		
-		
 		#region standard test's
-		
-		[Test]
-		public void GroupingCollection_Contains_IsGrouped_True()
-		{
-			var dataNavigator = PrepareStringGrouping();
-			Assert.That(dataNavigator.IsGrouped,Is.True);
-		}
-		
 		
 		[Test]
 		public void AvaiableFields_Should_Be_Set()
@@ -48,7 +30,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		
 		#endregion
 		
-		#region group by StringValue
+		#region Group by StringValue
 		
 		[Test]
 		public void Has_Children()
@@ -87,6 +69,12 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			              	ColumnName ="Last"
 			              }
 			             );
+			searchCol.Add(new BaseDataItem ()
+			              {
+			              
+			              	ColumnName ="GroupItem"
+			              }
+			             );
 			dataNavigator.Reset();
 			dataNavigator.MoveNext();
 
@@ -94,21 +82,18 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			{
 				if (dataNavigator.HasChildren)
 				{
-					Console.WriteLine("---");
+					dataNavigator.Fill(searchCol);
+					var b = (BaseDataItem)searchCol[1];
+					Console.WriteLine("-- <{0}>-",b.DBValue);
 					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
 						Assert.That(dataNavigator.HasChildren,Is.True);
-						
 						// we know that current is a 'contributor'
 						childNavigator.Fill(searchCol);
 						var a = (BaseDataItem)searchCol[0];
 						Console.WriteLine ("\t{0}",a.DBValue);
-						/*
-						Contributor c = dataNavigator.Current as Contributor;
-						string v2 = c.Last + " GroupVal :" +  c.GroupItem;
-						Console.WriteLine(v2);
-						 */
+				
 					}
 					while (childNavigator.MoveNext());
 				}
@@ -118,7 +103,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		
 		
 		[Test]
-		[Ignore]
+	
 		public void Collection_Contains_Subclass ()
 		{
 			var modifyedCollection = this.ModifyCollection();
@@ -142,6 +127,13 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			              }
 			             );
 			
+			searchCol.Add(new BaseDataItem ()
+			              {
+			             			           
+			              	ColumnName ="GroupItem"	
+			              }
+			             );
+			
 			dataNavigator.Reset();
 			dataNavigator.MoveNext();
 
@@ -150,8 +142,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			{
 				dataNavigator.Fill(searchCol);
 				var a1 = (BaseDataItem)searchCol[0];
-				var b1 = (BaseDataItem)searchCol[1];	
-				Console.WriteLine ("{0} - {1}",a1.DBValue,b1.DBValue);
+				var b1 = (BaseDataItem)searchCol[2];	
+				Console.WriteLine ("-----{0} - {1}------",a1.DBValue,b1.DBValue);
 							
 				if (dataNavigator.HasChildren)
 				{
@@ -163,7 +155,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 						
 							var a = (BaseDataItem)searchCol[0];
 							var b = (BaseDataItem)searchCol[1];	
-							Console.WriteLine ("{0} - {1}",a.DBValue,b.DBValue);
+							var c = (BaseDataItem)searchCol[2];	
+							Console.WriteLine ("\t{0} - {1} - {2}",a.DBValue,b.DBValue,c.DBValue);
 //						Contributor c = dataNavigator.Current as Contributor;
 //						string v2 = c.Last + " GroupVal :" +  c.GroupItem;
 //						Console.WriteLine(v2);
@@ -176,7 +169,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		
 		#endregion
 		
-		#region GroupbyDataTime
+		#region Group by DataTime
 		
 		[Test]
 		public void DateTimeCan_FillChild()

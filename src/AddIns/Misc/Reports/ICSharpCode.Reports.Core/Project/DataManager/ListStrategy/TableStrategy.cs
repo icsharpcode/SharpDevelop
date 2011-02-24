@@ -86,11 +86,11 @@ namespace ICSharpCode.Reports.Core
 			if ((base.ReportSettings.SortColumnsCollection != null)) {
 				if (base.ReportSettings.SortColumnsCollection.Count > 0) {
 					base.IndexList = this.BuildSortIndex (ReportSettings.SortColumnsCollection);
-					base.IsSorted = true;
+					//base.IsSorted = true;
 				} else {
 					// if we have no sorting, we build the indexlist as well
 					base.IndexList = this.IndexBuilder(ReportSettings.SortColumnsCollection);
-					base.IsSorted = false;
+					//base.IsSorted = false;
 				}
 			}
 		}
@@ -188,31 +188,12 @@ namespace ICSharpCode.Reports.Core
 			return ci;
 		}
 		
-		
+	
 		public override object CurrentFromPosition (int pos)
 		{
 			return this.table.Rows[pos];
 		}
 		
-		
-		public  CurrentItemsCollection FillDataRow(int pos)
-		{
-			CurrentItemsCollection ci = new CurrentItemsCollection();
-			DataRow row = this.table.Rows[pos] as DataRow;
-			
-			if (row != null) {
-				CurrentItem c = null;
-				foreach (DataColumn dc in table.Columns)
-				{
-					c = new CurrentItem();
-					c.ColumnName = dc.ColumnName;
-					c.DataType = dc.DataType;
-					c.Value = row[dc.ColumnName];
-					ci.Add(c);
-				}
-			}
-			return ci;
-		}
 		#endregion
 		
 		
@@ -259,23 +240,6 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
-		
-		public override int CurrentPosition {
-			get { return base.CurrentPosition; }
-			set { base.CurrentPosition = value; }
-		}
-		
-		public override bool IsSorted {
-			get { return base.IsSorted; }
-			set { base.IsSorted = value; }
-		}
-		
 		#endregion
-		
-		
-		public DataRow Readrandowm (int pos)
-		{
-			return this.table.Rows[pos];
-		}
 	}
 }

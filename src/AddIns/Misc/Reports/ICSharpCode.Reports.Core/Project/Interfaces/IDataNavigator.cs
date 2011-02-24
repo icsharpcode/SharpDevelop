@@ -30,11 +30,11 @@ using System.ComponentModel;
  		bool HasChildren {get;}
  
  		// end child list --------------------
- 		
+ 		/*
  		bool IsSorted {get;}
  		
  		bool IsGrouped {get;}
- 		
+ 		*/
  		int CurrentRow  {get;}
  			
  		int Count  {get;}

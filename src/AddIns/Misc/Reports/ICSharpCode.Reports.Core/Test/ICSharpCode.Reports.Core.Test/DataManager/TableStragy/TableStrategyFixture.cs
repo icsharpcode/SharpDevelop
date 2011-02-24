@@ -27,18 +27,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		#region Grouping
 		
 		[Test]
-		public void Add_GroupColumn_IsGrouped_true()
-		{
-			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
-			ICSharpCode.Reports.Core.TableStrategy tableStrategy =GroupTableStrategyFactory (gc);
-			tableStrategy.Bind();
-			Assert.That(tableStrategy.IsGrouped == true);
-		}
-		
-		
-		
-		
-		[Test]
 		public void CanGroup_All_Elements_are_GroupComparer ()
 		{
 			GroupColumn groupComparer = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
@@ -69,16 +57,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		
 		
 		#region Sorting
-		
-		[Test]
-		public void TableStrategy_Set_IsSorted()
-		{
-			SortColumn sc = new SortColumn("Last",System.ComponentModel.ListSortDirection.Ascending);
-			var tableStrategy = SortTableStrategyFactory(sc);
-			tableStrategy.Bind();
-			Assert.That(tableStrategy.IsSorted == true);
-		}
-		
 		
 		[Test]
 		public void CanSort_String_Ascending()

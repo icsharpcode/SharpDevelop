@@ -42,7 +42,6 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		
-		
 		#region build sorting
 		
 		private PropertyDescriptor[] BuildSortProperties (SortColumnCollection col)
@@ -166,7 +165,7 @@ namespace ICSharpCode.Reports.Core {
 			base.Group();
 			IndexList gl = new IndexList("group");
 			gl = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
-			ShowIndexList(gl);
+			//ShowIndexList(gl);
 			base.BuildGroup(gl);
 		}
 		
@@ -176,12 +175,9 @@ namespace ICSharpCode.Reports.Core {
 			base.Sort();
 			if ((base.ReportSettings.SortColumnsCollection != null)) {
 				if (base.ReportSettings.SortColumnsCollection.Count > 0) {
-
 					base.IndexList = this.BuildSortIndex (ReportSettings.SortColumnsCollection);
-					base.IsSorted = true;
 				} else {
 					base.IndexList = this.IndexBuilder(ReportSettings.SortColumnsCollection);
-					base.IsSorted = false;
 				}
 			}
 		}
@@ -236,12 +232,12 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-		#region Proppath from StackOverflow
+		#region PropertyPath from StackOverflow
 	
 		//http://stackoverflow.com/questions/366332/best-way-to-get-sub-properties-using-getproperty
 		
 		
-		private static object FollowPropertyPath(object value, string path)
+		public static  object FollowPropertyPath(object value, string path)
 		{
 			Type currentType = value.GetType();
 			foreach (string propertyName in path.Split('.'))
@@ -274,7 +270,7 @@ namespace ICSharpCode.Reports.Core {
 
         public override object CurrentFromPosition (int pos)
         {
-            return this.IndexList[this.CurrentPosition];
+        	return this.baseList[pos];
         }
 
 
@@ -302,32 +298,6 @@ namespace ICSharpCode.Reports.Core {
 			}
 			return ci;
 		}
-
-        public override CurrentItemsCollection FillDataRow(int pos)
-        {
-            CurrentItemsCollection ci = new CurrentItemsCollection();
-               CurrentItem c = null;
-               foreach (PropertyDescriptor pd in this.listProperties)
-				{
-					c = new CurrentItem();
-					c.ColumnName = pd.Name;
-					c.DataType = pd.PropertyType;
-                    
-					var s = pd.GetValue(this.Current);
-                    if (s != null)
-                    {
-                        c.Value = s.ToString();
-                    }
-                    else
-                    {
-                        c.Value = String.Empty;
-                    }
-					ci.Add(c);
-				}
-            
-            return ci;
-        }
-
 
 		#endregion
 		

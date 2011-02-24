@@ -30,16 +30,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		
 		
 		[Test]
-		public void GroupingCollection_EmptyGrouping_IsGrouped_False()
-		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,new ReportSettings());
-			DataNavigator dataNav = dm.GetNavigator;
-			
-			Assert.That(dataNav.IsGrouped == false);
-		}
-		
-		
-		[Test]
 		public void AvaiableFields_Should_Be_Set()
 		{
 			var dataNavigator = PrepareStringGrouping();
@@ -51,14 +41,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		}
 		
 		#region Group by String
-		
-		[Test]
-		public void GroupingCollection_ContainsGrouping_IsGrouped_True()
-		{
-			var dataNavigator = PrepareStringGrouping();
-			Assert.That(dataNavigator.IsGrouped == true);
-		}
-		
 		
 		[Test]
 		public void Has_Children()
@@ -130,14 +112,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		
 		
 		[Test]
-		public void DataTimeCollection_Contains_IsGrouped_False()
-		{
-			var dataNavigator = PrepareDateTimeGrouping();
-			Assert.That(dataNavigator.IsGrouped == true);
-		}
-		
-		
-		[Test]
 		public void DataTime_Has_Children()
 		{
 			var dataNav = PrepareDateTimeGrouping();
@@ -146,13 +120,10 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 			}
 		}
 		
-		
 		#endregion
 		
-	
 		#region Try make recursive with ChildNavigator
 	
-		
 		[Test]
 		public void Can_Get_ChildNavigator ()
 		{
@@ -172,7 +143,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 				}
 			}
 		}
-		
 		
 		
 		private void RecursiveCall (IDataNavigator startNavigator)

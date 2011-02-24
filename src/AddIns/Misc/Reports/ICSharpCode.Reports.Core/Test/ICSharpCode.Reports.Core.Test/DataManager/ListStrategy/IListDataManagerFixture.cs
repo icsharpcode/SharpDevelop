@@ -170,90 +170,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		#region Sorting
 		
 		[Test]
-		public void SortAscendingByOneColumn()
-		{
-			SortColumn sc = new SortColumn("Last",System.ComponentModel.ListSortDirection.Ascending);
-			ReportSettings rs = new ReportSettings();
-			rs.SortColumnsCollection.Add(sc);
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,rs);
-			DataNavigator dataNav = dm.GetNavigator;
-			string v1 = String.Empty;
-			while (dataNav.MoveNext()) {
-				Contributor view = dataNav.Current as Contributor;
-				string v2 = view.Last;
-				string ss = String.Format("< {0} > <{1}>",v1,v2);
-				Console.WriteLine(ss);
-//				Assert.LessOrEqual(v1,v2);
-				v1 = v2;
-			}
-			Assert.IsTrue(dataNav.IsSorted);
-		}
-		
-		
-		/*
-		[Test]
-		[Ignore("Sort of integer not working")]
-		public void SortAscendingByInteger()
-		{
-			SortColumn sc = new SortColumn("RandomInt",System.ComponentModel.ListSortDirection.Ascending,
-			                               typeof(System.Int16),false);
-			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,rs);
-			DataNavigator dataNav = dm.GetNavigator;
-			string v1 = String.Empty;
-			while (dataNav.MoveNext()) {
-				Contributor  view= dataNav.Current as Contributor;
-				string v2 = view.RandomInt.ToString();
-				int i2 = view.RandomInt;
-//				string ss = String.Format("< {0} > <{1}>",v1,v2);
-				Console.WriteLine(v2);
-				Assert.LessOrEqual(v1,v2);
-				v1 = v2;
-			}
-			Assert.IsTrue(dataNav.IsSorted);
-		}
-		*/
-		
-		[Test]
-		public void SortAscendingByDateTime()
-		{
-			SortColumn sc = new SortColumn("RandomDate",System.ComponentModel.ListSortDirection.Ascending,
-			                               typeof(System.Int16),false);
-			ReportSettings rs = new ReportSettings();
-			rs.SortColumnsCollection.Add(sc);
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,rs);
-			DataNavigator dataNav = dm.GetNavigator;
-			DateTime d1 = new DateTime(1,1,1);
-			while (dataNav.MoveNext()) {
-				Contributor view = dataNav.Current as Contributor;
-				Assert.LessOrEqual(d1,view.RandomDate);
-				d1 = view.RandomDate;
-			}
-			Assert.IsTrue(dataNav.IsSorted);
-		}
-		
-		
-		[Test]
-		public void SortDescendingByDateTime()
-		{
-			SortColumn sc = new SortColumn("RandomDate",System.ComponentModel.ListSortDirection.Descending,
-			                               typeof(System.Int16),false);
-			ReportSettings rs = new ReportSettings();
-			rs.SortColumnsCollection.Add(sc);
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,rs);
-			DataNavigator dataNav = dm.GetNavigator;
-			DateTime d1 = new DateTime(2099,12,30);
-			while (dataNav.MoveNext()) {
-				Contributor view = dataNav.Current as Contributor;
-				Assert.GreaterOrEqual(d1,view.RandomDate);
-				d1 = view.RandomDate;
-			}
-			Assert.IsTrue(dataNav.IsSorted);
-		}
-		
-		
-		[Test]
 		public void SortAscendingByTwoColumns()
 		{
 			SortColumn sc = new SortColumn("Last",System.ComponentModel.ListSortDirection.Ascending);
@@ -274,7 +190,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 				Assert.LessOrEqual(v1,v2);
 				v1 = v2;
 			}
-			Assert.IsTrue(dataNav.IsSorted);
 		}
 		
 		
@@ -293,7 +208,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 				Assert.GreaterOrEqual(compareTo,actual);
 				compareTo = actual;
 			}
-			Assert.IsTrue(dataNav.IsSorted);
 		}
 		
 		#endregion

@@ -81,14 +81,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		
 		
 		[Test]
-		public void DataNavigatorSortedEqualsFalse ()
-		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,new ReportSettings());
-			DataNavigator dataNav = dm.GetNavigator;
-			Assert.IsFalse(dataNav.IsSorted);
-			
-		}
-		[Test]
 		public void DataNavigatorCountEqualListCount ()
 		{
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,new ReportSettings());
@@ -112,9 +104,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		
 		
 		#region Sorting
-		//Tests moved to \Strategy
-		
-		
+
 		[Test]
 		public void SortDescendingByDateTime()
 		{
@@ -133,7 +123,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 				Assert.GreaterOrEqual(d1,d2);
 				d1 = d2;
 			}
-			Assert.IsTrue(dataNav.IsSorted);
 		}
 		
 		
@@ -154,7 +143,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 //				Console.WriteLine(ss);
 				compareTo = actual;
 			}
-			Assert.IsTrue(dataNav.IsSorted);
 		}
 		
 		

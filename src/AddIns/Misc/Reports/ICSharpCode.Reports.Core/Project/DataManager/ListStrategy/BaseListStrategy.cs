@@ -18,8 +18,8 @@ using System.Linq;
 
 namespace ICSharpCode.Reports.Core {	
 	
-	
-	public static class SortExtension
+
+	internal static class SortExtension
 	{
 		
 		public static IOrderedQueryable<BaseComparer> AscendingOrder(this IQueryable<BaseComparer> source )
@@ -34,12 +34,11 @@ namespace ICSharpCode.Reports.Core {
 			return source.OrderByDescending(x => x.ObjectArray[0]);
 		}
 	}
-		
+	
 	
 	internal  abstract class BaseListStrategy :IDataViewStrategy,IEnumerator
 	{
 
-		private IndexList indexList;
 		private AvailableFieldsCollection availableFields;
 		
 
@@ -51,25 +50,10 @@ namespace ICSharpCode.Reports.Core {
 				throw new ArgumentNullException("reportSettings");
 			}
 			this.ReportSettings = reportSettings;
-			this.indexList = new IndexList("IndexList");
+			this.IndexList = new IndexList("IndexList");
 		}
 		
 		#endregion
-		
-		
-		public IndexList IndexList
-		{
-			get {
-				return indexList;
-			}
-			set {
-				this.indexList = value;
-			}
-		}
-		
-		
-		protected ReportSettings ReportSettings {get;private set;}
-	
 		
 		#region Sorting delegates
 		
@@ -111,7 +95,7 @@ namespace ICSharpCode.Reports.Core {
 				}
 				compVal = v;
 			}
-			ShowIndexList(IndexList);
+			//ShowIndexList(IndexList);
 		}
 		
 		
@@ -157,7 +141,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		public  virtual void Reset()
 		{
-			this.indexList.CurrentPosition = -1;
+			this.IndexList.CurrentPosition = -1;
 		}
 		
 		
@@ -171,8 +155,8 @@ namespace ICSharpCode.Reports.Core {
 		
 		public virtual bool MoveNext()
 		{
-			this.indexList.CurrentPosition ++;
-			return this.indexList.CurrentPosition<this.indexList.Count;
+			this.IndexList.CurrentPosition ++;
+			return this.IndexList.CurrentPosition<this.IndexList.Count;
 		}
 		
 		#region test
@@ -182,6 +166,7 @@ namespace ICSharpCode.Reports.Core {
 			return new CurrentItemsCollection();
 		}
 
+		
 		public virtual object CurrentFromPosition (int pos)
 		{
 			throw new NotImplementedException();
@@ -192,6 +177,7 @@ namespace ICSharpCode.Reports.Core {
         {
             return FillDataRow();
         }
+        
 		#endregion
 		
 		#region SharpReportCore.IDataViewStrategy interface implementation
@@ -218,42 +204,25 @@ namespace ICSharpCode.Reports.Core {
 		public virtual int CurrentPosition
 		{
 			get {
-				return this.indexList.CurrentPosition;
+				return this.IndexList.CurrentPosition;
 			}
 			set {
-				if ((value > -1)|| (value > this.indexList.Count)){
-					this.indexList.CurrentPosition = value;
+				if ((value > -1)|| (value > this.IndexList.Count)){
+					this.IndexList.CurrentPosition = value;
 				}
 			}
 		}
 		
 		
-		public bool HasMoreData
-		{
-			get {
-				return true;
-			}
-		}
-		
-		
-		public virtual bool IsSorted {get;set;}
-		
-		
-		
-		public bool IsGrouped {get;set;}
-		
-		
 		public virtual void Sort() 
 		{
-			this.indexList.Clear();
+			this.IndexList.Clear();
 		}
 		
 		
 		public virtual void Group()
 		{
-			this.indexList.Clear();
-			this.IsGrouped = true;
-			
+			this.IndexList.Clear();
 		}
 		
 		public virtual void Bind() 
@@ -266,6 +235,14 @@ namespace ICSharpCode.Reports.Core {
 		{
 		}
 		
+		
+		protected ReportSettings ReportSettings {get;set;}
+		
+		public IndexList IndexList {get; set;}
+		
+		#endregion
+		
+		#region IDisposeable
 		
 		public virtual void Dispose()
 		{
@@ -281,9 +258,9 @@ namespace ICSharpCode.Reports.Core {
 		{
 			if (disposing) {
 				// Free other state (managed objects).
-				if (this.indexList != null) {
-					this.indexList.Clear();
-					this.indexList = null;
+				if (this.IndexList != null) {
+					this.IndexList.Clear();
+					this.IndexList = null;
 				}
 			}
 			
@@ -291,9 +268,8 @@ namespace ICSharpCode.Reports.Core {
 			// Set large fields to null.
 			// Call Dispose on your base class.
 		}
+		
 		#endregion
-		
-		
 	
 	}
 }

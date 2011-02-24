@@ -229,15 +229,6 @@ namespace ICSharpCode.Reports.Core {
 				return this.dataSource;
 			}
 		}
-		
-		
-		public bool IsSorted
-		{
-			get {
-				return this.dataViewStrategy.IsSorted;
-			}
-		}
-		
 	
 		#endregion
 		
