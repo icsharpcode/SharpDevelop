@@ -446,7 +446,7 @@ EventMemberDeclaration =
 	( "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | [ "(" [ ParameterList ] ")" ] )
 	[ "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/
 	  { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ } ]
-	/* the TypeName production already allows the "." IdentifierOrKeyword syntax, so to avoid an ambiguous grammer we just leave that out */
+	/* the TypeName production already allows the "." IdentifierOrKeyword syntax, so to avoid an ambiguous grammar we just leave that out */
 	StatementTerminator
 .
 
