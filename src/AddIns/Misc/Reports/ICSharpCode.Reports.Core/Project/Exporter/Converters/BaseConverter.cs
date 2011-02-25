@@ -139,8 +139,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected void ConvertGroupFooter (ISimpleContainer container,ExporterCollection exporterCollection)
 		{
             var footers = container.Items.FindGroupFooter();
-			if (footers.Count > 0) {
-				
+			if (footers.Count > 0) {				
 				Size rowSize = footers[0].Size;
 				CurrentPosition = ConvertStandardRow(exporterCollection,(ISimpleContainer)footers[0]);
 				FireGroupFooterRendering(footers[0]);
@@ -151,7 +150,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void PageBreakAfterGroupChange(BaseSection section,ExporterCollection exporterCollection)
 		{
-			
 			if (CheckPageBreakAfterGroupChange(section) ) {
 				
 				if (DataNavigator.HasMoreData)
@@ -165,7 +163,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private static bool CheckPageBreakAfterGroupChange(ISimpleContainer container)
 		{
             var groupedRows = container.Items.FindGroupHeader();
-            //var groupedRows  = BaseConverter.FindGroupHeader(container);
 			if (groupedRows.Count > 0) {
 				var groupedRow = groupedRows[0];
 				return groupedRow.PageBreakOnGroupChange;
@@ -173,19 +170,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return false;
 		}
 		
-		/*
-		protected static Collection<GroupHeader> FindGroupHeader (ISimpleContainer container)
-		{
-			return new Collection<GroupHeader>(container.Items.OfType<GroupHeader>().ToList());
-		}
-		*/
-		
-        /*
-		protected static Collection<GroupFooter> FindGroupFooter (ISimpleContainer container)
-		{
-			return new Collection<GroupFooter>(container.Items.OfType<GroupFooter>().ToList());
-		}
-		*/
 		
 		protected virtual Point ForcePageBreak(ExporterCollection exporterCollection, BaseSection section)
 		{
@@ -242,11 +226,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
-			Console.WriteLine("\tPrepareContainerForConverting");
-			
 			FireSectionRendering(section);
 			LayoutHelper.SetLayoutForRow(Graphics,Layouter,simpleContainer);
-			//LayoutRow(simpleContainer);
 		}
 		
 		protected  Point ConvertStandardRow(ExporterCollection mylist,  ISimpleContainer simpleContainer)
@@ -281,7 +262,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected static  void FillRow (ISimpleContainer row,IDataNavigator currentNavigator)
 		{
-			Console.WriteLine("\tFillrow");
 			currentNavigator.Fill(row.Items);
 		}
 		

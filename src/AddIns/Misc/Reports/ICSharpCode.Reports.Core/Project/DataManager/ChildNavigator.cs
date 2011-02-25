@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.ComponentModel;
 
 namespace ICSharpCode.Reports.Core
 {
@@ -41,20 +42,6 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		public bool IsSorted {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		
-		public bool IsGrouped {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		
 		public int CurrentRow 
 		{
 			get {return this.indexList.CurrentPosition;}
@@ -80,23 +67,19 @@ namespace ICSharpCode.Reports.Core
 				return dataStore.AvailableFields;
 			}
 		}
-		
-		
-		public void Fill(ReportItemCollection collection)
-		{
-			 var ss = this.indexList[this.indexList.CurrentPosition].ListIndex;
-			 var current = dataStore.CurrentFromPosition(ss);
-           
 
-			 // CurrentItemsCollection currentItemsCollection = dataStore.FillDataRow(this.indexList[CurrentRow].ListIndex);
-             
-			foreach (IDataItem item in collection)
-            {   
-				FillInternal (current,item);
+
+        public void Fill(ReportItemCollection collection)
+        {
+            var ss = this.indexList[this.indexList.CurrentPosition].ListIndex;
+            var current = dataStore.CurrentFromPosition(ss);
+            foreach (IDataItem item in collection)
+            {
+                FillInternal(current, item);
             }
-            
-		}
+        }
 		
+
 		private void FillInternal(object fillFrom,IDataItem item)
 		{
 			if (item is BaseDataItem)
@@ -127,7 +110,6 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		
 		public bool MoveNext()
 		{
 			this.indexList.CurrentPosition ++;
@@ -143,11 +125,12 @@ namespace ICSharpCode.Reports.Core
 		public CurrentItemsCollection GetDataRow
 		{
 			get {
-				return dataStore.FillDataRow(this.indexList[CurrentRow].ListIndex);
+               var ss = this.indexList[this.indexList.CurrentPosition].ListIndex;
+               return dataStore.FillDataRow(ss);
 			}
 		}
-		
-		
+
+
 		public IDataNavigator GetChildNavigator
 		{
 			get {

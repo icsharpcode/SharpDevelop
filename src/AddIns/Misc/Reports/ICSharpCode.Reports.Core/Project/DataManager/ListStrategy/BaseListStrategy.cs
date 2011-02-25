@@ -89,9 +89,9 @@ namespace ICSharpCode.Reports.Core {
 					childList = new IndexList();
 					GroupComparer gc = CreateGroupHeader(element);
 					gc.IndexList = childList;
-					CreateGroupeChildren(childList,element);
+					CreateGroupedChildren(childList,element);
 				} else {
-					CreateGroupeChildren(childList,element);
+					CreateGroupedChildren(childList,element);
 				}
 				compVal = v;
 			}
@@ -107,7 +107,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		protected static void CreateGroupeChildren(IndexList list,BaseComparer sc)
+		protected static void CreateGroupedChildren(IndexList list,BaseComparer sc)
 		{
 			list.Add(sc);
 		}

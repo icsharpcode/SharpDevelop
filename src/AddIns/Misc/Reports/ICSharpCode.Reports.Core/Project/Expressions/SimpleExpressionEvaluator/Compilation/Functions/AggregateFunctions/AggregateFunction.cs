@@ -109,7 +109,9 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         
         private List<object> SetupDataSource (object data,IDataNavigator navigator)
         {
-        	navigator.Reset();
+            Console.WriteLine("");
+          
+            navigator.Reset();
         	List<object> list = new List<object>();
         	while ( navigator.MoveNext()) {
         		CurrentItemsCollection row = navigator.GetDataRow;
@@ -118,7 +120,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         		if (currentItem != null) {
         			
         			object s1 = Convert.ToString(currentItem.Value.ToString(),CultureInfo.CurrentCulture);
-        			
+                    Console.WriteLine("\tvalue = {0}", s1.ToString());
         			if (IsNumeric(s1)) {
         				list.Add(Convert.ToDouble(s1,System.Globalization.CultureInfo.CurrentCulture));
         			} else {

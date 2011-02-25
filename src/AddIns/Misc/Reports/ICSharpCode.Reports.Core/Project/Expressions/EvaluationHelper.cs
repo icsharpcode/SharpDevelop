@@ -50,9 +50,6 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 					}
 					ExportText textItem = column as ExportText;
 					if (textItem != null) {
-//						if (textItem.Text.StartsWith("=",StringComparison.InvariantCulture)) {
-						////							Console.WriteLine(textItem.Text);
-//						}
 						textItem.Text = evaluator.Evaluate(textItem.Text);
 					}
 				}

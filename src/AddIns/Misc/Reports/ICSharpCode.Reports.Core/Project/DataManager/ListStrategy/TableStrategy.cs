@@ -156,17 +156,6 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		private void BuildAvailableFields ()
-		{
-			
-			base.AvailableFields.Clear();
-			for (int i = 0;i < table.Columns.Count ;i ++ ) {
-				DataColumn col = this.table.Columns[i];
-				base.AvailableFields.Add (new AbstractColumn(col.ColumnName,col.DataType));
-			}
-		
-		}
-		
 		#region Test
 		
 		public override CurrentItemsCollection FillDataRow()
@@ -216,7 +205,11 @@ namespace ICSharpCode.Reports.Core
 		
 		public override AvailableFieldsCollection AvailableFields {
 			get {
-				BuildAvailableFields();
+				base.AvailableFields.Clear();
+				for (int i = 0;i < table.Columns.Count ;i ++ ) {
+					DataColumn col = this.table.Columns[i];
+					base.AvailableFields.Add (new AbstractColumn(col.ColumnName,col.DataType));
+				}
 				return base.AvailableFields;
 			}
 		}

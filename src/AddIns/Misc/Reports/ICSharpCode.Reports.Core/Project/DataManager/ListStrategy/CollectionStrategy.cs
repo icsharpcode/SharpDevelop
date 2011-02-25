@@ -113,15 +113,6 @@ namespace ICSharpCode.Reports.Core {
 			return arrayList;
 		}
 		
-		
-		private void BuildAvailableFields ()
-		{
-			base.AvailableFields.Clear();
-			foreach (PropertyDescriptor p in this.listProperties){
-				base.AvailableFields.Add (new AbstractColumn(p.Name,p.PropertyType));
-			}
-		}
-		
 		#endregion
 		
 		#region SharpReportCore.IDataViewStrategy interface implementation
@@ -129,14 +120,18 @@ namespace ICSharpCode.Reports.Core {
 		public override AvailableFieldsCollection AvailableFields
 		{
 			get {
-				BuildAvailableFields();
+				base.AvailableFields.Clear();
+				foreach (PropertyDescriptor p in this.listProperties){
+					base.AvailableFields.Add (new AbstractColumn(p.Name,p.PropertyType));
+				}
 				return base.AvailableFields;
 			}
 		}
 		
 		public override object Current
 		{
-			get {
+			get
+			{
 				return this.baseList[((BaseComparer)base.IndexList[base.CurrentPosition]).ListIndex];
 			}
 		}
@@ -273,10 +268,39 @@ namespace ICSharpCode.Reports.Core {
         	return this.baseList[pos];
         }
 
+        
+        public override CurrentItemsCollection FillDataRow(int pos)
+        {
+            var item = CurrentFromPosition(pos);
+            CurrentItemsCollection ci = new CurrentItemsCollection();
+            if (item != null)
+            {
+                CurrentItem c = null;
+                foreach (PropertyDescriptor pd in this.listProperties)
+                {
+                    c = new CurrentItem();
+                    c.ColumnName = pd.Name;
+                    c.DataType = pd.PropertyType;
+                    var s = pd.GetValue(item);
+                    if (s != null)
+                    {
+                        c.Value = s.ToString();
+                    }
+                    else
+                    {
+                        c.Value = String.Empty;
+                    }
+                    ci.Add(c);
+                }
+            }
+            return ci;
+        }
 
+
+       
 		public override CurrentItemsCollection FillDataRow()
 		{
-			CurrentItemsCollection ci = base.FillDataRow();
+            CurrentItemsCollection ci = base.FillDataRow();
 			if (current != null) {
 				CurrentItem c = null;
 				foreach (PropertyDescriptor pd in this.listProperties)
