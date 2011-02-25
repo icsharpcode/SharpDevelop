@@ -148,75 +148,76 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				firstDrag = false;
 			}
 
-            // Drag and drop isn't working via e.Data.GetData, so I'm using reflection here - took me a lot of time to figure out how this works... 
-            // Still don't know why they implemented dnd so buggy and uncomfortable...
-            string draggedFormat = e.Data.GetFormats()[0];
-            IDatabaseObjectBase draggedObject = null;
+			// Drag and drop isn't working via e.Data.GetData, so I'm using reflection here - took me a lot of time to figure out how this works...
+			// Still don't know why they implemented dnd so buggy and uncomfortable...
+			string draggedFormat = e.Data.GetFormats()[0];
+			IDatabaseObjectBase draggedObject = null;
 
-            if (e.Data.GetDataPresent(draggedFormat))
-            {
-                object tempDraggedObject = null;
-                FieldInfo info;
-                info = e.Data.GetType().GetField("innerData", BindingFlags.NonPublic | BindingFlags.Instance);
-                tempDraggedObject = info.GetValue(e.Data);
-                info = tempDraggedObject.GetType().GetField("innerData", BindingFlags.NonPublic | BindingFlags.Instance);
-                System.Windows.DataObject dataObject = info.GetValue(tempDraggedObject) as System.Windows.DataObject;
-                draggedObject = dataObject.GetData(draggedFormat) as IDatabaseObjectBase;
-            }
+			if (e.Data.GetDataPresent(draggedFormat))
+			{
+				object tempDraggedObject = null;
+				FieldInfo info;
+				info = e.Data.GetType().GetField("innerData", BindingFlags.NonPublic | BindingFlags.Instance);
+				tempDraggedObject = info.GetValue(e.Data);
+				info = tempDraggedObject.GetType().GetField("innerData", BindingFlags.NonPublic | BindingFlags.Instance);
+				System.Windows.DataObject dataObject = info.GetValue(tempDraggedObject) as System.Windows.DataObject;
+				draggedObject = dataObject.GetData(draggedFormat) as IDatabaseObjectBase;
+			}
 
-            switch (CheckCurrentNode(draggedObject))
-            {
-                case NodeType.TableImage:
-                    // we insert Select * from.... otherwise we have to scan
-                    //the whole string for incorrect columnNames
-                    this.txtSqlString.Clear();
-                    ITable table = draggedObject as ITable;
-                    this.txtSqlString.Text = "SELECT * FROM " + table.Name;
-                    reportStructure.CommandType = CommandType.Text;
-                    reportStructure.IDatabaseObjectBase = table;
-                    break;
-
-                case NodeType.ColumnImage:
-                   IColumn column = draggedObject as IColumn;
-                   string colName = column.Name;
-                   
-                    if (this.txtSqlString.Text.Length == 0)
-                    {
-                        this.txtSqlString.AppendText("SELECT ");
-                        this.txtSqlString.AppendText(colName);
-                    }
-            
-                    else if (this.txtSqlString.Text.ToUpper(CultureInfo.InvariantCulture).IndexOf("where", StringComparison.OrdinalIgnoreCase) > 0)
-                    {
-                        this.txtSqlString.AppendText(colName + " = ?");
-                    }
-                    else
-                    {
-                        this.txtSqlString.AppendText(", ");
-                        this.txtSqlString.AppendText(colName);
-                    }
-                    reportStructure.CommandType = CommandType.Text;
-                    reportStructure.IDatabaseObjectBase = column;
-                    break;
-
-                case NodeType.ProcedureImage:
-                    this.txtSqlString.Clear();
-
-                    // we can't use the dragobject because it returns an string like 'EXECUTE ProcName'
-                    IProcedure procedure = draggedObject as IProcedure;         
-                    this.txtSqlString.Text = "[" + procedure.Name + "]";
-                   reportStructure.CommandType = CommandType.StoredProcedure;
-                   reportStructure.IDatabaseObjectBase = procedure;
+			switch (CheckCurrentNode(draggedObject))
+			{
+				case NodeType.TableImage:
+					// we insert Select * from.... otherwise we have to scan
+					//the whole string for incorrect columnNames
+					this.txtSqlString.Clear();
+					ITable table = draggedObject as ITable;
+					this.txtSqlString.Text = "SELECT * FROM " + table.Name;
+					reportStructure.CommandType = CommandType.Text;
+					reportStructure.IDatabaseObjectBase = table;
 					break;
 
-                case NodeType.ViewImage:
-                    this.txtSqlString.Text = String.Empty;
-                    this.txtSqlString.Text = "No idea how to handle views";
-                    break;
-                default:
-                    break;
-            }
-            base.EnableNext = true;
+				case NodeType.ColumnImage:
+					IColumn column = draggedObject as IColumn;
+					string colName = column.Name;
+					
+					if (this.txtSqlString.Text.Length == 0)
+					{
+						this.txtSqlString.AppendText("SELECT ");
+						this.txtSqlString.AppendText(colName);
+					}
+					
+					else if (this.txtSqlString.Text.ToUpper(CultureInfo.InvariantCulture).IndexOf("where", StringComparison.OrdinalIgnoreCase) > 0)
+					{
+						this.txtSqlString.AppendText(colName + " = ?");
+					}
+					else
+					{
+						this.txtSqlString.AppendText(", ");
+						this.txtSqlString.AppendText(colName);
+					}
+					reportStructure.CommandType = CommandType.Text;
+					reportStructure.IDatabaseObjectBase = column;
+					break;
+
+				case NodeType.ProcedureImage:
+					this.txtSqlString.Clear();
+
+					// we can't use the dragobject because it returns an string like 'EXECUTE ProcName'
+					IProcedure procedure = draggedObject as IProcedure;
+					this.txtSqlString.Text = "[" + procedure.Name + "]";
+					reportStructure.CommandType = CommandType.StoredProcedure;
+					reportStructure.IDatabaseObjectBase = procedure;
+					break;
+/*
+				case NodeType.ViewImage:
+					this.txtSqlString.Text = String.Empty;
+					this.txtSqlString.Text = "No idea how to handle views";
+					break;
+					*/
+				default:
+					break;
+			}
+			base.EnableNext = true;
 		}
 
 

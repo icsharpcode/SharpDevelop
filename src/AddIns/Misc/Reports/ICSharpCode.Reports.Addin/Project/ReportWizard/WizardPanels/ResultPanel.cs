@@ -68,11 +68,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			this.txtSqlString.Text = model.ReportSettings.CommandText;
 			switch (model.ReportSettings.CommandType) {
 				case CommandType.Text:
-						ITable t = reportStructure.IDatabaseObjectBase as ITable;
-						this.connectionObject = CreateConnection (t);
+						this.connectionObject = CreateConnection ();
 						var dataAccess = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
 						dataSet = dataAccess.ReadData();
-						dataSet.Tables[0].TableName = t.Name;
+						dataSet.Tables[0].TableName = CreateTableName (reportStructure);
 					break;
 				case CommandType.StoredProcedure:
 					dataSet = DatasetFromStoredProcedure();
@@ -87,8 +86,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		
-		ConnectionObject CreateConnection(IDatabaseObjectBase t)
+		ConnectionObject CreateConnection()
 		{
 			
 			var conobj = ConnectionObject.CreateInstance(this.model.ReportSettings.ConnectionString,
@@ -99,16 +97,27 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		
+		string CreateTableName(ReportStructure reportStructure)
+		{
+			ITable t = reportStructure.IDatabaseObjectBase as ITable;
+			string str = String.Empty;
+			
+			if (t != null) {
+				str = t.Name;
+			}
+			else
+			{
+				str = reportStructure.IDatabaseObjectBase.Parent.Name;
+			}
+			return str;
+		}
 		
 		
 		DataSet DatasetFromStoredProcedure()
 		{
-			
-			IProcedure procedure = reportStructure.IDatabaseObjectBase as IProcedure;
-			this.connectionObject = CreateConnection(procedure);
-			
+			this.connectionObject = CreateConnection();
 			DataSet dataSet = ResultPanel.CreateDataSet();
+			IProcedure procedure = reportStructure.IDatabaseObjectBase as IProcedure;
 			
 			var paramCollection = CheckParameters(procedure);
 			
