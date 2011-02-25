@@ -449,5 +449,83 @@ namespace PackageManagement.Tests
 			ILogger expectedLogger = packageManagementService.FakeOutputMessagesView;
 			Assert.AreEqual(expectedLogger, viewModel.LoggerUsedWhenCreatingPackageResolver);
 		}
+		
+		[Test]
+		public void AddPackage_PackageAddedSuccessfully_InstallingPackageMessageIsFirstMessageLogged()
+		{
+			CreateViewModel();
+			package.Id = "Test.Package";
+			package.Version = new Version(1, 2, 0, 55);
+			viewModel.PackageViewModelAddingPackageMessageFormat = "Updating...{0}";
+			viewModel.AddPackage();
+			
+			string expectedMessage = "------- Updating...Test.Package 1.2.0.55 -------";
+			string actualMessage = packageManagementService.FakeOutputMessagesView.FirstFormattedMessageLogged;
+						
+			Assert.AreEqual(expectedMessage, actualMessage);
+		}
+		
+		[Test]
+		public void AddPackage_PackageAddedSuccessfully_NextToLastMesssageLoggedMarksEndOfInstallation()
+		{
+			CreateViewModel();
+			viewModel.AddPackage();
+			
+			string expectedMessage = "==============================";
+			string actualMessage = packageManagementService.FakeOutputMessagesView.NextToLastFormattedMessageLogged;
+						
+			Assert.AreEqual(expectedMessage, actualMessage);
+		}
+		
+		[Test]
+		public void AddPackage_PackageAddedSuccessfully_LastMesssageLoggedIsEmptyLine()
+		{
+			CreateViewModel();
+			viewModel.AddPackage();
+			
+			string expectedMessage = String.Empty;
+			string actualMessage = packageManagementService.FakeOutputMessagesView.LastFormattedMessageLogged;
+						
+			Assert.AreEqual(expectedMessage, actualMessage);
+		}
+		
+		[Test]
+		public void RemovePackage_PackageRemovedSuccessfully_UninstallingPackageMessageIsFirstMessageLogged()
+		{
+			CreateViewModel();
+			package.Id = "Test.Package";
+			package.Version = new Version(1, 2, 0, 55);
+			viewModel.PackageViewModelRemovingPackageMessageFormat = "Removing...{0}";
+			viewModel.RemovePackage();
+			
+			string expectedMessage = "------- Removing...Test.Package 1.2.0.55 -------";
+			string actualMessage = packageManagementService.FakeOutputMessagesView.FirstFormattedMessageLogged;
+						
+			Assert.AreEqual(expectedMessage, actualMessage);
+		}
+		
+		[Test]
+		public void RemovePackage_PackageRemovedSuccessfully_NextToLastMesssageLoggedMarksEndOfInstallation()
+		{
+			CreateViewModel();
+			viewModel.RemovePackage();
+			
+			string expectedMessage = "==============================";
+			string actualMessage = packageManagementService.FakeOutputMessagesView.NextToLastFormattedMessageLogged;
+						
+			Assert.AreEqual(expectedMessage, actualMessage);
+		}
+		
+		[Test]
+		public void RemovePackage_PackageRemovedSuccessfully_LastMesssageLoggedIsEmptyLine()
+		{
+			CreateViewModel();
+			viewModel.RemovePackage();
+			
+			string expectedMessage = String.Empty;
+			string actualMessage = packageManagementService.FakeOutputMessagesView.LastFormattedMessageLogged;
+						
+			Assert.AreEqual(expectedMessage, actualMessage);
+		}
 	}
 }

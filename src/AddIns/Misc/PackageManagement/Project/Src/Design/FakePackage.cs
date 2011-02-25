@@ -76,7 +76,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public override string ToString()
 		{
-			return "Package.Id: " + Id;
+			return String.Format("{0} {1}", Id, Version);
 		}
 		
 		public override bool Equals(object obj)

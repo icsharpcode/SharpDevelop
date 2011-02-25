@@ -16,6 +16,8 @@ namespace PackageManagement.Tests.Helpers
 		public FakeLicenseAcceptanceService	FakeLicenseAcceptanceService;
 		public FakePackage FakePackage;
 		public ILogger LoggerUsedWhenCreatingPackageResolver;
+		public string PackageViewModelAddingPackageMessageFormat = String.Empty;
+		public string PackageViewModelRemovingPackageMessageFormat = String.Empty;
 		
 		public TestablePackageViewModel()
 			: this(
@@ -47,6 +49,14 @@ namespace PackageManagement.Tests.Helpers
 				return FakePackageOperationResolver;
 			}
 			return base.CreatePackageOperationResolver(logger);
+		}
+		
+		protected override string AddingPackageMessageFormat {
+			get { return PackageViewModelAddingPackageMessageFormat; }
+		}
+		
+		protected override string RemovingPackageMessageFormat {
+			get { return PackageViewModelRemovingPackageMessageFormat; }
 		}
 	}
 }

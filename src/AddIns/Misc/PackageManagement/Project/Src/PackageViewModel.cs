@@ -24,7 +24,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public PackageViewModel(
 			IPackage package,
-			IPackageManagementService packageManagementService, 
+			IPackageManagementService packageManagementService,
 			ILicenseAcceptanceService licenseAcceptanceService)
 		{
 			this.package = package;
@@ -59,7 +59,7 @@ namespace ICSharpCode.PackageManagement
 			localPackageRepository = packageManagementService.ActiveProjectManager.LocalRepository;
 		}
 		
-		public ICommand AddPackageCommand { 
+		public ICommand AddPackageCommand {
 			get { return addPackageCommand; }
 		}
 		
@@ -87,7 +87,7 @@ namespace ICSharpCode.PackageManagement
 		public Uri ProjectUrl {
 			get { return package.ProjectUrl; }
 		}
-	
+		
 		public bool HasReportAbuseUrl {
 			get { return ReportAbuseUrl != null; }
 		}
@@ -166,10 +166,59 @@ namespace ICSharpCode.PackageManagement
 		
 		public void AddPackage()
 		{
+			LogAddingPackage();
 			GetPackageOperations();
 			if (CanInstallPackage()) {
 				InstallPackage();
 			}
+			LogAfterPackageOperationCompletes();
+		}
+		
+		void LogAddingPackage()
+		{
+			string message = GetFormattedStartPackageOperationMessage(AddingPackageMessageFormat);
+			Log(message);
+		}
+				
+		void Log(string message)
+		{
+			Logger.Log(MessageLevel.Info, message);
+		}
+		
+		string GetFormattedStartPackageOperationMessage(string format)
+		{
+			string message = String.Format(format, package.ToString());
+			return GetStartPackageOperationMessage(message);
+		}
+		
+		string GetStartPackageOperationMessage(string message)
+		{
+			return String.Format("------- {0} -------", message);
+		}
+		
+		ILogger Logger {
+			get { return packageManagementService.OutputMessagesView; }
+		}
+		
+		protected virtual string AddingPackageMessageFormat {
+			get { return "Installing...{0}"; }
+		}
+		
+		void LogAfterPackageOperationCompletes()
+		{
+			LogEndMarkerLine();
+			LogEmptyLine();
+		}
+		
+		void LogEndMarkerLine()
+		{
+			string message = new String('=', 30);
+			Log(message);
+		}
+
+		void LogEmptyLine()
+		{
+			Log(String.Empty);
 		}
 		
 		void GetPackageOperations()
@@ -183,16 +232,12 @@ namespace ICSharpCode.PackageManagement
 			return CreatePackageOperationResolver(Logger);
 		}
 		
-		ILogger Logger {
-			get { return packageManagementService.OutputMessagesView; }
-		}
-		
 		protected virtual IPackageOperationResolver CreatePackageOperationResolver(ILogger logger)
 		{
 			return new InstallWalker(LocalPackageRepository,
-                sourcePackageRepository,
-                logger,
-                ignoreDependencies: false);
+			                         sourcePackageRepository,
+			                         logger,
+			                         ignoreDependencies: false);
 		}
 		
 		bool CanInstallPackage()
@@ -239,8 +284,21 @@ namespace ICSharpCode.PackageManagement
 		
 		public void RemovePackage()
 		{
+			LogRemovingPackage();
 			packageManagementService.UninstallPackage(sourcePackageRepository, package);
+			LogAfterPackageOperationCompletes();
+			
 			OnPropertyChanged(model => model.IsAdded);
+		}
+		
+		void LogRemovingPackage()
+		{
+			string message =  GetFormattedStartPackageOperationMessage(RemovingPackageMessageFormat);
+			Log(message);
+		}
+				
+		protected virtual string RemovingPackageMessageFormat {
+			get { return "Uninstalling...{0}"; }
 		}
 	}
 }
