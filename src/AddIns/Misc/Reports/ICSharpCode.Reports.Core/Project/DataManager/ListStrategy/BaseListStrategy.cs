@@ -231,6 +231,12 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
+		public virtual  void Fill(int position,ReportItemCollection collection)
+		{
+			throw new NotImplementedException();
+		}
+		
+		
 		public  virtual void Fill(IDataItem item)
 		{
 		}

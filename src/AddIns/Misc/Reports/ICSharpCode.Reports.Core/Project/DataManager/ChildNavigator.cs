@@ -67,16 +67,36 @@ namespace ICSharpCode.Reports.Core
 				return dataStore.AvailableFields;
 			}
 		}
-
+		
+		/*
+		 public void Fill(ReportItemCollection collection)
+		{
+			TableStrategy tableStrategy =  store as TableStrategy;
+			foreach (var item in collection) {
+				IDataItem dataItem = item as IDataItem;
+				if (dataItem != null) {
+					CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(this.indexList[CurrentRow].ListIndex);
+					CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == dataItem.ColumnName);
+					dataItem.DBValue = s.Value.ToString();
+				}
+				
+			}
+		}
+		 */ 
 
         public void Fill(ReportItemCollection collection)
         {
-            var ss = this.indexList[this.indexList.CurrentPosition].ListIndex;
-            var current = dataStore.CurrentFromPosition(ss);
+            var position = this.indexList[this.indexList.CurrentPosition].ListIndex;
+            var current = dataStore.CurrentFromPosition(position);
+
+            //var  current = dataStore.FillDataRow(position);
+            dataStore.Fill(position,collection);
+            /*
             foreach (IDataItem item in collection)
             {
                 FillInternal(current, item);
             }
+            */
         }
 		
 

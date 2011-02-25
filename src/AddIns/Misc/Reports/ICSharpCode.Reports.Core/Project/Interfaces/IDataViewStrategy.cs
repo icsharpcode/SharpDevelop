@@ -14,10 +14,13 @@ namespace ICSharpCode.Reports.Core{
 		
 		void Bind();
 		
+		void Fill (int position,ReportItemCollection collection);
+		
+		//rausnehmen
 		void Fill (IDataItem item);
 		
 		IndexList IndexList {get;set;}
-		//test
+		
         object CurrentFromPosition(int pos);
         
 		CurrentItemsCollection FillDataRow();

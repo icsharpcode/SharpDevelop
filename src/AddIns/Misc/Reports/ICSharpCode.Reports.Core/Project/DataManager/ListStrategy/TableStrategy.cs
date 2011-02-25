@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Linq;
 
 namespace ICSharpCode.Reports.Core
 {
@@ -39,12 +40,29 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
+		public override void Fill(int position,ReportItemCollection collection)
+		{
+			DataRow row = this.table.Rows[position];
+			foreach (var item in collection) {
+				IDataItem dataItem = item as IDataItem;
+				if (dataItem != null) {
+					FillInternal (row,dataItem);
+				}
+			}
+		}
+		
+		
 		public override void Fill(IDataItem item)
 		{
 			DataRow row = this.Current as DataRow;
-			if (row != null) {
+			if (row != null)
+			{
+				
+				this.FillInternal (row,item);
+				/*
 				BaseImageItem bi = item as BaseImageItem;
-				if (bi != null) {
+				if (bi != null)
+				{
 					using (System.IO.MemoryStream memStream = new System.IO.MemoryStream()){
 						Byte[] val = row[bi.ColumnName] as Byte[];
 						if (val != null) {
@@ -57,11 +75,38 @@ namespace ICSharpCode.Reports.Core
 							bi.Image = image;
 						}
 					}
-				} else {
+				} else
+				{
 					if (item != null) {
+						item.DBValue = row[item.ColumnName].ToString();
+						return;
+					}
+				}
+				*/
+			}
+		}
+		
+		
+		void FillInternal (DataRow row,IDataItem item)
+		{
+			BaseImageItem bi = item as BaseImageItem;
+			if (bi != null) {
+				using (System.IO.MemoryStream memStream = new System.IO.MemoryStream()){
+					Byte[] val = row[bi.ColumnName] as Byte[];
+					if (val != null) {
+						if ((val[78] == 66) && (val[79] == 77)){
+							memStream.Write(val, 78, val.Length - 78);
+						} else {
+							memStream.Write(val, 0, val.Length);
+						}
+						System.Drawing.Image image = System.Drawing.Image.FromStream(memStream);
+						bi.Image = image;
+					}
+				}
+			} else {
+				if (item != null) {
 					item.DBValue = row[item.ColumnName].ToString();
 					return;
-				}
 				}
 			}
 		}
@@ -86,11 +131,9 @@ namespace ICSharpCode.Reports.Core
 			if ((base.ReportSettings.SortColumnsCollection != null)) {
 				if (base.ReportSettings.SortColumnsCollection.Count > 0) {
 					base.IndexList = this.BuildSortIndex (ReportSettings.SortColumnsCollection);
-					//base.IsSorted = true;
 				} else {
 					// if we have no sorting, we build the indexlist as well
 					base.IndexList = this.IndexBuilder(ReportSettings.SortColumnsCollection);
-					//base.IsSorted = false;
 				}
 			}
 		}

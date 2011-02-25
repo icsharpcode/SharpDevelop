@@ -198,6 +198,11 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
+		public override void Fill(int position,ReportItemCollection collection)
+		{
+//			base.Fill(collection);
+		}
+	
 	
 		public override void Fill(IDataItem item)
 		{
