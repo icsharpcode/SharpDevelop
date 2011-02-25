@@ -848,7 +848,7 @@ PrimitiveTypeName =
 	
 TypeName = ( "Global" | Identifier | PrimitiveTypeName | "?" /* used for ? = completion */ ) { TypeSuffix } { "." IdentifierOrKeyword { TypeSuffix } } .
 
-TypeSuffix = "(" ( "Of" [ TypeName ] { "," [ TypeName ] } | [ ArgumentList ] ) ")" .
+TypeSuffix = "(" (. PushContext(Context.Expression, la, t); .) ( "Of" [ (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] { "," [ (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] } | [ ArgumentList ] ) (. PopContext(); .) ")" .
 
 IdentifierOrKeyword = ident
 | "AddHandler"
@@ -1095,7 +1095,7 @@ AddOrRemoveHandlerStatement =
 .
 
 RaiseEventStatement =
-	"RaiseEvent" IdentifierOrKeyword [ "(" [ ArgumentList ] ")" ]
+	"RaiseEvent" IdentifierOrKeyword [ "(" (. PushContext(Context.Expression, la, t); .) [ ArgumentList ] (. PopContext(); .) ")" ]
 .
 
 IfStatement =
