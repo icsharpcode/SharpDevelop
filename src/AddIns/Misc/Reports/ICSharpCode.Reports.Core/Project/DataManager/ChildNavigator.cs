@@ -67,69 +67,15 @@ namespace ICSharpCode.Reports.Core
 				return dataStore.AvailableFields;
 			}
 		}
-		
-		/*
-		 public void Fill(ReportItemCollection collection)
-		{
-			TableStrategy tableStrategy =  store as TableStrategy;
-			foreach (var item in collection) {
-				IDataItem dataItem = item as IDataItem;
-				if (dataItem != null) {
-					CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(this.indexList[CurrentRow].ListIndex);
-					CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == dataItem.ColumnName);
-					dataItem.DBValue = s.Value.ToString();
-				}
-				
-			}
-		}
-		 */ 
+	
 
         public void Fill(ReportItemCollection collection)
         {
             var position = this.indexList[this.indexList.CurrentPosition].ListIndex;
-            var current = dataStore.CurrentFromPosition(position);
-
-            //var  current = dataStore.FillDataRow(position);
             dataStore.Fill(position,collection);
-            /*
-            foreach (IDataItem item in collection)
-            {
-                FillInternal(current, item);
-            }
-            */
         }
 		
 
-		private void FillInternal(object fillFrom,IDataItem item)
-		{
-			if (item is BaseDataItem)
-			{
-				var retVal = CollectionStrategy.FollowPropertyPath(fillFrom,item.ColumnName);
-				if (retVal != null) {
-					item.DBValue = retVal.ToString();
-				} else {
-					item.DBValue = String.Empty;
-				}
-			}
-			
-			else
-			{
-				/*
-				//image processing from IList
-				BaseImageItem baseImageItem = item as BaseImageItem;
-				
-				if (baseImageItem != null) {
-					PropertyDescriptor p = this.listProperties.Find(baseImageItem.ColumnName, true);
-					if (p != null) {
-						baseImageItem.Image = p.GetValue(this.Current) as System.Drawing.Image;
-					}
-					return;
-				}
-				*/
-			}
-		}
-		
-		
 		public bool MoveNext()
 		{
 			this.indexList.CurrentPosition ++;

@@ -57,32 +57,7 @@ namespace ICSharpCode.Reports.Core
 			DataRow row = this.Current as DataRow;
 			if (row != null)
 			{
-				
 				this.FillInternal (row,item);
-				/*
-				BaseImageItem bi = item as BaseImageItem;
-				if (bi != null)
-				{
-					using (System.IO.MemoryStream memStream = new System.IO.MemoryStream()){
-						Byte[] val = row[bi.ColumnName] as Byte[];
-						if (val != null) {
-							if ((val[78] == 66) && (val[79] == 77)){
-								memStream.Write(val, 78, val.Length - 78);
-							} else {
-								memStream.Write(val, 0, val.Length);
-							}
-							System.Drawing.Image image = System.Drawing.Image.FromStream(memStream);
-							bi.Image = image;
-						}
-					}
-				} else
-				{
-					if (item != null) {
-						item.DBValue = row[item.ColumnName].ToString();
-						return;
-					}
-				}
-				*/
 			}
 		}
 		

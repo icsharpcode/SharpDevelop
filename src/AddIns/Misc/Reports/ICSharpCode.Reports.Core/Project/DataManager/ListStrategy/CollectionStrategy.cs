@@ -198,17 +198,22 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
+		
 		public override void Fill(int position,ReportItemCollection collection)
 		{
-//			base.Fill(collection);
+			var current = this.CurrentFromPosition(position);
+			foreach (IDataItem item in collection)
+            {
+                FillInternal(current, item);
+            }
 		}
 	
-	
-		public override void Fill(IDataItem item)
+		
+		private void FillInternal(object fillFrom,IDataItem item)
 		{
 			if (item is BaseDataItem)
 			{
-				var retVal = FollowPropertyPath(Current,item.ColumnName);
+				var retVal = FollowPropertyPath(fillFrom,item.ColumnName);
 				if (retVal != null) {
 					item.DBValue = retVal.ToString();
 				} else {
@@ -218,7 +223,6 @@ namespace ICSharpCode.Reports.Core {
 			
 			else
 			{
-				
 				//image processing from IList
 				BaseImageItem baseImageItem = item as BaseImageItem;
 				
@@ -229,7 +233,14 @@ namespace ICSharpCode.Reports.Core {
 					}
 					return;
 				}
+				
 			}
+		}
+		
+		
+		public override void Fill(IDataItem item)
+		{
+			FillInternal(Current,item);
 		}
 		
 		#region PropertyPath from StackOverflow
@@ -237,7 +248,7 @@ namespace ICSharpCode.Reports.Core {
 		//http://stackoverflow.com/questions/366332/best-way-to-get-sub-properties-using-getproperty
 		
 		
-		public static  object FollowPropertyPath(object value, string path)
+		private static  object FollowPropertyPath(object value, string path)
 		{
 			Type currentType = value.GetType();
 			foreach (string propertyName in path.Split('.'))
@@ -276,9 +287,9 @@ namespace ICSharpCode.Reports.Core {
         
         public override CurrentItemsCollection FillDataRow(int pos)
         {
-            var item = CurrentFromPosition(pos);
             CurrentItemsCollection ci = new CurrentItemsCollection();
-            if (item != null)
+        	var current = CurrentFromPosition(pos);
+            if (current != null)
             {
                 CurrentItem c = null;
                 foreach (PropertyDescriptor pd in this.listProperties)
@@ -286,7 +297,9 @@ namespace ICSharpCode.Reports.Core {
                     c = new CurrentItem();
                     c.ColumnName = pd.Name;
                     c.DataType = pd.PropertyType;
-                    var s = pd.GetValue(item);
+                    
+                    //var s = pd.GetValue(current);
+                    var s = FollowPropertyPath(current,pd.Name);
                     if (s != null)
                     {
                         c.Value = s.ToString();

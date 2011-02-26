@@ -89,7 +89,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 					do
 					{
 						Assert.That(dataNavigator.HasChildren,Is.True);
-						// we know that current is a 'contributor'
 						childNavigator.Fill(searchCol);
 						var a = (BaseDataItem)searchCol[0];
 						Console.WriteLine ("\t{0}",a.DBValue);
@@ -137,7 +136,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			dataNavigator.Reset();
 			dataNavigator.MoveNext();
 
-			
 			do
 			{
 				dataNavigator.Fill(searchCol);
@@ -150,16 +148,12 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
-//						
 						childNavigator.Fill(searchCol);
-						
-							var a = (BaseDataItem)searchCol[0];
-							var b = (BaseDataItem)searchCol[1];	
-							var c = (BaseDataItem)searchCol[2];	
-							Console.WriteLine ("\t{0} - {1} - {2}",a.DBValue,b.DBValue,c.DBValue);
-//						Contributor c = dataNavigator.Current as Contributor;
-//						string v2 = c.Last + " GroupVal :" +  c.GroupItem;
-//						Console.WriteLine(v2);
+						var a = (BaseDataItem)searchCol[0];
+						var b = (BaseDataItem)searchCol[1];
+						var c = (BaseDataItem)searchCol[2];
+						Console.WriteLine ("\t{0} - {1} - {2}",a.DBValue,b.DBValue,c.DBValue);
+
 					}
 					while (childNavigator.MoveNext());
 				}
@@ -182,7 +176,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
-						
 						Assert.That(dataNavigator.HasChildren,Is.True);
 						// we know that current is a 'contributor'
 						Contributor c = dataNavigator.Current as Contributor;
@@ -196,6 +189,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		}
 		
 		#endregion
+		
 		private ContributorCollection ModifyCollection ()
 		{
 			var newcol = this.contributorCollection;
