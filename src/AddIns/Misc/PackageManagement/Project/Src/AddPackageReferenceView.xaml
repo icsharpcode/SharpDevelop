@@ -33,15 +33,15 @@
 			</Button>
 		</StackPanel>
 		<TabControl>
-			<TabItem Header="Installed">
-				<pm:PackagesView
-					x:Name="installedPackagesView"
-					DataContext="{Binding Path=InstalledPackagesViewModel}"/>
-			</TabItem>
 			<TabItem Header="Available">
 				<pm:PackagesView
 					x:Name="availablePackagesView"
 					DataContext="{Binding Path=AvailablePackagesViewModel}"/>
+			</TabItem>
+			<TabItem Header="Installed">
+				<pm:PackagesView
+					x:Name="installedPackagesView"
+					DataContext="{Binding Path=InstalledPackagesViewModel}"/>
 			</TabItem>
 			<TabItem Header="Updates">
 				<pm:PackagesView
