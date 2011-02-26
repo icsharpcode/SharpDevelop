@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.Design;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -68,12 +69,23 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void CreatedSharedRepository_PathPassed_PathUsedToCreatedSharedRepository()
+		public void CreatedSharedRepository_PathResolverPassed_PathResolverUsedToCreatedSharedRepository()
 		{
 			CreateCache();
-			FakeSharedPackageRepository repository = cache.CreateSharedRepository("abc") as FakeSharedPackageRepository;
+			FakePackagePathResolver resolver = new FakePackagePathResolver();
+			FakeSharedPackageRepository repository = cache.CreateSharedRepository(resolver, null) as FakeSharedPackageRepository;
 			
-			Assert.AreEqual("abc", repository.PathPassedToConstructor);
+			Assert.AreEqual(resolver, repository.PackagePathResolverPassedToConstructor);
+		}
+		
+		[Test]
+		public void CreatedSharedRepository_FileSystemPassed_FileSystemUsedToCreatedSharedRepository()
+		{
+			CreateCache();
+			FakeFileSystem fileSystem = new FakeFileSystem();
+			FakeSharedPackageRepository repository = cache.CreateSharedRepository(null, fileSystem) as FakeSharedPackageRepository;
+			
+			Assert.AreEqual(fileSystem, repository.FileSystemPassedToConstructor);
 		}
 	}
 }

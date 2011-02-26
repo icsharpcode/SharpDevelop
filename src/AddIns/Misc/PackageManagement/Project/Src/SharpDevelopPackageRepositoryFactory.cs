@@ -7,10 +7,10 @@ using NuGet;
 namespace ICSharpCode.PackageManagement
 {
 	public class SharpDevelopPackageRepositoryFactory : PackageRepositoryFactory, ISharpDevelopPackageRepositoryFactory
-	{
-		public ISharedPackageRepository CreateSharedRepository(string path)
+	{	
+		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem)
 		{
-			return new SharedPackageRepository(path);
+			return new SharedPackageRepository(pathResolver, fileSystem);
 		}
 	}
 }

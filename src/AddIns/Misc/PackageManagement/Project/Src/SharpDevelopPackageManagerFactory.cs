@@ -15,14 +15,14 @@ namespace ICSharpCode.PackageManagement
 		
 		public SharpDevelopPackageManagerFactory()
 			: this(new SharpDevelopPackageRepositoryFactory(),
-				new SharpDevelopProjectSystemFactory(),
-				new PackageManagementOptions())
+			       new SharpDevelopProjectSystemFactory(),
+			       new PackageManagementOptions())
 		{
 		}
 		
 		public SharpDevelopPackageManagerFactory(ISharpDevelopPackageRepositoryFactory packageRepositoryFactory,
-			ISharpDevelopProjectSystemFactory projectSystemFactory,
-			PackageManagementOptions options)
+		                                         ISharpDevelopProjectSystemFactory projectSystemFactory,
+		                                         PackageManagementOptions options)
 		{
 			this.packageRepositoryFactory = packageRepositoryFactory;
 			this.projectSystemFactory = projectSystemFactory;
@@ -31,10 +31,25 @@ namespace ICSharpCode.PackageManagement
 		
 		public ISharpDevelopPackageManager CreatePackageManager(IPackageRepository packageRepository, MSBuildBasedProject project)
 		{
-			PackageRepositoryPaths repositoryPaths = new PackageRepositoryPaths(project, options);
+			IFileSystem fileSystem = CreateFileSystemThatWillContainPackages(project);
+			return CreatePackageManager(fileSystem, packageRepository, project);
+		}
+		
+		IFileSystem CreateFileSystemThatWillContainPackages(MSBuildBasedProject project)
+		{
+			var repositoryPaths = new PackageRepositoryPaths(project, options);
+			return new PhysicalFileSystem(repositoryPaths.SolutionPackagesPath);
+		}
+		
+		ISharpDevelopPackageManager CreatePackageManager(
+			IFileSystem fileSystem, 
+			IPackageRepository packageRepository, 
+			MSBuildBasedProject project)
+		{
+			DefaultPackagePathResolver pathResolver = new DefaultPackagePathResolver(fileSystem);
+			ISharedPackageRepository sharedRepository = CreateSharedRepository(pathResolver, fileSystem);
 			IProjectSystem projectSystem = CreateProjectSystem(project);
-			ISharedPackageRepository sharedRepository = CreateSharedRepository(repositoryPaths.SolutionPackagesPath);
-			return new SharpDevelopPackageManager(packageRepository, projectSystem, sharedRepository, repositoryPaths);
+			return new SharpDevelopPackageManager(packageRepository, projectSystem, fileSystem, sharedRepository, pathResolver);
 		}
 		
 		IProjectSystem CreateProjectSystem(MSBuildBasedProject project)
@@ -42,9 +57,9 @@ namespace ICSharpCode.PackageManagement
 			return projectSystemFactory.CreateProjectSystem(project);
 		}
 		
-		ISharedPackageRepository CreateSharedRepository(string path)
+		ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem)
 		{
-			return packageRepositoryFactory.CreateSharedRepository(path);
+			return packageRepositoryFactory.CreateSharedRepository(pathResolver, fileSystem);
 		}
 	}
 }

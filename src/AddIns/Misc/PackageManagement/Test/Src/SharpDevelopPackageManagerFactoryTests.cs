@@ -52,9 +52,9 @@ namespace PackageManagement.Tests
 			
 			Assert.IsNotNull(sharedRepository);
 		}
-
+		
 		[Test]
-		public void CreatePackageManager_PackagesSolutionFolderDefinedInOptions_PackageManagerLocalRepositoryFolderIsPackagesFolderInsideSolutionFolder()
+		public void CreatePackageManager_PackagesSolutionFolderDefinedInOptions_SharedLocalRepositoryFileSystemRootIsSolutionFolder()
 		{
 			CreateFactory();
 			CreateTestProject();
@@ -62,14 +62,14 @@ namespace PackageManagement.Tests
 			options.PackagesDirectory = "MyPackages";
 			CreatePackageManager();
 			
-			string expectedDirectory = @"c:\projects\MyProject\MyPackages";
 			FakeSharedPackageRepository sharedRepository = packageManager.LocalRepository as FakeSharedPackageRepository;
 			
-			Assert.AreEqual(expectedDirectory, sharedRepository.PathPassedToConstructor);
+			string expectedRoot = @"c:\projects\MyProject\MyPackages";
+			Assert.AreEqual(expectedRoot, sharedRepository.FileSystemPassedToConstructor.Root);
 		}
 		
 		[Test]
-		public void CreatePackageManager_PackagesSolutionFolderDefinedInOptions_PackageManagerFileSystemRootFolderIsPackagesFolderInsideSolutionFolder()
+		public void CreatePackageManager_PackagesSolutionFolderDefinedInOptions_SharedLocalRepositoryPackagePathResolverCreatedWithPackagesFolderInsideSolutionFolder()
 		{
 			CreateFactory();
 			CreateTestProject();
@@ -77,10 +77,26 @@ namespace PackageManagement.Tests
 			options.PackagesDirectory = "MyPackages";
 			CreatePackageManager();
 			
-			string expectedDirectory = @"c:\projects\MyProject\MyPackages";
-			string actualDirectory = packageManager.FileSystem.Root;
+			FakeSharedPackageRepository sharedRepository = packageManager.LocalRepository as FakeSharedPackageRepository;
+			
+			FakePackage package = new FakePackage("Test.Package");
+			package.Version = new Version(1, 0, 0, 0);
+			string expectedDirectory = @"c:\projects\MyProject\MyPackages\Test.Package.1.0.0.0";
+			string actualDirectory = sharedRepository.PackagePathResolverPassedToConstructor.GetInstallPath(package);
 			
 			Assert.AreEqual(expectedDirectory, actualDirectory);
+		}
+		
+		[Test]
+		public void CreatePackageManager_PackagesSolutionFolderDefinedInOptions_LocalRepositoryFileSystemIsPackageManagerFileSystem()
+		{
+			CreateFactory();
+			CreateTestProject();
+			CreatePackageManager();
+			
+			FakeSharedPackageRepository sharedRepository = packageManager.LocalRepository as FakeSharedPackageRepository;
+			
+			Assert.AreEqual(packageManager.FileSystem, sharedRepository.FileSystemPassedToConstructor);
 		}
 		
 		[Test]

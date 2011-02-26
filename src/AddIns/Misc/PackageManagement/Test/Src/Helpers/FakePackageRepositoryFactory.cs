@@ -35,9 +35,9 @@ namespace PackageManagement.Tests.Helpers
 			return FakePackageRepository;
 		}
 		
-		public ISharedPackageRepository CreateSharedRepository(string path)
+		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem)
 		{
-			return new FakeSharedPackageRepository(path);
+			return new FakeSharedPackageRepository(pathResolver, fileSystem);
 		}
 	}
 }

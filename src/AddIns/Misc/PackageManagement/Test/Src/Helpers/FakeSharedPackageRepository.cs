@@ -10,16 +10,18 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class FakeSharedPackageRepository : FakePackageRepository, ISharedPackageRepository
 	{
-		public string PathPassedToConstructor;
 		public string PathPassedToRegisterRepository;
-		
-		public FakeSharedPackageRepository(string path)
-		{
-			PathPassedToConstructor = path;
-		}
+		public IPackagePathResolver PackagePathResolverPassedToConstructor;
+		public IFileSystem FileSystemPassedToConstructor;
 		
 		public FakeSharedPackageRepository()
 		{
+		}
+		
+		public FakeSharedPackageRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem)
+		{
+			this.PackagePathResolverPassedToConstructor = pathResolver;
+			this.FileSystemPassedToConstructor = fileSystem;
 		}
 		
 		public bool IsReferenced(string packageId, Version version)

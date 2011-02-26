@@ -24,6 +24,7 @@ namespace PackageManagement.Tests
 		PackageRepositoryPaths repositoryPaths;
 		PackageReferenceRepositoryHelper packageRefRepositoryHelper;
 		TestableProjectManager testableProjectManager;
+		FakeFileSystem fakeFileSystem;
 		
 		void CreatePackageManager(IProject project, PackageReferenceRepositoryHelper packageRefRepositoryHelper)
 		{
@@ -31,14 +32,18 @@ namespace PackageManagement.Tests
 			options.PackagesDirectory = "packages";
 			
 			repositoryPaths = new PackageRepositoryPaths(project, options);
+			var pathResolver = new DefaultPackagePathResolver(repositoryPaths.SolutionPackagesPath);
+			
+			fakeFileSystem = new FakeFileSystem();
 			
 			fakeFeedSourceRepository = new FakePackageRepository();
 			fakeSolutionSharedRepository = packageRefRepositoryHelper.FakeSharedSourceRepository;
 			
 			packageManager = new SharpDevelopPackageManager(fakeFeedSourceRepository,
 				packageRefRepositoryHelper.FakeProjectSystem,
+				fakeFileSystem,
 				fakeSolutionSharedRepository,
-				repositoryPaths);
+				pathResolver);
 		}
 		
 		void CreatePackageManager()

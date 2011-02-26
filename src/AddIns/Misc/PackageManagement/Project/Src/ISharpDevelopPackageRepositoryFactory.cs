@@ -8,6 +8,6 @@ namespace ICSharpCode.PackageManagement
 {
 	public interface ISharpDevelopPackageRepositoryFactory : IPackageRepositoryFactory
 	{
-		ISharedPackageRepository CreateSharedRepository(string path);
+		ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem);
 	}
 }

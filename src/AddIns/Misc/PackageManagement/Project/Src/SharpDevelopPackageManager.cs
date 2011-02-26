@@ -14,41 +14,14 @@ namespace ICSharpCode.PackageManagement
 		
 		public SharpDevelopPackageManager(
 			IPackageRepository sourceRepository,
-			MSBuildBasedProject project,
-			ISharedPackageRepository localRepository,
-			PackageRepositoryPaths repositoryPaths)
-			: this(
-				sourceRepository,
-				new SharpDevelopProjectSystem(project),
-				localRepository,
-				repositoryPaths)
-		{
-		}
-		
-		public SharpDevelopPackageManager(
-			IPackageRepository sourceRepository,
 			IProjectSystem projectSystem,
+			IFileSystem fileSystem,
 			ISharedPackageRepository localRepository,
-			PackageRepositoryPaths repositoryPaths)
-			: this(
-				sourceRepository,
-				projectSystem,
-				localRepository,
-				repositoryPaths,
-				repositoryPaths.SolutionPackagesPath)
-		{
-		}
-		
-		SharpDevelopPackageManager(
-			IPackageRepository sourceRepository,
-			IProjectSystem projectSystem,
-			ISharedPackageRepository localRepository,
-			PackageRepositoryPaths repositoryPaths,
-			string solutionPackagesPath)
+			IPackagePathResolver pathResolver)
 			: base(
 				sourceRepository,
-				new DefaultPackagePathResolver(solutionPackagesPath),
-				new PhysicalFileSystem(solutionPackagesPath),
+				pathResolver,
+				fileSystem,
 				localRepository)
 		{
 			this.projectSystem = projectSystem;
