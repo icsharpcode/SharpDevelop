@@ -109,7 +109,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					if (container != null) {
 
 						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(container,offset);
-						StandardPrinter.AdjustBackColor (container);
+						
 						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(container.Items,exportContainer.StyleDecorator.Location);
 						exportContainer.Items.AddRange(clist);
 						list.Add(exportContainer);

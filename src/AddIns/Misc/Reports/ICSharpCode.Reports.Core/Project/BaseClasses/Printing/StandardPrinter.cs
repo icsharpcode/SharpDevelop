@@ -223,6 +223,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				lineItem.StyleDecorator.DisplayRectangle = new Rectangle(lineItem.StyleDecorator.Location,
 				                                                         lineItem.StyleDecorator.Size);
 				
+				AdjustBackColor (container);
 				return lineItem;
 			}
 			return null;

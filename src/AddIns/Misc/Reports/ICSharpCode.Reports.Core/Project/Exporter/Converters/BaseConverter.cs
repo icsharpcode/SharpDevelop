@@ -118,16 +118,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 			IExportColumnBuilder exportLineBuilder = row as IExportColumnBuilder;
 
 			if (exportLineBuilder != null) {
-
-				ExportContainer lineItem = StandardPrinter.ConvertToContainer(row,offset);
-				
-				StandardPrinter.AdjustBackColor(row);
-				ExporterCollection list = StandardPrinter.ConvertPlainCollection(row.Items,offset);
-					
-				lineItem.Items.AddRange(list);
-				
+				ExportContainer exportContainer = StandardPrinter.ConvertToContainer(row,offset);
+				ExporterCollection list = StandardPrinter.ConvertPlainCollection(row.Items,exportContainer.StyleDecorator.Location);
+				exportContainer.Items.AddRange(list);
 				ExporterCollection containerList = new ExporterCollection();
-				containerList.Add (lineItem);
+				containerList.Add (exportContainer);
 				return containerList;
 			}
 			return null;
