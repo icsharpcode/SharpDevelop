@@ -34,14 +34,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
         private ElementHost databasesTreeHost;
         private DatabasesTreeView databasesTree;
 		
-		private enum NodeType {
-			
-//			DataBaseRoot,
-//			dataBaseConnctionClose,
-//			dataBaseConnection,
-//			tablesRoot,
-//			viewsRoot,
-//			proceduresRoot,
+		private enum NodeType
+		{
 			TableImage,
 			ViewImage,
 			ProcedureImage,
@@ -89,7 +83,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			if (message == DialogMessage.Next) {
 				customizer.Set("SqlString", this.txtSqlString.Text.Trim());
-				//reportStructure.CommandType = commandType;
 				reportStructure.SqlString = this.txtSqlString.Text.Trim();
 				reportStructure.ConnectionString = connectionString;
 				base.EnableFinish = true;
@@ -196,7 +189,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 						this.txtSqlString.AppendText(colName);
 					}
 					reportStructure.CommandType = CommandType.Text;
-					reportStructure.IDatabaseObjectBase = column;
+					if (reportStructure.IDatabaseObjectBase == null)
+					{
+						reportStructure.IDatabaseObjectBase = column;
+					}
 					break;
 
 				case NodeType.ProcedureImage:
@@ -208,12 +204,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					reportStructure.CommandType = CommandType.StoredProcedure;
 					reportStructure.IDatabaseObjectBase = procedure;
 					break;
-/*
-				case NodeType.ViewImage:
-					this.txtSqlString.Text = String.Empty;
-					this.txtSqlString.Text = "No idea how to handle views";
-					break;
-					*/
 				default:
 					break;
 			}
@@ -223,7 +213,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 
         private void databasesTree_SelectedItemChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
         {
-            if (e.NewValue is IDatabaseObjectBase)
+        	if (e.NewValue is IDatabaseObjectBase)
             {
                 IDatabase parentDatabase = e.NewValue as IDatabase;
 
@@ -251,11 +241,16 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 
                 if (this.currentNode is IDatabase)
                 {
-                    this.connectionString = "Provider=" + parentDatabase.Datasource.DatabaseDriver.ODBCProviderName + ";" + parentDatabase.ConnectionString;
-                    this.txtSqlString.Enabled = true;
+                	if (parentDatabase != null)
+                	{
+                		this.connectionString = "Provider=" + parentDatabase.Datasource.DatabaseDriver.ODBCProviderName + ";" + parentDatabase.ConnectionString;
+                		this.txtSqlString.Enabled = true;
 
-                    if (this.firstDrag)
-                        this.txtSqlString.Text = string.Empty;
+                		if (this.firstDrag)
+                			this.txtSqlString.Text = string.Empty;
+                		
+                		firstDrag = false;
+                	}
                 }
                 else
                 {
@@ -264,6 +259,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
             }
         }
 		
+        
 		///<summary>
 		/// We check if a ColumnName includes an "-" Character,
 		/// if so, suround it with []</summary>

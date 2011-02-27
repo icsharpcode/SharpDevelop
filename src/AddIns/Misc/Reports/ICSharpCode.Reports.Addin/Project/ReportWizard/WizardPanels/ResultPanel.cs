@@ -105,9 +105,11 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			if (t != null) {
 				str = t.Name;
 			}
+			
 			else
 			{
-				str = reportStructure.IDatabaseObjectBase.Parent.Name;
+				//str = reportStructure.IDatabaseObjectBase.Parent.Name;
+				str = "Table1";
 			}
 			return str;
 		}
