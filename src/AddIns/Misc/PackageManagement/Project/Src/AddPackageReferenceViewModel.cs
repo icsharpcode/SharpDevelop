@@ -14,6 +14,7 @@ namespace ICSharpCode.PackageManagement
 		InstalledPackagesViewModel installedPackagesViewModel;
 		AvailablePackagesViewModel availablePackagesViewModel;
 		PackageUpdatesViewModel packageUpdatesViewModel;
+		RecentPackagesViewModel recentPackagesViewModel;
 		
 		public AddPackageReferenceViewModel(
 			IPackageManagementService packageManagementService,
@@ -22,13 +23,15 @@ namespace ICSharpCode.PackageManagement
 			this.packageManagementService = packageManagementService;
 			this.packageManagementService.OutputMessagesView.Clear();
 			
-			installedPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, taskFactory);
 			availablePackagesViewModel = new AvailablePackagesViewModel(packageManagementService, taskFactory);
+			installedPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, taskFactory);
 			packageUpdatesViewModel = new PackageUpdatesViewModel(packageManagementService, taskFactory);
+			recentPackagesViewModel = new RecentPackagesViewModel(packageManagementService, taskFactory);
 			
-			installedPackagesViewModel.ReadPackages();
 			availablePackagesViewModel.ReadPackages();
+			installedPackagesViewModel.ReadPackages();
 			packageUpdatesViewModel.ReadPackages();
+			recentPackagesViewModel.ReadPackages();
 		}
 		
 		public InstalledPackagesViewModel InstalledPackagesViewModel {
@@ -41,6 +44,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public PackageUpdatesViewModel PackageUpdatesViewModel {
 			get { return packageUpdatesViewModel; }
+		}
+		
+		public RecentPackagesViewModel RecentPackagesViewModel {
+			get { return recentPackagesViewModel; }
 		}
 	}
 }

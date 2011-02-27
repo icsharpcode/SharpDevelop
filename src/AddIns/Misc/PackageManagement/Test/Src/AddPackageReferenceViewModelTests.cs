@@ -98,5 +98,19 @@ namespace PackageManagement.Tests
 			
 			Assert.IsTrue(fakePackageManagementService.FakeOutputMessagesView.IsClearCalled);
 		}
+		
+		[Test]
+		public void RecentPackagesViewModel_RecentRepositoryHasOnePackage_HasOnePackageViewModel()
+		{
+			CreatePackageManagementService();
+			var package = new FakePackage();
+			package.Id = "Test";
+			fakePackageManagementService.FakeRecentPackageRepository.FakePackages.Add(package);
+			CreateViewModel(fakePackageManagementService);
+
+			List<FakePackage> expectedPackages = fakePackageManagementService.FakeRecentPackageRepository.FakePackages;
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.RecentPackagesViewModel.PackageViewModels);
+		}
 	}
 }

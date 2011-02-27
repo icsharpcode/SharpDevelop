@@ -143,6 +143,8 @@
     </Compile>
     <Compile Include="Src\Pages.cs" />
     <Compile Include="Src\ProjectTargetFramework.cs" />
+    <Compile Include="Src\RecentPackageRepository.cs" />
+    <Compile Include="Src\RecentPackagesViewModel.cs" />
     <Compile Include="Src\RegisteredPackageSource.cs" />
     <Compile Include="Src\RegisteredPackageSources.cs" />
     <Compile Include="Src\SelectedListBoxItemScrollingBehaviour.cs" />

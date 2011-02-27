@@ -133,5 +133,11 @@ namespace ICSharpCode.PackageManagement.Design
 		public IPackageManagementOutputMessagesView OutputMessagesView {
 			get { return FakeOutputMessagesView; }
 		}
+		
+		public FakePackageRepository FakeRecentPackageRepository = new FakePackageRepository();
+		
+		public IPackageRepository RecentPackageRepository {
+			get { return FakeRecentPackageRepository; }
+		}
 	}
 }

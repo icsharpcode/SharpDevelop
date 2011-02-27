@@ -123,6 +123,8 @@
     <Compile Include="Src\PackageUpdatesViewModelTests.cs" />
     <Compile Include="Src\PackageViewModelTests.cs" />
     <Compile Include="Src\PagesTests.cs" />
+    <Compile Include="Src\RecentPackageRepositoryTests.cs" />
+    <Compile Include="Src\RecentPackagesViewModelTests.cs" />
     <Compile Include="Src\RegisteredPackageSourcesTests.cs" />
     <Compile Include="Src\SelectedListBoxItemScrollingBehaviourTests.cs" />
     <Compile Include="Src\SharpDevelopPackageManagerFactoryTests.cs" />

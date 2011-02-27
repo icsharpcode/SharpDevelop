@@ -19,6 +19,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementProjectService projectService;
 		IPackageRepository activePackageRepository;
 		PackageSource activePackageSource;
+		RecentPackageRepository recentPackageRepository;
 		
 		public PackageManagementService(
 			PackageManagementOptions options,
@@ -70,16 +71,32 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public IPackageRepository ActivePackageRepository {
-			get { return GetActivePackageRepository(); }
+		public IPackageRepository RecentPackageRepository {
+			get {
+				if (recentPackageRepository == null) {
+					CreateRecentPackageRepository();
+				}
+				return recentPackageRepository;
+			}
 		}
 		
-		IPackageRepository GetActivePackageRepository()
+		void CreateRecentPackageRepository()
 		{
-			if (activePackageRepository == null) {
-				activePackageRepository = packageRepositoryCache.CreateRepository(ActivePackageSource);
+			recentPackageRepository = new RecentPackageRepository();
+		}
+		
+		public IPackageRepository ActivePackageRepository {
+			get {
+				if (activePackageRepository == null) {
+					CreateActivePackageRepository();
+				}
+				return activePackageRepository;
 			}
-			return activePackageRepository;
+		}
+		
+		void CreateActivePackageRepository()
+		{
+			activePackageRepository = packageRepositoryCache.CreateRepository(ActivePackageSource);
 		}
 		
 		public IProjectManager ActiveProjectManager {
@@ -101,6 +118,7 @@ namespace ICSharpCode.PackageManagement
 			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageRepository);
 			packageManager.InstallPackage(package, operations);
 			projectService.RefreshProjectBrowser();
+			RecentPackageRepository.AddPackage(package);
 			OnPackageInstalled();
 		}
 		

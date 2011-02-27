@@ -468,5 +468,21 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedLogger, actualLogger);
 		}
+		
+		[Test]
+		public void InstallPackage_OnePackageOperation_PackageInstalledAddedToRecentPackagesRepository()
+		{
+			CreatePackageManagementService();
+			installPackageHelper.AddPackageInstallOperation();
+			installPackageHelper.InstallTestPackage();
+			
+			var recentPackages = packageManagementService.RecentPackageRepository.GetPackages();
+			
+			var expectedPackages = new FakePackage[] {
+				installPackageHelper.TestPackage
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, recentPackages);
+		}
 	}
 }

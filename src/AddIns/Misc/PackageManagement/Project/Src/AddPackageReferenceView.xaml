@@ -48,6 +48,11 @@
 					x:Name="packageUpdatesView"
 					DataContext="{Binding Path=PackageUpdatesViewModel}"/>
 			</TabItem>
+			<TabItem Header="Recent">
+				<pm:PackagesView
+					x:Name="recentPackagesView"
+					DataContext="{Binding Path=RecentPackagesViewModel}"/>
+			</TabItem>
 		</TabControl>
 	</DockPanel>
 </Window>
