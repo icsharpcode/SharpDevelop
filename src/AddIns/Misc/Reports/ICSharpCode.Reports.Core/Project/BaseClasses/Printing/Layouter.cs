@@ -22,11 +22,9 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
 			}
-			
 			if (container == null) {
 				throw new ArgumentNullException("container");
 			}
-			
 			
 			if (container.Items == null)
 			{
