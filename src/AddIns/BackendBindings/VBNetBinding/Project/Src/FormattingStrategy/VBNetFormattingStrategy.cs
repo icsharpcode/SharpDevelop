@@ -627,7 +627,9 @@ namespace ICSharpCode.VBNetBinding
 					}
 				}
 				
-				if (current.Kind == Tokens.Function) {
+				// do not indent if current token is start of lambda
+				// only works with single-line lambdas
+				if (current.Kind == Tokens.Function || current.Kind == Tokens.Sub) {
 					lexer.StartPeek();
 					
 					if (lexer.Peek().Kind == Tokens.OpenParenthesis)
