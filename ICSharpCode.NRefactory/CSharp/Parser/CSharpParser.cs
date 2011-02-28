@@ -2540,7 +2540,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return EmptyList<AttributedNode>.Instance;
 		}
 		
-		public IEnumerable<AstNode> ParseStatements(TextReader reader)
+		public IEnumerable<Statement> ParseStatements(TextReader reader)
 		{
 			string code = "void M() { " + reader.ReadToEnd() + "}";
 			var members = ParseTypeMembers(new StringReader(code));
@@ -2548,10 +2548,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (method != null && method.Body != null)
 				return method.Body.Statements;
 			else
-				return EmptyList<AstNode>.Instance;
+				return EmptyList<Statement>.Instance;
 		}
 		
-		public AstNode ParseTypeReference(TextReader reader)
+		public AstType ParseTypeReference(TextReader reader)
 		{
 			// TODO: add support for parsing type references
 			throw new NotImplementedException();

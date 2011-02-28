@@ -395,13 +395,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override IEntity VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			DefaultProperty p = new DefaultProperty(currentTypeDefinition, propertyDeclaration.Name);
-			HandlePropertyOrIndexer(p, propertyDeclaration);
-			currentTypeDefinition.Properties.Add(p);
-			return p;
-		}
-		
-		void HandlePropertyOrIndexer(DefaultProperty p, PropertyDeclaration propertyDeclaration)
-		{
 			p.Region = MakeRegion(propertyDeclaration);
 			p.BodyRegion = MakeBraceRegion(propertyDeclaration);
 			ApplyModifiers(p, propertyDeclaration.Modifiers);
@@ -413,13 +406,25 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			p.Getter = ConvertAccessor(propertyDeclaration.Getter, p.Accessibility);
 			p.Setter = ConvertAccessor(propertyDeclaration.Setter, p.Accessibility);
+			currentTypeDefinition.Properties.Add(p);
+			return p;
 		}
 		
 		public override IEntity VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
 		{
 			DefaultProperty p = new DefaultProperty(currentTypeDefinition, "Items");
 			p.EntityType = EntityType.Indexer;
-			HandlePropertyOrIndexer(p, indexerDeclaration);
+			p.Region = MakeRegion(indexerDeclaration);
+			p.BodyRegion = MakeBraceRegion(indexerDeclaration);
+			ApplyModifiers(p, indexerDeclaration.Modifiers);
+			p.ReturnType = ConvertType(indexerDeclaration.ReturnType);
+			ConvertAttributes(p.Attributes, indexerDeclaration.Attributes);
+			if (!indexerDeclaration.PrivateImplementationType.IsNull) {
+				p.Accessibility = Accessibility.None;
+				p.InterfaceImplementations.Add(ConvertInterfaceImplementation(indexerDeclaration.PrivateImplementationType, p.Name));
+			}
+			p.Getter = ConvertAccessor(indexerDeclaration.Getter, p.Accessibility);
+			p.Setter = ConvertAccessor(indexerDeclaration.Setter, p.Accessibility);
 			ConvertParameters(p.Parameters, indexerDeclaration.Parameters);
 			currentTypeDefinition.Properties.Add(p);
 			return p;

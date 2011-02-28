@@ -38,6 +38,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return visitor.VisitEventDeclaration (this, data);
 		}
+		
+		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
+		{
+			EventDeclaration o = other as EventDeclaration;
+			return o != null && this.MatchMember(o, match) && this.Variables.DoMatch(o.Variables, match);
+		}
 	}
 	
 	public class CustomEventDeclaration : MemberDeclaration
@@ -66,6 +72,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCustomEventDeclaration (this, data);
+		}
+		
+		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
+		{
+			CustomEventDeclaration o = other as CustomEventDeclaration;
+			return o != null && this.MatchMember(o, match)
+				&& this.AddAccessor.DoMatch(o.AddAccessor, match) && this.RemoveAccessor.DoMatch(o.RemoveAccessor, match);
 		}
 	}
 }

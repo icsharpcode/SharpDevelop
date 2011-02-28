@@ -309,14 +309,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		// handle properties/indexers
-		ResolveResult VisitPropertyMember(PropertyDeclaration propertyDeclaration)
+		ResolveResult VisitPropertyMember(MemberDeclaration propertyOrIndexerDeclaration)
 		{
 			try {
 				if (resolver.CurrentTypeDefinition != null) {
-					resolver.CurrentMember = resolver.CurrentTypeDefinition.Properties.FirstOrDefault(p => p.Region.IsInside(propertyDeclaration.StartLocation));
+					resolver.CurrentMember = resolver.CurrentTypeDefinition.Properties.FirstOrDefault(p => p.Region.IsInside(propertyOrIndexerDeclaration.StartLocation));
 				}
 				
-				for (AstNode node = propertyDeclaration.FirstChild; node != null; node = node.NextSibling) {
+				for (AstNode node = propertyOrIndexerDeclaration.FirstChild; node != null; node = node.NextSibling) {
 					if (node.Role == PropertyDeclaration.SetterRole && resolver.CurrentMember != null) {
 						resolver.PushBlock();
 						resolver.AddVariable(resolver.CurrentMember.ReturnType, "value");
@@ -1135,7 +1135,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			throw new NotImplementedException();
 		}
-		*/
+		 */
 		#endregion
 		
 		public override ResolveResult VisitIdentifier(Identifier identifier, object data)

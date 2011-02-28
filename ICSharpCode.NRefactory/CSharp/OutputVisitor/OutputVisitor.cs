@@ -1889,7 +1889,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			StartNode(memberType);
 			memberType.Target.AcceptVisitor(this, data);
-			WriteToken(".", MemberType.Roles.Dot);
+			if (memberType.IsDoubleColon)
+				WriteToken("::", MemberType.Roles.Dot);
+			else
+				WriteToken(".", MemberType.Roles.Dot);
 			WriteIdentifier(memberType.MemberName);
 			WriteTypeArguments(memberType.TypeArguments);
 			return EndNode(memberType);

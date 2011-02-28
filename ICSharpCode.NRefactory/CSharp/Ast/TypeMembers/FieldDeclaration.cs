@@ -39,5 +39,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return visitor.VisitFieldDeclaration (this, data);
 		}
+		
+		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
+		{
+			FieldDeclaration o = other as FieldDeclaration;
+			return o != null && this.MatchMember(o, match) && this.Variables.DoMatch(o.Variables, match);
+		}
 	}
 }
