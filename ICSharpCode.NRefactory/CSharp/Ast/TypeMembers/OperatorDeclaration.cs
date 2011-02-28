@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		Explicit
 	}
 	
-	public class OperatorDeclaration : MemberDeclaration
+	public class OperatorDeclaration : AttributedNode
 	{
 		public static readonly Role<CSharpTokenNode> OperatorTypeRole = new Role<CSharpTokenNode>("OperatorType", CSharpTokenNode.Null);
 		public static readonly Role<CSharpTokenNode> OperatorKeywordRole = Roles.Keyword;
@@ -74,6 +74,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public OperatorType OperatorType {
 			get;
 			set;
+		}
+		
+		public AstType ReturnType {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
 		}
 		
 		public CSharpTokenNode LParToken {
@@ -103,15 +108,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			return Mono.CSharp.Operator.GetName((Mono.CSharp.Operator.OpType)type);
 		}
 		
+		public override NodeType NodeType {
+			get { return NodeType.Member; }
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitOperatorDeclaration (this, data);
 		}
 		
+		public string Name {
+			get { return GetName(this.OperatorType); }
+		}
+		
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			OperatorDeclaration o = other as OperatorDeclaration;
-			return o != null && this.MatchMember(o, match) && this.OperatorType == o.OperatorType
+			return o != null && this.MatchAttributesAndModifiers(o, match) && this.OperatorType == o.OperatorType
+				&& this.ReturnType.DoMatch(o.ReturnType, match)
 				&& this.Parameters.DoMatch(o.Parameters, match) && this.Body.DoMatch(o.Body, match);
 		}
 	}

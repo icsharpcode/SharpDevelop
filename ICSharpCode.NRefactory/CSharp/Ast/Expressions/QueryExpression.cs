@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			QueryExpression o = other as QueryExpression;
-			return o != null && this.Clauses.DoMatch(o.Clauses, match);
+			return o != null && !o.IsNull && this.Clauses.DoMatch(o.Clauses, match);
 		}
 	}
 	

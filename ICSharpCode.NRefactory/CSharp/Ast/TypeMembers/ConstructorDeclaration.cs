@@ -105,6 +105,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				return default (S);
 			}
+			
+			protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
+			{
+				return other == null || other.IsNull;
+			}
 		}
 		
 		public override NodeType NodeType {
@@ -130,7 +135,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			ConstructorInitializer o = other as ConstructorInitializer;
-			return o != null && this.ConstructorInitializerType == o.ConstructorInitializerType && this.Arguments.DoMatch(o.Arguments, match);
+			return o != null && !o.IsNull && this.ConstructorInitializerType == o.ConstructorInitializerType && this.Arguments.DoMatch(o.Arguments, match);
 		}
 	}
 }

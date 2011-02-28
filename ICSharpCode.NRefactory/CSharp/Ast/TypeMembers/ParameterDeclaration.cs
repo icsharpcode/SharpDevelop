@@ -89,6 +89,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				&& this.Type.DoMatch(o.Type, match) && MatchString(this.Name, o.Name)
 				&& this.DefaultExpression.DoMatch(o.DefaultExpression, match);
 		}
+		
+		public ParameterDeclaration()
+		{
+		}
+		
+		public ParameterDeclaration(AstType type, string name)
+		{
+			this.Type = type;
+			this.Name = name;
+		}
 	}
 }
 

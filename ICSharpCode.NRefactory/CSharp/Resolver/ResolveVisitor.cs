@@ -224,11 +224,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return VisitFieldOrEventDeclaration(eventDeclaration);
 		}
 		
-		ResolveResult VisitFieldOrEventDeclaration(MemberDeclaration fieldDeclaration)
+		ResolveResult VisitFieldOrEventDeclaration(AttributedNode fieldOrEventDeclaration)
 		{
-			int initializerCount = fieldDeclaration.GetChildrenByRole(FieldDeclaration.Roles.Variable).Count();
+			int initializerCount = fieldOrEventDeclaration.GetChildrenByRole(FieldDeclaration.Roles.Variable).Count();
 			ResolveResult result = null;
-			for (AstNode node = fieldDeclaration.FirstChild; node != null; node = node.NextSibling) {
+			for (AstNode node = fieldOrEventDeclaration.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == FieldDeclaration.Roles.Variable) {
 					if (resolver.CurrentTypeDefinition != null) {
 						resolver.CurrentMember = resolver.CurrentTypeDefinition.Fields.FirstOrDefault(f => f.Region.IsInside(node.StartLocation));

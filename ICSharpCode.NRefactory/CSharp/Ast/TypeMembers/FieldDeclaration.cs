@@ -1,6 +1,6 @@
 ﻿// 
 // FieldDeclaration.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -29,9 +29,18 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class FieldDeclaration : MemberDeclaration
+	public class FieldDeclaration : AttributedNode
 	{
-		public AstNodeCollection<VariableInitializer> Variables { 
+		public override NodeType NodeType {
+			get { return NodeType.Member; }
+		}
+		
+		public AstType ReturnType {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
+		}
+		
+		public AstNodeCollection<VariableInitializer> Variables {
 			get { return GetChildrenByRole (Roles.Variable); }
 		}
 		
@@ -43,7 +52,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			FieldDeclaration o = other as FieldDeclaration;
-			return o != null && this.MatchMember(o, match) && this.Variables.DoMatch(o.Variables, match);
+			return o != null && this.MatchAttributesAndModifiers(o, match)
+				&& this.ReturnType.DoMatch(o.ReturnType, match) && this.Variables.DoMatch(o.Variables, match);
 		}
 	}
 }

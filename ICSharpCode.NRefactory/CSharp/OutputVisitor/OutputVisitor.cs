@@ -1946,6 +1946,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public object VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration, object data)
 		{
 			StartNode(typeParameterDeclaration);
+			WriteAttributes(typeParameterDeclaration.Attributes);
 			switch (typeParameterDeclaration.Variance) {
 				case VarianceModifier.Invariant:
 					break;
