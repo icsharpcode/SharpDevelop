@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 {
-	[TestFixture, Ignore("Delegate.Name is broken")]
+	[TestFixture]
 	public class DelegateDeclarationTests
 	{
 		[Test]
@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 					}});
 		}
 		
-		[Test]
+		[Test, Ignore("Generics not yet supported")]
 		public void GenericDelegateDeclarationTest()
 		{
 			ParseUtilCSharp.AssertGlobal(

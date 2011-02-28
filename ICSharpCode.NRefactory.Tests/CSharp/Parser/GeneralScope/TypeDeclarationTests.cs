@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.AreEqual(Modifiers.Static, td.Modifiers);
 		}
 		
-		[Test, Ignore("Generic classes not yet supported")]
+		[Test, Ignore("Generics not yet supported")]
 		public void GenericClassTypeDeclarationTest()
 		{
 			ParseUtilCSharp.AssertGlobal(
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 				});
 		}
 		
-		[Test, Ignore("Generic classes not yet supported")]
+		[Test, Ignore("Constraints not yet supported")]
 		public void GenericClassWithWhere()
 		{
 			ParseUtilCSharp.AssertGlobal(
