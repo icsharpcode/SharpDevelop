@@ -1931,6 +1931,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			StartNode(primitiveType);
 			WriteKeyword(primitiveType.Keyword);
+			if (primitiveType.Keyword == "new") {
+				// new() constraint
+				LPar();
+				RPar();
+			}
 			return EndNode(primitiveType);
 		}
 		

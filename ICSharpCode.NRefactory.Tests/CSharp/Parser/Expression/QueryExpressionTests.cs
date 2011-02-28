@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 {
-	[TestFixture]
+	[TestFixture, Ignore("Query expressions not yet implemented")]
 	public class QueryExpressionTests
 	{
 		[Test]
@@ -195,6 +195,31 @@ select new { c.Name, o.OrderID, o.Total }",
 							Expression = new IdentifierExpression("x")
 						}
 					}});
+		}
+		
+		[Test]
+		public void QueryContinuation()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"from a in b select c into d select e",
+				new QueryExpression {
+					Clauses = {
+						new QueryContinuationClause {
+							PrecedingQuery = new QueryExpression {
+								Clauses = {
+									new QueryFromClause {
+										Identifier = "a",
+										Expression = new IdentifierExpression("b")
+									},
+									new QuerySelectClause { Expression = new IdentifierExpression("c") }
+								}
+							},
+							Identifier = "d"
+						},
+						new QuerySelectClause { Expression = new IdentifierExpression("e") }
+					}
+				}
+			);
 		}
 	}
 }

@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 {
-	[TestFixture]
+	[TestFixture, Ignore("Generics not yet implemented")]
 	public class MethodDeclarationTests
 	{
 		[Test]

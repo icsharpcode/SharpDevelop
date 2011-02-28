@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 				});
 		}
 		
-		[Test]
+		[Test, Ignore("AdditionalArraySpecifiers not yet implemented")]
 		public void MultidimensionalNestedArray()
 		{
 			ParseUtilCSharp.AssertExpression(
@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 				});
 		}
 		
-		[Test]
+		[Test, Ignore("Array initializers not yet implemented")]
 		public void ImplicitlyTypedArrayCreateExpression()
 		{
 			ParseUtilCSharp.AssertExpression(

@@ -18,6 +18,24 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			);
 		}
 		
+		[Test, Ignore("parser is broken and produces IdentifierExpression instead of PrimitiveType")]
+		public void ShortMaxValueTest()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"short.MaxValue",
+				new PrimitiveType("short").Member("MaxValue")
+			);
+		}
+		
+		[Test, Ignore("Parsing of @-identifiers is broken")]
+		public void IdentShortMaxValueTest()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"@short.MaxValue",
+				new IdentifierExpression("short").Member("MaxValue")
+			);
+		}
+		
 		[Test]
 		public void GenericFieldReferenceExpressionTest()
 		{
@@ -39,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			);
 		}
 		
-		[Test]
+		[Test, Ignore("Aliases not yet implemented")]
 		public void GlobalFullNamespaceGenericFieldReferenceExpressionTest()
 		{
 			ParseUtilCSharp.AssertExpression(

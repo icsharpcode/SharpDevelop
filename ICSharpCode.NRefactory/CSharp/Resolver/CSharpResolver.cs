@@ -1513,12 +1513,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
-			ResolveResult rr = LookupSimpleNameOrTypeName(
+			return LookupSimpleNameOrTypeName(
 				identifier, typeArguments,
 				isInvocationTarget ? SimpleNameLookupMode.InvocationTarget : SimpleNameLookupMode.Expression);
-			if (rr == ErrorResult && typeArguments.Count == 0)
-				rr = new UnknownIdentifierResolveResult(identifier);
-			return rr;
 		}
 		
 		public ResolveResult LookupSimpleNamespaceOrTypeName(string identifier, IList<IType> typeArguments, bool isUsingDeclaration = false)
@@ -1633,7 +1630,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				// if we didn't find anything: repeat lookup with parent namespace
 			}
-			return ErrorResult;
+			if (typeArguments.Count == 0)
+				return new UnknownIdentifierResolveResult(identifier);
+			else
+				return ErrorResult;
 		}
 		
 		/// <summary>

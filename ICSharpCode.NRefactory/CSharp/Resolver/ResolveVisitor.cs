@@ -472,9 +472,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return ie != null && ie.Target == node;
 		}
 		
-		IType ResolveType(AstNode node)
+		IType ResolveType(AstType type)
 		{
-			return MakeTypeReference(node).Resolve(resolver.Context);
+			return MakeTypeReference(type).Resolve(resolver.Context);
 		}
 		
 		public override ResolveResult VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
@@ -951,7 +951,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Creates a type reference for the specified type node.
 		/// If the type node is 'var', performs type inference on the initializer expression.
 		/// </summary>
-		ITypeReference MakeTypeReference(AstNode type, AstNode initializerExpression, bool isForEach)
+		ITypeReference MakeTypeReference(AstType type, AstNode initializerExpression, bool isForEach)
 		{
 			if (initializerExpression != null && IsVar(type)) {
 				return new VarTypeReference(this, resolver.Clone(), initializerExpression, isForEach);
@@ -960,14 +960,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ITypeReference MakeTypeReference(AstNode type)
+		ITypeReference MakeTypeReference(AstType type)
 		{
 			return TypeSystemConvertVisitor.ConvertType(type, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope, false);
 		}
 		
-		static bool IsVar(AstNode returnType)
+		static bool IsVar(AstType returnType)
 		{
-			return returnType is IdentifierExpression && ((IdentifierExpression)returnType).Identifier == "var";
+			return returnType is SimpleType
+				&& ((SimpleType)returnType).Identifier == "var"
+				&& ((SimpleType)returnType).TypeArguments.Count == 0;
 		}
 		
 		sealed class VarTypeReference : ITypeReference
@@ -1072,25 +1074,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitPrimitiveType(PrimitiveType primitiveType, object data)
 		{
 			ScanChildren(primitiveType);
-			return new TypeResolveResult(MakeTypeReference(primitiveType).Resolve(resolver.Context));
+			return new TypeResolveResult(ResolveType(primitiveType));
 		}
 		
 		public override ResolveResult VisitSimpleType(SimpleType simpleType, object data)
 		{
 			ScanChildren(simpleType);
-			return new TypeResolveResult(MakeTypeReference(simpleType).Resolve(resolver.Context));
+			return ResolveTypeOrNamespace(simpleType);
+		}
+		
+		ResolveResult ResolveTypeOrNamespace(AstType type)
+		{
+			ITypeReference typeRef = MakeTypeReference(type);
+			ITypeOrNamespaceReference typeOrNsRef = typeRef as ITypeOrNamespaceReference;
+			if (typeOrNsRef != null) {
+				return typeOrNsRef.DoResolve(resolver.Context);
+			} else {
+				return new TypeResolveResult(typeRef.Resolve(resolver.Context));
+			}
 		}
 		
 		public override ResolveResult VisitMemberType(MemberType memberType, object data)
 		{
 			ScanChildren(memberType);
-			return new TypeResolveResult(MakeTypeReference(memberType).Resolve(resolver.Context));
+			return ResolveTypeOrNamespace(memberType);
 		}
 		
 		public override ResolveResult VisitComposedType(ComposedType composedType, object data)
 		{
 			ScanChildren(composedType);
-			return new TypeResolveResult(MakeTypeReference(composedType).Resolve(resolver.Context));
+			return new TypeResolveResult(ResolveType(composedType));
 		}
 		#endregion
 		
