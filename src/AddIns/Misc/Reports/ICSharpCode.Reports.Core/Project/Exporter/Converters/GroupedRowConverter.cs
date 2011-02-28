@@ -82,9 +82,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 					IDataNavigator childNavigator = base.DataNavigator.GetChildNavigator;
 					
 					base.Evaluator.SinglePage.IDataNavigator = childNavigator;
-					Console.WriteLine("Header start {0}",base.CurrentPosition);
+					//Console.WriteLine("Header start {0}",base.CurrentPosition);
 					base.CurrentPosition = ConvertGroupHeader(exporterCollection,section,base.CurrentPosition);
-					Console.WriteLine("Header end {0}",base.CurrentPosition);
+					//Console.WriteLine("Header end {0}",base.CurrentPosition);
 					section.Size = base.RestoreSectionSize;
 					section.Items[0].Size = groupSize;
 					section.Items[1].Size = childSize;
@@ -95,7 +95,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					//Convert children
 					if (childNavigator != null) {
 						StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
-						Console.WriteLine("child start {0}",base.CurrentPosition);
+						//Console.WriteLine("child start {0}",base.CurrentPosition);
 						do
 						{
 							section.Size = base.RestoreSectionSize;
@@ -109,7 +109,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 							CheckForPageBreak(section,exporterCollection);
 						}
 						while ( childNavigator.MoveNext());
-						Console.WriteLine("child  end {0}",base.CurrentPosition);
+						//Console.WriteLine("child  end {0}",base.CurrentPosition);
 						// GroupFooter
 						base.ConvertGroupFooter(section,exporterCollection);
 						

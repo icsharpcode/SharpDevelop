@@ -31,9 +31,11 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			
 				throw new ArgumentNullException("singlePage");
 			}
+            /*
 			if (dataNavigator == null) {
 				throw new ArgumentNullException("dataNavigator");
 			}
+             * */
 			singlePage.IDataNavigator = dataNavigator;
 			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(singlePage);
 			return evaluatorFacade;

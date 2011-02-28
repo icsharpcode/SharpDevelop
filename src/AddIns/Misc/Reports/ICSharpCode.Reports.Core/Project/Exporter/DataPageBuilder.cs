@@ -7,6 +7,7 @@ using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Exporter
 {
@@ -77,6 +78,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override void BuildPageHeader ()
 		{
 			base.ReportModel.PageHeader.SectionOffset = base.AdjustPageHeader();
+         
 			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,this.dataNavigator.CurrentRow);
 			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
 			base.SinglePage.Items.AddRange(convertedList);
@@ -186,6 +188,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			this.dataNavigator = this.dataManager.GetNavigator;
 			this.BuildNewPage();
+		    this.SinglePage.IDataNavigator = this.dataNavigator;
 			this.dataNavigator.MoveNext();
 			BaseSection section = base.ReportModel.DetailSection;
 

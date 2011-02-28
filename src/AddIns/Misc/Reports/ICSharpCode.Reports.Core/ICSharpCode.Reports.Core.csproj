@@ -327,12 +327,6 @@
     <Compile Include="Project\Exporter\ExportColumns\ExportText.cs" />
     <Compile Include="Project\Exporter\ExportColumns\IExportColumnBuilder .cs" />
     <Compile Include="Project\ReportViewer\PageNavigationEventArgs.cs" />
-    <Compile Include="Project\ReportViewer\ReportViewer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Project\ReportViewer\ReportViewer.Designer.cs">
-      <DependentUpon>Project\ReportViewer.cs</DependentUpon>
-    </Compile>
     <Compile Include="Project\Exporter\ExportColumns\ExportGraphic.cs" />
     <Compile Include="Project\Exporter\Decorators\TextStyleDecorator.cs" />
     <Compile Include="Project\Exporter\Decorators\GraphicStyleDecorator.cs" />
@@ -344,6 +338,12 @@
     <Compile Include="Project\Exporter\ExportRenderer\BaseExportRenderer.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\PreviewRenderer.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\PrintRenderer.cs" />
+    <Compile Include="Project\ReportViewer\ReportViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Project\ReportViewer\ReportViewer.designer.cs">
+      <DependentUpon>ReportViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Project\Xml\BaseItemLoader.cs" />
     <Compile Include="Project\Xml\MycroParser.cs" />
     <Compile Include="Project\Xml\MycroWriter.cs" />
@@ -354,8 +354,7 @@
       <DependentUpon>ParameterDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Project\ReportViewer\ReportViewer.resx">
-      <DependentUpon>ReportViewer.Designer.cs</DependentUpon>
-      <Generator>ResXFileCodeGenerator</Generator>
+      <DependentUpon>ReportViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Project\Resources\CoreResource.resx" />
     <None Include="Project\Expressions\SimpleExpressionEvaluator\Parser\SimpleExpressionLanguage.tpg" />

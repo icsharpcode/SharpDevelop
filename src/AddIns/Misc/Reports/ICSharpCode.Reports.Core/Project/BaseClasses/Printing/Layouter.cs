@@ -106,7 +106,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			                              canGrowShrinkCollection.First().Size.Width,
 			                              canGrowShrinkCollection.First().Size.Height);
 			
-			foreach (BaseReportItem elemToLayout in canGrowShrinkCollection) {
+			foreach (BaseTextItem elemToLayout in canGrowShrinkCollection) {
+                Console.WriteLine("ELEMTEXT {0}",elemToLayout.Text);
 				Size textSize = MeasurementService.MeasureReportItem (graphics,elemToLayout);
 				elemToLayout.Size = new Size(elemToLayout.Size.Width,textSize.Height);
 				rec = Rectangle.Union(rec,new Rectangle(elemToLayout.Location,elemToLayout.Size));

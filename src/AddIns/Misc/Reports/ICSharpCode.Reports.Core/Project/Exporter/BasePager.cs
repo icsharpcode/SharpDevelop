@@ -92,28 +92,49 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			PrintHelper.AdjustParent((BaseSection)section,section.Items);
 			
-			ExporterCollection list = new ExporterCollection();
+			var list = new ExporterCollection();
 			
 			if (section.Items.Count > 0) {
 				
-				Point offset = new Point(section.Location.X,section.SectionOffset);
-			
+                section.Items.SortByLocation();
+
+				var offset = new Point(section.Location.X,section.SectionOffset);
+                IExpressionEvaluatorFacade f = EvaluationHelper.CreateEvaluator(this.SinglePage,this.SinglePage.IDataNavigator);
+
 				Rectangle desiredRectangle = LayoutHelper.FixSectionLayout(this.Graphics,section);
 				
 				Setlayout( desiredRectangle, section);
 				
 				foreach (BaseReportItem item in section.Items) {
 					
-					ISimpleContainer container = item as ISimpleContainer;
+					ISimpleContainer simpleContainer = item as ISimpleContainer;
 					
-					if (container != null) {
 
-						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(container,offset);
-						
-						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(container.Items,exportContainer.StyleDecorator.Location);
+					if (simpleContainer != null)
+					{
+					    foreach (BaseTextItem v in simpleContainer.Items)
+					    {
+					        string ss = f.Evaluate(v.Text);
+					        v.Text = ss;
+					    }
+                        Size s = simpleContainer.Size;
+                        var l = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
+                        LayoutHelper.SetLayoutForRow(Graphics,l, simpleContainer);
+
+						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(simpleContainer,offset);
+					    s = simpleContainer.Size;
+                        
+						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(simpleContainer.Items,exportContainer.StyleDecorator.Location);
 						exportContainer.Items.AddRange(clist);
 						list.Add(exportContainer);
-						
+                        offset = new Point(offset.X,offset.Y + simpleContainer.Size.Height + 4* GlobalValues.GapBetweenContainer);
+
+					    foreach (ExportText VARIABLE in clist)
+					    {
+					        Console.WriteLine("{0} - {1}",VARIABLE.Text,VARIABLE.StyleDecorator.Location);
+					    }
+                        Console.WriteLine(".......");
+
 					} else {
 						list = StandardPrinter.ConvertPlainCollection(section.Items,offset);
 					}
@@ -272,8 +293,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		#region Property's
 		
 		protected Graphics Graphics {get; private set;}
-		
-		//public ILayouter Layouter {get; private set;}
 		
 		public IReportModel ReportModel {get;set;}
 

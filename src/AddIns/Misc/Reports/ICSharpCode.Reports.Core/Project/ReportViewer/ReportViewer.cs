@@ -224,7 +224,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void GroupHeaderRendering (object sender, GroupHeaderEventArgs ghea)
 		{
-			Console.WriteLine("ReportViewer - GroupHeaderRendering  :");
+//			Console.WriteLine("ReportViewer - GroupHeaderRendering  :");
 //			BaseGroupedRow v = ghea.GroupHeader;
 //			v.BackColor = System.Drawing.Color.Red;
 		}
@@ -233,7 +233,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		private void GroupFooterRendering ( object sender, GroupFooterEventArgs gfea)
 		{
 //			Console.WriteLine();
-			Console.WriteLine("ReportViewer - GroupFooterRendering  :");
+//			Console.WriteLine("ReportViewer - GroupFooterRendering  :");
 //			var v = gfea.GroupFooter;
 //			v.BackColor = System.Drawing.Color.Red;
 //			BaseTextItem i = (BaseTextItem)v.Items[0];
@@ -243,7 +243,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void RowRendering (object sender,RowRenderEventArgs rrea)
 		{
-			Console.WriteLine("ReportViewer - RowRendering  :");
+			//Console.WriteLine("ReportViewer - RowRendering  :");
 		}
 		
 		#endregion
