@@ -80,7 +80,7 @@ namespace SharpRefactoring.Gui
 							new ThrowStatement(
 								new ObjectCreateExpression(
 									new TypeReference("ArgumentOutOfRangeException"),
-									new List<Expression>() { new PrimitiveExpression(w.ParameterName, '"' + w.ParameterName + '"'), new IdentifierExpression(w.ParameterName), new BinaryOperatorExpression(new PrimitiveExpression("Value must be between "), BinaryOperatorType.Add, new BinaryOperatorExpression(new IdentifierExpression("lower"), BinaryOperatorType.Add, new BinaryOperatorExpression(new PrimitiveExpression(" and "), BinaryOperatorType.Add, new IdentifierExpression("upper")))) }
+									new List<Expression>() { new PrimitiveExpression(w.ParameterName, '"' + w.ParameterName + '"'), new IdentifierExpression(w.ParameterName), new BinaryOperatorExpression(new PrimitiveExpression("Value must be between "), BinaryOperatorType.Concat, new BinaryOperatorExpression(new IdentifierExpression("lower"), BinaryOperatorType.Concat, new BinaryOperatorExpression(new PrimitiveExpression(" and "), BinaryOperatorType.Concat, new IdentifierExpression("upper")))) }
 								)
 							)
 						)
