@@ -181,12 +181,34 @@ namespace ICSharpCode.NRefactory.CSharp
 			RPar();
 		}
 		
-		void WriteCommaSeparatedListInBrackets(IEnumerable<AstNode> list)
+		#if DOTNET35
+		void WriteCommaSeparatedList(IEnumerable<VariableInitializer> list)
+		{
+			WriteCommaSeparatedList(list.SafeCast<VariableInitializer, AstNode>());
+		}
+		
+		void WriteCommaSeparatedList(IEnumerable<AstType> list)
+		{
+			WriteCommaSeparatedList(list.SafeCast<AstType, AstNode>());
+		}
+		
+		void WriteCommaSeparatedListInParenthesis(IEnumerable<Expression> list, bool spaceWithin)
+		{
+			WriteCommaSeparatedListInParenthesis(list.SafeCast<Expression, AstNode>(), spaceWithin);
+		}
+		
+		void WriteCommaSeparatedListInParenthesis(IEnumerable<ParameterDeclaration> list, bool spaceWithin)
+		{
+			WriteCommaSeparatedListInParenthesis(list.SafeCast<ParameterDeclaration, AstNode>(), spaceWithin);
+		}
+		#endif
+		
+		void WriteCommaSeparatedListInBrackets(IEnumerable<Expression> list)
 		{
 			WriteToken("[", AstNode.Roles.LBracket);
 			if (list.Any()) {
 				Space(policy.SpacesWithinBrackets);
-				WriteCommaSeparatedList(list);
+				WriteCommaSeparatedList(list.SafeCast<Expression, AstNode>());
 				Space(policy.SpacesWithinBrackets);
 			}
 			WriteToken("]", AstNode.Roles.RBracket);
@@ -354,7 +376,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (typeParameters.Any()) {
 				WriteToken("<", AstNode.Roles.LChevron);
-				WriteCommaSeparatedList(typeParameters);
+				WriteCommaSeparatedList(typeParameters.SafeCast<TypeParameterDeclaration, AstNode>());
 				WriteToken(">", AstNode.Roles.RChevron);
 			}
 		}
@@ -1036,7 +1058,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode(queryOrderClause);
 			WriteKeyword("orderby");
 			Space();
-			WriteCommaSeparatedList(queryOrderClause.Orderings);
+			WriteCommaSeparatedList(queryOrderClause.Orderings.SafeCast<QueryOrdering, AstNode>());
 			return EndNode(queryOrderClause);
 		}
 		
@@ -1099,7 +1121,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				WriteToken(":", AttributeSection.Roles.Colon);
 				Space();
 			}
-			WriteCommaSeparatedList(attributeSection.Attributes);
+			WriteCommaSeparatedList(attributeSection.Attributes.SafeCast<Attribute, AstNode>());
 			WriteToken("]", AstNode.Roles.RBracket);
 			NewLine();
 			return EndNode(attributeSection);
@@ -1348,7 +1370,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			LPar();
 			Space(policy.WithinForParentheses);
 			
-			WriteCommaSeparatedList(forStatement.Initializers);
+			WriteCommaSeparatedList(forStatement.Initializers.SafeCast<Statement, AstNode>());
 			WriteToken(";", AstNode.Roles.Semicolon);
 			Space(policy.SpacesAfterSemicolon);
 			
@@ -1356,7 +1378,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteToken(";", AstNode.Roles.Semicolon);
 			Space(policy.SpacesAfterSemicolon);
 			
-			WriteCommaSeparatedList(forStatement.Iterators);
+			WriteCommaSeparatedList(forStatement.Iterators.SafeCast<Statement, AstNode>());
 			
 			Space(policy.WithinForParentheses);
 			RPar();

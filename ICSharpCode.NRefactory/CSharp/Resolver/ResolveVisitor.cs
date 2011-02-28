@@ -593,7 +593,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ResolveResult[] GetArguments(IEnumerable<AstNode> argumentExpressions, out string[] argumentNames)
+		ResolveResult[] GetArguments(IEnumerable<Expression> argumentExpressions, out string[] argumentNames)
 		{
 			argumentNames = null; // TODO: add support for named arguments
 			ResolveResult[] arguments = new ResolveResult[argumentExpressions.Count()];
