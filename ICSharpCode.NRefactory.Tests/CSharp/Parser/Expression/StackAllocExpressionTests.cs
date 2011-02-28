@@ -9,11 +9,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	[TestFixture]
 	public class StackAllocExpressionTests
 	{
-		[Test, Ignore]
+		[Test]
 		public void StackAllocExpressionTest()
 		{
 			var sae = ParseUtilCSharp.ParseExpression<StackAllocExpression>("stackalloc int[100]");
-			throw new NotImplementedException(); // TODO: verify type + length expression
+			Assert.AreEqual("int", ((PrimitiveType)sae.Type).Keyword);
+			Assert.AreEqual(100, ((PrimitiveExpression)sae.CountExpression).Value);
 		}
 	}
 }

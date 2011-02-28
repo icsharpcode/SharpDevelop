@@ -57,22 +57,30 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			CheckIdentifier("@_int", "_int");
 		}
 		
-		[Test, Ignore]
+		[Test]
 		public void GenericMethodReference()
 		{
 			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("M<int>");
-			Assert.AreEqual("M", ident.Identifier);
-			//Assert.AreEqual(1, ident.TypeArguments.Count);
-			throw new NotImplementedException();
+			Assert.IsNotNull(
+				new IdentifierExpression {
+					Identifier = "M" ,
+					TypeArguments = {
+						new PrimitiveType("int")
+					}
+				}.Match(ident));
 		}
 		
-		[Test, Ignore]
+		[Test]
 		public void GenericMethodReference2()
 		{
 			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("TargetMethod<string>");
-			Assert.AreEqual("TargetMethod", ident.Identifier);
-			//Assert.AreEqual(1, ident.TypeArguments.Count);
-			throw new NotImplementedException();
+			Assert.IsNotNull(
+				new IdentifierExpression {
+					Identifier = "TargetMethod" ,
+					TypeArguments = {
+						new PrimitiveType("string")
+					}
+				}.Match(ident));
 		}
 	}
 }
