@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		readonly IOutputFormatter formatter;
 		readonly CSharpFormattingPolicy policy;
 		
-		AstNode currentContainerNode;
+		readonly Stack<AstNode> containerStack = new Stack<AstNode>();
 		readonly Stack<AstNode> positionStack = new Stack<AstNode>();
 		
 		/// <summary>
@@ -65,21 +65,23 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region StartNode/EndNode
 		void StartNode(AstNode node)
 		{
-			Debug.Assert(currentContainerNode == null || node.Parent == currentContainerNode);
+			// Ensure that nodes are visited in the proper nested order.
+			// Jumps to different subtrees are allowed only for the child of a placeholder node.
+			Debug.Assert(containerStack.Count == 0 || node.Parent == containerStack.Peek() || containerStack.Peek().NodeType == NodeType.Placeholder);
 			if (positionStack.Count > 0)
 				WriteSpecialsUpToNode(node);
-			currentContainerNode = node;
+			containerStack.Push(node);
 			positionStack.Push(node.FirstChild);
 			formatter.StartNode(node);
 		}
 		
 		object EndNode(AstNode node)
 		{
-			Debug.Assert(node == currentContainerNode);
+			Debug.Assert(node == containerStack.Peek());
 			AstNode pos = positionStack.Pop();
 			Debug.Assert(pos == null || pos.Parent == node);
 			WriteSpecials(pos, null);
-			currentContainerNode = node.Parent;
+			containerStack.Pop();
 			formatter.EndNode(node);
 			return null;
 		}
@@ -207,7 +209,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void WriteIdentifier(string identifier, Role<Identifier> identifierRole = null)
 		{
 			WriteSpecialsUpToRole(identifierRole ?? AstNode.Roles.Identifier);
-			if (IsKeyword(identifier, currentContainerNode)) {
+			if (IsKeyword(identifier, containerStack.Peek())) {
 				if (lastWritten == LastWritten.KeywordOrIdentifier)
 					Space(); // this space is not strictly required, so we call Space()
 				formatter.WriteToken("@");
@@ -265,7 +267,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		void Semicolon()
 		{
-			if (currentContainerNode.Role != ForStatement.InitializerRole && currentContainerNode.Role != ForStatement.IteratorRole && currentContainerNode.Role != UsingStatement.ResourceAcquisitionRole) {
+			Role role = containerStack.Peek().Role; // get the role of the current node
+			if (!(role == ForStatement.InitializerRole || role == ForStatement.IteratorRole || role == UsingStatement.ResourceAcquisitionRole)) {
 				WriteToken(";", AstNode.Roles.Semicolon);
 				NewLine();
 			}
