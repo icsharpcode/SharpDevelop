@@ -464,7 +464,7 @@ PropertyDeclaration =
 	"Property"
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
 	[ "(" [ ParameterList ] ")" ]
-	[ "As"  { AttributeBlock } ( NewExpression | (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ) ]
+	[ "As" (. PushContext(Context.Type, la, t); .) { AttributeBlock } ( NewExpression |  TypeName ) (. PopContext(); .) ]
 	[ "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/
 	    { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ } ]
 	[ "=" Expression ] StatementTerminator
