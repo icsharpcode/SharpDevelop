@@ -87,6 +87,7 @@
     <Compile Include="Src\Helpers\PackageCollectionAssert.cs" />
     <Compile Include="Src\Helpers\PackageSourceCollectionAssert.cs" />
     <Compile Include="Src\Helpers\PageCollectionAssert.cs" />
+    <Compile Include="Src\Helpers\RecentPackageInfoCollectionAssert.cs" />
     <Compile Include="Src\Helpers\ReferenceAndProjectName.cs" />
     <Compile Include="Src\Helpers\ReferenceProjectItemAssert.cs" />
     <Compile Include="Src\Helpers\TestablePackagesViewModel.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="Src\PackageUpdatesViewModelTests.cs" />
     <Compile Include="Src\PackageViewModelTests.cs" />
     <Compile Include="Src\PagesTests.cs" />
+    <Compile Include="Src\RecentPackageInfoTests.cs" />
     <Compile Include="Src\RecentPackageRepositoryTests.cs" />
     <Compile Include="Src\RecentPackagesViewModelTests.cs" />
     <Compile Include="Src\RegisteredPackageSourcesTests.cs" />

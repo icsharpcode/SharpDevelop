@@ -15,13 +15,16 @@ namespace ICSharpCode.PackageManagement
 		const string PackageSourcesPropertyName = "PackageSources";
 		const string PackageDirectoryPropertyName = "PackagesDirectory";
 		const string ActivePackageSourcePropertyName = "ActivePackageSource";
+		const string RecentPackagesPropertyName = "RecentPackages";
 
 		RegisteredPackageSources packageSources;
 		Properties properties;
+		List<RecentPackageInfo> recentPackages;
 		
 		public PackageManagementOptions(Properties properties)
 		{
 			this.properties = properties;
+			properties.Set<Version>("MyVersion", new Version(1, 0));
 		}
 		
 		public PackageManagementOptions()
@@ -90,6 +93,21 @@ namespace ICSharpCode.PackageManagement
 					properties.Set(ActivePackageSourcePropertyName, packageSource);
 				}
 			}
+		}
+		
+		public IList<RecentPackageInfo> RecentPackages {
+			get {
+				if (recentPackages == null) {
+					ReadRecentPackages();
+				}
+				return recentPackages;
+			}
+		}
+		
+		void ReadRecentPackages()
+		{
+			var defaultRecentPackages = new List<RecentPackageInfo>();
+			recentPackages = properties.Get<List<RecentPackageInfo>>(RecentPackagesPropertyName, defaultRecentPackages);
 		}
 	}
 }

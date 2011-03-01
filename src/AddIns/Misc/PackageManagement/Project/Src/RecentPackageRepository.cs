@@ -14,9 +14,11 @@ namespace ICSharpCode.PackageManagement
 		
 		List<IPackage> packages = new List<IPackage>();
 		int maximumPackagesCount = DefaultMaximumPackagesCount;
+		IPackageManagementService packageManagementService;
 		
-		public RecentPackageRepository()
+		public RecentPackageRepository(IPackageManagementService packageManagementService)
 		{
+			this.packageManagementService = packageManagementService;
 		}
 		
 		public string Source {
@@ -28,6 +30,7 @@ namespace ICSharpCode.PackageManagement
 			RemovePackageIfAlreadyAdded(package);
 			AddPackageAtBeginning(package);
 			RemoveLastPackageIfCurrentPackageCountExceedsMaximum();
+			UpdateRecentPackagesInOptions();
 		}
 		
 		void RemovePackageIfAlreadyAdded(IPackage package)
@@ -60,13 +63,82 @@ namespace ICSharpCode.PackageManagement
 			packages.RemoveAt(packages.Count - 1);
 		}
 		
+		void UpdateRecentPackagesInOptions()
+		{
+			IList<RecentPackageInfo> recentPackages = packageManagementService.Options.RecentPackages;
+			recentPackages.Clear();
+			recentPackages.AddRange(GetRecentPackagesInfo());
+		}
+		
+		List<RecentPackageInfo> GetRecentPackagesInfo()
+		{
+			List<RecentPackageInfo> allRecentPackages = new List<RecentPackageInfo>();
+			foreach (IPackage package in packages) {
+				var recentPackageInfo = new RecentPackageInfo(package);
+				allRecentPackages.Add(recentPackageInfo);
+			}
+			return allRecentPackages;
+		}
+		
 		public void RemovePackage(IPackage package)
 		{
 		}
 		
 		public IQueryable<IPackage> GetPackages()
 		{
+			UpdatePackages();
 			return packages.AsQueryable();
+		}
+		
+		void UpdatePackages()
+		{
+			if (!HasRecentPackagesBeenRead() && HasRecentPackages()) {
+				IEnumerable<IPackage> recentPackages = GetRecentPackages();
+				packages.AddRange(recentPackages);
+			}
+		}
+		
+		bool HasRecentPackagesBeenRead()
+		{
+			return packages.Count > 0;
+		}
+		
+		bool HasRecentPackages()
+		{
+			return packageManagementService.Options.RecentPackages.Count > 0;
+		}
+		
+		IEnumerable<IPackage> GetRecentPackages()
+		{
+			IEnumerable<IPackage> recentPackages = GetRecentPackagesFilteredById();
+			return GetRecentPackagesFilteredByVersion(recentPackages);
+		}
+		
+		IEnumerable<IPackage> GetRecentPackagesFilteredById()
+		{
+			IPackageRepository aggregrateRepository = packageManagementService.CreateAggregatePackageRepository();
+			IEnumerable<string> recentPackageIds = GetRecentPackageIds();
+			return aggregrateRepository.FindPackages(recentPackageIds);
+		}
+				
+		IEnumerable<string> GetRecentPackageIds()
+		{
+			foreach (RecentPackageInfo recentPackageInfo in packageManagementService.Options.RecentPackages) {
+				yield return recentPackageInfo.Id;
+			}
+		}
+		
+		IEnumerable<IPackage> GetRecentPackagesFilteredByVersion(IEnumerable<IPackage> recentPackages)
+		{
+			List<IPackage> filteredRecentPackages = new List<IPackage>();
+			foreach (IPackage recentPackage in recentPackages) {
+				foreach (RecentPackageInfo savedRecentPackageInfo in packageManagementService.Options.RecentPackages) {
+					if (savedRecentPackageInfo.IsMatch(recentPackage)) {
+						filteredRecentPackages.Add(recentPackage);
+					}
+				}
+			}
+			return filteredRecentPackages;
 		}
 		
 		public int MaximumPackagesCount {

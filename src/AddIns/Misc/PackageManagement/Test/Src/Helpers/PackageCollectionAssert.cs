@@ -13,7 +13,7 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public static void AreEqual(IEnumerable<IPackage> expectedPackages, IEnumerable<PackageViewModel> actualViewModels)
 		{
-			List<IPackage> expectedPackagesAsList = new List<IPackage>(expectedPackages);
+			var expectedPackagesAsList = new List<IPackage>(expectedPackages);
 			List<IPackage> actualPackages = ConvertToPackageList(actualViewModels);
 			
 			CollectionAssert.AreEqual(expectedPackagesAsList, actualPackages);
@@ -21,7 +21,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		static List<IPackage> ConvertToPackageList(IEnumerable<PackageViewModel> viewModels)
 		{
-			List<IPackage> packages = new List<IPackage>();
+			var packages = new List<IPackage>();
 			foreach (PackageViewModel viewModel in viewModels) {
 				packages.Add(viewModel.GetPackage());
 			}
@@ -30,10 +30,10 @@ namespace PackageManagement.Tests.Helpers
 		
 		public static void AreEqual(IEnumerable<IPackage> expectedPackages, IEnumerable<IPackage> actualPackages)
 		{
-			List<IPackage> expectedPackagesAsList = new List<IPackage>(expectedPackages);
-			List<IPackage> actualPackagesAsList = new List<IPackage>(actualPackages);
+			var expectedPackagesAsList = new List<IPackage>(expectedPackages);
+			var actualPackagesAsList = new List<IPackage>(actualPackages);
 			
-			CollectionAssert.AreEqual(expectedPackagesAsList, actualPackagesAsList);			
+			CollectionAssert.AreEqual(expectedPackagesAsList, actualPackagesAsList);		
 		}
 	}
 }

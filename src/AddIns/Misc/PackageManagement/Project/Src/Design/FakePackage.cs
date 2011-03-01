@@ -10,15 +10,16 @@ namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakePackage : IPackage
 	{		
-		List<string> authors = new List<string>();
-		List<string> owners = new List<string>();
-		Stream stream = null;
-		List<IPackageFile> files = new List<IPackageFile>();
-		List<IPackageAssemblyReference> assemblyReferences = 
-			new List<IPackageAssemblyReference>();
+		public Stream Stream = null;
+		public List<string> AuthorsList = new List<string>();
+		public List<string> OwnersList = new List<string>();
+		public List<IPackageFile> FilesList = new List<IPackageFile>();
 		
 		public List<PackageDependency> DependenciesList = 
 			new List<PackageDependency>();
+
+		public List<IPackageAssemblyReference> AssemblyReferenceList =
+			new List<IPackageAssemblyReference>();
 		
 		public FakePackage()
 			: this(String.Empty)
@@ -49,15 +50,15 @@ namespace ICSharpCode.PackageManagement.Design
 		public double Rating { get; set; }
 		
 		public IEnumerable<IPackageAssemblyReference> AssemblyReferences {
-			get { return assemblyReferences; }
+			get { return AssemblyReferenceList; }
 		}
 		
 		public IEnumerable<string> Authors {
-			get { return authors; }
+			get { return AuthorsList; }
 		}
 		
 		public IEnumerable<string> Owners {
-			get { return owners; }
+			get { return OwnersList; }
 		}
 		
 		public IEnumerable<PackageDependency> Dependencies {
@@ -66,12 +67,12 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IEnumerable<IPackageFile> GetFiles()
 		{
-			return files;
+			return FilesList;
 		}
 		
 		public Stream GetStream()
 		{
-			return stream;
+			return Stream;
 		}
 		
 		public override string ToString()
@@ -81,8 +82,11 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public override bool Equals(object obj)
 		{
-			FakePackage rhs = obj as FakePackage;
-			return (Id == rhs.Id) && (Version == rhs.Version);
+			IPackage rhs = obj as IPackage;
+			if (rhs != null) {
+				return (Id == rhs.Id) && (Version == rhs.Version);
+			}
+			return false;
 		}
 		
 		public override int GetHashCode()
@@ -92,7 +96,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public void AddAuthor(string author)
 		{
-			authors.Add(author);
+			AuthorsList.Add(author);
 		}
 		
 		public void AddDependency(string id, Version minVersion, Version maxVersion)

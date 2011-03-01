@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NUnit.Framework;
 
@@ -55,6 +56,14 @@ namespace PackageManagement.Tests
 			rhs.Version = new Version(2, 2, 0, 0);
 			
 			bool result = lhs.Equals(rhs);
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Equals_NullPassed_ReturnsFalse()
+		{
+			bool result = lhs.Equals(null);
 			
 			Assert.IsFalse(result);
 		}

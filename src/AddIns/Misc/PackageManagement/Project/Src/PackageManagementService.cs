@@ -80,9 +80,10 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		void CreateRecentPackageRepository()
+		public IPackageRepository CreateRecentPackageRepository()
 		{
-			recentPackageRepository = new RecentPackageRepository();
+			recentPackageRepository = new RecentPackageRepository(this);
+			return recentPackageRepository;
 		}
 		
 		public IPackageRepository ActivePackageRepository {

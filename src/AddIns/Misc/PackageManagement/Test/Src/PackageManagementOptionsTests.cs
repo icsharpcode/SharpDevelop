@@ -2,14 +2,16 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.Design;
 using NuGet;
 using NUnit.Framework;
+using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
 {
@@ -111,6 +113,34 @@ namespace PackageManagement.Tests
 			var activeSource = options.ActivePackageSource;
 			
 			Assert.IsNull(activeSource);
-		}		
+		}
+		
+		[Test]
+		public void RecentPackages_OneRecentPackageAddedAndOptionsReloadedFromSavedProperties_ContainsOneRecentPackageThatWasSavedPreviously()
+		{
+			CreateOptions();
+			var package = new FakePackage("Test");
+			var recentPackage = new RecentPackageInfo(package);
+			options.RecentPackages.Add(recentPackage);
+			CreateOptions(properties);
+			
+			var recentPackages = options.RecentPackages;
+			
+			var expectedRecentPackages = new RecentPackageInfo[] {
+				new RecentPackageInfo(package)
+			};
+			
+			RecentPackageInfoCollectionAssert.AreEqual(expectedRecentPackages, recentPackages);
+		}
+		
+		[Test]
+		public void RecentPackages_SaveRecentPackages_DoesNotThrowInvalidOperationException()
+		{
+			CreateOptions();
+			var recentPackage = new RecentPackageInfo("id", new Version(1, 0));
+			options.RecentPackages.Add(recentPackage);
+			
+			Assert.DoesNotThrow(() => SaveOptions());
+		}
 	}
 }

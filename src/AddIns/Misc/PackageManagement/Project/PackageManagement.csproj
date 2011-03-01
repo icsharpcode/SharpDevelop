@@ -77,6 +77,7 @@
     <Compile Include="Src\Design\DesignTimePackagesViewModel.cs" />
     <Compile Include="Src\Design\FakeFileSystem.cs" />
     <Compile Include="Src\Design\FakePackage.cs" />
+    <Compile Include="Src\Design\FakePackageAssemblyReference.cs" />
     <Compile Include="Src\Design\FakePackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\Design\FakePackageManagementService.cs" />
     <Compile Include="Src\Design\FakePackageRepository.cs" />
@@ -143,6 +144,7 @@
     </Compile>
     <Compile Include="Src\Pages.cs" />
     <Compile Include="Src\ProjectTargetFramework.cs" />
+    <Compile Include="Src\RecentPackageInfo.cs" />
     <Compile Include="Src\RecentPackageRepository.cs" />
     <Compile Include="Src\RecentPackagesViewModel.cs" />
     <Compile Include="Src\RegisteredPackageSource.cs" />
