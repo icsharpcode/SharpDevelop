@@ -63,5 +63,26 @@ namespace PackageManagement.Tests
 		
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
+		
+		[Test]
+		public void PackageViewModels_PackageIsUninstalledAfterRecentPackagesDisplayed_PackagesOnDisplayAreUpdated()
+		{
+			CreateViewModel();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			var package = new FakePackage("Test");
+			FakePackageRepository repository = packageManagementService.FakeRecentPackageRepository;
+			repository.FakePackages.Add(package);
+			
+			ClearReadPackagesTasks();
+			packageManagementService.FirePackageUninstalled();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				package
+			};
+		
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
 	}
 }

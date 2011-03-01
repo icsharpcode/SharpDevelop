@@ -16,9 +16,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			recentPackageRepository = packageManagementService.RecentPackageRepository;
 			packageManagementService.PackageInstalled += PackageInstalled;
+			packageManagementService.PackageUninstalled += PackageUninstalled;
 		}
 		
 		void PackageInstalled(object sender, EventArgs e)
+		{
+			ReadPackages();
+		}
+		
+		void PackageUninstalled(object sender, EventArgs e)
 		{
 			ReadPackages();
 		}
