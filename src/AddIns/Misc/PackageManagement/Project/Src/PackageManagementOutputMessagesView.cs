@@ -32,7 +32,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void CreatePackageManagementMessageCategory(ICompilerMessageView compilerMessageView)
 		{
-			messageViewCategory = compilerMessageView.Create(CategoryName, "Package Management");
+			messageViewCategory = compilerMessageView.Create(CategoryName, "Packages");
 		}
 		
 		public void Clear()
