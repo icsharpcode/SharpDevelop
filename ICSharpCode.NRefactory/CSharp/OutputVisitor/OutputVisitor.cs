@@ -148,13 +148,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// Writes a comma.
 		/// </summary>
 		/// <param name="nextNode">The next node after the comma.</param>
-		void Comma(AstNode nextNode)
+		/// <param name="noSpacesAfterComma">When set prevents printing a space after comma.</param>
+		void Comma(AstNode nextNode, bool noSpaceAfterComma = false)
 		{
 			WriteSpecialsUpToRole(AstNode.Roles.Comma, nextNode);
 			Space(policy.SpacesBeforeComma);
 			formatter.WriteToken(",");
 			lastWritten = LastWritten.Other;
-			Space(policy.SpacesAfterComma);
+			Space(!noSpaceAfterComma && policy.SpacesAfterComma);
 		}
 		
 		void WriteCommaSeparatedList(IEnumerable<AstNode> list)
@@ -1108,7 +1109,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode(attribute);
 			attribute.Type.AcceptVisitor(this, data);
 			Space(policy.BeforeMethodCallParentheses);
-			WriteCommaSeparatedListInParenthesis(attribute.Arguments, policy.WithinMethodCallParentheses);
+			if (attribute.Arguments.Count != 0 || !attribute.GetChildByRole(AstNode.Roles.LPar).IsNull)
+				WriteCommaSeparatedListInParenthesis(attribute.Arguments, policy.WithinMethodCallParentheses);
 			return EndNode(attribute);
 		}
 		
@@ -1123,7 +1125,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			WriteCommaSeparatedList(attributeSection.Attributes.SafeCast<Attribute, AstNode>());
 			WriteToken("]", AstNode.Roles.RBracket);
-			NewLine();
+			if (!(attributeSection.Parent is ParameterDeclaration))
+				NewLine();
 			return EndNode(attributeSection);
 		}
 		
@@ -1201,7 +1204,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (first) {
 						first = false;
 					} else {
-						Comma(member);
+						Comma(member, noSpaceAfterComma: true);
 						NewLine();
 					}
 					member.AcceptVisitor(this, data);
