@@ -224,7 +224,9 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				                                                         lineItem.StyleDecorator.Size);
 				
 				AdjustBackColor (container);
-				return lineItem;
+				Console.WriteLine("\tstart container  at {0}",lineItem.StyleDecorator.Location);
+				return lineItem;		
+				
 			}
 			return null;
 		}

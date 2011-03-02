@@ -42,6 +42,24 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		}
 		
 		
+		public static void EvaluateReportItems (IExpressionEvaluatorFacade  evaluator,ReportItemCollection items)
+		{
+			try {
+				foreach(BaseReportItem column in items) {
+					var container = column as ISimpleContainer ;
+					if (container != null) {
+						EvaluateReportItems(evaluator,container.Items);
+					}
+					BaseTextItem textItem = column as BaseTextItem;
+					if (textItem != null) {
+						textItem.Text = evaluator.Evaluate(textItem.Text);
+					}
+				}
+			} catch (Exception) {
+				throw ;
+			}
+		}
+		
 		public static void EvaluateRow(IExpressionEvaluatorFacade evaluator,ExporterCollection row)
 		{
 			try {

@@ -32,7 +32,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			}
 			
 //			Console.WriteLine("\tlayouter for container <{0}>",container.ToString());
-			Console.WriteLine("\tLayouter for Container");
+//			Console.WriteLine("\tLayouter for Container");
 			Rectangle desiredContainerRectangle = new Rectangle (container.Location,container.Size);
 			
 			System.Collections.Generic.IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in container.Items where bt.CanGrow == true select bt;
@@ -71,7 +71,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			}
 		
 //				Console.WriteLine("\tLayouter for Container");Console.WriteLine("\tlayouter for section <{0}>",section.Name);
-				Console.WriteLine("\tLayouter for Section");
+//				Console.WriteLine("\tLayouter for Section");
 			IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in section.Items where bt.CanGrow == true select bt;
 			
 			Rectangle desiredSectionRectangle = new Rectangle(section.Location.X,

@@ -16,12 +16,23 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 	
 	internal sealed class LayoutHelper
 	{
-		public static Rectangle FixSectionLayout(Graphics graphics,BaseSection section)
+		public static Rectangle CalculateSectionLayout(Graphics graphics,BaseSection section)
 		{
 			ILayouter layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
 			var desiredRectangle = layouter.Layout(graphics, section);
 			return desiredRectangle;
 		}
+		
+		
+		public static void FixSectionLayout(Rectangle desiredRectangle, BaseSection section)
+		{
+			Rectangle sectionRectangle = new Rectangle(section.Location, section.Size);
+			if (!sectionRectangle.Contains(desiredRectangle)) {
+				section.Size = new Size(section.Size.Width, 
+				                        desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
+			}
+		}
+		
 		
 		
 		public static void SetLayoutForRow (Graphics graphics, ILayouter layouter,ISimpleContainer row)

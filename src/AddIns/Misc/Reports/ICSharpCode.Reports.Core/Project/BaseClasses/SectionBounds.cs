@@ -96,7 +96,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 				throw new ArgumentNullException("section");
 			}
 			
-			section.SectionOffset = this.reportHeaderRectangle.Bottom + + 3 * GlobalValues.GapBetweenContainer;
+			section.SectionOffset = this.reportHeaderRectangle.Bottom + 3 * GlobalValues.GapBetweenContainer;
 			this.pageHeaderRectangle =  new Rectangle (this.reportHeaderRectangle.Left,
 			                                           section.SectionOffset,
 			                                           this.marginBounds.Width,

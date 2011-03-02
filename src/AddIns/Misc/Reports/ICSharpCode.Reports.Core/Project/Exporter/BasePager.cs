@@ -85,74 +85,74 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Converters
 		
+		//Point currentPosition = Point.Empty;
+		protected Point Offset {get;set;}
 		
 		protected ExporterCollection ConvertSection (BaseSection section,int dataRow)
 		{
 			FireSectionRenderEvent (section ,dataRow);
-			
+			Console.WriteLine("");
+			Console.WriteLine("section {0}",section.Name);
 			PrintHelper.AdjustParent((BaseSection)section,section.Items);
 			
 			var list = new ExporterCollection();
+			Offset = new Point(section.Location.X,section.SectionOffset);
 			
 			if (section.Items.Count > 0) {
 				
                 section.Items.SortByLocation();
 
-				var offset = new Point(section.Location.X,section.SectionOffset);
-                IExpressionEvaluatorFacade f = EvaluationHelper.CreateEvaluator(this.SinglePage,this.SinglePage.IDataNavigator);
+                IExpressionEvaluatorFacade evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.SinglePage.IDataNavigator);
 
-				Rectangle desiredRectangle = LayoutHelper.FixSectionLayout(this.Graphics,section);
+				Rectangle desiredRectangle = LayoutHelper.CalculateSectionLayout(this.Graphics,section);
+				LayoutHelper.FixSectionLayout(desiredRectangle,section);
 				
-				Setlayout( desiredRectangle, section);
-				
-				foreach (BaseReportItem item in section.Items) {
-					
+				foreach (BaseReportItem item in section.Items)
+				{
 					ISimpleContainer simpleContainer = item as ISimpleContainer;
 					
-
 					if (simpleContainer != null)
 					{
-					    foreach (BaseTextItem v in simpleContainer.Items)
-					    {
-					        string ss = f.Evaluate(v.Text);
-					        v.Text = ss;
-					    }
+					   	EvaluationHelper.EvaluateReportItems(evaluator,simpleContainer.Items);
                         Size s = simpleContainer.Size;
                         var l = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
                         LayoutHelper.SetLayoutForRow(Graphics,l, simpleContainer);
 
-						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(simpleContainer,offset);
+ExportContainer exportContainer = StandardPrinter.ConvertToContainer(simpleContainer,Offset);
+						Console.WriteLine ("offset {0}",Offset);
+Console.WriteLine("start exportContainer container  at {0} with height {1}",exportContainer.StyleDecorator.Location,exportContainer.StyleDecorator.Size.Height);						
 					    s = simpleContainer.Size;
-                        
+						
 						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(simpleContainer.Items,exportContainer.StyleDecorator.Location);
 						exportContainer.Items.AddRange(clist);
 						list.Add(exportContainer);
-                        offset = new Point(offset.X,offset.Y + simpleContainer.Size.Height + 4* GlobalValues.GapBetweenContainer);
+                       	Offset = new Point(Offset.X,Offset.Y + exportContainer.StyleDecorator.Size.Height);
+                       	
+Console.WriteLine ("new offset {0}",Offset);
 
-					    foreach (ExportText VARIABLE in clist)
-					    {
-					        Console.WriteLine("{0} - {1}",VARIABLE.Text,VARIABLE.StyleDecorator.Location);
-					    }
-                        Console.WriteLine(".......");
 
-					} else {
-						list = StandardPrinter.ConvertPlainCollection(section.Items,offset);
+//					    foreach (ExportText VARIABLE in clist)
+//					    {
+//					        Console.WriteLine("{0} - {1}",VARIABLE.Text,VARIABLE.StyleDecorator.Location);
+//					    }
+//                        Console.WriteLine(".......");
+
 					}
+					else
+					{
+						Console.WriteLine("start section {0}  at {1}",section.Name,section.SectionOffset + section.Location.Y);
+						list = StandardPrinter.ConvertPlainCollection(section.Items,Offset);
+						Offset = new Point(Offset.X,Offset.Y + section.Size.Height);
+					}
+					section.Size = new Size(section.Size.Width,section.Size.Height);
 				}
+				Console.WriteLine ("\toffset {0} sectionoffset {1}",Offset,section.SectionOffset);
+				
 			}
+			Console.WriteLine ("Cuurent location {0} section.botom {1}",Offset,section.Location.Y + section.Size.Height);
 			return list;
 		}
 
-
-		void Setlayout(Rectangle desiredRectangle, BaseSection section)
-		{
-			Rectangle sectionRectangle = new Rectangle(section.Location, section.Size);
-			if (!sectionRectangle.Contains(desiredRectangle)) {
-				section.Size = new Size(section.Size.Width, 
-				                        desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
-			}
-		}
-		
 		
 		public static BaseRectangleItem CreateDebugItem (BaseReportItem item)
 		{
@@ -163,7 +163,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			debugRectangle.FrameColor = item.FrameColor;
 			return debugRectangle;
 		}
-		
 		
 		#endregion
 		

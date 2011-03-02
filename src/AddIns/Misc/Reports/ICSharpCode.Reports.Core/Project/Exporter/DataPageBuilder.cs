@@ -78,9 +78,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override void BuildPageHeader ()
 		{
 			base.ReportModel.PageHeader.SectionOffset = base.AdjustPageHeader();
-         
+         Console.WriteLine ("pageHeader {0}",base.ReportModel.PageHeader.Size);
 			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,this.dataNavigator.CurrentRow);
+			Console.WriteLine ("pageHeader {0}",base.ReportModel.PageHeader.Size);
+//			base.ReportModel.PageHeader.Size = new Size(base.ReportModel.PageHeader.Size.Width,base.Offset.Y);
 			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
+			Console.WriteLine ("rect {0} detail {1}",base.SectionBounds.PageHeaderRectangle,base.SectionBounds.DetailStart);
 			base.SinglePage.Items.AddRange(convertedList);
 		}
 		
