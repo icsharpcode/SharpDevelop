@@ -154,18 +154,13 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					if (method != null && codeItem != null) {
 						methodItems[method.Name] = codeItem;
 					}
-					if (o.Equals(context.SuggestedItem))
-						result.SuggestedItem = item;
 				}
 			}
 			
-			if (context.SuggestedItem != null) {
-				if (result.SuggestedItem == null) {
-					result.SuggestedItem = CreateCompletionItem(context.SuggestedItem, context);
-					if (result.SuggestedItem != null) {
-						result.Items.Insert(0, result.SuggestedItem);
-					}
-				}
+			// Suggested entry (List<int> a = new => suggest List<int>).
+			if (context.SuggestedItem is SuggestedCodeCompletionItem) {
+				result.SuggestedItem = (SuggestedCodeCompletionItem)context.SuggestedItem;
+				result.Items.Insert(0, result.SuggestedItem);
 			}
 			return result;
 		}
@@ -238,6 +233,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			description = ambience.Convert(entity);
 			this.Image = ClassBrowserIconService.GetIcon(entity);
 			this.Overloads = 1;
+			this.InsertGenericArguments = false;
 			
 			this.Priority = CodeCompletionDataUsageCache.GetPriority(entity.DotNetName, true);
 		}
@@ -251,6 +247,12 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		public int Overloads { get; set; }
 		
 		public IImage Image { get; set; }
+		
+		/// <summary>
+		/// If true, will insert Text including generic arguments (e.g. List&lt;T&gt; or List&lt;string&gt;).
+		/// Otherwise will insert Text without generic arguments (e.g. List).
+		/// </summary>
+		public bool InsertGenericArguments { get; set; }
 		
 		protected void MarkAsUsed()
 		{
@@ -288,8 +290,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					addUsing = !IsKnownName(nameResult);
 				}
 				
-				//insertedText = StripGenericArgument(insertedText, context);
-				InsertText(context, insertedText);
+				InsertTextStripGenericArguments(context, insertedText, this.InsertGenericArguments);
 				
 				if (addUsing && nameResult != null && nameResult.CallingClass != null) {
 					var cu = nameResult.CallingClass.CompilationUnit;
@@ -298,15 +299,28 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				}
 			} else {
 				// Something else than a class or Extension method is being inserted - just insert text
-				//insertedText = StripGenericArgument(insertedText, context);
-				InsertText(context, insertedText);
+				InsertTextStripGenericArguments(context, insertedText, this.InsertGenericArguments);
 			}
+		}
+		
+		/// <summary>
+		/// Inserts the given text. Strips generic arguments from it if specified.
+		/// </summary>
+		static void InsertTextStripGenericArguments(CompletionContext context, string insertedText, bool stringGenericArguments)
+		{
+			if (!stringGenericArguments) {
+				// FIXME CodeCompletionItem should contain IReturnType and decide whether to INCLUDE generic arguments
+				// or not, not strip them.
+				insertedText = StripGenericArguments(insertedText, context);
+			}
+			context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
+			context.EndOffset = context.StartOffset + insertedText.Length;
 		}
 		
 		/// <summary>
 		/// Turns e.g. "List&lt;T&gt;" into "List&lt;"
 		/// </summary>
-		string StripGenericArgument(string itemText, CompletionContext context)
+		static string StripGenericArguments(string itemText, CompletionContext context)
 		{
 			if (context == null || context.Editor == null || context.Editor.Language == null ||
 			    context.Editor.Language.Properties != LanguageProperties.CSharp)
@@ -315,31 +329,10 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				int pos = itemText.LastIndexOf('<');
 				if (pos == -1)
 					return itemText;
-				int insertLen = pos + 1;
-				if (context.CompletionChar == '<') {
-					// don't insert '<' twice if user typed '<'
-					insertLen -= 1;
-				}
+				int insertLen = pos;
 				itemText = itemText.Substring(0, insertLen);
 			}
 			return itemText;
-		}
-		
-		bool IsReferenceTo(ResolveResult nameResult, IClass selectedClass)
-		{
-			// CC list contains RenamedClass instances which are kind of hacky:
-			// their name is e.g. "List<string>" or "int[]", but they do not have any generic arguments,
-			// so IsReferenceTo fails bc it compares generic argument count.
-			// This compares just name and ignores generic arguments.
-			return nameResult.IsReferenceTo(selectedClass) ||
-				(nameResult.ResolvedType.IsConstructedReturnType &&
-				 nameResult.ResolvedType.FullyQualifiedName == selectedClass.FullyQualifiedName);
-		}
-		
-		void InsertText(CompletionContext context, string insertedText)
-		{
-			context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
-			context.EndOffset = context.StartOffset + insertedText.Length;
 		}
 		
 		IClass GetClassOrExtensionMethodClass(IEntity selectedEntity)
@@ -513,5 +506,19 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			return cref;
 		}
 		#endregion
+	}
+	
+	/// <summary>
+	/// CodeCompletionItem that inserts also generic arguments.
+	/// Used only when suggesting items in CC (e.g. List&lt;int&gt; a = new => suggest List&lt;int&gt;).
+	/// </summary>
+	public class SuggestedCodeCompletionItem : CodeCompletionItem
+	{
+		public SuggestedCodeCompletionItem(IEntity entity, string nameWithSpecifiedGenericArguments)
+			: base(entity)
+		{
+			this.Text = nameWithSpecifiedGenericArguments;
+			this.InsertGenericArguments = true;
+		}
 	}
 }

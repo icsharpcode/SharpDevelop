@@ -350,6 +350,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbViewModel.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsHelper.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsPopupBase.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsService.cs" />
@@ -361,7 +362,6 @@
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsPopup.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionViewModel.cs" />
-    <Compile Include="Src\Services\RefactoringService\ContextActionsHelper.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionCache.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionsProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
