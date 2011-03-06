@@ -408,7 +408,6 @@ namespace ICSharpCode.VBNetBinding
 			while ((currentToken = lexer.NextToken()).Kind != Tokens.EOF) {
 				if (prevToken == null)
 					prevToken = currentToken;
-				
 				if (IsBlockStart(lexer, currentToken, prevToken)) {
 					if ((tokens.Count > 0 && tokens.Peek().Kind != Tokens.Interface) || IsDeclaration(currentToken.Kind))
 						tokens.Push(currentToken);
@@ -514,10 +513,9 @@ namespace ICSharpCode.VBNetBinding
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(editor.Document.Text));
 			
 			Stack<string> indentation = new Stack<string>();
-			
 			indentation.Push(string.Empty);
 			
-			int oldLine = 1;
+			List<int> eols = new List<int>();
 			
 			bool inInterface = false;
 			bool isMustOverride = false;
@@ -526,6 +524,8 @@ namespace ICSharpCode.VBNetBinding
 			
 			Token currentToken = null;
 			Token prevToken = null;
+			
+			int blockStart = 1;
 			
 			while ((currentToken = lexer.NextToken()).Kind != Tokens.EOF) {
 				if (prevToken == null)
@@ -540,11 +540,16 @@ namespace ICSharpCode.VBNetBinding
 				if (currentToken.Kind == Tokens.Declare)
 					isDeclare = true;
 				
-				if (currentToken.Kind == Tokens.EOL)
+				if (currentToken.Kind == Tokens.EOL) {
 					isDelegate = isDeclare = isMustOverride = false;
+					eols.Add(currentToken.Location.Line);
+				}
 				
 				if (IsBlockEnd(currentToken, prevToken)) {
-					ApplyToRange(editor, indentation, oldLine, currentToken.Location.Line, begin, end);
+					// indent the lines inside the block
+					// this is an End-statement
+					// hence we indent from blockStart to the previous line
+					ApplyToRange(editor, indentation, eols, blockStart, currentToken.Location.Line - 1, begin, end);
 					
 					if (currentToken.Kind == Tokens.Interface)
 						inInterface = false;
@@ -556,12 +561,17 @@ namespace ICSharpCode.VBNetBinding
 							Unindent(indentation);
 					}
 					
-					oldLine = currentToken.Location.Line;
+					// block start is this line (for the lines between two blocks)
+					blockStart = currentToken.Location.Line;
 				}
 				
 				if (IsBlockStart(lexer, currentToken, prevToken)) {
-					int line = GetLastVisualLine(currentToken.Location.Line, editor);
-					ApplyToRange(editor, indentation, oldLine, line, begin, end);
+					// indent the lines between the last and this block
+					// this is a Begin-statement
+					// hence we indent from blockStart to the this line
+					int lastVisualLine = FindNextEol(lexer);
+					eols.Add(lastVisualLine);
+					ApplyToRange(editor, indentation, eols, blockStart, lastVisualLine, begin, end);
 					
 					if (!inInterface && !isMustOverride && !isDeclare && !isDelegate) {
 						Indent(editor, indentation);
@@ -573,31 +583,78 @@ namespace ICSharpCode.VBNetBinding
 					if (currentToken.Kind == Tokens.Interface)
 						inInterface = true;
 					
-					oldLine = line + 1;
+					// block start is the following line (for the lines inside a block)
+					blockStart = lastVisualLine + 1;
 				}
 				
 				prevToken = currentToken;
 			}
 			
-			// do last indent step
-			int newLine = prevToken.Location.Line;
-			
-			if (oldLine > newLine)
-				newLine = oldLine;
-			
-			ApplyToRange(editor, indentation, oldLine, newLine, begin, end);
+			ApplyToRange(editor, indentation, eols, blockStart, editor.Document.TotalNumberOfLines, begin, end);
 			
 			return (indentation.PeekOrDefault() ?? string.Empty).Length;
 		}
 		
-		static int GetLastVisualLine(int line, ITextEditor area)
+		static int FindNextEol(ILexer lexer)
 		{
-			string text = area.Document.GetLine(line).Text.TrimComments();
-			while (text.EndsWith("_", StringComparison.Ordinal)) {
-				line++;
-				text = area.Document.GetLine(line).Text.TrimComments();
+			lexer.StartPeek();
+			
+			Token t = lexer.Peek();
+			
+			while (t.Kind != Tokens.EOL)
+				t = lexer.Peek();
+			
+			return t.Location.Line;
+		}
+		
+		static void ApplyToRange(ITextEditor editor, Stack<string> indentation, List<int> eols, int blockStart, int blockEnd, int selectionStart, int selectionEnd) {
+			LoggingService.InfoFormatted("indenting line {0} to {1} with {2}", blockStart, blockEnd, (indentation.PeekOrDefault() ?? "").Length);
+			
+			int nextEol = -1;
+			bool wasMultiLine = false;
+			
+			for (int i = blockStart; i <= blockEnd; i++) {
+				IDocumentLine curLine = editor.Document.GetLine(i);
+				string lineText = curLine.Text.TrimStart();
+				string noComments = lineText.TrimComments().TrimEnd();
+				
+				// adjust indentation if the current line is not selected
+				// lines between the selection will be aligned to the selected level
+				if (i < selectionStart || i > selectionEnd) {
+					indentation.PopOrDefault();
+					indentation.Push(DocumentUtilitites.GetWhitespaceAfter(editor.Document, curLine.Offset));
+				}
+				
+				// look for next eol if line is not empty
+				// (the lexer does not produce eols for empty lines)
+				if (!string.IsNullOrEmpty(noComments) && i >= nextEol) {
+					int search = eols.BinarySearch(i);
+					if (search < 0)
+						search = ~search;
+					nextEol = search < eols.Count ? eols[search] : i;
+				}
+				
+				// remove indentation in last line of multiline array(, collection, object) initializers
+				if (i == nextEol && wasMultiLine && noComments == "}") {
+					wasMultiLine = false;
+					Unindent(indentation);
+				}
+				
+				// apply the indentation
+				editor.Document.SmartReplaceLine(curLine, (indentation.PeekOrDefault() ?? "") + lineText);
+				
+				// indent line if it is ended by (implicit) line continuation
+				if (i < nextEol && !wasMultiLine) {
+					wasMultiLine = true;
+					Indent(editor, indentation);
+				}
+				
+				// unindent if this is the last line of a multiline statement
+				if (i == nextEol && wasMultiLine) {
+					wasMultiLine = false;
+					Unindent(indentation);
+				}
 			}
-			return line;
 		}
 
 		static void Unindent(Stack<string> indentation)
@@ -716,41 +773,6 @@ namespace ICSharpCode.VBNetBinding
 			}
 			
 			return false;
-		}
-		
-		static void ApplyToRange(ITextEditor editor, Stack<string> indentation, int begin, int end, int selBegin, int selEnd)
-		{
-			bool multiLine = false;
-			
-			for (int i = begin; i <= end; i++) {
-				IDocumentLine curLine = editor.Document.GetLine(i);
-				string lineText = curLine.Text.TrimStart(' ', '\t', '\r', '\n');
-				string noComments = lineText.TrimComments().TrimEnd(' ', '\t', '\r', '\n');
-				
-				if (i < selBegin || i > selEnd) {
-					indentation.PopOrDefault();
-					indentation.Push(DocumentUtilitites.GetWhitespaceAfter(editor.Document, curLine.Offset));
-				}
-				
-				// change indentation before (indent this line)
-				if (multiLine && noComments.EndsWith("}", StringComparison.OrdinalIgnoreCase)) {
-					Unindent(indentation);
-					multiLine = false;
-				}
-				
-				editor.Document.SmartReplaceLine(curLine, (indentation.PeekOrDefault() ?? string.Empty) + lineText);
-				
-				// change indentation afterwards (indent next line)
-				if (!multiLine && noComments.EndsWith("_", StringComparison.OrdinalIgnoreCase)) {
-					Indent(editor, indentation);
-					multiLine = true;
-				}
-
-				if (multiLine && !noComments.EndsWith("_", StringComparison.OrdinalIgnoreCase)) {
-					multiLine = false;
-					Unindent(indentation);
-				}
-			}
 		}
 		
 		/// <summary>
