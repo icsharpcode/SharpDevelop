@@ -75,12 +75,12 @@ End Interface";
 End Class";
 			
 			string code = @"Public Class Test
-	Private Sub Tester()
-		B = New Burger With {Cheese = True, _
-                    Lettuce = True, _
-                    Tomato = True, _
-    CookLevel = MeatCookLevel.WellDone}
-	End Sub
+Private Sub Tester()
+B = New Burger With {Cheese = True, _
+Lettuce = True, _
+Tomato = True, _
+CookLevel = MeatCookLevel.WellDone}
+End Sub
 End Class";
 			
 			RunFormatTest(code, expected);
@@ -94,7 +94,7 @@ End Class";
 ' User: Siegfried
 ' Date: 25.02.2011
 ' Time: 14:41
-' 
+'
 ' To change this template use Tools | Options | Coding | Edit Standard Headers.
 '
 Imports Microsoft.VisualBasic.ApplicationServices
@@ -121,7 +121,7 @@ End Namespace";
 ' User: Siegfried
 ' Date: 25.02.2011
 ' Time: 14:41
-' 
+'
 ' To change this template use Tools | Options | Coding | Edit Standard Headers.
 '
 Imports Microsoft.VisualBasic.ApplicationServices

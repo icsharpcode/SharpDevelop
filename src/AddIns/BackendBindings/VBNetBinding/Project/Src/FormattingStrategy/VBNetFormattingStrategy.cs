@@ -23,6 +23,7 @@ namespace ICSharpCode.VBNetBinding
 	/// </summary>
 	public class VBNetFormattingStrategy : DefaultFormattingStrategy
 	{
+		#region VB Statements
 		static readonly List<VBStatement> statements;
 		
 		internal static List<VBStatement> Statements {
@@ -85,6 +86,7 @@ namespace ICSharpCode.VBNetBinding
 				Tokens.If, Tokens.For, Tokens.Do, Tokens.While, Tokens.With, Tokens.Select, Tokens.Try,
 				Tokens.Property, Tokens.Get, Tokens.Set
 			});
+		#endregion
 		
 		bool doCasing;
 		bool doInsertion;
