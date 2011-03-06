@@ -404,6 +404,54 @@ End Class";
 			RunFormatTest(code, expected);
 		}
 		
+		[Test]
+		public void FunctionLambda()
+		{
+			string expected = @"Public Class Test
+	Private Sub Tester()
+		Dim increment1 = Function(x) x + 1
+		Dim increment2 = Function(x)
+			Return x + 2
+		End Function
+	End Sub
+End Class";
+			
+			string code = @"Public Class Test
+Private Sub Tester()
+Dim increment1 = Function(x) x + 1
+Dim increment2 = Function(x)
+Return x + 2
+End Function
+End Sub
+End Class";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test]
+		public void SubLambda()
+		{
+			string expected = @"Public Class Test
+	Private Sub Tester()
+		Dim writeline1 = Sub(x) Console.WriteLine(x)
+		Dim writeline2 = Sub(x)
+			Console.WriteLine(x)
+		End Sub
+	End Sub
+End Class";
+			
+			string code = @"Public Class Test
+Private Sub Tester()
+Dim writeline1 = Sub(x) Console.WriteLine(x)
+Dim writeline2 = Sub(x)
+Console.WriteLine(x)
+End Sub
+End Sub
+End Class";
+			
+			RunFormatTest(code, expected);
+		}
+		
 		void RunFormatTest(string code, string expectedCode)
 		{
 			AvalonEditTextEditorAdapter editor = new AvalonEditTextEditorAdapter(new TextEditor());

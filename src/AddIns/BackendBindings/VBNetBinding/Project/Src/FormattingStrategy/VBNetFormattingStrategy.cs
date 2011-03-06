@@ -686,12 +686,33 @@ namespace ICSharpCode.VBNetBinding
 					}
 				}
 				
-				// do not indent if current token is start of lambda
-				// only works with single-line lambdas
+				// check if it is a lambda
 				if (current.Kind == Tokens.Function || current.Kind == Tokens.Sub) {
 					lexer.StartPeek();
 					
-					if (lexer.Peek().Kind == Tokens.OpenParenthesis)
+					bool isSingleLineLambda = false;
+					
+					if (lexer.Peek().Kind == Tokens.OpenParenthesis) {
+						isSingleLineLambda = true;
+						
+						int brackets = 1;
+						
+						// look for end of parameter list
+						while (brackets > 0) {
+							var t = lexer.Peek();
+							if (t.Kind == Tokens.OpenParenthesis)
+								brackets++;
+							if (t.Kind == Tokens.CloseParenthesis)
+								brackets--;
+						}
+						
+						// expression is multiline lambda if next Token is EOL
+						if (brackets == 0)
+							return lexer.Peek().Kind == Tokens.EOL;
+					}
+					
+					// do not indent if current token is start ofsingleline lambda
+					if (isSingleLineLambda)
 						return false;
 				}
 				
