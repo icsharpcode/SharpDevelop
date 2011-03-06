@@ -528,6 +528,7 @@ namespace ICSharpCode.VBNetBinding
 			Token prevToken = null;
 			
 			int blockStart = 1;
+			int lambdaNesting = 0;
 			
 			while ((currentToken = lexer.NextToken()).Kind != Tokens.EOF) {
 				if (prevToken == null)
@@ -551,7 +552,20 @@ namespace ICSharpCode.VBNetBinding
 					// indent the lines inside the block
 					// this is an End-statement
 					// hence we indent from blockStart to the previous line
-					ApplyToRange(editor, indentation, eols, blockStart, currentToken.Location.Line - 1, begin, end);
+					int blockEnd = currentToken.Location.Line - 1;
+					
+					// if this is a lambda end include End-Statement in block
+//					if (lambdaNesting > 0 && (currentToken.Kind == Tokens.Function || currentToken.Kind == Tokens.Sub)) {
+//						blockEnd++;
+//					}
+					
+					ApplyToRange(editor, indentation, eols, blockStart, blockEnd, begin, end);
+					
+					if (lambdaNesting > 0 && (currentToken.Kind == Tokens.Function || currentToken.Kind == Tokens.Sub)) {
+						Unindent(indentation);
+						
+						ApplyToRange(editor, indentation, eols, currentToken.Location.Line, currentToken.Location.Line, begin, end);
+					}
 					
 					if (currentToken.Kind == Tokens.Interface)
 						inInterface = false;
@@ -565,15 +579,29 @@ namespace ICSharpCode.VBNetBinding
 					
 					// block start is this line (for the lines between two blocks)
 					blockStart = currentToken.Location.Line;
+					
+					if (lambdaNesting > 0 && (currentToken.Kind == Tokens.Function || currentToken.Kind == Tokens.Sub)) {
+						blockStart++;
+						lambdaNesting--;
+					}
 				}
 				
-				if (IsBlockStart(lexer, currentToken, prevToken)) {
+				bool isMultiLineLambda;
+				if (IsBlockStart(lexer, currentToken, prevToken, out isMultiLineLambda)) {
 					// indent the lines between the last and this block
 					// this is a Begin-statement
 					// hence we indent from blockStart to the this line
 					int lastVisualLine = FindNextEol(lexer);
 					eols.Add(lastVisualLine);
 					ApplyToRange(editor, indentation, eols, blockStart, lastVisualLine, begin, end);
+					
+					if (isMultiLineLambda && (currentToken.Kind == Tokens.Function || currentToken.Kind == Tokens.Sub)) {
+						lambdaNesting++;
+						int endColumn = currentToken.Location.Column;
+						int startColumn = DocumentUtilitites.GetWhitespaceAfter(editor.Document, editor.Document.GetLine(lastVisualLine).Offset).Length;
+						if (startColumn < endColumn)
+							Indent(editor, indentation, new string(' ', endColumn - startColumn - 1));
+					}
 					
 					if (!inInterface && !isMustOverride && !isDeclare && !isDelegate) {
 						Indent(editor, indentation);
@@ -664,13 +692,21 @@ namespace ICSharpCode.VBNetBinding
 			indentation.PopOrDefault();
 		}
 
-		static void Indent(ITextEditor editor, Stack<string> indentation)
+		static void Indent(ITextEditor editor, Stack<string> indentation, string indent = null)
 		{
-			indentation.Push((indentation.PeekOrDefault() ?? string.Empty) + editor.Options.IndentationString);
+			indentation.Push((indentation.PeekOrDefault() ?? string.Empty) + (indent ?? editor.Options.IndentationString));
 		}
 		
 		internal static bool IsBlockStart(ILexer lexer, Token current, Token prev)
 		{
+			bool tmp;
+			return IsBlockStart(lexer, current, prev, out tmp);
+		}
+		
+		static bool IsBlockStart(ILexer lexer, Token current, Token prev, out bool isMultiLineLambda)
+		{
+			isMultiLineLambda = false;
+			
 			if (blockTokens.Contains(current.Kind)) {
 				if (current.Kind == Tokens.If) {
 					if (prev.Kind != Tokens.EOL)
@@ -706,12 +742,12 @@ namespace ICSharpCode.VBNetBinding
 								brackets--;
 						}
 						
-						// expression is multiline lambda if next Token is EOL
+						// expression is multi-line lambda if next Token is EOL
 						if (brackets == 0)
-							return lexer.Peek().Kind == Tokens.EOL;
+							return isMultiLineLambda = (lexer.Peek().Kind == Tokens.EOL);
 					}
 					
-					// do not indent if current token is start ofsingleline lambda
+					// do not indent if current token is start of single-line lambda
 					if (isSingleLineLambda)
 						return false;
 				}
