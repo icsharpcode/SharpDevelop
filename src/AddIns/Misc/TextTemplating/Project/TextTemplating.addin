@@ -1,0 +1,30 @@
+﻿<AddIn
+	name="Text Templating"
+	author="Matt Ward"
+	copyright="prj:///doc/copyright.txt"
+	description="Adds support for T4 templates."
+	addInManagerHidden="preinstalled">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.TextTemplating"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="TextTemplating.dll"/>
+	</Runtime>
+	
+	<Path name="/SharpDevelop/Workbench/FileFilter">
+		<FileFilter
+			id="T4"
+            insertbefore="AllFiles"
+            name="Text Template Files (*.tt)"
+            extensions="*.tt"/>
+	</Path>
+
+	<Path name="/SharpDevelop/CustomTools">
+		<CustomTool 
+			id="TextTemplatingFileGenerator"
+            class="ICSharpCode.TextTemplating.TextTemplatingFileGeneratorCustomTool"
+            fileNamePattern=".tt"/>
+	</Path>
+</AddIn>
