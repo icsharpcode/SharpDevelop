@@ -64,6 +64,7 @@
     <Compile Include="Src\TextTemplatingHost.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\TextTemplating.xshd" />
     <None Include="TextTemplating.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -79,6 +80,9 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

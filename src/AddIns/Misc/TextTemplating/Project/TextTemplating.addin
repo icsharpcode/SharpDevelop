@@ -15,7 +15,7 @@
 	
 	<Path name="/SharpDevelop/Workbench/FileFilter">
 		<FileFilter
-			id="T4"
+			id="TextTemplating"
             insertbefore="AllFiles"
             name="Text Template Files (*.tt)"
             extensions="*.tt"/>
@@ -26,5 +26,13 @@
 			id="TextTemplatingFileGenerator"
             class="ICSharpCode.TextTemplating.TextTemplatingFileGeneratorCustomTool"
             fileNamePattern=".tt"/>
+	</Path>
+
+	<Path name="/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
+		<SyntaxMode
+			id="TextTemplating.SyntaxMode"
+			extensions=".tt"
+			name="TextTemplating"
+			resource="ICSharpCode.TextTemplating.Resources.TextTemplating.xshd"/>
 	</Path>
 </AddIn>
