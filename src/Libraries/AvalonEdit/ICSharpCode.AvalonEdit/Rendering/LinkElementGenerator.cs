@@ -2,16 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.TextFormatting;
-
-using ICSharpCode.AvalonEdit.Document;
-using System.Windows.Navigation;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Rendering
 {
@@ -68,8 +60,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		Match GetMatch(int startOffset)
 		{
 			int endOffset = CurrentContext.VisualLine.LastDocumentLine.EndOffset;
-			string relevantText = CurrentContext.Document.GetText(startOffset, endOffset - startOffset);
-			return linkRegex.Match(relevantText);
+			StringSegment relevantText = CurrentContext.GetText(startOffset, endOffset - startOffset);
+			return linkRegex.Match(relevantText.Text, relevantText.Offset, relevantText.Count);
 		}
 		
 		/// <inheritdoc/>

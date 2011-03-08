@@ -343,6 +343,7 @@
     <Compile Include="Utils\Rope.cs" />
     <Compile Include="Utils\RopeNode.cs" />
     <Compile Include="Utils\RopeTextReader.cs" />
+    <Compile Include="Utils\StringSegment.cs" />
     <Compile Include="Utils\TextFormatterFactory.cs" />
     <Compile Include="Utils\WeakEventManagerBase.cs" />
     <Compile Include="Utils\PixelSnapHelpers.cs" />

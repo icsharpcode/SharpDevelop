@@ -544,11 +544,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			public override TextFinderMatch Find(string inputText, int startPosition)
 			{
 				int pos = inputText.IndexOf(searchText, startPosition);
-				if (pos >= 0) {
+				if (pos > 0) {
 					return new TextFinderMatch(pos, searchText.Length, pos - 1);
-				} else {
-					return TextFinderMatch.Empty;
 				}
+				return TextFinderMatch.Empty;
 			}
 		}
 		#endregion

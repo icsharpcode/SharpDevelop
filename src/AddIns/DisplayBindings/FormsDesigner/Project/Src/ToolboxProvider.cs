@@ -218,6 +218,10 @@ namespace ICSharpCode.FormsDesigner
 		static IProject FindProjectContainingType(string type)
 		{
 			IProject currentProject = ProjectService.CurrentProject;
+			if (currentProject == null) {
+				return null;
+			}
+			
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				if (project != currentProject) {
 					IProjectContent projectContent = ParserService.GetProjectContent(project);

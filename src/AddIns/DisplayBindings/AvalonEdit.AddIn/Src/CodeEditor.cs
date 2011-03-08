@@ -409,6 +409,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (!CodeCompletionOptions.EnableCodeCompletion)
 				return;
 			
+			TextArea textArea = GetTextEditorFromSender(sender).TextArea;
+			if (textArea.ActiveInputHandler != textArea.DefaultInputHandler)
+				return; // deactivate CC for non-default input handlers
+			
 			ITextEditor adapter = GetAdapterFromSender(sender);
 			
 			foreach (char c in e.Text) {

@@ -559,7 +559,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Top = bounds.Top;
 			this.Width = bounds.Width;
 			this.Height = bounds.Height;
-			this.WindowState = memento.Get("WindowState", System.Windows.WindowState.Maximized);
+			lastNonMinimizedWindowState = memento.Get("WindowState", System.Windows.WindowState.Maximized);
+			this.WindowState = lastNonMinimizedWindowState;
 		}
 		
 		protected override void OnClosing(CancelEventArgs e)
