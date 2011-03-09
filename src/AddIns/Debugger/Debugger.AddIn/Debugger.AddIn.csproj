@@ -222,6 +222,7 @@
     <Compile Include="Visualizers\Common\VirtualizingCollection.cs" />
     <Compile Include="Visualizers\Common\VirtualizingObservableCollection.cs" />
     <Compile Include="Visualizers\Controls\DragScrollViewer.cs" />
+    <Compile Include="Visualizers\Graph\Drawing\BoolToBoldConverter.cs" />
     <Compile Include="Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml.cs">
       <DependentUpon>PositionedGraphNodeControl.xaml</DependentUpon>
       <SubType>Code</SubType>

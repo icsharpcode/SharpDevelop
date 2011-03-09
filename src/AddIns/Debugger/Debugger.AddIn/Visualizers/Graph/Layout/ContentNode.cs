@@ -88,11 +88,22 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		public virtual bool ShowExpandPropertyButton
 		{
-			get 
-			{
-				// this is NestedNodeViewModel -> no property, don't show expand button
+			get  {
+				// this is ContentNode -> no property, don't show expand button
 				return false;
 			}
+		}
+		
+		/// <summary>
+		/// Is this an expanded Property node?
+		/// </summary>
+		public virtual bool IsPropertyExpanded
+		{
+			get  {
+				// this is ContentNode -> no property, don't show expand button
+				return false;
+			}
+			set { throw new InvalidOperationException("Cannot set IsPropertyExpanded on " + typeof(ContentNode).Name); }
 		}
 		
 		/// <summary>
@@ -136,48 +147,40 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		}
 		#endregion
 		
-		public virtual void InitFrom(AbstractNode source, Expanded expanded)
+		public virtual void InitOverride(AbstractNode source, Expanded expanded)
 		{
-			this.Name = getContentNodeName(source);
+			this.Name = GetContentNodeName(source);
 			this.Text = "";			// lazy evaluated later
 			this.IsNested = true;
 			this.path = this.Parent == null ? this.Name : this.Parent.Path + "." + this.Name;
 			this.IsExpanded = (source is ThisNode) || expanded.ContentNodes.IsExpanded(this);
 				
-			foreach (AbstractNode child in source.Children)
-			{
-				if (child is PropertyNode)
-				{
-					var newChild = new ContentPropertyNode(this.ContainingNode, this);
-					newChild.InitFrom(child, expanded);
-					this.Children.Add(newChild);
+			foreach (AbstractNode child in source.Children) {
+				ContentNode newChild = null;
+				if (child is PropertyNode) {
+					newChild = new ContentPropertyNode(this.ContainingNode, this);
+				} else {
+					newChild = new ContentNode(this.ContainingNode, this);
 				}
-				else
-				{
-					var newChild = new ContentNode(this.ContainingNode, this);
-					newChild.InitFrom(child, expanded);
-					this.Children.Add(newChild);					
-				}
+				newChild.InitOverride(child, expanded);
+				this.Children.Add(newChild);
 			}
 		}
 		
-		private string getContentNodeName(AbstractNode source)
+		private string GetContentNodeName(AbstractNode source)
 		{
-			if (source is ThisNode)
-			{
+			if (source is ThisNode)	{
 				return "this";
 			}
 			
-			if (source is NonPublicMembersNode)
-			{
+			if (source is NonPublicMembersNode)	{
 				return StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicMembers}");
 			}
 			
 			var sourceBaseClassNode = source as BaseClassNode;
-			if (sourceBaseClassNode != null)
-			{
-				//return StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}") + " " + sourceBaseClassNode.TypeName;
-				return sourceBaseClassNode.TypeName;
+			if (sourceBaseClassNode != null) {
+				string baseClassString = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}");
+				return string.Format("{0} ({1})", sourceBaseClassNode.TypeName, baseClassString);
 			}
 
 			throw new ApplicationException("Unknown AbstractNode.");

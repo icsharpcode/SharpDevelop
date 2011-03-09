@@ -61,11 +61,10 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
-		// TODO for speedup of re-layout only, posNodeForObjectGraphNode will be a service, that will return existing posNodes or create empty new
 		public void InitContentFromObjectNode(Expanded expanded)
 		{
 			this.Content = new ContentNode(this, null);
-			this.Content.InitFrom(this.ObjectNode.Content, expanded);
+			this.Content.InitOverride(this.ObjectNode.Content, expanded);
 			this.nodeVisualControl.Root = this.Content;
 		}
 		

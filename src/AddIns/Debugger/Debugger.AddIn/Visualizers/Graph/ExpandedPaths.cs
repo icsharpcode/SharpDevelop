@@ -11,7 +11,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 	/// </summary>
 	public class ExpandedPaths
 	{
-		private Dictionary<string, bool> expandedNodes = new Dictionary<string, bool>();
+		private Dictionary<string, bool> expandedPaths = new Dictionary<string, bool>();
 		
 		public ExpandedPaths()
 		{
@@ -19,17 +19,17 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public bool IsExpanded(string path)
 		{
-			return expandedNodes.ContainsKey(path) && (expandedNodes[path] == true);
+			return expandedPaths.ContainsKey(path) && (expandedPaths[path] == true);
 		}
 		
 		public void SetExpanded(string path)
 		{
-			expandedNodes[path] = true;
+			expandedPaths[path] = true;
 		}
 		
 		public void SetCollapsed(string path)
 		{
-			expandedNodes[path] = false;
+			expandedPaths[path] = false;
 		}
 	}
 }

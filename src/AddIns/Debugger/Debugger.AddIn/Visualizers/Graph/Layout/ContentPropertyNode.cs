@@ -31,7 +31,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			get { return this.positionedProperty.IsEvaluated; }
 		}
 		
-		public bool IsPropertyExpanded
+		public override bool IsPropertyExpanded
 		{
 			get { return this.positionedProperty.IsPropertyExpanded; }
 			set { this.positionedProperty.IsPropertyExpanded = value; }
@@ -52,19 +52,19 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
-		public override void InitFrom(AbstractNode source, Expanded expanded)
+		public override void InitOverride(AbstractNode source, Expanded expanded)
 		{
 			if (!(source is PropertyNode))
-				throw new InvalidOperationException("PropertyNodeViewModel must initialize from PropertyNode");
+				throw new InvalidOperationException(string.Format("{0} must initialize from {1}", typeof(ContentPropertyNode).Name, typeof(PropertyNode).Name));
 			
 			PropertyNode sourcePropertyNode = source as PropertyNode;
 			
 			this.Name = sourcePropertyNode.Property.Name;
 			// Important to set Text here, as we might be just building new view over existing (evaluated) model.
-			// Evaluated also in Evaluate() if needed.
+			// If the model is not evaluated yet, this will be string.Empty and filled in Evaluate().
 			this.Text = sourcePropertyNode.Property.Value;		
 			this.IsNested = false;
-			this.IsExpanded = false;			// always false, property content nodes are never expanded
+			this.IsExpanded = false;			// always false, Property nodes are never expanded (they have IsPropertyExpanded)
 			this.positionedProperty = new PositionedNodeProperty(
 				sourcePropertyNode.Property, this.ContainingNode,
 				expanded.Expressions.IsExpanded(sourcePropertyNode.Property.Expression));
