@@ -245,13 +245,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 			Vector tangent = splineEndPoint - splineEndHandlePoint;
 			tangent.Normalize();
 			tangent = tangent * 20;
-			Point basePoint = splineEndPoint - 0.2 * tangent;
+			Point basePoint = splineEndPoint - 0.4 * tangent;
 			
 			PathFigure arrowFigure = new PathFigure();
 			arrowFigure.IsClosed = true;
 			arrowFigure.IsFilled = true;
 
-			arrowFigure.StartPoint = basePoint + tangent * 0.4;	// arrow tip
+			arrowFigure.StartPoint = splineEndPoint;	// arrow tip
 			Vector tangent2 = rotate90(tangent);
 			arrowFigure.Segments.Add(new LineSegment(basePoint + tangent2 * 0.15, true));
 			arrowFigure.Segments.Add(new LineSegment(basePoint - tangent2 * 0.15, true));
