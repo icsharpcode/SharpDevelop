@@ -2,7 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom.Compiler;
 using System.IO;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.TextTemplating
@@ -30,40 +33,65 @@ namespace ICSharpCode.TextTemplating
 		
 		public void ProcessTemplate()
 		{
-			GenerateOutputFileForTemplate();	
-			AddOutputFileToProjectIfRequired();
+			context.ClearTasksExceptCommentTasks();
+			if (TryGenerateOutputFileForTemplate()) {
+				AddOutputFileToProjectIfRequired();
+			}
+			AddAnyErrorsToTaskList();
+			BringErrorsToFrontIfRequired();
+		}
+		
+		void BringErrorsToFrontIfRequired()
+		{
+			if (host.Errors.HasErrors) { 
+				context.BringErrorsPadToFront();
+			}
 		}
 
-		void GenerateOutputFileForTemplate()
+		bool TryGenerateOutputFileForTemplate()
 		{
 			string inputFileName = projectFile.FileName;
 			string outputFileName = GetOutputFileName(inputFileName);
-			host.ProcessTemplate(inputFileName, outputFileName);
+			return TryProcessingTemplate(inputFileName, outputFileName);
+		}
+		
+		bool TryProcessingTemplate(string inputFileName, string outputFileName)
+		{
+			try {
+				return host.ProcessTemplate(inputFileName, outputFileName);
+			} catch (InvalidOperationException ex) {
+				AddCompilerErrorToTemplatingHost(ex, inputFileName);
+			}
+			return false;
+		}
+		
+		void AddCompilerErrorToTemplatingHost(Exception ex, string fileName)
+		{
+			var error = new TemplatingHostProcessTemplateError(ex, fileName);
+			host.Errors.Add(error);
 		}
 		
 		string GetOutputFileName(string inputFileName)
 		{
 			return Path.ChangeExtension(inputFileName, ".cs");
 		}
+		
+		void AddAnyErrorsToTaskList()
+		{
+			foreach (CompilerError error in host.Errors) {
+				AddErrorToTaskList(error);
+			}
+		}
+		
+		void AddErrorToTaskList(CompilerError error)
+		{
+			var task = new CompilerErrorTask(error);
+			context.AddTask(task);
+		}
 
 		void AddOutputFileToProjectIfRequired()
 		{
 			context.EnsureOutputFileIsInProject(projectFile, host.OutputFile);
 		}
-
-		
-//		internal static void LogicalSetData (string name, object value,
-//			System.CodeDom.Compiler.CompilerErrorCollection errors)
-//		{
-//			//FIXME: CallContext.LogicalSetData not implemented in Mono
-//			try {
-//				System.Runtime.Remoting.Messaging.CallContext.LogicalSetData (name, value);
-//			} catch (NotImplementedException) {
-//				errors.Add (new System.CodeDom.Compiler.CompilerError (
-//					null, -1, -1, null,
-//					"Could not set " + name +  " - CallContext.LogicalSetData not implemented in this Mono version"
-//				) { IsWarning = true });
-//			}
-//		}
 	}
 }

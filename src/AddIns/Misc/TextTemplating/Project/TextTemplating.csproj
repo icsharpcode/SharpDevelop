@@ -50,11 +50,13 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\CompilerErrorTask.cs" />
     <Compile Include="Src\ITextTemplatingAppDomain.cs" />
     <Compile Include="Src\ITextTemplatingAppDomainFactory.cs" />
     <Compile Include="Src\ITextTemplatingCustomToolContext.cs" />
     <Compile Include="Src\ITextTemplatingHost.cs" />
     <Compile Include="Src\ITextTemplatingFileGenerator.cs" />
+    <Compile Include="Src\TemplatingHostProcessTemplateError.cs" />
     <Compile Include="Src\TextTemplatingAppDomain.cs" />
     <Compile Include="Src\TextTemplatingAppDomainFactory.cs" />
     <Compile Include="Src\TextTemplatingCustomToolContext.cs" />

@@ -62,6 +62,7 @@
     <Compile Include="Helpers\FakeTextTemplatingFileGenerator.cs" />
     <Compile Include="Helpers\TestableFileProjectItem.cs" />
     <Compile Include="Helpers\TestableTextTemplatingFileGeneratorCustomTool.cs" />
+    <Compile Include="Src\CompilerErrorTaskTests.cs" />
     <Compile Include="Src\TextTemplatingFileGeneratorCustomToolTests.cs" />
     <Compile Include="Src\TextTemplatingFileGeneratorTests.cs" />
     <Compile Include="Src\TextTemplatingHostTests.cs" />

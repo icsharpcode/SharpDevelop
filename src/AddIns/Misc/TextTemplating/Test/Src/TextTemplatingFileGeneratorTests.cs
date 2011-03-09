@@ -2,6 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom.Compiler;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextTemplating;
 using NUnit.Framework;
@@ -78,6 +81,96 @@ namespace TextTemplating.Tests
 			generator.ProcessTemplate();
 			
 			Assert.AreEqual(@"d:\changed-output.test", customToolContext.OutputFileNamePassedToEnsureOutputFileIsInProject);
+		}
+		
+		[Test]
+		public void ProcessTemplate_TemplateFileInProjectPassed_TaskServiceHasClearedTasksExceptForCommentTasks()
+		{
+			var file = ProcessTemplate(@"d:\template.tt");
+			
+			Assert.IsTrue(customToolContext.IsClearTasksExceptCommentTasksCalled);
+		}
+		
+		[Test]
+		public void ProcessTemplate_TemplateHostHasOneErrorAfterProcessing_ErrorTaskAddedToTaskList()
+		{
+			CreateGenerator(@"d:\a.tt");
+			templatingHost.ErrorsCollection.Add(new CompilerError());
+			generator.ProcessTemplate();
+			
+			Task task = customToolContext.FirstTaskAdded;
+			
+			Assert.AreEqual(TaskType.Error, task.TaskType);
+		}
+		
+		[Test]
+		public void ProcessTemplate_TemplateHostHasOneErrorAfterProcessing_ErrorDescriptionIsAddedToTaskList()
+		{
+			CreateGenerator(@"d:\a.tt");
+			var error = new CompilerError();
+			error.ErrorText = "error text";
+			templatingHost.ErrorsCollection.Add(error);
+			generator.ProcessTemplate();
+			
+			Task task = customToolContext.FirstTaskAdded;
+			
+			Assert.AreEqual("error text", task.Description);
+		}
+		
+		[Test]
+		public void ProcessTemplate_ThrowsInvalidOperationException_ErrorTaskAddedToTaskList()
+		{
+			CreateGenerator(@"d:\a.tt");
+			var ex = new InvalidOperationException("invalid operation error");
+			templatingHost.ExceptionToThrowWhenProcessTemplateCalled = ex;
+			generator.ProcessTemplate();
+			
+			Task task = customToolContext.FirstTaskAdded;
+			
+			Assert.AreEqual("invalid operation error", task.Description);
+		}
+		
+		[Test]
+		public void ProcessTemplate_ThrowsInvalidOperationException_ErrorTaskAddedToTaskListWithTemplateFileName()
+		{
+			CreateGenerator(@"d:\a.tt");
+			var ex = new InvalidOperationException("invalid operation error");
+			templatingHost.ExceptionToThrowWhenProcessTemplateCalled = ex;
+			generator.ProcessTemplate();
+			
+			Task task = customToolContext.FirstTaskAdded;
+			var expectedFileName = new FileName(@"d:\a.tt");
+			
+			Assert.AreEqual(expectedFileName, task.FileName);
+		}
+		
+		[Test]
+		public void ProcessTemplate_MethodReturnsFalse_OutputFileNotAddedToProject()
+		{
+			CreateGenerator(@"d:\a.tt");
+			templatingHost.ProcessTemplateReturnValue = false;
+			generator.ProcessTemplate();
+
+			Assert.IsFalse(customToolContext.IsOutputFileNamePassedToEnsureOutputFileIsInProject);
+		}
+		
+		[Test]
+		public void ProcessTemplate_TemplateHostHasOneErrorAfterProcessing_ErrorsPadBroughtToFront()
+		{
+			CreateGenerator(@"d:\a.tt");
+			templatingHost.Errors.Add(new CompilerError());
+			generator.ProcessTemplate();
+			
+			Assert.IsTrue(customToolContext.IsBringErrorsPadToFrontCalled);
+		}
+		
+		[Test]
+		public void ProcessTemplate_NoErrorsAfterProcessing_ErrorsPadNotBroughtToFront()
+		{
+			CreateGenerator(@"d:\a.tt");
+			generator.ProcessTemplate();
+			
+			Assert.IsFalse(customToolContext.IsBringErrorsPadToFrontCalled);
 		}
 	}
 }

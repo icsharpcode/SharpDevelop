@@ -6,11 +6,12 @@ using System.CodeDom.Compiler;
 
 namespace ICSharpCode.TextTemplating
 {
-	public interface ITextTemplatingHost : IDisposable
+	public class TemplatingHostProcessTemplateError : CompilerError
 	{
-		string OutputFile { get; }
-		CompilerErrorCollection Errors { get; }
-		
-		bool ProcessTemplate(string inputFile, string outputFile);
+		public TemplatingHostProcessTemplateError(Exception ex, string fileName)
+		{
+			this.ErrorText = ex.Message;
+			this.FileName = fileName;
+		}
 	}
 }
