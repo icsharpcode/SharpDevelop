@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Reflection;
 using System.Text;
 
 namespace ICSharpCode.AvalonEdit
@@ -13,6 +14,32 @@ namespace ICSharpCode.AvalonEdit
 	[Serializable]
 	public class TextEditorOptions : INotifyPropertyChanged
 	{
+		#region ctor
+		/// <summary>
+		/// Initializes an empty instance of TextEditorOptions.
+		/// </summary>
+		public TextEditorOptions()
+		{
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of TextEditorOptions by copying all values
+		/// from <paramref name="options"/> to the new instance.
+		/// </summary>
+		public TextEditorOptions(TextEditorOptions options)
+		{
+			// get all the fields in the class
+			FieldInfo[] fields = GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+
+			// copy each value over to 'this'
+			foreach(FieldInfo fi in fields) {
+				if (fi.IsNotSerialized)
+					continue;
+				fi.SetValue(this, fi.GetValue(options));
+			}
+		}
+		#endregion
+		
 		#region PropertyChanged handling
 		/// <inheritdoc/>
 		[field: NonSerialized]
