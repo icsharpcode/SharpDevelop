@@ -29,13 +29,12 @@ namespace ICSharpCode.AvalonEdit
 		public TextEditorOptions(TextEditorOptions options)
 		{
 			// get all the fields in the class
-			FieldInfo[] fields = GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-
+			FieldInfo[] fields = typeof(TextEditorOptions).GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+			
 			// copy each value over to 'this'
 			foreach(FieldInfo fi in fields) {
-				if (fi.IsNotSerialized)
-					continue;
-				fi.SetValue(this, fi.GetValue(options));
+				if (!fi.IsNotSerialized)
+					fi.SetValue(this, fi.GetValue(options));
 			}
 		}
 		#endregion
