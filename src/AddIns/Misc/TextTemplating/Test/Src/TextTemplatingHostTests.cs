@@ -12,9 +12,10 @@ namespace TextTemplating.Tests
 	[TestFixture]
 	public class TextTemplatingHostTests
 	{
-		TextTemplatingHost host;
+		TestableTextTemplatingHost host;
 		FakeTextTemplatingAppDomainFactory textTemplatingAppDomainFactory;
 		FakeTextTemplatingAppDomain textTemplatingAppDomain;
+		FakeTextTemplatingAssemblyResolver assemblyResolver;
 		
 		void CreateHost()
 		{
@@ -23,9 +24,10 @@ namespace TextTemplating.Tests
 		
 		void CreateHost(string applicationBase)
 		{
-			textTemplatingAppDomainFactory = new FakeTextTemplatingAppDomainFactory();
+			host = new TestableTextTemplatingHost(applicationBase);
+			textTemplatingAppDomainFactory = host.FakeTextTemplatingAppDomainFactory;
 			textTemplatingAppDomain = textTemplatingAppDomainFactory.FakeTextTemplatingAppDomain;
-			host = new TextTemplatingHost(textTemplatingAppDomainFactory, applicationBase);
+			assemblyResolver = host.FakeTextTemplatingAssemblyResolver;
 		}
 		
 		[Test]
@@ -89,6 +91,25 @@ namespace TextTemplating.Tests
 			
 			string actualApplicationBase = textTemplatingAppDomainFactory.ApplicationBasePassedToCreateTextTemplatingAppDomain;
 			Assert.AreEqual(applicationBase, actualApplicationBase);
+		}
+		
+		[Test]
+		public void ResolveAssemblyReference_PassedMyAssemblyReference_CallsTextTemplatingAssemblyResolver()
+		{
+			CreateHost();
+			host.CallResolveAssemblyReference("MyReference");
+			
+			Assert.AreEqual("MyReference", assemblyResolver.AssembyReferencePassedToResolve);
+		}
+		
+		[Test]
+		public void ResolveAssemblyReference_PassedMyAssemblyReference_ReturnFileNameReturnedFromAssemblyResolverResolveMethod()
+		{
+			CreateHost();
+			assemblyResolver.ResolveReturnValue = @"d:\projects\references\MyReference.dll";
+			string result = host.CallResolveAssemblyReference("MyReference");
+			
+			Assert.AreEqual(@"d:\projects\references\MyReference.dll", result);
 		}
 	}
 }

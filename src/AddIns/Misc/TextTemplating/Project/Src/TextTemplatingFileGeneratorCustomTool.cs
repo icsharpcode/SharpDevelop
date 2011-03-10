@@ -9,7 +9,7 @@ using ICSharpCode.SharpDevelop.Project;
 namespace ICSharpCode.TextTemplating
 {
 	public class TextTemplatingFileGeneratorCustomTool : ICustomTool
-	{		
+	{
 		public void GenerateCode(FileProjectItem item, CustomToolContext context)
 		{
 			using (var generator = CreateTextTemplatingFileGenerator(item, context)) {
@@ -21,12 +21,19 @@ namespace ICSharpCode.TextTemplating
 			FileProjectItem projectFile,
 			CustomToolContext context)
 		{
-			var appDomainFactory = new TextTemplatingAppDomainFactory();
-			string applicationBase = GetAssemblyBaseLocation();
-			var host = new TextTemplatingHost(appDomainFactory, applicationBase);
+			TextTemplatingHost host = CreateTextTemplatingHost(context.Project);
 			var textTemplatingCustomToolContext = new TextTemplatingCustomToolContext(context);
 			
 			return new TextTemplatingFileGenerator(host, projectFile, textTemplatingCustomToolContext);
+		}
+
+		TextTemplatingHost CreateTextTemplatingHost(IProject project)
+		{
+			var appDomainFactory = new TextTemplatingAppDomainFactory();
+			string applicationBase = GetAssemblyBaseLocation();
+			var assemblyResolver = new TextTemplatingAssemblyResolver(project);
+			var host = new TextTemplatingHost(appDomainFactory, assemblyResolver, applicationBase);
+			return host;
 		}
 		
 		string GetAssemblyBaseLocation()

@@ -53,12 +53,14 @@
     <Compile Include="Src\CompilerErrorTask.cs" />
     <Compile Include="Src\ITextTemplatingAppDomain.cs" />
     <Compile Include="Src\ITextTemplatingAppDomainFactory.cs" />
+    <Compile Include="Src\ITextTemplatingAssemblyResolver.cs" />
     <Compile Include="Src\ITextTemplatingCustomToolContext.cs" />
     <Compile Include="Src\ITextTemplatingHost.cs" />
     <Compile Include="Src\ITextTemplatingFileGenerator.cs" />
     <Compile Include="Src\TemplatingHostProcessTemplateError.cs" />
     <Compile Include="Src\TextTemplatingAppDomain.cs" />
     <Compile Include="Src\TextTemplatingAppDomainFactory.cs" />
+    <Compile Include="Src\TextTemplatingAssemblyResolver.cs" />
     <Compile Include="Src\TextTemplatingCustomToolContext.cs" />
     <Compile Include="Src\TextTemplatingFileGenerator.cs" />
     <Compile Include="Src\TextTemplatingFileGeneratorCustomTool.cs" />
