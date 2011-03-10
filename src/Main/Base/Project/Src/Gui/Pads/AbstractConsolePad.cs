@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections.Generic;
@@ -265,6 +266,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public event TextCompositionEventHandler TextAreaTextEntered;
 		public event KeyEventHandler TextAreaPreviewKeyDown;
 		
+		static TextEditorOptions consoleOptions;
+		
 		public ConsoleControl()
 		{
 			this.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
@@ -278,6 +281,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.editor.SetValue(Grid.ColumnProperty, 0);
 			this.editor.SetValue(Grid.RowProperty, 0);
 			this.editor.ShowLineNumbers = false;
+			
+			if (consoleOptions == null) {
+				consoleOptions = new TextEditorOptions(editor.Options);
+				consoleOptions.AllowScrollBelowDocument = false;
+			}
+			
+			this.editor.Options = consoleOptions;
 			
 			this.Children.Add(editor);
 			

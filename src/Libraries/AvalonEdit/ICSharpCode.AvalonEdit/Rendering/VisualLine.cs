@@ -137,8 +137,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 								askInterestOffset = 0;
 								offset += element.DocumentLength;
 								if (offset > currentLineEnd) {
-									LastDocumentLine = document.GetLineByOffset(offset);
-									currentLineEnd = LastDocumentLine.Offset + LastDocumentLine.Length;
+									DocumentLine newEndLine = document.GetLineByOffset(offset);
+									if (newEndLine == this.LastDocumentLine) {
+										throw new InvalidOperationException(
+											"The VisualLineElementGenerator " + g.GetType().Name +
+											" produced an element which ends within the line delimiter");
+									}
+									currentLineEnd = newEndLine.Offset + newEndLine.Length;
+									this.LastDocumentLine = newEndLine;
 								}
 								break;
 							}

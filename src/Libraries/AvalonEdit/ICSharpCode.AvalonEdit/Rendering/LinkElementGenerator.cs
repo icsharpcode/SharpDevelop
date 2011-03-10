@@ -57,25 +57,29 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			this.RequireControlModifierForClick = options.RequireControlModifierForHyperlinkClick;
 		}
 		
-		Match GetMatch(int startOffset)
+		Match GetMatch(int startOffset, out int matchOffset)
 		{
 			int endOffset = CurrentContext.VisualLine.LastDocumentLine.EndOffset;
 			StringSegment relevantText = CurrentContext.GetText(startOffset, endOffset - startOffset);
-			return linkRegex.Match(relevantText.Text, relevantText.Offset, relevantText.Count);
+			Match m = linkRegex.Match(relevantText.Text, relevantText.Offset, relevantText.Count);
+			matchOffset = m.Success ? m.Index - relevantText.Offset + startOffset : -1;
+			return m;
 		}
 		
 		/// <inheritdoc/>
 		public override int GetFirstInterestedOffset(int startOffset)
 		{
-			Match m = GetMatch(startOffset);
-			return m.Success ? startOffset + m.Index : -1;
+			int matchOffset;
+			GetMatch(startOffset, out matchOffset);
+			return matchOffset;
 		}
 		
 		/// <inheritdoc/>
 		public override VisualLineElement ConstructElement(int offset)
 		{
-			Match m = GetMatch(offset);
-			if (m.Success && m.Index == 0) {
+			int matchOffset;
+			Match m = GetMatch(offset, out matchOffset);
+			if (m.Success && matchOffset == offset) {
 				Uri uri = GetUriFromMatch(m);
 				if (uri == null)
 					return null;
