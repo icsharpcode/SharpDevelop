@@ -62,9 +62,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			DocumentLine endLine = CurrentContext.VisualLine.LastDocumentLine;
 			StringSegment relevantText = CurrentContext.GetText(startOffset, endLine.EndOffset - startOffset);
 			
-			int endPos = relevantText.Offset + relevantText.Count;
-			for (int i = relevantText.Offset; i < endPos; i++) {
-				char c = relevantText.Text[i];
+			for (int i = 0; i < relevantText.Count; i++) {
+				char c = relevantText.Text[relevantText.Offset + i];
 				switch (c) {
 					case ' ':
 						if (ShowSpaces)
