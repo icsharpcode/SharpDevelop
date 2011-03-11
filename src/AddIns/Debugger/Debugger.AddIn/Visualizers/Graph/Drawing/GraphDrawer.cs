@@ -39,22 +39,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="diff"></param>
 		public void StartAnimation(PositionedGraph oldGraph, PositionedGraph newGraph, GraphDiff diff)
 		{
-			if (oldGraph != null)
-			{
-				foreach	(var oldNode in oldGraph.Nodes)
-				{
-					foreach	(var newNode in newGraph.Nodes)
-					{
-						if (oldNode.NodeVisualControl == newNode.NodeVisualControl)
-						{
-							ClearCanvas();
-						}
-					}
-				}
-			}
+			// account for that the visual controls could have been reused (we are not reusing controls now - NodeControlCache does nothing)
 			
-			this.canvas.Width = newGraph.BoundingRect.Width;
-			this.canvas.Height = newGraph.BoundingRect.Height;
+//			this.canvas.Width = newGraph.BoundingRect.Width;
+//			this.canvas.Height = newGraph.BoundingRect.Height;
 			
 			if (oldGraph == null)
 			{
@@ -113,7 +101,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				node.NodeVisualControl.BeginAnimation(CanvasLocationAdapter.LocationProperty, anim);
 			}
 		}
-		
+
 		/// <summary>
 		/// Draws <see cref="PositionedGraph"></see> on Canvas.
 		/// </summary>

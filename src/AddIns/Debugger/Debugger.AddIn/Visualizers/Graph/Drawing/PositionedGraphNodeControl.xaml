@@ -13,7 +13,11 @@
 	</UserControl.Resources>
 	
     <aero:SystemDropShadowChrome>
-    <Grid>
+    <StackPanel Orientation="Vertical">
+    	<!-- 
+    	<Border Background="#ddeeff" BorderThickness="1,1,1,0" BorderBrush="DarkGray" HorizontalAlignment="Stretch" Padding="1">
+    		<TextBlock>Hello</TextBlock>
+    	</Border>  -->
         <ListView Name="listView" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -51,8 +55,7 @@
                 <GridView>
                         <GridView.ColumnHeaderContainerStyle>
                             <Style>
-                            		<!-- 
-                                <Setter Property="FrameworkElement.Visibility" Value="Collapsed"/>	-->
+                            		<!--	<Setter Property="FrameworkElement.Visibility" Value="Collapsed"/>	-->
                         	 		<Setter Property="FrameworkElement.Height" Value="1"/>
                             </Style>
                         </GridView.ColumnHeaderContainerStyle>
@@ -98,6 +101,6 @@
                     </GridView>
             </ListView.View>
         </ListView>
-    </Grid>
+    </StackPanel>
     </aero:SystemDropShadowChrome>
 </UserControl>

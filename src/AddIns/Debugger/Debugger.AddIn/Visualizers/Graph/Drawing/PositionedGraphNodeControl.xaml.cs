@@ -59,16 +59,15 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			{
 				this.root = value;
 				this.view = getInitialView(this.root);
-				// data virtualization, PropertyNodeViewModel implements IEvaluate
+				// data virtualization, ContentPropertyNode implements IEvaluate
 				this.listView.ItemsSource = new VirtualizingObservableCollection<ContentNode>(this.view);
 				
-				int maxLen = this.view.MaxOrDefault(contentNode => { return contentNode.Name.Length; }, 0);
+				/*int maxLen = this.view.MaxOrDefault(contentNode => { return contentNode.Name.Length; }, 0);
 				int spaces = Math.Max((int)(maxLen * 1.8 - 3), 0);
 				string addedSpaces = StringHelper.Repeat(' ', spaces);
-				
 				GridView gv = listView.View as GridView;
 				// hack - autosize Name column
-				gv.Columns[1].Header = "Name" + addedSpaces;
+				gv.Columns[1].Header = "Name" + addedSpaces;*/
 				
 				//AutoSizeColumns();
 				

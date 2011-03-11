@@ -21,7 +21,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 		}
 		
-		public PositionedGraph RouteEdges(PositionedGraph posGraph)
+		public void RouteEdges(PositionedGraph posGraph)
 		{
 			List<RoutedEdge> routedEdges = router.RouteEdges(posGraph.Nodes, posGraph.Edges);
 			int i = 0;
@@ -30,7 +30,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				SetEdgeSplinePoints(edge, routedEdges[i]);
 				i++;
 			}
-			return posGraph;
 		}
 		
 		void SetEdgeSplinePoints(PositionedEdge edge, RoutedEdge routedEdge)
