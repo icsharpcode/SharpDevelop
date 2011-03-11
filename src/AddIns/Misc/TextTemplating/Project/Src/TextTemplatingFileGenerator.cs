@@ -55,12 +55,18 @@ namespace ICSharpCode.TextTemplating
 			return TryProcessingTemplate(inputFileName, outputFileName);
 		}
 		
+		string GetOutputFileName(string inputFileName)
+		{
+			return Path.ChangeExtension(inputFileName, ".cs");
+		}
+
 		bool TryProcessingTemplate(string inputFileName, string outputFileName)
 		{
 			try {
 				return host.ProcessTemplate(inputFileName, outputFileName);
-			} catch (InvalidOperationException ex) {
+			} catch (Exception ex) {
 				AddCompilerErrorToTemplatingHost(ex, inputFileName);
+				DebugLogException(ex, inputFileName);
 			}
 			return false;
 		}
@@ -71,11 +77,12 @@ namespace ICSharpCode.TextTemplating
 			host.Errors.Add(error);
 		}
 		
-		string GetOutputFileName(string inputFileName)
+		void DebugLogException(Exception ex, string fileName)
 		{
-			return Path.ChangeExtension(inputFileName, ".cs");
+			string message = String.Format("Exception thrown when processing template '{0}'.", fileName);
+			context.DebugLog(message, ex);
 		}
-		
+				
 		void AddAnyErrorsToTaskList()
 		{
 			foreach (CompilerError error in host.Errors) {

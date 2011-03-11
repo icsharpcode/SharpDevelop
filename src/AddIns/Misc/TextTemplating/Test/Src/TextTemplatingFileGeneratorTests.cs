@@ -172,5 +172,45 @@ namespace TextTemplating.Tests
 			
 			Assert.IsFalse(customToolContext.IsBringErrorsPadToFrontCalled);
 		}
+		
+		[Test]
+		public void ProcessTemplate_ThrowsInvalidOperationException_ExceptionLogged()
+		{
+			CreateGenerator(@"d:\a.tt");
+			var ex = new InvalidOperationException("invalid operation error");
+			templatingHost.ExceptionToThrowWhenProcessTemplateCalled = ex;
+			generator.ProcessTemplate();
+			
+			Exception exceptionLogged = customToolContext.ExceptionPassedToDebugLog;
+			
+			Assert.AreEqual(ex, exceptionLogged);
+		}
+		
+		[Test]
+		public void ProcessTemplate_ThrowsInvalidOperationException_MessageLoggedIncludesInformationAboutProcessingTemplateFailure()
+		{
+			CreateGenerator(@"d:\a.tt");
+			var ex = new InvalidOperationException("invalid operation error");
+			templatingHost.ExceptionToThrowWhenProcessTemplateCalled = ex;
+			generator.ProcessTemplate();
+			
+			string message = customToolContext.MessagePassedToDebugLog;
+			string expectedMessage = "Exception thrown when processing template 'd:\\a.tt'.";
+			
+			Assert.AreEqual(expectedMessage, message);
+		}
+		
+		[Test]
+		public void ProcessTemplate_ThrowsException_ErrorTaskAddedToTaskList()
+		{
+			CreateGenerator(@"d:\a.tt");
+			var ex = new Exception("error");
+			templatingHost.ExceptionToThrowWhenProcessTemplateCalled = ex;
+			generator.ProcessTemplate();
+			
+			Task task = customToolContext.FirstTaskAdded;
+			
+			Assert.AreEqual("error", task.Description);
+		}
 	}
 }

@@ -14,5 +14,6 @@ namespace ICSharpCode.TextTemplating
 		void ClearTasksExceptCommentTasks();
 		void AddTask(Task task);
 		void BringErrorsPadToFront();
+		void DebugLog(string message, Exception ex);
 	}
 }

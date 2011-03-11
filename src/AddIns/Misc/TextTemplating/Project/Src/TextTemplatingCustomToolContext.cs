@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -35,6 +36,11 @@ namespace ICSharpCode.TextTemplating
 		public void BringErrorsPadToFront()
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+		}
+		
+		public void DebugLog(string message, Exception ex)
+		{
+			LoggingService.DebugFormatted("{0}\r\n{1}", message, ex.ToString());
 		}
 	}
 }

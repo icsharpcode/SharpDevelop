@@ -16,6 +16,8 @@ namespace TextTemplating.Tests.Helpers
 		public bool IsOutputFileNamePassedToEnsureOutputFileIsInProject;
 		public bool IsClearTasksExceptCommentTasksCalled;
 		public bool IsBringErrorsPadToFrontCalled;
+		public Exception ExceptionPassedToDebugLog;
+		public string MessagePassedToDebugLog;
 		
 		public List<Task> TasksAdded = new List<Task>();
 		
@@ -49,6 +51,12 @@ namespace TextTemplating.Tests.Helpers
 		public void BringErrorsPadToFront()
 		{
 			IsBringErrorsPadToFrontCalled = true;
+		}
+		
+		public void DebugLog(string message, Exception ex)
+		{
+			MessagePassedToDebugLog = message;
+			ExceptionPassedToDebugLog = ex;
 		}
 	}
 }
