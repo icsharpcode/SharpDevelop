@@ -13,12 +13,22 @@
 		<Import assembly="TextTemplating.dll"/>
 	</Runtime>
 	
+	<BitmapResources file="Resources\TextTemplate.File.png"/>
+	<BitmapResources file="Resources\TextTemplate.ProjectBrowser.File.png"/>
+	
 	<Path name="/SharpDevelop/Workbench/FileFilter">
 		<FileFilter
 			id="TextTemplating"
             insertbefore="AllFiles"
             name="Text Template Files (*.tt)"
             extensions="*.tt"/>
+	</Path>
+
+	<Path name="/Workspace/Icons">
+		<Icon
+			id="TextTemplateFileIcon"
+			extensions=".tt"
+			resource="TextTemplate.ProjectBrowser.File"/>
 	</Path>
 
 	<Path name="/SharpDevelop/CustomTools">
@@ -34,5 +44,9 @@
 			extensions=".tt"
 			name="TextTemplating"
 			resource="ICSharpCode.TextTemplating.Resources.TextTemplating.xshd"/>
+	</Path>
+
+	<Path name="/SharpDevelop/BackendBindings/Templates">
+		<Directory id="TextTemplating" path="./Templates"/>
 	</Path>
 </AddIn>
