@@ -3,7 +3,7 @@
 		name="Text Template"
 		icon="TextTemplate.File"
 		category="C#"
-		defaultname="TextTemplate${Number}.txt"
+		defaultname="TextTemplate${Number}.tt"
 		language="Default"/>
 	 
 	<Description>A t4 text template for the C# language.</Description>

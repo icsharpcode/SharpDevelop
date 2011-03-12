@@ -1,7 +1,7 @@
 ﻿<SyntaxDefinition
 	xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"
 	name="TextTemplating"
-	extensions=".tt">
+	extensions=".tt;.t4">
 	
 	<Color name="TemplateBlockStartEndTags" foreground="Black" background="Yellow" />
 	<Color name="DirectiveKeywords" foreground="Brown" fontWeight="bold" />
