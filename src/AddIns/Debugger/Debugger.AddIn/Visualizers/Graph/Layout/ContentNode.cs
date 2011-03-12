@@ -15,7 +15,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class ContentNode : Utils.ITreeNode<ContentNode>
 	{
-		public ContentNode(PositionedGraphNode containingNode, ContentNode parent)
+		public ContentNode(PositionedNode containingNode, ContentNode parent)
 		{
 			if (containingNode == null)
 				throw new ArgumentNullException("containingNode");
@@ -74,11 +74,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		private List<ContentNode> children = new List<ContentNode>();		
 		public List<ContentNode> Children { get { return this.children; } }
 	
-		PositionedGraphNode containingNode;
+		PositionedNode containingNode;
 		/// <summary>
 		/// PositionedGraphNode that contains this PropertyNodeViewModel.
 		/// </summary>
-		public PositionedGraphNode ContainingNode
+		public PositionedNode ContainingNode
 		{
 			get { return this.containingNode; }
 		}

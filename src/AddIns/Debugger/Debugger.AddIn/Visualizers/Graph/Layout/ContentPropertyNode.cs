@@ -13,7 +13,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	{
 		PositionedNodeProperty positionedProperty;
 		
-		public ContentPropertyNode(PositionedGraphNode containingNode, ContentNode parent)
+		public ContentPropertyNode(PositionedNode containingNode, ContentNode parent)
 			: base(containingNode, parent)
 		{
 		}

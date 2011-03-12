@@ -13,18 +13,16 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// ObjectNode with added position information.
 	/// </summary>
-	public class PositionedGraphNode : SplineRouting.IRect
+	public class PositionedNode : SplineRouting.IRect
 	{
-		public static readonly double MaxHeight = 300;
-		
 		/// <summary>
 		/// Creates new PositionedNode.
 		/// </summary>
 		/// <param name="objectNode">Underlying ObjectNode.</param>
-		public PositionedGraphNode(ObjectGraphNode objectNode)
+		public PositionedNode(ObjectGraphNode objectNode)
 		{
 			this.objectNode = objectNode;
-			initVisualControl();
+			InitVisualControl();
 		}
 		
 		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
@@ -44,56 +42,45 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <summary>
 		/// Tree-of-properties content of this node.
 		/// </summary>
-		public ContentNode Content
-		{
-			get; set;
-		}
+		public ContentNode Content { get; set; }
 		
-		private PositionedGraphNodeControl nodeVisualControl;
+		/// <summary>
+		/// The size of the subtree of this node in the layout.
+		/// </summary>
+		public double SubtreeSize { get; set; }
+		
 		/// <summary>
 		/// Visual control to be shown for this node.
 		/// </summary>
-		public PositionedGraphNodeControl NodeVisualControl
-		{
-			get
-			{
-				return this.nodeVisualControl;
-			}
-		}
+		public PositionedGraphNodeControl NodeVisualControl { get; private set; }
 		
 		public void InitContentFromObjectNode(Expanded expanded)
 		{
 			this.Content = new ContentNode(this, null);
 			this.Content.InitOverride(this.ObjectNode.Content, expanded);
-			this.nodeVisualControl.Root = this.Content;
+			this.NodeVisualControl.Root = this.Content;
 		}
 		
-		private void initVisualControl()
+		private void InitVisualControl()
 		{
-			this.nodeVisualControl = NodeControlCache.Instance.GetNodeControl();
-			this.nodeVisualControl.MaxHeight = MaxHeight;
-			
+			this.NodeVisualControl = NodeControlCache.Instance.GetNodeControl();
 			// propagate events from nodeVisualControl
-			this.nodeVisualControl.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyExpanded);
-			this.nodeVisualControl.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyCollapsed);
-			this.nodeVisualControl.ContentNodeExpanded += new EventHandler<ContentNodeEventArgs>(NodeVisualControl_ContentNodeExpanded);
-			this.nodeVisualControl.ContentNodeCollapsed += new EventHandler<ContentNodeEventArgs>(NodeVisualControl_ContentNodeCollapsed);
+			this.NodeVisualControl.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyExpanded);
+			this.NodeVisualControl.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyCollapsed);
+			this.NodeVisualControl.ContentNodeExpanded += new EventHandler<ContentNodeEventArgs>(NodeVisualControl_ContentNodeExpanded);
+			this.NodeVisualControl.ContentNodeCollapsed += new EventHandler<ContentNodeEventArgs>(NodeVisualControl_ContentNodeCollapsed);
 		}
 		
 		public IEnumerable<PositionedNodeProperty> Properties
 		{
-			get
-			{
-				return this.Content.FlattenProperties();
-			}
+			get	{ return this.Content.FlattenProperties();	}
 		}
 		
 		public virtual IEnumerable<PositionedEdge> Edges
 		{
 			get
 			{
-				foreach	(PositionedNodeProperty property in this.Properties)
-				{
+				foreach	(PositionedNodeProperty property in this.Properties) {
 					if (property.Edge != null)
 						yield return property.Edge;
 				}
@@ -102,7 +89,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public void Measure()
 		{
-			this.nodeVisualControl.Measure(new Size(800, 800));
+			this.NodeVisualControl.Measure(new Size(800, 800));
 		}
 		
 		public double Left { get; set; }

@@ -315,15 +315,11 @@
     <Compile Include="Visualizers\Graph\Layout\GraphMatcher.cs" />
     <Compile Include="Visualizers\Graph\Layout\PositionedEdge.cs" />
     <Compile Include="Visualizers\Graph\Layout\PositionedGraph.cs" />
-    <Compile Include="Visualizers\Graph\Layout\PositionedGraphNode.cs" />
+    <Compile Include="Visualizers\Graph\Layout\PositionedNode.cs" />
     <Compile Include="Visualizers\Graph\Layout\PositionedNodeProperty.cs" />
     <Compile Include="Visualizers\Graph\Layout\PositionedPropertyEventArgs.cs" />
     <Compile Include="Visualizers\Graph\Layout\Tree\LayoutDirection.cs" />
-    <Compile Include="Visualizers\Graph\Layout\Tree\TreeEdge.cs" />
-    <Compile Include="Visualizers\Graph\Layout\Tree\TreeLayouter.cs" />
-    <Compile Include="Visualizers\Graph\Layout\Tree\TreeGraphNode.cs" />
-    <Compile Include="Visualizers\Graph\Layout\Tree\TreeGraphNodeLR.cs" />
-    <Compile Include="Visualizers\Graph\Layout\Tree\TreeGraphNodeTB.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\TreeLayout.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\ObjectGraph.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\ObjectGraphBuilder.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\ObjectGraphNode.cs" />

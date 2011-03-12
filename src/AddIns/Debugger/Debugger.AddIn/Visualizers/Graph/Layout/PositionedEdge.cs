@@ -11,7 +11,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// Edge with position information.
 	/// </summary>
-	public class PositionedEdge : NamedEdge<PositionedNodeProperty, PositionedGraphNode>, SplineRouting.IEdge
+	public class PositionedEdge : NamedEdge<PositionedNodeProperty, PositionedNode>, SplineRouting.IEdge
 	{
 		private IList<Point> splinePoints = new List<Point>();
 		/// <summary>

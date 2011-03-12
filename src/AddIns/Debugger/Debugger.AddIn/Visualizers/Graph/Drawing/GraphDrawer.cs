@@ -19,7 +19,8 @@ using Debugger.AddIn.Visualizers.Graph.Layout;
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Draws <see cref="PositionedGraph"></see> on Canvas.
+	/// Draws <see cref="PositionedGraph" /> on Canvas.
+	/// Keeps the last displayed graph and does a smooth transition into the new graph.
 	/// </summary>
 	public class GraphDrawer
 	{
@@ -41,11 +42,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			// account for that the visual controls could have been reused (we are not reusing controls now - NodeControlCache does nothing)
 			
-//			this.canvas.Width = newGraph.BoundingRect.Width;
-//			this.canvas.Height = newGraph.BoundingRect.Height;
+			this.canvas.Width = newGraph.BoundingRect.Width;
+			this.canvas.Height = newGraph.BoundingRect.Height;
 			
-			if (oldGraph == null)
-			{
+			if (oldGraph == null) {
 				Draw(newGraph);
 				return;
 			}
@@ -57,38 +57,31 @@ namespace Debugger.AddIn.Visualizers.Graph
 			DoubleAnimation fadeOutAnim = new DoubleAnimation(1.0, 0.0, durationFade);
 			DoubleAnimation fadeInAnim = new DoubleAnimation(0.0, 1.0, durationFade);
 			
-			foreach	(UIElement drawing in canvas.Children)
-			{
+			foreach	(UIElement drawing in canvas.Children) {
 				var arrow = drawing as Path;
-				if (arrow != null)
-				{
+				if (arrow != null) {
 					arrow.BeginAnimation(UIElement.OpacityProperty, fadeOutAnim);
 				}
 			}
 			
-			foreach	(PositionedEdge edge in newGraph.Edges)
-			{
-				addEdgeToCanvas(edge).BeginAnimation(UIElement.OpacityProperty, fadeInAnim);
+			foreach	(PositionedEdge edge in newGraph.Edges) {
+				AddEdgeToCanvas(edge).BeginAnimation(UIElement.OpacityProperty, fadeInAnim);
 			}
 			
-			foreach	(PositionedGraphNode removedNode in diff.RemovedNodes)
-			{
+			foreach	(PositionedNode removedNode in diff.RemovedNodes) {
 				removedNode.NodeVisualControl.BeginAnimation(UIElement.OpacityProperty, fadeOutAnim);
 			}
 			
-			foreach	(PositionedGraphNode addedNode in diff.AddedNodes)
-			{
-				addNodeToCanvas(addedNode).BeginAnimation(UIElement.OpacityProperty, fadeInAnim);
+			foreach	(PositionedNode addedNode in diff.AddedNodes) {
+				AddNodeToCanvas(addedNode).BeginAnimation(UIElement.OpacityProperty, fadeInAnim);
 			}
 			
 			bool first = true;
-			foreach	(PositionedGraphNode node in diff.ChangedNodes)
-			{
+			foreach	(PositionedNode node in diff.ChangedNodes) {
 				var newNode = diff.GetMatchingNewNode(node);
 				
 				PointAnimation anim = new PointAnimation();
-				if (first)
-				{
+				if (first) {
 					anim.Completed += new EventHandler((o, e) => { Draw(newGraph); });
 					first = false;
 				}
@@ -111,29 +104,14 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			canvas.Children.Clear();
 			
-			/*try
-			{
-			    // why do the controls disappear?
-				var n1 = posGraph.Nodes.First().NodeVisualControl;
-				var n2 = posGraph.Nodes.Skip(1).First().NodeVisualControl;
-				var n3 = posGraph.Nodes.Skip(2).First().NodeVisualControl;
-				if (n1 == n2 || n1 == n3 || n2 == n3)
-				{
-					ClearCanvas();
-				}
-			}
-			catch{}*/
-			
 			// draw nodes
-			foreach	(PositionedGraphNode node in posGraph.Nodes)
-			{
-				addNodeToCanvas(node);
+			foreach	(PositionedNode node in posGraph.Nodes) {
+				AddNodeToCanvas(node);
 			}
 			
 			// draw edges
-			foreach	(PositionedEdge edge in posGraph.Edges)
-			{
-				addEdgeToCanvas(edge);
+			foreach	(PositionedEdge edge in posGraph.Edges) {
+				AddEdgeToCanvas(edge);
 			}
 			
 			edgeTooltip.Visibility = Visibility.Hidden;
@@ -149,7 +127,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			canvas.Children.Clear();
 		}
 		
-		private PositionedGraphNodeControl addNodeToCanvas(PositionedGraphNode node)
+		PositionedGraphNodeControl AddNodeToCanvas(PositionedNode node)
 		{
 			canvas.Children.Add(node.NodeVisualControl);
 			Canvas.SetLeft(node.NodeVisualControl, node.Left);
@@ -157,13 +135,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 			return node.NodeVisualControl;
 		}
 		
-		private Path addEdgeToCanvas(PositionedEdge edge)
+		Path AddEdgeToCanvas(PositionedEdge edge)
 		{
-			PathFigure edgeSplineFigure = createEdgeSpline(edge);
+			PathFigure edgeSplineFigure = CreateEdgeSpline(edge);
 
 			PathGeometry geometryVisible = new PathGeometry();
 			geometryVisible.Figures.Add(edgeSplineFigure);
-			geometryVisible.Figures.Add(createEdgeArrow(edge));
+			geometryVisible.Figures.Add(CreateEdgeArrow(edge));
 			
 			Path pathVisible = new Path();
 			pathVisible.Stroke = Brushes.Black;
@@ -210,7 +188,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			return pathVisible;
 		}
 		
-		private PathFigure createEdgeSpline(PositionedEdge edge)
+		PathFigure CreateEdgeSpline(PositionedEdge edge)
 		{
 			PathFigure figure = new PathFigure();
 			figure.IsClosed = false;
@@ -225,7 +203,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			return figure;
 		}
 		
-		private PathFigure createEdgeArrow(PositionedEdge edge)
+		PathFigure CreateEdgeArrow(PositionedEdge edge)
 		{
 			Point splineEndPoint = edge.SplinePoints[edge.SplinePoints.Count - 1];
 			Point splineEndHandlePoint = edge.SplinePoints[edge.SplinePoints.Count - 2];
@@ -240,14 +218,14 @@ namespace Debugger.AddIn.Visualizers.Graph
 			arrowFigure.IsFilled = true;
 
 			arrowFigure.StartPoint = splineEndPoint;	// arrow tip
-			Vector tangent2 = rotate90(tangent);
+			Vector tangent2 = Rotate90(tangent);
 			arrowFigure.Segments.Add(new LineSegment(basePoint + tangent2 * 0.15, true));
 			arrowFigure.Segments.Add(new LineSegment(basePoint - tangent2 * 0.15, true));
 			
 			return arrowFigure;
 		}
 		
-		private static Vector rotate90(Vector v)
+		static Vector Rotate90(Vector v)
 		{
 			// (x, y) -> (y, -x)
 			double t = v.X;
