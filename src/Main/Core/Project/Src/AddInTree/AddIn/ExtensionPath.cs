@@ -58,6 +58,11 @@ namespace ICSharpCode.Core
 		public static void SetUp(ExtensionPath extensionPath, XmlReader reader, string endElement)
 		{
 			Stack<ICondition> conditionStack = new Stack<ICondition>();
+			extensionPath.DoSetUp(reader, endElement, conditionStack);
+		}
+		
+		void DoSetUp(XmlReader reader, string endElement, Stack<ICondition> conditionStack)
+		{
 			List<Codon> innerCodons = new List<Codon>();
 			while (reader.Read()) {
 				switch (reader.NodeType) {
@@ -66,7 +71,7 @@ namespace ICSharpCode.Core
 							conditionStack.Pop();
 						} else if (reader.LocalName == endElement) {
 							if (innerCodons.Count > 0)
-								extensionPath.codons.Add(innerCodons);
+								this.codons.Add(innerCodons);
 							return;
 						}
 						break;
@@ -77,24 +82,18 @@ namespace ICSharpCode.Core
 						} else if (elementName == "ComplexCondition") {
 							conditionStack.Push(Condition.ReadComplexCondition(reader));
 						} else {
-							Codon newCodon = new Codon(extensionPath.AddIn, elementName, Properties.ReadFromAttributes(reader), conditionStack.ToArray());
+							Codon newCodon = new Codon(this.AddIn, elementName, Properties.ReadFromAttributes(reader), conditionStack.ToArray());
 							innerCodons.Add(newCodon);
 							if (!reader.IsEmptyElement) {
-								ExtensionPath subPath = extensionPath.AddIn.GetExtensionPath(extensionPath.Name + "/" + newCodon.Id);
-								//foreach (ICondition condition in extensionPath.conditionStack) {
-								//	subPath.conditionStack.Push(condition);
-								//}
-								SetUp(subPath, reader, elementName);
-								//foreach (ICondition condition in extensionPath.conditionStack) {
-								//	subPath.conditionStack.Pop();
-								//}
+								ExtensionPath subPath = this.AddIn.GetExtensionPath(this.Name + "/" + newCodon.Id);
+								subPath.DoSetUp(reader, elementName, conditionStack);
 							}
 						}
 						break;
 				}
 			}
 			if (innerCodons.Count > 0)
-				extensionPath.codons.Add(innerCodons);
+				this.codons.Add(innerCodons);
 		}
 	}
 }
