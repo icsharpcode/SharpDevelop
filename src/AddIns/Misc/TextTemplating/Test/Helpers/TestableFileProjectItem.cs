@@ -11,7 +11,7 @@ namespace TextTemplating.Tests.Helpers
 		string fileName;
 		
 		public TestableFileProjectItem(string fileName)
-			: base(null, ItemType.None)
+			: base(ProjectHelper.CreateProject(), ItemType.None)
 		{
 			this.fileName = fileName;
 		}

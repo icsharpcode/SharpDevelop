@@ -13,7 +13,7 @@ namespace ICSharpCode.TextTemplating
 	public class TextTemplatingFileGenerator : ITextTemplatingFileGenerator
 	{
 		ITextTemplatingHost host;
-		FileProjectItem projectFile;
+		FileProjectItem templateFile;
 		ITextTemplatingCustomToolContext context;
 		
 		public TextTemplatingFileGenerator(
@@ -22,7 +22,7 @@ namespace ICSharpCode.TextTemplating
 			ITextTemplatingCustomToolContext context)
 		{
 			this.host = host;
-			this.projectFile = projectFile;
+			this.templateFile = projectFile;
 			this.context = context;
 		}
 		
@@ -34,6 +34,7 @@ namespace ICSharpCode.TextTemplating
 		public void ProcessTemplate()
 		{
 			context.ClearTasksExceptCommentTasks();
+			SetLogicalCallContextData();
 			if (TryGenerateOutputFileForTemplate()) {
 				AddOutputFileToProjectIfRequired();
 			}
@@ -41,16 +42,15 @@ namespace ICSharpCode.TextTemplating
 			BringErrorsToFrontIfRequired();
 		}
 		
-		void BringErrorsToFrontIfRequired()
+		void SetLogicalCallContextData()
 		{
-			if (host.Errors.HasErrors) { 
-				context.BringErrorsPadToFront();
-			}
+			var namespaceHint = new NamespaceHint(templateFile);
+			context.SetLogicalCallContextData("NamespaceHint", namespaceHint.ToString());
 		}
 
 		bool TryGenerateOutputFileForTemplate()
 		{
-			string inputFileName = projectFile.FileName;
+			string inputFileName = templateFile.FileName;
 			string outputFileName = GetOutputFileName(inputFileName);
 			return TryProcessingTemplate(inputFileName, outputFileName);
 		}
@@ -69,6 +69,13 @@ namespace ICSharpCode.TextTemplating
 				DebugLogException(ex, inputFileName);
 			}
 			return false;
+		}
+		
+		void BringErrorsToFrontIfRequired()
+		{
+			if (host.Errors.HasErrors) { 
+				context.BringErrorsPadToFront();
+			}
 		}
 		
 		void AddCompilerErrorToTemplatingHost(Exception ex, string fileName)
@@ -98,7 +105,7 @@ namespace ICSharpCode.TextTemplating
 
 		void AddOutputFileToProjectIfRequired()
 		{
-			context.EnsureOutputFileIsInProject(projectFile, host.OutputFile);
+			context.EnsureOutputFileIsInProject(templateFile, host.OutputFile);
 		}
 	}
 }

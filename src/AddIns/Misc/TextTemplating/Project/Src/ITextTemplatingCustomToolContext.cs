@@ -15,5 +15,7 @@ namespace ICSharpCode.TextTemplating
 		void AddTask(Task task);
 		void BringErrorsPadToFront();
 		void DebugLog(string message, Exception ex);
+		
+		void SetLogicalCallContextData(string name, object data);
 	}
 }

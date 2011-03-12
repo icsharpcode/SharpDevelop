@@ -18,6 +18,8 @@ namespace TextTemplating.Tests.Helpers
 		public bool IsBringErrorsPadToFrontCalled;
 		public Exception ExceptionPassedToDebugLog;
 		public string MessagePassedToDebugLog;
+		public string NamePassedToSetLogicalCallContextData;
+		public object DataPassedToSetLogicalCallContextData;
 		
 		public List<Task> TasksAdded = new List<Task>();
 		
@@ -57,6 +59,12 @@ namespace TextTemplating.Tests.Helpers
 		{
 			MessagePassedToDebugLog = message;
 			ExceptionPassedToDebugLog = ex;
+		}
+		
+		public void SetLogicalCallContextData(string name, object data)
+		{
+			NamePassedToSetLogicalCallContextData = name;
+			DataPassedToSetLogicalCallContextData = data;
 		}
 	}
 }

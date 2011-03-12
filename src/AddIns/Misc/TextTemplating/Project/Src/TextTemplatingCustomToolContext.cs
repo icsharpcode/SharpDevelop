@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Runtime.Remoting.Messaging;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -41,6 +42,11 @@ namespace ICSharpCode.TextTemplating
 		public void DebugLog(string message, Exception ex)
 		{
 			LoggingService.DebugFormatted("{0}\r\n{1}", message, ex.ToString());
+		}
+		
+		public void SetLogicalCallContextData(string name, object data)
+		{
+			CallContext.LogicalSetData(name, data);
 		}
 	}
 }

@@ -61,10 +61,12 @@
     <Compile Include="Helpers\FakeTextTemplatingCustomToolContext.cs" />
     <Compile Include="Helpers\FakeTextTemplatingHost.cs" />
     <Compile Include="Helpers\FakeTextTemplatingFileGenerator.cs" />
+    <Compile Include="Helpers\ProjectHelper.cs" />
     <Compile Include="Helpers\TestableFileProjectItem.cs" />
     <Compile Include="Helpers\TestableTextTemplatingFileGeneratorCustomTool.cs" />
     <Compile Include="Helpers\TestableTextTemplatingHost.cs" />
     <Compile Include="Src\CompilerErrorTaskTests.cs" />
+    <Compile Include="Src\NamespaceHintTests.cs" />
     <Compile Include="Src\TextTemplatingAssemblyResolverTests.cs" />
     <Compile Include="Src\TextTemplatingFileGeneratorCustomToolTests.cs" />
     <Compile Include="Src\TextTemplatingFileGeneratorTests.cs" />

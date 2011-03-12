@@ -212,5 +212,27 @@ namespace TextTemplating.Tests
 			
 			Assert.AreEqual("error", task.Description);
 		}
+		
+		[Test]
+		public void ProcessTemplate_CustomToolNamespaceNotSet_LogicalCallContextNamespaceHintDataIsSet()
+		{
+			var templateFile = CreateGenerator(@"d:\a.tt");
+			templateFile.Project.Name = "Test";
+			generator.ProcessTemplate();
+			
+			Assert.AreEqual("NamespaceHint", customToolContext.NamePassedToSetLogicalCallContextData);
+		}
+		
+		[Test]
+		public void ProcessTemplate_CustomToolNamespaceNotSet_LogicalCallContextNamespaceHintDataIsSetBefore()
+		{
+			var templateFile = CreateGenerator(@"d:\a.tt");
+			templateFile.Project.Name = "Test";
+			generator.ProcessTemplate();
+			
+			string data = customToolContext.DataPassedToSetLogicalCallContextData as String;
+			
+			Assert.AreEqual("Test", data);
+		}
 	}
 }

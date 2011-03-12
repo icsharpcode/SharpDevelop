@@ -2,9 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextTemplating;
 using NUnit.Framework;
 using TextTemplating.Tests.Helpers;
 
@@ -18,11 +16,6 @@ namespace TextTemplating.Tests
 		void CreateCustomTool()
 		{
 			customTool = new TestableTextTemplatingFileGeneratorCustomTool();
-		}
-		
-		IProject CreateProject()
-		{
-			return new MSBuildFileProject(@"d:\projects\test.csproj", "test");
 		}
 		
 		FileProjectItem GenerateCodeWithProjectFile()
@@ -45,7 +38,7 @@ namespace TextTemplating.Tests
 		public void GenerateCode_CustomToolContextPassed_CustomToolContextUsedToCreateTextTemplatingFileGenerator()
 		{
 			CreateCustomTool();
-			IProject project = CreateProject();
+			IProject project = ProjectHelper.CreateProject();
 			var context = new CustomToolContext(project);
 			customTool.GenerateCode(null, context);
 			

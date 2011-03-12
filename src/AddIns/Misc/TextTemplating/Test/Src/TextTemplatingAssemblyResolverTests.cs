@@ -6,6 +6,7 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextTemplating;
 using NUnit.Framework;
+using TextTemplating.Tests.Helpers;
 
 namespace TextTemplating.Tests
 {
@@ -17,11 +18,7 @@ namespace TextTemplating.Tests
 		
 		void CreateResolver()
 		{
-			var info = new ProjectCreateInformation();
-			info.Solution = new Solution();
-			info.OutputProjectFileName = @"d:\projects\MyProject\MyProject.cs";
-			info.ProjectName = "MyProject";
-			project = new MSBuildBasedProject(info);
+			project = ProjectHelper.CreateProject();
 			resolver = new TextTemplatingAssemblyResolver(project);
 		}
 		
