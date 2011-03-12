@@ -78,18 +78,12 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public virtual IEnumerable<PositionedEdge> Edges
 		{
-			get
-			{
+			get	{
 				foreach	(PositionedNodeProperty property in this.Properties) {
 					if (property.Edge != null)
 						yield return property.Edge;
 				}
 			}
-		}
-		
-		public void Measure()
-		{
-			this.NodeVisualControl.Measure(new Size(800, 800));
 		}
 		
 		public double Left { get; set; }
