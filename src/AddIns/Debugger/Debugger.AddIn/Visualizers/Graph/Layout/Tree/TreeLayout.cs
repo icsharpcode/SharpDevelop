@@ -52,6 +52,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			foreach (ObjectGraphNode objectNode in objectGraph.ReachableNodes) {
 				var posNode = new PositionedNode(objectNode);
 				posNode.InitContentFromObjectNode(expanded);
+				posNode.MeasureVisualControl();
 				positionedGraph.AddNode(posNode);
 				positionedNodeFor[objectNode] = posNode;
 			}
@@ -100,7 +101,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 					}
 				}
 			}
-			root.Measure();
 			root.SubtreeSize = Math.Max(GetLateralSizeWithMargin(root), subtreeSize);
 		}
 		

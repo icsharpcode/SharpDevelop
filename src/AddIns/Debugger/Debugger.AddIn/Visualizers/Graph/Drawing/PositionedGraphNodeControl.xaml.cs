@@ -46,7 +46,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		
 		
 		// shown in the ListView
-		private ObservableCollection<ContentNode> view = new ObservableCollection<ContentNode>();
+		private ObservableCollection<ContentNode> items = new ObservableCollection<ContentNode>();
 		
 		private ContentNode root;
 		/// <summary>
@@ -55,19 +55,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		public ContentNode Root
 		{
 			get { return this.root; }
-			set
-			{
+			set	{
 				this.root = value;
-				this.view = getInitialView(this.root);
+				this.items = GetInitialItems(this.root);
 				// data virtualization, ContentPropertyNode implements IEvaluate
-				this.listView.ItemsSource = new VirtualizingObservableCollection<ContentNode>(this.view);
-				
-				/*int maxLen = this.view.MaxOrDefault(contentNode => { return contentNode.Name.Length; }, 0);
-				int spaces = Math.Max((int)(maxLen * 1.8 - 3), 0);
-				string addedSpaces = StringHelper.Repeat(' ', spaces);
-				GridView gv = listView.View as GridView;
-				// hack - autosize Name column
-				gv.Columns[1].Header = "Name" + addedSpaces;*/
+				this.listView.ItemsSource = new VirtualizingObservableCollection<ContentNode>(this.items);
 				
 				//AutoSizeColumns();
 				
@@ -108,14 +100,28 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			}
 		}
 		
+		public void CalculateWidthHeight()
+		{
+			int maxLen = this.items.MaxOrDefault(contentNode => contentNode.Name.Length, 0);
+			int spaces = Math.Max((int)(maxLen * 1.8 - 3), 0);
+			GridView gv = listView.View as GridView;
+			gv.Columns[1].Width = 50 + spaces * 2.5;
+			gv.Columns[2].Width = 80;
+			listView.Width = gv.Columns[0].Width + gv.Columns[1].Width + gv.Columns[2].Width + 10;
+			
+			int maxItems = 10;
+			listView.Height = Math.Min(this.items.Count, maxItems) * 20;
+			if (this.items.Count > maxItems) {
+				listView.Width += 30;	// for scrollbar
+			}
+			
+			this.Width = listView.Width + 2;
+			this.Height = listView.Height + 2;
+		}
+		
 		public PositionedGraphNodeControl()
 		{
 			InitializeComponent();
-			Init();
-		}
-		
-		public void Init()
-		{
 			PropertyExpanded = null;
 			PropertyCollapsed = null;
 			ContentNodeExpanded = null;
@@ -165,7 +171,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		{
 			var clickedButton = (ToggleButton)e.Source;
 			var clickedNode = (ContentNode)(clickedButton).DataContext;
-			int clickedIndex = this.view.IndexOf(clickedNode);
+			int clickedIndex = this.items.IndexOf(clickedNode);
 			//clickedNode.IsExpanded = !clickedNode.IsExpanded;		// done by data binding
 			clickedButton.Content = clickedNode.IsExpanded ? "-" : "+";	// could be done by a converter
 
@@ -175,7 +181,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 				int i = 1;
 				foreach (var childNode in clickedNode.Children)
 				{
-					this.view.Insert(clickedIndex + i, childNode);
+					this.items.Insert(clickedIndex + i, childNode);
 					i++;
 				}
 				// insertChildren(clickedNode, this.view, clickedIndex); // TODO
@@ -184,13 +190,15 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			else
 			{
 				// remove whole subtree
-				int size = subtreeSize(clickedNode) - 1;
+				int size = SubtreeSize(clickedNode) - 1;
 				for (int i = 0; i < size; i++)
 				{
-					this.view.RemoveAt(clickedIndex + 1);
+					this.items.RemoveAt(clickedIndex + 1);
 				}
 				OnContentNodeCollapsed(clickedNode);
 			}
+			
+			CalculateWidthHeight();
 			
 			//AutoSizeColumns();
 
@@ -208,14 +216,14 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			this.listView.Width = double.NaN;*/
 		}
 		
-		private ObservableCollection<ContentNode> getInitialView(ContentNode root)
+		ObservableCollection<ContentNode> GetInitialItems(ContentNode root)
 		{
 			return new ObservableCollection<ContentNode>(root.FlattenChildrenExpanded());
 		}
 		
-		private int subtreeSize(ContentNode node)
+		int SubtreeSize(ContentNode node)
 		{
-			return 1 + node.Children.Sum(child => (child.IsExpanded ? subtreeSize(child) : 1));
+			return 1 + node.Children.Sum(child => (child.IsExpanded ? SubtreeSize(child) : 1));
 		}
 		
 		#region event helpers

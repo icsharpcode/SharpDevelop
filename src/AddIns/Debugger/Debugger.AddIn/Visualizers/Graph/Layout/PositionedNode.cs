@@ -90,11 +90,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public double Top { get; set; }
 		public double Width
 		{
-			get { return NodeVisualControl.DesiredSize.Width; }
+			get { return NodeVisualControl.Width; }
 		}
 		public double Height
 		{
-			get { return NodeVisualControl.DesiredSize.Height; }
+			get { return NodeVisualControl.Height; }
 		}
 		
 		public Point LeftTop
@@ -141,6 +141,13 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			if (box == null)
 				box = new SplineRouting.Box(this);
 			return box.Inflated(padding);
+		}
+		
+		public void MeasureVisualControl()
+		{
+			if ((this.NodeVisualControl != null)) {
+				this.NodeVisualControl.CalculateWidthHeight();
+			}
 		}
 	}
 }
