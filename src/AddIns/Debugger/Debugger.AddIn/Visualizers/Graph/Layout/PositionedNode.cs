@@ -19,10 +19,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// Creates new PositionedNode.
 		/// </summary>
 		/// <param name="objectNode">Underlying ObjectNode.</param>
-		public PositionedNode(ObjectGraphNode objectNode)
+		public PositionedNode(ObjectGraphNode objectNode, Expanded expanded)
 		{
-			this.objectNode = objectNode;
+			this.ObjectNode = objectNode;
 			InitVisualControl();
+			InitContentFromObjectNode(expanded);
 		}
 		
 		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
@@ -30,19 +31,20 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public event EventHandler<ContentNodeEventArgs> ContentNodeExpanded;
 		public event EventHandler<ContentNodeEventArgs> ContentNodeCollapsed;
 		
-		private ObjectGraphNode objectNode;
 		/// <summary>
 		/// Underlying ObjectNode.
 		/// </summary>
-		public ObjectGraphNode ObjectNode
-		{
-			get { return objectNode; }
-		}
+		public ObjectGraphNode ObjectNode { get; private set; }
 		
 		/// <summary>
 		/// Tree-of-properties content of this node.
 		/// </summary>
 		public ContentNode Content { get; set; }
+		
+		/// <summary>
+		/// Name of the Type in the debuggee.
+		/// </summary>
+		public string TypeName { get { return this.ObjectNode.TypeName; } }
 		
 		/// <summary>
 		/// The size of the subtree of this node in the layout.
@@ -54,14 +56,14 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		public PositionedGraphNodeControl NodeVisualControl { get; private set; }
 		
-		public void InitContentFromObjectNode(Expanded expanded)
+		void InitContentFromObjectNode(Expanded expanded)
 		{
 			this.Content = new ContentNode(this, null);
 			this.Content.InitOverride(this.ObjectNode.Content, expanded);
-			this.NodeVisualControl.Root = this.Content;
+			this.NodeVisualControl.SetDataContext(this);
 		}
 		
-		private void InitVisualControl()
+		void InitVisualControl()
 		{
 			this.NodeVisualControl = NodeControlCache.Instance.GetNodeControl();
 			// propagate events from nodeVisualControl

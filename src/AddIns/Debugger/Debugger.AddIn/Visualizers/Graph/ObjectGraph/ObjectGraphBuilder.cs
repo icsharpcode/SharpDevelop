@@ -303,6 +303,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		private ObjectGraphNode createNewNode(Value permanentReference, Expression expression)
 		{
 			ObjectGraphNode newNode = new ObjectGraphNode();
+			newNode.TypeName = permanentReference.Type.Name;
 			newNode.HashCode = permanentReference.InvokeDefaultGetHashCode();
 			
 			resultGraph.AddNode(newNode);

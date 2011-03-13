@@ -32,17 +32,16 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Property tree of this node.
 		/// </summary>
-		public ThisNode Content
-		{
-			get; set;
-		}
+		public ThisNode Content { get; set; }
+		
+		/// <summary>
+		/// Name of the Type in the debuggee.
+		/// </summary>
+		public string TypeName { get; set; }
 		
 		public IEnumerable<ObjectGraphProperty> Properties
 		{
-			get
-			{
-				return this.Content.FlattenPropertyNodes().Select(node => {return node.Property; });
-			}
+			get	{ return this.Content.FlattenPropertyNodes().Select(node => {return node.Property; });	}
 		}
 	}
 }

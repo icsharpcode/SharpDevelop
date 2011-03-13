@@ -48,19 +48,22 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		// shown in the ListView
 		private ObservableCollection<ContentNode> items = new ObservableCollection<ContentNode>();
 		
-		private ContentNode root;
 		/// <summary>
 		/// The tree to be displayed in this Control.
 		/// </summary>
-		public ContentNode Root
+		public ContentNode Root { get; set; }
+		
+		/// <summary>
+		/// Sets the node to be displayed by this control.
+		/// </summary>
+		/// <param name="node"></param>
+		public void SetDataContext(PositionedNode node)
 		{
-			get { return this.root; }
-			set	{
-				this.root = value;
-				this.items = GetInitialItems(this.root);
-				// data virtualization, ContentPropertyNode implements IEvaluate
-				this.listView.ItemsSource = new VirtualizingObservableCollection<ContentNode>(this.items);
-			}
+			this.DataContext = node;
+			this.Root = node.Content;
+			this.items = GetInitialItems(this.Root);
+			// data virtualization, ContentPropertyNode implements IEvaluate
+			this.listView.ItemsSource = new VirtualizingObservableCollection<ContentNode>(this.items);
 		}
 		
 		public void CalculateWidthHeight()
@@ -72,13 +75,13 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			listView.Width = gv.Columns[0].Width + gv.Columns[1].Width + gv.Columns[2].Width + 10;
 			
 			int maxItems = 10;
-			listView.Height = Math.Min(this.items.Count, maxItems) * 20;
+			listView.Height = 4 + Math.Min(this.items.Count, maxItems) * 20;
 			if (this.items.Count > maxItems) {
 				listView.Width += 30;	// for scrollbar
 			}
 			
 			this.Width = listView.Width + 2;
-			this.Height = listView.Height + 2;
+			this.Height = listView.Height + this.typeNameHeaderBorder.Height + 2;
 		}
 		
 		public PositionedGraphNodeControl()

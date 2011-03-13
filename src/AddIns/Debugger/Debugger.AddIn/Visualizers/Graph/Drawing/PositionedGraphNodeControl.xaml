@@ -14,10 +14,11 @@
 	
     <aero:SystemDropShadowChrome>
     <StackPanel Orientation="Vertical">
-    	<!-- 
-    	<Border Background="#ddeeff" BorderThickness="1,1,1,0" BorderBrush="DarkGray" HorizontalAlignment="Stretch" Padding="1">
-    		<TextBlock>Hello</TextBlock>
-    	</Border>  -->
+    	
+    	<Border x:Name="typeNameHeaderBorder" Background="#ddeeff" Height="20" Margin="1,0" BorderThickness="1,1,1,0" BorderBrush="DarkGray" HorizontalAlignment="Stretch" Padding="1">
+    		<TextBlock Text="{Binding TypeName}"></TextBlock>
+    	</Border>
+    	
         <ListView Name="listView" ScrollViewer.VerticalScrollBarVisibility="Auto" Width="200" Height="300">
             <ListView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -33,14 +34,6 @@
                     <Setter Property="BorderThickness" Value="1" />
                     <Setter Property="Focusable" Value="false" />
                     <Style.Triggers>
-                    	<!-- 
-                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
-                            <Setter Property="Background" Value="Transparent"></Setter>
-                        </Trigger>
-                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                            <Setter Property="Background" Value="Transparent"></Setter>
-                        </Trigger>
-						 -->
                         <DataTrigger Binding="{Binding IsNested}" Value="True">
                             <Setter Property="Foreground" Value="#666666"></Setter>
                             <Setter Property="FontStyle" Value="Italic"></Setter>

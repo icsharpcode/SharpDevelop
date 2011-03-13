@@ -53,8 +53,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			
 			// create empty PositionedNodes
 			foreach (ObjectGraphNode objectNode in objectGraph.ReachableNodes) {
-				var posNode = new PositionedNode(objectNode);
-				posNode.InitContentFromObjectNode(expanded);
+				var posNode = new PositionedNode(objectNode, expanded);
 				posNode.MeasureVisualControl();
 				positionedGraph.AddNode(posNode);
 				positionedNodeFor[objectNode] = posNode;
