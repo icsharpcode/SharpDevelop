@@ -65,10 +65,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		
 		public void CalculateWidthHeight()
 		{
-			int maxLen = this.items.MaxOrDefault(contentNode => contentNode.Name.Length, 0);
-			int spaces = Math.Max((int)(maxLen * 1.8 - 3), 0);
+			int nameColumnMaxLen = this.items.MaxOrDefault(contentNode => contentNode.Name.Length, 0);
 			GridView gv = listView.View as GridView;
-			gv.Columns[1].Width = 50 + spaces * 2.5;
+			gv.Columns[1].Width = Math.Min(20 + nameColumnMaxLen * 6, 260);
 			gv.Columns[2].Width = 80;
 			listView.Width = gv.Columns[0].Width + gv.Columns[1].Width + gv.Columns[2].Width + 10;
 			

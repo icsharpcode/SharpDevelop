@@ -226,9 +226,14 @@ namespace Debugger.AddIn.Visualizers.Graph
 			
 			foreach (MemberInfo memberProp in shownType.GetFieldsAndNonIndexedProperties(flags))
 			{
-				// skip backing fields
-				if (memberProp.Name.Contains("<"))
+				if (memberProp.Name.Contains("<")) {
+					// skip backing fields
 					continue;
+				}
+				if (memberProp.DeclaringType != shownType) {
+					// skip properties declared in the base type
+					continue;
+				}
 
 				// ObjectGraphProperty needs an expression
 				// to use expanded / nonexpanded (and to evaluate?)
