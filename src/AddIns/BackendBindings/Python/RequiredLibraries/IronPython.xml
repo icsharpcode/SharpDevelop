@@ -54,13 +54,13 @@
             Gets or creates the FunctionCode object for this FunctionDefinition.
             </summary>
         </member>
-        <member name="M:IronPython.Compiler.Ast.ScopeStatement.GetUpdateTrackbackExpression">
+        <member name="M:IronPython.Compiler.Ast.ScopeStatement.GetUpdateTrackbackExpression(System.Linq.Expressions.ParameterExpression)">
             <summary>
             Gets the expression for updating the dynamic stack trace at runtime when an
             exception is thrown.
             </summary>
         </member>
-        <member name="M:IronPython.Compiler.Ast.ScopeStatement.GetSaveLineNumberExpression(System.Boolean)">
+        <member name="M:IronPython.Compiler.Ast.ScopeStatement.GetSaveLineNumberExpression(System.Linq.Expressions.ParameterExpression,System.Boolean)">
             <summary>
             Gets the expression for the actual updating of the line number for stack traces to be available
             </summary>
@@ -212,166 +212,34 @@
             <summary>Ensures the underlying array is long enough to accomodate the given index</summary>
             <returns>The site storage type corresponding to the given index</returns>
         </member>
-        <member name="T:IronPython.DictionaryTypeInfoAttribute">
+        <member name="T:IronPython.Runtime.Binding.IPythonExpandable">
             <summary>
-            Provides more specific type information for Python dictionaries which are not strongly typed.
+            Interface used to mark objects which contain a dictionary of custom attributes that shadow
+            their existing attributes in a dynamic fashion.  <seealso cref="T:MetaExpandable"/>
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Binding.IPythonExpandable.EnsureCustomAttributes">
+            <summary>
+            Ensures that a non-null IDictionary instance is created for CustomAttributes and
+            returns it.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.Binding.MetaExpandable`1">
+            <summary>
+            Meta-object which allows IPythonExpandable objects to behave like Python objects in their
+            ability to dynamically add and remove new or existing custom attributes, generally shadowing
+            existing built-in members.  <seealso cref="T:IPythonExpandable"/>
             
-            This attribute can be applied to fields, parameters, proeprties, and return values.  It can be
-            inspected to get type information about the types of the keys and values of the expected 
-            dictionary or the returned dictionary.
-            </summary>
-        </member>
-        <member name="T:IronPython.Runtime.DictionaryStorage">
-            <summary>
-            Abstract base class for all PythonDictionary storage.
+            Getting: Member accesses first consult the object's CustomAttributes dictionary, then fall
+                through to the underlying object.
             
-            Defined as a class instead of an interface for performance reasons.  Also not
-            using IDictionary* for keeping a simple interface.
+            Setting: Values can be bound to any member name, shadowing any existing attributes except
+                public non-PythonHidden fields and properties, which will bypass the dictionary.  Thus,
+                it is possible for SetMember to fail, for example if the property is read-only or of
+                the wrong type.
             
-            Full locking is defined as being on the DictionaryStorage object it's self,
-            not an internal member.  This enables subclasses to provide their own locking
-            aruond large operations and call lock free functions.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.DictionaryStorage.CopyTo(IronPython.Runtime.DictionaryStorage)">
-            <summary>
-            Adds items from this dictionary into the other dictionary
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.DictionaryStorage.TryGetPath(System.Object@)">
-            <summary>
-            Provides fast access to the __path__ attribute if the dictionary storage supports caching it.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.DictionaryStorage.TryGetPackage(System.Object@)">
-            <summary>
-            Provides fast access to the __package__ attribute if the dictionary storage supports caching it.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.DictionaryStorage.TryGetBuiltins(System.Object@)">
-            <summary>
-            Provides fast access to the __builtins__ attribute if the dictionary storage supports caching it.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.DictionaryStorage.TryGetName(System.Object@)">
-            <summary>
-            Provides fast access to the __name__ attribute if the dictionary storage supports caching it.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.DictionaryStorage.TryGetImport(System.Object@)">
-            <summary>
-            Provides fast access to the __import__ attribute if the dictionary storage supports caching it.
-            </summary>
-        </member>
-        <member name="T:IronPython.Runtime.Binding.IComConvertible">
-            <summary>
-            An interface that is implemented on DynamicMetaObjects.
-            
-            This allows objects to opt-into custom conversions when calling
-            COM APIs.  The IronPython binders all call this interface before
-            doing any COM binding.
-            </summary>
-        </member>
-        <member name="T:IronPython.Runtime.CodeContext">
-            <summary>
-            Captures and flows the state of executing code from the generated 
-            Python code into the IronPython runtime.
-            </summary>    
-        </member>
-        <member name="M:IronPython.Runtime.CodeContext.#ctor(IronPython.Runtime.PythonDictionary,IronPython.Runtime.ModuleContext)">
-            <summary>
-            Creates a new CodeContext which is backed by the specified Python dictionary.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CodeContext.TryLookupName(System.String,System.Object@)">
-            <summary>
-            Attempts to lookup the provided name in this scope or any outer scope.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CodeContext.TryLookupBuiltin(System.String,System.Object@)">
-            <summary>
-            Looks up a global variable.  If the variable is not defined in the
-            global scope then built-ins is consulted.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CodeContext.TryGetVariable(System.String,System.Object@)">
-            <summary>
-            Attempts to lookup the variable in the local scope.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CodeContext.TryRemoveVariable(System.String)">
-            <summary>
-            Removes a variable from the local scope.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CodeContext.SetVariable(System.String,System.Object)">
-            <summary>
-            Sets a variable in the local scope.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CodeContext.TryGetGlobalVariable(System.String,System.Object@)">
-            <summary>
-            Gets a variable from the global scope.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CodeContext.SetGlobalVariable(System.String,System.Object)">
-            <summary>
-            Sets a variable in the global scope.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CodeContext.TryRemoveGlobalVariable(System.String)">
-            <summary>
-            Removes a variable from the global scope.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CodeContext.GetBuiltinsDict">
-            <summary>
-            Returns the dictionary associated with __builtins__ if one is
-            set or null if it's not available.  If __builtins__ is a module
-            the module's dictionary is returned.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.CodeContext.ModuleContext">
-            <summary>
-            Gets the module state for top-level code.
-            </summary>   
-        </member>
-        <member name="P:IronPython.Runtime.CodeContext.GlobalScope">
-            <summary>
-            Gets the DLR scope object that corresponds to the global variables of this context.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.CodeContext.LanguageContext">
-            <summary>
-            Gets the PythonContext which created the CodeContext.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.CodeContext.GlobalDict">
-            <summary>
-            Gets the dictionary for the global variables from the ModuleContext.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.CodeContext.ShowCls">
-            <summary>
-            True if this global context should display CLR members on shared types (for example .ToString on int/bool/etc...)
-            
-            False if these attributes should be hidden.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.CodeContext.Dict">
-            <summary>
-            Gets the dictionary used for storage of local variables.
-            </summary>
-        </member>
-        <member name="T:IronPython.Runtime.DontMapIEnumerableToIterAttribute">
-            <summary>
-            Marks a type so that IronPython will not expose the IEnumerable interface out as
-            __iter__
-            </summary>
-        </member>
-        <member name="T:IronPython.Runtime.Binding.ContextArgBuilder">
-            <summary>
-            ArgBuilder which provides the CodeContext parameter to a method.
+            Deleting: Any member represented in the dictionary can be deleted, re-exposing the
+                underlying member if it exists.  Any other deletions will fail.
             </summary>
         </member>
         <member name="M:IronPython.Runtime.Binding.PythonBinder.MakeReadOnlyMemberError(System.Type,System.String)">
@@ -499,6 +367,226 @@
             calling this method.
             </summary>
         </member>
+        <member name="T:IronPython.Runtime.BuiltinPythonModule">
+            <summary>
+            Implements a built-in module which is instanced per PythonContext.
+            
+            Implementers can subclass this type and then have a module which has efficient access
+            to internal state (this doesn't need to go through PythonContext.GetModuleState).  These
+            modules can also declare module level globals which they'd like to provide efficient
+            access to by overloading GetGlobalVariableNames.  When Initialize is called these
+            globals are provided and can be cached in the instance for fast global access.
+            
+            Just like normal static modules these modules are registered with the PythonModuleAttribute.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.BuiltinPythonModule.Initialize(IronPython.Runtime.CodeContext,System.Collections.Generic.Dictionary{System.String,IronPython.Compiler.PythonGlobal})">
+            <summary>
+            Initializes the module for it's first usage.  By default this calls PerformModuleReload with the
+            the dictionary.
+            </summary>
+            <param name="codeContext">The CodeContext for the module.</param>
+            <param name="optimizedGlobals">A list of globals which have optimize access.  Contains at least all of the global variables reutrned by GetGlobalVariableNames.</param>
+        </member>
+        <member name="M:IronPython.Runtime.BuiltinPythonModule.GetGlobalVariableNames">
+            <summary>
+            Gets a list of variable names which should have optimized storage (instances of PythonGlobal objects).
+            The module receives the global objects during the Initialize call and can hold onto them for
+            direct access to global members.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.BuiltinPythonModule.PerformModuleReload">
+            <summary>
+            Called when the user attempts to reload() on your module and by the base class Initialize method.
+            
+            This provides an opportunity to allocate any per-module data which is not simply function definitions.
+            
+            A common usage here is to create exception objects which are allocated by the module using PythonExceptions.CreateSubType.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.BuiltinPythonModule.Context">
+            <summary>
+            Provides access to the PythonContext which this module was created for.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.BuiltinPythonModule.Globals">
+            <summary>
+            Provides access to the CodeContext for the module.  Returns null before Initialize() is called.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.ConstantDictionaryStorage">
+            <summary>
+            Copy on write constant dictionary storage used for dictionaries created with constant items.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.DictionaryStorage">
+            <summary>
+            Abstract base class for all PythonDictionary storage.
+            
+            Defined as a class instead of an interface for performance reasons.  Also not
+            using IDictionary* for keeping a simple interface.
+            
+            Full locking is defined as being on the DictionaryStorage object it's self,
+            not an internal member.  This enables subclasses to provide their own locking
+            aruond large operations and call lock free functions.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.DictionaryStorage.CopyTo(IronPython.Runtime.DictionaryStorage@)">
+            <summary>
+            Adds items from this dictionary into the other dictionary
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.DictionaryStorage.TryGetPath(System.Object@)">
+            <summary>
+            Provides fast access to the __path__ attribute if the dictionary storage supports caching it.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.DictionaryStorage.TryGetPackage(System.Object@)">
+            <summary>
+            Provides fast access to the __package__ attribute if the dictionary storage supports caching it.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.DictionaryStorage.TryGetBuiltins(System.Object@)">
+            <summary>
+            Provides fast access to the __builtins__ attribute if the dictionary storage supports caching it.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.DictionaryStorage.TryGetName(System.Object@)">
+            <summary>
+            Provides fast access to the __name__ attribute if the dictionary storage supports caching it.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.DictionaryStorage.TryGetImport(System.Object@)">
+            <summary>
+            Provides fast access to the __import__ attribute if the dictionary storage supports caching it.
+            </summary>
+        </member>
+        <member name="T:IronPython.DictionaryTypeInfoAttribute">
+            <summary>
+            Provides more specific type information for Python dictionaries which are not strongly typed.
+            
+            This attribute can be applied to fields, parameters, proeprties, and return values.  It can be
+            inspected to get type information about the types of the keys and values of the expected 
+            dictionary or the returned dictionary.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.DebuggerDictionaryStorage">
+            <summary>
+            Adapts an IDictionary[object, object] for use as a PythonDictionary used for
+            our debug frames.  Also hides the special locals which start with $.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.Binding.IComConvertible">
+            <summary>
+            An interface that is implemented on DynamicMetaObjects.
+            
+            This allows objects to opt-into custom conversions when calling
+            COM APIs.  The IronPython binders all call this interface before
+            doing any COM binding.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.CodeContext">
+            <summary>
+            Captures and flows the state of executing code from the generated 
+            Python code into the IronPython runtime.
+            </summary>    
+        </member>
+        <member name="M:IronPython.Runtime.CodeContext.#ctor(IronPython.Runtime.PythonDictionary,IronPython.Runtime.ModuleContext)">
+            <summary>
+            Creates a new CodeContext which is backed by the specified Python dictionary.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CodeContext.TryLookupName(System.String,System.Object@)">
+            <summary>
+            Attempts to lookup the provided name in this scope or any outer scope.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CodeContext.TryLookupBuiltin(System.String,System.Object@)">
+            <summary>
+            Looks up a global variable.  If the variable is not defined in the
+            global scope then built-ins is consulted.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CodeContext.TryGetVariable(System.String,System.Object@)">
+            <summary>
+            Attempts to lookup the variable in the local scope.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CodeContext.TryRemoveVariable(System.String)">
+            <summary>
+            Removes a variable from the local scope.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CodeContext.SetVariable(System.String,System.Object)">
+            <summary>
+            Sets a variable in the local scope.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CodeContext.TryGetGlobalVariable(System.String,System.Object@)">
+            <summary>
+            Gets a variable from the global scope.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CodeContext.SetGlobalVariable(System.String,System.Object)">
+            <summary>
+            Sets a variable in the global scope.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CodeContext.TryRemoveGlobalVariable(System.String)">
+            <summary>
+            Removes a variable from the global scope.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CodeContext.GetBuiltinsDict">
+            <summary>
+            Returns the dictionary associated with __builtins__ if one is
+            set or null if it's not available.  If __builtins__ is a module
+            the module's dictionary is returned.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.CodeContext.ModuleContext">
+            <summary>
+            Gets the module state for top-level code.
+            </summary>   
+        </member>
+        <member name="P:IronPython.Runtime.CodeContext.GlobalScope">
+            <summary>
+            Gets the DLR scope object that corresponds to the global variables of this context.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.CodeContext.LanguageContext">
+            <summary>
+            Gets the PythonContext which created the CodeContext.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.CodeContext.GlobalDict">
+            <summary>
+            Gets the dictionary for the global variables from the ModuleContext.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.CodeContext.ShowCls">
+            <summary>
+            True if this global context should display CLR members on shared types (for example .ToString on int/bool/etc...)
+            
+            False if these attributes should be hidden.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.CodeContext.Dict">
+            <summary>
+            Gets the dictionary used for storage of local variables.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.DontMapIEnumerableToIterAttribute">
+            <summary>
+            Marks a type so that IronPython will not expose the IEnumerable interface out as
+            __iter__
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.Binding.ContextArgBuilder">
+            <summary>
+            ArgBuilder which provides the CodeContext parameter to a method.
+            </summary>
+        </member>
         <member name="T:IronPython.Compiler.ClosureExpression">
             <summary>
             Small reducable node which just fetches the value from a ClosureCell
@@ -613,6 +701,186 @@
             <summary>
             Marks a type so that IronPython will not expose the IEnumerable interface out as
             __contains__
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.EmptyDictionaryStorage">
+            <summary>
+            Singleton used for dictionaries which contain no items.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.ExtensionMethodSet">
+            <summary>
+            Represents the set of extension methods which are loaded into a module.
+            
+            This set is immutable (as far the external viewer is considered).  When a 
+            new extension method set is loaded into a module we create a new ExtensionMethodsSet object.  
+            
+            Multiple modules which have the same set of extension methods use the same set.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.ExtensionMethodSet.GetExtensionMethods(System.String)">
+            <summary>
+            Returns all of the extension methods with the given name.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.ExtensionMethodSet.GetExtensionMethods(IronPython.Runtime.Types.PythonType)">
+            <summary>
+            Returns all of the extension methods which are applicable for the given type.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.ExtensionMethodSet.AssemblyLoadInfo">
+            <summary>
+            Tracks the extension types that are loaded for a given assembly.
+            
+            We can have either types, namespaces, or a full assembly added as a reference.
+            
+            When the user just adds types we just add them to the type hash set.
+            
+            When the user adds namespaces we add them to the namespaces hashset.  On the
+            next lookup we'll lazily load the types from that namespace and put them in Types.
+            
+            When the user adds assemblies we set the value to the NotYetLoadedButFullAssembly
+            value.  The next load request will load the types from that namespace and put them
+            in Types.  When we do that we'll mark the assembly as FullyLoaded so we don't 
+            have to go through that again if the user adds a namespace.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.InstancedModuleDictionaryStorage">
+            <summary>
+            ModuleDictionaryStorage for a built-in module which is bound to a specific instance.
+            
+            These modules don't need to use PythonContext.GetModuleState() for storage and therefore
+            can provide efficient access to internal variables.  They can also cache PythonGlobal
+            objects and provide efficient access to module globals.  
+            
+            To the end user these modules appear just like any other module.  These modules are
+            implemented by subclassing the BuiltinPythonModule class.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.ModuleDictionaryStorage">
+            <summary>
+            Enables lazy initialization of module dictionaries.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CustomDictionaryStorage.GetExtraItems">
+            <summary>
+            Gets all of the extra names and values stored in the dictionary.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CustomDictionaryStorage.TrySetExtraValue(System.String,System.Object)">
+            <summary>
+            Attemps to sets a value in the extra keys.  Returns true if the value is set, false if 
+            the value is not an extra key.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CustomDictionaryStorage.TryGetExtraValue(System.String,System.Object@)">
+            <summary>
+            Attempts to get a value from the extra keys.  Returns true if the value is an extra
+            key and has a value.  False if it is not an extra key or doesn't have a value.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CustomDictionaryStorage.TryRemoveExtraValue(System.String)">
+            <summary>
+            Attempts to remove the key.  Returns true if the key is removed, false
+            if the key was not removed, or null if the key is not an extra key.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.Types.PythonTypeSlot">
+            <summary>
+            A TypeSlot is an item that gets stored in a type's dictionary.  Slots provide an 
+            opportunity to customize access at runtime when a value is get or set from a dictionary.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.PythonTypeSlot.TryGetValue(IronPython.Runtime.CodeContext,System.Object,IronPython.Runtime.Types.PythonType,System.Object@)">
+            <summary>
+            Gets the value stored in the slot for the given instance binding it to an instance if one is provided and
+            the slot binds to instances.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.PythonTypeSlot.TrySetValue(IronPython.Runtime.CodeContext,System.Object,IronPython.Runtime.Types.PythonType,System.Object)">
+            <summary>
+            Sets the value of the slot for the given instance.
+            </summary>
+            <returns>true if the value was set, false if it can't be set</returns>
+        </member>
+        <member name="M:IronPython.Runtime.Types.PythonTypeSlot.TryDeleteValue(IronPython.Runtime.CodeContext,System.Object,IronPython.Runtime.Types.PythonType)">
+            <summary>
+            Deletes the value stored in the slot from the instance.
+            </summary>
+            <returns>true if the value was deleted, false if it can't be deleted</returns>
+        </member>
+        <member name="M:IronPython.Runtime.Types.PythonTypeSlot.MakeGetExpression(IronPython.Runtime.Binding.PythonBinder,System.Linq.Expressions.Expression,System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject,IronPython.Runtime.Binding.ConditionalBuilder)">
+            <summary>
+            Gets an expression which is used for accessing this slot.  If the slot lookup fails the error expression
+            is used again.
+            
+            The default implementation just calls the TryGetValue method.  Subtypes of PythonTypeSlot can override
+            this and provide a more optimal implementation.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.Types.PythonTypeSlot.CanOptimizeGets">
+            <summary>
+            True if generating code for gets can result in more optimal accesses.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.Types.PythonTypeSlot.GetAlwaysSucceeds">
+            <summary>
+            True if TryGetValue will always succeed, false if it may fail.
+            
+            This is used to optimize away error generation code.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.IWeakReferenceable">
+            <summary>
+            Defines the internal interface used for accessing weak references and adding finalizers
+            to user-defined types.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.IWeakReferenceable.GetWeakRef">
+            <summary>
+            Gets the current WeakRefTracker for an object that can be used to
+            append additional weak references.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.IWeakReferenceable.SetWeakRef(IronPython.Runtime.WeakRefTracker)">
+            <summary>
+            Attempts to set the WeakRefTracker for an object.  Used on the first
+            addition of a weak ref tracker to an object.  If the object doesn't
+            support adding weak references then it returns false.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.IWeakReferenceable.SetFinalizer(IronPython.Runtime.WeakRefTracker)">
+            <summary>
+            Sets a WeakRefTracker on an object for the purposes of supporting finalization.
+            All user types (new-style and old-style) support finalization even if they don't
+            support weak-references, and therefore this function always succeeds.  Note the
+            slot used to store the WeakRefTracker is still shared between SetWeakRef and 
+            SetFinalizer if a type supports both.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="T:IronPython.Runtime.IPythonMembersList">
+            <summary>
+            Provides a list of all the members of an instance.  ie. all the keys in the 
+            dictionary of the object. Note that it can contain objects that are not strings. 
+            
+            Such keys can be added in IronPython using syntax like:
+                obj.__dict__[100] = someOtherObject
+                
+            This Python specific version also supports filtering based upon the show cls 
+            flag by flowing in the code context.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Method.CheckSelf(IronPython.Runtime.CodeContext,System.Object)">
+            <summary>
+            Validates that the current self object is usable for this method.  
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.PythonHiddenBaseClassAttribute">
+            <summary>
+            Marks a class as being hidden from the Python hierarchy.  This is applied to the base class
+            and then all derived types will not see the base class in their hierarchy and will not be
+            able to access members declaredo on the base class.
             </summary>
         </member>
         <member name="T:IronPython.Runtime.SequenceTypeInfoAttribute">
@@ -792,6 +1060,11 @@
             Include comments in the parse tree
             </summary>
         </member>
+        <member name="F:IronPython.Runtime.ModuleOptions.LightThrow">
+            <summary>
+            Generated code should support light exceptions
+            </summary>
+        </member>
         <member name="T:IronPython.Runtime.Profiler">
             <summary>
             Manages the acquisition of profiling data for a single ScriptRuntime
@@ -835,11 +1108,6 @@
             </summary>
         </member>
         <member name="M:IronPython.Runtime.Profiler.AddProfiling(System.Linq.Expressions.Expression,System.Reflection.MethodBase)">
-            <summary>
-            Wraps a call to a MethodInfo with profiling capture for that MethodInfo
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Profiler.AddProfiling(Microsoft.Scripting.Actions.Calls.OptimizingCallDelegate,System.Reflection.MethodBase)">
             <summary>
             Wraps a call to a MethodInfo with profiling capture for that MethodInfo
             </summary>
@@ -902,6 +1170,12 @@
             Determines delegate type for the Python function
             </summary>
         </member>
+        <member name="T:IronPython.Compiler.Ast.ComprehensionScope">
+            <summary>
+            Scope for the comprehension.  Because scopes are usually statements and comprehensions are expressions
+            this doesn't actually show up in the AST hierarchy and instead hangs off the comprehension expression.
+            </summary>
+        </member>
         <member name="T:IronPython.Compiler.Ast.LookupCompilationMode">
             <summary>
             Provides globals for when we need to lookup into a dictionary for each global access.
@@ -943,6 +1217,26 @@
             Top-level ast for all Python code.  Typically represents a module but could also
             be exec or eval code.
             </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.PythonAst.#ctor(System.Boolean,IronPython.Runtime.ModuleOptions,System.Boolean,Microsoft.Scripting.Runtime.CompilerContext)">
+            <summary>
+            Creates a new PythonAst without a body.  ParsingFinished should be called afterwards to set
+            the body.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.PythonAst.ParsingFinished(System.Int32[],IronPython.Compiler.Ast.Statement,IronPython.Runtime.ModuleOptions)">
+            <summary>
+            Called when parsing is complete, the body is built, the line mapping and language features are known.
+            
+            This is used in conjunction with the constructor which does not take a body.  It enables creating
+            the outer most PythonAst first so that nodes can always have a global parent.  This lets an un-bound
+            tree to still provide it's line information immediately after parsing.  When we set the location
+            of each node during construction we also set the global parent.  When we name bind the global 
+            parent gets replaced with the real parent ScopeStatement.
+            </summary>
+            <param name="lineLocations">a mapping of where each line begins</param>
+            <param name="body">The body of code</param>
+            <param name="languageFeatures">The language features which were set during parsing.</param>
         </member>
         <member name="M:IronPython.Compiler.Ast.PythonAst.Bind">
             <summary>
@@ -989,6 +1283,11 @@
         <member name="P:IronPython.Compiler.Ast.PythonAst.AbsoluteImports">
             <summary>
             True if absolute imports are enabled
+            </summary>
+        </member>
+        <member name="P:IronPython.Compiler.Ast.PythonAst.OnDiskProxy">
+            <summary>
+            True if this is on-disk code which we don't really have an AST for.
             </summary>
         </member>
         <member name="T:IronPython.Compiler.Ast.PythonReference">
@@ -1123,34 +1422,6 @@
             Updates the call site when the current rule is no longer applicable.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.ModuleDictionaryStorage">
-            <summary>
-            Enables lazy initialization of module dictionaries.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CustomDictionaryStorage.GetExtraItems">
-            <summary>
-            Gets all of the extra names and values stored in the dictionary.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CustomDictionaryStorage.TrySetExtraValue(System.String,System.Object)">
-            <summary>
-            Attemps to sets a value in the extra keys.  Returns true if the value is set, false if 
-            the value is not an extra key.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CustomDictionaryStorage.TryGetExtraValue(System.String,System.Object@)">
-            <summary>
-            Attempts to get a value from the extra keys.  Returns true if the value is an extra
-            key and has a value.  False if it is not an extra key or doesn't have a value.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.CustomDictionaryStorage.TryRemoveExtraValue(System.String)">
-            <summary>
-            Attempts to remove the key.  Returns true if the key is removed, false
-            if the key was not removed, or null if the key is not an extra key.
-            </summary>
-        </member>
         <member name="T:IronPython.Compiler.PythonGlobal">
             <summary>
             Provides cached global variable for modules to enable optimized access to
@@ -1187,6 +1458,12 @@
             
             This is exposed as a service through PythonEngine and the helper class
             uses this service to get the correct remoting semantics.
+            </summary>
+        </member>
+        <member name="M:IronPython.Hosting.PythonService.GetLocalCommandDispatcher">
+            <summary>
+            Returns an ObjectHandle to a delegate of type Action[Action] which calls the current
+            command dispatcher.
             </summary>
         </member>
         <member name="T:IronPython.MaybeNotImplementedAttribute">
@@ -1396,7 +1673,7 @@
             we want to pass in the tuple
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.PythonProtocol.Callable.CompleteRuleTarget(System.Dynamic.DynamicMetaObject[],System.Func{System.Dynamic.DynamicMetaObject})">
+        <member name="M:IronPython.Runtime.Binding.PythonProtocol.Callable.CompleteRuleTarget(System.Dynamic.DynamicMetaObjectBinder,System.Dynamic.DynamicMetaObject[],System.Func{System.Dynamic.DynamicMetaObject})">
             <summary>
             Adds the target of the call to the rule.
             </summary>
@@ -1573,7 +1850,7 @@
             this.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaUserObject.FindSlot(IronPython.Runtime.CodeContext,System.String,IronPython.Runtime.Types.IPythonObject,System.Boolean@,System.Boolean@)">
+        <member name="M:IronPython.Runtime.Binding.MetaUserObject.FindSlot(IronPython.Runtime.CodeContext,System.String,IronPython.Runtime.Types.IPythonObject,System.Boolean@,System.Boolean@,System.Boolean@)">
             <summary>
             Looks up the associated PythonTypeSlot from the object.  Indicates if the result
             came from a standard .NET type in which case we will fallback to the sites binder.
@@ -2017,7 +2294,7 @@
             current ScriptRuntime.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.ClrModule.SetCommandDispatcher(IronPython.Runtime.CodeContext,IronPython.Runtime.CommandDispatcher)">
+        <member name="M:IronPython.Runtime.ClrModule.SetCommandDispatcher(IronPython.Runtime.CodeContext,System.Action{System.Action})">
             <summary>
             SetCommandDispatcher(commandDispatcher)
             
@@ -2201,51 +2478,6 @@
             then calls the original function.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.PythonTypeSlot">
-            <summary>
-            A TypeSlot is an item that gets stored in a type's dictionary.  Slots provide an 
-            opportunity to customize access at runtime when a value is get or set from a dictionary.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Types.PythonTypeSlot.TryGetValue(IronPython.Runtime.CodeContext,System.Object,IronPython.Runtime.Types.PythonType,System.Object@)">
-            <summary>
-            Gets the value stored in the slot for the given instance binding it to an instance if one is provided and
-            the slot binds to instances.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Types.PythonTypeSlot.TrySetValue(IronPython.Runtime.CodeContext,System.Object,IronPython.Runtime.Types.PythonType,System.Object)">
-            <summary>
-            Sets the value of the slot for the given instance.
-            </summary>
-            <returns>true if the value was set, false if it can't be set</returns>
-        </member>
-        <member name="M:IronPython.Runtime.Types.PythonTypeSlot.TryDeleteValue(IronPython.Runtime.CodeContext,System.Object,IronPython.Runtime.Types.PythonType)">
-            <summary>
-            Deletes the value stored in the slot from the instance.
-            </summary>
-            <returns>true if the value was deleted, false if it can't be deleted</returns>
-        </member>
-        <member name="M:IronPython.Runtime.Types.PythonTypeSlot.MakeGetExpression(IronPython.Runtime.Binding.PythonBinder,System.Linq.Expressions.Expression,System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject,IronPython.Runtime.Binding.ConditionalBuilder)">
-            <summary>
-            Gets an expression which is used for accessing this slot.  If the slot lookup fails the error expression
-            is used again.
-            
-            The default implementation just calls the TryGetValue method.  Subtypes of PythonTypeSlot can override
-            this and provide a more optimal implementation.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.Types.PythonTypeSlot.CanOptimizeGets">
-            <summary>
-            True if generating code for gets can result in more optimal accesses.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.Types.PythonTypeSlot.GetAlwaysSucceeds">
-            <summary>
-            True if TryGetValue will always succeed, false if it may fail.
-            
-            This is used to optimize away error generation code.
-            </summary>
-        </member>
         <member name="T:IronPython.Runtime.ClrModule.ReturnChecker">
             <summary>
             Decorator for verifying the return type of functions.
@@ -2346,7 +2578,7 @@
         <member name="M:IronPython.Runtime.NewStringFormatter.StringFormatParser.Parse">
             <summary>
             Provides an enumerable of the parsed format.  The elements of the tuple are:
-                the text proceeding the format information
+                the text preceding the format information
                 the field name
                 the format spec
                 the conversion
@@ -2528,6 +2760,27 @@
             OperatorStrings (a Python specific operator)
             </summary>
         </member>
+        <member name="M:IronPython.Runtime.PythonContext.GetSetCommandDispatcher(System.Action{System.Action})">
+            <summary>
+            Sets the current command dispatcher for the Python command line.  The previous dispatcher
+            is returned.  Null can be passed to remove the current command dispatcher.
+            
+            The command dispatcher will be called with a delegate to be executed.  The command dispatcher
+            should invoke the target delegate in the desired context.
+            
+            A common use for this is to enable running all REPL commands on the UI thread while the REPL
+            continues to run on a non-UI thread.
+            
+            The ipy.exe REPL will call into PythonContext.DispatchCommand to dispatch each execution to
+            the correct thread.  Other REPLs can do the same to support this functionality as well.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.DispatchCommand(System.Action)">
+            <summary>
+            Dispatches the command to the current command dispatcher.  If there is no current command
+            dispatcher the command is executed immediately on the current thread.
+            </summary>
+        </member>
         <member name="M:IronPython.Runtime.PythonContext.GetComparer(System.Object,System.Type)">
             <summary>
             Gets a function which can be used for comparing two values.  If cmp is not null
@@ -2625,47 +2878,6 @@
         <member name="T:IronPython.Runtime.PythonFunction">
             <summary>
             Created for a user-defined function.  
-            </summary>
-        </member>
-        <member name="T:IronPython.Runtime.IWeakReferenceable">
-            <summary>
-            Defines the internal interface used for accessing weak references and adding finalizers
-            to user-defined types.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.IWeakReferenceable.GetWeakRef">
-            <summary>
-            Gets the current WeakRefTracker for an object that can be used to
-            append additional weak references.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.IWeakReferenceable.SetWeakRef(IronPython.Runtime.WeakRefTracker)">
-            <summary>
-            Attempts to set the WeakRefTracker for an object.  Used on the first
-            addition of a weak ref tracker to an object.  If the object doesn't
-            support adding weak references then it returns false.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.IWeakReferenceable.SetFinalizer(IronPython.Runtime.WeakRefTracker)">
-            <summary>
-            Sets a WeakRefTracker on an object for the purposes of supporting finalization.
-            All user types (new-style and old-style) support finalization even if they don't
-            support weak-references, and therefore this function always succeeds.  Note the
-            slot used to store the WeakRefTracker is still shared between SetWeakRef and 
-            SetFinalizer if a type supports both.
-            </summary>
-            <param name="value"></param>
-        </member>
-        <member name="T:IronPython.Runtime.IPythonMembersList">
-            <summary>
-            Provides a list of all the members of an instance.  ie. all the keys in the 
-            dictionary of the object. Note that it can contain objects that are not strings. 
-            
-            Such keys can be added in IronPython using syntax like:
-                obj.__dict__[100] = someOtherObject
-                
-            This Python specific version also supports filtering based upon the show cls 
-            flag by flowing in the code context.
             </summary>
         </member>
         <member name="M:IronPython.Runtime.PythonFunction.#ctor(IronPython.Runtime.CodeContext,IronPython.Runtime.FunctionCode,IronPython.Runtime.PythonDictionary,System.String,IronPython.Runtime.PythonTuple,IronPython.Runtime.PythonTuple)">
@@ -2853,6 +3065,11 @@
             Enable profiling code
             </summary>
         </member>
+        <member name="P:IronPython.PythonOptions.NoDebug">
+            <summary>
+            Returns a regular expression of Python files which should not be emitted in debug mode.
+            </summary>
+        </member>
         <member name="P:IronPython.PythonOptions.PythonVersion">
             <summary>
             Gets the CPython version which IronPython will emulate.  Currently limited
@@ -2904,6 +3121,219 @@
              the user has done an import clr.
              </summary>
         </member>
+        <member name="T:IronPython.Runtime.SetStorage">
+            <summary>
+            General-purpose storage used for Python sets and frozensets.
+            
+            The set storage is thread-safe for multiple readers or writers.
+            
+            Mutations to the set involve a simple locking strategy of locking on the SetStorage object
+            itself to ensure mutual exclusion.
+            
+            Reads against the set happen lock-free. When the set is mutated, it adds or removes buckets
+            in an atomic manner so that the readers will see a consistent picture as if the read
+            occurred either before or after the mutation.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.#ctor">
+            <summary>
+            Creates a new set storage with no buckets
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.#ctor(System.Int32)">
+            <summary>
+            Creates a new set storage with no buckets
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.Add(System.Object)">
+            <summary>
+            Adds a new item to the set, unless an equivalent item is already present
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.AddWorker(IronPython.Runtime.SetStorage.Bucket[],System.Object,System.Int32,System.Func{System.Object,System.Object,System.Boolean},System.Int32@)">
+            <summary>
+            Static helper which adds the given non-null item with a precomputed hash code. Returns
+            true if the item was added, false if it was already present in the set.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.AddOrRemoveWorker(System.Object,System.Int32)">
+            <summary>
+            Lock-free helper on a non-null item with a pre-calculated hash code. Removes the item
+            if it is present in the set, otherwise adds it.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.Clear">
+            <summary>
+            Clears the contents of the set
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.Clone">
+            <summary>
+            Clones the set, returning a new SetStorage object
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.Contains(System.Object)">
+            <summary>
+            Checks to see if the given item exists in the set
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.ContainsAlwaysHash(System.Object)">
+            <summary>
+            Checks to see if the given item exists in the set, and tries to hash it even
+            if it is known not to be in the set.
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.CopyTo(IronPython.Runtime.SetStorage)">
+            <summary>
+            Adds items from this set into the other set
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.Pop(System.Object@)">
+            <summary>
+            Removes the first set element in the iteration order.
+            </summary>
+            <returns>true if an item was removed, false if the set was empty</returns>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.Remove(System.Object)">
+            <summary>
+            Removes an item from the set and returns true if it was present, otherwise returns
+            false
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.RemoveAlwaysHash(System.Object)">
+            <summary>
+            Removes an item from the set and returns true if it was removed. The item will always
+            be hashed, throwing if it is unhashable - even if the set has no buckets.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.RemoveItem(System.Object)">
+            <summary>
+            Lock-free helper to remove a non-null item
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.IsDisjoint(IronPython.Runtime.SetStorage)">
+            <summary>
+            Determines whether the current set shares no elements with the given set
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.IsSubset(IronPython.Runtime.SetStorage)">
+            <summary>
+            Determines whether the current set is a subset of the given set
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.IsStrictSubset(IronPython.Runtime.SetStorage)">
+            <summary>
+            Determines whether the current set is a strict subset of the given set
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.UnionUpdate(IronPython.Runtime.SetStorage)">
+            <summary>
+            Mutates this set to contain its union with 'other'. The caller must lock the current
+            set if synchronization is desired.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.IntersectionUpdate(IronPython.Runtime.SetStorage)">
+            <summary>
+            Mutates this set to contain its intersection with 'other'. The caller must lock the
+            current set if synchronization is desired.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.SymmetricDifferenceUpdate(IronPython.Runtime.SetStorage)">
+            <summary>
+            Mutates this set to contain its symmetric difference with 'other'. The caller must
+            lock the current set if synchronization is desired.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.DifferenceUpdate(IronPython.Runtime.SetStorage)">
+            <summary>
+            Mutates this set to contain its difference with 'other'. The caller must lock the
+            current set if synchronization is desired.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.Union(IronPython.Runtime.SetStorage,IronPython.Runtime.SetStorage)">
+            <summary>
+            Computes the union of self and other, returning an entirely new set. This method is
+            thread-safe and makes no modifications to self or other.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.Intersection(IronPython.Runtime.SetStorage,IronPython.Runtime.SetStorage)">
+            <summary>
+            Computes the intersection of self and other, returning an entirely new set. This
+            method is thread-safe and makes no modifications to self or other.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.SymmetricDifference(IronPython.Runtime.SetStorage,IronPython.Runtime.SetStorage)">
+            <summary>
+            Computes the symmetric difference of self and other, returning an entirely new set.
+            This method is thread-safe and makes no modifications to self or other.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.Difference(IronPython.Runtime.SetStorage,IronPython.Runtime.SetStorage)">
+            <summary>
+            Computes the difference of self and other, returning an entirely new set. This
+            method is thread-safe and makes no modifications to self or other.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.Hash(System.Object)">
+            <summary>
+            Helper to hash the given item w/ support for null
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.SortBySize(IronPython.Runtime.SetStorage@,IronPython.Runtime.SetStorage@)">
+            <summary>
+            Helper which ensures that the first argument x requires the least work to enumerate
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.GetItems(System.Object)">
+            <summary>
+            A factory which creates a SetStorage object from any Python iterable. It extracts
+            the underlying storage of a set or frozen set without copying, which is left to the
+            caller if necessary.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.GetItems(System.Object,IronPython.Runtime.SetStorage@)">
+            <summary>
+            A factory which creates a SetStorage object from any Python iterable. It extracts
+            the underlying storage of a set or frozen set without copying, which is left to the
+            caller if necessary.
+            Returns true if the given object was a set or frozen set, false otherwise.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.GetFrozenItems(System.Object)">
+            <summary>
+            A factory which creates a SetStorage object from any Python iterable. It extracts
+            the underlying storage of a set or frozen set, copying in the former case, to return
+            a SetStorage object that is guaranteed not to receive any outside mutations.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.GetItemsIfSet(System.Object,IronPython.Runtime.SetStorage@)">
+            <summary>
+            Extracts the SetStorage object from o if it is a set or frozenset and returns true.
+            Otherwise returns false.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.SetStorage.GetHashableSetIfSet(System.Object@)">
+            <summary>
+            Creates a hashable set from the given set, or does nothing if the given object 
+            is not a set.
+            </summary>
+            <returns>True if o is a set or frozenset, false otherwise</returns>
+        </member>
+        <member name="P:IronPython.Runtime.SetStorage.Count">
+            <summary>
+            Returns the number of items currently in the set
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.SetStorage.Bucket">
+            <summary>
+            Used to store a single hashed item.
+            
+            Bucket is not serializable because it stores the computed hash code, which could change
+            between serialization and deserialization.
+            </summary>
+        </member>
         <member name="T:IronPython.Runtime.SiteLocalStorage`1">
             <summary>
             Provides storage which is flowed into a callers site.  The same storage object is 
@@ -2922,7 +3352,7 @@
             
             The default specification is:
             
-            format_spec =  [[fill]align][sign][#][0][width][.precision][type]
+            format_spec =  [[fill]align][sign][#][0][width][,][.precision][type]
             fill        =  a character other than }
             align       =  "&lt;" | "&gt;" | "=" | "^"
             sign        =  "+" | "-" | " "
@@ -2936,104 +3366,11 @@
             Parses a format spec and returns a new StringFormatSpec object.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.BuiltinFunction">
+        <member name="T:IronPython.Runtime.SysModuleDictionaryStorage">
             <summary>
-            BuiltinFunction represents any standard CLR function exposed to Python.
-            This is used for both methods on standard Python types such as list or tuple
-            and for methods from arbitrary .NET assemblies.
+            Optimized storage for setting exc_type, exc_value, and exc_traceback.
             
-            All calls are made through the optimizedTarget which is created lazily.
-            
-            TODO: Back BuiltinFunction's by MethodGroup's.
-            </summary>    
-        </member>
-        <member name="T:IronPython.Runtime.Operations.IDelegateConvertible">
-            <summary>
-            Interface used for things which can convert to delegates w/o code gen.  Currently
-            this is just non-overloaded builtin functions and bound builtin functions.  Avoiding
-            the code gen is not only nice for compilation but it also enables delegates to be added
-            in C# and removed in Python.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeFunction(System.String,System.Reflection.MethodBase[],System.Type)">
-            <summary>
-            Creates a new builtin function for a static .NET function.  This is used for module methods
-            and well-known __new__ methods.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeMethod(System.String,System.Reflection.MethodBase[],System.Type,IronPython.Runtime.Types.FunctionType)">
-            <summary>
-            Creates a built-in function for a .NET method declared on a type.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Types.BuiltinFunction.#ctor(System.Object,IronPython.Runtime.Types.BuiltinFunction.BuiltinFunctionData)">
-            <summary>
-            Creates a bound built-in function.  The instance may be null for built-in functions
-            accessed for None.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeGenericMethod(System.Type[])">
-            <summary>
-            Returns a BuiltinFunction bound to the provided type arguments.  Returns null if the binding
-            cannot be performed.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Types.BuiltinFunction.GetDescriptor">
-            <summary>
-            Returns a descriptor for the built-in function if one is
-            neededed
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeBoundFunctionTest(System.Linq.Expressions.Expression)">
-            <summary>
-            Makes a test for the built-in function against the private _data 
-            which is unique per built-in function.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeBuiltinFunctionCall(System.Dynamic.DynamicMetaObjectBinder,System.Linq.Expressions.Expression,System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject[],System.Boolean,System.Dynamic.BindingRestrictions,System.Func{System.Dynamic.DynamicMetaObject[],IronPython.Runtime.Types.BuiltinFunction.BindingResult})">
-            <summary>
-            Helper for generating the call to a builtin function.  This is used for calls from built-in method
-            descriptors and built-in functions w/ and w/o a bound instance.  
-            
-            This provides all sorts of common checks on top of the call while the caller provides a delegate
-            to do the actual call.  The common checks include:
-                check for generic-only methods
-                reversed operator support
-                transforming arguments so the default binder can understand them (currently user defined mapping types to PythonDictionary)
-                returning NotImplemented from binary operators
-                Warning when calling certain built-in functions
-                
-            </summary>
-            <param name="call">The call binder we're doing the call for</param>
-            <param name="codeContext">An expression which points to the code context</param>
-            <param name="function">the meta object for the built in function</param>
-            <param name="hasSelf">true if we're calling with an instance</param>
-            <param name="args">The arguments being passed to the function</param>
-            <param name="functionRestriction">A restriction for the built-in function, method desc, etc...</param>
-            <param name="bind">A delegate to perform the actual call to the method.</param>
-        </member>
-        <member name="P:IronPython.Runtime.Types.BuiltinFunction.Targets">
-            <summary>
-            Gets the target methods that we'll be calling.  
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.Types.BuiltinFunction.IsAlwaysVisible">
-            <summary>
-            True if the method should be visible to non-CLS opt-in callers
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.Types.BuiltinFunction.Overloads">
-            <summary>
-            Provides (for reflected methods) a mapping from a signature to the exact target
-            which takes this signature.
-            signature with syntax like the following:
-               someClass.SomeMethod.Overloads[str, int]("Foo", 123)
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.Types.BuiltinFunction.OverloadDictionary">
-            <summary>
-            Gets the overload dictionary for the logical function.  These overloads
-            are never bound to an instance.
+            This optimization can go away in Python 3.0 when these attributes are no longer used.
             </summary>
         </member>
         <member name="T:IronPython.Runtime.Types.DynamicBaseTypeAttribute">
@@ -3292,26 +3629,6 @@
             Summary description for Token.
             </summary>
         </member>
-        <member name="P:IronPython.Compiler.IncompleteStringToken.IsSingleTickQuote">
-            <summary>
-            True if the quotation is written using ', false if written using "
-            </summary>
-        </member>
-        <member name="P:IronPython.Compiler.IncompleteStringToken.IsRaw">
-            <summary>
-            True if the string is a raw-string (preceeded w/ r character)
-            </summary>
-        </member>
-        <member name="P:IronPython.Compiler.IncompleteStringToken.IsUnicode">
-            <summary>
-            True if the string is Unicode string (preceeded w/ a u character)
-            </summary>
-        </member>
-        <member name="P:IronPython.Compiler.IncompleteStringToken.IsTripleQuoted">
-            <summary>
-            True if the string is triple quoted (''' or """)
-            </summary>
-        </member>
         <member name="T:IronPython.Compiler.Tokenizer">
             <summary>
             IronPython tokenizer
@@ -3319,7 +3636,7 @@
         </member>
         <member name="M:IronPython.Compiler.Tokenizer.#ctor(Microsoft.Scripting.ErrorSink,IronPython.Compiler.PythonCompilerOptions,System.Boolean)">
             <summary>
-            Used to support legacy CreateParser API.
+            Used to create tokenizer for hosting API.
             </summary>
         </member>
         <member name="M:IronPython.Compiler.Tokenizer.ReadNewline">
@@ -3327,10 +3644,20 @@
             Returns whether the 
             </summary>
         </member>
+        <member name="M:IronPython.Compiler.Tokenizer.ResizeInternal(System.Char[]@,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Resizes an array to a speficied new size and copies a portion of the original array into its beginning.
+            </summary>
+        </member>
         <member name="P:IronPython.Compiler.Tokenizer.EndContinues">
             <summary>
             True if the last characters in the buffer are a backslash followed by a new line indicating
             that their is an incompletement statement which needs further input to complete.
+            </summary>
+        </member>
+        <member name="T:IronPython.Compiler.Tokenizer.TokenEqualityComparer">
+            <summary>
+            Equality comparer that can compare strings to our current token w/o creating a new string first.
             </summary>
         </member>
         <member name="T:IronPython.Hosting.PythonCommandLine">
@@ -3567,6 +3894,11 @@
             published it in sys.modules.  
             
             Returns the ScriptScope associated with the module.
+            </summary>
+        </member>
+        <member name="M:IronPython.Hosting.Python.GetModuleFilenames(Microsoft.Scripting.Hosting.ScriptEngine)">
+            <summary>
+            Gets the list of loaded Python module files names which are available in the provided ScriptEngine.
             </summary>
         </member>
         <member name="T:IronPython.Resources">
@@ -3860,7 +4192,7 @@
             items arary
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.CommonDictionaryStorage.#ctor(IronPython.Runtime.CommonDictionaryStorage.Bucket[],System.Int32,System.Type,System.Func{System.Object,System.Int32},System.Func{System.Object,System.Object,System.Boolean})">
+        <member name="M:IronPython.Runtime.CommonDictionaryStorage.#ctor(IronPython.Runtime.CommonDictionaryStorage.Bucket[],System.Int32,System.Type,System.Func{System.Object,System.Int32},System.Func{System.Object,System.Object,System.Boolean},IronPython.Runtime.CommonDictionaryStorage.NullValue)">
             <summary>
             Creates a new dictionary storage with the given set of buckets
             and size.  Used when cloning the dictionary storage.
@@ -3879,11 +4211,17 @@
         </member>
         <member name="M:IronPython.Runtime.CommonDictionaryStorage.Add(IronPython.Runtime.CommonDictionaryStorage.Bucket[],System.Object,System.Object)">
             <summary>
-            Static add helper that works over a single set of buckets.  Used for
+            Add helper that works over a single set of buckets.  Used for
             both the normal add case as well as the resize case.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.CommonDictionaryStorage.Remove(System.Object)">
+        <member name="M:IronPython.Runtime.CommonDictionaryStorage.AddWorker(IronPython.Runtime.CommonDictionaryStorage.Bucket[],System.Object,System.Object,System.Int32)">
+            <summary>
+            Add helper which adds the given key/value (where the key is not null) with
+            a pre-computed hash code.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.CommonDictionaryStorage.Remove(IronPython.Runtime.DictionaryStorage@,System.Object)">
             <summary>
             Removes an entry from the dictionary and returns true if the
             entry was removed or false.
@@ -3902,14 +4240,6 @@
             Checks to see if the key exists in the dictionary.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.CommonDictionaryStorage.Contains(IronPython.Runtime.CommonDictionaryStorage.Bucket[],System.Object)">
-            <summary>
-            Static helper to see if the key exists in the provided bucket array.
-            
-            Used so the contains check can run against a buckets while a writer
-            replaces the buckets.
-            </summary>
-        </member>
         <member name="M:IronPython.Runtime.CommonDictionaryStorage.TryGetValue(System.Object,System.Object@)">
             <summary>
             Trys to get the value associated with the given key and returns true
@@ -3924,7 +4254,7 @@
             replaces the buckets.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.CommonDictionaryStorage.Clear">
+        <member name="M:IronPython.Runtime.CommonDictionaryStorage.Clear(IronPython.Runtime.DictionaryStorage@)">
             <summary>
             Clears the contents of the dictionary.
             </summary>
@@ -3946,16 +4276,15 @@
         </member>
         <member name="T:IronPython.Runtime.CommonDictionaryStorage.Bucket">
             <summary>
-            Used to store a single hashed key/value and a linked list of
-            collisions.
+            Used to store a single hashed key/value.
             
             Bucket is not serializable because it stores the computed hash
             code which could change between serialization and deserialization.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.CommonDictionaryStorage.DeserializationBucket">
+        <member name="T:IronPython.Runtime.CommonDictionaryStorage.DeserializationNullValue">
             <summary>
-            Special marker bucket used during deserialization to not add
+            Special marker NullValue used during deserialization to not add
             an extra field to the dictionary storage type.
             </summary>
         </member>
@@ -4051,12 +4380,12 @@
             Creates a new style Python exception from the .NET exception
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.AssociateException(System.Exception,System.Object)">
+        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.SetPythonException(System.Exception,System.Object)">
             <summary>
             Internal helper to associate a .NET exception and a Python exception.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.GetAssociatedException(System.Exception)">
+        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.GetPythonException(System.Exception)">
             <summary>
             Internal helper to get the associated Python exception from a .NET exception.
             </summary>
@@ -4066,13 +4395,25 @@
             Converts the DLR SyntaxErrorException into a Python new-style SyntaxError instance.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.CreateSubType(IronPython.Runtime.PythonContext,IronPython.Runtime.Types.PythonType,System.String,System.String,System.String)">
+        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.CreateSubType(IronPython.Runtime.PythonContext,IronPython.Runtime.Types.PythonType,System.String,System.String,System.String,System.Func{System.String,System.Exception})">
             <summary>
             Creates a PythonType for a built-in module.  These types are mutable like
             normal user types.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.CreateSubType(IronPython.Runtime.Types.PythonType,System.String)">
+        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.CreateSubType(IronPython.Runtime.PythonContext,IronPython.Runtime.Types.PythonType,System.Type,System.String,System.String,System.String,System.Func{System.String,System.Exception})">
+            <summary>
+            Creates a PythonType for a built-in module.  These types are mutable like
+            normal user types.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.CreateSubType(IronPython.Runtime.PythonContext,IronPython.Runtime.Types.PythonType[],System.Type,System.String,System.String,System.String,System.Func{System.String,System.Exception})">
+            <summary>
+            Creates a PythonType for a built-in module, where the type may inherit
+            from multiple bases.  These types are mutable like normal user types. 
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.CreateSubType(IronPython.Runtime.Types.PythonType,System.String,System.Func{System.String,System.Exception})">
             <summary>
             Creates a new type for a built-in exception which derives from another Python
             type.  .  These types are built-in and immutable like any other normal type.  For 
@@ -4080,9 +4421,14 @@
             are like user defined types.  thread.error.x = 3 is legal.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.CreateSubType(IronPython.Runtime.Types.PythonType,System.Type)">
+        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.CreateSubType(IronPython.Runtime.Types.PythonType,System.Type,System.Func{System.String,System.Exception})">
             <summary>
             Creates a new type for a built-in exception which is the root concrete type.  
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.GetDynamicStackFrames(System.Exception)">
+            <summary>
+            Gets the list of DynamicStackFrames for the current exception.
             </summary>
         </member>
         <member name="T:IronPython.Runtime.Exceptions.PythonExceptions.BaseException">
@@ -4186,11 +4532,6 @@
             <summary>
             Implements __repr__ which returns the type name + the args
             tuple code formatted.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.BaseException.CreateClrException(System.String)">
-            <summary>
-            Creates a CLR Exception for this Python exception
             </summary>
         </member>
         <member name="M:IronPython.Runtime.Exceptions.PythonExceptions.BaseException.InitializeFromClr(System.Exception)">
@@ -4540,18 +4881,16 @@
             stream -> the stream to wrap in a file object.
             </summary>
         </member>
-        <member name="M:IronPython.Modules.Builtin.range(IronPython.Runtime.CodeContext,System.Double)">
+        <member name="M:IronPython.Modules.Builtin.range(IronPython.Runtime.CodeContext,System.Object)">
             <summary>
-            float overload of range - reports TypeError if the float is outside the range of normal integers.
-            
-            The method binder would usally report an OverflowError in this case.
+            object overload of range - attempts to convert via __int__, and __trunc__ if arg is
+            an OldInstance
             </summary>
         </member>
-        <member name="M:IronPython.Modules.Builtin.range(IronPython.Runtime.CodeContext,System.Double,System.Double,System.Double)">
+        <member name="M:IronPython.Modules.Builtin.range(IronPython.Runtime.CodeContext,System.Object,System.Object,System.Object)">
             <summary>
-            float overload of range - reports TypeError if the float is outside the range of normal integers.
-            
-            The method binder would usally report an OverflowError in this case.
+            object overload of range - attempts to convert via __int__, and __trunc__ if arg is
+            an OldInstance
             </summary>
         </member>
         <member name="M:IronPython.Modules.Builtin.GetRuntimeGeneratedCodeCompilerOptions(IronPython.Runtime.CodeContext,System.Boolean,IronPython.Runtime.CompileFlags)">
@@ -4627,7 +4966,7 @@
             Function codes created this way do support recursion enforcement and are therefore registered in the global function code registry.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.FunctionCode.#ctor(IronPython.Runtime.PythonContext,System.Delegate,IronPython.Compiler.Ast.ScopeStatement,System.String)">
+        <member name="M:IronPython.Runtime.FunctionCode.#ctor(IronPython.Runtime.PythonContext,System.Delegate,IronPython.Compiler.Ast.ScopeStatement,System.String,System.Nullable{System.Boolean},System.Boolean)">
             <summary>
             Constructor to create a FunctionCode at runtime.
             
@@ -4667,11 +5006,14 @@
             until the lock is released.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.FunctionCode.FromSourceUnit(Microsoft.Scripting.SourceUnit,IronPython.Compiler.PythonCompilerOptions)">
+        <member name="M:IronPython.Runtime.FunctionCode.FromSourceUnit(Microsoft.Scripting.SourceUnit,IronPython.Compiler.PythonCompilerOptions,System.Boolean)">
             <summary>
             Creates a FunctionCode object for exec/eval/execfile'd/compile'd code.
             
             The code is then executed in a specific CodeContext by calling the .Call method.
+            
+            If the code is being used for compile (vs. exec/eval/execfile) then it needs to be
+            registered incase our tracing mode changes.
             </summary>
         </member>
         <member name="M:IronPython.Runtime.FunctionCode.LazyCompileFirstTarget(IronPython.Runtime.PythonFunction)">
@@ -4792,11 +5134,6 @@
             for purposes of recursion enforcement or tracing.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Method.CheckSelf(IronPython.Runtime.CodeContext,System.Object)">
-            <summary>
-            Validates that the current self object is usable for this method.  
-            </summary>
-        </member>
         <member name="M:IronPython.Runtime.Converter.TryConvert(System.Object,System.Type,System.Object@)">
             <summary>
             General conversion routine TryConvert - tries to convert the object to the desired type.
@@ -4818,7 +5155,16 @@
         <member name="M:IronPython.Runtime.Converter.TryConvertToIndex(System.Object,System.Boolean,System.Int32@)">
             <summary>
             Attempts to convert value into a index usable for slicing and return the integer
-            value.  If the conversion fails false is returned.  
+            value.  If the conversion fails false is returned.
+            
+            If throwOverflowError is true then BigInteger's outside the normal range of integers will
+            result in an OverflowError.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Converter.TryConvertToIndex(System.Object,System.Boolean,System.Object@)">
+            <summary>
+            Attempts to convert value into a index usable for slicing and return the integer
+            value.  If the conversion fails false is returned.
             
             If throwOverflowError is true then BigInteger's outside the normal range of integers will
             result in an OverflowError.
@@ -4925,7 +5271,7 @@
             <summary>
             Fields set by Throw() to communicate an exception to the yield point.
             These are plumbed through the generator to become parameters to Raise(...) invoked 
-            at the yield suspenion point in the generator.
+            at the yield suspension point in the generator.
             </summary>
         </member>
         <member name="F:IronPython.Runtime.PythonGenerator._sendValue">
@@ -5014,6 +5360,12 @@
             <summary>
             Gateway into importing ... called from Ops.  Performs the initial import of
             a module and returns the module.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Importer.ImportLightThrow(IronPython.Runtime.CodeContext,System.String,IronPython.Runtime.PythonTuple,System.Int32)">
+            <summary>
+            Gateway into importing ... called from Ops.  Performs the initial import of
+            a module and returns the module.  This version returns light exceptions instead of throwing.
             </summary>
         </member>
         <member name="M:IronPython.Runtime.Importer.ImportFrom(IronPython.Runtime.CodeContext,System.Object,System.String)">
@@ -5584,6 +5936,11 @@
             exec code in globals [, locals ]
             </summary>
         </member>
+        <member name="M:IronPython.Runtime.Operations.PythonOps.BuildExceptionInfo(IronPython.Runtime.CodeContext,System.Exception)">
+            <summary>
+            Called from generated code at the start of a catch block.
+            </summary>
+        </member>
         <member name="M:IronPython.Runtime.Operations.PythonOps.GetExceptionInfo(IronPython.Runtime.CodeContext)">
             <summary>
             Get an exception tuple for the "current" exception. This is used for sys.exc_info()
@@ -5726,6 +6083,16 @@
             <param name="type">original type of exception requested</param>
             <returns>a TypeEror exception</returns>
         </member>
+        <member name="M:IronPython.Runtime.Operations.PythonOps.GetDynamicStackFrames(System.Exception)">
+            <summary>
+            Gets a list of DynamicStackFrames for the given exception.  These stack frames
+            can be programmatically inspected to understand the frames the exception crossed
+            through including Python frames.
+            
+            Dynamic stack frames are not preserved when an exception crosses an app domain
+            boundary.
+            </summary>
+        </member>
         <member name="T:IronPython.Runtime.Operations.UnicodeHelper">
             <summary>
             Helper clas for calls to unicode(...).  We generate code which checks if unicode
@@ -5776,7 +6143,7 @@
             replacement_field =  "{" field_name ["!" conversion] [":" format_spec] "}"
             field_name        =  (identifier | integer) ("." identifier | "[" element_index "]")*
             
-            format_spec: [[fill]align][sign][#][0][width][.precision][type]
+            format_spec: [[fill]align][sign][#][0][width][,][.precision][type]
             
             Conversion can be 'r' for repr or 's' for string.
             </summary>
@@ -5853,6 +6220,11 @@
             doesn't collide with other operators.
             </summary>
         </member>
+        <member name="M:IronPython.Runtime.PythonFile.SetMode(IronPython.Runtime.CodeContext,System.Boolean)">
+            <summary>
+            Sets the mode to text or binary.  Returns true if previously set to text, false if previously set to binary.
+            </summary>
+        </member>
         <member name="M:IronPython.Runtime.PythonFile.truncate">
             <summary>
             Truncates the file to the current length as indicated by tell().
@@ -5908,25 +6280,6 @@
             Provides dictionary based storage which is backed by a Scope object.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.ISet">
-            <summary>
-            Common interface shared by both Set and FrozenSet
-            </summary>
-        </member>
-        <member name="T:IronPython.Runtime.SetHelpers">
-            <summary>
-            Contains common set functionality between set and frozenSet
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.SetHelpers.GetHashableSetIfSet(System.Object)">
-            <summary>
-            Creates a set that can be hashable.  If the set is currently a FrozenSet the
-            set is returned.  If the set is a normal Set then a FrozenSet is returned
-            with its contents.
-            </summary>
-            <param name="o"></param>
-            <returns></returns>
-        </member>
         <member name="T:IronPython.Runtime.SetCollection">
             <summary>
             Mutable set class
@@ -5934,13 +6287,7 @@
         </member>
         <member name="M:IronPython.Runtime.SetCollection.update(System.Object)">
             <summary>
-            Appends one IEnumerable to an existing set
-            </summary>
-            <param name="s"></param>
-        </member>
-        <member name="M:IronPython.Runtime.SetCollection.update(System.Object[])">
-            <summary>
-            Appends one or more IEnumerables to an existing set
+            Appends an IEnumerable to an existing set
             </summary>
         </member>
         <member name="T:IronPython.Runtime.FrozenSetCollection">
@@ -6039,6 +6386,14 @@
             TODO: Should we attempt to unify all versions which share the same keys?
             </summary>
         </member>
+        <member name="T:IronPython.Runtime.Operations.IDelegateConvertible">
+            <summary>
+            Interface used for things which can convert to delegates w/o code gen.  Currently
+            this is just non-overloaded builtin functions and bound builtin functions.  Avoiding
+            the code gen is not only nice for compilation but it also enables delegates to be added
+            in C# and removed in Python.
+            </summary>
+        </member>
         <member name="T:IronPython.Runtime.Types.FunctionType">
             <summary>
             Represents a set of attributes that different functions can have.
@@ -6073,6 +6428,11 @@
                     2. The parameters are in reversed order (other, this)
                     
             This enables simple .NET operator methods to be mapped into the Python semantics.
+            </summary>
+        </member>
+        <member name="F:IronPython.Runtime.Types.FunctionType.ModuleMethod">
+            <summary>
+            A method declared on a built-in module
             </summary>
         </member>
         <member name="T:IronPython.Runtime.Types.OperatorMapping">
@@ -6135,6 +6495,11 @@
             Set if the type is user defined
             </summary>
         </member>
+        <member name="F:IronPython.Runtime.Types.PythonType.TypeFlagAbstractMethodsDefined">
+            <summary>
+            Set if the type has __abstractmethods__ defined
+            </summary>
+        </member>
         <member name="M:IronPython.Runtime.Types.PythonType.IronPython#Runtime#Binding#IFastInvokable#MakeInvokeBinding``1(System.Runtime.CompilerServices.CallSite{``0},IronPython.Runtime.Binding.PythonInvokeBinder,IronPython.Runtime.CodeContext,System.Object[])">
             <summary>
             Implements fast binding for user defined types.  This ensures that common highly dynamic
@@ -6177,7 +6542,7 @@
             </summary>
             <param name="underlyingSystemType"></param>
         </member>
-        <member name="M:IronPython.Runtime.Types.PythonType.#ctor(IronPython.Runtime.Types.PythonType,System.String)">
+        <member name="M:IronPython.Runtime.Types.PythonType.#ctor(IronPython.Runtime.Types.PythonType,System.String,System.Func{System.String,System.Exception})">
             <summary>
             Creates a new PythonType which is a subclass of the specified PythonType.
             
@@ -6185,9 +6550,41 @@
             primary example of this is the exception system.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.PythonType.#ctor(IronPython.Runtime.PythonContext,IronPython.Runtime.Types.PythonType,System.String,System.String,System.String)">
+        <member name="M:IronPython.Runtime.Types.PythonType.#ctor(IronPython.Runtime.Types.PythonType[],System.String)">
+            <summary>
+            Creates a new PythonType which is a subclass of the specified PythonTypes.
+            
+            Used for runtime defined new-style classes which require multiple inheritance.  The
+            primary example of this is the exception system.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.PythonType.#ctor(IronPython.Runtime.Types.PythonType[],System.Type,System.String,System.Func{System.String,System.Exception})">
+            <summary>
+            Creates a new PythonType which is a subclass of the specified PythonTypes.
+            
+            Used for runtime defined new-style classes which require multiple inheritance.  The
+            primary example of this is the exception system.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.PythonType.#ctor(IronPython.Runtime.PythonContext,IronPython.Runtime.Types.PythonType,System.String,System.String,System.String,System.Func{System.String,System.Exception})">
             <summary>
             Creates a new PythonType which is a subclass of the specified PythonType.
+            
+            Used for runtime defined new-style classes which require multiple inheritance.  The
+            primary example of this is the exception system.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.PythonType.#ctor(IronPython.Runtime.PythonContext,IronPython.Runtime.Types.PythonType[],System.String,System.String,System.String)">
+            <summary>
+            Creates a new PythonType which is a subclass of the specified PythonTypes.
+            
+            Used for runtime defined new-style classes which require multiple inheritance.  The
+            primary example of this is the exception system.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.PythonType.#ctor(IronPython.Runtime.PythonContext,IronPython.Runtime.Types.PythonType[],System.Type,System.String,System.String,System.String,System.Func{System.String,System.Exception})">
+            <summary>
+            Creates a new PythonType which is a subclass of the specified PythonTypes.
             
             Used for runtime defined new-style classes which require multiple inheritance.  The
             primary example of this is the exception system.
@@ -6488,7 +6885,7 @@
              <summary>
              Calculates the method resolution order for a Python class
              the rules are:
-                  If A is a subtype of B, then A has precedence (A >B)
+                  If A is a subtype of B, then A has precedence (A > B)
                   If C appears before D in the list of bases then C > D
                   If E > F in one __mro__ then E > F in all __mro__'s for our subtype
              
@@ -6539,11 +6936,6 @@
         <member name="M:IronPython.Runtime.PythonModule.#ctor(IronPython.Runtime.PythonContext,Microsoft.Scripting.Runtime.Scope)">
             <summary>
             Creates a new module backed by a Scope.  Used for creating modules for foreign Scope's.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonModule.#ctor(IronPython.Runtime.PythonDictionary,Microsoft.Scripting.Runtime.Scope)">
-            <summary>
-            Creates a new module backed by a Scope.  Used for creating modules for Python code.
             </summary>
         </member>
         <member name="M:IronPython.Runtime.PythonModule.#ctor(IronPython.Runtime.PythonDictionary)">
@@ -6917,6 +7309,104 @@
             MemberBinder which searches only the current type and it's extension types to find a member.
             </summary>
         </member>
+        <member name="T:IronPython.Runtime.Types.BuiltinFunction">
+            <summary>
+            BuiltinFunction represents any standard CLR function exposed to Python.
+            This is used for both methods on standard Python types such as list or tuple
+            and for methods from arbitrary .NET assemblies.
+            
+            All calls are made through the optimizedTarget which is created lazily.
+            
+            TODO: Back BuiltinFunction's by MethodGroup's.
+            </summary>    
+        </member>
+        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeFunction(System.String,System.Reflection.MethodBase[],System.Type)">
+            <summary>
+            Creates a new builtin function for a static .NET function.  This is used for module methods
+            and well-known __new__ methods.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeMethod(System.String,System.Reflection.MethodBase[],System.Type,IronPython.Runtime.Types.FunctionType)">
+            <summary>
+            Creates a built-in function for a .NET method declared on a type.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.BuiltinFunction.#ctor(System.Object,IronPython.Runtime.Types.BuiltinFunction.BuiltinFunctionData)">
+            <summary>
+            Creates a bound built-in function.  The instance may be null for built-in functions
+            accessed for None.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeGenericMethod(System.Type[])">
+            <summary>
+            Returns a BuiltinFunction bound to the provided type arguments.  Returns null if the binding
+            cannot be performed.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.BuiltinFunction.GetDescriptor">
+            <summary>
+            Returns a descriptor for the built-in function if one is
+            neededed
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeBoundFunctionTest(System.Linq.Expressions.Expression)">
+            <summary>
+            Makes a test for the built-in function against the private _data 
+            which is unique per built-in function.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeBuiltinFunctionCall(System.Dynamic.DynamicMetaObjectBinder,System.Linq.Expressions.Expression,System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject[],System.Boolean,System.Dynamic.BindingRestrictions,System.Func{System.Dynamic.DynamicMetaObject[],IronPython.Runtime.Types.BuiltinFunction.BindingResult})">
+            <summary>
+            Helper for generating the call to a builtin function.  This is used for calls from built-in method
+            descriptors and built-in functions w/ and w/o a bound instance.  
+            
+            This provides all sorts of common checks on top of the call while the caller provides a delegate
+            to do the actual call.  The common checks include:
+                check for generic-only methods
+                reversed operator support
+                transforming arguments so the default binder can understand them (currently user defined mapping types to PythonDictionary)
+                returning NotImplemented from binary operators
+                Warning when calling certain built-in functions
+                
+            </summary>
+            <param name="call">The call binder we're doing the call for</param>
+            <param name="codeContext">An expression which points to the code context</param>
+            <param name="function">the meta object for the built in function</param>
+            <param name="hasSelf">true if we're calling with an instance</param>
+            <param name="args">The arguments being passed to the function</param>
+            <param name="functionRestriction">A restriction for the built-in function, method desc, etc...</param>
+            <param name="bind">A delegate to perform the actual call to the method.</param>
+        </member>
+        <member name="P:IronPython.Runtime.Types.BuiltinFunction.Targets">
+            <summary>
+            Gets the target methods that we'll be calling.  
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.Types.BuiltinFunction.IsAlwaysVisible">
+            <summary>
+            True if the method should be visible to non-CLS opt-in callers
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.Types.BuiltinFunction.Overloads">
+            <summary>
+            Provides (for reflected methods) a mapping from a signature to the exact target
+            which takes this signature.
+            signature with syntax like the following:
+               someClass.SomeMethod.Overloads[str, int]("Foo", 123)
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.Types.BuiltinFunction.OverloadDictionary">
+            <summary>
+            Gets the overload dictionary for the logical function.  These overloads
+            are never bound to an instance.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.Types.BuiltinFunction.BindingSelf">
+            <summary>
+            Returns the instance used for binding.  This differs on module functions implemented
+            using instance methods so the built-in functions there don't expose the instance.
+            </summary>
+        </member>
         <member name="T:IronPython.Runtime.Types.GenericBuiltinFunction">
             <summary>
             A custom built-in function which supports indexing 
@@ -6990,6 +7480,11 @@
         <member name="M:IronPython.Runtime.Types.ReflectedProperty.SetValue(IronPython.Runtime.CodeContext,System.Object,System.Object)">
             <summary>
             Convenience function for users to call directly
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.Types.ReflectedProperty.CanOptimizeGets">
+            <summary>
+            True if generating code for gets can result in more optimal accesses.
             </summary>
         </member>
         <member name="T:IronPython.Runtime.WeakRefTracker">

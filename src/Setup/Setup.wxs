@@ -408,12 +408,13 @@
 				<ComponentRef Id="IronPythonModulesDll"/>	
 				<ComponentRef Id="IronPythonModulesXml"/>	
 				<ComponentRef Id="IronPythonDll"/>	
-				<ComponentRef Id="IronPythonXml"/>	
+				<ComponentRef Id="IronPythonXml"/>
+				<ComponentRef Id="IronPythonLicenseRtf"/>
 				<ComponentRef Id="PythonChironExe"/>
 				<ComponentRef Id="PythonChironExeConfig"/>
 				<ComponentRef Id="MicrosoftDynamicDll"/>
 				<ComponentRef Id="MicrosoftScriptingDll"/>	
-				<ComponentRef Id="MicrosoftScriptingDebuggingDll"/>	
+				<ComponentRef Id="MicrosoftScriptingMetadataDll"/>	
 				<ComponentRef Id="PythonBuildTasksDll"/>	
 				<ComponentRef Id="PythonBindingAddin"/>	
 				<ComponentRef Id="PythonBindingDll"/>

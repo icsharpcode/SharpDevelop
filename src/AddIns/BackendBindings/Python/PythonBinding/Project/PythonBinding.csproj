@@ -58,6 +58,9 @@
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Scripting.Metadata">
+      <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.Metadata.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -181,6 +184,10 @@
     <Compile Include="Src\StringTextContentProvider.cs" />
     <None Include="..\..\RequiredLibraries\Chiron.exe.Config">
       <Link>Chiron.exe.Config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\RequiredLibraries\License.Rtf">
+      <Link>License.Rtf</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Lib\runpy.py">

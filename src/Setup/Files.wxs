@@ -1092,11 +1092,6 @@
 											<netfx:NativeImage Id="MicrosoftDynamicDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
 										</File>
 									</Component>
-									<Component Guid="8A1A4691-E6BD-451F-AA5D-BE9C716D56A0" Id="MicrosoftScriptingDebuggingDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.Debugging.dll" Name="Microsoft.Scripting.Debugging.dll" Id="Microsoft.Scripting.Debugging.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Debugging.dll" AssemblyManifest="Microsoft.Scripting.Debugging.dll">
-											<netfx:NativeImage Id="MicrosoftScriptingDebuggingDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
-										</File>
-									</Component>
 									<Directory Id="TestRunner" Name="TestRunner">
 										<Component Id="PythonBindingSdTestPy" Guid="7D87D983-8924-456E-8E66-2C6AC76C16A6" DiskId="1">
 											<File Id="sdtest.py" Name="sdtest.py" Source="..\..\AddIns\BackendBindings\PythonBinding\TestRunner\sdtest.py" KeyPath="yes" />
@@ -1110,6 +1105,12 @@
 									</Component>
 									<Component Id="PythonChironExeConfig" Guid="1078B0F8-3984-45A8-846C-68479D717C03" DiskId="1">
 										<File Id="Python.Chiron.exe.Config" Name="Chiron.exe.Config" Source="..\..\AddIns\BackendBindings\PythonBinding\Chiron.exe.Config" KeyPath="yes" />
+									</Component>
+									<Component Id="IronPythonLicenseRtf" Guid="3F3B30E2-9CD4-4D32-95AF-82799C19ED0A" DiskId="1">
+										<File Id="IronPython.License.Rtf" Name="License.Rtf" Source="..\..\AddIns\BackendBindings\PythonBinding\License.Rtf" KeyPath="yes" />
+									</Component>
+									<Component Id="MicrosoftScriptingMetadataDll" Guid="7FD24C6E-5E64-4CCB-8C1E-2315498F81B1" DiskId="1">
+										<File Id="Microsoft.Scripting.Metadata.dll" Name="Microsoft.Scripting.Metadata.dll" Source="..\..\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.Metadata.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Metadata.dll" AssemblyManifest="Microsoft.Scripting.Metadata.dll" />
 									</Component>
 								</Directory>
 								<Directory Id="FSharpBinding" Name="FSharpBinding">
