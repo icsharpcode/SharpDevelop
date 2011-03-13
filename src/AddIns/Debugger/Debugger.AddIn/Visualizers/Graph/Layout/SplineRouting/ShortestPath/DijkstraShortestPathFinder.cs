@@ -10,11 +10,11 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 	/// <summary>
 	/// Description of AStarShortestPathFinder.
 	/// </summary>
-	public class AStarShortestPathFinder
+	public class DijkstraShortestPathFinder
 	{
 		RouteGraph graph;
 		
-		public AStarShortestPathFinder(RouteGraph routeGraph)
+		public DijkstraShortestPathFinder(RouteGraph routeGraph)
 		{
 			this.graph = routeGraph;
 		}

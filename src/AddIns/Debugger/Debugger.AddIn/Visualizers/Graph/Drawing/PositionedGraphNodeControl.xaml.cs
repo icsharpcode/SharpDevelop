@@ -60,43 +60,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 				this.items = GetInitialItems(this.root);
 				// data virtualization, ContentPropertyNode implements IEvaluate
 				this.listView.ItemsSource = new VirtualizingObservableCollection<ContentNode>(this.items);
-				
-				//AutoSizeColumns();
-				
-				/*DispatcherTimer t = new DispatcherTimer();
-				t.Interval = TimeSpan.FromMilliseconds(1000);
-				t.Start();
-				t.Tick += (s, ee) => { AutoSizeColumns(); t.Stop(); };*/
-			}
-		}
-		
-		public void AutoSizeColumns()
-		{
-			//listView.UpdateLayout();
-			//listView.Measure(new Size(800, 800));
-			//double sum = 0;
-			GridView gv = listView.View as GridView;
-			if (gv != null)
-			{
-				foreach (var c in gv.Columns)
-				{
-					//var header = c.Header as GridViewColumnHeader;
-					// Code below was found in GridViewColumnHeader.OnGripperDoubleClicked() event handler (using Reflector)
-					// i.e. it is the same code that is executed when the gripper is double clicked
-					//var uw = c.GetType().GetMethod("UpdateActualWidth", BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.NonPublic);
-					//uw.Invoke(c, new object[] { });
-					//if (double.IsNaN(c.Width))
-					{
-						c.Width = c.ActualWidth;
-					}
-					c.Width = double.NaN;
-
-					/*var dw = c.GetType().GetProperty("DesiredWidth", BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.NonPublic);
-					double desired = (double)dw.GetValue(c, null);
-					c.Width = c.ActualWidth;	// ActualWidth is not correct until GridViewRowPresenter gets measured
-					c.Width = double.NaN;
-					sum += c.Width;*/
-				}
 			}
 		}
 		
@@ -154,7 +117,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			}
 			
 			PositionedNodeProperty property = clickedNode.Property;
-			//property.IsPropertyExpanded = !property.IsPropertyExpanded;  // done by databinding
 			clickedButton.Content = property.IsPropertyExpanded ? "-" : "+";
 			
 			if (property.IsPropertyExpanded)
@@ -172,7 +134,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			var clickedButton = (ToggleButton)e.Source;
 			var clickedNode = (ContentNode)(clickedButton).DataContext;
 			int clickedIndex = this.items.IndexOf(clickedNode);
-			//clickedNode.IsExpanded = !clickedNode.IsExpanded;		// done by data binding
 			clickedButton.Content = clickedNode.IsExpanded ? "-" : "+";	// could be done by a converter
 
 			if (clickedNode.IsExpanded)
@@ -184,7 +145,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 					this.items.Insert(clickedIndex + i, childNode);
 					i++;
 				}
-				// insertChildren(clickedNode, this.view, clickedIndex); // TODO
 				OnContentNodeExpanded(clickedNode);
 			}
 			else
@@ -199,21 +159,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			}
 			
 			CalculateWidthHeight();
-			
-			//AutoSizeColumns();
-
-			// set to Auto again to resize columns
-			/*var colName = (this.listView.View as GridView).Columns[0];
-			var colValue = (this.listView.View as GridView).Columns[1];
-			colName.Width = 300;
-			colName.Width = double.NaN;
-			colValue.Width = 300;
-			colValue.Width = double.NaN;
-			//this.view.Insert(0, new ContentNode());
-			//this.view.RemoveAt(0);
-			this.listView.UpdateLayout();
-			this.listView.Width = colName.ActualWidth + colValue.ActualWidth + 30;
-			this.listView.Width = double.NaN;*/
 		}
 		
 		ObservableCollection<ContentNode> GetInitialItems(ContentNode root)

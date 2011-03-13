@@ -15,7 +15,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 	{
 		static readonly double boxPadding = 15;
 		//static readonly double boxSafetyMargin = 5;	// inflate boxes for collision testing
-		static readonly double multiEdgeGap = 10;
+		static readonly double multiEdgeGap = 15;
 		
 		List<IRect> boxes = new List<IRect>();
 		public List<IRect> Boxes {
@@ -27,11 +27,11 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 			get { return vertices; }
 		}
 		
-		AStarShortestPathFinder pathFinder;
+		DijkstraShortestPathFinder pathFinder;
 		
 		public RouteGraph()
 		{
-			pathFinder = new AStarShortestPathFinder(this);
+			pathFinder = new DijkstraShortestPathFinder(this);
 		}
 		
 		public static RouteGraph InitializeVertices(IEnumerable<IRect> nodes, IEnumerable<IEdge> edges)
@@ -104,7 +104,8 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		{
 			if (edgeStart == null || edgeEnd == null) {
 				// should not happen
-				return;
+				throw new System.Exception("edgeStart is null");
+				//return;
 			}
 			var startPoint = new RouteVertex(edgeStart.Value.X, edgeStart.Value.Y);
 			startPoint.IsEdgeEndpoint = true;

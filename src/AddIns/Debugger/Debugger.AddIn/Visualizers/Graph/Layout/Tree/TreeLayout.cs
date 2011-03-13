@@ -14,8 +14,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class TreeLayout
 	{
-		private static readonly double NodeMarginH = 30;
-		private static readonly double NodeMarginV = 30;
+		static readonly double NodeMarginH = 30;
+		static readonly double NodeMarginV = 30;
+		static readonly double MarginTop = 0;
+		static readonly double MarginBottom = 0;
+		
 		
 		GraphEdgeRouter edgeRouter = new GraphEdgeRouter();
 		/// <summary>
@@ -81,7 +84,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			// first layout pass
 			CalculateSubtreeSizes(positionedGraph.Root, seenNodes, treeEdges);
 			// second layout pass
-			CalculateNodePosRecursive(positionedGraph.Root, treeEdges, 0, 0);
+			CalculateNodePosRecursive(positionedGraph.Root, treeEdges, MarginTop, MarginBottom);
 		}
 		
 		// determines which edges are tree edges, and calculates subtree size for each node

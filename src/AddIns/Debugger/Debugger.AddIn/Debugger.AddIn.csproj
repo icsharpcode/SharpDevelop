@@ -245,7 +245,7 @@
     <Compile Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph\RouteGraph.cs" />
     <Compile Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph\RouteGraphEdge.cs" />
     <Compile Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph\RouteVertex.cs" />
-    <Compile Include="Visualizers\Graph\Layout\SplineRouting\ShortestPath\AStarShortestPathFinder.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\ShortestPath\DijkstraShortestPathFinder.cs" />
     <Compile Include="Visualizers\Graph\Layout\TreeModel\ContentNode.cs" />
     <Compile Include="Visualizers\Graph\Layout\TreeModel\ContentNodeEventArgs.cs" />
     <Compile Include="Visualizers\Graph\Layout\TreeModel\ContentPropertyNode.cs" />
