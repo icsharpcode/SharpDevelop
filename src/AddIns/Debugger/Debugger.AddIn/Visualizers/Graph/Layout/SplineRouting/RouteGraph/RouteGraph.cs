@@ -104,8 +104,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		{
 			if (edgeStart == null || edgeEnd == null) {
 				// should not happen
-				throw new System.Exception("edgeStart is null");
-				//return;
+				throw new System.Exception("The line between box centers does not intersect the boxes!");
 			}
 			var startPoint = new RouteVertex(edgeStart.Value.X, edgeStart.Value.Y);
 			startPoint.IsEdgeEndpoint = true;
@@ -209,12 +208,17 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		
 		static double GetMultiEdgeSpan(double space, int multiEdgeCount, double multiEdgeGap)
 		{
-			if ((multiEdgeCount + 1) * multiEdgeGap < space)
+			if (multiEdgeCount <= 1) {
+				// 1 edge, no spacing needed
+				return 0;
+			}
+			if ((multiEdgeCount + 1) * multiEdgeGap < space) {
 				// the edges fit, maintain the gap
 				return (multiEdgeCount - 1) * multiEdgeGap;
-			else
+			} else {
 				// there are too many edges, we have to make smaller gaps to fit edges into given space
 				return space - multiEdgeGap;
+			}
 		}
 	}
 }

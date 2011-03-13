@@ -20,5 +20,10 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		
 		public double X { get; set; }
 		public double Y { get; set; }
+		
+		public override string ToString()
+		{
+			return string.Format("[Point2D X={0}, Y={1}]", X, Y);
+		}
 	}
 }
