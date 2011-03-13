@@ -14,12 +14,12 @@ namespace TextTemplating.Tests
 	{
 		NamespaceHint namespaceHint;
 		IProject project;
-		FileProjectItem templateFile;
+		TestableFileProjectItem templateFile;
 		
 		void CreateProjectTemplateFile()
 		{
-			project = ProjectHelper.CreateProject();
-			templateFile = new FileProjectItem(project, ItemType.None, "MyTemplate.tt");
+			templateFile = new TestableFileProjectItem("MyTemplate.tt");
+			project = templateFile.Project;
 		}
 		
 		void CreateNamespaceHint()
@@ -31,7 +31,7 @@ namespace TextTemplating.Tests
 		public void ToString_TemplateFileHasCustomToolNamespaceSetToTest_ReturnsTest()
 		{
 			CreateProjectTemplateFile();
-			templateFile.SetMetadata("CustomToolNamespace", "Test");
+			templateFile.CustomToolNamespace = "Test";
 			CreateNamespaceHint();
 			
 			string result = namespaceHint.ToString();
@@ -43,7 +43,7 @@ namespace TextTemplating.Tests
 		public void ToString_TemplateFileHasNoCustomToolNamespace_ReturnsProjectRootNamespace()
 		{
 			CreateProjectTemplateFile();
-			ProjectHelper.SetProjectRootNamespace(project, "ProjectRootNamespace");
+			project.RootNamespace = "ProjectRootNamespace";
 			CreateNamespaceHint();
 			
 			string result = namespaceHint.ToString();

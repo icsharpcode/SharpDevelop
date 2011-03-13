@@ -19,7 +19,7 @@ namespace TextTemplating.Tests
 		FakeTextTemplatingHost templatingHost;
 		FakeTextTemplatingCustomToolContext customToolContext;
 		
-		FileProjectItem ProcessTemplate(string fileName)
+		TestableFileProjectItem ProcessTemplate(string fileName)
 		{
 			var projectFile = CreateGenerator(fileName);
 			generator.ProcessTemplate();
@@ -27,7 +27,7 @@ namespace TextTemplating.Tests
 			return projectFile;
 		}
 		
-		FileProjectItem CreateGenerator(string fileName)
+		TestableFileProjectItem CreateGenerator(string fileName)
 		{
 			templatingHost = new FakeTextTemplatingHost();
 			var projectFile = new TestableFileProjectItem(fileName);
@@ -227,7 +227,7 @@ namespace TextTemplating.Tests
 		public void ProcessTemplate_CustomToolNamespaceNotSet_LogicalCallContextNamespaceHintDataIsSetBefore()
 		{
 			var templateFile = CreateGenerator(@"d:\a.tt");
-			templateFile.Project.Name = "Test";
+			templateFile.Project.RootNamespace = "Test";
 			generator.ProcessTemplate();
 			
 			string data = customToolContext.DataPassedToSetLogicalCallContextData as String;

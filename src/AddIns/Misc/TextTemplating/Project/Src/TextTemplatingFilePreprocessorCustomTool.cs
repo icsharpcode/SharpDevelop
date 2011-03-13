@@ -6,23 +6,21 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.TextTemplating
 {
-	public class TextTemplatingFileGeneratorCustomTool : TextTemplatingCustomTool
+	public class TextTemplatingFilePreprocessorCustomTool : TextTemplatingCustomTool
 	{
 		public override void GenerateCode(FileProjectItem item, CustomToolContext context)
 		{
-			using (var generator = CreateTextTemplatingFileGenerator(item, context)) {
-				generator.ProcessTemplate();
-			}
+			var processor = CreateTextTemplatingFilePreprocessor(item, context);
+			processor.PreprocessTemplate();
 		}
 		
-		protected virtual ITextTemplatingFileGenerator CreateTextTemplatingFileGenerator(
+		protected virtual ITextTemplatingFilePreprocessor CreateTextTemplatingFilePreprocessor(
 			FileProjectItem templateFile,
 			CustomToolContext context)
 		{
-			TextTemplatingHost host = CreateTextTemplatingHost(context.Project);
+			var host = CreateTextTemplatingHost(context.Project);
 			var textTemplatingCustomToolContext = new TextTemplatingCustomToolContext(context);
-			
-			return new TextTemplatingFileGenerator(host, templateFile, textTemplatingCustomToolContext);
+			return new TextTemplatingFilePreprocessor(host, templateFile, textTemplatingCustomToolContext);
 		}
 	}
 }

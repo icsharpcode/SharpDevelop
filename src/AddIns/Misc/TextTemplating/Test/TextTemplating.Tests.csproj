@@ -59,18 +59,23 @@
     <Compile Include="Helpers\FakeTextTemplatingAppDomainFactory.cs" />
     <Compile Include="Helpers\FakeTextTemplatingAssemblyResolver.cs" />
     <Compile Include="Helpers\FakeTextTemplatingCustomToolContext.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingFilePreprocessor.cs" />
     <Compile Include="Helpers\FakeTextTemplatingHost.cs" />
     <Compile Include="Helpers\FakeTextTemplatingFileGenerator.cs" />
     <Compile Include="Helpers\ProjectHelper.cs" />
     <Compile Include="Helpers\TestableFileProjectItem.cs" />
+    <Compile Include="Helpers\TestableProject.cs" />
     <Compile Include="Helpers\TestableTextTemplatingFileGeneratorCustomTool.cs" />
+    <Compile Include="Helpers\TestableTextTemplatingFilePreprocessorCustomTool.cs" />
     <Compile Include="Helpers\TestableTextTemplatingHost.cs" />
     <Compile Include="Src\CompilerErrorTaskTests.cs" />
     <Compile Include="Src\NamespaceHintTests.cs" />
     <Compile Include="Src\TextTemplatingAssemblyResolverTests.cs" />
     <Compile Include="Src\TextTemplatingFileGeneratorCustomToolTests.cs" />
     <Compile Include="Src\TextTemplatingFileGeneratorTests.cs" />
+    <Compile Include="Src\TextTemplatingFilePreprocessorCustomToolTests.cs" />
     <Compile Include="Src\TextTemplatingHostTests.cs" />
+    <Compile Include="Src\TextTemplatingPreprocessorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />
@@ -85,6 +90,11 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Project\TextTemplating.csproj">
       <Project>{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}</Project>

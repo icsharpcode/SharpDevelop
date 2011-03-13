@@ -10,15 +10,28 @@ namespace TextTemplating.Tests.Helpers
 	{
 		string fileName;
 		
+		public TestableProject TestableProject;
+		
 		public TestableFileProjectItem(string fileName)
-			: base(ProjectHelper.CreateProject(), ItemType.None)
+			: this(ProjectHelper.CreateProject(), fileName)
 		{
+		}
+		
+		TestableFileProjectItem(TestableProject project, string fileName)
+			: base(project, ItemType.None)
+		{
+			this.TestableProject = project;
 			this.fileName = fileName;
 		}
 		
 		public override string FileName {
 			get { return fileName; }
 			set { fileName = value; }
+		}
+		
+		public string CustomToolNamespace {
+			get { return GetEvaluatedMetadata("CustomToolNamespace"); }
+			set { SetMetadata("CustomToolNamespace", value); }
 		}
 	}
 }

@@ -33,6 +33,10 @@
 			id="TextTemplatingFileGenerator"
             class="ICSharpCode.TextTemplating.TextTemplatingFileGeneratorCustomTool"
             fileNamePattern="\.t(t|4)$"/>
+		<CustomTool 
+			id="TextTemplatingFilePreprocessor"
+            class="ICSharpCode.TextTemplating.TextTemplatingFilePreprocessorCustomTool"
+            fileNamePattern="\.t(t|4)$"/>
 	</Path>
 
 	<Path name="/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">

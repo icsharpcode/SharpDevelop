@@ -10,31 +10,25 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.TextTemplating
 {
-	public class TextTemplatingFileGenerator : ITextTemplatingFileGenerator
+	public class TextTemplatingFileGenerator : TextTemplatingFileProcessor, ITextTemplatingFileGenerator
 	{
-		ITextTemplatingHost host;
-		FileProjectItem templateFile;
-		ITextTemplatingCustomToolContext context;
-		
 		public TextTemplatingFileGenerator(
 			ITextTemplatingHost host,
-			FileProjectItem projectFile,
+			FileProjectItem templateFile,
 			ITextTemplatingCustomToolContext context)
+			: base(host, templateFile, context)
 		{
-			this.host = host;
-			this.templateFile = projectFile;
-			this.context = context;
 		}
 		
 		public void Dispose()
 		{
-			host.Dispose();
+			Host.Dispose();
 		}
 		
 		public void ProcessTemplate()
 		{
-			context.ClearTasksExceptCommentTasks();
-			SetLogicalCallContextData();
+			ClearTasksExceptCommentTasks();
+			SetNamespaceHint();
 			if (TryGenerateOutputFileForTemplate()) {
 				AddOutputFileToProjectIfRequired();
 			}
@@ -42,17 +36,22 @@ namespace ICSharpCode.TextTemplating
 			BringErrorsToFrontIfRequired();
 		}
 		
-		void SetLogicalCallContextData()
+		void SetNamespaceHint()
 		{
-			var namespaceHint = new NamespaceHint(templateFile);
-			context.SetLogicalCallContextData("NamespaceHint", namespaceHint.ToString());
+			var namespaceHint = new NamespaceHint(TemplateFile);
+			SetNamespaceHint(namespaceHint.ToString());
 		}
 
 		bool TryGenerateOutputFileForTemplate()
 		{
-			string inputFileName = templateFile.FileName;
+			string inputFileName = TemplateFile.FileName;
 			string outputFileName = GetOutputFileName(inputFileName);
 			return TryProcessingTemplate(inputFileName, outputFileName);
+		}
+		
+		void AddOutputFileToProjectIfRequired()
+		{
+			AddOutputFileToProjectIfRequired(Host.OutputFile);
 		}
 		
 		string GetOutputFileName(string inputFileName)
@@ -63,49 +62,12 @@ namespace ICSharpCode.TextTemplating
 		bool TryProcessingTemplate(string inputFileName, string outputFileName)
 		{
 			try {
-				return host.ProcessTemplate(inputFileName, outputFileName);
+				return Host.ProcessTemplate(inputFileName, outputFileName);
 			} catch (Exception ex) {
 				AddCompilerErrorToTemplatingHost(ex, inputFileName);
 				DebugLogException(ex, inputFileName);
 			}
 			return false;
-		}
-		
-		void BringErrorsToFrontIfRequired()
-		{
-			if (host.Errors.HasErrors) { 
-				context.BringErrorsPadToFront();
-			}
-		}
-		
-		void AddCompilerErrorToTemplatingHost(Exception ex, string fileName)
-		{
-			var error = new TemplatingHostProcessTemplateError(ex, fileName);
-			host.Errors.Add(error);
-		}
-		
-		void DebugLogException(Exception ex, string fileName)
-		{
-			string message = String.Format("Exception thrown when processing template '{0}'.", fileName);
-			context.DebugLog(message, ex);
-		}
-				
-		void AddAnyErrorsToTaskList()
-		{
-			foreach (CompilerError error in host.Errors) {
-				AddErrorToTaskList(error);
-			}
-		}
-		
-		void AddErrorToTaskList(CompilerError error)
-		{
-			var task = new CompilerErrorTask(error);
-			context.AddTask(task);
-		}
-
-		void AddOutputFileToProjectIfRequired()
-		{
-			context.EnsureOutputFileIsInProject(templateFile, host.OutputFile);
 		}
 	}
 }

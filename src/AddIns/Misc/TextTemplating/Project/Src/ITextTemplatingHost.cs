@@ -3,6 +3,7 @@
 
 using System;
 using System.CodeDom.Compiler;
+using System.Text;
 
 namespace ICSharpCode.TextTemplating
 {
@@ -12,5 +13,14 @@ namespace ICSharpCode.TextTemplating
 		CompilerErrorCollection Errors { get; }
 		
 		bool ProcessTemplate(string inputFile, string outputFile);
+		
+		bool PreprocessTemplate (
+			string inputFile,
+			string className,
+			string classNamespace,
+			string outputFile,
+			Encoding encoding,
+			out string language,
+			out string[] references);
 	}
 }

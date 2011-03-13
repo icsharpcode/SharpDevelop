@@ -55,6 +55,7 @@
     <Compile Include="Src\ITextTemplatingAppDomainFactory.cs" />
     <Compile Include="Src\ITextTemplatingAssemblyResolver.cs" />
     <Compile Include="Src\ITextTemplatingCustomToolContext.cs" />
+    <Compile Include="Src\ITextTemplatingFilePreprocessor.cs" />
     <Compile Include="Src\ITextTemplatingHost.cs" />
     <Compile Include="Src\ITextTemplatingFileGenerator.cs" />
     <Compile Include="Src\NamespaceHint.cs" />
@@ -62,10 +63,14 @@
     <Compile Include="Src\TextTemplatingAppDomain.cs" />
     <Compile Include="Src\TextTemplatingAppDomainFactory.cs" />
     <Compile Include="Src\TextTemplatingAssemblyResolver.cs" />
+    <Compile Include="Src\TextTemplatingCustomTool.cs" />
     <Compile Include="Src\TextTemplatingCustomToolContext.cs" />
     <Compile Include="Src\TextTemplatingFileGenerator.cs" />
     <Compile Include="Src\TextTemplatingFileGeneratorCustomTool.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\TextTemplatingFilePreprocessor.cs" />
+    <Compile Include="Src\TextTemplatingFilePreprocessorCustomTool.cs" />
+    <Compile Include="Src\TextTemplatingFileProcessor.cs" />
     <Compile Include="Src\TextTemplatingHost.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +91,11 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

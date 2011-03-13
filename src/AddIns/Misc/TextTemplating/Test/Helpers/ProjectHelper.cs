@@ -9,21 +9,13 @@ namespace TextTemplating.Tests.Helpers
 {
 	public static class ProjectHelper
 	{
-		public static IProject CreateProject()
+		public static TestableProject CreateProject()
 		{
 			var info = new ProjectCreateInformation();
 			info.Solution = new Solution();
 			info.OutputProjectFileName = @"d:\projects\MyProject\MyProject.csproj";
 			info.ProjectName = "MyProject";
-			return new MSBuildBasedProject(info);
-		}
-		
-		/// <summary>
-		/// Project.RootNamespace returns Project.Name
-		/// </summary>
-		public static void SetProjectRootNamespace(IProject project, string rootNamespace)
-		{
-			project.Name = rootNamespace;
+			return new TestableProject(info);
 		}
 	}
 }
