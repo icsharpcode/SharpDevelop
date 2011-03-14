@@ -27,19 +27,19 @@ namespace Debugger.AddIn.Visualizers.Graph
 	/// </summary>
 	public partial class ObjectGraphControl : UserControl
 	{
-		private WindowsDebugger debuggerService;
-		private EnumViewModel<LayoutDirection> layoutViewModel;
-		private ObjectGraph objectGraph;
-		private ObjectGraphBuilder objectGraphBuilder;
+		WindowsDebugger debuggerService;
+		EnumViewModel<LayoutDirection> layoutViewModel;
+		ObjectGraph objectGraph;
+		ObjectGraphBuilder objectGraphBuilder;
 		
-		private PositionedGraph oldPosGraph;
-		private PositionedGraph currentPosGraph;
-		private GraphDrawer graphDrawer;
+		PositionedGraph oldPosGraph;
+		PositionedGraph currentPosGraph;
+		GraphDrawer graphDrawer;
 		
 		static double mouseWheelZoomSpeed = 0.05;
 		
 		/// <summary> Long-lived map telling which graph nodes and content nodes the user expanded. </summary>
-		private Expanded expanded = new Expanded();
+		static Expanded expanded = new Expanded();
 
 		public ObjectGraphControl()
 		{
@@ -136,7 +136,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			this.objectGraphBuilder = new ObjectGraphBuilder(debuggerService);
 			Log.Debug("Debugger visualizer: Building graph for expression: " + txtExpression.Text);
-			return this.objectGraphBuilder.BuildGraphForExpression(expression, this.expanded.Expressions);
+			return this.objectGraphBuilder.BuildGraphForExpression(expression, expanded.Expressions);
 		}
 		
 		void LayoutGraph(ObjectGraph graph)
@@ -150,7 +150,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			this.oldPosGraph = this.currentPosGraph;
 			Log.Debug("Debugger visualizer: Calculating graph layout");
 			var layoutDirection = layoutViewModel.SelectedEnumValue;
-			this.currentPosGraph = new TreeLayout(layoutDirection).CalculateLayout(graph, this.expanded);
+			this.currentPosGraph = new TreeLayout(layoutDirection).CalculateLayout(graph, expanded);
 			Log.Debug("Debugger visualizer: Graph layout done");
 			RegisterExpandCollapseEvents(this.currentPosGraph);
 			

@@ -242,7 +242,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				propertyList.Add(new ObjectGraphProperty
 				                 { Name = memberProp.Name,
 				                 	Expression = propExpression, Value = "",
-				                 	PropInfo = memberProp, IsAtomic = true, TargetNode = null });
+				                 	MemberInfo = memberProp, IsAtomic = true, TargetNode = null });
 				
 			}
 			return propertyList.Sorted(ObjectPropertyComparer.Instance);
