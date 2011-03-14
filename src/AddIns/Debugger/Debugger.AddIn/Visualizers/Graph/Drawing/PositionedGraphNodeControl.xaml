@@ -78,6 +78,16 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
+                        	<!-- Icon - didn't add much value -->
+                        	<!--  
+                        	<GridViewColumn Header="Icon" Width="10">
+                                <GridViewColumn.CellTemplate>
+                                	<DataTemplate>
+                        				<Image Width="10" Height="10" Source="{Binding MemberIcon}"></Image>
+									</DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                        	</GridViewColumn>
+							-->
                         	<!-- Name -->
                             <GridViewColumn Header="Name" Width="60">
                                 <GridViewColumn.CellTemplate>

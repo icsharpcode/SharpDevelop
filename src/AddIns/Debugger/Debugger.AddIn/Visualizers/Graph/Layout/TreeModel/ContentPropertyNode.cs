@@ -3,6 +3,8 @@
 
 using System;
 using System.ComponentModel;
+using Debugger.AddIn.TreeModel;
+using Debugger.MetaData;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -11,8 +13,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class ContentPropertyNode : ContentNode, IEvaluate
 	{
-		PositionedNodeProperty positionedProperty;
-		
 		public ContentPropertyNode(PositionedNode containingNode, ContentNode parent)
 			: base(containingNode, parent)
 		{
@@ -21,26 +21,23 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <summary>
 		/// The PositionedNodeProperty this node contains.
 		/// </summary>
-		public PositionedNodeProperty Property
-		{
-			get { return this.positionedProperty; }
-		}
+		public PositionedNodeProperty Property { get; private set; }
 		
 		public bool IsEvaluated
 		{
-			get { return this.positionedProperty.IsEvaluated; }
+			get { return this.Property.IsEvaluated; }
 		}
 		
 		public override bool IsPropertyExpanded
 		{
-			get { return this.positionedProperty.IsPropertyExpanded; }
-			set { this.positionedProperty.IsPropertyExpanded = value; }
+			get { return this.Property.IsPropertyExpanded; }
+			set { this.Property.IsPropertyExpanded = value; }
 		}
 		
 		public void Evaluate()
 		{
-			this.positionedProperty.Evaluate();
-			this.Text = this.positionedProperty.Value;
+			this.Property.Evaluate();
+			this.Text = this.Property.Value;
 		}
 		
 		public override bool ShowExpandPropertyButton
@@ -48,7 +45,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			get
 			{
 				// show expand button for non-null non-atomic objects
-				return (!this.positionedProperty.IsAtomic && !this.positionedProperty.IsNull);
+				return (!this.Property.IsAtomic && !this.Property.IsNull);
 			}
 		}
 		
@@ -65,9 +62,14 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.Text = sourcePropertyNode.Property.Value;		
 			this.IsNested = false;
 			this.IsExpanded = false;			// always false, Property nodes are never expanded (they have IsPropertyExpanded)
-			this.positionedProperty = new PositionedNodeProperty(
+			this.Property = new PositionedNodeProperty(
 				sourcePropertyNode.Property, this.ContainingNode,
 				expanded.Expressions.IsExpanded(sourcePropertyNode.Property.Expression));
+			
+			// Icon next to the name - didn't add much value
+			/*string imageName;
+			var image = ExpressionNode.GetImageForMember((IDebugMemberInfo)sourcePropertyNode.Property.PropInfo, out imageName);
+			this.MemberIcon = image.ImageSource;*/
 		}
 	}
 }

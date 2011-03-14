@@ -1,12 +1,14 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
-using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
+
 using Debugger.AddIn.Visualizers.Utils;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -23,6 +25,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.containingNode = containingNode;
 			this.parent = parent;
 		}
+		
+		// Icon next to the name - didn't add much value
+		//public ImageSource MemberIcon { get; set; }
 		
 		/// <summary>
 		/// Path to this content node in the whole <see cref="PositionedGraph"></see>.
@@ -137,7 +142,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public IEnumerable<PositionedNodeProperty> FlattenProperties()
 		{
 			return Utils.TreeFlattener.Flatten(this).Where(node => node is ContentPropertyNode).
-				Select(	propertyNode => ((ContentPropertyNode)propertyNode).Property);
+				Select(propertyNode => ((ContentPropertyNode)propertyNode).Property);
 		}
 		
 		#region Utils.ITreeNode implementation
