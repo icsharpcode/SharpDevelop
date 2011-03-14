@@ -36,6 +36,8 @@ namespace Debugger.AddIn.Visualizers.Graph
 		private PositionedGraph currentPosGraph;
 		private GraphDrawer graphDrawer;
 		
+		static double mouseWheelZoomSpeed = 0.05;
+		
 		/// <summary> Long-lived map telling which graph nodes and content nodes the user expanded. </summary>
 		private Expanded expanded = new Expanded();
 
@@ -219,6 +221,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 			// just remove edge from underlying object graph (no need to fully rebuild)
 			e.Property.ObjectGraphProperty.TargetNode = null;
 			LayoutGraph(this.objectGraph);
+		}
+		
+		void Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
+		{
+			if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
+				zoomSlider.Value += e.Delta > 0 ? mouseWheelZoomSpeed : -mouseWheelZoomSpeed;
+			}
 		}
 	}
 }

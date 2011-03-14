@@ -39,8 +39,10 @@
             </Border>
         </StackPanel>
 
-    	<controls:DragScrollViewer x:Name="scroller" Margin="0 4 0 0" Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-       		<Canvas HorizontalAlignment="Left" VerticalAlignment="Top" Name="canvas" Margin="4">
+    	<controls:DragScrollViewer x:Name="scroller" Margin="0 4 0 0" Grid.Row="1" Grid.Column="0" Background="White" PreviewMouseWheel="Canvas_MouseWheel" 
+    		HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+       		<Canvas x:Name="canvas" Margin="4"
+    				HorizontalAlignment="Left" VerticalAlignment="Top">
     			<Canvas.LayoutTransform>
 		            <ScaleTransform ScaleX="{Binding Path=Value, ElementName=zoomSlider}"
 		                            ScaleY="{Binding Path=Value, ElementName=zoomSlider}"/>

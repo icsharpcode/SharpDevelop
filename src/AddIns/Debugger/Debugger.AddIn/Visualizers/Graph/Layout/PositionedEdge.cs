@@ -19,14 +19,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		public IList<Point> SplinePoints
 		{
-			get 
-			{
-				return splinePoints;
-			}
-			set 
-			{
-				splinePoints = value;
-			}
+			get { return splinePoints;	}
+			set { splinePoints = value;	}
 		}
 		
 		/// <summary>
@@ -35,15 +29,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public System.Windows.Shapes.Path Spline { get; set; }
 		
 		public SplineRouting.IRect From {
-			get {
-				return this.Source.ContainingNode;
-			}
+			get { return this.Source.ContainingNode; }
 		}
 		
 		public SplineRouting.IRect To {
-			get {
-				return this.Target;
-			}
+			get { return this.Target; }
 		}
 	}
 }

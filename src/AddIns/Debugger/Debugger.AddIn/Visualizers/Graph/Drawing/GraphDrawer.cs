@@ -137,8 +137,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		Path AddEdgeToCanvas(PositionedEdge edge)
 		{
-			PathFigure edgeSplineFigure = CreateEdgeSpline(edge);
-
+			var edgeSplineFigure = CreateEdgeSpline(edge);
 			PathGeometry geometryVisible = new PathGeometry();
 			geometryVisible.Figures.Add(edgeSplineFigure);
 			geometryVisible.Figures.Add(CreateEdgeArrow(edge));
@@ -148,6 +147,11 @@ namespace Debugger.AddIn.Visualizers.Graph
 			pathVisible.Fill = Brushes.Black;
 			pathVisible.StrokeThickness = 1;
 			pathVisible.Data = geometryVisible;
+			
+			// remember this spline Path at PositionedEdge to be able to highlight edge from PositionedNodeProperty
+			edge.Spline = pathVisible;
+			// and remember the the edge for the spline, so that we can get edge name on spline mouse-over
+			pathVisible.Tag = edge;
 			
 			PathGeometry geometryInVisible = new PathGeometry();
 			geometryInVisible.Figures.Add(edgeSplineFigure);
@@ -179,12 +183,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 				Canvas.SetTop(this.edgeTooltip, mousePos.Y - 20);
 			};
 			
-			// remember this spline Path at PositionedEdge to be able to highlight edge from PositionedNodeProperty
-			edge.Spline = pathVisible;
-			
 			canvas.Children.Add(pathVisible);
 			canvas.Children.Add(pathInVisible);
-			pathVisible.Tag = edge;
+			
 			return pathVisible;
 		}
 		

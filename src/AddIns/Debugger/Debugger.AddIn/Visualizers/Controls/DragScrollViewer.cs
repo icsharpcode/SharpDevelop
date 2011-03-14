@@ -22,9 +22,15 @@ namespace Debugger.AddIn.Visualizers.Controls
 			this.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 			this.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
 			
-			this.PreviewMouseDown += new System.Windows.Input.MouseButtonEventHandler(DragScrollViewer_PreviewMouseDown);
-			this.PreviewMouseMove += new System.Windows.Input.MouseEventHandler(DragScrollViewer_PreviewMouseMove);
-			this.PreviewMouseUp += new System.Windows.Input.MouseButtonEventHandler(DragScrollViewer_PreviewMouseUp);
+			this.PreviewMouseDown += DragScrollViewer_PreviewMouseDown;
+			this.PreviewMouseMove += DragScrollViewer_PreviewMouseMove;
+			this.PreviewMouseUp += DragScrollViewer_PreviewMouseUp;
+			this.MouseWheel += DragScrollViewer_MouseWheel;
+		}
+
+		void DragScrollViewer_MouseWheel(object sender, MouseWheelEventArgs e)
+		{
+			MessageBox.Show("w");
 		}
 
 		void DragScrollViewer_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

@@ -23,12 +23,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public void RouteEdges(PositionedGraph posGraph)
 		{
-			List<RoutedEdge> routedEdges = router.RouteEdges(posGraph.Nodes, posGraph.Edges);
-			int i = 0;
-			// assume routedEdges come in the same order as posGraph.Edges
-			foreach (var edge in posGraph.Edges) {
-				SetEdgeSplinePoints(edge, routedEdges[i]);
-				i++;
+			Dictionary<PositionedEdge, RoutedEdge> routedEdges = router.RouteEdges(posGraph.Nodes, posGraph.Edges);
+			foreach (var edgePair in routedEdges) {
+				SetEdgeSplinePoints(edgePair.Key, edgePair.Value);
 			}
 		}
 		
