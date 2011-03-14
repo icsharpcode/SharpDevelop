@@ -29,6 +29,8 @@
             </ListView.Background>
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
+                	<EventSetter Event="MouseEnter" Handler="ListViewItem_MouseEnter"></EventSetter>
+                	<EventSetter Event="MouseLeave" Handler="ListViewItem_MouseLeave"></EventSetter>
                     <Setter Property="Background" Value="Transparent" />
                     <Setter Property="Margin" Value="0"></Setter>
                     <Setter Property="BorderThickness" Value="1" />
@@ -54,7 +56,7 @@
                         </GridView.ColumnHeaderContainerStyle>
                 	    <!-- Databound item is ContentNode -->
                         <GridView.Columns>
-                        	 <!-- Expand button (either property or nested) -->
+                        	<!-- Expand button (either property or nested) -->
                             <GridViewColumn Header="Plus" Width="20">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
@@ -73,11 +75,10 @@
                                                     Property="Visibility" Value="Collapsed"/>
                                             </DataTrigger>
                                         </DataTemplate.Triggers>
-											
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                        	 <!-- Name -->
+                        	<!-- Name -->
                             <GridViewColumn Header="Name" Width="60">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>

@@ -197,6 +197,25 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			if (this.ContentNodeCollapsed != null)
 				this.ContentNodeCollapsed(this, new ContentNodeEventArgs(node));
 		}
+		
+		void ListViewItem_MouseEnter(object sender, MouseEventArgs e)
+		{
+			SetEdgeStrokeThickness((ListViewItem)e.Source, 2);
+		}
+
+		void ListViewItem_MouseLeave(object sender, MouseEventArgs e)
+		{
+			SetEdgeStrokeThickness((ListViewItem)e.Source, 1);
+		}
+		
+		void SetEdgeStrokeThickness(ListViewItem listViewItem, int thickness)
+		{
+			var clickedNode = (ContentNode)listViewItem.DataContext;
+			var propNode = clickedNode as ContentPropertyNode;
+			if (propNode != null && propNode.Property != null && propNode.Property.Edge != null && propNode.Property.Edge.Spline != null) {
+				propNode.Property.Edge.Spline.StrokeThickness = thickness;
+			}
+		}
 		#endregion
 	}
 }
