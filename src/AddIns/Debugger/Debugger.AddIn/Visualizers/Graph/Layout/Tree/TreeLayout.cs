@@ -78,35 +78,52 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 
 		void CalculateLayout(PositionedGraph positionedGraph)
 		{
-			HashSet<PositionedNode> seenNodes = new HashSet<PositionedNode>();
-			HashSet<PositionedEdge> treeEdges = new HashSet<PositionedEdge>();
+			// impose a tree structure on the graph
+			HashSet<PositionedEdge> treeEdges = DetermineTreeEdges(positionedGraph.Root);
 			// first layout pass
-			CalculateSubtreeSizes(positionedGraph.Root, seenNodes, treeEdges);
+			CalculateSubtreeSizesRecursive(positionedGraph.Root, treeEdges);
 			// second layout pass
 			CalculateNodePosRecursive(positionedGraph.Root, treeEdges, MarginTop, MarginBottom);
 		}
 		
-		// determines which edges are tree edges, and calculates subtree size for each node
-		private void CalculateSubtreeSizes(PositionedNode root, HashSet<PositionedNode> seenNodes, HashSet<PositionedEdge> treeEdges)
+		
+		HashSet<PositionedEdge> DetermineTreeEdges(PositionedNode root)
 		{
+			var treeEdges = new HashSet<PositionedEdge>();
+			
+			var seenNodes = new HashSet<PositionedNode>();
+			var q = new Queue<PositionedNode>();
+			q.Enqueue(root);
 			seenNodes.Add(root);
-			double subtreeSize = 0;
-			foreach (var property in root.Properties) {
-				var edge = property.Edge;
-				if (edge != null) {
-					var targetNode = edge.Target;
-					if (!seenNodes.Contains(targetNode)) {
-						// when we come to a node for the first time, we declare the incoming edge a tree edge
-						treeEdges.Add(edge);
-						CalculateSubtreeSizes(targetNode, seenNodes, treeEdges);
-						subtreeSize += targetNode.SubtreeSize;
+			
+			while (q.Count > 0) {
+				var node = q.Dequeue();
+				foreach (var property in node.Properties) {
+					var edge = property.Edge;
+					if (edge != null && edge.Target != null) {
+						if (!seenNodes.Contains(edge.Target)) {
+							treeEdges.Add(edge);
+							seenNodes.Add(edge.Target);
+							q.Enqueue(edge.Target);
+						}
 					}
 				}
 			}
-			root.SubtreeSize = Math.Max(GetLateralSizeWithMargin(root), subtreeSize);
+			return treeEdges;
 		}
 		
-		
+		void CalculateSubtreeSizesRecursive(PositionedNode root, HashSet<PositionedEdge> treeEdges)
+		{
+			double subtreeSize = 0;
+			foreach (var child in TreeChildNodes(root, treeEdges)) {
+				CalculateSubtreeSizesRecursive(child, treeEdges);
+				// just sum up the sizes of children
+				subtreeSize += child.SubtreeSize;
+			}
+			root.SubtreeSize = Math.Max(GetLateralSizeWithMargin(root), subtreeSize);
+		}
+
+
 		/// <summary>
 		/// Given SubtreeSize for each node, positions the nodes, in a left-to-right or top-to-bottom layout.
 		/// </summary>
@@ -133,39 +150,39 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				childLateral += child.SubtreeSize;
 			}
 		}
-		
+
 		IEnumerable<PositionedEdge> TreeEdges(PositionedNode node, HashSet<PositionedEdge> treeEdges)
 		{
 			return node.Edges.Where(e => treeEdges.Contains(e));
 		}
-		
+
 		IEnumerable<PositionedNode> TreeChildNodes(PositionedNode node, HashSet<PositionedEdge> treeEdges)
 		{
 			return TreeEdges(node, treeEdges).Select(e => e.Target);
 		}
-		
+
 		#region Horizontal / vertical layout helpers
-		
+
 		double GetMainSizeWithMargin(PositionedNode node)
 		{
 			return (this.LayoutDirection == LayoutDirection.LeftRight) ? node.Width + NodeMarginH : node.Height + NodeMarginV;
 		}
-		
+
 		double GetLateralSizeWithMargin(PositionedNode node)
 		{
 			return (this.LayoutDirection == LayoutDirection.LeftRight) ? node.Height + NodeMarginV : node.Width + NodeMarginH;
 		}
-		
+
 		double GetMain(PositionedNode node)
 		{
 			return (this.LayoutDirection == LayoutDirection.LeftRight) ? node.Left : node.Top;
 		}
-		
+
 		double GetLateral(PositionedNode node)
 		{
 			return (this.LayoutDirection == LayoutDirection.LeftRight) ? node.Top : node.Left;
 		}
-		
+
 		void SetMain(PositionedNode node, double value)
 		{
 			if (this.LayoutDirection == LayoutDirection.LeftRight) {
@@ -174,7 +191,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				node.Top = value;
 			}
 		}
-		
+
 		void SetLateral(PositionedNode node, double value)
 		{
 			if (this.LayoutDirection == LayoutDirection.LeftRight) {
@@ -183,7 +200,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				node.Left = value;
 			}
 		}
-		
+
 		#endregion
 	}
 }
