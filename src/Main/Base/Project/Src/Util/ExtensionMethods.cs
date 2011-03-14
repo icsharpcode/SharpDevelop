@@ -325,7 +325,7 @@ namespace ICSharpCode.SharpDevelop
 		/// Removes <param name="stringToRemove" /> from the start of this string.
 		/// Throws ArgumentException if this string does not start with <param name="stringToRemove" />.
 		/// </summary>
-		public static string RemoveStart(this string s, string stringToRemove)
+		public static string RemoveFromStart(this string s, string stringToRemove)
 		{
 			if (s == null)
 				return null;
@@ -337,18 +337,32 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Removes <param name="stringToRemove" /> from the end of this string.
-		/// Throws ArgumentException if this string does not end with <param name="stringToRemove" />.
+		/// Removes <paramref name="stringToRemove" /> from the end of this string.
+		/// Throws ArgumentException if this string does not end with <paramref name="stringToRemove" />.
 		/// </summary>
-		public static string RemoveEnd(this string s, string stringToRemove)
+		public static string RemoveFromEnd(this string s, string stringToRemove)
 		{
-			if (s == null)
-				return null;
+			if (s == null) return null;
 			if (string.IsNullOrEmpty(stringToRemove))
 				return s;
 			if (!s.EndsWith(stringToRemove))
 				throw new ArgumentException(string.Format("{0} does not end with {1}", s, stringToRemove));
 			return s.Substring(0, s.Length - stringToRemove.Length);
+		}
+		
+		/// <summary>
+		/// Trims the string from the first occurence of <paramref name="cutoffStart" /> to the end, including <paramref name="cutoffStart" />.
+		/// If the string does not contain <paramref name="cutoffStart" />, just returns the original string.
+		/// </summary>
+		public static string CutoffEnd(this string s, string cutoffStart)
+		{
+			if (s == null) return null;
+			int pos = s.IndexOf(cutoffStart);
+			if (pos != -1) {
+				return s.Substring(0, pos);
+			} else {
+				return s;
+			}
 		}
 		
 		/// <summary>

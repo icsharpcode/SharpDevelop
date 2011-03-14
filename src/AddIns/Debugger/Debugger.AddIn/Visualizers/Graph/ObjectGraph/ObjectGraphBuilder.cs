@@ -4,13 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using Debugger.AddIn.Visualizers.Common;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers.Graph
@@ -150,7 +150,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			DebugType listItemType;
 			if (thisNode.PermanentReference.Type.ResolveIListImplementation(out iListType, out listItemType))
 			{
-				// it is a collection
+				// it is an IList
 				loadNodeCollectionContent(contentRoot, thisNode.Expression, iListType);
 			}
 			else
@@ -236,7 +236,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				}
 
 				// ObjectGraphProperty needs an expression
-				// to use expanded / nonexpanded (and to evaluate?)
+				// to know whether it is expanded, and to evaluate
 				Expression propExpression = expression.AppendMemberReference((IDebugMemberInfo)memberProp);
 				// Value, IsAtomic are lazy evaluated
 				propertyList.Add(new ObjectGraphProperty
@@ -259,13 +259,12 @@ namespace Debugger.AddIn.Visualizers.Graph
 			foreach(ObjectGraphProperty complexProperty in thisNode.Properties)
 			{
 				ObjectGraphNode targetNode = null;
-				// we are only evaluating expanded nodes here
-				// (we have to do this to know the "shape" of the graph)
-				// property laziness makes sense, as we are not evaluating atomic and non-expanded properties out of user's view
-				if (/*!complexProperty.IsNull && we dont know yet if it's null */expandedNodes.IsExpanded(complexProperty.Expression))
+				// We are only evaluating expanded nodes here.
+				// We have to do this to know the "shape" of the graph.
+				// We do not evaluate atomic and non-expanded properties, those will be lazy evaluated when drawn.
+				if (expandedNodes.IsExpanded(complexProperty.Expression))
 				{
 					// if expanded, evaluate this property
-					// complexProperty.Evaluate(); // consider
 					Value memberValue = complexProperty.Expression.Evaluate(this.debuggerService.DebuggedProcess);
 					if (memberValue.IsNull)
 					{
@@ -302,8 +301,12 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <returns>New empty object node representing the value.</returns>
 		private ObjectGraphNode createNewNode(Value permanentReference, Expression expression)
 		{
+			if (permanentReference == null)	throw new ArgumentNullException("permanentReference");
+			
 			ObjectGraphNode newNode = new ObjectGraphNode();
-			newNode.TypeName = permanentReference.Type.Name;
+			if (permanentReference.Type != null) {
+				newNode.TypeName = permanentReference.Type.FormatNameCSharp();
+			}
 			newNode.HashCode = permanentReference.InvokeDefaultGetHashCode();
 			
 			resultGraph.AddNode(newNode);
@@ -366,7 +369,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 			DebugType typeOfValue = expr.Evaluate(debuggerService.DebuggedProcess).Type;
 			if (typeOfValue.IsArray)
 			{
-				// arrays will be supported of course in the final version
 				throw new DebuggerVisualizerException("Arrays are not supported yet");
 			}
 		}
