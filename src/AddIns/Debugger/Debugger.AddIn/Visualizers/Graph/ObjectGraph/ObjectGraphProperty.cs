@@ -38,7 +38,14 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			if (this.Expression == null) throw new DebuggerVisualizerException("Cannot evaluate property with missing Expression");
 			
-			Value debuggerVal = this.Expression.Evaluate(WindowsDebugger.CurrentProcess);
+			Value debuggerVal;
+			try {
+				debuggerVal = this.Expression.Evaluate(WindowsDebugger.CurrentProcess);
+			} catch (System.Exception ex) {
+				this.Value = "Exception: " + ex.Message;
+				this.IsEvaluated = true;
+				return;
+			}
 			
 			this.IsAtomic = debuggerVal.Type.IsAtomic();
 			this.IsNull = debuggerVal.IsNull;
