@@ -13,11 +13,11 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Graph.Layout;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
-
 using Log = ICSharpCode.Core.LoggingService;
 
 namespace Debugger.AddIn.Visualizers.Graph
@@ -46,8 +46,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			InitializeComponent();
 			
 			debuggerService = DebuggerService.CurrentDebugger as WindowsDebugger;
-			if (debuggerService == null)
-				throw new ApplicationException("Only windows debugger is currently supported");
+			if (debuggerService == null) throw new ApplicationException("Only windows debugger is currently supported");
 			
 			this.layoutViewModel = new EnumViewModel<LayoutDirection>();
 			this.layoutViewModel.PropertyChanged += new PropertyChangedEventHandler(layoutViewModel_PropertyChanged);
@@ -63,38 +62,44 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public void Refresh()
 		{
-			clearErrorMessage();
-			if (string.IsNullOrEmpty(txtExpression.Text))
-			{
+			Log.Info("Object graph - refresh");
+			GC.Collect();
+			// Almost all of the blocking is done ContentPropertyNode.Evaluate,
+			// which is being called by WPF for all the properties.
+			// It would be better if we were filling the node texts ourselves in a loop,
+			// so that we could cancel any time. UI would redraw gradually thanks to INotifyPropertyChanged.
+			try {
+				Debugger.AddIn.TreeModel.Utils.DoEvents(debuggerService.DebuggedProcess);
+			} catch(AbortedBecauseDebuggeeResumedException) { 
+				Log.Warn("Object graph - debuggee resumed, cancelling refresh.");
 				this.graphDrawer.ClearCanvas();
 				return;
 			}
-			if (debuggerService.IsProcessRunning)		// "Process not paused" exception still occurs
-			{
+			
+			ClearErrorMessage();
+			if (string.IsNullOrEmpty(txtExpression.Text)) {
+				this.graphDrawer.ClearCanvas();
+				return;
+			}
+			if (debuggerService.IsProcessRunning) {
+				// "Process not paused" exception still occurs
 				ErrorMessage("Cannot inspect when the process is running.");
 				return;
 			}
 			bool isSuccess = true;
-			try
-			{
+			try	{
 				this.objectGraph = RebuildGraph(txtExpression.Text);
-			}
-			catch(DebuggerVisualizerException ex)
-			{
+			} catch(DebuggerVisualizerException ex)	{
 				isSuccess = false;
 				ErrorMessage(ex.Message);
-			}
-			catch(Debugger.GetValueException ex)
-			{
+			} catch(Debugger.GetValueException ex)	{
 				isSuccess = false;
 				ErrorMessage("Expression cannot be evaluated - " + ex.Message);
 			}
-			if (isSuccess)
-			{
+			
+			if (isSuccess) {
 				LayoutGraph(this.objectGraph);
-			}
-			else
-			{
+			} else {
 				this.graphDrawer.ClearCanvas();
 			}
 		}
@@ -168,7 +173,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 		}
 		
-		void clearErrorMessage()
+		void ClearErrorMessage()
 		{
 			this.pnlError.Visibility = Visibility.Collapsed;
 		}
