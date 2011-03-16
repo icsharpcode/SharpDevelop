@@ -11,7 +11,7 @@ namespace ICSharpCode.PackageManagement.Design
 	public class DesignTimePackagesViewModel : PackagesViewModel
 	{
 		public DesignTimePackagesViewModel()
-			: base(new DesignTimePackageManagementService(), new PackageManagementTaskFactory())
+			: base(new DesignTimePackageManagementService(), (IMessageReporter)null, new PackageManagementTaskFactory())
 		{
 			PageSize = 3;
 			AddPackageViewModels();

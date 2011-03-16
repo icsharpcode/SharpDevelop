@@ -55,16 +55,11 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IPackageRepository ActivePackageRepository { get; set; }
 		
-		public IProjectManager ActiveProjectManager {
-			get {
-				if (ActiveProjectManagerExeptionToThrow != null) {
-					throw ActiveProjectManagerExeptionToThrow;
-				}
-				return FakeActiveProjectManager;
-			}
+		public virtual IProjectManager ActiveProjectManager {
+			get { return FakeActiveProjectManager; }
 		}
 		
-		public void InstallPackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations)
+		public virtual void InstallPackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations)
 		{
 			IsInstallPackageCalled = true;
 			RepositoryPassedToInstallPackage = repository;
@@ -72,7 +67,7 @@ namespace ICSharpCode.PackageManagement.Design
 			PackageOperationsPassedToInstallPackage.AddRange(operations);
 		}
 		
-		public void UninstallPackage(IPackageRepository repository, IPackage package)
+		public virtual void UninstallPackage(IPackageRepository repository, IPackage package)
 		{
 			RepositoryPassedToUninstallPackage = repository;
 			PackagePassedToUninstallPackage = package;
@@ -112,9 +107,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public void AddPackageSources(IEnumerable<PackageSource> sources)
 		{
-			foreach (PackageSource source in sources) {
-				options.PackageSources.Add(source);
-			}
+			options.PackageSources.AddRange(sources);
 		}
 		
 		public PackageSource ActivePackageSource { get; set; }
@@ -125,8 +118,6 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			return FakeAggregateRepository;
 		}
-		
-		public Exception ActiveProjectManagerExeptionToThrow { get; set; }
 		
 		public FakePackageManagementOutputMessagesView FakeOutputMessagesView = new FakePackageManagementOutputMessagesView();
 		

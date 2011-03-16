@@ -68,10 +68,13 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementService.cs" />
+    <Compile Include="Src\Helpers\ExceptionThrowingPackageOperationResolver.cs" />
     <Compile Include="Src\Helpers\FakeCompilerMessageView.cs" />
     <Compile Include="Src\Helpers\FakeFileService.cs" />
     <Compile Include="Src\Helpers\FakeLicenseAcceptanceService.cs" />
     <Compile Include="Src\Helpers\FakeMessageCategoryView.cs" />
+    <Compile Include="Src\Helpers\FakeMessageReporter.cs" />
     <Compile Include="Src\Helpers\FakePackageManager.cs" />
     <Compile Include="Src\Helpers\FakePackageManagerFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageOperationResolver.cs" />

@@ -85,6 +85,7 @@
     <Compile Include="Src\Design\FakeProjectSystem.cs" />
     <Compile Include="Src\Design\WpfDesigner.cs" />
     <Compile Include="Src\ICompilerMessageView.cs" />
+    <Compile Include="Src\IMessageReporter.cs" />
     <Compile Include="Src\IMessageViewCategory.cs" />
     <Compile Include="Src\IPackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\IPackageRepositoryCache.cs" />
@@ -198,6 +199,7 @@
     <Resource Include="Resources\resultset_next.png" />
     <Resource Include="Resources\resultset_previous.png" />
     <Resource Include="Resources\accept.png" />
+    <Resource Include="Resources\exclamation.png" />
     <None Include="Resources\license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

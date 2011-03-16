@@ -31,6 +31,10 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
+		public string SecondFormattedMessageLogged {
+			get { return FormattedMessagesLogged[1]; }
+		}
+		
 		public void Clear()
 		{
 			IsClearCalled = true;

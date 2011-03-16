@@ -18,14 +18,29 @@ namespace PackageManagement.Tests
 		FakePackageManagementService packageManagementService;
 		FakePackageRepository sourcePackageRepository;
 		FakeLicenseAcceptanceService licenseAcceptanceService;
+		FakeMessageReporter messageReporter;
+		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
 		
 		void CreateViewModel()
 		{
-			viewModel = new TestablePackageViewModel();
+			packageManagementService = new FakePackageManagementService();
+			CreateViewModel(packageManagementService);
+		}
+		
+		void CreateViewModelWithExceptionThrowingPackageManagementService()
+		{
+			exceptionThrowingPackageManagementService = new ExceptionThrowingPackageManagementService();
+			CreateViewModel(exceptionThrowingPackageManagementService);
+		}
+		
+		void CreateViewModel(FakePackageManagementService packageManagementService)
+		{
+			viewModel = new TestablePackageViewModel(packageManagementService);
 			package = viewModel.FakePackage;
-			packageManagementService = viewModel.FakePackageManagementService;
+			this.packageManagementService = packageManagementService;
 			sourcePackageRepository = packageManagementService.FakeActivePackageRepository;
 			licenseAcceptanceService = viewModel.FakeLicenseAcceptanceService;
+			messageReporter = viewModel.FakeMessageReporter;
 		}
 		
 		FakePackage AddPackageDependencyThatDoesNotRequireLicenseAcceptance(string packageId)
@@ -466,7 +481,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void AddPackage_PackageAddedSuccessfully_NextToLastMesssageLoggedMarksEndOfInstallation()
+		public void AddPackage_PackageAddedSuccessfully_NextToLastMessageLoggedMarksEndOfInstallation()
 		{
 			CreateViewModel();
 			viewModel.AddPackage();
@@ -478,7 +493,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void AddPackage_PackageAddedSuccessfully_LastMesssageLoggedIsEmptyLine()
+		public void AddPackage_PackageAddedSuccessfully_LastMessageLoggedIsEmptyLine()
 		{
 			CreateViewModel();
 			viewModel.AddPackage();
@@ -505,7 +520,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void RemovePackage_PackageRemovedSuccessfully_NextToLastMesssageLoggedMarksEndOfInstallation()
+		public void RemovePackage_PackageRemovedSuccessfully_NextToLastMessageLoggedMarksEndOfInstallation()
 		{
 			CreateViewModel();
 			viewModel.RemovePackage();
@@ -517,7 +532,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void RemovePackage_PackageRemovedSuccessfully_LastMesssageLoggedIsEmptyLine()
+		public void RemovePackage_PackageRemovedSuccessfully_LastMessageLoggedIsEmptyLine()
 		{
 			CreateViewModel();
 			viewModel.RemovePackage();
@@ -526,6 +541,86 @@ namespace PackageManagement.Tests
 			string actualMessage = packageManagementService.FakeOutputMessagesView.LastFormattedMessageLogged;
 						
 			Assert.AreEqual(expectedMessage, actualMessage);
+		}
+		
+		[Test]
+		public void AddPackage_ExceptionWhenInstallingPackage_ExceptionErrorMessageReported()
+		{
+			CreateViewModelWithExceptionThrowingPackageManagementService();
+			Exception ex = new Exception("Test");
+			exceptionThrowingPackageManagementService.ExeptionToThrowWhenInstallPackageCalled = ex;
+			viewModel.AddPackage();
+			
+			Assert.AreEqual("Test", messageReporter.MessagePassedToShowErrorMessage);
+		}
+		
+		[Test]
+		public void AddPackage_PackageAddedSuccessfully_MessagesReportedPreviouslyAreCleared()
+		{
+			CreateViewModel();
+			viewModel.AddPackage();
+			
+			Assert.IsTrue(messageReporter.IsClearMessageCalled);
+		}
+		
+		[Test]
+		public void AddPackage_ExceptionWhenInstallingPackage_ExceptionLogged()
+		{
+			CreateViewModelWithExceptionThrowingPackageManagementService();
+			Exception ex = new Exception("Exception error message");
+			exceptionThrowingPackageManagementService.ExeptionToThrowWhenInstallPackageCalled = ex;
+			viewModel.AddPackage();
+			
+			string actualMessage = packageManagementService.FakeOutputMessagesView.SecondFormattedMessageLogged;
+			bool containsExceptionErrorMessage = actualMessage.Contains("Exception error message");
+			
+			Assert.IsTrue(containsExceptionErrorMessage, actualMessage);
+		}
+		
+		[Test]
+		public void RemovePackage_ExceptionWhenUninstallingPackage_ExceptionErrorMessageReported()
+		{
+			CreateViewModelWithExceptionThrowingPackageManagementService();
+			Exception ex = new Exception("Test");
+			exceptionThrowingPackageManagementService.ExeptionToThrowWhenUninstallPackageCalled = ex;
+			viewModel.RemovePackage();
+			
+			Assert.AreEqual("Test", messageReporter.MessagePassedToShowErrorMessage);
+		}
+		
+		[Test]
+		public void RemovePackage_PackageUninstalledSuccessfully_MessagesReportedPreviouslyAreCleared()
+		{
+			CreateViewModel();
+			viewModel.RemovePackage();
+			
+			Assert.IsTrue(messageReporter.IsClearMessageCalled);
+		}
+		
+		[Test]
+		public void RemovePackage_ExceptionWhenUninstallingPackage_ExceptionLogged()
+		{
+			CreateViewModelWithExceptionThrowingPackageManagementService();
+			Exception ex = new Exception("Exception error message");
+			exceptionThrowingPackageManagementService.ExeptionToThrowWhenUninstallPackageCalled = ex;
+			viewModel.RemovePackage();
+			
+			string actualMessage = packageManagementService.FakeOutputMessagesView.SecondFormattedMessageLogged;
+			bool containsExceptionErrorMessage = actualMessage.Contains("Exception error message");
+			
+			Assert.IsTrue(containsExceptionErrorMessage, actualMessage);
+		}
+		
+		[Test]
+		public void AddPackage_ExceptionThrownWhenResolvingPackageOperations_ExceptionReported()
+		{
+			CreateViewModel();
+			var resolver = new ExceptionThrowingPackageOperationResolver();
+			viewModel.FakePackageOperationResolver = resolver;
+			resolver.ResolveOperationsExceptionToThrow = new Exception("Test");
+			viewModel.AddPackage();
+			
+			Assert.AreEqual("Test", messageReporter.MessagePassedToShowErrorMessage);
 		}
 	}
 }

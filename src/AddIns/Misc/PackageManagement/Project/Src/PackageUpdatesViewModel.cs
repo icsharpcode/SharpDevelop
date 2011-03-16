@@ -18,8 +18,9 @@ namespace ICSharpCode.PackageManagement
 		
 		public PackageUpdatesViewModel(
 			IPackageManagementService packageManagementService,
+			IMessageReporter messageReporter,
 			ITaskFactory taskFactory)
-			: base(packageManagementService, taskFactory)
+			: base(packageManagementService, messageReporter, taskFactory)
 		{
 			this.packageManagementService = packageManagementService;
 		}

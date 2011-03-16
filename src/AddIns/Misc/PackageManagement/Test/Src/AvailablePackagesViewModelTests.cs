@@ -32,7 +32,8 @@ namespace PackageManagement.Tests
 		void CreateViewModel(IPackageManagementService packageManagementService)
 		{
 			taskFactory = new FakeTaskFactory();
-			viewModel = new AvailablePackagesViewModel(packageManagementService, taskFactory);
+			var messageReporter = new FakeMessageReporter();
+			viewModel = new AvailablePackagesViewModel(packageManagementService, messageReporter, taskFactory);
 		}
 		
 		void CompleteReadPackagesTask()

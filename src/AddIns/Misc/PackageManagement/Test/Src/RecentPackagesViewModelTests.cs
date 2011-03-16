@@ -30,7 +30,8 @@ namespace PackageManagement.Tests
 		void CreateViewModel(FakePackageManagementService packageManagementService)
 		{
 			taskFactory = new FakeTaskFactory();
-			viewModel = new RecentPackagesViewModel(packageManagementService, taskFactory);			
+			var messageReporter = new FakeMessageReporter();
+			viewModel = new RecentPackagesViewModel(packageManagementService, messageReporter, taskFactory);			
 		}
 		
 		void CompleteReadPackagesTask()

@@ -7,13 +7,13 @@ using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
-	public class FakePackageOperationResolver : IPackageOperationResolver
+	public class ExceptionThrowingPackageOperationResolver : FakePackageOperationResolver
 	{
-		public List<PackageOperation> PackageOperations = new List<PackageOperation>();
+		public Exception ResolveOperationsExceptionToThrow;
 		
-		public virtual IEnumerable<PackageOperation> ResolveOperations(IPackage package)
+		public override IEnumerable<PackageOperation> ResolveOperations(IPackage package)
 		{
-			return PackageOperations;
+			throw ResolveOperationsExceptionToThrow;
 		}
 	}
 }

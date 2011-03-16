@@ -37,6 +37,27 @@ namespace PackageManagement.Tests
 			taskFactory.ExecuteAllFakeTasks();
 		}
 		
+		List<string> CallShowErrorMessageAndRecordPropertiesChanged(string message)
+		{
+			var propertyNamesChanged = RecordViewModelPropertiesChanged();
+			viewModel.ShowErrorMessage(message);
+			return propertyNamesChanged;
+		}
+		
+		List<string> RecordViewModelPropertiesChanged()
+		{
+			var propertyNamesChanged = new List<string>();
+			viewModel.PropertyChanged += (sender, e) => propertyNamesChanged.Add(e.PropertyName);
+			return propertyNamesChanged;
+		}
+
+		List<string> CallClearMessageAndRecordPropertiesChanged()
+		{
+			var propertyNamesChanged = RecordViewModelPropertiesChanged();
+			viewModel.ClearMessage();
+			return propertyNamesChanged;
+		}		
+		
 		[Test]
 		public void InstalledPackagesViewModel_ProjectHasOneInstalledPackage_HasOnePackageViewModel()
 		{
@@ -111,6 +132,88 @@ namespace PackageManagement.Tests
 			List<FakePackage> expectedPackages = fakePackageManagementService.FakeRecentPackageRepository.FakePackages;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.RecentPackagesViewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void ShowErrorMessage_ErrorMessageToBeDisplayedToUser_MessageIsSet()
+		{
+			CreateViewModel();
+			viewModel.ShowErrorMessage("Test");
+			
+			Assert.AreEqual("Test", viewModel.Message);
+		}
+		
+		[Test]
+		public void ShowErrorMessage_ErrorMessageToBeDisplayedToUser_MessagePropertyIsChanged()
+		{
+			CreateViewModel();
+			List<string> propertyNamesChanged = CallShowErrorMessageAndRecordPropertiesChanged("Test");
+			
+			bool result = propertyNamesChanged.Contains("Message");
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void ShowErrorMessage_ErrorMessageToBeDisplayedToUser_HasErrorIsTrue()
+		{
+			CreateViewModel();
+			viewModel.ShowErrorMessage("Test");
+			
+			Assert.IsTrue(viewModel.HasError);
+		}
+		
+		[Test]
+		public void ShowErrorMessage_ErrorMessageToBeDisplayedToUser_HasErrorPropertyIsChanged()
+		{
+			CreateViewModel();
+			List<string> propertyNamesChanged = CallShowErrorMessageAndRecordPropertiesChanged("Test");
+			
+			bool result = propertyNamesChanged.Contains("HasError");
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void ClearMessage_ErrorMessageCurrentlyDisplayed_MessageIsCleared()
+		{
+			CreateViewModel();
+			viewModel.Message = "test";
+			viewModel.ClearMessage();
+			
+			Assert.IsNull(viewModel.Message);
+		}
+		
+		[Test]
+		public void ClearMessage_ErrorMessageCurrentlyDisplayed_MessagePropertyIsChanged()
+		{
+			CreateViewModel();
+			List<string> propertyNamesChanged = CallClearMessageAndRecordPropertiesChanged();
+			
+			bool result = propertyNamesChanged.Contains("Message");
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void ClearMessages_ErrorMessageCurrentlyDisplayed_HasErrorPropertyIsChanged()
+		{
+			CreateViewModel();
+			List<string> propertyNamesChanged = CallClearMessageAndRecordPropertiesChanged();
+			
+			bool result = propertyNamesChanged.Contains("HasError");
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void ClearMessage_ErrorMessageCurrentlyDisplayed_HasErrorIsFalse()
+		{
+			CreateViewModel();
+			viewModel.HasError = true;
+			viewModel.ClearMessage();
+			
+			Assert.IsFalse(viewModel.HasError);
 		}
 	}
 }
