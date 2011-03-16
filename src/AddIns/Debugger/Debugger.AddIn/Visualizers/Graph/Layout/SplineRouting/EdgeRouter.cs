@@ -16,9 +16,13 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		{
 		}
 		
-		public Dictionary<TEdge, RoutedEdge> RouteEdges<TEdge>(IEnumerable<IRect> nodes, IEnumerable<TEdge> edges) where TEdge : class, IEdge
+		/// <summary>
+		/// Calculates routes for edges in a graph, so that they avoid nodes.
+		/// </summary>
+		public Dictionary<TEdge, RoutedEdge> RouteEdges<TEdge>(IEnumerable<IRect> nodes, IEnumerable<TEdge> edges)
+			where TEdge : class, IEdge
 		{
-			var routeGraph = RouteGraph.InitializeVertices(nodes, edges);
+			var routeGraph = RouteGraph.InitializeVertices(nodes, edges, 0, 0);
 			var routedEdges = new Dictionary<TEdge, RoutedEdge>();
 			var occludedEdges = new List<TEdge>();
 			foreach (var edge in edges) {

@@ -34,14 +34,21 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 			pathFinder = new DijkstraShortestPathFinder(this);
 		}
 		
-		public static RouteGraph InitializeVertices(IEnumerable<IRect> nodes, IEnumerable<IEdge> edges)
+		/// <summary>
+		/// Initializes the RouteGraph by vertices close to node corners.
+		/// </summary>
+		/// <param name="boundX">X coordinates of vertices cannot be lower than this value (so that edges stay in boundaries).</param>
+		/// <param name="boundY">Y coordinates of vertices cannot be lower than this value (so that edges stay in boundaries).</param>
+		public static RouteGraph InitializeVertices(IEnumerable<IRect> nodes, IEnumerable<IEdge> edges, int boundX, int boundY)
 		{
 			var graph = new RouteGraph();
 			// add vertices for node corners
 			foreach (var node in nodes) {
 				graph.Boxes.Add(node);
 				foreach (var vertex in GetRectCorners(node, boxPadding)) {
-					graph.Vertices.Add(vertex);
+					if (vertex.X >= boundX && vertex.Y >= boundY) {
+						graph.Vertices.Add(vertex);
+					}
 				}
 			}
 			// add vertices for egde endpoints
