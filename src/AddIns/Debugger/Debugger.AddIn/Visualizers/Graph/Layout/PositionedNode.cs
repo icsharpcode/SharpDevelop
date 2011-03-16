@@ -56,6 +56,12 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		public PositionedGraphNodeControl NodeVisualControl { get; private set; }
 		
+		public void ReleaseNodeVisualControl()
+		{
+			this.NodeVisualControl.SetDataContext(null);
+			this.NodeVisualControl = null;
+		}
+		
 		void InitContentFromObjectNode(Expanded expanded)
 		{
 			this.Content = new ContentNode(this, null);

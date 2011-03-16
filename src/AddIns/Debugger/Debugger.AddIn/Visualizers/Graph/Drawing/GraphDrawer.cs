@@ -26,6 +26,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 	{
 		Canvas canvas;
 		TextBlock edgeTooltip = new TextBlock();
+		static double animationDurationSeconds = 0.5;
 		
 		public GraphDrawer(Canvas canvas)
 		{
@@ -50,8 +51,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				return;
 			}
 			
-			double seconds = 0.5;
-			var durationMove = new Duration(TimeSpan.FromSeconds(seconds));
+			var durationMove = new Duration(TimeSpan.FromSeconds(animationDurationSeconds));
 			var durationFade = durationMove;
 			
 			DoubleAnimation fadeOutAnim = new DoubleAnimation(1.0, 0.0, durationFade);
@@ -82,7 +82,14 @@ namespace Debugger.AddIn.Visualizers.Graph
 				
 				PointAnimation anim = new PointAnimation();
 				if (first) {
-					anim.Completed += new EventHandler((o, e) => { Draw(newGraph); });
+					anim.Completed += (o, e) => {
+						Draw(newGraph);
+						if (oldGraph != null) {
+							foreach (var oldNode in oldGraph.Nodes) {
+								oldNode.ReleaseNodeVisualControl();
+							}
+						}
+					};
 					first = false;
 				}
 				anim.From = node.LeftTop;

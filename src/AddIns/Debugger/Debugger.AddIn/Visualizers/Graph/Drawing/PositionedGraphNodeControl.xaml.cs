@@ -59,6 +59,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		/// <param name="node"></param>
 		public void SetDataContext(PositionedNode node)
 		{
+			if (node == null) {
+				this.DataContext = null;
+				this.listView.ItemsSource = null;
+				return;
+			}
 			this.DataContext = node;
 			this.Root = node.Content;
 			this.items = GetInitialItems(this.Root);
@@ -97,25 +102,19 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		void PropertyExpandButton_Click(object sender, RoutedEventArgs e)
 		{
 			var clickedButton = (ToggleButton)e.Source;
-			ContentPropertyNode clickedNode = null;
-			try
-			{
-				clickedNode = (ContentPropertyNode)(clickedButton).DataContext;
-			}
-			catch(InvalidCastException)
-			{
-				throw new InvalidOperationException("Clicked property expand button, button shouln't be there - DataContext is not PropertyNodeViewModel.");
+			if (clickedButton.DataContext == null) return;
+			ContentPropertyNode clickedNode = clickedButton.DataContext as ContentPropertyNode;
+			clickedNode = clickedButton.DataContext as ContentPropertyNode;
+			if (clickedNode == null) {
+				throw new InvalidOperationException("Clicked property expand button, button shouln't be there - DataContext is not ContentPropertyNode.");
 			}
 			
 			PositionedNodeProperty property = clickedNode.Property;
-			clickedButton.Content = property.IsPropertyExpanded ? "-" : "+";
+			clickedButton.Content = property.IsPropertyExpanded ? "-" : "+";	// could be done with a converter
 			
-			if (property.IsPropertyExpanded)
-			{
+			if (property.IsPropertyExpanded) {
 				OnPropertyExpanded(property);
-			}
-			else
-			{
+			} else {
 				OnPropertyCollapsed(property);
 			}
 		}
@@ -123,7 +122,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		void NestedExpandButton_Click(object sender, RoutedEventArgs e)
 		{
 			var clickedButton = (ToggleButton)e.Source;
-			var clickedNode = (ContentNode)(clickedButton).DataContext;
+			var clickedNode = clickedButton.DataContext as ContentNode;
+			if (clickedNode == null) return;
 			int clickedIndex = this.items.IndexOf(clickedNode);
 			clickedButton.Content = clickedNode.IsExpanded ? "-" : "+";	// could be done by a converter
 
@@ -199,8 +199,10 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		
 		void SetEdgeStrokeThickness(ListViewItem listViewItem, int thickness)
 		{
-			var clickedNode = (ContentNode)listViewItem.DataContext;
-			var propNode = clickedNode as ContentPropertyNode;
+			var propNode = listViewItem.DataContext as ContentPropertyNode;
+			if (propNode == null) {
+				return;
+			}
 			if (propNode != null && propNode.Property != null && propNode.Property.Edge != null && propNode.Property.Edge.Spline != null) {
 				propNode.Property.Edge.Spline.StrokeThickness = thickness;
 			}

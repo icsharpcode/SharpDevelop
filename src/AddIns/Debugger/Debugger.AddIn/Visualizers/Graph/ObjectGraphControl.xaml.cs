@@ -62,8 +62,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public void Refresh()
 		{
-			Log.Info("Object graph - refresh");
-			GC.Collect();
 			// Almost all of the blocking is done ContentPropertyNode.Evaluate,
 			// which is being called by WPF for all the properties.
 			// It would be better if we were filling the node texts ourselves in a loop,
