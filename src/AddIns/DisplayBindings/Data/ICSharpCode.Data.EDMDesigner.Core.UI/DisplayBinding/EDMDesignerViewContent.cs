@@ -89,12 +89,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 			if (primaryFile == null)
 				throw new ArgumentNullException("primaryFile");
 			
-			try {
-				primaryFile.ForceInitializeView(this); // call Load()
-			} catch (WizardCancelledException) {
-				this.Files.Clear(); // unregister with OpenedFile
-				throw;
-			}
+			primaryFile.ForceInitializeView(this); // call Load()
 
 			EDMDesignerChangeWatcher.AddEDMDesignerViewContent(this);
 		}
