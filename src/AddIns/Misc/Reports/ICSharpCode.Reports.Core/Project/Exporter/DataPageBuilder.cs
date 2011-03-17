@@ -78,12 +78,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override void BuildPageHeader ()
 		{
 			base.ReportModel.PageHeader.SectionOffset = base.AdjustPageHeader();
-         Console.WriteLine ("pageHeader {0}",base.ReportModel.PageHeader.Size);
+//        	 Console.WriteLine ("pageHeader at start {0}",base.ReportModel.PageHeader.Size);
 			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,this.dataNavigator.CurrentRow);
-			Console.WriteLine ("pageHeader {0}",base.ReportModel.PageHeader.Size);
+//			Console.WriteLine ("pageHeader after convert {0}",base.ReportModel.PageHeader.Size);
+//			Console.WriteLine ("Offset from base {0}",base.Offset);
 //			base.ReportModel.PageHeader.Size = new Size(base.ReportModel.PageHeader.Size.Width,base.Offset.Y);
 			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
-			Console.WriteLine ("rect {0} detail {1}",base.SectionBounds.PageHeaderRectangle,base.SectionBounds.DetailStart);
+//			Console.WriteLine ("PageHeaderRectangle {0} DetailStart  {1}",base.SectionBounds.PageHeaderRectangle,base.SectionBounds.DetailStart);
 			base.SinglePage.Items.AddRange(convertedList);
 		}
 		
@@ -159,29 +160,24 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		void OnSectionRendering (object sender,SectionRenderEventArgs e)
 		{
-//			Console.WriteLine("Datapagebuilder : OnSectionRendering");
 			base.FireSectionRenderEvent(e.Section,e.RowNumber);
 		}
 		
 		
 		void OnGroupHeaderRendering (object sender, GroupHeaderEventArgs ghea)
 		{
-			
-//			Console.WriteLine("Datapagebuilder : OnGroupHeaderRendering");
 			base.FireGroupHeaderEvent(ghea);
 		}
 		
 		
 		void OnGroupFooterRendering (object sender, GroupFooterEventArgs gfea)
 		{
-//			Console.WriteLine ("DatapageBuilder : OnGroupFooterEvent");
 			base.FireGroupFooterEvent(gfea);
 		}
 		
 		
 		void OnRowRendering (object sender,RowRenderEventArgs rrea)
 		{
-//				Console.WriteLine("Datapagebuilder : OnRowRendering");
 				base.FireRowRenderEvent(rrea);
 		}
 		#endregion

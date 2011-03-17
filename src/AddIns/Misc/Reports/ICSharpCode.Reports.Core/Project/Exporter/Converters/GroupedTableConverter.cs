@@ -101,7 +101,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 						if (childNavigator != null) {
 							do
 							{
-								StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
+								StandardPrinter.AdjustBackColor(simpleContainer);
+//								StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
 								simpleContainer = table.Items[2] as ISimpleContainer;
 								containerSize = simpleContainer.Size;
 								

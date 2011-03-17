@@ -94,8 +94,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 					
 					//Convert children
 					if (childNavigator != null) {
-						StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
-						//Console.WriteLine("child start {0}",base.CurrentPosition);
+//						StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
+						StandardPrinter.AdjustBackColor(simpleContainer);
 						do
 						{
 							section.Size = base.RestoreSectionSize;

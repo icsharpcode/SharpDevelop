@@ -55,7 +55,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			this.ReportModel.PageHeader.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Top;
 			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,0);
-			base.SinglePage.Items.AddRange(convertedList);	                      
+			base.SinglePage.Items.AddRange(convertedList);	 
+			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
 		}
 		
 		protected override void BuildDetailInternal(BaseSection section)

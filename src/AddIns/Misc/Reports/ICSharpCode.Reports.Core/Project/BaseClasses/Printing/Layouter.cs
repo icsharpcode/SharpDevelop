@@ -31,36 +31,22 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				return Rectangle.Empty;
 			}
 			
-//			Console.WriteLine("\tlayouter for container <{0}>",container.ToString());
-//			Console.WriteLine("\tLayouter for Container");
 			Rectangle desiredContainerRectangle = new Rectangle (container.Location,container.Size);
 			
 			System.Collections.Generic.IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in container.Items where bt.CanGrow == true select bt;
 			
 			if (canGrowShrinkCollection.Count() > 0 ) {
 				Rectangle surroundingRec = FindSurroundingRectangle(graphics,canGrowShrinkCollection);
-//				desiredContainerRectangle = new Rectangle(container.Location.X,
-//				                                          container.Location.Y,
-//				                                          container.Size.Width,
-//				                                          surroundingRec.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
-//			
 				desiredContainerRectangle = new Rectangle(container.Location.X,
 				                                          container.Location.Y,
 				                                          container.Size.Width,
 				                                          surroundingRec.Size.Height);
 				
-//			var r1 = new Rectangle(container.Location.X,
-//				                                          container.Location.Y,
-//				                                          container.Size.Width,
-//				                                          surroundingRec.Size.Height);
-//				                                       
-//				Console.WriteLine("Diff {0} - {1} dif  {2}",desiredContainerRectangle,r1,desiredContainerRectangle.Height - r1.Height);
 			}
-//			Console.WriteLine("\tContainer : {0} - DesiredContainerRectangle {1} ",container.Size,desiredContainerRectangle.Size);
 			return desiredContainerRectangle;
 		}
 		
-	
+		
 		public Rectangle Layout(Graphics graphics,BaseSection section)
 		{
 			if (graphics == null) {
@@ -69,9 +55,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			if (section == null) {
 				throw new ArgumentNullException("section");
 			}
-		
-//				Console.WriteLine("\tLayouter for Container");Console.WriteLine("\tlayouter for section <{0}>",section.Name);
-//				Console.WriteLine("\tLayouter for Section");
+			
 			IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in section.Items where bt.CanGrow == true select bt;
 			
 			Rectangle desiredSectionRectangle = new Rectangle(section.Location.X,
@@ -91,11 +75,10 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 					                                        surroundingRec.Size.Height);
 				}
 			}
-//			Console.WriteLine("\tSection : {0} - DesiredContainerRectangle {1} ",section.Size,desiredSectionRectangle.Size);
 			return desiredSectionRectangle;
 		}
 		
-	
+		
 		
 		private static Rectangle FindSurroundingRectangle (Graphics graphics,IEnumerable<BaseReportItem> canGrowShrinkCollection)
 		{
@@ -107,7 +90,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			                              canGrowShrinkCollection.First().Size.Height);
 			
 			foreach (BaseTextItem elemToLayout in canGrowShrinkCollection) {
-                Console.WriteLine("ELEMTEXT {0}",elemToLayout.Text);
 				Size textSize = MeasurementService.MeasureReportItem (graphics,elemToLayout);
 				elemToLayout.Size = new Size(elemToLayout.Size.Width,textSize.Height);
 				rec = Rectangle.Union(rec,new Rectangle(elemToLayout.Location,elemToLayout.Size));

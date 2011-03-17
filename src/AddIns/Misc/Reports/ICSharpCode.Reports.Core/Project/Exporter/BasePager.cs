@@ -86,23 +86,22 @@ namespace ICSharpCode.Reports.Core.Exporter
 		#region Converters
 		
 		//Point currentPosition = Point.Empty;
-		protected Point Offset {get;set;}
+		
 		
 		protected ExporterCollection ConvertSection (BaseSection section,int dataRow)
 		{
 			FireSectionRenderEvent (section ,dataRow);
-			Console.WriteLine("");
-			Console.WriteLine("section {0}",section.Name);
 			PrintHelper.AdjustParent((BaseSection)section,section.Items);
 			
 			var list = new ExporterCollection();
+			Point startLocation = section.Location;
 			Offset = new Point(section.Location.X,section.SectionOffset);
 			
 			if (section.Items.Count > 0) {
 				
-                section.Items.SortByLocation();
+				section.Items.SortByLocation();
 
-                IExpressionEvaluatorFacade evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.SinglePage.IDataNavigator);
+				IExpressionEvaluatorFacade evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.SinglePage.IDataNavigator);
 
 				Rectangle desiredRectangle = LayoutHelper.CalculateSectionLayout(this.Graphics,section);
 				LayoutHelper.FixSectionLayout(desiredRectangle,section);
@@ -113,43 +112,25 @@ namespace ICSharpCode.Reports.Core.Exporter
 					
 					if (simpleContainer != null)
 					{
-					   	EvaluationHelper.EvaluateReportItems(evaluator,simpleContainer.Items);
-                        Size s = simpleContainer.Size;
-                        var l = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
-                        LayoutHelper.SetLayoutForRow(Graphics,l, simpleContainer);
-
-ExportContainer exportContainer = StandardPrinter.ConvertToContainer(simpleContainer,Offset);
-						Console.WriteLine ("offset {0}",Offset);
-Console.WriteLine("start exportContainer container  at {0} with height {1}",exportContainer.StyleDecorator.Location,exportContainer.StyleDecorator.Size.Height);						
-					    s = simpleContainer.Size;
+						EvaluationHelper.EvaluateReportItems(evaluator,simpleContainer.Items);
+						var l = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
+						LayoutHelper.SetLayoutForRow(Graphics,l, simpleContainer);
+						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(simpleContainer,Offset);
 						
 						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(simpleContainer.Items,exportContainer.StyleDecorator.Location);
 						exportContainer.Items.AddRange(clist);
 						list.Add(exportContainer);
-                       	Offset = new Point(Offset.X,Offset.Y + exportContainer.StyleDecorator.Size.Height);
-                       	
-Console.WriteLine ("new offset {0}",Offset);
-
-
-//					    foreach (ExportText VARIABLE in clist)
-//					    {
-//					        Console.WriteLine("{0} - {1}",VARIABLE.Text,VARIABLE.StyleDecorator.Location);
-//					    }
-//                        Console.WriteLine(".......");
-
+						Offset = new Point(Offset.X,Offset.Y + exportContainer.StyleDecorator.Size.Height);
 					}
 					else
 					{
-						Console.WriteLine("start section {0}  at {1}",section.Name,section.SectionOffset + section.Location.Y);
 						list = StandardPrinter.ConvertPlainCollection(section.Items,Offset);
 						Offset = new Point(Offset.X,Offset.Y + section.Size.Height);
 					}
-					section.Size = new Size(section.Size.Width,section.Size.Height);
+					section.Size = new Size(section.Size.Width,Offset.Y  - section.SectionOffset);
+					
 				}
-				Console.WriteLine ("\toffset {0} sectionoffset {1}",Offset,section.SectionOffset);
-				
 			}
-			Console.WriteLine ("Cuurent location {0} section.botom {1}",Offset,section.Location.Y + section.Size.Height);
 			return list;
 		}
 
@@ -291,7 +272,14 @@ Console.WriteLine ("new offset {0}",Offset);
 		
 		#region Property's
 		
+		protected Point Offset {get;set;}
+		
 		protected Graphics Graphics {get; private set;}
+		
+		protected SectionBounds SectionBounds
+		{
+			get { return SinglePage.SectionBounds; }
+		}
 		
 		public IReportModel ReportModel {get;set;}
 
@@ -308,13 +296,6 @@ Console.WriteLine ("new offset {0}",Offset);
 				}
 			}
 		}
-		
-		
-		protected SectionBounds SectionBounds
-		{
-			get { return SinglePage.SectionBounds; }
-		}
-		
 		#endregion
 	}
 }

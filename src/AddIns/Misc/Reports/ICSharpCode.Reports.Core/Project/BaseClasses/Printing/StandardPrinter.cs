@@ -30,8 +30,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			}
 		}
 		
-		
-		public static void AdjustBackColor (ISimpleContainer container, Color defaultColor)
+		/*
+		public static void aaAdjustBackColor (ISimpleContainer container, Color defaultColor)
 		{
 			if (container.BackColor != defaultColor) {
 				foreach (var item in container.Items)
@@ -40,7 +40,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				}
 			}
 		}
-		
+		*/
 		
 		public static void FillBackground (Graphics  graphics,BaseStyleDecorator decorator)
 		{
@@ -224,10 +224,9 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				                                                         lineItem.StyleDecorator.Size);
 				
 				AdjustBackColor (container);
-				Console.WriteLine("\tstart container  at {0}",lineItem.StyleDecorator.Location);
-				return lineItem;		
-				
+				return lineItem;
 			}
+			
 			return null;
 		}
 		
