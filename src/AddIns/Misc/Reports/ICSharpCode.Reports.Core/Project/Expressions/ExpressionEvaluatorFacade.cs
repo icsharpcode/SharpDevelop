@@ -78,14 +78,25 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		
 		private void VariableStore (object sender,SimpleExpressionEvaluator.Evaluation.UnknownVariableEventArgs e)
 		{
-			
 			PropertyPath path = this.singlePage.ParsePropertyPath(e.VariableName);
 			if (path != null) {
 				e.VariableValue = path.Evaluate(path);
 			}
+			
 			// Look in Parametershash
-			if (singlePage.ParameterHash.ContainsKey(e.VariableName)) {
-				e.VariableValue = singlePage.ParameterHash[e.VariableName].ToString();
+			if (singlePage.ParameterHash.ContainsKey(e.VariableName))
+			{
+				try {
+					e.VariableValue = singlePage.ParameterHash[e.VariableName].ToString();
+				}
+				catch (Exception)
+				{
+					e.VariableValue = String.Empty;
+					Console.WriteLine("");
+					Console.WriteLine("ExpressionEvaluatorFacade.VariableStore");
+					Console.WriteLine("Replace Param <{0}> with String.Empty because no value is set",e.VariableName);
+					Console.WriteLine("");
+				}
 			}
 		}
 		

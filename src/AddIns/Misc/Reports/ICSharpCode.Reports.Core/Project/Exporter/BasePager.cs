@@ -91,10 +91,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected ExporterCollection ConvertSection (BaseSection section,int dataRow)
 		{
 			FireSectionRenderEvent (section ,dataRow);
-			PrintHelper.AdjustParent((BaseSection)section,section.Items);
+			PrintHelper.AdjustParent(section,section.Items);
 			
-			var list = new ExporterCollection();
-			Point startLocation = section.Location;
+			var convertedSection = new ExporterCollection();
 			Offset = new Point(section.Location.X,section.SectionOffset);
 			
 			if (section.Items.Count > 0) {
@@ -113,25 +112,28 @@ namespace ICSharpCode.Reports.Core.Exporter
 					if (simpleContainer != null)
 					{
 						EvaluationHelper.EvaluateReportItems(evaluator,simpleContainer.Items);
-						var l = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
-						LayoutHelper.SetLayoutForRow(Graphics,l, simpleContainer);
+						
+						var layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
+						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
+						
 						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(simpleContainer,Offset);
 						
-						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(simpleContainer.Items,exportContainer.StyleDecorator.Location);
-						exportContainer.Items.AddRange(clist);
-						list.Add(exportContainer);
+						ExporterCollection exporterCollection = StandardPrinter.ConvertPlainCollection(simpleContainer.Items,exportContainer.StyleDecorator.Location);
+						exportContainer.Items.AddRange(exporterCollection);
+						convertedSection.Add(exportContainer);
+						
 						Offset = new Point(Offset.X,Offset.Y + exportContainer.StyleDecorator.Size.Height);
 					}
 					else
 					{
-						list = StandardPrinter.ConvertPlainCollection(section.Items,Offset);
+						convertedSection = StandardPrinter.ConvertPlainCollection(section.Items,Offset);
 						Offset = new Point(Offset.X,Offset.Y + section.Size.Height);
 					}
 					section.Size = new Size(section.Size.Width,Offset.Y  - section.SectionOffset);
 					
 				}
 			}
-			return list;
+			return convertedSection;
 		}
 
 		

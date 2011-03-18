@@ -37,32 +37,13 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 					}
 				}
 				
-				/*
-				if (str.Contains(Environment.NewLine))
-				{
-				    	Console.WriteLine ("newline");
-				}
 				
-				
-				int lp = 0;
-				int cp = 0;
-				SizeF test = graphics.MeasureString(str.TrimEnd(), textItem.Font, textItem.Size, 
-				
-				                                      StringFormat.GenericTypographic,out cp, out lp);
-
-				
-				*/
 				SizeF sf = graphics.MeasureString(str.TrimEnd(),
 				                                  textItem.Font,
 				                                  textItem.Size.Width);
-				var hh = textItem.Font.GetHeight();
-				var h1 = textItem.Font.Height;
-				var aa = sf.Height / textItem.Font.GetHeight();
-				
 				return sf.ToSize();
 			}
 			return item.Size;
 		}
-		
 	}
 }
