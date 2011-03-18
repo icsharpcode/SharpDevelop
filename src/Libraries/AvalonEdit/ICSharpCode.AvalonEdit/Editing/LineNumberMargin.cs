@@ -94,7 +94,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 			base.OnDocumentChanged(oldDocument, newDocument);
 			if (newDocument != null) {
-				PropertyChangedEventManager.AddListener(oldDocument, this, "LineCount");
+				PropertyChangedEventManager.AddListener(newDocument, this, "LineCount");
 			}
 			OnDocumentLineCountChanged();
 		}
