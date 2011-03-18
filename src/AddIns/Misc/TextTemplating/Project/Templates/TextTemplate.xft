@@ -9,7 +9,11 @@
 	<Description>A t4 text template for the C# language.</Description>
 
 	<Files>
-		<File name="${FullName}" language="Default"><![CDATA[<#@ template language="C#" #>
+		<File
+      name="${FullName}"
+      language="Default"
+      buildAction="None"
+      Generator="TextTemplatingFileGenerator"><![CDATA[<#@ template language="C#" #>
 <#@ output extension=".txt" #>
 ]]></File>
 	</Files>
