@@ -265,7 +265,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					if (popup == null) {
 						popup = CreatePopup();
 					}
+					// if popup was only first level, hovering somewhere else closes it
 					if (TryCloseExistingPopup(false)) {
+						
 						// when popup content decides to close, close the popup
 						contentToShowITooltip.Closed += (closedSender, closedArgs) => { popup.IsOpen = false; };
 						popup.Child = (UIElement)args.ContentToShow;
@@ -303,13 +305,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		bool TryCloseExistingPopup(bool mouseClick)
+		bool TryCloseExistingPopup(bool hard)
 		{
 			bool canClose = true;
 			if (popup != null) {
 				var popupContentITooltip = popup.Child as ITooltip;
 				if (popupContentITooltip != null) {
-					canClose = popupContentITooltip.Close(mouseClick);
+					canClose = popupContentITooltip.Close(hard);
 				}
 				if (canClose) {
 					popup.IsOpen = false;

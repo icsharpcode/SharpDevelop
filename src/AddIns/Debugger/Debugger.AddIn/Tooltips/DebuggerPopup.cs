@@ -19,13 +19,13 @@ namespace Debugger.AddIn.Tooltips
 	/// </summary>
 	public class DebuggerPopup : Popup
 	{
-		internal DebuggerTooltipControl contentControl;
+		internal DebuggerTooltipControl innerControl;
 
 		public DebuggerPopup(DebuggerTooltipControl parentControl, Location logicalPosition, bool showPins = true)
 		{
-			this.contentControl = new DebuggerTooltipControl(parentControl, logicalPosition, showPins);
-			this.contentControl.containingPopup = this;
-			this.Child = this.contentControl;
+			this.innerControl = new DebuggerTooltipControl(parentControl, logicalPosition, showPins);
+			this.innerControl.containingPopup = this;
+			this.Child = this.innerControl;
 			this.IsLeaf = false;
 			
 			//this.KeyDown += new KeyEventHandler(DebuggerPopup_KeyDown);
@@ -64,8 +64,8 @@ namespace Debugger.AddIn.Tooltips
 
 		public IEnumerable<ITreeNode> ItemsSource
 		{
-			get { return this.contentControl.ItemsSource; }
-			set { this.contentControl.SetItemsSource(value); }
+			get { return this.innerControl.ItemsSource; }
+			set { this.innerControl.SetItemsSource(value); }
 		}
 
 		private bool isLeaf;
@@ -84,7 +84,7 @@ namespace Debugger.AddIn.Tooltips
 		{
 			base.OnClosed(e);
 			if (isLeaf) {
-				this.contentControl.CloseOnLostFocus();
+				this.innerControl.CloseOnLostFocus();
 			}
 		}
 
@@ -95,7 +95,7 @@ namespace Debugger.AddIn.Tooltips
 
 		public void CloseSelfAndChildren()
 		{
-			this.contentControl.CloseChildPopups();
+			this.innerControl.CloseChildPopups();
 			this.IsOpen = false;
 		}
 	}

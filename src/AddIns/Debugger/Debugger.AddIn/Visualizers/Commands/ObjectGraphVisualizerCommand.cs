@@ -17,8 +17,7 @@ namespace Debugger.AddIn.Visualizers
 	{
 		public bool IsVisualizerAvailable(DebugType type)
 		{
-			bool typeIsAtomic = type.IsPrimitive || type.IsSystemDotObject() || type.IsEnum();
-			return !typeIsAtomic;
+			return !type.IsAtomic() && !type.IsSystemDotObject();
 		}
 		
 		public IVisualizerCommand CreateVisualizerCommand(Expression expression)
@@ -48,8 +47,7 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
-			if (this.Expression != null)
-			{
+			if (this.Expression != null) {
 				var objectGraphWindow = ObjectGraphWindow.EnsureShown();
 				objectGraphWindow.ShownExpression = this.Expression;
 			}
