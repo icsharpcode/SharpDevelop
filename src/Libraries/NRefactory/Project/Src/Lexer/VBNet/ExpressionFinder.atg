@@ -367,13 +367,13 @@ TypeOrMemberModifier =
 
 InterfaceEvent =
 	"Event" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
-	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | "(" [ ParameterList ] ")" ]
+	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | ParameterListInParenthesis ]
 	StatementTerminator
 .
 
 InterfaceProperty =
 	"Property" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
-	[ "(" [ ParameterList ] ")" ] [ "As" (. PushContext(Context.Type, la, t); .) { AttributeBlock } TypeName (. PopContext(); .) ]
+	[ ParameterListInParenthesis ] [ "As" (. PushContext(Context.Type, la, t); .) { AttributeBlock } TypeName (. PopContext(); .) ]
 	StatementTerminator
 .
 
@@ -435,7 +435,7 @@ ExternalMemberDeclaration =
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
 	"Lib" LiteralString
 	[ "Alias" LiteralString ]
-	[ "(" [ ParameterList ] ")" ]
+	[ ParameterListInParenthesis ]
 	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
 	StatementTerminator
 .
@@ -443,7 +443,7 @@ ExternalMemberDeclaration =
 EventMemberDeclaration =
 	"Event"
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
-	( "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | [ "(" [ ParameterList ] ")" ] )
+	( "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | [ ParameterListInParenthesis ] )
 	[ "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/
 	  { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ } ]
 	/* the TypeName production already allows the "." IdentifierOrKeyword syntax, so to avoid an ambiguous grammar we just leave that out */
@@ -463,7 +463,7 @@ CustomEventMemberDeclaration =
 PropertyDeclaration =
 	"Property"
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
-	[ "(" [ ParameterList ] ")" ]
+	[ ParameterListInParenthesis ]
 	[ "As" (. PushContext(Context.Type, la, t); .) { AttributeBlock } ( NewExpression |  TypeName ) (. PopContext(); .) ]
 	[ "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/
 	    { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ } ]
@@ -474,10 +474,10 @@ PropertyDeclaration =
 	//        so we need to simulate it
 	(.OnEachPossiblePath: SetIdentifierExpected(la); .) }
 	[ (. PushContext(Context.Member, la, t); .)
-	( "Get" | "Set" ) [ "(" [ ParameterList ] ")" ]
+	( "Get" | "Set" ) [ ParameterListInParenthesis ]
 		StatementTerminatorAndBlock
 		"End" ( "Get" | "Set" ) StatementTerminator
-	[ { AttributeBlock } { AccessModifier } ( "Get" | "Set" ) [ "(" [ ParameterList ] ")" ]
+	[ { AttributeBlock } { AccessModifier } ( "Get" | "Set" ) [ ParameterListInParenthesis ]
 		StatementTerminatorAndBlock
 		"End" ( "Get" | "Set" ) StatementTerminator ]
 	
@@ -686,13 +686,17 @@ LambdaExpression =
 .
 
 SubLambdaExpression =
-	"Sub" "(" [ ParameterList ] ")"
+	"Sub" ParameterListInParenthesis
 	( GREEDY Statement | StatementTerminatorAndBlock "End" "Sub" )
 .
 
 FunctionLambdaExpression =
-	"Function" "(" [ ParameterList ] ")"
+	"Function" ParameterListInParenthesis
 	( GREEDY Expression | [ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] StatementTerminatorAndBlock "End" "Function" )
+.
+
+ParameterListInParenthesis =
+	"(" (. PushContext(Context.Default, la, t); .) [ ParameterList ] (. PopContext(); .) ")"
 .
 
 QueryExpression
