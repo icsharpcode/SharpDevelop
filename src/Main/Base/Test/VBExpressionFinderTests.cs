@@ -635,6 +635,36 @@ End Module", "FileReader()", ExpressionContext.ObjectCreation);
 End Module", "FileReader()", ExpressionContext.Default);
 		}
 		
+		[Test]
+		public void FunctionLambda()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		Dim f = Fun|ction(x, y) x + y
+	End Sub
+End Module", "Function(x, y) x + y", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void SubLambda()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		Dim f = Su|b(x, y) Console.WriteLine(x + y)
+	End Sub
+End Module", "Sub(x, y) Console.WriteLine(x + y)", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void NewExpression()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		Dim list = N|ew List(Of Integer)
+	End Sub
+End Module", "New List(Of Integer)", ExpressionContext.Default);
+		}
+		
 		#region Old Tests
 		void OldTest(string expr, int offset)
 		{

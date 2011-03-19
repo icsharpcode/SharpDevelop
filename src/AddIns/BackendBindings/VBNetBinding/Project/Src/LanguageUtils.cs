@@ -20,7 +20,7 @@ namespace ICSharpCode.VBNetBinding
 				if (line[i] == '"')
 					inStr = !inStr;
 				if (line[i] == '\'' && !inStr)
-					return line.Substring(0, i).Trim();
+					return line.Substring(0, i);
 			}
 			
 			return line;

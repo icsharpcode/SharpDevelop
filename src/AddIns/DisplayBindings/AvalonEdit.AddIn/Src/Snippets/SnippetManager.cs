@@ -220,6 +220,14 @@ End While",
 						Keyword = "While"
 					},
 					new CodeSnippet {
+						Name = "ctor",
+						Description = "Constructor",
+						Text = @"Public Sub New(${anchor:parameterList})
+	${refactoring:ctor}
+End Sub",
+						Keyword = "Sub"
+					},
+					new CodeSnippet {
 						Name = "Select",
 						Description = "Select statement",
 						Text = @"Select Case ${variable}

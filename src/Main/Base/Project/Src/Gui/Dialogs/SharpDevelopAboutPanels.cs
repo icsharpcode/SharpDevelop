@@ -80,6 +80,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			#if DEBUG
 			if (e.KeyData == (Keys.Control | Keys.Shift | Keys.E)) {
 				throw new ClownFishException();
+			} else if (e.KeyData == (Keys.Control | Keys.Shift | Keys.G)) {
+				GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+				GC.WaitForPendingFinalizers();
+				GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+				versionInfoTextBox.Text = GetVersionInformationString();
 			}
 			#endif
 		}
