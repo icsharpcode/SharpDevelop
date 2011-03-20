@@ -37,6 +37,42 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static void ApplyWindow(Window window, string propertyName, bool isResizable)
 		{
 			window.WindowStartupLocation = WindowStartupLocation.Manual;
+			Window owner = window.Owner ?? WorkbenchSingleton.MainWindow;
+			Point ownerPos = (owner == null ? new Point(0, 0) : new Point(owner.Left, owner.Top));
+			if (isResizable) {
+				Rect bounds = PropertyService.Get(propertyName, GetDefaultBounds(window));
+				bounds.Offset(ownerPos.X, ownerPos.Y);
+				bounds = Validate(bounds);
+				window.Left = bounds.X;
+				window.Top = bounds.Y;
+				window.Width = bounds.Width;
+				window.Height = bounds.Height;
+			} else {
+				Size size = new Size(window.ActualWidth, window.ActualHeight);
+				Point location = PropertyService.Get(propertyName, GetDefaultLocation(window));
+				location.Offset(ownerPos.X, ownerPos.Y);
+				location = Validate(location, size);
+				window.Left = location.X;
+				window.Top = location.Y;
+			}
+			window.Closing += delegate {
+				owner = window.Owner ?? WorkbenchSingleton.MainWindow;
+				ownerPos = (owner == null ? new Point(0, 0) : new Point(owner.Left, owner.Top));
+			    if (isResizable) {
+					if (window.WindowState == System.Windows.WindowState.Normal) {
+						PropertyService.Set(propertyName, new Rect(window.Left, window.Top, window.ActualWidth, window.ActualHeight));
+					}
+				} else {
+					PropertyService.Set(propertyName, new Point(window.Left - ownerPos.X, window.Top - ownerPos.Y));
+				                         
+				}
+			};
+		}
+		
+		/*
+		public static void ApplyWindow(Window window, string propertyName, bool isResizable)
+		{
+			window.WindowStartupLocation = WindowStartupLocation.Manual;
 			if (isResizable) {
 				Rect bounds = Validate(PropertyService.Get(propertyName, GetDefaultBounds(window)));
 				window.Left = bounds.X;
@@ -59,6 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			};
 		}
+		*/
 		
 		public static Rect Validate(Rect bounds)
 		{
