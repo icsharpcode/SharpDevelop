@@ -55,6 +55,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management.Automation" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
@@ -75,15 +76,19 @@
     <Compile Include="Src\Helpers\FakeLicenseAcceptanceService.cs" />
     <Compile Include="Src\Helpers\FakeMessageCategoryView.cs" />
     <Compile Include="Src\Helpers\FakeMessageReporter.cs" />
+    <Compile Include="Src\Helpers\FakePackageManagementConsoleHost.cs" />
     <Compile Include="Src\Helpers\FakePackageManager.cs" />
     <Compile Include="Src\Helpers\FakePackageManagerFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageOperationResolver.cs" />
     <Compile Include="Src\Helpers\FakePackageRepositoryFactory.cs" />
-    <Compile Include="Src\Helpers\FakePackageManagementProjectService.cs" />
     <Compile Include="Src\Helpers\FakePackagePathResolver.cs" />
     <Compile Include="Src\Helpers\FakePackageTests.cs" />
+    <Compile Include="Src\Helpers\FakePowerShellHost.cs" />
+    <Compile Include="Src\Helpers\FakePowerShellHostFactory.cs" />
+    <Compile Include="Src\Helpers\FakeScriptingConsoleWithLinesToRead.cs" />
     <Compile Include="Src\Helpers\FakeTask.cs" />
     <Compile Include="Src\Helpers\FakeTaskFactory.cs" />
+    <Compile Include="Src\Helpers\FakeThread.cs" />
     <Compile Include="Src\Helpers\FileNameAndDirectory.cs" />
     <Compile Include="Src\Helpers\FileNameAndProjectName.cs" />
     <Compile Include="Src\Helpers\FileProjectItemAssert.cs" />
@@ -93,6 +98,8 @@
     <Compile Include="Src\Helpers\RecentPackageInfoCollectionAssert.cs" />
     <Compile Include="Src\Helpers\ReferenceAndProjectName.cs" />
     <Compile Include="Src\Helpers\ReferenceProjectItemAssert.cs" />
+    <Compile Include="Src\Helpers\TestablePackageManagementConsoleHost.cs" />
+    <Compile Include="Src\Helpers\TestablePackageManagementConsoleViewModel.cs" />
     <Compile Include="Src\Helpers\TestablePackagesViewModel.cs" />
     <Compile Include="Src\Helpers\TestablePackageViewModel.cs" />
     <Compile Include="Src\Helpers\TestableProject.cs" />
@@ -131,6 +138,9 @@
     <Compile Include="Src\RecentPackageRepositoryTests.cs" />
     <Compile Include="Src\RecentPackagesViewModelTests.cs" />
     <Compile Include="Src\RegisteredPackageSourcesTests.cs" />
+    <Compile Include="Src\Scripting\PackageManagementConsoleHostTests.cs" />
+    <Compile Include="Src\Scripting\PackageManagementConsoleViewModelTests.cs" />
+    <Compile Include="Src\Scripting\PowerShellHostUserInterfaceTests.cs" />
     <Compile Include="Src\SelectedListBoxItemScrollingBehaviourTests.cs" />
     <Compile Include="Src\SharpDevelopPackageManagerFactoryTests.cs" />
     <Compile Include="Src\SharpDevelopPackageManagerTests.cs" />
@@ -139,6 +149,10 @@
     <Compile Include="Src\ViewModelBaseTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -146,6 +160,14 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\BackendBindings\Scripting\Project\ICSharpCode.Scripting.csproj">
+      <Project>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</Project>
+      <Name>ICSharpCode.Scripting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\BackendBindings\Scripting\Test\ICSharpCode.Scripting.Tests.csproj">
+      <Project>{85C09AD8-183B-403A-869A-7226646218A9}</Project>
+      <Name>ICSharpCode.Scripting.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\Project\PackageManagement.csproj">
       <Project>{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}</Project>
@@ -156,6 +178,7 @@
     <Folder Include="Src\Helpers" />
     <Folder Include="Src\Helpers\Tests" />
     <Folder Include="Src" />
+    <Folder Include="Src\Scripting" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

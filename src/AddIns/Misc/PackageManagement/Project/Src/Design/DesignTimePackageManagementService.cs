@@ -12,6 +12,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public DesignTimePackageManagementService()
 		{
 			AddDesignTimePackages();
+			ActivePackageSource = new PackageSource("http://nuget.org", "NuGet Official Package Source");
 		}
 		
 		void AddDesignTimePackages()

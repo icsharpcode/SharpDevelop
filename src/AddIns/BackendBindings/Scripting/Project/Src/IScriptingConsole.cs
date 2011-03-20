@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.Scripting
 {
-	public interface IScriptingConsole
+	public interface IScriptingConsole : IDisposable
 	{
 		event EventHandler LineReceived;
 		

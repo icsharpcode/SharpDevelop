@@ -59,4 +59,14 @@
 			class="ICSharpCode.PackageManagement.PackageManagementOptionsView"
 		/>
 	</Path>
+
+	<Path name="/SharpDevelop/Workbench/Pads">
+		<Pad
+			id="PackageManagementConsole"
+			category="Tools"
+			title="Package Management Console"
+			icon="PadIcons.Output"
+			defaultPosition="Bottom, Hidden"
+			class="ICSharpCode.PackageManagement.Scripting.PackageManagementConsolePad"/>
+	</Path>
 </AddIn>

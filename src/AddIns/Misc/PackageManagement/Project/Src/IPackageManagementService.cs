@@ -26,5 +26,6 @@ namespace ICSharpCode.PackageManagement
 		PackageSource ActivePackageSource { get; set; }
 		
 		IPackageManagementOutputMessagesView OutputMessagesView { get; }
+		IPackageManagementProjectService ProjectService { get; }
 	}
 }

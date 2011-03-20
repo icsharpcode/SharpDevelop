@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.Scripting.Tests.Utils
 {
@@ -15,11 +16,13 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public string TextPassedToWriteLine;
 		public ScriptingStyle ScriptingStylePassedToWriteLine;
 		public string TextPassedToWrite;
+		public List<string> AllTextPassedToWrite = new List<string>();
 		public ScriptingStyle ScriptingStylePassedToWrite;
 		public string TextToReturnFromReadLine;
 		public int AutoIndentSizePassedToReadLine;
 		public string TextToReturnFromReadFirstUnreadLine;
 		public bool IsReadLineCalled;
+		public bool IsDisposeCalled;
 		
 		public void SendLine(string text)
 		{
@@ -46,9 +49,10 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 			TextPassedToWrite = text;
 			ScriptingStylePassedToWrite = style;
+			AllTextPassedToWrite.Add(text);
 		}
 		
-		public string ReadLine(int autoIndentSize)
+		public virtual string ReadLine(int autoIndentSize)
 		{
 			IsReadLineCalled = true;
 			AutoIndentSizePassedToReadLine = autoIndentSize;
@@ -65,6 +69,11 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			if (LineReceived != null) {
 				LineReceived(this, new EventArgs());
 			}
+		}
+		
+		public void Dispose()
+		{
+			IsDisposeCalled = true;
 		}
 	}
 }

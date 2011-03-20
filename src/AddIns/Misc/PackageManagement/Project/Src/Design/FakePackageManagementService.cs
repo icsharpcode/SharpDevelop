@@ -14,7 +14,14 @@ namespace ICSharpCode.PackageManagement.Design
 		public event EventHandler PackageInstalled;
 		
 		PackageManagementOptions options = new PackageManagementOptions(new Properties());
+		
 		public List<PackageOperation> PackageOperationsPassedToInstallPackage = new List<PackageOperation>();
+		
+		public FakePackageManagementProjectService FakeProjectService = new FakePackageManagementProjectService();
+		
+		public IPackageManagementProjectService ProjectService {
+			get { return FakeProjectService; }
+		}
 		
 		protected virtual void OnPackageInstalled()
 		{
@@ -97,10 +104,16 @@ namespace ICSharpCode.PackageManagement.Design
 			options.PackageSources.Clear();
 		}
 		
-		public void AddOnePackageSource()
+		public PackageSource AddOnePackageSource()
 		{
-			var source = new PackageSource("http://sharpdevelop.codeplex.com", "Test");
+			return AddOnePackageSource("Test");
+		}
+		
+		public PackageSource AddOnePackageSource(string name)
+		{
+			var source = new PackageSource("http://sharpdevelop.codeplex.com", name);
 			options.PackageSources.Add(source);
+			return source;
 		}
 		
 		public bool HasMultiplePackageSources { get; set; }

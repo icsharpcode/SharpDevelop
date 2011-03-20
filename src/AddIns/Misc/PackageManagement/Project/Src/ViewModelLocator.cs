@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.PackageManagement.Design;
+using ICSharpCode.PackageManagement.Scripting;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -10,6 +11,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		AddPackageReferenceViewModel addPackageReferenceViewModel;
 		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
+		PackageManagementConsoleViewModel packageManagementConsoleViewModel;
 		IPackageManagementService packageManagementService;
 		
 		public AddPackageReferenceViewModel AddPackageReferenceViewModel {
@@ -59,6 +61,25 @@ namespace ICSharpCode.PackageManagement
 			} else {
 				packageManagementOptionsViewModel = new PackageManagementOptionsViewModel(packageManagementService.Options);
 			}
+		}
+		
+		public PackageManagementConsoleViewModel PackageManagementConsoleViewModel {
+			get { 
+				if (packageManagementConsoleViewModel == null) {
+					CreatePackageManagementConsoleViewModel();
+				}
+				return packageManagementConsoleViewModel;
+			}
+		}
+		
+		void CreatePackageManagementConsoleViewModel()
+		{
+			CreatePackageManagementService();
+			var packageManagementConsole = new PackageManagementConsoleHost();
+			packageManagementConsoleViewModel = 
+				new PackageManagementConsoleViewModel(
+					packageManagementService,
+					packageManagementConsole);
 		}
 	}
 }

@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.Scripting
 {
-	public class ThreadSafeScriptingConsole : IScriptingConsole, IDisposable
+	public class ThreadSafeScriptingConsole : IScriptingConsole
 	{
 		IScriptingConsole nonThreadSafeScriptingConsole;
 		IControlDispatcher dispatcher;

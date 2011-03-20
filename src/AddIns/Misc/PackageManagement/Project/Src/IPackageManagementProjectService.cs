@@ -9,6 +9,13 @@ namespace ICSharpCode.PackageManagement
 	public interface IPackageManagementProjectService
 	{
 		IProject CurrentProject { get; }
+		Solution OpenSolution { get; }
+		
+		event ProjectEventHandler ProjectAdded;
+		event SolutionFolderEventHandler SolutionFolderRemoved;
+		event EventHandler SolutionClosed;
+		event EventHandler<SolutionEventArgs> SolutionLoaded;
+		
 		void RefreshProjectBrowser();
 	}
 }
