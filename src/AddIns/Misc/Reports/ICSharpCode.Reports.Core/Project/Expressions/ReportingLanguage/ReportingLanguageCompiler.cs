@@ -17,7 +17,6 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 	/// </summary>
 	public class ReportingLanguageCompiler:SimpleExpressionLanguageCompiler
 	{
-//		private IPageInfo singlePage;
 		private ReportingLanguage reportingLanguage;
 		private Compiler compiler;
 		

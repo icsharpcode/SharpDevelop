@@ -19,7 +19,6 @@ namespace ICSharpCode.Reports.Core
 	public class BaseSection : BaseReportItem,ISimpleContainer
 	{
 		
-//		private bool pageBreakAfter;
 		private ReportItemCollection items;
 		
 		public event EventHandler<SectionEventArgs> SectionPrinting;
@@ -106,7 +105,6 @@ namespace ICSharpCode.Reports.Core
 				if (cont != null) {
 					return FindRec (cont.Items,itemName);
 				} else {
-					//return InnerFind(itemName);
 					return FindRec(this.items,itemName);
 				}
 			}

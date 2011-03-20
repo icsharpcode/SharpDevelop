@@ -85,9 +85,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Converters
 		
-		//Point currentPosition = Point.Empty;
-		
-		
 		protected ExporterCollection ConvertSection (BaseSection section,int dataRow)
 		{
 			FireSectionRenderEvent (section ,dataRow);
@@ -126,11 +123,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 					}
 					else
 					{
-						convertedSection = StandardPrinter.ConvertPlainCollection(section.Items,Offset);
-						Offset = new Point(Offset.X,Offset.Y + section.Size.Height);
+						var converteditem = StandardPrinter.ConvertLineItem(item,Offset);
+						convertedSection.Add(converteditem);
 					}
 					section.Size = new Size(section.Size.Width,Offset.Y  - section.SectionOffset);
-					
 				}
 			}
 			return convertedSection;
