@@ -9,7 +9,7 @@ using Debugger.AddIn.Visualizers.Utils;
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
-	/// Describes changes between 2 <see cref="PositionedGraph"/>s.
+	/// Describes changes which occured between 2 <see cref="PositionedGraph"/>s.
 	/// </summary>
 	public class GraphDiff
 	{
@@ -35,8 +35,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		}
 		
 		/// <summary>
-		/// Nodes in the old graph that were chaged.
-		/// These have matching new nodes, which can be obtained by <see cref="GetMatchingNewNode"/>.
+		/// Nodes in the old graph that are present also in the new graph (they represent the same debuggee instance).
+		/// The matching new nodes can be obtained by <see cref="GetMatchingNewNode"/>.
 		/// </summary>
 		public IList<PositionedNode> ChangedNodes
 		{
@@ -63,17 +63,5 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			matching[matchFrom] = matchTo;
 			changedNodes.Add(matchFrom);
 		}
-		
-		public GraphDiff()
-		{
-			
-		}
-		
-		/*public void MakeReadOnly()
-		{
-			addedNodes = ((List<PositionedNode>)addedNodes).AsReadOnly();
-			deletedNodes = ((List<PositionedNode>)deletedNodes).AsReadOnly();
-			changedNodes = ((List<PositionedNode>)changedNodes).AsReadOnly();
-		}*/
 	}
 }
