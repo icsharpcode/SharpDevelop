@@ -35,6 +35,12 @@ namespace ICSharpCode.Scripting
 			consoleEvents.SetLineReceivedEvent();
 		}
 		
+		
+		public bool ScrollToEndWhenPromptWritten {
+			get { return nonThreadSafeScriptingConsole.ScrollToEndWhenPromptWritten; }
+			set { nonThreadSafeScriptingConsole.ScrollToEndWhenPromptWritten = value; }
+		}
+		
 		public void WriteLine()
 		{
 			if (dispatcher.CheckAccess()) {

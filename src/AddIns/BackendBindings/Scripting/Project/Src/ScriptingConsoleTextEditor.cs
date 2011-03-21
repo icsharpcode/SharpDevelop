@@ -147,5 +147,10 @@ namespace ICSharpCode.Scripting
 				completionWindow = null;
 			}
 		}
+		
+		public void ScrollToEnd()
+		{
+			textEditor.ScrollToEnd();
+		}
 	}
 }

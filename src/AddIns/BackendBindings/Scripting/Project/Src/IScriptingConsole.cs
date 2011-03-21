@@ -8,6 +8,8 @@ namespace ICSharpCode.Scripting
 	public interface IScriptingConsole : IDisposable
 	{
 		event EventHandler LineReceived;
+				
+		bool ScrollToEndWhenPromptWritten { get; set; }
 		
 		void SendLine(string line);
 		void SendText(string text);

@@ -23,6 +23,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public string TextToReturnFromReadFirstUnreadLine;
 		public bool IsReadLineCalled;
 		public bool IsDisposeCalled;
+		public bool ScrollToEndWhenPromptWritten { get; set; }
 		
 		public void SendLine(string text)
 		{
@@ -74,6 +75,11 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public void Dispose()
 		{
 			IsDisposeCalled = true;
+		}
+		
+		public void ScrollToEnd()
+		{
+			
 		}
 	}
 }

@@ -195,5 +195,13 @@ namespace ICSharpCode.Scripting.Tests.Utils
 				LineBuilder.Remove(SelectionStart, SelectionLength);
 			}
 		}
+		
+		public bool IsScrollToEndCalled;
+		public bool ScrollToEndWhenPromptWritten { get; set; }
+		
+		public void ScrollToEnd()
+		{
+			IsScrollToEndCalled = true;
+		}
 	}
 }

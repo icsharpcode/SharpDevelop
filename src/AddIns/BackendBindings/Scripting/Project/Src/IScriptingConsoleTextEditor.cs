@@ -77,5 +77,7 @@ namespace ICSharpCode.Scripting
 		/// Makes the current text content read only. Text can be entered at the end.
 		/// </summary>
 		void MakeCurrentContentReadOnly();
+		
+		void ScrollToEnd();
 	}
 }

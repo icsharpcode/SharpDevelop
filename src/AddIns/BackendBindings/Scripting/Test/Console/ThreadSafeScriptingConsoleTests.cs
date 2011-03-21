@@ -353,5 +353,23 @@ namespace ICSharpCode.Scripting.Tests.Console
 			string expectedLine = "abc";
 			Assert.AreEqual(expectedLine, line);
 		}
+		
+		[Test]
+		public void ScrollToEndWhenPromptWritten_NonThreadSafeConsoleScrollToEndWhenPromptWrittenIsTrue_ReturnsTrue()
+		{
+			CreateThreadSafeScriptingConsole();
+			nonThreadSafeScriptingConsole.ScrollToEndWhenPromptWritten = true;
+			
+			Assert.IsTrue(threadSafeConsole.ScrollToEndWhenPromptWritten);
+		}
+		
+		[Test]
+		public void ScrollToEndWhenPromptWritten_NonThreadSafeConsoleScrollToEndWhenPromptWrittenIsFalse_ReturnsFalse()
+		{
+			CreateThreadSafeScriptingConsole();
+			nonThreadSafeScriptingConsole.ScrollToEndWhenPromptWritten = false;
+			
+			Assert.IsFalse(threadSafeConsole.ScrollToEndWhenPromptWritten);
+		}
 	}
 }

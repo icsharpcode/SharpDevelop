@@ -13,16 +13,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 		TextEditor textEditor;
 		
 		public PackageManagementConsole()
-			: this(CreateTextEditor())
+			: this(TextEditorFactory.CreateTextEditor())
 		{
 		}
-		
-		static TextEditor CreateTextEditor()
-		{
-			object textEditor;
-			EditorControlService.CreateEditor(out textEditor);
-			return (TextEditor)textEditor;
-		}
+
 		
 		public PackageManagementConsole(TextEditor textEditor)
 			: this(new ScriptingConsoleTextEditor(textEditor), new ControlDispatcher(textEditor))
