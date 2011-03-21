@@ -16,14 +16,10 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	/// </summary>
 	public class ObjectValue
 	{
-		private int index;
 		/// <summary> Index of this item in the collection. </summary>
-		public int Index {
-			get { return index; }
-		}
+		public int Index { get; private set; }
 		
-		// PermanentReference to one row. Even if we used expressions, they are cached using PermanentReferences, so
-		// one PermanentReference for a row would be created anyway
+		// PermanentReference for one row.
 		public Value PermanentReference { get; private set; }
 		
 		private Dictionary<string, ObjectProperty> properties = new Dictionary<string, ObjectProperty>();
@@ -33,7 +29,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		
 		internal ObjectValue(int index, Dictionary<string, MemberInfo> memberFromNameMap)
 		{
-			this.index = index;
+			this.Index = index;
 			this.memberForNameMap = memberFromNameMap;
 		}
 
@@ -60,7 +56,6 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				}
 				return property;
 			}
-			//set	{ properties[key] = value; }
 		}
 		
 		public static ObjectValue Create(Debugger.Value value, int index, Dictionary<string, MemberInfo> memberFromName)

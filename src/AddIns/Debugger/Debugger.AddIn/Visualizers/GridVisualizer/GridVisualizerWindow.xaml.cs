@@ -105,54 +105,61 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		
 		public void Refresh()
 		{
-			// clear ListView
-			listView.ItemsSource = null;
-			ScrollViewer listViewScroller = listView.GetScrollViewer();
-			if (listViewScroller != null) {
-				listViewScroller.ScrollToVerticalOffset(0);
-			}
-			Value shownValue = null;
-			ICSharpCode.NRefactory.Ast.Expression shownExpr = null;
-			try	{
-				shownExpr = debuggerService.GetExpression(txtExpression.Text);
-				shownValue = shownExpr.Evaluate(debuggerService.DebuggedProcess);
-			} catch(GetValueException) {
-				// display ex.Message
-			}
-			if (shownValue != null && !shownValue.IsNull) {
-				GridValuesProvider gridValuesProvider;
-				// Value is IList
-				DebugType iListType, listItemType;
-				if (shownValue.Type.ResolveIListImplementation(out iListType, out listItemType)) {
-					gridValuesProvider = CreateListValuesProvider(shownExpr, iListType, listItemType);
-				} else	{
-					// Value is IEnumerable
-					DebugType iEnumerableType, itemType;
-					if (shownValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
-						// original
-						/*var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, initialIEnumerableItemsCount);
+			try {
+				// clear ListView
+				listView.ItemsSource = null;
+				ScrollViewer listViewScroller = listView.GetScrollViewer();
+				if (listViewScroller != null) {
+					listViewScroller.ScrollToVerticalOffset(0);
+				}
+				Value shownValue = null;
+				ICSharpCode.NRefactory.Ast.Expression shownExpr = null;
+				try	{
+					shownExpr = debuggerService.GetExpression(txtExpression.Text);
+					shownValue = shownExpr.Evaluate(debuggerService.DebuggedProcess);
+				} catch(GetValueException) {
+					// display ex.Message
+				}
+				if (shownValue != null && !shownValue.IsNull) {
+					GridValuesProvider gridValuesProvider;
+					// Value is IList
+					DebugType iListType, listItemType;
+					if (shownValue.Type.ResolveIListImplementation(out iListType, out listItemType)) {
+						gridValuesProvider = CreateListValuesProvider(shownValue, iListType, listItemType);
+					} else	{
+						// Value is IEnumerable
+						DebugType iEnumerableType, itemType;
+						if (shownValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
+							// original
+							/*var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, initialIEnumerableItemsCount);
 						var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
 						lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
 						gridValuesProvider = enumerableValuesProvider;*/
-						DebugType debugListType;
-						var debugListExpression = DebuggerHelpers.CreateDebugListExpression(shownExpr, itemType, out debugListType);
-						gridValuesProvider = CreateListValuesProvider(debugListExpression, debugListType, itemType);
-					} else	{
-						// Value cannot be displayed in GridVisualizer
-						return;
+							DebugType debugListType;
+							var debugListExpression = DebuggerHelpers.CreateDebugListExpression(shownExpr, itemType, out debugListType);
+							var debugList = debugListExpression.Evaluate(WindowsDebugger.CurrentProcess);
+							gridValuesProvider = CreateListValuesProvider(debugList, debugListType, itemType);
+						} else	{
+							// Value cannot be displayed in GridVisualizer
+							return;
+						}
 					}
+					
+					IList<MemberInfo> itemTypeMembers = gridValuesProvider.GetItemTypeMembers();
+					InitializeColumns((GridView)this.listView.View, itemTypeMembers);
+					this.columnHider = new GridViewColumnHider((GridView)this.listView.View);
+					cmbColumns.ItemsSource = this.columnHider.HideableColumns;
 				}
-				
-				IList<MemberInfo> itemTypeMembers = gridValuesProvider.GetItemTypeMembers();
-				InitializeColumns((GridView)this.listView.View, itemTypeMembers);
-				this.columnHider = new GridViewColumnHider((GridView)this.listView.View);
-				cmbColumns.ItemsSource = this.columnHider.HideableColumns;
+			} catch (GetValueException ex) {
+				// TODO display ex msg
+			} catch (DebuggerVisualizerException ex) {
+				// TODO display ex msg
 			}
 		}
 		
-		ListValuesProvider CreateListValuesProvider(ICSharpCode.NRefactory.Ast.Expression targetObject, DebugType iListType, DebugType listItemType)
+		ListValuesProvider CreateListValuesProvider(Value targetValue, DebugType iListType, DebugType listItemType)
 		{
-			var listValuesProvider = new ListValuesProvider(targetObject, iListType, listItemType);
+			var listValuesProvider = new ListValuesProvider(targetValue, listItemType);
 			var virtCollection = new VirtualizingCollection<ObjectValue>(listValuesProvider);
 			this.listView.ItemsSource = virtCollection;
 			return listValuesProvider;
