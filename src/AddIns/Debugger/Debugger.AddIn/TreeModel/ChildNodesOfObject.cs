@@ -101,11 +101,7 @@ namespace Debugger.AddIn.TreeModel
 			// Add a cast, so that we are sure the expression has an indexer.
 			// (The expression can be e.g. of type 'object' but its value is a List.
 			// Without the cast, evaluating "expr[i]" would fail, because object does not have an indexer).
-			targetObject = new CastExpression(
-				new TypeReference(typeof(IList).FullName),
-				targetObject,
-				CastType.Cast
-			);
+			targetObject = targetObject.CastToIList();
 			int count = 0;
 			GetValueException error = null;
 			try {
@@ -127,21 +123,6 @@ namespace Debugger.AddIn.TreeModel
 					yield return itemNode;
 				}
 			}
-		}
-		
-		/// <summary>
-		/// Evaluates System.Collections.ICollection.Count property on given object.
-		/// </summary>
-		/// <exception cref="GetValueException">Evaluating System.Collections.ICollection.Count on targetObject failed.</exception>
-		public static int GetIListCount(Expression targetObject)
-		{
-			Value list = targetObject.Evaluate(WindowsDebugger.CurrentProcess);
-			var iCollectionInterface = list.Type.GetInterface(typeof(ICollection).FullName);
-			if (iCollectionInterface == null)
-				throw new GetValueException(targetObject, targetObject.PrettyPrint() + " does not implement System.Collections.ICollection");
-			PropertyInfo countProperty = iCollectionInterface.GetProperty("Count");
-			// Do not get string representation since it can be printed in hex
-			return (int)list.GetPropertyValue(countProperty).PrimitiveValue;
 		}
 		
 		public static IEnumerable<TreeNode> PrependNode(TreeNode node, IEnumerable<TreeNode> rest)

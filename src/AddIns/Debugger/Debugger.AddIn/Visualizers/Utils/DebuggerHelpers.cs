@@ -110,15 +110,5 @@ namespace Debugger.AddIn.Visualizers.Utils
 		{
 			return expr.Evaluate(WindowsDebugger.CurrentProcess).GetPermanentReference();
 		}
-		
-		public static bool IsNull(this Expression expr)
-		{
-			return expr.Evaluate(WindowsDebugger.CurrentProcess).IsNull;
-		}
-		
-		public static DebugType GetType(this Expression expr)
-		{
-			return expr.Evaluate(WindowsDebugger.CurrentProcess).Type;
-		}
 	}
 }

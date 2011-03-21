@@ -19,8 +19,8 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		private bool countEvaluated = false;
 		private int count = -1;
 		
-		public ListValuesProvider(Expression targetObject, DebugType iListType, DebugType listItemType)
-			:base(targetObject, iListType, listItemType)
+		public ListValuesProvider(Expression targetObject, DebugType listItemType)
+			:base(targetObject, listItemType)
 		{
 		}
 		
@@ -28,7 +28,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		{
 			if (!countEvaluated)
 			{
-				this.count = evaluateCount();
+				this.count = Debugger.AddIn.TreeModel.Utils.GetIListCount(this.targetObject);
 				countEvaluated = true;
 			}
 			return this.count;
@@ -41,18 +41,6 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				//targetObject.AppendIndexer(index), // use Expression instead of value - possible only for IList though
 				index,
 				this.memberFromNameMap);
-		}
-		
-		// TODO move to Utils iListType.EvaluateCount(Expression targetObject)
-		// or targetObject.EvaluateCount(iListType)
-		// or targetObject.EvaluateIListCount()	<- calls ResolveIListImplementation
-		int evaluateCount()
-		{
-			PropertyInfo countProperty = this.collectionType.GetGenericInterface("System.Collections.Generic.ICollection").GetProperty("Count");
-			// Do not get string representation since it can be printed in hex later
-			Value countValue = targetObject.Evaluate(WindowsDebugger.CurrentProcess).GetPropertyValue(countProperty);
-			//Value countValue = targetObject.AppendMemberReference(countProperty).Evaluate(WindowsDebugger.CurrentProcess);
-			return (int)countValue.PrimitiveValue;
 		}
 	}
 }

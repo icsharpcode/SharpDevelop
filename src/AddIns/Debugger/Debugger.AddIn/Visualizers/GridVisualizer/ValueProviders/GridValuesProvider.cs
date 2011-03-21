@@ -20,13 +20,11 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		protected Dictionary<string, MemberInfo> memberFromNameMap;
 		
 		protected Expression targetObject;
-		protected DebugType collectionType;
 		protected DebugType itemType;
 		
-		public GridValuesProvider(Expression targetObject, DebugType collectionType, DebugType itemType)
+		public GridValuesProvider(Expression targetObject, DebugType itemType)
 		{
 			this.targetObject = targetObject;
-			this.collectionType = collectionType;
 			this.itemType = itemType;
 			
 			this.memberFromNameMap = this.GetItemTypeMembers().MakeDictionary(memberInfo => memberInfo.Name);

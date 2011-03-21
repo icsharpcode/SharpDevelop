@@ -14,14 +14,15 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Common;
 using Debugger.AddIn.Visualizers.PresentationBindings;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
-using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
@@ -125,20 +126,19 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 					// Value is IList
 					DebugType iListType, listItemType;
 					if (shownValue.Type.ResolveIListImplementation(out iListType, out listItemType)) {
-						gridValuesProvider = CreateListValuesProvider(shownValue, iListType, listItemType);
+						gridValuesProvider = CreateListValuesProvider(shownExpr.CastToIList(), listItemType);
 					} else	{
 						// Value is IEnumerable
 						DebugType iEnumerableType, itemType;
 						if (shownValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
 							// original
 							/*var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, initialIEnumerableItemsCount);
-						var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
-						lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
-						gridValuesProvider = enumerableValuesProvider;*/
+							var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
+							lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
+							gridValuesProvider = enumerableValuesProvider;*/
 							DebugType debugListType;
 							var debugListExpression = DebuggerHelpers.CreateDebugListExpression(shownExpr, itemType, out debugListType);
-							var debugList = debugListExpression.Evaluate(WindowsDebugger.CurrentProcess);
-							gridValuesProvider = CreateListValuesProvider(debugList, debugListType, itemType);
+							gridValuesProvider = CreateListValuesProvider(debugListExpression, itemType);
 						} else	{
 							// Value cannot be displayed in GridVisualizer
 							return;
@@ -157,9 +157,9 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			}
 		}
 		
-		ListValuesProvider CreateListValuesProvider(Value targetValue, DebugType iListType, DebugType listItemType)
+		ListValuesProvider CreateListValuesProvider(ICSharpCode.NRefactory.Ast.Expression targetExpression, DebugType listItemType)
 		{
-			var listValuesProvider = new ListValuesProvider(targetValue, listItemType);
+			var listValuesProvider = new ListValuesProvider(targetExpression, listItemType);
 			var virtCollection = new VirtualizingCollection<ObjectValue>(listValuesProvider);
 			this.listView.ItemsSource = virtCollection;
 			return listValuesProvider;
