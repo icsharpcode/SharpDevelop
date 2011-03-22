@@ -17,6 +17,7 @@ namespace PackageManagement.Tests
 		AvailablePackagesViewModel viewModel;
 		FakePackageManagementService packageManagementService;
 		FakeTaskFactory taskFactory = new FakeTaskFactory();
+		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
 		
 		void CreateViewModel()
 		{
@@ -34,6 +35,11 @@ namespace PackageManagement.Tests
 			taskFactory = new FakeTaskFactory();
 			var messageReporter = new FakeMessageReporter();
 			viewModel = new AvailablePackagesViewModel(packageManagementService, messageReporter, taskFactory);
+		}
+		
+		void CreateExceptionThrowingPackageManagementService()
+		{
+			exceptionThrowingPackageManagementService = new ExceptionThrowingPackageManagementService();
 		}
 		
 		void CompleteReadPackagesTask()
@@ -359,6 +365,19 @@ namespace PackageManagement.Tests
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void ReadPackages_ExceptionThrownWhenAccessingActiveRepository_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
+		{
+			CreateExceptionThrowingPackageManagementService();
+			exceptionThrowingPackageManagementService.ExeptionToThrowWhenActiveRepositoryAccessed = 
+				new Exception("Test");
+			CreateViewModel(exceptionThrowingPackageManagementService);
+			viewModel.ReadPackages();
+			
+			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
+			Assert.AreEqual("Test", ex.Message);
 		}
 	}
 }

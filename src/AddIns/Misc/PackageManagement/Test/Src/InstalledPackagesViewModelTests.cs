@@ -91,26 +91,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void HasError_ActiveProjectManagerThrowsException_ReturnsTrue()
-		{
-			CreateExceptionThrowingPackageManagementService();
-			exceptionThrowingPackageManagementService.ExeptionToThrowWhenActiveProjectManagerAccessed = new Exception();
-			CreateViewModel(exceptionThrowingPackageManagementService);
-			
-			Assert.IsTrue(viewModel.HasError);
-		}
-		
-		[Test]
-		public void ErrorMessage_ActiveProjectManagerThrowsException_ReturnsErrorMessageFromException()
-		{
-			CreateExceptionThrowingPackageManagementService();
-			exceptionThrowingPackageManagementService.ExeptionToThrowWhenActiveProjectManagerAccessed = new Exception("Test");
-			CreateViewModel(exceptionThrowingPackageManagementService);
-			
-			Assert.AreEqual("Test", viewModel.ErrorMessage);
-		}
-		
-		[Test]
 		public void ReadPackages_ActiveProjectManagerThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
 		{
 			CreateExceptionThrowingPackageManagementService();
