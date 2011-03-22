@@ -35,7 +35,8 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		/// </summary>
 		public IList<MemberInfo> GetItemTypeMembers()
 		{
-			return itemType.GetFieldsAndNonIndexedProperties(BindingFlags.Public | BindingFlags.Instance);
+			var publicPropetiesAndFields = itemType.GetFieldsAndNonIndexedProperties(BindingFlags.Public | BindingFlags.Instance);
+			return publicPropetiesAndFields;
 		}
 	}
 }

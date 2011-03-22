@@ -5,6 +5,7 @@ using System;
 using Debugger.AddIn.Visualizers.Common;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Services;
 using System.Reflection;
@@ -16,8 +17,12 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	/// </summary>
 	public class ListValuesProvider : GridValuesProvider, IListValuesProvider<ObjectValue>
 	{
-		private bool countEvaluated = false;
-		private int count = -1;
+		int? listCount = null;
+		/// <summary>
+		/// After evaluating how many items to clear debugger Expression cache,
+		/// so that the cache does not keep too many PermanentReferences.
+		/// </summary>
+		static readonly int ClearCacheThreshold = 50;
 		
 		public ListValuesProvider(Expression targetObject, DebugType listItemType)
 			:base(targetObject, listItemType)
@@ -26,16 +31,23 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		
 		public int GetCount()
 		{
-			if (!countEvaluated)
-			{
-				this.count = Debugger.AddIn.TreeModel.Utils.GetIListCount(this.targetObject);
-				countEvaluated = true;
+			if (this.listCount == null) {
+				this.listCount = Debugger.AddIn.TreeModel.Utils.GetIListCount(this.targetObject);
 			}
-			return this.count;
+			return this.listCount.Value;
 		}
+		
+		/// <summary>When this reaches ClearCacheThreshold, the debugger Expression cache is cleared.</summary>
+		int itemClearCacheCounter = 0;
 		
 		public ObjectValue GetItemAt(int index)
 		{
+			if (itemClearCacheCounter++ > ClearCacheThreshold) {
+				// clear debugger Expression cache to avoid holding too many PermanentReferences
+				WindowsDebugger.CurrentProcess.ClearExpressionCache();
+				LoggingService.Info("Cleared debugger Expression cache.");
+				itemClearCacheCounter = 0;
+			}
 			return ObjectValue.Create(
 				targetObject.AppendIndexer(index).Evaluate(WindowsDebugger.CurrentProcess),
 				//targetObject.AppendIndexer(index), // use Expression instead of value - possible only for IList though
