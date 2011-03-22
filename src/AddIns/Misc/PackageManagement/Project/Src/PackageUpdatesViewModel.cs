@@ -15,6 +15,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementService packageManagementService;
 		IPackageRepository localRepository;
 		IPackageRepository sourceRepository;
+		string errorMessage = String.Empty;
 		
 		public PackageUpdatesViewModel(
 			IPackageManagementService packageManagementService,
@@ -27,14 +28,20 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
 		{
-			IProjectManager projectManager = packageManagementService.ActiveProjectManager;
-			localRepository = projectManager.LocalRepository;
-			
+			try {
+				IProjectManager projectManager = packageManagementService.ActiveProjectManager;
+				localRepository = projectManager.LocalRepository;
+			} catch (Exception ex) {
+				errorMessage = ex.Message;
+			}
 			sourceRepository = packageManagementService.CreateAggregatePackageRepository();
 		}
 		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
+			if (localRepository == null) {
+				ThrowSavedException();
+			}
 			IQueryable<IPackage> localPackages = localRepository.GetPackages();
 			return GetUpdatedPackages(localPackages);
 		}
@@ -42,6 +49,11 @@ namespace ICSharpCode.PackageManagement
 		IQueryable<IPackage> GetUpdatedPackages(IQueryable<IPackage> localPackages)
 		{
 			return sourceRepository.GetUpdates(localPackages).AsQueryable();
+		}
+		
+		void ThrowSavedException()
+		{
+			throw new ApplicationException(errorMessage);
 		}
 	}
 }

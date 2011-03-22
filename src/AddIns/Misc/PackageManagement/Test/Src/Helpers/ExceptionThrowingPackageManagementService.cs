@@ -13,6 +13,7 @@ namespace PackageManagement.Tests.Helpers
 		public Exception ExeptionToThrowWhenActiveProjectManagerAccessed { get; set; }
 		public Exception ExeptionToThrowWhenInstallPackageCalled { get; set; }
 		public Exception ExeptionToThrowWhenUninstallPackageCalled { get; set; }
+		public Exception ExeptionToThrowWhenActiveRepositoryAccessed { get; set; }
 
 		public override IProjectManager ActiveProjectManager {
 			get {
@@ -21,6 +22,16 @@ namespace PackageManagement.Tests.Helpers
 				}
 				return base.ActiveProjectManager;
 			}
+		}
+		
+		public override IPackageRepository ActivePackageRepository {
+			get {
+				if (ExeptionToThrowWhenActiveRepositoryAccessed != null) {
+					throw ExeptionToThrowWhenActiveRepositoryAccessed;
+				}
+				return base.ActivePackageRepository;
+			}
+			set { base.ActivePackageRepository = value; }
 		}
 		
 		public override void InstallPackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations)

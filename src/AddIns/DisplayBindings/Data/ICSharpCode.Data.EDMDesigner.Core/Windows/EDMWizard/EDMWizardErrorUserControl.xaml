@@ -9,6 +9,6 @@
         </Grid.RowDefinitions>
         
         <TextBlock Margin="3">The following error(s) occured during generation of the Entity Data Model:</TextBlock>
-        <TextBox Grid.Row="1" Margin="3" Text="{Binding Path=Exception.FullMessage, ElementName=This, Mode=OneWay}" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+        <TextBox Grid.Row="1" Margin="3" Text="{Binding Path=Exception, ElementName=This, Mode=OneWay}" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
     </Grid>
 </data:WizardErrorUserControl>

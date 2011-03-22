@@ -70,14 +70,17 @@ namespace SharpRefactoring
 		{
 			int i = 0;
 			
-			foreach (var f in sourceClass.Fields.Where(field => !field.IsConst && field.IsStatic == sourceClass.IsStatic)) {
+			foreach (var f in sourceClass.Fields.Where(field => !field.IsConst
+			                                           && field.IsStatic == sourceClass.IsStatic
+			                                           && field.ReturnType != null)) {
 				yield return new PropertyOrFieldWrapper(f) { Index = i, IsSelected = true };
 				i++;
 			}
 			
 			foreach (var p in sourceClass.Properties.Where(prop => prop.CanSet && !prop.IsIndexer
 			                                               && PropertyRefactoringMenuBuilder.IsAutomaticProperty(prop)
-			                                               && prop.IsStatic == sourceClass.IsStatic)) {
+			                                               && prop.IsStatic == sourceClass.IsStatic
+			                                               && prop.ReturnType != null)) {
 				yield return new PropertyOrFieldWrapper(p) { Index = i, IsSelected = true };
 				i++;
 			}

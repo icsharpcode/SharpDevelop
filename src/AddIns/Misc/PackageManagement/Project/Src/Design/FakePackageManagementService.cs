@@ -60,7 +60,7 @@ namespace ICSharpCode.PackageManagement.Design
 			FakeActiveProjectManager.FakeSourceRepository = FakeActivePackageRepository;
 		}
 		
-		public IPackageRepository ActivePackageRepository { get; set; }
+		public virtual IPackageRepository ActivePackageRepository { get; set; }
 		
 		public virtual IProjectManager ActiveProjectManager {
 			get { return FakeActiveProjectManager; }

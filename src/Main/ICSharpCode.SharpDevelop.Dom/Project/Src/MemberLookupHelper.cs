@@ -87,6 +87,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			//Dictionary<IMember, IMember> overrideDict = new Dictionary<IMember, IMember>();
 			
 			ParameterListComparer parameterListComparer = new ParameterListComparer();
+			parameterListComparer.UseCachedHashes = true;
 			HashSet<IMethod> handledMethods = new HashSet<IMethod>(parameterListComparer);
 			Dictionary<IMethod, IMethod> overrideMethodDict = new Dictionary<IMethod, IMethod>(parameterListComparer);
 			IMember nonMethodOverride = null;

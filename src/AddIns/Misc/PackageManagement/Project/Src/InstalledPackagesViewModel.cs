@@ -31,8 +31,7 @@ namespace ICSharpCode.PackageManagement
 			try {
 				this.projectManager = PackageManagementService.ActiveProjectManager;
 			} catch (Exception ex) {
-				SaveError(ex);
-				errorMessage = ErrorMessage;
+				errorMessage = ex.Message;
 			}
 		}
 

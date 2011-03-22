@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.VBNetBinding.Tests
 {
-	[TestFixture, Ignore]
+	[TestFixture]
 	public class IndentationTests
 	{
 		[Test]
@@ -63,6 +63,90 @@ End Interface";
 		}
 		
 		[Test]
+		public void SD1775_Fix()
+		{
+			string expected = @"Public Class Test
+	Private Sub Tester()
+		B = New Burger With {Cheese = True, _
+			Lettuce = True, _
+			Tomato = True, _
+			CookLevel = MeatCookLevel.WellDone}
+	End Sub
+End Class";
+			
+			string code = @"Public Class Test
+Private Sub Tester()
+B = New Burger With {Cheese = True, _
+Lettuce = True, _
+Tomato = True, _
+CookLevel = MeatCookLevel.WellDone}
+End Sub
+End Class";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test]
+		public void Simple()
+		{
+			string expected = @"'
+' Created by SharpDevelop.
+' User: Siegfried
+' Date: 25.02.2011
+' Time: 14:41
+'
+' To change this template use Tools | Options | Coding | Edit Standard Headers.
+'
+Imports Microsoft.VisualBasic.ApplicationServices
+
+Namespace My
+	' This file controls the behaviour of the application.
+	Partial Class MyApplication
+		Public Sub New()
+			MyBase.New(AuthenticationMode.Windows)
+			Me.IsSingleInstance = False
+			Me.EnableVisualStyles = True
+			Me.SaveMySettingsOnExit = True
+			Me.ShutDownStyle = ShutdownMode.AfterMainFormCloses
+		End Sub
+		
+		Protected Overrides Sub OnCreateMainForm()
+			Me.MainForm = My.Forms.MainForm
+		End Sub
+	End Class
+End Namespace";
+			
+			string code = @"'
+' Created by SharpDevelop.
+' User: Siegfried
+' Date: 25.02.2011
+' Time: 14:41
+'
+' To change this template use Tools | Options | Coding | Edit Standard Headers.
+'
+Imports Microsoft.VisualBasic.ApplicationServices
+
+Namespace My
+' This file controls the behaviour of the application.
+Partial Class MyApplication
+Public Sub New()
+MyBase.New(AuthenticationMode.Windows)
+Me.IsSingleInstance = False
+Me.EnableVisualStyles = True
+Me.SaveMySettingsOnExit = True
+Me.ShutDownStyle = ShutdownMode.AfterMainFormCloses
+End Sub
+
+Protected Overrides Sub OnCreateMainForm()
+Me.MainForm = My.Forms.MainForm
+End Sub
+End Class
+End Namespace";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test]
 		public void ArrayInitializerTest()
 		{
 			string expected = @"Public Class Test
@@ -79,16 +163,16 @@ End Interface";
 End Class";
 			
 			string code = @"Public Class Test
-	Private Sub Tester()
-		test(asdf, _
-			asdf, _
-			asdf, _
-			asdf)
-		
-		Dim test As Integer() = { _
-		2,2,3,34,4,5 _
-		}
-	End Sub
+Private Sub Tester()
+test(asdf, _
+asdf, _
+asdf, _
+asdf)
+
+Dim test As Integer() = { _
+2,2,3,34,4,5 _
+}
+End Sub
 End Class";
 			
 			RunFormatTest(code, expected);
@@ -177,7 +261,7 @@ End Class";
 		[Test]
 		public void SelectCaseTest()
 		{
-						string expected = @"Public Class Test
+			string expected = @"Public Class Test
 	Private Sub Tester()
 		Select Case a
 			Case 0
@@ -215,7 +299,7 @@ End Class";
 		[Test]
 		public void SelectCaseTest2()
 		{
-						string expected = @"Public Class Test
+			string expected = @"Public Class Test
 	Private Sub Tester()
 		Select Case a
 			Case 0
@@ -247,7 +331,7 @@ End Class";
 		[Test]
 		public void WithTest()
 		{
-						string expected = @"Public Class Test
+			string expected = @"Public Class Test
 	Private Sub Tester()
 		With a
 			If True Then
@@ -281,7 +365,7 @@ End Class";
 		[Test]
 		public void WithTest2()
 		{
-						string expected = @"Public Class Test
+			string expected = @"Public Class Test
 	Private Sub Tester()
 		With a
 			If True Then
@@ -314,6 +398,56 @@ Catch ex As Exception
 End Try
 End If
 End With
+End Sub
+End Class";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test, Ignore]
+		// TODO : find out why unit test does not work, but normal run works
+		public void FunctionLambda()
+		{
+			string expected = @"Public Class Test
+	Private Sub Tester()
+		Dim increment1 = Function(x) x + 1
+		Dim increment2 = Function(x)
+		                 	Return x + 2
+		                 End Function
+	End Sub
+End Class";
+			
+			string code = @"Public Class Test
+Private Sub Tester()
+Dim increment1 = Function(x) x + 1
+Dim increment2 = Function(x)
+Return x + 2
+End Function
+End Sub
+End Class";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test, Ignore]
+		// TODO : find out why unit test does not work, but normal run works
+		public void SubLambda()
+		{
+			string expected = @"Public Class Test
+	Private Sub Tester()
+		Dim writeline1 = Sub(x) Console.WriteLine(x)
+		Dim writeline2 = Sub(x)
+		                 	Console.WriteLine(x)
+		                 End Sub
+	End Sub
+End Class";
+			
+			string code = @"Public Class Test
+Private Sub Tester()
+Dim writeline1 = Sub(x) Console.WriteLine(x)
+Dim writeline2 = Sub(x)
+Console.WriteLine(x)
+End Sub
 End Sub
 End Class";
 			
