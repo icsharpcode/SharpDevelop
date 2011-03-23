@@ -36,15 +36,18 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			try {
 				if (CanEvaluate(expression)) {
 					IExpression compiled = compiler.CompileExpression<string>(expression);
+					
 					this.context.ContextObject = this.SinglePage;
 					if (compiled != null) {
 						return (compiled.Evaluate(context)).ToString();
 					}
 				}
 			} catch (Exception e) {
-				
-//				Console.WriteLine("error");
 				expression = e.Message;
+				Console.WriteLine("");
+				Console.WriteLine("ExpressionEvaluatorFacade.Evaluate");
+				Console.WriteLine(e.Message);
+				Console.WriteLine("");
 			}
 			
 			return expression;

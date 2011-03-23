@@ -90,7 +90,6 @@ namespace ICSharpCode.Reports.Core
 						currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
 					
 						tableContainer.Location = saveLocation;
-						Console.WriteLine("----");
 					}
 					else {
 						int adjust = row.Location.Y - saveLocation.Y;

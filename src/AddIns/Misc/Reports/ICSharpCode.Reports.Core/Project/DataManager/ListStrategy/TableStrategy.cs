@@ -13,7 +13,7 @@ namespace ICSharpCode.Reports.Core
 	/// <summary>
 	/// Description of TableStrategy.
 	/// </summary>
-	internal class TableStrategy: BaseListStrategy,IEnumerable<BaseComparer> 
+	internal class TableStrategy: BaseListStrategy,IEnumerable<BaseComparer>
 	{
 		private DataTable table;
 		
@@ -87,6 +87,36 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
+		public override CurrentItemsCollection FillDataRow(int pos)
+		{
+			//this.table.Rows[pos];
+			DataRow row = (DataRow) CurrentFromPosition(pos);
+			return FillCurrentRow(row);
+		}
+		
+		
+		public override CurrentItemsCollection FillDataRow()
+		{
+			DataRow row =this.Current as DataRow;
+			return FillCurrentRow(row);
+		}
+		
+		
+		CurrentItemsCollection FillCurrentRow( DataRow row)
+		{
+			CurrentItemsCollection ci = new CurrentItemsCollection();
+			if (row != null) {
+				CurrentItem c = null;
+				foreach (DataColumn dc in table.Columns) {
+					c = new CurrentItem();
+					c.ColumnName = dc.ColumnName;
+					c.DataType = dc.DataType;
+					c.Value = row[dc.ColumnName];
+					ci.Add(c);
+				}
+			}
+			return ci;
+		}
 		public override bool MoveNext()
 		{
 			return base.MoveNext();
@@ -176,26 +206,7 @@ namespace ICSharpCode.Reports.Core
 		
 		#region Test
 		
-		public override CurrentItemsCollection FillDataRow()
-		{
-			CurrentItemsCollection ci = base.FillDataRow();
-			DataRow row = this.Current as DataRow;
-			
-			if (row != null) {
-				CurrentItem c = null;
-				foreach (DataColumn dc in table.Columns)
-				{
-					c = new CurrentItem();
-					c.ColumnName = dc.ColumnName;
-					c.DataType = dc.DataType;
-					c.Value = row[dc.ColumnName];
-					ci.Add(c);
-				}
-			}
-			return ci;
-		}
 		
-	
 		public override object CurrentFromPosition (int pos)
 		{
 			return this.table.Rows[pos];

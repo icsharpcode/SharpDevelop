@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
@@ -102,11 +103,9 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		
 		
 		[Test]
-	
 		public void Collection_Contains_Subclass ()
 		{
 			var modifyedCollection = this.ModifyCollection();
-	
 			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
 			ReportSettings rs = new ReportSettings();
 			rs.GroupColumnsCollection.Add(gc);
@@ -162,6 +161,81 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		}
 		
 		#endregion
+		
+		#region FieldReference
+		
+		[Test]
+		public void Check_Field_Reference()
+		{
+			var modifyedCollection = this.ModifyCollection();
+			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
+			ReportSettings rs = new ReportSettings();
+			rs.GroupColumnsCollection.Add(gc);
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(modifyedCollection,rs);
+			IDataNavigator dataNavigator = dm.GetNavigator;
+			
+//			IExpressionEvaluatorFacade  evaluator = new ExpressionEvaluatorFacade();
+			
+			ReportItemCollection searchCol = new ReportItemCollection();
+			
+			searchCol.Add(new BaseDataItem ()
+			              {
+			              	ColumnName ="DummyClass.DummyString"			     
+			              }
+			             );
+			searchCol.Add(new BaseDataItem ()
+			              {
+			              	Name ="Last",			           
+			              	ColumnName ="Last"	
+			              }
+			             );
+			
+			searchCol.Add(new BaseDataItem ()
+			              {
+			             			           
+			              	ColumnName ="GroupItem"	
+			              }
+			             );
+//			searchCol.Add(new BaseTextItem()
+//			              {
+//			              	Name ="FieldRef",
+//			              	Text ="=Fields!Last"
+//			              }
+//			             );
+			              
+			dataNavigator.Reset();
+			dataNavigator.MoveNext();
+
+			do
+			{
+				
+				dataNavigator.Fill(searchCol);
+				var a1 = (BaseDataItem)searchCol[0];
+				var b1 = (BaseDataItem)searchCol[2];	
+				Console.WriteLine ("-----{0} - {1}------",a1.DBValue,b1.DBValue);
+							
+				if (dataNavigator.HasChildren)
+				{
+					var childNavigator = dataNavigator.GetChildNavigator;
+					do
+					{
+						var dataRow = childNavigator.GetDataRow;
+						var item = dataRow.Find("Last");
+//						childNavigator.Fill(searchCol);
+//						var a = (BaseDataItem)searchCol[0];
+//						var b = (BaseDataItem)searchCol[1];
+//						var c = (BaseDataItem)searchCol[3];
+//						Console.WriteLine ("\t{0} - {1} - {2}",a.DBValue,b.DBValue,c.DBValue);
+						                        Console.WriteLine(item.Value);
+					}
+					while (childNavigator.MoveNext());
+				}
+			}
+			while (dataNavigator.MoveNext());
+		}
+	
+		#endregion
+		
 		
 		#region Group by DataTime
 		

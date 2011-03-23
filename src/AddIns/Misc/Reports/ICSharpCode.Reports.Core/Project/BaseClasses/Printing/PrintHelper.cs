@@ -216,10 +216,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			foreach (BaseExportColumn element in items) {
 				ExportContainer cont = element as ExportContainer;
 				if (cont != null) {
-					Console.WriteLine("-------Container ----{0}-----",cont.StyleDecorator.Location);
 					ShowLocations(cont.Items);
 				}
-				System.Console.WriteLine ("{0} - {1}",element.ToString(),element.StyleDecorator.Location.ToString());
 			}
 		}
 		

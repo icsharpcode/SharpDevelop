@@ -40,8 +40,14 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.ReportingService
 				string retval;
 				if (item != null) {
 					retval = item.Value.ToString();
-				} else {
+				} else 
+				{
 					retval = GlobalValues.UnkownFunctionMessage(variable.VariableName);
+						
+					Console.WriteLine("");
+					Console.WriteLine("ExpressionEvaluatorFacade.FieldReference");
+					Console.WriteLine("Field<{0}> not found",variable.VariableName);
+					Console.WriteLine("");
 				}
 				return retval;
 			}
@@ -49,11 +55,10 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.ReportingService
 		}
 		
 		
-		
 		protected override void AggregateValue(object value, AggregationState aggregationState, params object[] args)
-       {
+		{
 
-       }
+		}
 
         protected override string ExtractAggregateValue(AggregationState aggregationState)
         {

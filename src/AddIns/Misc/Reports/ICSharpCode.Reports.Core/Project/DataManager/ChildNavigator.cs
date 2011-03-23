@@ -91,8 +91,8 @@ namespace ICSharpCode.Reports.Core
 		public CurrentItemsCollection GetDataRow
 		{
 			get {
-               var ss = this.indexList[this.indexList.CurrentPosition].ListIndex;
-               return dataStore.FillDataRow(ss);
+               var position = this.indexList[this.indexList.CurrentPosition].ListIndex;
+               return dataStore.FillDataRow(position);
 			}
 		}
 

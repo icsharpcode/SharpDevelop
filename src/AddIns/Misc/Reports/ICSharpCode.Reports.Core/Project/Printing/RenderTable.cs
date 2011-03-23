@@ -94,7 +94,6 @@ namespace ICSharpCode.Reports.Core
 				pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)table,currentPosition);
 				
 				if (PrintHelper.IsPageFull(pageBreakRect,this.SectionBounds)) {
-					Console.WriteLine("PageBreak - PageFull");
 					table.Location = saveLocation;
 					AbstractRenderer.PageBreak(ReportPageEventArgs);
 					return;

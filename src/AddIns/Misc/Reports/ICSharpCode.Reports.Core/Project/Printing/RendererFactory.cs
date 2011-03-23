@@ -24,7 +24,6 @@ namespace ICSharpCode.Reports.Core
 
 			Type t = itemToConvert.GetType();
 			if (t.Equals(typeof(BaseTableItem))) {
-				Console.WriteLine("render Table");
 				return new RenderTable(dataNavigator,Rectangle.Empty,singlePage,layouter,section);
 			}
 			

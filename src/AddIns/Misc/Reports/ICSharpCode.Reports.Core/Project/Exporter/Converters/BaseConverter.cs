@@ -78,7 +78,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (row == null) {
 				throw new ArgumentException("row");
 			}
-//			Console.WriteLine("\tFireRowRendering");
 			RowRenderEventArgs rrea = new RowRenderEventArgs(row,currentNavigator.Current);
 			EventHelper.Raise<RowRenderEventArgs>(RowRendering,this,rrea);
 		}
@@ -86,7 +85,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void FireGroupHeaderRendering (GroupHeader groupHeader)
 		{
-//			Console.WriteLine("\tFireGroupHeaderRendering");
 			GroupHeaderEventArgs ghea = new GroupHeaderEventArgs(groupHeader);
 			EventHelper.Raise<GroupHeaderEventArgs>(GroupHeaderRendering,this,ghea);
 		}
@@ -182,9 +180,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return new ExporterCollection();;
 		}
 		
-		public Point CurrentPosition {get;set;}
+		
 		
 		#endregion
+		
+		public Point CurrentPosition {get;set;}
 		
 		public Rectangle ParentRectangle {get;private set;}
 			
@@ -192,32 +192,25 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		public SectionBounds SectionBounds {get; private set;}
 		
-		
 		public IDataNavigator DataNavigator {get;private set;}
 			
-		
 		public ILayouter Layouter {get; private set;}
 		
-		
 		public Graphics Graphics {get;set;}
-		
 		
 		protected IExpressionEvaluatorFacade Evaluator{get;private set;}
 		
 		protected int DefaultLeftPosition {get;set;}
-		
 		
 		protected void  SaveSectionSize(Size size)
 		{
 			this.saveSize = size;
 		}
 		
-		
 		protected Size RestoreSectionSize
 		{
 			get {return this.saveSize;}
 		}
-		
 		
 		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
@@ -225,13 +218,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 			LayoutHelper.SetLayoutForRow(Graphics,Layouter,simpleContainer);
 		}
 		
-		protected  Point ConvertStandardRow(ExporterCollection mylist,  ISimpleContainer simpleContainer)
+		protected  Point ConvertStandardRow(ExporterCollection mylist,ISimpleContainer simpleContainer)
 		{
 			var rowSize = simpleContainer.Size;
 			
 			Point curPos = new Point(DefaultLeftPosition, CurrentPosition.Y);
 			ExporterCollection ml = BaseConverter.ConvertItems (simpleContainer, curPos);
 			EvaluationHelper.EvaluateRow(Evaluator,ml);
+			
 			mylist.AddRange(ml);
 		
 			curPos = new Point (DefaultLeftPosition,CurrentPosition.Y + simpleContainer.Size.Height);

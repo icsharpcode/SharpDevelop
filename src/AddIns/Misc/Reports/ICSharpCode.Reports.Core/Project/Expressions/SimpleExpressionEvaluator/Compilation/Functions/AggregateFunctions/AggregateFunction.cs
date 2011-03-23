@@ -109,8 +109,6 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         
         private List<object> SetupDataSource (object data,IDataNavigator navigator)
         {
-            Console.WriteLine("");
-          
             navigator.Reset();
         	List<object> list = new List<object>();
         	while ( navigator.MoveNext()) {
