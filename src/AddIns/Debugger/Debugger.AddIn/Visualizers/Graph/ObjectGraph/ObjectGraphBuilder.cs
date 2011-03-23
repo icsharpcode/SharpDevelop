@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
+using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Common;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
@@ -146,15 +148,18 @@ namespace Debugger.AddIn.Visualizers.Graph
 			thisNode.Content = new ThisNode();
 			ThisNode contentRoot = thisNode.Content;
 			
-			DebugType iListType;
-			DebugType listItemType;
-			if (thisNode.PermanentReference.Type.ResolveIListImplementation(out iListType, out listItemType))
+			DebugType collectionType;
+			DebugType itemType;
+			if (thisNode.PermanentReference.Type.ResolveIListImplementation(out collectionType, out itemType))
 			{
 				// it is an IList
-				loadNodeCollectionContent(contentRoot, thisNode.Expression, iListType);
-			}
-			else
-			{
+				loadNodeCollectionContent(contentRoot, thisNode.Expression, collectionType);
+			} else if (thisNode.PermanentReference.Type.ResolveIEnumerableImplementation(out collectionType, out itemType)) {
+				// it is an IEnumerable
+				DebugType debugListType;
+				var debugListExpression = DebuggerHelpers.CreateDebugListExpression(thisNode.Expression, itemType, out debugListType);
+				loadNodeCollectionContent(contentRoot, debugListExpression, debugListType);
+			} else {
 				// it is an object
 				loadNodeObjectContent(contentRoot, thisNode.Expression, thisNode.PermanentReference.Type);
 			}
@@ -162,6 +167,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		private void loadNodeCollectionContent(AbstractNode node, Expression thisObject, DebugType iListType)
 		{
+			thisObject = thisObject.CastToIList();
 			int listCount = getIListCount(thisObject, iListType);
 			
 			for (int i = 0; i < listCount; i++)

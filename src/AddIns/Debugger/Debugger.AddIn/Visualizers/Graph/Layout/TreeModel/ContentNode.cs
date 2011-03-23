@@ -26,8 +26,10 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.parent = parent;
 		}
 		
-		// Icon next to the name - didn't add much value
-		//public ImageSource MemberIcon { get; set; }
+		/// <summary>
+		/// Icon next to the name - didn't add much value
+		/// </summary>
+		public ImageSource MemberIcon { get; set; }
 		
 		/// <summary>
 		/// Path to this content node in the whole <see cref="PositionedGraph"></see>.

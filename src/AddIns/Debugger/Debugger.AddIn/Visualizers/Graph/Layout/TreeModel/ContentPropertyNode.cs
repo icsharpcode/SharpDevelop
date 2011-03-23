@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using Debugger.AddIn.TreeModel;
+using Debugger.AddIn.Visualizers.Graph.Drawing;
 using Debugger.MetaData;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
@@ -39,7 +40,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.Property.Evaluate();
 			this.Text = this.Property.Value;
 		}
-		
+
 		public override bool ShowExpandPropertyButton
 		{
 			get
@@ -59,17 +60,28 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.Name = sourcePropertyNode.Property.Name;
 			// Important to set Text here, as we might be just building new view over existing (evaluated) model.
 			// If the model is not evaluated yet, this will be string.Empty and filled in Evaluate().
-			this.Text = sourcePropertyNode.Property.Value;		
+			this.Text = sourcePropertyNode.Property.Value;
 			this.IsNested = false;
 			this.IsExpanded = false;			// always false, Property nodes are never expanded (they have IsPropertyExpanded)
 			this.Property = new PositionedNodeProperty(
 				sourcePropertyNode.Property, this.ContainingNode,
 				expanded.Expressions.IsExpanded(sourcePropertyNode.Property.Expression));
-			
-			// Icon next to the name - didn't add much value
-			/*string imageName;
-			var image = ExpressionNode.GetImageForMember((IDebugMemberInfo)sourcePropertyNode.Property.PropInfo, out imageName);
-			this.MemberIcon = image.ImageSource;*/
+			if (PositionedGraphNodeControl.IsShowMemberIcon) {
+				EvalMemberIcon();
+			}
+		}
+		
+		void EvalMemberIcon()
+		{
+			// should never be null, just to be sure
+			if ((this.Property != null) && (this.Property.ObjectGraphProperty != null)) {
+				var memberInfo = (IDebugMemberInfo)this.Property.ObjectGraphProperty.MemberInfo;
+				if (memberInfo != null) {
+					string imageName;
+					var image = ExpressionNode.GetImageForMember(memberInfo, out imageName);
+					this.MemberIcon = image.ImageSource;
+				}
+			}
 		}
 	}
 }

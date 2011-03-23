@@ -57,7 +57,7 @@
                 	    <!-- Databound item is ContentNode -->
                         <GridView.Columns>
                         	<!-- Expand button (either property or nested) -->
-                            <GridViewColumn Header="Plus" Width="20">
+                            <GridViewColumn Header="Plus" Width="20" x:Name="columnExpander">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Margin="0 2 0 0">
@@ -78,18 +78,16 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                        	<!-- Icon - didn't add much value -->
-                        	<!--  
-                        	<GridViewColumn Header="Icon" Width="10">
+                        	<!-- Icon -->
+                        	<GridViewColumn Header="Icon" Width="10" x:Name="columnMemberIcon" >
                                 <GridViewColumn.CellTemplate>
                                 	<DataTemplate>
-                        				<Image Width="10" Height="10" Source="{Binding MemberIcon}"></Image>
+                        				<Image Width="10" Height="10" Source="{Binding MemberIcon}" Margin="-6 0"></Image>
 									</DataTemplate>
                                 </GridViewColumn.CellTemplate>
                         	</GridViewColumn>
-							-->
                         	<!-- Name -->
-                            <GridViewColumn Header="Name" Width="60">
+                            <GridViewColumn Header="Name" Width="60" x:Name="columnName">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                     	<StackPanel Orientation="Horizontal">
@@ -99,7 +97,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                         	 <!-- Text -->
-                            <GridViewColumn Header="Value" Width="60" CellTemplate="{StaticResource valueColumnTemplate}">
+                            <GridViewColumn Header="Value" Width="60" CellTemplate="{StaticResource valueColumnTemplate}" x:Name="columnText">
                             </GridViewColumn>
                         </GridView.Columns>
                     </GridView>

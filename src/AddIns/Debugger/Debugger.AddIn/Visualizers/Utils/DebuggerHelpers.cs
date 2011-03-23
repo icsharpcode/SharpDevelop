@@ -30,7 +30,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 			var iEnumerableType = DebugType.CreateFromType(itemType.AppDomain, typeof(IEnumerable<>), itemType);
 			// explicitely cast the variable to IEnumerable<T>, where T is itemType
 			Expression iEnumerableVariableExplicitCast = new CastExpression(iEnumerableType.GetTypeReference() , iEnumerableVariable, CastType.Cast);
-			return new ObjectCreateExpression(listType.GetTypeReference(), iEnumerableVariableExplicitCast.ToList());
+			return new ObjectCreateExpression(listType.GetTypeReference(), iEnumerableVariableExplicitCast.SingleItemList());
 		}
 		
 		/// <summary>

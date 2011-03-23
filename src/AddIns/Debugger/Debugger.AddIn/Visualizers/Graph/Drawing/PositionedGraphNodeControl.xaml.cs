@@ -26,6 +26,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 	/// </summary>
 	public partial class PositionedGraphNodeControl : UserControl
 	{
+		public static readonly bool IsShowMemberIcon = true;
+		
 		/// <summary>
 		/// Occurs when <see cref="PositionedNodeProperty"/> is expanded.
 		/// </summary>
@@ -73,11 +75,15 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		
 		public void CalculateWidthHeight()
 		{
+			if (!IsShowMemberIcon) {
+				columnMemberIcon.Width = 0;
+			}
+			
 			int nameColumnMaxLen = this.items.MaxOrDefault(contentNode => contentNode.Name.Length, 0);
 			GridView gv = listView.View as GridView;
-			gv.Columns[1].Width = Math.Min(20 + nameColumnMaxLen * 6, 260);
-			gv.Columns[2].Width = 80;
-			listView.Width = gv.Columns[0].Width + gv.Columns[1].Width + gv.Columns[2].Width + 10;
+			columnName.Width = Math.Min(20 + nameColumnMaxLen * 6, 260);
+			columnText.Width = 80;
+			listView.Width = columnExpander.Width + columnMemberIcon.Width + columnName.Width + columnText.Width + 10;
 			
 			int maxItems = 10;
 			listView.Height = 4 + Math.Min(this.items.Count, maxItems) * 20;
