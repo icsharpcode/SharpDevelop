@@ -288,27 +288,26 @@ namespace ICSharpCode.Reports.Core {
         public override CurrentItemsCollection FillDataRow(int pos)
         {
             CurrentItemsCollection ci = new CurrentItemsCollection();
-        	var current = CurrentFromPosition(pos);
-            if (current != null)
+        	var obj = CurrentFromPosition(pos);
+            if (obj != null)
             {
-                CurrentItem c = null;
+                CurrentItem currentItem = null;
                 foreach (PropertyDescriptor pd in this.listProperties)
                 {
-                    c = new CurrentItem();
-                    c.ColumnName = pd.Name;
-                    c.DataType = pd.PropertyType;
+                    currentItem = new CurrentItem();
+                    currentItem.ColumnName = pd.Name;
+                    currentItem.DataType = pd.PropertyType;
                     
-                    //var s = pd.GetValue(current);
-                    var s = FollowPropertyPath(current,pd.Name);
-                    if (s != null)
+                    var propValue = FollowPropertyPath(obj,pd.Name);
+                    if (propValue != null)
                     {
-                        c.Value = s.ToString();
+                        currentItem.Value = propValue.ToString();
                     }
                     else
                     {
-                        c.Value = String.Empty;
+                        currentItem.Value = String.Empty;
                     }
-                    ci.Add(c);
+                    ci.Add(currentItem);
                 }
             }
             return ci;

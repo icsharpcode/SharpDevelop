@@ -105,8 +105,7 @@ namespace ICSharpCode.Reports.Core.Globals
 		
 		#endregion
 		
-		/// </summary>
-		/// 
+		
 		#region Zoom
 		
 		public static string[] ZoomValues ()
@@ -127,7 +126,6 @@ namespace ICSharpCode.Reports.Core.Globals
 									"75%",
 									"50%",
 									"25%"};
-		
 		
 		#endregion
 		
