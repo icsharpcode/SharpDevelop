@@ -47,6 +47,7 @@ namespace ICSharpCode.Reports.Core {
 		private LineDecorator CreateLineShape ()
 		{
 			LineDecorator decorator = new LineDecorator(this.shape);
+//			decorator.Size = CalculateLineSize ();
 			decorator.Size = this.Size;
 			decorator.Location = this.Location;
 			decorator.BackColor = this.BackColor;
@@ -57,6 +58,18 @@ namespace ICSharpCode.Reports.Core {
 			decorator.From = this.fromPoint;
 			decorator.To = this.toPoint;
 			return decorator;
+		}
+		
+		Size CalculateLineSize()
+		{
+			int dif = 0;
+			if (fromPoint.Y < toPoint.Y) {
+				//
+				dif = toPoint.Y - fromPoint.Y;
+			} else {
+				dif = fromPoint.Y - toPoint.Y;
+			}
+			return new Size (Size.Width, dif + ICSharpCode.Reports.Core.Globals.GlobalValues.GapBetweenContainer);
 		}
 		
 		
@@ -86,7 +99,6 @@ namespace ICSharpCode.Reports.Core {
 		{
 			return "BaseLineItem";
 		}
-		
 		
 		public virtual Point FromPoint {
 			get { 

@@ -94,7 +94,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			Offset = new Point(section.Location.X,section.SectionOffset);
 			
 			if (section.Items.Count > 0) {
-				
 				section.Items.SortByLocation();
 
 				IExpressionEvaluatorFacade evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.SinglePage.IDataNavigator);
@@ -118,12 +117,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 						ExporterCollection exporterCollection = StandardPrinter.ConvertPlainCollection(simpleContainer.Items,exportContainer.StyleDecorator.Location);
 						exportContainer.Items.AddRange(exporterCollection);
 						convertedSection.Add(exportContainer);
-						
-						Offset = new Point(Offset.X,Offset.Y + exportContainer.StyleDecorator.Size.Height);
+						Offset = new Point(Offset.X,Offset.Y + exportContainer.StyleDecorator.Size.Height + GlobalValues.GapBetweenContainer);
+						//Console.WriteLine("{0} - {1}",exportContainer.StyleDecorator.Size,item.Size);
 					}
 					else
 					{
 						var converteditem = StandardPrinter.ConvertLineItem(item,Offset);
+							Offset = new Point(Offset.X,Offset.Y + converteditem.StyleDecorator.Size.Height + GlobalValues.GapBetweenContainer);
 						convertedSection.Add(converteditem);
 					}
 					section.Size = new Size(section.Size.Width,Offset.Y  - section.SectionOffset);

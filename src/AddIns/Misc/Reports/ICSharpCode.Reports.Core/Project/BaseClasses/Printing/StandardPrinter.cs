@@ -90,14 +90,12 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			
 			if (columnBuilder != null) {
 				lineItem = columnBuilder.CreateExportColumn();
-				
-				                                              
+							                                              
 				lineItem.StyleDecorator.Location = new Point(offset.X + lineItem.StyleDecorator.Location.X,
 				                                             lineItem.StyleDecorator.Location.Y + offset.Y);
 				
 				lineItem.StyleDecorator.DisplayRectangle = new Rectangle(lineItem.StyleDecorator.Location,
 				                                                         lineItem.StyleDecorator.Size);
-				
 			} 
 			return lineItem;
 		}
