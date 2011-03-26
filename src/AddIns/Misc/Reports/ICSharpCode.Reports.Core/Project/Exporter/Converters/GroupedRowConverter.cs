@@ -6,6 +6,7 @@ using System.Drawing;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Core.Project.Exporter;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Exporter
@@ -174,7 +175,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				groupCollection = section.Items.ExtractGroupedColumns();
 				base.DataNavigator.Fill(groupCollection);
 				base.FireSectionRendering(section);
-				ExporterCollection list = StandardPrinter.ConvertPlainCollection(groupCollection,offset);
+				ExporterCollection list = ExportHelper.ConvertPlainCollection(groupCollection,offset);
 				
 				EvaluationHelper.EvaluateRow(base.Evaluator,list);
 				

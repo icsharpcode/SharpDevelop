@@ -11,6 +11,7 @@ using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Core.Project.Exporter;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Exporter
@@ -116,8 +117,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 			IExportColumnBuilder exportLineBuilder = row as IExportColumnBuilder;
 
 			if (exportLineBuilder != null) {
-				ExportContainer exportContainer = StandardPrinter.ConvertToContainer(row,offset);
-				ExporterCollection list = StandardPrinter.ConvertPlainCollection(row.Items,exportContainer.StyleDecorator.Location);
+				ExportContainer exportContainer = ExportHelper.ConvertToContainer(row,offset);
+				ExporterCollection list = ExportHelper.ConvertPlainCollection(row.Items,exportContainer.StyleDecorator.Location);
 				exportContainer.Items.AddRange(list);
 				ExporterCollection containerList = new ExporterCollection();
 				containerList.Add (exportContainer);

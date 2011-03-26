@@ -7,6 +7,7 @@ using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Core.Project.Exporter;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Exporter
@@ -112,9 +113,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 						var layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
 						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
 						
-						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(simpleContainer,Offset);
+						ExportContainer exportContainer = ExportHelper.ConvertToContainer(simpleContainer,Offset);
 						
-						ExporterCollection exporterCollection = StandardPrinter.ConvertPlainCollection(simpleContainer.Items,exportContainer.StyleDecorator.Location);
+						ExporterCollection exporterCollection = ExportHelper.ConvertPlainCollection(simpleContainer.Items,exportContainer.StyleDecorator.Location);
 						exportContainer.Items.AddRange(exporterCollection);
 						convertedSection.Add(exportContainer);
 						Offset = new Point(Offset.X,Offset.Y + exportContainer.StyleDecorator.Size.Height + GlobalValues.GapBetweenContainer);
@@ -122,7 +123,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					}
 					else
 					{
-						var converteditem = StandardPrinter.ConvertLineItem(item,Offset);
+						var converteditem = ExportHelper.ConvertLineItem(item,Offset);
 							Offset = new Point(Offset.X,Offset.Y + converteditem.StyleDecorator.Size.Height + GlobalValues.GapBetweenContainer);
 						convertedSection.Add(converteditem);
 					}

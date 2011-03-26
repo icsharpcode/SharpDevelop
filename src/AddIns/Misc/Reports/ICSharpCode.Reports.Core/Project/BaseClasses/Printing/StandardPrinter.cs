@@ -30,17 +30,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			}
 		}
 		
-		/*
-		public static void aaAdjustBackColor (ISimpleContainer container, Color defaultColor)
-		{
-			if (container.BackColor != defaultColor) {
-				foreach (var item in container.Items)
-				{
-					item.BackColor = defaultColor;
-				}
-			}
-		}
-		*/
 		
 		public static void FillBackground (Graphics  graphics,BaseStyleDecorator decorator)
 		{
@@ -77,29 +66,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		/// <param name="offset"> only Y value is used, gives the offset to Items location.Y </param>
 		/// <param name="item">Item to convert</param>
 		/// <returns></returns>
-		
-		public static BaseExportColumn ConvertLineItem (BaseReportItem item,Point offset)
-		{
-			if (item == null) {
-				throw new ArgumentNullException("item");
-			}
-
-			IExportColumnBuilder columnBuilder = item as IExportColumnBuilder;
-			BaseExportColumn lineItem = null;
-			
-			
-			if (columnBuilder != null) {
-				lineItem = columnBuilder.CreateExportColumn();
-							                                              
-				lineItem.StyleDecorator.Location = new Point(offset.X + lineItem.StyleDecorator.Location.X,
-				                                             lineItem.StyleDecorator.Location.Y + offset.Y);
-				
-				lineItem.StyleDecorator.DisplayRectangle = new Rectangle(lineItem.StyleDecorator.Location,
-				                                                         lineItem.StyleDecorator.Size);
-			} 
-			return lineItem;
-		}
-		
 		
 		
 		private static void RenderLineItem (BaseReportItem item, Point offset,IExpressionEvaluatorFacade evaluator,ReportPageEventArgs rpea)
@@ -158,28 +124,10 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static  ExporterCollection ConvertPlainCollection (ReportItemCollection items,Point offset)
-		{
-			if (items == null) {
-				throw new ArgumentNullException("items");
-			}
-			ExporterCollection col = new ExporterCollection();
-			if (items.Count > 0) {
-				
-				foreach(BaseReportItem item in items)
-				{
-					col.Add(StandardPrinter.ConvertLineItem(item,offset));
-				}
-			}
-			return col;
-		}
-		
 		#endregion
 	
 		
-		#region Container
-		
-		
+
 		public static Rectangle RenderContainer (ISimpleContainer simpleContainer,IExpressionEvaluatorFacade evaluator,Point offset,ReportPageEventArgs rpea)
 		{
 			
@@ -201,34 +149,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			item.Location = saveLocation;
 			return retVal;
 		}
-		
-		
-		public static ExportContainer ConvertToContainer (ISimpleContainer container,Point offset) 
-		{
-			if (container == null) {
-				throw new ArgumentNullException("item");
-			}
-			
-			PrintHelper.AdjustParent(container,container.Items);
-			IExportColumnBuilder lineBuilder = container as IExportColumnBuilder;
-	
-			if (lineBuilder != null) {
-				ExportContainer lineItem = (ExportContainer)lineBuilder.CreateExportColumn();
-				
-				lineItem.StyleDecorator.Location = new Point (offset.X + lineItem.StyleDecorator.Location.X,
-				                                              offset.Y);
-				
-				lineItem.StyleDecorator.DisplayRectangle = new Rectangle(lineItem.StyleDecorator.Location,
-				                                                         lineItem.StyleDecorator.Size);
-				
-				AdjustBackColor (container);
-				return lineItem;
-			}
-			
-			return null;
-		}
-		
-		#endregion
 
 	}
 }
