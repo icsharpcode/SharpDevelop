@@ -23,6 +23,8 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public string TextToReturnFromReadFirstUnreadLine;
 		public bool IsReadLineCalled;
 		public bool IsDisposeCalled;
+		public int MaximumVisibleColumns;
+		
 		public bool ScrollToEndWhenTextWritten { get; set; }
 		
 		public void SendLine(string text)
@@ -77,9 +79,9 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			IsDisposeCalled = true;
 		}
 		
-		public void ScrollToEnd()
+		public int GetMaximumVisibleColumns()
 		{
-			
+			return MaximumVisibleColumns;
 		}
 	}
 }

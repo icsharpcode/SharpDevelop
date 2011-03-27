@@ -85,6 +85,7 @@
     <Compile Include="Console\ScriptingConsoleReadTests.cs" />
     <Compile Include="Console\ScriptingConsoleSendLineTests.cs" />
     <Compile Include="Console\ScriptingConsoleSendTextTests.cs" />
+    <Compile Include="Console\ScriptingConsoleTests.cs" />
     <Compile Include="Console\ScriptingConsoleTestsBase.cs" />
     <Compile Include="Console\ScriptingConsoleTextEditorTests.cs" />
     <Compile Include="Console\ScriptingConsoleUnreadLinesTests.cs" />

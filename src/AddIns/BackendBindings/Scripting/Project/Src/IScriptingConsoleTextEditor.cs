@@ -79,5 +79,10 @@ namespace ICSharpCode.Scripting
 		void MakeCurrentContentReadOnly();
 		
 		void ScrollToEnd();
+		
+		/// <summary>
+		/// Returns the total number of columns/characters that are visible without scrolling.
+		/// </summary>
+		int GetMaximumVisibleColumns();
 	}
 }

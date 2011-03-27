@@ -142,6 +142,7 @@
     <Compile Include="Src\PackagesViewModel.cs" />
     <Compile Include="Src\Scripting\ErrorRecordFactory.cs" />
     <Compile Include="Src\Scripting\IErrorRecordFactory.cs" />
+    <Compile Include="Src\Scripting\PowerShellHostRawUserInterface.cs" />
     <Compile Include="Src\UpdatedPackagesViewModel.cs" />
     <Compile Include="Src\PackageViewModel.cs" />
     <Compile Include="Src\PackageViewModelFactory.cs" />

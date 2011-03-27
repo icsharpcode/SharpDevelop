@@ -13,6 +13,7 @@ namespace ICSharpCode.Scripting
 		
 		delegate string ThreadSafeReadLineInvoker(int autoIndentSize);
 		delegate string ThreadSafeReadFirstUnreadLineInvoker();
+		delegate int ThreadSafeGetMaximumVisibleColumnsInvoker();
 		
 		public ThreadSafeScriptingConsole(IScriptingConsole nonThreadSafeScriptingConsole, IControlDispatcher dispatcher)
 			: this(nonThreadSafeScriptingConsole, new ThreadSafeScriptingConsoleEvents(), dispatcher)
@@ -132,6 +133,16 @@ namespace ICSharpCode.Scripting
 		public string ReadFirstUnreadLine()
 		{
 			return nonThreadSafeScriptingConsole.ReadFirstUnreadLine();
+		}
+		
+		public int GetMaximumVisibleColumns()
+		{
+			if (dispatcher.CheckAccess()) {
+				return nonThreadSafeScriptingConsole.GetMaximumVisibleColumns();
+			} else {
+				ThreadSafeGetMaximumVisibleColumnsInvoker action = GetMaximumVisibleColumns;
+				return (int)dispatcher.Invoke(action);
+			}
 		}
 	}
 }

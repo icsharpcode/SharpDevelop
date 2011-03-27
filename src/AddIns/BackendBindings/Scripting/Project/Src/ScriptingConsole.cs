@@ -352,5 +352,10 @@ namespace ICSharpCode.Scripting
 		{
 			textEditor.ScrollToEnd();
 		}
+		
+		public int GetMaximumVisibleColumns()
+		{
+			return textEditor.GetMaximumVisibleColumns();
+		}
 	}
 }

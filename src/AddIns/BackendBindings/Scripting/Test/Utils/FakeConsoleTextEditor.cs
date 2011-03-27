@@ -197,11 +197,17 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		}
 		
 		public bool IsScrollToEndCalled;
-		public bool ScrollToEndWhenPromptWritten { get; set; }
 		
 		public void ScrollToEnd()
 		{
 			IsScrollToEndCalled = true;
+		}
+		
+		public int MaximumVisibleColumns;
+	
+		public int GetMaximumVisibleColumns()
+		{
+			return MaximumVisibleColumns;
 		}
 	}
 }

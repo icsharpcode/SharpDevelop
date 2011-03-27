@@ -158,5 +158,37 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.AreEqual(-1, result);
 		}
+		
+		[Test]
+		public void RawUIBufferSize_ScriptingConsoleHas90MaximumVisibleColumns_ReturnsSizeWithWidthOf90()
+		{
+			CreateHostUserInterface();
+			scriptingConsole.MaximumVisibleColumns = 90;
+			
+			Size actualSize = hostUI.RawUI.BufferSize;
+			
+			Size expectedSize = new Size() {
+				Width = 90,
+				Height = 0
+			};
+			
+			Assert.AreEqual(expectedSize, actualSize);
+		}
+		
+		[Test]
+		public void RawUIBufferSize_ScriptingConsoleHas79MaxVisibleColumns_ReturnsSizeWithMinimumWidthOf80()
+		{
+			CreateHostUserInterface();
+			scriptingConsole.MaximumVisibleColumns = 79;
+			
+			Size actualSize = hostUI.RawUI.BufferSize;
+			
+			Size expectedSize = new Size() {
+				Width = 80,
+				Height = 0
+			};
+			
+			Assert.AreEqual(expectedSize, actualSize);
+		}
 	}
 }

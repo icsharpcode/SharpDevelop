@@ -18,5 +18,6 @@ namespace ICSharpCode.Scripting
 		void Write(string text, ScriptingStyle style);
 		string ReadLine(int autoIndentSize);
 		string ReadFirstUnreadLine();
+		int GetMaximumVisibleColumns();
 	}
 }

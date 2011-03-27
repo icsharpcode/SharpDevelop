@@ -26,7 +26,7 @@
 	<UserControl.DataContext>
 		<Binding Path="PackageManagementConsoleViewModel" Source="{StaticResource ViewModelLocator}"/>
 	</UserControl.DataContext>
-    
+	
     <Grid>        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -68,9 +68,9 @@
         	</Button>
         </ToolBar>
         
-        <ContentPresenter
+        <ContentControl
 			Grid.Row="1"
             Margin="4, 0"
-			Content="{Binding TextEditor}"/>
+			Content="{Binding Path=TextEditor}"/>
     </Grid>
 </UserControl>

@@ -371,5 +371,44 @@ namespace ICSharpCode.Scripting.Tests.Console
 			
 			Assert.IsFalse(threadSafeConsole.ScrollToEndWhenTextWritten);
 		}
+		
+		[Test]
+		public void GetMaximumVisibleColumns_NonThreadSafeConsoleMaximumVisibleColumnsIsTen_ReturnsTen()
+		{
+			CreateThreadSafeScriptingConsole();
+			nonThreadSafeScriptingConsole.MaximumVisibleColumns = 10;
+			
+			int columns = threadSafeConsole.GetMaximumVisibleColumns();
+			
+			Assert.AreEqual(10, columns);
+		}
+		
+		[Test]
+		public void GetMaximumVisibleColumns_DispatcherCheckAccessReturnsFalse_MethodIsInvoked()
+		{
+			CreateThreadSafeScriptingConsole();
+			
+			dispatcher.CheckAccessReturnValue = false;
+			dispatcher.MethodInvoked = null;
+			dispatcher.InvokeReturnValue = 10;
+			
+			int columns = threadSafeConsole.GetMaximumVisibleColumns();
+			
+			Assert.IsNotNull(dispatcher.MethodInvoked);
+		}
+		
+		[Test]
+		public void GetMaximumVisibleColumns_DispatcherCheckAccessReturnsFalse_DispatcherReturnValueIsReturned()
+		{
+			CreateThreadSafeScriptingConsole();
+			
+			dispatcher.CheckAccessReturnValue = false;
+			dispatcher.MethodInvoked = null;
+			dispatcher.InvokeReturnValue = 10;
+			
+			int columns = threadSafeConsole.GetMaximumVisibleColumns();
+			
+			Assert.AreEqual(10, columns);
+		}
 	}
 }

@@ -15,10 +15,12 @@ namespace ICSharpCode.PackageManagement.Scripting
 	public class PowerShellHostUserInterface : PSHostUserInterface
 	{
 		IScriptingConsole scriptingConsole;
+		PowerShellHostRawUserInterface rawUI;
 		
 		public PowerShellHostUserInterface(IScriptingConsole scriptingConsole)
 		{
 			this.scriptingConsole = scriptingConsole;
+			rawUI = new PowerShellHostRawUserInterface(scriptingConsole);
 		}
 		
 		public override void WriteWarningLine(string message)
@@ -71,7 +73,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		}
 		
 		public override PSHostRawUserInterface RawUI {
-			get { return null; }
+			get { return rawUI; }
 		}
 		
 		public override PSCredential PromptForCredential(string caption, string message, string userName, string targetName, PSCredentialTypes allowedCredentialTypes, System.Management.Automation.PSCredentialUIOptions options)
