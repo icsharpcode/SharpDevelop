@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
-using ICSharpCode.NRefactory.VB.Dom;
+using ICSharpCode.NRefactory.VB.Ast;
 using ICSharpCode.NRefactory.VB.Parser;
-using ASTAttribute = ICSharpCode.NRefactory.VB.Dom.Attribute;
+using ASTAttribute = ICSharpCode.NRefactory.VB.Ast.Attribute;
 
 COMPILER VB
 
