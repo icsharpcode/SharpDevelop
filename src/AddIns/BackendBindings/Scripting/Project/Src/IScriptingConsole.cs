@@ -9,7 +9,7 @@ namespace ICSharpCode.Scripting
 	{
 		event EventHandler LineReceived;
 				
-		bool ScrollToEndWhenPromptWritten { get; set; }
+		bool ScrollToEndWhenTextWritten { get; set; }
 		
 		void SendLine(string line);
 		void SendText(string text);

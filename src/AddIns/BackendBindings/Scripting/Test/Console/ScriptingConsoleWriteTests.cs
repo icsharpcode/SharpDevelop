@@ -52,36 +52,36 @@ namespace ICSharpCode.Scripting.Tests.Console
 		}
 		
 		[Test]
-		public void Write_WritePromptWhenScrollToPromptIsTrue_TextEditorIsScrolled()
+		public void Write_WritePromptWhenScrollToEndWhenTextWritten_TextEditorIsScrolled()
 		{
-			TestableScriptingConsole.ScrollToEndWhenPromptWritten = true;
+			TestableScriptingConsole.ScrollToEndWhenTextWritten = true;
 			TestableScriptingConsole.Write("a", ScriptingStyle.Prompt);
 			
 			Assert.IsTrue(FakeConsoleTextEditor.IsScrollToEndCalled);
 		}
 		
 		[Test]
-		public void Write_WritePromptWhenScrollToPromptIsFalse_TextEditorIsNotScrolled()
+		public void Write_WritePromptWhenScrollToEndWhenTextWrittenIsFalse_TextEditorIsNotScrolled()
 		{
-			TestableScriptingConsole.ScrollToEndWhenPromptWritten = false;
+			TestableScriptingConsole.ScrollToEndWhenTextWritten = false;
 			TestableScriptingConsole.Write("a", ScriptingStyle.Prompt);
 			
 			Assert.IsFalse(FakeConsoleTextEditor.IsScrollToEndCalled);
 		}
 		
 		[Test]
-		public void Write_WriteErrorWhenScrollToPromptIsTrue_TextEditorIsNotScrolled()
+		public void Write_WriteErrorWhenScrollToEndWhenTextWrittenIsTrue_TextEditorIsScrolled()
 		{
-			TestableScriptingConsole.ScrollToEndWhenPromptWritten = true;
+			TestableScriptingConsole.ScrollToEndWhenTextWritten = true;
 			TestableScriptingConsole.Write("a", ScriptingStyle.Error);
 			
-			Assert.IsFalse(FakeConsoleTextEditor.IsScrollToEndCalled);
+			Assert.IsTrue(FakeConsoleTextEditor.IsScrollToEndCalled);
 		}
 		
 		[Test]
-		public void ScrollToEndWhenPromptWritten_NewInstance_IsTrue()
+		public void ScrollToEndWhenTextWritten_NewInstance_IsTrue()
 		{
-			Assert.IsTrue(TestableScriptingConsole.ScrollToEndWhenPromptWritten);
+			Assert.IsTrue(TestableScriptingConsole.ScrollToEndWhenTextWritten);
 		}
 	}
 }

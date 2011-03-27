@@ -34,7 +34,7 @@ namespace ICSharpCode.Scripting
 		{
 			this.textEditor = textEditor;
 			this.unreadLines = unreadLines;
-			this.ScrollToEndWhenPromptWritten = true;
+			this.ScrollToEndWhenTextWritten = true;
 			textEditor.PreviewKeyDown += ProcessPreviewKeyDown;
 		}
 		
@@ -78,10 +78,10 @@ namespace ICSharpCode.Scripting
 				WriteFirstLineOfSentText();
 				
 				textEditor.MakeCurrentContentReadOnly();
-				
-				if (ScrollToEndWhenPromptWritten) {
-					ScrollToEnd();
-				}
+			}
+			
+			if (ScrollToEndWhenTextWritten) {
+				ScrollToEnd();
 			}
 		}
 		
@@ -346,7 +346,7 @@ namespace ICSharpCode.Scripting
 			return unreadLines.RemoveFirstLine();
 		}
 		
-		public bool ScrollToEndWhenPromptWritten { get; set; }
+		public bool ScrollToEndWhenTextWritten { get; set; }
 		
 		void ScrollToEnd()
 		{

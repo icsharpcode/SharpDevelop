@@ -17,7 +17,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 		}
 
-		
 		public PackageManagementConsole(TextEditor textEditor)
 			: this(new ScriptingConsoleTextEditor(textEditor), new ControlDispatcher(textEditor))
 		{

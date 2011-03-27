@@ -35,10 +35,9 @@ namespace ICSharpCode.Scripting
 			consoleEvents.SetLineReceivedEvent();
 		}
 		
-		
-		public bool ScrollToEndWhenPromptWritten {
-			get { return nonThreadSafeScriptingConsole.ScrollToEndWhenPromptWritten; }
-			set { nonThreadSafeScriptingConsole.ScrollToEndWhenPromptWritten = value; }
+		public bool ScrollToEndWhenTextWritten {
+			get { return nonThreadSafeScriptingConsole.ScrollToEndWhenTextWritten; }
+			set { nonThreadSafeScriptingConsole.ScrollToEndWhenTextWritten = value; }
 		}
 		
 		public void WriteLine()

@@ -23,7 +23,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public string TextToReturnFromReadFirstUnreadLine;
 		public bool IsReadLineCalled;
 		public bool IsDisposeCalled;
-		public bool ScrollToEndWhenPromptWritten { get; set; }
+		public bool ScrollToEndWhenTextWritten { get; set; }
 		
 		public void SendLine(string text)
 		{

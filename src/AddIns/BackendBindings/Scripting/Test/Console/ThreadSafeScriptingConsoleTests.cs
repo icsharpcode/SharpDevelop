@@ -355,21 +355,21 @@ namespace ICSharpCode.Scripting.Tests.Console
 		}
 		
 		[Test]
-		public void ScrollToEndWhenPromptWritten_NonThreadSafeConsoleScrollToEndWhenPromptWrittenIsTrue_ReturnsTrue()
+		public void ScrollToEndWhenTextWritten_NonThreadSafeConsoleScrollToEndWhenTextWrittenIsTrue_ReturnsTrue()
 		{
 			CreateThreadSafeScriptingConsole();
-			nonThreadSafeScriptingConsole.ScrollToEndWhenPromptWritten = true;
+			nonThreadSafeScriptingConsole.ScrollToEndWhenTextWritten = true;
 			
-			Assert.IsTrue(threadSafeConsole.ScrollToEndWhenPromptWritten);
+			Assert.IsTrue(threadSafeConsole.ScrollToEndWhenTextWritten);
 		}
 		
 		[Test]
-		public void ScrollToEndWhenPromptWritten_NonThreadSafeConsoleScrollToEndWhenPromptWrittenIsFalse_ReturnsFalse()
+		public void ScrollToEndWhenTextWritten_NonThreadSafeConsoleScrollToEndWhenTextWrittenIsFalse_ReturnsFalse()
 		{
 			CreateThreadSafeScriptingConsole();
-			nonThreadSafeScriptingConsole.ScrollToEndWhenPromptWritten = false;
+			nonThreadSafeScriptingConsole.ScrollToEndWhenTextWritten = false;
 			
-			Assert.IsFalse(threadSafeConsole.ScrollToEndWhenPromptWritten);
+			Assert.IsFalse(threadSafeConsole.ScrollToEndWhenTextWritten);
 		}
 	}
 }
