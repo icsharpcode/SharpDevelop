@@ -126,6 +126,7 @@
     <None Include="Lexer\ExpressionFinder.atg">
       <Generator>CocoParserGenerator</Generator>
       <CustomToolNamespace>ICSharpCode.NRefactory.VB.Parser</CustomToolNamespace>
+      <LastGenOutput>Parser.cs</LastGenOutput>
     </None>
     <None Include="Lexer\KeywordList.txt" />
     <None Include="Lexer\PushParser.frame">
@@ -137,6 +138,7 @@
     <None Include="Parser\vb.atg">
       <CustomToolNamespace>ICSharpCode.NRefactory.VB.Parser</CustomToolNamespace>
       <Generator>CocoParserGenerator</Generator>
+      <LastGenOutput>Parser.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
