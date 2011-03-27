@@ -14,20 +14,26 @@ namespace PackageManagement.Tests.Helpers
 		public FakeThread FakeThread = new FakeThread();
 		public ThreadStart ThreadStartPassedToCreateThread;
 		public FakePowerShellHostFactory FakePowerShellHostFactory;
+		public FakePackageManagementAddInPath FakePackageManagementAddInPath;
 		
 		public TestablePackageManagementConsoleHost()
-			: this(new FakeScriptingConsoleWithLinesToRead(), new FakePowerShellHostFactory())
+			: this(
+				new FakeScriptingConsoleWithLinesToRead(),
+				new FakePowerShellHostFactory(),
+				new FakePackageManagementAddInPath())
 		{
 		}
 		
 		public TestablePackageManagementConsoleHost(
 			FakeScriptingConsoleWithLinesToRead scriptingConsole,
-			FakePowerShellHostFactory powerShellHostFactory)
-			: base(powerShellHostFactory)
+			FakePowerShellHostFactory powerShellHostFactory,
+			FakePackageManagementAddInPath addinPath)
+			: base(powerShellHostFactory, addinPath)
 		{
 			this.FakeScriptingConsole = scriptingConsole;
 			this.ScriptingConsole = scriptingConsole;
 			this.FakePowerShellHostFactory = powerShellHostFactory;
+			this.FakePackageManagementAddInPath = addinPath;
 		}
 		
 		protected override IThread CreateThread(ThreadStart threadStart)

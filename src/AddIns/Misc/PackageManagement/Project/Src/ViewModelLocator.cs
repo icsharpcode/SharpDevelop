@@ -75,11 +75,11 @@ namespace ICSharpCode.PackageManagement
 		void CreatePackageManagementConsoleViewModel()
 		{
 			CreatePackageManagementService();
-			var packageManagementConsole = new PackageManagementConsoleHost();
+			var consoleHost = ServiceLocator.PackageManagementConsoleHost;
 			packageManagementConsoleViewModel = 
 				new PackageManagementConsoleViewModel(
 					packageManagementService,
-					packageManagementConsole);
+					consoleHost);
 		}
 	}
 }

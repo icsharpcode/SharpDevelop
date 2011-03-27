@@ -10,9 +10,9 @@ using PackageManagement.Tests.Helpers;
 namespace PackageManagement.Tests
 {
 	[TestFixture]
-	public class PackageUpdatesViewModelTests
+	public class UpdatedPackagesViewModelTests
 	{
-		PackageUpdatesViewModel viewModel;
+		UpdatedPackagesViewModel viewModel;
 		FakePackageManagementService packageManagementService;
 		FakeTaskFactory taskFactory;
 		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
@@ -32,7 +32,7 @@ namespace PackageManagement.Tests
 		{
 			taskFactory = new FakeTaskFactory();
 			var messageReporter = new FakeMessageReporter();
-			viewModel = new PackageUpdatesViewModel(packageManagementService, messageReporter, taskFactory);
+			viewModel = new UpdatedPackagesViewModel(packageManagementService, messageReporter, taskFactory);
 		}
 		
 		void CreateExceptionThrowingPackageManagementService()
@@ -47,26 +47,14 @@ namespace PackageManagement.Tests
 
 		FakePackage AddPackageToLocalRepository(string version)
 		{
-			var package = CreatePackage(version);
+			var package = FakePackage.CreatePackageWithVersion(version);
 			packageManagementService.AddPackageToProjectLocalRepository(package);
 			return package;
 		}
 		
-		FakePackage AddPackageToSourceRepository(string version)
+		FakePackage AddPackageToAggregateRepository(string version)
 		{
-			var package = CreatePackage(version);
-			packageManagementService.FakeAggregateRepository.FakePackages.Add(package);
-			return package;
-		}
-		
-		FakePackage CreatePackage(string version)
-		{
-			var package = new FakePackage() {
-				Id = "Test",
-				Description = String.Empty,
-				Version = new Version(version)
-			};
-			return package;
+			return packageManagementService.AddFakePackageWithVersionToAggregrateRepository(version);
 		}
 		
 		[Test]
@@ -74,7 +62,7 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			AddPackageToLocalRepository("1.0.0.0");
-			var newerPackage = AddPackageToSourceRepository("1.1.0.0");
+			var newerPackage = AddPackageToAggregateRepository("1.1.0.0");
 			
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
@@ -91,8 +79,8 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			AddPackageToLocalRepository("1.0.0.0");
-			AddPackageToSourceRepository("1.0.0.0");
-			var newerPackage = AddPackageToSourceRepository("1.1.0.0");
+			AddPackageToAggregateRepository("1.0.0.0");
+			var newerPackage = AddPackageToAggregateRepository("1.1.0.0");
 			
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
@@ -105,11 +93,11 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ReadPackages_OneNewerPackage_RepositoriesNotCreatedByBackgroundThread()
+		public void ReadPackages_OneNewerPackageVersionAvailable_RepositoriesNotCreatedByBackgroundThread()
 		{
 			CreateViewModel();
 			AddPackageToLocalRepository("1.0.0.0");
-			var newerPackage = AddPackageToSourceRepository("1.1.0.0");
+			var newerPackage = AddPackageToAggregateRepository("1.1.0.0");
 			
 			viewModel.ReadPackages();
 			
@@ -132,18 +120,5 @@ namespace PackageManagement.Tests
 			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
 			Assert.AreEqual("Test", ex.Message);
 		}
-		
-//		[Test]
-//		public void ReadPackages_ActiveProjectManagerThrowsException_ErrorMessageFromExceptionReturned()
-//		{
-//			CreateExceptionThrowingPackageManagementService();
-//			exceptionThrowingPackageManagementService.ExeptionToThrowWhenActiveProjectManagerAccessed = 
-//				new Exception("Test");
-//			CreateViewModel(exceptionThrowingPackageManagementService);
-//			viewModel.ReadPackages();
-//			
-//			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
-//			Assert.AreEqual("Test", ex.Message);
-//		}
 	}
 }

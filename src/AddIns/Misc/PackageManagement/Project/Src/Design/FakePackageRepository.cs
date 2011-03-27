@@ -34,5 +34,12 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public string Source { get; set; }
+		
+		public FakePackage AddOneFakePackage(string packageId)
+		{
+			var package = new FakePackage(packageId);
+			FakePackages.Add(package);
+			return package;
+		}
 	}
 }

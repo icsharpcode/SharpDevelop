@@ -2,16 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
+using System.Management.Automation;
 
 namespace ICSharpCode.PackageManagement.Scripting
 {
-	public interface IPowerShellHost
+	public interface IErrorRecordFactory
 	{
-		IList<string> ModulesToImport { get; }
-		
-		void SetRemoteSignedExecutionPolicy();
-		void UpdateFormatting(IEnumerable<string> formattingFiles);
-		void ExecuteCommand(string command);
+		ErrorRecord CreateNoProjectOpenErrorRecord();
 	}
 }

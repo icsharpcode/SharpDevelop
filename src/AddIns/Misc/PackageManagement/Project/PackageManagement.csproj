@@ -54,6 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />
+    <Folder Include="Scripts" />
+    <Folder Include="Scripts" />
     <Folder Include="Resources" />
     <Folder Include="Src" />
     <Folder Include="Src\Design" />
@@ -138,7 +140,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\PackagesViewModel.cs" />
-    <Compile Include="Src\PackageUpdatesViewModel.cs" />
+    <Compile Include="Src\Scripting\ErrorRecordFactory.cs" />
+    <Compile Include="Src\Scripting\IErrorRecordFactory.cs" />
+    <Compile Include="Src\UpdatedPackagesViewModel.cs" />
     <Compile Include="Src\PackageViewModel.cs" />
     <Compile Include="Src\PackageViewModelFactory.cs" />
     <Compile Include="Src\Page.cs" />
@@ -153,10 +157,12 @@
     <Compile Include="Src\RecentPackagesViewModel.cs" />
     <Compile Include="Src\RegisteredPackageSource.cs" />
     <Compile Include="Src\RegisteredPackageSources.cs" />
+    <Compile Include="Src\Scripting\IPackageManagementAddInPath.cs" />
     <Compile Include="Src\Scripting\IPackageManagementConsoleHost.cs" />
     <Compile Include="Src\Scripting\IPowerShellHost.cs" />
     <Compile Include="Src\Scripting\IPowerShellHostFactory.cs" />
     <Compile Include="Src\Scripting\IThread.cs" />
+    <Compile Include="Src\Scripting\PackageManagementAddInPath.cs" />
     <Compile Include="Src\Scripting\PackageManagementConsole.cs" />
     <Compile Include="Src\Scripting\PackageManagementConsoleHost.cs" />
     <Compile Include="Src\Scripting\PackageManagementConsolePad.cs" />
@@ -178,6 +184,7 @@
     <Compile Include="Src\SharpDevelopProjectSystem.cs" />
     <Compile Include="Src\SharpDevelopProjectSystemFactory.cs" />
     <Compile Include="Src\StringToStringCollectionConverter.cs" />
+    <Compile Include="Src\UpdatedPackages.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
     <Compile Include="Src\ViewModelLocator.cs" />
   </ItemGroup>
@@ -222,6 +229,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="PackageManagement.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\Package.Format.ps1xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Resource Include="Resources\packageicon.png" />

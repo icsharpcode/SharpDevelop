@@ -33,6 +33,21 @@ namespace ICSharpCode.PackageManagement.Design
 			this.Version = new Version(1, 0, 0, 0);
 		}
 		
+		public static FakePackage CreatePackageWithVersion(string version)
+		{
+			return CreatePackageWithVersion("Test", version);
+		}
+		
+		public static FakePackage CreatePackageWithVersion(string id, string version)
+		{
+			var package = new FakePackage() {
+				Id = id,
+				Description = String.Empty,
+				Version = new Version(version)
+			};
+			return package;
+		}
+		
 		public string Id { get; set; }
 		public Version Version { get; set; }
 		public string Title { get; set; }		

@@ -13,7 +13,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementService packageManagementService;
 		InstalledPackagesViewModel installedPackagesViewModel;
 		AvailablePackagesViewModel availablePackagesViewModel;
-		PackageUpdatesViewModel packageUpdatesViewModel;
+		UpdatedPackagesViewModel updatedPackagesViewModel;
 		RecentPackagesViewModel recentPackagesViewModel;
 		string message;
 		bool hasError;
@@ -27,12 +27,12 @@ namespace ICSharpCode.PackageManagement
 			
 			availablePackagesViewModel = new AvailablePackagesViewModel(packageManagementService, this, taskFactory);
 			installedPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, this, taskFactory);
-			packageUpdatesViewModel = new PackageUpdatesViewModel(packageManagementService, this, taskFactory);
+			updatedPackagesViewModel = new UpdatedPackagesViewModel(packageManagementService, this, taskFactory);
 			recentPackagesViewModel = new RecentPackagesViewModel(packageManagementService, this, taskFactory);
 			
 			availablePackagesViewModel.ReadPackages();
 			installedPackagesViewModel.ReadPackages();
-			packageUpdatesViewModel.ReadPackages();
+			updatedPackagesViewModel.ReadPackages();
 			recentPackagesViewModel.ReadPackages();
 		}
 		
@@ -44,8 +44,8 @@ namespace ICSharpCode.PackageManagement
 			get { return availablePackagesViewModel; }
 		}
 		
-		public PackageUpdatesViewModel PackageUpdatesViewModel {
-			get { return packageUpdatesViewModel; }
+		public UpdatedPackagesViewModel UpdatedPackagesViewModel {
+			get { return updatedPackagesViewModel; }
 		}
 		
 		public RecentPackagesViewModel RecentPackagesViewModel {

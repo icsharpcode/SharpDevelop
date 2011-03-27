@@ -76,6 +76,7 @@
     <Compile Include="Src\Helpers\FakeLicenseAcceptanceService.cs" />
     <Compile Include="Src\Helpers\FakeMessageCategoryView.cs" />
     <Compile Include="Src\Helpers\FakeMessageReporter.cs" />
+    <Compile Include="Src\Helpers\FakePackageManagementAddInPath.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementConsoleHost.cs" />
     <Compile Include="Src\Helpers\FakePackageManager.cs" />
     <Compile Include="Src\Helpers\FakePackageManagerFactory.cs" />
@@ -131,7 +132,7 @@
     <Compile Include="Src\PackageRepositoryPathsTests.cs" />
     <Compile Include="Src\PackageSourceViewModelTests.cs" />
     <Compile Include="Src\PackagesViewModelTests.cs" />
-    <Compile Include="Src\PackageUpdatesViewModelTests.cs" />
+    <Compile Include="Src\UpdatedPackagesViewModelTests.cs" />
     <Compile Include="Src\PackageViewModelTests.cs" />
     <Compile Include="Src\PagesTests.cs" />
     <Compile Include="Src\RecentPackageInfoTests.cs" />

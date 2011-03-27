@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -13,6 +14,9 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler PackageUninstalled;
 		
 		IPackageRepository CreateAggregatePackageRepository();
+		IPackageRepository CreatePackageRepository(PackageSource source);
+		ISharpDevelopProjectManager CreateProjectManager(IPackageRepository repository, MSBuildBasedProject project);
+		
 		IPackageRepository ActivePackageRepository { get; }
 		IProjectManager ActiveProjectManager { get; }
 		IPackageRepository RecentPackageRepository { get; }

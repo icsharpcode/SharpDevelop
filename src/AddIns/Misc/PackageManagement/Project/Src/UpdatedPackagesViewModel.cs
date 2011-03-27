@@ -9,15 +9,13 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class PackageUpdatesViewModel : PackagesViewModel
+	public class UpdatedPackagesViewModel : PackagesViewModel
 	{
-		List<IPackage> packages = new List<IPackage>();
 		IPackageManagementService packageManagementService;
-		IPackageRepository localRepository;
-		IPackageRepository sourceRepository;
+		UpdatedPackages updatedPackages;
 		string errorMessage = String.Empty;
 		
-		public PackageUpdatesViewModel(
+		public UpdatedPackagesViewModel(
 			IPackageManagementService packageManagementService,
 			IMessageReporter messageReporter,
 			ITaskFactory taskFactory)
@@ -29,31 +27,28 @@ namespace ICSharpCode.PackageManagement
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
 		{
 			try {
-				IProjectManager projectManager = packageManagementService.ActiveProjectManager;
-				localRepository = projectManager.LocalRepository;
+				updatedPackages = new UpdatedPackages(packageManagementService);
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}
-			sourceRepository = packageManagementService.CreateAggregatePackageRepository();
 		}
 		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			if (localRepository == null) {
+			if (updatedPackages == null) {
 				ThrowSavedException();
 			}
-			IQueryable<IPackage> localPackages = localRepository.GetPackages();
-			return GetUpdatedPackages(localPackages);
-		}
-		
-		IQueryable<IPackage> GetUpdatedPackages(IQueryable<IPackage> localPackages)
-		{
-			return sourceRepository.GetUpdates(localPackages).AsQueryable();
+			return GetUpdatedPackages();
 		}
 		
 		void ThrowSavedException()
 		{
 			throw new ApplicationException(errorMessage);
+		}
+		
+		IQueryable<IPackage> GetUpdatedPackages()
+		{
+			return updatedPackages.GetUpdatedPackages().AsQueryable();
 		}
 	}
 }

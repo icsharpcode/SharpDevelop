@@ -24,5 +24,18 @@ namespace PackageManagement.Tests.Helpers
 			CommandPassedToExecuteCommand = command;
 			AllCommandsPassedToExecuteCommand.Add(command);
 		}
+		
+		public List<string> modulesToImport = new List<string>();
+		
+		public IList<string> ModulesToImport {
+			get { return modulesToImport; }
+		}
+		
+		public IEnumerable<string> FormattingFilesPassedToUpdateFormatting;
+		
+		public void UpdateFormatting(IEnumerable<string> formattingFiles)
+		{
+			FormattingFilesPassedToUpdateFormatting = formattingFiles;
+		}
 	}
 }

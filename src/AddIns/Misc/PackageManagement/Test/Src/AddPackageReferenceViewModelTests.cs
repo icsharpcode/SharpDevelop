@@ -109,7 +109,7 @@ namespace PackageManagement.Tests
 			
 			List<FakePackage> expectedPackages = fakePackageManagementService.FakeAggregateRepository.FakePackages;
 			
-			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageUpdatesViewModel.PackageViewModels);
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.UpdatedPackagesViewModel.PackageViewModels);
 		}
 		
 		[Test]

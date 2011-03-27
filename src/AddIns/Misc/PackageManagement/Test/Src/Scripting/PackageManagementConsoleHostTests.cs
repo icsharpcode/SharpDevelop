@@ -167,5 +167,39 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.AreEqual(commands, powerShellHost.AllCommandsPassedToExecuteCommand);
 		}
+		
+		[Test]
+		public void Run_PowerShellHostInitialization_CmdletsAreImported()
+		{
+			CreateHost();
+			string cmdletsAssemblyFileName = 
+				@"d:\program files\SharpDevelop\4.0\AddIns\PackageManagement\PackageManagement.Cmdlets.dll";
+			host.FakePackageManagementAddInPath.CmdletsAssemblyFileName = cmdletsAssemblyFileName;
+			RunHost();
+			
+			var expectedModules = new string[] {
+				cmdletsAssemblyFileName
+			};
+			var actualModules = powerShellHost.ModulesToImport;
+			
+			CollectionAssert.AreEqual(expectedModules, actualModules);
+		}
+		
+		[Test]
+		public void Run_TwoPowerShellFormattingConfigXmlFilesInAddInFolder_UpdateFormattingCalledWithTwoFormattingFiles()
+		{
+			CreateHost();
+			var files = new string[] {
+				@"d:\program files\SharpDevelop\4.0\AddIns\PackageManagement\Scripting\Package.Format.ps1xml",
+				@"d:\temp\test\Format.ps1xml"
+			};
+			host.FakePackageManagementAddInPath.PowerShellFormattingFileNames.AddRange(files);
+			
+			RunHost();
+			
+			var actualFiles = powerShellHost.FormattingFilesPassedToUpdateFormatting;
+			
+			CollectionAssert.AreEqual(files, actualFiles);
+		}
 	}
 }

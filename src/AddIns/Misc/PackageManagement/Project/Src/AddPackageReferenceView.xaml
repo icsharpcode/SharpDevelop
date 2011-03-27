@@ -65,7 +65,7 @@
 			<TabItem Header="Updates">
 				<pm:PackagesView
 					x:Name="packageUpdatesView"
-					DataContext="{Binding Path=PackageUpdatesViewModel}"/>
+					DataContext="{Binding Path=UpdatedPackagesViewModel}"/>
 			</TabItem>
 			<TabItem Header="Recent">
 				<pm:PackagesView

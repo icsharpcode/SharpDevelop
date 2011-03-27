@@ -6,12 +6,10 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.PackageManagement.Scripting
 {
-	public interface IPowerShellHost
+	public interface IPackageManagementAddInPath
 	{
-		IList<string> ModulesToImport { get; }
+		string CmdletsAssemblyFileName { get; }
 		
-		void SetRemoteSignedExecutionPolicy();
-		void UpdateFormatting(IEnumerable<string> formattingFiles);
-		void ExecuteCommand(string command);
+		IEnumerable<string> GetPowerShellFormattingFileNames();
 	}
 }

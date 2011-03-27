@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
+
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Project;
@@ -15,16 +17,20 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IThread thread;
 		IPowerShellHostFactory powerShellHostFactory;
 		IPowerShellHost powerShellHost;
+		IPackageManagementAddInPath addinPath;
 		int autoIndentSize = 0;
 		string prompt = "PM> ";
 		
-		public PackageManagementConsoleHost(IPowerShellHostFactory powerShellHostFactory)
+		public PackageManagementConsoleHost(
+			IPowerShellHostFactory powerShellHostFactory,
+			IPackageManagementAddInPath addinPath)
 		{
 			this.powerShellHostFactory = powerShellHostFactory;
+			this.addinPath = addinPath;
 		}
 		
 		public PackageManagementConsoleHost()
-			: this(new PowerShellHostFactory())
+			: this(new PowerShellHostFactory(), new PackageManagementAddInPath())
 		{
 		}
 		
@@ -69,7 +75,15 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void InitPowerShell()
 		{
 			CreatePowerShellHost();
+			AddModulesToImport();
 			powerShellHost.SetRemoteSignedExecutionPolicy();
+			UpdateFormatting();
+		}
+		
+		void UpdateFormatting()
+		{
+			IEnumerable<string> fileNames = addinPath.GetPowerShellFormattingFileNames();
+			powerShellHost.UpdateFormatting(fileNames);
 		}
 		
 		void CreatePowerShellHost()
@@ -77,10 +91,15 @@ namespace ICSharpCode.PackageManagement.Scripting
 			powerShellHost = powerShellHostFactory.CreatePowerShellHost(ScriptingConsole);
 		}
 		
+		void AddModulesToImport()
+		{
+			string module = addinPath.CmdletsAssemblyFileName;
+			powerShellHost.ModulesToImport.Add(module);
+		}
+		
 		void WritePrompt()
 		{
 			ScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
-			//textEditor.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate { textEditor.ScrollToEnd(); }));
 		}
 		
 		void ProcessUserCommands()

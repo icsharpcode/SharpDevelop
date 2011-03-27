@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Management.Automation.Host;
@@ -21,6 +22,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		Version version = new Version(0, 1);
 		Runspace runspace;
 		PowerShellHostUserInterface userInterface;
+		List<string> modulesToImport = new List<string>();
 		//SharpDevelopEnvDTE dte = new SharpDevelopEnvDTE();
 		
 		public PowerShellHost(IScriptingConsole scriptingConsole)
@@ -29,9 +31,21 @@ namespace ICSharpCode.PackageManagement.Scripting
 			userInterface = new PowerShellHostUserInterface(scriptingConsole);
 		}
 		
+		public IList<string> ModulesToImport {
+			get { return modulesToImport; }
+		}
+		
 		public void SetRemoteSignedExecutionPolicy()
 		{
-			ExecuteCommand("Set-ExecutionPolicy RemoteSigned -Scope 0 -Force");
+			ExecuteCommand("Set-ExecutionPolicy RemoteSigned -Scope 0 -Force");	
+		}
+		
+		public void UpdateFormatting(IEnumerable<string> formattingFiles)
+		{
+			foreach (string file in formattingFiles) {
+				string command = String.Format("Update-FormatData '{0}'", file);
+				ExecuteCommand(command);
+			}
 		}
 		
 		public void ExecuteCommand(string command)
@@ -59,14 +73,20 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void CreateRunspace()
 		{
 			if (runspace == null) {
-				var initialSessionState = InitialSessionState.CreateDefault();
-				//var options = ScopedItemOptions.AllScope | ScopedItemOptions.Constant;
-				//var variable = new SessionStateVariableEntry("DTE", dte, "SharpDevelop DTE object", options);
-				//initialSessionState.Variables.Add(variable);
-
-				runspace = RunspaceFactory.CreateRunspace(this); //, initialSessionState);
+				InitialSessionState initialSessionState = CreateInitialSessionState();
+				runspace = RunspaceFactory.CreateRunspace(this, initialSessionState);
 				runspace.Open();
 			}
+		}
+		
+		InitialSessionState CreateInitialSessionState()
+		{
+			var initialSessionState = InitialSessionState.CreateDefault();
+			initialSessionState.ImportPSModule(modulesToImport.ToArray());
+			//var options = ScopedItemOptions.AllScope | ScopedItemOptions.Constant;
+			//var variable = new SessionStateVariableEntry("DTE", dte, "SharpDevelop DTE object", options);
+			//initialSessionState.Variables.Add(variable);
+			return initialSessionState;
 		}
 		
 		public override Version Version {

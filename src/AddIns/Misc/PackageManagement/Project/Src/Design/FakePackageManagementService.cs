@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
@@ -142,6 +143,39 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IPackageRepository RecentPackageRepository {
 			get { return FakeRecentPackageRepository; }
+		}
+		
+		public FakePackageRepository FakePackageRepositoryToReturnFromCreatePackageRepository = new FakePackageRepository();
+		public PackageSource PackageSourcePassedToCreatePackageRepository;
+		
+		public IPackageRepository CreatePackageRepository(PackageSource source)
+		{
+			PackageSourcePassedToCreatePackageRepository = source;
+			return FakePackageRepositoryToReturnFromCreatePackageRepository;
+		}
+		
+		public FakeProjectManager FakeProjectManagerToReturnFromCreateProjectManager = new FakeProjectManager();
+		public IPackageRepository PackageRepositoryPassedToCreateProjectManager;
+		public MSBuildBasedProject ProjectPassedToCreateProjectManager;
+		
+		public ISharpDevelopProjectManager CreateProjectManager(IPackageRepository repository, MSBuildBasedProject project)
+		{
+			PackageRepositoryPassedToCreateProjectManager = repository;
+			ProjectPassedToCreateProjectManager = project;
+			
+			return FakeProjectManagerToReturnFromCreateProjectManager;
+		}
+		
+		public FakePackage AddFakePackageWithVersionToAggregrateRepository(string version)
+		{
+			return AddFakePackageWithVersionToAggregrateRepository("Test", version);
+		}
+		
+		public FakePackage AddFakePackageWithVersionToAggregrateRepository(string id, string version)
+		{
+			var package = FakePackage.CreatePackageWithVersion(id, version);
+			FakeAggregateRepository.FakePackages.Add(package);
+			return package;
 		}
 	}
 }

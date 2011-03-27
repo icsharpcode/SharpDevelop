@@ -115,24 +115,18 @@ namespace ICSharpCode.PackageManagement
 			return packageManager.ProjectManager;
 		}
 		
-		public void InstallPackage(
-			IPackageRepository packageRepository,
-			IPackage package,
-			IEnumerable<PackageOperation> operations)
-		{
-			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageRepository);
-			packageManager.InstallPackage(package, operations);
-			projectService.RefreshProjectBrowser();
-			RecentPackageRepository.AddPackage(package);
-			OnPackageInstalled();
-		}
-		
 		ISharpDevelopPackageManager CreatePackageManager(IPackageRepository packageRepository)
 		{
 			MSBuildBasedProject project = projectService.CurrentProject as MSBuildBasedProject;
 			ISharpDevelopPackageManager packageManager = packageManagerFactory.CreatePackageManager(packageRepository, project);
 			ConfigureLogger(packageManager);
 			return packageManager;
+		}
+		
+		public ISharpDevelopProjectManager CreateProjectManager(IPackageRepository repository, MSBuildBasedProject project)
+		{
+			ISharpDevelopPackageManager packageManager = packageManagerFactory.CreatePackageManager(repository, project);
+			return packageManager.ProjectManager;
 		}
 		
 		void ConfigureLogger(ISharpDevelopPackageManager packageManager)
@@ -143,6 +137,18 @@ namespace ICSharpCode.PackageManagement
 			IProjectManager projectManager = packageManager.ProjectManager;
 			projectManager.Logger = outputMessagesView;
 			projectManager.Project.Logger = outputMessagesView;
+		}
+		
+		public void InstallPackage(
+			IPackageRepository packageRepository,
+			IPackage package,
+			IEnumerable<PackageOperation> operations)
+		{
+			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageRepository);
+			packageManager.InstallPackage(package, operations);
+			projectService.RefreshProjectBrowser();
+			RecentPackageRepository.AddPackage(package);
+			OnPackageInstalled();
 		}
 		
 		public void UninstallPackage(IPackageRepository repository, IPackage package)
@@ -187,7 +193,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		IPackageRepository CreatePackageRepository(PackageSource source)
+		public IPackageRepository CreatePackageRepository(PackageSource source)
 		{
 			return packageRepositoryCache.CreateRepository(source);
 		}

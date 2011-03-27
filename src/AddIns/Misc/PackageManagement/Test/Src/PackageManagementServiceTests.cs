@@ -484,5 +484,65 @@ namespace PackageManagement.Tests
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, recentPackages);
 		}
+		
+		[Test]
+		public void CreatePackageRepository_PackageSourceSpecified_CreatesPackageRepositoryFromPackageRepositoryFactory()
+		{
+			CreatePackageManagementService();
+			var repository = packageManagementService.CreatePackageRepository(new PackageSource("a"));
+			var expectedRepository = fakePackageRepositoryFactory.FakePackageRepository;
+			
+			Assert.AreEqual(expectedRepository, repository);
+		}
+		
+		[Test]
+		public void CreatePackageRepository_PackageSourceSpecified_PackageSourcePassedToPackageRepositoryFactory()
+		{
+			CreatePackageManagementService();
+			var source = new PackageSource("Test");
+			var repository = packageManagementService.CreatePackageRepository(source);
+			var actualSource = fakePackageRepositoryFactory.PackageSourcesPassedToCreateRepository.First();
+			
+			Assert.AreEqual(source, actualSource);
+		}
+		
+		[Test]
+		public void CreateProjectManager_RepositoryAndProjectSpecified_CreatesPackageManagerFromPackageManagerFactory()
+		{
+			CreatePackageManagementService();
+			var repository = new FakePackageRepository();
+			var project = ProjectHelper.CreateTestProject();
+			
+			ISharpDevelopProjectManager projectManager = packageManagementService.CreateProjectManager(repository, project);
+			
+			var expectedProjectManager = fakePackageManagerFactory.FakePackageManager.FakeProjectManager;
+			Assert.AreEqual(expectedProjectManager, projectManager);
+		}
+		
+		[Test]
+		public void CreateProjectManager_RepositorySpecified_RepositoryUsedToCreateProjectManager()
+		{
+			CreatePackageManagementService();
+			var repository = new FakePackageRepository();
+			
+			packageManagementService.CreateProjectManager(repository, null);
+			
+			var expectedRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
+			
+			Assert.AreEqual(expectedRepository, repository);
+		}
+		
+		[Test]
+		public void CreateProjectManager_ProjectSpecified_ProjectUsedToCreateProjectManager()
+		{
+			CreatePackageManagementService();
+			var project = ProjectHelper.CreateTestProject();
+			
+			packageManagementService.CreateProjectManager(null, project);
+			
+			var expectedProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
+			
+			Assert.AreEqual(expectedProject, project);
+		}
 	}
 }
