@@ -37,5 +37,20 @@ namespace PackageManagement.Tests.Helpers
 			PackageOperations.Add(operation);
 			return package;
 		}
+		
+		public PackageSource PackageSource = new PackageSource("http://sharpdevelop/packages");
+		public TestableProject TestableProject = ProjectHelper.CreateTestProject();
+		public bool IgnoreDependencies;
+		public Version Version;
+		
+		public void InstallPackageById(string packageId)
+		{
+			packageManagementService.InstallPackage(
+				packageId, 
+				Version,
+				TestableProject,
+				PackageSource,
+				IgnoreDependencies);
+		}
 	}
 }

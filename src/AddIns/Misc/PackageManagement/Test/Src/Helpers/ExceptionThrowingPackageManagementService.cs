@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
 
@@ -14,6 +15,7 @@ namespace PackageManagement.Tests.Helpers
 		public Exception ExeptionToThrowWhenInstallPackageCalled { get; set; }
 		public Exception ExeptionToThrowWhenUninstallPackageCalled { get; set; }
 		public Exception ExeptionToThrowWhenActiveRepositoryAccessed { get; set; }
+		public Exception ExceptionToThrowWhenCreatePackageManagerForActiveProjectCalled { get; set; }
 
 		public override IProjectManager ActiveProjectManager {
 			get {
@@ -42,6 +44,14 @@ namespace PackageManagement.Tests.Helpers
 		public override void UninstallPackage(IPackageRepository repository, IPackage package)
 		{
 			throw ExeptionToThrowWhenUninstallPackageCalled;
+		}
+		
+		public override ISharpDevelopPackageManager CreatePackageManagerForActiveProject()
+		{
+			if (ExceptionToThrowWhenCreatePackageManagerForActiveProjectCalled != null) {
+				throw ExceptionToThrowWhenCreatePackageManagerForActiveProjectCalled;
+			}
+			return base.CreatePackageManagerForActiveProject();
 		}
 	}
 }

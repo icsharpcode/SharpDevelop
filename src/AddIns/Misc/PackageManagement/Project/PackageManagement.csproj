@@ -85,6 +85,7 @@
     <Compile Include="Src\Design\FakePackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\Design\FakePackageManagementProjectService.cs" />
     <Compile Include="Src\Design\FakePackageManagementService.cs" />
+    <Compile Include="Src\Design\FakePackageManager.cs" />
     <Compile Include="Src\Design\FakePackageRepository.cs" />
     <Compile Include="Src\Design\FakeProjectManager.cs" />
     <Compile Include="Src\Design\FakeProjectSystem.cs" />
@@ -94,9 +95,11 @@
     <Compile Include="Src\IMessageViewCategory.cs" />
     <Compile Include="Src\IPackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\IPackageRepositoryCache.cs" />
+    <Compile Include="Src\IPackageOperationResolverFactory.cs" />
     <Compile Include="Src\PackageManagementCompilerMessageView.cs" />
     <Compile Include="Src\PackageManagementMessageViewCategory.cs" />
     <Compile Include="Src\PackageManagementOutputMessagesView.cs" />
+    <Compile Include="Src\PackageOperationsResolverFactory.cs" />
     <Compile Include="Src\PackageRepositoryCache.cs" />
     <Compile Include="Src\PackagesForSelectedPageResult.cs" />
     <Compile Include="Src\ILicenseAcceptanceService.cs" />
@@ -140,8 +143,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\PackagesViewModel.cs" />
-    <Compile Include="Src\Scripting\ErrorRecordFactory.cs" />
-    <Compile Include="Src\Scripting\IErrorRecordFactory.cs" />
     <Compile Include="Src\Scripting\PowerShellHostRawUserInterface.cs" />
     <Compile Include="Src\UpdatedPackagesViewModel.cs" />
     <Compile Include="Src\PackageViewModel.cs" />

@@ -78,9 +78,9 @@
     <Compile Include="Src\Helpers\FakeMessageReporter.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementAddInPath.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementConsoleHost.cs" />
-    <Compile Include="Src\Helpers\FakePackageManager.cs" />
     <Compile Include="Src\Helpers\FakePackageManagerFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageOperationResolver.cs" />
+    <Compile Include="Src\Helpers\FakePackageOperationResolverFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageRepositoryFactory.cs" />
     <Compile Include="Src\Helpers\FakePackagePathResolver.cs" />
     <Compile Include="Src\Helpers\FakePackageTests.cs" />

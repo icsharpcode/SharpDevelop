@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
 
@@ -19,8 +21,41 @@ namespace ICSharpCode.PackageManagement
 		
 		public void RefreshProjectBrowser()
 		{
-			var refreshCommand = new RefreshProjectBrowser();
-			refreshCommand.Run();
+			if (WorkbenchSingleton.InvokeRequired) {
+				WorkbenchSingleton.SafeThreadAsyncCall(RefreshProjectBrowser);
+			} else {
+				var refreshCommand = new RefreshProjectBrowser();
+				refreshCommand.Run();
+			}
+		}
+		
+		public IEnumerable<IProject> GetOpenProjects()
+		{
+			Solution solution = OpenSolution;
+			if (solution != null) {
+				return solution.Projects;
+			}
+			return new IProject[0];
+		}
+		
+		public void AddProjectItem(IProject project, ProjectItem item)
+		{
+			if (WorkbenchSingleton.InvokeRequired) {
+				Action<IProject, ProjectItem> action = AddProjectItem;
+				WorkbenchSingleton.SafeThreadCall<IProject, ProjectItem>(action, project, item);
+			} else {
+				ProjectService.AddProjectItem(project, item);
+			}
+		}
+		
+		public void Save(IProject project)
+		{
+			if (WorkbenchSingleton.InvokeRequired) {
+				Action<IProject> action = Save;
+				WorkbenchSingleton.SafeThreadCall<IProject>(action, project);
+			} else {
+				project.Save();
+			}
 		}
 		
 		public event ProjectEventHandler ProjectAdded {

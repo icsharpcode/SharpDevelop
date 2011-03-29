@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.PackageManagement;
 
@@ -50,6 +51,28 @@ namespace ICSharpCode.PackageManagement.Design
 			if (SolutionFolderRemoved != null) {
 				SolutionFolderRemoved(this, new SolutionFolderEventArgs(solutionFolder));
 			}
+		}
+		
+		public List<IProject> OpenProjects = new List<IProject>();
+		
+		public void AddFakeProject(IProject project)
+		{
+			OpenProjects.Add(project);
+		}
+		
+		public IEnumerable<IProject> GetOpenProjects()
+		{
+			return OpenProjects;
+		}
+		
+		public void AddProjectItem(IProject project, ProjectItem item)
+		{
+			ProjectService.AddProjectItem(project, item);
+		}
+		
+		public void Save(IProject project)
+		{
+			project.Save();
 		}
 	}
 }

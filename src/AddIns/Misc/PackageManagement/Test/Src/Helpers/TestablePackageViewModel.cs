@@ -10,13 +10,11 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class TestablePackageViewModel : PackageViewModel
 	{
-		public FakePackageOperationResolver FakePackageOperationResolver;
 		public FakePackageRepository FakeSourcePackageRepository;
 		public FakePackageManagementService	FakePackageManagementService;
 		public FakeLicenseAcceptanceService	FakeLicenseAcceptanceService;
 		public FakeMessageReporter FakeMessageReporter;
 		public FakePackage FakePackage;
-		public ILogger LoggerUsedWhenCreatingPackageResolver;
 		public string PackageViewModelAddingPackageMessageFormat = String.Empty;
 		public string PackageViewModelRemovingPackageMessageFormat = String.Empty;
 		
@@ -47,21 +45,37 @@ namespace PackageManagement.Tests.Helpers
 			this.FakeSourcePackageRepository = FakePackageManagementService.FakeActivePackageRepository;
 		}
 		
-		protected override IPackageOperationResolver CreatePackageOperationResolver(ILogger logger)
-		{
-			LoggerUsedWhenCreatingPackageResolver = logger;
-			if (FakePackageOperationResolver != null) {
-				return FakePackageOperationResolver;
-			}
-			return base.CreatePackageOperationResolver(logger);
-		}
-		
 		protected override string AddingPackageMessageFormat {
 			get { return PackageViewModelAddingPackageMessageFormat; }
 		}
 		
 		protected override string RemovingPackageMessageFormat {
 			get { return PackageViewModelRemovingPackageMessageFormat; }
+		}
+		
+		public PackageOperation AddOneFakeInstallPackageOperationForViewModelPackage()
+		{
+			var operation = new PackageOperation(FakePackage, PackageAction.Install);
+			
+			FakePackageManagementService
+				.FakePackageManagerToReturnFromCreatePackageManagerForActiveProject
+				.PackageOperationsToReturnFromGetInstallPackageOperations
+				.Add(operation);
+			
+			return operation;
+		}
+		
+		public PackageOperation AddOneFakeUninstallPackageOperation()
+		{
+			var package = new FakePackage("PackageToUninstall");			
+			var operation = new PackageOperation(package, PackageAction.Uninstall);
+			
+			FakePackageManagementService
+				.FakePackageManagerToReturnFromCreatePackageManagerForActiveProject
+				.PackageOperationsToReturnFromGetInstallPackageOperations
+				.Add(operation);
+			
+			return operation;
 		}
 	}
 }

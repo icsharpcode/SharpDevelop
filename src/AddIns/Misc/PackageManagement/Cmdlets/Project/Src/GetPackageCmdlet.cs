@@ -11,14 +11,11 @@ using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
-namespace PackageManagement.Cmdlets
+namespace ICSharpCode.PackageManagement.Cmdlets
 {
-	[Cmdlet(VerbsCommon.Get, "Package", DefaultParameterSetName=ParameterAttribute.AllParameterSets)]
-	public class GetPackageCmdlet : PSCmdlet
+	[Cmdlet(VerbsCommon.Get, "Package", DefaultParameterSetName = ParameterAttribute.AllParameterSets)]
+	public class GetPackageCmdlet : PackageManagementCmdlet
 	{
-		IPackageManagementService packageManagementService;
-		IPackageManagementConsoleHost consoleHost;
-		IErrorRecordFactory errorRecordFactory;
 		int? skip;
 		int? take;
 		
@@ -26,18 +23,16 @@ namespace PackageManagement.Cmdlets
 			: this(
 				ServiceLocator.PackageManagementService,
 				ServiceLocator.PackageManagementConsoleHost,
-				new ErrorRecordFactory())
+				null)
 		{
 		}
 		
 		public GetPackageCmdlet(
 			IPackageManagementService packageManagementService,
 			IPackageManagementConsoleHost consoleHost,
-			IErrorRecordFactory errorRecordFactory)
+			ICmdletTerminatingError terminatingError)
+			: base(packageManagementService, consoleHost, terminatingError)
 		{
-			this.packageManagementService = packageManagementService;
-			this.consoleHost = consoleHost;
-			this.errorRecordFactory = errorRecordFactory;
 		}
 		
 		[Alias("Online", "Remote")]
@@ -98,12 +93,6 @@ namespace PackageManagement.Cmdlets
 			return true;
 		}
 		
-		void ThrowProjectNotOpenTerminatorError()
-		{
-			var error = errorRecordFactory.CreateNoProjectOpenErrorRecord();
-			CmdletThrowTerminatingError(error);
-		}
-		
 		protected virtual void CmdletThrowTerminatingError(ErrorRecord errorRecord)
 		{
 			ThrowTerminatingError(errorRecord);
@@ -120,7 +109,6 @@ namespace PackageManagement.Cmdlets
 			}
 			return GetInstalledPackages();
 		}
-
 		
 		IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
 		{
@@ -148,15 +136,12 @@ namespace PackageManagement.Cmdlets
 		IPackageRepository CreatePackageRepositoryForActivePackageSource()
 		{
 			PackageSource source = GetActivePackageSource();
-			return packageManagementService.CreatePackageRepository(source);
+			return PackageManagementService.CreatePackageRepository(source);
 		}
 		
 		PackageSource GetActivePackageSource()
 		{
-			if (Source != null) {
-				return new PackageSource(Source);
-			}
-			return consoleHost.ActivePackageSource;
+			return GetActivePackageSource(Source);
 		}
 		
 		IQueryable<IPackage> FilterPackages(IQueryable<IPackage> packages)
@@ -170,31 +155,32 @@ namespace PackageManagement.Cmdlets
 		
 		IQueryable<IPackage> GetUpdatedPackages()
 		{
-			var updatedPackages = new UpdatedPackages(packageManagementService, DefaultProject);
+			var updatedPackages = new UpdatedPackages(PackageManagementService, DefaultProject);
 			updatedPackages.SearchTerms = Filter;
 			return updatedPackages.GetUpdatedPackages().AsQueryable();
 		}
 		
 		IQueryable<IPackage> GetInstalledPackages()
 		{
-			IPackageRepository repository = CreatePackageRepositoryForActivePackageSource();
-			ISharpDevelopProjectManager projectManager = CreateProjectManagerForActiveProject(repository);
+			ISharpDevelopProjectManager projectManager = CreateProjectManagerForActiveProject();
 			IQueryable<IPackage> packages = projectManager.LocalRepository.GetPackages();
 			return FilterPackages(packages);
 		}
 		
-		ISharpDevelopProjectManager CreateProjectManagerForActiveProject(IPackageRepository repository)
+		ISharpDevelopProjectManager CreateProjectManagerForActiveProject()
 		{
-			return packageManagementService.CreateProjectManager(repository, DefaultProject);
+			IPackageRepository repository = CreatePackageRepositoryForActivePackageSource();
+			return CreateProjectManagerForActiveProject(repository);
 		}
 		
-		MSBuildBasedProject DefaultProject {
-			get { return consoleHost.DefaultProject as MSBuildBasedProject; }
+		ISharpDevelopProjectManager CreateProjectManagerForActiveProject(IPackageRepository repository)
+		{
+			return PackageManagementService.CreateProjectManager(repository, DefaultProject);
 		}
 		
 		IQueryable<IPackage> GetRecentPackages()
 		{
-			IQueryable<IPackage> packages = packageManagementService.RecentPackageRepository.GetPackages();
+			IQueryable<IPackage> packages = PackageManagementService.RecentPackageRepository.GetPackages();
 			return FilterPackages(packages);
 		}
 		

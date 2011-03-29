@@ -17,17 +17,22 @@ namespace ICSharpCode.PackageManagement
 		MSBuildBasedProject project;
 		ProjectTargetFramework targetFramework;
 		IPackageManagementFileService fileService;
+		IPackageManagementProjectService projectService;
 		
 		public SharpDevelopProjectSystem(MSBuildBasedProject project)
-			: this(project, new PackageManagementFileService())
+			: this(project, new PackageManagementFileService(), new PackageManagementProjectService())
 		{
 		}
 		
-		public SharpDevelopProjectSystem(MSBuildBasedProject project, IPackageManagementFileService fileService)
+		public SharpDevelopProjectSystem(
+			MSBuildBasedProject project,
+			IPackageManagementFileService fileService,
+			IPackageManagementProjectService projectService)
 			: base(AppendTrailingSlashToDirectory(project.Directory))
 		{
 			this.project = project;
 			this.fileService = fileService;
+			this.projectService = projectService;
 		}
 		
 		static string AppendTrailingSlashToDirectory(string directory)
@@ -59,8 +64,8 @@ namespace ICSharpCode.PackageManagement
 		public void AddReference(string referencePath, Stream stream)
 		{
 			ReferenceProjectItem assemblyReference = CreateReference(referencePath);
-			ProjectService.AddProjectItem(project, assemblyReference);
-			project.Save();
+			projectService.AddProjectItem(project, assemblyReference);
+			projectService.Save(project);
 			LogAddedReferenceToProject(assemblyReference);
 		}
 		
@@ -177,8 +182,8 @@ namespace ICSharpCode.PackageManagement
 		void AddFileToProject(string path)
 		{
 			FileProjectItem fileItem = CreateFileProjectItem(path);
-			ProjectService.AddProjectItem(project, fileItem);
-			project.Save();
+			projectService.AddProjectItem(project, fileItem);
+			projectService.Save(project);
 		}
 		
 		FileProjectItem CreateFileProjectItem(string path)

@@ -34,5 +34,19 @@ namespace PackageManagement.Tests.Helpers
 		{
 			IsRunCalled = true;
 		}
+		
+		public TestableProject AddFakeDefaultProject()
+		{
+			var project = ProjectHelper.CreateTestProject();
+			DefaultProject = project;
+			return project;
+		}
+		
+		public PackageSource AddTestPackageSource()
+		{
+			var source = new PackageSource("Test");
+			ActivePackageSource = source;
+			return source;
+		}
 	}
 }

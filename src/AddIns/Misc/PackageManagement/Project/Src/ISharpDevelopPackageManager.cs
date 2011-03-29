@@ -10,8 +10,9 @@ namespace ICSharpCode.PackageManagement
 	public interface ISharpDevelopPackageManager : IPackageManager
 	{
 		ISharpDevelopProjectManager ProjectManager { get; }
-		void InstallPackage(IPackage package);
-		void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations);
+		
+		void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies);
 		void UninstallPackage(IPackage package);
+		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies);
 	}
 }

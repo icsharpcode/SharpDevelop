@@ -43,10 +43,15 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Helpers\FakeCmdletTerminatingError.cs" />
     <Compile Include="Helpers\FakeCommandRuntime.cs" />
-    <Compile Include="Helpers\FakeErrorRecordFactory.cs" />
+    <Compile Include="Helpers\FakeTerminatingCmdlet.cs" />
     <Compile Include="Helpers\TestableGetPackageCmdlet.cs" />
+    <Compile Include="Helpers\TestableInstallPackageCmdlet.cs" />
+    <Compile Include="Src\CmdletTerminatorErrorTests.cs" />
     <Compile Include="Src\GetPackageCmdletTests.cs" />
+    <Compile Include="Src\InstallPackageCmdletTests.cs" />
+    <Compile Include="Src\PackageManagementCmdletTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

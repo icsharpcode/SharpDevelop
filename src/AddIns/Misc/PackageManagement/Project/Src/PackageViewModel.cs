@@ -20,7 +20,6 @@ namespace ICSharpCode.PackageManagement
 		IPackage package;
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
 		IPackageRepository sourcePackageRepository;
-		IPackageRepository localPackageRepository;
 		bool? hasDependencies;
 		
 		public PackageViewModel(
@@ -43,25 +42,7 @@ namespace ICSharpCode.PackageManagement
 			addPackageCommand = new DelegateCommand(param => AddPackage());
 			removePackageCommand = new DelegateCommand(param => RemovePackage());
 		}
-		
-		public IPackageRepository SourcePackageRepository {
-			get { return sourcePackageRepository; }
-		}
-		
-		public IPackageRepository LocalPackageRepository {
-			get {
-				if (localPackageRepository == null) {
-					GetLocalPackageRepository();
-				}
-				return localPackageRepository;
-			}
-		}
-		
-		void GetLocalPackageRepository()
-		{
-			localPackageRepository = packageManagementService.ActiveProjectManager.LocalRepository;
-		}
-		
+	
 		public ICommand AddPackageCommand {
 			get { return addPackageCommand; }
 		}
@@ -229,21 +210,15 @@ namespace ICSharpCode.PackageManagement
 		
 		void GetPackageOperations()
 		{
-			IPackageOperationResolver resolver = CreatePackageOperationResolver();
-			packageOperations = resolver.ResolveOperations(package);
+			ISharpDevelopPackageManager packageManager = CreatePackageManagerForActiveProject();
+			packageOperations = packageManager.GetInstallPackageOperations(package, false);
 		}
 		
-		IPackageOperationResolver CreatePackageOperationResolver()
+		ISharpDevelopPackageManager CreatePackageManagerForActiveProject()
 		{
-			return CreatePackageOperationResolver(Logger);
-		}
-		
-		protected virtual IPackageOperationResolver CreatePackageOperationResolver(ILogger logger)
-		{
-			return new InstallWalker(LocalPackageRepository,
-			                         sourcePackageRepository,
-			                         logger,
-			                         ignoreDependencies: false);
+			ISharpDevelopPackageManager packageManager = packageManagementService.CreatePackageManagerForActiveProject();
+			packageManager.Logger = Logger;
+			return packageManager;
 		}
 		
 		bool CanInstallPackage()

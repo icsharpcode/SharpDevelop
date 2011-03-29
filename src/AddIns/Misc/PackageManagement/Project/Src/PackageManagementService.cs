@@ -84,7 +84,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public IPackageRepository CreateRecentPackageRepository()
+		IPackageRepository CreateRecentPackageRepository()
 		{
 			recentPackageRepository = new RecentPackageRepository(this);
 			return recentPackageRepository;
@@ -115,9 +115,19 @@ namespace ICSharpCode.PackageManagement
 			return packageManager.ProjectManager;
 		}
 		
+		public ISharpDevelopPackageManager CreatePackageManagerForActiveProject()
+		{
+			return CreatePackageManager(ActivePackageRepository);
+		}
+		
 		ISharpDevelopPackageManager CreatePackageManager(IPackageRepository packageRepository)
 		{
 			MSBuildBasedProject project = projectService.CurrentProject as MSBuildBasedProject;
+			return CreatePackageManager(packageRepository, project);
+		}
+		
+		ISharpDevelopPackageManager CreatePackageManager(IPackageRepository packageRepository, MSBuildBasedProject project)
+		{
 			ISharpDevelopPackageManager packageManager = packageManagerFactory.CreatePackageManager(packageRepository, project);
 			ConfigureLogger(packageManager);
 			return packageManager;
@@ -125,7 +135,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public ISharpDevelopProjectManager CreateProjectManager(IPackageRepository repository, MSBuildBasedProject project)
 		{
-			ISharpDevelopPackageManager packageManager = packageManagerFactory.CreatePackageManager(repository, project);
+			ISharpDevelopPackageManager packageManager = CreatePackageManager(repository, project);
 			return packageManager.ProjectManager;
 		}
 		
@@ -145,10 +155,54 @@ namespace ICSharpCode.PackageManagement
 			IEnumerable<PackageOperation> operations)
 		{
 			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageRepository);
-			packageManager.InstallPackage(package, operations);
+			bool ignoreDependencies = false;
+			InstallPackage(packageManager, package, operations, ignoreDependencies);
+		}
+		
+		void InstallPackage(
+			IPackageRepository packageRepository,
+			IPackage package,
+			IEnumerable<PackageOperation> operations,
+			bool ignoreDependencies)
+		{
+			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageRepository);
+			InstallPackage(packageManager, package, operations, ignoreDependencies);
+		}
+		
+		void InstallPackage(
+			ISharpDevelopPackageManager packageManager,
+			IPackage package,
+			IEnumerable<PackageOperation> operations,
+			bool ignoreDependencies)
+		{
+			packageManager.InstallPackage(package, operations, ignoreDependencies);
 			projectService.RefreshProjectBrowser();
 			RecentPackageRepository.AddPackage(package);
 			OnPackageInstalled();
+		}
+		
+		public void InstallPackage(
+			string packageId,
+			Version version,
+			MSBuildBasedProject project,
+			PackageSource packageSource,
+			bool ignoreDependencies)
+		{
+			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageSource, project);
+			IPackage package = packageManager.SourceRepository.FindPackage(packageId, version);
+			InstallPackage(packageManager, package, ignoreDependencies);
+		}
+		
+		void InstallPackage(ISharpDevelopPackageManager packageManager, IPackage package, bool ignoreDependencies)
+		{
+			IEnumerable<PackageOperation> operations = packageManager.GetInstallPackageOperations(package, ignoreDependencies);
+			InstallPackage(packageManager, package, operations, ignoreDependencies);
+		}
+		
+		ISharpDevelopPackageManager CreatePackageManager(PackageSource packageSource, MSBuildBasedProject project)
+		{
+			IPackageRepository packageRepository = CreatePackageRepository(packageSource);
+			return CreatePackageManager(packageRepository, project);
 		}
 		
 		public void UninstallPackage(IPackageRepository repository, IPackage package)
@@ -196,6 +250,21 @@ namespace ICSharpCode.PackageManagement
 		public IPackageRepository CreatePackageRepository(PackageSource source)
 		{
 			return packageRepositoryCache.CreateRepository(source);
+		}
+		
+		public MSBuildBasedProject GetProject(string name)
+		{
+			foreach (IProject project in projectService.GetOpenProjects()) {
+				if (IsProjectNameMatch(project.Name, name)) {
+					return project as MSBuildBasedProject;
+				}
+			}
+			return null;
+		}
+		
+		bool IsProjectNameMatch(string a, string b)
+		{
+			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
 		}
 	}
 }

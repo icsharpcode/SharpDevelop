@@ -10,9 +10,11 @@ namespace PackageManagement.Tests.Helpers
 	public class FakePackageOperationResolver : IPackageOperationResolver
 	{
 		public List<PackageOperation> PackageOperations = new List<PackageOperation>();
+		public IPackage PackagePassedToResolveOperations;
 		
 		public virtual IEnumerable<PackageOperation> ResolveOperations(IPackage package)
 		{
+			PackagePassedToResolveOperations = package;
 			return PackageOperations;
 		}
 	}

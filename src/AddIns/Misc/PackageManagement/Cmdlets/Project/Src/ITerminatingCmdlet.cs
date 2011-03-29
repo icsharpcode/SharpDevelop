@@ -4,10 +4,10 @@
 using System;
 using System.Management.Automation;
 
-namespace ICSharpCode.PackageManagement.Scripting
+namespace ICSharpCode.PackageManagement.Cmdlets
 {
-	public interface IErrorRecordFactory
+	public interface ITerminatingCmdlet
 	{
-		ErrorRecord CreateNoProjectOpenErrorRecord();
+		void ThrowTerminatingError(ErrorRecord errorRecord);
 	}
 }

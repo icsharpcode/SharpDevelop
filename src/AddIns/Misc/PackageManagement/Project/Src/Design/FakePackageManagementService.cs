@@ -166,6 +166,14 @@ namespace ICSharpCode.PackageManagement.Design
 			return FakeProjectManagerToReturnFromCreateProjectManager;
 		}
 		
+		public FakePackageManager FakePackageManagerToReturnFromCreatePackageManagerForActiveProject =
+			new FakePackageManager();
+		
+		public virtual ISharpDevelopPackageManager CreatePackageManagerForActiveProject()
+		{
+			return FakePackageManagerToReturnFromCreatePackageManagerForActiveProject;
+		}
+		
 		public FakePackage AddFakePackageWithVersionToAggregrateRepository(string version)
 		{
 			return AddFakePackageWithVersionToAggregrateRepository("Test", version);
@@ -176,6 +184,35 @@ namespace ICSharpCode.PackageManagement.Design
 			var package = FakePackage.CreatePackageWithVersion(id, version);
 			FakeAggregateRepository.FakePackages.Add(package);
 			return package;
+		}
+		
+		public string PackageIdPassedToInstallPackage;
+		public PackageSource PackageSourcePassedToInstallPackage;
+		public MSBuildBasedProject ProjectPassedToInstallPackage;
+		public bool IgnoreDependenciesPassedToInstallPackage;
+		public Version VersionPassedToInstallPackage;
+		
+		public void InstallPackage(
+			string packageId,
+			Version version,
+			MSBuildBasedProject project,
+			PackageSource packageSource,
+			bool ignoreDependencies)
+		{
+			PackageIdPassedToInstallPackage = packageId;
+			VersionPassedToInstallPackage = version;
+			ProjectPassedToInstallPackage = project;
+			PackageSourcePassedToInstallPackage = packageSource;
+			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
+		}
+		
+		public MSBuildBasedProject FakeProjectToReturnFromGetProject;
+		public string NamePassedToGetProject;
+		
+		public MSBuildBasedProject GetProject(string name)
+		{
+			NamePassedToGetProject = name;
+			return FakeProjectToReturnFromGetProject;
 		}
 	}
 }

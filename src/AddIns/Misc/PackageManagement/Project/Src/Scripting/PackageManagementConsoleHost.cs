@@ -118,6 +118,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void ProcessLine(string line)
 		{
 			powerShellHost.ExecuteCommand(line);
-		}		
+		}
 	}
 }

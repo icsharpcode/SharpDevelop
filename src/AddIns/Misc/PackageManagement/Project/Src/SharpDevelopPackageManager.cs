@@ -11,13 +11,15 @@ namespace ICSharpCode.PackageManagement
 	public class SharpDevelopPackageManager : PackageManager, ISharpDevelopPackageManager
 	{
 		IProjectSystem projectSystem;
+		IPackageOperationResolverFactory packageOperationResolverFactory;
 		
 		public SharpDevelopPackageManager(
 			IPackageRepository sourceRepository,
 			IProjectSystem projectSystem,
 			IFileSystem fileSystem,
 			ISharedPackageRepository localRepository,
-			IPackagePathResolver pathResolver)
+			IPackagePathResolver pathResolver,
+			IPackageOperationResolverFactory packageOperationResolverFactory)
 			: base(
 				sourceRepository,
 				pathResolver,
@@ -25,6 +27,7 @@ namespace ICSharpCode.PackageManagement
 				localRepository)
 		{
 			this.projectSystem = projectSystem;
+			this.packageOperationResolverFactory = packageOperationResolverFactory;
 			CreateProjectManager();
 		}
 		
@@ -61,17 +64,11 @@ namespace ICSharpCode.PackageManagement
 			InstallPackage(package, ignoreDependencies);
 		}
 		
-		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations)
+		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies)
 		{
 			foreach (PackageOperation operation in operations) {
 				Execute(operation);
 			}
-			AddPackageReference(package);
-		}
-
-		void AddPackageReference(IPackage package)
-		{
-			bool ignoreDependencies = false;
 			AddPackageReference(package, ignoreDependencies);
 		}
 		
@@ -90,6 +87,21 @@ namespace ICSharpCode.PackageManagement
 		{
 			ProjectManager.RemovePackageReference(package.Id, forceRemove, removeDependencies);
 			base.UninstallPackage(package, forceRemove, removeDependencies);
+		}
+		
+		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
+		{
+			IPackageOperationResolver resolver = CreateInstallPackageOperationResolver(ignoreDependencies);
+			return resolver.ResolveOperations(package);
+		}
+		
+		IPackageOperationResolver CreateInstallPackageOperationResolver(bool ignoreDependencies)
+		{
+			return packageOperationResolverFactory.CreateInstallPackageOperationResolver(
+				LocalRepository,
+				SourceRepository,
+				Logger,
+				ignoreDependencies);
 		}
 	}
 }

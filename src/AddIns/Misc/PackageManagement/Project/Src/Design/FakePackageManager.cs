@@ -4,10 +4,9 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
-using ICSharpCode.PackageManagement.Design;
 using NuGet;
 
-namespace PackageManagement.Tests.Helpers
+namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakePackageManager : ISharpDevelopPackageManager
 	{
@@ -35,7 +34,6 @@ namespace PackageManagement.Tests.Helpers
 					PackagePassedToInstallPackage,
 					IgnoreDependenciesPassedToInstallPackage);
 			}
-			
 		}
 		
 		#pragma warning disable 67
@@ -61,13 +59,6 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackageManager()
 		{
 			ProjectManager = FakeProjectManager;
-		}
-		
-		public void InstallPackage(IPackage package)
-		{
-			LoggerSetBeforeInstallPackageCalled = Logger;
-			
-			InstallPackage(package, false);
 		}
 		
 		public void InstallPackage(IPackage package, bool ignoreDependencies)
@@ -115,7 +106,7 @@ namespace PackageManagement.Tests.Helpers
 			throw new NotImplementedException();
 		}
 		
-		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations)
+		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies)
 		{
 			LoggerSetBeforeInstallPackageCalled = Logger;
 			
@@ -125,7 +116,20 @@ namespace PackageManagement.Tests.Helpers
 			ParametersPassedToInstallPackage.PackagePassedToInstallPackage = package;
 			ParametersPassedToInstallPackage.PackageOperationsPassedToInstallPackage = operations;
 			
+			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
+			
 			IsRefreshProjectBrowserCalledWhenInstallPackageCalled = FakeProjectService.IsRefreshProjectBrowserCalled;
+		}
+		
+		public List<PackageOperation> PackageOperationsToReturnFromGetInstallPackageOperations = new List<PackageOperation>();
+		public IPackage PackagePassedToGetInstallPackageOperations;
+		public bool IgnoreDependenciesPassedToGetInstallPackageOperations;
+		
+		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
+		{
+			PackagePassedToGetInstallPackageOperations = package;
+			IgnoreDependenciesPassedToGetInstallPackageOperations = ignoreDependencies;
+			return PackageOperationsToReturnFromGetInstallPackageOperations;
 		}
 	}
 }

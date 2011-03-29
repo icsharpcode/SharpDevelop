@@ -14,6 +14,7 @@ namespace PackageManagement.Tests.Helpers
 		public string PathPassedToPhysicalFileSystemAddFile;
 		public Stream StreamPassedToPhysicalFileSystemAddFile;
 		public FakeFileService FakeFileService;
+		public FakePackageManagementProjectService FakeProjectService;
 		public FakePackageManagementOutputMessagesView FakeOutputMessagesView;
 		public string FileNamePassedToLogDeletedFile;
 		public FileNameAndDirectory FileNameAndDirectoryPassedToLogDeletedFileFromDirectory;
@@ -23,14 +24,18 @@ namespace PackageManagement.Tests.Helpers
 		public FileNameAndProjectName FileNameAndProjectNamePassedToLogAddedFileToProject;
 		
 		public TestableSharpDevelopProjectSystem(MSBuildBasedProject project)
-			: this(project, new FakeFileService(project))
+			: this(project, new FakeFileService(project), new FakePackageManagementProjectService())
 		{
 		}
 		
-		TestableSharpDevelopProjectSystem(MSBuildBasedProject project, IPackageManagementFileService fileService)
-			: base(project, fileService)
+		TestableSharpDevelopProjectSystem(
+			MSBuildBasedProject project,
+			IPackageManagementFileService fileService,
+			IPackageManagementProjectService projectService)
+			: base(project, fileService, projectService)
 		{
 			FakeFileService = (FakeFileService)fileService;
+			FakeProjectService = (FakePackageManagementProjectService)projectService;
 			Logger = FakeOutputMessagesView;
 		}
 		

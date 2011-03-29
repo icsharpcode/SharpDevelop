@@ -2,46 +2,38 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using ICSharpCode.PackageManagement.Cmdlets;
 using ICSharpCode.PackageManagement.Design;
-using NuGet;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Cmdlets.Tests.Helpers
 {
-	public class TestableGetPackageCmdlet : GetPackageCmdlet
+	public class TestableInstallPackageCmdlet : InstallPackageCmdlet
 	{
-		public FakePackageManagementService FakePackageManagementService;
-		public FakeCommandRuntime FakeCommandRuntime;
-		public List<IPackage> PackagesPassedToWriteObject = new List<IPackage>();
-		public FakePackageManagementConsoleHost FakePackageManagementConsoleHost;
 		public FakeCmdletTerminatingError FakeCmdletTerminatingError;
+		public FakePackageManagementConsoleHost FakePackageManagementConsoleHost;
+		public FakePackageManagementService FakePackageManagementService;
 		
-		public TestableGetPackageCmdlet()
+		public TestableInstallPackageCmdlet()
 			: this(
 				new FakePackageManagementService(),
 				new FakePackageManagementConsoleHost(),
-				new FakeCommandRuntime(),
 				new FakeCmdletTerminatingError())
 		{
 		}
 		
-		public TestableGetPackageCmdlet(
+		public TestableInstallPackageCmdlet(
 			FakePackageManagementService packageManagementService,
 			FakePackageManagementConsoleHost consoleHost,
-			FakeCommandRuntime commandRuntime,
-			FakeCmdletTerminatingError terminatingError)
-			: base(packageManagementService, consoleHost, terminatingError)
+			FakeCmdletTerminatingError cmdletTerminatingError)
+			: base(packageManagementService, consoleHost, cmdletTerminatingError)
 		{
 			this.FakePackageManagementService = packageManagementService;
 			this.FakePackageManagementConsoleHost = consoleHost;
-			this.FakeCommandRuntime = commandRuntime;
-			this.CommandRuntime = commandRuntime;
-			this.FakeCmdletTerminatingError = terminatingError;
+			this.FakeCmdletTerminatingError = cmdletTerminatingError;
 		}
-		
-		public void RunProcessRecord()
+				
+		public void CallProcessRecord()
 		{
 			base.ProcessRecord();
 		}

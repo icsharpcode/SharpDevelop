@@ -16,13 +16,23 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository CreateAggregatePackageRepository();
 		IPackageRepository CreatePackageRepository(PackageSource source);
 		ISharpDevelopProjectManager CreateProjectManager(IPackageRepository repository, MSBuildBasedProject project);
+		ISharpDevelopPackageManager CreatePackageManagerForActiveProject();
 		
 		IPackageRepository ActivePackageRepository { get; }
 		IProjectManager ActiveProjectManager { get; }
 		IPackageRepository RecentPackageRepository { get; }
 		
 		void InstallPackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations);
+		void InstallPackage(
+			string packageId,
+			Version version,
+			MSBuildBasedProject project,
+			PackageSource packageSource,
+			bool ignoreDependencies);
+		
 		void UninstallPackage(IPackageRepository repository, IPackage package);
+		
+		MSBuildBasedProject GetProject(string name);
 
 		PackageManagementOptions Options { get; }
 		
