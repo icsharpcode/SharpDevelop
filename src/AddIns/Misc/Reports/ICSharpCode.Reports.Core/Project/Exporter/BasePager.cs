@@ -114,20 +114,26 @@ namespace ICSharpCode.Reports.Core.Exporter
 						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
 						
 						ExportContainer exportContainer = ExportHelper.ConvertToContainer(simpleContainer,Offset);
-						
+
 						ExporterCollection exporterCollection = ExportHelper.ConvertPlainCollection(simpleContainer.Items,exportContainer.StyleDecorator.Location);
 						exportContainer.Items.AddRange(exporterCollection);
+						Offset  = new Point(Offset.X,Offset.Y + exportContainer.StyleDecorator.Size.Height + GlobalValues.GapBetweenContainer);
+						
+						/*
+						Offset = ExportHelper.ConvertPlainCollection_2(exportContainer,simpleContainer.Items,Offset);
+						
+						*/
+						
 						convertedSection.Add(exportContainer);
-						Offset = new Point(Offset.X,Offset.Y + exportContainer.StyleDecorator.Size.Height + GlobalValues.GapBetweenContainer);
-						//Console.WriteLine("{0} - {1}",exportContainer.StyleDecorator.Size,item.Size);
+						
 					}
 					else
 					{
 						var converteditem = ExportHelper.ConvertLineItem(item,Offset);
-							Offset = new Point(Offset.X,Offset.Y + converteditem.StyleDecorator.Size.Height + GlobalValues.GapBetweenContainer);
+						Offset = new Point(Offset.X,Offset.Y + converteditem.StyleDecorator.Size.Height + GlobalValues.GapBetweenContainer);
 						convertedSection.Add(converteditem);
 					}
-					section.Size = new Size(section.Size.Width,Offset.Y  - section.SectionOffset);
+//					section.Size = new Size(section.Size.Width,Offset.Y  - section.SectionOffset);
 				}
 			}
 			return convertedSection;

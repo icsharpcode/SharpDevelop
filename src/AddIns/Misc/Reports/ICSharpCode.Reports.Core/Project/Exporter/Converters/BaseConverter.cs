@@ -52,13 +52,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		
 		#region PageBreak
 		
 		protected void BuildNewPage(ExporterCollection myList,BaseSection section)
 		{
 			FirePageFull(myList);
 			section.SectionOffset = SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
+//			Console.WriteLine("BuildNewPage with {0} - {1}",SinglePage.SectionBounds.PageHeaderRectangle.Location,section.SectionOffset);		
 			myList.Clear();
 		}
 		
@@ -70,6 +70,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		#endregion
+		
 		
 		#region Events
 		
@@ -229,7 +230,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			mylist.AddRange(ml);
 		
-			curPos = new Point (DefaultLeftPosition,CurrentPosition.Y + simpleContainer.Size.Height);
+			curPos = new Point (DefaultLeftPosition,CurrentPosition.Y + simpleContainer.Size.Height + 2 * GlobalValues.GapBetweenContainer);
 			simpleContainer.Size = rowSize;
 			return curPos;
 			

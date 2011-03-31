@@ -43,7 +43,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 
 			this.sectionBounds.MeasureReportFooter(reportModel.ReportFooter);
 
-			this.sectionBounds.MeasureDetailArea();
+			//this.sectionBounds.MeasureDetailArea();
 			
 			this.sectionBounds.DetailSectionRectangle = new System.Drawing.Rectangle(reportModel.DetailSection.Location.X,sectionBounds.DetailStart.Y,
 			                                                                         reportModel.DetailSection.Size.Width,

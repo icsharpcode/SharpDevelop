@@ -101,6 +101,11 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			                                           section.SectionOffset,
 			                                           this.marginBounds.Width,
 			                                           section.Size.Height + 3 * GlobalValues.GapBetweenContainer);
+			
+			Console.WriteLine("\tMeasurePageHeader {0}",pageHeaderRectangle);
+			
+			Console.WriteLine("\tDetailStart {0}",DetailStart);
+			
 		}
 		
 		
@@ -135,6 +140,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		
 		
 		//Test
+		/*
 		public void MeasureDetailArea ()
 		{
 			this.detailArea =  new Rectangle (this.DetailStart.X,
@@ -142,7 +148,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			                                 this.pageHeaderRectangle.Width,
 			                                 (this.pageFooterRectangle.Top -1) - (this.pageHeaderRectangle.Bottom + 1));
 		}
-		
+		*/
 		
 		#endregion
 		
@@ -198,8 +204,10 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		public Point DetailStart
 		{
 			get {
-				return new Point(this.pageHeaderRectangle.Left,
-				                 this.pageHeaderRectangle.Bottom + 3 * GlobalValues.GapBetweenContainer);
+//				return new Point(this.pageHeaderRectangle.Left,
+//				                 this.pageHeaderRectangle.Bottom + 3 * GlobalValues.GapBetweenContainer);
+					return new Point(this.pageHeaderRectangle.Left,
+				                 this.pageHeaderRectangle.Bottom );
 			}
 		}
 		
@@ -218,6 +226,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		/// </summary>
 		
 		//Test
+		
 		public Rectangle DetailArea
 		{
 			get {

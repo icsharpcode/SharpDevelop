@@ -57,8 +57,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private ExporterCollection ConvertDataRow (ISimpleContainer simpleContainer)
 		{
+			
 			ExporterCollection exporterCollection = new ExporterCollection();
 			base.CurrentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
+			
 			BaseSection section = parent as BaseSection;
 			
 			DefaultLeftPosition = parent.Location.X;
@@ -70,8 +72,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 				groupSize = section.Items[0].Size;
 				childSize  = section.Items[1].Size;
 			}
-			
-			do {
+//			Console.WriteLine("start with section at {0}",section.SectionOffset);
+//			Console.WriteLine();
+			do {            	
 				base.SaveSectionSize(section.Size);
 				PrintHelper.AdjustSectionLocation (section);
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
@@ -103,7 +106,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 							FillRow(simpleContainer,childNavigator);
 							FireRowRendering(simpleContainer,childNavigator);
 							PrepareContainerForConverting(section,simpleContainer);
-//							base.Evaluator.SinglePage.IDataNavigator = childNavigator;
 							base.CurrentPosition = ConvertStandardRow(exporterCollection,simpleContainer);
 							CheckForPageBreak(section,exporterCollection);
 						}
@@ -146,22 +148,42 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			var pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)section.Items[0],base.CurrentPosition);
 			
-			if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds)) {
+			if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds))
+			{
 				base.CurrentPosition = ForcePageBreak (exporterCollection,section);
+				Console.WriteLine("\t -new  CurPos = {0}",base.CurrentPosition);
 			}
 		}
 		
 		
 		protected override Point ForcePageBreak(ExporterCollection exporterCollection, BaseSection section)
 		{
+			Console.WriteLine("PageBreak");
 			base.ForcePageBreak(exporterCollection,section);
-			return CalculateStartPosition();
+			return CalculateStartPosition(section);
+			
 		}
 		
 		
-		private Point CalculateStartPosition()
+		private Point CalculateStartPosition(BaseSection section)
 		{
-			return new Point(base.SectionBounds.PageHeaderRectangle.X,base.SectionBounds.PageHeaderRectangle.Y);
+			/*
+			Console.WriteLine();
+			Console.WriteLine(" CalculateStartPosition");
+			Console.WriteLine("{0}",base.SectionBounds.DetailStart);
+			Console.WriteLine("{0} ",SectionBounds.DetailArea);
+			Console.WriteLine("{0} ",base.SectionBounds.ReportHeaderRectangle);
+			Console.WriteLine("{0} ",base.SectionBounds.PageHeaderRectangle);
+//			return new Point (base.SectionBounds.PageHeaderRectangle.X,SectionBounds.DetailStart.Y);
+//			return new Point (base.SectionBounds.PageHeaderRectangle.X,SectionBounds.DetailStart.Y);
+//			return new Point (base.SectionBounds.PageHeaderRectangle.X,SectionBounds.DetailArea.Top);
+			
+//			return new Point (base.SectionBounds.PageHeaderRectangle.X,base.SectionBounds.PageHeaderRectangle.Bottom);
+			var pp = new Point (base.SectionBounds.PageHeaderRectangle.X,base.SectionBounds.PageHeaderRectangle.Bottom);
+			Console.WriteLine ("Bottom {0}",pp);
+			Console.WriteLine("secoffset {0}",section.SectionOffset);
+			*/
+			return new Point (base.SectionBounds.PageHeaderRectangle.X,section.SectionOffset);
 		}
 		
 		

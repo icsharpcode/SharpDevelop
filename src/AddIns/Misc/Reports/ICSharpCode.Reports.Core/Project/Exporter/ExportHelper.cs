@@ -10,6 +10,7 @@ using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Core.Project.Exporter
@@ -57,6 +58,36 @@ namespace ICSharpCode.Reports.Core.Project.Exporter
 				}
 			}
 			return col;
+		}
+		
+		
+		public static Point   ConvertPlainCollection_2 (ExportContainer container,ReportItemCollection items,Point offset)
+		{
+			if (items == null) {
+				throw new ArgumentNullException("items");
+			}
+			
+			ExporterCollection col = new ExporterCollection();
+			Point o = offset;
+			if (items.Count > 0) {
+				
+				foreach(BaseReportItem item in items)
+				{
+					container.Items.Add(ExportHelper.ConvertLineItem(item,offset));
+				}
+				Size max = Size.Empty;
+				foreach (var element in items) {
+					if (element.Size.Height > max.Height) {
+						max = element.Size;
+					}
+				}
+				
+				if (container.StyleDecorator.Size.Height > max.Height) {
+					offset = new Point (o.X,o.Y + container.StyleDecorator.Size.Height + GlobalValues.GapBetweenContainer);
+				}
+				
+			}
+			return offset;
 		}
 		
 		
