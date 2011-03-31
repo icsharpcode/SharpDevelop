@@ -53,11 +53,19 @@ namespace ICSharpCode.NRefactory
 		
 		public Change (int offset, int removedChars, string insertedText)
 		{
+			if (removedChars < 0)
+				throw new ArgumentOutOfRangeException ("removedChars", "removedChars needs to be >= 0");
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException ("offset", "offset needs to be >= 0");
 			this.removedChars = removedChars;
 			this.Offset = offset;
 			this.InsertedText = insertedText;
 		}
-
+		
+		public override string ToString ()
+		{
+			return string.Format ("[Change: Offset={0}, RemovedChars={1}, InsertedText={2}]", Offset, RemovedChars, InsertedText);
+		}
 	}
 	
 }

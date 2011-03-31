@@ -34,6 +34,7 @@ namespace ICSharpCode.NRefactory
 		int TabSize { get; }
 		string EolMarker { get; }
 		
+		string Text { get;  }
 		int Length { get; }
 		int LocationToOffset (int line, int col);
 		char GetCharAt (int offset);

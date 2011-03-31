@@ -87,13 +87,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				return;
 			var loc = node.EndLocation;
 			int line = loc.Line;
-			while (line < data.LineCount && data.GetEditableLength (line) == data.GetIndentation (line).Length) {
+			do {
 				line++;
-			}
+			} while (line < data.LineCount && data.GetEditableLength (line) == data.GetIndentation (line).Length);
 			var start = data.GetLineEndOffset (loc.Line); 
 			StringBuilder sb = new StringBuilder ();
 			for (int i = 0; i < blankLines; i++)
 				sb.Append (data.EolMarker);
+			Console.WriteLine (loc.Line + "--- " + line);
 			int removedChars = line < data.LineCount ? data.GetLineOffset (line) - start : 0;
 			AddChange (start, removedChars, sb.ToString ());
 		}
@@ -104,11 +105,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				return;
 			var loc = node.StartLocation;
 			int line = loc.Line;
-			while (line >= 0 && data.GetEditableLength (line) == data.GetIndentation (line).Length)
+			do {
 				line--;
+			} while (line > 0 && data.GetEditableLength (line) == data.GetIndentation (line).Length);
 			
 			int end = data.GetLineOffset (loc.Line);
-			int start = line >= 0 ? data.GetLineEndOffset (line) : 0;
+			int start = line >= 1 ? data.GetLineEndOffset (line) : 0;
 			StringBuilder sb = new StringBuilder ();
 			for (int i = 0; i < blankLines; i++)
 				sb.Append (data.EolMarker);
@@ -939,8 +941,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					return;
 				}
 			}
-			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars , insertedText == null ? "<null>" : insertedText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."));
-			//Console.WriteLine (Environment.StackTrace);
+//			Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars , insertedText == null ? "<null>" : insertedText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."));
+//			Console.WriteLine (Environment.StackTrace);
 			
 			changes.Add (new Change (offset, removedChars, insertedText));
 		}
