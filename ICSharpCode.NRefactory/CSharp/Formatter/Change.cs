@@ -1,10 +1,10 @@
 // 
-// Indent.cs
+// Change.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,65 +25,40 @@
 // THE SOFTWARE.
 using System;
 
-namespace ICSharpCode.NRefactory.CSharp
+namespace ICSharpCode.NRefactory
 {
-	public class Indent
+	public class Change
 	{
-		public int Level {
+		public int Offset {
 			get;
 			set;
 		}
-
-		public int ExtraSpaces {
-			get;
-			set;
-		}
-
-		public bool TabsToSpaces {
-			get;
-			set;
-		}
-
-		public int TabSize {
-			get;
-			set;
-		}
-
-		public Indent ()
-		{
-		}
-
-		public Indent (int level, int extraSpaces)
-		{
-			this.Level = level;
-			this.ExtraSpaces = extraSpaces;
-		}
-
-		public static Indent operator+ (Indent left, Indent right)
-		{
-			return new Indent (left.Level + right.Level, left.ExtraSpaces + right.ExtraSpaces);
-		}
-
-		public static Indent operator- (Indent left, Indent right)
-		{
-			return new Indent (left.Level - right.Level, left.ExtraSpaces - right.ExtraSpaces);
-		}
-
-		public string IndentString {
-			get {
-				return (TabsToSpaces ? new string (' ', Level * TabSize) : new string ('\t', Level)) + new string (' ', ExtraSpaces);
+		
+		int removedChars;
+		public int RemovedChars {
+			get { 
+				return removedChars; 
+			}
+			set {
+				if (value < 0)
+					throw new ArgumentOutOfRangeException ("RemovedChars", "needs to be >= 0");
+				removedChars = value; 
 			}
 		}
 
-		public string SingleIndent {
-			get {
-				return TabsToSpaces ? new string (' ', TabSize) : "\t";
-			}
+		public string InsertedText {
+			get;
+			set;
+		}
+		
+		public Change (int offset, int removedChars, string insertedText)
+		{
+			this.removedChars = removedChars;
+			this.Offset = offset;
+			this.InsertedText = insertedText;
 		}
 
-		public override string ToString ()
-		{
-			return string.Format ("[Indent: Level={0}, ExtraSpaces={1}]", Level, ExtraSpaces);
-		}
 	}
+	
 }
+

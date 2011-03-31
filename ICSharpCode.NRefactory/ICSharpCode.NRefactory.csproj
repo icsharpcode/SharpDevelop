@@ -344,6 +344,9 @@
     <Compile Include="CSharp\Ast\Statements\DoWhileStatement.cs" />
     <Compile Include="CSharp\Ast\Statements\YieldBreakStatement.cs" />
     <Compile Include="CSharp\Ast\Expressions\EmptyExpression.cs" />
+    <Compile Include="CSharp\Formatter\AstFormattingVisitor.cs" />
+    <Compile Include="CSharp\Formatter\ITextEditorAdapter.cs" />
+    <Compile Include="CSharp\Formatter\Change.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
