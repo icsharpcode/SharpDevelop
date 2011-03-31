@@ -171,7 +171,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		protected T Resolve<T>(string code) where T : ResolveResult
 		{
 			ResolveResult rr = Resolve(code);
-			Assert.IsInstanceOf(typeof(T), rr);
+			Assert.IsTrue(rr is T);
 			return (T)rr;
 		}
 		

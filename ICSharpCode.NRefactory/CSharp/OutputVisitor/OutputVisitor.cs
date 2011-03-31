@@ -782,16 +782,20 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode(parenthesizedExpression);
 		}
 		
-		public object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
+		public object VisitPointerReferenceExpression (PointerReferenceExpression pointerReferenceExpression, object data)
 		{
-			StartNode(pointerReferenceExpression);
-			pointerReferenceExpression.Target.AcceptVisitor(this, data);
-			WriteToken("->", PointerReferenceExpression.ArrowRole);
-			WriteIdentifier(pointerReferenceExpression.MemberName);
-			WriteTypeArguments(pointerReferenceExpression.TypeArguments);
-			return EndNode(pointerReferenceExpression);
+			StartNode (pointerReferenceExpression);
+			pointerReferenceExpression.Target.AcceptVisitor (this, data);
+			WriteToken ("->", PointerReferenceExpression.ArrowRole);
+			WriteIdentifier (pointerReferenceExpression.MemberName);
+			WriteTypeArguments (pointerReferenceExpression.TypeArguments);
+			return EndNode (pointerReferenceExpression);
 		}
 		
+		public object VisitEmptyExpression (EmptyExpression emptyExpression, object data)
+		{
+			return EndNode (emptyExpression);
+		}
 		#region VisitPrimitiveExpression
 		public object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
