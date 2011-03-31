@@ -79,9 +79,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		void ValidateParameters()
 		{
 			if (ParametersRequireProject()) {
-				if (DefaultProject == null) {
-					ThrowProjectNotOpenTerminatorError();
-				}
+				ThrowErrorIfProjectNotOpen();
 			}
 		}
 		
@@ -135,13 +133,8 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IPackageRepository CreatePackageRepositoryForActivePackageSource()
 		{
-			PackageSource source = GetActivePackageSource();
+			PackageSource source = GetActivePackageSource(Source);
 			return PackageManagementService.CreatePackageRepository(source);
-		}
-		
-		PackageSource GetActivePackageSource()
-		{
-			return GetActivePackageSource(Source);
 		}
 		
 		IQueryable<IPackage> FilterPackages(IQueryable<IPackage> packages)

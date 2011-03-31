@@ -12,7 +12,7 @@ using PackageManagement.Tests.Helpers;
 namespace PackageManagement.Cmdlets.Tests
 {
 	[TestFixture]
-	public class GetPackageCmdletTests : PackageManagementCmdletTests
+	public class GetPackageCmdletTests : CmdletTestsBase
 	{
 		TestableGetPackageCmdlet cmdlet;
 		FakePackageManagementService fakePackageManagementService;

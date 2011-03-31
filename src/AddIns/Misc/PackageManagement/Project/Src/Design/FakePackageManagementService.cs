@@ -214,5 +214,28 @@ namespace ICSharpCode.PackageManagement.Design
 			NamePassedToGetProject = name;
 			return FakeProjectToReturnFromGetProject;
 		}
+		
+		public string PackageIdPassedToUninstallPackage;
+		public MSBuildBasedProject ProjectPassedToUninstallPackage;
+		public Version VersionPassedToUninstallPackage;
+		public PackageSource PackageSourcePassedToUninstallPackage;
+		public bool ForceRemovePassedToUninstallPackage;
+		public bool RemoveDependenciesPassedToUninstallPackage;
+		
+		public void UninstallPackage(
+			string packageId,
+			Version version,
+			MSBuildBasedProject project,
+			PackageSource packageSource,
+			bool forceRemove,
+			bool removeDependencies)
+		{
+			PackageIdPassedToUninstallPackage = packageId;
+			VersionPassedToUninstallPackage = version;
+			ProjectPassedToUninstallPackage = project;
+			PackageSourcePassedToUninstallPackage = packageSource;
+			ForceRemovePassedToUninstallPackage = forceRemove;
+			RemoveDependenciesPassedToUninstallPackage = removeDependencies;
+		}
 	}
 }

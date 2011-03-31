@@ -106,7 +106,6 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 		
 		public void ThrowTerminatingError(ErrorRecord errorRecord)
 		{
-			throw new NotImplementedException();
 		}
 	}
 }

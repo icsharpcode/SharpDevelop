@@ -2,23 +2,27 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using NuGet;
-using PackageManagement.Tests.Helpers;
+using NUnit.Framework;
+using PackageManagement.Cmdlets.Tests.Helpers;
 
 namespace PackageManagement.Cmdlets.Tests
 {
-	public abstract class PackageManagementCmdletTests
+	[TestFixture]
+	public class PackageManagementCmdletTests
 	{
-		protected FakePackageManagementConsoleHost fakeConsoleHost;
+		TestablePackageManagementCmdlet cmdlet;
 		
-		protected TestableProject AddDefaultProjectToConsoleHost()
+		void CreateCmdletWithNullTerminatingError()
 		{
-			return fakeConsoleHost.AddFakeDefaultProject();
+			cmdlet = new TestablePackageManagementCmdlet(null);
 		}
 		
-		protected PackageSource AddPackageSourceToConsoleHost()
+		[Test]
+		public void ThrowProjectNotOpenTerminatingError_TerminatingErrorIsNull_NullReferenceExceptionIsNotThrown()
 		{
-			return fakeConsoleHost.AddTestPackageSource();
+			CreateCmdletWithNullTerminatingError();
+			
+			Assert.DoesNotThrow(() => cmdlet.CallThrowProjectNotOpenTerminatingError());
 		}
 	}
 }

@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -10,12 +11,22 @@ namespace ICSharpCode.PackageManagement
 	{
 		public void RemoveFile(string path)
 		{
-			FileService.RemoveFile(path, false);
+			if (WorkbenchSingleton.InvokeRequired) {
+				Action<string> action = RemoveFile;
+				WorkbenchSingleton.SafeThreadCall<string>(action, path);
+			} else {
+				FileService.RemoveFile(path, false);
+			}
 		}
 		
 		public void RemoveDirectory(string path)
 		{
-			FileService.RemoveFile(path, true);
+			if (WorkbenchSingleton.InvokeRequired) {
+				Action<string> action = RemoveDirectory;
+				WorkbenchSingleton.SafeThreadCall<string>(action, path);
+			} else {
+				FileService.RemoveFile(path, true);
+			}
 		}
 	}
 }

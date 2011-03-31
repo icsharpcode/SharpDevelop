@@ -45,10 +45,17 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 				return terminatingError;
 			}
 		}
-			
-		protected void ThrowProjectNotOpenTerminatorError()
+		
+		protected void ThrowErrorIfProjectNotOpen()
 		{
-			terminatingError.ThrowNoProjectOpenError();
+			if (DefaultProject == null) {
+				ThrowProjectNotOpenTerminatingError();
+			}
+		}
+			
+		protected void ThrowProjectNotOpenTerminatingError()
+		{
+			TerminatingError.ThrowNoProjectOpenError();
 		}
 		
 		protected PackageSource GetActivePackageSource(string source)
@@ -57,6 +64,14 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 				return new PackageSource(source);
 			}
 			return ConsoleHost.ActivePackageSource;
+		}
+		
+		protected MSBuildBasedProject GetActiveProject(string projectName)
+		{
+			if (projectName != null) {
+				return PackageManagementService.GetProject(projectName);
+			}
+			return ConsoleHost.DefaultProject as MSBuildBasedProject;
 		}
 	}
 }

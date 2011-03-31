@@ -48,10 +48,14 @@
     <Compile Include="Helpers\FakeTerminatingCmdlet.cs" />
     <Compile Include="Helpers\TestableGetPackageCmdlet.cs" />
     <Compile Include="Helpers\TestableInstallPackageCmdlet.cs" />
+    <Compile Include="Helpers\TestablePackageManagementCmdlet.cs" />
+    <Compile Include="Helpers\TestableUninstallPackageCmdlet.cs" />
     <Compile Include="Src\CmdletTerminatorErrorTests.cs" />
     <Compile Include="Src\GetPackageCmdletTests.cs" />
     <Compile Include="Src\InstallPackageCmdletTests.cs" />
+    <Compile Include="Src\CmdletTestsBase.cs" />
     <Compile Include="Src\PackageManagementCmdletTests.cs" />
+    <Compile Include="Src\UninstallPackageCmdletTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

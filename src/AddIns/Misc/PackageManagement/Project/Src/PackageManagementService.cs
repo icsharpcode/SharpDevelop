@@ -133,9 +133,9 @@ namespace ICSharpCode.PackageManagement
 			return packageManager;
 		}
 		
-		public ISharpDevelopProjectManager CreateProjectManager(IPackageRepository repository, MSBuildBasedProject project)
+		public ISharpDevelopProjectManager CreateProjectManager(IPackageRepository packageRepository, MSBuildBasedProject project)
 		{
-			ISharpDevelopPackageManager packageManager = CreatePackageManager(repository, project);
+			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageRepository, project);
 			return packageManager.ProjectManager;
 		}
 		
@@ -208,9 +208,27 @@ namespace ICSharpCode.PackageManagement
 		public void UninstallPackage(IPackageRepository repository, IPackage package)
 		{
 			ISharpDevelopPackageManager packageManager = CreatePackageManager(repository);
+			UninstallPackage(packageManager, package);
+		}
+		
+		void UninstallPackage(ISharpDevelopPackageManager packageManager, IPackage package)
+		{
 			packageManager.UninstallPackage(package);
 			projectService.RefreshProjectBrowser();
 			OnPackageUninstalled();
+		}
+		
+		public void UninstallPackage(
+			string packageId,
+			Version version,
+			MSBuildBasedProject project,
+			PackageSource packageSource,
+			bool forceRemove,
+			bool removeDependencies)
+		{
+			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageSource, project);
+			IPackage package = packageManager.SourceRepository.FindPackage(packageId);
+			UninstallPackage(packageManager, package);
 		}
 		
 		public bool HasMultiplePackageSources {

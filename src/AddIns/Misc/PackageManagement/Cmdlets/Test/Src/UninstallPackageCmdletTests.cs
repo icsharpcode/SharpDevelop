@@ -4,8 +4,6 @@
 using System;
 using System.Management.Automation;
 using ICSharpCode.PackageManagement.Design;
-using ICSharpCode.PackageManagement.Scripting;
-using NuGet;
 using NUnit.Framework;
 using PackageManagement.Cmdlets.Tests.Helpers;
 using PackageManagement.Tests.Helpers;
@@ -13,27 +11,27 @@ using PackageManagement.Tests.Helpers;
 namespace PackageManagement.Cmdlets.Tests
 {
 	[TestFixture]
-	public class InstallPackageCmdletTests : CmdletTestsBase
+	public class UninstallPackageCmdletTests : CmdletTestsBase
 	{
-		TestableInstallPackageCmdlet cmdlet;
+		TestableUninstallPackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
 		FakePackageManagementService fakePackageManagementService;
 		
 		void CreateCmdletWithoutActiveProject()
 		{
-			cmdlet = new TestableInstallPackageCmdlet();
+			cmdlet = new TestableUninstallPackageCmdlet();
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
 			fakePackageManagementService = cmdlet.FakePackageManagementService;
 		}
-				
+		
 		void CreateCmdletWithActivePackageSourceAndProject()
 		{
 			CreateCmdletWithoutActiveProject();
 			AddPackageSourceToConsoleHost();
 			AddDefaultProjectToConsoleHost();
 		}
-
+		
 		void RunCmdlet()
 		{
 			cmdlet.CallProcessRecord();
@@ -44,14 +42,14 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.Id = id;
 		}
 		
-		void EnableIgnoreDependenciesParameter()
+		void EnableForceParameter()
 		{
-			cmdlet.IgnoreDependencies = new SwitchParameter(true);
+			cmdlet.Force = new SwitchParameter(true);
 		}
 		
-		void SetSourceParameter(string source)
+		void EnableRemoveDependenciesParameter()
 		{
-			cmdlet.Source = source;
+			cmdlet.RemoveDependencies = new SwitchParameter(true);
 		}
 		
 		void SetVersionParameter(Version version)
@@ -63,7 +61,7 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			cmdlet.ProjectName = name;
 		}
-		
+
 		[Test]
 		public void ProcessRecord_NoActiveProject_ThrowsNoProjectOpenTerminatingError()
 		{
@@ -87,34 +85,20 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageIdSpecified_PackageIdUsedToInstallPackage()
+		public void ProcessRecord_PackageIdSpecified_PackageIdUsedToUninstallPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualPackageId = fakePackageManagementService.PackageIdPassedToInstallPackage;
+			var actualPackageId = fakePackageManagementService.PackageIdPassedToUninstallPackage;
 			
 			Assert.AreEqual("Test", actualPackageId);
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageIdSpecified_ActivePackageSourceUsedToInstallPackage()
-		{
-			CreateCmdletWithoutActiveProject();
-			AddDefaultProjectToConsoleHost();
-			var packageSource = AddPackageSourceToConsoleHost();
-			SetIdParameter("Test");
-			RunCmdlet();
-			
-			var actualPackageSource = fakePackageManagementService.PackageSourcePassedToInstallPackage;
-			
-			Assert.AreEqual(packageSource, actualPackageSource);
-		}
-		
-		[Test]
-		public void ProcessRecord_PackageIdSpecified_ActiveProjectUsedToInstallPackage()
+		public void ProcessRecord_PackageIdSpecified_ActiveProjectUsedToUninstallPackage()
 		{
 			CreateCmdletWithoutActiveProject();
 			AddPackageSourceToConsoleHost();
@@ -122,55 +106,67 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToInstallPackage;
+			var actualProject = fakePackageManagementService.ProjectPassedToUninstallPackage;
 			
 			Assert.AreEqual(project, actualProject);
 		}
 		
 		[Test]
-		public void ProcessRecord_IgnoreDependenciesParameterSet_IgnoreDependenciesIsTrueWhenInstallingPackage()
+		public void ProcessRecord_ForceParameterSet_PackageForcefullyUninstalled()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			
 			SetIdParameter("Test");
-			EnableIgnoreDependenciesParameter();
+			EnableForceParameter();
 			RunCmdlet();
 			
-			bool result = fakePackageManagementService.IgnoreDependenciesPassedToInstallPackage;
+			bool result = fakePackageManagementService.ForceRemovePassedToUninstallPackage;
 			
 			Assert.IsTrue(result);
 		}
 		
 		[Test]
-		public void ProcessRecord_IgnoreDependenciesParameterNotSet_IgnoreDependenciesIsFalseWhenInstallingPackage()
+		public void ProcessRecord_ForceParameterNotSet_PackageIsNotForcefullyUninstalled()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			bool result = fakePackageManagementService.IgnoreDependenciesPassedToInstallPackage;
+			bool result = fakePackageManagementService.ForceRemovePassedToUninstallPackage;
 			
 			Assert.IsFalse(result);
 		}
 		
 		[Test]
-		public void ProcessRecord_SourceParameterSet_CustomSourceUsedWhenInstallingPackage()
+		public void ProcessRecord_RemoveDependenciesParameterSet_PackageDependenciesUninstalled()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			
 			SetIdParameter("Test");
-			SetSourceParameter("http://sharpdevelop.net/packages");
+			EnableRemoveDependenciesParameter();
 			RunCmdlet();
 			
-			var expected = "http://sharpdevelop.net/packages";
-			var actual = fakePackageManagementService.PackageSourcePassedToInstallPackage.Source;
+			bool result = fakePackageManagementService.RemoveDependenciesPassedToUninstallPackage;
 			
-			Assert.AreEqual(expected, actual);
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageVersionParameterSet_VersionUsedWhenInstallingPackage()
+		public void ProcessRecord_RemoveDependenciesParameterNotSet_PackageDependenciesNotUninstalled()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			bool result = fakePackageManagementService.RemoveDependenciesPassedToUninstallPackage;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageVersionParameterSet_VersionUsedWhenUninstallingPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			
@@ -179,26 +175,26 @@ namespace PackageManagement.Cmdlets.Tests
 			SetVersionParameter(version);
 			RunCmdlet();
 			
-			var actualVersion = fakePackageManagementService.VersionPassedToInstallPackage;
+			var actualVersion = fakePackageManagementService.VersionPassedToUninstallPackage;
 			
 			Assert.AreEqual(version, actualVersion);
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageVersionParameterNotSet_VersionUsedWhenInstallingPackageIsNull()
+		public void ProcessRecord_PackageVersionParameterNotSet_VersionUsedWhenUninstallingPackageIsNull()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualVersion = fakePackageManagementService.VersionPassedToInstallPackage;
+			var actualVersion = fakePackageManagementService.VersionPassedToUninstallPackage;
 			
 			Assert.IsNull(actualVersion);
 		}
 		
 		[Test]
-		public void ProcessRecord_ProjectNameSpecified_ProjectMatchingProjectNameUsedWhenInstallingPackage()
+		public void ProcessRecord_ProjectNameSpecified_ProjectMatchingProjectNameUsedWhenUninstallingPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			fakePackageManagementService.FakeProjectToReturnFromGetProject = ProjectHelper.CreateTestProject();
@@ -207,7 +203,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToInstallPackage;
+			var actualProject = fakePackageManagementService.ProjectPassedToUninstallPackage;
 			var expectedProject = fakePackageManagementService.FakeProjectToReturnFromGetProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);
@@ -226,6 +222,20 @@ namespace PackageManagement.Cmdlets.Tests
 			var expected = "MyProject";
 			
 			Assert.AreEqual(expected, actual);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_ActivePackageSourceUsedToUninstallPackage()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			var packageSource = AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			var actualPackageSource = fakePackageManagementService.PackageSourcePassedToUninstallPackage;
+			
+			Assert.AreEqual(packageSource, actualPackageSource);
 		}
 	}
 }

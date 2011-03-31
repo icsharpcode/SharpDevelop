@@ -24,7 +24,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		ErrorRecord CreateInvalidOperationErrorRecord(string errorId)
 		{
 			return new ErrorRecord(
-				new InvalidOperationException(),
+				new InvalidOperationException("A project must be open to run this command."),
 				"NoProjectOpen",
 				ErrorCategory.InvalidOperation,
 				null);

@@ -31,6 +31,13 @@ namespace ICSharpCode.PackageManagement
 			bool ignoreDependencies);
 		
 		void UninstallPackage(IPackageRepository repository, IPackage package);
+		void UninstallPackage(
+			string packageId,
+			Version version,
+			MSBuildBasedProject project,
+			PackageSource packageSource,
+			bool forceRemove,
+			bool removeDependencies);
 		
 		MSBuildBasedProject GetProject(string name);
 

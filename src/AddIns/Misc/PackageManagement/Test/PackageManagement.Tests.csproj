@@ -121,6 +121,7 @@
     <Compile Include="Src\AvailablePackagesViewModelTests.cs" />
     <Compile Include="Src\BooleanToFontWeightConverterTests.cs" />
     <Compile Include="Src\DelegateCommandTests.cs" />
+    <Compile Include="Src\Helpers\UninstallPackageHelper.cs" />
     <Compile Include="Src\InstalledPackagesViewModelTests.cs" />
     <Compile Include="Src\LicenseAcceptanceViewModelTests.cs" />
     <Compile Include="Src\OpenHyperlinkCommandTests.cs" />

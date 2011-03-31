@@ -9,10 +9,10 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement.Cmdlets
 {
-	[Cmdlet(VerbsLifecycle.Install, "Package", DefaultParameterSetName = ParameterAttribute.AllParameterSets)]
-	public class InstallPackageCmdlet : PackageManagementCmdlet
+	[Cmdlet(VerbsLifecycle.Uninstall, "Package", DefaultParameterSetName = ParameterAttribute.AllParameterSets)]
+	public class UninstallPackageCmdlet : PackageManagementCmdlet
 	{
-		public InstallPackageCmdlet()
+		public UninstallPackageCmdlet()
 			: this(
 				ServiceLocator.PackageManagementService,
 				ServiceLocator.PackageManagementConsoleHost,
@@ -20,7 +20,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		{
 		}
 		
-		public InstallPackageCmdlet(
+		public UninstallPackageCmdlet(
 			IPackageManagementService packageManagementService,
 			IPackageManagementConsoleHost consoleHost,
 			ICmdletTerminatingError terminatingError)
@@ -37,23 +37,35 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		[Parameter(Position = 2)]
 		public Version Version { get; set; }
 		
-		[Parameter(Position = 3)]
-		public string Source { get; set; }
+		[Parameter]
+		public SwitchParameter Force { get; set; }
 		
 		[Parameter]
-		public SwitchParameter IgnoreDependencies { get; set; }
+		public SwitchParameter RemoveDependencies { get; set; }
 		
 		protected override void ProcessRecord()
 		{
 			ThrowErrorIfProjectNotOpen();
-			InstallPackage();
+			UninstallPackage();
 		}
 		
-		void InstallPackage()
+		void UninstallPackage()
 		{
-			PackageSource packageSource = GetActivePackageSource(Source);
 			MSBuildBasedProject project = GetActiveProject(ProjectName);
-			PackageManagementService.InstallPackage(Id, Version, project, packageSource, IgnoreDependencies.IsPresent);
+			PackageSource packageSource = GetActivePackageSource();
+			
+			PackageManagementService.UninstallPackage(
+				Id,
+				Version,
+				project,
+				packageSource,
+				Force.IsPresent,
+				RemoveDependencies.IsPresent);
+		}
+		
+		PackageSource GetActivePackageSource()
+		{
+			return GetActivePackageSource(null);
 		}
 	}
 }
