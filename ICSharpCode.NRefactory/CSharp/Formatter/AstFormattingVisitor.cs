@@ -94,7 +94,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			StringBuilder sb = new StringBuilder ();
 			for (int i = 0; i < blankLines; i++)
 				sb.Append (data.EolMarker);
-			Console.WriteLine (loc.Line + "--- " + line);
 			int removedChars = line < data.LineCount ? data.GetLineOffset (line) - start : 0;
 			AddChange (start, removedChars, sb.ToString ());
 		}

@@ -132,7 +132,8 @@ using (IDisposable b = null) {
 }");
 			int start = result.GetLineOffset (5);
 			int end = result.GetLineOffset (result.LineCount - 1);
-			string text = result.GetTextAt (start, end - start).Trim ().Replace ("\t\t\t", "\t");
+			string text = result.GetTextAt (start, end - start).Trim ();
+			expectedOutput = expectedOutput.Replace ("\n", "\n\t\t");
 			Assert.AreEqual (expectedOutput, text);
 		}
 

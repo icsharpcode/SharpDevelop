@@ -35,6 +35,11 @@ namespace ICSharpCode.NRefactory.FormattingTests
 				Offset = offset;
 				Length = length;
 			}
+			
+			public override string ToString ()
+			{
+				return string.Format ("[Delimiter: Offset={0}, Length={1}]", Offset, Length);
+			}
 		}
 
 		static IEnumerable<Delimiter> FindDelimiter (string text)
@@ -74,6 +79,11 @@ namespace ICSharpCode.NRefactory.FormattingTests
 				this.Length = length;
 				this.DelimiterLength = delimiterLength;
 			}
+			
+			public override string ToString ()
+			{
+				return string.Format ("[Segment: Offset={0}, Length={1}, DelimiterLength={2}]", Offset, Length, DelimiterLength);
+			}
 		}
 		
 		Segment Get (int number)
@@ -101,6 +111,7 @@ namespace ICSharpCode.NRefactory.FormattingTests
 			foreach (var change in changes) {
 				text = text.Substring (0, change.Offset) + change.InsertedText + text.Substring (change.Offset + change.RemovedChars);
 			}
+			delimiters = new  List<Delimiter> (FindDelimiter (text));
 		}
 		
 		#region ITextEditorAdapter implementation
