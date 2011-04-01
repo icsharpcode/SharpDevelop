@@ -59,9 +59,7 @@ namespace ICSharpCode.PackageManagement
 		public void AddReference(string referencePath, Stream stream)
 		{
 			ReferenceProjectItem assemblyReference = CreateReference(referencePath);
-			ProjectService.AddProjectItem(project, assemblyReference);
-			project.Save();
-			LogAddedReferenceToProject(assemblyReference);
+			AddReferenceToProject(assemblyReference);
 		}
 		
 		ReferenceProjectItem CreateReference(string referencePath)
@@ -70,6 +68,13 @@ namespace ICSharpCode.PackageManagement
 			assemblyReference.Include = Path.GetFileNameWithoutExtension(referencePath);
 			assemblyReference.HintPath = referencePath;
 			return assemblyReference;
+		}
+		
+		void AddReferenceToProject(ReferenceProjectItem assemblyReference)
+		{
+			ProjectService.AddProjectItem(project, assemblyReference);
+			project.Save();
+			LogAddedReferenceToProject(assemblyReference);
 		}
 		
 		void LogAddedReferenceToProject(ReferenceProjectItem referenceProjectItem)
@@ -239,6 +244,19 @@ namespace ICSharpCode.PackageManagement
 		protected virtual void LogDeletedFileFromDirectory(string fileName, string directory)
 		{
 			DebugLogFormat("Removed file '{0}' from folder '{1}'.", fileName, directory);
+		}
+		
+		public void AddFrameworkReference(string name)
+		{
+			ReferenceProjectItem assemblyReference = CreateGacReference(name);
+			AddReferenceToProject(assemblyReference);
+		}
+		
+		ReferenceProjectItem CreateGacReference(string name)
+		{
+			var assemblyReference = new ReferenceProjectItem(project);
+			assemblyReference.Include = name;
+			return assemblyReference;
 		}
 	}
 }
