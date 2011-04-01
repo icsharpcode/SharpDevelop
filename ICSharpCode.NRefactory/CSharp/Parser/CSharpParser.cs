@@ -369,17 +369,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void Visit (EnumMember em)
 			{
 				EnumMemberDeclaration newField = new EnumMemberDeclaration ();
-				VariableInitializer variable = new VariableInitializer ();
-				
-				variable.AddChild (new Identifier (em.Name, Convert (em.Location)), AstNode.Roles.Identifier);
+				// TODO: attributes, 'new' modifier
+				newField.AddChild (new Identifier (em.Name, Convert (em.Location)), AstNode.Roles.Identifier);
 				
 				if (em.Initializer != null) {
 					var initializer = (Expression)em.Initializer.Accept (this);
 					if (initializer != null)
-						variable.AddChild (initializer, EnumMemberDeclaration.InitializerRole);
+						newField.AddChild (initializer, EnumMemberDeclaration.InitializerRole);
 				}
 				
-				newField.AddChild (variable, AstNode.Roles.Variable);
 				typeStack.Peek ().AddChild (newField, TypeDeclaration.MemberRole);
 			}
 			#endregion
