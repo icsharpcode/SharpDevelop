@@ -48,6 +48,16 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
+		public void RemoveProjectItem(IProject project, ProjectItem item)
+		{
+			if (WorkbenchSingleton.InvokeRequired) {
+				Action<IProject, ProjectItem> action = RemoveProjectItem;
+				WorkbenchSingleton.SafeThreadCall<IProject, ProjectItem>(action, project, item);
+			} else {
+				ProjectService.RemoveProjectItem(project, item);
+			}
+		}
+		
 		public void Save(IProject project)
 		{
 			if (WorkbenchSingleton.InvokeRequired) {

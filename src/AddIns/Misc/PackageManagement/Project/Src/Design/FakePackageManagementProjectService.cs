@@ -70,6 +70,11 @@ namespace ICSharpCode.PackageManagement.Design
 			ProjectService.AddProjectItem(project, item);
 		}
 		
+		public void RemoveProjectItem(IProject project, ProjectItem item)
+		{
+			ProjectService.RemoveProjectItem(project, item);
+		}
+		
 		public void Save(IProject project)
 		{
 			project.Save();

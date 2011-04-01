@@ -121,8 +121,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			ReferenceProjectItem referenceProjectItem = FindReference(name);
 			if (referenceProjectItem != null) {
-				ProjectService.RemoveProjectItem(project, referenceProjectItem);
-				project.Save();
+				projectService.RemoveProjectItem(project, referenceProjectItem);
+				projectService.Save(project);
 				LogRemovedReferenceFromProject(referenceProjectItem);
 			}
 		}
