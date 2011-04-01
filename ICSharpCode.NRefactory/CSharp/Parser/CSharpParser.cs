@@ -392,32 +392,43 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var location = LocationsBag.GetMemberLocation (f);
 				
-				FieldDeclaration newField = new FieldDeclaration ();
+				var newField = new FixedFieldDeclaration ();
 				
 				AddModifiers (newField, location);
 				if (location != null)
-					newField.AddChild (new CSharpTokenNode (Convert (location[0]), "fixed".Length), FieldDeclaration.Roles.Keyword);
-				newField.AddChild (ConvertToType (f.TypeName), FieldDeclaration.Roles.Type);
+					newField.AddChild (new CSharpTokenNode (Convert (location [0]), "fixed".Length), FixedFieldDeclaration.Roles.Keyword);
+				newField.AddChild (ConvertToType (f.TypeName), FixedFieldDeclaration.Roles.Type);
 				
-				VariableInitializer variable = new VariableInitializer ();
-				variable.AddChild (new Identifier (f.MemberName.Name, Convert (f.MemberName.Location)), FieldDeclaration.Roles.Identifier);
+				var variable = new FixedVariableInitializer ();
+				variable.AddChild (new Identifier (f.MemberName.Name, Convert (f.MemberName.Location)), FixedFieldDeclaration.Roles.Identifier);
 				if (!f.Initializer.IsNull) {
+					var bracketLocations = LocationsBag.GetLocations (f.Initializer);
+					if (bracketLocations != null && bracketLocations.Count > 1)
+						variable.AddChild (new CSharpTokenNode (Convert (bracketLocations [0]), 1), FixedFieldDeclaration.Roles.LBracket);
+						
 					variable.AddChild ((Expression)f.Initializer.Accept (this), FieldDeclaration.Roles.Expression);
+					if (bracketLocations != null && bracketLocations.Count > 1)
+						variable.AddChild (new CSharpTokenNode (Convert (bracketLocations [0]), 1), FixedFieldDeclaration.Roles.RBracket);
 				}
+				newField.AddChild (variable, FixedFieldDeclaration.Initializer);
 				
-				newField.AddChild (variable, FieldDeclaration.Roles.Variable);
 				if (f.Declarators != null) {
 					foreach (var decl in f.Declarators) {
 						var declLoc = LocationsBag.GetLocations (decl);
 						if (declLoc != null)
-							newField.AddChild (new CSharpTokenNode (Convert (declLoc[0]), 1), FieldDeclaration.Roles.Comma);
+							newField.AddChild (new CSharpTokenNode (Convert (declLoc [0]), 1), FieldDeclaration.Roles.Comma);
 						
-						variable = new VariableInitializer ();
+						variable = new FixedVariableInitializer ();
 						variable.AddChild (new Identifier (decl.Name.Value, Convert (decl.Name.Location)), FieldDeclaration.Roles.Identifier);
 						if (!decl.Initializer.IsNull) {
+							var bracketLocations = LocationsBag.GetLocations (f.Initializer);
+							if (bracketLocations != null && bracketLocations.Count > 1)
+								variable.AddChild (new CSharpTokenNode (Convert (bracketLocations [0]), 1), FixedFieldDeclaration.Roles.LBracket);
 							variable.AddChild ((Expression)decl.Initializer.Accept (this), FieldDeclaration.Roles.Expression);
+							if (bracketLocations != null && bracketLocations.Count > 1)
+								variable.AddChild (new CSharpTokenNode (Convert (bracketLocations [0]), 1), FixedFieldDeclaration.Roles.RBracket);
 						}
-						newField.AddChild (variable, FieldDeclaration.Roles.Variable);
+						newField.AddChild (variable, FixedFieldDeclaration.Initializer);
 					}
 				}
 				if (location != null)

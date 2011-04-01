@@ -108,6 +108,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitParameterDeclaration(ParameterDeclaration parameterDeclaration, T data);
 		S VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, T data);
 		S VisitVariableInitializer(VariableInitializer variableInitializer, T data);
+		S VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration, T data);
+		S VisitFixedVariableInitializer(FixedVariableInitializer fixedVariableInitializer, T data);
 		
 		S VisitCompilationUnit(CompilationUnit compilationUnit, T data);
 		S VisitSimpleType(SimpleType simpleType, T data);

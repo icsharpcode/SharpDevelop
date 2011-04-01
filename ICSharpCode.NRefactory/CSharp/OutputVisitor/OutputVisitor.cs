@@ -218,13 +218,13 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		void WriteCommaSeparatedListInBrackets(IEnumerable<Expression> list)
 		{
-			WriteToken("[", AstNode.Roles.LBracket);
-			if (list.Any()) {
-				Space(policy.SpacesWithinBrackets);
-				WriteCommaSeparatedList(list.SafeCast<Expression, AstNode>());
-				Space(policy.SpacesWithinBrackets);
+			WriteToken ("[", AstNode.Roles.LBracket);
+			if (list.Any ()) {
+				Space (policy.SpacesWithinBrackets);
+				WriteCommaSeparatedList (list.SafeCast<Expression, AstNode> ());
+				Space (policy.SpacesWithinBrackets);
 			}
-			WriteToken("]", AstNode.Roles.RBracket);
+			WriteToken ("]", AstNode.Roles.RBracket);
 		}
 		#endregion
 		
@@ -1812,16 +1812,45 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode(customEventDeclaration);
 		}
 		
-		public object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
+		public object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
-			StartNode(fieldDeclaration);
-			WriteAttributes(fieldDeclaration.Attributes);
-			WriteModifiers(fieldDeclaration.ModifierTokens);
-			fieldDeclaration.ReturnType.AcceptVisitor(this, data);
+			StartNode (fieldDeclaration);
+			WriteAttributes (fieldDeclaration.Attributes);
+			WriteModifiers (fieldDeclaration.ModifierTokens);
+			fieldDeclaration.ReturnType.AcceptVisitor (this, data);
+			Space ();
+			WriteCommaSeparatedList (fieldDeclaration.Variables);
+			Semicolon ();
+			return EndNode (fieldDeclaration);
+		}
+		
+		public object VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration, object data)
+		{
+			StartNode(fixedFieldDeclaration);
+			WriteAttributes(fixedFieldDeclaration.Attributes);
+			WriteModifiers(fixedFieldDeclaration.ModifierTokens);
 			Space();
-			WriteCommaSeparatedList(fieldDeclaration.Variables);
+			WriteKeyword("fixed");
+			Space();
+			fixedFieldDeclaration.ReturnType.AcceptVisitor (this, data);
+			Space();
+			WriteCommaSeparatedList(fixedFieldDeclaration.Variables);
 			Semicolon();
-			return EndNode(fieldDeclaration);
+			return EndNode(fixedFieldDeclaration);
+		}
+		
+		public object VisitFixedVariableInitializer (FixedVariableInitializer fixedVariableInitializer, object data)
+		{
+			StartNode(fixedVariableInitializer);
+			WriteIdentifier(fixedVariableInitializer.Name);
+			if (!fixedVariableInitializer.Initializer.IsNull) {
+				WriteToken("[", AstNode.Roles.LBracket);
+				Space(policy.SpacesWithinBrackets);
+				fixedVariableInitializer.Initializer.AcceptVisitor(this, data);
+				Space(policy.SpacesWithinBrackets);
+				WriteToken("]", AstNode.Roles.RBracket);
+			}
+			return EndNode(fixedVariableInitializer);
 		}
 		
 		public object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
@@ -1831,7 +1860,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteModifiers(indexerDeclaration.ModifierTokens);
 			indexerDeclaration.ReturnType.AcceptVisitor(this, data);
 			WritePrivateImplementationType(indexerDeclaration.PrivateImplementationType);
-			WriteKeyword("this");
+			WriteKeyword ("this");
 			Space(policy.SpaceBeforeMethodDeclarationParentheses);
 			WriteCommaSeparatedListInBrackets(indexerDeclaration.Parameters, policy.SpaceWithinMethodDeclarationParentheses);
 			OpenBrace(policy.PropertyBraceStyle);

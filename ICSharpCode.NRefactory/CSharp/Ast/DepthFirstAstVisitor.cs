@@ -160,6 +160,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (fieldDeclaration, data);
 		}
 		
+		public virtual S VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration, T data)
+		{
+			return VisitChildren (fixedFieldDeclaration, data);
+		}
+		
+		public virtual S VisitFixedVariableInitializer (FixedVariableInitializer fixedVariableInitializer, T data)
+		{
+			return VisitChildren (fixedVariableInitializer, data);
+		}
+		
 		public virtual S VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration, T data)
 		{
 			return VisitChildren (indexerDeclaration, data);

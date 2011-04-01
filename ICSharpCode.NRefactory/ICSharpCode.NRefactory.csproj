@@ -347,6 +347,8 @@
     <Compile Include="CSharp\Formatter\AstFormattingVisitor.cs" />
     <Compile Include="CSharp\Formatter\ITextEditorAdapter.cs" />
     <Compile Include="CSharp\Formatter\Change.cs" />
+    <Compile Include="CSharp\Ast\TypeMembers\FixedFieldDeclaration.cs" />
+    <Compile Include="CSharp\Ast\TypeMembers\FixedVariableInitializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
