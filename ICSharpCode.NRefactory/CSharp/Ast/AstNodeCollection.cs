@@ -117,6 +117,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			AstNode next;
 			for (AstNode cur = node.FirstChild; cur != null; cur = next) {
+				Debug.Assert(cur.Parent == node);
 				// Remember next before yielding cur.
 				// This allows removing/replacing nodes while iterating through the list.
 				next = cur.NextSibling;
@@ -191,6 +192,16 @@ namespace ICSharpCode.NRefactory.CSharp
 					return true;
 			}
 			return false;
+		}
+		
+		public void InsertAfter(T existingItem, T newItem)
+		{
+			node.InsertChildAfter(existingItem, newItem, role);
+		}
+		
+		public void InsertBefore(T existingItem, T newItem)
+		{
+			node.InsertChildBefore(existingItem, newItem, role);
 		}
 	}
 }

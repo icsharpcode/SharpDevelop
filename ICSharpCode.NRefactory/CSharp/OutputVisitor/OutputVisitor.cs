@@ -428,7 +428,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (block != null)
 				VisitBlockStatement(block, null);
 			else
-				throw new NotImplementedException();
+				embeddedStatement.AcceptVisitor(this, null);
 		}
 		
 		void WriteMethodBody(BlockStatement body)
@@ -1405,9 +1405,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			StartNode(fixedStatement);
 			WriteKeyword("fixed");
+			Space(policy.SpaceBeforeUsingParentheses);
 			LPar();
+			Space(policy.SpacesWithinUsingParentheses);
 			fixedStatement.Type.AcceptVisitor(this, data);
+			Space();
 			WriteCommaSeparatedList(fixedStatement.Variables);
+			Space(policy.SpacesWithinUsingParentheses);
 			RPar();
 			WriteEmbeddedStatement(fixedStatement.EmbeddedStatement);
 			return EndNode(fixedStatement);
