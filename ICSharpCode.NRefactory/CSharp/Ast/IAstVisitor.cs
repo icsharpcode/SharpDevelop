@@ -62,6 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitTypeDeclaration(TypeDeclaration typeDeclaration, T data);
 		S VisitUsingAliasDeclaration(UsingAliasDeclaration usingAliasDeclaration, T data);
 		S VisitUsingDeclaration(UsingDeclaration usingDeclaration, T data);
+		S VisitExternAliasDeclaration(ExternAliasDeclaration externAliasDeclaration, T data);
 		
 		S VisitBlockStatement(BlockStatement blockStatement, T data);
 		S VisitBreakStatement(BreakStatement breakStatement, T data);

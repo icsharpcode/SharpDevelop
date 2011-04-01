@@ -188,7 +188,17 @@ namespace ICSharpCode.NRefactory.CSharp
 				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
 				AddToNamespace (ud);
 			}
-			
+
+			public override void Visit (UsingsBag.ExternAlias u)
+			{
+				var ud = new ExternAliasDeclaration ();
+				ud.AddChild (new CSharpTokenNode (Convert (u.ExternLocation), "extern".Length), ExternAliasDeclaration.Roles.Keyword);
+				ud.AddChild (new CSharpTokenNode (Convert (u.AliasLocation), "alias".Length), ExternAliasDeclaration.AliasRole);
+				ud.AddChild (new Identifier (u.Identifier.Value, Convert (u.Identifier.Location)), ExternAliasDeclaration.Roles.Identifier);
+				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
+				AddToNamespace (ud);
+			}
+
 			AstType ConvertImport (MemberName memberName)
 			{
 				if (memberName.Left != null) {

@@ -130,6 +130,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (usingDeclaration, data);
 		}
 		
+		public virtual S VisitExternAliasDeclaration(ExternAliasDeclaration externAliasDeclaration, T data)
+		{
+			return VisitChildren (externAliasDeclaration, data);
+		}
+		
 		public virtual S VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, T data)
 		{
 			return VisitChildren (constructorDeclaration, data);

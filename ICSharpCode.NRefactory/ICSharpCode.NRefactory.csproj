@@ -349,6 +349,7 @@
     <Compile Include="CSharp\Formatter\Change.cs" />
     <Compile Include="CSharp\Ast\TypeMembers\FixedFieldDeclaration.cs" />
     <Compile Include="CSharp\Ast\TypeMembers\FixedVariableInitializer.cs" />
+    <Compile Include="CSharp\Ast\GeneralScope\ExternAliasDeclaration.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />

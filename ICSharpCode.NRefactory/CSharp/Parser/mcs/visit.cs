@@ -76,7 +76,11 @@ namespace Mono.CSharp
 		public virtual void Visit (UsingsBag.AliasUsing aliasUsing)
 		{
 		}
-		
+
+		public virtual void Visit (UsingsBag.ExternAlias externAlias)
+		{
+		}
+
 		public virtual void Visit (Class c)
 		{
 			VisitTypeContainer (c);

@@ -1294,6 +1294,20 @@ namespace ICSharpCode.NRefactory.CSharp
 			Semicolon();
 			return EndNode(usingDeclaration);
 		}
+		
+		public object VisitExternAliasDeclaration(ExternAliasDeclaration externAliasDeclaration, object data)
+		{
+			StartNode(externAliasDeclaration);
+			WriteKeyword("extern");
+			Space ();
+			WriteKeyword("alias");
+			Space ();
+			externAliasDeclaration.NameToken.AcceptVisitor(this, data);
+			Semicolon();
+			return EndNode(externAliasDeclaration);
+		}
+
+
 		#endregion
 		
 		#region Statements

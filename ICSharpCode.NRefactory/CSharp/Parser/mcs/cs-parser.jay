@@ -422,6 +422,7 @@ extern_alias_directive
 		} else {
 			lt = (Tokenizer.LocatedToken) $3; 
 			current_namespace.AddUsingExternalAlias (lt.Value, lt.Location, Report);
+			ubag.AddExternAlias  (GetLocation ($1), GetLocation ($2), lt, GetLocation ($4));
 		}
 	  }
 	| EXTERN_ALIAS error
@@ -459,7 +460,7 @@ using_alias_directive
 
 		current_namespace.AddUsingAlias (lt.Value, (MemberName) $4, GetLocation ($1));
 		ubag.AddUsingAlias (GetLocation ($1), lt, GetLocation ($3), (MemberName) $4, GetLocation ($5));
-	  }
+		  }
 	| USING error
 	 {
 		Error_SyntaxError (yyToken);
