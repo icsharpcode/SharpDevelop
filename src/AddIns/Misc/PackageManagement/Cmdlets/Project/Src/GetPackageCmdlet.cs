@@ -17,7 +17,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 	public class GetPackageCmdlet : PackageManagementCmdlet
 	{
 		int? skip;
-		int? take;
+		int? first;
 		
 		public GetPackageCmdlet()
 			: this(
@@ -59,11 +59,12 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			set { skip = value; }
 		}
 		
+		[Alias("Take")]
 		[Parameter]
 		[ValidateRange(0, Int32.MaxValue)]
-		public int Take {
-			get { return take.GetValueOrDefault(); }
-			set { take = value; }
+		public int First {
+			get { return first.GetValueOrDefault(); }
+			set { first = value; }
 		}
 		
 		protected override void ProcessRecord()
@@ -118,8 +119,8 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			if (skip.HasValue) {
 				packages = packages.Skip(skip.Value);
 			}
-			if (take.HasValue) {
-				packages = packages.Take(take.Value);
+			if (first.HasValue) {
+				packages = packages.Take(first.Value);
 			}
 			return packages;
 		}

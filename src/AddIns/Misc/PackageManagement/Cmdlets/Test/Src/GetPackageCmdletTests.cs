@@ -88,9 +88,9 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.Skip = skip;
 		}
 		
-		void SetTakeParameter(int take)
+		void SetFirstParameter(int first)
 		{
-			cmdlet.Take = take;
+			cmdlet.First = first;
 		}
 
 		[Test]
@@ -501,7 +501,7 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_ListAvailableAndTakeTwo_ReturnsFirstTwoPackages()
+		public void ProcessRecord_ListAvailableAndFirstTwo_ReturnsFirstTwoPackages()
 		{
 			CreateCmdlet();
 			var repository = fakePackageManagementService.FakePackageRepositoryToReturnFromCreatePackageRepository;
@@ -510,7 +510,7 @@ namespace PackageManagement.Cmdlets.Tests
 			repository.AddOneFakePackage("C");			
 			
 			EnableListAvailableParameter();
-			SetTakeParameter(2);
+			SetFirstParameter(2);
 			RunCmdlet();
 			
 			var actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
@@ -523,12 +523,12 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void Take_NewGetPackageCmdletInstance_ReturnsZero()
+		public void First_NewGetPackageCmdletInstance_ReturnsZero()
 		{
 			CreateCmdlet();
-			int take = cmdlet.Take;
+			int first = cmdlet.First;
 			
-			Assert.AreEqual(0, take);
+			Assert.AreEqual(0, first);
 		}
 	}
 }
