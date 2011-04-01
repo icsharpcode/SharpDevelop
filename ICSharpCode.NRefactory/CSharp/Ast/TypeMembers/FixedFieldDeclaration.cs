@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FixedFieldDeclaration.cs
 //
 // Author:
@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class FixedFieldDeclaration : AttributedNode
 	{
-		public static readonly Role<FixedVariableInitializer> Initializer = new Role<FixedVariableInitializer> ("Initializer");
+		public static readonly Role<FixedVariableInitializer> VariableRole = new Role<FixedVariableInitializer> ("FixedVariable");
 		
 		public override NodeType NodeType {
 			get { return NodeType.Member; }
@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public AstNodeCollection<FixedVariableInitializer> Variables {
-			get { return GetChildrenByRole (Initializer); }
+			get { return GetChildrenByRole (VariableRole); }
 		}
 
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)

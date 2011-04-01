@@ -418,7 +418,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (bracketLocations != null && bracketLocations.Count > 1)
 						variable.AddChild (new CSharpTokenNode (Convert (bracketLocations [0]), 1), FixedFieldDeclaration.Roles.RBracket);
 				}
-				newField.AddChild (variable, FixedFieldDeclaration.Initializer);
+				newField.AddChild (variable, FixedFieldDeclaration.VariableRole);
 				
 				if (f.Declarators != null) {
 					foreach (var decl in f.Declarators) {
@@ -436,7 +436,7 @@ namespace ICSharpCode.NRefactory.CSharp
 							if (bracketLocations != null && bracketLocations.Count > 1)
 								variable.AddChild (new CSharpTokenNode (Convert (bracketLocations [0]), 1), FixedFieldDeclaration.Roles.RBracket);
 						}
-						newField.AddChild (variable, FixedFieldDeclaration.Initializer);
+						newField.AddChild (variable, FixedFieldDeclaration.VariableRole);
 					}
 				}
 				if (location != null)
