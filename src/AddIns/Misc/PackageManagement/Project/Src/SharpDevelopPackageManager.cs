@@ -104,17 +104,11 @@ namespace ICSharpCode.PackageManagement
 				ignoreDependencies);
 		}
 		
-		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations)
+		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies)
 		{
 			foreach (PackageOperation operation in operations) {
 				Execute(operation);
 			}
-			UpdatePackageReference(package);
-		}
-		
-		void UpdatePackageReference(IPackage package)
-		{
-			bool updateDependencies = true;
 			UpdatePackageReference(package, updateDependencies);
 		}
 		

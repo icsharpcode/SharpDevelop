@@ -134,11 +134,13 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IPackage PackagePassedToUpdatePackage;
 		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
+		public bool UpdateDependenciesPassedToUpdatePackage;
 		
-		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations)
+		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies)
 		{
 			PackagePassedToUpdatePackage = package;
 			PackageOperationsPassedToUpdatePackage = operations;
+			UpdateDependenciesPassedToUpdatePackage = updateDependencies;
 		}
 	}
 }

@@ -185,7 +185,7 @@ namespace PackageManagement.Tests
 		{
 			FakePackage package = CreateFakePackage();
 			var operations = new List<PackageOperation>();
-			packageManager.UpdatePackage(package, operations);
+			packageManager.UpdatePackage(package, operations, true);
 			return package;
 		}
 		
@@ -195,8 +195,16 @@ namespace PackageManagement.Tests
 				operation
 			};
 			FakePackage package = CreateFakePackage();
-			packageManager.UpdatePackage(package, operations);
+			packageManager.UpdatePackage(package, operations, true);
 			return package;
+		}
+		
+		FakePackage UpdatePackageWithNoPackageOperationsAndDoNotUpdateDependencies()
+		{
+			FakePackage package = CreateFakePackage();
+			var operations = new List<PackageOperation>();
+			packageManager.UpdatePackage(package, operations, false);
+			return package;			
 		}
 
 		[Test]
@@ -529,6 +537,16 @@ namespace PackageManagement.Tests
 			UpdatePackageWithPackageOperations(operation);
 			
 			Assert.AreEqual(operation.Package, fakeSolutionSharedRepository.FirstPackageAdded);
+		}
+		
+		[Test]
+		public void UpdatePackage_UpdateDependenciesSetToFalse_DependenciesInProjectNotUpdated()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			UpdatePackageWithNoPackageOperationsAndDoNotUpdateDependencies();
+			
+			Assert.IsFalse(testableProjectManager.UpdateDependenciesPassedToUpdatePackageReference);
 		}
 	}
 }

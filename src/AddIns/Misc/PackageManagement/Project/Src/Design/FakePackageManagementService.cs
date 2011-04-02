@@ -248,5 +248,25 @@ namespace ICSharpCode.PackageManagement.Design
 			PackagePassedToUpdatePackage = package;
 			PackageOperationsPassedToUpdatePackage = operations;
 		}
+		
+		public string PackageIdPassedToUpdatePackage;
+		public Version VersionPassedToUpdatePackage;
+		public MSBuildBasedProject ProjectPassedToUpdatePackage;
+		public PackageSource PackageSourcePassedToUpdatePackage;
+		public bool UpdateDependenciesPassedToUpdatePackage;
+		
+		public void UpdatePackage(
+			string packageId,
+			Version version,
+			MSBuildBasedProject project,
+			PackageSource packageSource,
+			bool updateDependencies)
+		{
+			PackageIdPassedToUpdatePackage = packageId;
+			VersionPassedToUpdatePackage = version;
+			ProjectPassedToUpdatePackage = project;
+			PackageSourcePassedToUpdatePackage = packageSource;
+			UpdateDependenciesPassedToUpdatePackage = updateDependencies;
+		}
 	}
 }

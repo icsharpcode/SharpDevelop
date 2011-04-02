@@ -291,7 +291,34 @@ namespace ICSharpCode.PackageManagement
 			IEnumerable<PackageOperation> operations)
 		{
 			ISharpDevelopPackageManager packageManager = CreatePackageManager(repository);
-			packageManager.UpdatePackage(package, operations);
+			UpdatePackage(packageManager, package, operations, true);
+		}
+		
+		public void UpdatePackage(
+			string packageId,
+			Version version,
+			MSBuildBasedProject project,
+			PackageSource packageSource,
+			bool updateDependencies)
+		{
+			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageSource, project);
+			IPackage package = packageManager.SourceRepository.FindPackage(packageId, version);
+			UpdatePackage(packageManager, package, updateDependencies);
+		}
+		
+		void UpdatePackage(ISharpDevelopPackageManager packageManager, IPackage package, bool updateDependencies)
+		{
+			IEnumerable<PackageOperation> operations = packageManager.GetInstallPackageOperations(package, !updateDependencies);
+			UpdatePackage(packageManager, package, operations, updateDependencies);
+		}
+
+		void UpdatePackage(
+			ISharpDevelopPackageManager packageManager,
+			IPackage package,
+			IEnumerable<PackageOperation> operations,
+			bool updateDependencies)
+		{
+			packageManager.UpdatePackage(package, operations, updateDependencies);
 			projectService.RefreshProjectBrowser();
 			RecentPackageRepository.AddPackage(package);
 			OnPackageInstalled();

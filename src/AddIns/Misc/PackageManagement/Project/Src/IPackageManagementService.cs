@@ -40,6 +40,12 @@ namespace ICSharpCode.PackageManagement
 			bool removeDependencies);
 		
 		void UpdatePackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations);
+		void UpdatePackage(
+			string packageId,
+			Version version,
+			MSBuildBasedProject project,
+			PackageSource packageSource,
+			bool updateDependencies);
 		
 		MSBuildBasedProject GetProject(string name);
 

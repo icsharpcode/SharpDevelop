@@ -50,6 +50,7 @@
     <Compile Include="Src\ITerminatingCmdlet.cs" />
     <Compile Include="Src\PackageManagementCmdlet.cs" />
     <Compile Include="Src\UninstallPackageCmdlet.cs" />
+    <Compile Include="Src\UpdatePackageCmdlet.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
