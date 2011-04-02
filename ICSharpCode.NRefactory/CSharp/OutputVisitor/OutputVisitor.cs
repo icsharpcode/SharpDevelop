@@ -1847,7 +1847,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode(fixedFieldDeclaration);
 			WriteAttributes(fixedFieldDeclaration.Attributes);
 			WriteModifiers(fixedFieldDeclaration.ModifierTokens);
-			Space();
 			WriteKeyword("fixed");
 			Space();
 			fixedFieldDeclaration.ReturnType.AcceptVisitor (this, data);
@@ -1861,10 +1860,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			StartNode(fixedVariableInitializer);
 			WriteIdentifier(fixedVariableInitializer.Name);
-			if (!fixedVariableInitializer.Initializer.IsNull) {
+			if (!fixedVariableInitializer.CountExpression.IsNull) {
 				WriteToken("[", AstNode.Roles.LBracket);
 				Space(policy.SpacesWithinBrackets);
-				fixedVariableInitializer.Initializer.AcceptVisitor(this, data);
+				fixedVariableInitializer.CountExpression.AcceptVisitor(this, data);
 				Space(policy.SpacesWithinBrackets);
 				WriteToken("]", AstNode.Roles.RBracket);
 			}

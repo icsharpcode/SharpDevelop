@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 					Variables = {
 						new FixedVariableInitializer {
 							Name = "Field",
-							Initializer = new PrimitiveExpression(100)
+							CountExpression = new PrimitiveExpression(100)
 						}
 					}
 				});
