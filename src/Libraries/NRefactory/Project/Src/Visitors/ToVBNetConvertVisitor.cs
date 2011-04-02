@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		// The following conversions are implemented:
 		//   Conflicting field/property names -> m_field
 		//   Conflicting variable names inside methods
-		//   Anonymous methods are put into new methods
+		//   Anonymous methods are converted to Sub/Function-lambdas
 		//   Simple event handler creation is replaced with AddressOfExpression
 		//   Move Imports-statements out of namespaces
 		//   Parenthesis around Cast expressions remove - these are syntax errors in VB.NET
@@ -134,16 +134,46 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			base.VisitAnonymousMethodExpression(anonymousMethodExpression, data);
+			LambdaExpression lambda = new LambdaExpression();
+			lambda.Parameters = anonymousMethodExpression.Parameters;
 			if (anonymousMethodExpression.Body.Children.Count == 1) {
 				ReturnStatement rs = anonymousMethodExpression.Body.Children[0] as ReturnStatement;
-				if (rs != null) {
-					LambdaExpression lambda = new LambdaExpression();
+				if (rs != null)
 					lambda.ExpressionBody = rs.Expression;
-					lambda.Parameters = anonymousMethodExpression.Parameters;
-					ReplaceCurrentNode(lambda);
+				else {
+					lambda.StatementBody = anonymousMethodExpression.Body.Children[0] as Statement;
+					lambda.ReturnType = new TypeReference("System.Void", true);
 				}
+			} else {
+				var visitor = new ReturnStatementVisitor();
+				anonymousMethodExpression.AcceptVisitor(visitor, null);
+				lambda.StatementBody = anonymousMethodExpression.Body;
+				if (!visitor.HasReturn)
+					lambda.ReturnType = new TypeReference("System.Void", true);
 			}
+			ReplaceCurrentNode(lambda);
 			return null;
+		}
+		
+		sealed class ReturnStatementVisitor : AbstractAstVisitor
+		{
+			public bool HasReturn { get; private set; }
+			
+			public override object VisitReturnStatement(ReturnStatement returnStatement, object data)
+			{
+				HasReturn = true;
+				return base.VisitReturnStatement(returnStatement, data);
+			}
+			
+			public override object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
+			{
+				return null;
+			}
+			
+			public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
+			{
+				return null;
+			}
 		}
 		
 		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
