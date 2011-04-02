@@ -9,7 +9,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public override string DocumentationTag {
 			get {
-				return "F:" + this.DotNetName;
+				return "F:" + this.DotNetName.Replace('+', '.');
 			}
 		}
 		

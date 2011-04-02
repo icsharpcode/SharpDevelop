@@ -79,6 +79,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return this.Clone();
 		}
 		
+		public override string Documentation {
+			get { 
+				if (genericMember != null)
+					return genericMember.Documentation;
+				return base.Documentation; 
+			}
+			set { 
+				base.Documentation = value; 
+			}
+		}
+		
 		IMember genericMember;
 		
 		public virtual IMember GenericMember {

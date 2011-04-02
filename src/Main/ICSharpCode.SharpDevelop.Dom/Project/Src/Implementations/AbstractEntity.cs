@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		string documentation;
 		
-		public string Documentation {
+		public virtual string Documentation {
 			get {
 				if (documentation == null) {
 					string documentationTag = this.DocumentationTag;

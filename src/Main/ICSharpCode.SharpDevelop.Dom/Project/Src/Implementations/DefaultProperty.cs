@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 					}
 					b.Append(')');
 				}
-				return b.ToString();
+				return b.ToString().Replace('+', '.');
 			}
 		}
 		
