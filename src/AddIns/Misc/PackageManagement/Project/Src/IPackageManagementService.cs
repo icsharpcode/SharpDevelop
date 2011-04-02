@@ -19,6 +19,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void InstallPackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations);
 		void UninstallPackage(IPackageRepository repository, IPackage package);
+		void UpdatePackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations);
 
 		PackageManagementOptions Options { get; }
 		

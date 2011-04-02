@@ -21,7 +21,23 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementService packageManagementService,
 			IMessageReporter messageReporter,
 			ITaskFactory taskFactory)
-			: base(packageManagementService, messageReporter, taskFactory)
+			: this(
+				packageManagementService,
+				messageReporter,
+				new LicenseAcceptanceService(),
+				taskFactory)
+		{
+		}
+		
+		public PackageUpdatesViewModel(
+			IPackageManagementService packageManagementService,
+			IMessageReporter messageReporter,
+			ILicenseAcceptanceService licenseAcceptanceService,
+			ITaskFactory taskFactory)
+			: base(
+				packageManagementService,
+				new UpdatedPackageViewModelFactory(packageManagementService, licenseAcceptanceService, messageReporter),
+				taskFactory)
 		{
 			this.packageManagementService = packageManagementService;
 		}

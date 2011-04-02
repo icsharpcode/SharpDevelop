@@ -297,8 +297,16 @@ namespace ICSharpCode.PackageManagement
 		
 		void InstallPackage()
 		{
-			packageManagementService.InstallPackage(sourcePackageRepository, package, packageOperations);
+			InstallPackage(sourcePackageRepository, package, packageOperations);
 			OnPropertyChanged(model => model.IsAdded);
+		}
+		
+		protected virtual void InstallPackage(
+			IPackageRepository sourcePackageRepository,
+			IPackage package,
+			IEnumerable<PackageOperation> packageOperations)
+		{
+			packageManagementService.InstallPackage(sourcePackageRepository, package, packageOperations);
 		}
 		
 		void ReportError(Exception ex)

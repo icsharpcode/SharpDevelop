@@ -17,6 +17,9 @@ namespace PackageManagement.Tests.Helpers
 		public bool ForcePassedToRemovePackageReference;
 		public bool RemoveDependenciesPassedToRemovePackageReference;
 		
+		public IPackage PackagePassedToUpdatePackageReference;
+		public bool UpdateDependenciesPassedToUpdatePackageReference;
+		
 		public FakePackageRepository FakeLocalRepository {
 			get { return LocalRepository as FakePackageRepository; }
 		}
@@ -49,6 +52,16 @@ namespace PackageManagement.Tests.Helpers
 			PackagePassedToRemovePackageReference = package;
 			ForcePassedToRemovePackageReference = force;
 			RemoveDependenciesPassedToRemovePackageReference = removeDependencies;
+		}
+		
+		public override void UpdatePackageReference(string packageId, Version version, bool updateDependencies)
+		{
+			var package = new FakePackage();
+			package.Id = packageId;
+			package.Version = version;
+			
+			PackagePassedToUpdatePackageReference = package;
+			UpdateDependenciesPassedToUpdatePackageReference = updateDependencies;
 		}
 	}
 }

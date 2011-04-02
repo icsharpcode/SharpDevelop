@@ -130,5 +130,16 @@ namespace ICSharpCode.PackageManagement.Design
 		public IPackageRepository RecentPackageRepository {
 			get { return FakeRecentPackageRepository; }
 		}
+		
+		public IPackageRepository RepositoryPassedToUpdatePackage;
+		public IPackage PackagePassedToUpdatePackage;
+		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
+		
+		public void UpdatePackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations)
+		{
+			RepositoryPassedToUpdatePackage = repository;
+			PackagePassedToUpdatePackage = package;
+			PackageOperationsPassedToUpdatePackage = operations;
+		}
 	}
 }

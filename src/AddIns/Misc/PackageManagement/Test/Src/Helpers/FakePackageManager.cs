@@ -115,6 +115,15 @@ namespace PackageManagement.Tests.Helpers
 			throw new NotImplementedException();
 		}
 		
+		public IPackage PackagePassedToUpdatePackage;
+		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
+		
+		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations)
+		{
+			PackagePassedToUpdatePackage = package;
+			PackageOperationsPassedToUpdatePackage = operations;
+		}
+		
 		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations)
 		{
 			LoggerSetBeforeInstallPackageCalled = Logger;

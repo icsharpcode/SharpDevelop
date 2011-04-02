@@ -187,5 +187,17 @@ namespace ICSharpCode.PackageManagement
 		{
 			return packageRepositoryCache.CreateRepository(source);
 		}
+		
+		public void UpdatePackage(
+			IPackageRepository repository,
+			IPackage package,
+			IEnumerable<PackageOperation> operations)
+		{
+			ISharpDevelopPackageManager packageManager = CreatePackageManager(repository);
+			packageManager.UpdatePackage(package, operations);
+			projectService.RefreshProjectBrowser();
+			RecentPackageRepository.AddPackage(package);
+			OnPackageInstalled();
+		}
 	}
 }

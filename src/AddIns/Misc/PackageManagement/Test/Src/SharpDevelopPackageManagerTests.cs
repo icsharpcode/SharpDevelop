@@ -92,7 +92,7 @@ namespace PackageManagement.Tests
 			return package;
 		}
 		
-		FakePackage InstallPackageWithOnePackageOperation(PackageOperation operation)
+		FakePackage InstallPackageWithPackageOperations(PackageOperation operation)
 		{
 			var operations = new PackageOperation[] {
 				operation
@@ -157,6 +157,24 @@ namespace PackageManagement.Tests
 			return new PackageOperation(package, PackageAction.Install);
 		}
 		
+		FakePackage UpdatePackageWithNoPackageOperations()
+		{
+			FakePackage package = CreateFakePackage();
+			var operations = new List<PackageOperation>();
+			packageManager.UpdatePackage(package, operations);
+			return package;
+		}
+		
+		FakePackage UpdatePackageWithPackageOperations(PackageOperation operation)
+		{
+			var operations = new PackageOperation[] {
+				operation
+			};
+			FakePackage package = CreateFakePackage();
+			packageManager.UpdatePackage(package, operations);
+			return package;
+		}
+
 		[Test]
 		public void ProjectManager_InstanceCreated_SourceRepositoryIsSharedRepositoryPassedToPackageManager()
 		{
@@ -242,8 +260,8 @@ namespace PackageManagement.Tests
 			CreateTestableProjectManager();
 			
 			PackageOperation operation = CreateOneInstallPackageOperation();
-			InstallPackageWithOnePackageOperation(operation);
-				
+			InstallPackageWithPackageOperations(operation);
+			
 			Assert.AreEqual(operation.Package, fakeSolutionSharedRepository.FirstPackageAdded);
 		}
 		
@@ -357,6 +375,38 @@ namespace PackageManagement.Tests
 			packageManager.UninstallPackage(package);
 			
 			Assert.AreEqual("Test", packageRemovedFromProject.Id);
+		}
+		
+		[Test]
+		public void UpdatePackage_PackageInstanceAndNoPackageOperationsPassed_UpdatesReferenceInProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			var package = UpdatePackageWithNoPackageOperations();
+			
+			Assert.AreEqual(package, testableProjectManager.PackagePassedToUpdatePackageReference);
+		}
+		
+		[Test]
+		public void UpdatePackage_PackageInstanceAndNoPackageOperationsPassed_UpdatesDependenciesInProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			var package = UpdatePackageWithNoPackageOperations();
+			
+			Assert.IsTrue(testableProjectManager.UpdateDependenciesPassedToUpdatePackageReference);
+		}
+		
+		[Test]
+		public void UpdatePackage_PackageInstanceAndOneInstallPackageOperationPassed_PackageDefinedInOperationIsInstalledInLocalRepository()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			
+			PackageOperation operation = CreateOneInstallPackageOperation();
+			UpdatePackageWithPackageOperations(operation);
+			
+			Assert.AreEqual(operation.Package, fakeSolutionSharedRepository.FirstPackageAdded);
 		}
 	}
 }

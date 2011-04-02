@@ -106,6 +106,7 @@
     <Compile Include="Src\Helpers\TestableOpenHyperlinkCommand.cs" />
     <Compile Include="Src\Helpers\TestableSelectedListBoxItemScrollingBehaviour.cs" />
     <Compile Include="Src\Helpers\TestableSharpDevelopProjectSystem.cs" />
+    <Compile Include="Src\Helpers\TestableUpdatedPackageViewModel.cs" />
     <Compile Include="Src\Helpers\TestableViewModelBase.cs" />
     <Compile Include="Src\Helpers\Tests\PackageReferenceRepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="Src\AvailablePackagesViewModelTests.cs" />
     <Compile Include="Src\BooleanToFontWeightConverterTests.cs" />
     <Compile Include="Src\DelegateCommandTests.cs" />
+    <Compile Include="Src\Helpers\UpdatePackageHelper.cs" />
     <Compile Include="Src\InstalledPackagesViewModelTests.cs" />
     <Compile Include="Src\LicenseAcceptanceViewModelTests.cs" />
     <Compile Include="Src\OpenHyperlinkCommandTests.cs" />
@@ -136,6 +138,7 @@
     <Compile Include="Src\SharpDevelopPackageManagerTests.cs" />
     <Compile Include="Src\SharpDevelopProjectSystemTests.cs" />
     <Compile Include="Src\StringToStringCollectionConverterTests.cs" />
+    <Compile Include="Src\UpdatedPackageViewModelTests.cs" />
     <Compile Include="Src\ViewModelBaseTests.cs" />
   </ItemGroup>
   <ItemGroup>
