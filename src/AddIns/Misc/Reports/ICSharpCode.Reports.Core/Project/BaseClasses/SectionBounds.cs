@@ -14,7 +14,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 	public interface ISectionBounds
 	{
 		Rectangle MarginBounds {get;}
-		Rectangle ReportHeaderRectangle{get;} 
+		Rectangle ReportHeaderRectangle{get;}
 		Rectangle PageHeaderRectangle {get;}
 		Rectangle PageFooterRectangle {get;}
 		Rectangle ReportFooterRectangle {get;set;}
@@ -43,7 +43,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		
 		
 		#region Constructor
-	
+		
 		
 		public SectionBounds (ReportSettings reportSettings,bool firstPage)
 		{
@@ -58,7 +58,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			this.printableArea = new Rectangle(reportSettings.LeftMargin,reportSettings.TopMargin,
 			                                   reportSettings.PageSize.Width - reportSettings.RightMargin,
 			                                   reportSettings.PageSize.Height - reportSettings.BottomMargin);
-		
+			
 			this.marginBounds = new Rectangle(reportSettings.LeftMargin,
 			                                  reportSettings.TopMargin,
 			                                  reportSettings.PageSize.Width - reportSettings.LeftMargin - reportSettings.RightMargin,
@@ -77,39 +77,69 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			
 			Size size = Size.Empty;
 			section.SectionOffset = this.printableArea.Location.Y;
-			if (this.firstPage) {
-				if (section.Items.Count > 0) {
-					size = new Size(this.marginBounds.Width,section.Size.Height + 3 * GlobalValues.GapBetweenContainer);
-				} else {
-					size = new Size(this.marginBounds.Width,0);
-				}
-			} else {
+			if (this.firstPage)
+			{
+				size = CalculateSize(section);
+			} 
+			else
+			{
 				size = new Size(this.marginBounds.Width,0);
 			}
 			this.reportHeaderRectangle = new Rectangle(this.printableArea.Location,size);
 		}
+
+		
+		Size CalculateSize(BaseSection section)
+		{
+			Size size = Size.Empty;
+			if (section.Items.Count > 0) {
+//				size = new Size(this.marginBounds.Width, section.Size.Height + 3 * GlobalValues.GapBetweenContainer);
+//				size = new Size(this.marginBounds.Width, section.Size.Height + GlobalValues.GapBetweenContainer);
+				size = new Size(this.marginBounds.Width, section.Size.Height);
+			} else {
+				size = new Size(this.marginBounds.Width, 0);
+			}
+			return size;
+		}
 		
 		
-		public void MeasurePageHeader (IReportItem section)
+		
+		public void MeasurePageHeader (BaseSection section)
 		{
 			if (section == null) {
 				throw new ArgumentNullException("section");
 			}
 			
-			section.SectionOffset = this.reportHeaderRectangle.Bottom + 3 * GlobalValues.GapBetweenContainer;
+//			section.SectionOffset = this.reportHeaderRectangle.Bottom + 3 * GlobalValues.GapBetweenContainer;
+			section.SectionOffset = this.reportHeaderRectangle.Bottom + GlobalValues.GapBetweenContainer;
+			Size s = CalculateSize(section);
+			
+			/*
 			this.pageHeaderRectangle =  new Rectangle (this.reportHeaderRectangle.Left,
 			                                           section.SectionOffset,
 			                                           this.marginBounds.Width,
 			                                           section.Size.Height + 3 * GlobalValues.GapBetweenContainer);
+			 */
+//			this.pageHeaderRectangle =  new Rectangle (this.reportHeaderRectangle.Left,
+//			                                           section.SectionOffset,
+//			                                           this.marginBounds.Width,
+//			                                           section.Size.Height);
 			
+			this.pageHeaderRectangle =  new Rectangle (this.reportHeaderRectangle.Left,
+			                                           section.SectionOffset,
+			                                           this.marginBounds.Width,
+			                                           s.Height);
+			
+			
+			Console.WriteLine("---------------");
+			Console.WriteLine("\tMeasureReprtHeader {0}",reportHeaderRectangle);
 			Console.WriteLine("\tMeasurePageHeader {0}",pageHeaderRectangle);
-			
 			Console.WriteLine("\tDetailStart {0}",DetailStart);
-			
+			Console.WriteLine("---------------");
 		}
 		
 		
-	
+		
 		public void  MeasurePageFooter (IReportItem section)
 		{
 			if (section == null) {
@@ -148,7 +178,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			                                 this.pageHeaderRectangle.Width,
 			                                 (this.pageFooterRectangle.Top -1) - (this.pageHeaderRectangle.Bottom + 1));
 		}
-		*/
+		 */
 		
 		#endregion
 		
@@ -172,7 +202,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		
 		
 		//Test
-		public Rectangle PageHeaderRectangle 
+		public Rectangle PageHeaderRectangle
 		{
 			get {
 				return pageHeaderRectangle;
@@ -181,7 +211,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		
 		
 		//Test
-		public Rectangle PageFooterRectangle 
+		public Rectangle PageFooterRectangle
 		{
 			get {
 				return pageFooterRectangle;
@@ -190,7 +220,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		
 		
 		//Test
-		public Rectangle ReportFooterRectangle 
+		public Rectangle ReportFooterRectangle
 		{
 			get {
 				return reportFooterRectangle;
@@ -206,7 +236,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			get {
 //				return new Point(this.pageHeaderRectangle.Left,
 //				                 this.pageHeaderRectangle.Bottom + 3 * GlobalValues.GapBetweenContainer);
-					return new Point(this.pageHeaderRectangle.Left,
+				return new Point(this.pageHeaderRectangle.Left,
 				                 this.pageHeaderRectangle.Bottom );
 			}
 		}
@@ -234,7 +264,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			}
 		}
 		
-	
+		
 		public Rectangle DetailSectionRectangle {get;set;}
 		
 		

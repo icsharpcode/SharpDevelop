@@ -85,18 +85,23 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override void BuildPageHeader ()
 		{
 			var s = base.ReportModel.PageHeader;
-var i = base.Pages.Count;
-Console.WriteLine("");
-			Console.WriteLine("name <{0}> on PAGE {1}",s.Name,i);
-			Console.WriteLine("start section size {0} sectionoffset {1} offset {2}",s.Size,s.SectionOffset,base.Offset);
-			base.ReportModel.PageHeader.SectionOffset = base.AdjustPageHeader();
+
+			Console.WriteLine("name <{0}> on PAGE {1}",s.Name,base.Pages.Count);
+			
+			Console.WriteLine("section {0}",base.ReportModel.PageHeader.Size);
+			
+			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
+			
+//			Console.WriteLine("section after adjustparent {0} new size {1}",base.ReportModel.PageHeader.SectionOffset,ss);
+			
 			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,this.dataNavigator.CurrentRow);
+			
 			Console.WriteLine("end section size {0} sectionoffset {1} offset {2}",s.Size,s.SectionOffset,base.Offset);
 			
-			base.SectionBounds.MeasurePageHeader(base.ReportModel.ReportHeader);
-//			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
-//			base.SectionBounds.MeasureDetailArea();
+			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
+			
 			base.SinglePage.Items.AddRange(convertedList);
+			
 			Console.WriteLine("aft-section size {0} sectionoffset {1} offset {2}",s.Size,s.SectionOffset,base.Offset);
 			Console.WriteLine();
 		}
@@ -146,9 +151,9 @@ Console.WriteLine("");
 		{
 			ExporterCollection convertedList = new ExporterCollection();
 			var s = section;
-//			Console.WriteLine("name <{0}>",s.Name);
-//			Console.WriteLine("start section size {0} sectionoffset {1} offset {2}",s.Size,s.SectionOffset,base.Offset);
-//			Console.WriteLine("----");
+			Console.WriteLine("name <{0}>",s.Name);
+			Console.WriteLine("start section size {0} sectionoffset {1} offset {2}",s.Size,s.SectionOffset,base.Offset);
+			Console.WriteLine("----");
 			foreach (BaseReportItem item in section.Items)
 			{
 				IBaseConverter baseConverter = ConverterFactory.CreateConverter(item,dataNavigator,

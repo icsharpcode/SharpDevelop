@@ -47,17 +47,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Create and Init new page
 		
-		protected int AdjustPageHeader ()
-		{
-			int offset = 0;
-			if (this.SinglePage.Items.Count > 0) {
-				offset = this.SinglePage.SectionBounds.PageHeaderRectangle.Top;
-			} else {
-				offset = this.SinglePage.SectionBounds.ReportHeaderRectangle.Top;
-			}
-			return offset;
-		}
-		
 		
 		protected ExporterPage InitNewPage ()
 		{
