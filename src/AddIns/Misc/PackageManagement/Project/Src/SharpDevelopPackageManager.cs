@@ -103,5 +103,24 @@ namespace ICSharpCode.PackageManagement
 				Logger,
 				ignoreDependencies);
 		}
+		
+		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations)
+		{
+			foreach (PackageOperation operation in operations) {
+				Execute(operation);
+			}
+			UpdatePackageReference(package);
+		}
+		
+		void UpdatePackageReference(IPackage package)
+		{
+			bool updateDependencies = true;
+			UpdatePackageReference(package, updateDependencies);
+		}
+		
+		void UpdatePackageReference(IPackage package, bool updateDependencies)
+		{
+			ProjectManager.UpdatePackageReference(package.Id, package.Version, updateDependencies);			
+		}
 	}
 }

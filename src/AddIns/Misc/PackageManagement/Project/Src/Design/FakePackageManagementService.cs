@@ -237,5 +237,16 @@ namespace ICSharpCode.PackageManagement.Design
 			ForceRemovePassedToUninstallPackage = forceRemove;
 			RemoveDependenciesPassedToUninstallPackage = removeDependencies;
 		}
+		
+		public IPackageRepository RepositoryPassedToUpdatePackage;
+		public IPackage PackagePassedToUpdatePackage;
+		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
+		
+		public void UpdatePackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations)
+		{
+			RepositoryPassedToUpdatePackage = repository;
+			PackagePassedToUpdatePackage = package;
+			PackageOperationsPassedToUpdatePackage = operations;
+		}
 	}
 }

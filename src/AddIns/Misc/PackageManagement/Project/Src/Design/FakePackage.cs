@@ -127,5 +127,12 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			DependenciesList.Add(new PackageDependency(id));
 		}
+		
+		List<FrameworkAssemblyReference> frameworkAssemblies = 
+			new List<FrameworkAssemblyReference>();
+		
+		public IEnumerable<FrameworkAssemblyReference> FrameworkAssemblies {
+			get { return frameworkAssemblies; }
+		}
 	}
 }

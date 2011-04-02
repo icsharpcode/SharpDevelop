@@ -55,7 +55,6 @@
   <ItemGroup>
     <Folder Include="Configuration" />
     <Folder Include="Scripts" />
-    <Folder Include="Scripts" />
     <Folder Include="Resources" />
     <Folder Include="Src" />
     <Folder Include="Src\Design" />
@@ -187,6 +186,8 @@
     <Compile Include="Src\SharpDevelopProjectSystemFactory.cs" />
     <Compile Include="Src\StringToStringCollectionConverter.cs" />
     <Compile Include="Src\UpdatedPackages.cs" />
+    <Compile Include="Src\UpdatedPackageViewModel.cs" />
+    <Compile Include="Src\UpdatedPackageViewModelFactory.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
     <Compile Include="Src\ViewModelLocator.cs" />
   </ItemGroup>

@@ -13,6 +13,8 @@ namespace ICSharpCode.PackageManagement
 		
 		void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies);
 		void UninstallPackage(IPackage package);
+		void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations);
+		
 		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies);
 	}
 }

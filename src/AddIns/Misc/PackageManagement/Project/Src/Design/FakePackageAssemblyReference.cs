@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Versioning;
+
 using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
@@ -27,6 +29,12 @@ namespace ICSharpCode.PackageManagement.Design
 		public Stream GetStream()
 		{
 			throw new NotImplementedException();
+		}
+		
+		public IEnumerable<FrameworkName> SupportedFrameworks {
+			get {
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

@@ -39,6 +39,8 @@ namespace ICSharpCode.PackageManagement
 			bool forceRemove,
 			bool removeDependencies);
 		
+		void UpdatePackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations);
+		
 		MSBuildBasedProject GetProject(string name);
 
 		PackageManagementOptions Options { get; }

@@ -131,5 +131,14 @@ namespace ICSharpCode.PackageManagement.Design
 			IgnoreDependenciesPassedToGetInstallPackageOperations = ignoreDependencies;
 			return PackageOperationsToReturnFromGetInstallPackageOperations;
 		}
+		
+		public IPackage PackagePassedToUpdatePackage;
+		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
+		
+		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations)
+		{
+			PackagePassedToUpdatePackage = package;
+			PackageOperationsPassedToUpdatePackage = operations;
+		}
 	}
 }

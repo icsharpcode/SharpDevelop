@@ -284,5 +284,17 @@ namespace ICSharpCode.PackageManagement
 		{
 			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
 		}
+		
+		public void UpdatePackage(
+			IPackageRepository repository,
+			IPackage package,
+			IEnumerable<PackageOperation> operations)
+		{
+			ISharpDevelopPackageManager packageManager = CreatePackageManager(repository);
+			packageManager.UpdatePackage(package, operations);
+			projectService.RefreshProjectBrowser();
+			RecentPackageRepository.AddPackage(package);
+			OnPackageInstalled();
+		}
 	}
 }
