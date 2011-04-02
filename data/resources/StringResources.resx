@@ -6411,37 +6411,37 @@ Removed the end part of the original message ", reason '${Message}'" since this 
     <value>Delete all web references</value>
     <comment>Title of the dialog box when the user tries to remove all web references.</comment>
   </data>
-  <data name="ReflectorAddIn.IdeOptions.FindReflectorPath" xml:space="preserve">
-    <value>Select Reflector path</value>
-    <comment>Button to select the Reflector path</comment>
+  <data name="ILSpyAddIn.IdeOptions.FindILSpyPath" xml:space="preserve">
+    <value>Select ILSpy path</value>
+    <comment>Button to select the ILSpy path</comment>
   </data>
-  <data name="ReflectorAddIn.IdeOptions.ReflectorFoundInPath" xml:space="preserve">
-    <value>Reflector was found in the following directory:</value>
+  <data name="ILSpyAddIn.IdeOptions.ILSpyFoundInPath" xml:space="preserve">
+    <value>ILSpy was found in the following directory:</value>
   </data>
-  <data name="ReflectorAddIn.IdeOptions.ReflectorTitle" xml:space="preserve">
-    <value>Reflector</value>
-    <comment>Title of Reflector path option panel</comment>
+  <data name="ILSpyAddIn.IdeOptions.ILSpyTitle" xml:space="preserve">
+    <value>ILSpy</value>
+    <comment>Title of ILSpy path option panel</comment>
   </data>
-  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
-    <value>Open .NET Reflector</value>
+  <data name="ILSpyAddIn.OpenILSpyCommand" xml:space="preserve">
+    <value>Open ILSpy</value>
   </data>
-  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
-    <value>Reflector could not be found at the specified location, or SharpDevelop does not have sufficient rights to access it.</value>
+  <data name="ILSpyAddIn.ILSpyDoesNotExist" xml:space="preserve">
+    <value>ILSpy could not be found at the specified location, or SharpDevelop does not have sufficient rights to access it.</value>
   </data>
-  <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
-    <value>The path to Reflector has not been set yet.</value>
+  <data name="ILSpyAddIn.ILSpyPathNotSet" xml:space="preserve">
+    <value>The path to ILSpy has not been set yet.</value>
   </data>
-  <data name="ReflectorAddIn.ReflectorRemotingFailed" xml:space="preserve">
-    <value>Failed to connect to Reflector.</value>
+  <data name="ILSpyAddIn.ILSpyRemotingFailed" xml:space="preserve">
+    <value>Failed to connect to ILSpy.</value>
   </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.PathToReflectorExe" xml:space="preserve">
-    <value>Full path to Reflector.exe</value>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.PathToILSpyExe" xml:space="preserve">
+    <value>Full path to ILSpy.exe</value>
   </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.ReflectorInfo" xml:space="preserve">
-    <value>This feature requires Red Gate's .NET Reflector. If you do not have it yet, you can download it for free there:</value>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.ILSpyInfo" xml:space="preserve">
+    <value>This feature requires ILSpy. If you do not have it yet, you can download it for free there:</value>
   </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialogTitle" xml:space="preserve">
-    <value>Set path to Reflector</value>
+  <data name="ILSpyAddIn.SetILSpyPathDialogTitle" xml:space="preserve">
+    <value>Set path to ILSpy</value>
   </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>Assemblies (*.dll)|*.dll</value>

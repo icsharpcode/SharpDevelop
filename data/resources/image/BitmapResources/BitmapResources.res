@@ -226,6 +226,7 @@ Icons.16x16.OpenFileIcon                          = BitmapResources-data\Icons.1
 Icons.16x16.HtmlElements.FieldSetElement          = BitmapResources-data\Icons.16x16.HtmlElements.FieldSetElement.png
 Icons.16x16.SplitWindow                           = BitmapResources-data\Icons.16x16.SplitWindow.png
 Icons.16x16.DeleteHistory                         = BitmapResources-data\Icons.16x16.DeleteHistory.png
+ILSpy = BitmapResources-data\ILSpy.png
 
 #pad icons
 PadIcons.ErrorList                                = PadIcons\ErrorList.png
