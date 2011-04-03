@@ -10,9 +10,11 @@
 					IsChecked="{Binding Path=IsChecked, Mode=TwoWay}" />
 			</DataTemplate>
 			<DataTemplate
-				x:Key="ImageTemplate">
-				<Image
-					Source="{Binding Path=Image, UpdateSourceTrigger=PropertyChanged}" />
+				x:Key="InformationTemplate">
+				<StackPanel Orientation="Horizontal">
+					<Image Source="{Binding Path=Image, UpdateSourceTrigger=PropertyChanged}" Margin="1, 1, 5, 1" />
+					<TextBlock Text="{Binding Path=Location}" />
+				</StackPanel>
 			</DataTemplate>
 		</Grid.Resources>
 		<ListView
@@ -25,13 +27,9 @@
 						Width="Auto"
 						CellTemplate="{StaticResource CheckBoxTemplate}" />
 					<GridViewColumn
-						Header=""
-						Width="Auto"
-						CellTemplate="{StaticResource ImageTemplate}" />
-					<GridViewColumn
 						Header="{core:Localize MainWindow.Windows.BookmarkPad.LocationText}"
 						Width="Auto"
-						DisplayMemberBinding="{Binding Path=Location}" />
+						CellTemplate="{StaticResource InformationTemplate}" />
 					<GridViewColumn
 						Header="{core:Localize MainWindow.Windows.Debug.CallStack.Language}"
 						Width="Auto"

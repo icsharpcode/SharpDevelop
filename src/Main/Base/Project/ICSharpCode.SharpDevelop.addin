@@ -1978,17 +1978,16 @@
 		             icon    = "Bookmarks.GotoNext"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoNext.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmarkPadCommand"/>
-		<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
+		<!--<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
 		<ToolbarItem id      = "EnableDisableAll"
 		             icon    = "Bookmarks.EnableDisableAll"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.EnableDisableAll.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>-->
 		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
 		<ToolbarItem id      = "DeleteMark"
 		             icon    = "Bookmarks.DeleteMark"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteMark.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteMark"/>
-		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
 		<ToolbarItem id      = "DeleteAllMarks"
 		             icon    = "Bookmarks.DeleteAllMarks"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteAllMarks.ToolTip}"

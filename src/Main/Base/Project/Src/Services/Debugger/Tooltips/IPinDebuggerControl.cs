@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 
-using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Bookmarks;
 
-namespace Services.Debugger.Tooltips
+namespace ICSharpCode.SharpDevelop.Debugging
 {
 	public interface IPinDebuggerControl
 	{
