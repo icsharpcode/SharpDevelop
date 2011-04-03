@@ -17,6 +17,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public ScriptingStyle ScriptingStylePassedToWriteLine;
 		public string TextPassedToWrite;
 		public List<string> AllTextPassedToWrite = new List<string>();
+		public List<string> AllTextPassedToWriteLine = new List<string>();
 		public ScriptingStyle ScriptingStylePassedToWrite;
 		public string TextToReturnFromReadLine;
 		public int AutoIndentSizePassedToReadLine;
@@ -24,6 +25,10 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public bool IsReadLineCalled;
 		public bool IsDisposeCalled;
 		public int MaximumVisibleColumns;
+		
+		public string LastLinePassedToWriteLine {
+			get { return AllTextPassedToWriteLine[AllTextPassedToWriteLine.Count - 1]; }
+		}
 		
 		public bool ScrollToEndWhenTextWritten { get; set; }
 		
@@ -40,12 +45,14 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public void WriteLine()
 		{
 			IsWriteLineCalled = true;
+			AllTextPassedToWriteLine.Add(String.Empty);
 		}
 		
 		public void WriteLine(string text, ScriptingStyle style)
 		{
 			TextPassedToWriteLine = text;
 			ScriptingStylePassedToWriteLine = style;
+			AllTextPassedToWriteLine.Add(text);
 		}
 		
 		public void Write(string text, ScriptingStyle style)
