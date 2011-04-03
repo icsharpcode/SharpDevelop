@@ -201,5 +201,19 @@ namespace PackageManagement.Tests.Scripting
 			
 			CollectionAssert.AreEqual(files, actualFiles);
 		}
+		
+		[Test]
+		public void Run_TextDisplayedBeforeFirstPromptDisplayed_NuGetVersionDisplayed()
+		{
+			CreateHost();
+			host.VersionToReturnFromGetNuGetVersion = new Version("1.2.0.4");
+			RunHost();
+			
+			string expected = "NuGet 1.2.0.4";
+			
+			bool contains = scriptingConsole.AllTextPassedToWriteLine.Contains(expected);
+			
+			Assert.IsTrue(contains);
+		}
 	}
 }

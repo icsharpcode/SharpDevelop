@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 
 using ICSharpCode.AvalonEdit;
@@ -20,6 +21,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IPackageManagementAddInPath addinPath;
 		int autoIndentSize = 0;
 		string prompt = "PM> ";
+		Version nuGetVersion;
 		
 		public PackageManagementConsoleHost(
 			IPowerShellHostFactory powerShellHostFactory,
@@ -68,6 +70,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void RunSynchronous()
 		{
 			InitPowerShell();
+			WriteInfoBeforeFirstPrompt();
 			WritePrompt();
 			ProcessUserCommands();
 		}
@@ -95,6 +98,26 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			string module = addinPath.CmdletsAssemblyFileName;
 			powerShellHost.ModulesToImport.Add(module);
+		}
+		
+		void WriteInfoBeforeFirstPrompt()
+		{
+			WriteNuGetVersionInfo();
+		}
+		
+		void WriteNuGetVersionInfo()
+		{
+			string versionInfo = String.Format("NuGet {0}", GetNuGetVersion());
+			ScriptingConsole.WriteLine(versionInfo, ScriptingStyle.Out);
+		}
+		
+		protected virtual Version GetNuGetVersion()
+		{
+			if (nuGetVersion == null) {
+				AssemblyName name = typeof(PackageSource).Assembly.GetName();
+				nuGetVersion = name.Version;
+			}
+			return nuGetVersion;
 		}
 		
 		void WritePrompt()

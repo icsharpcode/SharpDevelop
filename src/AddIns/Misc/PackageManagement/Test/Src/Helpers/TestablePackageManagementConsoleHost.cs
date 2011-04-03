@@ -41,5 +41,12 @@ namespace PackageManagement.Tests.Helpers
 			ThreadStartPassedToCreateThread = threadStart;
 			return FakeThread;
 		}
+		
+		public Version VersionToReturnFromGetNuGetVersion = new Version("1.2");
+		
+		protected override Version GetNuGetVersion()
+		{
+			return VersionToReturnFromGetNuGetVersion;
+		}
 	}
 }
