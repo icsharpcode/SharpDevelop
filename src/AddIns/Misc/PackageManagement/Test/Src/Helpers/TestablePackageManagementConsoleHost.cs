@@ -48,5 +48,12 @@ namespace PackageManagement.Tests.Helpers
 		{
 			return VersionToReturnFromGetNuGetVersion;
 		}
+		
+		public string TextToReturnFromGetHelpInfo = String.Empty;
+		
+		protected override string GetHelpInfo()
+		{
+			return TextToReturnFromGetHelpInfo;
+		}
 	}
 }

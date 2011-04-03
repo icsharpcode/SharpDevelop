@@ -215,5 +215,31 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.IsTrue(contains);
 		}
+		
+		[Test]
+		public void Run_TextDisplayedBeforeFirstPromptDisplayed_HelpInfoDisplayed()
+		{
+			CreateHost();
+			string expectedHelpMessage = "Type 'get-help NuGet' for more information.";
+			host.TextToReturnFromGetHelpInfo = expectedHelpMessage;
+			RunHost();
+			
+			bool contains = scriptingConsole.AllTextPassedToWriteLine.Contains("Type 'get-help NuGet' for more information.");
+			
+			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void Run_TextDisplayedBeforeFirstPromptDisplayed_BlankLineBeforePrompt()
+		{
+			CreateHost();
+			host.TextToReturnFromGetHelpInfo = "abc";
+			RunHost();
+			
+			string actualLastLine = scriptingConsole.LastLinePassedToWriteLine;
+			string expectedLastLine = String.Empty;
+			
+			Assert.AreEqual(expectedLastLine, actualLastLine);
+		}
 	}
 }

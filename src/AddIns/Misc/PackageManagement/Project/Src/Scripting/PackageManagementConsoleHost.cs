@@ -103,12 +103,14 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void WriteInfoBeforeFirstPrompt()
 		{
 			WriteNuGetVersionInfo();
+			WriteHelpInfo();
+			WriteLine();
 		}
 		
 		void WriteNuGetVersionInfo()
 		{
 			string versionInfo = String.Format("NuGet {0}", GetNuGetVersion());
-			ScriptingConsole.WriteLine(versionInfo, ScriptingStyle.Out);
+			WriteLine(versionInfo);
 		}
 		
 		protected virtual Version GetNuGetVersion()
@@ -118,6 +120,27 @@ namespace ICSharpCode.PackageManagement.Scripting
 				nuGetVersion = name.Version;
 			}
 			return nuGetVersion;
+		}
+		
+		void WriteLine(string message)
+		{
+			ScriptingConsole.WriteLine(message, ScriptingStyle.Out);
+		}
+		
+		void WriteLine()
+		{
+			WriteLine(String.Empty);
+		}
+		
+		void WriteHelpInfo()
+		{
+			string helpInfo = GetHelpInfo();
+			WriteLine(helpInfo);
+		}
+		
+		protected virtual string GetHelpInfo()
+		{
+			return "Type 'get-help NuGet' for more information.";
 		}
 		
 		void WritePrompt()

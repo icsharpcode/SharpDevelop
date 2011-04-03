@@ -227,8 +227,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\RequiredLibraries\about_NuGet.Cmdlets.help.txt">
+      <Link>about_NuGet.Cmdlets.help.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="..\RequiredLibraries\LICENSE.txt">
       <Link>NuGet-LICENSE.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\RequiredLibraries\NuGet.Cmdlets.dll-Help.xml">
+      <Link>PackageManagement.Cmdlets.dll-Help.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="PackageManagement.addin">
