@@ -4,6 +4,7 @@
 #pragma warning disable 1591
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -38,6 +39,62 @@ namespace Debugger.Interop
 		Synchronize = 0x00100000
 	}
 	
+	[StructLayout(LayoutKind.Sequential)]
+	public struct SYSTEM_INFO
+	{
+		internal _PROCESSOR_INFO_UNION uProcessorInfo;
+		public uint dwPageSize;
+		public IntPtr lpMinimumApplicationAddress;
+		public IntPtr lpMaximumApplicationAddress;
+		public IntPtr dwActiveProcessorMask;
+		public uint dwNumberOfProcessors;
+		public uint dwProcessorType;
+		public uint dwAllocationGranularity;
+		public ushort dwProcessorLevel;
+		public ushort dwProcessorRevision;
+	}
+
+	[StructLayout(LayoutKind.Explicit)]
+	public struct _PROCESSOR_INFO_UNION
+	{
+		[FieldOffset(0)]
+		internal uint dwOemId;
+		[FieldOffset(0)]
+		internal ushort wProcessorArchitecture;
+		[FieldOffset(2)]
+		internal ushort wReserved;
+	}
+	
+	[Flags]
+	public enum AllocationType
+	{
+		Commit = 0x1000,
+		Reserve = 0x2000,
+		Decommit = 0x4000,
+		Release = 0x8000,
+		Reset = 0x80000,
+		Physical = 0x400000,
+		TopDown = 0x100000,
+		WriteWatch = 0x200000,
+		LargePages = 0x20000000
+	}
+
+	[Flags]
+	public enum MemoryProtection
+	{
+		Execute = 0x10,
+		ExecuteRead = 0x20,
+		ExecuteReadWrite = 0x40,
+		ExecuteWriteCopy = 0x80,
+		NoAccess = 0x01,
+		ReadOnly = 0x02,
+		ReadWrite = 0x04,
+		WriteCopy = 0x08,
+		GuardModifierflag = 0x100,
+		NoCacheModifierflag = 0x200,
+		WriteCombineModifierflag = 0x400
+	}
+	
 	public static class NativeMethods
 	{
 		[DllImport("kernel32.dll")]
@@ -63,7 +120,7 @@ namespace Debugger.Interop
 		
 		[DllImport("kernel32.dll", SetLastError = true)]
 		public static extern bool VirtualProtectEx(IntPtr hProcess, IntPtr lpAddress,
-		                                    UIntPtr dwSize, uint flNewProtect, out uint lpflOldProtect);
+		                                           UIntPtr dwSize, uint flNewProtect, out uint lpflOldProtect);
 		
 		[DllImport("kernel32.dll", SetLastError = true)]
 		public static extern bool ReadProcessMemory(
@@ -74,45 +131,59 @@ namespace Debugger.Interop
 			out int lpNumberOfBytesRead
 		);
 		
-		public static byte[] ReadProcessMemory(this Process process, out long baseAddress)
+		[DllImport("kernel32.dll", SetLastError = true)]
+		public static extern void GetSystemInfo(out SYSTEM_INFO lpSystemInfo);
+		
+		[DllImport("kernel32.dll", SetLastError=true, ExactSpelling=true)]
+		public static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, AllocationType flAllocationType, MemoryProtection flProtect);
+		
+		public static List<Tuple<long, long>> GetMemoryAddresses(this Process process)
+		{
+			var result = new List<Tuple<long, long>>();
+			SYSTEM_INFO sysinfo = new SYSTEM_INFO();
+			GetSystemInfo(out sysinfo);
+			
+			uint handle = process.CorProcess.GetHandle();
+			long address = 0;
+			MEMORY_BASIC_INFORMATION m = new MEMORY_BASIC_INFORMATION();
+			
+			while (address < sysinfo.lpMaximumApplicationAddress.ToInt64())
+			{
+				if (!VirtualQueryEx(new IntPtr(handle), new IntPtr(address), out m, (uint)Marshal.SizeOf(m)))
+					break;
+				
+				try {
+					byte[] temp = new byte[m.RegionSize.ToInt64()];
+					int outSize;
+					if (!ReadProcessMemory(new IntPtr(handle), new IntPtr(address), temp, temp.Length, out outSize))
+						continue;
+				} catch {
+					continue;
+				} finally {
+					// next address
+					address = m.BaseAddress.ToInt64() + m.RegionSize.ToInt64();
+				}
+				
+				result.Add(new Tuple<long, long>(m.BaseAddress.ToInt64(), m.RegionSize.ToInt64()));
+			}
+			
+			return result;
+		}
+		
+		public static byte[] ReadProcessMemory(this Process process, long startAddress, long size)
 		{
 			uint handle = process.CorProcess.GetHandle();
 			
-			var proc = System.Diagnostics.Process.GetProcessById((int)process.Id);
-			baseAddress = proc.MainModule.BaseAddress.ToInt64();
-			long addr = baseAddress;
+			byte[] temp = new byte[size];
+			int outSize;
+			bool success = ReadProcessMemory(new IntPtr(handle), new IntPtr(startAddress), temp, temp.Length, out outSize);
 			
-			byte[] memory = null;
-			
-			while (true)
-			{
-				byte[] temp = new byte[1024];
-				int outSize;
-				bool success = ReadProcessMemory(new IntPtr(handle), new IntPtr(addr), temp, temp.Length, out outSize);
-				
-				addr += 1024;
-				
-				if (outSize == 0)
-					break;
-				
-				if (memory == null) {
-					memory = new byte[outSize];
-					Array.Copy(temp, memory, outSize);
-				} else {
-					// expand memory
-					byte[] newTemp = new byte[memory.Length];
-					Array.Copy(memory, newTemp, memory.Length);
-					
-					memory = new byte[memory.Length + outSize];
-					Array.Copy(newTemp, memory, newTemp.Length);
-					Array.Copy(temp, 0, memory, newTemp.Length, outSize);
-				}
-				
-				if (!success) // break when we cannot read anymore
-					break;
+			if (!success || outSize == 0) {
+				var proc = System.Diagnostics.Process.GetProcessById((int)process.Id);
+				return process.ReadProcessMemory(proc.MainModule.BaseAddress.ToInt64(), (long)4096);
 			}
 			
-			return memory;
+			return temp;
 		}
 	}
 }

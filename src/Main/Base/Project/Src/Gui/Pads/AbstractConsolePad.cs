@@ -294,7 +294,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Children.Add(editor);
 			
 			editor.TextArea.ReadOnlySectionProvider = readOnlyRegion = new BeginReadOnlySectionProvider();
-			
 			editor.TextArea.TextEntered += new TextCompositionEventHandler(editor_TextArea_TextEntered);
 			editor.TextArea.PreviewKeyDown += new KeyEventHandler(editor_TextArea_PreviewKeyDown);
 		}

@@ -47,7 +47,9 @@ OutputPad.Toolbar.ClearOutputWindow = OutputPadIcons\ClearOutputWindow.png
 OutputPad.Toolbar.ToggleWordWrap    = OutputPadIcons\ToggleWordWrap.png
 
 #Memory pad
-MemoryPad.Icon  		     			= PadIcons\memory.png
+MemoryPad.Icon  		    		 			= PadIcons\memory.png
+MemoryPad.NextMemoryIcon  		     			= PadIcons\nextmemory.png
+MemoryPad.PreviousMemoryIcon	     			= PadIcons\previousmemory.png
 
 Icons.16x16.OpenFolderBitmap                      = ProjectBrowserIcons\Folder.Open.png
 Icons.16x16.ClosedFolderBitmap                    = ProjectBrowserIcons\Folder.Closed.png

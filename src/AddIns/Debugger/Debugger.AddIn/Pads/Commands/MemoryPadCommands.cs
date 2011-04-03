@@ -40,9 +40,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 	}
 	
-	public sealed class RefreshMemoryCommand : AbstractCommand
+	public abstract class ItemMemoryCommand : AbstractCommand
 	{
-		MemoryPad pad;
+		protected MemoryPad pad;
 		
 		protected override void OnOwnerChanged(EventArgs e)
 		{
@@ -52,13 +52,38 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			base.OnOwnerChanged(e);
 		}
-		
+	}
+	
+	public sealed class RefreshAddressCommand : ItemMemoryCommand
+	{
 		public override void Run()
 		{
 			if (this.pad == null)
 				return;
 			
-			this.pad.Refresh(true);
+			this.pad.Refresh();
+		}
+	}
+	
+	public sealed class NextAddressCommand : ItemMemoryCommand
+	{
+		public override void Run()
+		{
+			if (this.pad == null)
+				return;
+			
+			this.pad.MoveToNextAddress();
+		}
+	}
+	
+	public sealed class PreviousAddressCommand : ItemMemoryCommand
+	{
+		public override void Run()
+		{
+			if (this.pad == null)
+				return;
+			
+			this.pad.MoveToPreviousAddress();
 		}
 	}
 }
