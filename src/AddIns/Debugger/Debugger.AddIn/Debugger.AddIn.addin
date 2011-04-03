@@ -117,6 +117,13 @@
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ConsolePad"
 		     defaultPosition = "Bottom, Hidden" />
 		
+		<Pad id    = "MemoryPad"
+		     category = "Debugger"
+		     title    = "${res:MainWindow.Windows.Debug.MemoryPad}"
+		     icon     = "MemoryPad.Icon"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.MemoryPad"
+		     defaultPosition = "Bottom, Hidden" />
+		
 		<Pad id    = "WatchPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Watch}"
@@ -189,6 +196,17 @@
 			icon="ParallelStacks.ZoomControl"
 			class="ICSharpCode.SharpDevelop.Gui.Pads.ShowZoomControlCommand"/>
 		/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/MemoryPad/ToolBar">
+		<ToolbarItem id="JumpToAddressLabel" type="Item" label="${res:MainWindow.Windows.Debug.MemoryPad.JumpTo}" class="ICSharpCode.SharpDevelop.Gui.Pads.JumpToAddressCommand"/>
+		<ToolbarItem id="JumpToAddressCombo" type="ComboBox" class="ICSharpCode.SharpDevelop.Gui.Pads.JumpToAddressCommand"/>
+		<ToolbarItem id="Separator1" type="Separator"/>
+		<ToolbarItem id="RefreshMemory" 
+		             type="Item"
+		             icon="Icons.16x16.Refresh"
+		             tooltip="${res:MainWindow.Windows.Debug.MemoryPad.Refresh}"
+		             class="ICSharpCode.SharpDevelop.Gui.Pads.RefreshMemoryCommand"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Services/DebuggerService/Visualizers">

@@ -5728,6 +5728,15 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.ObjectGraph" xml:space="preserve">
     <value>Object Graph</value>
   </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.JumpTo" xml:space="preserve">
+    <value>Jump to address:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
   <data name="MainWindow.Windows.Debug.ParallelStack" xml:space="preserve">
     <value>Parallel Stacks</value>
   </data>

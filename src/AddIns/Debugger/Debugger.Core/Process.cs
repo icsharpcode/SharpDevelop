@@ -362,6 +362,10 @@ namespace Debugger
 			get { return pauseSession == null; }
 		}
 		
+		public uint Id {
+			get { return corProcess.GetID(); }
+		}
+		
 		public bool IsPaused {
 			get { return !IsRunning; }
 		}
