@@ -102,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public bool Refresh()
+		public bool Refresh(bool refreshMemoryAddresses = false)
 		{
 			console.Clear();
 			
@@ -117,7 +117,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return false;
 			}
 			
-			memoryAddresses = debuggedProcess.GetMemoryAddresses();
+			if (refreshMemoryAddresses)
+				memoryAddresses = debuggedProcess.GetMemoryAddresses();
+			
 			if (memoryAddresses.Count == 0) {
 				console.Append("No mappings for memory addresses!");
 				return false;
