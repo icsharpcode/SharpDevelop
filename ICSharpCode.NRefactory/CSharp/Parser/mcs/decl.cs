@@ -27,6 +27,7 @@ using IKVM.Reflection.Emit;
 #else
 using System.Reflection;
 using System.Reflection.Emit;
+using Mono.Collections.Generic;
 #endif
 
 namespace Mono.CSharp {
@@ -1425,6 +1426,13 @@ namespace Mono.CSharp {
 			return type_param_list;
 		}
 		
+#if FULL_AST
+		public List<Constraints> PlainConstraints {
+			get;
+			private set;
+		}
+#endif
+
 		public List<Constraints> Constraints {
 			get;
 			private set;
@@ -1432,7 +1440,14 @@ namespace Mono.CSharp {
 		
 		public virtual void SetParameterInfo (List<Constraints> constraints_list)
 		{
+#if FULL_AST
+			if (constraints_list != null) {
+				this.PlainConstraints = constraints_list;
+				constraints_list = this.Constraints = new List<Constraints> (constraints_list);
+			}
+#else
 			this.Constraints = constraints_list;
+#endif
 			if (!is_generic) {
 				if (constraints_list != null) {
 					Report.Error (

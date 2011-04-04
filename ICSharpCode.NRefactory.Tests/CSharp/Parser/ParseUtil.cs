@@ -79,8 +79,6 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		public static T ParseTypeMember<T>(string expr, bool expectErrors = false) where T : AttributedNode
 		{
-			if (expectErrors) Assert.Ignore("errors not yet implemented");
-			
 			CSharpParser parser = new CSharpParser();
 			var members = parser.ParseTypeMembers(new StringReader(expr));
 			
