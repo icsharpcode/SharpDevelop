@@ -9,7 +9,6 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
-using Services.Debugger.Tooltips;
 
 namespace Debugger.AddIn.Tooltips
 {

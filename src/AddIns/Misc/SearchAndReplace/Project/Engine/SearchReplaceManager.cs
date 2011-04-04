@@ -150,7 +150,7 @@ namespace SearchAndReplace
 						return;
 					}
 				}
-				BookmarkManager.AddMark(new SDBookmark(result.FileName, textArea.Document.OffsetToPosition(result.Offset)));
+				BookmarkManager.AddMark(new Bookmark(result.FileName, textArea.Document.OffsetToPosition(result.Offset)));
 			}
 		}
 		
