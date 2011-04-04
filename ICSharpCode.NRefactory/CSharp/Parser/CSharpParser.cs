@@ -1511,12 +1511,23 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			public override object Visit (MemberAccess memberAccess)
 			{
-				var result = new MemberReferenceExpression ();
-				if (memberAccess.LeftExpression != null) {
-					var leftExpr = memberAccess.LeftExpression.Accept (this);
-					result.AddChild ((Expression)leftExpr, MemberReferenceExpression.Roles.TargetExpression);
+				Expression result;
+				
+				if (memberAccess.LeftExpression is Indirection) {
+					var ind = memberAccess.LeftExpression as Indirection;
+					result = new PointerReferenceExpression ();
+					result.AddChild ((Expression)ind.Expr.Accept (this), PointerReferenceExpression.Roles.TargetExpression);
+					result.AddChild (new CSharpTokenNode (Convert (ind.Location), "->".Length), PointerReferenceExpression.ArrowRole);
+				} else {
+					result = new MemberReferenceExpression ();
+					if (memberAccess.LeftExpression != null) {
+						var leftExpr = memberAccess.LeftExpression.Accept (this);
+						result.AddChild ((Expression)leftExpr, MemberReferenceExpression.Roles.TargetExpression);
+					}
 				}
+				
 				result.AddChild (new Identifier (memberAccess.Name, Convert (memberAccess.Location)), MemberReferenceExpression.Roles.Identifier);
+				
 				if (memberAccess.TypeArguments != null)  {
 					var location = LocationsBag.GetLocations (memberAccess);
 					if (location != null)
@@ -2602,7 +2613,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IEnumerable<AttributedNode> ParseTypeMembers(TextReader reader)
 		{
-			string code = "class MyClass { " + reader.ReadToEnd() + "}";
+			string code = "unsafe class MyClass { " + reader.ReadToEnd() + "}";
+			Console.WriteLine (code);
 			var cu = Parse(new StringReader(code));
 			var td = cu.Children.FirstOrDefault() as TypeDeclaration;
 			if (td != null)
