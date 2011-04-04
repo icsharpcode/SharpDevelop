@@ -4229,7 +4229,10 @@ opt_partial
 	: /* empty */
 	  { $$ = null; }
 	| PARTIAL
-	  { $$ = $1; } // location
+	  {
+	  	$$ = $1;
+		StoreModifierLocation (Modifiers.PARTIAL, GetLocation ($1));
+	  } // location
 	;
 
 opt_modifiers

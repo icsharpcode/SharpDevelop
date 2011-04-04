@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.AreEqual(2, td.EndLocation.Column, "EndLocation.Y");
 		}
 		
-		[Test, Ignore("partial modifier is broken")]
+		[Test]
 		public void SimplePartialClassTypeDeclarationTest()
 		{
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("partial class MyClass { }");
