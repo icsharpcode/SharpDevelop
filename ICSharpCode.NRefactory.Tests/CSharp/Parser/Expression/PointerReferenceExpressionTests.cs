@@ -17,7 +17,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			Assert.AreEqual("b", pre.MemberName);
 		}
 		
-		[Test, Ignore ("compiler error - reported upstream")]
+		[Test]
 		public void PointerReferenceGenericMethodTest()
 		{
 			ParseUtilCSharp.AssertExpression(

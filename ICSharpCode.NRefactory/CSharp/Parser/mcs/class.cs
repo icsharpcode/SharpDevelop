@@ -32,12 +32,19 @@ using System.Reflection;
 using System.Reflection.Emit;
 #endif
 
-namespace Mono.CSharp {
+namespace Mono.CSharp
+{
+
+	public interface ITypesContainer
+	{
+		Location Location { get; }
+		MemberName MemberName { get; }
+	}
 
 	/// <summary>
 	///   This is the base class for structs and classes.  
 	/// </summary>
-	public abstract class TypeContainer : DeclSpace, ITypeDefinition
+	public abstract class TypeContainer : DeclSpace, ITypeDefinition, ITypesContainer
 	{
 		//
 		// Different context is needed when resolving type container base
@@ -96,7 +103,7 @@ namespace Mono.CSharp {
 				return tc.GetSignatureForError ();
 			}
 
-			public IList<MethodSpec> LookupExtensionMethod (TypeSpec extensionType, string name, int arity, ref NamespaceEntry scope)
+			public IList<MethodSpec> LookupExtensionMethod (TypeSpec extensionType, string name, int arity, ref NamespaceContainer scope)
 			{
 				return null;
 			}
@@ -232,7 +239,7 @@ namespace Mono.CSharp {
 		/// </remarks>
 		PendingImplementation pending;
 
-		public TypeContainer (NamespaceEntry ns, DeclSpace parent, MemberName name,
+		public TypeContainer (NamespaceContainer ns, DeclSpace parent, MemberName name,
 				      Attributes attrs, MemberKind kind)
 			: base (ns, parent, name, attrs)
 		{
@@ -1079,11 +1086,6 @@ namespace Mono.CSharp {
 			int type_size = Kind == MemberKind.Struct && first_nonstatic_field == null ? 1 : 0;
 
 			if (IsTopLevel) {
-				// TODO: Completely wrong
-				if (Module.GlobalRootNamespace.IsNamespace (Name)) {
-					Report.Error (519, Location, "`{0}' clashes with a predefined namespace", Name);
-				}
-
 				TypeBuilder = Module.CreateBuilder (Name, TypeAttr, type_size);
 			} else {
 				TypeBuilder = Parent.TypeBuilder.DefineNestedType (Basename, TypeAttr, null, type_size);
@@ -1145,7 +1147,7 @@ namespace Mono.CSharp {
 				var cloned_params = ParametersCompiled.CreateFullyResolved (base_parameters, method.Parameters.Types);
 				if (method.Parameters.HasArglist) {
 					cloned_params.FixedParameters[0] = new Parameter (null, "__arglist", Parameter.Modifier.NONE, null, Location);
-					cloned_params.Types[0] = Module.PredefinedTypes.RuntimeArgumentHandle.Resolve (Location);
+					cloned_params.Types[0] = Module.PredefinedTypes.RuntimeArgumentHandle.Resolve ();
 				}
 
 				GenericMethod generic_method;
@@ -2298,7 +2300,7 @@ namespace Mono.CSharp {
 	{
 		SecurityType declarative_security;
 
-		public ClassOrStruct (NamespaceEntry ns, DeclSpace parent,
+		public ClassOrStruct (NamespaceContainer ns, DeclSpace parent,
 				      MemberName name, Attributes attrs, MemberKind kind)
 			: base (ns, parent, name, attrs, kind)
 		{
@@ -2423,7 +2425,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public override IList<MethodSpec> LookupExtensionMethod (TypeSpec extensionType, string name, int arity, ref NamespaceEntry scope)
+		public override IList<MethodSpec> LookupExtensionMethod (TypeSpec extensionType, string name, int arity, ref NamespaceContainer scope)
 		{
 			DeclSpace top_level = Parent;
 			if (top_level != null) {
@@ -2463,7 +2465,7 @@ namespace Mono.CSharp {
 
 		public const TypeAttributes StaticClassAttribute = TypeAttributes.Abstract | TypeAttributes.Sealed;
 
-		public Class (NamespaceEntry ns, DeclSpace parent, MemberName name, Modifiers mod,
+		public Class (NamespaceContainer ns, DeclSpace parent, MemberName name, Modifiers mod,
 			      Attributes attrs)
 			: base (ns, parent, name, attrs, MemberKind.Class)
 		{
@@ -2707,7 +2709,7 @@ namespace Mono.CSharp {
 			Modifiers.UNSAFE    |
 			Modifiers.PRIVATE;
 
-		public Struct (NamespaceEntry ns, DeclSpace parent, MemberName name,
+		public Struct (NamespaceContainer ns, DeclSpace parent, MemberName name,
 			       Modifiers mod, Attributes attrs)
 			: base (ns, parent, name, attrs, MemberKind.Struct)
 		{
@@ -2898,7 +2900,7 @@ namespace Mono.CSharp {
 		 	Modifiers.UNSAFE    |
 			Modifiers.PRIVATE;
 
-		public Interface (NamespaceEntry ns, DeclSpace parent, MemberName name, Modifiers mod,
+		public Interface (NamespaceContainer ns, DeclSpace parent, MemberName name, Modifiers mod,
 				  Attributes attrs)
 			: base (ns, parent, name, attrs, MemberKind.Interface)
 		{
@@ -3408,6 +3410,14 @@ namespace Mono.CSharp {
 			return TypeManager.CSharpName (InterfaceType) + "." + name;
 		}
 
+		public override string GetSignatureForDocumentation ()
+		{
+			if (IsExplicitImpl)
+				return Parent.GetSignatureForDocumentation () + "." + InterfaceType.GetExplicitNameSignatureForDocumentation () + "#" + ShortName;
+
+			return Parent.GetSignatureForDocumentation () + "." + ShortName;
+		}
+
 		protected override bool VerifyClsCompliance ()
 		{
 			if (!base.VerifyClsCompliance ()) {
@@ -3551,6 +3561,11 @@ namespace Mono.CSharp {
 			CheckProtectedModifier ();
 
 			return true;
+		}
+
+		public override string GetSignatureForDocumentation ()
+		{
+			return Parent.Name + "." + Name;
 		}
 
 		protected virtual bool ResolveMemberType ()

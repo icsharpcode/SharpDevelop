@@ -2606,7 +2606,7 @@ namespace Mono.CSharp
 					break;
 				return left;
 			}
-			Error_OperatorCannotBeApplied (ec, this.left, this.right);
+
 			return null;
 		}
 
@@ -3878,7 +3878,7 @@ namespace Mono.CSharp
 			if ((oper & Operator.LogicalMask) != 0)
 				flags |= CSharpBinderFlags.BinaryOperationLogical;
 
-			binder_args.Add (new Argument (new EnumConstant (new IntLiteral (ec.BuiltinTypes, (int) flags, loc), ec.Module.PredefinedTypes.BinderFlags.Resolve (loc))));
+			binder_args.Add (new Argument (new EnumConstant (new IntLiteral (ec.BuiltinTypes, (int) flags, loc), ec.Module.PredefinedTypes.BinderFlags.Resolve ())));
 			binder_args.Add (new Argument (new MemberAccess (new MemberAccess (sle, "ExpressionType", loc), GetOperatorExpressionTypeName (), loc)));
 			binder_args.Add (new Argument (new TypeOf (new TypeExpression (ec.CurrentType, loc), loc)));									
 			binder_args.Add (new Argument (new ImplicitlyTypedArrayCreation (args.CreateDynamicBinderArguments (ec), loc)));
@@ -4954,6 +4954,9 @@ namespace Mono.CSharp
 
 		bool DoResolveBase (ResolveContext ec)
 		{
+			if (eclass != ExprClass.Unresolved)
+				return true;
+
 			type = pi.ParameterType;
 			eclass = ExprClass.Variable;
 
@@ -7027,7 +7030,7 @@ namespace Mono.CSharp
 		protected override Expression DoResolve (ResolveContext ec)
 		{
 			eclass = ExprClass.Variable;
-			type = ec.Module.PredefinedTypes.RuntimeArgumentHandle.Resolve (loc);
+			type = ec.Module.PredefinedTypes.RuntimeArgumentHandle.Resolve ();
 
 			if (ec.HasSet (ResolveContext.Options.FieldInitializerScope) || !ec.CurrentBlock.ParametersBlock.Parameters.HasArglist) {
 				ec.Report.Error (190, loc,
@@ -7139,7 +7142,7 @@ namespace Mono.CSharp
 				return null;
 
 			type = texpr.Type;
-			expr = Convert.ImplicitConversionRequired (rc, expr, rc.Module.PredefinedTypes.TypedReference.Resolve (loc), loc);
+			expr = Convert.ImplicitConversionRequired (rc, expr, rc.Module.PredefinedTypes.TypedReference.Resolve (), loc);
 			eclass = ExprClass.Value;
 			return this;
 		}
@@ -7166,7 +7169,7 @@ namespace Mono.CSharp
 			if (expr == null)
 				return null;
 
-			expr = Convert.ImplicitConversionRequired (rc, expr, rc.Module.PredefinedTypes.TypedReference.Resolve (loc), loc);
+			expr = Convert.ImplicitConversionRequired (rc, expr, rc.Module.PredefinedTypes.TypedReference.Resolve (), loc);
 			if (expr == null)
 				return null;
 
@@ -7196,7 +7199,7 @@ namespace Mono.CSharp
 		protected override Expression DoResolve (ResolveContext rc)
 		{
 			expr = expr.ResolveLValue (rc, EmptyExpression.LValueMemberAccess);
-			type = rc.Module.PredefinedTypes.TypedReference.Resolve (loc);
+			type = rc.Module.PredefinedTypes.TypedReference.Resolve ();
 			eclass = ExprClass.Value;
 			return this;
 		}
@@ -7353,9 +7356,9 @@ namespace Mono.CSharp
 		protected override Expression DoResolve (ResolveContext ec)
 		{
 			if (member.IsConstructor) {
-				type = ec.Module.PredefinedTypes.ConstructorInfo.Resolve (loc);
+				type = ec.Module.PredefinedTypes.ConstructorInfo.Resolve ();
 			} else {
-				type = ec.Module.PredefinedTypes.MethodInfo.Resolve (loc);
+				type = ec.Module.PredefinedTypes.MethodInfo.Resolve ();
 			}
 
 			if (type == null)
@@ -7436,7 +7439,7 @@ namespace Mono.CSharp
 
 		protected override Expression DoResolve (ResolveContext ec)
 		{
-			type = ec.Module.PredefinedTypes.FieldInfo.Resolve (loc);
+			type = ec.Module.PredefinedTypes.FieldInfo.Resolve ();
 			if (type == null)
 				return null;
 
@@ -7761,7 +7764,7 @@ namespace Mono.CSharp
 					// Try to look for extension method when member lookup failed
 					//
 					if (MethodGroupExpr.IsExtensionMethodArgument (expr)) {
-						NamespaceEntry scope = null;
+						NamespaceContainer scope = null;
 						var methods = rc.LookupExtensionMethod (expr_type, Name, lookup_arity, ref scope);
 						if (methods != null) {
 							var emg = new ExtensionMethodGroupExpr (methods, scope, expr, loc);
@@ -7935,7 +7938,7 @@ namespace Mono.CSharp
 			var nested = MemberCache.FindNestedType (expr_type, Name, -System.Math.Max (1, Arity));
 
 			if (nested != null) {
-				Error_TypeArgumentsCannotBeUsed (rc.Module.Compiler.Report, expr.Location, nested, Arity);
+				Error_TypeArgumentsCannotBeUsed (rc, nested, Arity, expr.Location);
 				return;
 			}
 
@@ -8634,7 +8637,7 @@ namespace Mono.CSharp
 
 		public override void SetTypeArguments (ResolveContext ec, TypeArguments ta)
 		{
-			Error_TypeArgumentsCannotBeUsed (ec.Report, "indexer", GetSignatureForError (), loc);
+			Error_TypeArgumentsCannotBeUsed (ec, "indexer", GetSignatureForError (), loc);
 		}
 
 		#region IBaseMembersProvider Members

@@ -571,6 +571,11 @@ namespace Mono.CSharp {
 			throw new NotSupportedException ();
 		}
 
+		public override string GetSignatureForDocumentation ()
+		{
+			throw new NotImplementedException ();
+		}
+
 		public override string GetSignatureForError ()
 		{
 			return MemberName.Name;
@@ -845,6 +850,19 @@ namespace Mono.CSharp {
 				return Convert.FindMostEncompassedType (types.Select (l => l.BaseType));
 
 			return BaseType;
+		}
+
+		public override string GetSignatureForDocumentation ()
+		{
+			int c = 0;
+			var type = DeclaringType;
+			while (type != null && type.DeclaringType != null) {
+				type = type.DeclaringType;
+				c += type.MemberDefinition.TypeParametersCount;
+			}
+
+			var prefix = IsMethodOwned ? "``" : "`";
+			return prefix + (c + DeclaredPosition);
 		}
 
 		public override string GetSignatureForError ()
@@ -1943,6 +1961,9 @@ namespace Mono.CSharp {
 
 			constraints_checked = true;
 
+			if ((type.Modifiers & Modifiers.COMPILER_GENERATED) != 0)
+				return true;
+
 			var gtype = (InflatedTypeSpec) type;
 			var constraints = gtype.Constraints;
 			if (constraints == null)
@@ -2286,14 +2307,14 @@ namespace Mono.CSharp {
 	{
 		ParametersCompiled parameters;
 
-		public GenericMethod (NamespaceEntry ns, DeclSpace parent, MemberName name,
+		public GenericMethod (NamespaceContainer ns, DeclSpace parent, MemberName name,
 				      FullNamedExpression return_type, ParametersCompiled parameters)
 			: base (ns, parent, name, null)
 		{
 			this.parameters = parameters;
 		}
 
-		public GenericMethod (NamespaceEntry ns, DeclSpace parent, MemberName name, TypeParameter[] tparams,
+		public GenericMethod (NamespaceContainer ns, DeclSpace parent, MemberName name, TypeParameter[] tparams,
 					  FullNamedExpression return_type, ParametersCompiled parameters)
 			: this (ns, parent, name, return_type, parameters)
 		{
