@@ -141,7 +141,7 @@ namespace Mono.CSharp
 		LocationsBag lbag;
 		UsingsBag ubag;
 		List<Tuple<Modifiers, Location>> mod_locations;
-		Location parameterModifierLocation, savedLocation;
+		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
 %}
 
 %token EOF
@@ -3714,6 +3714,11 @@ anonymous_method_expression
 	  block
 	  {
 		$$ = end_anonymous ((ParametersBlock) $4);
+		if ((ParametersCompiled) $2 != ParametersCompiled.Undefined) {
+			lbag.AddLocation ($$, GetLocation ($1), savedOpenLocation, savedCloseLocation);
+		} else {
+			lbag.AddLocation ($$, GetLocation ($1));
+		}
 	  }
 	;
 
@@ -3734,6 +3739,8 @@ anonymous_method_signature
 	  {
 		valid_param_mod = 0;
 	  	$$ = $3;
+	  	savedOpenLocation = GetLocation ($1);
+	  	savedCloseLocation = GetLocation ($2);
 	  }
 	;
 

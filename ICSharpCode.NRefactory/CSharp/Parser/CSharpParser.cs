@@ -2222,17 +2222,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				var result = new AnonymousMethodExpression ();
 				var location = LocationsBag.GetLocations (anonymousMethodExpression);
 				if (location != null) {
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "delegate".Length), AssignmentExpression.Roles.Keyword);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), "delegate".Length), AnonymousMethodExpression.Roles.Keyword);
 					
 					if (location.Count > 1) {
 						result.HasParameterList = true;
-						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AssignmentExpression.Roles.LPar);
+						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AnonymousMethodExpression.Roles.LPar);
 						AddParameter (result, anonymousMethodExpression.Parameters);
-						result.AddChild (new CSharpTokenNode (Convert (location[2]), 1), AssignmentExpression.Roles.RPar);
+						result.AddChild (new CSharpTokenNode (Convert (location[2]), 1), AnonymousMethodExpression.Roles.RPar);
 					}
 				}
-				
-				result.AddChild ((BlockStatement)anonymousMethodExpression.Block.Accept (this), AssignmentExpression.Roles.Body);
+				result.AddChild ((BlockStatement)anonymousMethodExpression.Block.Accept (this), AnonymousMethodExpression.Roles.Body);
 				return result;
 			}
 
