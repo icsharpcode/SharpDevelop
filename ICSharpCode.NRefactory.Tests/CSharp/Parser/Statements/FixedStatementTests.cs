@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 {
-	[TestFixture, Ignore("fixed is not implemented")]
+	[TestFixture]
 	public class FixedStatementTests
 	{
 		[Test]

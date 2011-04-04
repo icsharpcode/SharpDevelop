@@ -1342,13 +1342,35 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), FixedStatement.Roles.LPar);
 				
 				if (fixedStatement.Variables != null) {
-//					result.AddChild (ConvertToType (fixedStatement.Variables), UsingStatement.Roles.Type);
-					result.AddChild (new Identifier (fixedStatement.Variables.Variable.Name, Convert (fixedStatement.Variables.Variable.Location)), UsingStatement.Roles.Identifier);
-					var loc = LocationsBag.GetLocations (fixedStatement.Variables);
-					if (loc != null)
-						result.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), ContinueStatement.Roles.Assign);
-//					if (fixedStatement.Variables.Initializer != null)
-//						result.AddChild (fixedStatement.Variables.Initializer.Accept (this), UsingStatement.Roles.Variable);
+					var blockVariableDeclaration = fixedStatement.Variables;
+					result.AddChild (ConvertToType (blockVariableDeclaration.TypeExpression), FixedStatement.Roles.Type);
+					var varInit = new VariableInitializer ();
+					var initLocation = LocationsBag.GetLocations (blockVariableDeclaration);
+					varInit.AddChild (new Identifier (blockVariableDeclaration.Variable.Name, Convert (blockVariableDeclaration.Variable.Location)), VariableInitializer.Roles.Identifier);
+					if (blockVariableDeclaration.Initializer != null) {
+						if (initLocation != null)
+							varInit.AddChild (new CSharpTokenNode (Convert (location[0]), 1), VariableInitializer.Roles.Assign);
+						varInit.AddChild ((Expression)blockVariableDeclaration.Initializer.Accept (this), VariableInitializer.Roles.Expression);
+					}
+					
+					result.AddChild (varInit, FixedStatement.Roles.Variable);
+					
+					if (blockVariableDeclaration.Declarators != null) {
+						foreach (var decl in blockVariableDeclaration.Declarators) {
+							var loc = LocationsBag.GetLocations (decl);
+							var init = new VariableInitializer ();
+							if (loc != null && loc.Count > 0)
+								result.AddChild (new CSharpTokenNode (Convert (loc [0]), 1), VariableInitializer.Roles.Comma);
+							init.AddChild (new Identifier (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
+							if (decl.Initializer != null) {
+								if (loc != null && loc.Count > 1)
+									result.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), VariableInitializer.Roles.Assign);
+								init.AddChild ((Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
+							} else {
+							}
+							result.AddChild (init, FixedStatement.Roles.Variable);
+						}
+					}
 				}
 				
 				if (location != null)
