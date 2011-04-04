@@ -97,7 +97,7 @@ namespace Debugger.Interop
 	
 	public static class NativeMethods
 	{
-		[DllImport("kernel32.dll")]
+		[DllImport("kernel32.dll", SetLastError = true)]
 		public static extern bool CloseHandle(IntPtr handle);
 		
 		[DllImport("mscoree.dll", CharSet=CharSet.Unicode, PreserveSig=false)]
@@ -133,38 +133,41 @@ namespace Debugger.Interop
 		
 		[DllImport("kernel32.dll", SetLastError = true)]
 		public static extern void GetSystemInfo(out SYSTEM_INFO lpSystemInfo);
-		
-		[DllImport("kernel32.dll", SetLastError=true, ExactSpelling=true)]
-		public static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, AllocationType flAllocationType, MemoryProtection flProtect);
-		
+
 		public static List<Tuple<long, long>> GetMemoryAddresses(this Process process)
 		{
 			var result = new List<Tuple<long, long>>();
 			SYSTEM_INFO sysinfo = new SYSTEM_INFO();
 			GetSystemInfo(out sysinfo);
 			
-			uint handle = process.CorProcess.GetHandle();
 			long address = 0;
 			MEMORY_BASIC_INFORMATION m = new MEMORY_BASIC_INFORMATION();
-			
-			while (address < sysinfo.lpMaximumApplicationAddress.ToInt64())
-			{
-				if (!VirtualQueryEx(new IntPtr(handle), new IntPtr(address), out m, (uint)Marshal.SizeOf(m)))
-					break;
+			IntPtr openedProcess = IntPtr.Zero;
+			try {
+				openedProcess = OpenProcess(ProcessAccessFlags.All, false, (int)process.Id);
 				
-				try {
-					byte[] temp = new byte[m.RegionSize.ToInt64()];
-					int outSize;
-					if (!ReadProcessMemory(new IntPtr(handle), new IntPtr(address), temp, temp.Length, out outSize))
+				while (address < sysinfo.lpMaximumApplicationAddress.ToInt64())
+				{
+					if (!VirtualQueryEx(openedProcess, new IntPtr(address), out m, (uint)Marshal.SizeOf(m)))
+						break;
+					
+					try {
+						byte[] temp = new byte[m.RegionSize.ToInt64()];
+						int outSize;
+						if (!ReadProcessMemory(openedProcess, new IntPtr(address), temp, temp.Length, out outSize))
+							continue;
+					} catch {
 						continue;
-				} catch {
-					continue;
-				} finally {
-					// next address
-					address = m.BaseAddress.ToInt64() + m.RegionSize.ToInt64();
+					} finally {
+						// next address
+						address = m.BaseAddress.ToInt64() + m.RegionSize.ToInt64();
+					}
+					
+					result.Add(new Tuple<long, long>(m.BaseAddress.ToInt64(), m.RegionSize.ToInt64()));
 				}
-				
-				result.Add(new Tuple<long, long>(m.BaseAddress.ToInt64(), m.RegionSize.ToInt64()));
+			} finally {
+				if (openedProcess != IntPtr.Zero)
+					CloseHandle(openedProcess);
 			}
 			
 			return result;
@@ -172,15 +175,22 @@ namespace Debugger.Interop
 		
 		public static byte[] ReadProcessMemory(this Process process, long startAddress, long size)
 		{
-			uint handle = process.CorProcess.GetHandle();
-			
+			IntPtr openedProcess = IntPtr.Zero;
 			byte[] temp = new byte[size];
-			int outSize;
-			bool success = ReadProcessMemory(new IntPtr(handle), new IntPtr(startAddress), temp, temp.Length, out outSize);
 			
-			if (!success || outSize == 0) {
-				var proc = System.Diagnostics.Process.GetProcessById((int)process.Id);
-				return process.ReadProcessMemory(proc.MainModule.BaseAddress.ToInt64(), (long)4096);
+			try {
+				openedProcess = OpenProcess(ProcessAccessFlags.All, false, (int)process.Id);
+
+				int outSize;
+				bool success = ReadProcessMemory(openedProcess, new IntPtr(startAddress), temp, temp.Length, out outSize);
+				
+				if (!success || outSize == 0) {
+					var proc = System.Diagnostics.Process.GetProcessById((int)process.Id);
+					return process.ReadProcessMemory(proc.MainModule.BaseAddress.ToInt64(), (long)4096);
+				}
+			} finally {
+				if (openedProcess != IntPtr.Zero)
+					CloseHandle(openedProcess);
 			}
 			
 			return temp;

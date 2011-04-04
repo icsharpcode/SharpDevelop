@@ -2,9 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -24,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		Process debuggedProcess;
 		List<Tuple<long, long>> memoryAddresses = new List<Tuple<long, long>>();
-		Dictionary<long, int> addressesMapping = new Dictionary<long, int>();
+		Dictionary<string, int> addressesMapping = new Dictionary<string, int>();
 		
 		public MemoryPad()
 		{
@@ -64,11 +66,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				
 				long addr = Int64.Parse(address, NumberStyles.AllowHexSpecifier);
 				
+				memoryAddresses = debuggedProcess.GetMemoryAddresses();
 				// find index for the address or the near addess
-				currentAddressIndex = memoryAddresses.Search(addr);
+				currentAddressIndex = memoryAddresses.BinarySearch(addr);
 				if (currentAddressIndex == -1) {
 					MessageService.ShowMessage(
-						string.Format(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.AddressNotFound"), address), 
+						string.Format(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.AddressNotFound"), address),
 						ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad"));
 					
 					currentAddressIndex = 0;
@@ -76,13 +79,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}
 				
 				// refresh pad
-				Refresh();
+				if (!Refresh())
+					return;
 				
 				// find line
 				long mod = addr % addressStep;
 				int line;
-				if (addressesMapping.ContainsKey(addr - mod))
-					line = addressesMapping[addr - mod];
+				string key = (addr - mod).ToString("X8");
+				if (addressesMapping.ContainsKey(key))
+					line = addressesMapping[key];
 				else
 					line = 1;
 
@@ -97,15 +102,41 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public void Refresh()
+		public bool Refresh()
 		{
-			if (debuggedProcess == null || debugger.IsProcessRunning)
-				return;
+			console.Clear();
 			
-			if (memoryAddresses.Count == 0)
-				return;
+			if (debuggedProcess == null || debugger.IsProcessRunning) {
+				console.Append("Not debugging or process is running!");
+				return false;
+			}
 			
-			console.Clear();addressesMapping.Clear();
+			if (currentAddressIndex <= -1) {
+				console.Append("No mappings for memory addresses!");
+				currentAddressIndex = -1;
+				return false;
+			}
+			
+			memoryAddresses = debuggedProcess.GetMemoryAddresses();
+			if (memoryAddresses.Count == 0) {
+				console.Append("No mappings for memory addresses!");
+				return false;
+			}
+			
+			if (currentAddressIndex >= memoryAddresses.Count) {
+				console.Append("No mappings for memory addresses!");
+				currentAddressIndex = memoryAddresses.Count ;
+				return false;
+			}
+
+			console.Append(DoWork());
+			return true;
+		}
+		
+		string DoWork()
+		{
+			// refresh data
+			addressesMapping.Clear();
 			
 			// get current address
 			var item = memoryAddresses[currentAddressIndex];
@@ -115,25 +146,25 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			byte[] memory = debuggedProcess.ReadProcessMemory(address, size);
 			System.Diagnostics.Debug.Assert(memory != null);
 			
-			int div = memory.Length / addressStep;
+			int numberOfLines = memory.Length / addressStep;
 			int mod = memory.Length % addressStep;
-			int index = 0;
+			int currentLine = 0;
+			StringBuilder sb = new StringBuilder();
 			
-			while (index < div) {
-				StringBuilder sb = new StringBuilder();
-				addressesMapping.Add(address, index + 1);
+			while (currentLine < numberOfLines) {
+				addressesMapping.Add(address.ToString("X8"), currentLine + 1);
 				// write address
 				sb.Append(address.ToString("X8")); address += (long)addressStep;
 				sb.Append(" ");
 				
 				// write bytes
 				for (int i = 0; i < addressStep; ++i) {
-					sb.Append(memory[index * addressStep + i].ToString("X2") + " ");
+					sb.Append(memory[currentLine * addressStep + i].ToString("X2") + " ");
 				}
 				// write chars
 				StringBuilder sb1 = new StringBuilder();
 				for (int i = 0; i < addressStep; ++i) {
-					sb1.Append(((char)memory[index * addressStep + i]).ToString());
+					sb1.Append(((char)memory[currentLine * addressStep + i]).ToString());
 				}
 				string s = sb1.ToString();
 				s = Regex.Replace(s, @"\r\n", string.Empty);
@@ -142,61 +173,43 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				sb.Append(s);
 				sb.Append(Environment.NewLine);
 				
-				// start writing in console
-				console.Append(sb.ToString());
-				index++;
+				currentLine++;
 			}
 			
 			if (mod != 0) {
 				// write the rest of memory
-				StringBuilder sb = new StringBuilder();
-				addressesMapping.Add(address, index + 1);
+				addressesMapping.Add(address.ToString("X8"), currentLine + 1);
 				// write address
 				sb.Append(address.ToString("X8"));
 				sb.Append(" ");
 				
 				// write bytes
 				for (int i = 0; i < mod; ++i) {
-					sb.Append(memory[index * addressStep + i].ToString("X2") + " ");
+					sb.Append(memory[currentLine * addressStep + i].ToString("X2") + " ");
 				}
 				// write chars
 				StringBuilder sb1 = new StringBuilder();
 				for (int i = 0; i < mod; ++i) {
-					sb1.Append(((char)memory[index * addressStep + i]).ToString());
+					sb1.Append(((char)memory[currentLine * addressStep + i]).ToString());
 				}
 				string s = sb1.ToString();
 				s = Regex.Replace(s, @"\r\n", string.Empty);
 				s = Regex.Replace(s, @"\n", string.Empty);
 				s = Regex.Replace(s, @"\r", string.Empty);
 				sb.Append(s);
-				
-				sb.Append(Environment.NewLine);
-				
-				// start writing in console
-				console.Append(sb.ToString());
 			}
+			
+			return sb.ToString();
 		}
 		
 		public void MoveToPreviousAddress()
 		{
-			if (debuggedProcess == null || debugger.IsProcessRunning)
-				return;
-			
-			if (currentAddressIndex == 0)
-				return;
-			
 			currentAddressIndex--;
 			Refresh();
 		}
 		
 		public void MoveToNextAddress()
 		{
-			if (debuggedProcess == null || debugger.IsProcessRunning)
-				return;
-			
-			if (currentAddressIndex == memoryAddresses.Count)
-				return;
-			
 			currentAddressIndex++;
 			Refresh();
 		}
@@ -204,19 +217,41 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	
 	internal static class MemoryPadExtensions
 	{
-		internal static int Search(this List<Tuple<long, long>> source, long item1)
+		/// <summary>
+		/// Does a binary search when the Item1 from Tuple is sorted.
+		/// </summary>
+		/// <param name="source">Source of data.</param>
+		/// <param name="item1">Item to search.</param>
+		/// <returns>The nearast index.</returns>
+		internal static int BinarySearch(this List<Tuple<long, long>> source, long item1)
 		{
+			// base checks
 			if (source == null)
 				throw new NullReferenceException("Source is null!");
 			
-			for (int i = 0; i < source.Count - 1; i++) {
-				if (source[i + 1].Item1 < item1)
-					continue;
-				
-				return i;
+			if (source.Count == 0)
+				return -1;
+			
+			if (item1 < source[0].Item1)
+				return 0;
+			
+			if (item1 > source[source.Count - 1].Item1)
+				return source.Count;
+			
+			// do a binary search since the source is sorted
+			int first = 0; int last = source.Count;
+			while (first < last - 1) {
+				int middle = (first + last) / 2;
+				if (source[middle].Item1 == item1)
+					return middle;
+				else
+					if (source[middle].Item1 < item1)
+						first = middle;
+					else
+						last = middle;
 			}
 			
-			return -1;
+			return first;
 		}
 	}
 }
