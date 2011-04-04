@@ -12,6 +12,7 @@ using Debugger;
 using Debugger.Interop;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -20,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		int currentAddressIndex;
 		ConsoleControl console;
 		int columnsNumber = 16;
-		byte displayByteSize = 2;
+		byte displayByteSize = 1;
 		
 		/// <summary>
 		/// Gets or sets the number of columns in the display
@@ -36,16 +37,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 		/// <summary>
-		/// Gets or sets the display byte size: 2, 4, 8
+		/// Gets or sets the display byte size: 1, 2, 4
 		/// </summary>
-		[DefaultValue(2)]
+		[DefaultValue(1)]
 		public byte DisplayByteSize {
 			get { return displayByteSize; }
 			set {
-				// check is value is a power of 2 between 1 and 8.
+				// check is value is a power of 2 between 1 and 4.
 				if ((value & (value - 1)) != 0)
 					return;
-				if (value <= 1 || value > 8)
+				if (value < 1 || value > 4)
 					return;
 				
 				if (displayByteSize != value) {
@@ -65,6 +66,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			this.console.Encoding = Encoding.Default;
 			RefreshPad();
 			this.console.SetReadonly();
+			
+			DebuggerService.DebugStopped += DebuggerService_DebugStopped;
+		}
+
+		void DebuggerService_DebugStopped(object sender, EventArgs e)
+		{
+			memoryAddresses.Clear();
+			addressesMapping.Clear();
 		}
 		
 		protected override ToolBar BuildToolBar()
@@ -123,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					line = 1;
 
 				// jump
-				console.SelectText(line + 1, 0, 8);
+				console.SelectText(line, 0, 8);
 				console.JumpToLine(line);
 				
 			} catch (System.Exception ex) {
@@ -183,8 +192,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return string.Format(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.UnableToReadFormat"), address.ToString("X8"), size);
 			}
 			
-			int bytesNr = displayByteSize / 2;
-			int totalBytesPerRow = columnsNumber * bytesNr;
+			int totalBytesPerRow = columnsNumber * displayByteSize;
 			int numberOfLines = memory.Length / totalBytesPerRow;
 			int remainingMemory = memory.Length % totalBytesPerRow;
 			
@@ -206,7 +214,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				int start = index * totalBytesPerRow;
 				// write bytes
 				for (int i = 0; i < columnsNumber; ++i) {
-					for (int j = 0; j < bytesNr; ++j) {
+					for (int j = 0; j < displayByteSize; ++j) {
 						sb.Append(memory[start++].ToString("X2"));
 					}
 					sb.Append(" ");
@@ -237,18 +245,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				sb.Append(" ");
 				
 				// write bytes
-				int start = index * remainingMemory * bytesNr;
+				int start = index * remainingMemory * displayByteSize;
 				for (int i = 0; i < remainingMemory; ++i) {
-					for (int j = 0; j < bytesNr; j++) {
+					for (int j = 0; j < displayByteSize; j++) {
 						sb.Append(memory[start++].ToString("X2"));
 					}
 					sb.Append(" ");
 				}
 				
 				// write chars
-				start = index * remainingMemory * bytesNr;
+				start = index * remainingMemory * displayByteSize;
 				StringBuilder sb1 = new StringBuilder();
-				for (int i = 0; i < remainingMemory * bytesNr; ++i) {
+				for (int i = 0; i < remainingMemory * displayByteSize; ++i) {
 					sb1.Append(((char)memory[start++]).ToString());
 				}
 				string s = sb1.ToString();

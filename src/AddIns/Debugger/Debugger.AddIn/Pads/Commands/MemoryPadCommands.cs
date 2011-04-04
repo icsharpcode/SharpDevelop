@@ -105,11 +105,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			comboBox.SelectionChanged += (s, ea) => { Run(); };
 			
+			comboBox.Items.Add(1);
 			comboBox.Items.Add(2);
 			comboBox.Items.Add(4);
-			comboBox.Items.Add(8);
-			comboBox.Text = "2";
-			comboBox.Width = 33;
+			comboBox.Text = "1";
+			comboBox.Width = 30;
 			comboBox.IsEditable = false;
 			
 			base.OnOwnerChanged(e);
