@@ -5746,6 +5746,21 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.MemoryPad.PreviousAddress" xml:space="preserve">
     <value>Previous virtual addresses</value>
   </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ByteSize" xml:space="preserve">
+    <value>Display bytes size:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ReadingFromFormat" xml:space="preserve">
+    <value>Reading from {0} to {1} - size {2}.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.UnableToReadFormat" xml:space="preserve">
+    <value>Unable to read at address {0} of size {1}.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NotDebuggingOrProcessRunning" xml:space="preserve">
+    <value>Not debugging or process is running!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NoMappings" xml:space="preserve">
+    <value>No mappings for memory addresses!</value>
+  </data>  
   <data name="MainWindow.Windows.Debug.ParallelStack" xml:space="preserve">
     <value>Parallel Stacks</value>
   </data>

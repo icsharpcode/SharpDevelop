@@ -86,4 +86,42 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			this.pad.MoveToPreviousAddress();
 		}
 	}
+	
+	public sealed class DisplayByteSizeCommand : AbstractComboBoxCommand
+	{
+		MemoryPad pad;
+		ComboBox comboBox;		
+		
+		protected override void OnOwnerChanged(EventArgs e)
+		{
+			this.pad = this.Owner as MemoryPad;
+			if (this.pad == null)
+				return;
+			
+			comboBox = this.ComboBox as ComboBox;
+			
+			if (this.comboBox == null)
+				return;
+			
+			comboBox.SelectionChanged += (s, ea) => { Run(); };
+			
+			comboBox.Items.Add(2);
+			comboBox.Items.Add(4);
+			comboBox.Items.Add(8);
+			comboBox.Text = "2";
+			comboBox.Width = 33;
+			comboBox.IsEditable = false;
+			
+			base.OnOwnerChanged(e);
+		}
+		
+		public override void Run()
+		{
+			if (this.pad != null && this.comboBox != null) {
+				pad.DisplayByteSize = Convert.ToByte(this.comboBox.SelectedValue);
+				pad.Refresh();
+			}
+			base.Run();
+		}
+	}
 }

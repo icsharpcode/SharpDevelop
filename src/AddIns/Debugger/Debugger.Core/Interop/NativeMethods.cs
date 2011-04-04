@@ -134,7 +134,7 @@ namespace Debugger.Interop
 		[DllImport("kernel32.dll", SetLastError = true)]
 		public static extern void GetSystemInfo(out SYSTEM_INFO lpSystemInfo);
 
-		public static List<Tuple<long, long>> GetMemoryAddresses(this Process process)
+		public static List<Tuple<long, long>> GetVirtualMemoryAddresses(this Process process)
 		{
 			var result = new List<Tuple<long, long>>();
 			SYSTEM_INFO sysinfo = new SYSTEM_INFO();
@@ -148,16 +148,9 @@ namespace Debugger.Interop
 				
 				while (address < sysinfo.lpMaximumApplicationAddress.ToInt64())
 				{
-					if (!VirtualQueryEx(openedProcess, new IntPtr(address), out m, (uint)Marshal.SizeOf(m)))
-						break;
-					
 					try {
-						byte[] temp = new byte[m.RegionSize.ToInt64()];
-						int outSize;
-						if (!ReadProcessMemory(openedProcess, new IntPtr(address), temp, temp.Length, out outSize))
+						if (!VirtualQueryEx(openedProcess, new IntPtr(address), out m, (uint)Marshal.SizeOf(m)))
 							continue;
-					} catch {
-						continue;
 					} finally {
 						// next address
 						address = m.BaseAddress.ToInt64() + m.RegionSize.ToInt64();
@@ -188,6 +181,8 @@ namespace Debugger.Interop
 					var proc = System.Diagnostics.Process.GetProcessById((int)process.Id);
 					return process.ReadProcessMemory(proc.MainModule.BaseAddress.ToInt64(), (long)4096);
 				}
+			} catch {
+				return null;
 			} finally {
 				if (openedProcess != IntPtr.Zero)
 					CloseHandle(openedProcess);

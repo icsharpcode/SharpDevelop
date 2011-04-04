@@ -6,15 +6,12 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 
 using Debugger;
 using Debugger.Interop;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -22,11 +19,44 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	{
 		int currentAddressIndex;
 		ConsoleControl console;
-		int addressStep = 16;
+		int columnsNumber = 16;
+		byte displayByteSize = 2;
+		
+		/// <summary>
+		/// Gets or sets the number of columns in the display
+		/// </summary>
+		[DefaultValue(16)]
+		public int ColumnsNumber {
+			get { return columnsNumber; }
+			set {
+				if (value != columnsNumber) {
+					columnsNumber = value;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Gets or sets the display byte size: 2, 4, 8
+		/// </summary>
+		[DefaultValue(2)]
+		public byte DisplayByteSize {
+			get { return displayByteSize; }
+			set {
+				// check is value is a power of 2 between 1 and 8.
+				if ((value & (value - 1)) != 0)
+					return;
+				if (value <= 1 || value > 8)
+					return;
+				
+				if (displayByteSize != value) {
+					displayByteSize = value;
+				}
+			}
+		}
 		
 		Process debuggedProcess;
 		List<Tuple<long, long>> memoryAddresses = new List<Tuple<long, long>>();
-		Dictionary<string, int> addressesMapping = new Dictionary<string, int>();
+		Dictionary<long, int> addressesMapping = new Dictionary<long, int>();
 		
 		public MemoryPad()
 		{
@@ -48,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			
 			debuggedProcess = process;
-			memoryAddresses = debuggedProcess.GetMemoryAddresses();
+			memoryAddresses = debuggedProcess.GetVirtualMemoryAddresses();
 			currentAddressIndex = 0;
 		}
 		
@@ -66,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				
 				long addr = Int64.Parse(address, NumberStyles.AllowHexSpecifier);
 				
-				memoryAddresses = debuggedProcess.GetMemoryAddresses();
+				memoryAddresses = debuggedProcess.GetVirtualMemoryAddresses();
 				// find index for the address or the near addess
 				currentAddressIndex = memoryAddresses.BinarySearch(addr);
 				if (currentAddressIndex == -1) {
@@ -83,16 +113,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					return;
 				
 				// find line
-				long mod = addr % addressStep;
+				long mod = addr % (columnsNumber * displayByteSize);
 				int line;
-				string key = (addr - mod).ToString("X8");
+				long key = addr - mod;
+				//int index = addressesMapping.BinarySearch(key);
 				if (addressesMapping.ContainsKey(key))
 					line = addressesMapping[key];
 				else
 					line = 1;
 
 				// jump
-				console.SelectText(line, 0, 8);
+				console.SelectText(line + 1, 0, 8);
 				console.JumpToLine(line);
 				
 			} catch (System.Exception ex) {
@@ -104,29 +135,31 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public bool Refresh(bool refreshMemoryAddresses = false)
 		{
-			console.Clear();
+			if (console == null)
+				return false;
 			
+			console.Clear();
 			if (debuggedProcess == null || debugger.IsProcessRunning) {
-				console.Append("Not debugging or process is running!");
+				console.Append(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.NotDebuggingOrProcessRunning"));
 				return false;
 			}
 			
 			if (currentAddressIndex <= -1) {
-				console.Append("No mappings for memory addresses!");
+				console.Append(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.NoMappings"));
 				currentAddressIndex = -1;
 				return false;
 			}
 			
 			if (refreshMemoryAddresses)
-				memoryAddresses = debuggedProcess.GetMemoryAddresses();
+				memoryAddresses = debuggedProcess.GetVirtualMemoryAddresses();
 			
 			if (memoryAddresses.Count == 0) {
-				console.Append("No mappings for memory addresses!");
+				console.Append(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.NoMappings"));
 				return false;
 			}
 			
 			if (currentAddressIndex >= memoryAddresses.Count) {
-				console.Append("No mappings for memory addresses!");
+				console.Append(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.NoMappings"));
 				currentAddressIndex = memoryAddresses.Count ;
 				return false;
 			}
@@ -146,27 +179,43 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			long size = item.Item2;
 			
 			byte[] memory = debuggedProcess.ReadProcessMemory(address, size);
-			System.Diagnostics.Debug.Assert(memory != null);
+			if (memory == null) {
+				return string.Format(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.UnableToReadFormat"), address.ToString("X8"), size);
+			}
 			
-			int numberOfLines = memory.Length / addressStep;
-			int mod = memory.Length % addressStep;
-			int currentLine = 0;
+			int bytesNr = displayByteSize / 2;
+			int totalBytesPerRow = columnsNumber * bytesNr;
+			int numberOfLines = memory.Length / totalBytesPerRow;
+			int remainingMemory = memory.Length % totalBytesPerRow;
+			
 			StringBuilder sb = new StringBuilder();
+			sb.Append(string.Format(
+				ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.ReadingFromFormat"),
+				address.ToString("X8"), (address + memory.Length).ToString("X8"), memory.Length));
+			sb.Append(Environment.NewLine);
 			
-			while (currentLine < numberOfLines) {
-				addressesMapping.Add(address.ToString("X8"), currentLine + 1);
+			int currentLine = 2; // line in the console			
+			int index = 0; // index in memory arrray of current line
+			
+			while (index < numberOfLines) {
+				addressesMapping.Add(address, currentLine);
 				// write address
-				sb.Append(address.ToString("X8")); address += (long)addressStep;
+				sb.Append(address.ToString("X8")); address += (long)totalBytesPerRow;
 				sb.Append(" ");
 				
+				int start = index * totalBytesPerRow;
 				// write bytes
-				for (int i = 0; i < addressStep; ++i) {
-					sb.Append(memory[currentLine * addressStep + i].ToString("X2") + " ");
+				for (int i = 0; i < columnsNumber; ++i) {
+					for (int j = 0; j < bytesNr; ++j) {
+						sb.Append(memory[start++].ToString("X2"));
+					}
+					sb.Append(" ");
 				}
 				// write chars
+				start = index * totalBytesPerRow;
 				StringBuilder sb1 = new StringBuilder();
-				for (int i = 0; i < addressStep; ++i) {
-					sb1.Append(((char)memory[currentLine * addressStep + i]).ToString());
+				for (int i = 0; i < totalBytesPerRow; ++i) {
+					sb1.Append(((char)memory[start++]).ToString());
 				}
 				string s = sb1.ToString();
 				s = Regex.Replace(s, @"\r\n", string.Empty);
@@ -176,23 +225,31 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				sb.Append(Environment.NewLine);
 				
 				currentLine++;
+				index++;
 			}
 			
-			if (mod != 0) {
+			if (remainingMemory != 0) {
 				// write the rest of memory
-				addressesMapping.Add(address.ToString("X8"), currentLine + 1);
+				addressesMapping.Add(address, currentLine);
+				
 				// write address
 				sb.Append(address.ToString("X8"));
 				sb.Append(" ");
 				
 				// write bytes
-				for (int i = 0; i < mod; ++i) {
-					sb.Append(memory[currentLine * addressStep + i].ToString("X2") + " ");
+				int start = index * remainingMemory * bytesNr;
+				for (int i = 0; i < remainingMemory; ++i) {
+					for (int j = 0; j < bytesNr; j++) {
+						sb.Append(memory[start++].ToString("X2"));
+					}
+					sb.Append(" ");
 				}
+				
 				// write chars
+				start = index * remainingMemory * bytesNr;
 				StringBuilder sb1 = new StringBuilder();
-				for (int i = 0; i < mod; ++i) {
-					sb1.Append(((char)memory[currentLine * addressStep + i]).ToString());
+				for (int i = 0; i < remainingMemory * bytesNr; ++i) {
+					sb1.Append(((char)memory[start++]).ToString());
 				}
 				string s = sb1.ToString();
 				s = Regex.Replace(s, @"\r\n", string.Empty);
@@ -224,8 +281,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		/// </summary>
 		/// <param name="source">Source of data.</param>
 		/// <param name="item1">Item to search.</param>
-		/// <returns>The nearast index.</returns>
-		internal static int BinarySearch(this List<Tuple<long, long>> source, long item1)
+		/// <returns>The nearest index.</returns>
+		internal static int BinarySearch<T>(this List<Tuple<long, T>> source, long item1)
 		{
 			// base checks
 			if (source == null)

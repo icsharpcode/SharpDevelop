@@ -225,6 +225,15 @@
 		             icon="Icons.16x16.Refresh"
 		             tooltip="${res:MainWindow.Windows.Debug.MemoryPad.Refresh}"
 		             class="ICSharpCode.SharpDevelop.Gui.Pads.RefreshAddressCommand"/>
+		<ToolbarItem id="Separator3" 
+		             type="Separator"/>
+		<ToolbarItem id="ByteSizeLabel" 
+		             type="Item" 
+		             label="${res:MainWindow.Windows.Debug.MemoryPad.ByteSize}" 
+		             class="ICSharpCode.SharpDevelop.Gui.Pads.DisplayByteSizeCommand"/>
+		<ToolbarItem id="ByteSizeCombo" 
+		             type="ComboBox" 
+		             class="ICSharpCode.SharpDevelop.Gui.Pads.DisplayByteSizeCommand"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Services/DebuggerService/Visualizers">
