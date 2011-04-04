@@ -12,8 +12,8 @@ namespace PackageManagement.Tests.Helpers
 	public class ExceptionThrowingPackageManagementService : FakePackageManagementService
 	{
 		public Exception ExeptionToThrowWhenActiveProjectManagerAccessed { get; set; }
-		public Exception ExeptionToThrowWhenInstallPackageCalled { get; set; }
-		public Exception ExeptionToThrowWhenUninstallPackageCalled { get; set; }
+		public Exception ExeptionToThrowWhenCreateInstallPackageTaskCalled { get; set; }
+		public Exception ExeptionToThrowWhenCreateUninstallPackageActionCalled { get; set; }
 		public Exception ExeptionToThrowWhenActiveRepositoryAccessed { get; set; }
 		public Exception ExceptionToThrowWhenCreatePackageManagerForActiveProjectCalled { get; set; }
 
@@ -36,14 +36,14 @@ namespace PackageManagement.Tests.Helpers
 			set { base.ActivePackageRepository = value; }
 		}
 		
-		public override void InstallPackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations)
+		public override InstallPackageAction CreateInstallPackageAction()
 		{
-			throw ExeptionToThrowWhenInstallPackageCalled;
+			throw ExeptionToThrowWhenCreateInstallPackageTaskCalled;
 		}
 		
-		public override void UninstallPackage(IPackageRepository repository, IPackage package)
+		public override UninstallPackageAction CreateUninstallPackageAction()
 		{
-			throw ExeptionToThrowWhenUninstallPackageCalled;
+			throw ExeptionToThrowWhenCreateUninstallPackageActionCalled;
 		}
 		
 		public override ISharpDevelopPackageManager CreatePackageManagerForActiveProject()

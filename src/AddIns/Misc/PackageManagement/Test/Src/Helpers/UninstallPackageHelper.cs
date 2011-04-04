@@ -26,7 +26,10 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void UninstallTestPackage()
 		{
-			packageManagementService.UninstallPackage(FakePackageRepository, TestPackage);
+			var action = packageManagementService.CreateUninstallPackageAction();
+			action.PackageRepository = FakePackageRepository;
+			action.Package = TestPackage;
+			action.Execute();
 		}
 		
 		public Version Version;
@@ -37,13 +40,14 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void UninstallPackageById(string packageId)
 		{
-			packageManagementService.UninstallPackage(
-				packageId,
-				Version,
-				Project,
-				PackageSource,
-				ForceRemove,
-				RemoveDependencies);
+			var action = packageManagementService.CreateUninstallPackageAction();
+			action.PackageId = packageId;
+			action.PackageVersion = Version;
+			action.Project = Project;
+			action.ForceRemove = ForceRemove;
+			action.PackageSource = PackageSource;
+			action.RemoveDependencies = RemoveDependencies;
+			action.Execute();
 		}
 	}
 }

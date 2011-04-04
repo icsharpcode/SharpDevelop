@@ -26,7 +26,11 @@ namespace ICSharpCode.PackageManagement
 			IPackage package,
 			IEnumerable<PackageOperation> packageOperations)
 		{
-			packageManagementService.UpdatePackage(sourcePackageRepository, package, packageOperations);
+			var action = packageManagementService.CreateUpdatePackageAction();
+			action.PackageRepository = sourcePackageRepository;
+			action.Package = package;
+			action.Operations = packageOperations;
+			action.Execute();
 		}
 	}
 }

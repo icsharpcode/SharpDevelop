@@ -63,7 +63,7 @@ namespace PackageManagement.Tests
 			repository.FakePackages.Add(package);
 			
 			ClearReadPackagesTasks();
-			packageManagementService.FirePackageInstalled();
+			packageManagementService.FireParentPackageInstalled();
 			CompleteReadPackagesTask();
 		
 			IPackage firstPackage = viewModel.PackageViewModels[0].GetPackage();
@@ -84,7 +84,7 @@ namespace PackageManagement.Tests
 			repository.FakePackages.Clear();
 			
 			ClearReadPackagesTasks();
-			packageManagementService.FirePackageUninstalled();
+			packageManagementService.FireParentPackageUninstalled();
 			CompleteReadPackagesTask();
 		
 			Assert.AreEqual(0, viewModel.PackageViewModels.Count);

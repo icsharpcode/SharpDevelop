@@ -252,7 +252,7 @@ namespace PackageManagement.Tests
 			CreatePackageManagementService();
 			
 			IPackage package = null;
-			packageManagementService.PackageInstalled += (sender, e) => {
+			packageManagementService.ParentPackageInstalled += (sender, e) => {
 				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToInstallPackage;
 			};
 			installPackageHelper.InstallTestPackage();
@@ -266,7 +266,7 @@ namespace PackageManagement.Tests
 			CreatePackageManagementService();
 			
 			IPackage package = null;
-			packageManagementService.PackageUninstalled += (sender, e) => {
+			packageManagementService.ParentPackageUninstalled += (sender, e) => {
 				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToUninstallPackage;
 			};
 			
@@ -275,6 +275,26 @@ namespace PackageManagement.Tests
 			var expectedPackage = uninstallPackageHelper.TestPackage;
 			
 			Assert.AreEqual(expectedPackage, package);
+		}
+		
+		[Test]
+		public void UninstallPackage_PackageObjectPassed_PackageIsNotForcefullyRemoved()
+		{
+			CreatePackageManagementService();
+			
+			uninstallPackageHelper.UninstallTestPackage();
+			
+			Assert.IsFalse(fakePackageManagerFactory.FakePackageManager.ForceRemovePassedToUninstallPackage);
+		}
+		
+		[Test]
+		public void UninstallPackage_PackageObjectPassed_PackageDependenciesAreNotRemoved()
+		{
+			CreatePackageManagementService();
+			
+			uninstallPackageHelper.UninstallTestPackage();
+			
+			Assert.IsFalse(fakePackageManagerFactory.FakePackageManager.RemoveDependenciesPassedToUninstallPackage);
 		}
 		
 		[Test]
@@ -779,7 +799,7 @@ namespace PackageManagement.Tests
 			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
 			
 			IPackage package = null;
-			packageManagementService.PackageInstalled += (sender, e) => {
+			packageManagementService.ParentPackageInstalled += (sender, e) => {
 				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToInstallPackage;
 			};
 			installPackageHelper.InstallPackageById("PackageId");
@@ -871,7 +891,7 @@ namespace PackageManagement.Tests
 			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
 			
 			IPackage package = null;
-			packageManagementService.PackageInstalled += (sender, e) => {
+			packageManagementService.ParentPackageInstalled += (sender, e) => {
 				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToInstallPackage;
 			};
 			
@@ -942,7 +962,7 @@ namespace PackageManagement.Tests
 			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
 			
 			IPackage package = null;
-			packageManagementService.PackageUninstalled += (sender, e) => {
+			packageManagementService.ParentPackageUninstalled += (sender, e) => {
 				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToUninstallPackage;
 			};
 			
@@ -1067,7 +1087,7 @@ namespace PackageManagement.Tests
 			CreatePackageManagementService();
 			
 			IPackage package = null;
-			packageManagementService.PackageInstalled += (sender, e) => {
+			packageManagementService.ParentPackageInstalled += (sender, e) => {
 				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToUpdatePackage;
 			};
 			updatePackageHelper.UpdateTestPackage();
@@ -1265,12 +1285,88 @@ namespace PackageManagement.Tests
 			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
 			
 			IPackage package = null;
-			packageManagementService.PackageInstalled += (sender, e) => {
+			packageManagementService.ParentPackageInstalled += (sender, e) => {
 				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToUpdatePackage;
 			};
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
 			Assert.AreEqual(expectedPackage, package);
+		}
+		
+		[Test]
+		public void UninstallPackage_PackageIdSpecified_PackageIsNotForcefullyRemoved()
+		{
+			CreatePackageManagementService();
+			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
+			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
+			
+			uninstallPackageHelper.ForceRemove = false;
+			uninstallPackageHelper.UninstallPackageById("PackageId");
+			
+			Assert.IsFalse(fakePackageManagerFactory.FakePackageManager.ForceRemovePassedToUninstallPackage);
+		}
+		
+		[Test]
+		public void UninstallPackage_PackageIdSpecifiedAndForceRemoveIsTrue_PackageIsForcefullyRemoved()
+		{
+			CreatePackageManagementService();
+			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
+			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
+			
+			uninstallPackageHelper.ForceRemove = true;
+			uninstallPackageHelper.UninstallPackageById("PackageId");
+			
+			Assert.IsTrue(fakePackageManagerFactory.FakePackageManager.ForceRemovePassedToUninstallPackage);
+		}
+		
+		[Test]
+		public void UninstallPackage_PackageIdSpecified_PackageDependenciesAreNotRemoved()
+		{
+			CreatePackageManagementService();
+			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
+			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
+			
+			uninstallPackageHelper.RemoveDependencies = false;
+			uninstallPackageHelper.UninstallPackageById("PackageId");
+			
+			Assert.IsFalse(fakePackageManagerFactory.FakePackageManager.RemoveDependenciesPassedToUninstallPackage);
+		}
+		
+		[Test]
+		public void UninstallPackage_PackageIdSpecifiedAndRemoveDependenciesIsTrue_PackageDependenciesAreRemoved()
+		{
+			CreatePackageManagementService();
+			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
+			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
+			
+			uninstallPackageHelper.RemoveDependencies = true;
+			uninstallPackageHelper.UninstallPackageById("PackageId");
+			
+			Assert.IsTrue(fakePackageManagerFactory.FakePackageManager.RemoveDependenciesPassedToUninstallPackage);
+		}
+		
+		[Test]
+		public void UninstallPackage_VersionSpecified_VersionUsedWhenSearchingForPackage()
+		{
+			CreatePackageManagementService();
+			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
+			
+			var recentPackage = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
+			recentPackage.Version = new Version("1.2.0");
+			
+			var oldPackage = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
+			oldPackage.Version = new Version("1.0.0");
+			
+			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
+			var version = new Version("1.1.0");
+			package.Version = version;
+			
+			uninstallPackageHelper.Version = version;
+			uninstallPackageHelper.UninstallPackageById("PackageId");
+			
+			var actualPackage = fakePackageManagerFactory.FakePackageManager.PackagePassedToUninstallPackage;
+			
+			Assert.AreEqual(package, actualPackage);
 		}
 	}
 }

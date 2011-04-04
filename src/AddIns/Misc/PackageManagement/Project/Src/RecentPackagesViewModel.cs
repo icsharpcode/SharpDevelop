@@ -18,8 +18,8 @@ namespace ICSharpCode.PackageManagement
 			: base(packageManagementService, messageReporter, taskFactory)
 		{
 			recentPackageRepository = packageManagementService.RecentPackageRepository;
-			packageManagementService.PackageInstalled += PackageInstalled;
-			packageManagementService.PackageUninstalled += PackageUninstalled;
+			packageManagementService.ParentPackageInstalled += PackageInstalled;
+			packageManagementService.ParentPackageUninstalled += PackageUninstalled;
 		}
 		
 		void PackageInstalled(object sender, EventArgs e)

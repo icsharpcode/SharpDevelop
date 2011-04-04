@@ -14,12 +14,14 @@ namespace PackageManagement.Tests
 		TestableUpdatedPackageViewModel viewModel;
 		FakePackageManagementService fakePackageManagementService;
 		FakePackageRepository sourcePackageRepository;
+		FakeUpdatePackageAction updatePackageAction;
 		
 		void CreateViewModel()
 		{
 			viewModel = new TestableUpdatedPackageViewModel();
 			fakePackageManagementService = viewModel.FakePackageManagementService;
 			sourcePackageRepository = viewModel.FakeSourcePackageRepository;
+			updatePackageAction = fakePackageManagementService.ActionToReturnFromCreateUpdatePackageAction;
 		}
 		
 		[Test]
@@ -28,7 +30,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddPackage();
 						
-			Assert.AreEqual(sourcePackageRepository, fakePackageManagementService.RepositoryPassedToUpdatePackage);
+			Assert.AreEqual(sourcePackageRepository, updatePackageAction.PackageRepository);
 		}
 	
 		[Test]
@@ -38,7 +40,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			var expectedPackage = viewModel.FakePackage;
-			var actualPackage = fakePackageManagementService.PackagePassedToUpdatePackage;
+			var actualPackage = updatePackageAction.Package;
 						
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}
@@ -50,9 +52,18 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			var expectedOperations = viewModel.FakePackageOperationResolver.PackageOperations;
-			var actualOperations = fakePackageManagementService.PackageOperationsPassedToUpdatePackage;
+			var actualOperations = updatePackageAction.Operations;
 						
 			Assert.AreEqual(expectedOperations, actualOperations);
+		}
+		
+		[Test]
+		public void AddPackage_PackageAddedSuccessfully_PackageIsUpdated()
+		{
+			CreateViewModel();
+			viewModel.AddPackage();
+			
+			Assert.IsTrue(updatePackageAction.IsExecuted);
 		}
 	}
 }

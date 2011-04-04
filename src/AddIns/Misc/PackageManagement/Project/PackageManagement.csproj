@@ -79,6 +79,7 @@
     <Compile Include="Src\Design\DesignTimePackageManagementService.cs" />
     <Compile Include="Src\Design\DesignTimePackagesViewModel.cs" />
     <Compile Include="Src\Design\FakeFileSystem.cs" />
+    <Compile Include="Src\Design\FakeInstallPackageTask.cs" />
     <Compile Include="Src\Design\FakePackage.cs" />
     <Compile Include="Src\Design\FakePackageAssemblyReference.cs" />
     <Compile Include="Src\Design\FakePackageManagementOutputMessagesView.cs" />
@@ -88,10 +89,13 @@
     <Compile Include="Src\Design\FakePackageRepository.cs" />
     <Compile Include="Src\Design\FakeProjectManager.cs" />
     <Compile Include="Src\Design\FakeProjectSystem.cs" />
+    <Compile Include="Src\Design\FakeUninstallPackageAction.cs" />
+    <Compile Include="Src\Design\FakeUpdatePackageAction.cs" />
     <Compile Include="Src\Design\WpfDesigner.cs" />
     <Compile Include="Src\ICompilerMessageView.cs" />
     <Compile Include="Src\IMessageReporter.cs" />
     <Compile Include="Src\IMessageViewCategory.cs" />
+    <Compile Include="Src\InstallPackageAction.cs" />
     <Compile Include="Src\IPackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\IPackageRepositoryCache.cs" />
     <Compile Include="Src\IPackageOperationResolverFactory.cs" />
@@ -142,7 +146,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\PackagesViewModel.cs" />
+    <Compile Include="Src\ProcessPackageAction.cs" />
     <Compile Include="Src\Scripting\PowerShellHostRawUserInterface.cs" />
+    <Compile Include="Src\UninstallPackageAction.cs" />
     <Compile Include="Src\UpdatedPackagesViewModel.cs" />
     <Compile Include="Src\PackageViewModel.cs" />
     <Compile Include="Src\PackageViewModelFactory.cs" />
@@ -188,6 +194,7 @@
     <Compile Include="Src\UpdatedPackages.cs" />
     <Compile Include="Src\UpdatedPackageViewModel.cs" />
     <Compile Include="Src\UpdatedPackageViewModelFactory.cs" />
+    <Compile Include="Src\UpdatePackageAction.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
     <Compile Include="Src\ViewModelLocator.cs" />
   </ItemGroup>

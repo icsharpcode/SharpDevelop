@@ -16,6 +16,7 @@ namespace PackageManagement.Cmdlets.Tests
 		TestableUpdatePackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
 		FakePackageManagementService fakePackageManagementService;
+		FakeUpdatePackageAction fakeUpdatePackageAction;
 		
 		void CreateCmdletWithoutActiveProject()
 		{
@@ -23,6 +24,7 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
 			fakePackageManagementService = cmdlet.FakePackageManagementService;
+			fakeUpdatePackageAction = fakePackageManagementService.ActionToReturnFromCreateUpdatePackageAction;
 		}
 				
 		void CreateCmdletWithActivePackageSourceAndProject()
@@ -92,7 +94,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualPackageId = fakePackageManagementService.PackageIdPassedToUpdatePackage;
+			var actualPackageId = fakeUpdatePackageAction.PackageId;
 			 
 			Assert.AreEqual("Test", actualPackageId);
 		}
@@ -106,7 +108,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualPackageSource = fakePackageManagementService.PackageSourcePassedToUpdatePackage;
+			var actualPackageSource = fakeUpdatePackageAction.PackageSource;
 			
 			Assert.AreEqual(packageSource, actualPackageSource);
 		}
@@ -120,7 +122,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToUpdatePackage;
+			var actualProject = fakeUpdatePackageAction.Project;
 			
 			Assert.AreEqual(project, actualProject);
 		}
@@ -134,7 +136,7 @@ namespace PackageManagement.Cmdlets.Tests
 			EnableIgnoreDependenciesParameter();
 			RunCmdlet();
 			
-			bool result = fakePackageManagementService.UpdateDependenciesPassedToUpdatePackage;
+			bool result = fakeUpdatePackageAction.UpdateDependencies;
 			
 			Assert.IsFalse(result);
 		}
@@ -147,7 +149,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			bool result = fakePackageManagementService.UpdateDependenciesPassedToUpdatePackage;
+			bool result = fakeUpdatePackageAction.UpdateDependencies;
 			
 			Assert.IsTrue(result);
 		}
@@ -162,7 +164,7 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			var expected = "http://sharpdevelop.net/packages";
-			var actual = fakePackageManagementService.PackageSourcePassedToUpdatePackage.Source;
+			var actual = fakeUpdatePackageAction.PackageSource.Source;
 			
 			Assert.AreEqual(expected, actual);
 		}
@@ -177,7 +179,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetVersionParameter(version);
 			RunCmdlet();
 			
-			var actualVersion = fakePackageManagementService.VersionPassedToUpdatePackage;
+			var actualVersion = fakeUpdatePackageAction.PackageVersion;
 			
 			Assert.AreEqual(version, actualVersion);
 		}
@@ -190,7 +192,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualVersion = fakePackageManagementService.VersionPassedToUpdatePackage;
+			var actualVersion = fakeUpdatePackageAction.PackageVersion;
 			
 			Assert.IsNull(actualVersion);
 		}
@@ -205,7 +207,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToUpdatePackage;
+			var actualProject = fakeUpdatePackageAction.Project;
 			var expectedProject = fakePackageManagementService.FakeProjectToReturnFromGetProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);
@@ -224,6 +226,20 @@ namespace PackageManagement.Cmdlets.Tests
 			var expected = "MyProject";
 			
 			Assert.AreEqual(expected, actual);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_PackageIsUpdated()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			var packageSource = AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			bool executed = fakeUpdatePackageAction.IsExecuted;
+			
+			Assert.IsTrue(executed);
 		}
 	}
 }

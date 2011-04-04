@@ -53,7 +53,20 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		{
 			PackageSource packageSource = GetActivePackageSource(Source);
 			MSBuildBasedProject project = GetActiveProject(ProjectName);
-			PackageManagementService.UpdatePackage(Id, Version, project, packageSource, !IgnoreDependencies.IsPresent);
+			
+			UpdatePackageAction action = CreateUpdatePackageAction(packageSource, project);
+			action.Execute();
+		}
+		
+		UpdatePackageAction CreateUpdatePackageAction(PackageSource packageSource, MSBuildBasedProject project)
+		{
+			var action = PackageManagementService.CreateUpdatePackageAction();
+			action.PackageSource = packageSource;
+			action.Project = project;
+			action.PackageId = Id;
+			action.PackageVersion = Version;
+			action.UpdateDependencies = !IgnoreDependencies.IsPresent;
+			return action;
 		}
 	}
 }

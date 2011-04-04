@@ -10,42 +10,26 @@ namespace ICSharpCode.PackageManagement
 {
 	public interface IPackageManagementService
 	{
-		event EventHandler PackageInstalled;
-		event EventHandler PackageUninstalled;
+		event EventHandler ParentPackageInstalled;
+		event EventHandler ParentPackageUninstalled;
 		
 		IPackageRepository CreateAggregatePackageRepository();
 		IPackageRepository CreatePackageRepository(PackageSource source);
 		ISharpDevelopProjectManager CreateProjectManager(IPackageRepository repository, MSBuildBasedProject project);
 		ISharpDevelopPackageManager CreatePackageManagerForActiveProject();
+		ISharpDevelopPackageManager CreatePackageManagerForActiveProject(IPackageRepository packageRepository);
+		ISharpDevelopPackageManager CreatePackageManager(PackageSource packageSource, MSBuildBasedProject project);
 		
 		IPackageRepository ActivePackageRepository { get; }
 		IProjectManager ActiveProjectManager { get; }
 		IPackageRepository RecentPackageRepository { get; }
 		
-		void InstallPackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations);
-		void InstallPackage(
-			string packageId,
-			Version version,
-			MSBuildBasedProject project,
-			PackageSource packageSource,
-			bool ignoreDependencies);
+		InstallPackageAction CreateInstallPackageAction();
+		UninstallPackageAction CreateUninstallPackageAction();
+		UpdatePackageAction CreateUpdatePackageAction();
 		
-		void UninstallPackage(IPackageRepository repository, IPackage package);
-		void UninstallPackage(
-			string packageId,
-			Version version,
-			MSBuildBasedProject project,
-			PackageSource packageSource,
-			bool forceRemove,
-			bool removeDependencies);
-		
-		void UpdatePackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations);
-		void UpdatePackage(
-			string packageId,
-			Version version,
-			MSBuildBasedProject project,
-			PackageSource packageSource,
-			bool updateDependencies);
+		void OnParentPackageInstalled(IPackage package);
+		void OnParentPackageUninstalled(IPackage package);
 		
 		MSBuildBasedProject GetProject(string name);
 

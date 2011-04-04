@@ -57,21 +57,21 @@ namespace ICSharpCode.PackageManagement
 			get { return options; }
 		}
 		
-		public event EventHandler PackageInstalled;
+		public event EventHandler ParentPackageInstalled;
 		
-		protected virtual void OnPackageInstalled()
+		protected virtual void OnParentPackageInstalled()
 		{
-			if (PackageInstalled != null) {
-				PackageInstalled(this, new EventArgs());
+			if (ParentPackageInstalled != null) {
+				ParentPackageInstalled(this, new EventArgs());
 			}
 		}
 		
-		public event EventHandler PackageUninstalled;
+		public event EventHandler ParentPackageUninstalled;
 		
-		protected virtual void OnPackageUninstalled()
+		protected virtual void OnParentPackageUninstalled()
 		{
-			if (PackageUninstalled != null) {
-				PackageUninstalled(this, new EventArgs());
+			if (ParentPackageUninstalled != null) {
+				ParentPackageUninstalled(this, new EventArgs());
 			}
 		}
 		
@@ -111,16 +111,16 @@ namespace ICSharpCode.PackageManagement
 		IProjectManager GetActiveProjectManager()
 		{
 			IPackageRepository repository = ActivePackageRepository;
-			ISharpDevelopPackageManager packageManager = CreatePackageManager(repository);
+			ISharpDevelopPackageManager packageManager = CreatePackageManagerForActiveProject(repository);
 			return packageManager.ProjectManager;
 		}
 		
 		public ISharpDevelopPackageManager CreatePackageManagerForActiveProject()
 		{
-			return CreatePackageManager(ActivePackageRepository);
+			return CreatePackageManagerForActiveProject(ActivePackageRepository);
 		}
 		
-		ISharpDevelopPackageManager CreatePackageManager(IPackageRepository packageRepository)
+		public ISharpDevelopPackageManager CreatePackageManagerForActiveProject(IPackageRepository packageRepository)
 		{
 			MSBuildBasedProject project = projectService.CurrentProject as MSBuildBasedProject;
 			return CreatePackageManager(packageRepository, project);
@@ -149,86 +149,20 @@ namespace ICSharpCode.PackageManagement
 			projectManager.Project.Logger = outputMessagesView;
 		}
 		
-		public void InstallPackage(
-			IPackageRepository packageRepository,
-			IPackage package,
-			IEnumerable<PackageOperation> operations)
+		public InstallPackageAction CreateInstallPackageAction()
 		{
-			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageRepository);
-			bool ignoreDependencies = false;
-			InstallPackage(packageManager, package, operations, ignoreDependencies);
+			return new InstallPackageAction(this);
 		}
 		
-		void InstallPackage(
-			IPackageRepository packageRepository,
-			IPackage package,
-			IEnumerable<PackageOperation> operations,
-			bool ignoreDependencies)
-		{
-			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageRepository);
-			InstallPackage(packageManager, package, operations, ignoreDependencies);
-		}
-		
-		void InstallPackage(
-			ISharpDevelopPackageManager packageManager,
-			IPackage package,
-			IEnumerable<PackageOperation> operations,
-			bool ignoreDependencies)
-		{
-			packageManager.InstallPackage(package, operations, ignoreDependencies);
-			projectService.RefreshProjectBrowser();
-			RecentPackageRepository.AddPackage(package);
-			OnPackageInstalled();
-		}
-		
-		public void InstallPackage(
-			string packageId,
-			Version version,
-			MSBuildBasedProject project,
-			PackageSource packageSource,
-			bool ignoreDependencies)
-		{
-			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageSource, project);
-			IPackage package = packageManager.SourceRepository.FindPackage(packageId, version);
-			InstallPackage(packageManager, package, ignoreDependencies);
-		}
-		
-		void InstallPackage(ISharpDevelopPackageManager packageManager, IPackage package, bool ignoreDependencies)
-		{
-			IEnumerable<PackageOperation> operations = packageManager.GetInstallPackageOperations(package, ignoreDependencies);
-			InstallPackage(packageManager, package, operations, ignoreDependencies);
-		}
-		
-		ISharpDevelopPackageManager CreatePackageManager(PackageSource packageSource, MSBuildBasedProject project)
+		public ISharpDevelopPackageManager CreatePackageManager(PackageSource packageSource, MSBuildBasedProject project)
 		{
 			IPackageRepository packageRepository = CreatePackageRepository(packageSource);
 			return CreatePackageManager(packageRepository, project);
 		}
 		
-		public void UninstallPackage(IPackageRepository repository, IPackage package)
+		public UninstallPackageAction CreateUninstallPackageAction()
 		{
-			ISharpDevelopPackageManager packageManager = CreatePackageManager(repository);
-			UninstallPackage(packageManager, package);
-		}
-		
-		void UninstallPackage(ISharpDevelopPackageManager packageManager, IPackage package)
-		{
-			packageManager.UninstallPackage(package);
-			projectService.RefreshProjectBrowser();
-			OnPackageUninstalled();
-		}
-		
-		public void UninstallPackage(
-			string packageId,
-			Version version,
-			MSBuildBasedProject project,
-			PackageSource packageSource,
-			bool forceRemove,
-			bool removeDependencies)
-		{
-			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageSource, project);
-			IPackage package = packageManager.SourceRepository.FindPackage(packageId);
-			UninstallPackage(packageManager, package);
+			return new UninstallPackageAction(this);
 		}
 		
 		public bool HasMultiplePackageSources {
@@ -285,43 +219,22 @@ namespace ICSharpCode.PackageManagement
 			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
 		}
 		
-		public void UpdatePackage(
-			IPackageRepository repository,
-			IPackage package,
-			IEnumerable<PackageOperation> operations)
+		public UpdatePackageAction CreateUpdatePackageAction()
 		{
-			ISharpDevelopPackageManager packageManager = CreatePackageManager(repository);
-			UpdatePackage(packageManager, package, operations, true);
+			return new UpdatePackageAction(this);
 		}
 		
-		public void UpdatePackage(
-			string packageId,
-			Version version,
-			MSBuildBasedProject project,
-			PackageSource packageSource,
-			bool updateDependencies)
+		public void OnParentPackageInstalled(IPackage package)
 		{
-			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageSource, project);
-			IPackage package = packageManager.SourceRepository.FindPackage(packageId, version);
-			UpdatePackage(packageManager, package, updateDependencies);
-		}
-		
-		void UpdatePackage(ISharpDevelopPackageManager packageManager, IPackage package, bool updateDependencies)
-		{
-			IEnumerable<PackageOperation> operations = packageManager.GetInstallPackageOperations(package, !updateDependencies);
-			UpdatePackage(packageManager, package, operations, updateDependencies);
-		}
-
-		void UpdatePackage(
-			ISharpDevelopPackageManager packageManager,
-			IPackage package,
-			IEnumerable<PackageOperation> operations,
-			bool updateDependencies)
-		{
-			packageManager.UpdatePackage(package, operations, updateDependencies);
 			projectService.RefreshProjectBrowser();
 			RecentPackageRepository.AddPackage(package);
-			OnPackageInstalled();
+			OnParentPackageInstalled();
+		}
+		
+		public void OnParentPackageUninstalled(IPackage package)
+		{
+			projectService.RefreshProjectBrowser();
+			OnParentPackageUninstalled();
 		}
 	}
 }

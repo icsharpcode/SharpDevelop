@@ -16,6 +16,7 @@ namespace PackageManagement.Cmdlets.Tests
 		TestableUninstallPackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
 		FakePackageManagementService fakePackageManagementService;
+		FakeUninstallPackageAction uninstallPackageAction;
 		
 		void CreateCmdletWithoutActiveProject()
 		{
@@ -23,6 +24,7 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
 			fakePackageManagementService = cmdlet.FakePackageManagementService;
+			uninstallPackageAction = fakePackageManagementService.ActionToReturnFromCreateUninstallPackageAction;
 		}
 		
 		void CreateCmdletWithActivePackageSourceAndProject()
@@ -92,7 +94,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualPackageId = fakePackageManagementService.PackageIdPassedToUninstallPackage;
+			var actualPackageId = uninstallPackageAction.PackageId;
 			
 			Assert.AreEqual("Test", actualPackageId);
 		}
@@ -106,7 +108,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToUninstallPackage;
+			var actualProject = uninstallPackageAction.Project;
 			
 			Assert.AreEqual(project, actualProject);
 		}
@@ -120,7 +122,7 @@ namespace PackageManagement.Cmdlets.Tests
 			EnableForceParameter();
 			RunCmdlet();
 			
-			bool result = fakePackageManagementService.ForceRemovePassedToUninstallPackage;
+			bool result = uninstallPackageAction.ForceRemove;
 			
 			Assert.IsTrue(result);
 		}
@@ -133,7 +135,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			bool result = fakePackageManagementService.ForceRemovePassedToUninstallPackage;
+			bool result = uninstallPackageAction.ForceRemove;
 			
 			Assert.IsFalse(result);
 		}
@@ -147,7 +149,7 @@ namespace PackageManagement.Cmdlets.Tests
 			EnableRemoveDependenciesParameter();
 			RunCmdlet();
 			
-			bool result = fakePackageManagementService.RemoveDependenciesPassedToUninstallPackage;
+			bool result = uninstallPackageAction.RemoveDependencies;
 			
 			Assert.IsTrue(result);
 		}
@@ -160,7 +162,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			bool result = fakePackageManagementService.RemoveDependenciesPassedToUninstallPackage;
+			bool result = uninstallPackageAction.RemoveDependencies;
 			
 			Assert.IsFalse(result);
 		}
@@ -175,7 +177,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetVersionParameter(version);
 			RunCmdlet();
 			
-			var actualVersion = fakePackageManagementService.VersionPassedToUninstallPackage;
+			var actualVersion = uninstallPackageAction.PackageVersion;
 			
 			Assert.AreEqual(version, actualVersion);
 		}
@@ -188,7 +190,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualVersion = fakePackageManagementService.VersionPassedToUninstallPackage;
+			var actualVersion = uninstallPackageAction.PackageVersion;
 			
 			Assert.IsNull(actualVersion);
 		}
@@ -203,7 +205,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToUninstallPackage;
+			var actualProject = uninstallPackageAction.Project;
 			var expectedProject = fakePackageManagementService.FakeProjectToReturnFromGetProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);
@@ -233,9 +235,21 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualPackageSource = fakePackageManagementService.PackageSourcePassedToUninstallPackage;
+			var actualPackageSource = uninstallPackageAction.PackageSource;
 			
 			Assert.AreEqual(packageSource, actualPackageSource);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_PackageIsUninstalled()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			var packageSource = AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			RunCmdlet();
+						
+			Assert.IsTrue(uninstallPackageAction.IsExecuted);
 		}
 	}
 }

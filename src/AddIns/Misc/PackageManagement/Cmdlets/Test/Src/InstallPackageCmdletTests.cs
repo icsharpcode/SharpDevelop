@@ -3,6 +3,7 @@
 
 using System;
 using System.Management.Automation;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
@@ -18,6 +19,7 @@ namespace PackageManagement.Cmdlets.Tests
 		TestableInstallPackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
 		FakePackageManagementService fakePackageManagementService;
+		FakeInstallPackageAction fakeInstallPackageTask;
 		
 		void CreateCmdletWithoutActiveProject()
 		{
@@ -25,6 +27,7 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
 			fakePackageManagementService = cmdlet.FakePackageManagementService;
+			fakeInstallPackageTask = fakePackageManagementService.ActionToReturnFromCreateInstallPackageAction;
 		}
 				
 		void CreateCmdletWithActivePackageSourceAndProject()
@@ -94,7 +97,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualPackageId = fakePackageManagementService.PackageIdPassedToInstallPackage;
+			var actualPackageId = fakeInstallPackageTask.PackageId;
 			
 			Assert.AreEqual("Test", actualPackageId);
 		}
@@ -108,7 +111,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualPackageSource = fakePackageManagementService.PackageSourcePassedToInstallPackage;
+			var actualPackageSource = fakeInstallPackageTask.PackageSource;
 			
 			Assert.AreEqual(packageSource, actualPackageSource);
 		}
@@ -122,7 +125,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToInstallPackage;
+			var actualProject = fakeInstallPackageTask.Project;
 			
 			Assert.AreEqual(project, actualProject);
 		}
@@ -136,7 +139,7 @@ namespace PackageManagement.Cmdlets.Tests
 			EnableIgnoreDependenciesParameter();
 			RunCmdlet();
 			
-			bool result = fakePackageManagementService.IgnoreDependenciesPassedToInstallPackage;
+			bool result = fakeInstallPackageTask.IgnoreDependencies;
 			
 			Assert.IsTrue(result);
 		}
@@ -149,7 +152,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			bool result = fakePackageManagementService.IgnoreDependenciesPassedToInstallPackage;
+			bool result = fakeInstallPackageTask.IgnoreDependencies;
 			
 			Assert.IsFalse(result);
 		}
@@ -164,7 +167,7 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			var expected = "http://sharpdevelop.net/packages";
-			var actual = fakePackageManagementService.PackageSourcePassedToInstallPackage.Source;
+			var actual = fakeInstallPackageTask.PackageSource.Source;
 			
 			Assert.AreEqual(expected, actual);
 		}
@@ -179,7 +182,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetVersionParameter(version);
 			RunCmdlet();
 			
-			var actualVersion = fakePackageManagementService.VersionPassedToInstallPackage;
+			var actualVersion = fakeInstallPackageTask.PackageVersion;
 			
 			Assert.AreEqual(version, actualVersion);
 		}
@@ -192,7 +195,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualVersion = fakePackageManagementService.VersionPassedToInstallPackage;
+			var actualVersion = fakeInstallPackageTask.PackageVersion;
 			
 			Assert.IsNull(actualVersion);
 		}
@@ -207,7 +210,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToInstallPackage;
+			var actualProject = fakeInstallPackageTask.Project;
 			var expectedProject = fakePackageManagementService.FakeProjectToReturnFromGetProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);
@@ -226,6 +229,20 @@ namespace PackageManagement.Cmdlets.Tests
 			var expected = "MyProject";
 			
 			Assert.AreEqual(expected, actual);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_PackageIsInstalled()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			var packageSource = AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			bool result = fakeInstallPackageTask.IsExecuteCalled;
+			
+			Assert.IsTrue(result);
 		}
 	}
 }

@@ -12,11 +12,9 @@ namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakePackageManagementService : IPackageManagementService
 	{
-		public event EventHandler PackageInstalled;
+		public event EventHandler ParentPackageInstalled;
 		
 		PackageManagementOptions options = new PackageManagementOptions(new Properties());
-		
-		public List<PackageOperation> PackageOperationsPassedToInstallPackage = new List<PackageOperation>();
 		
 		public FakePackageManagementProjectService FakeProjectService = new FakePackageManagementProjectService();
 		
@@ -24,28 +22,21 @@ namespace ICSharpCode.PackageManagement.Design
 			get { return FakeProjectService; }
 		}
 		
-		protected virtual void OnPackageInstalled()
+		protected virtual void OnParentPackageInstalled()
 		{
-			if (PackageInstalled != null) {
-				PackageInstalled(this, new EventArgs());
+			if (ParentPackageInstalled != null) {
+				ParentPackageInstalled(this, new EventArgs());
 			}
 		}
 		
-		public event EventHandler PackageUninstalled;
+		public event EventHandler ParentPackageUninstalled;
 		
-		protected virtual void OnPackageUninstalled()
+		protected virtual void OnParentPackageUninstalled()
 		{
-			if (PackageUninstalled != null) {
-				PackageUninstalled(this, new EventArgs());
+			if (ParentPackageUninstalled != null) {
+				ParentPackageUninstalled(this, new EventArgs());
 			}
 		}
-		
-		public IPackageRepository RepositoryPassedToInstallPackage;
-		public IPackage PackagePassedToInstallPackage;
-		public bool IsInstallPackageCalled;
-		
-		public IPackageRepository RepositoryPassedToUninstallPackage;
-		public IPackage PackagePassedToUninstallPackage;
 		
 		public FakeProjectManager FakeActiveProjectManager { get; set; }
 		
@@ -67,28 +58,30 @@ namespace ICSharpCode.PackageManagement.Design
 			get { return FakeActiveProjectManager; }
 		}
 		
-		public virtual void InstallPackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations)
+		public FakeInstallPackageAction ActionToReturnFromCreateInstallPackageAction =
+			new FakeInstallPackageAction();
+		
+		public virtual InstallPackageAction CreateInstallPackageAction()
 		{
-			IsInstallPackageCalled = true;
-			RepositoryPassedToInstallPackage = repository;
-			PackagePassedToInstallPackage = package;
-			PackageOperationsPassedToInstallPackage.AddRange(operations);
+			return ActionToReturnFromCreateInstallPackageAction;
 		}
 		
-		public virtual void UninstallPackage(IPackageRepository repository, IPackage package)
+		public FakeUninstallPackageAction ActionToReturnFromCreateUninstallPackageAction =
+			new FakeUninstallPackageAction();		
+		
+		public virtual UninstallPackageAction CreateUninstallPackageAction()
 		{
-			RepositoryPassedToUninstallPackage = repository;
-			PackagePassedToUninstallPackage = package;
+			return ActionToReturnFromCreateUninstallPackageAction;
 		}
 		
-		public void FirePackageInstalled()
+		public void FireParentPackageInstalled()
 		{
-			OnPackageInstalled();
+			OnParentPackageInstalled();
 		}
 		
-		public void FirePackageUninstalled()
+		public void FireParentPackageUninstalled()
 		{
-			OnPackageUninstalled();
+			OnParentPackageUninstalled();
 		}
 		
 		public void AddPackageToProjectLocalRepository(FakePackage package)
@@ -174,6 +167,19 @@ namespace ICSharpCode.PackageManagement.Design
 			return FakePackageManagerToReturnFromCreatePackageManagerForActiveProject;
 		}
 		
+		public ISharpDevelopPackageManager CreatePackageManagerForActiveProject(IPackageRepository packageRepository)
+		{
+			return FakePackageManagerToReturnFromCreatePackageManagerForActiveProject;
+		}
+		
+		public FakePackageManager FakePackageManagerToReturnFromCreatePackageManager =
+			new FakePackageManager();
+		
+		public ISharpDevelopPackageManager CreatePackageManager(PackageSource packageSource, MSBuildBasedProject project)
+		{
+			return FakePackageManagerToReturnFromCreatePackageManager;
+		}
+		
 		public FakePackage AddFakePackageWithVersionToAggregrateRepository(string version)
 		{
 			return AddFakePackageWithVersionToAggregrateRepository("Test", version);
@@ -186,26 +192,6 @@ namespace ICSharpCode.PackageManagement.Design
 			return package;
 		}
 		
-		public string PackageIdPassedToInstallPackage;
-		public PackageSource PackageSourcePassedToInstallPackage;
-		public MSBuildBasedProject ProjectPassedToInstallPackage;
-		public bool IgnoreDependenciesPassedToInstallPackage;
-		public Version VersionPassedToInstallPackage;
-		
-		public void InstallPackage(
-			string packageId,
-			Version version,
-			MSBuildBasedProject project,
-			PackageSource packageSource,
-			bool ignoreDependencies)
-		{
-			PackageIdPassedToInstallPackage = packageId;
-			VersionPassedToInstallPackage = version;
-			ProjectPassedToInstallPackage = project;
-			PackageSourcePassedToInstallPackage = packageSource;
-			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
-		}
-		
 		public MSBuildBasedProject FakeProjectToReturnFromGetProject;
 		public string NamePassedToGetProject;
 		
@@ -215,58 +201,20 @@ namespace ICSharpCode.PackageManagement.Design
 			return FakeProjectToReturnFromGetProject;
 		}
 		
-		public string PackageIdPassedToUninstallPackage;
-		public MSBuildBasedProject ProjectPassedToUninstallPackage;
-		public Version VersionPassedToUninstallPackage;
-		public PackageSource PackageSourcePassedToUninstallPackage;
-		public bool ForceRemovePassedToUninstallPackage;
-		public bool RemoveDependenciesPassedToUninstallPackage;
+		public FakeUpdatePackageAction ActionToReturnFromCreateUpdatePackageAction =
+			new FakeUpdatePackageAction();
 		
-		public void UninstallPackage(
-			string packageId,
-			Version version,
-			MSBuildBasedProject project,
-			PackageSource packageSource,
-			bool forceRemove,
-			bool removeDependencies)
+		public UpdatePackageAction CreateUpdatePackageAction()
 		{
-			PackageIdPassedToUninstallPackage = packageId;
-			VersionPassedToUninstallPackage = version;
-			ProjectPassedToUninstallPackage = project;
-			PackageSourcePassedToUninstallPackage = packageSource;
-			ForceRemovePassedToUninstallPackage = forceRemove;
-			RemoveDependenciesPassedToUninstallPackage = removeDependencies;
+			return ActionToReturnFromCreateUpdatePackageAction;
+		}
+				
+		public void OnParentPackageInstalled(IPackage package)
+		{
 		}
 		
-		public IPackageRepository RepositoryPassedToUpdatePackage;
-		public IPackage PackagePassedToUpdatePackage;
-		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
-		
-		public void UpdatePackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations)
+		public void OnParentPackageUninstalled(IPackage package)
 		{
-			RepositoryPassedToUpdatePackage = repository;
-			PackagePassedToUpdatePackage = package;
-			PackageOperationsPassedToUpdatePackage = operations;
-		}
-		
-		public string PackageIdPassedToUpdatePackage;
-		public Version VersionPassedToUpdatePackage;
-		public MSBuildBasedProject ProjectPassedToUpdatePackage;
-		public PackageSource PackageSourcePassedToUpdatePackage;
-		public bool UpdateDependenciesPassedToUpdatePackage;
-		
-		public void UpdatePackage(
-			string packageId,
-			Version version,
-			MSBuildBasedProject project,
-			PackageSource packageSource,
-			bool updateDependencies)
-		{
-			PackageIdPassedToUpdatePackage = packageId;
-			VersionPassedToUpdatePackage = version;
-			ProjectPassedToUpdatePackage = project;
-			PackageSourcePassedToUpdatePackage = packageSource;
-			UpdateDependenciesPassedToUpdatePackage = updateDependencies;
 		}
 	}
 }

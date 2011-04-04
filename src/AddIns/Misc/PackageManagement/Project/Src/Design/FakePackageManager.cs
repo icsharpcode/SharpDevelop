@@ -56,9 +56,12 @@ namespace ICSharpCode.PackageManagement.Design
 		public ISharpDevelopProjectManager ProjectManager { get; set; }
 		public ILogger LoggerSetBeforeInstallPackageCalled;
 		
+		public FakePackageRepository FakeSourceRepository = new FakePackageRepository();
+		
 		public FakePackageManager()
 		{
 			ProjectManager = FakeProjectManager;
+			SourceRepository = FakeSourceRepository;
 		}
 		
 		public void InstallPackage(IPackage package, bool ignoreDependencies)
@@ -80,9 +83,15 @@ namespace ICSharpCode.PackageManagement.Design
 			throw new NotImplementedException();
 		}
 		
+		public bool ForceRemovePassedToUninstallPackage;
+		public bool RemoveDependenciesPassedToUninstallPackage;
+		
 		public void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
 		{
-			throw new NotImplementedException();
+			PackagePassedToUninstallPackage = package;
+			ForceRemovePassedToUninstallPackage = forceRemove;
+			RemoveDependenciesPassedToUninstallPackage = removeDependencies;
+			IsRefreshProjectBrowserCalledWhenUninstallPackageCalled = FakeProjectService.IsRefreshProjectBrowserCalled;
 		}
 		
 		public void UninstallPackage(string packageId, Version version, bool forceRemove, bool removeDependencies)

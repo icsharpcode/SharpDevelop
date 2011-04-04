@@ -27,7 +27,11 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void InstallTestPackage()
 		{
-			packageManagementService.InstallPackage(PackageRepository, TestPackage, PackageOperations);
+			var task = packageManagementService.CreateInstallPackageAction();
+			task.Package = TestPackage;
+			task.PackageRepository = PackageRepository;
+			task.Operations = PackageOperations;
+			task.Execute();
 		}
 		
 		public FakePackage AddPackageInstallOperation()
@@ -45,12 +49,14 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void InstallPackageById(string packageId)
 		{
-			packageManagementService.InstallPackage(
-				packageId, 
-				Version,
-				TestableProject,
-				PackageSource,
-				IgnoreDependencies);
+			var task = packageManagementService.CreateInstallPackageAction();
+			task.PackageId = packageId;
+			task.PackageVersion = Version;
+			task.Project = TestableProject;
+			task.PackageSource = PackageSource;
+			task.IgnoreDependencies = IgnoreDependencies;
+			
+			task.Execute();
 		}
 	}
 }

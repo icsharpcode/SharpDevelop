@@ -281,7 +281,11 @@ namespace ICSharpCode.PackageManagement
 			IPackage package,
 			IEnumerable<PackageOperation> packageOperations)
 		{
-			packageManagementService.InstallPackage(sourcePackageRepository, package, packageOperations);
+			InstallPackageAction task = packageManagementService.CreateInstallPackageAction();
+			task.PackageRepository = sourcePackageRepository;
+			task.Package = package;
+			task.Operations = packageOperations;
+			task.Execute();
 		}
 		
 		void ReportError(Exception ex)
@@ -312,7 +316,10 @@ namespace ICSharpCode.PackageManagement
 		void TryUninstallingPackage()
 		{
 			try {
-				packageManagementService.UninstallPackage(sourcePackageRepository, package);
+				var action = packageManagementService.CreateUninstallPackageAction();
+				action.PackageRepository = sourcePackageRepository;
+				action.Package = package;
+				action.Execute();
 			} catch (Exception ex) {
 				ReportError(ex);
 				Log(ex.ToString());

@@ -55,7 +55,7 @@ namespace PackageManagement.Tests
 			repository.FakePackages.Add(package);
 			
 			ClearReadPackagesTasks();
-			packageManagementService.FirePackageInstalled();
+			packageManagementService.FireParentPackageInstalled();
 			CompleteReadPackagesTask();
 			
 			var expectedPackages = new FakePackage[] {
@@ -76,7 +76,7 @@ namespace PackageManagement.Tests
 			repository.FakePackages.Add(package);
 			
 			ClearReadPackagesTasks();
-			packageManagementService.FirePackageUninstalled();
+			packageManagementService.FireParentPackageUninstalled();
 			CompleteReadPackagesTask();
 			
 			var expectedPackages = new FakePackage[] {

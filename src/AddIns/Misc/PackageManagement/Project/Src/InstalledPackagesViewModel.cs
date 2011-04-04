@@ -20,8 +20,8 @@ namespace ICSharpCode.PackageManagement
 			ITaskFactory taskFactory)
 			: base(packageManagementService, messageReporter, taskFactory)
 		{
-			packageManagementService.PackageInstalled += PackageInstalled;
-			packageManagementService.PackageUninstalled += PackageUninstalled;
+			packageManagementService.ParentPackageInstalled += PackageInstalled;
+			packageManagementService.ParentPackageUninstalled += PackageUninstalled;
 			
 			GetActiveProjectManager();
 		}
