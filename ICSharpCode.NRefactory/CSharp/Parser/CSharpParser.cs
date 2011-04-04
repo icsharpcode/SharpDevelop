@@ -85,9 +85,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (typeName is Mono.CSharp.QualifiedAliasMember) {
 					var qam = (Mono.CSharp.QualifiedAliasMember)typeName;
-					// TODO: Overwork the return type model - atm we don't have a good representation
-					// for qualified alias members.
-					return new SimpleType (qam.Name, Convert (qam.Location));
+					var memberType = new MemberType ();
+					if (qam.LeftExpression == null) {
+						memberType.Target = new SimpleType("global");
+					} else { 
+						memberType.Target = ConvertToType (qam.LeftExpression);
+					}
+					memberType.IsDoubleColon = true;
+					memberType.MemberName = qam.Name;
+					return memberType;
 				}
 				
 				if (typeName is MemberAccess) {
@@ -2607,8 +2613,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public AstType ParseTypeReference(TextReader reader)
 		{
-			// TODO: add support for parsing type references
-			throw new NotImplementedException();
+			string code = reader.ReadToEnd() + " a;";
+			var members = ParseTypeMembers(new StringReader(code));
+			var field = members.FirstOrDefault() as FieldDeclaration;
+			Console.WriteLine ("field : " +field.ReturnType);
+			if (field != null)
+				return field.ReturnType;
+			return AstType.Null;
 		}
 		
 		public AstNode ParseExpression(TextReader reader)
