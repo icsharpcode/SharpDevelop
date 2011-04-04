@@ -1044,8 +1044,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					return;
 				if (init is StatementList) {
 					foreach (var stmt in ((StatementList)init).Statements) {
+						Console.WriteLine ("stmt:" + stmt);
 						forStatement.AddChild ((Statement)stmt.Accept (this), role);
 					}
+				} else if (init is Mono.CSharp.EmptyStatement) {
+					
 				} else {
 					forStatement.AddChild ((Statement)init.Accept (this), role);
 				}
@@ -1462,7 +1465,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ForeachStatement.Roles.LPar);
 				
-				if (foreachStatement.TypeExpr == null)
+				if (foreachStatement.TypeExpr != null)
 					result.AddChild (ConvertToType (foreachStatement.TypeExpr), ForeachStatement.Roles.Type);
 				if (foreachStatement.Variable != null)
 					result.AddChild (new Identifier (foreachStatement.Variable.Name, Convert (foreachStatement.Variable.Location)), ForeachStatement.Roles.Identifier);
@@ -2636,7 +2639,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		public IEnumerable<AttributedNode> ParseTypeMembers(TextReader reader)
 		{
 			string code = "unsafe class MyClass { " + reader.ReadToEnd() + "}";
-			Console.WriteLine (code);
 			var cu = Parse(new StringReader(code));
 			var td = cu.Children.FirstOrDefault() as TypeDeclaration;
 			if (td != null)

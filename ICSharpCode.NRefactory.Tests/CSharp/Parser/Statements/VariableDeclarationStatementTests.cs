@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 {
-	[TestFixture, Ignore]
+	[TestFixture]
 	public class VariableDeclarationStatementTests
 	{
 		[Test]
@@ -15,10 +15,10 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		{
 			VariableDeclarationStatement lvd = ParseUtilCSharp.ParseStatement<VariableDeclarationStatement>("int a = 5;");
 			Assert.AreEqual(1, lvd.Variables.Count());
-			/*Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
-			TypeReference type = lvd.GetTypeForVariable(0);
-			Assert.AreEqual("System.Int32", type.Type);
-			Assert.AreEqual(5, ((PrimitiveExpression)lvd.Variables[0].Initializer).Value);*/ throw new NotImplementedException();
+			Assert.AreEqual("a", lvd.Variables.First ().Name);
+			var type = lvd.Type;
+			Assert.AreEqual("int", type.ToString ());
+			Assert.AreEqual(5, ((PrimitiveExpression)lvd.Variables.First ().Initializer).Value);
 		}
 		
 		/* TODO port unit tests
