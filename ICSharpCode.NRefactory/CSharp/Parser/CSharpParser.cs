@@ -213,11 +213,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					t.IsDoubleColon = memberName.IsDoubleColon;
 					t.AddChild (ConvertImport (memberName.Left), MemberType.TargetRole);
 					t.AddChild (new Identifier (memberName.Name, Convert(memberName.Location)), MemberType.Roles.Identifier);
+					AddTypeArguments (t, (List<Location>)null, memberName.TypeArguments);
 					return t;
 				} else {
 					SimpleType t = new SimpleType();
 					t.AddChild (new Identifier (memberName.Name, Convert(memberName.Location)), SimpleType.Roles.Identifier);
-					// TODO type arguments
+					AddTypeArguments (t, (List<Location>)null, memberName.TypeArguments);
 					return t;
 				}
 			}
@@ -2600,8 +2601,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public CompilationUnit Parse (Stream stream)
 		{
 			lock (CompilerCallableEntryPoint.parseLock) {
-				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, "parsed.cs", Console.Out);
-				
+				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, "parsed.cs", errorReportPrinter);
 				if (top == null)
 					return null;
 				CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
