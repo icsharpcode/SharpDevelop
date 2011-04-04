@@ -161,8 +161,13 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			}
 			
 			// The reportFooter is set On Top of PageFooter
+//			this.reportFooterRectangle =  new Rectangle (this.printableArea.Left,
+//			                                             this.PageFooterRectangle.Top - section.Size.Height ,
+//			                                             this.marginBounds.Width,
+//			                                             section.Size.Height);
+			
 			this.reportFooterRectangle =  new Rectangle (this.printableArea.Left,
-			                                             this.PageFooterRectangle.Top - section.Size.Height - 3 * GlobalValues.GapBetweenContainer,
+			                                             this.PageFooterRectangle.Top - section.Size.Height - GlobalValues.GapBetweenContainer,
 			                                             this.marginBounds.Width,
 			                                             section.Size.Height);
 			section.SectionOffset = this.reportFooterRectangle.Top;
@@ -235,9 +240,9 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		{
 			get {
 //				return new Point(this.pageHeaderRectangle.Left,
-//				                 this.pageHeaderRectangle.Bottom + 3 * GlobalValues.GapBetweenContainer);
+//				                 this.pageHeaderRectangle.Bottom + 3 * );
 				return new Point(this.pageHeaderRectangle.Left,
-				                 this.pageHeaderRectangle.Bottom );
+				                 this.pageHeaderRectangle.Bottom + GlobalValues.GapBetweenContainer );
 			}
 		}
 		
@@ -246,7 +251,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		public Point DetailEnds
 		{
 			get {
-				return new Point(this.pageFooterRectangle.Left,this.pageFooterRectangle.Top - 3 * GlobalValues.GapBetweenContainer);
+//				return new Point(this.pageFooterRectangle.Left,this.pageFooterRectangle.Top - 3 * GlobalValues.GapBetweenContainer);
+				return new Point(this.pageFooterRectangle.Left,this.pageFooterRectangle.Top - GlobalValues.GapBetweenContainer);
 			}
 		}
 		

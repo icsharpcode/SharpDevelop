@@ -7,7 +7,6 @@ using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
-using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Exporter
 {
