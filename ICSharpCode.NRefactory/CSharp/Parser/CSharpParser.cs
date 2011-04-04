@@ -2010,8 +2010,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				var result = new ArrayCreateExpression ();
 				
 				var location = LocationsBag.GetLocations (arrayCreationExpression);
-				result.AddChild (new CSharpTokenNode (Convert (arrayCreationExpression.Location), "new".Length), ArrayCreateExpression.Roles.Keyword);
-				
 				if (arrayCreationExpression.NewType != null)
 					result.AddChild (ConvertToType (arrayCreationExpression.NewType), ArrayCreateExpression.Roles.Type);
 				if (location != null)
@@ -2024,24 +2022,36 @@ namespace ICSharpCode.NRefactory.CSharp
 							result.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - i]), 1), ArrayCreateExpression.Roles.Comma);
 					}
 				}
+				var next = arrayCreationExpression.Rank.Next;
+				while (next != null) {
+					ArraySpecifier spec = new ArraySpecifier (next.Dimension);
+					var loc = LocationsBag.GetLocations (next);
+					spec.AddChild (new CSharpTokenNode (Convert (next.Location), 1), ArraySpecifier.Roles.LBracket);
+					if (loc != null)
+						result.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), ArraySpecifier.Roles.RBracket);
+					result.AddChild (spec, ArrayCreateExpression.AdditionalArraySpecifierRole);
+					next = next.Next;
+				}
+				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ArrayCreateExpression.Roles.RBracket);
 				
 				if (arrayCreationExpression.Initializers != null && arrayCreationExpression.Initializers.Count != 0) {
-					//throw new NotImplementedException();
-					/* TODO: use ArrayInitializerExpression
 					var initLocation = LocationsBag.GetLocations (arrayCreationExpression.Initializers);
-					result.AddChild (new CSharpTokenNode (Convert (arrayCreationExpression.Initializers.Location), 1), ArrayCreateExpression.Roles.LBrace);
+					ArrayInitializerExpression initializer = new ArrayInitializerExpression();
+					
+					initializer.AddChild (new CSharpTokenNode (Convert (arrayCreationExpression.Initializers.Location), 1), ArrayCreateExpression.Roles.LBrace);
 					var commaLocations = LocationsBag.GetLocations (arrayCreationExpression.Initializers.Elements);
 					for (int i = 0; i < arrayCreationExpression.Initializers.Count; i++) {
-						result.AddChild ((AstNode)arrayCreationExpression.Initializers[i].Accept (this), ObjectCreateExpression.Roles.Variable);
+						initializer.AddChild ((Expression)arrayCreationExpression.Initializers[i].Accept (this), ArrayInitializerExpression.Roles.Expression);
 						if (commaLocations != null && i > 0) {
-							result.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - i]), 1), IndexerExpression.Roles.Comma);
+							initializer.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - i]), 1), IndexerExpression.Roles.Comma);
 						}
 					}
 					
 					if (initLocation != null)
-						result.AddChild (new CSharpTokenNode (Convert (initLocation[initLocation.Count - 1]), 1), ArrayCreateExpression.Roles.RBrace); */
+						initializer.AddChild (new CSharpTokenNode (Convert (initLocation[initLocation.Count - 1]), 1), ArrayCreateExpression.Roles.RBrace);
+					result.AddChild (initializer, ArrayCreateExpression.InitializerRole);
 				}
 				
 				return result;
@@ -2171,7 +2181,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (simpleAssign.Target != null)
 					result.AddChild ((Expression)simpleAssign.Target.Accept (this), AssignmentExpression.LeftRole);
 				result.AddChild (new CSharpTokenNode (Convert (simpleAssign.Location), 1), AssignmentExpression.OperatorRole);
-				
 				if (simpleAssign.Source != null) {
 					result.AddChild ((Expression)simpleAssign.Source.Accept (this), AssignmentExpression.RightRole);
 				}

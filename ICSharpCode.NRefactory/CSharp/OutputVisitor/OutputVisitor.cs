@@ -501,7 +501,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				style = BraceStyle.EndOfLine;
 			OpenBrace(style);
 			bool isFirst = true;
-			foreach (AstNode node in arrayInitializerExpression.Children) {
+			foreach (AstNode node in arrayInitializerExpression.Elements) {
 				if (isFirst) {
 					isFirst = false;
 				} else {
