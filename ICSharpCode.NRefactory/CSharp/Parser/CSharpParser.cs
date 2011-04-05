@@ -142,7 +142,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						result.PointerRank++;
 					} else {
 						var location = LocationsBag.GetLocations (cc.Spec);
-						var spec = new ArraySpecifier () { Dimensions = cc.Spec.Dimension - 1 };
+						var spec = new ArraySpecifier () { Dimensions = cc.Spec.Dimension };
 						spec.AddChild (new CSharpTokenNode (Convert (cc.Spec.Location), 1), FieldDeclaration.Roles.LBracket);
 						if (location != null)
 							spec.AddChild (new CSharpTokenNode (Convert (location [0]), 1), FieldDeclaration.Roles.RBracket);
