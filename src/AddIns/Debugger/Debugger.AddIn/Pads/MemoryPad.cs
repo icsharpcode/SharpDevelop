@@ -22,6 +22,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		ConsoleControl console;
 		int columnsNumber = 16;
 		byte displayByteSize = 1;
+		byte[] memory;
+		Process debuggedProcess;
+		List<Tuple<long, long>> memoryAddresses = new List<Tuple<long, long>>();
+		Dictionary<long, int> addressesMapping = new Dictionary<long, int>();
 		
 		/// <summary>
 		/// Gets or sets the number of columns in the display
@@ -55,10 +59,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		Process debuggedProcess;
-		List<Tuple<long, long>> memoryAddresses = new List<Tuple<long, long>>();
-		Dictionary<long, int> addressesMapping = new Dictionary<long, int>();
-		
 		public MemoryPad()
 		{
 			this.console = new ConsoleControl();
@@ -74,6 +74,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			memoryAddresses.Clear();
 			addressesMapping.Clear();
+			memory = null;
 		}
 		
 		protected override ToolBar BuildToolBar()
@@ -89,12 +90,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			debuggedProcess = process;
 			memoryAddresses = debuggedProcess.GetVirtualMemoryAddresses();
 			currentAddressIndex = 0;
-		}
-		
-		public override void RefreshPad()
-		{
-			Refresh();
-			base.RefreshPad();
 		}
 		
 		public void JumpToAddress(string address)
@@ -173,11 +168,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return false;
 			}
 
-			console.Append(DoWork());
+			RetrieveMemory();
 			return true;
 		}
 		
-		string DoWork()
+		void RetrieveMemory()
 		{
 			// refresh data
 			addressesMapping.Clear();
@@ -187,38 +182,54 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			long address = item.Item1;
 			long size = item.Item2;
 			
-			byte[] memory = debuggedProcess.ReadProcessMemory(address, size);
+			memory = debuggedProcess.ReadProcessMemory(address, size);
 			if (memory == null) {
-				return string.Format(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.UnableToReadFormat"), address.ToString("X8"), size);
+				console.Append(string.Format(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.UnableToReadFormat"), address.ToString("X8"), size));
+				return;
 			}
+			
+			ChangeByteDisplay();
+		}
+
+		public void ChangeByteDisplay()
+		{
+			if (memory == null || memory.Length == 0)
+				return;
+			
+			if (console == null)
+				return;
+			
+			console.Clear();
+			addressesMapping.Clear();
+			var item = memoryAddresses[currentAddressIndex];
+			long address = item.Item1;
 			
 			int totalBytesPerRow = columnsNumber * displayByteSize;
 			int numberOfLines = memory.Length / totalBytesPerRow;
 			int remainingMemory = memory.Length % totalBytesPerRow;
+			int currentLine = 2;// line in the console
+			int index = 0;// index in memory arrray of current line
 			
 			StringBuilder sb = new StringBuilder();
-			sb.Append(string.Format(
-				ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.ReadingFromFormat"),
-				address.ToString("X8"), (address + memory.Length).ToString("X8"), memory.Length));
+			sb.Append(string.Format(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.ReadingFromFormat"), address.ToString("X8"), (address + memory.Length).ToString("X8"), memory.Length));
 			sb.Append(Environment.NewLine);
-			
-			int currentLine = 2; // line in the console			
-			int index = 0; // index in memory arrray of current line
 			
 			while (index < numberOfLines) {
 				addressesMapping.Add(address, currentLine);
 				// write address
-				sb.Append(address.ToString("X8")); address += (long)totalBytesPerRow;
+				sb.Append(address.ToString("X8"));
+				address += (long)totalBytesPerRow;
 				sb.Append(" ");
 				
-				int start = index * totalBytesPerRow;
 				// write bytes
+				int start = index * totalBytesPerRow;
 				for (int i = 0; i < columnsNumber; ++i) {
 					for (int j = 0; j < displayByteSize; ++j) {
 						sb.Append(memory[start++].ToString("X2"));
 					}
 					sb.Append(" ");
 				}
+				
 				// write chars
 				start = index * totalBytesPerRow;
 				StringBuilder sb1 = new StringBuilder();
@@ -226,20 +237,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					sb1.Append(((char)memory[start++]).ToString());
 				}
 				string s = sb1.ToString();
-				s = Regex.Replace(s, @"\r\n", string.Empty);
-				s = Regex.Replace(s, @"\n", string.Empty);
-				s = Regex.Replace(s, @"\r", string.Empty);
+				s = Regex.Replace(s, "\\r\\n", string.Empty);
+				s = Regex.Replace(s, "\\n", string.Empty);
+				s = Regex.Replace(s, "\\r", string.Empty);
 				sb.Append(s);
 				sb.Append(Environment.NewLine);
-				
 				currentLine++;
 				index++;
 			}
 			
+			// write the rest of memory
 			if (remainingMemory != 0) {
-				// write the rest of memory
 				addressesMapping.Add(address, currentLine);
-				
 				// write address
 				sb.Append(address.ToString("X8"));
 				sb.Append(" ");
@@ -260,13 +269,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					sb1.Append(((char)memory[start++]).ToString());
 				}
 				string s = sb1.ToString();
-				s = Regex.Replace(s, @"\r\n", string.Empty);
-				s = Regex.Replace(s, @"\n", string.Empty);
-				s = Regex.Replace(s, @"\r", string.Empty);
+				s = Regex.Replace(s, "\\r\\n", string.Empty);
+				s = Regex.Replace(s, "\\n", string.Empty);
+				s = Regex.Replace(s, "\\r", string.Empty);
 				sb.Append(s);
 			}
 			
-			return sb.ToString();
+			console.Append(sb.ToString());
 		}
 		
 		public void MoveToPreviousAddress()
