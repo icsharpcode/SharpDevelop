@@ -344,6 +344,11 @@ namespace Mono.CSharp
 			return null;
 		}
 
+		public virtual object Visit (QualifiedAliasMember qualifiedAliasMember)
+		{
+			return null;
+		}
+
 		public virtual object Visit (LocalVariableReference localVariableReference)
 		{
 			return null;

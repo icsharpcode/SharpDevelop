@@ -7522,7 +7522,7 @@ namespace Mono.CSharp
 	/// </summary>
 	public class QualifiedAliasMember : MemberAccess
 	{
-		readonly string alias;
+		public readonly string alias;
 		public static readonly string GlobalAlias = "global";
 
 		public QualifiedAliasMember (string alias, string identifier, Location l)
@@ -7602,6 +7602,11 @@ namespace Mono.CSharp
 		protected override void CloneTo (CloneContext clonectx, Expression t)
 		{
 			// Nothing 
+		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
 		}
 	}
 

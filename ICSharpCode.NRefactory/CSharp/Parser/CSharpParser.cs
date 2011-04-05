@@ -1698,7 +1698,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (MemberAccess memberAccess)
 			{
 				Expression result;
-				
+				Console.WriteLine (memberAccess.LeftExpression  + "/" + memberAccess.Name);
 				if (memberAccess.LeftExpression is Indirection) {
 					var ind = memberAccess.LeftExpression as Indirection;
 					result = new PointerReferenceExpression ();
@@ -1723,6 +1723,15 @@ namespace ICSharpCode.NRefactory.CSharp
 						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MemberReferenceExpression.Roles.RChevron);
 				}
 				return result;
+			}
+			
+			public override object Visit (QualifiedAliasMember qualifiedAliasMember)
+			{
+				var result = new MemberType ();
+				result.Target = new SimpleType (qualifiedAliasMember.alias);
+				result.IsDoubleColon = true;
+				result.AddChild (new Identifier (qualifiedAliasMember.Name, Convert (qualifiedAliasMember.Location)), MemberReferenceExpression.Roles.Identifier);
+				return  new TypeReferenceExpression () { Type = result };
 			}
 			
 			public override object Visit (Constant constant)
