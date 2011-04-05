@@ -119,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			if (this.pad != null && this.comboBox != null) {
 				pad.DisplayByteSize = Convert.ToByte(this.comboBox.SelectedValue);
-				pad.ChangeByteDisplay();
+				pad.DisplayMemory();
 			}
 			base.Run();
 		}

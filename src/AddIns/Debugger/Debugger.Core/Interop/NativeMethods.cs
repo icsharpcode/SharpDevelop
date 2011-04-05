@@ -169,9 +169,9 @@ namespace Debugger.Interop
 		public static byte[] ReadProcessMemory(this Process process, long startAddress, long size)
 		{
 			IntPtr openedProcess = IntPtr.Zero;
-			byte[] temp = new byte[size];
-			
+			byte[] temp = null;
 			try {
+				temp = new byte[size];
 				openedProcess = OpenProcess(ProcessAccessFlags.All, false, (int)process.Id);
 
 				int outSize;

@@ -188,10 +188,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			}
 			
-			ChangeByteDisplay();
+			DisplayMemory();
 		}
 
-		public void ChangeByteDisplay()
+		public void DisplayMemory()
 		{
 			if (memory == null || memory.Length == 0)
 				return;
