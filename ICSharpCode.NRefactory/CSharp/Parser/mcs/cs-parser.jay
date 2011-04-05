@@ -653,6 +653,7 @@ attribute_sections
 	  {
 		var sect = (List<Attribute>) $1;
 		$$ = new Attributes (sect);
+		lbag.AddLocation ($$, savedOpenLocation, savedCloseLocation);
 	  }
 	| attribute_sections attribute_section
 	  {
@@ -663,6 +664,7 @@ attribute_sections
 		else
 			attrs.AddAttributes (sect);
 		$$ = attrs;
+		lbag.AddLocation ($$, savedOpenLocation, savedCloseLocation);
 	  }
 	;
 	
@@ -670,6 +672,7 @@ attribute_section
 	: OPEN_BRACKET
 	  {
 		lexer.parsing_attribute_section = true;
+		savedOpenLocation = GetLocation ($1);
 	  }
 	  attribute_section_cont
 	  {
@@ -696,10 +699,12 @@ attribute_section_cont
 	  
 		current_attr_target = null;
 		lexer.parsing_attribute_section = false;
+		savedCloseLocation = GetLocation ($6);
  	  }
 	| attribute_list opt_comma CLOSE_BRACKET
 	  {
 		$$ = $1;
+		savedCloseLocation = GetLocation ($3);
 	  }
 	;	
 
@@ -829,6 +834,7 @@ named_attribute_argument
 	  	--lexer.parsing_block;
 	  	var lt = (Tokenizer.LocatedToken) $1;
 		$$ = new NamedArgument (lt.Value, lt.Location, (Expression) $4);	  
+		lbag.AddLocation ($$, GetLocation($2));
 	  }
 	;
 	

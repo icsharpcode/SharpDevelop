@@ -1169,8 +1169,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			StartNode(attributeSection);
 			WriteToken("[", AstNode.Roles.LBracket);
-			if (attributeSection.AttributeTarget != AttributeTarget.None) {
-				WriteToken(AttributeSection.GetAttributeTargetName(attributeSection.AttributeTarget), AttributeSection.TargetRole);
+			if (!string.IsNullOrEmpty (attributeSection.AttributeTarget)) {
+				WriteToken(attributeSection.AttributeTarget, AttributeSection.TargetRole);
 				WriteToken(":", AttributeSection.Roles.Colon);
 				Space();
 			}

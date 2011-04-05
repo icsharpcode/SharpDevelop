@@ -157,6 +157,56 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new SimpleType ("unknown");
 			}
 			
+			IEnumerable<Attribute> GetAttributes (Attributes optAttributes)
+			{
+				if (optAttributes == null || optAttributes.Attrs == null)
+					yield break;
+				
+				foreach (var attr in optAttributes.Attrs) {
+					Attribute result = new Attribute ();
+					result.Type = ConvertToType (attr.TypeNameExpression);
+					
+					if (attr.PosArguments != null) {
+						foreach (var arg in attr.PosArguments) {
+							result.AddChild ((Expression)arg.Expr.Accept (this), Attribute.Roles.Argument);
+						}
+					}
+					if (attr.NamedArguments != null) { 
+						foreach (NamedArgument na in attr.NamedArguments) {
+							NamedArgumentExpression newArg = new NamedArgumentExpression();
+							newArg.AddChild (new Identifier (na.Name, Convert (na.Location)), NamedArgumentExpression.Roles.Identifier);
+							
+							var loc = LocationsBag.GetLocations (na);
+							if (loc != null)
+								newArg.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), NamedArgumentExpression.Roles.Assign);
+							newArg.AddChild ((Expression)na.Expr.Accept (this), NamedArgumentExpression.Roles.Expression);
+							result.AddChild (newArg, Attribute.Roles.Argument);
+						}
+					}
+					yield return result;
+				}
+			}
+			
+			AttributeSection ConvertAttributeSection (Attributes optAttributes)
+			{
+				if (optAttributes == null || optAttributes.Attrs == null)
+					return null;
+				AttributeSection result = new AttributeSection ();
+				var loc = LocationsBag.GetLocations (optAttributes);
+				if (loc != null)
+					result.AddChild (new CSharpTokenNode (Convert (loc [0]), 1), AttributeSection.Roles.LBracket);
+				
+				result.AttributeTarget = optAttributes.Attrs.First ().ExplicitTarget;
+				
+				foreach (var attr in GetAttributes (optAttributes)) {
+					result.AddChild (attr, AttributeSection.AttributeRole);
+				}
+				
+				if (loc != null)
+					result.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), AttributeSection.Roles.RBracket);
+				return result;
+			}
+			
 			public override void Visit (UsingsBag.Namespace nspace)
 			{
 				NamespaceDeclaration nDecl = null;
@@ -252,6 +302,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				TypeDeclaration newType = new TypeDeclaration ();
 				newType.ClassType = ClassType.Class;
+				AddAttributeSection (newType, c);
 				
 				var location = LocationsBag.GetMemberLocation (c);
 				AddModifiers (newType, location);
@@ -286,7 +337,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				TypeDeclaration newType = new TypeDeclaration ();
 				newType.ClassType = ClassType.Struct;
-				
+				AddAttributeSection (newType, s);
 				var location = LocationsBag.GetMemberLocation (s);
 				AddModifiers (newType, location);
 				if (location != null)
@@ -322,7 +373,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				TypeDeclaration newType = new TypeDeclaration ();
 				newType.ClassType = ClassType.Interface;
-				
+				AddAttributeSection (newType, i);
 				var location = LocationsBag.GetMemberLocation (i);
 				AddModifiers (newType, location);
 				if (location != null)
@@ -356,7 +407,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				DelegateDeclaration newDelegate = new DelegateDeclaration ();
 				var location = LocationsBag.GetMemberLocation (d);
-				
+				AddAttributeSection (newDelegate, d);
 				AddModifiers (newDelegate, location);
 				if (location != null)
 					newDelegate.AddChild (new CSharpTokenNode (Convert (location[0]), "delegate".Length), TypeDeclaration.Roles.Keyword);
@@ -403,6 +454,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void Visit (Mono.CSharp.Enum e)
 			{
 				TypeDeclaration newType = new TypeDeclaration ();
+				AddAttributeSection (newType, e);
 				newType.ClassType = ClassType.Enum;
 				var location = LocationsBag.GetMemberLocation (e);
 				
@@ -430,7 +482,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void Visit (EnumMember em)
 			{
 				EnumMemberDeclaration newField = new EnumMemberDeclaration ();
-				// TODO: attributes, 'new' modifier
+				AddAttributeSection (newField, em);
 				newField.AddChild (new Identifier (em.Name, Convert (em.Location)), AstNode.Roles.Identifier);
 				
 				if (em.Initializer != null) {
@@ -449,7 +501,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetMemberLocation (f);
 				
 				var newField = new FixedFieldDeclaration ();
-				
+				AddAttributeSection (newField, f);
 				AddModifiers (newField, location);
 				if (location != null)
 					newField.AddChild (new CSharpTokenNode (Convert (location [0]), "fixed".Length), FixedFieldDeclaration.Roles.Keyword);
@@ -498,7 +550,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetMemberLocation (f);
 				
 				FieldDeclaration newField = new FieldDeclaration ();
-				
+				AddAttributeSection (newField, f);
 				AddModifiers (newField, location);
 				newField.AddChild (ConvertToType (f.TypeName), FieldDeclaration.Roles.Type);
 				
@@ -537,7 +589,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetMemberLocation (f);
 				
 				FieldDeclaration newField = new FieldDeclaration ();
-				
+				AddAttributeSection (newField, f);
 				AddModifiers (newField, location);
 				if (location != null)
 					newField.AddChild (new CSharpTokenNode (Convert (location[0]), "const".Length), FieldDeclaration.Roles.Keyword);
@@ -580,7 +632,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				newOperator.OperatorType = (OperatorType)o.OperatorType;
 				
 				var location = LocationsBag.GetMemberLocation (o);
-				
+				AddAttributeSection (newOperator, o);
 				AddModifiers (newOperator, location);
 				
 				newOperator.AddChild (ConvertToType (o.TypeName), AstNode.Roles.Type);
@@ -633,14 +685,22 @@ namespace ICSharpCode.NRefactory.CSharp
 				typeStack.Peek ().AddChild (newOperator, TypeDeclaration.MemberRole);
 			}
 			
+			public void AddAttributeSection (AttributedNode parent, Attributable a)
+			{
+				if (a.OptAttributes != null && a.OptAttributes.Attrs != null) 
+					parent.AddChild (ConvertAttributeSection (a.OptAttributes), AttributedNode.AttributeRole);
+			}
+			
 			public override void Visit (Indexer indexer)
 			{
 				IndexerDeclaration newIndexer = new IndexerDeclaration ();
-				
+				AddAttributeSection (newIndexer, indexer);
 				var location = LocationsBag.GetMemberLocation (indexer);
 				AddModifiers (newIndexer, location);
 				
-				newIndexer.AddChild (ConvertToType (indexer.TypeName), AstNode.Roles.Type);
+				if (indexer.MemberName.Left != null)
+					newIndexer.AddChild (ConvertToType (indexer.MemberName.Left), IndexerDeclaration.PrivateImplementationTypeRole);
+				newIndexer.AddChild (ConvertToType (indexer.TypeName), IndexerDeclaration.Roles.Type);
 				
 				if (location != null)
 					newIndexer.AddChild (new CSharpTokenNode (Convert (location[0]), 1), IndexerDeclaration.Roles.LBracket);
@@ -653,6 +713,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (indexer.Get != null) {
 					Accessor getAccessor = new Accessor ();
 					var getLocation = LocationsBag.GetMemberLocation (indexer.Get);
+					AddAttributeSection (getAccessor, indexer.Get);
 					AddModifiers (getAccessor, getLocation);
 					if (getLocation != null)
 						getAccessor.AddChild (new CSharpTokenNode (Convert (indexer.Get.Location), "get".Length), PropertyDeclaration.Roles.Keyword);
@@ -668,6 +729,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (indexer.Set != null) {
 					Accessor setAccessor = new Accessor ();
 					var setLocation = LocationsBag.GetMemberLocation (indexer.Set);
+					AddAttributeSection (setAccessor, indexer.Set);
 					AddModifiers (setAccessor, setLocation);
 					if (setLocation != null)
 						setAccessor.AddChild (new CSharpTokenNode (Convert (indexer.Set.Location), "set".Length), PropertyDeclaration.Roles.Keyword);
@@ -690,7 +752,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void Visit (Method m)
 			{
 				MethodDeclaration newMethod = new MethodDeclaration ();
-				
+				AddAttributeSection (newMethod, m);
 				var location = LocationsBag.GetMemberLocation (m);
 				AddModifiers (newMethod, location);
 				
@@ -781,7 +843,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void Visit (Property p)
 			{
 				PropertyDeclaration newProperty = new PropertyDeclaration ();
-				
+				AddAttributeSection (newProperty, p);
 				var location = LocationsBag.GetMemberLocation (p);
 				AddModifiers (newProperty, location);
 				newProperty.AddChild (ConvertToType (p.TypeName), AstNode.Roles.Type);
@@ -795,6 +857,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (p.Get != null) {
 					Accessor getAccessor = new Accessor ();
+					AddAttributeSection (getAccessor, p.Get);
 					var getLocation = LocationsBag.GetMemberLocation (p.Get);
 					AddModifiers (getAccessor, getLocation);
 					getAccessor.AddChild (new CSharpTokenNode (Convert (p.Get.Location), "get".Length), PropertyDeclaration.Roles.Keyword);
@@ -810,6 +873,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (p.Set != null) {
 					Accessor setAccessor = new Accessor ();
+					AddAttributeSection (setAccessor, p.Set);
 					var setLocation = LocationsBag.GetMemberLocation (p.Set);
 					AddModifiers (setAccessor, setLocation);
 					setAccessor.AddChild (new CSharpTokenNode (Convert (p.Set.Location), "set".Length), PropertyDeclaration.Roles.Keyword);
@@ -831,6 +895,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void Visit (Constructor c)
 			{
 				ConstructorDeclaration newConstructor = new ConstructorDeclaration ();
+				AddAttributeSection (newConstructor, c);
 				var location = LocationsBag.GetMemberLocation (c);
 				AddModifiers (newConstructor, location);
 				newConstructor.AddChild (new Identifier (c.MemberName.Name, Convert (c.MemberName.Location)), AstNode.Roles.Identifier);
@@ -850,6 +915,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void Visit (Destructor d)
 			{
 				DestructorDeclaration newDestructor = new DestructorDeclaration ();
+				AddAttributeSection (newDestructor, d);
 				var location = LocationsBag.GetMemberLocation (d);
 				AddModifiers (newDestructor, location);
 				if (location != null)
@@ -870,7 +936,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void Visit (EventField e)
 			{
 				EventDeclaration newEvent = new EventDeclaration ();
-				
+				AddAttributeSection (newEvent, e);
 				var location = LocationsBag.GetMemberLocation (e);
 				AddModifiers (newEvent, location);
 				
@@ -892,7 +958,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void Visit (EventProperty ep)
 			{
 				CustomEventDeclaration newEvent = new CustomEventDeclaration ();
-				
+				AddAttributeSection (newEvent, ep);
 				var location = LocationsBag.GetMemberLocation (ep);
 				AddModifiers (newEvent, location);
 				
@@ -909,6 +975,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (ep.Add != null) {
 					Accessor addAccessor = new Accessor ();
+					AddAttributeSection (addAccessor, ep.Add);
 					var addLocation = LocationsBag.GetMemberLocation (ep.Add);
 					AddModifiers (addAccessor, addLocation);
 					addAccessor.AddChild (new CSharpTokenNode (Convert (ep.Add.Location), "add".Length), CustomEventDeclaration.Roles.Keyword);
@@ -919,6 +986,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (ep.Remove != null) {
 					Accessor removeAccessor = new Accessor ();
+					AddAttributeSection (removeAccessor, ep.Remove);
 					var removeLocation = LocationsBag.GetMemberLocation (ep.Remove);
 					AddModifiers (removeAccessor, removeLocation);
 					removeAccessor.AddChild (new CSharpTokenNode (Convert (ep.Remove.Location), "remove".Length), CustomEventDeclaration.Roles.Keyword);

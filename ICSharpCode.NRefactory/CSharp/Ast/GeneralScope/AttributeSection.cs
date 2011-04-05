@@ -44,13 +44,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public AttributeTarget AttributeTarget {
+		public CSharpTokenNode LBracketToken {
+			get { return GetChildByRole (Roles.LBracket); }
+		}
+		
+		public string AttributeTarget {
 			get;
 			set;
 		}
 		
 		public AstNodeCollection<Attribute> Attributes {
 			get { return base.GetChildrenByRole (AttributeRole); }
+		}
+		
+		public CSharpTokenNode RBracketToken {
+			get { return GetChildByRole (Roles.RBracket); }
 		}
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
@@ -73,29 +81,29 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.Attributes.Add(attr);
 		}
 		
-		public static string GetAttributeTargetName(AttributeTarget attributeTarget)
-		{
-			switch (attributeTarget) {
-				case AttributeTarget.None:
-					return null;
-				case AttributeTarget.Assembly:
-					return "assembly";
-				case AttributeTarget.Module:
-					return "module";
-				case AttributeTarget.Type:
-					return "type";
-				case AttributeTarget.Param:
-					return "param";
-				case AttributeTarget.Field:
-					return "field";
-				case AttributeTarget.Return:
-					return "return";
-				case AttributeTarget.Method:
-					return "method";
-				default:
-					throw new NotSupportedException("Invalid value for AttributeTarget");
-			}
-		}
+//		public static string GetAttributeTargetName(AttributeTarget attributeTarget)
+//		{
+//			switch (attributeTarget) {
+//				case AttributeTarget.None:
+//					return null;
+//				case AttributeTarget.Assembly:
+//					return "assembly";
+//				case AttributeTarget.Module:
+//					return "module";
+//				case AttributeTarget.Type:
+//					return "type";
+//				case AttributeTarget.Param:
+//					return "param";
+//				case AttributeTarget.Field:
+//					return "field";
+//				case AttributeTarget.Return:
+//					return "return";
+//				case AttributeTarget.Method:
+//					return "method";
+//				default:
+//					throw new NotSupportedException("Invalid value for AttributeTarget");
+//			}
+//		}
 	}
 	
 	public enum AttributeTarget {
