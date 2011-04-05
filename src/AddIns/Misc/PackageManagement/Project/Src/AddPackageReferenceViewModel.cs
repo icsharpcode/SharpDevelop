@@ -8,13 +8,9 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class AddPackageReferenceViewModel : ViewModelBase<AddPackageReferenceViewModel>, IMessageReporter
+	public class AddPackageReferenceViewModel : ViewModelBase<AddPackageReferenceViewModel>, IMessageReporter, IDisposable
 	{
 		IPackageManagementService packageManagementService;
-		InstalledPackagesViewModel installedPackagesViewModel;
-		AvailablePackagesViewModel availablePackagesViewModel;
-		UpdatedPackagesViewModel updatedPackagesViewModel;
-		RecentPackagesViewModel recentPackagesViewModel;
 		string message;
 		bool hasError;
 		
@@ -25,31 +21,28 @@ namespace ICSharpCode.PackageManagement
 			this.packageManagementService = packageManagementService;
 			this.packageManagementService.OutputMessagesView.Clear();
 			
-			availablePackagesViewModel = new AvailablePackagesViewModel(packageManagementService, this, taskFactory);
-			installedPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, this, taskFactory);
-			updatedPackagesViewModel = new UpdatedPackagesViewModel(packageManagementService, this, taskFactory);
-			recentPackagesViewModel = new RecentPackagesViewModel(packageManagementService, this, taskFactory);
+			AvailablePackagesViewModel = new AvailablePackagesViewModel(packageManagementService, this, taskFactory);
+			InstalledPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, this, taskFactory);
+			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(packageManagementService, this, taskFactory);
+			RecentPackagesViewModel = new RecentPackagesViewModel(packageManagementService, this, taskFactory);
 			
-			availablePackagesViewModel.ReadPackages();
-			installedPackagesViewModel.ReadPackages();
-			updatedPackagesViewModel.ReadPackages();
-			recentPackagesViewModel.ReadPackages();
+			AvailablePackagesViewModel.ReadPackages();
+			InstalledPackagesViewModel.ReadPackages();
+			UpdatedPackagesViewModel.ReadPackages();
+			RecentPackagesViewModel.ReadPackages();
 		}
 		
-		public InstalledPackagesViewModel InstalledPackagesViewModel {
-			get { return installedPackagesViewModel; }
-		}
+		public AvailablePackagesViewModel AvailablePackagesViewModel { get; private set; }
+		public InstalledPackagesViewModel InstalledPackagesViewModel { get; private set; }
+		public RecentPackagesViewModel RecentPackagesViewModel { get; private set; }
+		public UpdatedPackagesViewModel UpdatedPackagesViewModel { get; private set; }
 		
-		public AvailablePackagesViewModel AvailablePackagesViewModel {
-			get { return availablePackagesViewModel; }
-		}
-		
-		public UpdatedPackagesViewModel UpdatedPackagesViewModel {
-			get { return updatedPackagesViewModel; }
-		}
-		
-		public RecentPackagesViewModel RecentPackagesViewModel {
-			get { return recentPackagesViewModel; }
+		public void Dispose()
+		{
+			AvailablePackagesViewModel.Dispose();
+			InstalledPackagesViewModel.Dispose();
+			RecentPackagesViewModel.Dispose();
+			UpdatedPackagesViewModel.Dispose();
 		}
 		
 		public void ShowErrorMessage(string message)

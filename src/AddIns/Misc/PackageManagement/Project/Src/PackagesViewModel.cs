@@ -11,27 +11,15 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public abstract class PackagesViewModel : ViewModelBase<PackagesViewModel>
+	public abstract class PackagesViewModel : ViewModelBase<PackagesViewModel>, IDisposable
 	{
-		DelegateCommand showNextPageCommand;
-		DelegateCommand showPreviousPageCommand;
-		DelegateCommand showPageCommand;
-		DelegateCommand searchCommand;
-		
-		ObservableCollection<PackageViewModel> packageViewModels = 
-			new ObservableCollection<PackageViewModel>();
 		Pages pages = new Pages();
 		
 		IPackageManagementService packageManagementService;
 		IPackageViewModelFactory packageViewModelFactory;
 		ITaskFactory taskFactory;
 		IEnumerable<IPackage> allPackages;
-		string searchTerms;
-		bool isReadingPackages;
 		ITask<PackagesForSelectedPageResult> task;
-		int totalItems;
-		bool hasError;
-		string errorMessage = String.Empty;
 		
 		public PackagesViewModel(
 			IPackageManagementService packageManagementService,
@@ -65,54 +53,48 @@ namespace ICSharpCode.PackageManagement
 			this.packageManagementService = packageManagementService;
 			this.packageViewModelFactory = packageViewModelFactory;
 			this.taskFactory = taskFactory;
+			
+			PackageViewModels = new ObservableCollection<PackageViewModel>();
+			ErrorMessage = String.Empty;
 
 			CreateCommands();
 		}
 		
 		void CreateCommands()
 		{
-			showNextPageCommand = new DelegateCommand(param => ShowNextPage());
-			showPreviousPageCommand = new DelegateCommand(param => ShowPreviousPage());
-			showPageCommand = new DelegateCommand(param => ExecuteShowPageCommand(param));
-			searchCommand = new DelegateCommand(param => Search());
+			ShowNextPageCommand = new DelegateCommand(param => ShowNextPage());
+			ShowPreviousPageCommand = new DelegateCommand(param => ShowPreviousPage());
+			ShowPageCommand = new DelegateCommand(param => ExecuteShowPageCommand(param));
+			SearchCommand = new DelegateCommand(param => Search());
 		}
 		
-		public ICommand ShowNextPageCommand {
-			get { return showNextPageCommand; }
+		public ICommand ShowNextPageCommand { get; private set; }
+		public ICommand ShowPreviousPageCommand { get; private set; }
+		public ICommand ShowPageCommand { get; private set; }
+		public ICommand SearchCommand { get; private set; }
+		
+		public void Dispose()
+		{
+			OnDispose();
+			IsDisposed = true;
 		}
 		
-		public ICommand ShowPreviousPageCommand {
-			get { return showPreviousPageCommand; }
+		protected virtual void OnDispose()
+		{
 		}
 		
-		public ICommand ShowPageCommand {
-			get { return showPageCommand; }
-		}
+		public bool IsDisposed { get; private set; }
 		
-		public ICommand SearchCommand {
-			get { return searchCommand; }
-		}
+		public bool HasError { get; private set; }
+		public string ErrorMessage { get; private set; }
 		
-		public bool HasError {
-			get { return hasError; }
-		}
-		
-		public string ErrorMessage {
-			get { return errorMessage; }
-		}
-		
-		public ObservableCollection<PackageViewModel> PackageViewModels {
-			get { return packageViewModels; }
-			set { packageViewModels = value; }
-		}
+		public ObservableCollection<PackageViewModel> PackageViewModels { get; set; }
 		
 		public IPackageManagementService PackageManagementService { 
 			get { return packageManagementService; }
 		}
 		
-		public bool IsReadingPackages {
-			get { return isReadingPackages; }
-		}
+		public bool IsReadingPackages { get; private set; }
 		
 		public void ReadPackages()
 		{
@@ -124,8 +106,8 @@ namespace ICSharpCode.PackageManagement
 		
 		void StartReadPackagesTask()
 		{
-			isReadingPackages = true;
-			hasError = false;
+			IsReadingPackages = true;
+			HasError = false;
 			ClearPackages();
 			CancelReadPackagesTask();
 			CreateReadPackagesTask();
@@ -153,12 +135,12 @@ namespace ICSharpCode.PackageManagement
 		PackagesForSelectedPageResult GetPackagesForSelectedPageResult()
 		{
 			IEnumerable<IPackage> packages = GetPackagesForSelectedPage();
-			return new PackagesForSelectedPageResult(packages, totalItems);
+			return new PackagesForSelectedPageResult(packages, TotalItems);
 		}
 		
 		void OnPackagesReadForSelectedPage(ITask<PackagesForSelectedPageResult> task)
 		{
-			isReadingPackages = false;
+			IsReadingPackages = false;
 			if (task.IsFaulted) {
 				SaveError(task.Exception);
 			} else if (task.IsCancelled) {
@@ -176,8 +158,8 @@ namespace ICSharpCode.PackageManagement
 		
 		protected void SaveError(Exception ex)
 		{
-			hasError = true;
-			errorMessage = ex.Message;
+			HasError = true;
+			ErrorMessage = ex.Message;
 		}
 
 		void UpdatePackagesForSelectedPage(PackagesForSelectedPageResult result)
@@ -205,7 +187,7 @@ namespace ICSharpCode.PackageManagement
 				IQueryable<IPackage> packages = GetAllPackages();
 				packages = OrderPackages(packages);
 				packages = FilterPackagesBySearchCriteria(packages);
-				totalItems = packages.Count();
+				TotalItems = packages.Count();
 				allPackages = GetFilteredPackagesBeforePagingResults(packages);
 			}
 			return allPackages;
@@ -225,10 +207,10 @@ namespace ICSharpCode.PackageManagement
 		
 		string GetSearchCriteria()
 		{
-			if (String.IsNullOrWhiteSpace(searchTerms)) {
+			if (String.IsNullOrWhiteSpace(SearchTerms)) {
 				return null;
 			}
-			return searchTerms;
+			return SearchTerms;
 		}
 
 		protected virtual IQueryable<IPackage> FilterPackagesBySearchCriteria(IQueryable<IPackage> packages, string searchCriteria)
@@ -333,9 +315,7 @@ namespace ICSharpCode.PackageManagement
 			set { pages.MaximumSelectablePages = value; }
 		}
 		
-		public int TotalItems {
-			get { return totalItems; }
-		}
+		public int TotalItems { get; private set; }
 		
 		public void ShowNextPage()
 		{
@@ -360,10 +340,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool IsSearchable { get; set; }
 		
-		public string SearchTerms {
-			get { return searchTerms; }
-			set { searchTerms = value; }
-		}
+		public string SearchTerms { get; set; }
 		
 		public void Search()
 		{

@@ -20,8 +20,8 @@ namespace ICSharpCode.PackageManagement
 			ITaskFactory taskFactory)
 			: base(packageManagementService, messageReporter, taskFactory)
 		{
-			packageManagementService.ParentPackageInstalled += PackageInstalled;
-			packageManagementService.ParentPackageUninstalled += PackageUninstalled;
+			packageManagementService.ParentPackageInstalled += ParentPackageInstalled;
+			packageManagementService.ParentPackageUninstalled += ParentPackageUninstalled;
 			
 			GetActiveProjectManager();
 		}
@@ -35,14 +35,20 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 
-		void PackageInstalled(object sender, EventArgs e)
+		void ParentPackageInstalled(object sender, EventArgs e)
 		{
 			ReadPackages();
 		}
 		
-		void PackageUninstalled(object sender, EventArgs e)
+		void ParentPackageUninstalled(object sender, EventArgs e)
 		{
 			ReadPackages();
+		}
+		
+		protected override void OnDispose()
+		{
+			PackageManagementService.ParentPackageInstalled -= ParentPackageInstalled;
+			PackageManagementService.ParentPackageUninstalled -= ParentPackageUninstalled;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()

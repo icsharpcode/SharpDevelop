@@ -215,5 +215,49 @@ namespace PackageManagement.Tests
 			
 			Assert.IsFalse(viewModel.HasError);
 		}
+		
+		[Test]
+		public void Dispose_ContainedViewModelsAreDisposed_AvailablePackagesViewModelIsDisposed()
+		{
+			CreateViewModel();
+			viewModel.Dispose();
+			
+			bool disposed = viewModel.AvailablePackagesViewModel.IsDisposed;
+			
+			Assert.IsTrue(disposed);
+		}
+		
+		[Test]
+		public void Dispose_ContainedViewModelsAreDisposed_InstaledPackagesViewModelIsDisposed()
+		{
+			CreateViewModel();
+			viewModel.Dispose();
+			
+			bool disposed = viewModel.InstalledPackagesViewModel.IsDisposed;
+			
+			Assert.IsTrue(disposed);
+		}
+		
+		[Test]
+		public void Dispose_ContainedViewModelsAreDisposed_UpdatedPackagesViewModelIsDisposed()
+		{
+			CreateViewModel();
+			viewModel.Dispose();
+			
+			bool disposed = viewModel.UpdatedPackagesViewModel.IsDisposed;
+			
+			Assert.IsTrue(disposed);
+		}
+		
+		[Test]
+		public void Dispose_ContainedViewModelsAreDisposed_RecentPackagesViewModelIsDisposed()
+		{
+			CreateViewModel();
+			viewModel.Dispose();
+			
+			bool disposed = viewModel.RecentPackagesViewModel.IsDisposed;
+			
+			Assert.IsTrue(disposed);
+		}
 	}
 }

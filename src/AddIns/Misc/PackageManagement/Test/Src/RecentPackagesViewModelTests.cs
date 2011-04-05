@@ -31,7 +31,7 @@ namespace PackageManagement.Tests
 		{
 			taskFactory = new FakeTaskFactory();
 			var messageReporter = new FakeMessageReporter();
-			viewModel = new RecentPackagesViewModel(packageManagementService, messageReporter, taskFactory);			
+			viewModel = new RecentPackagesViewModel(packageManagementService, messageReporter, taskFactory);
 		}
 		
 		void CompleteReadPackagesTask()
@@ -43,6 +43,14 @@ namespace PackageManagement.Tests
 		{
 			taskFactory.ClearAllFakeTasks();
 		}
+		
+		FakePackage AddPackageToRecentPackageRepository()
+		{
+			var package = new FakePackage("Test");
+			FakePackageRepository repository = packageManagementService.FakeRecentPackageRepository;
+			repository.FakePackages.Add(package);
+			return package;
+		}
 
 		[Test]
 		public void PackageViewModels_PackageIsInstalledAfterRecentPackagesDisplayed_PackagesOnDisplayAreUpdated()
@@ -50,9 +58,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
-			var package = new FakePackage("Test");
-			FakePackageRepository repository = packageManagementService.FakeRecentPackageRepository;
-			repository.FakePackages.Add(package);
+			var package = AddPackageToRecentPackageRepository();
 			
 			ClearReadPackagesTasks();
 			packageManagementService.FireParentPackageInstalled();
@@ -61,7 +67,7 @@ namespace PackageManagement.Tests
 			var expectedPackages = new FakePackage[] {
 				package
 			};
-		
+			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
 		
@@ -71,9 +77,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
-			var package = new FakePackage("Test");
-			FakePackageRepository repository = packageManagementService.FakeRecentPackageRepository;
-			repository.FakePackages.Add(package);
+			var package = AddPackageToRecentPackageRepository();
 			
 			ClearReadPackagesTasks();
 			packageManagementService.FireParentPackageUninstalled();
@@ -82,8 +86,42 @@ namespace PackageManagement.Tests
 			var expectedPackages = new FakePackage[] {
 				package
 			};
-		
+			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void PackageViewModels_PackageIsUninstalledAfterViewModelIsDisposed_PackagesOnDisplayAreNotUpdated()
+		{
+			CreateViewModel();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			AddPackageToRecentPackageRepository();
+			
+			ClearReadPackagesTasks();
+			viewModel.Dispose();
+			
+			packageManagementService.FireParentPackageUninstalled();
+			CompleteReadPackagesTask();
+			
+			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void PackageViewModels_PackageIsInstalledAfterViewModelIsDisposed_PackagesOnDisplayAreNotUpdated()
+		{
+			CreateViewModel();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			AddPackageToRecentPackageRepository();
+			
+			ClearReadPackagesTasks();
+			
+			viewModel.Dispose();
+			packageManagementService.FireParentPackageInstalled();
+			CompleteReadPackagesTask();
+			
+			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
 		}
 	}
 }

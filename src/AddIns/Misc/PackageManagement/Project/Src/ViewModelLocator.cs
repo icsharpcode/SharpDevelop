@@ -16,9 +16,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public AddPackageReferenceViewModel AddPackageReferenceViewModel {
 			get {
-				if (addPackageReferenceViewModel == null) {
-					CreateAddPackageReferenceViewModel();
-				}
+				CreateAddPackageReferenceViewModel();
 				return addPackageReferenceViewModel;
 			}
 		}

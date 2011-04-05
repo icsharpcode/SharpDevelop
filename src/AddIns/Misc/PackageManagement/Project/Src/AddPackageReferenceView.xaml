@@ -21,7 +21,7 @@
 			UriSource="pack://application:,,,/PackageManagement;component/Resources/exclamation.png"/>
     </Window.Resources>
 	
-	<DockPanel>
+	<DockPanel x:Name="MainPanel">
 		<!-- Use DockPanel.DataContext instead of Window.DataContext otherwise Visual Studio does not show
 			design time data -->
 		<DockPanel.DataContext>
@@ -54,22 +54,22 @@
 		<TabControl>
 			<TabItem Header="Available">
 				<pm:PackagesView
-					x:Name="availablePackagesView"
+					x:Name="AvailablePackagesView"
 					DataContext="{Binding Path=AvailablePackagesViewModel}"/>
 			</TabItem>
 			<TabItem Header="Installed">
 				<pm:PackagesView
-					x:Name="installedPackagesView"
+					x:Name="InstalledPackagesView"
 					DataContext="{Binding Path=InstalledPackagesViewModel}"/>
 			</TabItem>
 			<TabItem Header="Updates">
 				<pm:PackagesView
-					x:Name="packageUpdatesView"
+					x:Name="PackageUpdatesView"
 					DataContext="{Binding Path=UpdatedPackagesViewModel}"/>
 			</TabItem>
 			<TabItem Header="Recent">
 				<pm:PackagesView
-					x:Name="recentPackagesView"
+					x:Name="RecentPackagesView"
 					DataContext="{Binding Path=RecentPackagesViewModel}"/>
 			</TabItem>
 		</TabControl>

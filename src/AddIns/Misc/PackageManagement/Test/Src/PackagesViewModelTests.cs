@@ -1235,5 +1235,22 @@ namespace PackageManagement.Tests
 			
 			Assert.IsNull(viewModel.SearchCriteriaPassedToFilterPackagesBySearchCriteria);
 		}
+		
+		[Test]
+		public void IsDisposed_DisposeMethodCalled_ReturnsTrue()
+		{
+			CreateViewModel();
+			viewModel.Dispose();
+			
+			Assert.IsTrue(viewModel.IsDisposed);
+		}
+		
+		[Test]
+		public void IsDisposed_DisposeMethodNotCalled_ReturnsFalse()
+		{
+			CreateViewModel();
+			
+			Assert.IsFalse(viewModel.IsDisposed);
+		}
 	}
 }

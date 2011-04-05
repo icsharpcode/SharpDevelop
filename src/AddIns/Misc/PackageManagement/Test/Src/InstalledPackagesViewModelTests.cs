@@ -51,16 +51,21 @@ namespace PackageManagement.Tests
 			taskFactory.ClearAllFakeTasks();
 		}
 		
+		FakePackage AddPackageToProjectManagerLocalPackageRepository()
+		{
+			var package = new FakePackage("Test");
+			FakePackageRepository repository = packageManagementService.FakeActiveProjectManager.FakeLocalRepository;
+			repository.FakePackages.Add(package);
+			return package;
+		}
+		
 		[Test]
 		public void PackageViewModels_PackageReferenceIsAdded_PackageViewModelsIsUpdated()
 		{
 			CreateViewModel();
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
-			FakePackage package = new FakePackage();
-			package.Id = "Test";
-			FakePackageRepository repository = packageManagementService.FakeActiveProjectManager.FakeLocalRepository;
-			repository.FakePackages.Add(package);
+			FakePackage package = AddPackageToProjectManagerLocalPackageRepository();
 			
 			ClearReadPackagesTasks();
 			packageManagementService.FireParentPackageInstalled();
@@ -74,14 +79,11 @@ namespace PackageManagement.Tests
 		public void PackageViewModels_PackageReferenceIsRemoved_PackageViewModelsIsUpdated()
 		{
 			CreateViewModel();
-			FakePackage package = new FakePackage();
-			package.Id = "Test";
-			FakePackageRepository repository = packageManagementService.FakeActiveProjectManager.FakeLocalRepository;
-			repository.FakePackages.Add(package);
+			FakePackage package = AddPackageToProjectManagerLocalPackageRepository();
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			
-			repository.FakePackages.Clear();
+			packageManagementService.FakeActiveProjectManager.FakeLocalRepository.FakePackages.Clear();
 			
 			ClearReadPackagesTasks();
 			packageManagementService.FireParentPackageUninstalled();
@@ -113,6 +115,40 @@ namespace PackageManagement.Tests
 			packageManagementService.FakeActiveProjectManager.FakeLocalRepository = null;
 			CompleteReadPackagesTask();
 			
+			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void PackageViewModels_PackageReferenceIsAddedAfterViewModelIsDisposed_PackageViewModelsIsNotUpdated()
+		{
+			CreateViewModel();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			FakePackage package = AddPackageToProjectManagerLocalPackageRepository();
+			
+			ClearReadPackagesTasks();
+			viewModel.Dispose();
+			packageManagementService.FireParentPackageInstalled();
+			CompleteReadPackagesTask();
+		
+			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void PackageViewModels_PackageReferenceIsRemovedAfterViewModelIsDisposed_PackageViewModelsIsNotUpdated()
+		{
+			CreateViewModel();
+			FakePackage package = AddPackageToProjectManagerLocalPackageRepository();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			packageManagementService.FakeActiveProjectManager.FakeLocalRepository.FakePackages.Clear();
+			
+			ClearReadPackagesTasks();
+			viewModel.Dispose();
+			packageManagementService.FireParentPackageUninstalled();
+			CompleteReadPackagesTask();
+		
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
 		}
 	}

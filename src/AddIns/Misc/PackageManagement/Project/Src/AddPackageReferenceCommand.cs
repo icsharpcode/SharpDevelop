@@ -12,9 +12,12 @@ namespace ICSharpCode.PackageManagement
 	{
 		public override void Run()
 		{
-			AddPackageReferenceView view = new AddPackageReferenceView();
+			var view = new AddPackageReferenceView();
 			view.Owner = WorkbenchSingleton.MainWindow;
 			view.ShowDialog();
+			
+			var viewModel = view.MainPanel.DataContext as AddPackageReferenceViewModel;
+			viewModel.Dispose();
 		}
 	}
 }
