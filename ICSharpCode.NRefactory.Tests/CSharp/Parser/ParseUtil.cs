@@ -57,8 +57,6 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		public static T ParseExpression<T>(string expr, bool expectErrors = false) where T : AstNode
 		{
-			if (expectErrors) Assert.Ignore("errors not yet implemented");
-			
 			CSharpParser parser = new CSharpParser();
 			AstNode parsedExpression = parser.ParseExpression(new StringReader(expr));
 			

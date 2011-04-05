@@ -2130,6 +2130,44 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
+			Expression ConvertArgument (Argument arg)
+			{
+				if (arg is NamedArgument) {
+					var na = (NamedArgument)arg;
+					NamedArgumentExpression newArg = new NamedArgumentExpression();
+					newArg.AddChild (new Identifier (na.Name, Convert (na.Location)), NamedArgumentExpression.Roles.Identifier);
+					
+					var loc = LocationsBag.GetLocations (na);
+					if (loc != null)
+						newArg.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), NamedArgumentExpression.Roles.Assign);
+					
+					if (arg.ArgType == Argument.AType.Out || arg.ArgType == Argument.AType.Ref) {
+						DirectionExpression direction = new DirectionExpression ();
+						direction.FieldDirection = arg.ArgType == Argument.AType.Out ? FieldDirection.Out : FieldDirection.Ref;
+						var argLocation = LocationsBag.GetLocations (arg);
+						if (argLocation != null)
+							direction.AddChild (new CSharpTokenNode (Convert (argLocation[0]), "123".Length), InvocationExpression.Roles.Keyword);
+						direction.AddChild ((Expression)arg.Expr.Accept (this), InvocationExpression.Roles.Expression);
+						newArg.AddChild (direction, NamedArgumentExpression.Roles.Expression);
+					} else {
+						newArg.AddChild ((Expression)na.Expr.Accept (this), NamedArgumentExpression.Roles.Expression);
+					}
+					return newArg;
+				}
+				
+				if (arg.ArgType == Argument.AType.Out || arg.ArgType == Argument.AType.Ref) {
+					DirectionExpression direction = new DirectionExpression ();
+					direction.FieldDirection = arg.ArgType == Argument.AType.Out ? FieldDirection.Out : FieldDirection.Ref;
+					var argLocation = LocationsBag.GetLocations (arg);
+					if (argLocation != null)
+						direction.AddChild (new CSharpTokenNode (Convert (argLocation[0]), "123".Length), InvocationExpression.Roles.Keyword);
+					direction.AddChild ((Expression)arg.Expr.Accept (this), InvocationExpression.Roles.Expression);
+					return direction;
+				}
+				
+				return (Expression)arg.Expr.Accept (this);
+			}
+			
 			void AddArguments (AstNode parent, object location, Mono.CSharp.Arguments args)
 			{
 				if (args == null)
@@ -2138,19 +2176,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var commaLocations = LocationsBag.GetLocations (args);
 				
 				for (int i = 0; i < args.Count; i++) {
-					Argument arg = args[i];
-					if (arg.ArgType == Argument.AType.Out || arg.ArgType == Argument.AType.Ref) {
-						DirectionExpression direction = new DirectionExpression ();
-						direction.FieldDirection = arg.ArgType == Argument.AType.Out ? FieldDirection.Out : FieldDirection.Ref;
-						var argLocation = LocationsBag.GetLocations (arg);
-						if (argLocation != null)
-							direction.AddChild (new CSharpTokenNode (Convert (argLocation[0]), "123".Length), InvocationExpression.Roles.Keyword);
-						direction.AddChild ((Expression)arg.Expr.Accept (this), InvocationExpression.Roles.Expression);
-						
-						parent.AddChild (direction, InvocationExpression.Roles.Argument);
-					} else {
-						parent.AddChild ((Expression)arg.Expr.Accept (this), InvocationExpression.Roles.Argument);
-					}
+					parent.AddChild (ConvertArgument (args[i]), InvocationExpression.Roles.Argument);
 					if (commaLocations != null && i > 0) {
 						int idx = commaLocations.Count - i;
 						if (idx >= 0)
