@@ -150,7 +150,7 @@ namespace Mono.CSharp {
 				}
 			}
 
-			ReturnType = ReturnType.ResolveAsTypeTerminal (this, false);
+			ReturnType = ReturnType.ResolveAsType (this);
 			if (ReturnType == null)
 				return false;
 

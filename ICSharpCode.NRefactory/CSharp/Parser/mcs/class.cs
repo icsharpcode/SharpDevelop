@@ -916,7 +916,7 @@ namespace Mono.CSharp
 			for (int i = 0, j = 0; i < count; i++){
 				FullNamedExpression fne = type_bases [i];
 
-				TypeExpr fne_resolved = fne.ResolveAsTypeTerminal (base_context, false);
+				TypeExpr fne_resolved = fne.ResolveAsType (base_context);
 				if (fne_resolved == null)
 					continue;
 
@@ -2033,7 +2033,7 @@ namespace Mono.CSharp
 		// Performs the validation on a Method's modifiers (properties have
 		// the same properties).
 		//
-		// TODO: Why is it not done at parse stage ?
+		// TODO: Why is it not done at parse stage, move to Modifiers::Check
 		//
 		public bool MethodModifiersValid (MemberCore mc)
 		{
@@ -2194,7 +2194,6 @@ namespace Mono.CSharp
 				return e;
 
 			e = null;
-			int errors = Report.Errors;
 
 			if (arity == 0) {
 				TypeParameter[] tp = CurrentTypeParameters;
@@ -2212,12 +2211,18 @@ namespace Mono.CSharp
 					e = new TypeExpression (t, Location.Null);
 				else if (Parent != null) {
 					e = Parent.LookupNamespaceOrType (name, arity, loc, ignore_cs0104);
-				} else
+				} else {
+					int errors = Report.Errors;
+
 					e = NamespaceEntry.LookupNamespaceOrType (name, arity, loc, ignore_cs0104);
+
+					if (errors != Report.Errors)
+						return e;
+				}
 			}
 
 			// TODO MemberCache: How to cache arity stuff ?
-			if (errors == Report.Errors && arity == 0)
+			if (arity == 0)
 				Cache[name] = e;
 
 			return e;
@@ -3244,7 +3249,7 @@ namespace Mono.CSharp
 			}
 
 			if (IsExplicitImpl) {
-				TypeExpr iface_texpr = MemberName.Left.GetTypeExpression ().ResolveAsTypeTerminal (Parent, false);
+				TypeExpr iface_texpr = MemberName.Left.GetTypeExpression ().ResolveAsType (Parent);
 				if (iface_texpr == null)
 					return false;
 
@@ -3573,7 +3578,7 @@ namespace Mono.CSharp
 			if (member_type != null)
 				throw new InternalErrorException ("Multi-resolve");
 
-			TypeExpr te = type_expr.ResolveAsTypeTerminal (this, false);
+			TypeExpr te = type_expr.ResolveAsType (this);
 			if (te == null)
 				return false;
 			

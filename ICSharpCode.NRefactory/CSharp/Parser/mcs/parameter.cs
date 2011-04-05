@@ -357,7 +357,7 @@ namespace Mono.CSharp {
 			if (attributes != null)
 				attributes.AttachTo (this, rc);
 
-			var expr = texpr.ResolveAsTypeTerminal (rc, false);
+			var expr = texpr.ResolveAsType (rc);
 			if (expr == null)
 				return null;
 

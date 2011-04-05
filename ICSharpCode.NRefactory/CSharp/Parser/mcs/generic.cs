@@ -59,6 +59,11 @@ namespace Mono.CSharp {
 		{
 			throw new NotImplementedException ();
 		}
+
+		public override FullNamedExpression ResolveAsTypeOrNamespace (IMemberContext ec)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 
 	//
@@ -169,7 +174,7 @@ namespace Mono.CSharp {
 					continue;
 				}
 
-				var type_expr = constraints[i] = constraint.ResolveAsTypeTerminal (context, false);
+				var type_expr = constraints[i] = constraint.ResolveAsType (context);
 				if (type_expr == null)
 					continue;
 
@@ -1362,23 +1367,12 @@ namespace Mono.CSharp {
 	/// <summary>
 	///   A TypeExpr which already resolved to a type parameter.
 	/// </summary>
-	public class TypeParameterExpr : TypeExpr {
-		
+	public class TypeParameterExpr : TypeExpression
+	{
 		public TypeParameterExpr (TypeParameter type_parameter, Location loc)
+			: base (type_parameter.Type, loc)
 		{
-			this.type = type_parameter.Type;
 			this.eclass = ExprClass.TypeParameter;
-			this.loc = loc;
-		}
-
-		protected override TypeExpr DoResolveAsTypeStep (IMemberContext ec)
-		{
-			throw new NotSupportedException ();
-		}
-
-		public override FullNamedExpression ResolveAsTypeStep (IMemberContext ec, bool silent)
-		{
-			return this;
 		}
 	}
 
@@ -1811,7 +1805,7 @@ namespace Mono.CSharp {
 			atypes = new TypeSpec [count];
 
 			for (int i = 0; i < count; i++){
-				TypeExpr te = args[i].ResolveAsTypeTerminal (ec, false);
+				TypeExpr te = args[i].ResolveAsType (ec);
 				if (te == null) {
 					ok = false;
 					continue;
@@ -1929,7 +1923,7 @@ namespace Mono.CSharp {
 			return TypeManager.CSharpName (type);
 		}
 
-		protected override TypeExpr DoResolveAsTypeStep (IMemberContext ec)
+		public override TypeExpr ResolveAsType (IMemberContext ec)
 		{
 			if (!args.Resolve (ec))
 				return null;
@@ -1940,6 +1934,7 @@ namespace Mono.CSharp {
 			// Now bind the parameters
 			//
 			type = open_type.MakeGenericType (ec, atypes);
+			eclass = ExprClass.Type;
 
 			//
 			// Check constraints when context is not method/base type
@@ -2022,17 +2017,11 @@ namespace Mono.CSharp {
 	//
 	// Generic type with unbound type arguments, used for typeof (G<,,>)
 	//
-	class GenericOpenTypeExpr : TypeExpr
+	class GenericOpenTypeExpr : TypeExpression
 	{
 		public GenericOpenTypeExpr (TypeSpec type, /*UnboundTypeArguments args,*/ Location loc)
+			: base (type.GetDefinition (), loc)
 		{
-			this.type = type.GetDefinition ();
-			this.loc = loc;
-		}
-
-		protected override TypeExpr DoResolveAsTypeStep (IMemberContext ec)
-		{
-			return this;
 		}
 	}
 

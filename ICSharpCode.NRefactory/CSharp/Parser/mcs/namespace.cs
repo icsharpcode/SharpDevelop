@@ -73,7 +73,7 @@ namespace Mono.CSharp {
 	}
 
 	//
-	// Namespace cache for imported and compiler namespaces
+	// Namespace cache for imported and compiled namespaces
 	//
 	// This is an Expression to allow it to be referenced in the
 	// compiler parse/intermediate tree during name resolution.
@@ -161,7 +161,7 @@ namespace Mono.CSharp {
 
 		public virtual void Error_NamespaceDoesNotExist (Location loc, string name, int arity, IMemberContext ctx)
 		{
-			FullNamedExpression retval = Lookup (ctx, name, -System.Math.Max (1, arity), loc);
+			var retval = LookupType (ctx, name, -System.Math.Max (1, arity), loc);
 			if (retval != null) {
 				Error_TypeArgumentsCannotBeUsed (ctx, retval.Type, arity, loc);
 				return;
@@ -317,12 +317,26 @@ namespace Mono.CSharp {
 			return null;
 		}
 
-		public FullNamedExpression Lookup (IMemberContext ctx, string name, int arity, Location loc)
+		public FullNamedExpression LookupTypeOrNamespace (IMemberContext ctx, string name, int arity, Location loc)
 		{
-			if (arity == 0 && namespaces.ContainsKey (name))
-				return namespaces [name];
+			var texpr = LookupType (ctx, name, arity, loc);
 
-			return LookupType (ctx, name, arity, loc);
+			Namespace ns;
+			if (arity == 0 && namespaces.TryGetValue (name, out ns)) {
+				if (texpr == null)
+					return ns;
+
+				ctx.Module.Compiler.Report.SymbolRelatedToPreviousError (texpr.Type);
+				// ctx.Module.Compiler.Report.SymbolRelatedToPreviousError (ns.loc, "");
+				ctx.Module.Compiler.Report.Warning (437, 2, loc,
+					"The type `{0}' conflicts with the imported namespace `{1}'. Using the definition found in the source file",
+					texpr.GetSignatureForError (), ns.GetSignatureForError ());
+
+				if (texpr.Type.MemberDefinition.IsImported)
+					return ns;
+			}
+
+			return texpr;
 		}
 
 		//
@@ -450,6 +464,11 @@ namespace Mono.CSharp {
 		{
 			types.Remove (name);
 			cached_types.Remove (name);
+		}
+
+		public override FullNamedExpression ResolveAsTypeOrNamespace (IMemberContext mc)
+		{
+			return this;
 		}
 
 		public void SetBuiltinType (BuiltinTypeSpec pts)
@@ -858,7 +877,7 @@ namespace Mono.CSharp {
 			//
 			// Check whether it's in the namespace.
 			//
-			FullNamedExpression fne = ns.Lookup (this, name, arity, loc);
+			FullNamedExpression fne = ns.LookupTypeOrNamespace (this, name, arity, loc);
 
 			//
 			// Check aliases. 
@@ -1130,7 +1149,7 @@ namespace Mono.CSharp {
 			if (resolved != null)
 				return resolved;
 
-			FullNamedExpression fne = name.GetTypeExpression ().ResolveAsTypeStep (rc, false);
+			FullNamedExpression fne = name.GetTypeExpression ().ResolveAsTypeOrNamespace (rc);
 			if (fne == null)
 				return null;
 
@@ -1188,14 +1207,14 @@ namespace Mono.CSharp {
 			if (local)
 				return null;
 
-			resolved = value.GetTypeExpression ().ResolveAsTypeStep (rc, false);
+			resolved = value.GetTypeExpression ().ResolveAsTypeOrNamespace (rc);
 			if (resolved == null) {
 				value = null;
 				return null;
 			}
 
 			if (resolved is TypeExpr)
-				resolved = resolved.ResolveAsTypeTerminal (rc, false);
+				resolved = resolved.ResolveAsType (rc);
 
 			return resolved;
 		}
