@@ -75,11 +75,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			applicationManifestComboBox.TextChanged += delegate { helper.IsDirty = true; };
 			
 			// embedding manifests requires the project to target MSBuild 3.5 or higher
+			project_MinimumSolutionVersionChanged(null, null);
 			// re-evaluate if the project has the minimum version whenever this options page gets visible
 			// because the "convert project" button on the compiling tab page might have updated the MSBuild version.
-			applicationManifestComboBox.VisibleChanged += delegate {
-				applicationManifestComboBox.Enabled = project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
-			};
+			project.MinimumSolutionVersionChanged += project_MinimumSolutionVersionChanged;
 			
 			Get<TextBox>("projectFolder").Text = project.Directory;
 			Get<TextBox>("projectFile").Text = Path.GetFileName(project.FileName);
@@ -91,6 +90,18 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			RefreshOutputNameTextBox(null, EventArgs.Empty);
 			
 			helper.AddConfigurationSelector(this);
+		}
+		
+		void project_MinimumSolutionVersionChanged(object sender, EventArgs e)
+		{
+			// embedding manifests requires the project to target MSBuild 3.5 or higher
+			applicationManifestComboBox.Enabled = project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
+		}
+		
+		protected override void Dispose(bool disposing)
+		{
+			project.MinimumSolutionVersionChanged -= project_MinimumSolutionVersionChanged;
+			base.Dispose(disposing);
 		}
 		
 		void ApplicationManifestComboBox_SelectedIndexChanged(object sender, EventArgs e)
