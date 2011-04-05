@@ -959,10 +959,31 @@ namespace ICSharpCode.NRefactory.CSharp
 					newEvent.AddChild (new CSharpTokenNode (Convert (location[0]), "event".Length), EventDeclaration.Roles.Keyword);
 				newEvent.AddChild (ConvertToType (e.TypeName), AstNode.Roles.Type);
 				
-//				if (e.MemberName.Left != null)
-//					newEvent.AddChild (ConvertToType (e.MemberName.Left), EventDeclaration.PrivateImplementationTypeRole);
+				VariableInitializer variable = new VariableInitializer ();
+				variable.AddChild (new Identifier (e.MemberName.Name, Convert (e.MemberName.Location)), FieldDeclaration.Roles.Identifier);
 				
-				newEvent.AddChild (new Identifier (e.MemberName.Name, Convert (e.Location)), EventDeclaration.Roles.Identifier);
+				if (e.Initializer != null) {
+					if (location != null)
+						variable.AddChild (new CSharpTokenNode (Convert (location[0]), 1), FieldDeclaration.Roles.Assign);
+					variable.AddChild ((Expression)e.Initializer.Accept (this), VariableInitializer.Roles.Expression);
+				}
+				newEvent.AddChild (variable, FieldDeclaration.Roles.Variable);
+				if (e.Declarators != null) {
+					foreach (var decl in e.Declarators) {
+						var declLoc = LocationsBag.GetLocations (decl);
+						if (declLoc != null)
+							newEvent.AddChild (new CSharpTokenNode (Convert (declLoc[0]), 1), FieldDeclaration.Roles.Comma);
+						
+						variable = new VariableInitializer ();
+						variable.AddChild (new Identifier (decl.Name.Value, Convert (decl.Name.Location)), VariableInitializer.Roles.Identifier);
+
+						if (decl.Initializer != null) {
+							variable.AddChild (new CSharpTokenNode (Convert (decl.Initializer.Location), 1), FieldDeclaration.Roles.Assign);
+							variable.AddChild ((Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
+						}
+						newEvent.AddChild (variable, FieldDeclaration.Roles.Variable);
+					}
+				}
 				
 				if (location != null)
 					newEvent.AddChild (new CSharpTokenNode (Convert (location[1]), ";".Length), EventDeclaration.Roles.Semicolon);
