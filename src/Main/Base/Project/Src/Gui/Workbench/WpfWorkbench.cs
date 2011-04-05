@@ -627,9 +627,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			try {
 				if (data != null && data.GetDataPresent(DataFormats.FileDrop)) {
 					string[] files = (string[])data.GetData(DataFormats.FileDrop);
-					foreach (string file in files) {
-						if (File.Exists(file)) {
-							return DragDropEffects.Link;
+					if (files != null) {
+						foreach (string file in files) {
+							if (File.Exists(file)) {
+								return DragDropEffects.Link;
+							}
 						}
 					}
 				}
@@ -646,7 +648,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (!e.Handled && e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) {
 					e.Handled = true;
 					string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-					
+					if (files == null)
+						return;
 					foreach (string file in files) {
 						if (File.Exists(file)) {
 							Project.IProjectLoader loader = Project.ProjectService.GetProjectLoader(file);
