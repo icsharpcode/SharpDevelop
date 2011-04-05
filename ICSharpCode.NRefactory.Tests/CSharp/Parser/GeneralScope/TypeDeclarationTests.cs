@@ -217,7 +217,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 						new TypeParameterDeclaration {
 							Attributes = {
 								new AttributeSection {
-									AttributeTarget = AttributeTarget.Unknown,
+									AttributeTarget = "partial",
 									Attributes = { new Attribute { Type = new SimpleType("where") } }
 								}
 							},
