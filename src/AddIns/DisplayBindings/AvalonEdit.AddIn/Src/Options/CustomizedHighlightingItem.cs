@@ -191,6 +191,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		
 		public override string ToString()
 		{
-			return this.Name;		}
+			return this.Name;
+		}
 	}
 }

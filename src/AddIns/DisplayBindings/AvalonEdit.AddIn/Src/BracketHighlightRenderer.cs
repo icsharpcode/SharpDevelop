@@ -83,6 +83,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			foreach (CustomizedHighlightingColor color in customizations) {
 				if (color.Name == BracketHighlight) {
 					renderer.UpdateColors(color.Background ?? Colors.Blue, color.Foreground ?? Colors.Blue);
+					// 'break;' is necessary because more specific customizations come first in the list
+					// (language-specific customizations are first, followed by 'all languages' customizations)
+					break;
 				}
 			}
 		}
