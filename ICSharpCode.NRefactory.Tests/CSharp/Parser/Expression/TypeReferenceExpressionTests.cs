@@ -6,41 +6,55 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 {
-	[TestFixture, Ignore]
+	[TestFixture]
 	public class TypeReferenceExpressionTests
 	{
 		[Test]
 		public void GlobalTypeReferenceExpression()
 		{
-			/*TypeReferenceExpression tr = ParseUtilCSharp.ParseExpression<TypeReferenceExpression>("global::System");
-			Assert.AreEqual("System", tr.TypeReference.Type);
-			Assert.IsTrue(tr.TypeReference.IsGlobal);*/
-			throw new NotImplementedException();
+			TypeReferenceExpression tr = ParseUtilCSharp.ParseExpression<TypeReferenceExpression>("global::System");
+			Assert.IsNotNull (tr.Match (new TypeReferenceExpression () {
+				Type = new MemberType () {
+					Target = new SimpleType ("global"),
+					IsDoubleColon = true,
+					MemberName = "System"
+				}
+			}));
 		}
 		
-		/* TODO
-		[Test]
+		[Test, Ignore ("Doesn't work")]
 		public void GlobalTypeReferenceExpressionWithoutTypeName()
 		{
 			TypeReferenceExpression tr = ParseUtilCSharp.ParseExpression<TypeReferenceExpression>("global::", true);
-			Assert.AreEqual("?", tr.TypeReference.Type);
-			Assert.IsTrue(tr.TypeReference.IsGlobal);
+			Assert.IsNotNull (tr.Match (new TypeReferenceExpression () {
+				Type = new MemberType () {
+					Target = new SimpleType ("global"),
+					IsDoubleColon = true,
+				}
+			}));
 		}
 		
 		[Test]
 		public void IntReferenceExpression()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("int.MaxValue");
-			Assert.AreEqual("MaxValue", fre.MemberName);
-			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.Type);
+			Assert.IsNotNull (fre.Match (new MemberReferenceExpression () {
+				Target = new IdentifierExpression () {
+					Identifier = "int"
+				},
+				MemberName = "MaxValue"
+			}));
 		}
 		
-		[Test]
+	/*	[Test]
 		public void StandaloneIntReferenceExpression()
 		{
+		// doesn't work because a = int; gives a compiler error.
 			TypeReferenceExpression tre = ParseUtilCSharp.ParseExpression<TypeReferenceExpression>("int");
-			Assert.AreEqual("System.Int32", tre.TypeReference.Type);
-		}
-		*/
+			Assert.IsNotNull (tre.Match (new TypeReferenceExpression () {
+				Type = new SimpleType ("int")
+			}));
+		}*/
+		
 	}
 }
