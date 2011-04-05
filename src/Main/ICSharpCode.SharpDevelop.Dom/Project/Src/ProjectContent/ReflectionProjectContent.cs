@@ -122,7 +122,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 				LoggingService.Warn(ex);
 			}
 			
-			string fileName = XmlDoc.LookupLocalizedXmlDoc(assemblyLocation);
+			string fileName = null;
+			if (assemblyLocation != typeof(object).Assembly.Location) {
+				// First look in the assembly's directory.
+				// mscorlib is the exception, because it is loaded from the runtime directory (C:\Windows\Microsoft.NET\Framework\v4.0.30319),
+				// but that might contain an outdated version of mscorlib.xml (with less documented members than the mscorlib.xml in the Reference Assemblies)
+				// (at least on my machine, lots of others don't seem to have the v4.0.30319\mscorlib.xml at all).
+				fileName = XmlDoc.LookupLocalizedXmlDoc(assemblyLocation);
+			}
 			if (fileName == null) {
 				// Not found -> look in other directories:
 				foreach (string testDirectory in XmlDoc.XmlDocLookupDirectories) {
