@@ -2762,9 +2762,10 @@ namespace Mono.CSharp
 						if (c == '\\') {
 							int surrogate;
 							c = escape (c, out surrogate);
+							if (is_identifier_part_character ((char) c))
+								id_builder[pos++] = (char) c;
+
 							if (surrogate != 0) {
-								if (is_identifier_part_character ((char) c))
-									id_builder[pos++] = (char) c;
 								c = surrogate;
 							}
 

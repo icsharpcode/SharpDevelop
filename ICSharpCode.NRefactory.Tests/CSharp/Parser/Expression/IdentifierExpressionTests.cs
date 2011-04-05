@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			CheckIdentifier(@"\u006cexer", "lexer");
 		}
 		
-		[Test, Ignore("Mono parser bug?")]
+		[Test]
 		public void TestIdentifierContainingEscapeSequence()
 		{
 			CheckIdentifier(@"l\U00000065xer", "lexer");
