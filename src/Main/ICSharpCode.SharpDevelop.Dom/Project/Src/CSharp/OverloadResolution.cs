@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				if (candidate.Status == CandidateStatus.Success) {
 					if (candidate.Parameters.Count > 0 && arguments.Count >= candidate.Parameters.Count - 1) {
 						IParameter lastParameter = candidate.Parameters[candidate.Parameters.Count - 1];
-						if (lastParameter.IsParams && lastParameter.ReturnType.IsArrayReturnType) {
+						if (lastParameter.IsParams && lastParameter.ReturnType != null && lastParameter.ReturnType.IsArrayReturnType) {
 							// try to construct an expanded form with the correct parameter count
 							IReturnType elementType = lastParameter.ReturnType.CastToArrayReturnType().ArrayElementType;
 							IMethodOrProperty expanded = (IMethodOrProperty)candidate.Method.CreateSpecializedMember();
