@@ -69,7 +69,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			void AddTypeArguments (ATypeNameExpression texpr, AstType result)
 			{
-				if (!texpr.HasTypeArguments)
+				if (texpr.TypeArguments == null || texpr.TypeArguments.Args == null)
 					return;
 				foreach (var arg in texpr.TypeArguments.Args) {
 					result.AddChild (ConvertToType (arg), AstType.Roles.TypeArgument);
