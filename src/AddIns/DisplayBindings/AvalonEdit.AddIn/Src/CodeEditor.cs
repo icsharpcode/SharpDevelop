@@ -314,6 +314,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				secondaryTextEditor.SetBinding(TextEditor.IsReadOnlyProperty,
 				                               new Binding(TextEditor.IsReadOnlyProperty.Name) { Source = primaryTextEditor });
 				secondaryTextEditor.SyntaxHighlighting = primaryTextEditor.SyntaxHighlighting;
+				secondaryTextEditor.UpdateCustomizedHighlighting();
 				
 				gridSplitter = new GridSplitter {
 					Height = 4,
