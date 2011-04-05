@@ -906,6 +906,21 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					newConstructor.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MethodDeclaration.Roles.RPar);
 				
+				if (c.Initializer != null) {
+					var initializer = new ConstructorInitializer ();
+					initializer.ConstructorInitializerType = c.Initializer is ConstructorBaseInitializer ? ConstructorInitializerType.Base : ConstructorInitializerType.This;
+					var initializerLocation = LocationsBag.GetLocations (c.Initializer);
+					
+					if (initializerLocation != null)
+						newConstructor.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ConstructorDeclaration.Roles.Colon);
+					if (initializerLocation != null)
+						initializer.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ConstructorDeclaration.Roles.LPar);
+					AddArguments (initializer, LocationsBag.GetLocations (c.Initializer.Arguments), c.Initializer.Arguments);
+					if (initializerLocation != null)
+						initializer.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ConstructorDeclaration.Roles.RPar);
+					newConstructor.AddChild (initializer, ConstructorDeclaration.InitializerRole);
+				}
+				
 				if (c.Block != null)
 					newConstructor.AddChild ((BlockStatement)c.Block.Accept (this), ConstructorDeclaration.Roles.Body);
 				
