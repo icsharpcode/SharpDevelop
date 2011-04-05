@@ -308,7 +308,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newType, location);
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "class".Length), TypeDeclaration.Roles.Keyword);
-				newType.AddChild (new Identifier (c.Basename, Convert (c.MemberName.Location)), AstNode.Roles.Identifier);
+				newType.AddChild (new Identifier (c.MemberName.Name, Convert (c.MemberName.Location)), AstNode.Roles.Identifier);
 				if (c.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (c.MemberName);
 					if (typeArgLocation != null)
@@ -342,7 +342,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newType, location);
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "struct".Length), TypeDeclaration.Roles.Keyword);
-				newType.AddChild (new Identifier (s.Basename, Convert (s.MemberName.Location)), AstNode.Roles.Identifier);
+				newType.AddChild (new Identifier (s.MemberName.Name, Convert (s.MemberName.Location)), AstNode.Roles.Identifier);
 				if (s.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (s.MemberName);
 					if (typeArgLocation != null)
@@ -378,7 +378,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newType, location);
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "interface".Length), TypeDeclaration.Roles.Keyword);
-				newType.AddChild (new Identifier (i.Basename, Convert (i.MemberName.Location)), AstNode.Roles.Identifier);
+				newType.AddChild (new Identifier (i.MemberName.Name, Convert (i.MemberName.Location)), AstNode.Roles.Identifier);
 				if (i.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (i.MemberName);
 					if (typeArgLocation != null)
@@ -412,7 +412,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					newDelegate.AddChild (new CSharpTokenNode (Convert (location[0]), "delegate".Length), TypeDeclaration.Roles.Keyword);
 				newDelegate.AddChild (ConvertToType (d.ReturnType), AstNode.Roles.Type);
-				newDelegate.AddChild (new Identifier (d.Basename, Convert (d.MemberName.Location)), AstNode.Roles.Identifier);
+				newDelegate.AddChild (new Identifier (d.MemberName.Name, Convert (d.MemberName.Location)), AstNode.Roles.Identifier);
 				if (d.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (d.MemberName);
 					if (typeArgLocation != null)
@@ -461,7 +461,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newType, location);
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "enum".Length), TypeDeclaration.Roles.Keyword);
-				newType.AddChild (new Identifier (e.Basename, Convert (e.MemberName.Location)), AstNode.Roles.Identifier);
+				newType.AddChild (new Identifier (e.MemberName.Name, Convert (e.MemberName.Location)), AstNode.Roles.Identifier);
 				
 				if (e.TypeBaseExpressions != null) {
 					foreach (var baseTypes in e.TypeBaseExpressions) {
