@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class AstFormattingVisitor : DepthFirstAstVisitor<object, object>
 	{
-		CSharpFormattingPolicy policy;
+		CSharpFormattingOptions policy;
 		ITextEditorAdapter data;
 		List<Change> changes = new List<Change> ();
 		Indent curIndent = new Indent ();
@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public AstFormattingVisitor (CSharpFormattingPolicy policy, ITextEditorAdapter data)
+		public AstFormattingVisitor (CSharpFormattingOptions policy, ITextEditorAdapter data)
 		{
 			this.policy = policy;
 			this.data = data;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
@@ -100,7 +100,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		static string ToCSharp(AstNode node)
 		{
 			StringWriter w = new StringWriter();
-			node.AcceptVisitor(new OutputVisitor(w, new CSharpFormattingPolicy()), null);
+			node.AcceptVisitor(new OutputVisitor(w, new CSharpFormattingOptions()), null);
 			return w.ToString();
 		}
 	}

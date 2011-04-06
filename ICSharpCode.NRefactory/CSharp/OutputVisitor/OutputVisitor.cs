@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class OutputVisitor : IPatternAstVisitor<object, object>
 	{
 		readonly IOutputFormatter formatter;
-		readonly CSharpFormattingPolicy policy;
+		readonly CSharpFormattingOptions policy;
 		
 		readonly Stack<AstNode> containerStack = new Stack<AstNode>();
 		readonly Stack<AstNode> positionStack = new Stack<AstNode>();
@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			Division
 		}
 		
-		public OutputVisitor(TextWriter textWriter, CSharpFormattingPolicy formattingPolicy)
+		public OutputVisitor(TextWriter textWriter, CSharpFormattingOptions formattingPolicy)
 		{
 			if (textWriter == null)
 				throw new ArgumentNullException("textWriter");
@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.policy = formattingPolicy;
 		}
 		
-		public OutputVisitor(IOutputFormatter formatter, CSharpFormattingPolicy formattingPolicy)
+		public OutputVisitor(IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy)
 		{
 			if (formatter == null)
 				throw new ArgumentNullException("formatter");

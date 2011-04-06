@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (IsNull)
 				return "Null";
 			StringWriter w = new StringWriter();
-			AcceptVisitor(new OutputVisitor(w, new CSharpFormattingPolicy()), null);
+			AcceptVisitor(new OutputVisitor(w, new CSharpFormattingOptions()), null);
 			return w.ToString();
 		}
 		
