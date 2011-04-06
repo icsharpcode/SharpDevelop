@@ -3,6 +3,7 @@
 
 using System;
 using NUnit.Framework;
+using ICSharpCode.NRefactory.PatternMatching;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 {
@@ -61,26 +62,26 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		public void GenericMethodReference()
 		{
 			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("M<int>");
-			Assert.IsNotNull(
+			Assert.IsTrue(
 				new IdentifierExpression {
 					Identifier = "M" ,
 					TypeArguments = {
 						new PrimitiveType("int")
 					}
-				}.Match(ident));
+				}.IsMatch(ident));
 		}
 		
 		[Test]
 		public void GenericMethodReference2()
 		{
 			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("TargetMethod<string>");
-			Assert.IsNotNull(
+			Assert.IsTrue(
 				new IdentifierExpression {
 					Identifier = "TargetMethod" ,
 					TypeArguments = {
 						new PrimitiveType("string")
 					}
-				}.Match(ident));
+				}.IsMatch(ident));
 		}
 	}
 }

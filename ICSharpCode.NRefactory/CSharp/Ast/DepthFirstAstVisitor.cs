@@ -584,5 +584,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return VisitChildren (emptyExpression, data);
 		}
+		
+		public virtual S VisitPatternPlaceholder(AstNode placeholder, PatternMatching.Pattern pattern, T data)
+		{
+			return VisitChildren (placeholder, data);
+		}
 	}
 }

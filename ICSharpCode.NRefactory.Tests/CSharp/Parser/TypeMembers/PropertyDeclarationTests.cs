@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using ICSharpCode.NRefactory.PatternMatching;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 {
@@ -85,7 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 			Assert.IsFalse(pd.Getter.IsNull);
 			Assert.IsTrue(pd.Setter.IsNull);
 			
-			Assert.IsNotNull(new SimpleType { Identifier = "MyInterface", TypeArguments = { new PrimitiveType("string") } }.Match(pd.PrivateImplementationType));
+			Assert.IsTrue(new SimpleType { Identifier = "MyInterface", TypeArguments = { new PrimitiveType("string") } }.IsMatch(pd.PrivateImplementationType));
 		}
 	}
 }

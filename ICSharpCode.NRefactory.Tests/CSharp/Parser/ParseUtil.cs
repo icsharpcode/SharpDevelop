@@ -4,6 +4,8 @@
 using System;
 using System.IO;
 using System.Linq;
+
+using ICSharpCode.NRefactory.PatternMatching;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser
@@ -29,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		public static void AssertGlobal(string code, AstNode expectedNode)
 		{
 			var node = ParseGlobal<AstNode>(code);
-			if (expectedNode.Match(node) == null) {
+			if (!expectedNode.IsMatch(node)) {
 				Assert.Fail("Expected '{0}' but was '{1}'", ToCSharp(expectedNode), ToCSharp(node));
 			}
 		}
@@ -50,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		public static void AssertStatement(string code, CSharp.Statement expectedStmt)
 		{
 			var stmt = ParseStatement<CSharp.Statement>(code);
-			if (expectedStmt.Match(stmt) == null) {
+			if (!expectedStmt.IsMatch(stmt)) {
 				Assert.Fail("Expected '{0}' but was '{1}'", ToCSharp(expectedStmt), ToCSharp(stmt));
 			}
 		}
@@ -71,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		public static void AssertExpression(string code, CSharp.Expression expectedExpr)
 		{
 			var expr = ParseExpression<CSharp.Expression>(code);
-			if (expectedExpr.Match(expr) == null) {
+			if (!expectedExpr.IsMatch(expr)) {
 				Assert.Fail("Expected '{0}' but was '{1}'", ToCSharp(expectedExpr), ToCSharp(expr));
 			}
 		}
@@ -92,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		public static void AssertTypeMember(string code, CSharp.AttributedNode expectedMember)
 		{
 			var member = ParseTypeMember<CSharp.AttributedNode>(code);
-			if (expectedMember.Match(member) == null) {
+			if (!expectedMember.IsMatch(member)) {
 				Assert.Fail("Expected '{0}' but was '{1}'", ToCSharp(expectedMember), ToCSharp(member));
 			}
 		}
