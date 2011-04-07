@@ -69,7 +69,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		protected MSBuildBasedProject GetActiveProject(string projectName)
 		{
 			if (projectName != null) {
-				return PackageManagementService.GetProject(projectName);
+				return ConsoleHost.GetProject(projectName);
 			}
 			return ConsoleHost.DefaultProject as MSBuildBasedProject;
 		}

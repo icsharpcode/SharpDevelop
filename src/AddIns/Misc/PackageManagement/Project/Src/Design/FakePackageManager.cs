@@ -54,7 +54,6 @@ namespace ICSharpCode.PackageManagement.Design
 		public ILogger Logger { get; set; }
 		public IPackageRepository SourceRepository { get; set; }
 		public ISharpDevelopProjectManager ProjectManager { get; set; }
-		public ILogger LoggerSetBeforeInstallPackageCalled;
 		
 		public FakePackageRepository FakeSourceRepository = new FakePackageRepository();
 		
@@ -66,8 +65,6 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public void InstallPackage(IPackage package, bool ignoreDependencies)
 		{
-			LoggerSetBeforeInstallPackageCalled = Logger;
-			
 			PackagePassedToInstallPackage = package;
 			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
 			
@@ -117,8 +114,6 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies)
 		{
-			LoggerSetBeforeInstallPackageCalled = Logger;
-			
 			PackagePassedToInstallPackage = package;
 			
 			ParametersPassedToInstallPackage = new InstallPackageParameters();

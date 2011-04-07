@@ -103,6 +103,7 @@
     <Compile Include="Src\Helpers\TestablePackageManagementConsoleViewModel.cs" />
     <Compile Include="Src\Helpers\TestablePackagesViewModel.cs" />
     <Compile Include="Src\Helpers\TestablePackageViewModel.cs" />
+    <Compile Include="Src\Helpers\TestableProcessPackageAction.cs" />
     <Compile Include="Src\Helpers\TestableProject.cs" />
     <Compile Include="Src\Helpers\TestableProjectManager.cs" />
     <Compile Include="Src\Helpers\FakeProjectSystemFactory.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Src\Helpers\UninstallPackageHelper.cs" />
     <Compile Include="Src\Helpers\UpdatePackageHelper.cs" />
     <Compile Include="Src\InstalledPackagesViewModelTests.cs" />
+    <Compile Include="Src\InstallPackageActionTests.cs" />
     <Compile Include="Src\LicenseAcceptanceViewModelTests.cs" />
     <Compile Include="Src\OpenHyperlinkCommandTests.cs" />
     <Compile Include="Src\PackageManagementOptionsTests.cs" />
@@ -135,6 +137,8 @@
     <Compile Include="Src\PackageRepositoryPathsTests.cs" />
     <Compile Include="Src\PackageSourceViewModelTests.cs" />
     <Compile Include="Src\PackagesViewModelTests.cs" />
+    <Compile Include="Src\ProcessPackageActionTests.cs" />
+    <Compile Include="Src\UninstallPackageActionTests.cs" />
     <Compile Include="Src\UpdatedPackagesViewModelTests.cs" />
     <Compile Include="Src\PackageViewModelTests.cs" />
     <Compile Include="Src\PagesTests.cs" />
@@ -151,6 +155,7 @@
     <Compile Include="Src\SharpDevelopProjectSystemTests.cs" />
     <Compile Include="Src\StringToStringCollectionConverterTests.cs" />
     <Compile Include="Src\UpdatedPackageViewModelTests.cs" />
+    <Compile Include="Src\UpdatePackageActionTests.cs" />
     <Compile Include="Src\ViewModelBaseTests.cs" />
   </ItemGroup>
   <ItemGroup>

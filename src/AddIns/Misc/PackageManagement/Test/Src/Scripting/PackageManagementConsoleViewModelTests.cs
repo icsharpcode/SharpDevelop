@@ -4,11 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
+using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -18,42 +18,40 @@ namespace PackageManagement.Tests.Scripting
 	public class PackageManagementConsoleViewModelTests
 	{
 		TestablePackageManagementConsoleViewModel viewModel;
-		FakePackageManagementService packageManagementService;
 		FakePackageManagementProjectService projectService;
 		FakePackageManagementConsoleHost consoleHost;
 		List<string> propertiesChanged;
 		
-		void CreatePackageManagementServices()
+		void CreateConsoleHost()
 		{
-			packageManagementService = new FakePackageManagementService();
-			projectService = packageManagementService.FakeProjectService;
 			consoleHost = new FakePackageManagementConsoleHost();
+			projectService = consoleHost.FakeProjectService;
 		}
 		
 		void CreateViewModel()
 		{
-			CreatePackageManagementServices();
-			CreateViewModel(packageManagementService);
+			CreateConsoleHost();
+			CreateViewModel(consoleHost);
 		}
 		
-		void CreateViewModel(IPackageManagementService packageManagementService)
+		void CreateViewModel(IPackageManagementConsoleHost consoleHost)
 		{
-			viewModel = new TestablePackageManagementConsoleViewModel(packageManagementService, consoleHost);
+			viewModel = new TestablePackageManagementConsoleViewModel(consoleHost);
 		}
 		
 		void CreateViewModelWithOneRegisteredPackageSource()
 		{
-			CreatePackageManagementServices();
+			CreateConsoleHost();
 			AddOnePackageSourceAndRemoveAnyExistingPackageSources();
-			CreateViewModel(packageManagementService);
+			CreateViewModel(consoleHost);
 		}
 		
 		Solution CreateViewModelWithOneProjectOpen()
 		{
-			CreatePackageManagementServices();
+			CreateConsoleHost();
 			Solution solution = CreateSolutionWithOneProject();
 			projectService.OpenSolution = solution;
-			CreateViewModel(packageManagementService);
+			CreateViewModel(consoleHost);
 			
 			return solution;
 		}
@@ -69,7 +67,7 @@ namespace PackageManagement.Tests.Scripting
 		
 		void AddOnePackageSourceAndRemoveAnyExistingPackageSources()
 		{
-			packageManagementService.ClearPackageSources();
+			viewModel.RegisteredPackageSources.Clear();
 			AddOnePackageSource();
 		}
 		
@@ -80,7 +78,7 @@ namespace PackageManagement.Tests.Scripting
 		
 		void AddOnePackageSource(string name)
 		{
-			packageManagementService.AddOnePackageSource(name);
+			viewModel.RegisteredPackageSources.Add(new PackageSource(name));
 		}
 		
 		PackageSourceViewModel SelectSecondPackageSource()
@@ -98,7 +96,7 @@ namespace PackageManagement.Tests.Scripting
 		
 		Solution CreatePackageManagementServiceWithEmptySolutionOpen()
 		{
-			CreatePackageManagementServices();
+			CreateConsoleHost();
 			var solution = new Solution();
 			projectService.OpenSolution = solution;
 			return solution;
@@ -107,7 +105,7 @@ namespace PackageManagement.Tests.Scripting
 		Solution CreateViewModelWithEmptySolutionOpen()
 		{
 			var solution = CreatePackageManagementServiceWithEmptySolutionOpen();
-			CreateViewModel(packageManagementService);
+			CreateViewModel(consoleHost);
 			return solution;
 		}
 		
@@ -142,7 +140,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateViewModelWithOneRegisteredPackageSource();
 			
-			var expectedPackageSources = packageManagementService.Options.PackageSources;
+			var expectedPackageSources = viewModel.RegisteredPackageSources;
 			var actualPackageSources = viewModel.PackageSources;
 			
 			PackageSourceCollectionAssert.AreEqual(expectedPackageSources, actualPackageSources);
@@ -152,7 +150,7 @@ namespace PackageManagement.Tests.Scripting
 		public void ActivePackageSource_OneRegisteredPackageSourceWhenConsoleCreated_SinglePackageSourceIsActivePackageSource()
 		{
 			CreateViewModelWithOneRegisteredPackageSource();
-			var expectedPackageSource = packageManagementService.Options.PackageSources[0];
+			var expectedPackageSource = viewModel.RegisteredPackageSources[0];
 			var actualPackageSource = viewModel.ActivePackageSource.GetPackageSource();
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
@@ -164,7 +162,7 @@ namespace PackageManagement.Tests.Scripting
 			CreateViewModel();
 			AddOnePackageSourceAndRemoveAnyExistingPackageSources();
 			
-			var expectedPackageSources = packageManagementService.Options.PackageSources;
+			var expectedPackageSources = viewModel.RegisteredPackageSources;
 			var actualPackageSources = viewModel.PackageSources;
 			
 			PackageSourceCollectionAssert.AreEqual(expectedPackageSources, actualPackageSources);
@@ -176,7 +174,7 @@ namespace PackageManagement.Tests.Scripting
 			CreateViewModel();
 			AddOnePackageSourceAndRemoveAnyExistingPackageSources();
 			
-			var expectedPackageSource = packageManagementService.Options.PackageSources[0];
+			var expectedPackageSource = viewModel.RegisteredPackageSources[0];
 			var actualPackageSource = viewModel.ActivePackageSource.GetPackageSource();
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
@@ -225,7 +223,7 @@ namespace PackageManagement.Tests.Scripting
 			CreateViewModel();
 			AddOnePackageSource();
 			SelectSecondPackageSource();
-			packageManagementService.Options.PackageSources.RemoveAt(1);
+			viewModel.RegisteredPackageSources.RemoveAt(1);
 			
 			var expectedPackageSource = viewModel.PackageSources[0];
 			var actualPackageSource = viewModel.ActivePackageSource;
@@ -257,7 +255,7 @@ namespace PackageManagement.Tests.Scripting
 		public void Constructor_EmptySolutionOpenWhenConsoleCreated_DoesNotThrowException()
 		{
 			CreatePackageManagementServiceWithEmptySolutionOpen();
-			Assert.DoesNotThrow(() => CreateViewModel(packageManagementService));
+			Assert.DoesNotThrow(() => CreateViewModel(consoleHost));
 		}
 		
 		[Test]
@@ -407,7 +405,7 @@ namespace PackageManagement.Tests.Scripting
 		public void ActivePackageSource_OneRegisteredPackageSourceWhenConsoleCreated_ActivePackageSourceSetForConsole()
 		{
 			CreateViewModelWithOneRegisteredPackageSource();
-			var expectedPackageSource = packageManagementService.Options.PackageSources[0];
+			var expectedPackageSource = viewModel.RegisteredPackageSources[0];
 			var actualPackageSource = consoleHost.ActivePackageSource;
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);

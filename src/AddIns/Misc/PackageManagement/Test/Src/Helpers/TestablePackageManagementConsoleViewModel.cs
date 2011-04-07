@@ -6,6 +6,7 @@ using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
+using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -14,11 +15,19 @@ namespace PackageManagement.Tests.Helpers
 		public PackageManagementConsole FakeConsole = 
 			new PackageManagementConsole(new FakeScriptingConsole(), new FakeControlDispatcher());
 		
-		public TestablePackageManagementConsoleViewModel(
-			IPackageManagementService packageManagementService,
-			IPackageManagementConsoleHost consoleHost)
-			: base(packageManagementService, consoleHost)
+		public RegisteredPackageSources RegisteredPackageSources;
+		
+		public TestablePackageManagementConsoleViewModel(IPackageManagementConsoleHost consoleHost)
+			: this(new RegisteredPackageSources(new PackageSource[0]), consoleHost)
 		{
+		}
+		
+		public TestablePackageManagementConsoleViewModel(
+			RegisteredPackageSources registeredPackageSources,
+			IPackageManagementConsoleHost consoleHost)
+			: base(registeredPackageSources, consoleHost)
+		{
+			this.RegisteredPackageSources = registeredPackageSources;
 		}
 		
 		protected override PackageManagementConsole CreateConsole()

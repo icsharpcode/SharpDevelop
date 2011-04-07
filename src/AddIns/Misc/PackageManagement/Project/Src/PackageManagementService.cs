@@ -45,10 +45,6 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public IPackageManagementProjectService ProjectService {
-			get { return projectService; }
-		}
-		
 		public IPackageManagementOutputMessagesView OutputMessagesView {
 			get { return outputMessagesView; }
 		}
@@ -128,9 +124,7 @@ namespace ICSharpCode.PackageManagement
 		
 		ISharpDevelopPackageManager CreatePackageManager(IPackageRepository packageRepository, MSBuildBasedProject project)
 		{
-			ISharpDevelopPackageManager packageManager = packageManagerFactory.CreatePackageManager(packageRepository, project);
-			ConfigureLogger(packageManager);
-			return packageManager;
+			return packageManagerFactory.CreatePackageManager(packageRepository, project);
 		}
 		
 		public ISharpDevelopProjectManager CreateProjectManager(IPackageRepository packageRepository, MSBuildBasedProject project)
@@ -139,30 +133,10 @@ namespace ICSharpCode.PackageManagement
 			return packageManager.ProjectManager;
 		}
 		
-		void ConfigureLogger(ISharpDevelopPackageManager packageManager)
-		{
-			packageManager.Logger = outputMessagesView;
-			packageManager.FileSystem.Logger = outputMessagesView;
-			
-			IProjectManager projectManager = packageManager.ProjectManager;
-			projectManager.Logger = outputMessagesView;
-			projectManager.Project.Logger = outputMessagesView;
-		}
-		
-		public InstallPackageAction CreateInstallPackageAction()
-		{
-			return new InstallPackageAction(this);
-		}
-		
 		public ISharpDevelopPackageManager CreatePackageManager(PackageSource packageSource, MSBuildBasedProject project)
 		{
 			IPackageRepository packageRepository = CreatePackageRepository(packageSource);
 			return CreatePackageManager(packageRepository, project);
-		}
-		
-		public UninstallPackageAction CreateUninstallPackageAction()
-		{
-			return new UninstallPackageAction(this);
 		}
 		
 		public bool HasMultiplePackageSources {
@@ -204,24 +178,19 @@ namespace ICSharpCode.PackageManagement
 			return packageRepositoryCache.CreateRepository(source);
 		}
 		
-		public MSBuildBasedProject GetProject(string name)
+		public InstallPackageAction CreateInstallPackageAction()
 		{
-			foreach (IProject project in projectService.GetOpenProjects()) {
-				if (IsProjectNameMatch(project.Name, name)) {
-					return project as MSBuildBasedProject;
-				}
-			}
-			return null;
-		}
-		
-		bool IsProjectNameMatch(string a, string b)
-		{
-			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
+			return new InstallPackageAction(this);
 		}
 		
 		public UpdatePackageAction CreateUpdatePackageAction()
 		{
 			return new UpdatePackageAction(this);
+		}
+		
+		public UninstallPackageAction CreateUninstallPackageAction()
+		{
+			return new UninstallPackageAction(this);
 		}
 		
 		public void OnParentPackageInstalled(IPackage package)

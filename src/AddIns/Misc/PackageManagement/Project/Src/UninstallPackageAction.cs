@@ -19,6 +19,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool ForceRemove { get; set; }
 		public bool RemoveDependencies { get; set; }
+
+		protected override void BeforeExecute()
+		{
+			base.BeforeExecute();
+		}
 		
 		protected override void ExecuteCore()
 		{

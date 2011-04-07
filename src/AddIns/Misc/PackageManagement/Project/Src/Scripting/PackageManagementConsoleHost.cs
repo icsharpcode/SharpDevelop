@@ -17,6 +17,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 	{
 		IThread thread;
 		IPowerShellHostFactory powerShellHostFactory;
+		IPackageManagementProjectService projectService;
 		IPowerShellHost powerShellHost;
 		IPackageManagementAddInPath addinPath;
 		int autoIndentSize = 0;
@@ -25,20 +26,29 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		public PackageManagementConsoleHost(
 			IPowerShellHostFactory powerShellHostFactory,
+			IPackageManagementProjectService projectService,
 			IPackageManagementAddInPath addinPath)
 		{
 			this.powerShellHostFactory = powerShellHostFactory;
+			this.projectService = projectService;
 			this.addinPath = addinPath;
 		}
 		
 		public PackageManagementConsoleHost()
-			: this(new PowerShellHostFactory(), new PackageManagementAddInPath())
+			: this(
+				new PowerShellHostFactory(),
+				new PackageManagementProjectService(),
+				new PackageManagementAddInPath())
 		{
 		}
 		
 		public IProject DefaultProject { get; set; }
 		public PackageSource ActivePackageSource { get; set; }
 		public IScriptingConsole ScriptingConsole { get; set; }
+		
+		public IPackageManagementProjectService ProjectService {
+			get { return projectService; }
+		}
 		
 		public void Dispose()
 		{
@@ -164,6 +174,21 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void ProcessLine(string line)
 		{
 			powerShellHost.ExecuteCommand(line);
+		}
+		
+		public MSBuildBasedProject GetProject(string name)
+		{
+			foreach (IProject project in projectService.GetOpenProjects()) {
+				if (IsProjectNameMatch(project.Name, name)) {
+					return project as MSBuildBasedProject;
+				}
+			}
+			return null;
+		}
+		
+		bool IsProjectNameMatch(string a, string b)
+		{
+			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
 		}
 	}
 }

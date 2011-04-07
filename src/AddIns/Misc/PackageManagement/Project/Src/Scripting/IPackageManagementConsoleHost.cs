@@ -14,8 +14,11 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IProject DefaultProject { get; set; }
 		PackageSource ActivePackageSource { get; set; }
 		IScriptingConsole ScriptingConsole { get; set; }
+		IPackageManagementProjectService ProjectService { get; }
 		
 		void Clear();
 		void Run();
+		
+		MSBuildBasedProject GetProject(string name);
 	}
 }

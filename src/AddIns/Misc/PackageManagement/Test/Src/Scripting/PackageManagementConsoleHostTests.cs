@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
@@ -16,19 +17,27 @@ namespace PackageManagement.Tests.Scripting
 		TestablePackageManagementConsoleHost host;
 		FakeScriptingConsoleWithLinesToRead scriptingConsole;
 		FakePowerShellHost powerShellHost;
+		FakePackageManagementProjectService fakeProjectService;
 		
 		void CreateHost()
 		{
 			host = new TestablePackageManagementConsoleHost();
 			scriptingConsole = host.FakeScriptingConsole;
-			
 			powerShellHost = host.FakePowerShellHostFactory.FakePowerShellHost;
+			fakeProjectService = host.FakeProjectService;
 		}
 		
 		void RunHost()
 		{
 			host.Run();
 			host.ThreadStartPassedToCreateThread.Invoke();
+		}
+		
+		TestableProject AddProject(string name)
+		{
+			var project = ProjectHelper.CreateTestProject(name);
+			fakeProjectService.AddFakeProject(project);
+			return project;
 		}
 		
 		[Test]
@@ -240,6 +249,34 @@ namespace PackageManagement.Tests.Scripting
 			string expectedLastLine = String.Empty;
 			
 			Assert.AreEqual(expectedLastLine, actualLastLine);
+		}
+		
+		[Test]
+		public void GetProject_ThreeProjectsOpenAndProjectWithNameExists_ReturnsMatchingProject()
+		{
+			CreateHost();
+			
+			AddProject("One");
+			var expectedProject = AddProject("Two");
+			AddProject("Three");
+			
+			var actualProject = host.GetProject("Two");
+			
+			Assert.AreEqual(expectedProject, actualProject);
+		}
+		
+		[Test]
+		public void GetProject_ProjectNameHasDifferentCase_ReturnsMatchingProjectIgnoringCase()
+		{
+			CreateHost();
+			
+			AddProject("One");
+			var expectedProject = AddProject("TWO");
+			AddProject("Three");
+			
+			var actualProject = host.GetProject("two");
+			
+			Assert.AreEqual(expectedProject, actualProject);
 		}
 	}
 }

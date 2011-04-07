@@ -3,6 +3,8 @@
 
 using System;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Project;
@@ -47,6 +49,21 @@ namespace PackageManagement.Tests.Helpers
 			var source = new PackageSource("Test");
 			ActivePackageSource = source;
 			return source;
+		}
+		
+		public MSBuildBasedProject FakeProjectToReturnFromGetProject;
+		public string NamePassedToGetProject;
+		
+		public MSBuildBasedProject GetProject(string name)
+		{
+			NamePassedToGetProject = name;
+			return FakeProjectToReturnFromGetProject;
+		}
+		
+		public FakePackageManagementProjectService FakeProjectService = new FakePackageManagementProjectService();
+		
+		public IPackageManagementProjectService ProjectService {
+			get { return FakeProjectService; }
 		}
 	}
 }

@@ -76,7 +76,7 @@ namespace ICSharpCode.PackageManagement
 			var consoleHost = ServiceLocator.PackageManagementConsoleHost;
 			packageManagementConsoleViewModel = 
 				new PackageManagementConsoleViewModel(
-					packageManagementService,
+					packageManagementService.Options.PackageSources,
 					consoleHost);
 		}
 	}

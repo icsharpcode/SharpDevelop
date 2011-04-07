@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
 
@@ -15,11 +16,13 @@ namespace PackageManagement.Tests.Helpers
 		public ThreadStart ThreadStartPassedToCreateThread;
 		public FakePowerShellHostFactory FakePowerShellHostFactory;
 		public FakePackageManagementAddInPath FakePackageManagementAddInPath;
+		public FakePackageManagementProjectService FakeProjectService;
 		
 		public TestablePackageManagementConsoleHost()
 			: this(
 				new FakeScriptingConsoleWithLinesToRead(),
 				new FakePowerShellHostFactory(),
+				new FakePackageManagementProjectService(),
 				new FakePackageManagementAddInPath())
 		{
 		}
@@ -27,12 +30,14 @@ namespace PackageManagement.Tests.Helpers
 		public TestablePackageManagementConsoleHost(
 			FakeScriptingConsoleWithLinesToRead scriptingConsole,
 			FakePowerShellHostFactory powerShellHostFactory,
+			FakePackageManagementProjectService projectService,
 			FakePackageManagementAddInPath addinPath)
-			: base(powerShellHostFactory, addinPath)
+			: base(powerShellHostFactory, projectService, addinPath)
 		{
 			this.FakeScriptingConsole = scriptingConsole;
 			this.ScriptingConsole = scriptingConsole;
 			this.FakePowerShellHostFactory = powerShellHostFactory;
+			this.FakeProjectService = projectService;
 			this.FakePackageManagementAddInPath = addinPath;
 		}
 		

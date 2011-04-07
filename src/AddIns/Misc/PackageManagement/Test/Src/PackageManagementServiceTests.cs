@@ -23,9 +23,6 @@ namespace PackageManagement.Tests
 		FakePackageManagerFactory fakePackageManagerFactory;
 		FakePackageManagementProjectService fakeProjectService;
 		TestableProject testProject;
-		InstallPackageHelper installPackageHelper;
-		UninstallPackageHelper uninstallPackageHelper;
-		UpdatePackageHelper updatePackageHelper;
 		FakePackageManagementOutputMessagesView fakeOutputMessagesView;
 		
 		void CreatePackageSources()
@@ -53,10 +50,6 @@ namespace PackageManagement.Tests
 					fakePackageManagerFactory,
 					fakeProjectService,
 					fakeOutputMessagesView);
-
-			installPackageHelper = new InstallPackageHelper(packageManagementService);
-			uninstallPackageHelper = new UninstallPackageHelper(packageManagementService);
-			updatePackageHelper = new UpdatePackageHelper(packageManagementService);
 		}
 		
 		FakePackage AddOneFakePackageToPackageRepositoryFactoryRepository(string id)
@@ -81,80 +74,7 @@ namespace PackageManagement.Tests
 			
 			return operations;
 		}
-		
-		TestableProject AddProject(string name)
-		{
-			var project = ProjectHelper.CreateTestProject(name);
-			fakeProjectService.AddFakeProject(project);
-			return project;
-		}
-		
-		[Test]
-		public void InstallPackage_PackageObjectPassed_CallsPackageManagerInstallPackage()
-		{
-			CreatePackageManagementService();
-			installPackageHelper.InstallTestPackage();
 			
-			bool expectedIgnoreDependencies = false;
-			var expectedInstallPackageParameters = new FakePackageManager.InstallPackageParameters() {
-				IgnoreDependenciesPassedToInstallPackage = expectedIgnoreDependencies,
-				PackagePassedToInstallPackage = installPackageHelper.TestPackage,
-				PackageOperationsPassedToInstallPackage = installPackageHelper.PackageOperations
-			};
-			
-			var actualInstallPackageParameters = fakePackageManagerFactory.FakePackageManager.ParametersPassedToInstallPackage;
-			
-			Assert.AreEqual(expectedInstallPackageParameters, actualInstallPackageParameters);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageAndPackageRepositoryPassed_CreatesPackageManagerWithPackageRepository()
-		{
-			CreatePackageManagementService();
-			installPackageHelper.InstallTestPackage();
-			
-			IPackageRepository expectedRepository = installPackageHelper.PackageRepository;
-			IPackageRepository actualRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
-			
-			Assert.AreEqual(expectedRepository, actualRepository);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageAndPackageRepositoryPassed_CreatesPackageManagerWithCurrentlyActiveProject()
-		{
-			CreatePackageManagementService();
-			IProject expectedProject = ProjectHelper.CreateTestProject();
-			fakeProjectService.CurrentProject = expectedProject;
-			
-			installPackageHelper.InstallTestPackage();
-			
-			IProject actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
-			
-			Assert.AreEqual(expectedProject, actualProject);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageAndPackageRepositoryPassed_RefreshesProjectBrowserWindow()
-		{
-			CreatePackageManagementService();
-			installPackageHelper.InstallTestPackage();
-			
-			Assert.IsTrue(fakeProjectService.IsRefreshProjectBrowserCalled);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageAndPackageRepositoryPassed_RefreshesProjectBrowserWindowAfterInstallingPackage()
-		{
-			CreatePackageManagementService();
-			fakePackageManagerFactory.FakePackageManager.FakeProjectService = fakeProjectService;
-			
-			installPackageHelper.InstallTestPackage();
-			
-			bool result = fakePackageManagerFactory.FakePackageManager.IsRefreshProjectBrowserCalledWhenInstallPackageCalled;
-			
-			Assert.IsFalse(result);
-		}
-				
 		[Test]
 		public void ActivePackageRepository_OneRegisteredSource_RepositoryCreatedFromRegisteredSource()
 		{
@@ -190,111 +110,33 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void UninstallPackage_PackageObjectPassed_CallsPackageManagerUninstallPackageWithPackage()
+		public void OnParentPackageInstalled_PackagePassed_ParentPackageInstalledEventFires()
 		{
 			CreatePackageManagementService();
 			
-			uninstallPackageHelper.UninstallTestPackage();
-			
-			var actualPackage = fakePackageManagerFactory.FakePackageManager.PackagePassedToUninstallPackage;
-			var expectedPackage = uninstallPackageHelper.TestPackage;
-			
-			Assert.AreEqual(expectedPackage, actualPackage);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageObjectPassed_PackageRepositoryUsedToCreatePackageManager()
-		{
-			CreatePackageManagementService();
-			
-			uninstallPackageHelper.UninstallTestPackage();
-	
-			Assert.AreEqual(uninstallPackageHelper.FakePackageRepository, fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageObjectPassed_ProjectUsedToCreateRepository()
-		{
-			CreatePackageManagementService();
-			
-			uninstallPackageHelper.UninstallTestPackage();
-			
-			Assert.AreEqual(testProject, fakePackageManagerFactory.ProjectPassedToCreateRepository);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageAndPackageRepositoryPassed_RefreshesProjectBrowserWindow()
-		{
-			CreatePackageManagementService();
-
-			uninstallPackageHelper.UninstallTestPackage();
-			
-			Assert.IsTrue(fakeProjectService.IsRefreshProjectBrowserCalled);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageAndPackageRepositoryPassed_RefreshesProjectBrowserWindowAfterUninstallingPackage()
-		{
-			CreatePackageManagementService();
-
-			fakePackageManagerFactory.FakePackageManager.FakeProjectService = fakeProjectService;
-			
-			uninstallPackageHelper.UninstallTestPackage();
-			
-			bool result = fakePackageManagerFactory.FakePackageManager.IsRefreshProjectBrowserCalledWhenUninstallPackageCalled;
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIsInstalled_EventFiresAfterPackageInstalled()
-		{
-			CreatePackageManagementService();
-			
-			IPackage package = null;
+			bool fired = false;
 			packageManagementService.ParentPackageInstalled += (sender, e) => {
-				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToInstallPackage;
+				fired = true;
 			};
-			installPackageHelper.InstallTestPackage();
+			var package = new FakePackage();
+			packageManagementService.OnParentPackageInstalled(package);
 			
-			Assert.AreEqual(installPackageHelper.TestPackage, package);
+			Assert.IsTrue(fired);
 		}
 		
 		[Test]
-		public void UninstallPackage_PackageIsUninstalled_EventFiresAfterPackageUninstalled()
+		public void OnParentPackageUninstalled_PackagePassed_OnParentPackageUninstalledEventFires()
 		{
 			CreatePackageManagementService();
 			
-			IPackage package = null;
+			bool fired = false;
 			packageManagementService.ParentPackageUninstalled += (sender, e) => {
-				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToUninstallPackage;
+				fired = true;
 			};
+			var package = new FakePackage();
+			packageManagementService.OnParentPackageUninstalled(package);
 			
-			uninstallPackageHelper.UninstallTestPackage();
-			
-			var expectedPackage = uninstallPackageHelper.TestPackage;
-			
-			Assert.AreEqual(expectedPackage, package);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageObjectPassed_PackageIsNotForcefullyRemoved()
-		{
-			CreatePackageManagementService();
-			
-			uninstallPackageHelper.UninstallTestPackage();
-			
-			Assert.IsFalse(fakePackageManagerFactory.FakePackageManager.ForceRemovePassedToUninstallPackage);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageObjectPassed_PackageDependenciesAreNotRemoved()
-		{
-			CreatePackageManagementService();
-			
-			uninstallPackageHelper.UninstallTestPackage();
-			
-			Assert.IsFalse(fakePackageManagerFactory.FakePackageManager.RemoveDependenciesPassedToUninstallPackage);
+			Assert.IsTrue(fired);
 		}
 		
 		[Test]
@@ -447,108 +289,7 @@ namespace PackageManagement.Tests
 			
 			CollectionAssert.AreEqual(expectedPackages, packages);
 		}
-		
-		[Test]
-		public void InstallPackage_OnePackageOperation_PackageOperationPassedToPackageManagerWhenInstallingPackage()
-		{
-			CreatePackageManagementService();
-			
-			installPackageHelper.AddPackageInstallOperation();
-			installPackageHelper.InstallTestPackage();
-			
-			var actualOperations = 
-				fakePackageManagerFactory
-					.FakePackageManager
-					.ParametersPassedToInstallPackage
-					.PackageOperationsPassedToInstallPackage;
-			
-			CollectionAssert.AreEqual(installPackageHelper.PackageOperations, actualOperations);
-		}
-		
-		[Test]
-		public void InstallPackage_OnePackageOperation_LoggerUsedByPackageManagerIsOutputMessagesViewLogger()
-		{
-			CreatePackageManagementService();
-			installPackageHelper.AddPackageInstallOperation();
-			installPackageHelper.InstallTestPackage();
-			
-			ILogger expectedLogger = fakeOutputMessagesView;
-			ILogger actualLogger = fakePackageManagerFactory.FakePackageManager.Logger;
-			
-			Assert.AreEqual(expectedLogger, actualLogger);
-		}
-		
-		[Test]
-		public void InstallPackage_OnePackageOperation_LoggerUsedByPackageManagerIsConfiguredBeforeInstallPackageCalled()
-		{
-			CreatePackageManagementService();
-			installPackageHelper.AddPackageInstallOperation();
-			installPackageHelper.InstallTestPackage();
-			
-			ILogger expectedLogger = fakeOutputMessagesView;
-			ILogger actualLogger = fakePackageManagerFactory.FakePackageManager.LoggerSetBeforeInstallPackageCalled;
-			
-			Assert.AreEqual(expectedLogger, actualLogger);
-		}
-		
-		[Test]
-		public void InstallPackage_OnePackageOperation_ProjectManagerLoggerIsOutputMessagesViewLogger()
-		{
-			CreatePackageManagementService();
-			installPackageHelper.AddPackageInstallOperation();
-			installPackageHelper.InstallTestPackage();
-			
-			ILogger expectedLogger = fakeOutputMessagesView;
-			ILogger actualLogger = fakePackageManagerFactory.FakePackageManager.FakeProjectManager.Logger;
-			
-			Assert.AreEqual(expectedLogger, actualLogger);
-		}
-		
-		[Test]
-		public void InstallPackage_OnePackageOperation_ProjectManagerProjectSystemLoggerIsOutputMessagesViewLogger()
-		{
-			CreatePackageManagementService();
-			var projectSystem = new FakeProjectSystem();
-			FakeProjectManager projectManager = fakePackageManagerFactory.FakePackageManager.FakeProjectManager;
-			projectManager.Project = projectSystem;
-			installPackageHelper.AddPackageInstallOperation();
-			installPackageHelper.InstallTestPackage();
-			
-			ILogger expectedLogger = fakeOutputMessagesView;
-			ILogger actualLogger = projectSystem.Logger;
-			
-			Assert.AreEqual(expectedLogger, actualLogger);
-		}
-		
-		[Test]
-		public void InstallPackage_OnePackageOperation_PackageManagerFileSystemLoggerIsOutputMessagesViewLogger()
-		{
-			CreatePackageManagementService();
-			installPackageHelper.AddPackageInstallOperation();
-			installPackageHelper.InstallTestPackage();
-			
-			ILogger expectedLogger = fakeOutputMessagesView;
-			ILogger actualLogger = fakePackageManagerFactory.FakePackageManager.FileSystem.Logger;
-			
-			Assert.AreEqual(expectedLogger, actualLogger);
-		}
-		
-		[Test]
-		public void InstallPackage_OnePackageOperation_PackageInstalledIsAddedToRecentPackagesRepository()
-		{
-			CreatePackageManagementService();
-			installPackageHelper.AddPackageInstallOperation();
-			installPackageHelper.InstallTestPackage();
-			
-			var recentPackages = packageManagementService.RecentPackageRepository.GetPackages();
-			
-			var expectedPackages = new FakePackage[] {
-				installPackageHelper.TestPackage
-			};
-			
-			PackageCollectionAssert.AreEqual(expectedPackages, recentPackages);
-		}
-		
+	
 		[Test]
 		public void CreatePackageRepository_PackageSourceSpecified_CreatesPackageRepositoryFromPackageRepositoryFactory()
 		{
@@ -607,205 +348,7 @@ namespace PackageManagement.Tests
 			var expectedProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
 			
 			Assert.AreEqual(expectedProject, project);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIdAndSourceAndProjectPassed_RepositoryCreatedForPackageSource()
-		{
-			CreatePackageManagementService();
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			var expectedPackageSource = installPackageHelper.PackageSource;
-			var actualPackageSource = fakePackageRepositoryFactory.FirstPackageSourcePassedToCreateRepository;
-			
-			Assert.AreEqual(expectedPackageSource, actualPackageSource);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIdAndSourceAndProjectPassed_InstallsPackageFromPackageSource()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			var actualPackage = fakePackageManagerFactory.FakePackageManager.PackagePassedToInstallPackage;
-			
-			Assert.AreEqual(package, actualPackage);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIdAndSourceAndProjectPassed_RepositoryCreatedFromPackageSourceIsUsedToCreatePackageManager()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			var repository = fakePackageRepositoryFactory.FakePackageRepository;
-			
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			var actualRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
-			
-			Assert.AreEqual(repository, actualRepository);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIdAndSourceAndProjectPassed_ProjectIsUsedToCreatePackageManager()
-		{
-			CreatePackageManagementService();
-			fakeProjectService.CurrentProject = null;
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			var actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
-			var expectedProject = installPackageHelper.TestableProject;
-			
-			Assert.AreEqual(expectedProject, actualProject);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIdAndSourceAndProjectPassed_PackageOperationsToInstallPackage()
-		{
-			CreatePackageManagementService();
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			var packageOperations = AddOnePackageOperationToPackageManager();
-			
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			var packageManager = fakePackageManagerFactory.FakePackageManager;
-			var actualPackageOperations = packageManager.ParametersPassedToInstallPackage.PackageOperationsPassedToInstallPackage;
-			
-			Assert.AreEqual(packageOperations, actualPackageOperations);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIdAndSourceAndProjectPassed_PackageOperationsCreatedForInstallPackage()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			var packageOperations = AddOnePackageOperationToPackageManager();
-			
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			var actualPackage = fakePackageManagerFactory.FakePackageManager.PackagePassedToGetInstallPackageOperations;
-			
-			Assert.AreEqual(package, actualPackage);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIdAndSourceAndProjectPassedAndIgnoreDependenciesIsTrue_DependenciesIgnoredWhenInstallingPackage()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			installPackageHelper.IgnoreDependencies = true;
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			bool result = fakePackageManagerFactory.FakePackageManager.IgnoreDependenciesPassedToInstallPackage;
-			
-			Assert.IsTrue(result);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIdAndSourceAndProjectPassedAndIgnoreDependenciesIsTrue_DependenciesIgnoredWhenGettingPackageOperations()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			installPackageHelper.IgnoreDependencies = true;
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			bool result = fakePackageManagerFactory.FakePackageManager.IgnoreDependenciesPassedToGetInstallPackageOperations;
-			
-			Assert.IsTrue(result);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIdAndSourceAndProjectPassedAndIgnoreDependenciesIsFalse_DependenciesNotIgnoredWhenGettingPackageOperations()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			installPackageHelper.IgnoreDependencies = false;
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			bool result = fakePackageManagerFactory.FakePackageManager.IgnoreDependenciesPassedToGetInstallPackageOperations;
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIdAndSourceAndProjectPassedAndIgnoreDependenciesIsFalse_DependenciesNotIgnoredWhenInstallingPackage()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			installPackageHelper.IgnoreDependencies = false;
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			bool result = fakePackageManagerFactory.FakePackageManager.IgnoreDependenciesPassedToInstallPackage;
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIdAndSourcePassed_ProjectBrowserIsRefreshed()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			bool refreshed = fakeProjectService.IsRefreshProjectBrowserCalled;
-			Assert.IsTrue(refreshed);
-		}
-		
-		[Test]
-		public void InstalPackage_PackageIdAndSourcePassed_PackageIsAddedToRecentPackages()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			var recentPackages = packageManagementService.RecentPackageRepository.GetPackages();
-			
-			var expectedPackages = new FakePackage[] {
-				package
-			};
-			
-			PackageCollectionAssert.AreEqual(expectedPackages, recentPackages);
-		}
-		
-		[Test]
-		public void InstallPackage_PackageIsInstalled_EventFiresAfterPackageInstald()
-		{
-			CreatePackageManagementService();
-			var expectedPackage = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			IPackage package = null;
-			packageManagementService.ParentPackageInstalled += (sender, e) => {
-				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToInstallPackage;
-			};
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			Assert.AreEqual(expectedPackage, package);
-		}
+		}		
 		
 		[Test]
 		public void CreatePackageManagerForActiveProject_ProjectIsSelected_ReferencesSelectedProject()
@@ -818,6 +361,33 @@ namespace PackageManagement.Tests
 			IProject actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
 			
 			Assert.AreEqual(expectedProject, actualProject);
+		}
+		
+		[Test]
+		public void CreatePackageManagerForActiveProject_PackageRepositoryPassed_CreatesPackageManagerWithCurrentlyActiveProject()
+		{
+			CreatePackageManagementService();
+			
+			var repository = new FakePackageRepository();
+			packageManagementService.CreatePackageManagerForActiveProject(repository);
+			
+			IProject expectedProject = fakeProjectService.CurrentProject;
+			IProject actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
+			
+			Assert.AreEqual(expectedProject, actualProject);
+		}
+		
+		[Test]
+		public void CreatePackageManagerForActiveProject_PackageRepositoryPassed_PackageManagerCreatedWithRepository()
+		{
+			CreatePackageManagementService();
+			
+			var repository = new FakePackageRepository();
+			packageManagementService.CreatePackageManagerForActiveProject(repository);
+			
+			var actualRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
+			
+			Assert.AreEqual(repository, actualRepository);
 		}
 		
 		[Test]
@@ -834,7 +404,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void CreatePackageManagerForActiveProject_ReturnsPackageManager()
+		public void CreatePackageManagerForActiveProject_ProjectIsSelected_ReturnsPackageManager()
 		{
 			CreatePackageManagementService();
 			
@@ -847,426 +417,88 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void InstallPackage_VersionSpecified_VersionUsedWhenSearchingForPackage()
+		public void CreatePackageManager_PackageSourceAndProjectPassed_ReturnsNewPackageManager()
 		{
 			CreatePackageManagementService();
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
 			
-			var recentPackage = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			recentPackage.Version = new Version("1.2.0");
+			var packageSource = new PackageSource("test");
+			ISharpDevelopPackageManager packageManager = 
+				packageManagementService.CreatePackageManager(packageSource, testProject);
 			
-			var oldPackage = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			oldPackage.Version = new Version("1.0.0");
+			var expectedPackageManager = fakePackageManagerFactory.FakePackageManager;
 			
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			var version = new Version("1.1.0");
-			package.Version = version;
-			
-			installPackageHelper.Version = version;
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			var actualPackage = fakePackageManagerFactory.FakePackageManager.PackagePassedToInstallPackage;
-			
-			Assert.AreEqual(package, actualPackage);
+			Assert.AreEqual(expectedPackageManager, packageManager);
 		}
 		
 		[Test]
-		public void InstallPackage_PackageIdSpecified_RefreshesProjectBrowserWindow()
+		public void CreatePackageManager_PackageSourceAndProjectPassed_PackageSourceUsedToCreateRepository()
 		{
 			CreatePackageManagementService();
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
 			
-			installPackageHelper.InstallPackageById("PackageId");
+			var packageSource = new PackageSource("test");
+			ISharpDevelopPackageManager packageManager = 
+				packageManagementService.CreatePackageManager(packageSource, testProject);
 			
-			Assert.IsTrue(fakeProjectService.IsRefreshProjectBrowserCalled);
+			var actualPackageSource = fakePackageRepositoryFactory.FirstPackageSourcePassedToCreateRepository;
+			
+			Assert.AreEqual(packageSource, actualPackageSource);
 		}
 		
 		[Test]
-		public void InstallPackage_PackageIdSpecified_EventFiresAfterPackageInstalled()
+		public void CreatePackageManager_PackageSourceAndProjectPassed_CreatedRepositoryUsedToCreatePackageManager()
 		{
 			CreatePackageManagementService();
 			
-			var expectedPackage = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
+			var packageSource = new PackageSource("test");
+			ISharpDevelopPackageManager packageManager = 
+				packageManagementService.CreatePackageManager(packageSource, testProject);
 			
-			IPackage package = null;
-			packageManagementService.ParentPackageInstalled += (sender, e) => {
-				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToInstallPackage;
-			};
-			
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			Assert.AreEqual(expectedPackage, package);
-		}
-
-		[Test]
-		public void GetProject_ThreeProjectsOpenAndProjectWithNameExists_ReturnsMatchingProject()
-		{
-			CreatePackageManagementService();
-			
-			AddProject("One");
-			var expectedProject = AddProject("Two");
-			AddProject("Three");
-			
-			var actualProject = packageManagementService.GetProject("Two");
-			
-			Assert.AreEqual(expectedProject, actualProject);
-		}
-		
-		[Test]
-		public void GetProject_ProjectNameHasDifferentCase_ReturnsMatchingProjectIgnoringCase()
-		{
-			CreatePackageManagementService();
-			
-			AddProject("One");
-			var expectedProject = AddProject("TWO");
-			AddProject("Three");
-			
-			var actualProject = packageManagementService.GetProject("two");
-			
-			Assert.AreEqual(expectedProject, actualProject);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageIdSpecified_CallsPackageManagerUninstallPackage()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			uninstallPackageHelper.UninstallPackageById("PackageId");
-			
-			var actualPackage = fakePackageManagerFactory.FakePackageManager.PackagePassedToUninstallPackage;
-			
-			Assert.AreEqual(package, actualPackage);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageIdSpecified_RefreshesProjectBrowserWindow()
-		{
-			CreatePackageManagementService();
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			uninstallPackageHelper.UninstallPackageById("PackageId");
-			
-			Assert.IsTrue(fakeProjectService.IsRefreshProjectBrowserCalled);
-		}
-		
-		[Test]
-		public void PackageUninstalled_PackageIdSpecified_EventFiresAfterPackageUninstalled()
-		{
-			CreatePackageManagementService();
-			var expectedPackage = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			IPackage package = null;
-			packageManagementService.ParentPackageUninstalled += (sender, e) => {
-				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToUninstallPackage;
-			};
-			
-			uninstallPackageHelper.UninstallPackageById("PackageId");
-						
-			Assert.AreEqual(expectedPackage, package);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageIdSpecified_PackageSourcePassedIsUsedToCreateRepository()
-		{
-			CreatePackageManagementService();
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			var expectedPackageSource = new PackageSource("http://test");
-			uninstallPackageHelper.PackageSource = expectedPackageSource;
-			uninstallPackageHelper.UninstallPackageById("PackageId");
-			
-			var expectedPackageSources = new PackageSource[] {
-				expectedPackageSource
-			};
-			
-			var actualPackageSources = fakePackageRepositoryFactory.PackageSourcesPassedToCreateRepository;
-			
-			CollectionAssert.AreEqual(expectedPackageSources, actualPackageSources);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageIdSpecified_ProjectPassedIsUsedToCreateRepository()
-		{
-			CreatePackageManagementService();
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			var expectedProject = ProjectHelper.CreateTestProject();
-			uninstallPackageHelper.Project = expectedProject;
-			
-			uninstallPackageHelper.UninstallPackageById("PackageId");
-			
-			var actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
-			
-			Assert.AreEqual(expectedProject, actualProject);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageAndRepositoryPassed_PackageInstalled()
-		{
-			CreatePackageManagementService();
-			updatePackageHelper.UpdateTestPackage();
-			
-			var expectedPackage = updatePackageHelper.TestPackage;
-			var actualPackage = fakePackageManagerFactory.FakePackageManager.PackagePassedToUpdatePackage;
-			
-			Assert.AreEqual(expectedPackage, actualPackage);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageAndRepositoryPassed_RepositoryUsedToCreatePackageManager()
-		{
-			CreatePackageManagementService();
-			updatePackageHelper.UpdateTestPackage();
-			
-			var expectedRepository = updatePackageHelper.PackageRepository;
 			var actualRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
+			var expectedRepository = fakePackageRepositoryFactory.FakePackageRepository;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
 		}
 		
 		[Test]
-		public void UpdatePackage_PackageAndRepositoryPassed_PackageOperationsUsedToUpdatePackage()
-		{
-			CreatePackageManagementService();
-			updatePackageHelper.UpdateTestPackage();
-			
-			var expectedOperations = updatePackageHelper.PackageOperations;
-			var actualOperations = fakePackageManagerFactory.FakePackageManager.PackageOperationsPassedToUpdatePackage;
-			
-			Assert.AreEqual(expectedOperations, actualOperations);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageAndRepositoryPassed_ProjectBrowserIsRefreshed()
-		{
-			CreatePackageManagementService();
-			updatePackageHelper.UpdateTestPackage();
-			
-			bool refreshed = fakeProjectService.IsRefreshProjectBrowserCalled;
-			
-			Assert.IsTrue(refreshed);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageAndRepositoryPassed_DependenciesUpdated()
-		{
-			CreatePackageManagementService();
-			updatePackageHelper.UpdateTestPackage();
-			
-			bool result = fakePackageManagerFactory.FakePackageManager.UpdateDependenciesPassedToUpdatePackage;
-			
-			Assert.IsTrue(result);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageAndRepositoryPassed_PackageUpdateIsAddedToRecentPackagesRepository()
-		{
-			CreatePackageManagementService();
-			updatePackageHelper.UpdateTestPackage();
-			
-			var recentPackages = packageManagementService.RecentPackageRepository.GetPackages();
-			
-			var expectedPackages = new FakePackage[] {
-				updatePackageHelper.TestPackage
-			};
-			
-			PackageCollectionAssert.AreEqual(expectedPackages, recentPackages);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageAndRepositoryPassed_PackageInstalledEventIsFired()
+		public void CreatePackageManager_PackageSourceAndProjectPassed_ProjectUsedToCreatePackageManager()
 		{
 			CreatePackageManagementService();
 			
-			IPackage package = null;
-			packageManagementService.ParentPackageInstalled += (sender, e) => {
-				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToUpdatePackage;
-			};
-			updatePackageHelper.UpdateTestPackage();
-			
-			Assert.AreEqual(installPackageHelper.TestPackage, package);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageIdAndSourceAndProjectPassed_RepositoryCreatedForPackageSource()
-		{
-			CreatePackageManagementService();
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			var expectedPackageSource = updatePackageHelper.PackageSource;
-			var actualPackageSource = fakePackageRepositoryFactory.FirstPackageSourcePassedToCreateRepository;
-			
-			Assert.AreEqual(expectedPackageSource, actualPackageSource);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageIdAndSourceAndProjectPassed_UpdatesPackageFromPackageSource()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			var actualPackage = fakePackageManagerFactory.FakePackageManager.PackagePassedToUpdatePackage;
-			
-			Assert.AreEqual(package, actualPackage);
-		}
-	
-		[Test]
-		public void UpdatePackage_PackageIdAndSourceAndProjectPassed_RepositoryCreatedFromPackageSourceIsUsedToCreatePackageManager()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			var repository = fakePackageRepositoryFactory.FakePackageRepository;
-			
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			var actualRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
-			
-			Assert.AreEqual(repository, actualRepository);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageIdAndSourceAndProjectPassed_ProjectIsUsedToCreatePackageManager()
-		{
-			CreatePackageManagementService();
-			fakeProjectService.CurrentProject = null;
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			updatePackageHelper.UpdatePackageById("PackageId");
+			var packageSource = new PackageSource("test");
+			ISharpDevelopPackageManager packageManager = 
+				packageManagementService.CreatePackageManager(packageSource, testProject);
 			
 			var actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
-			var expectedProject = updatePackageHelper.TestableProject;
 			
-			Assert.AreEqual(expectedProject, actualProject);
+			Assert.AreEqual(testProject, actualProject);
 		}
 		
 		[Test]
-		public void UpdatePackage_PackageIdAndSourceAndProjectPassed_PackageOperationsToUpdatePackage()
+		public void OnParentPackageUninstalled_PackagePassed_RefreshesProjectBrowserWindow()
 		{
 			CreatePackageManagementService();
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			var packageOperations = AddOnePackageOperationToPackageManager();
+			var package = new FakePackage("Test");
+			packageManagementService.OnParentPackageUninstalled(package);
 			
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			var packageManager = fakePackageManagerFactory.FakePackageManager;
-			var actualPackageOperations = packageManager.PackageOperationsPassedToUpdatePackage;
-			
-			Assert.AreEqual(packageOperations, actualPackageOperations);
+			Assert.IsTrue(fakeProjectService.IsRefreshProjectBrowserCalled);
 		}
 		
 		[Test]
-		public void UpdatePackage_PackageIdAndSourceAndProjectPassed_PackageOperationsCreatedForPackage()
+		public void OnParentPackageInstalled_PackagePassed_RefreshesProjectBrowserWindow()
 		{
 			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			var packageOperations = AddOnePackageOperationToPackageManager();
+			var package = new FakePackage("Test");
+			packageManagementService.OnParentPackageInstalled(package);
 			
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			var actualPackage = fakePackageManagerFactory.FakePackageManager.PackagePassedToGetInstallPackageOperations;
-			
-			Assert.AreEqual(package, actualPackage);
+			Assert.IsTrue(fakeProjectService.IsRefreshProjectBrowserCalled);
 		}
 		
 		[Test]
-		public void UpdatePackage_PackageIdAndSourceAndProjectPassedAndUpdateDependenciesIsTrue_DependenciesUpdatedWhenInstallingPackage()
+		public void OnParentPackageInstalled_PackagePassed_PackageInstalledIsAddedToRecentPackagesRepository()
 		{
 			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			updatePackageHelper.UpdateDependencies = true;
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			bool result = fakePackageManagerFactory.FakePackageManager.UpdateDependenciesPassedToUpdatePackage;
-			
-			Assert.IsTrue(result);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageIdAndSourceAndProjectPassedAndUpdateDependenciesIsFalse_DependenciesNotUpdateWhenGettingPackageOperations()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			updatePackageHelper.UpdateDependencies = false;
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			bool result = fakePackageManagerFactory.FakePackageManager.UpdateDependenciesPassedToUpdatePackage;
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageIdAndSourceAndProjectPassedAndUpdateDependenciesIsFalse_DependenciesIgnoredWhenGettingPackageOperations()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			updatePackageHelper.UpdateDependencies = false;
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			bool result = fakePackageManagerFactory.FakePackageManager.IgnoreDependenciesPassedToGetInstallPackageOperations;
-			
-			Assert.IsTrue(result);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageIdAndSourceAndProjectPassedAndUpdateDependenciesIsTrue_DependenciesNotIgnoredWhenInstallingPackage()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			updatePackageHelper.UpdateDependencies = true;
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			bool result = fakePackageManagerFactory.FakePackageManager.IgnoreDependenciesPassedToInstallPackage;
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageIdAndSourcePassed_ProjectBrowserIsRefreshed()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			bool refreshed = fakeProjectService.IsRefreshProjectBrowserCalled;
-			Assert.IsTrue(refreshed);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageIdAndSourcePassed_PackageIsAddedToRecentPackages()
-		{
-			CreatePackageManagementService();
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			updatePackageHelper.UpdatePackageById("PackageId");
+			var package = new FakePackage("Test");
+			packageManagementService.OnParentPackageInstalled(package);
 			
 			var recentPackages = packageManagementService.RecentPackageRepository.GetPackages();
 			
@@ -1275,98 +507,6 @@ namespace PackageManagement.Tests
 			};
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, recentPackages);
-		}
-		
-		[Test]
-		public void UpdatePackage_PackageIsUpdated_EventFiresAfterPackageUpdated()
-		{
-			CreatePackageManagementService();
-			var expectedPackage = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			IPackage package = null;
-			packageManagementService.ParentPackageInstalled += (sender, e) => {
-				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToUpdatePackage;
-			};
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			Assert.AreEqual(expectedPackage, package);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageIdSpecified_PackageIsNotForcefullyRemoved()
-		{
-			CreatePackageManagementService();
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			uninstallPackageHelper.ForceRemove = false;
-			uninstallPackageHelper.UninstallPackageById("PackageId");
-			
-			Assert.IsFalse(fakePackageManagerFactory.FakePackageManager.ForceRemovePassedToUninstallPackage);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageIdSpecifiedAndForceRemoveIsTrue_PackageIsForcefullyRemoved()
-		{
-			CreatePackageManagementService();
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			uninstallPackageHelper.ForceRemove = true;
-			uninstallPackageHelper.UninstallPackageById("PackageId");
-			
-			Assert.IsTrue(fakePackageManagerFactory.FakePackageManager.ForceRemovePassedToUninstallPackage);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageIdSpecified_PackageDependenciesAreNotRemoved()
-		{
-			CreatePackageManagementService();
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			uninstallPackageHelper.RemoveDependencies = false;
-			uninstallPackageHelper.UninstallPackageById("PackageId");
-			
-			Assert.IsFalse(fakePackageManagerFactory.FakePackageManager.RemoveDependenciesPassedToUninstallPackage);
-		}
-		
-		[Test]
-		public void UninstallPackage_PackageIdSpecifiedAndRemoveDependenciesIsTrue_PackageDependenciesAreRemoved()
-		{
-			CreatePackageManagementService();
-			AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			uninstallPackageHelper.RemoveDependencies = true;
-			uninstallPackageHelper.UninstallPackageById("PackageId");
-			
-			Assert.IsTrue(fakePackageManagerFactory.FakePackageManager.RemoveDependenciesPassedToUninstallPackage);
-		}
-		
-		[Test]
-		public void UninstallPackage_VersionSpecified_VersionUsedWhenSearchingForPackage()
-		{
-			CreatePackageManagementService();
-			MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame();
-			
-			var recentPackage = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			recentPackage.Version = new Version("1.2.0");
-			
-			var oldPackage = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			oldPackage.Version = new Version("1.0.0");
-			
-			var package = AddOneFakePackageToPackageRepositoryFactoryRepository("PackageId");
-			var version = new Version("1.1.0");
-			package.Version = version;
-			
-			uninstallPackageHelper.Version = version;
-			uninstallPackageHelper.UninstallPackageById("PackageId");
-			
-			var actualPackage = fakePackageManagerFactory.FakePackageManager.PackagePassedToUninstallPackage;
-			
-			Assert.AreEqual(package, actualPackage);
 		}
 	}
 }

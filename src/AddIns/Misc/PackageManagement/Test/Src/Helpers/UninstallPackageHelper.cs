@@ -11,11 +11,11 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class UninstallPackageHelper
 	{
-		PackageManagementService packageManagementService;
+		UninstallPackageAction action;
 		
-		public UninstallPackageHelper(PackageManagementService packageManagementService)
+		public UninstallPackageHelper(UninstallPackageAction action)
 		{
-			this.packageManagementService = packageManagementService;
+			this.action = action;
 		}
 		
 		public FakePackage TestPackage = new FakePackage() {
@@ -26,7 +26,6 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void UninstallTestPackage()
 		{
-			var action = packageManagementService.CreateUninstallPackageAction();
 			action.PackageRepository = FakePackageRepository;
 			action.Package = TestPackage;
 			action.Execute();
@@ -40,7 +39,6 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void UninstallPackageById(string packageId)
 		{
-			var action = packageManagementService.CreateUninstallPackageAction();
 			action.PackageId = packageId;
 			action.PackageVersion = Version;
 			action.Project = Project;

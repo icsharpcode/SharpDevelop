@@ -58,7 +58,7 @@ namespace PackageManagement.Tests.Helpers
 			var operation = new PackageOperation(FakePackage, PackageAction.Install);
 			
 			FakePackageManagementService
-				.FakePackageManagerToReturnFromCreatePackageManagerForActiveProject
+				.FakePackageManagerToReturnFromCreatePackageManager
 				.PackageOperationsToReturnFromGetInstallPackageOperations
 				.Add(operation);
 			
@@ -71,7 +71,7 @@ namespace PackageManagement.Tests.Helpers
 			var operation = new PackageOperation(package, PackageAction.Uninstall);
 			
 			FakePackageManagementService
-				.FakePackageManagerToReturnFromCreatePackageManagerForActiveProject
+				.FakePackageManagerToReturnFromCreatePackageManager
 				.PackageOperationsToReturnFromGetInstallPackageOperations
 				.Add(operation);
 			

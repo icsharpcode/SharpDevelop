@@ -11,7 +11,7 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class UpdatePackageHelper
 	{
-		PackageManagementService packageManagementService;
+		UpdatePackageAction action;
 		
 		public FakePackage TestPackage = new FakePackage() {
 			Id = "Test"
@@ -20,14 +20,13 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackageRepository PackageRepository = new FakePackageRepository();
 		public List<PackageOperation> PackageOperations = new List<PackageOperation>();
 		
-		public UpdatePackageHelper(PackageManagementService packageManagementService)
+		public UpdatePackageHelper(UpdatePackageAction action)
 		{
-			this.packageManagementService = packageManagementService;
+			this.action = action;
 		}
 		
 		public void UpdateTestPackage()
 		{
-			var action = packageManagementService.CreateUpdatePackageAction();
 			action.PackageRepository = PackageRepository;
 			action.Package = TestPackage;
 			action.Operations = PackageOperations;
@@ -49,7 +48,6 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void UpdatePackageById(string packageId)
 		{
-			var action = packageManagementService.CreateUpdatePackageAction();
 			action.PackageId = packageId;
 			action.PackageVersion = Version;
 			action.PackageSource = PackageSource;

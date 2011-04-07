@@ -31,14 +31,11 @@ namespace ICSharpCode.PackageManagement
 		void OnParentPackageInstalled(IPackage package);
 		void OnParentPackageUninstalled(IPackage package);
 		
-		MSBuildBasedProject GetProject(string name);
-
 		PackageManagementOptions Options { get; }
 		
 		bool HasMultiplePackageSources { get; }
 		PackageSource ActivePackageSource { get; set; }
 		
 		IPackageManagementOutputMessagesView OutputMessagesView { get; }
-		IPackageManagementProjectService ProjectService { get; }
 	}
 }

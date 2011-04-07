@@ -11,7 +11,7 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class InstallPackageHelper
 	{
-		PackageManagementService packageManagementService;
+		InstallPackageAction action;
 		
 		public FakePackage TestPackage = new FakePackage() {
 			Id = "Test"
@@ -20,18 +20,17 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackageRepository PackageRepository = new FakePackageRepository();
 		public List<PackageOperation> PackageOperations = new List<PackageOperation>();
 		
-		public InstallPackageHelper(PackageManagementService packageManagementService)
+		public InstallPackageHelper(InstallPackageAction action)
 		{
-			this.packageManagementService = packageManagementService;
+			this.action = action;
 		}
 		
 		public void InstallTestPackage()
 		{
-			var task = packageManagementService.CreateInstallPackageAction();
-			task.Package = TestPackage;
-			task.PackageRepository = PackageRepository;
-			task.Operations = PackageOperations;
-			task.Execute();
+			action.Package = TestPackage;
+			action.PackageRepository = PackageRepository;
+			action.Operations = PackageOperations;
+			action.Execute();
 		}
 		
 		public FakePackage AddPackageInstallOperation()
@@ -49,14 +48,13 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void InstallPackageById(string packageId)
 		{
-			var task = packageManagementService.CreateInstallPackageAction();
-			task.PackageId = packageId;
-			task.PackageVersion = Version;
-			task.Project = TestableProject;
-			task.PackageSource = PackageSource;
-			task.IgnoreDependencies = IgnoreDependencies;
+			action.PackageId = packageId;
+			action.PackageVersion = Version;
+			action.Project = TestableProject;
+			action.PackageSource = PackageSource;
+			action.IgnoreDependencies = IgnoreDependencies;
 			
-			task.Execute();
+			action.Execute();
 		}
 	}
 }

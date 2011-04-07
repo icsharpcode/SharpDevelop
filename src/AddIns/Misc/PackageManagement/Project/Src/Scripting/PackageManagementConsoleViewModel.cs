@@ -17,7 +17,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PackageManagementConsoleViewModel : ViewModelBase<PackageManagementConsoleViewModel>
 	{
-		IPackageManagementService packageManagementService;
+		RegisteredPackageSources registeredPackageSources;
 		IPackageManagementProjectService projectService;
 		IPackageManagementConsoleHost consoleHost;
 		
@@ -31,11 +31,11 @@ namespace ICSharpCode.PackageManagement.Scripting
 		PackageManagementConsole packageManagementConsole;
 		
 		public PackageManagementConsoleViewModel(
-			IPackageManagementService packageManagementService,
+			RegisteredPackageSources registeredPackageSources,
 			IPackageManagementConsoleHost consoleHost)
 		{
-			this.packageManagementService = packageManagementService;
-			this.projectService = packageManagementService.ProjectService;
+			this.registeredPackageSources = registeredPackageSources;
+			this.projectService = consoleHost.ProjectService;
 			this.consoleHost = consoleHost;
 			
 			Init();
@@ -80,7 +80,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void UpdatePackageSourceViewModels()
 		{
 			packageSources.Clear();
-			foreach (PackageSource packageSource in packageManagementService.Options.PackageSources) {
+			foreach (PackageSource packageSource in registeredPackageSources) {
 				AddPackageSourceViewModel(packageSource);
 			}
 			SelectFirstActivePackageSource();
@@ -101,7 +101,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		void ReceiveNotificationsWhenPackageSourcesUpdated()
 		{
-			packageManagementService.Options.PackageSources.CollectionChanged += PackageSourcesChanged;
+			registeredPackageSources.CollectionChanged += PackageSourcesChanged;
 		}
 
 		void PackageSourcesChanged(object sender, NotifyCollectionChangedEventArgs e)

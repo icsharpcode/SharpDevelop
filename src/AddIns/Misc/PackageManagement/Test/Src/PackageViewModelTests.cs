@@ -367,7 +367,7 @@ namespace PackageManagement.Tests
 			
 			ILogger expectedLogger = packageManagementService.FakeOutputMessagesView;
 			ILogger actualLogger = packageManagementService
-				.FakePackageManagerToReturnFromCreatePackageManagerForActiveProject
+				.FakePackageManagerToReturnFromCreatePackageManager
 				.Logger;
 			Assert.AreEqual(expectedLogger, actualLogger);
 		}
@@ -548,7 +548,7 @@ namespace PackageManagement.Tests
 			
 			var expectedPackage = package;
 			var actualPackage = packageManagementService
-				.FakePackageManagerToReturnFromCreatePackageManagerForActiveProject
+				.FakePackageManagerToReturnFromCreatePackageManager
 				.PackagePassedToGetInstallPackageOperations;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
@@ -562,7 +562,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			bool result = packageManagementService
-				.FakePackageManagerToReturnFromCreatePackageManagerForActiveProject
+				.FakePackageManagerToReturnFromCreatePackageManager
 				.IgnoreDependenciesPassedToGetInstallPackageOperations;
 			
 			Assert.IsFalse(result);

@@ -199,14 +199,14 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_ProjectNameSpecified_ProjectMatchingProjectNameUsedWhenUninstallingPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
-			fakePackageManagementService.FakeProjectToReturnFromGetProject = ProjectHelper.CreateTestProject();
+			fakeConsoleHost.FakeProjectToReturnFromGetProject = ProjectHelper.CreateTestProject();
 			
 			SetIdParameter("Test");
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
 			var actualProject = uninstallPackageAction.Project;
-			var expectedProject = fakePackageManagementService.FakeProjectToReturnFromGetProject;
+			var expectedProject = fakeConsoleHost.FakeProjectToReturnFromGetProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);
 		}
@@ -220,7 +220,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actual = fakePackageManagementService.NamePassedToGetProject;
+			var actual = fakeConsoleHost.NamePassedToGetProject;
 			var expected = "MyProject";
 			
 			Assert.AreEqual(expected, actual);

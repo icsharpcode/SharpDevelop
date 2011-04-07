@@ -16,12 +16,6 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		PackageManagementOptions options = new PackageManagementOptions(new Properties());
 		
-		public FakePackageManagementProjectService FakeProjectService = new FakePackageManagementProjectService();
-		
-		public IPackageManagementProjectService ProjectService {
-			get { return FakeProjectService; }
-		}
-		
 		protected virtual void OnParentPackageInstalled()
 		{
 			if (ParentPackageInstalled != null) {
@@ -159,24 +153,29 @@ namespace ICSharpCode.PackageManagement.Design
 			return FakeProjectManagerToReturnFromCreateProjectManager;
 		}
 		
-		public FakePackageManager FakePackageManagerToReturnFromCreatePackageManagerForActiveProject =
+		public FakePackageManager FakePackageManagerToReturnFromCreatePackageManager =
 			new FakePackageManager();
 		
 		public virtual ISharpDevelopPackageManager CreatePackageManagerForActiveProject()
 		{
-			return FakePackageManagerToReturnFromCreatePackageManagerForActiveProject;
+			return FakePackageManagerToReturnFromCreatePackageManager;
 		}
+		
+		public IPackageRepository PackageRepositoryPassedToCreatePackageManager;
 		
 		public ISharpDevelopPackageManager CreatePackageManagerForActiveProject(IPackageRepository packageRepository)
 		{
-			return FakePackageManagerToReturnFromCreatePackageManagerForActiveProject;
+			PackageRepositoryPassedToCreatePackageManager = packageRepository;
+			return FakePackageManagerToReturnFromCreatePackageManager;
 		}
 		
-		public FakePackageManager FakePackageManagerToReturnFromCreatePackageManager =
-			new FakePackageManager();
+		public PackageSource PackageSourcePassedToCreatePackageManager;
+		public MSBuildBasedProject ProjectPassedToCreatePackageManager;
 		
 		public ISharpDevelopPackageManager CreatePackageManager(PackageSource packageSource, MSBuildBasedProject project)
 		{
+			PackageSourcePassedToCreatePackageManager = packageSource;
+			ProjectPassedToCreatePackageManager = project;
 			return FakePackageManagerToReturnFromCreatePackageManager;
 		}
 		
@@ -192,15 +191,6 @@ namespace ICSharpCode.PackageManagement.Design
 			return package;
 		}
 		
-		public MSBuildBasedProject FakeProjectToReturnFromGetProject;
-		public string NamePassedToGetProject;
-		
-		public MSBuildBasedProject GetProject(string name)
-		{
-			NamePassedToGetProject = name;
-			return FakeProjectToReturnFromGetProject;
-		}
-		
 		public FakeUpdatePackageAction ActionToReturnFromCreateUpdatePackageAction =
 			new FakeUpdatePackageAction();
 		
@@ -208,13 +198,19 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			return ActionToReturnFromCreateUpdatePackageAction;
 		}
-				
+		
+		public IPackage PackagePassedToOnParentPackageInstalled;
+		
 		public void OnParentPackageInstalled(IPackage package)
 		{
+			PackagePassedToOnParentPackageInstalled = package;
 		}
+		
+		public IPackage PackagePassedToOnParentPackageUninstalled;
 		
 		public void OnParentPackageUninstalled(IPackage package)
 		{
+			PackagePassedToOnParentPackageUninstalled = package;
 		}
 	}
 }

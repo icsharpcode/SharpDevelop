@@ -17,6 +17,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public ISharpDevelopPackageManager PackageManager { get; set; }
+		public ILogger Logger { get; set; }
 		public IPackage Package { get; set; }
 		public Version PackageVersion { get; set; }
 		public string PackageId { get; set; }
@@ -42,7 +43,9 @@ namespace ICSharpCode.PackageManagement
 		
 		protected virtual void BeforeExecute()
 		{
-			CreatePackageManagerIfMissing();
+			GetLoggerIfMissing();
+			CreatePackageManager();
+			ConfigurePackageManagerLogger();
 			GetPackageIfMissing();
 		}
 		
@@ -50,10 +53,10 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		void CreatePackageManagerIfMissing()
+		void GetLoggerIfMissing()
 		{
-			if (PackageManager == null) {
-				CreatePackageManager();
+			if (Logger == null) {
+				Logger = packageManagementService.OutputMessagesView;
 			}
 		}
 		
@@ -64,6 +67,16 @@ namespace ICSharpCode.PackageManagement
 			} else {
 				PackageManager = packageManagementService.CreatePackageManagerForActiveProject(PackageRepository);
 			}
+		}
+		
+		void ConfigurePackageManagerLogger()
+		{
+			PackageManager.Logger = Logger;
+			PackageManager.FileSystem.Logger = Logger;
+			
+			IProjectManager projectManager = PackageManager.ProjectManager;
+			projectManager.Logger = Logger;
+			projectManager.Project.Logger = Logger;
 		}
 		
 		void GetPackageIfMissing()
