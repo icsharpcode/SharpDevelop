@@ -294,8 +294,8 @@ namespace AvalonDock
 
             if (ActiveDocument == null)
             {
-                var docToActivate = Documents.OrderBy(d => d.LastActivation).FirstOrDefault();
-                if (docToActivate != null)
+                var docToActivate = Documents.OrderBy(d => d.LastActivation).LastOrDefault();
+                if (docToActivate != null && docToActivate.LastActivation != DateTime.MinValue)
                     docToActivate.Activate();
             }
         }
@@ -3775,7 +3775,8 @@ namespace AvalonDock
                 pane.ToggleAutoHide();
 
             DockableContent[] actualContents = DockableContents.ToArray();
-            DocumentContent[] actualDocuments = Documents.ToArray();
+            // preserve the order of the documents
+            DocumentContent[] actualDocuments = Documents.OrderBy(d => d.ContainerPane != null ? d.ContainerPane.Items.IndexOf(d) : -1).ToArray();
 
 
             //first detach all my actual contents
@@ -3892,16 +3893,8 @@ namespace AvalonDock
             ClearEmptyPanes();
             RefreshContents();
 
-            if (ActiveDocument != null &&
-               (ActiveDocument.ContainerPane == null ||
-               ActiveDocument.ContainerPane.GetManager() != this))
-            {
-                if (Documents.Count > 0)
-                    ActiveDocument = Documents[0];
-                else
-                    ActiveDocument = null;
-            }
-
+            // by setting ActiveDocument to null, we activate the previously activated document (as per LastActivation)
+            ActiveDocument = null;
             ActiveContent = ActiveDocument;
         } 
         #endregion
