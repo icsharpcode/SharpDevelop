@@ -2564,38 +2564,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				var result = new QueryExpression ();
 				
 				var currentClause = queryExpression.next;
-				var queryStarts = new Stack<QueryClause> ();
 				
 				while (currentClause != null) {
 					Console.WriteLine (currentClause);
 					QueryClause clause = (QueryClause)currentClause.Accept (this);
-					if (clause is QueryFromClause) {
-						queryStarts.Push (clause);
-					} else if (clause is QueryContinuationClause) {
-						var lastStart = queryStarts.Pop ();
-						var precedingQuery = new QueryExpression ();
-						List<AstNode> children = new List<AstNode> ();
-						AstNode node = lastStart;
-						while (node != null) {
-							children.Add (node);
-							node = node.NextSibling;
-						}
-						result.LastChild = lastStart.PrevSibling;
-						if (lastStart.PrevSibling != null) {
-							lastStart.PrevSibling.NextSibling = null;
-							lastStart.PrevSibling = null;
-						} else {
-							// lastStart == FirstChild
-							result.FirstChild = null;
-						}
-						
-						children.ForEach (c => c.Parent = precedingQuery);
-						precedingQuery.FirstChild = children.First ();
-						precedingQuery.LastChild = children.Last ();
-						
-						((QueryContinuationClause)clause).PrecedingQuery = precedingQuery;
-						
-						queryStarts.Push (clause);
+					if (clause is QueryContinuationClause) {
+						// insert preceding query at beginning of QueryContinuationClause
+						clause.InsertChildAfter(null, result, QueryContinuationClause.PrecedingQueryRole);
+						// create a new QueryExpression for the remaining query
+						result = new QueryExpression();
 					}
 					result.AddChild (clause, QueryExpression.ClauseRole);
 					currentClause = currentClause.next;

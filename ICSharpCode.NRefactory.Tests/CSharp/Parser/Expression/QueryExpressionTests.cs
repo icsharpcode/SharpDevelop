@@ -219,5 +219,66 @@ select new { c.Name, o.OrderID, o.Total }",
 				}
 			);
 		}
+		
+		
+		[Test]
+		public void QueryContinuationWithMultipleFrom()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"from a in b from c in d select e into f select g",
+				new QueryExpression {
+					Clauses = {
+						new QueryContinuationClause {
+							PrecedingQuery = new QueryExpression {
+								Clauses = {
+									new QueryFromClause {
+										Identifier = "a",
+										Expression = new IdentifierExpression("b")
+									},
+									new QueryFromClause {
+										Identifier = "c",
+										Expression = new IdentifierExpression("d")
+									},
+									new QuerySelectClause { Expression = new IdentifierExpression("e") }
+								}
+							},
+							Identifier = "f"
+						},
+						new QuerySelectClause { Expression = new IdentifierExpression("g") }
+					}
+				}
+			);
+		}
+		
+		[Test]
+		public void MultipleQueryContinuation()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"from a in b select c into d select e into f select g",
+				new QueryExpression {
+					Clauses = {
+						new QueryContinuationClause {
+							PrecedingQuery = new QueryExpression {
+								Clauses = {
+									new QueryContinuationClause {
+										PrecedingQuery = new QueryExpression {
+											Clauses = {
+												new QueryFromClause {
+													Identifier = "a",
+													Expression = new IdentifierExpression("b")
+												},
+												new QuerySelectClause { Expression = new IdentifierExpression("c") }
+											}
+										},
+										Identifier = "d"
+									},
+									new QuerySelectClause { Expression = new IdentifierExpression("e") }
+								}
+							},
+							Identifier = "f"
+						},
+						new QuerySelectClause { Expression = new IdentifierExpression("g") }
+					}});
+		}
 	}
 }

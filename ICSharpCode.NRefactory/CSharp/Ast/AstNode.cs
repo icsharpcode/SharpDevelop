@@ -137,7 +137,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public AstNode Parent {
 			get { return parent; }
-			set { parent = value; }
 		}
 		
 		public Role Role {
@@ -146,22 +145,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public AstNode NextSibling {
 			get { return nextSibling; }
-			set { nextSibling = value; }
 		}
 		
 		public AstNode PrevSibling {
 			get { return prevSibling; }
-			set { prevSibling = value; }
 		}
 		
 		public AstNode FirstChild {
 			get { return firstChild; }
-			set { firstChild = value; }
 		}
 		
 		public AstNode LastChild {
 			get { return lastChild; }
-			set { lastChild = value; }
 		}
 		
 		public IEnumerable<AstNode> Children {
