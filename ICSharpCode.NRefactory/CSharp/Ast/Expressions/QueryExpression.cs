@@ -101,6 +101,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			QueryContinuationClause o = other as QueryContinuationClause;
+			Console.WriteLine ("other: " + other);
+			Console.WriteLine (MatchString(this.Identifier, o.Identifier));
+			Console.WriteLine (this.PrecedingQuery.DoMatch(o.PrecedingQuery, match));
 			return o != null && MatchString(this.Identifier, o.Identifier) && this.PrecedingQuery.DoMatch(o.PrecedingQuery, match);
 		}
 	}

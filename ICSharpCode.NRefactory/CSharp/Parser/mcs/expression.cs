@@ -9670,7 +9670,7 @@ namespace Mono.CSharp
 		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
-		}			
+		}
 	}
 
 	public class NewAnonymousType : New
@@ -9782,6 +9782,11 @@ namespace Mono.CSharp
 
 			RequestedType = new GenericTypeExpr (anonymous_type.Definition, new TypeArguments (t_args), loc);
 			return base.DoResolve (ec);
+		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
 		}
 	}
 

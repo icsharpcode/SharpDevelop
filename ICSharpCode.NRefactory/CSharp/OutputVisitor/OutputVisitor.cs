@@ -771,6 +771,25 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode(objectCreateExpression);
 		}
 		
+		public object VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, object data)
+		{
+			StartNode(anonymousTypeCreateExpression);
+			WriteKeyword("new");
+			Space();
+			LPar();
+			RPar();
+			Space();
+			OpenBrace(policy.AnonymousMethodBraceStyle);
+			foreach (AstNode node in anonymousTypeCreateExpression.Initializer) {
+				node.AcceptVisitor(this, null);
+				if (node.NextSibling != null)
+					Comma(node);
+				NewLine ();
+			}
+			CloseBrace(policy.AnonymousMethodBraceStyle);
+			return EndNode(anonymousTypeCreateExpression);
+		}
+
 		public object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
 			StartNode(parenthesizedExpression);
@@ -1026,7 +1045,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (first) {
 					first = false;
 				} else {
-					NewLine();
+					if (!(clause is QueryContinuationClause))
+						NewLine();
 				}
 				clause.AcceptVisitor(this, data);
 			}

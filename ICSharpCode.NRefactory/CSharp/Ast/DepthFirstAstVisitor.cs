@@ -440,6 +440,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (objectCreateExpression, data);
 		}
 		
+		public virtual S VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, T data)
+		{
+			return VisitChildren (anonymousTypeCreateExpression, data);
+		}
+		
 		public virtual S VisitArrayCreateExpression (ArrayCreateExpression arrayObjectCreateExpression, T data)
 		{
 			return VisitChildren (arrayObjectCreateExpression, data);

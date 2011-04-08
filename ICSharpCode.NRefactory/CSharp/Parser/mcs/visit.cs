@@ -446,6 +446,11 @@ namespace Mono.CSharp
 			return null;
 		}
 
+		public virtual object Visit (NewAnonymousType newAnonymousType)
+		{
+			return null;
+		}
+
 		public virtual object Visit (NewInitialize newInitializeExpression)
 		{
 			return null;
@@ -546,6 +551,11 @@ namespace Mono.CSharp
 			return null;
 		}
 
+		public virtual object Visit (Linq.QueryStartClause queryExpression)
+		{
+			return null;
+		}
+		
 		public virtual object Visit (Linq.SelectMany selectMany)
 		{
 			return null;

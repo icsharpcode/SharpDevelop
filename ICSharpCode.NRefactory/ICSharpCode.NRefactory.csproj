@@ -351,6 +351,7 @@
     <Compile Include="CSharp\Ast\TypeMembers\FixedVariableInitializer.cs" />
     <Compile Include="CSharp\Ast\GeneralScope\ExternAliasDeclaration.cs" />
     <Compile Include="CSharp\Formatter\CSharpFormattingOptions.cs" />
+    <Compile Include="CSharp\Ast\Expressions\AnonymousTypeCreateExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />

@@ -5669,6 +5669,7 @@ select_or_group_clause
 	  BY expression
 	  {
 		$$ = new Linq.GroupBy ((Linq.QueryBlock)current_block, (Expression)$3, linq_clause_blocks.Pop (), (Expression)$6, GetLocation ($1));
+		lbag.AddLocation ($$, GetLocation ($5));
 		
 		current_block.SetEndLocation (lexer.Location);
 		current_block = current_block.Parent;
@@ -5707,7 +5708,8 @@ let_clause
 		var lt = (Tokenizer.LocatedToken) $2;
 		var sn = new Linq.RangeVariable (lt.Value, lt.Location);
 	  	$$ = new Linq.Let ((Linq.QueryBlock) current_block, sn, (Expression)$5, GetLocation ($1));
-	  	
+		lbag.AddLocation ($$, GetLocation ($3));
+		
 		current_block.SetEndLocation (lexer.Location);
 		current_block = current_block.Parent;
 		
@@ -5769,6 +5771,7 @@ join_clause
 		if ($12 == null) {
 			into = sn;
 	  		$$ = new Linq.Join (block, sn, (Expression)$5, outer_selector, (Linq.QueryBlock) current_block, GetLocation ($1));
+			lbag.AddLocation ($$, GetLocation ($3), GetLocation ($6), GetLocation ($9));
 		} else {
 			//
 			// Set equals right side parent to beginning of linq query, it is not accessible therefore cannot cause name collisions
@@ -5785,6 +5788,7 @@ join_clause
 			into = new Linq.RangeVariable (lt.Value, lt.Location);
 
 			$$ = new Linq.GroupJoin (block, sn, (Expression)$5, outer_selector, (Linq.QueryBlock) current_block, into, GetLocation ($1));	
+			lbag.AddLocation ($$, GetLocation ($3), GetLocation ($6), GetLocation ($9), GetLocation ($12));
 		}
 
 		current_block = block.Parent;
@@ -5918,10 +5922,12 @@ order_by
 	| expression ASCENDING
 	  {
 		$$ = new Linq.OrderByAscending ((Linq.QueryBlock) current_block, (Expression)$1);	
+		lbag.AddLocation ($$, GetLocation ($2));
 	  }
 	| expression DESCENDING
 	  {
 		$$ = new Linq.OrderByDescending ((Linq.QueryBlock) current_block, (Expression)$1);	
+		lbag.AddLocation ($$, GetLocation ($2));
 	  }
 	;
 
@@ -5933,10 +5939,12 @@ then_by
 	| expression ASCENDING
 	  {
 		$$ = new Linq.ThenByAscending ((Linq.QueryBlock) current_block, (Expression)$1);	
+		lbag.AddLocation ($$, GetLocation ($2));
 	  }
 	| expression DESCENDING
 	  {
 		$$ = new Linq.ThenByDescending ((Linq.QueryBlock) current_block, (Expression)$1);	
+		lbag.AddLocation ($$, GetLocation ($2));
 	  }	
 	;
 

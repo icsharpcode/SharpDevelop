@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 {
-	[TestFixture, Ignore("Query expressions not yet implemented")]
+	[TestFixture]
 	public class QueryExpressionTests
 	{
 		[Test]
@@ -125,19 +125,17 @@ select new { c.Name, o.OrderID, o.Total }",
 						},
 						new QueryWhereClause {
 							Condition = new BinaryOperatorExpression {
-								Left = new IdentifierExpression("c").Member("OrderDate").Member("Year"),
+								Left = new IdentifierExpression("o").Member("OrderDate").Member("Year"),
 								Operator = BinaryOperatorType.Equality,
 								Right = new PrimitiveExpression(2005)
 							}
 						},
 						new QuerySelectClause {
-							Expression = new ObjectCreateExpression {
-								Initializer = new ArrayInitializerExpression {
-									Elements = {
-										new IdentifierExpression("c").Member("Name"),
-										new IdentifierExpression("o").Member("OrderID"),
-										new IdentifierExpression("o").Member("Total")
-									}
+							Expression = new AnonymousTypeCreateExpression {
+								Initializer = {
+									new IdentifierExpression("c").Member("Name"),
+									new IdentifierExpression("o").Member("OrderID"),
+									new IdentifierExpression("o").Member("Total")
 								}
 							}
 						}

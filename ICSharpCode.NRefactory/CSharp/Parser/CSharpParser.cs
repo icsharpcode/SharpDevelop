@@ -2217,8 +2217,25 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ObjectCreateExpression.Roles.RPar);
 				
-				// TODO: Collection initializer ?
-				
+				return result;
+			}
+			
+			public override object Visit (NewAnonymousType newAnonymousType)
+			{
+				var result = new AnonymousTypeCreateExpression ();
+				foreach (var par in newAnonymousType.Parameters) {
+					var location = LocationsBag.GetLocations (par);
+
+					if (location == null) {
+						result.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
+					} else {
+						var namedArgument = new NamedArgumentExpression ();
+						namedArgument.AddChild (new Identifier (par.Name, Convert (par.Location)), AnonymousTypeCreateExpression.Roles.Identifier);
+						namedArgument.AddChild (new CSharpTokenNode (Convert (location[0]), 1), AnonymousTypeCreateExpression.Roles.Assign);
+						namedArgument.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
+						result.AddChild (namedArgument, AnonymousTypeCreateExpression.Roles.Expression);
+					}
+				}
 				return result;
 			}
 			
@@ -2542,47 +2559,98 @@ namespace ICSharpCode.NRefactory.CSharp
 			#endregion
 			
 			#region LINQ expressions
-/*			public override object Visit (Mono.CSharp.Linq.Query queryExpression)
+			public override object Visit (Mono.CSharp.Linq.QueryExpression queryExpression)
 			{
-				var result = new QueryFromClause ();
-				var location = LocationsBag.GetLocations (queryExpression);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "from".Length), QueryFromClause.FromKeywordRole);
-				// TODO: select identifier
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), "in".Length), QueryFromClause.InKeywordRole);
-				var query = queryExpression.Expr as Mono.CSharp.Linq.AQueryClause;
-//				if (query != null && query.Expr != null)
-//					result.AddChild ((AstNode)query.Expr.Accept (this), QueryFromClause.Roles.Expression);
+				var result = new QueryExpression ();
+				
+				var currentClause = queryExpression.next;
+				var queryStarts = new Stack<QueryClause> ();
+				
+				while (currentClause != null) {
+					Console.WriteLine (currentClause);
+					QueryClause clause = (QueryClause)currentClause.Accept (this);
+					if (clause is QueryFromClause) {
+						queryStarts.Push (clause);
+					} else if (clause is QueryContinuationClause) {
+						var lastStart = queryStarts.Pop ();
+						var precedingQuery = new QueryExpression ();
+						List<AstNode> children = new List<AstNode> ();
+						AstNode node = lastStart;
+						while (node != null) {
+							children.Add (node);
+							node = node.NextSibling;
+						}
+						result.LastChild = lastStart.PrevSibling;
+						if (lastStart.PrevSibling != null) {
+							lastStart.PrevSibling.NextSibling = null;
+							lastStart.PrevSibling = null;
+						} else {
+							// lastStart == FirstChild
+							result.FirstChild = null;
+						}
+						
+						children.ForEach (c => c.Parent = precedingQuery);
+						precedingQuery.FirstChild = children.First ();
+						precedingQuery.LastChild = children.Last ();
+						
+						((QueryContinuationClause)clause).PrecedingQuery = precedingQuery;
+						
+						queryStarts.Push (clause);
+					}
+					result.AddChild (clause, QueryExpression.ClauseRole);
+					currentClause = currentClause.next;
+				}
+				
 				return result;
-			}				 */
+			}
 			
-			public override object Visit (Mono.CSharp.Linq.SelectMany selectMany)
+			public override object Visit (Mono.CSharp.Linq.QueryStartClause queryStart)
 			{
-				var result = new QueryFromClause ();
-				// TODO:
-//				Mono.CSharp.Linq.Cast cast = selectMany.Expr as Mono.CSharp.Linq.Cast;
-				var location = LocationsBag.GetLocations (selectMany);
+				if (queryStart.Expr == null) {
+					var intoClause = new QueryContinuationClause ();
+					intoClause.AddChild (new CSharpTokenNode (Convert (queryStart.Location), "into".Length), QueryContinuationClause.IntoKeywordRole);
+					intoClause.AddChild (new Identifier (queryStart.IntoVariable.Name, Convert(queryStart.IntoVariable.Location)), QueryContinuationClause.Roles.Identifier);
+					return intoClause;
+				}
+				
+				var fromClause = new QueryFromClause ();
+				var location = LocationsBag.GetLocations (queryStart);
+				
+				fromClause.AddChild (new CSharpTokenNode (Convert (queryStart.Location), "from".Length), QueryFromClause.FromKeywordRole);
+				
+				if (queryStart.IdentifierType != null)
+					fromClause.AddChild (ConvertToType (queryStart.IdentifierType), QueryFromClause.Roles.Type);
+				
+				fromClause.AddChild (new Identifier (queryStart.IntoVariable.Name, Convert(queryStart.IntoVariable.Location)), QueryFromClause.Roles.Identifier);
+				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "from".Length), QueryFromClause.FromKeywordRole);
+					fromClause.AddChild (new CSharpTokenNode (Convert (location[0]), "in".Length), QueryFromClause.InKeywordRole);
+				fromClause.AddChild ((Expression)queryStart.Expr.Accept (this), QueryFromClause.Roles.Expression);
+				return fromClause;
+			}
+			
+			public override object Visit (Mono.CSharp.Linq.SelectMany queryStart)
+			{
+				var fromClause = new QueryFromClause ();
+				var location = LocationsBag.GetLocations (queryStart);
 				
-				//					result.AddChild ((AstNode)cast.TypeExpr.Accept (this), QueryFromClause.Roles.ReturnType);
-//				if (cast != null)
+				fromClause.AddChild (new CSharpTokenNode (Convert (queryStart.Location), "from".Length), QueryFromClause.FromKeywordRole);
 				
-//				result.AddChild (new Identifier (selectMany.SelectIdentifier.Value, Convert (selectMany.SelectIdentifier.Location)), QueryFromClause.Roles.Identifier);
-				//				result.AddChild (new CSharpTokenNode (Convert (location[1]), "in".Length), QueryFromClause.InKeywordRole);
+				if (queryStart.IdentifierType != null)
+					fromClause.AddChild (ConvertToType (queryStart.IdentifierType), QueryFromClause.Roles.Type);
 				
-				//				result.AddChild ((AstNode)(cast != null ? cast.Expr : selectMany.Expr).Accept (this), QueryFromClause.Roles.Expression);
+				fromClause.AddChild (new Identifier (queryStart.IntoVariable.Name, Convert(queryStart.IntoVariable.Location)), QueryFromClause.Roles.Identifier);
 				
-				
-				return result;
+				if (location != null)
+					fromClause.AddChild (new CSharpTokenNode (Convert (location[0]), "in".Length), QueryFromClause.InKeywordRole);
+				fromClause.AddChild ((Expression)queryStart.Expr.Accept (this), QueryFromClause.Roles.Expression);
+				return fromClause;
 			}
 			
 			public override object Visit (Mono.CSharp.Linq.Select sel)
 			{
 				var result = new QuerySelectClause ();
-				var location = LocationsBag.GetLocations (sel);
-				result.AddChild (new CSharpTokenNode (Convert (location[0]), "select".Length), QueryWhereClause.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (sel.Location), "select".Length), QueryWhereClause.Roles.Keyword);
 				result.AddChild ((Expression)sel.Expr.Accept (this), QueryWhereClause.Roles.Expression);
 				return result;
 			}
@@ -2591,12 +2659,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new QueryGroupClause ();
 				var location = LocationsBag.GetLocations (groupBy);
+				result.AddChild (new CSharpTokenNode (Convert (groupBy.Location), "group".Length), QueryGroupClause.GroupKeywordRole);
+				result.AddChild ((Expression)groupBy.ElementSelector.Accept (this), QueryGroupClause.KeyRole);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "group".Length), QueryGroupClause.GroupKeywordRole);
-//				result.AddChild ((AstNode)groupBy.ElementSelector.Accept (this), QueryGroupClause.GroupByExpressionRole);
-//				if (location != null)
-//					result.AddChild (new CSharpTokenNode (Convert (location[1]), "by".Length), QueryGroupClause.ByKeywordRole);
-//				result.AddChild ((AstNode)groupBy.Expr.Accept (this), QueryGroupClause.ProjectionExpressionRole);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), "by".Length), QueryGroupClause.ByKeywordRole);
+				result.AddChild ((Expression)groupBy.Expr.Accept (this), QueryGroupClause.ProjectionRole);
 				return result;
 			}
 			
@@ -2605,17 +2672,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				var result = new QueryLetClause ();
 				var location = LocationsBag.GetLocations (l);
 				
+				result.AddChild (new CSharpTokenNode (Convert (l.Location), "let".Length), QueryLetClause.Roles.Keyword);
+				result.AddChild (new Identifier (l.IntoVariable.Name, Convert (l.IntoVariable.Location)), Identifier.Roles.Identifier);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "let".Length), QueryWhereClause.Roles.Keyword);
-				
-				NewAnonymousType aType = l.Expr as NewAnonymousType;
-				AnonymousTypeParameter param = ((AnonymousTypeParameter)aType.Parameters[1]);
-				result.AddChild (new Identifier (param.Name, Convert (param.Location)), Identifier.Roles.Identifier);
-				
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), QueryWhereClause.Roles.Assign);
-				
-				result.AddChild ((Expression)param.Expr.Accept (this), QueryWhereClause.Roles.Condition);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), QueryLetClause.Roles.Assign);
+				result.AddChild ((Expression)l.Expr.Accept (this), QueryLetClause.Roles.Expression);
 				return result;
 			}
 			
@@ -2632,98 +2693,117 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (Mono.CSharp.Linq.Join join)
 			{
 				var result = new QueryJoinClause ();
-		/*		var location = LocationsBag.GetLocations (join);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "join".Length), QueryJoinClause.JoinKeywordRole);
+				var location = LocationsBag.GetLocations (join);
+				result.AddChild (new CSharpTokenNode (Convert (join.Location), "join".Length), QueryJoinClause.JoinKeywordRole);
 				
 				result.AddChild (new Identifier (join.JoinVariable.Name, Convert (join.JoinVariable.Location)), Identifier.Roles.Identifier);
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), "in".Length), QueryJoinClause.InKeywordRole);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), "in".Length), QueryJoinClause.InKeywordRole);
 				
-				result.AddChild ((AstNode)join.Expr.Accept (this), QueryJoinClause.Roles.Expression);
+				result.AddChild ((Expression)join.Expr.Accept (this), QueryJoinClause.Roles.Expression);
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[2]), "on".Length), QueryJoinClause.OnKeywordRole);
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), "on".Length), QueryJoinClause.OnKeywordRole);
 				// TODO: on expression
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[3]), "equals".Length), QueryJoinClause.EqualsKeywordRole);
+					result.AddChild (new CSharpTokenNode (Convert (location[2]), "equals".Length), QueryJoinClause.EqualsKeywordRole);
 				// TODO: equals expression
-				*/
+				
 				return result;
 			}
 			
-			public override object Visit (Mono.CSharp.Linq.GroupJoin groupJoin)
+			public override object Visit (Mono.CSharp.Linq.GroupJoin join)
 			{
 				var result = new QueryJoinClause ();
-/*				var location = LocationsBag.GetLocations (groupJoin);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "join".Length), QueryJoinClause.JoinKeywordRole);
+				var location = LocationsBag.GetLocations (join);
+				result.AddChild (new CSharpTokenNode (Convert (join.Location), "join".Length), QueryJoinClause.JoinKeywordRole);
 				
-				result.AddChild (new Identifier (groupJoin.JoinVariable.Name, Convert (groupJoin.JoinVariable.Location)), Identifier.Roles.Identifier);
-				
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), "in".Length), QueryJoinClause.InKeywordRole);
-				
-				result.AddChild ((AstNode)groupJoin.Expr.Accept (this), QueryJoinClause.Roles.Expression);
+				result.AddChild (new Identifier (join.JoinVariable.Name, Convert (join.JoinVariable.Location)), Identifier.Roles.Identifier);
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[2]), "on".Length), QueryJoinClause.OnKeywordRole);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), "in".Length), QueryJoinClause.InKeywordRole);
+				
+				result.AddChild ((Expression)join.Expr.Accept (this), QueryJoinClause.Roles.Expression);
+				
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), "on".Length), QueryJoinClause.OnKeywordRole);
+				
 				// TODO: on expression
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[3]), "equals".Length), QueryJoinClause.EqualsKeywordRole);
+					result.AddChild (new CSharpTokenNode (Convert (location[2]), "equals".Length), QueryJoinClause.EqualsKeywordRole);
 				// TODO: equals expression
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[4]), "into".Length), QueryJoinClause.IntoKeywordRole);
+					result.AddChild (new CSharpTokenNode (Convert (location[3]), "into".Length), QueryJoinClause.IntoKeywordRole);
 				
-				result.AddChild (new Identifier (groupJoin.JoinVariable.Name, Convert (groupJoin.JoinVariable.Location)), Identifier.Roles.Identifier);*/
+				result.AddChild (new Identifier (join.JoinVariable.Name, Convert (join.JoinVariable.Location)), Identifier.Roles.Identifier);
 				return result;
 			}
 			
 			public override object Visit (Mono.CSharp.Linq.OrderByAscending orderByAscending)
 			{
 				var result = new QueryOrderClause ();
-			/*	result.OrderAscending = true;
-				result.AddChild ((AstNode)orderByAscending.Expr.Accept (this), QueryWhereClause.Roles.Expression);
+				
+				var ordering = new QueryOrdering ();
+				
+				ordering.AddChild ((Expression)orderByAscending.Expr.Accept (this), QueryWhereClause.Roles.Expression);
 				var location = LocationsBag.GetLocations (orderByAscending);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "ascending".Length), QueryWhereClause.Roles.Keyword);*/
+				if (location != null) {
+					ordering.Direction = QueryOrderingDirection.Ascending;
+					ordering.AddChild (new CSharpTokenNode (Convert (location[0]), "ascending".Length), QueryWhereClause.Roles.Keyword);
+				}
+				result.AddChild (ordering, QueryOrderClause.OrderingRole);
 				return result;
 			}
 			
 			public override object Visit (Mono.CSharp.Linq.OrderByDescending orderByDescending)
 			{
 				var result = new QueryOrderClause ();
-		/*		result.OrderAscending = false;
-				result.AddChild ((AstNode)orderByDescending.Expr.Accept (this), QueryWhereClause.Roles.Expression);
+				
+				var ordering = new QueryOrdering ();
+				
+				ordering.AddChild ((Expression)orderByDescending.Expr.Accept (this), QueryWhereClause.Roles.Expression);
 				var location = LocationsBag.GetLocations (orderByDescending);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "descending".Length), QueryWhereClause.Roles.Keyword);*/
+				if (location != null) {
+					ordering.Direction = QueryOrderingDirection.Descending;
+					ordering.AddChild (new CSharpTokenNode (Convert (location[0]), "ascending".Length), QueryWhereClause.Roles.Keyword);
+				}
+				result.AddChild (ordering, QueryOrderClause.OrderingRole);
 				return result;
-			}
+		}
 			
 			public override object Visit (Mono.CSharp.Linq.ThenByAscending thenByAscending)
 			{
 				var result = new QueryOrderClause ();
-			/*	result.OrderAscending = true;
-				result.AddChild ((AstNode)thenByAscending.Expr.Accept (this), QueryWhereClause.Roles.Expression);
+				
+				var ordering = new QueryOrdering ();
+				
+				ordering.AddChild ((Expression)thenByAscending.Expr.Accept (this), QueryWhereClause.Roles.Expression);
 				var location = LocationsBag.GetLocations (thenByAscending);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "ascending".Length), QueryWhereClause.Roles.Keyword);*/
+				if (location != null) {
+					ordering.Direction = QueryOrderingDirection.Ascending;
+					ordering.AddChild (new CSharpTokenNode (Convert (location[0]), "ascending".Length), QueryWhereClause.Roles.Keyword);
+				}
+				result.AddChild (ordering, QueryOrderClause.OrderingRole);
 				return result;
 			}
 			
 			public override object Visit (Mono.CSharp.Linq.ThenByDescending thenByDescending)
 			{
 				var result = new QueryOrderClause ();
-/*				result.OrderAscending = false;
-				result.AddChild ((AstNode)thenByDescending.Expr.Accept (this), QueryWhereClause.Roles.Expression);
+				
+				var ordering = new QueryOrdering ();
+				
+				ordering.AddChild ((Expression)thenByDescending.Expr.Accept (this), QueryWhereClause.Roles.Expression);
 				var location = LocationsBag.GetLocations (thenByDescending);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "descending".Length), QueryWhereClause.Roles.Keyword);*/
+				if (location != null) {
+					ordering.Direction = QueryOrderingDirection.Descending;
+					ordering.AddChild (new CSharpTokenNode (Convert (location[0]), "ascending".Length), QueryWhereClause.Roles.Keyword);
+				}
+				result.AddChild (ordering, QueryOrderClause.OrderingRole);
 				return result;
 			}
 			#endregion

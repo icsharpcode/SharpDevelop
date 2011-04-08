@@ -32,6 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, T data);
 		S VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression, T data);
 		S VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, T data);
+		S VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, T data);
 		S VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, T data);
 		S VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, T data);
 		S VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, T data);
