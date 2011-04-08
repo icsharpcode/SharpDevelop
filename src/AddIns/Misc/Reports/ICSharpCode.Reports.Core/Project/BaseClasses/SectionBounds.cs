@@ -131,11 +131,11 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			                                           s.Height);
 			
 			
-			Console.WriteLine("---------------");
-			Console.WriteLine("\tMeasureReprtHeader {0}",reportHeaderRectangle);
-			Console.WriteLine("\tMeasurePageHeader {0}",pageHeaderRectangle);
-			Console.WriteLine("\tDetailStart {0}",DetailStart);
-			Console.WriteLine("---------------");
+//			Console.WriteLine("---------------");
+//			Console.WriteLine("\tMeasureReprtHeader {0}",reportHeaderRectangle);
+//			Console.WriteLine("\tMeasurePageHeader {0}",pageHeaderRectangle);
+//			Console.WriteLine("\tDetailStart {0}",DetailStart);
+//			Console.WriteLine("---------------");
 		}
 		
 		

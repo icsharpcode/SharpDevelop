@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+
 using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Globals;
@@ -91,41 +93,57 @@ namespace ICSharpCode.Reports.Core.Exporter
 				Rectangle desiredRectangle = LayoutHelper.CalculateSectionLayout(this.Graphics,section);
 				LayoutHelper.FixSectionLayout(desiredRectangle,section);
 				
+				BaseReportItem oldItem = section.Items[0];
+				
+				int gap = 0;
+
 				foreach (BaseReportItem item in section.Items)
 				{
-					ISimpleContainer simpleContainer = item as ISimpleContainer;
 					
+					ISimpleContainer simpleContainer = item as ISimpleContainer;
+					gap = CalculateGap (oldItem,item);
+
 					if (simpleContainer != null)
 					{
 						EvaluationHelper.EvaluateReportItems(evaluator,simpleContainer.Items);
-						
+
+//						
+						Offset  = new Point(Offset.X,Offset.Y + item.Size.Height + gap);
 						var layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
 						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
-						
-						ExportContainer exportContainer = ExportHelper.ConvertToContainer(simpleContainer,Offset);
-
-						ExporterCollection exporterCollection = ExportHelper.ConvertPlainCollection(simpleContainer.Items,exportContainer.StyleDecorator.Location);
-						exportContainer.Items.AddRange(exporterCollection);
-						Offset  = new Point(Offset.X,Offset.Y + exportContainer.StyleDecorator.Size.Height + GlobalValues.GapBetweenContainer);
-						
 						/*
-						Offset = ExportHelper.ConvertPlainCollection_2(exportContainer,simpleContainer.Items,Offset);
+					ExporterCollection xx = new ExporterCollection();
+						var pp = BaseConverter.ConvertContainer(xx,simpleContainer,Offset.X,Offset);
 						
 						*/
+						ExportContainer exportContainer = ExportHelper.ConvertToContainer(simpleContainer,Offset);
+						
+						ExporterCollection exporterCollection = ExportHelper.ConvertPlainCollection(simpleContainer.Items,exportContainer.StyleDecorator.Location);
+						exportContainer.Items.AddRange(exporterCollection);
 						
 						convertedSection.Add(exportContainer);
 						
 					}
 					else
 					{
+						Offset = new Point(Offset.X,Offset.Y  + gap);
 						var converteditem = ExportHelper.ConvertLineItem(item,Offset);
-						Offset = new Point(Offset.X,Offset.Y + converteditem.StyleDecorator.Size.Height + GlobalValues.GapBetweenContainer);
 						convertedSection.Add(converteditem);
 					}
-//					section.Size = new Size(section.Size.Width,Offset.Y  - section.SectionOffset);
+					oldItem = item;
 				}
 			}
 			return convertedSection;
+		}
+		
+		
+		int CalculateGap(BaseReportItem oldItem, BaseReportItem item)
+		{
+				var gap = item.Location.Y - (oldItem.Location.Y + oldItem.Size.Height) ;
+						if (gap < 0) {
+							gap = 0;
+						}
+				return gap;
 		}
 
 		
