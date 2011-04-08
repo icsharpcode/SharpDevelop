@@ -71,14 +71,36 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return NodeType.TypeReference; }
 		}
 		
+		public new AstType Clone()
+		{
+			return (AstType)base.Clone();
+		}
+		
+		/// <summary>
+		/// Creates a pointer type from this type by nesting it in a <see cref="ComposedType"/>.
+		/// If this type already is a pointer type, this method just increases the PointerRank of the existing pointer type.
+		/// </summary>
 		public virtual AstType MakePointerType()
 		{
 			return new ComposedType { BaseType = this }.MakePointerType();
 		}
 		
+		/// <summary>
+		/// Creates an array type from this type by nesting it in a <see cref="ComposedType"/>.
+		/// If this type already is an array type, the additional rank is prepended to the existing array specifier list.
+		/// Thus, <c>new SimpleType("T").MakeArrayType(1).MakeArrayType(2)</c> will result in "T[,][]".
+		/// </summary>
 		public virtual AstType MakeArrayType(int rank = 1)
 		{
 			return new ComposedType { BaseType = this }.MakeArrayType(rank);
+		}
+		
+		/// <summary>
+		/// Creates a nullable type from this type by nesting it in a <see cref="ComposedType"/>.
+		/// </summary>
+		public AstType MakeNullableType()
+		{
+			return new ComposedType { BaseType = this, HasNullableSpecifier = true };
 		}
 		
 		/// <summary>
