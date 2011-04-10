@@ -15,6 +15,7 @@ namespace PackageManagement.Tests
 		UpdatedPackagesViewModel viewModel;
 		FakePackageManagementService packageManagementService;
 		FakeTaskFactory taskFactory;
+		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
 		
 		void CreateViewModel()
@@ -31,8 +32,14 @@ namespace PackageManagement.Tests
 		void CreateViewModel(FakePackageManagementService packageManagementService)
 		{
 			taskFactory = new FakeTaskFactory();
+			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
+			var packageViewModelFactory = new FakePackageViewModelFactory();
 			var messageReporter = new FakeMessageReporter();
-			viewModel = new UpdatedPackagesViewModel(packageManagementService, messageReporter, taskFactory);
+			viewModel = new UpdatedPackagesViewModel(
+				packageManagementService,
+				registeredPackageRepositories,
+				packageViewModelFactory,
+				taskFactory);
 		}
 		
 		void CreateExceptionThrowingPackageManagementService()
@@ -54,7 +61,7 @@ namespace PackageManagement.Tests
 		
 		FakePackage AddPackageToAggregateRepository(string version)
 		{
-			return packageManagementService.AddFakePackageWithVersionToAggregrateRepository(version);
+			return registeredPackageRepositories.AddFakePackageWithVersionToAggregrateRepository(version);
 		}
 		
 		[Test]
@@ -101,7 +108,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.ReadPackages();
 			
-			packageManagementService.FakeAggregateRepository = null;
+			registeredPackageRepositories.FakeAggregateRepository = null;
 			packageManagementService.FakeActiveProjectManager.LocalRepository = null;
 			CompleteReadPackagesTask();
 			

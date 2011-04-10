@@ -9,15 +9,18 @@ namespace ICSharpCode.PackageManagement
 {
 	public class RecentPackagesViewModel : PackagesViewModel
 	{
+		IPackageManagementService packageManagementService;
 		IPackageRepository recentPackageRepository;
 		
 		public RecentPackagesViewModel(
 			IPackageManagementService packageManagementService,
-			IMessageReporter messageReporter,
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
-			: base(packageManagementService, messageReporter, taskFactory)
+			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
-			recentPackageRepository = packageManagementService.RecentPackageRepository;
+			this.packageManagementService = packageManagementService;
+			recentPackageRepository = registeredPackageRepositories.RecentPackageRepository;
 			packageManagementService.ParentPackageInstalled += ParentPackageInstalled;
 			packageManagementService.ParentPackageUninstalled += ParentPackageUninstalled;
 		}
@@ -34,8 +37,8 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void OnDispose()
 		{
-			PackageManagementService.ParentPackageInstalled -= ParentPackageInstalled;
-			PackageManagementService.ParentPackageUninstalled -= ParentPackageUninstalled;
+			packageManagementService.ParentPackageInstalled -= ParentPackageInstalled;
+			packageManagementService.ParentPackageUninstalled -= ParentPackageUninstalled;
 		}
 		
 		protected override IQueryable<IPackage> GetAllPackages()

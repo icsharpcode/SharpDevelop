@@ -10,16 +10,19 @@ namespace ICSharpCode.PackageManagement
 {
 	public class InstalledPackagesViewModel : PackagesViewModel
 	{
+		IPackageManagementService packageManagementService;
 		IProjectManager projectManager;
 		IPackageRepository repository;
 		string errorMessage = String.Empty;
 
 		public InstalledPackagesViewModel(
 			IPackageManagementService packageManagementService,
-			IMessageReporter messageReporter,
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
-			: base(packageManagementService, messageReporter, taskFactory)
+			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
+			this.packageManagementService = packageManagementService;
 			packageManagementService.ParentPackageInstalled += ParentPackageInstalled;
 			packageManagementService.ParentPackageUninstalled += ParentPackageUninstalled;
 			
@@ -29,7 +32,7 @@ namespace ICSharpCode.PackageManagement
 		void GetActiveProjectManager()
 		{
 			try {
-				this.projectManager = PackageManagementService.ActiveProjectManager;
+				this.projectManager = packageManagementService.ActiveProjectManager;
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}
@@ -47,8 +50,8 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void OnDispose()
 		{
-			PackageManagementService.ParentPackageInstalled -= ParentPackageInstalled;
-			PackageManagementService.ParentPackageUninstalled -= ParentPackageUninstalled;
+			packageManagementService.ParentPackageInstalled -= ParentPackageInstalled;
+			packageManagementService.ParentPackageUninstalled -= ParentPackageUninstalled;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()

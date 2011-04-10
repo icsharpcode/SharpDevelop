@@ -13,7 +13,7 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class TestablePackagesViewModel : PackagesViewModel
 	{
-		public FakePackageManagementService FakePackageManagementService;
+		public FakeRegisteredPackageRepositories FakeRegisteredPackageRepositories;
 		public FakeTaskFactory FakeTaskFactory;
 		public List<FakePackage> FakePackages = new List<FakePackage>();
 		public int GetAllPackagesCallCount;
@@ -21,19 +21,24 @@ namespace PackageManagement.Tests.Helpers
 		public string SearchCriteriaPassedToFilterPackagesBySearchCriteria;
 		
 		public TestablePackagesViewModel()
-			: this(new FakePackageManagementService())
+			: this(new FakeRegisteredPackageRepositories())
 		{
 		}
 		
-		public TestablePackagesViewModel(FakePackageManagementService packageManagementService)
-			: this(packageManagementService, new FakeTaskFactory())
+		public TestablePackagesViewModel(FakeRegisteredPackageRepositories registeredPackageRepositories)
+			: this(registeredPackageRepositories, new FakeTaskFactory())
 		{
 		}
 		
-		public TestablePackagesViewModel(FakePackageManagementService packageManagementService, FakeTaskFactory taskFactory)
-			: base(packageManagementService, new FakeMessageReporter(), taskFactory)
+		public TestablePackagesViewModel(
+			FakeRegisteredPackageRepositories registeredPackageRepositories,
+			FakeTaskFactory taskFactory)
+			: base(
+				registeredPackageRepositories,
+				new FakePackageViewModelFactory(),
+				taskFactory)
 		{
-			FakePackageManagementService = packageManagementService;
+			FakeRegisteredPackageRepositories = registeredPackageRepositories;
 			FakeTaskFactory = taskFactory;
 		}
 		

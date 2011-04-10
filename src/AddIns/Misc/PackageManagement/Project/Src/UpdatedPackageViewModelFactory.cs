@@ -8,11 +8,8 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UpdatedPackageViewModelFactory : PackageViewModelFactory
 	{
-		public UpdatedPackageViewModelFactory(
-			IPackageManagementService packageManagementService,
-			ILicenseAcceptanceService licenseAcceptanceService,
-			IMessageReporter messageReporter)
-			: base(packageManagementService, licenseAcceptanceService, messageReporter)
+		public UpdatedPackageViewModelFactory(IPackageViewModelFactory packageViewModelFactory)
+			: base(packageViewModelFactory)
 		{
 		}
 		
@@ -20,6 +17,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			return new UpdatedPackageViewModel(
 				package,
+				RegisteredPackageRepositories.ActiveRepository,
 				PackageManagementService,
 				LicenseAcceptanceService,
 				MessageReporter);

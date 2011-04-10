@@ -40,7 +40,7 @@ namespace PackageManagement.Tests
 			viewModel = new TestablePackageViewModel(packageManagementService);
 			package = viewModel.FakePackage;
 			this.packageManagementService = packageManagementService;
-			sourcePackageRepository = packageManagementService.FakeActivePackageRepository;
+			sourcePackageRepository = viewModel.FakeSourcePackageRepository;
 			licenseAcceptanceService = viewModel.FakeLicenseAcceptanceService;
 			messageReporter = viewModel.FakeMessageReporter;
 			fakeInstallPackageTask = packageManagementService.ActionToReturnFromCreateInstallPackageAction;

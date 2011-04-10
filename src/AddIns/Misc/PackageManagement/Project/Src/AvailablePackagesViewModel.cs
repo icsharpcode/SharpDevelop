@@ -15,19 +15,19 @@ namespace ICSharpCode.PackageManagement
 		string errorMessage;
 		
 		public AvailablePackagesViewModel(
-			IPackageManagementService packageManagementService,
-			IMessageReporter messageReporter,
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
-			: base(packageManagementService, messageReporter, taskFactory)
+			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
 			IsSearchable = true;
-			ShowPackageSources = packageManagementService.HasMultiplePackageSources;
+			ShowPackageSources = registeredPackageRepositories.HasMultiplePackageSources;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
 		{
 			try {
-				repository = PackageManagementService.ActivePackageRepository;
+				repository = RegisteredPackageRepositories.ActiveRepository;
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}

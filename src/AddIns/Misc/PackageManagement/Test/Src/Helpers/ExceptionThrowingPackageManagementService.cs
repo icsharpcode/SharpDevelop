@@ -14,7 +14,6 @@ namespace PackageManagement.Tests.Helpers
 		public Exception ExeptionToThrowWhenActiveProjectManagerAccessed { get; set; }
 		public Exception ExeptionToThrowWhenCreateInstallPackageTaskCalled { get; set; }
 		public Exception ExeptionToThrowWhenCreateUninstallPackageActionCalled { get; set; }
-		public Exception ExeptionToThrowWhenActiveRepositoryAccessed { get; set; }
 		public Exception ExceptionToThrowWhenCreatePackageManagerForActiveProjectCalled { get; set; }
 
 		public override IProjectManager ActiveProjectManager {
@@ -24,16 +23,6 @@ namespace PackageManagement.Tests.Helpers
 				}
 				return base.ActiveProjectManager;
 			}
-		}
-		
-		public override IPackageRepository ActivePackageRepository {
-			get {
-				if (ExeptionToThrowWhenActiveRepositoryAccessed != null) {
-					throw ExeptionToThrowWhenActiveRepositoryAccessed;
-				}
-				return base.ActivePackageRepository;
-			}
-			set { base.ActivePackageRepository = value; }
 		}
 		
 		public override InstallPackageAction CreateInstallPackageAction()

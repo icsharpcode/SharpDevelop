@@ -15,49 +15,25 @@ namespace ICSharpCode.PackageManagement
 	{
 		Pages pages = new Pages();
 		
-		IPackageManagementService packageManagementService;
+		IRegisteredPackageRepositories registeredPackageRepositories;
 		IPackageViewModelFactory packageViewModelFactory;
 		ITaskFactory taskFactory;
 		IEnumerable<IPackage> allPackages;
 		ITask<PackagesForSelectedPageResult> task;
-		
+
 		public PackagesViewModel(
-			IPackageManagementService packageManagementService,
-			IMessageReporter messageReporter,
-			ITaskFactory taskFactory)
-			: this(
-				packageManagementService,
-				new LicenseAcceptanceService(),
-				messageReporter,
-				taskFactory)
-		{
-		}
-		
-		public PackagesViewModel(
-			IPackageManagementService packageManagementService,
-			ILicenseAcceptanceService licenseAcceptanceService,
-			IMessageReporter messageReporter,
-			ITaskFactory taskFactory)
-			: this(
-				packageManagementService, 
-				new PackageViewModelFactory(packageManagementService, licenseAcceptanceService, messageReporter),
-				taskFactory)
-		{
-		}
-		
-		public PackagesViewModel(
-			IPackageManagementService packageManagementService, 
+			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 		{
-			this.packageManagementService = packageManagementService;
+			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.packageViewModelFactory = packageViewModelFactory;
 			this.taskFactory = taskFactory;
 			
 			PackageViewModels = new ObservableCollection<PackageViewModel>();
 			ErrorMessage = String.Empty;
 
-			CreateCommands();
+			CreateCommands();			
 		}
 		
 		void CreateCommands()
@@ -90,8 +66,8 @@ namespace ICSharpCode.PackageManagement
 		
 		public ObservableCollection<PackageViewModel> PackageViewModels { get; set; }
 		
-		public IPackageManagementService PackageManagementService { 
-			get { return packageManagementService; }
+		public IRegisteredPackageRepositories RegisteredPackageRepositories {
+			get { return registeredPackageRepositories; }
 		}
 		
 		public bool IsReadingPackages { get; private set; }
@@ -351,14 +327,14 @@ namespace ICSharpCode.PackageManagement
 		public bool ShowPackageSources { get; set; }
 		
 		public IEnumerable<PackageSource> PackageSources {
-			get { return packageManagementService.Options.PackageSources; }
+			get { return registeredPackageRepositories.PackageSources; }
 		}
 		
 		public PackageSource SelectedPackageSource {
-			get { return packageManagementService.ActivePackageSource; }
+			get { return registeredPackageRepositories.ActivePackageSource; }
 			set {
-				if (packageManagementService.ActivePackageSource != value) {
-					packageManagementService.ActivePackageSource = value;
+				if (registeredPackageRepositories.ActivePackageSource != value) {
+					registeredPackageRepositories.ActivePackageSource = value;
 					ReadPackages();
 					OnPropertyChanged(null);
 				}

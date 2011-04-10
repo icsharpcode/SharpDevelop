@@ -13,16 +13,12 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler ParentPackageInstalled;
 		event EventHandler ParentPackageUninstalled;
 		
-		IPackageRepository CreateAggregatePackageRepository();
-		IPackageRepository CreatePackageRepository(PackageSource source);
 		ISharpDevelopProjectManager CreateProjectManager(IPackageRepository repository, MSBuildBasedProject project);
 		ISharpDevelopPackageManager CreatePackageManagerForActiveProject();
 		ISharpDevelopPackageManager CreatePackageManagerForActiveProject(IPackageRepository packageRepository);
 		ISharpDevelopPackageManager CreatePackageManager(PackageSource packageSource, MSBuildBasedProject project);
 		
-		IPackageRepository ActivePackageRepository { get; }
 		IProjectManager ActiveProjectManager { get; }
-		IPackageRepository RecentPackageRepository { get; }
 		
 		InstallPackageAction CreateInstallPackageAction();
 		UninstallPackageAction CreateUninstallPackageAction();
@@ -32,9 +28,6 @@ namespace ICSharpCode.PackageManagement
 		void OnParentPackageUninstalled(IPackage package);
 		
 		PackageManagementOptions Options { get; }
-		
-		bool HasMultiplePackageSources { get; }
-		PackageSource ActivePackageSource { get; set; }
 		
 		IPackageManagementOutputMessagesView OutputMessagesView { get; }
 	}

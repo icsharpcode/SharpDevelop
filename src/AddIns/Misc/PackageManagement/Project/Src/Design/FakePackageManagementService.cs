@@ -34,19 +34,10 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public FakeProjectManager FakeActiveProjectManager { get; set; }
 		
-		public FakePackageRepository FakeActivePackageRepository {
-			get { return ActivePackageRepository as FakePackageRepository; }
-			set { ActivePackageRepository = value; }
-		}
-		
 		public FakePackageManagementService()
 		{
 			FakeActiveProjectManager = new FakeProjectManager();
-			FakeActivePackageRepository = new FakePackageRepository();
-			FakeActiveProjectManager.FakeSourceRepository = FakeActivePackageRepository;
 		}
-		
-		public virtual IPackageRepository ActivePackageRepository { get; set; }
 		
 		public virtual IProjectManager ActiveProjectManager {
 			get { return FakeActiveProjectManager; }
@@ -87,58 +78,10 @@ namespace ICSharpCode.PackageManagement.Design
 			get { return options; }
 		}
 		
-		public void ClearPackageSources()
-		{
-			options.PackageSources.Clear();
-		}
-		
-		public PackageSource AddOnePackageSource()
-		{
-			return AddOnePackageSource("Test");
-		}
-		
-		public PackageSource AddOnePackageSource(string name)
-		{
-			var source = new PackageSource("http://sharpdevelop.codeplex.com", name);
-			options.PackageSources.Add(source);
-			return source;
-		}
-		
-		public bool HasMultiplePackageSources { get; set; }
-		
-		public void AddPackageSources(IEnumerable<PackageSource> sources)
-		{
-			options.PackageSources.AddRange(sources);
-		}
-		
-		public PackageSource ActivePackageSource { get; set; }
-		
-		public FakePackageRepository FakeAggregateRepository = new FakePackageRepository();
-		
-		public IPackageRepository CreateAggregatePackageRepository()
-		{
-			return FakeAggregateRepository;
-		}
-		
 		public FakePackageManagementOutputMessagesView FakeOutputMessagesView = new FakePackageManagementOutputMessagesView();
 		
 		public IPackageManagementOutputMessagesView OutputMessagesView {
 			get { return FakeOutputMessagesView; }
-		}
-		
-		public FakePackageRepository FakeRecentPackageRepository = new FakePackageRepository();
-		
-		public IPackageRepository RecentPackageRepository {
-			get { return FakeRecentPackageRepository; }
-		}
-		
-		public FakePackageRepository FakePackageRepositoryToReturnFromCreatePackageRepository = new FakePackageRepository();
-		public PackageSource PackageSourcePassedToCreatePackageRepository;
-		
-		public IPackageRepository CreatePackageRepository(PackageSource source)
-		{
-			PackageSourcePassedToCreatePackageRepository = source;
-			return FakePackageRepositoryToReturnFromCreatePackageRepository;
 		}
 		
 		public FakeProjectManager FakeProjectManagerToReturnFromCreateProjectManager = new FakeProjectManager();
@@ -177,18 +120,6 @@ namespace ICSharpCode.PackageManagement.Design
 			PackageSourcePassedToCreatePackageManager = packageSource;
 			ProjectPassedToCreatePackageManager = project;
 			return FakePackageManagerToReturnFromCreatePackageManager;
-		}
-		
-		public FakePackage AddFakePackageWithVersionToAggregrateRepository(string version)
-		{
-			return AddFakePackageWithVersionToAggregrateRepository("Test", version);
-		}
-		
-		public FakePackage AddFakePackageWithVersionToAggregrateRepository(string id, string version)
-		{
-			var package = FakePackage.CreatePackageWithVersion(id, version);
-			FakeAggregateRepository.FakePackages.Add(package);
-			return package;
 		}
 		
 		public FakeUpdatePackageAction ActionToReturnFromCreateUpdatePackageAction =

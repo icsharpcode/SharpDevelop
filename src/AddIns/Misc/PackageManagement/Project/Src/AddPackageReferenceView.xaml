@@ -14,7 +14,7 @@
 	
 	<Window.Resources>
 		<Style TargetType="Button" BasedOn="{x:Static core:GlobalStyles.ButtonStyle}"/>
-		<pm:ViewModelLocator x:Key="ViewModelLocator"/>
+		<pm:PackageManagementViewModels x:Key="ViewModels"/>
 		<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
 		
 		<BitmapImage x:Key="ErrorIcon"
@@ -25,7 +25,7 @@
 		<!-- Use DockPanel.DataContext instead of Window.DataContext otherwise Visual Studio does not show
 			design time data -->
 		<DockPanel.DataContext>
-			<Binding Source="{StaticResource ViewModelLocator}" Path="AddPackageReferenceViewModel"/>
+			<Binding Source="{StaticResource ViewModels}" Path="AddPackageReferenceViewModel"/>
 		</DockPanel.DataContext>
 		<Grid
 			DockPanel.Dock="Bottom"

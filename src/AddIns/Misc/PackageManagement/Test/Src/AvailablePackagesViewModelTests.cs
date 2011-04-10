@@ -15,31 +15,32 @@ namespace PackageManagement.Tests
 	public class AvailablePackagesViewModelTests
 	{
 		AvailablePackagesViewModel viewModel;
-		FakePackageManagementService packageManagementService;
-		FakeTaskFactory taskFactory = new FakeTaskFactory();
-		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
+		FakeRegisteredPackageRepositories registeredPackageRepositories;
+		ExceptionThrowingRegisteredPackageRepositories exceptionThrowingRegisteredPackageRepositories;
+		FakeTaskFactory taskFactory;
 		
 		void CreateViewModel()
 		{
-			CreatePackageManagementService();
-			CreateViewModel(packageManagementService);
+			CreateRegisteredPackageRepositories();
+			CreateViewModel(registeredPackageRepositories);
 		}
 		
-		void CreatePackageManagementService()
+		void CreateRegisteredPackageRepositories()
 		{
-			packageManagementService = new FakePackageManagementService();
+			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 		}
 		
-		void CreateViewModel(IPackageManagementService packageManagementService)
+		void CreateViewModel(FakeRegisteredPackageRepositories registeredPackageRepositories)
 		{
 			taskFactory = new FakeTaskFactory();
 			var messageReporter = new FakeMessageReporter();
-			viewModel = new AvailablePackagesViewModel(packageManagementService, messageReporter, taskFactory);
+			var packageViewModelFactory = new FakePackageViewModelFactory();
+			viewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
 		}
 		
-		void CreateExceptionThrowingPackageManagementService()
+		void CreateExceptionThrowingRegisteredPackageRepositories()
 		{
-			exceptionThrowingPackageManagementService = new ExceptionThrowingPackageManagementService();
+			exceptionThrowingRegisteredPackageRepositories = new ExceptionThrowingRegisteredPackageRepositories();
 		}
 		
 		void CompleteReadPackagesTask()
@@ -54,9 +55,9 @@ namespace PackageManagement.Tests
 
 		void AddOnePackageSourceToRegisteredSources()
 		{
-			packageManagementService.ClearPackageSources();
-			packageManagementService.AddOnePackageSource();
-			packageManagementService.HasMultiplePackageSources = false;
+			registeredPackageRepositories.ClearPackageSources();
+			registeredPackageRepositories.AddOnePackageSource();
+			registeredPackageRepositories.HasMultiplePackageSources = false;
 		}
 		
 		void AddTwoPackageSourcesToRegisteredSources()
@@ -66,13 +67,13 @@ namespace PackageManagement.Tests
 				new PackageSource("http://second.com", "Second")
 			};
 			AddPackageSourcesToRegisteredSources(expectedPackageSources);
-			packageManagementService.HasMultiplePackageSources = true;
+			registeredPackageRepositories.HasMultiplePackageSources = true;
 		}
 				
 		void AddPackageSourcesToRegisteredSources(PackageSource[] sources)
 		{
-			packageManagementService.ClearPackageSources();
-			packageManagementService.AddPackageSources(sources);
+			registeredPackageRepositories.ClearPackageSources();
+			registeredPackageRepositories.AddPackageSources(sources);
 		}
 		
 		void CreateNewActiveRepositoryWithDifferentPackages()
@@ -80,15 +81,15 @@ namespace PackageManagement.Tests
 			var package = new FakePackage("NewRepositoryPackageId");
 			var newRepository = new FakePackageRepository();
 			newRepository.FakePackages.Add(package);
-			packageManagementService.FakeActivePackageRepository = newRepository;
+			registeredPackageRepositories.FakeActiveRepository = newRepository;
 		}
 		
 		void SetUpTwoPackageSourcesAndViewModelHasReadPackages()
 		{
-			CreatePackageManagementService();
+			CreateRegisteredPackageRepositories();
 			AddTwoPackageSourcesToRegisteredSources();
-			CreateViewModel(packageManagementService);
-			packageManagementService.ActivePackageSource = packageManagementService.Options.PackageSources[0];
+			CreateViewModel(registeredPackageRepositories);
+			registeredPackageRepositories.ActivePackageSource = registeredPackageRepositories.PackageSources[0];
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			CreateNewActiveRepositoryWithDifferentPackages();
@@ -96,13 +97,13 @@ namespace PackageManagement.Tests
 		
 		void ChangeSelectedPackageSourceToSecondSource()
 		{
-			var secondPackageSource = packageManagementService.Options.PackageSources[1];
+			var secondPackageSource = registeredPackageRepositories.PackageSources[1];
 			viewModel.SelectedPackageSource = secondPackageSource;
 		}
 		
 		void ChangeSelectedPackageSourceToFirstSource()
 		{
-			var firstPackageSource = packageManagementService.Options.PackageSources[0];
+			var firstPackageSource = registeredPackageRepositories.PackageSources[0];
 			viewModel.SelectedPackageSource = firstPackageSource;
 		}
 		
@@ -127,7 +128,7 @@ namespace PackageManagement.Tests
 				package1, package2, package3
 			};
 			
-			packageManagementService.FakeActivePackageRepository.FakePackages.AddRange(packages);
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
 			
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
@@ -170,7 +171,7 @@ namespace PackageManagement.Tests
 				package1, package2, package3
 			};
 			
-			packageManagementService.FakeActivePackageRepository.FakePackages.AddRange(packages);
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
 			
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
@@ -213,7 +214,7 @@ namespace PackageManagement.Tests
 				package1, package2, package3, package4
 			};
 			
-			packageManagementService.FakeActivePackageRepository.FakePackages.AddRange(packages);
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
 			
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
@@ -235,9 +236,9 @@ namespace PackageManagement.Tests
 		[Test]
 		public void ShowSources_TwoPackageSources_ReturnsTrue()
 		{
-			CreatePackageManagementService();
+			CreateRegisteredPackageRepositories();
 			AddTwoPackageSourcesToRegisteredSources();
-			CreateViewModel(packageManagementService);
+			CreateViewModel(registeredPackageRepositories);
 			
 			Assert.IsTrue(viewModel.ShowPackageSources);
 		}
@@ -245,9 +246,9 @@ namespace PackageManagement.Tests
 		[Test]
 		public void ShowPackageSources_OnePackageSources_ReturnsFalse()
 		{
-			CreatePackageManagementService();
+			CreateRegisteredPackageRepositories();
 			AddOnePackageSourceToRegisteredSources();
-			CreateViewModel(packageManagementService);
+			CreateViewModel(registeredPackageRepositories);
 			
 			Assert.IsFalse(viewModel.ShowPackageSources);
 		}
@@ -255,11 +256,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void PackageSources_TwoPackageSourcesInOptions_HasTwoRepositoriesInCollection()
 		{
-			CreatePackageManagementService();
+			CreateRegisteredPackageRepositories();
 			AddTwoPackageSourcesToRegisteredSources();
-			CreateViewModel(packageManagementService);
+			CreateViewModel(registeredPackageRepositories);
 			
-			var expectedPackageSources = packageManagementService.Options.PackageSources;
+			var expectedPackageSources = registeredPackageRepositories.PackageSources;
 			
 			PackageSourceCollectionAssert.AreEqual(expectedPackageSources, viewModel.PackageSources);
 		}
@@ -267,12 +268,12 @@ namespace PackageManagement.Tests
 		[Test]
 		public void SelectedPackageSource_TwoPackageSourcesInOptionsAndActivePackageSourceIsFirstSource_IsFirstPackageSource()
 		{
-			CreatePackageManagementService();
+			CreateRegisteredPackageRepositories();
 			AddTwoPackageSourcesToRegisteredSources();
-			CreateViewModel(packageManagementService);
+			CreateViewModel(registeredPackageRepositories);
 			
-			var expectedPackageSource = packageManagementService.Options.PackageSources[0];
-			packageManagementService.ActivePackageSource = expectedPackageSource;
+			var expectedPackageSource = registeredPackageRepositories.PackageSources[0];
+			registeredPackageRepositories.ActivePackageSource = expectedPackageSource;
 			
 			Assert.AreEqual(expectedPackageSource, viewModel.SelectedPackageSource);
 		}
@@ -280,28 +281,28 @@ namespace PackageManagement.Tests
 		[Test]
 		public void SelectedPackageSource_TwoPackageSourcesInOptionsAndActivePackageSourceIsSecondSource_IsSecondPackageSource()
 		{
-			CreatePackageManagementService();
+			CreateRegisteredPackageRepositories();
 			AddTwoPackageSourcesToRegisteredSources();
-			CreateViewModel(packageManagementService);
+			CreateViewModel(registeredPackageRepositories);
 			
-			var expectedPackageSource = packageManagementService.Options.PackageSources[1];
-			packageManagementService.ActivePackageSource = expectedPackageSource;
+			var expectedPackageSource = registeredPackageRepositories.PackageSources[1];
+			registeredPackageRepositories.ActivePackageSource = expectedPackageSource;
 			
 			Assert.AreEqual(expectedPackageSource, viewModel.SelectedPackageSource);
 		}
 		
 		[Test]
-		public void SelectedPackageSource_Changed_PackageManagementServiceActivatePackageSourceChanged()
+		public void SelectedPackageSource_Changed_ActivePackageSourceChanged()
 		{
-			CreatePackageManagementService();
+			CreateRegisteredPackageRepositories();
 			AddTwoPackageSourcesToRegisteredSources();
-			CreateViewModel(packageManagementService);
+			CreateViewModel(registeredPackageRepositories);
 			
-			packageManagementService.ActivePackageSource = packageManagementService.Options.PackageSources[0];
-			var expectedPackageSource = packageManagementService.Options.PackageSources[1];
+			registeredPackageRepositories.ActivePackageSource = registeredPackageRepositories.PackageSources[0];
+			var expectedPackageSource = registeredPackageRepositories.PackageSources[1];
 			viewModel.SelectedPackageSource = expectedPackageSource;
 			
-			Assert.AreEqual(expectedPackageSource, packageManagementService.ActivePackageSource);
+			Assert.AreEqual(expectedPackageSource, registeredPackageRepositories.ActivePackageSource);
 		}
 		
 		[Test]
@@ -312,7 +313,7 @@ namespace PackageManagement.Tests
 			ChangeSelectedPackageSourceToSecondSource();
 			CompleteReadPackagesTask();
 			
-			var expectedPackages = packageManagementService.FakeActivePackageRepository.FakePackages;
+			var expectedPackages = registeredPackageRepositories.FakeActiveRepository.FakePackages;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
@@ -355,13 +356,13 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetAllPackages_OnePackageInRepository_RepositoryNotCreatedByBackgroundThread()
 		{
-			CreatePackageManagementService();
+			CreateRegisteredPackageRepositories();
 			AddOnePackageSourceToRegisteredSources();
-			packageManagementService.FakeActivePackageRepository.FakePackages.Add(new FakePackage());
-			CreateViewModel(packageManagementService);
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.Add(new FakePackage());
+			CreateViewModel(registeredPackageRepositories);
 			viewModel.ReadPackages();
 			
-			packageManagementService.FakeActivePackageRepository = null;
+			registeredPackageRepositories.FakeActiveRepository = null;
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
@@ -370,10 +371,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void ReadPackages_ExceptionThrownWhenAccessingActiveRepository_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
 		{
-			CreateExceptionThrowingPackageManagementService();
-			exceptionThrowingPackageManagementService.ExeptionToThrowWhenActiveRepositoryAccessed = 
+			CreateExceptionThrowingRegisteredPackageRepositories();
+			exceptionThrowingRegisteredPackageRepositories.ExeptionToThrowWhenActiveRepositoryAccessed = 
 				new Exception("Test");
-			CreateViewModel(exceptionThrowingPackageManagementService);
+			CreateViewModel(exceptionThrowingRegisteredPackageRepositories);
 			viewModel.ReadPackages();
 			
 			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());

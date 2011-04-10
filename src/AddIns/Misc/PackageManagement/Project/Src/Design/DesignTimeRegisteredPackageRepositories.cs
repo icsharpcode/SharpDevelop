@@ -7,9 +7,9 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
 {
-	public class DesignTimePackageManagementService : FakePackageManagementService
+	public class DesignTimeRegisteredPackageRepositories : FakeRegisteredPackageRepositories
 	{
-		public DesignTimePackageManagementService()
+		public DesignTimeRegisteredPackageRepositories()
 		{
 			AddDesignTimePackages();
 			ActivePackageSource = new PackageSource("http://nuget.org", "NuGet Official Package Source");
@@ -19,8 +19,7 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			for (int i = 0; i < 5; ++i) {
 				FakePackage package = CreatePackage(i);
-				FakeActiveProjectManager.FakeLocalRepository.FakePackages.Add(package);
-				FakeActivePackageRepository.FakePackages.Add(package);
+				FakeActiveRepository.FakePackages.Add(package);
 			}
 		}
 		

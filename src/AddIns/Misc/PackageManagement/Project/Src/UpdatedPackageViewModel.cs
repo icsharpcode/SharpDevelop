@@ -13,10 +13,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public UpdatedPackageViewModel(
 			IPackage package,
+			IPackageRepository sourceRepository,
 			IPackageManagementService packageManagementService,
 			ILicenseAcceptanceService licenseAcceptanceService,
 			IMessageReporter messageReporter)
-			: base(package, packageManagementService, licenseAcceptanceService, messageReporter)
+			: base(package, sourceRepository, packageManagementService, licenseAcceptanceService, messageReporter)
 		{
 			this.packageManagementService = packageManagementService;
 		}

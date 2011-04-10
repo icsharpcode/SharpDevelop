@@ -14,12 +14,9 @@ namespace ICSharpCode.PackageManagement
 	{
 		IPackageManagementOutputMessagesView outputMessagesView;
 		PackageManagementOptions options;
-		IPackageRepositoryCache packageRepositoryCache;
+		IRegisteredPackageRepositories registeredPackageRepositories;
 		IPackageManagerFactory packageManagerFactory;
 		IPackageManagementProjectService projectService;
-		IPackageRepository activePackageRepository;
-		PackageSource activePackageSource;
-		RecentPackageRepository recentPackageRepository;
 		
 		public PackageManagementService(
 			PackageManagementOptions options,
@@ -27,24 +24,55 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagerFactory packageManagerFactory,
 			IPackageManagementProjectService projectService,
 			IPackageManagementOutputMessagesView outputMessagesView)
+			: this(
+				options,
+				new RegisteredPackageRepositories(packageRepositoryCache, options),
+				packageManagerFactory,
+				projectService,
+				outputMessagesView)
 		{
-			this.options = options;
-			this.packageRepositoryCache = packageRepositoryCache;
-			this.packageManagerFactory = packageManagerFactory;
-			this.projectService = projectService;
-			this.outputMessagesView = outputMessagesView;
 		}
 		
-		public PackageManagementService()
+		public PackageManagementService(
+			PackageManagementOptions options,
+			IRegisteredPackageRepositories registeredPackageRepositories)
 			: this(
-				new PackageManagementOptions(),
-				new PackageRepositoryCache(),
+				options,
+				registeredPackageRepositories,
 				new SharpDevelopPackageManagerFactory(),
 				new PackageManagementProjectService(),
 				new PackageManagementOutputMessagesView())
 		{
 		}
 		
+		public PackageManagementService(
+			PackageManagementOptions options,
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageManagerFactory packageManagerFactory,
+			IPackageManagementProjectService projectService,
+			IPackageManagementOutputMessagesView outputMessagesView)
+		{
+			this.options = options;
+			this.registeredPackageRepositories = registeredPackageRepositories;
+			this.packageManagerFactory = packageManagerFactory;
+			this.projectService = projectService;
+			this.outputMessagesView = outputMessagesView;
+		}
+		
+		public PackageManagementService(
+			PackageManagementOptions options,
+			IPackageManagerFactory packageManagerFactory,
+			IPackageManagementProjectService projectService,
+			IPackageManagementOutputMessagesView outputMessagesView)
+			: this(
+				options,
+				new PackageRepositoryCache(options.PackageSources, options.RecentPackages),
+				packageManagerFactory,
+				projectService,
+				outputMessagesView)
+		{
+		}
+
 		public IPackageManagementOutputMessagesView OutputMessagesView {
 			get { return outputMessagesView; }
 		}
@@ -71,33 +99,12 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public IPackageRepository RecentPackageRepository {
-			get {
-				if (recentPackageRepository == null) {
-					CreateRecentPackageRepository();
-				}
-				return recentPackageRepository;
-			}
+		IPackageRepository RecentPackageRepository {
+			get { return registeredPackageRepositories.RecentPackageRepository; }
 		}
 		
-		IPackageRepository CreateRecentPackageRepository()
-		{
-			recentPackageRepository = new RecentPackageRepository(this);
-			return recentPackageRepository;
-		}
-		
-		public IPackageRepository ActivePackageRepository {
-			get {
-				if (activePackageRepository == null) {
-					CreateActivePackageRepository();
-				}
-				return activePackageRepository;
-			}
-		}
-		
-		void CreateActivePackageRepository()
-		{
-			activePackageRepository = packageRepositoryCache.CreateRepository(ActivePackageSource);
+		IPackageRepository ActivePackageRepository {
+			get { return registeredPackageRepositories.ActiveRepository; }
 		}
 		
 		public IProjectManager ActiveProjectManager {
@@ -139,43 +146,9 @@ namespace ICSharpCode.PackageManagement
 			return CreatePackageManager(packageRepository, project);
 		}
 		
-		public bool HasMultiplePackageSources {
-			get { return options.PackageSources.HasMultiplePackageSources; }
-		}
-		
-		public PackageSource ActivePackageSource {
-			get {
-				activePackageSource = options.ActivePackageSource;
-				if (activePackageSource == null) {
-					activePackageSource = options.PackageSources[0];
-				}
-				return activePackageSource;
-			}
-			set {
-				if (activePackageSource != value) {
-					activePackageSource = value;
-					options.ActivePackageSource = value;
-					activePackageRepository = null;
-				}
-			}
-		}
-		
-		public IPackageRepository CreateAggregatePackageRepository()
+		IPackageRepository CreatePackageRepository(PackageSource source)
 		{
-			IEnumerable<IPackageRepository> allRepositories = CreateAllRepositories();
-			return new AggregateRepository(allRepositories);
-		}
-		
-		IEnumerable<IPackageRepository> CreateAllRepositories()
-		{
-			foreach (PackageSource source in options.PackageSources) {
-				yield return CreatePackageRepository(source);
-			}
-		}
-		
-		public IPackageRepository CreatePackageRepository(PackageSource source)
-		{
-			return packageRepositoryCache.CreateRepository(source);
+			return registeredPackageRepositories.CreateRepository(source);
 		}
 		
 		public InstallPackageAction CreateInstallPackageAction()

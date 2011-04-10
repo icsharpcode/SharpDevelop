@@ -39,5 +39,45 @@ namespace PackageManagement.Tests.Helpers
 		{
 			return new FakeSharedPackageRepository(pathResolver, fileSystem);
 		}
+		
+		public FakePackageRepository FakeAggregateRepository = new FakePackageRepository();
+		
+		public IPackageRepository CreateAggregateRepository()
+		{
+			return FakeAggregateRepository;
+		}
+		
+		public FakePackageRepository FakeRecentPackageRepository = new FakePackageRepository();
+		public IList<RecentPackageInfo> RecentPackagesPassedToCreateRecentPackageRepository;
+		public IPackageRepository AggregateRepositoryPassedToCreateRecentPackageRepository;
+		
+		public IPackageRepository CreateRecentPackageRepository(
+			IList<RecentPackageInfo> recentPackages,
+			IPackageRepository aggregateRepository)
+		{
+			RecentPackagesPassedToCreateRecentPackageRepository = recentPackages;
+			AggregateRepositoryPassedToCreateRecentPackageRepository = aggregateRepository;
+			return FakeRecentPackageRepository;
+		}
+		
+		public IEnumerable<IPackageRepository> RepositoriesPassedToCreateAggregateRepository;
+		
+		public IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories)
+		{
+			RepositoriesPassedToCreateAggregateRepository = repositories;
+			return FakeAggregateRepository;
+		}
+		
+		public FakePackageRepository AddFakePackageRepositoryForPackageSource(string source)
+		{
+			var packageSource = new PackageSource(source);
+			var repository = new FakePackageRepository();			
+			FakePackageRepositories.Add(packageSource, repository);
+			return repository;
+		}
+		
+		public IPackageRepository RecentPackageRepository {
+			get { return FakeRecentPackageRepository; }
+		}
 	}
 }

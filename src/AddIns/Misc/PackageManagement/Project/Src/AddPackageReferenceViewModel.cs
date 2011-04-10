@@ -16,15 +16,18 @@ namespace ICSharpCode.PackageManagement
 		
 		public AddPackageReferenceViewModel(
 			IPackageManagementService packageManagementService,
+			IRegisteredPackageRepositories registeredPackageRepositories,
 			ITaskFactory taskFactory)
 		{
 			this.packageManagementService = packageManagementService;
 			this.packageManagementService.OutputMessagesView.Clear();
 			
-			AvailablePackagesViewModel = new AvailablePackagesViewModel(packageManagementService, this, taskFactory);
-			InstalledPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, this, taskFactory);
-			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(packageManagementService, this, taskFactory);
-			RecentPackagesViewModel = new RecentPackagesViewModel(packageManagementService, this, taskFactory);
+			var packageViewModelFactory = new PackageViewModelFactory(registeredPackageRepositories, packageManagementService, new LicenseAcceptanceService(), this);
+			
+			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			InstalledPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(packageManagementService, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			RecentPackagesViewModel = new RecentPackagesViewModel(packageManagementService, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 			
 			AvailablePackagesViewModel.ReadPackages();
 			InstalledPackagesViewModel.ReadPackages();

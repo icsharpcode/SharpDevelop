@@ -14,6 +14,7 @@ namespace PackageManagement.Tests
 	{
 		RecentPackagesViewModel viewModel;
 		FakePackageManagementService packageManagementService;
+		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		FakeTaskFactory taskFactory;
 		
 		void CreateViewModel()
@@ -29,9 +30,14 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel(FakePackageManagementService packageManagementService)
 		{
+			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 			taskFactory = new FakeTaskFactory();
-			var messageReporter = new FakeMessageReporter();
-			viewModel = new RecentPackagesViewModel(packageManagementService, messageReporter, taskFactory);
+			var packageViewModelFactory = new FakePackageViewModelFactory();
+			viewModel = new RecentPackagesViewModel(
+				packageManagementService,
+				registeredPackageRepositories,
+				packageViewModelFactory,
+				taskFactory);
 		}
 		
 		void CompleteReadPackagesTask()
@@ -47,7 +53,7 @@ namespace PackageManagement.Tests
 		FakePackage AddPackageToRecentPackageRepository()
 		{
 			var package = new FakePackage("Test");
-			FakePackageRepository repository = packageManagementService.FakeRecentPackageRepository;
+			FakePackageRepository repository = registeredPackageRepositories.FakeRecentPackageRepository;
 			repository.FakePackages.Add(package);
 			return package;
 		}

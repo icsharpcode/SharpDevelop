@@ -11,7 +11,7 @@
     d:DesignWidth="500">
 
     <UserControl.Resources>
-        <pmd:ViewModelLocator x:Key="ViewModelLocator"/>
+        <pmd:PackageManagementViewModels x:Key="ViewModels"/>
 		
     	<DataTemplate x:Key="PackageSourceTemplate">
     		<TextBlock Text="{Binding Name}"/>
@@ -24,7 +24,7 @@
     </UserControl.Resources>
 
 	<UserControl.DataContext>
-		<Binding Path="PackageManagementConsoleViewModel" Source="{StaticResource ViewModelLocator}"/>
+		<Binding Path="PackageManagementConsoleViewModel" Source="{StaticResource ViewModels}"/>
 	</UserControl.DataContext>
 	
     <Grid>        

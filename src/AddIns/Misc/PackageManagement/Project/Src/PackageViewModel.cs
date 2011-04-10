@@ -19,17 +19,18 @@ namespace ICSharpCode.PackageManagement
 		IMessageReporter messageReporter;
 		IPackage package;
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
-		IPackageRepository sourcePackageRepository;
+		IPackageRepository sourceRepository;
 		bool? hasDependencies;
 		
 		public PackageViewModel(
 			IPackage package,
+			IPackageRepository sourceRepository,
 			IPackageManagementService packageManagementService,
 			ILicenseAcceptanceService licenseAcceptanceService,
 			IMessageReporter messageReporter)
 		{
 			this.package = package;
-			this.sourcePackageRepository = packageManagementService.ActivePackageRepository;
+			this.sourceRepository = sourceRepository;
 			this.packageManagementService = packageManagementService;
 			this.licenseAcceptanceService = licenseAcceptanceService;
 			this.messageReporter = messageReporter;
@@ -272,7 +273,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void InstallPackage()
 		{
-			InstallPackage(sourcePackageRepository, package, packageOperations);
+			InstallPackage(sourceRepository, package, packageOperations);
 			OnPropertyChanged(model => model.IsAdded);
 		}
 		
@@ -317,7 +318,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			try {
 				var action = packageManagementService.CreateUninstallPackageAction();
-				action.PackageRepository = sourcePackageRepository;
+				action.PackageRepository = sourceRepository;
 				action.Package = package;
 				action.Execute();
 			} catch (Exception ex) {

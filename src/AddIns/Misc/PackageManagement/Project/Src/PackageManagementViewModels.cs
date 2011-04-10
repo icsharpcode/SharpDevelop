@@ -7,12 +7,13 @@ using ICSharpCode.PackageManagement.Scripting;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class ViewModelLocator
+	public class PackageManagementViewModels
 	{
 		AddPackageReferenceViewModel addPackageReferenceViewModel;
 		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
 		PackageManagementConsoleViewModel packageManagementConsoleViewModel;
 		IPackageManagementService packageManagementService;
+		IRegisteredPackageRepositories registeredPackageRepositories;
 		
 		public AddPackageReferenceViewModel AddPackageReferenceViewModel {
 			get {
@@ -23,18 +24,35 @@ namespace ICSharpCode.PackageManagement
 		
 		void CreateAddPackageReferenceViewModel()
 		{
+			CreateRegisteredPackageRepositories();
 			CreatePackageManagementService();
-			addPackageReferenceViewModel = new AddPackageReferenceViewModel(packageManagementService, new PackageManagementTaskFactory());
+			addPackageReferenceViewModel = 
+				new AddPackageReferenceViewModel(
+					packageManagementService,
+					registeredPackageRepositories,
+					new PackageManagementTaskFactory());
 		}
 		
 		void CreatePackageManagementService()
 		{
 			if (packageManagementService == null) {
 				if (IsInDesignMode()) {
-					packageManagementService = new DesignTimePackageManagementService();
+					packageManagementService = new FakePackageManagementService();
+				} else {
+					packageManagementService = PackageManagementServices.PackageManagementService;
 				}
-				packageManagementService = ServiceLocator.PackageManagementService;
 			}
+		}
+		
+		void CreateRegisteredPackageRepositories()
+		{
+			if (registeredPackageRepositories == null) {
+				if (IsInDesignMode()) {
+					registeredPackageRepositories = new DesignTimeRegisteredPackageRepositories();
+				} else {
+					registeredPackageRepositories = PackageManagementServices.RegisteredPackageRepositories;
+				}
+			}			
 		}
 		
 		bool IsInDesignMode()
@@ -73,10 +91,10 @@ namespace ICSharpCode.PackageManagement
 		void CreatePackageManagementConsoleViewModel()
 		{
 			CreatePackageManagementService();
-			var consoleHost = ServiceLocator.PackageManagementConsoleHost;
+			var consoleHost = PackageManagementServices.ConsoleHost;
 			packageManagementConsoleViewModel = 
 				new PackageManagementConsoleViewModel(
-					packageManagementService.Options.PackageSources,
+					PackageManagementServices.RegisteredPackageRepositories.PackageSources,
 					consoleHost);
 		}
 	}

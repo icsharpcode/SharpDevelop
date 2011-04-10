@@ -6,9 +6,16 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IPackageRepositoryCache : ISharpDevelopPackageRepositoryFactory
+	public interface IRegisteredPackageRepositories
 	{
+		IPackageRepository ActiveRepository { get; }
 		IPackageRepository RecentPackageRepository { get; }
+		
+		IPackageRepository CreateRepository(PackageSource source);
 		IPackageRepository CreateAggregateRepository();
+		
+		bool HasMultiplePackageSources { get; }
+		PackageSource ActivePackageSource { get; set; }
+		RegisteredPackageSources PackageSources { get; }
 	}
 }

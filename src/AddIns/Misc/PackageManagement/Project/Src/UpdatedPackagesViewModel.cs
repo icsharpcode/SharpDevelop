@@ -17,24 +17,25 @@ namespace ICSharpCode.PackageManagement
 		
 		public UpdatedPackagesViewModel(
 			IPackageManagementService packageManagementService,
-			IMessageReporter messageReporter,
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: this(
 				packageManagementService,
-				messageReporter,
-				new LicenseAcceptanceService(),
+				registeredPackageRepositories,
+				new UpdatedPackageViewModelFactory(packageViewModelFactory),
 				taskFactory)
 		{
 		}
 		
 		public UpdatedPackagesViewModel(
 			IPackageManagementService packageManagementService,
-			IMessageReporter messageReporter,
-			ILicenseAcceptanceService licenseAcceptanceService,
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			UpdatedPackageViewModelFactory packageViewModelFactory,			
 			ITaskFactory taskFactory)
 			: base(
-				packageManagementService,
-				new UpdatedPackageViewModelFactory(packageManagementService, licenseAcceptanceService, messageReporter),
+				registeredPackageRepositories,
+				packageViewModelFactory,
 				taskFactory)
 		{
 			this.packageManagementService = packageManagementService;
@@ -43,7 +44,8 @@ namespace ICSharpCode.PackageManagement
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
 		{
 			try {
-				updatedPackages = new UpdatedPackages(packageManagementService);
+				IPackageRepository aggregateRepository = RegisteredPackageRepositories.CreateAggregateRepository();
+				updatedPackages = new UpdatedPackages(packageManagementService, aggregateRepository);
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}

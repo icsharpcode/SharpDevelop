@@ -15,6 +15,7 @@ namespace PackageManagement.Tests
 	{
 		InstalledPackagesViewModel viewModel;
 		FakePackageManagementService packageManagementService;
+		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
 		FakeTaskFactory taskFactory;
 		
@@ -27,6 +28,7 @@ namespace PackageManagement.Tests
 		void CreatePackageManagementService()
 		{
 			packageManagementService = new FakePackageManagementService();
+			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 		}
 		
 		void CreateExceptionThrowingPackageManagementService()
@@ -36,9 +38,16 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel(FakePackageManagementService packageManagementService)
 		{
-			taskFactory = new FakeTaskFactory();
+			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 			var messageReporter = new FakeMessageReporter();
-			viewModel = new InstalledPackagesViewModel(packageManagementService, messageReporter, taskFactory);			
+			var packageViewModelFactory = new FakePackageViewModelFactory();
+			taskFactory = new FakeTaskFactory();
+			
+			viewModel = new InstalledPackagesViewModel(
+				packageManagementService,
+				registeredPackageRepositories,
+				packageViewModelFactory,
+				taskFactory);
 		}
 		
 		void CompleteReadPackagesTask()

@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddPackageReferenceCommand.cs" />
+    <Compile Include="Src\RegisteredPackageRepositories.cs" />
     <Compile Include="Src\AddPackageReferenceView.xaml.cs">
       <DependentUpon>AddPackageReferenceView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -76,8 +77,9 @@
     <Compile Include="Src\DelegateCommand.cs" />
     <Compile Include="Src\Design\DesignTimeLicenseAcceptanceViewModel.cs" />
     <Compile Include="Src\Design\DesignTimePackageManagementOptionsViewModel.cs" />
-    <Compile Include="Src\Design\DesignTimePackageManagementService.cs" />
+    <Compile Include="Src\Design\DesignTimeRegisteredPackageRepositories.cs" />
     <Compile Include="Src\Design\DesignTimePackagesViewModel.cs" />
+    <Compile Include="Src\Design\FakeRegisteredPackageRepositories.cs" />
     <Compile Include="Src\Design\FakeFileSystem.cs" />
     <Compile Include="Src\Design\FakeInstallPackageTask.cs" />
     <Compile Include="Src\Design\FakePackage.cs" />
@@ -92,6 +94,7 @@
     <Compile Include="Src\Design\FakeUninstallPackageAction.cs" />
     <Compile Include="Src\Design\FakeUpdatePackageAction.cs" />
     <Compile Include="Src\Design\WpfDesigner.cs" />
+    <Compile Include="Src\IRegisteredPackageRepositories.cs" />
     <Compile Include="Src\ICompilerMessageView.cs" />
     <Compile Include="Src\IMessageReporter.cs" />
     <Compile Include="Src\IMessageViewCategory.cs" />
@@ -183,7 +186,7 @@
     <Compile Include="Src\Scripting\PowerShellHostFactory.cs" />
     <Compile Include="Src\Scripting\PowerShellHostUserInterface.cs" />
     <Compile Include="Src\SelectedListBoxItemScrollingBehaviour.cs" />
-    <Compile Include="Src\ServiceLocator.cs" />
+    <Compile Include="Src\PackageManagementServices.cs" />
     <Compile Include="Src\SharpDevelopPackageManager.cs" />
     <Compile Include="Src\SharpDevelopPackageManagerFactory.cs" />
     <Compile Include="Src\SharpDevelopPackageRepositoryFactory.cs" />
@@ -196,7 +199,7 @@
     <Compile Include="Src\UpdatedPackageViewModelFactory.cs" />
     <Compile Include="Src\UpdatePackageAction.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
-    <Compile Include="Src\ViewModelLocator.cs" />
+    <Compile Include="Src\PackageManagementViewModels.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\AddPackageReferenceView.xaml" />

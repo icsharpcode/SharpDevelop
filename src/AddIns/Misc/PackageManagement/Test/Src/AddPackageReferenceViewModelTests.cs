@@ -17,11 +17,13 @@ namespace PackageManagement.Tests
 	{
 		AddPackageReferenceViewModel viewModel;
 		FakePackageManagementService fakePackageManagementService;
+		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
 		FakeTaskFactory taskFactory;
 		
 		void CreatePackageManagementService()
 		{
 			fakePackageManagementService = new FakePackageManagementService();
+			fakeRegisteredPackageRepositories = new FakeRegisteredPackageRepositories();
 		}
 		
 		void CreateViewModel()
@@ -33,7 +35,7 @@ namespace PackageManagement.Tests
 		void CreateViewModel(FakePackageManagementService packageManagementService)
 		{
 			taskFactory = new FakeTaskFactory();
-			viewModel = new AddPackageReferenceViewModel(packageManagementService, taskFactory);
+			viewModel = new AddPackageReferenceViewModel(packageManagementService, fakeRegisteredPackageRepositories, taskFactory);
 			taskFactory.ExecuteAllFakeTasks();
 		}
 		
@@ -80,10 +82,10 @@ namespace PackageManagement.Tests
 			CreatePackageManagementService();
 			var package = new FakePackage();
 			package.Id = "Test";
-			fakePackageManagementService.FakeActivePackageRepository.FakePackages.Add(package);
+			fakeRegisteredPackageRepositories.FakeActiveRepository.FakePackages.Add(package);
 			CreateViewModel(fakePackageManagementService);
 
-			List<FakePackage> expectedPackages = fakePackageManagementService.FakeActivePackageRepository.FakePackages;
+			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeActiveRepository.FakePackages;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.AvailablePackagesViewModel.PackageViewModels);
 		}
@@ -103,11 +105,11 @@ namespace PackageManagement.Tests
 				Id = "Test",
 				Version = new Version("2.0.0.0")
 			};
-			fakePackageManagementService.FakeAggregateRepository.FakePackages.Add(newPackage);
+			fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages.Add(newPackage);
 			
 			CreateViewModel(fakePackageManagementService);
 			
-			List<FakePackage> expectedPackages = fakePackageManagementService.FakeAggregateRepository.FakePackages;
+			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.UpdatedPackagesViewModel.PackageViewModels);
 		}
@@ -126,10 +128,10 @@ namespace PackageManagement.Tests
 			CreatePackageManagementService();
 			var package = new FakePackage();
 			package.Id = "Test";
-			fakePackageManagementService.FakeRecentPackageRepository.FakePackages.Add(package);
+			fakeRegisteredPackageRepositories.FakeRecentPackageRepository.FakePackages.Add(package);
 			CreateViewModel(fakePackageManagementService);
 
-			List<FakePackage> expectedPackages = fakePackageManagementService.FakeRecentPackageRepository.FakePackages;
+			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeRecentPackageRepository.FakePackages;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.RecentPackagesViewModel.PackageViewModels);
 		}

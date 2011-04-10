@@ -19,24 +19,24 @@ namespace PackageManagement.Tests
 	{
 		TestablePackagesViewModel viewModel;
 		FakeTaskFactory taskFactory;
-		FakePackageManagementService packageManagementService;
+		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		
-		void CreateViewModel(FakePackageManagementService packageManagementService)
+		void CreateViewModel(FakeRegisteredPackageRepositories registeredPackageRepositories)
 		{
-			viewModel = new TestablePackagesViewModel(packageManagementService);
-			this.packageManagementService = packageManagementService;
+			viewModel = new TestablePackagesViewModel(registeredPackageRepositories);
+			this.registeredPackageRepositories = registeredPackageRepositories;
 			taskFactory = viewModel.FakeTaskFactory;
 		}
 		
 		void CreateViewModel()
 		{
-			CreatePackageManagementService();
-			CreateViewModel(packageManagementService);
+			CreateRegisteredRepositoriesService();
+			CreateViewModel(registeredPackageRepositories);
 		}
 		
-		void CreatePackageManagementService()
+		void CreateRegisteredRepositoriesService()
 		{
-			packageManagementService = new FakePackageManagementService();
+			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 		}
 		
 		void CompleteReadPackagesTask()

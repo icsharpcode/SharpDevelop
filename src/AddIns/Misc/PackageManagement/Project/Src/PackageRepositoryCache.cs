@@ -10,16 +10,29 @@ namespace ICSharpCode.PackageManagement
 	public class PackageRepositoryCache : IPackageRepositoryCache
 	{
 		ISharpDevelopPackageRepositoryFactory factory;
+		RegisteredPackageSources registeredPackageSources;
+		IList<RecentPackageInfo> recentPackages;
+		IPackageRepository recentPackageRepository;
 		Dictionary<PackageSource, IPackageRepository> repositories =
 			new Dictionary<PackageSource, IPackageRepository>();
 		
-		public PackageRepositoryCache(ISharpDevelopPackageRepositoryFactory factory)
+		public PackageRepositoryCache(
+			ISharpDevelopPackageRepositoryFactory factory,
+			RegisteredPackageSources registeredPackageSources,
+			IList<RecentPackageInfo> recentPackages)
 		{
 			this.factory = factory;
+			this.registeredPackageSources = registeredPackageSources;
+			this.recentPackages = recentPackages;
 		}
 		
-		public PackageRepositoryCache()
-			: this(new SharpDevelopPackageRepositoryFactory())
+		public PackageRepositoryCache(
+			RegisteredPackageSources registeredPackageSources,
+			IList<RecentPackageInfo> recentPackages)
+			: this(
+				new SharpDevelopPackageRepositoryFactory(),
+				registeredPackageSources,
+				recentPackages)
 		{
 		}
 		
@@ -51,6 +64,49 @@ namespace ICSharpCode.PackageManagement
 		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem)
 		{
 			return factory.CreateSharedRepository(pathResolver, fileSystem);
+		}
+		
+		public IPackageRepository CreateAggregateRepository()
+		{
+			IEnumerable<IPackageRepository> allRepositories = CreateAllRepositories();
+			return CreateAggregateRepository(allRepositories);
+		}
+		
+		IEnumerable<IPackageRepository> CreateAllRepositories()
+		{
+			foreach (PackageSource source in registeredPackageSources) {
+				yield return CreateRepository(source);
+			}
+		}
+		
+		public IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories)
+		{
+			return factory.CreateAggregateRepository(repositories);
+		}
+		
+		public IPackageRepository RecentPackageRepository {
+			get {
+				CreateRecentPackageRepository();
+				return recentPackageRepository;
+			}
+		}
+		
+		void CreateRecentPackageRepository()
+		{
+			if (recentPackageRepository == null) {
+				IPackageRepository aggregateRepository = CreateAggregateRepository();
+				CreateRecentPackageRepository(recentPackages, aggregateRepository);
+			}
+		}
+		
+		public IPackageRepository CreateRecentPackageRepository(
+			IList<RecentPackageInfo> recentPackages,
+			IPackageRepository aggregateRepository)
+		{
+			if (recentPackageRepository == null) {
+				recentPackageRepository = factory.CreateRecentPackageRepository(recentPackages, aggregateRepository);
+			}
+			return recentPackageRepository;
 		}
 	}
 }

@@ -17,26 +17,24 @@ namespace PackageManagement.Tests
 	public class RecentPackageRepositoryTests
 	{
 		RecentPackageRepository repository;
-		PackageManagementOptions options;
 		FakePackageRepository aggregateRepository;
-		FakePackageManagementService packageManagementService;
+		List<RecentPackageInfo> recentPackages;
 		
 		void CreateRepository()
 		{
-			CreatePackageManagementService();
-			CreateRepository(packageManagementService);
+			CreateRecentPackages();
+			CreateRepository(recentPackages);
 		}
 		
-		void CreatePackageManagementService()
+		void CreateRecentPackages()
 		{
-			packageManagementService = new FakePackageManagementService();
-			options = packageManagementService.Options;
-			aggregateRepository = packageManagementService.FakeAggregateRepository;
+			recentPackages =  new List<RecentPackageInfo>();
+			aggregateRepository = new FakePackageRepository();
 		}
 		
-		void CreateRepository(IPackageManagementService packageManagementService)
+		void CreateRepository(IList<RecentPackageInfo> recentPackages)
 		{
-			repository = new RecentPackageRepository(packageManagementService);
+			repository = new RecentPackageRepository(recentPackages, aggregateRepository);
 		}
 		
 		FakePackage AddOnePackageToRepository(string id)
@@ -62,11 +60,11 @@ namespace PackageManagement.Tests
 		
 		FakePackage CreateRepositoryWithOneRecentPackageSavedInOptions()
 		{
-			CreatePackageManagementService();
+			CreateRecentPackages();
 			var package = new FakePackage("Test");
 			aggregateRepository.FakePackages.Add(package);
-			options.RecentPackages.Add(new RecentPackageInfo(package));
-			CreateRepository(packageManagementService);
+			recentPackages.Add(new RecentPackageInfo(package));
+			CreateRepository(recentPackages);
 			return package;
 		}
 		
@@ -141,8 +139,6 @@ namespace PackageManagement.Tests
 			CreateRepository();
 			var package = AddOnePackageToRepository("Test");
 			
-			var recentPackages = options.RecentPackages;
-			
 			var expectedPackages = new RecentPackageInfo[] {
 				new RecentPackageInfo(package)
 			};
@@ -156,8 +152,6 @@ namespace PackageManagement.Tests
 			CreateRepository();
 			var package1 = AddOnePackageToRepository("Test1");
 			var package2 = AddOnePackageToRepository("Test2");
-			
-			var recentPackages = options.RecentPackages;
 			
 			var expectedPackages = new RecentPackageInfo[] {
 				new RecentPackageInfo(package2),

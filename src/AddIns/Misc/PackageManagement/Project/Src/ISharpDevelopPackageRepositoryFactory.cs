@@ -2,12 +2,21 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public interface ISharpDevelopPackageRepositoryFactory : IPackageRepositoryFactory
 	{
-		ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem);
+		ISharedPackageRepository CreateSharedRepository(
+			IPackagePathResolver pathResolver,
+			IFileSystem fileSystem);
+		
+		IPackageRepository CreateRecentPackageRepository(
+			IList<RecentPackageInfo> recentPackages,
+			IPackageRepository aggregateRepository);
+		
+		IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories);
 	}
 }

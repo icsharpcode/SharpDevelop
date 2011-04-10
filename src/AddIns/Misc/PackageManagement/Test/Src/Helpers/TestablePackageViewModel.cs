@@ -21,6 +21,7 @@ namespace PackageManagement.Tests.Helpers
 		public TestablePackageViewModel(FakePackageManagementService packageManagementService)
 			: this(
 				new FakePackage(),
+				new FakePackageRepository(),
 				packageManagementService,
 				new FakeLicenseAcceptanceService(),
 				new FakeMessageReporter())
@@ -29,11 +30,13 @@ namespace PackageManagement.Tests.Helpers
 		
 		public TestablePackageViewModel(
 			FakePackage package,
+			FakePackageRepository sourceRepository,
 			FakePackageManagementService packageManagementService,
 			FakeLicenseAcceptanceService licenseAcceptanceService,
 			FakeMessageReporter messageReporter)
 			: base(
 				package,
+				sourceRepository,
 				packageManagementService,
 				licenseAcceptanceService,
 				messageReporter)
@@ -42,7 +45,7 @@ namespace PackageManagement.Tests.Helpers
 			this.FakePackageManagementService = packageManagementService;
 			this.FakeLicenseAcceptanceService = licenseAcceptanceService;
 			this.FakeMessageReporter = messageReporter;
-			this.FakeSourcePackageRepository = FakePackageManagementService.FakeActivePackageRepository;
+			this.FakeSourcePackageRepository = sourceRepository;
 		}
 		
 		protected override string AddingPackageMessageFormat {

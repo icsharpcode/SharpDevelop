@@ -17,29 +17,27 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository localRepository;
 		IPackageRepository sourceRepository;
 		
-		public UpdatedPackages(IPackageManagementService packageManagementService)
-			: this(packageManagementService, null)
+		public UpdatedPackages(
+			IPackageManagementService packageManagementService,
+			IPackageRepository aggregateRepository)
+			: this(packageManagementService, aggregateRepository, null)
 		{
 		}
 		
 		public UpdatedPackages(
 			IPackageManagementService packageManagementService,
+			IPackageRepository aggregateRepository,
 			MSBuildBasedProject project)
 		{
 			this.packageManagementService = packageManagementService;
+			this.sourceRepository = aggregateRepository;
 			this.project = project;
 			GetRepositories();
 		}
 		
 		void GetRepositories()
 		{
-			GetSourceRepository();
 			GetLocalRepository();
-		}
-		
-		void GetSourceRepository()
-		{
-			sourceRepository = packageManagementService.CreateAggregatePackageRepository();
 		}
 		
 		void GetLocalRepository()

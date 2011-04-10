@@ -16,6 +16,7 @@ namespace PackageManagement.Cmdlets.Tests
 	{
 		TestableGetPackageCmdlet cmdlet;
 		FakePackageManagementService fakePackageManagementService;
+		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
 		FakeCommandRuntime fakeCommandRuntime;
 		FakeCmdletTerminatingError fakeTerminatingError;
 		
@@ -23,6 +24,7 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			cmdlet = new TestableGetPackageCmdlet();
 			fakePackageManagementService = cmdlet.FakePackageManagementService;
+			fakeRegisteredPackageRepositories = cmdlet.FakeRegisteredPackageRepositories;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
 			fakeCommandRuntime = cmdlet.FakeCommandRuntime;
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
@@ -65,7 +67,7 @@ namespace PackageManagement.Cmdlets.Tests
 		
 		FakePackage AddPackageToAggregateRepository(string id, string version)
 		{
-			return fakePackageManagementService.AddFakePackageWithVersionToAggregrateRepository(id, version);
+			return fakeRegisteredPackageRepositories.AddFakePackageWithVersionToAggregrateRepository(id, version);
 		}
 		
 		void SetFilterParameter(string filter)
@@ -97,8 +99,8 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_ListAvailablePackagesWhenDefaultPackageSourceHasOnePackage_OutputIsPackagesFromPackageSourceRepository()
 		{
 			CreateCmdlet();
-			var repository = fakePackageManagementService.FakePackageRepositoryToReturnFromCreatePackageRepository;
-			repository.AddOneFakePackage("Test");
+			var repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			repository.AddFakePackage("Test");
 			
 			EnableListAvailableParameter();
 			RunCmdlet();
@@ -113,10 +115,10 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_ListAvailablePackagesWhenDefaultPackageSourceHasThreePackages_OutputIsPackagesFromPackageSourceRepository()
 		{
 			CreateCmdlet();
-			var repository = fakePackageManagementService.FakePackageRepositoryToReturnFromCreatePackageRepository;
-			repository.AddOneFakePackage("A");
-			repository.AddOneFakePackage("B");
-			repository.AddOneFakePackage("C");
+			var repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			repository.AddFakePackage("A");
+			repository.AddFakePackage("B");
+			repository.AddFakePackage("C");
 			
 			EnableListAvailableParameter();
 			RunCmdlet();
@@ -131,9 +133,9 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_ListAvailablePackagesWhenDefaultPackageSourceHasTwoPackages_PackagesAreSortedById()
 		{
 			CreateCmdlet();
-			var repository = fakePackageManagementService.FakePackageRepositoryToReturnFromCreatePackageRepository;
-			var packageB = repository.AddOneFakePackage("B");
-			var packageA = repository.AddOneFakePackage("A");
+			var repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			var packageB = repository.AddFakePackage("B");
+			var packageA = repository.AddFakePackage("A");
 			
 			EnableListAvailableParameter();
 			RunCmdlet();
@@ -156,7 +158,7 @@ namespace PackageManagement.Cmdlets.Tests
 			EnableListAvailableParameter();
 			RunCmdlet();
 			
-			var actualSource = fakePackageManagementService.PackageSourcePassedToCreatePackageRepository;
+			var actualSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
 			
 			Assert.AreEqual(source, actualSource);
 		}
@@ -167,8 +169,8 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdlet();
 			AddDefaultProjectToConsoleHost();
 			FakeProjectManager projectManager = fakePackageManagementService.FakeProjectManagerToReturnFromCreateProjectManager;
-			projectManager.FakeLocalRepository.AddOneFakePackage("One");
-			projectManager.FakeLocalRepository.AddOneFakePackage("Two");
+			projectManager.FakeLocalRepository.AddFakePackage("One");
+			projectManager.FakeLocalRepository.AddFakePackage("Two");
 			
 			RunCmdlet();
 			
@@ -186,7 +188,7 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			RunCmdlet();
 			
-			var actualSource = fakePackageManagementService.PackageSourcePassedToCreatePackageRepository;
+			var actualSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
 			
 			Assert.AreEqual(source, actualSource);
 		}
@@ -200,7 +202,7 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			var actualRepository = fakePackageManagementService.PackageRepositoryPassedToCreateProjectManager;
-			var expectedRepository = fakePackageManagementService.FakePackageRepositoryToReturnFromCreatePackageRepository;
+			var expectedRepository = fakeRegisteredPackageRepositories.FakePackageRepository;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
 		}
@@ -260,7 +262,7 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			var actualRepository = fakePackageManagementService.PackageRepositoryPassedToCreateProjectManager;
-			var expectedRepository = fakePackageManagementService.FakeAggregateRepository;
+			var expectedRepository = fakeRegisteredPackageRepositories.FakeAggregateRepository;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
 		}
@@ -269,10 +271,10 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_ListAvailablePackagesAndFilterResults_PackagesReturnedMatchFilter()
 		{
 			CreateCmdlet();
-			var repository = fakePackageManagementService.FakePackageRepositoryToReturnFromCreatePackageRepository;
-			repository.AddOneFakePackage("A");
-			var package = repository.AddOneFakePackage("B");
-			repository.AddOneFakePackage("C");
+			var repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			repository.AddFakePackage("A");
+			var package = repository.AddFakePackage("B");
+			repository.AddFakePackage("C");
 			
 			EnableListAvailableParameter();
 			SetFilterParameter("B");
@@ -292,8 +294,8 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdlet();
 			AddPackageSourceToConsoleHost();
 			FakeProjectManager projectManager = fakePackageManagementService.FakeProjectManagerToReturnFromCreateProjectManager;
-			projectManager.FakeLocalRepository.AddOneFakePackage("A");
-			var package = projectManager.FakeLocalRepository.AddOneFakePackage("B");
+			projectManager.FakeLocalRepository.AddFakePackage("A");
+			var package = projectManager.FakeLocalRepository.AddFakePackage("B");
 			
 			SetFilterParameter("B");
 			RunCmdlet();
@@ -332,13 +334,13 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_ListAvailablePackagesWhenPackageSourceParameterSpecified_PackageRepositoryCreatedForPackageSourceSpecifiedByParameter()
 		{
 			CreateCmdlet();
-			var repository = fakePackageManagementService.FakePackageRepositoryToReturnFromCreatePackageRepository;
+			var repository = fakeRegisteredPackageRepositories.FakePackageRepository;
 			
 			SetSourceParameter("http://sharpdevelop.com/packages");
 			EnableListAvailableParameter();
 			RunCmdlet();
 			
-			var actualPackageSource = fakePackageManagementService.PackageSourcePassedToCreatePackageRepository.Source;
+			var actualPackageSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository.Source;
 			var expectedPackageSource = "http://sharpdevelop.com/packages";
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
@@ -352,7 +354,7 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			RunCmdlet();
 			
-			var actualPackageSource = fakePackageManagementService.PackageSourcePassedToCreatePackageRepository.Source;
+			var actualPackageSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository.Source;
 			var expectedPackageSource = "http://test";
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
@@ -363,8 +365,8 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			
-			var recentPackageRepository = fakePackageManagementService.FakeRecentPackageRepository;
-			recentPackageRepository.AddOneFakePackage("A");
+			var recentPackageRepository = fakeRegisteredPackageRepositories.FakeRecentPackageRepository;
+			recentPackageRepository.AddFakePackage("A");
 			
 			EnableRecentParameter();
 			RunCmdlet();
@@ -380,9 +382,9 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			
-			var recentPackageRepository = fakePackageManagementService.FakeRecentPackageRepository;
-			recentPackageRepository.AddOneFakePackage("A");
-			var packageB = recentPackageRepository.AddOneFakePackage("B");
+			var recentPackageRepository = fakeRegisteredPackageRepositories.FakeRecentPackageRepository;
+			recentPackageRepository.AddFakePackage("A");
+			var packageB = recentPackageRepository.AddFakePackage("B");
 			
 			EnableRecentParameter();
 			SetFilterParameter("B");
@@ -402,9 +404,9 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdlet();
 			AddPackageSourceToConsoleHost();
 			FakeProjectManager projectManager = fakePackageManagementService.FakeProjectManagerToReturnFromCreateProjectManager;
-			var packageA = projectManager.FakeLocalRepository.AddOneFakePackage("A");
-			var packageB = projectManager.FakeLocalRepository.AddOneFakePackage("B");
-			var packageC = projectManager.FakeLocalRepository.AddOneFakePackage("C");
+			var packageA = projectManager.FakeLocalRepository.AddFakePackage("A");
+			var packageB = projectManager.FakeLocalRepository.AddFakePackage("B");
+			var packageC = projectManager.FakeLocalRepository.AddFakePackage("C");
 			
 			SetFilterParameter("B C");
 			RunCmdlet();
@@ -474,10 +476,10 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_ListAvailableAndSkipFirstTwoPackages_ReturnsAllPackagesExceptionFirstTwo()
 		{
 			CreateCmdlet();
-			var repository = fakePackageManagementService.FakePackageRepositoryToReturnFromCreatePackageRepository;
-			repository.AddOneFakePackage("A");
-			repository.AddOneFakePackage("B");
-			var packageC = repository.AddOneFakePackage("C");			
+			var repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			repository.AddFakePackage("A");
+			repository.AddFakePackage("B");
+			var packageC = repository.AddFakePackage("C");			
 			
 			EnableListAvailableParameter();
 			SetSkipParameter(2);
@@ -504,10 +506,10 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_ListAvailableAndFirstTwo_ReturnsFirstTwoPackages()
 		{
 			CreateCmdlet();
-			var repository = fakePackageManagementService.FakePackageRepositoryToReturnFromCreatePackageRepository;
-			var packageA = repository.AddOneFakePackage("A");
-			var packageB = repository.AddOneFakePackage("B");
-			repository.AddOneFakePackage("C");			
+			var repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			var packageA = repository.AddFakePackage("A");
+			var packageB = repository.AddFakePackage("B");
+			repository.AddFakePackage("C");			
 			
 			EnableListAvailableParameter();
 			SetFirstParameter(2);

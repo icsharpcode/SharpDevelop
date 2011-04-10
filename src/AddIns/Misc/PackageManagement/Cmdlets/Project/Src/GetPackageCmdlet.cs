@@ -18,21 +18,25 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 	{
 		int? skip;
 		int? first;
+		IRegisteredPackageRepositories registeredPackageRepositories;
 		
 		public GetPackageCmdlet()
 			: this(
-				ServiceLocator.PackageManagementService,
-				ServiceLocator.PackageManagementConsoleHost,
+				PackageManagementServices.RegisteredPackageRepositories,
+				PackageManagementServices.PackageManagementService,
+				PackageManagementServices.ConsoleHost,
 				null)
 		{
 		}
 		
 		public GetPackageCmdlet(
+			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagementService packageManagementService,
 			IPackageManagementConsoleHost consoleHost,
 			ICmdletTerminatingError terminatingError)
 			: base(packageManagementService, consoleHost, terminatingError)
 		{
+			this.registeredPackageRepositories = registeredPackageRepositories;
 		}
 		
 		[Alias("Online", "Remote")]
@@ -135,7 +139,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		IPackageRepository CreatePackageRepositoryForActivePackageSource()
 		{
 			PackageSource source = GetActivePackageSource(Source);
-			return PackageManagementService.CreatePackageRepository(source);
+			return registeredPackageRepositories.CreateRepository(source);
 		}
 		
 		IQueryable<IPackage> FilterPackages(IQueryable<IPackage> packages)
@@ -149,7 +153,8 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IQueryable<IPackage> GetUpdatedPackages()
 		{
-			var updatedPackages = new UpdatedPackages(PackageManagementService, DefaultProject);
+			IPackageRepository aggregateRepository = registeredPackageRepositories.CreateAggregateRepository();
+			var updatedPackages = new UpdatedPackages(PackageManagementService, aggregateRepository, DefaultProject);
 			updatedPackages.SearchTerms = Filter;
 			return updatedPackages.GetUpdatedPackages().AsQueryable();
 		}
@@ -174,7 +179,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IQueryable<IPackage> GetRecentPackages()
 		{
-			IQueryable<IPackage> packages = PackageManagementService.RecentPackageRepository.GetPackages();
+			IQueryable<IPackage> packages = registeredPackageRepositories.RecentPackageRepository.GetPackages();
 			return FilterPackages(packages);
 		}
 		

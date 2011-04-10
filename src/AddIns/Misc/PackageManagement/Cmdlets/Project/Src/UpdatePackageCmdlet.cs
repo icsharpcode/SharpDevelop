@@ -14,8 +14,8 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 	{
 		public UpdatePackageCmdlet()
 			: this(
-				ServiceLocator.PackageManagementService,
-				ServiceLocator.PackageManagementConsoleHost,
+				PackageManagementServices.PackageManagementService,
+				PackageManagementServices.ConsoleHost,
 				null)
 		{
 		}

@@ -30,7 +30,7 @@ namespace PackageManagement.Tests
 		{
 			return fakePackageManager
 				.FakeSourceRepository
-				.AddOneFakePackage(packageId);
+				.AddFakePackage(packageId);
 		}
 		
 		[Test]
