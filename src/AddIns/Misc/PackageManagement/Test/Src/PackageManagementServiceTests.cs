@@ -46,7 +46,7 @@ namespace PackageManagement.Tests
 			
 			fakeProjectService.CurrentProject = testProject;
 			packageManagementService = 
-				new PackageManagementService(options,
+				new PackageManagementService(
 					fakeRegisteredPackageRepositories,
 					fakePackageManagerFactory,
 					fakeProjectService,

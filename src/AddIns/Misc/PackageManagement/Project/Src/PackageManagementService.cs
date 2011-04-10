@@ -13,7 +13,6 @@ namespace ICSharpCode.PackageManagement
 	public class PackageManagementService : IPackageManagementService
 	{
 		IPackageManagementOutputMessagesView outputMessagesView;
-		PackageManagementOptions options;
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		IPackageManagerFactory packageManagerFactory;
 		IPackageManagementProjectService projectService;
@@ -25,7 +24,6 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementProjectService projectService,
 			IPackageManagementOutputMessagesView outputMessagesView)
 			: this(
-				options,
 				new RegisteredPackageRepositories(packageRepositoryCache, options),
 				packageManagerFactory,
 				projectService,
@@ -33,11 +31,8 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public PackageManagementService(
-			PackageManagementOptions options,
-			IRegisteredPackageRepositories registeredPackageRepositories)
+		public PackageManagementService(IRegisteredPackageRepositories registeredPackageRepositories)
 			: this(
-				options,
 				registeredPackageRepositories,
 				new SharpDevelopPackageManagerFactory(),
 				new PackageManagementProjectService(),
@@ -46,39 +41,19 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public PackageManagementService(
-			PackageManagementOptions options,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagerFactory packageManagerFactory,
 			IPackageManagementProjectService projectService,
 			IPackageManagementOutputMessagesView outputMessagesView)
 		{
-			this.options = options;
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.packageManagerFactory = packageManagerFactory;
 			this.projectService = projectService;
 			this.outputMessagesView = outputMessagesView;
 		}
-		
-		public PackageManagementService(
-			PackageManagementOptions options,
-			IPackageManagerFactory packageManagerFactory,
-			IPackageManagementProjectService projectService,
-			IPackageManagementOutputMessagesView outputMessagesView)
-			: this(
-				options,
-				new PackageRepositoryCache(options.PackageSources, options.RecentPackages),
-				packageManagerFactory,
-				projectService,
-				outputMessagesView)
-		{
-		}
 
 		public IPackageManagementOutputMessagesView OutputMessagesView {
 			get { return outputMessagesView; }
-		}
-		
-		public PackageManagementOptions Options {
-			get { return options; }
 		}
 		
 		public event EventHandler ParentPackageInstalled;

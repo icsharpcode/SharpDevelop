@@ -75,7 +75,7 @@ namespace ICSharpCode.PackageManagement
 			if (IsInDesignMode()) {
 				packageManagementOptionsViewModel = new DesignTimePackageManagementOptionsViewModel();
 			} else {
-				packageManagementOptionsViewModel = new PackageManagementOptionsViewModel(packageManagementService.Options);
+				packageManagementOptionsViewModel = new PackageManagementOptionsViewModel(PackageManagementServices.Options);
 			}
 		}
 		

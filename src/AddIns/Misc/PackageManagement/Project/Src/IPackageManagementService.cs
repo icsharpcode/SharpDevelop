@@ -27,8 +27,6 @@ namespace ICSharpCode.PackageManagement
 		void OnParentPackageInstalled(IPackage package);
 		void OnParentPackageUninstalled(IPackage package);
 		
-		PackageManagementOptions Options { get; }
-		
 		IPackageManagementOutputMessagesView OutputMessagesView { get; }
 	}
 }

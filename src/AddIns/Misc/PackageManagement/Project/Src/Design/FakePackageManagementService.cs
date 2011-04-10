@@ -14,8 +14,6 @@ namespace ICSharpCode.PackageManagement.Design
 	{
 		public event EventHandler ParentPackageInstalled;
 		
-		PackageManagementOptions options = new PackageManagementOptions(new Properties());
-		
 		protected virtual void OnParentPackageInstalled()
 		{
 			if (ParentPackageInstalled != null) {
@@ -72,10 +70,6 @@ namespace ICSharpCode.PackageManagement.Design
 		public void AddPackageToProjectLocalRepository(FakePackage package)
 		{
 			FakeActiveProjectManager.FakeLocalRepository.FakePackages.Add(package);
-		}
-		
-		public PackageManagementOptions Options {
-			get { return options; }
 		}
 		
 		public FakePackageManagementOutputMessagesView FakeOutputMessagesView = new FakePackageManagementOutputMessagesView();

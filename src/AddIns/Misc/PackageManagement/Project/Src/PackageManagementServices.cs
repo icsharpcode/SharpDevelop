@@ -17,7 +17,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			options = new PackageManagementOptions();
 			registeredPackageRepositories = new RegisteredPackageRepositories(options);
-			packageManagementService = new PackageManagementService(options, registeredPackageRepositories);
+			packageManagementService = new PackageManagementService(registeredPackageRepositories);
 		}
 		
 		public static PackageManagementOptions Options {
