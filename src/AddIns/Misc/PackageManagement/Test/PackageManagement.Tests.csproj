@@ -70,7 +70,9 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\Helpers\ExceptionThrowingRegisteredPackageRepositories.cs" />
+    <Compile Include="Src\Helpers\FakePackageManagementEvents.cs" />
     <Compile Include="Src\Helpers\FakePackageViewModelFactory.cs" />
+    <Compile Include="Src\PackageManagementEventsTests.cs" />
     <Compile Include="Src\RegisteredPackageRepositoriesTests.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementService.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageOperationResolver.cs" />
@@ -78,7 +80,6 @@
     <Compile Include="Src\Helpers\FakeFileService.cs" />
     <Compile Include="Src\Helpers\FakeLicenseAcceptanceService.cs" />
     <Compile Include="Src\Helpers\FakeMessageCategoryView.cs" />
-    <Compile Include="Src\Helpers\FakeMessageReporter.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementAddInPath.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementConsoleHost.cs" />
     <Compile Include="Src\Helpers\FakePackageManagerFactory.cs" />

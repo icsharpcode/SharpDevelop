@@ -8,21 +8,31 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class AddPackageReferenceViewModel : ViewModelBase<AddPackageReferenceViewModel>, IMessageReporter, IDisposable
+	public class AddPackageReferenceViewModel : ViewModelBase<AddPackageReferenceViewModel>, IDisposable
 	{
 		IPackageManagementService packageManagementService;
+		IPackageManagementEvents packageManagementEvents;
+		ILicenseAcceptanceService licenseAcceptanceService;
 		string message;
 		bool hasError;
 		
 		public AddPackageReferenceViewModel(
 			IPackageManagementService packageManagementService,
 			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageManagementEvents packageManagementEvents,
+			ILicenseAcceptanceService licenseAcceptanceService,
 			ITaskFactory taskFactory)
 		{
 			this.packageManagementService = packageManagementService;
 			this.packageManagementService.OutputMessagesView.Clear();
+			this.packageManagementEvents = packageManagementEvents;
+			this.licenseAcceptanceService = licenseAcceptanceService;
 			
-			var packageViewModelFactory = new PackageViewModelFactory(registeredPackageRepositories, packageManagementService, new LicenseAcceptanceService(), this);
+			packageManagementEvents.PackageOperationError += PackageOperationError;
+			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
+			packageManagementEvents.AcceptLicenses += AcceptLicenses;
+			
+			var packageViewModelFactory = new PackageViewModelFactory(registeredPackageRepositories, packageManagementService, packageManagementEvents);
 			
 			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
 			InstalledPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, registeredPackageRepositories, packageViewModelFactory, taskFactory);
@@ -46,9 +56,18 @@ namespace ICSharpCode.PackageManagement
 			InstalledPackagesViewModel.Dispose();
 			RecentPackagesViewModel.Dispose();
 			UpdatedPackagesViewModel.Dispose();
+			
+			packageManagementEvents.AcceptLicenses -= AcceptLicenses;
+			packageManagementEvents.PackageOperationError -= PackageOperationError;
+			packageManagementEvents.PackageOperationsStarting -= PackageOperationsStarting;
 		}
 		
-		public void ShowErrorMessage(string message)
+		void PackageOperationError(object sender, PackageOperationExceptionEventArgs e)
+		{
+			ShowErrorMessage(e.Exception.Message);
+		}
+		
+		void ShowErrorMessage(string message)
 		{
 			this.Message = message;
 			this.HasError = true;
@@ -70,10 +89,20 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public void ClearMessage()
+		void PackageOperationsStarting(object sender, EventArgs e)
+		{
+			ClearMessage();
+		}
+		
+		void ClearMessage()
 		{
 			this.Message = null;
 			this.HasError = false;
+		}
+		
+		void AcceptLicenses(object sender, AcceptLicensesEventArgs e)
+		{
+			e.IsAccepted = licenseAcceptanceService.AcceptLicenses(e.Packages);
 		}
 	}
 }

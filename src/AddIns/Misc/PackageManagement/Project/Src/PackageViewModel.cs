@@ -15,8 +15,7 @@ namespace ICSharpCode.PackageManagement
 		DelegateCommand removePackageCommand;
 		
 		IPackageManagementService packageManagementService;
-		ILicenseAcceptanceService licenseAcceptanceService;
-		IMessageReporter messageReporter;
+		IPackageManagementEvents packageManagementEvents;
 		IPackage package;
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
 		IPackageRepository sourceRepository;
@@ -26,14 +25,12 @@ namespace ICSharpCode.PackageManagement
 			IPackage package,
 			IPackageRepository sourceRepository,
 			IPackageManagementService packageManagementService,
-			ILicenseAcceptanceService licenseAcceptanceService,
-			IMessageReporter messageReporter)
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.package = package;
 			this.sourceRepository = sourceRepository;
 			this.packageManagementService = packageManagementService;
-			this.licenseAcceptanceService = licenseAcceptanceService;
-			this.messageReporter = messageReporter;
+			this.packageManagementEvents = packageManagementEvents;
 			
 			CreateCommands();
 		}
@@ -159,7 +156,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void ClearReportedMessages()
 		{
-			messageReporter.ClearMessage();
+			packageManagementEvents.OnPackageOperationsStarting();
 		}
 		
 		void LogAddingPackage()
@@ -226,7 +223,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			IEnumerable<IPackage> packages = GetPackagesRequiringLicenseAcceptance();
 			if (packages.Any()) {
-				return licenseAcceptanceService.AcceptLicenses(packages);
+				return packageManagementEvents.OnAcceptLicenses(packages);
 			}
 			return true;
 		}
@@ -291,7 +288,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void ReportError(Exception ex)
 		{
-			messageReporter.ShowErrorMessage(ex.Message);
+			packageManagementEvents.OnPackageOperationError(ex);
 		}
 		
 		public void RemovePackage()

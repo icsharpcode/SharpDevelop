@@ -12,7 +12,6 @@ namespace ICSharpCode.PackageManagement
 		
 		IRegisteredPackageRepositories RegisteredPackageRepositories { get; }
 		IPackageManagementService PackageManagementService { get; }
-		ILicenseAcceptanceService LicenseAcceptanceService { get; }
-		IMessageReporter MessageReporter { get; }
+		IPackageManagementEvents PackageManagementEvents { get; }
 	}
 }

@@ -12,8 +12,7 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public FakeRegisteredPackageRepositories FakeRegisteredPackageRepositories = new FakeRegisteredPackageRepositories();
 		public FakePackageManagementService FakePackageManagementService = new FakePackageManagementService();
-		public FakeLicenseAcceptanceService FakeLicenseAcceptanceService = new FakeLicenseAcceptanceService();
-		public FakeMessageReporter FakeMessageReporter = new FakeMessageReporter();
+		public FakePackageManagementEvents FakePackageManagementEvents = new FakePackageManagementEvents();
 		
 		public PackageViewModel CreatePackageViewModel(IPackage package)
 		{
@@ -21,8 +20,7 @@ namespace PackageManagement.Tests.Helpers
 				package,
 				FakeRegisteredPackageRepositories.FakeActiveRepository,
 				FakePackageManagementService,
-				FakeLicenseAcceptanceService,
-				FakeMessageReporter);
+				FakePackageManagementEvents);
 		}
 		
 		public IRegisteredPackageRepositories RegisteredPackageRepositories {
@@ -33,12 +31,8 @@ namespace PackageManagement.Tests.Helpers
 			get { return FakePackageManagementService; }
 		}
 		
-		public ILicenseAcceptanceService LicenseAcceptanceService {
-			get { return FakeLicenseAcceptanceService; }
-		}
-		
-		public IMessageReporter MessageReporter {
-			get { return FakeMessageReporter; }
+		public IPackageManagementEvents PackageManagementEvents {
+			get { return FakePackageManagementEvents; }
 		}
 	}
 }

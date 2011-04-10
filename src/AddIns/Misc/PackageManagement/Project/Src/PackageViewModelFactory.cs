@@ -12,21 +12,18 @@ namespace ICSharpCode.PackageManagement
 			: this(
 				packageViewModelFactory.RegisteredPackageRepositories,
 				packageViewModelFactory.PackageManagementService,
-				packageViewModelFactory.LicenseAcceptanceService,
-				packageViewModelFactory.MessageReporter)
+				packageViewModelFactory.PackageManagementEvents)
 		{
 		}
 		
 		public PackageViewModelFactory(
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagementService packageManagementService,
-			ILicenseAcceptanceService licenseAcceptanceService,
-			IMessageReporter messageReporter)
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.RegisteredPackageRepositories = registeredPackageRepositories;
 			this.PackageManagementService = packageManagementService;
-			this.LicenseAcceptanceService = licenseAcceptanceService;
-			this.MessageReporter = messageReporter;
+			this.PackageManagementEvents = packageManagementEvents;
 		}
 		
 		public virtual PackageViewModel CreatePackageViewModel(IPackage package)
@@ -35,13 +32,11 @@ namespace ICSharpCode.PackageManagement
 				package,
 				RegisteredPackageRepositories.ActiveRepository,
 				PackageManagementService,
-				LicenseAcceptanceService,
-				MessageReporter);
+				PackageManagementEvents);
 		}
 		
 		public IRegisteredPackageRepositories RegisteredPackageRepositories { get; private set; }
 		public IPackageManagementService PackageManagementService { get; private set; }
-		public ILicenseAcceptanceService LicenseAcceptanceService { get; private set; }
-		public IMessageReporter MessageReporter { get; private set; }
+		public IPackageManagementEvents PackageManagementEvents { get; private set; }
 	}
 }

@@ -30,6 +30,8 @@ namespace ICSharpCode.PackageManagement
 				new AddPackageReferenceViewModel(
 					packageManagementService,
 					registeredPackageRepositories,
+					PackageManagementServices.PackageManagementEvents,
+					new LicenseAcceptanceService(),
 					new PackageManagementTaskFactory());
 		}
 		

@@ -15,9 +15,8 @@ namespace ICSharpCode.PackageManagement
 			IPackage package,
 			IPackageRepository sourceRepository,
 			IPackageManagementService packageManagementService,
-			ILicenseAcceptanceService licenseAcceptanceService,
-			IMessageReporter messageReporter)
-			: base(package, sourceRepository, packageManagementService, licenseAcceptanceService, messageReporter)
+			IPackageManagementEvents packageManagementEvents)
+			: base(package, sourceRepository, packageManagementService, packageManagementEvents)
 		{
 			this.packageManagementService = packageManagementService;
 		}

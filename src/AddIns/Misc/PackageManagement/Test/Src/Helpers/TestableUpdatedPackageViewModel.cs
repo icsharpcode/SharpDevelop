@@ -13,8 +13,7 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackageOperationResolver FakePackageOperationResolver = new FakePackageOperationResolver();
 		public FakePackageRepository FakeSourcePackageRepository;
 		public FakePackageManagementService	FakePackageManagementService;
-		public FakeLicenseAcceptanceService	FakeLicenseAcceptanceService;
-		public FakeMessageReporter FakeMessageReporter;
+		public FakePackageManagementEvents FakePackageManagementEvents;
 		public FakePackage FakePackage;
 		public ILogger LoggerUsedWhenCreatingPackageResolver;
 		public string PackageViewModelAddingPackageMessageFormat = String.Empty;
@@ -30,8 +29,7 @@ namespace PackageManagement.Tests.Helpers
 				new FakePackage(),
 				new FakePackageRepository(),
 				packageManagementService,
-				new FakeLicenseAcceptanceService(),
-				new FakeMessageReporter())
+				new FakePackageManagementEvents())
 		{		
 		}
 		
@@ -39,19 +37,15 @@ namespace PackageManagement.Tests.Helpers
 			FakePackage package,
 			FakePackageRepository sourceRepository,
 			FakePackageManagementService packageManagementService,
-			FakeLicenseAcceptanceService licenseAcceptanceService,
-			FakeMessageReporter messageReporter)
+			FakePackageManagementEvents packageManagementEvents)
 			: base(
 				package,
 				sourceRepository,
 				packageManagementService,
-				licenseAcceptanceService,
-				messageReporter)
+				packageManagementEvents)
 		{
 			this.FakePackage = package;
 			this.FakePackageManagementService = packageManagementService;
-			this.FakeLicenseAcceptanceService = licenseAcceptanceService;
-			this.FakeMessageReporter = messageReporter;
 			this.FakeSourcePackageRepository = sourceRepository;
 		}
 		

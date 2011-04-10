@@ -39,7 +39,6 @@ namespace PackageManagement.Tests
 		void CreateViewModel(FakePackageManagementService packageManagementService)
 		{
 			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
-			var messageReporter = new FakeMessageReporter();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
 			taskFactory = new FakeTaskFactory();
 			

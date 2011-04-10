@@ -12,6 +12,7 @@ namespace ICSharpCode.PackageManagement
 		static readonly PackageManagementService packageManagementService;
 		static readonly PackageManagementConsoleHost consoleHost = new PackageManagementConsoleHost();
 		static readonly RegisteredPackageRepositories registeredPackageRepositories;
+		static readonly PackageManagementEvents packageManagementEvents = new PackageManagementEvents();
 		
 		static PackageManagementServices()
 		{
@@ -34,6 +35,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public static IRegisteredPackageRepositories RegisteredPackageRepositories {
 			get { return registeredPackageRepositories; }
+		}
+		
+		public static IPackageManagementEvents PackageManagementEvents {
+			get { return packageManagementEvents; }
 		}
 	}
 }

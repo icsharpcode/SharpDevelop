@@ -20,7 +20,7 @@ namespace ICSharpCode.PackageManagement.Design
 			FakePackageManagementService packageManagementService)
 			: base(
 				registeredPackageRepositories,
-				new PackageViewModelFactory(registeredPackageRepositories, packageManagementService, null, null),
+				new PackageViewModelFactory(registeredPackageRepositories, packageManagementService, null),
 				new PackageManagementTaskFactory())
 		{
 			PageSize = 3;

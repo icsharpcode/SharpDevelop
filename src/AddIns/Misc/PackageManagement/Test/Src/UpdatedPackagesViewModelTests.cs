@@ -34,7 +34,6 @@ namespace PackageManagement.Tests
 			taskFactory = new FakeTaskFactory();
 			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
-			var messageReporter = new FakeMessageReporter();
 			viewModel = new UpdatedPackagesViewModel(
 				packageManagementService,
 				registeredPackageRepositories,

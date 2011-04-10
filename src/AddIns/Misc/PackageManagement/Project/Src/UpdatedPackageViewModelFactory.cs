@@ -19,8 +19,7 @@ namespace ICSharpCode.PackageManagement
 				package,
 				RegisteredPackageRepositories.ActiveRepository,
 				PackageManagementService,
-				LicenseAcceptanceService,
-				MessageReporter);
+				PackageManagementEvents);
 		}
 	}
 }
