@@ -2320,26 +2320,79 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (ArglistAccess argListAccessExpression)
 			{
-				var result = new ArgListExpression ();
-				result.IsAccess = true;
-				result.AddChild (new CSharpTokenNode (Convert (argListAccessExpression.Location), "__arglist".Length), ArgListExpression.Roles.Keyword);
+				var result = new UndocumentedExpression () {
+					UndocumentedExpressionType = UndocumentedExpressionType.ArgListAccess
+				};
+				result.AddChild (new CSharpTokenNode (Convert (argListAccessExpression.Location), "__arglist".Length), UndocumentedExpression.Roles.Keyword);
 				return result;
 			}
 			
+			#region Undocumented expressions
 			public override object Visit (Arglist argListExpression)
 			{
-				var result = new ArgListExpression ();
-				result.AddChild (new CSharpTokenNode (Convert (argListExpression.Location), "__arglist".Length), ArgListExpression.Roles.Keyword);
+				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.ArgListAccess };
+				result.AddChild (new CSharpTokenNode (Convert (argListExpression.Location), "__arglist".Length), UndocumentedExpression.Roles.Keyword);
 				var location = LocationsBag.GetLocations (argListExpression);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ArgListExpression.Roles.LPar);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), UndocumentedExpression.Roles.LPar);
 				
 				AddArguments (result, location, argListExpression.Arguments);
 				
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ArgListExpression.Roles.RPar);
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), UndocumentedExpression.Roles.RPar);
 				return result;
 			}
+			
+			public override object Visit (MakeRefExpr makeRefExpr)
+			{
+				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.RefValue };
+				result.AddChild (new CSharpTokenNode (Convert (makeRefExpr.Location), "__makeref".Length), UndocumentedExpression.Roles.Keyword);
+				var location = LocationsBag.GetLocations (makeRefExpr);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), UndocumentedExpression.Roles.LPar);
+				if (makeRefExpr.Expr != null)
+					result.AddChild ((Expression)makeRefExpr.Expr.Accept (this), UndocumentedExpression.Roles.Argument);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), UndocumentedExpression.Roles.RPar);
+				return result;
+			}
+			
+			public override object Visit (RefTypeExpr refTypeExpr)
+			{
+				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.RefValue };
+				result.AddChild (new CSharpTokenNode (Convert (refTypeExpr.Location), "__reftype".Length), UndocumentedExpression.Roles.Keyword);
+				var location = LocationsBag.GetLocations (refTypeExpr);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), UndocumentedExpression.Roles.LPar);
+				
+				if (refTypeExpr.Expr != null)
+					result.AddChild ((Expression)refTypeExpr.Expr.Accept (this), UndocumentedExpression.Roles.Argument);
+				
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), UndocumentedExpression.Roles.RPar);
+				return result;
+			}
+			
+			public override object Visit (RefValueExpr refValueExpr)
+			{
+				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.RefValue };
+				result.AddChild (new CSharpTokenNode (Convert (refValueExpr.Location), "__refvalue".Length), UndocumentedExpression.Roles.Keyword);
+				var location = LocationsBag.GetLocations (refValueExpr);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), UndocumentedExpression.Roles.LPar);
+				
+				
+				if (refValueExpr.Expr != null)
+					result.AddChild ((Expression)refValueExpr.Expr.Accept (this), UndocumentedExpression.Roles.Argument);
+
+				if (refValueExpr.FullNamedExpression != null)
+					result.AddChild ((Expression)refValueExpr.FullNamedExpression.Accept (this), UndocumentedExpression.Roles.Argument);
+				
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), UndocumentedExpression.Roles.RPar);
+				return result;
+			}
+			#endregion
 			
 			public override object Visit (TypeOf typeOfExpression)
 			{

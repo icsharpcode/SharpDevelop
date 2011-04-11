@@ -7113,10 +7113,12 @@ namespace Mono.CSharp
 		}
 	}
 
-	class RefValueExpr : ShimExpression
+	public class RefValueExpr : ShimExpression
 	{
 		FullNamedExpression texpr;
-
+		
+		public FullNamedExpression FullNamedExpression { get { return texpr; }}
+		
 		public RefValueExpr (Expression expr, FullNamedExpression texpr, Location loc)
 			: base (expr)
 		{
@@ -7143,9 +7145,14 @@ namespace Mono.CSharp
 			ec.Emit (OpCodes.Refanyval, type);
 			ec.EmitLoadFromPtr (type);
 		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
+		}
 	}
 
-	class RefTypeExpr : ShimExpression
+	public class RefTypeExpr : ShimExpression
 	{
 		public RefTypeExpr (Expression expr, Location loc)
 			: base (expr)
@@ -7176,9 +7183,14 @@ namespace Mono.CSharp
 			if (m != null)
 				ec.Emit (OpCodes.Call, m);
 		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
+		}
 	}
 
-	class MakeRefExpr : ShimExpression
+	public class MakeRefExpr : ShimExpression
 	{
 		public MakeRefExpr (Expression expr, Location loc)
 			: base (expr)
@@ -7198,6 +7210,11 @@ namespace Mono.CSharp
 		{
 			((IMemoryLocation) expr).AddressOf (ec, AddressOp.Load);
 			ec.Emit (OpCodes.Mkrefany, expr.Type);
+		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
 		}
 	}
 

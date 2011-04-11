@@ -565,9 +565,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (defaultValueExpression, data);
 		}
 		
-		public virtual S VisitArgListExpression (ArgListExpression argListExpression, T data)
+		public virtual S VisitUndocumentedExpression (UndocumentedExpression undocumentedExpression, T data)
 		{
-			return VisitChildren (argListExpression, data);
+			return VisitChildren (undocumentedExpression, data);
 		}
 		
 		public virtual S VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression, T data)

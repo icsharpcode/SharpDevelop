@@ -468,15 +468,29 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode(anonymousMethodExpression);
 		}
 		
-		public object VisitArgListExpression(ArgListExpression argListExpression, object data)
+		public object VisitUndocumentedExpression(UndocumentedExpression undocumentedExpression, object data)
 		{
-			StartNode(argListExpression);
-			WriteKeyword("__arglist");
-			if (!argListExpression.IsAccess) {
-				Space(policy.SpaceBeforeMethodCallParentheses);
-				WriteCommaSeparatedListInParenthesis(argListExpression.Arguments, policy.SpaceWithinMethodCallParentheses);
+			StartNode(undocumentedExpression);
+			switch (undocumentedExpression.UndocumentedExpressionType) {
+			case UndocumentedExpressionType.ArgList:
+			case UndocumentedExpressionType.ArgListAccess:
+				WriteKeyword("__arglist");
+				break;
+			case UndocumentedExpressionType.MakeRef:
+				WriteKeyword("__makeref");
+				break;
+			case UndocumentedExpressionType.RefType:
+				WriteKeyword("__reftype");
+				break;
+			case UndocumentedExpressionType.RefValue:
+				WriteKeyword("__refvalue");
+				break;
 			}
-			return EndNode(argListExpression);
+			if (undocumentedExpression.Arguments.Count > 0) {
+				Space(policy.SpaceBeforeMethodCallParentheses);
+				WriteCommaSeparatedListInParenthesis(undocumentedExpression.Arguments, policy.SpaceWithinMethodCallParentheses);
+			}
+			return EndNode(undocumentedExpression);
 		}
 		
 		public object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)

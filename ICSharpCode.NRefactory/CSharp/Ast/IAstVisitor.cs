@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	public interface IAstVisitor<in T, out S>
 	{
 		S VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, T data);
-		S VisitArgListExpression(ArgListExpression argListExpression, T data);
+		S VisitUndocumentedExpression(UndocumentedExpression undocumentedExpression, T data);
 		S VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, T data);
 		S VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, T data);
 		S VisitAsExpression(AsExpression asExpression, T data);

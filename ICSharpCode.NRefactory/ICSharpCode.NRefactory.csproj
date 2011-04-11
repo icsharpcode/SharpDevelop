@@ -67,7 +67,6 @@
     <Compile Include="CSharp\Ast\AstLocation.cs" />
     <Compile Include="CSharp\Ast\AstType.cs" />
     <Compile Include="CSharp\Ast\Expressions\AnonymousMethodExpression.cs" />
-    <Compile Include="CSharp\Ast\Expressions\ArgListExpression.cs" />
     <Compile Include="CSharp\Ast\Expressions\AsExpression.cs" />
     <Compile Include="CSharp\Ast\Expressions\AssignmentExpression.cs" />
     <Compile Include="CSharp\Ast\Expressions\BaseReferenceExpression.cs" />
@@ -352,6 +351,7 @@
     <Compile Include="CSharp\Ast\GeneralScope\ExternAliasDeclaration.cs" />
     <Compile Include="CSharp\Formatter\CSharpFormattingOptions.cs" />
     <Compile Include="CSharp\Ast\Expressions\AnonymousTypeCreateExpression.cs" />
+    <Compile Include="CSharp\Ast\Expressions\UndocumentedExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />

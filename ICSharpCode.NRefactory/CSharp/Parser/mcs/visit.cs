@@ -605,8 +605,24 @@ namespace Mono.CSharp
 		{
 			return null;
 		}
-
+		
 		public virtual object Visit (Linq.ThenByDescending thenByDescending)
+		{
+			return null;
+		}
+		
+		// undocumented expressions
+		public virtual object Visit (RefValueExpr refValueExpr)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (RefTypeExpr refTypeExpr)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (MakeRefExpr makeRefExpr)
 		{
 			return null;
 		}
