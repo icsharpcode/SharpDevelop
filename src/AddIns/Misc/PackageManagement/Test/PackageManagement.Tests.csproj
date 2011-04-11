@@ -73,6 +73,7 @@
     <Compile Include="Src\Helpers\FakePackageManagementEvents.cs" />
     <Compile Include="Src\Helpers\FakePackageViewModelFactory.cs" />
     <Compile Include="Src\PackageManagementEventsTests.cs" />
+    <Compile Include="Src\ProjectBrowserRefresherTests.cs" />
     <Compile Include="Src\RegisteredPackageRepositoriesTests.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementService.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageOperationResolver.cs" />

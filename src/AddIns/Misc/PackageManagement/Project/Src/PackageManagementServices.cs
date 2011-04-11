@@ -13,12 +13,15 @@ namespace ICSharpCode.PackageManagement
 		static readonly PackageManagementConsoleHost consoleHost = new PackageManagementConsoleHost();
 		static readonly RegisteredPackageRepositories registeredPackageRepositories;
 		static readonly PackageManagementEvents packageManagementEvents = new PackageManagementEvents();
+		static readonly PackageManagementProjectService projectService = new PackageManagementProjectService();
+		static readonly ProjectBrowserRefresher projectBrowserRefresher;
 		
 		static PackageManagementServices()
 		{
 			options = new PackageManagementOptions();
 			registeredPackageRepositories = new RegisteredPackageRepositories(options);
-			packageManagementService = new PackageManagementService(registeredPackageRepositories);
+			packageManagementService = new PackageManagementService(registeredPackageRepositories, packageManagementEvents);
+			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
 		}
 		
 		public static PackageManagementOptions Options {

@@ -11,20 +11,23 @@ namespace ICSharpCode.PackageManagement
 	public class InstalledPackagesViewModel : PackagesViewModel
 	{
 		IPackageManagementService packageManagementService;
+		IPackageManagementEvents packageManagementEvents;
 		IProjectManager projectManager;
 		IPackageRepository repository;
 		string errorMessage = String.Empty;
 
 		public InstalledPackagesViewModel(
 			IPackageManagementService packageManagementService,
+			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
 			this.packageManagementService = packageManagementService;
-			packageManagementService.ParentPackageInstalled += ParentPackageInstalled;
-			packageManagementService.ParentPackageUninstalled += ParentPackageUninstalled;
+			this.packageManagementEvents = packageManagementEvents;
+			packageManagementEvents.ParentPackageInstalled += InstalledPackagesChanged;
+			packageManagementEvents.ParentPackageUninstalled += InstalledPackagesChanged;
 			
 			GetActiveProjectManager();
 		}
@@ -38,20 +41,15 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 
-		void ParentPackageInstalled(object sender, EventArgs e)
-		{
-			ReadPackages();
-		}
-		
-		void ParentPackageUninstalled(object sender, EventArgs e)
+		void InstalledPackagesChanged(object sender, EventArgs e)
 		{
 			ReadPackages();
 		}
 		
 		protected override void OnDispose()
 		{
-			packageManagementService.ParentPackageInstalled -= ParentPackageInstalled;
-			packageManagementService.ParentPackageUninstalled -= ParentPackageUninstalled;
+			packageManagementEvents.ParentPackageInstalled -= InstalledPackagesChanged;
+			packageManagementEvents.ParentPackageUninstalled -= InstalledPackagesChanged;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()

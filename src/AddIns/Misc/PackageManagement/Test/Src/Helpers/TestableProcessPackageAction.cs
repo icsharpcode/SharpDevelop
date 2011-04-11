@@ -10,18 +10,22 @@ namespace PackageManagement.Tests.Helpers
 	public class TestableProcessPackageAction : ProcessPackageAction
 	{
 		public FakePackageManagementService FakePackageManagementService;
+		public FakePackageManagementEvents FakePackageManagementEvents;
 		public FakePackageRepository FakePackageRepository = new FakePackageRepository();
 		public FakePackage FakePackage = new FakePackage("Test");
 		
 		public TestableProcessPackageAction()
-			: this(new FakePackageManagementService())
+			: this(new FakePackageManagementService(), new FakePackageManagementEvents())
 		{
 		}
 		
-		public TestableProcessPackageAction(FakePackageManagementService packageManagementService)
-			: base(packageManagementService)
+		public TestableProcessPackageAction(
+			FakePackageManagementService packageManagementService,
+			FakePackageManagementEvents packageManagementEvents)
+			: base(packageManagementService, packageManagementEvents)
 		{
 			FakePackageManagementService = packageManagementService;
+			FakePackageManagementEvents = packageManagementEvents;
 			this.PackageRepository = FakePackageRepository;
 			this.Package = FakePackage;
 		}

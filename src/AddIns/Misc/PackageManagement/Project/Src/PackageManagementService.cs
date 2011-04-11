@@ -16,25 +16,31 @@ namespace ICSharpCode.PackageManagement
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		IPackageManagerFactory packageManagerFactory;
 		IPackageManagementProjectService projectService;
+		IPackageManagementEvents packageManagementEvents;
 		
 		public PackageManagementService(
 			PackageManagementOptions options,
 			IPackageRepositoryCache packageRepositoryCache,
 			IPackageManagerFactory packageManagerFactory,
+			IPackageManagementEvents packageManagementEvents,
 			IPackageManagementProjectService projectService,
 			IPackageManagementOutputMessagesView outputMessagesView)
 			: this(
 				new RegisteredPackageRepositories(packageRepositoryCache, options),
 				packageManagerFactory,
+				packageManagementEvents,
 				projectService,
 				outputMessagesView)
 		{
 		}
 		
-		public PackageManagementService(IRegisteredPackageRepositories registeredPackageRepositories)
+		public PackageManagementService(
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageManagementEvents packageManagementEvents)
 			: this(
 				registeredPackageRepositories,
 				new SharpDevelopPackageManagerFactory(),
+				packageManagementEvents,
 				new PackageManagementProjectService(),
 				new PackageManagementOutputMessagesView())
 		{
@@ -43,10 +49,12 @@ namespace ICSharpCode.PackageManagement
 		public PackageManagementService(
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagerFactory packageManagerFactory,
+			IPackageManagementEvents packageManagementEvents,
 			IPackageManagementProjectService projectService,
 			IPackageManagementOutputMessagesView outputMessagesView)
 		{
 			this.registeredPackageRepositories = registeredPackageRepositories;
+			this.packageManagementEvents = packageManagementEvents;
 			this.packageManagerFactory = packageManagerFactory;
 			this.projectService = projectService;
 			this.outputMessagesView = outputMessagesView;
@@ -54,28 +62,6 @@ namespace ICSharpCode.PackageManagement
 
 		public IPackageManagementOutputMessagesView OutputMessagesView {
 			get { return outputMessagesView; }
-		}
-		
-		public event EventHandler ParentPackageInstalled;
-		
-		protected virtual void OnParentPackageInstalled()
-		{
-			if (ParentPackageInstalled != null) {
-				ParentPackageInstalled(this, new EventArgs());
-			}
-		}
-		
-		public event EventHandler ParentPackageUninstalled;
-		
-		protected virtual void OnParentPackageUninstalled()
-		{
-			if (ParentPackageUninstalled != null) {
-				ParentPackageUninstalled(this, new EventArgs());
-			}
-		}
-		
-		IPackageRepository RecentPackageRepository {
-			get { return registeredPackageRepositories.RecentPackageRepository; }
 		}
 		
 		IPackageRepository ActivePackageRepository {
@@ -128,30 +114,17 @@ namespace ICSharpCode.PackageManagement
 		
 		public InstallPackageAction CreateInstallPackageAction()
 		{
-			return new InstallPackageAction(this);
+			return new InstallPackageAction(this, packageManagementEvents);
 		}
 		
 		public UpdatePackageAction CreateUpdatePackageAction()
 		{
-			return new UpdatePackageAction(this);
+			return new UpdatePackageAction(this, packageManagementEvents);
 		}
 		
 		public UninstallPackageAction CreateUninstallPackageAction()
 		{
-			return new UninstallPackageAction(this);
-		}
-		
-		public void OnParentPackageInstalled(IPackage package)
-		{
-			projectService.RefreshProjectBrowser();
-			RecentPackageRepository.AddPackage(package);
-			OnParentPackageInstalled();
-		}
-		
-		public void OnParentPackageUninstalled(IPackage package)
-		{
-			projectService.RefreshProjectBrowser();
-			OnParentPackageUninstalled();
+			return new UninstallPackageAction(this, packageManagementEvents);
 		}
 	}
 }

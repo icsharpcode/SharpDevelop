@@ -12,8 +12,10 @@ namespace PackageManagement.Tests.Helpers
 	{
 		#pragma warning disable 0067
 		public event EventHandler PackageOperationsStarting;
-		public event AcceptLicensesEventHandler AcceptLicenses;
-		public event PackageOperationExceptionEventHandler PackageOperationError;
+		public event EventHandler<AcceptLicensesEventArgs> AcceptLicenses;
+		public event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
+		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
+		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
 		#pragma warning restore 0067
 		
 		public bool IsOnPackageOperationsStartingCalled;
@@ -39,6 +41,20 @@ namespace PackageManagement.Tests.Helpers
 			PackagesPassedToOnAcceptLicenses = packages;
 			IsOnAcceptLicensesCalled = true;
 			return AcceptLicensesReturnValue;
+		}
+		
+		public IPackage PackagePassedToOnParentPackageInstalled;
+		
+		public void OnParentPackageInstalled(IPackage package)
+		{
+			PackagePassedToOnParentPackageInstalled = package;
+		}
+		
+		public IPackage PackagePassedToOnParentPackageUninstalled;
+		
+		public void OnParentPackageUninstalled(IPackage package)
+		{
+			PackagePassedToOnParentPackageUninstalled = package;
 		}
 	}
 }

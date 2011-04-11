@@ -10,11 +10,15 @@ namespace ICSharpCode.PackageManagement
 	public interface IPackageManagementEvents
 	{
 		event EventHandler PackageOperationsStarting;
-		event AcceptLicensesEventHandler AcceptLicenses;
-		event PackageOperationExceptionEventHandler PackageOperationError;
-		
+		event EventHandler<AcceptLicensesEventArgs> AcceptLicenses;
+		event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
+		event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
+		event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
+	
 		void OnPackageOperationsStarting();		
 		void OnPackageOperationError(Exception ex);
 		bool OnAcceptLicenses(IEnumerable<IPackage> packages);
+		void OnParentPackageInstalled(IPackage package);
+		void OnParentPackageUninstalled(IPackage package);
 	}
 }

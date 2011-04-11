@@ -15,6 +15,7 @@ namespace PackageManagement.Tests
 	{
 		InstalledPackagesViewModel viewModel;
 		FakePackageManagementService packageManagementService;
+		PackageManagementEvents packageManagementEvents;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
 		FakeTaskFactory taskFactory;
@@ -41,9 +42,11 @@ namespace PackageManagement.Tests
 			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
 			taskFactory = new FakeTaskFactory();
+			packageManagementEvents = new PackageManagementEvents();
 			
 			viewModel = new InstalledPackagesViewModel(
 				packageManagementService,
+				packageManagementEvents,
 				registeredPackageRepositories,
 				packageViewModelFactory,
 				taskFactory);
@@ -76,7 +79,7 @@ namespace PackageManagement.Tests
 			FakePackage package = AddPackageToProjectManagerLocalPackageRepository();
 			
 			ClearReadPackagesTasks();
-			packageManagementService.FireParentPackageInstalled();
+			packageManagementEvents.OnParentPackageInstalled(new FakePackage());
 			CompleteReadPackagesTask();
 		
 			IPackage firstPackage = viewModel.PackageViewModels[0].GetPackage();
@@ -94,7 +97,7 @@ namespace PackageManagement.Tests
 			packageManagementService.FakeActiveProjectManager.FakeLocalRepository.FakePackages.Clear();
 			
 			ClearReadPackagesTasks();
-			packageManagementService.FireParentPackageUninstalled();
+			packageManagementEvents.OnParentPackageUninstalled(new FakePackage());
 			CompleteReadPackagesTask();
 		
 			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
@@ -136,7 +139,7 @@ namespace PackageManagement.Tests
 			
 			ClearReadPackagesTasks();
 			viewModel.Dispose();
-			packageManagementService.FireParentPackageInstalled();
+			packageManagementEvents.OnParentPackageInstalled(new FakePackage());
 			CompleteReadPackagesTask();
 		
 			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
@@ -154,7 +157,7 @@ namespace PackageManagement.Tests
 			
 			ClearReadPackagesTasks();
 			viewModel.Dispose();
-			packageManagementService.FireParentPackageUninstalled();
+			packageManagementEvents.OnParentPackageUninstalled(new FakePackage());
 			CompleteReadPackagesTask();
 		
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);

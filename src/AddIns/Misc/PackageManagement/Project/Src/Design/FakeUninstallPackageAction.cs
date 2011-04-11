@@ -10,7 +10,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public bool IsExecuted;
 		
 		public FakeUninstallPackageAction()
-			: base(null)
+			: base(null, null)
 		{
 		}
 		

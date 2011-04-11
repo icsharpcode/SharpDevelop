@@ -18,7 +18,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public event PackageOperationExceptionEventHandler PackageOperationError;
+		public event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
 		
 		public void OnPackageOperationError(Exception ex)
 		{
@@ -27,7 +27,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public event AcceptLicensesEventHandler AcceptLicenses;
+		public event EventHandler<AcceptLicensesEventArgs> AcceptLicenses;
 		
 		public bool OnAcceptLicenses(IEnumerable<IPackage> packages)
 		{
@@ -37,6 +37,24 @@ namespace ICSharpCode.PackageManagement
 				return eventArgs.IsAccepted;
 			}
 			return true;
+		}
+		
+		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
+		
+		public void OnParentPackageInstalled(IPackage package)
+		{
+			if (ParentPackageInstalled != null) {
+				ParentPackageInstalled(this, new ParentPackageOperationEventArgs(package));
+			}
+		}
+		
+		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
+		
+		public void OnParentPackageUninstalled(IPackage package)
+		{
+			if (ParentPackageUninstalled != null) {
+				ParentPackageUninstalled(this, new ParentPackageOperationEventArgs(package));
+			}
 		}
 	}
 }

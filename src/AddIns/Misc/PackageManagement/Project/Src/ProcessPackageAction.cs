@@ -10,10 +10,14 @@ namespace ICSharpCode.PackageManagement
 	public abstract class ProcessPackageAction
 	{
 		IPackageManagementService packageManagementService;
+		IPackageManagementEvents packageManagementEvents;
 		
-		public ProcessPackageAction(IPackageManagementService packageManagementService)
+		public ProcessPackageAction(
+			IPackageManagementService packageManagementService,
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.packageManagementService = packageManagementService;
+			this.packageManagementEvents = packageManagementEvents;
 		}
 		
 		public ISharpDevelopPackageManager PackageManager { get; set; }
@@ -27,12 +31,12 @@ namespace ICSharpCode.PackageManagement
 		
 		protected void OnParentPackageInstalled()
 		{
-			packageManagementService.OnParentPackageInstalled(Package);
+			packageManagementEvents.OnParentPackageInstalled(Package);
 		}
 		
 		protected void OnParentPackageUninstalled()
 		{
-			packageManagementService.OnParentPackageUninstalled(Package);
+			packageManagementEvents.OnParentPackageUninstalled(Package);
 		}
 		
 		public void Execute()

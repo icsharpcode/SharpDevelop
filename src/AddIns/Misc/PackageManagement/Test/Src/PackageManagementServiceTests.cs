@@ -43,12 +43,14 @@ namespace PackageManagement.Tests
 			fakePackageManagerFactory = new FakePackageManagerFactory();
 			fakeProjectService = new FakePackageManagementProjectService();
 			fakeOutputMessagesView = new FakePackageManagementOutputMessagesView();
+			var packageManagementEvents = new FakePackageManagementEvents();
 			
 			fakeProjectService.CurrentProject = testProject;
 			packageManagementService = 
 				new PackageManagementService(
 					fakeRegisteredPackageRepositories,
 					fakePackageManagerFactory,
+					packageManagementEvents,
 					fakeProjectService,
 					fakeOutputMessagesView);
 		}
@@ -85,36 +87,6 @@ namespace PackageManagement.Tests
 			IProject actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
 			
 			Assert.AreEqual(testProject, actualProject);
-		}
-		
-		[Test]
-		public void OnParentPackageInstalled_PackagePassed_ParentPackageInstalledEventFires()
-		{
-			CreatePackageManagementService();
-			
-			bool fired = false;
-			packageManagementService.ParentPackageInstalled += (sender, e) => {
-				fired = true;
-			};
-			var package = new FakePackage();
-			packageManagementService.OnParentPackageInstalled(package);
-			
-			Assert.IsTrue(fired);
-		}
-		
-		[Test]
-		public void OnParentPackageUninstalled_PackagePassed_OnParentPackageUninstalledEventFires()
-		{
-			CreatePackageManagementService();
-			
-			bool fired = false;
-			packageManagementService.ParentPackageUninstalled += (sender, e) => {
-				fired = true;
-			};
-			var package = new FakePackage();
-			packageManagementService.OnParentPackageUninstalled(package);
-			
-			Assert.IsTrue(fired);
 		}
 		
 		[Test]
@@ -277,42 +249,6 @@ namespace PackageManagement.Tests
 			var actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
 			
 			Assert.AreEqual(testProject, actualProject);
-		}
-		
-		[Test]
-		public void OnParentPackageUninstalled_PackagePassed_RefreshesProjectBrowserWindow()
-		{
-			CreatePackageManagementService();
-			var package = new FakePackage("Test");
-			packageManagementService.OnParentPackageUninstalled(package);
-			
-			Assert.IsTrue(fakeProjectService.IsRefreshProjectBrowserCalled);
-		}
-		
-		[Test]
-		public void OnParentPackageInstalled_PackagePassed_RefreshesProjectBrowserWindow()
-		{
-			CreatePackageManagementService();
-			var package = new FakePackage("Test");
-			packageManagementService.OnParentPackageInstalled(package);
-			
-			Assert.IsTrue(fakeProjectService.IsRefreshProjectBrowserCalled);
-		}
-		
-		[Test]
-		public void OnParentPackageInstalled_PackagePassed_PackageInstalledIsAddedToRecentPackagesRepository()
-		{
-			CreatePackageManagementService();
-			var package = new FakePackage("Test");
-			packageManagementService.OnParentPackageInstalled(package);
-			
-			var recentPackages = fakeRegisteredPackageRepositories.FakeRecentPackageRepository.PackagesAdded;
-			
-			var expectedPackages = new FakePackage[] {
-				package
-			};
-			
-			PackageCollectionAssert.AreEqual(expectedPackages, recentPackages);
 		}
 	}
 }

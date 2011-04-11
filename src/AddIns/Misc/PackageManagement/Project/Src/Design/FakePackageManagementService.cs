@@ -12,24 +12,6 @@ namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakePackageManagementService : IPackageManagementService
 	{
-		public event EventHandler ParentPackageInstalled;
-		
-		protected virtual void OnParentPackageInstalled()
-		{
-			if (ParentPackageInstalled != null) {
-				ParentPackageInstalled(this, new EventArgs());
-			}
-		}
-		
-		public event EventHandler ParentPackageUninstalled;
-		
-		protected virtual void OnParentPackageUninstalled()
-		{
-			if (ParentPackageUninstalled != null) {
-				ParentPackageUninstalled(this, new EventArgs());
-			}
-		}
-		
 		public FakeProjectManager FakeActiveProjectManager { get; set; }
 		
 		public FakePackageManagementService()
@@ -55,16 +37,6 @@ namespace ICSharpCode.PackageManagement.Design
 		public virtual UninstallPackageAction CreateUninstallPackageAction()
 		{
 			return ActionToReturnFromCreateUninstallPackageAction;
-		}
-		
-		public void FireParentPackageInstalled()
-		{
-			OnParentPackageInstalled();
-		}
-		
-		public void FireParentPackageUninstalled()
-		{
-			OnParentPackageUninstalled();
 		}
 		
 		public void AddPackageToProjectLocalRepository(FakePackage package)
@@ -122,20 +94,6 @@ namespace ICSharpCode.PackageManagement.Design
 		public UpdatePackageAction CreateUpdatePackageAction()
 		{
 			return ActionToReturnFromCreateUpdatePackageAction;
-		}
-		
-		public IPackage PackagePassedToOnParentPackageInstalled;
-		
-		public void OnParentPackageInstalled(IPackage package)
-		{
-			PackagePassedToOnParentPackageInstalled = package;
-		}
-		
-		public IPackage PackagePassedToOnParentPackageUninstalled;
-		
-		public void OnParentPackageUninstalled(IPackage package)
-		{
-			PackagePassedToOnParentPackageUninstalled = package;
 		}
 	}
 }

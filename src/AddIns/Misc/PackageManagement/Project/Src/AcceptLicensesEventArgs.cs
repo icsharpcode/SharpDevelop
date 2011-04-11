@@ -7,8 +7,6 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public delegate void AcceptLicensesEventHandler(object sender, AcceptLicensesEventArgs e);
-
 	public class AcceptLicensesEventArgs : EventArgs
 	{
 		public AcceptLicensesEventArgs(IEnumerable<IPackage> packages)

@@ -10,9 +10,6 @@ namespace ICSharpCode.PackageManagement
 {
 	public interface IPackageManagementService
 	{
-		event EventHandler ParentPackageInstalled;
-		event EventHandler ParentPackageUninstalled;
-		
 		ISharpDevelopProjectManager CreateProjectManager(IPackageRepository repository, MSBuildBasedProject project);
 		ISharpDevelopPackageManager CreatePackageManagerForActiveProject();
 		ISharpDevelopPackageManager CreatePackageManagerForActiveProject(IPackageRepository packageRepository);
@@ -23,9 +20,6 @@ namespace ICSharpCode.PackageManagement
 		InstallPackageAction CreateInstallPackageAction();
 		UninstallPackageAction CreateUninstallPackageAction();
 		UpdatePackageAction CreateUpdatePackageAction();
-		
-		void OnParentPackageInstalled(IPackage package);
-		void OnParentPackageUninstalled(IPackage package);
 		
 		IPackageManagementOutputMessagesView OutputMessagesView { get; }
 	}

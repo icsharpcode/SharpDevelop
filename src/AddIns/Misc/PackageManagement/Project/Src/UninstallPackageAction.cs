@@ -11,8 +11,10 @@ namespace ICSharpCode.PackageManagement
 	{
 		IPackageManagementService packageManagementService;
 		
-		public UninstallPackageAction(IPackageManagementService packageManagementService)
-			: base(packageManagementService)
+		public UninstallPackageAction(
+			IPackageManagementService packageManagementService,
+			IPackageManagementEvents packageManagementEvents)
+			: base(packageManagementService, packageManagementEvents)
 		{
 			this.packageManagementService = packageManagementService;
 		}

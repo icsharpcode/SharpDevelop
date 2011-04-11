@@ -10,7 +10,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public bool IsExecuted;
 		
 		public FakeUpdatePackageAction()
-			: base(null)
+			: base(null, null)
 		{
 		}
 		

@@ -15,14 +15,16 @@ namespace PackageManagement.Tests
 	{
 		UninstallPackageAction action;
 		FakePackageManagementService fakePackageManagementService;
+		FakePackageManagementEvents fakePackageManagementEvents;
 		FakePackageManager fakePackageManager;
 		UninstallPackageHelper uninstallPackageHelper;
 		
 		void CreateAction()
 		{
 			fakePackageManagementService = new FakePackageManagementService();
+			fakePackageManagementEvents = new FakePackageManagementEvents();
 			fakePackageManager = fakePackageManagementService.FakePackageManagerToReturnFromCreatePackageManager;
-			action = new UninstallPackageAction(fakePackageManagementService);
+			action = new UninstallPackageAction(fakePackageManagementService, fakePackageManagementEvents);
 			uninstallPackageHelper = new UninstallPackageHelper(action);
 		}
 		
@@ -67,7 +69,7 @@ namespace PackageManagement.Tests
 
 			uninstallPackageHelper.UninstallTestPackage();
 			
-			var actualPackage = fakePackageManagementService.PackagePassedToOnParentPackageUninstalled;
+			var actualPackage = fakePackageManagementEvents.PackagePassedToOnParentPackageUninstalled;
 			var expectedPackage = uninstallPackageHelper.TestPackage;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);

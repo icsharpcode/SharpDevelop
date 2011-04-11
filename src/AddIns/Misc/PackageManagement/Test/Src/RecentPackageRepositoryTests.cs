@@ -18,6 +18,7 @@ namespace PackageManagement.Tests
 	{
 		RecentPackageRepository repository;
 		FakePackageRepository aggregateRepository;
+		PackageManagementEvents packageManagementEvents;
 		List<RecentPackageInfo> recentPackages;
 		
 		void CreateRepository()
@@ -34,7 +35,8 @@ namespace PackageManagement.Tests
 		
 		void CreateRepository(IList<RecentPackageInfo> recentPackages)
 		{
-			repository = new RecentPackageRepository(recentPackages, aggregateRepository);
+			packageManagementEvents = new PackageManagementEvents();
+			repository = new RecentPackageRepository(recentPackages, aggregateRepository, packageManagementEvents);
 		}
 		
 		FakePackage AddOnePackageToRepository(string id)
@@ -202,6 +204,23 @@ namespace PackageManagement.Tests
 			
 			var expectedPackages = new FakePackage[] {
 				package1
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, recentPackages);
+		}
+		
+		[Test]
+		public void ParentPackageInstalled_EventFires_PackageAddedToRecentPackages()
+		{
+			CreateRepository();
+			
+			var package = new FakePackage("Test");
+			packageManagementEvents.OnParentPackageInstalled(package);
+			
+			var recentPackages = repository.GetPackages();
+			
+			var expectedPackages = new FakePackage[] {
+				package
 			};
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, recentPackages);

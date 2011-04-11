@@ -70,6 +70,8 @@
     <Compile Include="Src\IPackageManagementEvents.cs" />
     <Compile Include="Src\PackageManagementEvents.cs" />
     <Compile Include="Src\PackageOperationExceptionEventArgs.cs" />
+    <Compile Include="Src\ParentPackageOperationEventArgs.cs" />
+    <Compile Include="Src\ProjectBrowserRefresher.cs" />
     <Compile Include="Src\RegisteredPackageRepositories.cs" />
     <Compile Include="Src\AddPackageReferenceView.xaml.cs">
       <DependentUpon>AddPackageReferenceView.xaml</DependentUpon>
@@ -100,7 +102,6 @@
     <Compile Include="Src\Design\WpfDesigner.cs" />
     <Compile Include="Src\IRegisteredPackageRepositories.cs" />
     <Compile Include="Src\ICompilerMessageView.cs" />
-    <Compile Include="Src\IMessageReporter.cs" />
     <Compile Include="Src\IMessageViewCategory.cs" />
     <Compile Include="Src\InstallPackageAction.cs" />
     <Compile Include="Src\IPackageManagementOutputMessagesView.cs" />

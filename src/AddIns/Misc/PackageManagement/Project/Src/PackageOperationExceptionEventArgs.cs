@@ -5,8 +5,6 @@ using System;
 
 namespace ICSharpCode.PackageManagement
 {
-	public delegate void PackageOperationExceptionEventHandler(object sender, PackageOperationExceptionEventArgs e);
-
 	public class PackageOperationExceptionEventArgs : EventArgs
 	{
 		public PackageOperationExceptionEventArgs(Exception ex)

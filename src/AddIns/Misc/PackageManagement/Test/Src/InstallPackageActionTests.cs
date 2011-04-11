@@ -13,6 +13,7 @@ namespace PackageManagement.Tests
 	public class InstallPackageActionTests
 	{
 		FakePackageManagementService fakePackageManagementService;
+		FakePackageManagementEvents fakePackageManagementEvents;
 		FakePackageManager fakePackageManager;
 		InstallPackageAction action;
 		InstallPackageHelper installPackageHelper;
@@ -20,8 +21,9 @@ namespace PackageManagement.Tests
 		void CreateAction()
 		{
 			fakePackageManagementService = new FakePackageManagementService();
+			fakePackageManagementEvents = new FakePackageManagementEvents();
 			fakePackageManager = fakePackageManagementService.FakePackageManagerToReturnFromCreatePackageManager;
-			action = new InstallPackageAction(fakePackageManagementService);
+			action = new InstallPackageAction(fakePackageManagementService, fakePackageManagementEvents);
 			installPackageHelper = new InstallPackageHelper(action);
 		}
 		
@@ -88,7 +90,7 @@ namespace PackageManagement.Tests
 			installPackageHelper.InstallTestPackage();
 			
 			var expectedPackage = installPackageHelper.TestPackage;
-			var actualPackage = fakePackageManagementService.PackagePassedToOnParentPackageInstalled;
+			var actualPackage = fakePackageManagementEvents.PackagePassedToOnParentPackageInstalled;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}

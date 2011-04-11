@@ -2,12 +2,17 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IMessageReporter
+	public class ParentPackageOperationEventArgs : EventArgs
 	{
-		void ShowErrorMessage(string message);
-		void ClearMessage();
+		public ParentPackageOperationEventArgs(IPackage package)
+		{
+			this.Package = package;
+		}
+		
+		public IPackage Package { get; private set; }
 	}
 }

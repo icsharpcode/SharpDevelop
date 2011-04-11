@@ -148,5 +148,73 @@ namespace PackageManagement.Tests
 			
 			Assert.IsTrue(result);
 		}
+		
+		[Test]
+		public void OnParentPackageInstalled_OneEventSubscriber_EventArgsHasPackage()
+		{
+			CreateEvents();
+			IPackage package = null;
+			events.ParentPackageInstalled += (sender, e) => package = e.Package;
+			
+			var expectedPackage = new FakePackage("Test");
+			events.OnParentPackageInstalled(expectedPackage);
+			
+			Assert.AreEqual(expectedPackage, package);
+		}
+		
+		[Test]
+		public void OnParentPackageInstalled_OneEventSubscriber_SenderIsPackageManagementEvents()
+		{
+			CreateEvents();
+			object eventSender = null;
+			events.ParentPackageInstalled += (sender, e) => eventSender = sender;
+			
+			var package = new FakePackage("Test");
+			events.OnParentPackageInstalled(package);
+			
+			Assert.AreEqual(events, eventSender);
+		}
+		
+		[Test]
+		public void  OnParentPackageInstalled_NoEventSubscribers_NullReferenceExceptionIsNotThrown()
+		{
+			CreateEvents();
+			var package = new FakePackage("Test");
+			Assert.DoesNotThrow(() => events.OnParentPackageInstalled(package));
+		}
+		
+		[Test]
+		public void OnParentPackageUninstalled_OneEventSubscriber_EventArgsHasPackage()
+		{
+			CreateEvents();
+			IPackage package = null;
+			events.ParentPackageUninstalled += (sender, e) => package = e.Package;
+			
+			var expectedPackage = new FakePackage("Test");
+			events.OnParentPackageUninstalled(expectedPackage);
+			
+			Assert.AreEqual(expectedPackage, package);
+		}
+		
+		[Test]
+		public void OnParentPackageUninstalled_OneEventSubscriber_SenderIsPackageManagementEvents()
+		{
+			CreateEvents();
+			object eventSender = null;
+			events.ParentPackageUninstalled += (sender, e) => eventSender = sender;
+			
+			var package = new FakePackage("Test");
+			events.OnParentPackageUninstalled(package);
+			
+			Assert.AreEqual(events, eventSender);
+		}
+		
+		[Test]
+		public void  OnParentPackageUninstalled_NoEventSubscribers_NullReferenceExceptionIsNotThrown()
+		{
+			CreateEvents();
+			var package = new FakePackage("Test");
+			Assert.DoesNotThrow(() => events.OnParentPackageUninstalled(package));
+		}
 	}
 }
