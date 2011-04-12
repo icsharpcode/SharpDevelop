@@ -178,11 +178,12 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			thisObject = thisObject.CastToIList();
 			int listCount = thisObject.GetIListCount();
+			PropertyInfo indexerProp = iListType.GetProperty("Item");
 			
 			for (int i = 0; i < listCount; i++)	{
 				Expression itemExpr = thisObject.AppendIndexer(i);
 				PropertyNode itemNode = new PropertyNode(
-					new ObjectGraphProperty {	Name = "[" + i + "]", Expression = itemExpr, Value = "", IsAtomic = true, TargetNode = null });
+					new ObjectGraphProperty { Name = "[" + i + "]", MemberInfo = indexerProp, Expression = itemExpr, Value = "", IsAtomic = true, TargetNode = null });
 				node.AddChild(itemNode);
 			}
 		}
