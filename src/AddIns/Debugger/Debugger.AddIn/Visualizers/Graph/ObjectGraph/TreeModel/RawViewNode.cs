@@ -6,11 +6,11 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Contains "Non-public members" of a node in the ObjectGraph.
+	/// Contains "Raw view" of collection properties in ObjectGraph.
 	/// </summary>
-	public class NonPublicMembersNode : AbstractNode
+	public class RawViewNode : AbstractNode
 	{
-		public NonPublicMembersNode()
+		public RawViewNode()
 		{
 		}
 	}

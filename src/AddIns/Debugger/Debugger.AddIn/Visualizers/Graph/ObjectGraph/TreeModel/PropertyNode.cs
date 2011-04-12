@@ -7,7 +7,7 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Node containing ObjectGraphProperty.
+	/// Contains ObjectGraphProperty.
 	/// </summary>
 	public class PropertyNode : AbstractNode
 	{

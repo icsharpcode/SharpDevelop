@@ -40,10 +40,8 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		{
 			get
 			{
-				if (this.splinePoints == null)
-				{
-					List<Point2D> sPoints = RouteSpline(this.Points);
-					splinePoints = sPoints.AsReadOnly();
+				if (this.splinePoints == null) {
+					this.splinePoints = RouteSpline(this.Points).AsReadOnly();
 				}
 				return this.splinePoints;
 			}

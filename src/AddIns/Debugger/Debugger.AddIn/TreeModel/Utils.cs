@@ -35,33 +35,6 @@ namespace Debugger.AddIn.TreeModel
 			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => frame.Continue = false));
 			Dispatcher.PushFrame(frame);
 		}
-		
-		/// <summary>
-		/// Evaluates System.Collections.ICollection.Count property on given object.
-		/// </summary>
-		/// <exception cref="GetValueException">Evaluating System.Collections.ICollection.Count on targetObject failed.</exception>
-		public static int GetIListCount(Expression targetObject)
-		{
-			Value list = targetObject.Evaluate(WindowsDebugger.CurrentProcess);
-			var iCollectionInterface = list.Type.GetInterface(typeof(ICollection).FullName);
-			if (iCollectionInterface == null)
-				throw new GetValueException(targetObject, targetObject.PrettyPrint() + " does not implement System.Collections.ICollection");
-			PropertyInfo countProperty = iCollectionInterface.GetProperty("Count");
-			// Do not get string representation since it can be printed in hex
-			return (int)list.GetPropertyValue(countProperty).PrimitiveValue;
-		}
-		
-		/// <summary>
-		/// Prepends a cast to IList before the given Expression.
-		/// </summary>
-		public static Expression CastToIList(this Expression expr)
-		{
-			return new CastExpression(
-				new TypeReference(typeof(IList).FullName),
-				expr.Parenthesize(),
-				CastType.Cast
-			);
-		}
 	}
 	
 	public class AbortedBecauseDebuggeeResumedException: System.Exception

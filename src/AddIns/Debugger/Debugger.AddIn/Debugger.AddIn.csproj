@@ -255,8 +255,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\PropertiesFirstComparer.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\AbstractNode.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\BaseClassNode.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\RawViewNode.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\ThisNode.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\NonPublicMembersNode.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\PropertyNode.cs" />

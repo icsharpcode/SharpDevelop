@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
+using Debugger.AddIn.Visualizers.Utils;
 using ICSharpCode.NRefactory.Ast;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,20 +13,20 @@ namespace Debugger.AddIn.TreeModel
 {
 	public class IListNode : TreeNode
 	{
-		Expression targetObject;
-		int count;
+		Expression targetList;
+		int listCount;
 		
-		public IListNode(Expression targetObject)
+		public IListNode(Expression targetListObject)
 		{
-			this.targetObject = targetObject;
+			this.targetList = targetListObject;
 			
 			this.Name = "IList";
-			this.count = Utils.GetIListCount(this.targetObject);
-			this.ChildNodes = Utils.LazyGetItemsOfIList(this.targetObject);
+			this.listCount = this.targetList.GetIListCount();
+			this.ChildNodes = Utils.LazyGetItemsOfIList(this.targetList);
 		}
 		
 		public override bool HasChildNodes {
-			get { return this.count > 0; }
+			get { return this.listCount > 0; }
 		}
 	}
 }

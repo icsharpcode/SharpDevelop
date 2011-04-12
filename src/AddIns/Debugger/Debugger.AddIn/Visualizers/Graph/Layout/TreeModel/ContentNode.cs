@@ -174,23 +174,23 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
-		private string GetContentNodeName(AbstractNode source)
+		string GetContentNodeName(AbstractNode source)
 		{
 			if (source is ThisNode)	{
 				return "this";
 			}
-			
 			if (source is NonPublicMembersNode)	{
 				return StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicMembers}");
 			}
-			
+			if (source is RawViewNode)	{
+				return StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.RawView}");
+			}
 			var sourceBaseClassNode = source as BaseClassNode;
 			if (sourceBaseClassNode != null) {
 				string baseClassString = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}");
 				return string.Format("{0} ({1})", sourceBaseClassNode.TypeName, baseClassString);
 			}
-
-			throw new ApplicationException("Unknown AbstractNode.");
+			throw new ApplicationException("Unknown AbstractNode: " + source.GetType());
 		}
 	}
 }

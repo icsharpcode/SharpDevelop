@@ -105,7 +105,7 @@ namespace Debugger.AddIn.TreeModel
 			int count = 0;
 			GetValueException error = null;
 			try {
-				count = GetIListCount(targetObject);
+				count = targetObject.GetIListCount();
 			} catch (GetValueException e) {
 				// Cannot yield a value in the body of a catch clause (CS1631)
 				error = e;

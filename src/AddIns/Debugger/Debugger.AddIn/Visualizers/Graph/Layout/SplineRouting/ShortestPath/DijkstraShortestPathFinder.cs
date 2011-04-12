@@ -41,8 +41,9 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 					reached = true;
 				}
 				foreach (var edge in minVertex.Neighbors) {
-					if (minVertex.Distance + edge.Length < edge.EndVertex.Distance) {
-						edge.EndVertex.Distance = minVertex.Distance + edge.Length;
+					double newDist = minVertex.Distance + edge.Length + edge.EndVertex.Penalization;
+					if (newDist < edge.EndVertex.Distance) {
+						edge.EndVertex.Distance = newDist;
 						edge.EndVertex.Predecessor = minVertex;
 					}
 				}
@@ -53,7 +54,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 				if (pathVertex == null)
 					break;
 				path.Add(pathVertex);
-				//pathVertex.IsUsed = true;
+				//pathVertex.Penalization += 16;	// penalize path vertices so that next path tend to choose different vertices
 				pathVertex = pathVertex.Predecessor;
 			}
 			path.Add(start);

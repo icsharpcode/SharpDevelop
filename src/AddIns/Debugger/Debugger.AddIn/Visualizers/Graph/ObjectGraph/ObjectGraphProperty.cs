@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-
 using Debugger.AddIn.Visualizers.Utils;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.NRefactory.Ast;
 
@@ -37,7 +37,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 		public void Evaluate()
 		{
 			if (this.Expression == null) throw new DebuggerVisualizerException("Cannot evaluate property with missing Expression");
-			
 			Value debuggerVal;
 			try {
 				debuggerVal = this.Expression.Evaluate(WindowsDebugger.CurrentProcess);

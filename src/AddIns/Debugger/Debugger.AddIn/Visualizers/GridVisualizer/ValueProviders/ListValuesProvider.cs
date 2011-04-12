@@ -2,13 +2,15 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Debugger.AddIn.Visualizers.Common;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Services;
-using System.Reflection;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
@@ -32,7 +34,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		public int GetCount()
 		{
 			if (this.listCount == null) {
-				this.listCount = Debugger.AddIn.TreeModel.Utils.GetIListCount(this.targetObject);
+				this.listCount = this.targetObject.GetIListCount();
 			}
 			return this.listCount.Value;
 		}

@@ -110,5 +110,31 @@ namespace Debugger.AddIn.Visualizers.Utils
 		{
 			return expr.Evaluate(WindowsDebugger.CurrentProcess).GetPermanentReference();
 		}
+		
+		/// <summary>
+		/// Evaluates System.Collections.ICollection.Count property on given object.
+		/// </summary>
+		/// <exception cref="GetValueException">Evaluating System.Collections.ICollection.Count on targetObject failed.</exception>
+		public static int GetIListCount(this Expression targetObject)
+		{
+			Value list = targetObject.Evaluate(WindowsDebugger.CurrentProcess);
+			var iCollectionType = list.Type.GetInterface(typeof(System.Collections.ICollection).FullName);
+			if (iCollectionType == null)
+				throw new GetValueException(targetObject, targetObject.PrettyPrint() + " does not implement System.Collections.ICollection");
+			// Do not get string representation since it can be printed in hex
+			return (int)list.GetPropertyValue(iCollectionType.GetProperty("Count")).PrimitiveValue;
+		}
+		
+		/// <summary>
+		/// Prepends a cast to IList before the given Expression.
+		/// </summary>
+		public static Expression CastToIList(this Expression expr)
+		{
+			return new CastExpression(
+				new TypeReference(typeof(System.Collections.IList).FullName),
+				expr.Parenthesize(),
+				CastType.Cast
+			);
+		}
 	}
 }
