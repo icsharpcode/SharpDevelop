@@ -204,6 +204,9 @@
       <DependentUpon>VisualizerPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="TreeModel\DebuggerResourceService.cs" />
+    <Compile Include="TreeModel\ICorDebug.cs" />
+    <Compile Include="TreeModel\IEnumerableNode.cs" />
+    <Compile Include="TreeModel\IListNode.cs" />
     <Compile Include="TreeModel\SavedTreeNode.cs" />
     <Compile Include="TreeModel\TreeNode.cs" />
     <Compile Include="Visualizers\Commands\ExpressionVisualizerCommand.cs" />
@@ -218,10 +221,10 @@
     <Compile Include="Visualizers\Common\DebuggerVisualizerException.cs" />
     <Compile Include="Visualizers\Common\IEvaluate.cs" />
     <Compile Include="Visualizers\Common\IListValuesProvider.cs" />
+    <Compile Include="Visualizers\Common\ObjectProperty.cs" />
     <Compile Include="Visualizers\Common\ObjectPropertyComparer.cs" />
     <Compile Include="Visualizers\Common\VirtualizingCollection.cs" />
     <Compile Include="Visualizers\Common\VirtualizingObservableCollection.cs" />
-    <Compile Include="Visualizers\Controls\DragScrollViewer.cs" />
     <Compile Include="Visualizers\Graph\Drawing\BoolToBoldConverter.cs" />
     <Compile Include="Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml.cs">
       <DependentUpon>PositionedGraphNodeControl.xaml</DependentUpon>
@@ -263,7 +266,7 @@
     <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\NonPublicMembersNode.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\PropertyNode.cs" />
     <Compile Include="Visualizers\GridVisualizer\ValueProviders\GridValuesProvider.cs" />
-    <Compile Include="Visualizers\IEnumerableNode.cs" />
+    <Compile Include="Visualizers\PresentationBindings\DragScrollViewer.cs" />
     <Compile Include="Visualizers\PresentationBindings\GridViewColumnHider.cs" />
     <Compile Include="Visualizers\PresentationBindings\GridViewHideableColumn.cs" />
     <Compile Include="Visualizers\PresentationBindings\TooltipVisibilityConverter.cs" />
@@ -333,7 +336,6 @@
     <Compile Include="Visualizers\GridVisualizer\ObjectValue.cs" />
     <Compile Include="Visualizers\GridVisualizer\ValueProviders\EnumerableValuesProvider.cs" />
     <Compile Include="Visualizers\GridVisualizer\ValueProviders\ListValuesProvider.cs" />
-    <Compile Include="Visualizers\ObjectProperty.cs" />
     <Compile Include="Visualizers\Utils\DebuggerHelpers.cs" />
     <Compile Include="Visualizers\Utils\DictionaryExtensions.cs" />
     <Compile Include="Visualizers\Utils\Lookup.cs" />
@@ -341,8 +343,6 @@
     <Compile Include="Visualizers\Graph\ObjectGraphWindow.xaml.cs">
       <DependentUpon>ObjectGraphWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Visualizers\ICorDebug.cs" />
-    <Compile Include="Visualizers\IListNode.cs" />
     <Compile Include="Visualizers\PresentationBindings\DisplayAttribute.cs" />
     <Compile Include="Visualizers\PresentationBindings\EnumViewModel.cs" />
     <Compile Include="Visualizers\PresentationBindings\ViewModelBase.cs" />
@@ -441,7 +441,6 @@
     <Folder Include="Visualizers\Graph\ObjectGraph\TreeModel" />
     <Folder Include="Visualizers\Graph\ObjectGraph" />
     <Folder Include="Visualizers\GridVisualizer\ValueProviders" />
-    <Folder Include="Visualizers\Controls" />
     <Folder Include="Visualizers\Common" />
     <Folder Include="Visualizers\Commands" />
     <Folder Include="Visualizers\TextVisualizer" />

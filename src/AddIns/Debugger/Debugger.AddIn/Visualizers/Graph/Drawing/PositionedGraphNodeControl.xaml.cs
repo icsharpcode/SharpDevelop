@@ -16,7 +16,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Debugger.AddIn.Visualizers.Common;
 using Debugger.AddIn.Visualizers.Graph.Layout;
 
 namespace Debugger.AddIn.Visualizers.Graph.Drawing

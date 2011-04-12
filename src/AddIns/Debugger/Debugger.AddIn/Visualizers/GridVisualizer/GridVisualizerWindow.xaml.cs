@@ -15,7 +15,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using Debugger.AddIn.TreeModel;
-using Debugger.AddIn.Visualizers.Common;
 using Debugger.AddIn.Visualizers.PresentationBindings;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;

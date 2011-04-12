@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-namespace Debugger.AddIn.Visualizers.Common
+namespace Debugger.AddIn.Visualizers
 {
 	/// <summary>
 	/// Proxy wrapping ObservableCollection&lt;IEvaluate&gt;

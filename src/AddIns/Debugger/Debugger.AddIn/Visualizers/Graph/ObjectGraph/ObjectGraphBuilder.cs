@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Debugger.AddIn.TreeModel;
-using Debugger.AddIn.Visualizers.Common;
 using Debugger.AddIn.Visualizers.Graph.Layout;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
