@@ -84,8 +84,8 @@ namespace ICSharpCode.Reports.Core {
 			IndexList childList = null;
 			foreach (BaseComparer element in list)
 			{
-				string v = element.ObjectArray[0].ToString();
-				if (compVal != v) {
+				string groupValue = element.ObjectArray[0].ToString();
+				if (compVal != groupValue) {
 					childList = new IndexList();
 					GroupComparer gc = CreateGroupHeader(element);
 					gc.IndexList = childList;
@@ -93,7 +93,7 @@ namespace ICSharpCode.Reports.Core {
 				} else {
 					CreateGroupedChildren(childList,element);
 				}
-				compVal = v;
+				compVal = groupValue;
 			}
 			//ShowIndexList(IndexList);
 		}

@@ -65,18 +65,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override void BuildReportHeader ()
 		{
 			if ((base.Pages.Count == 0) && (base.ReportModel.ReportHeader.Items.Count > 0)) {
-				
 				var s = base.ReportModel.ReportHeader;
-				Console.WriteLine("name <{0}>",s.Name);
-				Console.WriteLine("start section size {0} sectionoffset {1} offset {2}",s.Size,s.SectionOffset,base.Offset);
 				base.ReportModel.ReportHeader.SectionOffset = base.SinglePage.SectionBounds.ReportHeaderRectangle.Top;
 				ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.ReportHeader,this.dataNavigator.CurrentRow);
-				
 				base.SectionBounds.MeasurePageHeader(base.ReportModel.ReportHeader);
-				
 				base.SinglePage.Items.AddRange(convertedList);
-//				Console.WriteLine("end section size {0} sectionoffset {1} offset {2}",s.Size,s.SectionOffset,base.Offset);
-//				Console.WriteLine();
 			}
 		}
 		
@@ -91,17 +84,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
 			
-//			Console.WriteLine("section after adjustparent {0} new size {1}",base.ReportModel.PageHeader.SectionOffset,ss);
-			
 			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,this.dataNavigator.CurrentRow);
-			
-			Console.WriteLine("end section size {0} sectionoffset {1} offset {2}",s.Size,s.SectionOffset,base.Offset);
+			base.SinglePage.Items.AddRange(convertedList);
 			
 			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
 			
-			base.SinglePage.Items.AddRange(convertedList);
-			
 			Console.WriteLine("aft-section size {0} sectionoffset {1} offset {2}",s.Size,s.SectionOffset,base.Offset);
+			Console.WriteLine("Pageheader {0} - Detailstart {0}",SectionBounds.PageHeaderRectangle,SectionBounds.DetailStart);
 			Console.WriteLine();
 		}
 		
