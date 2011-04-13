@@ -205,9 +205,9 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			return null;
 		}
 		
-		public override object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
+		public override object VisitUsingDeclaration(ImportsStatement usingDeclaration, object data)
 		{
-			foreach (Using u in usingDeclaration.Usings) {
+			foreach (ImportsClause u in usingDeclaration.ImportsClauses) {
 				namespaceDeclarations.Peek().Imports.Add(new CodeNamespaceImport(u.Name));
 			}
 			return null;
@@ -1262,7 +1262,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			return addressOfExpression.Expression.AcceptVisitor(this, data);
 		}
 
-		public override object VisitUsing(Using @using, object data)
+		public override object VisitUsing(ImportsClause @using, object data)
 		{
 			return base.VisitUsing(@using, data);
 		}

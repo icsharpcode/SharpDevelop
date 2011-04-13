@@ -849,7 +849,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return queryExpressionLetClause.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object VisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data) {
+		public virtual object VisitQueryExpressionLetVBClause(QueryExpressionLetClause queryExpressionLetVBClause, object data) {
 			Debug.Assert((queryExpressionLetVBClause != null));
 			Debug.Assert((queryExpressionLetVBClause.Variables != null));
 			foreach (ExpressionRangeVariable o in queryExpressionLetVBClause.Variables) {
@@ -1064,16 +1064,16 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return unaryOperatorExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object VisitUsing(Using @using, object data) {
+		public virtual object VisitUsing(ImportsClause @using, object data) {
 			Debug.Assert((@using != null));
 			Debug.Assert((@using.Alias != null));
 			return @using.Alias.AcceptVisitor(this, data);
 		}
 		
-		public virtual object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data) {
+		public virtual object VisitUsingDeclaration(ImportsStatement usingDeclaration, object data) {
 			Debug.Assert((usingDeclaration != null));
-			Debug.Assert((usingDeclaration.Usings != null));
-			foreach (Using o in usingDeclaration.Usings) {
+			Debug.Assert((usingDeclaration.ImportsClauses != null));
+			foreach (ImportsClause o in usingDeclaration.ImportsClauses) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}

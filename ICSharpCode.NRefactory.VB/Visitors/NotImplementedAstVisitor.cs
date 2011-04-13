@@ -322,7 +322,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			throw new global::System.NotImplementedException("QueryExpressionLetClause");
 		}
 		
-		public virtual object VisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data) {
+		public virtual object VisitQueryExpressionLetVBClause(QueryExpressionLetClause queryExpressionLetVBClause, object data) {
 			throw new global::System.NotImplementedException("QueryExpressionLetVBClause");
 		}
 		
@@ -422,11 +422,11 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			throw new global::System.NotImplementedException("UnaryOperatorExpression");
 		}
 		
-		public virtual object VisitUsing(Using @using, object data) {
+		public virtual object VisitUsing(ImportsClause @using, object data) {
 			throw new global::System.NotImplementedException("Using");
 		}
 		
-		public virtual object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data) {
+		public virtual object VisitUsingDeclaration(ImportsStatement usingDeclaration, object data) {
 			throw new global::System.NotImplementedException("UsingDeclaration");
 		}
 		

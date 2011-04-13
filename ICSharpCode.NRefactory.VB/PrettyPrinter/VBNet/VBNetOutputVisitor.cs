@@ -230,26 +230,26 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 			return null;
 		}
 		
-		public override object TrackedVisitUsing(Using @using, object data)
+		public override object TrackedVisitUsing(ImportsClause @using, object data)
 		{
 			Debug.Fail("Should never be called. The usings should be handled in Visit(UsingDeclaration)");
 			return null;
 		}
 		
-		public override object TrackedVisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
+		public override object TrackedVisitUsingDeclaration(ImportsStatement usingDeclaration, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Imports);
 			outputFormatter.Space();
-			for (int i = 0; i < usingDeclaration.Usings.Count; ++i) {
-				outputFormatter.PrintIdentifier(((Using)usingDeclaration.Usings[i]).Name);
-				if (((Using)usingDeclaration.Usings[i]).IsAlias) {
+			for (int i = 0; i < usingDeclaration.ImportsClauses.Count; ++i) {
+				outputFormatter.PrintIdentifier(((ImportsClause)usingDeclaration.ImportsClauses[i]).Name);
+				if (((ImportsClause)usingDeclaration.ImportsClauses[i]).IsAlias) {
 					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.Assign);
 					outputFormatter.Space();
-					TrackedVisit(((Using)usingDeclaration.Usings[i]).Alias, data);
+					TrackedVisit(((ImportsClause)usingDeclaration.ImportsClauses[i]).Alias, data);
 				}
-				if (i + 1 < usingDeclaration.Usings.Count) {
+				if (i + 1 < usingDeclaration.ImportsClauses.Count) {
 					outputFormatter.PrintToken(Tokens.Comma);
 					outputFormatter.Space();
 				}

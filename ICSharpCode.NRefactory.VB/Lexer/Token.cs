@@ -5,18 +5,6 @@ using System;
 
 namespace ICSharpCode.NRefactory.VB.Parser
 {
-	public enum LiteralFormat : byte
-	{
-		None,
-		DecimalNumber,
-		HexadecimalNumber,
-		OctalNumber,
-		StringLiteral,
-		VerbatimStringLiteral,
-		CharLiteral,
-		DateTimeLiteral
-	}
-	
 	public class Token
 	{
 		internal readonly int kind;

@@ -1542,16 +1542,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return null;
 		}
 		
-		public virtual object VisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data) {
-			Debug.Assert((queryExpressionLetClause != null));
-			Debug.Assert((queryExpressionLetClause.Expression != null));
-			nodeStack.Push(queryExpressionLetClause.Expression);
-			queryExpressionLetClause.Expression.AcceptVisitor(this, data);
-			queryExpressionLetClause.Expression = ((Expression)(nodeStack.Pop()));
-			return null;
-		}
-		
-		public virtual object VisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data) {
+		public virtual object VisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetVBClause, object data) {
 			Debug.Assert((queryExpressionLetVBClause != null));
 			Debug.Assert((queryExpressionLetVBClause.Variables != null));
 			for (int i = 0; i < queryExpressionLetVBClause.Variables.Count; i++) {
@@ -1930,7 +1921,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return null;
 		}
 		
-		public virtual object VisitUsing(Using @using, object data) {
+		public virtual object VisitUsing(ImportsClause @using, object data) {
 			Debug.Assert((@using != null));
 			Debug.Assert((@using.Alias != null));
 			nodeStack.Push(@using.Alias);
@@ -1939,19 +1930,19 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return null;
 		}
 		
-		public virtual object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data) {
+		public virtual object VisitUsingDeclaration(ImportsStatement usingDeclaration, object data) {
 			Debug.Assert((usingDeclaration != null));
-			Debug.Assert((usingDeclaration.Usings != null));
-			for (int i = 0; i < usingDeclaration.Usings.Count; i++) {
-				Using o = usingDeclaration.Usings[i];
+			Debug.Assert((usingDeclaration.ImportsClauses != null));
+			for (int i = 0; i < usingDeclaration.ImportsClauses.Count; i++) {
+				ImportsClause o = usingDeclaration.ImportsClauses[i];
 				Debug.Assert(o != null);
 				nodeStack.Push(o);
 				o.AcceptVisitor(this, data);
-				o = (Using)nodeStack.Pop();
+				o = (ImportsClause)nodeStack.Pop();
 				if (o == null)
-					usingDeclaration.Usings.RemoveAt(i--);
+					usingDeclaration.ImportsClauses.RemoveAt(i--);
 				else
-					usingDeclaration.Usings[i] = o;
+					usingDeclaration.ImportsClauses[i] = o;
 			}
 			return null;
 		}

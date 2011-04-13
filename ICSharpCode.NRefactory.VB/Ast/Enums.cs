@@ -359,20 +359,6 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		Ansi
 	}
 	
-	///<summary>
-	/// Compare type, used in the <c>Option Compare</c>
-	/// pragma (VB only).
-	///</summary>
-	public enum OptionType
-	{
-		None,
-		Explicit,
-		Strict,
-		CompareBinary,
-		CompareText,
-		Infer
-	}
-	
 	/// <summary>
 	/// Specifies the ordering direction of a QueryExpressionOrdering node.
 	/// </summary>

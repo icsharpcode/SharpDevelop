@@ -170,11 +170,11 @@ partial class VBParser
 	}
 
 	void ImportsStmt() {
-		List<Using> usings = new List<Using>();
+		List<ImportsClause> usings = new List<ImportsClause>();
 
 		Expect(137);
 		Location startPos = t.Location;
-			Using u;
+			ImportsClause u;
 
 		ImportClause(out u);
 		if (u != null) { usings.Add(u); }
@@ -184,7 +184,7 @@ partial class VBParser
 			if (u != null) { usings.Add(u); }
 		}
 		EndOfStmt();
-		UsingDeclaration usingDeclaration = new UsingDeclaration(usings);
+		ImportsStatement usingDeclaration = new ImportsStatement(usings);
 			usingDeclaration.StartLocation = startPos;
 			usingDeclaration.EndLocation   = t.Location;
 			AddChild(usingDeclaration);
@@ -277,7 +277,7 @@ partial class VBParser
 		} else SynErr(246);
 	}
 
-	void ImportClause(out Using u) {
+	void ImportClause(out ImportsClause u) {
 		string qualident  = null;
 		TypeReference aliasedType = null;
 		u = null;
@@ -290,9 +290,9 @@ partial class VBParser
 			}
 			if (qualident != null && qualident.Length > 0) {
 					if (aliasedType != null) {
-						u = new Using(qualident, aliasedType);
+						u = new ImportsClause(qualident, aliasedType);
 					} else {
-						u = new Using(qualident);
+						u = new ImportsClause(qualident);
 					}
 				}
 
@@ -303,7 +303,7 @@ partial class VBParser
 			prefix = t.val;
 			Expect(20);
 			Expect(3);
-			u = new Using(t.literalValue as string, prefix);
+			u = new ImportsClause(t.literalValue as string, prefix);
 			Expect(11);
 		} else SynErr(247);
 	}
@@ -3953,7 +3953,7 @@ partial class VBParser
 	}
 
 	void LetQueryOperator(List<QueryExpressionClause> middleClauses) {
-		QueryExpressionLetVBClause letClause = new QueryExpressionLetVBClause();
+		QueryExpressionLetClause letClause = new QueryExpressionLetClause();
 		letClause.StartLocation = la.Location;
 
 		Expect(148);

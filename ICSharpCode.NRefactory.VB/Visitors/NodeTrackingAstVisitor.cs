@@ -563,7 +563,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data) {
+		public sealed override object VisitQueryExpressionLetVBClause(QueryExpressionLetClause queryExpressionLetVBClause, object data) {
 			this.BeginVisit(queryExpressionLetVBClause);
 			object result = this.TrackedVisitQueryExpressionLetVBClause(queryExpressionLetVBClause, data);
 			this.EndVisit(queryExpressionLetVBClause);
@@ -738,14 +738,14 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitUsing(Using @using, object data) {
+		public sealed override object VisitUsing(ImportsClause @using, object data) {
 			this.BeginVisit(@using);
 			object result = this.TrackedVisitUsing(@using, data);
 			this.EndVisit(@using);
 			return result;
 		}
 		
-		public sealed override object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data) {
+		public sealed override object VisitUsingDeclaration(ImportsStatement usingDeclaration, object data) {
 			this.BeginVisit(usingDeclaration);
 			object result = this.TrackedVisitUsingDeclaration(usingDeclaration, data);
 			this.EndVisit(usingDeclaration);
@@ -1119,7 +1119,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return base.VisitQueryExpressionLetClause(queryExpressionLetClause, data);
 		}
 		
-		public virtual object TrackedVisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data) {
+		public virtual object TrackedVisitQueryExpressionLetVBClause(QueryExpressionLetClause queryExpressionLetVBClause, object data) {
 			return base.VisitQueryExpressionLetVBClause(queryExpressionLetVBClause, data);
 		}
 		
@@ -1219,11 +1219,11 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return base.VisitUnaryOperatorExpression(unaryOperatorExpression, data);
 		}
 		
-		public virtual object TrackedVisitUsing(Using @using, object data) {
+		public virtual object TrackedVisitUsing(ImportsClause @using, object data) {
 			return base.VisitUsing(@using, data);
 		}
 		
-		public virtual object TrackedVisitUsingDeclaration(UsingDeclaration usingDeclaration, object data) {
+		public virtual object TrackedVisitUsingDeclaration(ImportsStatement usingDeclaration, object data) {
 			return base.VisitUsingDeclaration(usingDeclaration, data);
 		}
 		
