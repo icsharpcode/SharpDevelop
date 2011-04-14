@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -46,6 +47,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public CSharpTokenNode RParToken {
 			get { return GetChildByRole (Roles.RPar); }
+		}
+		
+		public AnonymousTypeCreateExpression ()
+		{
+		}
+		
+		public AnonymousTypeCreateExpression (IEnumerable<Expression> initializer)
+		{
+			foreach (var ini in initializer) {
+				AddChild (ini, Roles.Expression);
+			}
+		}
+		
+		public AnonymousTypeCreateExpression (params Expression[] initializer) : this ((IEnumerable<Expression>)initializer)
+		{
 		}
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
