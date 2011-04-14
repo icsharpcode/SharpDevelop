@@ -1687,7 +1687,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			public override object Visit (TypeExpression typeExpression)
 			{
-				return new IdentifierExpression (keywordTable [(int)typeExpression.Type.BuiltinType], Convert (typeExpression.Location));
+				return new TypeReferenceExpression (new PrimitiveType (keywordTable [(int)typeExpression.Type.BuiltinType], Convert (typeExpression.Location)));
 			}
 
 			public override object Visit (LocalVariableReference localVariableReference)
