@@ -521,12 +521,24 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			FixIndentationForceNewLine (fieldDeclaration.StartLocation);
 			FormatCommas (fieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
-			if (fieldDeclaration.NextSibling is FieldDeclaration) {
+			if (fieldDeclaration.NextSibling is FieldDeclaration || fieldDeclaration.NextSibling is FixedFieldDeclaration) {
 				EnsureBlankLinesAfter (fieldDeclaration, policy.BlankLinesBetweenFields);
 			} else if (IsMember (fieldDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter (fieldDeclaration, policy.BlankLinesBetweenMembers);
 			}
 			return base.VisitFieldDeclaration (fieldDeclaration, data);
+		}
+		
+		public override object VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration, object data)
+		{
+			FixIndentationForceNewLine (fixedFieldDeclaration.StartLocation);
+			FormatCommas (fixedFieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
+			if (fixedFieldDeclaration.NextSibling is FieldDeclaration || fixedFieldDeclaration.NextSibling is FixedFieldDeclaration ) {
+				EnsureBlankLinesAfter (fixedFieldDeclaration, policy.BlankLinesBetweenFields);
+			} else if (IsMember (fixedFieldDeclaration.NextSibling)) {
+				EnsureBlankLinesAfter (fixedFieldDeclaration, policy.BlankLinesBetweenMembers);
+			}
+			return base.VisitFixedFieldDeclaration (fixedFieldDeclaration, data);
 		}
 
 		public override object VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, object data)
