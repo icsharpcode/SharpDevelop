@@ -35,8 +35,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		private static void AdjustParentInternal (ReportItemCollection items,ISimpleContainer parent)
-		
-		//private static void AdjustParentInternal (ReportItemCollection items,BaseReportItem parent)
 		{
 			foreach(BaseReportItem item in items) {
 				item.Parent = parent as BaseReportItem;

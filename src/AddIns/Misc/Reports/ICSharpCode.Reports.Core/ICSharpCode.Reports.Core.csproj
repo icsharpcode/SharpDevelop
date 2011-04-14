@@ -213,6 +213,7 @@
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\UnaryOperator.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\UserId.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\UserLanguage.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Substring.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Today.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ToString.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\UnknownFunction.cs" />

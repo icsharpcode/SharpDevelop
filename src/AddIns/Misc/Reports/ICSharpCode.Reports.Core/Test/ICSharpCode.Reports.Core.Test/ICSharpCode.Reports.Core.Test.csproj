@@ -96,6 +96,7 @@
     <Compile Include="ReportingLanguage\IntegrationTests\FieldReferenceFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\GlobalFunctions.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\SimpleCompilerFixture.cs" />
+    <Compile Include="ReportingLanguage\IntegrationTests\SubstringFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\UserFunctionsFixture.cs" />
     <Compile Include="ReportingLanguage\LanguageTests\AggregateFunctionsFixture.cs" />
     <Compile Include="ReportingLanguage\LanguageTests\ConditionalFixture.cs" />
