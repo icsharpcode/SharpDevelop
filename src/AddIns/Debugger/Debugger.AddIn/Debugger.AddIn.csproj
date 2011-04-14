@@ -408,6 +408,7 @@
     <Page Include="Visualizers\Graph\Drawing\NodeControlResources.xaml" />
     <Page Include="Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml" />
     <Page Include="Visualizers\Graph\ObjectGraphControl.xaml" />
+    <Page Include="Visualizers\GridVisualizer\ColumnPicker.xaml" />
     <Page Include="Visualizers\GridVisualizer\GridVisualizerWindow.xaml" />
     <Page Include="Visualizers\TextVisualizer\TextVisualizerWindow.xaml" />
     <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
