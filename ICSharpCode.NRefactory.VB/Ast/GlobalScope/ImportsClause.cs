@@ -7,66 +7,93 @@ namespace ICSharpCode.NRefactory.VB.Ast
 {
 	public abstract class ImportsClause : AstNode
 	{
+		public static readonly ImportsClause Null = new NullImportsClause();
 		
+		public static readonly Role<ImportsClause> ImportsClauseRole = new Role<ImportsClause>("ImportsClause", Null);
+		
+		class NullImportsClause : ImportsClause
+		{
+			public override bool IsNull {
+				get { return true; }
+			}
+			
+			protected internal override bool DoMatch(AstNode other, ICSharpCode.NRefactory.PatternMatching.Match match)
+			{
+				return other != null && other.IsNull;
+			}
+			
+			public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
+			{
+				return default(S);
+			}
+		}
 	}
 	
 	public class AliasImportsClause : ImportsClause
 	{
-		string name;
+		public Identifier Name { get; set; }
 		
-		TypeReference alias;
+		AstType alias;
 		
-
-		
-		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = string.IsNullOrEmpty(value) ? "?" : value;
-			}
+		public AstType Alias {
+			get { return alias; }
+			set { alias = value ?? AstType.Null; }
 		}
 		
-		public TypeReference Alias {
-			get {
-				return alias;
-			}
-			set {
-				alias = value ?? TypeReference.Null;
-				if (!alias.IsNull) alias.Parent = this;
-			}
-		}
-		
-
-		
-		public AliasImportsClause(string name) {
+		public AliasImportsClause(Identifier name) {
 			Name = name;
-			alias = TypeReference.Null;
+			alias = AstType.Null;
 		}
 		
-		public AliasImportsClause(string name, TypeReference alias) {
+		public AliasImportsClause(Identifier name, AstType alias) {
 			Name = name;
 			Alias = alias;
 		}
 		
-		public bool IsAlias {
-			get {
-				return !alias.IsNull;
-			}
+		protected internal override bool DoMatch(AstNode other, ICSharpCode.NRefactory.PatternMatching.Match match)
+		{
+			var clause = other as AliasImportsClause;
+			return clause != null
+				&& Name.DoMatch(clause.Name, match)
+				&& alias.DoMatch(clause.Alias, match);
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitImportsClause(this, data);
+		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitAliasImportsClause(this, data);
 		}
 		
 		public override string ToString() {
-			return string.Format("[ImportsClause Name={0} Alias={1} XmlPrefix={2}]", Name, Alias, XmlPrefix);
+			return string.Format("[AliasImportsClause Name={0} Alias={1}]", Name, Alias);
 		}
 	}
 	
 	public class MemberImportsClause : ImportsClause
 	{
+		public AstType NamespaceOrType { get; set; }
 		
+		public MemberImportsClause(AstType namespaceOrType)
+		{
+			this.NamespaceOrType = namespaceOrType;
+		}
+		
+		protected internal override bool DoMatch(AstNode other, ICSharpCode.NRefactory.PatternMatching.Match match)
+		{
+			var node = other as MemberImportsClause;
+			return node != null
+				&& NamespaceOrType.DoMatch(node.NamespaceOrType, match);
+		}
+		
+		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitMembersImportsClause(this, data);
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[MemberImportsClause NamespaceOrType={0}]", NamespaceOrType);
+		}
+
 	}
 	
 	public class XmlNamespaceImportsClause : ImportsClause

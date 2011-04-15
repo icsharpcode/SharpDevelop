@@ -46,23 +46,28 @@
     <Compile Include="Ast\AstLocation.cs" />
     <Compile Include="Ast\AstNode.cs" />
     <Compile Include="Ast\AstNodeCollection.cs" />
-    <Compile Include="Ast\AstType.cs" />
     <Compile Include="Ast\Enums.cs" />
     <Compile Include="Ast\Expressions\Expression.cs" />
-    <Compile Include="Ast\Expressions\IdentifierExpression.cs" />
+    <Compile Include="Ast\Expressions\SimpleNameExpression.cs" />
     <Compile Include="Ast\Expressions\PrimitiveExpression.cs" />
-    <Compile Include="Ast\General\BlockStatement.cs" />
+    <Compile Include="Ast\General\Attribute.cs" />
+    <Compile Include="Ast\General\AttributeBlock.cs" />
     <Compile Include="Ast\General\CompilationUnit.cs" />
-    <Compile Include="Ast\General\LocalVariableDeclaration.cs" />
-    <Compile Include="Ast\General\Statement.cs" />
     <Compile Include="Ast\Generated.cs" />
     <Compile Include="Ast\GlobalScope\ImportsClause.cs" />
     <Compile Include="Ast\GlobalScope\ImportsStatement.cs" />
+    <Compile Include="Ast\GlobalScope\ModuleDeclaration.cs" />
     <Compile Include="Ast\GlobalScope\OptionStatement.cs" />
     <Compile Include="Ast\Identifier.cs" />
     <Compile Include="Ast\INullable.cs" />
+    <Compile Include="Ast\Statements\BlockStatement.cs" />
+    <Compile Include="Ast\Statements\Statement.cs" />
+    <Compile Include="Ast\TypeName\AstType.cs" />
+    <Compile Include="Ast\TypeName\ComposedType.cs" />
+    <Compile Include="Ast\TypeName\PrimitiveType.cs" />
+    <Compile Include="Ast\TypeName\SimpleType.cs" />
+    <Compile Include="Ast\VBModifierToken.cs" />
     <Compile Include="Ast\VBTokenNode.cs" />
-    <Compile Include="EnvironmentInformationProvider.cs" />
     <Compile Include="IAstVisitor.cs" />
     <Compile Include="Lexer\Block.cs" />
     <Compile Include="Lexer\ExpressionFinder.cs" />
@@ -87,11 +92,7 @@
     <Compile Include="Lexer\Tokens.cs" />
     <Compile Include="Lexer\VBLexerMemento.cs" />
     <Compile Include="Lexer\XmlModeInfo.cs" />
-    <Compile Include="Location.cs" />
-    <Compile Include="OperatorPrecedence.cs" />
-    <Compile Include="ParserFactory.cs" />
     <Compile Include="Parser\Errors.cs" />
-    <Compile Include="Parser\ModifierList.cs" />
     <Compile Include="Parser\ParamModifierList.cs" />
     <Compile Include="Parser\Parser.cs">
       <DependentUpon>vb.atg</DependentUpon>
@@ -108,15 +109,7 @@
     <Compile Include="SnippetParser.cs" />
     <Compile Include="Visitors\AbstractAstTransformer.cs" />
     <Compile Include="Visitors\AbstractAstVisitor.cs" />
-    <Compile Include="Visitors\CodeDOMOutputVisitor.cs" />
-    <Compile Include="Visitors\CodeDOMVerboseOutputGenerator.cs" />
-    <Compile Include="Visitors\LookupTableVisitor.cs" />
     <Compile Include="Visitors\NodeTrackingAstVisitor.cs" />
-    <Compile Include="Visitors\NotImplementedAstVisitor.cs" />
-    <Compile Include="Visitors\PrefixFieldsVisitor.cs" />
-    <Compile Include="Visitors\RenameIdentifierVisitor.cs" />
-    <Compile Include="Visitors\SetParentVisitor.cs" />
-    <Compile Include="Visitors\SetRegionInclusionVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Ast" />
@@ -124,6 +117,8 @@
     <Folder Include="Ast\General" />
     <Folder Include="Ast\GlobalScope" />
     <Folder Include="Ast\Expressions" />
+    <Folder Include="Ast\Statements" />
+    <Folder Include="Ast\TypeName" />
     <Folder Include="Lexer" />
     <Folder Include="Lexer\Special" />
     <Folder Include="Parser" />

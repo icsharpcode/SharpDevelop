@@ -25,7 +25,7 @@ Public Structure MyUnion
 End Structure 'MyUnion
 ";
 			TypeDeclaration decl = ParseUtil.ParseGlobal<TypeDeclaration>(program);
-			Assert.AreEqual("StructLayout", decl.Attributes[0].Attributes[0].Name);
+			Assert.AreEqual("StructLayout", decl.Attributes[0].Attributes[0].Type);
 		}
 		
 		[Test]
@@ -41,7 +41,7 @@ Public Module MyExtra
 End Module
 ";
 			TypeDeclaration decl = ParseUtil.ParseGlobal<TypeDeclaration>(program);
-			Assert.AreEqual("HideModule", decl.Attributes[0].Attributes[0].Name);
+			Assert.AreEqual("HideModule", decl.Attributes[0].Attributes[0].Type);
 		}
 		
 		[Test]
@@ -52,7 +52,7 @@ Public Class Form1
 	
 End Class";
 			TypeDeclaration decl = ParseUtil.ParseGlobal<TypeDeclaration>(program);
-			Assert.AreEqual("Microsoft.VisualBasic.CompilerServices.DesignerGenerated", decl.Attributes[0].Attributes[0].Name);
+			Assert.AreEqual("Microsoft.VisualBasic.CompilerServices.DesignerGenerated", decl.Attributes[0].Attributes[0].Type);
 		}
 		
 		[Test]

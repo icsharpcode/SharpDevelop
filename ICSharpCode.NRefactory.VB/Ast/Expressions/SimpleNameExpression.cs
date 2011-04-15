@@ -8,31 +8,20 @@ namespace ICSharpCode.NRefactory.VB.Ast
 	/// <summary>
 	/// Description of IdentifierExpression.
 	/// </summary>
-	public class IdentifierExpression : Expression
+	public class SimpleNameExpression : Expression
 	{
-		public string Identifier { get; set; }
-		
-		public bool IsEscaped { get; set; }
-		
-		public bool IsKeyword { get; set; }
-		
-		public TypeCode TypeCharacter { get; set; }
-		
-
+		public Identifier Identifier { get; set; }
 		
 		protected internal override bool DoMatch(AstNode other, ICSharpCode.NRefactory.PatternMatching.Match match)
 		{
-			var node = other as IdentifierExpression;
+			var node = other as SimpleNameExpression;
 			return node != null
-				&& node.Identifier == Identifier
-				&& node.IsEscaped == IsEscaped
-				&& node.IsKeyword == IsKeyword
-				&& node.TypeCharacter == TypeCharacter;
+				&& Identifier.DoMatch(node.Identifier, match);
 		}
 		
 		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitIdentifierExpression(this, data);
+			return visitor.VisitSimpleNameExpression(this, data);
 		}
 	}
 }

@@ -3,19 +3,33 @@
 
 using System;
 using ICSharpCode.NRefactory.VB.Ast;
+using Attribute = ICSharpCode.NRefactory.VB.Ast.Attribute;
 
 namespace ICSharpCode.NRefactory.VB {
 	public interface IAstVisitor<in T, out S> {
+		S VisitPatternPlaceholder(AstNode placeholder, PatternMatching.Pattern pattern, T data);
+		S VisitVBTokenNode(VBTokenNode vBTokenNode, T data);
+		S VisitCompilationUnit(CompilationUnit compilationUnit, T data);
+		S VisitBlockStatement(BlockStatement blockStatement, T data);
+		
 		// Global scope
 		S VisitOptionStatement(OptionStatement optionStatement, T data);
 		S VisitImportsStatement(ImportsStatement importsStatement, T data);
 		S VisitAliasImportsClause(AliasImportsClause aliasImportsClause, T data);
 		S VisitMembersImportsClause(MemberImportsClause membersImportsClause, T data);
 		S VisitXmlNamespaceImportsClause(XmlNamespaceImportsClause xmlNamespaceImportsClause, T data);
+		S VisitAttribute(Attribute attribute, T data);
+		S VisitAttributeBlock(AttributeBlock attributeBlock, T data);
 		
 		// Expression scope
 		S VisitIdentifier(Identifier identifier, T data);
-		S VisitIdentifierExpression(IdentifierExpression identifierExpression, T data);
+		S VisitSimpleNameExpression(SimpleNameExpression identifierExpression, T data);
 		S VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, T data);
+		
+		// TypeName
+		S VisitPrimitiveType(PrimitiveType primitiveType, T data);
+		S VisitComposedType(ComposedType composedType, T data);
+		S VisitArraySpecifier(ArraySpecifier arraySpecifier, T data);
+		S VisitSimpleType(SimpleType simpleType, T data);
 	}
 }

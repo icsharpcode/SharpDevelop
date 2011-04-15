@@ -20,20 +20,20 @@ namespace ICSharpCode.NRefactory.VB.Tests.Ast
 			BinaryOperatorExpression boe;
 			boe = ParseUtil.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(weakOperatorType, boe.Op);
-			Assert.IsTrue(boe.Left is IdentifierExpression);
+			Assert.IsTrue(boe.Left is SimpleNameExpression);
 			boe = (BinaryOperatorExpression)boe.Right;
 			Assert.AreEqual(strongOperatorType, boe.Op);
-			Assert.IsTrue(boe.Left is IdentifierExpression);
-			Assert.IsTrue(boe.Right is IdentifierExpression);
+			Assert.IsTrue(boe.Left is SimpleNameExpression);
+			Assert.IsTrue(boe.Right is SimpleNameExpression);
 			
 			program = "a " + strongOperator + " b " + weakOperator + " c";
 			boe = ParseUtil.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(weakOperatorType, boe.Op);
-			Assert.IsTrue(boe.Right is IdentifierExpression);
+			Assert.IsTrue(boe.Right is SimpleNameExpression);
 			boe = (BinaryOperatorExpression)boe.Left;
 			Assert.AreEqual(strongOperatorType, boe.Op);
-			Assert.IsTrue(boe.Left is IdentifierExpression);
-			Assert.IsTrue(boe.Right is IdentifierExpression);
+			Assert.IsTrue(boe.Left is SimpleNameExpression);
+			Assert.IsTrue(boe.Right is SimpleNameExpression);
 		}
 		
 		void SameOperatorPrecedenceTest(string firstOperator, BinaryOperatorType firstOperatorType,
@@ -43,20 +43,20 @@ namespace ICSharpCode.NRefactory.VB.Tests.Ast
 			BinaryOperatorExpression boe;
 			boe = ParseUtil.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(firstOperatorType, boe.Op);
-			Assert.IsTrue(boe.Right is IdentifierExpression);
+			Assert.IsTrue(boe.Right is SimpleNameExpression);
 			boe = (BinaryOperatorExpression)boe.Left;
 			Assert.AreEqual(secondOperatorType, boe.Op);
-			Assert.IsTrue(boe.Left is IdentifierExpression);
-			Assert.IsTrue(boe.Right is IdentifierExpression);
+			Assert.IsTrue(boe.Left is SimpleNameExpression);
+			Assert.IsTrue(boe.Right is SimpleNameExpression);
 			
 			program = "a " + firstOperator + " b " + secondOperator + " c";
 			boe = ParseUtil.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(secondOperatorType, boe.Op);
-			Assert.IsTrue(boe.Right is IdentifierExpression);
+			Assert.IsTrue(boe.Right is SimpleNameExpression);
 			boe = (BinaryOperatorExpression)boe.Left;
 			Assert.AreEqual(firstOperatorType, boe.Op);
-			Assert.IsTrue(boe.Left is IdentifierExpression);
-			Assert.IsTrue(boe.Right is IdentifierExpression);
+			Assert.IsTrue(boe.Left is SimpleNameExpression);
+			Assert.IsTrue(boe.Right is SimpleNameExpression);
 		}
 		
 		#region VB.NET
@@ -65,8 +65,8 @@ namespace ICSharpCode.NRefactory.VB.Tests.Ast
 			BinaryOperatorExpression boe = ParseUtil.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(op, boe.Op);
 			
-			Assert.IsTrue(boe.Left is IdentifierExpression);
-			Assert.IsTrue(boe.Right is IdentifierExpression);
+			Assert.IsTrue(boe.Left is SimpleNameExpression);
+			Assert.IsTrue(boe.Right is SimpleNameExpression);
 		}
 		
 		[Test]
@@ -251,7 +251,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Ast
 		{
 			BinaryOperatorExpression boe = ParseUtil.ParseExpression<BinaryOperatorExpression>("a!b");
 			Assert.AreEqual(BinaryOperatorType.DictionaryAccess, boe.Op);
-			Assert.IsTrue(boe.Left is IdentifierExpression);
+			Assert.IsTrue(boe.Left is SimpleNameExpression);
 			Assert.IsTrue(boe.Right is PrimitiveExpression);
 		}
 		
@@ -290,7 +290,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Ast
 			Assert.AreEqual("2", AddInteger<PrimitiveExpression>("1", 1));
 			Assert.AreEqual("-1", AddInteger<PrimitiveExpression>("1", -2));
 			Assert.AreEqual("0", AddInteger<PrimitiveExpression>("1", -1));
-			Assert.AreEqual("a + 1", AddInteger<IdentifierExpression>("a", 1));
+			Assert.AreEqual("a + 1", AddInteger<SimpleNameExpression>("a", 1));
 		}
 		
 		[Test]
@@ -303,7 +303,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Ast
 			Assert.AreEqual("a + b + c", AddIntegerToBoe("a + b + c + 2", -2));
 			Assert.AreEqual("a", AddIntegerToBoe("a - 1", 1));
 			Assert.AreEqual("a + 1", AddIntegerToBoe("a - 2", 3));
-			Assert.AreEqual("a - 1", AddInteger<IdentifierExpression>("a", -1));
+			Assert.AreEqual("a - 1", AddInteger<SimpleNameExpression>("a", -1));
 		}
 		#endregion
 	}

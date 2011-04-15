@@ -40,12 +40,6 @@ namespace ICSharpCode.NRefactory.VB.Ast
 			}
 		}
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Token;
-			}
-		}
-		
 		AstLocation startLocation;
 		public override AstLocation StartLocation {
 			get {
@@ -68,7 +62,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitCSharpTokenNode (this, data);
+			return visitor.VisitVBTokenNode(this, data);
 		}
 		
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)

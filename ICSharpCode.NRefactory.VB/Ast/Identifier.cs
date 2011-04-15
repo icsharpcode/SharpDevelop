@@ -6,7 +6,7 @@ using System;
 namespace ICSharpCode.NRefactory.VB.Ast
 {
 	/// <summary>
-	/// Description of Identifier.
+	/// Represents an identifier in VB.
 	/// </summary>
 	public class Identifier : AstNode
 	{
@@ -75,12 +75,23 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		
 		protected internal override bool DoMatch(AstNode other, ICSharpCode.NRefactory.PatternMatching.Match match)
 		{
-			throw new NotImplementedException();
+			var node = other as Identifier;
+			return node != null
+				&& MatchString(node.name, name)
+				&& node.IsEscaped == IsEscaped
+				&& node.IsKeyword == IsKeyword
+				&& node.TypeCharacter == TypeCharacter;
 		}
 		
 		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
 		{
-			throw new NotImplementedException();
+			return visitor.VisitIdentifier(this, data);
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[Identifier Name={0}, StartLocation={1}, IsEscaped={2}, IsKeyword={3}, TypeCharacter{4}]",
+			                     name, startLocation, IsEscaped, IsKeyword, TypeCharacter);
 		}
 	}
 }

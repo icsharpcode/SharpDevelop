@@ -30,8 +30,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-
 using ICSharpCode.NRefactory.PatternMatching;
+using ICSharpCode.NRefactory.VB.Ast;
 
 namespace ICSharpCode.NRefactory.VB
 {
@@ -586,7 +586,7 @@ namespace ICSharpCode.NRefactory.VB
 		#region Pattern Matching
 		protected static bool MatchString(string name1, string name2)
 		{
-			return string.IsNullOrEmpty(name1) || name1 == name2;
+			return string.IsNullOrEmpty(name1) || string.Equals(name1, name2, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		protected internal abstract bool DoMatch(AstNode other, PatternMatching.Match match);
@@ -631,8 +631,8 @@ namespace ICSharpCode.NRefactory.VB
 			return null;
 		}
 		
-		// filters all non c# nodes (comments, white spaces or pre processor directives)
-		public AstNode GetCSharpNodeBefore (AstNode node)
+		// filters all non VB nodes (comments, white spaces or pre processor directives)
+		public AstNode GetVBNodeBefore (AstNode node)
 		{
 			var n = node.PrevSibling;
 			while (n != null) {
@@ -654,42 +654,47 @@ namespace ICSharpCode.NRefactory.VB
 			public static readonly Role<AstNode> Root = RootRole;
 			
 			// some pre defined constants for common roles
-//			public static readonly Role<Identifier> Identifier = new Role<Identifier>("Identifier", CSharp.Identifier.Null);
-//			
+			public static readonly Role<Identifier> Identifier = new Role<Identifier>("Identifier", Ast.Identifier.Null);
+			
 //			public static readonly Role<BlockStatement> Body = new Role<BlockStatement>("Body", CSharp.BlockStatement.Null);
 //			public static readonly Role<ParameterDeclaration> Parameter = new Role<ParameterDeclaration>("Parameter");
-//			public static readonly Role<Expression> Argument = new Role<Expression>("Argument", CSharp.Expression.Null);
-//			public static readonly Role<AstType> Type = new Role<AstType>("Type", CSharp.AstType.Null);
-//			public static readonly Role<Expression> Expression = new Role<Expression>("Expression", CSharp.Expression.Null);
+			public static readonly Role<Expression> Argument = new Role<Expression>("Argument", Ast.Expression.Null);
+			public static readonly Role<AstType> Type = new Role<AstType>("Type", AstType.Null);
+			public static readonly Role<Expression> Expression = new Role<Expression>("Expression", Ast.Expression.Null);
 //			public static readonly Role<Expression> TargetExpression = new Role<Expression>("Target", CSharp.Expression.Null);
 //			public readonly static Role<Expression> Condition = new Role<Expression>("Condition", CSharp.Expression.Null);
 //			
 //			public static readonly Role<TypeParameterDeclaration> TypeParameter = new Role<TypeParameterDeclaration>("TypeParameter");
-//			public static readonly Role<AstType> TypeArgument = new Role<AstType>("TypeArgument", CSharp.AstType.Null);
+			public static readonly Role<AstType> TypeArgument = new Role<AstType>("TypeArgument", AstType.Null);
 //			public readonly static Role<Constraint> Constraint = new Role<Constraint>("Constraint");
 //			public static readonly Role<VariableInitializer> Variable = new Role<VariableInitializer>("Variable");
 //			public static readonly Role<Statement> EmbeddedStatement = new Role<Statement>("EmbeddedStatement", CSharp.Statement.Null);
 //			
-//			public static readonly Role<CSharpTokenNode> Keyword = new Role<CSharpTokenNode>("Keyword", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> InKeyword = new Role<CSharpTokenNode>("InKeyword", CSharpTokenNode.Null);
-//			
-//			// some pre defined constants for most used punctuation
-//			public static readonly Role<CSharpTokenNode> LPar = new Role<CSharpTokenNode>("LPar", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> RPar = new Role<CSharpTokenNode>("RPar", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> LBracket = new Role<CSharpTokenNode>("LBracket", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> RBracket = new Role<CSharpTokenNode>("RBracket", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> LBrace = new Role<CSharpTokenNode>("LBrace", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> RBrace = new Role<CSharpTokenNode>("RBrace", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> LChevron = new Role<CSharpTokenNode>("LChevron", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> RChevron = new Role<CSharpTokenNode>("RChevron", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> Comma = new Role<CSharpTokenNode>("Comma", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> Dot = new Role<CSharpTokenNode>("Dot", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> Semicolon = new Role<CSharpTokenNode>("Semicolon", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> Assign = new Role<CSharpTokenNode>("Assign", CSharpTokenNode.Null);
-//			public static readonly Role<CSharpTokenNode> Colon = new Role<CSharpTokenNode>("Colon", CSharpTokenNode.Null);
+			public static readonly Role<VBTokenNode> Keyword = new Role<VBTokenNode>("Keyword", VBTokenNode.Null);
+//			public static readonly Role<VBTokenNode> InKeyword = new Role<VBTokenNode>("InKeyword", VBTokenNode.Null);
+			
+			// some pre defined constants for most used punctuation
+			public static readonly Role<VBTokenNode> LPar = new Role<VBTokenNode>("LPar", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> RPar = new Role<VBTokenNode>("RPar", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> LBracket = new Role<VBTokenNode>("LBracket", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> RBracket = new Role<VBTokenNode>("RBracket", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> LBrace = new Role<VBTokenNode>("LBrace", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> RBrace = new Role<VBTokenNode>("RBrace", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> LChevron = new Role<VBTokenNode>("LChevron", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> RChevron = new Role<VBTokenNode>("RChevron", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> Comma = new Role<VBTokenNode>("Comma", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> Dot = new Role<VBTokenNode>("Dot", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> Semicolon = new Role<VBTokenNode>("Semicolon", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> Assign = new Role<VBTokenNode>("Assign", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> Colon = new Role<VBTokenNode>("Colon", VBTokenNode.Null);
 			
 			public static readonly Role<Comment> Comment = new Role<Comment>("Comment");
 			
 		}
+	}
+	
+	public class Comment
+	{
+		
 	}
 }
