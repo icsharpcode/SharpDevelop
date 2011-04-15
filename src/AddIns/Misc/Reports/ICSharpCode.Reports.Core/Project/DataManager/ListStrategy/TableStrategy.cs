@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
-
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
 namespace ICSharpCode.Reports.Core
 {
 	/// <summary>
@@ -16,6 +16,7 @@ namespace ICSharpCode.Reports.Core
 	internal class TableStrategy: BaseListStrategy,IEnumerable<BaseComparer>
 	{
 		private DataTable table;
+		private IExpressionEvaluatorFacade expressionEvaluator;
 		
 		public TableStrategy(DataTable table,ReportSettings reportSettings):base(reportSettings)
 		{
@@ -23,6 +24,7 @@ namespace ICSharpCode.Reports.Core
 				throw new ArgumentNullException("table");
 			}
 			this.table = table;
+			expressionEvaluator = new ExpressionEvaluatorFacade (null);
 		}
 		
 		#region Methods
@@ -64,27 +66,48 @@ namespace ICSharpCode.Reports.Core
 		
 		void FillInternal (DataRow row,IDataItem item)
 		{
-			BaseImageItem bi = item as BaseImageItem;
-			if (bi != null) {
-				using (System.IO.MemoryStream memStream = new System.IO.MemoryStream()){
-					Byte[] val = row[bi.ColumnName] as Byte[];
-					if (val != null) {
-						if ((val[78] == 66) && (val[79] == 77)){
-							memStream.Write(val, 78, val.Length - 78);
-						} else {
-							memStream.Write(val, 0, val.Length);
+			if (item != null)
+			{
+				BaseImageItem bi = item as BaseImageItem;
+				if (bi != null) {
+					using (System.IO.MemoryStream memStream = new System.IO.MemoryStream()){
+						Byte[] val = row[bi.ColumnName] as Byte[];
+						if (val != null) {
+							if ((val[78] == 66) && (val[79] == 77)){
+								memStream.Write(val, 78, val.Length - 78);
+							} else {
+								memStream.Write(val, 0, val.Length);
+							}
+							System.Drawing.Image image = System.Drawing.Image.FromStream(memStream);
+							bi.Image = image;
 						}
-						System.Drawing.Image image = System.Drawing.Image.FromStream(memStream);
-						bi.Image = image;
 					}
 				}
-			} else {
-				if (item != null) {
-					item.DBValue = row[item.ColumnName].ToString();
+				else
+				{
+					var dataItem = item as BaseDataItem;
+					if (dataItem != null) {
+						dataItem.DBValue = ExtractValue(row,dataItem).ToString();
+						//dataItem.DBValue = row[dataItem.ColumnName].ToString();
+					}
 					return;
 				}
 			}
 		}
+		
+		object ExtractValue(DataRow row,BaseDataItem item)
+		{
+			var val = row[item.ColumnName];
+			if (item.Text.StartsWith("=")) {
+//				string s = expressionEvaluator (
+				return val;
+			} else {
+				return val;
+			}
+			return null;
+		}
+			 
+			
 		
 		
 		public override CurrentItemsCollection FillDataRow(int pos)

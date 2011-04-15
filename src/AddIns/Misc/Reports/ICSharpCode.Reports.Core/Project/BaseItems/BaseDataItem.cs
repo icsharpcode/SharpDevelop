@@ -71,7 +71,6 @@ namespace ICSharpCode.Reports.Core
 
 		public override void Render(ReportPageEventArgs rpea)
 		{
-//			string toPrint = CheckForNullValue();
 			base.Text = StandardFormatter.FormatOutput(DBValue, this.FormatString, base.DataType, this.NullValue);
 			base.Render(rpea);
 		}
@@ -87,7 +86,6 @@ namespace ICSharpCode.Reports.Core
 		[Browsable(false)]
 		public virtual string DBValue {get;set;}
 			
-
 		public virtual string ColumnName {
 			get {
 				return columnName;

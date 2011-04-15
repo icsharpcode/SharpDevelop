@@ -139,8 +139,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 				DataRow r = dataNav.Current as DataRow;
 				string actual = r["last"].ToString();
 				Assert.GreaterOrEqual(compareTo,actual);
-//				string ss = String.Format("< {0} > <{1}>",compareTo,actual);
-//				Console.WriteLine(ss);
 				compareTo = actual;
 			}
 		}
@@ -148,6 +146,34 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		
 		#endregion
 		
+		#region	Substring
+		
+		[Test]
+		public void EnumSubStrings()
+		{
+			ReportSettings rs = new ReportSettings();
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
+			DataNavigator dataNav = dm.GetNavigator;
+			BaseDataItem bdi = new BaseDataItem(){
+				Name ="MyDataItem",
+				ColumnName = "last",
+				Text ="=Substring('Sharp',0,3)"
+			};
+			var ri = new ReportItemCollection();
+			ri.Add(bdi);
+			
+			while (dataNav.MoveNext())
+			{
+				dataNav.Fill(ri);
+				DataRow r = dataNav.Current as DataRow;
+				string actual = r["first"].ToString();
+				Console.WriteLine("{0} - {1} - {2}",actual,bdi.DBValue,bdi.Text);
+				Console.WriteLine("{0} - {1}",actual,actual.Substring(0,2));
+			}
+		}
+		
+		
+		#endregion
 		
 		#region Standart Enumerator
 		/*

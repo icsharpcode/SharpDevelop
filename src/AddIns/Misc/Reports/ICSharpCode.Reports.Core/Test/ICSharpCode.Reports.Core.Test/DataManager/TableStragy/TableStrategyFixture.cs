@@ -134,7 +134,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		#endregion
 		
 		
-		#region Setup7TearDown
+		#region Setup/TearDown
 		
 		private ICSharpCode.Reports.Core.TableStrategy SortTableStrategyFactory (SortColumn sortColumn)
 		{

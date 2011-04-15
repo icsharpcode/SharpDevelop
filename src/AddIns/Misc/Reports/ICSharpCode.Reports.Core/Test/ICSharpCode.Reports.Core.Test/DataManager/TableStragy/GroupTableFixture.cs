@@ -177,8 +177,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		
 		private IDataNavigator PrepareDateTimeGrouping ()
 		{
-			Console.WriteLine("PrepareDateTimeGrouping ()");
-			
 			GroupColumn gc = new GroupColumn("RandomDate",1,ListSortDirection.Ascending);
 			ReportSettings rs = new ReportSettings();
 			rs.GroupColumnsCollection.Add(gc);

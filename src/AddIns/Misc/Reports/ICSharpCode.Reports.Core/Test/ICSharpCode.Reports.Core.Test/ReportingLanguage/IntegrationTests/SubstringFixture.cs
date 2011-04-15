@@ -51,19 +51,32 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		
 		
 		[Test]
+		public void Substring_Result_Has_Correct_Length()	
+		{
+			string expression = "=Substring('Sharp',0,3)";
+			string val = this.evaluator.Evaluate(expression);
+			Assert.That(val.Length, Is.EqualTo(3));
+		}
+		
+		
+		[Test]
 		public void Concat_Substring_With_SubString()
 		{
 			string expression = "=Substring('SharpDevelop',0,5) + '-' + Substring('SharpDevelop',5)";
 			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo("Sharp-Develop"));
 		}
-				
-		 
+		
+
+		
 		[Test]
 		public void Too_Much_Args_returns_Err_Message()
 		{
 			string expression = "=Substring('Sharp',0,3,5)";
 			Assert.That(this.evaluator.Evaluate(expression),Is.StringStarting("Wrong number"));
 		}
+		
+		
+		
 		[TestFixtureSetUp]
 		public void Init()
 		{
