@@ -497,7 +497,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			throw new NotImplementedException();
 		}
 		
-		public object VisitUndocumentedExpression(UndocumentedExpression undocumentedExpression, object data)
+		public override ResolveResult VisitUndocumentedExpression(UndocumentedExpression undocumentedExpression, object data)
 		{
 			// TODO: ? 
 			ScanChildren(undocumentedExpression);
