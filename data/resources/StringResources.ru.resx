@@ -5639,36 +5639,6 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Удалить все веб-ссылки</value>
   </data>
-  <data name="ReflectorAddIn.IdeOptions.FindReflectorPath" xml:space="preserve">
-    <value>Выберите путь отражателя</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.ReflectorFoundInPath" xml:space="preserve">
-    <value>Отражатель был найден в следующей папке:</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.ReflectorTitle" xml:space="preserve">
-    <value>Отражатель</value>
-  </data>
-  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
-    <value>Открыть Отражатель .NET</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
-    <value>Отражатель не может быть найден в указанном месте, или SharpDevelop не имеет достаточных прав для доступа к нему.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
-    <value>Путь к отражателю не определен.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorRemotingFailed" xml:space="preserve">
-    <value>Соединение с Отражателем не удалось.</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.PathToReflectorExe" xml:space="preserve">
-    <value>Полный путь к Reflector.exe</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.ReflectorInfo" xml:space="preserve">
-    <value>Эта функция требует Красные ворота в отражателе .NET. Если у вас его ещё нет, то вы можете бесплатно скачать его здесь:</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialogTitle" xml:space="preserve">
-    <value>Установить путь к Отражателю</value>
-  </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>Сборки (*.dll)|*.dll</value>
   </data>

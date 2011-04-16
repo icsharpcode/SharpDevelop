@@ -5328,27 +5328,6 @@ Windows Forms 구성 요소가 아무 것도 사용가능하지 않습니다. �
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>모든 웹 참조 지우기</value>
   </data>
-  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
-    <value>.NET Reflector 열기</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
-    <value>지정된 위치에 .NET Reflector가 없거나, SharpDevelop가 그 위치에 접근할 수 있는 충분한 권한을 가지고 있지 않습니다.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
-    <value>.NET Reflector의 경로가 아직 지정되어 있지 않습니다.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorRemotingFailed" xml:space="preserve">
-    <value>.NET Reflector에 연결할 수 없습니다.</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.PathToReflectorExe" xml:space="preserve">
-    <value>Reflector.exe의 전체 경로</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.ReflectorInfo" xml:space="preserve">
-    <value>이 기능은 Red Gate사의 .NET Reflector를 필요로 합니다. 만약 .NET Reflector를 아직 가지고 있지 않다면, 다음 웹 사이트에서 무료로 다운로드할 수 있습니다:</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialogTitle" xml:space="preserve">
-    <value>.NET Reflector의 경로 설정</value>
-  </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>어셈블리 (*.dll)|*.dll</value>
   </data>
