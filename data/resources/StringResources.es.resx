@@ -2738,6 +2738,9 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.CaretCheckBox" xml:space="preserve">
     <value>Mostrar marcador de posición del cursor</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EnableAnimationsCheckBox" xml:space="preserve">
+    <value>Habilitar animaciones</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Mostrar marcas de &amp;párrafo</value>
   </data>
@@ -2770,6 +2773,9 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
     <value>Marcadores y Reglas</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
+    <value>Mostrar &amp;definiciones ocultas (solo corchetes)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.SpacesCheckBox" xml:space="preserve">
     <value>Mostrar E&amp;spacios</value>
@@ -3988,6 +3994,9 @@ Por favor configure la ubicación del archivo ejecutable de NAnt en las opciones
   <data name="ICSharpCode.NAntAddIn.StopNAntMenuLabel" xml:space="preserve">
     <value>&amp;Detener NAnt</value>
   </data>
+  <data name="ICSharpCode.NoStartupProject" xml:space="preserve">
+    <value>No hay ningún proyecto de inicio para depurar.</value>
+  </data>
   <data name="ICSharpCode.NUnitPad.NUnitPadContent.PadName" xml:space="preserve">
     <value>Pruebas de Unidad</value>
   </data>
@@ -4882,6 +4891,48 @@ Vaya a 'Opciones-&gt;Estilo Visual' y cambie el lenguaje del ambiente.</value>
   <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
     <value>No se pudieron ejecutar los test de unidad. El archivo '{0}' no se pudo encontrar.</value>
   </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel" xml:space="preserve">
+    <value>Web</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.ApplicationExists" xml:space="preserve">
+    <value>La aplicación ya existe.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.CreateVirtualDir" xml:space="preserve">
+    <value>Crear directorio virtual/de aplicación</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.DisableWebServerButton" xml:space="preserve">
+    <value>Deshabilitar opciones del servidor web</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.IISNotFound" xml:space="preserve">
+    <value>No se encontró un IIS o IIS Express local.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.NoIISWP" xml:space="preserve">
+    <value>No se encontró el proceso ASP.NET/IIS (Express) ({0}).</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
+    <value>No hay ningún url de proyecto ni programa externo especificado. Verifique el servidor web en Propiedades del Proyecto -&amp;gt; Depurar.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
+    <value>Puerto de servidor:</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.ProjectUrl" xml:space="preserve">
+    <value>Url del Proyecto:</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Server" xml:space="preserve">
+    <value>Servidor Web</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UnableToAttach" xml:space="preserve">
+    <value>El depurador no pudo adjuntarse al proceso.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UseIISExpress" xml:space="preserve">
+    <value>Usar el Servidor Web IIS Express</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UseLocalIIS" xml:space="preserve">
+    <value>Usar el servidor web IIS local</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.VirtualDirCreated" xml:space="preserve">
+    <value>Se creó el directorio virtual/de aplicación.</value>
+  </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
     <value>Agregar Extensiones</value>
   </data>
@@ -5564,6 +5615,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.ExceptionHistory.Time" xml:space="preserve">
     <value>Tiempo</value>
   </data>
+  <data name="MainWindow.Windows.Debug.HideZoomControl" xml:space="preserve">
+    <value>Mostrar/Ocultar Control de Zoom</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Local" xml:space="preserve">
     <value>Local</value>
   </data>
@@ -5639,6 +5693,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.ObjectGraph" xml:space="preserve">
     <value>Objeto Gráfica</value>
   </data>
+  <data name="MainWindow.Windows.Debug.ParallelStack" xml:space="preserve">
+    <value>Stacks Paralelos</value>
+  </data>
   <data name="MainWindow.Windows.Debug.RunToCursor" xml:space="preserve">
     <value>Ejecutar hasta el cursor</value>
   </data>
@@ -5686,6 +5743,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.Threads.ThreadSwitch" xml:space="preserve">
     <value>Intercambio de hilos</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ToggleMethodView" xml:space="preserve">
+    <value>Cambiar Vista de Método</value>
   </data>
   <data name="MainWindow.Windows.Debug.Watch" xml:space="preserve">
     <value>Inspección</value>
@@ -5933,6 +5993,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
     <value>Abrir Carpeta Contenedora en el Explorador</value>
   </data>
+  <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
+    <value>Colapsar todos los nodos</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.AddExistingFiles" xml:space="preserve">
     <value>Agregar archivos existentes</value>
   </data>
@@ -6073,36 +6136,6 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Eliminar todas las referencias web</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.FindReflectorPath" xml:space="preserve">
-    <value>Seleccione la ruta a Reflector</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.ReflectorFoundInPath" xml:space="preserve">
-    <value>Reflector fue encontrado en el siguiente directorio:</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.ReflectorTitle" xml:space="preserve">
-    <value>Reflector</value>
-  </data>
-  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
-    <value>Abrir .NET Reflector</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
-    <value>Reflector no se encontró en la ubicación especificada, o SharpDevelop no tiene suficientes permisos para acceder a él.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
-    <value>La ruta a Reflector no se ha establecida todavía.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorRemotingFailed" xml:space="preserve">
-    <value>No se pudo conectar a Reflector.</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.PathToReflectorExe" xml:space="preserve">
-    <value>Ruta completa a Reflector.exe</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.ReflectorInfo" xml:space="preserve">
-    <value>Esta característica requiere Red Gate's .NET Reflector. Si todavía no lo tiene, puede descargarlo gratuitamente desde aquí:</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialogTitle" xml:space="preserve">
-    <value>Establecer ruta a Reflector</value>
   </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>Ensamblados (*.dll)|*.dll</value>
@@ -6769,6 +6802,12 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   <data name="SharpReport.Toolbar.Functions.TodaysDate" xml:space="preserve">
     <value>Hoy</value>
   </data>
+  <data name="SharpReport.Toolbar.GroupFooter" xml:space="preserve">
+    <value>GrupoDePie</value>
+  </data>
+  <data name="SharpReport.Toolbar.GroupHeader" xml:space="preserve">
+    <value>GrupoDeCabezal</value>
+  </data>
   <data name="SharpReport.Toolbar.Image" xml:space="preserve">
     <value>Imagen</value>
   </data>
@@ -6780,6 +6819,9 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   </data>
   <data name="SharpReport.Toolbar.Rectangle" xml:space="preserve">
     <value>Rectángulo</value>
+  </data>
+  <data name="SharpReport.Toolbar.Table" xml:space="preserve">
+    <value>Tabla</value>
   </data>
   <data name="SharpReport.Toolbar.TextBox" xml:space="preserve">
     <value>Etiqueta</value>
@@ -6816,6 +6858,21 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportType" xml:space="preserve">
     <value>Tipo de Reporte</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.Column" xml:space="preserve">
+    <value>Seleccionar el GrupoDeColumna</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.Grouping" xml:space="preserve">
+    <value>Agrupamiento</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.ListLayout" xml:space="preserve">
+    <value>Diseño de Lista</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.ReportLayout" xml:space="preserve">
+    <value>Diseño de Reporte</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.TableLayout" xml:space="preserve">
+    <value>Diseño de Tabla</value>
   </data>
   <data name="SharpReport.Wizard.PullModel" xml:space="preserve">
     <value>Obtener Modelo de Datos</value>

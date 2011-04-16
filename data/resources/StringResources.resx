@@ -2690,6 +2690,15 @@ system. I don't think that it needs translation.</comment>
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Appearance</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
+    <value>Expand project references (reflect references)</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
+    <value>Sharp Develop UI options</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
+    <value>Sharp Develop UI options</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Comment Tags</value>
   </data>
@@ -4142,6 +4151,9 @@ Please configure the NAnt executable's location in the SharpDevelop Options.</va
     <value>&amp;Stop NAnt</value>
     <comment>Menu option to stop the currently running NAnt build.</comment>
   </data>
+  <data name="ICSharpCode.NoStartupProject" xml:space="preserve">
+    <value>There is no startup project to debug.</value>
+  </data>
   <data name="ICSharpCode.NUnitPad.NUnitPadContent.PadName" xml:space="preserve">
     <value>Unit Tests</value>
   </data>
@@ -5119,6 +5131,48 @@ Goto 'Options-&gt;Visual Style' and change the current language ambience.</value
   <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
     <value>Unable to run unit tests. The file '{0}' cannot be found.</value>
   </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel" xml:space="preserve">
+    <value>Web</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.ApplicationExists" xml:space="preserve">
+    <value>Application already exists.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.CreateVirtualDir" xml:space="preserve">
+    <value>Create application/virtual directory</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.DisableWebServerButton" xml:space="preserve">
+    <value>Disable web server options</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.IISNotFound" xml:space="preserve">
+    <value>Local IIS or IIS Express was not found.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.NoIISWP" xml:space="preserve">
+    <value>ASP.NET/IIS (Express) worker process ({0}) was not found.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
+    <value>There's no Project Url specified or external program. Check the web server at Project Properties -&amp;gt; Debug tab.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
+    <value>Server port:</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.ProjectUrl" xml:space="preserve">
+    <value>Project Url:</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Server" xml:space="preserve">
+    <value>Web Server</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UnableToAttach" xml:space="preserve">
+    <value>Debugger was unable to attach to process.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UseIISExpress" xml:space="preserve">
+    <value>Use IIS Express Web server</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UseLocalIIS" xml:space="preserve">
+    <value>Use local IIS Web server</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.VirtualDirCreated" xml:space="preserve">
+    <value>Application/virtual directory was created.</value>
+  </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
     <value>Add Extensions</value>
   </data>
@@ -5558,6 +5612,24 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="ICSharpCode.XmlEditor.XslOutputView.Title" xml:space="preserve">
     <value>XSLT Output</value>
   </data>
+  <data name="ILSpyAddIn.ILSpyDoesNotExist" xml:space="preserve">
+    <value>ILSpy could not be found at the specified location, or SharpDevelop does not have sufficient rights to access it.</value>
+  </data>
+  <data name="ILSpyAddIn.ILSpyPathNotSet" xml:space="preserve">
+    <value>The path to ILSpy has not been set yet.</value>
+  </data>
+  <data name="ILSpyAddIn.OpenILSpyCommand" xml:space="preserve">
+    <value>Open ILSpy</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.ILSpyInfo" xml:space="preserve">
+    <value>This feature requires ILSpy. If you do not have it yet, you can download it for free there:</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.PathToILSpyExe" xml:space="preserve">
+    <value>Full path to ILSpy.exe</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialogTitle" xml:space="preserve">
+    <value>Set path to ILSpy</value>
+  </data>
   <data name="Internal.ExternalTool.CantLoadToolConfigWarining" xml:space="preserve">
     <value>Can't load external tools configuration file</value>
   </data>
@@ -5912,6 +5984,39 @@ Shows the full callstack of the error.</comment>
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>Static members</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.AddressNotFound" xml:space="preserve">
+    <value>The address {0} was not found!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ByteSize" xml:space="preserve">
+    <value>Display bytes size:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.JumpTo" xml:space="preserve">
+    <value>Jump to address:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NextAddress" xml:space="preserve">
+    <value>Next virtual addresses</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NoMappings" xml:space="preserve">
+    <value>No mappings for memory addresses!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NotDebuggingOrProcessRunning" xml:space="preserve">
+    <value>Not debugging or process is running!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.PreviousAddress" xml:space="preserve">
+    <value>Previous virtual addresses</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ReadingFromFormat" xml:space="preserve">
+    <value>Reading from {0} to {1} - size {2}.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.Refresh" xml:space="preserve">
+    <value>Refresh current addresses</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.UnableToReadFormat" xml:space="preserve">
+    <value>Unable to read at address {0} of size {1}.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules" xml:space="preserve">
     <value>Loaded modules</value>
@@ -6410,38 +6515,6 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Delete all web references</value>
     <comment>Title of the dialog box when the user tries to remove all web references.</comment>
-  </data>
-  <data name="ILSpyAddIn.IdeOptions.FindILSpyPath" xml:space="preserve">
-    <value>Select ILSpy path</value>
-    <comment>Button to select the ILSpy path</comment>
-  </data>
-  <data name="ILSpyAddIn.IdeOptions.ILSpyFoundInPath" xml:space="preserve">
-    <value>ILSpy was found in the following directory:</value>
-  </data>
-  <data name="ILSpyAddIn.IdeOptions.ILSpyTitle" xml:space="preserve">
-    <value>ILSpy</value>
-    <comment>Title of ILSpy path option panel</comment>
-  </data>
-  <data name="ILSpyAddIn.OpenILSpyCommand" xml:space="preserve">
-    <value>Open ILSpy</value>
-  </data>
-  <data name="ILSpyAddIn.ILSpyDoesNotExist" xml:space="preserve">
-    <value>ILSpy could not be found at the specified location, or SharpDevelop does not have sufficient rights to access it.</value>
-  </data>
-  <data name="ILSpyAddIn.ILSpyPathNotSet" xml:space="preserve">
-    <value>The path to ILSpy has not been set yet.</value>
-  </data>
-  <data name="ILSpyAddIn.ILSpyRemotingFailed" xml:space="preserve">
-    <value>Failed to connect to ILSpy.</value>
-  </data>
-  <data name="ILSpyAddIn.SetILSpyPathDialog.PathToILSpyExe" xml:space="preserve">
-    <value>Full path to ILSpy.exe</value>
-  </data>
-  <data name="ILSpyAddIn.SetILSpyPathDialog.ILSpyInfo" xml:space="preserve">
-    <value>This feature requires ILSpy. If you do not have it yet, you can download it for free there:</value>
-  </data>
-  <data name="ILSpyAddIn.SetILSpyPathDialogTitle" xml:space="preserve">
-    <value>Set path to ILSpy</value>
   </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>Assemblies (*.dll)|*.dll</value>

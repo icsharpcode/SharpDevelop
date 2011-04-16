@@ -2617,6 +2617,15 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Vormgeving</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
+    <value>Project referenties uitbreiden (referenties weergeven)</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
+    <value>SharpDevelop UI opties</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
+    <value>SharpDevelop UI opties</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Commentaar labels</value>
   </data>
@@ -2777,7 +2786,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Markeringen en Linealen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
-    <value>Toon &amp;amp;verborgen definities(alleen haakjes)</value>
+    <value>Toon &amp;verborgen definities(alleen haakjes)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.SpacesCheckBox" xml:space="preserve">
     <value>Toon &amp;spaties</value>
@@ -3993,6 +4002,9 @@ Configureer a.u.b. in SharpDevelop opties de locatie van NAnt's uitvoerend besta
   <data name="ICSharpCode.NAntAddIn.StopNAntMenuLabel" xml:space="preserve">
     <value>&amp;Stop NAnt</value>
   </data>
+  <data name="ICSharpCode.NoStartupProject" xml:space="preserve">
+    <value>Er is geen startproject voor foutopsporing.</value>
+  </data>
   <data name="ICSharpCode.NUnitPad.NUnitPadContent.PadName" xml:space="preserve">
     <value>Unittesten</value>
   </data>
@@ -4880,6 +4892,48 @@ Ga naar 'Opties-&gt;Vormgeving' en wijzig de momentele taal ambience.</value>
   <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
     <value>Unittesten kunnen niet uitgevoerd omdat het bestand '{0}' niet gevonden wordt.</value>
   </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel" xml:space="preserve">
+    <value>Web</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.ApplicationExists" xml:space="preserve">
+    <value>Applicatie bestaat reeds.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.CreateVirtualDir" xml:space="preserve">
+    <value>Maak applicatie/virtuele directory</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.DisableWebServerButton" xml:space="preserve">
+    <value>Schakel Web server opties uit.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.IISNotFound" xml:space="preserve">
+    <value>Plaatselijke IIS of IIS Express niet gevonden.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.NoIISWP" xml:space="preserve">
+    <value>ASP.NET/IIS (Express) werker proces ({0}) werd niet gevonden.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
+    <value>Geen project URL of extern programma opgegeven. Controleer de Web server op project eigenschappen -&amp;gt; Foutzoeken tab.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
+    <value>Server poort:</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.ProjectUrl" xml:space="preserve">
+    <value>Project URL:</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Server" xml:space="preserve">
+    <value>Web Server</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UnableToAttach" xml:space="preserve">
+    <value>Debugger kon het proces niet binden.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UseIISExpress" xml:space="preserve">
+    <value>Gebruik IIS Express Web server</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UseLocalIIS" xml:space="preserve">
+    <value>Gebruik plaatselijke IIS Web server</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.VirtualDirCreated" xml:space="preserve">
+    <value>Applicatie/virtuele directory is gemaakt.</value>
+  </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
     <value>Extensies toevoegen</value>
   </data>
@@ -5286,6 +5340,24 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="ICSharpCode.XmlEditor.XslOutputView.Title" xml:space="preserve">
     <value>XSLT uitvoer</value>
   </data>
+  <data name="ILSpyAddIn.ILSpyDoesNotExist" xml:space="preserve">
+    <value>ILSpy niet gevonden op aangegeven locatie, of SharpDevelo beschikt niet over voldoende rechten om het te kunnen benaderen.</value>
+  </data>
+  <data name="ILSpyAddIn.ILSpyPathNotSet" xml:space="preserve">
+    <value>Het pad naar ILSpy is nog niet ingesteld.</value>
+  </data>
+  <data name="ILSpyAddIn.OpenILSpyCommand" xml:space="preserve">
+    <value>ILSpy openen</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.ILSpyInfo" xml:space="preserve">
+    <value>Deze functie benodigt ILSpy. Als u nog niet hierover beschikt, kunt u het hier vrij downloaden.</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.PathToILSpyExe" xml:space="preserve">
+    <value>Volledig pad naar ILSpy.exe</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialogTitle" xml:space="preserve">
+    <value>Stel het pad naar ILSpy in</value>
+  </data>
   <data name="Internal.ExternalTool.CantLoadToolConfigWarining" xml:space="preserve">
     <value>Laden van configuratiebestand externe toepassing mislukt</value>
   </data>
@@ -5609,6 +5681,39 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>Statische leden</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
+    <value>Geheugen</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.AddressNotFound" xml:space="preserve">
+    <value>Adres {0} werd niet gevonden!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ByteSize" xml:space="preserve">
+    <value>Omvang in bytes tonen:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.JumpTo" xml:space="preserve">
+    <value>Spring naar adres:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NextAddress" xml:space="preserve">
+    <value>Volgende virtuele adressen:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NoMappings" xml:space="preserve">
+    <value>Geen toewijzingen voor geheugenadressen!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NotDebuggingOrProcessRunning" xml:space="preserve">
+    <value>Geen foutopsporing of proces is draaiende.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.PreviousAddress" xml:space="preserve">
+    <value>Voorgaande virtuele adressen</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ReadingFromFormat" xml:space="preserve">
+    <value>Lezen van {0} tot {1} -- grootte {2}.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.Refresh" xml:space="preserve">
+    <value>Ververs momentele adressen</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.UnableToReadFormat" xml:space="preserve">
+    <value>Lezen van adres {0} met grootte {1} niet mogelijk.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules" xml:space="preserve">
     <value>Geladen modules</value>
@@ -6083,36 +6188,6 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Verwijder alle web referenties</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.FindReflectorPath" xml:space="preserve">
-    <value>Selecteer Reflector psd</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.ReflectorFoundInPath" xml:space="preserve">
-    <value>Reflector werd in volgende directorie gevonden:</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.ReflectorTitle" xml:space="preserve">
-    <value>Reflector</value>
-  </data>
-  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
-    <value>Open .NET Reflector</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
-    <value>Reflector werd niet gevonden op aangegeven locatie, of SharpDevelop heeft onvoldoende toegangsrechten.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
-    <value>Het pad naar Reflector is nog niet ingesteld.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorRemotingFailed" xml:space="preserve">
-    <value>Verbinden met Reflector mislukt.</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.PathToReflectorExe" xml:space="preserve">
-    <value>Volledig pad naar Reflector.exe</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.ReflectorInfo" xml:space="preserve">
-    <value>Deze optie vereistde Red Gate .NET Reflector.  Indien u er nog niet over beschikt, kunt u deze vrij downloaden bij:</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialogTitle" xml:space="preserve">
-    <value>Pad naar Reflector instellen.</value>
   </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>Assemblies (*.dll)|*.dll</value>
