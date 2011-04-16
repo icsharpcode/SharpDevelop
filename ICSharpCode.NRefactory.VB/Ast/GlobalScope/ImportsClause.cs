@@ -7,9 +7,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 {
 	public abstract class ImportsClause : AstNode
 	{
-		public static readonly ImportsClause Null = new NullImportsClause();
-		
-		public static readonly Role<ImportsClause> ImportsClauseRole = new Role<ImportsClause>("ImportsClause", Null);
+		public new static readonly ImportsClause Null = new NullImportsClause();
 		
 		class NullImportsClause : ImportsClause
 		{
@@ -31,23 +29,14 @@ namespace ICSharpCode.NRefactory.VB.Ast
 	
 	public class AliasImportsClause : ImportsClause
 	{
-		public Identifier Name { get; set; }
-		
-		AstType alias;
+		public Identifier Name {
+			get { return GetChildByRole(Roles.Identifier); }
+			set { SetChildByRole(Roles.Identifier, value); }
+		}
 		
 		public AstType Alias {
-			get { return alias; }
-			set { alias = value ?? AstType.Null; }
-		}
-		
-		public AliasImportsClause(Identifier name) {
-			Name = name;
-			alias = AstType.Null;
-		}
-		
-		public AliasImportsClause(Identifier name, AstType alias) {
-			Name = name;
-			Alias = alias;
+			get { return GetChildByRole(Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
 		}
 		
 		protected internal override bool DoMatch(AstNode other, ICSharpCode.NRefactory.PatternMatching.Match match)
@@ -55,7 +44,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 			var clause = other as AliasImportsClause;
 			return clause != null
 				&& Name.DoMatch(clause.Name, match)
-				&& alias.DoMatch(clause.Alias, match);
+				&& Alias.DoMatch(clause.Alias, match);
 		}
 		
 		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
@@ -70,18 +59,16 @@ namespace ICSharpCode.NRefactory.VB.Ast
 	
 	public class MemberImportsClause : ImportsClause
 	{
-		public AstType NamespaceOrType { get; set; }
-		
-		public MemberImportsClause(AstType namespaceOrType)
-		{
-			this.NamespaceOrType = namespaceOrType;
+		public AstType Member {
+			get { return GetChildByRole(Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
 		}
 		
 		protected internal override bool DoMatch(AstNode other, ICSharpCode.NRefactory.PatternMatching.Match match)
 		{
 			var node = other as MemberImportsClause;
 			return node != null
-				&& NamespaceOrType.DoMatch(node.NamespaceOrType, match);
+				&& Member.DoMatch(node.Member, match);
 		}
 		
 		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
@@ -91,18 +78,15 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		
 		public override string ToString()
 		{
-			return string.Format("[MemberImportsClause NamespaceOrType={0}]", NamespaceOrType);
+			return string.Format("[MemberImportsClause Member={0}]", Member);
 		}
-
 	}
 	
 	public class XmlNamespaceImportsClause : ImportsClause
 	{
-		string xmlPrefix;
-		
-		public string XmlPrefix {
-			get { return xmlPrefix; }
-			set { xmlPrefix = value ?? ""; }
+		public XmlIdentifier Prefix {
+			get { return GetChildByRole(Roles.XmlIdentifier); }
+			set { SetChildByRole(Roles.XmlIdentifier, value); }
 		}
 		
 		string xmlNamespace;
@@ -112,21 +96,10 @@ namespace ICSharpCode.NRefactory.VB.Ast
 			set { xmlNamespace = value ?? ""; }
 		}
 		
-		public XmlNamespaceImportsClause(string xmlPrefix, string xmlNamespace)
-		{
-			this.xmlPrefix = xmlPrefix;
-			this.xmlNamespace = xmlNamespace;
-		}
-		
-		public XmlNamespaceImportsClause(string xmlNamespace)
-		{
-			this.xmlNamespace = xmlNamespace;
-		}
-		
 		protected internal override bool DoMatch(AstNode other, ICSharpCode.NRefactory.PatternMatching.Match match)
 		{
 			var clause = other as XmlNamespaceImportsClause;
-			return clause != null && clause.xmlNamespace == xmlNamespace && clause.xmlPrefix == xmlPrefix;
+			return clause != null && clause.xmlNamespace == xmlNamespace && Prefix.DoMatch(clause.Prefix, match);
 		}
 		
 		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
@@ -136,7 +109,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		
 		public override string ToString()
 		{
-			return string.Format("[XmlNamespaceImportsClause XmlPrefix={0}, XmlNamespace={1}]", xmlPrefix, xmlNamespace);
+			return string.Format("[XmlNamespaceImportsClause Prefix={0}, XmlNamespace={1}]", Prefix, xmlNamespace);
 		}
 	}
 }

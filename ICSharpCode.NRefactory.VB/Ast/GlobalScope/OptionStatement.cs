@@ -8,14 +8,24 @@ namespace ICSharpCode.NRefactory.VB.Ast
 {
 	public class OptionStatement : AstNode
 	{
-		public OptionType OptionType { get; set; }
-		
-		public bool OptionValue { get; set; }
-		
-		public OptionStatement(OptionType optionType, bool optionValue) {
-			OptionType = optionType;
-			OptionValue = optionValue;
+		public static readonly Role<VBTokenNode> OptionTypeRole = new Role<VBTokenNode>("OptionType");
+		public static readonly Role<VBTokenNode> OptionValueRole = new Role<VBTokenNode>("OptionValue");
+
+		public VBTokenNode OptionKeyword {
+			get { return GetChildByRole(Roles.Keyword); }
 		}
+		
+		public VBTokenNode OptionTypeKeyword {
+			get { return GetChildByRole(OptionTypeRole); }
+		}
+		
+		public VBTokenNode OptionValueKeyword {
+			get { return GetChildByRole(OptionValueRole); }
+		}
+
+		public OptionType OptionType { get; set; }
+
+		public OptionValue OptionValue { get; set; }
 		
 		protected internal override bool DoMatch(AstNode other, Match match)
 		{
@@ -38,8 +48,13 @@ namespace ICSharpCode.NRefactory.VB.Ast
 	{
 		Explicit,
 		Strict,
-		CompareBinary,
-		CompareText,
+		Compare,
 		Infer
+	}
+	
+	public enum OptionValue
+	{
+		On, Off,
+		Text, Binary
 	}
 }

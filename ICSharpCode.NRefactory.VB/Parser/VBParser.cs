@@ -15,10 +15,10 @@ namespace ICSharpCode.NRefactory.VB.Parser
 	internal partial class VBParser : IDisposable
 	{
 		VBLexer lexer;
-		Stack<AstNode> blockStack;
+		Stack<AstNode> stack;
 		CompilationUnit compilationUnit;
 		int errDist = MinErrDist;
-				
+		
 		const int    MinErrDist   = 2;
 		const string ErrMsgFormat = "-- line {0} col {1}: {2}";  // 0=line, 1=column, 2=text
 		
@@ -27,23 +27,30 @@ namespace ICSharpCode.NRefactory.VB.Parser
 			this.errors = lexer.Errors;
 			errors.SynErr = new ErrorCodeProc(SynErr);
 			this.lexer = (VBLexer)lexer;
-			this.blockStack = new Stack<AstNode>();
+			this.stack = new Stack<AstNode>();
 		}
 		
-		void BlockStart(AstNode block)
+		void NodeStart(AstNode node)
 		{
-			blockStack.Push(block);
+			stack.Push(node);
 		}
 		
-		void BlockEnd()
+		void NodeEnd(AstNode currentNode, Role role)
 		{
-			blockStack.Pop();
+			AstNode node = stack.Pop();
+			Debug.Assert(currentNode == node);
+			stack.Peek().AddChildUntyped(node, role);
+		}
+		
+		void AddTerminal(Role<VBTokenNode> role)
+		{
+			stack.Peek().AddChild(new VBTokenNode(t.Location, t.val.Length), role);
 		}
 		
 		void AddChild<T>(T childNode, Role<T> role) where T : AstNode
 		{
 			if (childNode != null) {
-				blockStack.Peek().AddChild(childNode, role);
+				stack.Peek().AddChild(childNode, role);
 			}
 		}
 		
@@ -115,7 +122,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 //		{
 //			lexer.NextToken();
 //			compilationUnit = new CompilationUnit();
-//			
+//
 //			Location startLocation = la.Location;
 //			Statement st;
 //			Block(out st);

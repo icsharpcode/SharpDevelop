@@ -22,19 +22,28 @@ namespace ICSharpCode.NRefactory.VB
 	
 	public class VBParser
 	{
-		public CompilationUnit ParseFile(string content)
+		bool hasErrors;
+		
+		public CompilationUnit Parse(string content)
 		{
-			throw new NotImplementedException();
+			return Parse(new StringReader(content));
 		}
 		
-		public CompilationUnit ParseFile(TextReader reader)
+		public CompilationUnit Parse(TextReader reader)
 		{
-			throw new NotImplementedException();
+			var parser = new ICSharpCode.NRefactory.VB.Parser.VBParser(new VBLexer(reader));
+			parser.Parse();
+			hasErrors = parser.Errors.Count > 0;
+			return parser.CompilationUnit;
 		}
 		
 		public AstNode ParseSnippet(TextReader reader)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public bool HasErrors {
+			get { return hasErrors; }
 		}
 	}
 }

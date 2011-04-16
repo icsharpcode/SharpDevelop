@@ -8,8 +8,14 @@ namespace ICSharpCode.NRefactory.VB.Ast
 {
 	public class ImportsStatement : AstNode
 	{
+		public static readonly Role<ImportsClause> ImportsClauseRole = new Role<ImportsClause>("ImportsClause", ImportsClause.Null);
+		
+		public VBTokenNode Imports {
+			get { return GetChildByRole(Roles.Keyword); }
+		}
+		
 		public AstNodeCollection<ImportsClause> ImportsClauses {
-			get { return GetChildrenByRole(ImportsClause.ImportsClauseRole); }
+			get { return GetChildrenByRole(ImportsClauseRole); }
 		}
 		
 //		public override string ToString() {

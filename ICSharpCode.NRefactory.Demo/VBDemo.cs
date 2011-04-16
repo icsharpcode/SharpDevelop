@@ -28,14 +28,10 @@ namespace ICSharpCode.NRefactory.Demo
 			ParseButtonClick(null, null);
 		}
 		
-		IList<ISpecial> savedSpecials;
-		
 		void ParseButtonClick(object sender, EventArgs e)
 		{
 			using (VBParser parser = new VBParser(new VBLexer(new StringReader(codeView.Text)))) {
 				parser.Parse();
-				// this allows retrieving comments, preprocessor directives, etc. (stuff that isn't part of the syntax)
-				SetSpecials(parser.Lexer.SpecialTracker.RetrieveSpecials());
 				// this retrieves the root node of the result DOM
 				if (parser.Errors.Count > 0) {
 					MessageBox.Show(parser.Errors.ErrorOutput);

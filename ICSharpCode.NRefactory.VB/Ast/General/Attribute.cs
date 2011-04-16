@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		}
 		
 		public VBTokenNode ColonToken {
-			get { return GetChildByRole(Roles.Colon); }
+			get { return GetChildByRole(Roles.StatementTerminator); }
 		}
 		
 		public AstType Type {

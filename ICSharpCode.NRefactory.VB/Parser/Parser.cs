@@ -7,6 +7,7 @@ using System.Text;
 using ICSharpCode.NRefactory.VB.Ast;
 using ICSharpCode.NRefactory.VB.Parser;
 using ASTAttribute = ICSharpCode.NRefactory.VB.Ast.Attribute;
+using Roles = ICSharpCode.NRefactory.VB.AstNode.Roles;
 
 
 
@@ -86,13 +87,14 @@ partial class VBParser
 
 	void VB() {
 		compilationUnit = new CompilationUnit();
-			BlockStart(compilationUnit);
+			NodeStart(compilationUnit);
+			Get();
 
 		while (la.kind == 1 || la.kind == 21) {
 			StatementTerminator();
 		}
-		while (la.kind == 1 || la.kind == 21) {
-			OptionStatement(out option);
+		while (la.kind == 173) {
+			OptionStatement(CompilationUnit.MemberRole);
 			while (la.kind == 1 || la.kind == 21) {
 				StatementTerminator();
 			}
@@ -103,12 +105,70 @@ partial class VBParser
 		while (!(la.kind == 0 || la.kind == 1 || la.kind == 21)) {SynErr(239); Get();}
 		if (la.kind == 1) {
 			Get();
+			AddTerminal(Roles.StatementTerminator);
 		} else if (la.kind == 21) {
 			Get();
+			AddTerminal(Roles.StatementTerminator);
 		} else SynErr(240);
 	}
 
-	void OptionStatement(out OptionStatement result) {
+	void OptionStatement(Role role) {
+		var result = new OptionStatement(); NodeStart(result);
+		Expect(173);
+		AddTerminal(Roles.Keyword);
+		if (la.kind == 121) {
+			Get();
+			AddTerminal(Ast.OptionStatement.OptionTypeRole);
+			result.OptionType = OptionType.Explicit;
+			if (la.kind == 170 || la.kind == 171) {
+				OnOff(result);
+			}
+		} else if (la.kind == 207) {
+			Get();
+			AddTerminal(Ast.OptionStatement.OptionTypeRole);
+			result.OptionType = OptionType.Strict;
+			if (la.kind == 170 || la.kind == 171) {
+				OnOff(result);
+			}
+		} else if (la.kind == 139) {
+			Get();
+			AddTerminal(Ast.OptionStatement.OptionTypeRole);
+			result.OptionType = OptionType.Infer;
+			if (la.kind == 170 || la.kind == 171) {
+				OnOff(result);
+			}
+		} else if (la.kind == 87) {
+			Get();
+			AddTerminal(Ast.OptionStatement.OptionTypeRole);
+			result.OptionType = OptionType.Compare;
+			BinaryText(result);
+		} else SynErr(241);
+		StatementTerminator();
+		NodeEnd(result, role);
+	}
+
+	void OnOff(OptionStatement os) {
+		if (la.kind == 171) {
+			Get();
+			AddTerminal(Ast.OptionStatement.OptionValueRole);
+			os.OptionValue = OptionValue.On;
+		} else if (la.kind == 170) {
+			Get();
+			AddTerminal(Ast.OptionStatement.OptionValueRole);
+			os.OptionValue  = OptionValue.Off;
+		} else SynErr(242);
+	}
+
+	void BinaryText(OptionStatement os) {
+		if (la.kind == 213) {
+			Get();
+			AddTerminal(Ast.OptionStatement.OptionValueRole);
+			os.OptionValue = OptionValue.Text;
+		} else if (la.kind == 67) {
+			Get();
+			AddTerminal(Ast.OptionStatement.OptionValueRole);
+			os.OptionValue  = OptionValue.Binary;
+		} else SynErr(243);
 	}
 
 
@@ -373,6 +433,9 @@ partial class VBParser
 			case 238: return "??? expected";
 			case 239: return "this symbol not expected in StatementTerminator";
 			case 240: return "invalid StatementTerminator";
+			case 241: return "invalid OptionStatement";
+			case 242: return "invalid OnOff";
+			case 243: return "invalid BinaryText";
 
 			default: return "error " + errorNumber;
 		}

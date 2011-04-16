@@ -7,6 +7,7 @@ using System.Text;
 using ICSharpCode.NRefactory.VB.Ast;
 using ICSharpCode.NRefactory.VB.Parser;
 using ASTAttribute = ICSharpCode.NRefactory.VB.Ast.Attribute;
+using Roles = ICSharpCode.NRefactory.VB.AstNode.Roles;
 
 COMPILER VB
 
@@ -259,20 +260,50 @@ TOKENS
 
 PRODUCTIONS
 
+#region General
+
 VB =
-	(.
-		compilationUnit = new CompilationUnit();
-		BlockStart(compilationUnit);
-	.)
+(.
+	compilationUnit = new CompilationUnit();
+	NodeStart(compilationUnit);
+	Get();
+.)
 	{ StatementTerminator }
-	{ OptionStatement<out option>  { StatementTerminator } }
+	{ OptionStatement<CompilationUnit.MemberRole>  { StatementTerminator } }
 /*	{ ImportsStmt { StatementTerminator } }
 	{ IF (IsGlobalAttrTarget()) GlobalAttributeSection { StatementTerminator } }
 	{ NamespaceMemberDecl { StatementTerminator } } */
 .
 
-StatementTerminator = SYNC ( EOL | ":" ) .
+StatementTerminator = SYNC ( EOL<Roles.StatementTerminator> | ":"<Roles.StatementTerminator> ) .
 
-OptionStatement<auto> = .
+#endregion
+
+#region Global
+
+#region OptionStatement
+
+OptionStatement<auto> =
+	"Option"<Roles.Keyword> (
+		"Explicit"<Ast.OptionStatement.OptionTypeRole> (. result.OptionType = OptionType.Explicit; .) [ OnOff<result> ]
+		| "Strict"<Ast.OptionStatement.OptionTypeRole> (. result.OptionType = OptionType.Strict; .) [ OnOff<result> ]
+		| "Infer"<Ast.OptionStatement.OptionTypeRole> (. result.OptionType = OptionType.Infer; .) [ OnOff<result> ]
+		| "Compare"<Ast.OptionStatement.OptionTypeRole> (. result.OptionType = OptionType.Compare; .) BinaryText<result>
+	) StatementTerminator
+.
+
+OnOff<OptionStatement os> =
+	"On"<Ast.OptionStatement.OptionValueRole> (. os.OptionValue = OptionValue.On; .)
+	| "Off"<Ast.OptionStatement.OptionValueRole> (. os.OptionValue  = OptionValue.Off; .)
+.
+
+BinaryText<OptionStatement os> =
+	"Text"<Ast.OptionStatement.OptionValueRole> (. os.OptionValue = OptionValue.Text; .)
+	| "Binary"<Ast.OptionStatement.OptionValueRole> (. os.OptionValue  = OptionValue.Binary; .)
+.
+
+#endregion
+
+#endregion
 
 END VB .

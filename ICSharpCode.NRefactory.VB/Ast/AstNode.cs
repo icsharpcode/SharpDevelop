@@ -231,6 +231,19 @@ namespace ICSharpCode.NRefactory.VB
 			AddChildUnsafe(child, role);
 		}
 		
+		internal void AddChildUntyped(AstNode child, Role role)
+		{
+			if (role == null)
+				throw new ArgumentNullException("role");
+			if (child == null || child.IsNull)
+				return;
+			if (this.IsNull)
+				throw new InvalidOperationException("Cannot add children to null nodes");
+			if (child.parent != null)
+				throw new ArgumentException ("Node is already used in another tree.", "child");
+			AddChildUnsafe(child, role);
+		}
+		
 		/// <summary>
 		/// Adds a child without performing any safety checks.
 		/// </summary>
@@ -655,6 +668,7 @@ namespace ICSharpCode.NRefactory.VB
 			
 			// some pre defined constants for common roles
 			public static readonly Role<Identifier> Identifier = new Role<Identifier>("Identifier", Ast.Identifier.Null);
+			public static readonly Role<XmlIdentifier> XmlIdentifier = new Role<XmlIdentifier>("XmlIdentifier", Ast.XmlIdentifier.Null);
 			
 //			public static readonly Role<BlockStatement> Body = new Role<BlockStatement>("Body", CSharp.BlockStatement.Null);
 //			public static readonly Role<ParameterDeclaration> Parameter = new Role<ParameterDeclaration>("Parameter");
@@ -663,13 +677,13 @@ namespace ICSharpCode.NRefactory.VB
 			public static readonly Role<Expression> Expression = new Role<Expression>("Expression", Ast.Expression.Null);
 //			public static readonly Role<Expression> TargetExpression = new Role<Expression>("Target", CSharp.Expression.Null);
 //			public readonly static Role<Expression> Condition = new Role<Expression>("Condition", CSharp.Expression.Null);
-//			
+//
 //			public static readonly Role<TypeParameterDeclaration> TypeParameter = new Role<TypeParameterDeclaration>("TypeParameter");
 			public static readonly Role<AstType> TypeArgument = new Role<AstType>("TypeArgument", AstType.Null);
 //			public readonly static Role<Constraint> Constraint = new Role<Constraint>("Constraint");
 //			public static readonly Role<VariableInitializer> Variable = new Role<VariableInitializer>("Variable");
 //			public static readonly Role<Statement> EmbeddedStatement = new Role<Statement>("EmbeddedStatement", CSharp.Statement.Null);
-//			
+//
 			public static readonly Role<VBTokenNode> Keyword = new Role<VBTokenNode>("Keyword", VBTokenNode.Null);
 //			public static readonly Role<VBTokenNode> InKeyword = new Role<VBTokenNode>("InKeyword", VBTokenNode.Null);
 			
@@ -687,6 +701,7 @@ namespace ICSharpCode.NRefactory.VB
 			public static readonly Role<VBTokenNode> Semicolon = new Role<VBTokenNode>("Semicolon", VBTokenNode.Null);
 			public static readonly Role<VBTokenNode> Assign = new Role<VBTokenNode>("Assign", VBTokenNode.Null);
 			public static readonly Role<VBTokenNode> Colon = new Role<VBTokenNode>("Colon", VBTokenNode.Null);
+			public static readonly Role<VBTokenNode> StatementTerminator = new Role<VBTokenNode>("StatementTerminator", VBTokenNode.Null);
 			
 			public static readonly Role<Comment> Comment = new Role<Comment>("Comment");
 			

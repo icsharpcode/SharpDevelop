@@ -23,6 +23,7 @@ namespace ICSharpCode.NRefactory.VB {
 		
 		// Expression scope
 		S VisitIdentifier(Identifier identifier, T data);
+		S VisitXmlIdentifier(XmlIdentifier xmlIdentifier, T data);
 		S VisitSimpleNameExpression(SimpleNameExpression identifierExpression, T data);
 		S VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, T data);
 		

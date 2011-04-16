@@ -41,10 +41,6 @@ namespace ICSharpCode.NRefactory.VB.Ast
 			}
 		}
 		
-		public bool IsEscaped { get; set; }
-		
-		public bool IsKeyword { get; set; }
-		
 		public TypeCode TypeCharacter { get; set; }
 		
 		AstLocation startLocation;
@@ -56,7 +52,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		
 		public override AstLocation EndLocation {
 			get {
-				return new AstLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length);
+				return new AstLocation (StartLocation.Line, StartLocation.Column + Name.Length);
 			}
 		}
 		
@@ -78,8 +74,6 @@ namespace ICSharpCode.NRefactory.VB.Ast
 			var node = other as Identifier;
 			return node != null
 				&& MatchString(node.name, name)
-				&& node.IsEscaped == IsEscaped
-				&& node.IsKeyword == IsKeyword
 				&& node.TypeCharacter == TypeCharacter;
 		}
 		
@@ -90,8 +84,8 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		
 		public override string ToString()
 		{
-			return string.Format("[Identifier Name={0}, StartLocation={1}, IsEscaped={2}, IsKeyword={3}, TypeCharacter{4}]",
-			                     name, startLocation, IsEscaped, IsKeyword, TypeCharacter);
+			return string.Format("[Identifier Name={0}, StartLocation={1}, TypeCharacter{4}]",
+			                     name, startLocation, TypeCharacter);
 		}
 	}
 }
