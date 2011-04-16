@@ -21,6 +21,7 @@ namespace PackageManagement.Tests
 		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
 		FakeInstallPackageAction fakeInstallPackageTask;
 		FakeUninstallPackageAction fakeUninstallPackageAction;
+		FakePackageManagementOutputMessagesView fakeLogger;
 		
 		void CreateViewModel()
 		{
@@ -41,6 +42,7 @@ namespace PackageManagement.Tests
 			this.packageManagementService = packageManagementService;
 			sourcePackageRepository = viewModel.FakeSourcePackageRepository;
 			packageManagementEvents = viewModel.FakePackageManagementEvents;
+			fakeLogger = packageManagementService.FakeOutputMessagesView;
 			fakeInstallPackageTask = packageManagementService.ActionToReturnFromCreateInstallPackageAction;
 			fakeUninstallPackageAction = packageManagementService.ActionToReturnFromCreateUninstallPackageAction;
 		}
@@ -363,7 +365,7 @@ namespace PackageManagement.Tests
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			viewModel.AddPackage();
 			
-			ILogger expectedLogger = packageManagementService.FakeOutputMessagesView;
+			ILogger expectedLogger = fakeLogger;
 			ILogger actualLogger = packageManagementService
 				.FakePackageManagerToReturnFromCreatePackageManager
 				.Logger;
@@ -381,7 +383,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			string expectedMessage = "------- Updating...Test.Package 1.2.0.55 -------";
-			string actualMessage = packageManagementService.FakeOutputMessagesView.FirstFormattedMessageLogged;
+			string actualMessage = fakeLogger.FirstFormattedMessageLogged;
 						
 			Assert.AreEqual(expectedMessage, actualMessage);
 		}
@@ -394,7 +396,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			string expectedMessage = "==============================";
-			string actualMessage = packageManagementService.FakeOutputMessagesView.NextToLastFormattedMessageLogged;
+			string actualMessage = fakeLogger.NextToLastFormattedMessageLogged;
 						
 			Assert.AreEqual(expectedMessage, actualMessage);
 		}
@@ -407,7 +409,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			string expectedMessage = String.Empty;
-			string actualMessage = packageManagementService.FakeOutputMessagesView.LastFormattedMessageLogged;
+			string actualMessage = fakeLogger.LastFormattedMessageLogged;
 						
 			Assert.AreEqual(expectedMessage, actualMessage);
 		}
@@ -423,7 +425,7 @@ namespace PackageManagement.Tests
 			viewModel.RemovePackage();
 			
 			string expectedMessage = "------- Removing...Test.Package 1.2.0.55 -------";
-			string actualMessage = packageManagementService.FakeOutputMessagesView.FirstFormattedMessageLogged;
+			string actualMessage = fakeLogger.FirstFormattedMessageLogged;
 						
 			Assert.AreEqual(expectedMessage, actualMessage);
 		}
@@ -436,7 +438,7 @@ namespace PackageManagement.Tests
 			viewModel.RemovePackage();
 			
 			string expectedMessage = "==============================";
-			string actualMessage = packageManagementService.FakeOutputMessagesView.NextToLastFormattedMessageLogged;
+			string actualMessage = fakeLogger.NextToLastFormattedMessageLogged;
 						
 			Assert.AreEqual(expectedMessage, actualMessage);
 		}
@@ -448,7 +450,7 @@ namespace PackageManagement.Tests
 			viewModel.RemovePackage();
 			
 			string expectedMessage = String.Empty;
-			string actualMessage = packageManagementService.FakeOutputMessagesView.LastFormattedMessageLogged;
+			string actualMessage = fakeLogger.LastFormattedMessageLogged;
 						
 			Assert.AreEqual(expectedMessage, actualMessage);
 		}
@@ -484,7 +486,7 @@ namespace PackageManagement.Tests
 			exceptionThrowingPackageManagementService.ExeptionToThrowWhenCreateInstallPackageTaskCalled = ex;
 			viewModel.AddPackage();
 			
-			string actualMessage = packageManagementService.FakeOutputMessagesView.SecondFormattedMessageLogged;
+			string actualMessage = fakeLogger.SecondFormattedMessageLogged;
 			bool containsExceptionErrorMessage = actualMessage.Contains("Exception error message");
 			
 			Assert.IsTrue(containsExceptionErrorMessage, actualMessage);
@@ -518,7 +520,7 @@ namespace PackageManagement.Tests
 			exceptionThrowingPackageManagementService.ExeptionToThrowWhenCreateUninstallPackageActionCalled = ex;
 			viewModel.RemovePackage();
 			
-			string actualMessage = packageManagementService.FakeOutputMessagesView.SecondFormattedMessageLogged;
+			string actualMessage = fakeLogger.SecondFormattedMessageLogged;
 			bool containsExceptionErrorMessage = actualMessage.Contains("Exception error message");
 			
 			Assert.IsTrue(containsExceptionErrorMessage, actualMessage);

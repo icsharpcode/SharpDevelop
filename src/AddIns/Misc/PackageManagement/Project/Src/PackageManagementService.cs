@@ -12,7 +12,6 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementService : IPackageManagementService
 	{
-		IPackageManagementOutputMessagesView outputMessagesView;
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		IPackageManagerFactory packageManagerFactory;
 		IPackageManagementProjectService projectService;
@@ -23,26 +22,24 @@ namespace ICSharpCode.PackageManagement
 			IPackageRepositoryCache packageRepositoryCache,
 			IPackageManagerFactory packageManagerFactory,
 			IPackageManagementEvents packageManagementEvents,
-			IPackageManagementProjectService projectService,
-			IPackageManagementOutputMessagesView outputMessagesView)
+			IPackageManagementProjectService projectService)
 			: this(
 				new RegisteredPackageRepositories(packageRepositoryCache, options),
 				packageManagerFactory,
 				packageManagementEvents,
-				projectService,
-				outputMessagesView)
+				projectService)
 		{
 		}
 		
 		public PackageManagementService(
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageManagementEvents packageManagementEvents)
+			IPackageManagementEvents packageManagementEvents,
+			IPackageManagementOutputMessagesView outputMessagesView)
 			: this(
 				registeredPackageRepositories,
 				new SharpDevelopPackageManagerFactory(),
 				packageManagementEvents,
-				new PackageManagementProjectService(),
-				new PackageManagementOutputMessagesView())
+				new PackageManagementProjectService())
 		{
 		}
 		
@@ -50,18 +47,12 @@ namespace ICSharpCode.PackageManagement
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagerFactory packageManagerFactory,
 			IPackageManagementEvents packageManagementEvents,
-			IPackageManagementProjectService projectService,
-			IPackageManagementOutputMessagesView outputMessagesView)
+			IPackageManagementProjectService projectService)
 		{
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.packageManagementEvents = packageManagementEvents;
 			this.packageManagerFactory = packageManagerFactory;
 			this.projectService = projectService;
-			this.outputMessagesView = outputMessagesView;
-		}
-
-		public IPackageManagementOutputMessagesView OutputMessagesView {
-			get { return outputMessagesView; }
 		}
 		
 		IPackageRepository ActivePackageRepository {

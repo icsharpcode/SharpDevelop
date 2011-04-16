@@ -60,7 +60,7 @@ namespace ICSharpCode.PackageManagement
 		void GetLoggerIfMissing()
 		{
 			if (Logger == null) {
-				Logger = packageManagementService.OutputMessagesView;
+				Logger = new PackageManagementLogger(packageManagementEvents);
 			}
 		}
 		

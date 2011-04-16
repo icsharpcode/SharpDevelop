@@ -24,7 +24,6 @@ namespace ICSharpCode.PackageManagement
 			ITaskFactory taskFactory)
 		{
 			this.packageManagementService = packageManagementService;
-			this.packageManagementService.OutputMessagesView.Clear();
 			this.packageManagementEvents = packageManagementEvents;
 			this.licenseAcceptanceService = licenseAcceptanceService;
 			

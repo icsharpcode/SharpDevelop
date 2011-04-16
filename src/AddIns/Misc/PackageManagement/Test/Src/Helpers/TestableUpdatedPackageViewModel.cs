@@ -42,7 +42,8 @@ namespace PackageManagement.Tests.Helpers
 				package,
 				sourceRepository,
 				packageManagementService,
-				packageManagementEvents)
+				packageManagementEvents,
+				packageManagementService.FakeOutputMessagesView)
 		{
 			this.FakePackage = package;
 			this.FakePackageManagementService = packageManagementService;

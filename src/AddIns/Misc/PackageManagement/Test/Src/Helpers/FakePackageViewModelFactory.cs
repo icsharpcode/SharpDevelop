@@ -20,7 +20,8 @@ namespace PackageManagement.Tests.Helpers
 				package,
 				FakeRegisteredPackageRepositories.FakeActiveRepository,
 				FakePackageManagementService,
-				FakePackageManagementEvents);
+				FakePackageManagementEvents,
+				FakePackageManagementService.FakeOutputMessagesView);
 		}
 		
 		public IRegisteredPackageRepositories RegisteredPackageRepositories {

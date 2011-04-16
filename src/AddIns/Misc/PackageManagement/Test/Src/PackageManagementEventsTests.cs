@@ -216,5 +216,52 @@ namespace PackageManagement.Tests
 			var package = new FakePackage("Test");
 			Assert.DoesNotThrow(() => events.OnParentPackageUninstalled(package));
 		}
+		
+		[Test]
+		public void OnPackageOperationMessageLogged_OneEventSubscriber_SenderIsPackageManagementEvents()
+		{
+			CreateEvents();
+			object eventSender = null;
+			events.PackageOperationMessageLogged += (sender, e) => eventSender = sender;
+			
+			events.OnPackageOperationMessageLogged(MessageLevel.Info, "Test");
+			
+			Assert.AreEqual(events, eventSender);
+		}
+		
+		[Test]
+		public void OnPackageOperationMessageLogged_NoEventSubscribers_NullReferenceExceptionIsNotThrown()
+		{
+			CreateEvents();
+			Assert.DoesNotThrow(() => events.OnPackageOperationMessageLogged(MessageLevel.Info, "Test"));
+		}
+		
+		[Test]
+		public void OnPackageOperationMessageLogged_InfoMessageLoggedWithOneEventSubscriber_EventArgsHasInfoMessageLevel()
+		{
+			CreateEvents();
+			PackageOperationMessageLoggedEventArgs eventArgs = null;
+			events.PackageOperationMessageLogged += (sender, e) => eventArgs = e;
+			
+			events.OnPackageOperationMessageLogged(MessageLevel.Info, "Test");
+			
+			Assert.AreEqual(MessageLevel.Info, eventArgs.Message.Level);
+		}
+		
+		[Test]
+		public void OnPackageOperationMessageLogged_FormattedInfoMessageLoggedWithOneEventSubscriber_EventArgsHasFormattedMessage()
+		{
+			CreateEvents();
+			PackageOperationMessageLoggedEventArgs eventArgs = null;
+			events.PackageOperationMessageLogged += (sender, e) => eventArgs = e;
+			
+			string format = "Test {0}";
+			events.OnPackageOperationMessageLogged(MessageLevel.Info, format, "B");
+			
+			string message = eventArgs.Message.ToString();
+			
+			string expectedMessage = "Test B";
+			Assert.AreEqual(expectedMessage, message);
+		}
 	}
 }

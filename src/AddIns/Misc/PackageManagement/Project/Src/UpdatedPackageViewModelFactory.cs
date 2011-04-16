@@ -19,7 +19,8 @@ namespace ICSharpCode.PackageManagement
 				package,
 				RegisteredPackageRepositories.ActiveRepository,
 				PackageManagementService,
-				PackageManagementEvents);
+				PackageManagementEvents,
+				Logger);
 		}
 	}
 }

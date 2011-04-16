@@ -56,5 +56,15 @@ namespace ICSharpCode.PackageManagement
 				ParentPackageUninstalled(this, new ParentPackageOperationEventArgs(package));
 			}
 		}
+		
+		public event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
+		
+		public void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args)
+		{
+			if (PackageOperationMessageLogged != null) {
+				var eventArgs = new PackageOperationMessageLoggedEventArgs(level, message, args);
+				PackageOperationMessageLogged(this, eventArgs);
+			}
+		}
 	}
 }

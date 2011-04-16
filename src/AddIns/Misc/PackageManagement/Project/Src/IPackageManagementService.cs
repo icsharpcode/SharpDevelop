@@ -20,7 +20,5 @@ namespace ICSharpCode.PackageManagement
 		InstallPackageAction CreateInstallPackageAction();
 		UninstallPackageAction CreateUninstallPackageAction();
 		UpdatePackageAction CreateUpdatePackageAction();
-		
-		IPackageManagementOutputMessagesView OutputMessagesView { get; }
 	}
 }

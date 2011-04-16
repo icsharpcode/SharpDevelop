@@ -23,7 +23,6 @@ namespace PackageManagement.Tests
 		FakePackageManagerFactory fakePackageManagerFactory;
 		FakePackageManagementProjectService fakeProjectService;
 		TestableProject testProject;
-		FakePackageManagementOutputMessagesView fakeOutputMessagesView;
 		
 		void CreatePackageSources()
 		{
@@ -42,7 +41,6 @@ namespace PackageManagement.Tests
 			fakeRegisteredPackageRepositories = new FakeRegisteredPackageRepositories();
 			fakePackageManagerFactory = new FakePackageManagerFactory();
 			fakeProjectService = new FakePackageManagementProjectService();
-			fakeOutputMessagesView = new FakePackageManagementOutputMessagesView();
 			var packageManagementEvents = new FakePackageManagementEvents();
 			
 			fakeProjectService.CurrentProject = testProject;
@@ -51,8 +49,7 @@ namespace PackageManagement.Tests
 					fakeRegisteredPackageRepositories,
 					fakePackageManagerFactory,
 					packageManagementEvents,
-					fakeProjectService,
-					fakeOutputMessagesView);
+					fakeProjectService);
 		}
 		
 		FakePackage AddOneFakePackageToPackageRepositoryFactoryRepository(string id)

@@ -15,12 +15,14 @@ namespace ICSharpCode.PackageManagement
 		static readonly PackageManagementEvents packageManagementEvents = new PackageManagementEvents();
 		static readonly PackageManagementProjectService projectService = new PackageManagementProjectService();
 		static readonly ProjectBrowserRefresher projectBrowserRefresher;
+		static readonly PackageManagementOutputMessagesView outputMessagesView;
 		
 		static PackageManagementServices()
 		{
 			options = new PackageManagementOptions();
 			registeredPackageRepositories = new RegisteredPackageRepositories(options);
-			packageManagementService = new PackageManagementService(registeredPackageRepositories, packageManagementEvents);
+			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
+			packageManagementService = new PackageManagementService(registeredPackageRepositories, packageManagementEvents, outputMessagesView);
 			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
 		}
 		
@@ -42,6 +44,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public static IPackageManagementEvents PackageManagementEvents {
 			get { return packageManagementEvents; }
+		}
+		
+		public static IPackageManagementOutputMessagesView OutputMessagesView {
+			get { return outputMessagesView; }
 		}
 	}
 }

@@ -24,6 +24,7 @@ namespace ICSharpCode.PackageManagement
 			this.RegisteredPackageRepositories = registeredPackageRepositories;
 			this.PackageManagementService = packageManagementService;
 			this.PackageManagementEvents = packageManagementEvents;
+			this.Logger = new PackageManagementLogger(packageManagementEvents);
 		}
 		
 		public virtual PackageViewModel CreatePackageViewModel(IPackage package)
@@ -32,11 +33,13 @@ namespace ICSharpCode.PackageManagement
 				package,
 				RegisteredPackageRepositories.ActiveRepository,
 				PackageManagementService,
-				PackageManagementEvents);
+				PackageManagementEvents,
+				Logger);
 		}
 		
 		public IRegisteredPackageRepositories RegisteredPackageRepositories { get; private set; }
 		public IPackageManagementService PackageManagementService { get; private set; }
 		public IPackageManagementEvents PackageManagementEvents { get; private set; }
+		public ILogger Logger { get; private set; }
 	}
 }

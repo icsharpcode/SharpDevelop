@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
 using NUnit.Framework;
@@ -33,15 +34,15 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_LoggerIsNull_LoggerUsedByPackageManagerIsOutputMessagesViewLogger()
+		public void Execute_LoggerIsNull_LoggerUsedByPackageManagerIsPackageManagementLogger()
 		{
 			CreateAction();
 			action.Execute();
 			
-			ILogger expectedLogger = fakeOutputMessagesView;
 			ILogger actualLogger = fakePackageManager.Logger;
+			Type expectedType = typeof(PackageManagementLogger);
 			
-			Assert.AreEqual(expectedLogger, actualLogger);
+			Assert.IsInstanceOf(expectedType, actualLogger);
 		}
 		
 		[Test]

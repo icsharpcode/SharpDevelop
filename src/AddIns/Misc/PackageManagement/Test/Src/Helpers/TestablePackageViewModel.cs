@@ -22,7 +22,8 @@ namespace PackageManagement.Tests.Helpers
 				new FakePackage(),
 				new FakePackageRepository(),
 				packageManagementService,
-				new FakePackageManagementEvents())
+				new FakePackageManagementEvents(),
+				packageManagementService.FakeOutputMessagesView)
 		{		
 		}
 		
@@ -30,12 +31,14 @@ namespace PackageManagement.Tests.Helpers
 			FakePackage package,
 			FakePackageRepository sourceRepository,
 			FakePackageManagementService packageManagementService,
-			FakePackageManagementEvents packageManagementEvents)
+			FakePackageManagementEvents packageManagementEvents,
+			FakePackageManagementOutputMessagesView logger)
 			: base(
 				package,
 				sourceRepository,
 				packageManagementService,
-				packageManagementEvents)
+				packageManagementEvents,
+				logger)
 		{
 			this.FakePackage = package;
 			this.FakePackageManagementService = packageManagementService;

@@ -16,6 +16,7 @@ namespace PackageManagement.Tests.Helpers
 		public event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
+		public event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 		#pragma warning restore 0067
 		
 		public bool IsOnPackageOperationsStartingCalled;
@@ -55,6 +56,15 @@ namespace PackageManagement.Tests.Helpers
 		public void OnParentPackageUninstalled(IPackage package)
 		{
 			PackagePassedToOnParentPackageUninstalled = package;
+		}
+		
+		public MessageLevel MessageLevelPassedToOnPackageOperationMessageLogged;
+		public string FormattedStringPassedToOnPackageOperationMessageLogged;
+		
+		public void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args)
+		{
+			MessageLevelPassedToOnPackageOperationMessageLogged = level;
+			FormattedStringPassedToOnPackageOperationMessageLogged = String.Format(message, args);
 		}
 	}
 }

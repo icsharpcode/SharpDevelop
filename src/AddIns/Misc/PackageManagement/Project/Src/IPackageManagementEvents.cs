@@ -14,11 +14,13 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
 		event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
 		event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
+		event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 	
 		void OnPackageOperationsStarting();		
 		void OnPackageOperationError(Exception ex);
 		bool OnAcceptLicenses(IEnumerable<IPackage> packages);
 		void OnParentPackageInstalled(IPackage package);
 		void OnParentPackageUninstalled(IPackage package);
+		void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args);
 	}
 }

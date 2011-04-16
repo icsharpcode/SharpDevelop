@@ -20,17 +20,20 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
 		IPackageRepository sourceRepository;
 		bool? hasDependencies;
+		ILogger logger;
 		
 		public PackageViewModel(
 			IPackage package,
 			IPackageRepository sourceRepository,
 			IPackageManagementService packageManagementService,
-			IPackageManagementEvents packageManagementEvents)
+			IPackageManagementEvents packageManagementEvents,
+			ILogger logger)
 		{
 			this.package = package;
 			this.sourceRepository = sourceRepository;
 			this.packageManagementService = packageManagementService;
 			this.packageManagementEvents = packageManagementEvents;
+			this.logger = logger;
 			
 			CreateCommands();
 		}
@@ -167,7 +170,7 @@ namespace ICSharpCode.PackageManagement
 				
 		void Log(string message)
 		{
-			Logger.Log(MessageLevel.Info, message);
+			logger.Log(MessageLevel.Info, message);
 		}
 		
 		string GetFormattedStartPackageOperationMessage(string format)
@@ -179,10 +182,6 @@ namespace ICSharpCode.PackageManagement
 		string GetStartPackageOperationMessage(string message)
 		{
 			return String.Format("------- {0} -------", message);
-		}
-		
-		ILogger Logger {
-			get { return packageManagementService.OutputMessagesView; }
 		}
 		
 		protected virtual string AddingPackageMessageFormat {
@@ -215,7 +214,7 @@ namespace ICSharpCode.PackageManagement
 		ISharpDevelopPackageManager CreatePackageManagerForActiveProject()
 		{
 			ISharpDevelopPackageManager packageManager = packageManagementService.CreatePackageManagerForActiveProject();
-			packageManager.Logger = Logger;
+			packageManager.Logger = logger;
 			return packageManager;
 		}
 		

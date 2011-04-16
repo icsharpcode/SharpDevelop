@@ -143,14 +143,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Constructor_InstanceCreated_OutputMessagesCleared()
-		{
-			CreateViewModel();
-			
-			Assert.IsTrue(fakePackageManagementService.FakeOutputMessagesView.IsClearCalled);
-		}
-		
-		[Test]
 		public void RecentPackagesViewModel_RecentRepositoryHasOnePackage_HasOnePackageViewModel()
 		{
 			CreatePackageManagementService();

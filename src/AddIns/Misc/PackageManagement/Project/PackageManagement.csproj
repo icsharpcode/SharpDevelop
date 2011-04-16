@@ -67,9 +67,13 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AcceptLicensesEventArgs.cs" />
     <Compile Include="Src\AddPackageReferenceCommand.cs" />
+    <Compile Include="Src\IAddPackageReferenceView.cs" />
     <Compile Include="Src\IPackageManagementEvents.cs" />
     <Compile Include="Src\PackageManagementEvents.cs" />
+    <Compile Include="Src\PackageManagementLogger.cs" />
     <Compile Include="Src\PackageOperationExceptionEventArgs.cs" />
+    <Compile Include="Src\PackageOperationMessage.cs" />
+    <Compile Include="Src\PackageOperationMessageLoggedEventArgs.cs" />
     <Compile Include="Src\ParentPackageOperationEventArgs.cs" />
     <Compile Include="Src\ProjectBrowserRefresher.cs" />
     <Compile Include="Src\RegisteredPackageRepositories.cs" />
