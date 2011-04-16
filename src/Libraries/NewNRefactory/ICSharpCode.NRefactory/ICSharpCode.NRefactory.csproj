@@ -55,6 +55,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="CSharp\Analysis\ControlFlow.cs" />
     <Compile Include="CSharp\Analysis\DefiniteAssignmentAnalysis.cs" />
     <Compile Include="CSharp\Analysis\MinimalResolveContext.cs" />
