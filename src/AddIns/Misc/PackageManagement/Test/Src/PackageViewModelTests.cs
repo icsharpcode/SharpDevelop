@@ -359,13 +359,13 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void AddPackage_CheckLoggerUsed_OutputMessagesLoggerUsedWhenResolvingPackageOperations()
+		public void AddPackage_CheckLoggerUsed_PackageViewModelLoggerUsedWhenResolvingPackageOperations()
 		{
 			CreateViewModel();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			viewModel.AddPackage();
 			
-			ILogger expectedLogger = fakeLogger;
+			ILogger expectedLogger = viewModel.OperationLoggerCreated;
 			ILogger actualLogger = packageManagementService
 				.FakePackageManagerToReturnFromCreatePackageManager
 				.Logger;
@@ -379,12 +379,11 @@ namespace PackageManagement.Tests
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			package.Id = "Test.Package";
 			package.Version = new Version(1, 2, 0, 55);
-			viewModel.PackageViewModelAddingPackageMessageFormat = "Updating...{0}";
 			viewModel.AddPackage();
 			
-			string expectedMessage = "------- Updating...Test.Package 1.2.0.55 -------";
+			string expectedMessage = "------- Installing...Test.Package 1.2.0.55 -------";
 			string actualMessage = fakeLogger.FirstFormattedMessageLogged;
-						
+			
 			Assert.AreEqual(expectedMessage, actualMessage);
 		}
 		
@@ -421,10 +420,9 @@ namespace PackageManagement.Tests
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			package.Id = "Test.Package";
 			package.Version = new Version(1, 2, 0, 55);
-			viewModel.PackageViewModelRemovingPackageMessageFormat = "Removing...{0}";
 			viewModel.RemovePackage();
 			
-			string expectedMessage = "------- Removing...Test.Package 1.2.0.55 -------";
+			string expectedMessage = "------- Uninstalling...Test.Package 1.2.0.55 -------";
 			string actualMessage = fakeLogger.FirstFormattedMessageLogged;
 						
 			Assert.AreEqual(expectedMessage, actualMessage);

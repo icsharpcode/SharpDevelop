@@ -20,7 +20,7 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
 		IPackageRepository sourceRepository;
 		bool? hasDependencies;
-		ILogger logger;
+		PackageViewModelOperationLogger logger;
 		
 		public PackageViewModel(
 			IPackage package,
@@ -33,9 +33,14 @@ namespace ICSharpCode.PackageManagement
 			this.sourceRepository = sourceRepository;
 			this.packageManagementService = packageManagementService;
 			this.packageManagementEvents = packageManagementEvents;
-			this.logger = logger;
+			this.logger = CreateLogger(logger);
 			
 			CreateCommands();
+		}
+		
+		protected virtual PackageViewModelOperationLogger CreateLogger(ILogger logger)
+		{
+			return new PackageViewModelOperationLogger(logger, package);
 		}
 		
 		void CreateCommands()
@@ -152,57 +157,14 @@ namespace ICSharpCode.PackageManagement
 		public void AddPackage()
 		{
 			ClearReportedMessages();
-			LogAddingPackage();
+			logger.LogAddingPackage();
 			TryInstallingPackage();
-			LogAfterPackageOperationCompletes();
+			logger.LogAfterPackageOperationCompletes();
 		}
 		
 		void ClearReportedMessages()
 		{
 			packageManagementEvents.OnPackageOperationsStarting();
-		}
-		
-		void LogAddingPackage()
-		{
-			string message = GetFormattedStartPackageOperationMessage(AddingPackageMessageFormat);
-			Log(message);
-		}
-				
-		void Log(string message)
-		{
-			logger.Log(MessageLevel.Info, message);
-		}
-		
-		string GetFormattedStartPackageOperationMessage(string format)
-		{
-			string message = String.Format(format, package.ToString());
-			return GetStartPackageOperationMessage(message);
-		}
-		
-		string GetStartPackageOperationMessage(string message)
-		{
-			return String.Format("------- {0} -------", message);
-		}
-		
-		protected virtual string AddingPackageMessageFormat {
-			get { return "Installing...{0}"; }
-		}
-		
-		void LogAfterPackageOperationCompletes()
-		{
-			LogEndMarkerLine();
-			LogEmptyLine();
-		}
-		
-		void LogEndMarkerLine()
-		{
-			string message = new String('=', 30);
-			Log(message);
-		}
-
-		void LogEmptyLine()
-		{
-			Log(String.Empty);
 		}
 		
 		void GetPackageOperations()
@@ -263,7 +225,7 @@ namespace ICSharpCode.PackageManagement
 				}
 			} catch (Exception ex) {
 				ReportError(ex);
-				Log(ex.ToString());
+				logger.LogError(ex);
 			}
 		}
 		
@@ -293,21 +255,16 @@ namespace ICSharpCode.PackageManagement
 		public void RemovePackage()
 		{
 			ClearReportedMessages();
-			LogRemovingPackage();
+			logger.LogRemovingPackage();
 			TryUninstallingPackage();
-			LogAfterPackageOperationCompletes();
+			logger.LogAfterPackageOperationCompletes();
 			
 			OnPropertyChanged(model => model.IsAdded);
 		}
 		
 		void LogRemovingPackage()
 		{
-			string message =  GetFormattedStartPackageOperationMessage(RemovingPackageMessageFormat);
-			Log(message);
-		}
-				
-		protected virtual string RemovingPackageMessageFormat {
-			get { return "Uninstalling...{0}"; }
+			logger.LogRemovingPackage();
 		}
 		
 		void TryUninstallingPackage()
@@ -319,7 +276,7 @@ namespace ICSharpCode.PackageManagement
 				action.Execute();
 			} catch (Exception ex) {
 				ReportError(ex);
-				Log(ex.ToString());
+				logger.LogError(ex);
 			}
 		}
 	}

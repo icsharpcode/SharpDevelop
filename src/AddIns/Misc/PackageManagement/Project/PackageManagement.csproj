@@ -74,6 +74,7 @@
     <Compile Include="Src\PackageOperationExceptionEventArgs.cs" />
     <Compile Include="Src\PackageOperationMessage.cs" />
     <Compile Include="Src\PackageOperationMessageLoggedEventArgs.cs" />
+    <Compile Include="Src\PackageViewModelOperationLogger.cs" />
     <Compile Include="Src\ParentPackageOperationEventArgs.cs" />
     <Compile Include="Src\ProjectBrowserRefresher.cs" />
     <Compile Include="Src\RegisteredPackageRepositories.cs" />

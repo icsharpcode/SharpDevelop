@@ -15,8 +15,6 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackageManagementEvents FakePackageManagementEvents;
 		public FakePackage FakePackage;
 		public FakeLogger FakeLogger;
-		public string PackageViewModelAddingPackageMessageFormat = String.Empty;
-		public string PackageViewModelRemovingPackageMessageFormat = String.Empty;
 		
 		public TestablePackageViewModel(FakePackageManagementService packageManagementService)
 			: this(
@@ -48,13 +46,16 @@ namespace PackageManagement.Tests.Helpers
 			this.FakeLogger = logger;
 		}
 		
-		protected override string AddingPackageMessageFormat {
-			get { return PackageViewModelAddingPackageMessageFormat; }
+		protected override PackageViewModelOperationLogger CreateLogger(ILogger logger)
+		{
+			PackageViewModelOperationLogger operationLogger = base.CreateLogger(logger);
+			operationLogger.AddingPackageMessageFormat = "Installing...{0}";
+			operationLogger.RemovingPackageMessageFormat = "Uninstalling...{0}";
+			OperationLoggerCreated = operationLogger;
+			return operationLogger;
 		}
 		
-		protected override string RemovingPackageMessageFormat {
-			get { return PackageViewModelRemovingPackageMessageFormat; }
-		}
+		public PackageViewModelOperationLogger OperationLoggerCreated;
 		
 		public PackageOperation AddOneFakeInstallPackageOperationForViewModelPackage()
 		{

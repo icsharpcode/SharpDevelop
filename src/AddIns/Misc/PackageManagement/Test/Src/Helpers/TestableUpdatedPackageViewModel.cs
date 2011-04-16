@@ -17,8 +17,6 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackage FakePackage;
 		public FakeLogger FakeLogger;
 		public ILogger LoggerUsedWhenCreatingPackageResolver;
-		public string PackageViewModelAddingPackageMessageFormat = String.Empty;
-		public string PackageViewModelRemovingPackageMessageFormat = String.Empty;
 		
 		public TestableUpdatedPackageViewModel()
 			: this(new FakePackageManagementService())
@@ -52,14 +50,6 @@ namespace PackageManagement.Tests.Helpers
 			this.FakePackageManagementService = packageManagementService;
 			this.FakeSourcePackageRepository = sourceRepository;
 			this.FakeLogger = logger;
-		}
-		
-		protected override string AddingPackageMessageFormat {
-			get { return PackageViewModelAddingPackageMessageFormat; }
-		}
-		
-		protected override string RemovingPackageMessageFormat {
-			get { return PackageViewModelRemovingPackageMessageFormat; }
 		}
 	}
 }
