@@ -340,6 +340,7 @@ namespace AvalonDock
         /// </summary>
         internal void InternalClose()
         {
+            this.LastActivation = DateTime.MinValue; // make this content ineligible for ActiveDocument selection when ActiveDocument is set to null
             DockingManager manager = Manager;
 
             if (manager != null)

@@ -237,6 +237,7 @@ Icons.16x16.DeleteHistory                         = BitmapResources-data\Icons.1
 Icons.48x48.CurrentFrame 						  = BitmapResources-data\Icons.48x48.CurrentFrame.png
 Icons.16x16.Refresh                         	  = BitmapResources-data\Icons.16x16.Refresh.png
 Icons.Magnifier									  = BitmapResources-data\magnifier.png
+ILSpy = BitmapResources-data\ILSpy.png
 
 #pad icons
 PadIcons.ErrorList                                = PadIcons\ErrorList.png

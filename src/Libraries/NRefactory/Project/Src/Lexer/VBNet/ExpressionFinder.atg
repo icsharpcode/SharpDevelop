@@ -512,6 +512,7 @@ Parameter =
 	(. PushContext(Context.Parameter, la, t); .)
 	{ AttributeBlock } { ParameterModifier }
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	[ "?" ] { "(" { "," } ")" }
 	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
 	[ "=" Expression ]
 	(. PopContext(); .)

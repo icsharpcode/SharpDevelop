@@ -374,6 +374,7 @@
 				<ComponentRef Id="RegExToolkitFiles"/>
 				<ComponentRef Id="ResourceToolkitFiles"/>
 				<ComponentRef Id="SearchAndReplaceFiles"/>
+				<ComponentRef Id="ILSpyAddInFiles"/>
 
 				<ComponentRef Id="StartPageAddInFiles"/>
 				<ComponentRef Id="SubversionAddInDll"/>

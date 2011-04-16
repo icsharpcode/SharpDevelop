@@ -165,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (typeParameterCount == 0 && name == "System.Object" && HasDynamicAttribute(attributeProvider, typeIndex))
 					return new DynamicReturnType(pc);
 				
-				IClass c = pc.GetClass(name, typeParameterCount);
+				IClass c = pc.GetClass(name, typeParameterCount, LanguageProperties.CSharp, GetClassOptions.Default | GetClassOptions.ExactMatch);
 				if (c != null) {
 					return c.DefaultReturnType;
 				} else {

@@ -1,32 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.1.7088
+# SharpDevelop 4.0.1.7146
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{256F5C28-532C-44C0-8AB8-D8EC5E492E01}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartUp", "src\Main\StartUp\Project\StartUp.csproj", "{1152B71B-3C05-4598-B20D-823B5D40559E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.BuildWorker35", "src\Main\ICSharpCode.SharpDevelop.BuildWorker35\ICSharpCode.SharpDevelop.BuildWorker35.csproj", "{B5F54272-49F0-40DB-845A-8D837875D3BA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Widgets", "src\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj", "{8035765F-D51F-4A0C-A746-2FD100E19419}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.BuildWorker", "src\Main\ICSharpCode.SharpDevelop.BuildWorker\ICSharpCode.SharpDevelop.BuildWorker.csproj", "{C3CBC8E3-81D8-4C5B-9941-DCCD12D50B1F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop", "src\Main\Base\Project\ICSharpCode.SharpDevelop.csproj", "{2748AD25-9C63-4E12-877B-4DCE96FBED54}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Core", "src\Main\Core\Project\ICSharpCode.Core.csproj", "{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Sda", "src\Main\ICSharpCode.SharpDevelop.Sda\ICSharpCode.SharpDevelop.Sda.csproj", "{80318B5F-A25D-45AB-8A95-EF31D2370A4C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Dom", "src\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj", "{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Core.Presentation", "src\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj", "{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
@@ -36,19 +28,27 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Core.WinForms",
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Core.Presentation", "src\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj", "{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Dom", "src\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj", "{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Core", "src\Main\Core\Project\ICSharpCode.Core.csproj", "{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.BuildWorker", "src\Main\ICSharpCode.SharpDevelop.BuildWorker\ICSharpCode.SharpDevelop.BuildWorker.csproj", "{C3CBC8E3-81D8-4C5B-9941-DCCD12D50B1F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Sda", "src\Main\ICSharpCode.SharpDevelop.Sda\ICSharpCode.SharpDevelop.Sda.csproj", "{80318B5F-A25D-45AB-8A95-EF31D2370A4C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.BuildWorker35", "src\Main\ICSharpCode.SharpDevelop.BuildWorker35\ICSharpCode.SharpDevelop.BuildWorker35.csproj", "{B5F54272-49F0-40DB-845A-8D837875D3BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop", "src\Main\Base\Project\ICSharpCode.SharpDevelop.csproj", "{2748AD25-9C63-4E12-877B-4DCE96FBED54}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Widgets", "src\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj", "{8035765F-D51F-4A0C-A746-2FD100E19419}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartUp", "src\Main\StartUp\Project\StartUp.csproj", "{1152B71B-3C05-4598-B20D-823B5D40559E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
@@ -57,351 +57,79 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactory", "src\Libraries\NRefactory\Project\NRefactory.csproj", "{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.TreeView", "src\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj", "{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aga.Controls", "src\Libraries\TreeViewAdv\Aga.Controls\Aga.Controls.csproj", "{E73BB233-D88B-44A7-A98F-D71EE158381D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Build.Tasks", "src\Libraries\ICSharpCode.Build.Tasks\Project\ICSharpCode.Build.Tasks.csproj", "{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonDock", "src\Libraries\AvalonDock\AvalonDock\AvalonDock.csproj", "{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.AvalonEdit", "src\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj", "{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonDock", "src\Libraries\AvalonDock\AvalonDock\AvalonDock.csproj", "{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Build.Tasks", "src\Libraries\ICSharpCode.Build.Tasks\Project\ICSharpCode.Build.Tasks.csproj", "{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aga.Controls", "src\Libraries\TreeViewAdv\Aga.Controls\Aga.Controls.csproj", "{E73BB233-D88B-44A7-A98F-D71EE158381D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.TreeView", "src\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj", "{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactory", "src\Libraries\NRefactory\Project\NRefactory.csproj", "{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AddIns", "AddIns", "{39327899-ED91-4F7F-988C-4FE4E17C014D}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Version Control", "Version Control", "{6E3D4DBA-DBF9-4035-8F7E-1403975B21EA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reports", "Reports", "{8789D7FF-B36C-4187-B57D-55ED64623272}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubversionAddIn", "src\AddIns\VersionControl\SubversionAddIn\SubversionAddIn.csproj", "{17F4D7E0-6933-4C2E-8714-FD7E98D625D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Reports.Addin", "src\AddIns\Misc\Reports\ICSharpCode.Reports.Addin\ICSharpCode.Reports.Addin.csproj", "{35D002D7-C78B-44FB-92AA-104BEB431678}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitAddIn", "src\AddIns\VersionControl\GitAddIn\GitAddIn.csproj", "{83F15BA7-8478-4664-81BB-A82F146D88B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Reports.Core", "src\AddIns\Misc\Reports\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj", "{4B2239FF-8FD6-431D-9D22-1B8049BA6917}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{F355E45F-F54F-4B42-8916-9A633A392789}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Irony", "src\AddIns\Misc\Reports\Irony\Irony.csproj", "{D81F5C91-D7DB-46E5-BC99-49488FB6814C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Profiler", "Profiler", "{C4035C32-026F-4158-AF15-113EA1EF1960}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeQualityAnalysis", "src\AddIns\Analysis\CodeQuality\CodeQualityAnalysis.csproj", "{76DD1CC0-0D86-44A1-9BD6-D91F79807BC3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.AddIn", "src\AddIns\Analysis\Profiler\Frontend\AddIn\Profiler.AddIn.csproj", "{D294A12D-4B38-4F25-9AA6-3D4A6CE26E7B}"
 	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+		{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6} = {FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.Controls", "src\AddIns\Analysis\Profiler\Frontend\Controls\Profiler.Controls.csproj", "{BDA49550-5ED1-4C6B-B648-657B2CACD8E0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6} = {FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceAnalysis", "src\AddIns\Analysis\SourceAnalysis\SourceAnalysis.csproj", "{CE498514-D12D-4B6E-AE0E-FEC29BD43748}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.Controller", "src\AddIns\Analysis\Profiler\Controller\Profiler.Controller.csproj", "{72FFB35A-C9E2-4A31-B4FA-E3E3E28DED5F}"
 	ProjectSection(ProjectDependencies) = postProject
+		{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6} = {FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage", "src\AddIns\Analysis\CodeCoverage\Project\CodeCoverage.csproj", "{08CE9972-283B-44F4-82FA-966F7DFA6B7A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeAnalysis", "src\AddIns\Analysis\CodeAnalysis\CodeAnalysis.csproj", "{3EAA45A9-735C-4AC7-A799-947B93EA449D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "src\AddIns\Analysis\UnitTesting\UnitTesting.csproj", "{1F261725-6318-4434-A1B1-6C70CE4CD324}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Display Bindings", "Display Bindings", "{11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WpfDesign", "WpfDesign", "{6022AC51-B658-4C54-97EF-79187AC65B47}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.XamlDom", "src\AddIns\DisplayBindings\WpfDesign\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj", "{88DA149F-21B2-48AB-82C4-28FB6BDFD783}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.Designer", "src\AddIns\DisplayBindings\WpfDesign\WpfDesign.Designer\Project\WpfDesign.Designer.csproj", "{78CC29AC-CC79-4355-B1F2-97936DF198AC}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.AddIn", "src\AddIns\DisplayBindings\WpfDesign\WpfDesign.AddIn\WpfDesign.AddIn.csproj", "{9A9D6FD4-6A2E-455D-ACC3-DDA775FE9865}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign", "src\AddIns\DisplayBindings\WpfDesign\WpfDesign\Project\WpfDesign.csproj", "{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IconEditor", "IconEditor", "{0773ED53-08E2-4495-A3BE-CA0B5D413C15}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconEditorAddIn", "src\AddIns\DisplayBindings\IconEditor\IconEditorAddIn\IconEditorAddIn.csproj", "{DFB936AD-90EE-4B4F-941E-4F4A636F0D92}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconEditor", "src\AddIns\DisplayBindings\IconEditor\IconEditor\IconEditor.csproj", "{DC1CCE11-CB91-40FA-9C47-4D9EB5D67BFD}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexEditor", "src\AddIns\DisplayBindings\HexEditor\Project\HexEditor.csproj", "{E618A9CD-A39F-4925-A538-E8A3FEF24E54}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceEditor", "src\AddIns\DisplayBindings\ResourceEditor\Project\ResourceEditor.csproj", "{CBC6C247-747B-4908-B09A-4D2E0F640B6B}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonEdit.AddIn", "src\AddIns\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj", "{0162E499-42D0-409B-AA25-EED21F75336B}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlEditor", "src\AddIns\DisplayBindings\XmlEditor\Project\XmlEditor.csproj", "{DCA2703D-250A-463E-A68A-07ED105AE6BD}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormsDesigner", "src\AddIns\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj", "{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClassDiagram", "ClassDiagram", "{BFA3BF26-33BD-4A65-B84D-C7F30D131668}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassCanvas", "src\AddIns\DisplayBindings\ClassDiagram\ClassCanvas\ClassCanvas.csproj", "{08F772A1-F0BE-433E-8B37-F6522953DB05}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassDiagramAddin", "src\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin\ClassDiagramAddin.csproj", "{5A1354DF-4989-4BB4-BC6B-D627C2E9FA13}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diagrams", "src\AddIns\DisplayBindings\ClassDiagram\DiagramRouter\Diagrams.csproj", "{0991423A-DBF6-4C89-B365-A1DF1EB32E42}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{C7F29FC2-1B03-4CDD-9E30-400F4765FF04}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.Addin", "src\AddIns\DisplayBindings\Data\ICSharpCode.Data.Addin\ICSharpCode.Data.Addin.csproj", "{A9F12710-24E4-46D4-832C-6ECB395B9EAD}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.Core", "src\AddIns\DisplayBindings\Data\ICSharpCode.Data.Core\ICSharpCode.Data.Core.csproj", "{B7823AE9-4B43-4859-8796-2EBDC116FBB8}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.Core.UI", "src\AddIns\DisplayBindings\Data\ICSharpCode.Data.Core.UI\ICSharpCode.Data.Core.UI.csproj", "{BAD94D6E-4159-4CB6-B991-486F412D9BB6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.EDMDesigner.Core", "src\AddIns\DisplayBindings\Data\ICSharpCode.Data.EDMDesigner.Core\ICSharpCode.Data.EDMDesigner.Core.csproj", "{5C70D6AB-0A33-43F9-B8B5-54558C35BBB1}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.EDMDesigner.Core.UI", "src\AddIns\DisplayBindings\Data\ICSharpCode.Data.EDMDesigner.Core.UI\ICSharpCode.Data.EDMDesigner.Core.UI.csproj", "{EEF5E054-4192-4A57-8FBF-E860D808A51D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.SQLServer", "src\AddIns\DisplayBindings\Data\ICSharpCode.Data.SQLServer\ICSharpCode.Data.SQLServer.csproj", "{AFE34868-AFA1-4E1C-9450-47AB4BE329D5}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SettingsEditor", "src\AddIns\DisplayBindings\SettingsEditor\Project\SettingsEditor.csproj", "{85226AFB-CE71-4851-9A75-7EEC663A8E8A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{F3662720-9EA2-4591-BBC6-97361DCE50A9}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement", "src\AddIns\Misc\PackageManagement\Project\PackageManagement.csproj", "{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UsageDataCollector", "UsageDataCollector", "{DEFC8584-BEC3-4921-BD0F-40482E450B7B}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsageDataCollector.AddIn", "src\AddIns\Misc\UsageDataCollector\UsageDataCollector.AddIn\UsageDataCollector.AddIn.csproj", "{0008FCE9-9EB4-4E2E-979B-553278E5BBA6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsageDataCollector", "src\AddIns\Misc\UsageDataCollector\UsageDataCollector\UsageDataCollector.csproj", "{6B1CFE35-DA17-4DEB-9C6E-227E5E251DA0}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceToolkit", "src\AddIns\Misc\ResourceToolkit\Project\ResourceToolkit.csproj", "{461606BD-E824-4D0A-8CBA-01810B1F5E02}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegExpTk", "src\AddIns\Misc\RegExpTk\Project\RegExpTk.csproj", "{64A3E5E6-90BF-47F6-94DF-68C94B62C817}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PInvokeAddIn", "src\AddIns\Misc\PInvokeAddIn\Project\PInvokeAddIn.csproj", "{5EEB99CF-EA2B-4733-80A6-CE9192D68170}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiletypeRegisterer", "src\AddIns\Misc\FiletypeRegisterer\Project\FiletypeRegisterer.csproj", "{D022A6CE-7438-41E8-AC64-F2DE18EC54C6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddinScout", "src\AddIns\Misc\AddinScout\Project\AddinScout.csproj", "{4B8F0F98-8BE1-402B-AA8B-C8D548577B38}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddInManager", "src\AddIns\Misc\AddInManager\Project\AddInManager.csproj", "{F93E52FD-DA66-4CE5-A0CB-BCD902811122}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartPage", "src\AddIns\Misc\StartPage\Project\StartPage.csproj", "{7D5C266F-D6FF-4D14-B315-0C0FC6C4EF51}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAndReplace", "src\AddIns\Misc\SearchAndReplace\Project\SearchAndReplace.csproj", "{9196DD8A-B4D4-4780-8742-C5762E547FC2}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpRefactoring", "src\AddIns\Misc\SharpRefactoring\Project\SharpRefactoring.csproj", "{3CA90546-3B4C-4663-9445-C4E9371750A7}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelpViewer", "src\AddIns\Misc\HelpViewer\HelpViewer.csproj", "{80F76D10-0B44-4D55-B4BD-DAEB5464090C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debugger", "Debugger", "{CDE0C5A4-2096-48B5-BEA3-74DBA0F0E1EF}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Debugger.AddIn", "src\AddIns\Debugger\Debugger.AddIn\Debugger.AddIn.csproj", "{EC06F96A-AEEC-49D6-B03D-AB87C6EB674C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Debugger.Core", "src\AddIns\Debugger\Debugger.Core\Debugger.Core.csproj", "{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.X64Converter", "src\AddIns\Analysis\Profiler\X64Converter\Profiler.X64Converter.csproj", "{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Language Bindings", "Language Bindings", "{E0646C25-36F2-4524-969F-FA621353AB94}"
 	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Scripting", "src\AddIns\BackendBindings\Scripting\Project\ICSharpCode.Scripting.csproj", "{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSharpBinding", "src\AddIns\BackendBindings\FSharpBinding\FSharpBinding.csproj", "{E954F3CB-A446-492F-A664-2B376EBC86E8}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamlBinding", "src\AddIns\BackendBindings\XamlBinding\XamlBinding\XamlBinding.csproj", "{7C96B65D-28A5-4F28-A35B-8D83CE831EE8}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBNetBinding", "src\AddIns\BackendBindings\VBNetBinding\Project\VBNetBinding.csproj", "{BF38FB72-B380-4196-AF8C-95749D726C61}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpBinding", "src\AddIns\BackendBindings\CSharpBinding\Project\CSharpBinding.csproj", "{1F1AC7CD-D154-45BB-8EAF-804CA8055F5A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixBinding", "src\AddIns\BackendBindings\WixBinding\Project\WixBinding.csproj", "{E1B288A2-08EE-4318-8BBB-8AB72C69E33E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Python", "Python", "{CA76F702-5B4E-4918-B8D8-7FF8382434FF}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PythonBinding", "src\AddIns\BackendBindings\Python\PythonBinding\Project\PythonBinding.csproj", "{8D732610-8FC6-43BA-94C9-7126FD7FE361}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Python.Build.Tasks", "src\AddIns\BackendBindings\Python\Python.Build.Tasks\Project\Python.Build.Tasks.csproj", "{D332F2D1-2CF1-43B7-903C-844BD5211A7E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Boo", "Boo", "{97B3B514-AB0E-4FE1-89DE-8A945F5112AE}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactoryToBooConverter", "src\AddIns\BackendBindings\Boo\NRefactoryToBooConverter\Project\NRefactoryToBooConverter.csproj", "{DBCF20A1-BA13-4582-BFA9-74DE4D987B73}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BooBinding", "src\AddIns\BackendBindings\Boo\BooBinding\Project\BooBinding.csproj", "{4AC2D5F1-F671-480C-A075-6BF62B3721B2}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppBinding", "src\AddIns\BackendBindings\CppBinding\CppBinding\CppBinding.csproj", "{70966F84-74C9-4067-A379-0C674A929233}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ruby", "Ruby", "{C7288E72-FFBE-48CD-84B4-6CBF95A7195A}"
@@ -413,45 +141,325 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RubyBinding", "src\AddIns\B
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Profiler", "Profiler", "{C4035C32-026F-4158-AF15-113EA1EF1960}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppBinding", "src\AddIns\BackendBindings\CppBinding\CppBinding\CppBinding.csproj", "{70966F84-74C9-4067-A379-0C674A929233}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Boo", "Boo", "{97B3B514-AB0E-4FE1-89DE-8A945F5112AE}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.X64Converter", "src\AddIns\Analysis\Profiler\X64Converter\Profiler.X64Converter.csproj", "{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BooBinding", "src\AddIns\BackendBindings\Boo\BooBinding\Project\BooBinding.csproj", "{4AC2D5F1-F671-480C-A075-6BF62B3721B2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.Controller", "src\AddIns\Analysis\Profiler\Controller\Profiler.Controller.csproj", "{72FFB35A-C9E2-4A31-B4FA-E3E3E28DED5F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactoryToBooConverter", "src\AddIns\BackendBindings\Boo\NRefactoryToBooConverter\Project\NRefactoryToBooConverter.csproj", "{DBCF20A1-BA13-4582-BFA9-74DE4D987B73}"
 	ProjectSection(ProjectDependencies) = postProject
-		{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6} = {FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.Controls", "src\AddIns\Analysis\Profiler\Frontend\Controls\Profiler.Controls.csproj", "{BDA49550-5ED1-4C6B-B648-657B2CACD8E0}"
-	ProjectSection(ProjectDependencies) = postProject
-		{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6} = {FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.AddIn", "src\AddIns\Analysis\Profiler\Frontend\AddIn\Profiler.AddIn.csproj", "{D294A12D-4B38-4F25-9AA6-3D4A6CE26E7B}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-		{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6} = {FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reports", "Reports", "{8789D7FF-B36C-4187-B57D-55ED64623272}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Python", "Python", "{CA76F702-5B4E-4918-B8D8-7FF8382434FF}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Irony", "src\AddIns\Misc\Reports\Irony\Irony.csproj", "{D81F5C91-D7DB-46E5-BC99-49488FB6814C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Reports.Core", "src\AddIns\Misc\Reports\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj", "{4B2239FF-8FD6-431D-9D22-1B8049BA6917}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Python.Build.Tasks", "src\AddIns\BackendBindings\Python\Python.Build.Tasks\Project\Python.Build.Tasks.csproj", "{D332F2D1-2CF1-43B7-903C-844BD5211A7E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Reports.Addin", "src\AddIns\Misc\Reports\ICSharpCode.Reports.Addin\ICSharpCode.Reports.Addin.csproj", "{35D002D7-C78B-44FB-92AA-104BEB431678}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PythonBinding", "src\AddIns\BackendBindings\Python\PythonBinding\Project\PythonBinding.csproj", "{8D732610-8FC6-43BA-94C9-7126FD7FE361}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixBinding", "src\AddIns\BackendBindings\WixBinding\Project\WixBinding.csproj", "{E1B288A2-08EE-4318-8BBB-8AB72C69E33E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpBinding", "src\AddIns\BackendBindings\CSharpBinding\Project\CSharpBinding.csproj", "{1F1AC7CD-D154-45BB-8EAF-804CA8055F5A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBNetBinding", "src\AddIns\BackendBindings\VBNetBinding\Project\VBNetBinding.csproj", "{BF38FB72-B380-4196-AF8C-95749D726C61}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamlBinding", "src\AddIns\BackendBindings\XamlBinding\XamlBinding\XamlBinding.csproj", "{7C96B65D-28A5-4F28-A35B-8D83CE831EE8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSharpBinding", "src\AddIns\BackendBindings\FSharpBinding\FSharpBinding.csproj", "{E954F3CB-A446-492F-A664-2B376EBC86E8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Scripting", "src\AddIns\BackendBindings\Scripting\Project\ICSharpCode.Scripting.csproj", "{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debugger", "Debugger", "{CDE0C5A4-2096-48B5-BEA3-74DBA0F0E1EF}"
+	ProjectSection(SolutionItems) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Debugger.Core", "src\AddIns\Debugger\Debugger.Core\Debugger.Core.csproj", "{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Debugger.AddIn", "src\AddIns\Debugger\Debugger.AddIn\Debugger.AddIn.csproj", "{EC06F96A-AEEC-49D6-B03D-AB87C6EB674C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{F3662720-9EA2-4591-BBC6-97361DCE50A9}"
+	ProjectSection(SolutionItems) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelpViewer", "src\AddIns\Misc\HelpViewer\HelpViewer.csproj", "{80F76D10-0B44-4D55-B4BD-DAEB5464090C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpRefactoring", "src\AddIns\Misc\SharpRefactoring\Project\SharpRefactoring.csproj", "{3CA90546-3B4C-4663-9445-C4E9371750A7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAndReplace", "src\AddIns\Misc\SearchAndReplace\Project\SearchAndReplace.csproj", "{9196DD8A-B4D4-4780-8742-C5762E547FC2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartPage", "src\AddIns\Misc\StartPage\Project\StartPage.csproj", "{7D5C266F-D6FF-4D14-B315-0C0FC6C4EF51}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddInManager", "src\AddIns\Misc\AddInManager\Project\AddInManager.csproj", "{F93E52FD-DA66-4CE5-A0CB-BCD902811122}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddinScout", "src\AddIns\Misc\AddinScout\Project\AddinScout.csproj", "{4B8F0F98-8BE1-402B-AA8B-C8D548577B38}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiletypeRegisterer", "src\AddIns\Misc\FiletypeRegisterer\Project\FiletypeRegisterer.csproj", "{D022A6CE-7438-41E8-AC64-F2DE18EC54C6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PInvokeAddIn", "src\AddIns\Misc\PInvokeAddIn\Project\PInvokeAddIn.csproj", "{5EEB99CF-EA2B-4733-80A6-CE9192D68170}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegExpTk", "src\AddIns\Misc\RegExpTk\Project\RegExpTk.csproj", "{64A3E5E6-90BF-47F6-94DF-68C94B62C817}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceToolkit", "src\AddIns\Misc\ResourceToolkit\Project\ResourceToolkit.csproj", "{461606BD-E824-4D0A-8CBA-01810B1F5E02}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UsageDataCollector", "UsageDataCollector", "{DEFC8584-BEC3-4921-BD0F-40482E450B7B}"
+	ProjectSection(SolutionItems) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsageDataCollector", "src\AddIns\Misc\UsageDataCollector\UsageDataCollector\UsageDataCollector.csproj", "{6B1CFE35-DA17-4DEB-9C6E-227E5E251DA0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsageDataCollector.AddIn", "src\AddIns\Misc\UsageDataCollector\UsageDataCollector.AddIn\UsageDataCollector.AddIn.csproj", "{0008FCE9-9EB4-4E2E-979B-553278E5BBA6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement", "src\AddIns\Misc\PackageManagement\Project\PackageManagement.csproj", "{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILSpyAddIn", "src\AddIns\Misc\ILSpyAddIn\ILSpyAddIn.csproj", "{8AA421C8-D7AF-4957-9F43-5135328ACB24}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Display Bindings", "Display Bindings", "{11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}"
+	ProjectSection(SolutionItems) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SettingsEditor", "src\AddIns\DisplayBindings\SettingsEditor\Project\SettingsEditor.csproj", "{85226AFB-CE71-4851-9A75-7EEC663A8E8A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{C7F29FC2-1B03-4CDD-9E30-400F4765FF04}"
+	ProjectSection(SolutionItems) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.SQLServer", "src\AddIns\DisplayBindings\Data\ICSharpCode.Data.SQLServer\ICSharpCode.Data.SQLServer.csproj", "{AFE34868-AFA1-4E1C-9450-47AB4BE329D5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.EDMDesigner.Core.UI", "src\AddIns\DisplayBindings\Data\ICSharpCode.Data.EDMDesigner.Core.UI\ICSharpCode.Data.EDMDesigner.Core.UI.csproj", "{EEF5E054-4192-4A57-8FBF-E860D808A51D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.EDMDesigner.Core", "src\AddIns\DisplayBindings\Data\ICSharpCode.Data.EDMDesigner.Core\ICSharpCode.Data.EDMDesigner.Core.csproj", "{5C70D6AB-0A33-43F9-B8B5-54558C35BBB1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.Core.UI", "src\AddIns\DisplayBindings\Data\ICSharpCode.Data.Core.UI\ICSharpCode.Data.Core.UI.csproj", "{BAD94D6E-4159-4CB6-B991-486F412D9BB6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.Core", "src\AddIns\DisplayBindings\Data\ICSharpCode.Data.Core\ICSharpCode.Data.Core.csproj", "{B7823AE9-4B43-4859-8796-2EBDC116FBB8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.Addin", "src\AddIns\DisplayBindings\Data\ICSharpCode.Data.Addin\ICSharpCode.Data.Addin.csproj", "{A9F12710-24E4-46D4-832C-6ECB395B9EAD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClassDiagram", "ClassDiagram", "{BFA3BF26-33BD-4A65-B84D-C7F30D131668}"
+	ProjectSection(SolutionItems) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diagrams", "src\AddIns\DisplayBindings\ClassDiagram\DiagramRouter\Diagrams.csproj", "{0991423A-DBF6-4C89-B365-A1DF1EB32E42}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassDiagramAddin", "src\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin\ClassDiagramAddin.csproj", "{5A1354DF-4989-4BB4-BC6B-D627C2E9FA13}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassCanvas", "src\AddIns\DisplayBindings\ClassDiagram\ClassCanvas\ClassCanvas.csproj", "{08F772A1-F0BE-433E-8B37-F6522953DB05}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormsDesigner", "src\AddIns\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj", "{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlEditor", "src\AddIns\DisplayBindings\XmlEditor\Project\XmlEditor.csproj", "{DCA2703D-250A-463E-A68A-07ED105AE6BD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonEdit.AddIn", "src\AddIns\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj", "{0162E499-42D0-409B-AA25-EED21F75336B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceEditor", "src\AddIns\DisplayBindings\ResourceEditor\Project\ResourceEditor.csproj", "{CBC6C247-747B-4908-B09A-4D2E0F640B6B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexEditor", "src\AddIns\DisplayBindings\HexEditor\Project\HexEditor.csproj", "{E618A9CD-A39F-4925-A538-E8A3FEF24E54}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IconEditor", "IconEditor", "{0773ED53-08E2-4495-A3BE-CA0B5D413C15}"
+	ProjectSection(SolutionItems) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconEditor", "src\AddIns\DisplayBindings\IconEditor\IconEditor\IconEditor.csproj", "{DC1CCE11-CB91-40FA-9C47-4D9EB5D67BFD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconEditorAddIn", "src\AddIns\DisplayBindings\IconEditor\IconEditorAddIn\IconEditorAddIn.csproj", "{DFB936AD-90EE-4B4F-941E-4F4A636F0D92}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WpfDesign", "WpfDesign", "{6022AC51-B658-4C54-97EF-79187AC65B47}"
+	ProjectSection(SolutionItems) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign", "src\AddIns\DisplayBindings\WpfDesign\WpfDesign\Project\WpfDesign.csproj", "{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.AddIn", "src\AddIns\DisplayBindings\WpfDesign\WpfDesign.AddIn\WpfDesign.AddIn.csproj", "{9A9D6FD4-6A2E-455D-ACC3-DDA775FE9865}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.Designer", "src\AddIns\DisplayBindings\WpfDesign\WpfDesign.Designer\Project\WpfDesign.Designer.csproj", "{78CC29AC-CC79-4355-B1F2-97936DF198AC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.XamlDom", "src\AddIns\DisplayBindings\WpfDesign\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj", "{88DA149F-21B2-48AB-82C4-28FB6BDFD783}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{F355E45F-F54F-4B42-8916-9A633A392789}"
+	ProjectSection(SolutionItems) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "src\AddIns\Analysis\UnitTesting\UnitTesting.csproj", "{1F261725-6318-4434-A1B1-6C70CE4CD324}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeAnalysis", "src\AddIns\Analysis\CodeAnalysis\CodeAnalysis.csproj", "{3EAA45A9-735C-4AC7-A799-947B93EA449D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage", "src\AddIns\Analysis\CodeCoverage\Project\CodeCoverage.csproj", "{08CE9972-283B-44F4-82FA-966F7DFA6B7A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceAnalysis", "src\AddIns\Analysis\SourceAnalysis\SourceAnalysis.csproj", "{CE498514-D12D-4B6E-AE0E-FEC29BD43748}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeQualityAnalysis", "src\AddIns\Analysis\CodeQuality\CodeQualityAnalysis.csproj", "{76DD1CC0-0D86-44A1-9BD6-D91F79807BC3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Version Control", "Version Control", "{6E3D4DBA-DBF9-4035-8F7E-1403975B21EA}"
+	ProjectSection(SolutionItems) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitAddIn", "src\AddIns\VersionControl\GitAddIn\GitAddIn.csproj", "{83F15BA7-8478-4664-81BB-A82F146D88B3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubversionAddIn", "src\AddIns\VersionControl\SubversionAddIn\SubversionAddIn.csproj", "{17F4D7E0-6933-4C2E-8714-FD7E98D625D5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
@@ -942,104 +950,121 @@ Global
 		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}.Release|x86.ActiveCfg = Release|x86
 		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}.Release|Debug.Build.0 = Release|x86
 		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}.Release|Debug.ActiveCfg = Release|x86
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Debug|Win32.Build.0 = Debug|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Debug|x86.Build.0 = Debug|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Debug|Debug.Build.0 = Debug|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Debug|Debug.ActiveCfg = Debug|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Release|Win32.Build.0 = Release|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Release|Win32.ActiveCfg = Release|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Release|x86.Build.0 = Release|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Release|x86.ActiveCfg = Release|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Release|Debug.Build.0 = Release|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Release|Debug.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{B5F54272-49F0-40DB-845A-8D837875D3BA} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
-		{C3CBC8E3-81D8-4C5B-9941-DCCD12D50B1F} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
-		{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
-		{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
-		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
-		{80318B5F-A25D-45AB-8A95-EF31D2370A4C} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
-		{2748AD25-9C63-4E12-877B-4DCE96FBED54} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
-		{8035765F-D51F-4A0C-A746-2FD100E19419} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
 		{1152B71B-3C05-4598-B20D-823B5D40559E} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
-		{2FF700C2-A38A-48BD-A637-8CAFD4FE6237} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
-		{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
-		{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
-		{E73BB233-D88B-44A7-A98F-D71EE158381D} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
-		{DDE2A481-8271-4EAC-A330-8FA6A38D13D1} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
+		{8035765F-D51F-4A0C-A746-2FD100E19419} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
+		{2748AD25-9C63-4E12-877B-4DCE96FBED54} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
+		{80318B5F-A25D-45AB-8A95-EF31D2370A4C} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
+		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
+		{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
+		{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
+		{C3CBC8E3-81D8-4C5B-9941-DCCD12D50B1F} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
+		{B5F54272-49F0-40DB-845A-8D837875D3BA} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
-		{8789D7FF-B36C-4187-B57D-55ED64623272} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
-		{C4035C32-026F-4158-AF15-113EA1EF1960} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
-		{E0646C25-36F2-4524-969F-FA621353AB94} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
-		{CDE0C5A4-2096-48B5-BEA3-74DBA0F0E1EF} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
-		{F3662720-9EA2-4591-BBC6-97361DCE50A9} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
-		{11BF9245-88A3-4A0A-9A8A-EC9D98036B0F} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
-		{F355E45F-F54F-4B42-8916-9A633A392789} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
+		{DDE2A481-8271-4EAC-A330-8FA6A38D13D1} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
+		{E73BB233-D88B-44A7-A98F-D71EE158381D} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
+		{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
+		{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
+		{2FF700C2-A38A-48BD-A637-8CAFD4FE6237} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
 		{6E3D4DBA-DBF9-4035-8F7E-1403975B21EA} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
-		{83F15BA7-8478-4664-81BB-A82F146D88B3} = {6E3D4DBA-DBF9-4035-8F7E-1403975B21EA}
-		{17F4D7E0-6933-4C2E-8714-FD7E98D625D5} = {6E3D4DBA-DBF9-4035-8F7E-1403975B21EA}
-		{1F261725-6318-4434-A1B1-6C70CE4CD324} = {F355E45F-F54F-4B42-8916-9A633A392789}
-		{3EAA45A9-735C-4AC7-A799-947B93EA449D} = {F355E45F-F54F-4B42-8916-9A633A392789}
-		{08CE9972-283B-44F4-82FA-966F7DFA6B7A} = {F355E45F-F54F-4B42-8916-9A633A392789}
-		{CE498514-D12D-4B6E-AE0E-FEC29BD43748} = {F355E45F-F54F-4B42-8916-9A633A392789}
-		{76DD1CC0-0D86-44A1-9BD6-D91F79807BC3} = {F355E45F-F54F-4B42-8916-9A633A392789}
-		{85226AFB-CE71-4851-9A75-7EEC663A8E8A} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
-		{C7F29FC2-1B03-4CDD-9E30-400F4765FF04} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
-		{BFA3BF26-33BD-4A65-B84D-C7F30D131668} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
-		{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
-		{DCA2703D-250A-463E-A68A-07ED105AE6BD} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
-		{0162E499-42D0-409B-AA25-EED21F75336B} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
-		{CBC6C247-747B-4908-B09A-4D2E0F640B6B} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
-		{E618A9CD-A39F-4925-A538-E8A3FEF24E54} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
-		{0773ED53-08E2-4495-A3BE-CA0B5D413C15} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
-		{6022AC51-B658-4C54-97EF-79187AC65B47} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
-		{66A378A1-E9F4-4AD5-8946-D0EC06C2902F} = {6022AC51-B658-4C54-97EF-79187AC65B47}
-		{9A9D6FD4-6A2E-455D-ACC3-DDA775FE9865} = {6022AC51-B658-4C54-97EF-79187AC65B47}
-		{78CC29AC-CC79-4355-B1F2-97936DF198AC} = {6022AC51-B658-4C54-97EF-79187AC65B47}
-		{88DA149F-21B2-48AB-82C4-28FB6BDFD783} = {6022AC51-B658-4C54-97EF-79187AC65B47}
-		{DC1CCE11-CB91-40FA-9C47-4D9EB5D67BFD} = {0773ED53-08E2-4495-A3BE-CA0B5D413C15}
-		{DFB936AD-90EE-4B4F-941E-4F4A636F0D92} = {0773ED53-08E2-4495-A3BE-CA0B5D413C15}
-		{0991423A-DBF6-4C89-B365-A1DF1EB32E42} = {BFA3BF26-33BD-4A65-B84D-C7F30D131668}
-		{5A1354DF-4989-4BB4-BC6B-D627C2E9FA13} = {BFA3BF26-33BD-4A65-B84D-C7F30D131668}
-		{08F772A1-F0BE-433E-8B37-F6522953DB05} = {BFA3BF26-33BD-4A65-B84D-C7F30D131668}
-		{AFE34868-AFA1-4E1C-9450-47AB4BE329D5} = {C7F29FC2-1B03-4CDD-9E30-400F4765FF04}
-		{EEF5E054-4192-4A57-8FBF-E860D808A51D} = {C7F29FC2-1B03-4CDD-9E30-400F4765FF04}
-		{5C70D6AB-0A33-43F9-B8B5-54558C35BBB1} = {C7F29FC2-1B03-4CDD-9E30-400F4765FF04}
-		{BAD94D6E-4159-4CB6-B991-486F412D9BB6} = {C7F29FC2-1B03-4CDD-9E30-400F4765FF04}
-		{B7823AE9-4B43-4859-8796-2EBDC116FBB8} = {C7F29FC2-1B03-4CDD-9E30-400F4765FF04}
-		{A9F12710-24E4-46D4-832C-6ECB395B9EAD} = {C7F29FC2-1B03-4CDD-9E30-400F4765FF04}
-		{80F76D10-0B44-4D55-B4BD-DAEB5464090C} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
-		{3CA90546-3B4C-4663-9445-C4E9371750A7} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
-		{9196DD8A-B4D4-4780-8742-C5762E547FC2} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
-		{7D5C266F-D6FF-4D14-B315-0C0FC6C4EF51} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
-		{F93E52FD-DA66-4CE5-A0CB-BCD902811122} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
-		{4B8F0F98-8BE1-402B-AA8B-C8D548577B38} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
-		{D022A6CE-7438-41E8-AC64-F2DE18EC54C6} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
-		{5EEB99CF-EA2B-4733-80A6-CE9192D68170} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
-		{64A3E5E6-90BF-47F6-94DF-68C94B62C817} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
-		{461606BD-E824-4D0A-8CBA-01810B1F5E02} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
-		{DEFC8584-BEC3-4921-BD0F-40482E450B7B} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
-		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
-		{6B1CFE35-DA17-4DEB-9C6E-227E5E251DA0} = {DEFC8584-BEC3-4921-BD0F-40482E450B7B}
-		{0008FCE9-9EB4-4E2E-979B-553278E5BBA6} = {DEFC8584-BEC3-4921-BD0F-40482E450B7B}
-		{1D18D788-F7EE-4585-A23B-34DC8EC63CB8} = {CDE0C5A4-2096-48B5-BEA3-74DBA0F0E1EF}
-		{EC06F96A-AEEC-49D6-B03D-AB87C6EB674C} = {CDE0C5A4-2096-48B5-BEA3-74DBA0F0E1EF}
-		{C7288E72-FFBE-48CD-84B4-6CBF95A7195A} = {E0646C25-36F2-4524-969F-FA621353AB94}
-		{70966F84-74C9-4067-A379-0C674A929233} = {E0646C25-36F2-4524-969F-FA621353AB94}
-		{97B3B514-AB0E-4FE1-89DE-8A945F5112AE} = {E0646C25-36F2-4524-969F-FA621353AB94}
-		{CA76F702-5B4E-4918-B8D8-7FF8382434FF} = {E0646C25-36F2-4524-969F-FA621353AB94}
-		{E1B288A2-08EE-4318-8BBB-8AB72C69E33E} = {E0646C25-36F2-4524-969F-FA621353AB94}
-		{1F1AC7CD-D154-45BB-8EAF-804CA8055F5A} = {E0646C25-36F2-4524-969F-FA621353AB94}
-		{BF38FB72-B380-4196-AF8C-95749D726C61} = {E0646C25-36F2-4524-969F-FA621353AB94}
-		{7C96B65D-28A5-4F28-A35B-8D83CE831EE8} = {E0646C25-36F2-4524-969F-FA621353AB94}
-		{E954F3CB-A446-492F-A664-2B376EBC86E8} = {E0646C25-36F2-4524-969F-FA621353AB94}
-		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD} = {E0646C25-36F2-4524-969F-FA621353AB94}
-		{D332F2D1-2CF1-43B7-903C-844BD5211A7E} = {CA76F702-5B4E-4918-B8D8-7FF8382434FF}
-		{8D732610-8FC6-43BA-94C9-7126FD7FE361} = {CA76F702-5B4E-4918-B8D8-7FF8382434FF}
-		{4AC2D5F1-F671-480C-A075-6BF62B3721B2} = {97B3B514-AB0E-4FE1-89DE-8A945F5112AE}
-		{DBCF20A1-BA13-4582-BFA9-74DE4D987B73} = {97B3B514-AB0E-4FE1-89DE-8A945F5112AE}
-		{C896FFFF-5B6C-4B0E-B6DF-049865F501B4} = {C7288E72-FFBE-48CD-84B4-6CBF95A7195A}
-		{D294A12D-4B38-4F25-9AA6-3D4A6CE26E7B} = {C4035C32-026F-4158-AF15-113EA1EF1960}
-		{BDA49550-5ED1-4C6B-B648-657B2CACD8E0} = {C4035C32-026F-4158-AF15-113EA1EF1960}
-		{72FFB35A-C9E2-4A31-B4FA-E3E3E28DED5F} = {C4035C32-026F-4158-AF15-113EA1EF1960}
-		{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6} = {C4035C32-026F-4158-AF15-113EA1EF1960}
-		{35D002D7-C78B-44FB-92AA-104BEB431678} = {8789D7FF-B36C-4187-B57D-55ED64623272}
-		{4B2239FF-8FD6-431D-9D22-1B8049BA6917} = {8789D7FF-B36C-4187-B57D-55ED64623272}
+		{F355E45F-F54F-4B42-8916-9A633A392789} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
+		{11BF9245-88A3-4A0A-9A8A-EC9D98036B0F} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
+		{F3662720-9EA2-4591-BBC6-97361DCE50A9} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
+		{CDE0C5A4-2096-48B5-BEA3-74DBA0F0E1EF} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
+		{E0646C25-36F2-4524-969F-FA621353AB94} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
+		{C4035C32-026F-4158-AF15-113EA1EF1960} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
+		{8789D7FF-B36C-4187-B57D-55ED64623272} = {39327899-ED91-4F7F-988C-4FE4E17C014D}
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C} = {8789D7FF-B36C-4187-B57D-55ED64623272}
+		{4B2239FF-8FD6-431D-9D22-1B8049BA6917} = {8789D7FF-B36C-4187-B57D-55ED64623272}
+		{35D002D7-C78B-44FB-92AA-104BEB431678} = {8789D7FF-B36C-4187-B57D-55ED64623272}
+		{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6} = {C4035C32-026F-4158-AF15-113EA1EF1960}
+		{72FFB35A-C9E2-4A31-B4FA-E3E3E28DED5F} = {C4035C32-026F-4158-AF15-113EA1EF1960}
+		{BDA49550-5ED1-4C6B-B648-657B2CACD8E0} = {C4035C32-026F-4158-AF15-113EA1EF1960}
+		{D294A12D-4B38-4F25-9AA6-3D4A6CE26E7B} = {C4035C32-026F-4158-AF15-113EA1EF1960}
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD} = {E0646C25-36F2-4524-969F-FA621353AB94}
+		{E954F3CB-A446-492F-A664-2B376EBC86E8} = {E0646C25-36F2-4524-969F-FA621353AB94}
+		{7C96B65D-28A5-4F28-A35B-8D83CE831EE8} = {E0646C25-36F2-4524-969F-FA621353AB94}
+		{BF38FB72-B380-4196-AF8C-95749D726C61} = {E0646C25-36F2-4524-969F-FA621353AB94}
+		{1F1AC7CD-D154-45BB-8EAF-804CA8055F5A} = {E0646C25-36F2-4524-969F-FA621353AB94}
+		{E1B288A2-08EE-4318-8BBB-8AB72C69E33E} = {E0646C25-36F2-4524-969F-FA621353AB94}
+		{CA76F702-5B4E-4918-B8D8-7FF8382434FF} = {E0646C25-36F2-4524-969F-FA621353AB94}
+		{97B3B514-AB0E-4FE1-89DE-8A945F5112AE} = {E0646C25-36F2-4524-969F-FA621353AB94}
+		{70966F84-74C9-4067-A379-0C674A929233} = {E0646C25-36F2-4524-969F-FA621353AB94}
+		{C7288E72-FFBE-48CD-84B4-6CBF95A7195A} = {E0646C25-36F2-4524-969F-FA621353AB94}
+		{C896FFFF-5B6C-4B0E-B6DF-049865F501B4} = {C7288E72-FFBE-48CD-84B4-6CBF95A7195A}
+		{DBCF20A1-BA13-4582-BFA9-74DE4D987B73} = {97B3B514-AB0E-4FE1-89DE-8A945F5112AE}
+		{4AC2D5F1-F671-480C-A075-6BF62B3721B2} = {97B3B514-AB0E-4FE1-89DE-8A945F5112AE}
+		{8D732610-8FC6-43BA-94C9-7126FD7FE361} = {CA76F702-5B4E-4918-B8D8-7FF8382434FF}
+		{D332F2D1-2CF1-43B7-903C-844BD5211A7E} = {CA76F702-5B4E-4918-B8D8-7FF8382434FF}
+		{EC06F96A-AEEC-49D6-B03D-AB87C6EB674C} = {CDE0C5A4-2096-48B5-BEA3-74DBA0F0E1EF}
+		{1D18D788-F7EE-4585-A23B-34DC8EC63CB8} = {CDE0C5A4-2096-48B5-BEA3-74DBA0F0E1EF}
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{DEFC8584-BEC3-4921-BD0F-40482E450B7B} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{461606BD-E824-4D0A-8CBA-01810B1F5E02} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{64A3E5E6-90BF-47F6-94DF-68C94B62C817} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{5EEB99CF-EA2B-4733-80A6-CE9192D68170} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{D022A6CE-7438-41E8-AC64-F2DE18EC54C6} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{4B8F0F98-8BE1-402B-AA8B-C8D548577B38} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{F93E52FD-DA66-4CE5-A0CB-BCD902811122} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{7D5C266F-D6FF-4D14-B315-0C0FC6C4EF51} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{9196DD8A-B4D4-4780-8742-C5762E547FC2} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{3CA90546-3B4C-4663-9445-C4E9371750A7} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{80F76D10-0B44-4D55-B4BD-DAEB5464090C} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{0008FCE9-9EB4-4E2E-979B-553278E5BBA6} = {DEFC8584-BEC3-4921-BD0F-40482E450B7B}
+		{6B1CFE35-DA17-4DEB-9C6E-227E5E251DA0} = {DEFC8584-BEC3-4921-BD0F-40482E450B7B}
+		{6022AC51-B658-4C54-97EF-79187AC65B47} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
+		{0773ED53-08E2-4495-A3BE-CA0B5D413C15} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
+		{E618A9CD-A39F-4925-A538-E8A3FEF24E54} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
+		{CBC6C247-747B-4908-B09A-4D2E0F640B6B} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
+		{0162E499-42D0-409B-AA25-EED21F75336B} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
+		{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
+		{BFA3BF26-33BD-4A65-B84D-C7F30D131668} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
+		{C7F29FC2-1B03-4CDD-9E30-400F4765FF04} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
+		{85226AFB-CE71-4851-9A75-7EEC663A8E8A} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
+		{A9F12710-24E4-46D4-832C-6ECB395B9EAD} = {C7F29FC2-1B03-4CDD-9E30-400F4765FF04}
+		{B7823AE9-4B43-4859-8796-2EBDC116FBB8} = {C7F29FC2-1B03-4CDD-9E30-400F4765FF04}
+		{BAD94D6E-4159-4CB6-B991-486F412D9BB6} = {C7F29FC2-1B03-4CDD-9E30-400F4765FF04}
+		{5C70D6AB-0A33-43F9-B8B5-54558C35BBB1} = {C7F29FC2-1B03-4CDD-9E30-400F4765FF04}
+		{EEF5E054-4192-4A57-8FBF-E860D808A51D} = {C7F29FC2-1B03-4CDD-9E30-400F4765FF04}
+		{AFE34868-AFA1-4E1C-9450-47AB4BE329D5} = {C7F29FC2-1B03-4CDD-9E30-400F4765FF04}
+		{08F772A1-F0BE-433E-8B37-F6522953DB05} = {BFA3BF26-33BD-4A65-B84D-C7F30D131668}
+		{5A1354DF-4989-4BB4-BC6B-D627C2E9FA13} = {BFA3BF26-33BD-4A65-B84D-C7F30D131668}
+		{0991423A-DBF6-4C89-B365-A1DF1EB32E42} = {BFA3BF26-33BD-4A65-B84D-C7F30D131668}
+		{DFB936AD-90EE-4B4F-941E-4F4A636F0D92} = {0773ED53-08E2-4495-A3BE-CA0B5D413C15}
+		{DC1CCE11-CB91-40FA-9C47-4D9EB5D67BFD} = {0773ED53-08E2-4495-A3BE-CA0B5D413C15}
+		{88DA149F-21B2-48AB-82C4-28FB6BDFD783} = {6022AC51-B658-4C54-97EF-79187AC65B47}
+		{78CC29AC-CC79-4355-B1F2-97936DF198AC} = {6022AC51-B658-4C54-97EF-79187AC65B47}
+		{9A9D6FD4-6A2E-455D-ACC3-DDA775FE9865} = {6022AC51-B658-4C54-97EF-79187AC65B47}
+		{66A378A1-E9F4-4AD5-8946-D0EC06C2902F} = {6022AC51-B658-4C54-97EF-79187AC65B47}
+		{76DD1CC0-0D86-44A1-9BD6-D91F79807BC3} = {F355E45F-F54F-4B42-8916-9A633A392789}
+		{CE498514-D12D-4B6E-AE0E-FEC29BD43748} = {F355E45F-F54F-4B42-8916-9A633A392789}
+		{08CE9972-283B-44F4-82FA-966F7DFA6B7A} = {F355E45F-F54F-4B42-8916-9A633A392789}
+		{3EAA45A9-735C-4AC7-A799-947B93EA449D} = {F355E45F-F54F-4B42-8916-9A633A392789}
+		{1F261725-6318-4434-A1B1-6C70CE4CD324} = {F355E45F-F54F-4B42-8916-9A633A392789}
+		{17F4D7E0-6933-4C2E-8714-FD7E98D625D5} = {6E3D4DBA-DBF9-4035-8F7E-1403975B21EA}
+		{83F15BA7-8478-4664-81BB-A82F146D88B3} = {6E3D4DBA-DBF9-4035-8F7E-1403975B21EA}
 	EndGlobalSection
 EndGlobal

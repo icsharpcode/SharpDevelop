@@ -559,12 +559,7 @@ namespace AvalonDock
             ((ManagedContent)d).OnIsActiveContentChanged(e);
         }
 
-        DateTime _lastActivation = DateTime.MinValue;
-
-        internal DateTime LastActivation
-        {
-            get { return _lastActivation; }
-        }
+        internal DateTime LastActivation = DateTime.MinValue;
 
         /// <summary>
         /// Provides derived classes an opportunity to handle changes to the IsActiveContent property.
@@ -572,7 +567,7 @@ namespace AvalonDock
         protected virtual void OnIsActiveContentChanged(DependencyPropertyChangedEventArgs e)
         {
             if (IsActiveContent)
-                _lastActivation = DateTime.Now;
+                this.LastActivation = DateTime.UtcNow;
 
             FocusContent();
 

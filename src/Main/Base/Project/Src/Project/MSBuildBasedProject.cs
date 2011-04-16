@@ -114,6 +114,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public event EventHandler MinimumSolutionVersionChanged;
+		
 		protected void SetToolsVersion(string newToolsVersion)
 		{
 			PerformUpdateOnProjectFile(
@@ -121,6 +123,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					projectFile.ToolsVersion = newToolsVersion;
 					userProjectFile.ToolsVersion = newToolsVersion;
 				});
+			if (MinimumSolutionVersionChanged != null)
+				MinimumSolutionVersionChanged(this, EventArgs.Empty);
 		}
 		
 		public void PerformUpdateOnProjectFile(Action action)

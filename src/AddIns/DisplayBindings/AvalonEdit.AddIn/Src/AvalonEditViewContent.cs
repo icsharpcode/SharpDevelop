@@ -136,7 +136,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			isLoading = true;
 			try {
 				BookmarksDetach();
-				codeEditor.PrimaryTextEditor.SyntaxHighlighting =
+				codeEditor.SyntaxHighlighting =
 					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
 				
 				if (!file.IsUntitled) {
