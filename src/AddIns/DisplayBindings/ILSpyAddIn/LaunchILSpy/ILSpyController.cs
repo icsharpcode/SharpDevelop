@@ -32,12 +32,7 @@ namespace ICSharpCode.ILSpyAddIn
 			ReflectionProjectContent rpc = pc as ReflectionProjectContent;
 			string assemblyLocation = null;
 			if (rpc != null) {
-				// prefer GAC assemblies over reference assemblies:
-				assemblyLocation = FindAssemblyInNetGac(new DomAssemblyName(rpc.AssemblyFullName));
-				if (string.IsNullOrEmpty(assemblyLocation)) {
-					// use file only if assembly isn't in GAC:
-					assemblyLocation = rpc.AssemblyLocation;
-				}
+				assemblyLocation = GetAssemblyLocation(rpc);
 			} else {
 				IProject project = pc.Project as IProject;
 				if (project != null) {
@@ -57,6 +52,19 @@ namespace ICSharpCode.ILSpyAddIn
 			string commandLine = "/singleInstance \"" + assemblyLocation + "\" \"/navigateTo:" + entity.DocumentationTag + "\"";
 			LoggingService.Debug(ilspyPath + " " + commandLine);
 			Process.Start(ilspyPath, commandLine);
+		}
+		
+		public static string GetAssemblyLocation(ReflectionProjectContent rpc)
+		{
+			if (rpc == null)
+				throw new ArgumentNullException("rpc");
+			// prefer GAC assemblies over reference assemblies:
+			string assemblyLocation = FindAssemblyInNetGac(new DomAssemblyName(rpc.AssemblyFullName));
+			if (string.IsNullOrEmpty(assemblyLocation)) {
+				// use file only if assembly isn't in GAC:
+				assemblyLocation = rpc.AssemblyLocation;
+			}
+			return assemblyLocation;
 		}
 		
 		#region Find ILSpy

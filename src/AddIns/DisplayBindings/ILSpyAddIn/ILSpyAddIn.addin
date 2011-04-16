@@ -12,7 +12,11 @@
 		<Import assembly = "ILSpyAddIn.dll"/>
 	</Runtime>
 	
-	<!-- Text editor context menu -->
+	<Path name="/SharpDevelop/Services/NavigateToEntityService">
+		<Class id="ILSpy" class="ICSharpCode.ILSpyAddIn.NavigateToDecompiledEntityService"/>
+	</Path>
+	
+	<!-- Text editor context menu: Launch ILSpy command -->
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
 		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.TextEditorContextMenuCommand"/>

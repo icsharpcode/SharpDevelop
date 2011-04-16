@@ -26,11 +26,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public void Execute()
 		{
-			var cu = this.Member.CompilationUnit;
-			var region = this.Member.Region;
-			if (cu == null || cu.FileName == null || region == null || region.IsEmpty)
-				return;
-			FileService.JumpToFilePosition(cu.FileName, region.BeginLine, region.BeginColumn);
+			NavigationService.NavigateTo(this.Member);
 		}
 	}
 }

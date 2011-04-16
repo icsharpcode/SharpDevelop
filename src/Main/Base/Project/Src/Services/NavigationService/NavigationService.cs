@@ -445,5 +445,42 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		#endregion
+		
+		#region Navigate To Entity
+		public static bool NavigateTo(Dom.IEntity entity)
+		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			var cu = entity.CompilationUnit;
+			Dom.DomRegion region;
+			if (entity is Dom.IClass)
+				region = ((Dom.IClass)entity).Region;
+			else if (entity is Dom.IMember)
+				region = ((Dom.IMember)entity).Region;
+			else
+				region = Dom.DomRegion.Empty;
+			
+			if (cu == null || string.IsNullOrEmpty(cu.FileName) || region.IsEmpty) {
+				foreach (var item in AddInTree.BuildItems<INavigateToEntityService>("/SharpDevelop/Services/NavigateToEntityService", null, false)) {
+					if (item.NavigateTo(entity))
+						return true;
+				}
+				return false;
+			} else {
+				return FileService.JumpToFilePosition(cu.FileName, region.BeginLine, region.BeginColumn) != null;
+			}
+		}
+		#endregion
+	}
+	
+	/// <summary>
+	/// Called by <see cref="NavigationService.NavigateTo"/> when the entity is not defined in source code.
+	/// </summary>
+	/// <remarks>
+	/// Loaded from addin tree path "/SharpDevelop/Services/NavigateToEntityService"
+	/// </remarks>
+	public interface INavigateToEntityService
+	{
+		bool NavigateTo(Dom.IEntity entity);
 	}
 }
