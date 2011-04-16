@@ -48,11 +48,5 @@ namespace ICSharpCode.PackageManagement
 		{
 			messageViewCategory.Clear();
 		}
-		
-		public void Log(MessageLevel level, string message, params object[] args)
-		{
-			string formattedMessage = String.Format(message, args);
-			messageViewCategory.AppendLine(formattedMessage);
-		}
 	}
 }

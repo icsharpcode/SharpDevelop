@@ -94,7 +94,6 @@
     <Compile Include="Src\Design\FakeInstallPackageTask.cs" />
     <Compile Include="Src\Design\FakePackage.cs" />
     <Compile Include="Src\Design\FakePackageAssemblyReference.cs" />
-    <Compile Include="Src\Design\FakePackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\Design\FakePackageManagementProjectService.cs" />
     <Compile Include="Src\Design\FakePackageManagementService.cs" />
     <Compile Include="Src\Design\FakePackageManager.cs" />

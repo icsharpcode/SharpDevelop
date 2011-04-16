@@ -13,6 +13,7 @@ namespace PackageManagement.Tests.Helpers
 		public FakeRegisteredPackageRepositories FakeRegisteredPackageRepositories = new FakeRegisteredPackageRepositories();
 		public FakePackageManagementService FakePackageManagementService = new FakePackageManagementService();
 		public FakePackageManagementEvents FakePackageManagementEvents = new FakePackageManagementEvents();
+		public FakeLogger FakeLogger = new FakeLogger();
 		
 		public PackageViewModel CreatePackageViewModel(IPackage package)
 		{
@@ -21,7 +22,7 @@ namespace PackageManagement.Tests.Helpers
 				FakeRegisteredPackageRepositories.FakeActiveRepository,
 				FakePackageManagementService,
 				FakePackageManagementEvents,
-				FakePackageManagementService.FakeOutputMessagesView);
+				FakeLogger);
 		}
 		
 		public IRegisteredPackageRepositories RegisteredPackageRepositories {

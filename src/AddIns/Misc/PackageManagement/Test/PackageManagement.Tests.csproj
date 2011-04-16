@@ -72,7 +72,9 @@
     <Compile Include="Src\AddPackageReferenceCommandTests.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingRegisteredPackageRepositories.cs" />
     <Compile Include="Src\Helpers\FakeAddPackageReferenceView.cs" />
+    <Compile Include="Src\Helpers\FakeLogger.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementEvents.cs" />
+    <Compile Include="Src\Helpers\FakePackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\Helpers\FakePackageViewModelFactory.cs" />
     <Compile Include="Src\Helpers\TestableAddPackageReferenceCommand.cs" />
     <Compile Include="Src\PackageManagementEventsTests.cs" />

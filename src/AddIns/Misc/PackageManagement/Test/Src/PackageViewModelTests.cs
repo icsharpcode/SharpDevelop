@@ -21,7 +21,7 @@ namespace PackageManagement.Tests
 		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
 		FakeInstallPackageAction fakeInstallPackageTask;
 		FakeUninstallPackageAction fakeUninstallPackageAction;
-		FakePackageManagementOutputMessagesView fakeLogger;
+		FakeLogger fakeLogger;
 		
 		void CreateViewModel()
 		{
@@ -42,7 +42,7 @@ namespace PackageManagement.Tests
 			this.packageManagementService = packageManagementService;
 			sourcePackageRepository = viewModel.FakeSourcePackageRepository;
 			packageManagementEvents = viewModel.FakePackageManagementEvents;
-			fakeLogger = packageManagementService.FakeOutputMessagesView;
+			fakeLogger = viewModel.FakeLogger;
 			fakeInstallPackageTask = packageManagementService.ActionToReturnFromCreateInstallPackageAction;
 			fakeUninstallPackageAction = packageManagementService.ActionToReturnFromCreateUninstallPackageAction;
 		}

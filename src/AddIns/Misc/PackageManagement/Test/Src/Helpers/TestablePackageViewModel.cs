@@ -14,6 +14,7 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackageManagementService	FakePackageManagementService;
 		public FakePackageManagementEvents FakePackageManagementEvents;
 		public FakePackage FakePackage;
+		public FakeLogger FakeLogger;
 		public string PackageViewModelAddingPackageMessageFormat = String.Empty;
 		public string PackageViewModelRemovingPackageMessageFormat = String.Empty;
 		
@@ -23,7 +24,7 @@ namespace PackageManagement.Tests.Helpers
 				new FakePackageRepository(),
 				packageManagementService,
 				new FakePackageManagementEvents(),
-				packageManagementService.FakeOutputMessagesView)
+				new FakeLogger())
 		{		
 		}
 		
@@ -32,7 +33,7 @@ namespace PackageManagement.Tests.Helpers
 			FakePackageRepository sourceRepository,
 			FakePackageManagementService packageManagementService,
 			FakePackageManagementEvents packageManagementEvents,
-			FakePackageManagementOutputMessagesView logger)
+			FakeLogger logger)
 			: base(
 				package,
 				sourceRepository,
@@ -44,6 +45,7 @@ namespace PackageManagement.Tests.Helpers
 			this.FakePackageManagementService = packageManagementService;
 			this.FakePackageManagementEvents = packageManagementEvents;
 			this.FakeSourcePackageRepository = sourceRepository;
+			this.FakeLogger = logger;
 		}
 		
 		protected override string AddingPackageMessageFormat {

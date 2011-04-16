@@ -3,14 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement.Design
+namespace PackageManagement.Tests.Helpers
 {
-	public class FakePackageManagementOutputMessagesView : IPackageManagementOutputMessagesView
+	public class FakeLogger : ILogger
 	{
-		public bool IsClearCalled;
 		public List<string> FormattedMessagesLogged = new List<string>();
 		
 		public string FirstFormattedMessageLogged {
@@ -33,11 +31,6 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public string SecondFormattedMessageLogged {
 			get { return FormattedMessagesLogged[1]; }
-		}
-		
-		public void Clear()
-		{
-			IsClearCalled = true;
 		}
 		
 		public void Log(MessageLevel level, string message, params object[] args)

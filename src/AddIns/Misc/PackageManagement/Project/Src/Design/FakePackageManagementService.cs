@@ -44,8 +44,6 @@ namespace ICSharpCode.PackageManagement.Design
 			FakeActiveProjectManager.FakeLocalRepository.FakePackages.Add(package);
 		}
 		
-		public FakePackageManagementOutputMessagesView FakeOutputMessagesView = new FakePackageManagementOutputMessagesView();
-		
 		public FakeProjectManager FakeProjectManagerToReturnFromCreateProjectManager = new FakeProjectManager();
 		public IPackageRepository PackageRepositoryPassedToCreateProjectManager;
 		public MSBuildBasedProject ProjectPassedToCreateProjectManager;

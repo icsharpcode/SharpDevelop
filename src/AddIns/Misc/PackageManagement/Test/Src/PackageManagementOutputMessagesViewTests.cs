@@ -37,7 +37,7 @@ namespace PackageManagement.Tests
 		
 		void LogInfoMessage(string message)
 		{
-			view.Log(MessageLevel.Info, message);
+			packageManagementEvents.OnPackageOperationMessageLogged(MessageLevel.Info, message);
 		}
 		
 		[Test]
@@ -91,16 +91,6 @@ namespace PackageManagement.Tests
 			string actualCategoryName = fakeCompilerMessageView.CategoryNamePassedToCategoryExists;
 			
 			Assert.AreEqual(expectedCategryName, actualCategoryName);
-		}
-		
-		[Test]
-		public void Log_InfoMessageUsingFormatStringPassed_FullyFormattedStringAddedToMessageViewCategory()
-		{
-			CreateView();
-			
-			view.Log(MessageLevel.Info, "Test {0}", 1);
-			
-			Assert.AreEqual("Test 1", fakeMessageCategoryView.FirstLineAppended);
 		}
 		
 		[Test]

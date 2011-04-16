@@ -16,13 +16,13 @@ namespace PackageManagement.Tests
 		TestableProcessPackageAction action;
 		FakePackageManagementService fakePackageManagementService;
 		FakePackageManager fakePackageManager;
-		FakePackageManagementOutputMessagesView fakeOutputMessagesView;
+		FakeLogger fakeLogger;
 		
 		void CreateAction()
 		{
 			action = new TestableProcessPackageAction();
 			fakePackageManagementService = action.FakePackageManagementService;
-			fakeOutputMessagesView = fakePackageManagementService.FakeOutputMessagesView;
+			fakeLogger = new FakeLogger();
 			fakePackageManager = fakePackageManagementService.FakePackageManagerToReturnFromCreatePackageManager;
 		}
 		
