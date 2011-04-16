@@ -25,6 +25,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			{
 				return null;
 			}
+			
+			public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
+			{
+				return null;
+			}
+			
+			public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters)
+			{
+				return null;
+			}
 		}
 		
 		public static ReflectionProjectContent LoadAssembly(string fileName, ProjectContentRegistry registry)

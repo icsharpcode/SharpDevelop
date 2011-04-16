@@ -74,9 +74,6 @@
     <Reference Include="Microsoft.Contracts">
       <HintPath>..\..\..\Libraries\GraphSharp\Microsoft.Contracts.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\Libraries\Mono.Cecil\Mono.Cecil.dll</HintPath>
-    </Reference>
     <Reference Include="QuickGraph">
       <HintPath>..\..\..\Libraries\GraphSharp\QuickGraph.dll</HintPath>
     </Reference>
@@ -209,6 +206,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\Mono.Cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
