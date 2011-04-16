@@ -13,7 +13,14 @@ namespace ICSharpCode.NRefactory.VB.Tests.Ast
 	public class OptionStatementTests
 	{
 		[Test]
-		public void VBNetStrictOptionDeclarationTest()
+		public void InvalidOptionSyntax()
+		{
+			string program = "Option\n";
+			ParseUtil.ParseGlobal<OptionStatement>(program, true);
+		}
+		
+		[Test]
+		public void StrictOption()
 		{
 			string program = "Option Strict On\n";
 			
@@ -24,68 +31,83 @@ namespace ICSharpCode.NRefactory.VB.Tests.Ast
 			
 			ParseUtil.AssertGlobal(program, node);
 		}
-//		
-//		[Test]
-//		public void VBNetExplicitOptionDeclarationTest()
-//		{
-//			string program = "Option Explicit Off\n";
-//			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
-//			Assert.AreEqual(OptionType.Explicit, opDec.OptionType);
-//			Assert.IsFalse(opDec.OptionValue, "Off option value excepted!");
-//		}
-//		
-//		[Test]
-//		public void VBNetCompareBinaryOptionDeclarationTest()
-//		{
-//			string program = "Option Compare Binary\n";
-//			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
-//			Assert.AreEqual(OptionType.CompareBinary, opDec.OptionType);
-//			Assert.IsTrue(opDec.OptionValue);
-//		}
-//		
-//		[Test]
-//		public void VBNetCompareTextOptionDeclarationTest()
-//		{
-//			string program = "Option Compare Text\n";
-//			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
-//			Assert.AreEqual(OptionType.CompareText, opDec.OptionType);
-//			Assert.IsTrue(opDec.OptionValue);
-//		}
-//
-//		[Test]
-//		public void VBNetInferOnOptionDeclarationTest()
-//		{
-//			string program = "Option Infer On\n";
-//			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
-//			Assert.AreEqual(OptionType.Infer, opDec.OptionType);
-//			Assert.IsTrue(opDec.OptionValue);
-//		}
-//
-//		[Test]
-//		public void VBNetInferOffOptionDeclarationTest()
-//		{
-//			string program = "Option Infer\n";
-//			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
-//			Assert.AreEqual(OptionType.Infer, opDec.OptionType);
-//			Assert.IsTrue(opDec.OptionValue);
-//		}
-//		
-//		[Test]
-//		public void VBNetInferOptionDeclarationTest()
-//		{
-//			string program = "Option Infer\n";
-//			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
-//			Assert.AreEqual(OptionType.Infer, opDec.OptionType);
-//			Assert.IsTrue(opDec.OptionValue);
-//		}
-//		
-//		[Test]
-//		public void VBNetInvalidOptionDeclarationTest()
-//		{
-//			string program = "Option\n";
-//			VBParser parser = ParserFactory.CreateParser(new StringReader(program));
-//			parser.Parse();
-//			Assert.IsFalse(parser.Errors.ErrorOutput.Length == 0, "Expected errors, but operation completed successfully");
-//		}
+		
+		[Test]
+		public void ExplicitOption()
+		{
+			string program = "Option Explicit Off\n";
+			
+			var node = new OptionStatement {
+				OptionType = OptionType.Explicit,
+				OptionValue = OptionValue.Off
+			};
+			
+			ParseUtil.AssertGlobal(program, node);
+		}
+		
+		[Test]
+		public void CompareBinaryOption()
+		{
+			string program = "Option Compare Binary\n";
+			
+			var node = new OptionStatement {
+				OptionType = OptionType.Compare,
+				OptionValue = OptionValue.Binary
+			};
+			
+			ParseUtil.AssertGlobal(program, node);
+		}
+
+		[Test]
+		public void CompareTextOption()
+		{
+			string program = "Option Compare Text\n";
+			
+			var node = new OptionStatement {
+				OptionType = OptionType.Compare,
+				OptionValue = OptionValue.Text
+			};
+			
+			ParseUtil.AssertGlobal(program, node);
+		}
+
+		[Test]
+		public void InferOnOption()
+		{
+			string program = "Option Infer On\n";
+			
+			var node = new OptionStatement {
+				OptionType = OptionType.Infer,
+				OptionValue = OptionValue.On
+			};
+			
+			ParseUtil.AssertGlobal(program, node);
+		}
+
+		[Test]
+		public void InferOffOption()
+		{
+			string program = "Option Infer Off\n";
+			
+			var node = new OptionStatement {
+				OptionType = OptionType.Infer,
+				OptionValue = OptionValue.Off
+			};
+			
+			ParseUtil.AssertGlobal(program, node);
+		}
+
+		[Test]
+		public void InferOption()
+		{
+			string program = "Option Infer\n";
+			
+			var node = new OptionStatement {
+				OptionType = OptionType.Infer,
+				OptionValue = OptionValue.On
+			};
+			
+			ParseUtil.AssertGlobal(program, node);
+		}
 	}
 }

@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 		
 		void AddTerminal(Role<VBTokenNode> role)
 		{
-			stack.Peek().AddChild(new VBTokenNode(t.Location, t.val.Length), role);
+			stack.Peek().AddChild(new VBTokenNode(t.Location, t.EndLocation), role);
 		}
 		
 		void AddChild<T>(T childNode, Role<T> role) where T : AstNode

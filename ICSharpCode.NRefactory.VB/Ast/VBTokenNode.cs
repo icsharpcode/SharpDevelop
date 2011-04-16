@@ -47,10 +47,12 @@ namespace ICSharpCode.NRefactory.VB.Ast
 			}
 		}
 		
-		protected int tokenLength;
+		protected int tokenLength = -1;
+		
+		AstLocation endLocation;
 		public override AstLocation EndLocation {
 			get {
-				return new AstLocation (StartLocation.Line, StartLocation.Column + tokenLength);
+				return tokenLength < 0 ? endLocation : new AstLocation(startLocation.Line, startLocation.Column + tokenLength);
 			}
 		}
 		
@@ -58,6 +60,12 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		{
 			this.startLocation = location;
 			this.tokenLength = tokenLength;
+		}
+		
+		public VBTokenNode(AstLocation startLocation, AstLocation endLocation)
+		{
+			this.startLocation = startLocation;
+			this.endLocation = endLocation;
 		}
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
