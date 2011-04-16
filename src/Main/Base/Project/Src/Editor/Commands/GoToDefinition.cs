@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				return;
 			FilePosition pos = symbol.GetDefinitionPosition();
 			if (pos.IsEmpty) {
-				new GoToDecompiledDefinition().Run(symbol);
+				//new GoToDecompiledDefinition().Run(symbol);
 			} else {
 				try {
 					if (pos.Position.IsEmpty)
@@ -33,6 +33,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		}
 	}
 	
+	/*
 	public class GoToDecompiledDefinition : AbstractMenuCommand
 	{
 		/// <summary>
@@ -129,5 +130,5 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 					FileService.OpenFile(filePath);
 			}
 		}
-	}
+	}*/
 }
