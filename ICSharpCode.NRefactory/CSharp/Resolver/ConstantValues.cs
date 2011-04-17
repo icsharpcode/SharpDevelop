@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
-	public class ConstantCast : ConstantExpression, ISupportsInterning
+	public sealed class ConstantCast : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference targetType;
 		IConstantValue expression;
@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
-	public class ConstantIdentifierReference : ConstantExpression, ISupportsInterning
+	public sealed class ConstantIdentifierReference : ConstantExpression, ISupportsInterning
 	{
 		string identifier;
 		IList<ITypeReference> typeArguments;
@@ -138,7 +138,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
-	public class ConstantMemberReference : ConstantExpression, ISupportsInterning
+	public sealed class ConstantMemberReference : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference targetType;
 		IConstantValue targetExpression;
@@ -209,7 +209,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
-	public class ConstantDefaultValue : ConstantExpression, ISupportsInterning
+	public sealed class ConstantDefaultValue : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference type;
 		
@@ -242,7 +242,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
-	public class ConstantUnaryOperator : ConstantExpression, ISupportsInterning
+	public sealed class ConstantUnaryOperator : ConstantExpression, ISupportsInterning
 	{
 		UnaryOperatorType operatorType;
 		IConstantValue expression;
@@ -286,7 +286,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 
-	public class ConstantBinaryOperator : ConstantExpression, ISupportsInterning
+	public sealed class ConstantBinaryOperator : ConstantExpression, ISupportsInterning
 	{
 		IConstantValue left;
 		BinaryOperatorType operatorType;
@@ -337,7 +337,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
-	public class ConstantConditionalOperator : ConstantExpression, ISupportsInterning
+	public sealed class ConstantConditionalOperator : ConstantExpression, ISupportsInterning
 	{
 		IConstantValue condition, trueExpr, falseExpr;
 		

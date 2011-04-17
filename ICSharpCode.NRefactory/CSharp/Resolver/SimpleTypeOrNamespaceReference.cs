@@ -29,6 +29,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.isInUsingDeclaration = isInUsingDeclaration;
 		}
 		
+		/// <summary>
+		/// Adds a suffix to the identifier.
+		/// Does not modify the existing type reference, but returns a new one.
+		/// </summary>
+		public SimpleTypeOrNamespaceReference AddSuffix(string suffix)
+		{
+			return new SimpleTypeOrNamespaceReference(identifier + suffix, typeArguments, parentTypeDefinition, parentUsingScope, isInUsingDeclaration);
+		}
+		
 		public ResolveResult DoResolve(ITypeResolveContext context)
 		{
 			CSharpResolver r = new CSharpResolver(context);

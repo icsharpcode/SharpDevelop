@@ -29,12 +29,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the positional arguments passed to the attribute.
 		/// </summary>
-		IList<IConstantValue> PositionalArguments { get; }
+		IList<IConstantValue> GetPositionalArguments(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets the named arguments passed to the attribute.
 		/// </summary>
-		IList<KeyValuePair<string, IConstantValue>> NamedArguments { get; }
+		IList<KeyValuePair<string, IConstantValue>> GetNamedArguments(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Resolves the constructor method used for this attribute invocation.

@@ -31,6 +31,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.parentUsingScope = parentUsingScope;
 		}
 		
+		/// <summary>
+		/// Adds a suffix to the identifier.
+		/// Does not modify the existing type reference, but returns a new one.
+		/// </summary>
+		public MemberTypeOrNamespaceReference AddSuffix(string suffix)
+		{
+			return new MemberTypeOrNamespaceReference(target, identifier + suffix, typeArguments, parentTypeDefinition, parentUsingScope);
+		}
+		
 		public ResolveResult DoResolve(ITypeResolveContext context)
 		{
 			ResolveResult targetRR = target.DoResolve(context);

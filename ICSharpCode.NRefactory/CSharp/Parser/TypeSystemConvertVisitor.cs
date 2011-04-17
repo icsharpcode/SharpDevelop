@@ -167,7 +167,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			td.Region = MakeRegion(delegateDeclaration);
 			td.BaseTypes.Add(multicastDelegateReference);
 			
-			ConvertAttributes(td.Attributes, delegateDeclaration.Attributes);
 			ApplyModifiers(td, delegateDeclaration.Modifiers);
 			td.IsSealed = true; // delegates are implicitly sealed
 			
@@ -177,6 +176,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			List<IParameter> parameters = new List<IParameter>();
 			ConvertParameters(parameters, delegateDeclaration.Parameters);
 			AddDefaultMethodsToDelegate(td, returnType, parameters);
+			
+			foreach (AttributeSection section in delegateDeclaration.Attributes) {
+				if (section.AttributeTarget == "return") {
+					ConvertAttributes(td.Methods.Single(m => m.Name == "Invoke").ReturnTypeAttributes, section);
+					ConvertAttributes(td.Methods.Single(m => m.Name == "EndInvoke").ReturnTypeAttributes, section);
+				} else {
+					ConvertAttributes(td.Attributes, section);
+				}
+			}
 			
 			currentTypeDefinition = (DefaultTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
 			return td;
@@ -449,7 +457,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			DefaultAccessor a = new DefaultAccessor();
 			a.Accessibility = GetAccessibility(accessor.Modifiers) ?? defaultAccessibility;
 			a.Region = MakeRegion(accessor);
-			ConvertAttributes(a.Attributes, accessor.Attributes);
+			foreach (AttributeSection section in accessor.Attributes) {
+				if (section.AttributeTarget == "return") {
+					ConvertAttributes(a.ReturnTypeAttributes, section);
+				} else if (section.AttributeTarget != "param") {
+					ConvertAttributes(a.Attributes, section);
+				}
+			}
 			return a;
 		}
 		#endregion
@@ -465,11 +479,25 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				ev.Region = isSingleEvent ? MakeRegion(eventDeclaration) : MakeRegion(vi);
 				ev.BodyRegion = MakeRegion(vi);
-				ConvertAttributes(ev.Attributes, eventDeclaration.Attributes);
 				
 				ApplyModifiers(ev, modifiers);
 				
 				ev.ReturnType = ConvertType(eventDeclaration.ReturnType);
+				
+				if (eventDeclaration.Attributes.Any(a => a.AttributeTarget == "method")) {
+					ev.AddAccessor = ev.RemoveAccessor = new DefaultAccessor { Accessibility = ev.Accessibility };
+				} else {
+					// if there's no attributes on the accessors, we can re-use the shared accessor instance
+					ev.AddAccessor = ev.RemoveAccessor = DefaultAccessor.GetFromAccessibility(ev.Accessibility);
+				}
+				foreach (AttributeSection section in eventDeclaration.Attributes) {
+					if (section.AttributeTarget == "method") {
+						// as we use the same instance for AddAccessor and RemoveAccessor, we only need to add the attribute once
+						ConvertAttributes(ev.AddAccessor.Attributes, section);
+					} else if (section.AttributeTarget != "field") {
+						ConvertAttributes(ev.Attributes, section);
+					}
+				}
 				
 				currentTypeDefinition.Events.Add(ev);
 			}
@@ -541,8 +569,55 @@ namespace ICSharpCode.NRefactory.CSharp
 		void ConvertAttributes(IList<IAttribute> outputList, IEnumerable<AttributeSection> attributes)
 		{
 			foreach (AttributeSection section in attributes) {
-				throw new NotImplementedException();
+				ConvertAttributes(outputList, section);
 			}
+		}
+		
+		void ConvertAttributes(IList<IAttribute> outputList, AttributeSection attributeSection)
+		{
+			foreach (CSharp.Attribute attr in attributeSection.Attributes) {
+				outputList.Add(ConvertAttribute(attr));
+			}
+		}
+		
+		IAttribute ConvertAttribute(CSharp.Attribute attr)
+		{
+			DomRegion region = MakeRegion(attr);
+			ITypeReference type = ConvertType(attr.Type);
+			if (!attr.Type.GetChildByRole(AstNode.Roles.Identifier).IsVerbatim) {
+				// Try to add "Attribute" suffix, but only if the identifier
+				// (=last identifier in fully qualified name) isn't a verbatim identifier.
+				SimpleTypeOrNamespaceReference st = type as SimpleTypeOrNamespaceReference;
+				MemberTypeOrNamespaceReference mt = type as MemberTypeOrNamespaceReference;
+				if (st != null)
+					type = new AttributeTypeReference(st, st.AddSuffix("Attribute"));
+				else if (mt != null)
+					type = new AttributeTypeReference(mt, mt.AddSuffix("Attribute"));
+			}
+			List<IConstantValue> positionalArguments = null;
+			List<KeyValuePair<string, IConstantValue>> namedCtorArguments = null;
+			List<KeyValuePair<string, IConstantValue>> namedArguments = null;
+			foreach (Expression expr in attr.Arguments) {
+				NamedArgumentExpression nae = expr as NamedArgumentExpression;
+				if (nae != null) {
+					if (namedCtorArguments == null)
+						namedCtorArguments = new List<KeyValuePair<string, IConstantValue>>();
+					namedCtorArguments.Add(new KeyValuePair<string, IConstantValue>(nae.Identifier, ConvertAttributeArgument(nae.Expression)));
+				} else {
+					AssignmentExpression ae = expr as AssignmentExpression;
+					if (ae != null && ae.Left is IdentifierExpression && ae.Operator == AssignmentOperatorType.Assign) {
+						string name = ((IdentifierExpression)ae.Left).Identifier;
+						if (namedArguments == null)
+							namedArguments = new List<KeyValuePair<string, IConstantValue>>();
+						namedArguments.Add(new KeyValuePair<string, IConstantValue>(name, ConvertAttributeArgument(nae.Expression)));
+					} else {
+						if (positionalArguments == null)
+							positionalArguments = new List<IConstantValue>();
+						positionalArguments.Add(ConvertAttributeArgument(nae.Expression));
+					}
+				}
+			}
+			return new CSharpAttribute(type, region, positionalArguments, namedCtorArguments, namedArguments);
 		}
 		#endregion
 		
@@ -661,6 +736,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new ConstantCast(targetType, c, b.checkForOverflow);
 			else
 				return c;
+		}
+		
+		IConstantValue ConvertAttributeArgument(Expression expression)
+		{
+			throw new NotImplementedException();
 		}
 		
 		sealed class ConstantValueBuilder : DepthFirstAstVisitor<object, IConstantValue>
