@@ -145,7 +145,7 @@
     <Compile Include="Src\PackageManagementOptionsTests.cs" />
     <Compile Include="Src\PackageManagementOptionsViewModelTests.cs" />
     <Compile Include="Src\PackageManagementOutputMessagesViewTests.cs" />
-    <Compile Include="Src\PackageManagementServiceTests.cs" />
+    <Compile Include="Src\PackageManagementSolutionTests.cs" />
     <Compile Include="Src\PackageRepositoryCacheTests.cs" />
     <Compile Include="Src\PackageRepositoryPathsTests.cs" />
     <Compile Include="Src\PackageSourceViewModelTests.cs" />

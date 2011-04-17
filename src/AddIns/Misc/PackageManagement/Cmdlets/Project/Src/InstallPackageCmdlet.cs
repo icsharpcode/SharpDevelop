@@ -14,17 +14,17 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 	{
 		public InstallPackageCmdlet()
 			: this(
-				PackageManagementServices.PackageManagementService,
+				PackageManagementServices.Solution,
 				PackageManagementServices.ConsoleHost,
 				null)
 		{
 		}
 		
 		public InstallPackageCmdlet(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageManagementConsoleHost consoleHost,
 			ICmdletTerminatingError terminatingError)
-			: base(packageManagementService, consoleHost, terminatingError)
+			: base(solution, consoleHost, terminatingError)
 		{
 		}
 		
@@ -60,7 +60,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		InstallPackageAction CreateInstallPackageTask(PackageSource packageSource, MSBuildBasedProject project)
 		{
-			InstallPackageAction action = PackageManagementService.CreateInstallPackageAction();
+			InstallPackageAction action = Solution.CreateInstallPackageAction();
 			action.PackageId = Id;
 			action.PackageVersion = Version;
 			action.Project = project;

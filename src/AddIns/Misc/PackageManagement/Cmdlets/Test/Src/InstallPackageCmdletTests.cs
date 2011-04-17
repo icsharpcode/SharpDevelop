@@ -18,7 +18,7 @@ namespace PackageManagement.Cmdlets.Tests
 	{
 		TestableInstallPackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
-		FakePackageManagementService fakePackageManagementService;
+		FakePackageManagementSolution fakeSolution;
 		FakeInstallPackageAction fakeInstallPackageTask;
 		
 		void CreateCmdletWithoutActiveProject()
@@ -26,8 +26,8 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet = new TestableInstallPackageCmdlet();
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
-			fakePackageManagementService = cmdlet.FakePackageManagementService;
-			fakeInstallPackageTask = fakePackageManagementService.ActionToReturnFromCreateInstallPackageAction;
+			fakeSolution = cmdlet.FakeSolution;
+			fakeInstallPackageTask = fakeSolution.ActionToReturnFromCreateInstallPackageAction;
 		}
 				
 		void CreateCmdletWithActivePackageSourceAndProject()

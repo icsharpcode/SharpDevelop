@@ -10,20 +10,20 @@ namespace ICSharpCode.PackageManagement
 {
 	public class AddPackageReferenceViewModel : ViewModelBase<AddPackageReferenceViewModel>, IDisposable
 	{
-		IPackageManagementService packageManagementService;
+		IPackageManagementSolution solution;
 		IPackageManagementEvents packageManagementEvents;
 		ILicenseAcceptanceService licenseAcceptanceService;
 		string message;
 		bool hasError;
 		
 		public AddPackageReferenceViewModel(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagementEvents packageManagementEvents,
 			ILicenseAcceptanceService licenseAcceptanceService,
 			ITaskFactory taskFactory)
 		{
-			this.packageManagementService = packageManagementService;
+			this.solution = solution;
 			this.packageManagementEvents = packageManagementEvents;
 			this.licenseAcceptanceService = licenseAcceptanceService;
 			
@@ -31,11 +31,11 @@ namespace ICSharpCode.PackageManagement
 			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
 			packageManagementEvents.AcceptLicenses += AcceptLicenses;
 			
-			var packageViewModelFactory = new PackageViewModelFactory(packageManagementService, packageManagementEvents);
+			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents);
 			
 			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
-			InstalledPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
-			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(packageManagementService, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 			RecentPackagesViewModel = new RecentPackagesViewModel(packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 			
 			AvailablePackagesViewModel.ReadPackages();

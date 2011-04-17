@@ -10,21 +10,21 @@ namespace ICSharpCode.PackageManagement
 {
 	public class InstalledPackagesViewModel : PackagesViewModel
 	{
-		IPackageManagementService packageManagementService;
+		IPackageManagementSolution solution;
 		IPackageManagementEvents packageManagementEvents;
 		IProjectManager projectManager;
 		IPackageRepository repository;
 		string errorMessage = String.Empty;
 
 		public InstalledPackagesViewModel(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
-			this.packageManagementService = packageManagementService;
+			this.solution = solution;
 			this.packageManagementEvents = packageManagementEvents;
 			packageManagementEvents.ParentPackageInstalled += InstalledPackagesChanged;
 			packageManagementEvents.ParentPackageUninstalled += InstalledPackagesChanged;
@@ -35,7 +35,7 @@ namespace ICSharpCode.PackageManagement
 		void GetActiveProjectManager()
 		{
 			try {
-				this.projectManager = packageManagementService.ActiveProjectManager;
+				this.projectManager = solution.ActiveProjectManager;
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}

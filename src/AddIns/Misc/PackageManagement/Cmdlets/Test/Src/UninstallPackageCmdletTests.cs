@@ -15,7 +15,7 @@ namespace PackageManagement.Cmdlets.Tests
 	{
 		TestableUninstallPackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
-		FakePackageManagementService fakePackageManagementService;
+		FakePackageManagementSolution fakeSolution;
 		FakeUninstallPackageAction uninstallPackageAction;
 		
 		void CreateCmdletWithoutActiveProject()
@@ -23,8 +23,8 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet = new TestableUninstallPackageCmdlet();
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
-			fakePackageManagementService = cmdlet.FakePackageManagementService;
-			uninstallPackageAction = fakePackageManagementService.ActionToReturnFromCreateUninstallPackageAction;
+			fakeSolution = cmdlet.FakeSolution;
+			uninstallPackageAction = fakeSolution.ActionToReturnFromCreateUninstallPackageAction;
 		}
 		
 		void CreateCmdletWithActivePackageSourceAndProject()

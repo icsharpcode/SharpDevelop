@@ -14,30 +14,30 @@ namespace PackageManagement.Tests
 	public class InstalledPackagesViewModelTests
 	{
 		InstalledPackagesViewModel viewModel;
-		FakePackageManagementService packageManagementService;
+		FakePackageManagementSolution solution;
 		PackageManagementEvents packageManagementEvents;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
-		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
+		ExceptionThrowingPackageManagementSolution exceptionThrowingSolution;
 		FakeTaskFactory taskFactory;
 		
 		void CreateViewModel()
 		{
-			CreatePackageManagementService();
-			CreateViewModel(packageManagementService);
+			CreateSolution();
+			CreateViewModel(solution);
 		}
 		
-		void CreatePackageManagementService()
+		void CreateSolution()
 		{
-			packageManagementService = new FakePackageManagementService();
+			solution = new FakePackageManagementSolution();
 			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 		}
 		
-		void CreateExceptionThrowingPackageManagementService()
+		void CreateExceptionThrowingSolution()
 		{
-			exceptionThrowingPackageManagementService = new ExceptionThrowingPackageManagementService();
+			exceptionThrowingSolution = new ExceptionThrowingPackageManagementSolution();
 		}
 		
-		void CreateViewModel(FakePackageManagementService packageManagementService)
+		void CreateViewModel(FakePackageManagementSolution solution)
 		{
 			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
@@ -45,7 +45,7 @@ namespace PackageManagement.Tests
 			packageManagementEvents = new PackageManagementEvents();
 			
 			viewModel = new InstalledPackagesViewModel(
-				packageManagementService,
+				solution,
 				packageManagementEvents,
 				registeredPackageRepositories,
 				packageViewModelFactory,
@@ -65,7 +65,7 @@ namespace PackageManagement.Tests
 		FakePackage AddPackageToProjectManagerLocalPackageRepository()
 		{
 			var package = new FakePackage("Test");
-			FakePackageRepository repository = packageManagementService.FakeActiveProjectManager.FakeLocalRepository;
+			FakePackageRepository repository = solution.FakeActiveProjectManager.FakeLocalRepository;
 			repository.FakePackages.Add(package);
 			return package;
 		}
@@ -94,7 +94,7 @@ namespace PackageManagement.Tests
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			
-			packageManagementService.FakeActiveProjectManager.FakeLocalRepository.FakePackages.Clear();
+			solution.FakeActiveProjectManager.FakeLocalRepository.FakePackages.Clear();
 			
 			ClearReadPackagesTasks();
 			packageManagementEvents.OnParentPackageUninstalled(new FakePackage());
@@ -106,9 +106,9 @@ namespace PackageManagement.Tests
 		[Test]
 		public void ReadPackages_ActiveProjectManagerThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
 		{
-			CreateExceptionThrowingPackageManagementService();
-			exceptionThrowingPackageManagementService.ExeptionToThrowWhenActiveProjectManagerAccessed = new Exception("Test");
-			CreateViewModel(exceptionThrowingPackageManagementService);
+			CreateExceptionThrowingSolution();
+			exceptionThrowingSolution.ExeptionToThrowWhenActiveProjectManagerAccessed = new Exception("Test");
+			CreateViewModel(exceptionThrowingSolution);
 			viewModel.ReadPackages();
 			
 			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
@@ -118,12 +118,12 @@ namespace PackageManagement.Tests
 		[Test]
 		public void ReadPackages_OnePackageInLocalRepository_RepositoryIsNotCreatedByBackgroundThread()
 		{
-			CreatePackageManagementService();
-			packageManagementService.AddPackageToProjectLocalRepository(new FakePackage());
-			CreateViewModel(packageManagementService);
+			CreateSolution();
+			solution.AddPackageToProjectLocalRepository(new FakePackage());
+			CreateViewModel(solution);
 			viewModel.ReadPackages();
 			
-			packageManagementService.FakeActiveProjectManager.FakeLocalRepository = null;
+			solution.FakeActiveProjectManager.FakeLocalRepository = null;
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
@@ -153,7 +153,7 @@ namespace PackageManagement.Tests
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			
-			packageManagementService.FakeActiveProjectManager.FakeLocalRepository.FakePackages.Clear();
+			solution.FakeActiveProjectManager.FakeLocalRepository.FakePackages.Clear();
 			
 			ClearReadPackagesTasks();
 			viewModel.Dispose();

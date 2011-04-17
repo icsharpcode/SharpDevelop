@@ -12,7 +12,7 @@ namespace PackageManagement.Tests
 	[TestFixture]
 	public class InstallPackageActionTests
 	{
-		FakePackageManagementService fakePackageManagementService;
+		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementEvents fakePackageManagementEvents;
 		FakePackageManager fakePackageManager;
 		InstallPackageAction action;
@@ -20,10 +20,10 @@ namespace PackageManagement.Tests
 
 		void CreateAction()
 		{
-			fakePackageManagementService = new FakePackageManagementService();
+			fakeSolution = new FakePackageManagementSolution();
 			fakePackageManagementEvents = new FakePackageManagementEvents();
-			fakePackageManager = fakePackageManagementService.FakePackageManagerToReturnFromCreatePackageManager;
-			action = new InstallPackageAction(fakePackageManagementService, fakePackageManagementEvents);
+			fakePackageManager = fakeSolution.FakePackageManagerToReturnFromCreatePackageManager;
+			action = new InstallPackageAction(fakeSolution, fakePackageManagementEvents);
 			installPackageHelper = new InstallPackageHelper(action);
 		}
 		
@@ -59,7 +59,7 @@ namespace PackageManagement.Tests
 			installPackageHelper.InstallPackageById("PackageId");
 			
 			var expectedPackageSource = installPackageHelper.PackageSource;
-			var actualPackageSource = fakePackageManagementService.PackageSourcePassedToCreatePackageManager;
+			var actualPackageSource = fakeSolution.PackageSourcePassedToCreatePackageManager;
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
 		}
@@ -78,7 +78,7 @@ namespace PackageManagement.Tests
 			installPackageHelper.InstallTestPackage();
 			
 			var expectedRepository = installPackageHelper.PackageRepository;
-			var actualRepository = fakePackageManagementService.PackageRepositoryPassedToCreatePackageManager;
+			var actualRepository = fakeSolution.PackageRepositoryPassedToCreatePackageManager;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
 		}
@@ -141,7 +141,7 @@ namespace PackageManagement.Tests
 			CreateAction();
 			installPackageHelper.InstallPackageById("PackageId");
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToCreatePackageManager;
+			var actualProject = fakeSolution.ProjectPassedToCreatePackageManager;
 			var expectedProject = installPackageHelper.TestableProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);

@@ -15,9 +15,9 @@ using PackageManagement.Tests.Helpers;
 namespace PackageManagement.Tests
 {
 	[TestFixture]
-	public class PackageManagementServiceTests
+	public class PackageManagementSolutionTests
 	{
-		PackageManagementService packageManagementService;
+		PackageManagementSolution solution;
 		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
 		OneRegisteredPackageSourceHelper packageSourcesHelper;
 		FakePackageManagerFactory fakePackageManagerFactory;
@@ -29,13 +29,13 @@ namespace PackageManagement.Tests
 			packageSourcesHelper = new OneRegisteredPackageSourceHelper();
 		}
 		
-		void CreatePackageManagementService()
+		void CreateSolution()
 		{
 			CreatePackageSources();
-			CreatePackageManagementService(packageSourcesHelper.Options);
+			CreateSolution(packageSourcesHelper.Options);
 		}
 		
-		void CreatePackageManagementService(PackageManagementOptions options)
+		void CreateSolution(PackageManagementOptions options)
 		{
 			testProject = ProjectHelper.CreateTestProject();
 			fakeRegisteredPackageRepositories = new FakeRegisteredPackageRepositories();
@@ -44,8 +44,8 @@ namespace PackageManagement.Tests
 			var packageManagementEvents = new FakePackageManagementEvents();
 			
 			fakeProjectService.CurrentProject = testProject;
-			packageManagementService = 
-				new PackageManagementService(
+			solution = 
+				new PackageManagementSolution(
 					fakeRegisteredPackageRepositories,
 					fakePackageManagerFactory,
 					packageManagementEvents,
@@ -78,9 +78,9 @@ namespace PackageManagement.Tests
 		[Test]
 		public void ActiveProjectManager_ProjectIsSelected_ReferencesSelectedProject()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
-			IProjectManager activeProjectManager = packageManagementService.ActiveProjectManager;
+			IProjectManager activeProjectManager = solution.ActiveProjectManager;
 			IProject actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
 			
 			Assert.AreEqual(testProject, actualProject);
@@ -89,11 +89,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreateProjectManager_RepositoryAndProjectSpecified_CreatesPackageManagerFromPackageManagerFactory()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			var repository = new FakePackageRepository();
 			var project = ProjectHelper.CreateTestProject();
 			
-			ISharpDevelopProjectManager projectManager = packageManagementService.CreateProjectManager(repository, project);
+			ISharpDevelopProjectManager projectManager = solution.CreateProjectManager(repository, project);
 			
 			var expectedProjectManager = fakePackageManagerFactory.FakePackageManager.FakeProjectManager;
 			Assert.AreEqual(expectedProjectManager, projectManager);
@@ -102,10 +102,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreateProjectManager_RepositorySpecified_RepositoryUsedToCreateProjectManager()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			var repository = new FakePackageRepository();
 			
-			packageManagementService.CreateProjectManager(repository, null);
+			solution.CreateProjectManager(repository, null);
 			
 			var expectedRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
 			
@@ -115,10 +115,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreateProjectManager_ProjectSpecified_ProjectUsedToCreateProjectManager()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			var project = ProjectHelper.CreateTestProject();
 			
-			packageManagementService.CreateProjectManager(null, project);
+			solution.CreateProjectManager(null, project);
 			
 			var expectedProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
 			
@@ -128,9 +128,9 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreatePackageManagerForActiveProject_ProjectIsSelected_ReferencesSelectedProject()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
-			packageManagementService.CreatePackageManagerForActiveProject();
+			solution.CreatePackageManagerForActiveProject();
 			
 			IProject expectedProject = fakeProjectService.CurrentProject;
 			IProject actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
@@ -141,10 +141,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreatePackageManagerForActiveProject_PackageRepositoryPassed_CreatesPackageManagerWithCurrentlyActiveProject()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			var repository = new FakePackageRepository();
-			packageManagementService.CreatePackageManagerForActiveProject(repository);
+			solution.CreatePackageManagerForActiveProject(repository);
 			
 			IProject expectedProject = fakeProjectService.CurrentProject;
 			IProject actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
@@ -155,10 +155,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreatePackageManagerForActiveProject_PackageRepositoryPassed_PackageManagerCreatedWithRepository()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			var repository = new FakePackageRepository();
-			packageManagementService.CreatePackageManagerForActiveProject(repository);
+			solution.CreatePackageManagerForActiveProject(repository);
 			
 			var actualRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
 			
@@ -168,9 +168,9 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreatePackageManagerForActiveProject_ProjectIsSelected_UsesActiveRepository()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
-			packageManagementService.CreatePackageManagerForActiveProject();
+			solution.CreatePackageManagerForActiveProject();
 			
 			var expectedRepository = fakeRegisteredPackageRepositories.ActiveRepository;
 			var actualRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
@@ -181,10 +181,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreatePackageManagerForActiveProject_ProjectIsSelected_ReturnsPackageManager()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			ISharpDevelopPackageManager packageManager = 
-				packageManagementService.CreatePackageManagerForActiveProject();
+				solution.CreatePackageManagerForActiveProject();
 			
 			var expectedPackageManager = fakePackageManagerFactory.FakePackageManager;
 			
@@ -194,11 +194,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreatePackageManager_PackageSourceAndProjectPassed_ReturnsNewPackageManager()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			var packageSource = new PackageSource("test");
 			ISharpDevelopPackageManager packageManager = 
-				packageManagementService.CreatePackageManager(packageSource, testProject);
+				solution.CreatePackageManager(packageSource, testProject);
 			
 			var expectedPackageManager = fakePackageManagerFactory.FakePackageManager;
 			
@@ -208,11 +208,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreatePackageManager_PackageSourceAndProjectPassed_PackageSourceUsedToCreateRepository()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			var packageSource = new PackageSource("test");
 			ISharpDevelopPackageManager packageManager = 
-				packageManagementService.CreatePackageManager(packageSource, testProject);
+				solution.CreatePackageManager(packageSource, testProject);
 			
 			var actualPackageSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
 			
@@ -222,11 +222,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreatePackageManager_PackageSourceAndProjectPassed_CreatedRepositoryUsedToCreatePackageManager()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			var packageSource = new PackageSource("test");
 			ISharpDevelopPackageManager packageManager = 
-				packageManagementService.CreatePackageManager(packageSource, testProject);
+				solution.CreatePackageManager(packageSource, testProject);
 			
 			var actualRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
 			var expectedRepository = fakeRegisteredPackageRepositories.FakePackageRepository;
@@ -237,11 +237,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreatePackageManager_PackageSourceAndProjectPassed_ProjectUsedToCreatePackageManager()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			var packageSource = new PackageSource("test");
 			ISharpDevelopPackageManager packageManager = 
-				packageManagementService.CreatePackageManager(packageSource, testProject);
+				solution.CreatePackageManager(packageSource, testProject);
 			
 			var actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
 			

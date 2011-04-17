@@ -10,16 +10,16 @@ namespace ICSharpCode.PackageManagement
 	{
 		public PackageViewModelFactory(IPackageViewModelFactory packageViewModelFactory)
 			: this(
-				packageViewModelFactory.PackageManagementService,
+				packageViewModelFactory.Solution,
 				packageViewModelFactory.PackageManagementEvents)
 		{
 		}
 		
 		public PackageViewModelFactory(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents)
 		{
-			this.PackageManagementService = packageManagementService;
+			this.Solution = solution;
 			this.PackageManagementEvents = packageManagementEvents;
 			this.Logger = new PackageManagementLogger(packageManagementEvents);
 		}
@@ -28,12 +28,12 @@ namespace ICSharpCode.PackageManagement
 		{
 			return new PackageViewModel(
 				package,
-				PackageManagementService,
+				Solution,
 				PackageManagementEvents,
 				Logger);
 		}
 		
-		public IPackageManagementService PackageManagementService { get; private set; }
+		public IPackageManagementSolution Solution { get; private set; }
 		public IPackageManagementEvents PackageManagementEvents { get; private set; }
 		public ILogger Logger { get; private set; }
 	}

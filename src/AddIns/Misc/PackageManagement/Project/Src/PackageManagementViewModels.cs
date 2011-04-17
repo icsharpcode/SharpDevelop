@@ -12,7 +12,7 @@ namespace ICSharpCode.PackageManagement
 		AddPackageReferenceViewModel addPackageReferenceViewModel;
 		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
 		PackageManagementConsoleViewModel packageManagementConsoleViewModel;
-		IPackageManagementService packageManagementService;
+		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		
 		public AddPackageReferenceViewModel AddPackageReferenceViewModel {
@@ -25,23 +25,23 @@ namespace ICSharpCode.PackageManagement
 		void CreateAddPackageReferenceViewModel()
 		{
 			CreateRegisteredPackageRepositories();
-			CreatePackageManagementService();
+			CreateSolution();
 			addPackageReferenceViewModel = 
 				new AddPackageReferenceViewModel(
-					packageManagementService,
+					solution,
 					registeredPackageRepositories,
 					PackageManagementServices.PackageManagementEvents,
 					new LicenseAcceptanceService(),
 					new PackageManagementTaskFactory());
 		}
 		
-		void CreatePackageManagementService()
+		void CreateSolution()
 		{
-			if (packageManagementService == null) {
+			if (solution == null) {
 				if (IsInDesignMode()) {
-					packageManagementService = new FakePackageManagementService();
+					solution = new FakePackageManagementSolution();
 				} else {
-					packageManagementService = PackageManagementServices.PackageManagementService;
+					solution = PackageManagementServices.Solution;
 				}
 			}
 		}
@@ -73,7 +73,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void CreatePackageManagementOptionsViewModel()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			if (IsInDesignMode()) {
 				packageManagementOptionsViewModel = new DesignTimePackageManagementOptionsViewModel();
 			} else {
@@ -92,7 +92,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void CreatePackageManagementConsoleViewModel()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			var consoleHost = PackageManagementServices.ConsoleHost;
 			packageManagementConsoleViewModel = 
 				new PackageManagementConsoleViewModel(

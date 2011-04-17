@@ -123,7 +123,7 @@
     <Compile Include="Src\InstalledPackagesViewModel.cs" />
     <Compile Include="Src\IPackageManagementFileService.cs" />
     <Compile Include="Src\IPackageManagementProjectService.cs" />
-    <Compile Include="Src\IPackageManagementService.cs" />
+    <Compile Include="Src\IPackageManagementSolution.cs" />
     <Compile Include="Src\IPackageManagerFactory.cs" />
     <Compile Include="Src\IPackageViewModelFactory.cs" />
     <Compile Include="Src\ISharpDevelopPackageManager.cs" />
@@ -149,7 +149,7 @@
     <Compile Include="Src\PackageManagementOptionsViewModel.cs" />
     <Compile Include="Src\PackageManagementProjectService.cs" />
     <Compile Include="Src\PackageManagementEnumerableExtensions.cs" />
-    <Compile Include="Src\PackageManagementService.cs" />
+    <Compile Include="Src\PackageManagementSolution.cs" />
     <Compile Include="Src\PackageManagementTask.cs" />
     <Compile Include="Src\PackageManagementTaskFactory.cs" />
     <Compile Include="Src\PackageRepositoryPaths.cs" />

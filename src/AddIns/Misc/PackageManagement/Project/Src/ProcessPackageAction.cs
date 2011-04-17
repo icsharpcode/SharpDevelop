@@ -9,14 +9,14 @@ namespace ICSharpCode.PackageManagement
 {
 	public abstract class ProcessPackageAction
 	{
-		IPackageManagementService packageManagementService;
+		IPackageManagementSolution solution;
 		IPackageManagementEvents packageManagementEvents;
 		
 		public ProcessPackageAction(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents)
 		{
-			this.packageManagementService = packageManagementService;
+			this.solution = solution;
 			this.packageManagementEvents = packageManagementEvents;
 		}
 		
@@ -67,9 +67,9 @@ namespace ICSharpCode.PackageManagement
 		void CreatePackageManager()
 		{
 			if (PackageRepository == null) {
-				PackageManager = packageManagementService.CreatePackageManager(PackageSource, Project);
+				PackageManager = solution.CreatePackageManager(PackageSource, Project);
 			} else {
-				PackageManager = packageManagementService.CreatePackageManagerForActiveProject(PackageRepository);
+				PackageManager = solution.CreatePackageManagerForActiveProject(PackageRepository);
 			}
 		}
 		

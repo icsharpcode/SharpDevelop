@@ -15,7 +15,7 @@ namespace PackageManagement.Cmdlets.Tests
 	public class GetPackageCmdletTests : CmdletTestsBase
 	{
 		TestableGetPackageCmdlet cmdlet;
-		FakePackageManagementService fakePackageManagementService;
+		FakePackageManagementSolution fakeSolution;
 		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
 		FakeCommandRuntime fakeCommandRuntime;
 		FakeCmdletTerminatingError fakeTerminatingError;
@@ -23,7 +23,7 @@ namespace PackageManagement.Cmdlets.Tests
 		void CreateCmdlet()
 		{
 			cmdlet = new TestableGetPackageCmdlet();
-			fakePackageManagementService = cmdlet.FakePackageManagementService;
+			fakeSolution = cmdlet.FakeSolution;
 			fakeRegisteredPackageRepositories = cmdlet.FakeRegisteredPackageRepositories;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
 			fakeCommandRuntime = cmdlet.FakeCommandRuntime;
@@ -53,7 +53,7 @@ namespace PackageManagement.Cmdlets.Tests
 		FakePackage AddPackageToProjectManagerLocalRepository(string id, string version)
 		{
 			var package = FakePackage.CreatePackageWithVersion(id, version);
-			fakePackageManagementService
+			fakeSolution
 				.FakeProjectManagerToReturnFromCreateProjectManager
 				.FakeLocalRepository
 				.FakePackages.Add(package);
@@ -168,7 +168,7 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			AddDefaultProjectToConsoleHost();
-			FakeProjectManager projectManager = fakePackageManagementService.FakeProjectManagerToReturnFromCreateProjectManager;
+			FakeProjectManager projectManager = fakeSolution.FakeProjectManagerToReturnFromCreateProjectManager;
 			projectManager.FakeLocalRepository.AddFakePackage("One");
 			projectManager.FakeLocalRepository.AddFakePackage("Two");
 			
@@ -201,7 +201,7 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			RunCmdlet();
 			
-			var actualRepository = fakePackageManagementService.PackageRepositoryPassedToCreateProjectManager;
+			var actualRepository = fakeSolution.PackageRepositoryPassedToCreateProjectManager;
 			var expectedRepository = fakeRegisteredPackageRepositories.FakePackageRepository;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
@@ -216,7 +216,7 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			RunCmdlet();
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToCreateProjectManager;
+			var actualProject = fakeSolution.ProjectPassedToCreateProjectManager;
 			
 			Assert.AreEqual(project, actualProject);
 		}
@@ -248,7 +248,7 @@ namespace PackageManagement.Cmdlets.Tests
 			EnableUpdatesParameter();
 			RunCmdlet();
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToCreateProjectManager;
+			var actualProject = fakeSolution.ProjectPassedToCreateProjectManager;
 			
 			Assert.AreEqual(project, actualProject);
 		}
@@ -261,7 +261,7 @@ namespace PackageManagement.Cmdlets.Tests
 			EnableUpdatesParameter();
 			RunCmdlet();
 			
-			var actualRepository = fakePackageManagementService.PackageRepositoryPassedToCreateProjectManager;
+			var actualRepository = fakeSolution.PackageRepositoryPassedToCreateProjectManager;
 			var expectedRepository = fakeRegisteredPackageRepositories.FakeAggregateRepository;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
@@ -293,7 +293,7 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			AddPackageSourceToConsoleHost();
-			FakeProjectManager projectManager = fakePackageManagementService.FakeProjectManagerToReturnFromCreateProjectManager;
+			FakeProjectManager projectManager = fakeSolution.FakeProjectManagerToReturnFromCreateProjectManager;
 			projectManager.FakeLocalRepository.AddFakePackage("A");
 			var package = projectManager.FakeLocalRepository.AddFakePackage("B");
 			
@@ -403,7 +403,7 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			AddPackageSourceToConsoleHost();
-			FakeProjectManager projectManager = fakePackageManagementService.FakeProjectManagerToReturnFromCreateProjectManager;
+			FakeProjectManager projectManager = fakeSolution.FakeProjectManagerToReturnFromCreateProjectManager;
 			var packageA = projectManager.FakeLocalRepository.AddFakePackage("A");
 			var packageB = projectManager.FakeLocalRepository.AddFakePackage("B");
 			var packageC = projectManager.FakeLocalRepository.AddFakePackage("C");

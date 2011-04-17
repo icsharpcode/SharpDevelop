@@ -10,9 +10,9 @@ namespace ICSharpCode.PackageManagement
 	public class UpdatePackageAction : ProcessPackageAction
 	{
 		public UpdatePackageAction(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents)
-			: base(packageManagementService, packageManagementEvents)
+			: base(solution, packageManagementEvents)
 
 		{
 			UpdateDependencies = true;

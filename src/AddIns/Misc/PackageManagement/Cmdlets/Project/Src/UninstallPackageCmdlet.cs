@@ -14,17 +14,17 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 	{
 		public UninstallPackageCmdlet()
 			: this(
-				PackageManagementServices.PackageManagementService,
+				PackageManagementServices.Solution,
 				PackageManagementServices.ConsoleHost,
 				null)
 		{
 		}
 		
 		public UninstallPackageCmdlet(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageManagementConsoleHost consoleHost,
 			ICmdletTerminatingError terminatingError)
-			: base(packageManagementService, consoleHost, terminatingError)
+			: base(solution, consoleHost, terminatingError)
 		{
 		}
 		
@@ -65,7 +65,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		UninstallPackageAction CreateUninstallPackageAction(MSBuildBasedProject project, PackageSource packageSource)
 		{
-			var action = PackageManagementService.CreateUninstallPackageAction();
+			var action = Solution.CreateUninstallPackageAction();
 			action.PackageId = Id;
 			action.PackageVersion = Version;
 			action.Project = project;

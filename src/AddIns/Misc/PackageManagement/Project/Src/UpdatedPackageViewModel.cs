@@ -9,23 +9,23 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UpdatedPackageViewModel : PackageViewModel
 	{
-		IPackageManagementService packageManagementService;
+		IPackageManagementSolution solution;
 		
 		public UpdatedPackageViewModel(
 			IPackageFromRepository package,
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
 			ILogger logger)
-			: base(package, packageManagementService, packageManagementEvents, logger)
+			: base(package, solution, packageManagementEvents, logger)
 		{
-			this.packageManagementService = packageManagementService;
+			this.solution = solution;
 		}
 		
 		protected override void InstallPackage(
 			IPackageFromRepository package,
 			IEnumerable<PackageOperation> packageOperations)
 		{
-			var action = packageManagementService.CreateUpdatePackageAction();
+			var action = solution.CreateUpdatePackageAction();
 			action.PackageRepository = package.Repository;
 			action.Package = package;
 			action.Operations = packageOperations;

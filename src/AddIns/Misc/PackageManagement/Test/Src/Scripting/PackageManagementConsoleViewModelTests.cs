@@ -94,7 +94,7 @@ namespace PackageManagement.Tests.Scripting
 			viewModel.PropertyChanged += (sender, e) => propertiesChanged.Add(e.PropertyName);
 		}
 		
-		Solution CreatePackageManagementServiceWithEmptySolutionOpen()
+		Solution CreateConsoleHostWithEmptySolutionOpen()
 		{
 			CreateConsoleHost();
 			var solution = new Solution();
@@ -104,7 +104,7 @@ namespace PackageManagement.Tests.Scripting
 		
 		Solution CreateViewModelWithEmptySolutionOpen()
 		{
-			var solution = CreatePackageManagementServiceWithEmptySolutionOpen();
+			var solution = CreateConsoleHostWithEmptySolutionOpen();
 			CreateViewModel(consoleHost);
 			return solution;
 		}
@@ -254,7 +254,7 @@ namespace PackageManagement.Tests.Scripting
 		[Test]
 		public void Constructor_EmptySolutionOpenWhenConsoleCreated_DoesNotThrowException()
 		{
-			CreatePackageManagementServiceWithEmptySolutionOpen();
+			CreateConsoleHostWithEmptySolutionOpen();
 			Assert.DoesNotThrow(() => CreateViewModel(consoleHost));
 		}
 		

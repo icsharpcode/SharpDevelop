@@ -12,14 +12,14 @@ namespace PackageManagement.Tests
 	public class UpdatedPackageViewModelTests
 	{
 		TestableUpdatedPackageViewModel viewModel;
-		FakePackageManagementService fakePackageManagementService;
+		FakePackageManagementSolution fakeSolution;
 		FakeUpdatePackageAction updatePackageAction;
 		
 		void CreateViewModel()
 		{
 			viewModel = new TestableUpdatedPackageViewModel();
-			fakePackageManagementService = viewModel.FakePackageManagementService;
-			updatePackageAction = fakePackageManagementService.ActionToReturnFromCreateUpdatePackageAction;
+			fakeSolution = viewModel.FakeSolution;
+			updatePackageAction = fakeSolution.ActionToReturnFromCreateUpdatePackageAction;
 		}
 		
 		[Test]

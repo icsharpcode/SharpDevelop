@@ -14,17 +14,17 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 	{
 		public UpdatePackageCmdlet()
 			: this(
-				PackageManagementServices.PackageManagementService,
+				PackageManagementServices.Solution,
 				PackageManagementServices.ConsoleHost,
 				null)
 		{
 		}
 		
 		public UpdatePackageCmdlet(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageManagementConsoleHost consoleHost,
 			ICmdletTerminatingError terminatingError)
-			: base(packageManagementService, consoleHost, terminatingError)
+			: base(solution, consoleHost, terminatingError)
 		{
 		}
 		
@@ -60,7 +60,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		UpdatePackageAction CreateUpdatePackageAction(PackageSource packageSource, MSBuildBasedProject project)
 		{
-			var action = PackageManagementService.CreateUpdatePackageAction();
+			var action = Solution.CreateUpdatePackageAction();
 			action.PackageSource = packageSource;
 			action.Project = project;
 			action.PackageId = Id;

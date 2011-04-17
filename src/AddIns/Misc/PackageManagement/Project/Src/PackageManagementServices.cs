@@ -9,7 +9,7 @@ namespace ICSharpCode.PackageManagement
 	public static class PackageManagementServices
 	{
 		static readonly PackageManagementOptions options;
-		static readonly PackageManagementService packageManagementService;
+		static readonly PackageManagementSolution solution;
 		static readonly PackageManagementConsoleHost consoleHost = new PackageManagementConsoleHost();
 		static readonly RegisteredPackageRepositories registeredPackageRepositories;
 		static readonly PackageManagementEvents packageManagementEvents = new PackageManagementEvents();
@@ -22,7 +22,7 @@ namespace ICSharpCode.PackageManagement
 			options = new PackageManagementOptions();
 			registeredPackageRepositories = new RegisteredPackageRepositories(options);
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
-			packageManagementService = new PackageManagementService(registeredPackageRepositories, packageManagementEvents);
+			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
 			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
 		}
 		
@@ -30,8 +30,8 @@ namespace ICSharpCode.PackageManagement
 			get { return options; }
 		}
 		
-		public static IPackageManagementService PackageManagementService {
-			get { return packageManagementService; }
+		public static IPackageManagementSolution Solution {
+			get { return solution; }
 		}
 		
 		public static IPackageManagementConsoleHost ConsoleHost {

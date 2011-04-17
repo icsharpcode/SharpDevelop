@@ -11,17 +11,17 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UpdatedPackagesViewModel : PackagesViewModel
 	{
-		IPackageManagementService packageManagementService;
+		IPackageManagementSolution solution;
 		UpdatedPackages updatedPackages;
 		string errorMessage = String.Empty;
 		
 		public UpdatedPackagesViewModel(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: this(
-				packageManagementService,
+				solution,
 				registeredPackageRepositories,
 				new UpdatedPackageViewModelFactory(packageViewModelFactory),
 				taskFactory)
@@ -29,7 +29,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public UpdatedPackagesViewModel(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution packageManagementService,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			UpdatedPackageViewModelFactory packageViewModelFactory,			
 			ITaskFactory taskFactory)
@@ -38,14 +38,14 @@ namespace ICSharpCode.PackageManagement
 				packageViewModelFactory,
 				taskFactory)
 		{
-			this.packageManagementService = packageManagementService;
+			this.solution = packageManagementService;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
 		{
 			try {
 				IPackageRepository aggregateRepository = RegisteredPackageRepositories.CreateAggregateRepository();
-				updatedPackages = new UpdatedPackages(packageManagementService, aggregateRepository);
+				updatedPackages = new UpdatedPackages(solution, aggregateRepository);
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}

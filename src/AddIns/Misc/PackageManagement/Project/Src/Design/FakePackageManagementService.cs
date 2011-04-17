@@ -10,11 +10,11 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
 {
-	public class FakePackageManagementService : IPackageManagementService
+	public class FakePackageManagementSolution : IPackageManagementSolution
 	{
 		public FakeProjectManager FakeActiveProjectManager { get; set; }
 		
-		public FakePackageManagementService()
+		public FakePackageManagementSolution()
 		{
 			FakeActiveProjectManager = new FakeProjectManager();
 		}

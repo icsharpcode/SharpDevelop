@@ -14,7 +14,7 @@ namespace ICSharpCode.PackageManagement
 		DelegateCommand addPackageCommand;
 		DelegateCommand removePackageCommand;
 		
-		IPackageManagementService packageManagementService;
+		IPackageManagementSolution solution;
 		IPackageManagementEvents packageManagementEvents;
 		IPackageFromRepository package;
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
@@ -22,12 +22,12 @@ namespace ICSharpCode.PackageManagement
 		
 		public PackageViewModel(
 			IPackageFromRepository package,
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
 			ILogger logger)
 		{
 			this.package = package;
-			this.packageManagementService = packageManagementService;
+			this.solution = solution;
 			this.packageManagementEvents = packageManagementEvents;
 			this.logger = CreateLogger(logger);
 			
@@ -93,7 +93,7 @@ namespace ICSharpCode.PackageManagement
 		
 		bool IsPackageInstalled(IPackage package)
 		{
-			return packageManagementService.ActiveProjectManager.IsInstalled(package);
+			return solution.ActiveProjectManager.IsInstalled(package);
 		}
 		
 		public IEnumerable<PackageDependency> Dependencies {
@@ -165,7 +165,7 @@ namespace ICSharpCode.PackageManagement
 		
 		ISharpDevelopPackageManager CreatePackageManagerForActiveProject()
 		{
-			ISharpDevelopPackageManager packageManager = packageManagementService.CreatePackageManagerForActiveProject();
+			ISharpDevelopPackageManager packageManager = solution.CreatePackageManagerForActiveProject();
 			packageManager.Logger = logger;
 			return packageManager;
 		}
@@ -229,7 +229,7 @@ namespace ICSharpCode.PackageManagement
 			IPackageFromRepository package,
 			IEnumerable<PackageOperation> packageOperations)
 		{
-			InstallPackageAction task = packageManagementService.CreateInstallPackageAction();
+			InstallPackageAction task = solution.CreateInstallPackageAction();
 			task.PackageRepository = package.Repository;
 			task.Package = package;
 			task.Operations = packageOperations;
@@ -259,7 +259,7 @@ namespace ICSharpCode.PackageManagement
 		void TryUninstallingPackage()
 		{
 			try {
-				var action = packageManagementService.CreateUninstallPackageAction();
+				var action = solution.CreateUninstallPackageAction();
 				action.PackageRepository = package.Repository;
 				action.Package = package;
 				action.Execute();

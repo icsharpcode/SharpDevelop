@@ -18,30 +18,30 @@ namespace PackageManagement.Tests
 		AddPackageReferenceViewModel viewModel;
 		PackageManagementEvents packageManagementEvents;
 		FakeLicenseAcceptanceService fakeLicenseAcceptanceSevice;
-		FakePackageManagementService fakePackageManagementService;
+		FakePackageManagementSolution fakeSolution;
 		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
 		FakeTaskFactory taskFactory;
 		List<FakePackage> packagesPassedToOnAcceptLicenses;
 		
-		void CreatePackageManagementService()
+		void CreateSolution()
 		{
-			fakePackageManagementService = new FakePackageManagementService();
+			fakeSolution = new FakePackageManagementSolution();
 			fakeRegisteredPackageRepositories = new FakeRegisteredPackageRepositories();
 		}
 		
 		void CreateViewModel()
 		{
-			CreatePackageManagementService();
-			CreateViewModel(fakePackageManagementService);
+			CreateSolution();
+			CreateViewModel(fakeSolution);
 		}
 		
-		void CreateViewModel(FakePackageManagementService packageManagementService)
+		void CreateViewModel(FakePackageManagementSolution solution)
 		{
 			taskFactory = new FakeTaskFactory();
 			packageManagementEvents = new PackageManagementEvents();
 			fakeLicenseAcceptanceSevice = new FakeLicenseAcceptanceService();
 			viewModel = new AddPackageReferenceViewModel(
-				packageManagementService,
+				solution,
 				fakeRegisteredPackageRepositories,
 				packageManagementEvents,
 				fakeLicenseAcceptanceSevice,
@@ -91,12 +91,12 @@ namespace PackageManagement.Tests
 		[Test]
 		public void InstalledPackagesViewModel_ProjectHasOneInstalledPackage_HasOnePackageViewModel()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			var projectManager = new FakeProjectManager();
-			fakePackageManagementService.FakeActiveProjectManager = projectManager;
+			fakeSolution.FakeActiveProjectManager = projectManager;
 			FakePackage package = new FakePackage();
 			projectManager.FakeLocalRepository.FakePackages.Add(package);
-			CreateViewModel(fakePackageManagementService);
+			CreateViewModel(fakeSolution);
 			
 			IEnumerable<IPackage> expectedPackages = projectManager.FakeLocalRepository.FakePackages;
 			IEnumerable<PackageViewModel> actualPackageViewModels = viewModel.InstalledPackagesViewModel.PackageViewModels;
@@ -107,11 +107,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AvailablePackagesViewModel_ActiveRepositoryHasOnePackage_HasOnePackageViewModel()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			var package = new FakePackage();
 			package.Id = "Test";
 			fakeRegisteredPackageRepositories.FakeActiveRepository.FakePackages.Add(package);
-			CreateViewModel(fakePackageManagementService);
+			CreateViewModel(fakeSolution);
 
 			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeActiveRepository.FakePackages;
 			
@@ -121,13 +121,13 @@ namespace PackageManagement.Tests
 		[Test]
 		public void PackageUpdatesViewModel_OneUpdatedPackageVersion_HasOnePackageViewModel()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			var oldPackage = new FakePackage() {
 				Id = "Test",
 				Version = new Version("1.0.0.0")
 			};
-			fakePackageManagementService.AddPackageToProjectLocalRepository(oldPackage);
+			fakeSolution.AddPackageToProjectLocalRepository(oldPackage);
 			
 			var newPackage = new FakePackage() {
 				Id = "Test",
@@ -135,7 +135,7 @@ namespace PackageManagement.Tests
 			};
 			fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages.Add(newPackage);
 			
-			CreateViewModel(fakePackageManagementService);
+			CreateViewModel(fakeSolution);
 			
 			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages;
 			
@@ -145,11 +145,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void RecentPackagesViewModel_RecentRepositoryHasOnePackage_HasOnePackageViewModel()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			var package = new FakePackage();
 			package.Id = "Test";
 			fakeRegisteredPackageRepositories.FakeRecentPackageRepository.FakePackages.Add(package);
-			CreateViewModel(fakePackageManagementService);
+			CreateViewModel(fakeSolution);
 
 			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeRecentPackageRepository.FakePackages;
 			

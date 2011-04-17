@@ -8,7 +8,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IPackageManagementService
+	public interface IPackageManagementSolution
 	{
 		ISharpDevelopProjectManager CreateProjectManager(IPackageRepository repository, MSBuildBasedProject project);
 		ISharpDevelopPackageManager CreatePackageManagerForActiveProject();

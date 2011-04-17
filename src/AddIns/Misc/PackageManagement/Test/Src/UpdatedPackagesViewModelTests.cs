@@ -13,37 +13,37 @@ namespace PackageManagement.Tests
 	public class UpdatedPackagesViewModelTests
 	{
 		UpdatedPackagesViewModel viewModel;
-		FakePackageManagementService packageManagementService;
+		FakePackageManagementSolution solution;
 		FakeTaskFactory taskFactory;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
-		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
+		ExceptionThrowingPackageManagementSolution exceptionThrowingSolution;
 		
 		void CreateViewModel()
 		{
-			CreatePackageManagementService();
-			CreateViewModel(packageManagementService);
+			CreateSolution();
+			CreateViewModel(solution);
 		}
 		
-		void CreatePackageManagementService()
+		void CreateSolution()
 		{
-			packageManagementService = new FakePackageManagementService();
+			solution = new FakePackageManagementSolution();
 		}
 		
-		void CreateViewModel(FakePackageManagementService packageManagementService)
+		void CreateViewModel(FakePackageManagementSolution solution)
 		{
 			taskFactory = new FakeTaskFactory();
 			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
 			viewModel = new UpdatedPackagesViewModel(
-				packageManagementService,
+				solution,
 				registeredPackageRepositories,
 				packageViewModelFactory,
 				taskFactory);
 		}
 		
-		void CreateExceptionThrowingPackageManagementService()
+		void CreateExceptionThrowingSolution()
 		{
-			exceptionThrowingPackageManagementService = new ExceptionThrowingPackageManagementService();
+			exceptionThrowingSolution = new ExceptionThrowingPackageManagementSolution();
 		}
 		
 		void CompleteReadPackagesTask()
@@ -54,7 +54,7 @@ namespace PackageManagement.Tests
 		FakePackage AddPackageToLocalRepository(string version)
 		{
 			var package = FakePackage.CreatePackageWithVersion(version);
-			packageManagementService.AddPackageToProjectLocalRepository(package);
+			solution.AddPackageToProjectLocalRepository(package);
 			return package;
 		}
 		
@@ -108,7 +108,7 @@ namespace PackageManagement.Tests
 			viewModel.ReadPackages();
 			
 			registeredPackageRepositories.FakeAggregateRepository = null;
-			packageManagementService.FakeActiveProjectManager.LocalRepository = null;
+			solution.FakeActiveProjectManager.LocalRepository = null;
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
@@ -117,10 +117,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void ReadPackages_ActiveProjectManagerThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
 		{
-			CreateExceptionThrowingPackageManagementService();
-			exceptionThrowingPackageManagementService.ExeptionToThrowWhenActiveProjectManagerAccessed = 
+			CreateExceptionThrowingSolution();
+			exceptionThrowingSolution.ExeptionToThrowWhenActiveProjectManagerAccessed = 
 				new Exception("Test");
-			CreateViewModel(exceptionThrowingPackageManagementService);
+			CreateViewModel(exceptionThrowingSolution);
 			viewModel.ReadPackages();
 			
 			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());

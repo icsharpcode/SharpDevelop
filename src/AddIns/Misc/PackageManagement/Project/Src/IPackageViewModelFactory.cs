@@ -10,7 +10,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		PackageViewModel CreatePackageViewModel(IPackageFromRepository package);
 		
-		IPackageManagementService PackageManagementService { get; }
+		IPackageManagementSolution Solution { get; }
 		IPackageManagementEvents PackageManagementEvents { get; }
 	}
 }

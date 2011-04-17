@@ -15,34 +15,34 @@ namespace PackageManagement.Tests
 	{
 		TestablePackageViewModel viewModel;
 		FakePackage package;
-		FakePackageManagementService packageManagementService;
+		FakePackageManagementSolution solution;
 		FakePackageManagementEvents packageManagementEvents;
-		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
+		ExceptionThrowingPackageManagementSolution exceptionThrowingSolution;
 		FakeInstallPackageAction fakeInstallPackageTask;
 		FakeUninstallPackageAction fakeUninstallPackageAction;
 		FakeLogger fakeLogger;
 		
 		void CreateViewModel()
 		{
-			packageManagementService = new FakePackageManagementService();
-			CreateViewModel(packageManagementService);
+			solution = new FakePackageManagementSolution();
+			CreateViewModel(solution);
 		}
 		
-		void CreateViewModelWithExceptionThrowingPackageManagementService()
+		void CreateViewModelWithExceptionThrowingSolution()
 		{
-			exceptionThrowingPackageManagementService = new ExceptionThrowingPackageManagementService();
-			CreateViewModel(exceptionThrowingPackageManagementService);
+			exceptionThrowingSolution = new ExceptionThrowingPackageManagementSolution();
+			CreateViewModel(exceptionThrowingSolution);
 		}
 		
-		void CreateViewModel(FakePackageManagementService packageManagementService)
+		void CreateViewModel(FakePackageManagementSolution solution)
 		{
-			viewModel = new TestablePackageViewModel(packageManagementService);
+			viewModel = new TestablePackageViewModel(solution);
 			package = viewModel.FakePackage;
-			this.packageManagementService = packageManagementService;
+			this.solution = solution;
 			packageManagementEvents = viewModel.FakePackageManagementEvents;
 			fakeLogger = viewModel.FakeLogger;
-			fakeInstallPackageTask = packageManagementService.ActionToReturnFromCreateInstallPackageAction;
-			fakeUninstallPackageAction = packageManagementService.ActionToReturnFromCreateUninstallPackageAction;
+			fakeInstallPackageTask = solution.ActionToReturnFromCreateInstallPackageAction;
+			fakeUninstallPackageAction = solution.ActionToReturnFromCreateUninstallPackageAction;
 		}
 
 		[Test]
@@ -176,7 +176,7 @@ namespace PackageManagement.Tests
 		public void IsAdded_ProjectHasPackageAdded_ReturnsTrue()
 		{
 			CreateViewModel();
-			packageManagementService.FakeActiveProjectManager.IsInstalledReturnValue = true;
+			solution.FakeActiveProjectManager.IsInstalledReturnValue = true;
 			
 			Assert.IsTrue(viewModel.IsAdded);
 		}
@@ -185,7 +185,7 @@ namespace PackageManagement.Tests
 		public void IsAdded_ProjectDoesNotHavePackageInstalled_ReturnsFalse()
 		{
 			CreateViewModel();
-			packageManagementService.FakeActiveProjectManager.IsInstalledReturnValue = false;
+			solution.FakeActiveProjectManager.IsInstalledReturnValue = false;
 			
 			Assert.IsFalse(viewModel.IsAdded);
 		}
@@ -364,7 +364,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			ILogger expectedLogger = viewModel.OperationLoggerCreated;
-			ILogger actualLogger = packageManagementService
+			ILogger actualLogger = solution
 				.FakePackageManagerToReturnFromCreatePackageManager
 				.Logger;
 			Assert.AreEqual(expectedLogger, actualLogger);
@@ -454,10 +454,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AddPackage_ExceptionWhenInstallingPackage_ExceptionErrorMessageReported()
 		{
-			CreateViewModelWithExceptionThrowingPackageManagementService();
+			CreateViewModelWithExceptionThrowingSolution();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			Exception ex = new Exception("Test");
-			exceptionThrowingPackageManagementService.ExeptionToThrowWhenCreateInstallPackageTaskCalled = ex;
+			exceptionThrowingSolution.ExeptionToThrowWhenCreateInstallPackageTaskCalled = ex;
 			viewModel.AddPackage();
 			
 			Assert.AreEqual(ex, packageManagementEvents.ExceptionPassedToOnPackageOperationError);
@@ -476,10 +476,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AddPackage_ExceptionWhenInstallingPackage_ExceptionLogged()
 		{
-			CreateViewModelWithExceptionThrowingPackageManagementService();
+			CreateViewModelWithExceptionThrowingSolution();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			Exception ex = new Exception("Exception error message");
-			exceptionThrowingPackageManagementService.ExeptionToThrowWhenCreateInstallPackageTaskCalled = ex;
+			exceptionThrowingSolution.ExeptionToThrowWhenCreateInstallPackageTaskCalled = ex;
 			viewModel.AddPackage();
 			
 			string actualMessage = fakeLogger.SecondFormattedMessageLogged;
@@ -491,9 +491,9 @@ namespace PackageManagement.Tests
 		[Test]
 		public void RemovePackage_ExceptionWhenUninstallingPackage_ExceptionErrorMessageReported()
 		{
-			CreateViewModelWithExceptionThrowingPackageManagementService();
+			CreateViewModelWithExceptionThrowingSolution();
 			Exception ex = new Exception("Test");
-			exceptionThrowingPackageManagementService.ExeptionToThrowWhenCreateUninstallPackageActionCalled = ex;
+			exceptionThrowingSolution.ExeptionToThrowWhenCreateUninstallPackageActionCalled = ex;
 			viewModel.RemovePackage();
 			
 			Assert.AreEqual(ex, packageManagementEvents.ExceptionPassedToOnPackageOperationError);
@@ -511,9 +511,9 @@ namespace PackageManagement.Tests
 		[Test]
 		public void RemovePackage_ExceptionWhenUninstallingPackage_ExceptionLogged()
 		{
-			CreateViewModelWithExceptionThrowingPackageManagementService();
+			CreateViewModelWithExceptionThrowingSolution();
 			Exception ex = new Exception("Exception error message");
-			exceptionThrowingPackageManagementService.ExeptionToThrowWhenCreateUninstallPackageActionCalled = ex;
+			exceptionThrowingSolution.ExeptionToThrowWhenCreateUninstallPackageActionCalled = ex;
 			viewModel.RemovePackage();
 			
 			string actualMessage = fakeLogger.SecondFormattedMessageLogged;
@@ -525,11 +525,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AddPackage_ExceptionThrownWhenResolvingPackageOperations_ExceptionReported()
 		{
-			CreateViewModelWithExceptionThrowingPackageManagementService();
+			CreateViewModelWithExceptionThrowingSolution();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			
 			var exception = new Exception("Test");;
-			exceptionThrowingPackageManagementService.ExceptionToThrowWhenCreatePackageManagerForActiveProjectCalled =
+			exceptionThrowingSolution.ExceptionToThrowWhenCreatePackageManagerForActiveProjectCalled =
 				exception;
 			viewModel.AddPackage();
 			
@@ -544,7 +544,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			var expectedPackage = package;
-			var actualPackage = packageManagementService
+			var actualPackage = solution
 				.FakePackageManagerToReturnFromCreatePackageManager
 				.PackagePassedToGetInstallPackageOperations;
 			
@@ -558,7 +558,7 @@ namespace PackageManagement.Tests
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			viewModel.AddPackage();
 			
-			bool result = packageManagementService
+			bool result = solution
 				.FakePackageManagerToReturnFromCreatePackageManager
 				.IgnoreDependenciesPassedToGetInstallPackageOperations;
 			

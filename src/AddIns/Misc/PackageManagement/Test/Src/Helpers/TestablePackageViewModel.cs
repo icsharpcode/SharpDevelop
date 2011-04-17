@@ -10,15 +10,15 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class TestablePackageViewModel : PackageViewModel
 	{
-		public FakePackageManagementService	FakePackageManagementService;
+		public FakePackageManagementSolution FakeSolution;
 		public FakePackageManagementEvents FakePackageManagementEvents;
 		public FakePackage FakePackage;
 		public FakeLogger FakeLogger;
 		
-		public TestablePackageViewModel(FakePackageManagementService packageManagementService)
+		public TestablePackageViewModel(FakePackageManagementSolution solution)
 			: this(
 				new FakePackage(),
-				packageManagementService,
+				solution,
 				new FakePackageManagementEvents(),
 				new FakeLogger())
 		{		
@@ -26,17 +26,17 @@ namespace PackageManagement.Tests.Helpers
 		
 		public TestablePackageViewModel(
 			FakePackage package,
-			FakePackageManagementService packageManagementService,
+			FakePackageManagementSolution solution,
 			FakePackageManagementEvents packageManagementEvents,
 			FakeLogger logger)
 			: base(
 				package,
-				packageManagementService,
+				solution,
 				packageManagementEvents,
 				logger)
 		{
 			this.FakePackage = package;
-			this.FakePackageManagementService = packageManagementService;
+			this.FakeSolution = solution;
 			this.FakePackageManagementEvents = packageManagementEvents;
 			this.FakeLogger = logger;
 		}
@@ -56,7 +56,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			var operation = new PackageOperation(FakePackage, PackageAction.Install);
 			
-			FakePackageManagementService
+			FakeSolution
 				.FakePackageManagerToReturnFromCreatePackageManager
 				.PackageOperationsToReturnFromGetInstallPackageOperations
 				.Add(operation);
@@ -69,7 +69,7 @@ namespace PackageManagement.Tests.Helpers
 			var package = new FakePackage("PackageToUninstall");			
 			var operation = new PackageOperation(package, PackageAction.Uninstall);
 			
-			FakePackageManagementService
+			FakeSolution
 				.FakePackageManagerToReturnFromCreatePackageManager
 				.PackageOperationsToReturnFromGetInstallPackageOperations
 				.Add(operation);

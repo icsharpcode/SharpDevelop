@@ -11,9 +11,9 @@ namespace ICSharpCode.PackageManagement
 	public class InstallPackageAction : ProcessPackageAction
 	{
 		public InstallPackageAction(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents)
-			: base(packageManagementService, packageManagementEvents)
+			: base(solution, packageManagementEvents)
 		{
 		}
 		

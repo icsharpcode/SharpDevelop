@@ -14,17 +14,17 @@ namespace PackageManagement.Tests
 	public class UninstallPackageActionTests
 	{
 		UninstallPackageAction action;
-		FakePackageManagementService fakePackageManagementService;
+		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementEvents fakePackageManagementEvents;
 		FakePackageManager fakePackageManager;
 		UninstallPackageHelper uninstallPackageHelper;
 		
 		void CreateAction()
 		{
-			fakePackageManagementService = new FakePackageManagementService();
+			fakeSolution = new FakePackageManagementSolution();
 			fakePackageManagementEvents = new FakePackageManagementEvents();
-			fakePackageManager = fakePackageManagementService.FakePackageManagerToReturnFromCreatePackageManager;
-			action = new UninstallPackageAction(fakePackageManagementService, fakePackageManagementEvents);
+			fakePackageManager = fakeSolution.FakePackageManagerToReturnFromCreatePackageManager;
+			action = new UninstallPackageAction(fakeSolution, fakePackageManagementEvents);
 			uninstallPackageHelper = new UninstallPackageHelper(action);
 		}
 		
@@ -55,7 +55,7 @@ namespace PackageManagement.Tests
 			
 			uninstallPackageHelper.UninstallTestPackage();
 			
-			var actualRepository = fakePackageManagementService.PackageRepositoryPassedToCreatePackageManager;
+			var actualRepository = fakeSolution.PackageRepositoryPassedToCreatePackageManager;
 	
 			var expectedRepository = uninstallPackageHelper.FakePackageRepository;
 			
@@ -110,7 +110,7 @@ namespace PackageManagement.Tests
 			uninstallPackageHelper.PackageSource = expectedPackageSource;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
-			var actualPackageSource = fakePackageManagementService.PackageSourcePassedToCreatePackageManager;
+			var actualPackageSource = fakeSolution.PackageSourcePassedToCreatePackageManager;
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
 		}
@@ -124,7 +124,7 @@ namespace PackageManagement.Tests
 			
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToCreatePackageManager;
+			var actualProject = fakeSolution.ProjectPassedToCreatePackageManager;
 			
 			Assert.AreEqual(expectedProject, actualProject);
 		}

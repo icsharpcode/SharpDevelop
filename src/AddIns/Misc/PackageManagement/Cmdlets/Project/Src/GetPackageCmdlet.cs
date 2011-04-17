@@ -23,7 +23,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		public GetPackageCmdlet()
 			: this(
 				PackageManagementServices.RegisteredPackageRepositories,
-				PackageManagementServices.PackageManagementService,
+				PackageManagementServices.Solution,
 				PackageManagementServices.ConsoleHost,
 				null)
 		{
@@ -31,10 +31,10 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		public GetPackageCmdlet(
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageManagementConsoleHost consoleHost,
 			ICmdletTerminatingError terminatingError)
-			: base(packageManagementService, consoleHost, terminatingError)
+			: base(solution, consoleHost, terminatingError)
 		{
 			this.registeredPackageRepositories = registeredPackageRepositories;
 		}
@@ -154,7 +154,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		IQueryable<IPackage> GetUpdatedPackages()
 		{
 			IPackageRepository aggregateRepository = registeredPackageRepositories.CreateAggregateRepository();
-			var updatedPackages = new UpdatedPackages(PackageManagementService, aggregateRepository, DefaultProject);
+			var updatedPackages = new UpdatedPackages(Solution, aggregateRepository, DefaultProject);
 			updatedPackages.SearchTerms = Filter;
 			return updatedPackages.GetUpdatedPackages().AsQueryable();
 		}
@@ -174,7 +174,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		ISharpDevelopProjectManager CreateProjectManagerForActiveProject(IPackageRepository repository)
 		{
-			return PackageManagementService.CreateProjectManager(repository, DefaultProject);
+			return Solution.CreateProjectManager(repository, DefaultProject);
 		}
 		
 		IQueryable<IPackage> GetRecentPackages()

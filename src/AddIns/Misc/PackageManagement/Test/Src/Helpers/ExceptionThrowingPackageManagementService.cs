@@ -9,7 +9,7 @@ using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
-	public class ExceptionThrowingPackageManagementService : FakePackageManagementService
+	public class ExceptionThrowingPackageManagementSolution : FakePackageManagementSolution
 	{
 		public Exception ExeptionToThrowWhenActiveProjectManagerAccessed { get; set; }
 		public Exception ExeptionToThrowWhenCreateInstallPackageTaskCalled { get; set; }

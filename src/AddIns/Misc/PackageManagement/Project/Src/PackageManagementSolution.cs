@@ -10,14 +10,14 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class PackageManagementService : IPackageManagementService
+	public class PackageManagementSolution : IPackageManagementSolution
 	{
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		IPackageManagerFactory packageManagerFactory;
 		IPackageManagementProjectService projectService;
 		IPackageManagementEvents packageManagementEvents;
 		
-		public PackageManagementService(
+		public PackageManagementSolution(
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagementEvents packageManagementEvents)
 			: this(
@@ -28,7 +28,7 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public PackageManagementService(
+		public PackageManagementSolution(
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagerFactory packageManagerFactory,
 			IPackageManagementEvents packageManagementEvents,

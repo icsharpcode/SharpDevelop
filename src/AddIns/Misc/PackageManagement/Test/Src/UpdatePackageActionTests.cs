@@ -13,24 +13,24 @@ namespace PackageManagement.Tests
 	public class UpdatePackageActionTests
 	{
 		UpdatePackageAction action;
-		FakePackageManagementService fakePackageManagementService;
+		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementEvents fakePackageManagementEvents;
 		FakePackageManager fakePackageManager;
 		UpdatePackageHelper updatePackageHelper;
 		
-		void CreatePackageManagementService()
+		void CreateSolution()
 		{
-			fakePackageManagementService = new FakePackageManagementService();
+			fakeSolution = new FakePackageManagementSolution();
 			fakePackageManagementEvents = new FakePackageManagementEvents();
-			fakePackageManager = fakePackageManagementService.FakePackageManagerToReturnFromCreatePackageManager;
-			action = new UpdatePackageAction(fakePackageManagementService, fakePackageManagementEvents);
+			fakePackageManager = fakeSolution.FakePackageManagerToReturnFromCreatePackageManager;
+			action = new UpdatePackageAction(fakeSolution, fakePackageManagementEvents);
 			updatePackageHelper = new UpdatePackageHelper(action);
 		}
 		
 		[Test]
 		public void Execute_PackageAndRepositoryPassed_PackageIsUpdated()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			updatePackageHelper.UpdateTestPackage();
 			
 			var expectedPackage = updatePackageHelper.TestPackage;
@@ -42,18 +42,18 @@ namespace PackageManagement.Tests
 		[Test]
 		public void UpdateDependencies_DefaultValue_ReturnsTrue()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			Assert.IsTrue(action.UpdateDependencies);
 		}
 		
 		[Test]
 		public void Execute_PackageAndRepositoryPassed_RepositoryUsedToCreatePackageManager()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			updatePackageHelper.UpdateTestPackage();
 			
 			var expectedRepository = updatePackageHelper.PackageRepository;
-			var actualRepository = fakePackageManagementService.PackageRepositoryPassedToCreatePackageManager;
+			var actualRepository = fakeSolution.PackageRepositoryPassedToCreatePackageManager;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
 		}
@@ -61,7 +61,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Execute_PackageAndRepositoryPassed_PackageOperationsUsedToUpdatePackage()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			updatePackageHelper.UpdateTestPackage();
 			
 			var expectedOperations = updatePackageHelper.PackageOperations;
@@ -73,7 +73,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Execute_PackageAndRepositoryPassed_DependenciesUpdated()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			updatePackageHelper.UpdateDependencies = true;
 			updatePackageHelper.UpdateTestPackage();
 			
@@ -85,7 +85,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Execute_PackageAndRepositoryPassed_PackageInstalledEventIsFired()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			updatePackageHelper.UpdateTestPackage();
 			
 			var expectedPackage = updatePackageHelper.TestPackage;
@@ -96,11 +96,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Execute_PackageIdAndSourceAndProjectPassed_PackageSourceUsedToCreatePackageManager()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
 			var expectedPackageSource = updatePackageHelper.PackageSource;
-			var actualPackageSource = fakePackageManagementService.PackageSourcePassedToCreatePackageManager;
+			var actualPackageSource = fakeSolution.PackageSourcePassedToCreatePackageManager;
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
 		}
@@ -108,10 +108,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Execute_PackageIdAndSourceAndProjectPassed_ProjectIsUsedToCreatePackageManager()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
-			var actualProject = fakePackageManagementService.ProjectPassedToCreatePackageManager;
+			var actualProject = fakeSolution.ProjectPassedToCreatePackageManager;
 			var expectedProject = updatePackageHelper.TestableProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);
@@ -120,7 +120,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Execute_PackagePassedButNoPackageOperations_PackageOperationsRetrievedFromPackageManager()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			updatePackageHelper.PackageOperations = null;
 			updatePackageHelper.UpdateTestPackage();
 			
@@ -133,7 +133,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Execute_PackagePassedButNoPackageOperations_PackageOperationsCreatedForPackage()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			updatePackageHelper.PackageOperations = null;
 			updatePackageHelper.UpdateTestPackage();
 			
@@ -146,7 +146,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Execute_PackageIdAndSourceAndProjectPassedAndUpdateDependenciesIsTrue_DependenciesUpdatedWhenUpdatingPackage()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			updatePackageHelper.UpdateDependencies = true;
 			updatePackageHelper.UpdatePackageById("PackageId");
@@ -159,7 +159,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Execute_PackageIdAndSourceAndProjectPassedAndUpdateDependenciesIsFalse_DependenciesNotUpdatedWhenGettingPackageOperations()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			updatePackageHelper.UpdateDependencies = false;
 			updatePackageHelper.UpdatePackageById("PackageId");
@@ -172,7 +172,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Execute_UpdatedDepdenciesIsFalseAndNoPackageOperations_DependenciesIgnoredWhenGettingPackageOperations()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			updatePackageHelper.UpdateDependencies = false;
 			updatePackageHelper.UpdatePackageById("PackageId");
@@ -185,7 +185,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Execute_UpdateDependenciesIsTrueAndNoPackageOperations_DependenciesNotIgnoredWhenGettingPackageOperations()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			updatePackageHelper.UpdateDependencies = true;
 			updatePackageHelper.UpdatePackageById("PackageId");
@@ -198,7 +198,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Execute_PackageAndPackageOperationsSet_OperationsNotRetrievedFromPackageManager()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			updatePackageHelper.UpdateTestPackage();
 			
 			var actualPackage = fakePackageManager.PackagePassedToGetInstallPackageOperations;

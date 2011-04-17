@@ -12,24 +12,24 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UpdatedPackages
 	{
-		IPackageManagementService packageManagementService;
+		IPackageManagementSolution solution;
 		MSBuildBasedProject project;
 		IPackageRepository localRepository;
 		IPackageRepository sourceRepository;
 		
 		public UpdatedPackages(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageRepository aggregateRepository)
-			: this(packageManagementService, aggregateRepository, null)
+			: this(solution, aggregateRepository, null)
 		{
 		}
 		
 		public UpdatedPackages(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
 			IPackageRepository aggregateRepository,
 			MSBuildBasedProject project)
 		{
-			this.packageManagementService = packageManagementService;
+			this.solution = solution;
 			this.sourceRepository = aggregateRepository;
 			this.project = project;
 			GetRepositories();
@@ -68,9 +68,9 @@ namespace ICSharpCode.PackageManagement
 		IProjectManager CreateProjectManager()
 		{
 			if (project != null) {
-				return packageManagementService.CreateProjectManager(sourceRepository, project);
+				return solution.CreateProjectManager(sourceRepository, project);
 			}
-			return packageManagementService.ActiveProjectManager;
+			return solution.ActiveProjectManager;
 		}
 	}
 }

@@ -12,7 +12,7 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 {
 	public class TestableGetPackageCmdlet : GetPackageCmdlet
 	{
-		public FakePackageManagementService FakePackageManagementService;
+		public FakePackageManagementSolution FakeSolution;
 		public FakeRegisteredPackageRepositories FakeRegisteredPackageRepositories;
 		public FakeCommandRuntime FakeCommandRuntime;
 		public List<IPackage> PackagesPassedToWriteObject = new List<IPackage>();
@@ -21,7 +21,7 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 		
 		public TestableGetPackageCmdlet()
 			: this(
-				new FakePackageManagementService(),
+				new FakePackageManagementSolution(),
 				new FakeRegisteredPackageRepositories(),
 				new FakePackageManagementConsoleHost(),
 				new FakeCommandRuntime(),
@@ -30,14 +30,14 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 		}
 		
 		public TestableGetPackageCmdlet(
-			FakePackageManagementService packageManagementService,
+			FakePackageManagementSolution solution,
 			FakeRegisteredPackageRepositories registeredPackageRepositories,
 			FakePackageManagementConsoleHost consoleHost,
 			FakeCommandRuntime commandRuntime,
 			FakeCmdletTerminatingError terminatingError)
-			: base(registeredPackageRepositories, packageManagementService, consoleHost, terminatingError)
+			: base(registeredPackageRepositories, solution, consoleHost, terminatingError)
 		{
-			this.FakePackageManagementService = packageManagementService;
+			this.FakeSolution = solution;
 			this.FakeRegisteredPackageRepositories = registeredPackageRepositories;
 			this.FakePackageManagementConsoleHost = consoleHost;
 			this.FakeCommandRuntime = commandRuntime;
