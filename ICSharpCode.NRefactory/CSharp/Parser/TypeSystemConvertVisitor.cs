@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
@@ -652,8 +653,137 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region Constant Values
 		IConstantValue ConvertConstantValue(ITypeReference targetType, AstNode expression)
 		{
-			// TODO: implement ConvertConstantValue
-			return new SimpleConstantValue(targetType, null);
+			ConstantValueBuilder b = new ConstantValueBuilder();
+			b.convertVisitor = this;
+			// TODO: initialize b.checkForOverflow based on the project's overflow setting
+			IConstantValue c = expression.AcceptVisitor(b, null);
+			if (c != null)
+				return new ConstantCast(targetType, c, b.checkForOverflow);
+			else
+				return c;
+		}
+		
+		sealed class ConstantValueBuilder : DepthFirstAstVisitor<object, IConstantValue>
+		{
+			internal TypeSystemConvertVisitor convertVisitor;
+			internal bool checkForOverflow;
+			
+			protected override IConstantValue VisitChildren(AstNode node, object data)
+			{
+				return null;
+			}
+			
+			public override IConstantValue VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression, object data)
+			{
+				return new SimpleConstantValue(KnownTypeReference.Object, null);
+			}
+			
+			public override IConstantValue VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
+			{
+				TypeCode typeCode = Type.GetTypeCode(primitiveExpression.Value.GetType());
+				return new SimpleConstantValue(typeCode.ToTypeReference(), primitiveExpression.Value);
+			}
+			
+			IList<ITypeReference> ConvertTypeArguments(AstNodeCollection<AstType> types)
+			{
+				int count = types.Count;
+				if (count == 0)
+					return null;
+				ITypeReference[] result = new ITypeReference[count];
+				int pos = 0;
+				foreach (AstType type in types) {
+					result[pos++] = convertVisitor.ConvertType(type);
+				}
+				return result;
+			}
+			
+			public override IConstantValue VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
+			{
+				return new ConstantIdentifierReference(identifierExpression.Identifier, ConvertTypeArguments(identifierExpression.TypeArguments));
+			}
+			
+			public override IConstantValue VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+			{
+				TypeReferenceExpression tre = memberReferenceExpression.Target as TypeReferenceExpression;
+				if (tre != null) {
+					// handle "int.MaxValue"
+					return new ConstantMemberReference(
+						convertVisitor.ConvertType(tre.Type),
+						memberReferenceExpression.MemberName,
+						ConvertTypeArguments(memberReferenceExpression.TypeArguments));
+				}
+				IConstantValue v = memberReferenceExpression.Target.AcceptVisitor(this, data);
+				if (v == null)
+					return null;
+				return new ConstantMemberReference(
+					v, memberReferenceExpression.MemberName,
+					ConvertTypeArguments(memberReferenceExpression.TypeArguments));
+			}
+			
+			public override IConstantValue VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
+			{
+				return parenthesizedExpression.Expression.AcceptVisitor(this, data);
+			}
+			
+			public override IConstantValue VisitCastExpression(CastExpression castExpression, object data)
+			{
+				IConstantValue v = castExpression.Expression.AcceptVisitor(this, data);
+				if (v == null)
+					return null;
+				return new ConstantCast(convertVisitor.ConvertType(castExpression.Type), v, checkForOverflow);
+			}
+			
+			public override IConstantValue VisitCheckedExpression(CheckedExpression checkedExpression, object data)
+			{
+				bool oldCheckForOverflow = checkForOverflow;
+				try {
+					checkForOverflow = true;
+					return checkedExpression.Expression.AcceptVisitor(this, data);
+				} finally {
+					checkForOverflow = oldCheckForOverflow;
+				}
+			}
+			
+			public override IConstantValue VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
+			{
+				bool oldCheckForOverflow = checkForOverflow;
+				try {
+					checkForOverflow = false;
+					return uncheckedExpression.Expression.AcceptVisitor(this, data);
+				} finally {
+					checkForOverflow = oldCheckForOverflow;
+				}
+			}
+			
+			public override IConstantValue VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
+			{
+				return new ConstantDefaultValue(convertVisitor.ConvertType(defaultValueExpression.Type));
+			}
+			
+			public override IConstantValue VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
+			{
+				IConstantValue v = unaryOperatorExpression.Expression.AcceptVisitor(this, data);
+				if (v == null)
+					return null;
+				switch (unaryOperatorExpression.Operator) {
+					case UnaryOperatorType.Not:
+					case UnaryOperatorType.BitNot:
+					case UnaryOperatorType.Minus:
+					case UnaryOperatorType.Plus:
+						return new ConstantUnaryOperator(unaryOperatorExpression.Operator, v, checkForOverflow);
+					default:
+						return null;
+				}
+			}
+			
+			public override IConstantValue VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
+			{
+				IConstantValue left = binaryOperatorExpression.Left.AcceptVisitor(this, data);
+				IConstantValue right = binaryOperatorExpression.Right.AcceptVisitor(this, data);
+				if (left == null || right == null)
+					return null;
+				return new ConstantBinaryOperator(left, binaryOperatorExpression.Operator, right, checkForOverflow);
+			}
 		}
 		#endregion
 		
