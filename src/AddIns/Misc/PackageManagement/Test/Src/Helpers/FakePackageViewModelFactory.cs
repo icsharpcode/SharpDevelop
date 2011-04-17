@@ -10,23 +10,17 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class FakePackageViewModelFactory : IPackageViewModelFactory
 	{
-		public FakeRegisteredPackageRepositories FakeRegisteredPackageRepositories = new FakeRegisteredPackageRepositories();
 		public FakePackageManagementService FakePackageManagementService = new FakePackageManagementService();
 		public FakePackageManagementEvents FakePackageManagementEvents = new FakePackageManagementEvents();
 		public FakeLogger FakeLogger = new FakeLogger();
 		
-		public PackageViewModel CreatePackageViewModel(IPackage package)
+		public PackageViewModel CreatePackageViewModel(IPackageFromRepository package)
 		{
 			return new PackageViewModel(
 				package,
-				FakeRegisteredPackageRepositories.FakeActiveRepository,
 				FakePackageManagementService,
 				FakePackageManagementEvents,
 				FakeLogger);
-		}
-		
-		public IRegisteredPackageRepositories RegisteredPackageRepositories {
-			get { return FakeRegisteredPackageRepositories; }
 		}
 		
 		public IPackageManagementService PackageManagementService { 

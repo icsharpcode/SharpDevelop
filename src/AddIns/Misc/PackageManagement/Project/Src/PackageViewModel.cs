@@ -16,21 +16,17 @@ namespace ICSharpCode.PackageManagement
 		
 		IPackageManagementService packageManagementService;
 		IPackageManagementEvents packageManagementEvents;
-		IPackage package;
+		IPackageFromRepository package;
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
-		IPackageRepository sourceRepository;
-		bool? hasDependencies;
 		PackageViewModelOperationLogger logger;
 		
 		public PackageViewModel(
-			IPackage package,
-			IPackageRepository sourceRepository,
+			IPackageFromRepository package,
 			IPackageManagementService packageManagementService,
 			IPackageManagementEvents packageManagementEvents,
 			ILogger logger)
 		{
 			this.package = package;
-			this.sourceRepository = sourceRepository;
 			this.packageManagementService = packageManagementService;
 			this.packageManagementEvents = packageManagementEvents;
 			this.logger = CreateLogger(logger);
@@ -105,13 +101,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool HasDependencies {
-			get {
-				if (!hasDependencies.HasValue) {
-					IEnumerator<PackageDependency> enumerator = Dependencies.GetEnumerator();
-					hasDependencies = enumerator.MoveNext();
-				}
-				return hasDependencies.Value;
-			}
+			get { return package.HasDependencies; }
 		}
 		
 		public bool HasNoDependencies {
@@ -231,17 +221,16 @@ namespace ICSharpCode.PackageManagement
 		
 		void InstallPackage()
 		{
-			InstallPackage(sourceRepository, package, packageOperations);
+			InstallPackage(package, packageOperations);
 			OnPropertyChanged(model => model.IsAdded);
 		}
 		
 		protected virtual void InstallPackage(
-			IPackageRepository sourcePackageRepository,
-			IPackage package,
+			IPackageFromRepository package,
 			IEnumerable<PackageOperation> packageOperations)
 		{
 			InstallPackageAction task = packageManagementService.CreateInstallPackageAction();
-			task.PackageRepository = sourcePackageRepository;
+			task.PackageRepository = package.Repository;
 			task.Package = package;
 			task.Operations = packageOperations;
 			task.Execute();
@@ -271,7 +260,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			try {
 				var action = packageManagementService.CreateUninstallPackageAction();
-				action.PackageRepository = sourceRepository;
+				action.PackageRepository = package.Repository;
 				action.Package = package;
 				action.Execute();
 			} catch (Exception ex) {

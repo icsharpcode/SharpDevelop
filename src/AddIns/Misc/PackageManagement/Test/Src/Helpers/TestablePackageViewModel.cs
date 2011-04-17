@@ -10,7 +10,6 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class TestablePackageViewModel : PackageViewModel
 	{
-		public FakePackageRepository FakeSourcePackageRepository;
 		public FakePackageManagementService	FakePackageManagementService;
 		public FakePackageManagementEvents FakePackageManagementEvents;
 		public FakePackage FakePackage;
@@ -19,7 +18,6 @@ namespace PackageManagement.Tests.Helpers
 		public TestablePackageViewModel(FakePackageManagementService packageManagementService)
 			: this(
 				new FakePackage(),
-				new FakePackageRepository(),
 				packageManagementService,
 				new FakePackageManagementEvents(),
 				new FakeLogger())
@@ -28,13 +26,11 @@ namespace PackageManagement.Tests.Helpers
 		
 		public TestablePackageViewModel(
 			FakePackage package,
-			FakePackageRepository sourceRepository,
 			FakePackageManagementService packageManagementService,
 			FakePackageManagementEvents packageManagementEvents,
 			FakeLogger logger)
 			: base(
 				package,
-				sourceRepository,
 				packageManagementService,
 				packageManagementEvents,
 				logger)
@@ -42,7 +38,6 @@ namespace PackageManagement.Tests.Helpers
 			this.FakePackage = package;
 			this.FakePackageManagementService = packageManagementService;
 			this.FakePackageManagementEvents = packageManagementEvents;
-			this.FakeSourcePackageRepository = sourceRepository;
 			this.FakeLogger = logger;
 		}
 		

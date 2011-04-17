@@ -18,23 +18,8 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementEvents packageManagementEvents;
 		
 		public PackageManagementService(
-			PackageManagementOptions options,
-			IPackageRepositoryCache packageRepositoryCache,
-			IPackageManagerFactory packageManagerFactory,
-			IPackageManagementEvents packageManagementEvents,
-			IPackageManagementProjectService projectService)
-			: this(
-				new RegisteredPackageRepositories(packageRepositoryCache, options),
-				packageManagerFactory,
-				packageManagementEvents,
-				projectService)
-		{
-		}
-		
-		public PackageManagementService(
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageManagementEvents packageManagementEvents,
-			IPackageManagementOutputMessagesView outputMessagesView)
+			IPackageManagementEvents packageManagementEvents)
 			: this(
 				registeredPackageRepositories,
 				new SharpDevelopPackageManagerFactory(),

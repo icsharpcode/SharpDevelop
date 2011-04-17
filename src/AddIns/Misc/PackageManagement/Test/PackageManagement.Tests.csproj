@@ -77,6 +77,7 @@
     <Compile Include="Src\Helpers\FakePackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\Helpers\FakePackageViewModelFactory.cs" />
     <Compile Include="Src\Helpers\TestableAddPackageReferenceCommand.cs" />
+    <Compile Include="Src\PackageFromRepositoryTests.cs" />
     <Compile Include="Src\PackageManagementEventsTests.cs" />
     <Compile Include="Src\PackageManagementLoggerTests.cs" />
     <Compile Include="Src\PackageOperationMessageTests.cs" />

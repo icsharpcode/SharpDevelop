@@ -68,7 +68,9 @@
     <Compile Include="Src\AcceptLicensesEventArgs.cs" />
     <Compile Include="Src\AddPackageReferenceCommand.cs" />
     <Compile Include="Src\IAddPackageReferenceView.cs" />
+    <Compile Include="Src\IPackageFromRepository.cs" />
     <Compile Include="Src\IPackageManagementEvents.cs" />
+    <Compile Include="Src\PackageFromRepository.cs" />
     <Compile Include="Src\PackageManagementEvents.cs" />
     <Compile Include="Src\PackageManagementLogger.cs" />
     <Compile Include="Src\PackageOperationExceptionEventArgs.cs" />

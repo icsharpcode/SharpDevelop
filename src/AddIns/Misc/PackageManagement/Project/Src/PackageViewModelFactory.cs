@@ -10,34 +10,29 @@ namespace ICSharpCode.PackageManagement
 	{
 		public PackageViewModelFactory(IPackageViewModelFactory packageViewModelFactory)
 			: this(
-				packageViewModelFactory.RegisteredPackageRepositories,
 				packageViewModelFactory.PackageManagementService,
 				packageViewModelFactory.PackageManagementEvents)
 		{
 		}
 		
 		public PackageViewModelFactory(
-			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagementService packageManagementService,
 			IPackageManagementEvents packageManagementEvents)
 		{
-			this.RegisteredPackageRepositories = registeredPackageRepositories;
 			this.PackageManagementService = packageManagementService;
 			this.PackageManagementEvents = packageManagementEvents;
 			this.Logger = new PackageManagementLogger(packageManagementEvents);
 		}
 		
-		public virtual PackageViewModel CreatePackageViewModel(IPackage package)
+		public virtual PackageViewModel CreatePackageViewModel(IPackageFromRepository package)
 		{
 			return new PackageViewModel(
 				package,
-				RegisteredPackageRepositories.ActiveRepository,
 				PackageManagementService,
 				PackageManagementEvents,
 				Logger);
 		}
 		
-		public IRegisteredPackageRepositories RegisteredPackageRepositories { get; private set; }
 		public IPackageManagementService PackageManagementService { get; private set; }
 		public IPackageManagementEvents PackageManagementEvents { get; private set; }
 		public ILogger Logger { get; private set; }

@@ -13,11 +13,10 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public override PackageViewModel CreatePackageViewModel(IPackage package)
+		public override PackageViewModel CreatePackageViewModel(IPackageFromRepository package)
 		{
 			return new UpdatedPackageViewModel(
 				package,
-				RegisteredPackageRepositories.ActiveRepository,
 				PackageManagementService,
 				PackageManagementEvents,
 				Logger);

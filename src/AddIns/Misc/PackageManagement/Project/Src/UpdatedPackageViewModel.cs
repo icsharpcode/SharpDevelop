@@ -12,23 +12,21 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementService packageManagementService;
 		
 		public UpdatedPackageViewModel(
-			IPackage package,
-			IPackageRepository sourceRepository,
+			IPackageFromRepository package,
 			IPackageManagementService packageManagementService,
 			IPackageManagementEvents packageManagementEvents,
 			ILogger logger)
-			: base(package, sourceRepository, packageManagementService, packageManagementEvents, logger)
+			: base(package, packageManagementService, packageManagementEvents, logger)
 		{
 			this.packageManagementService = packageManagementService;
 		}
 		
 		protected override void InstallPackage(
-			IPackageRepository sourcePackageRepository,
-			IPackage package,
+			IPackageFromRepository package,
 			IEnumerable<PackageOperation> packageOperations)
 		{
 			var action = packageManagementService.CreateUpdatePackageAction();
-			action.PackageRepository = sourcePackageRepository;
+			action.PackageRepository = package.Repository;
 			action.Package = package;
 			action.Operations = packageOperations;
 			action.Execute();

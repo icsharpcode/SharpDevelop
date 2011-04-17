@@ -6,11 +6,9 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IPackageViewModelFactory
+	public interface IPackageFromRepository : IPackage
 	{
-		PackageViewModel CreatePackageViewModel(IPackageFromRepository package);
-		
-		IPackageManagementService PackageManagementService { get; }
-		IPackageManagementEvents PackageManagementEvents { get; }
+		IPackageRepository Repository { get; }
+		bool HasDependencies { get; }
 	}
 }

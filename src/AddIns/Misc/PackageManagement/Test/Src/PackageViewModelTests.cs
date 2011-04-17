@@ -16,7 +16,6 @@ namespace PackageManagement.Tests
 		TestablePackageViewModel viewModel;
 		FakePackage package;
 		FakePackageManagementService packageManagementService;
-		FakePackageRepository sourcePackageRepository;
 		FakePackageManagementEvents packageManagementEvents;
 		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
 		FakeInstallPackageAction fakeInstallPackageTask;
@@ -40,7 +39,6 @@ namespace PackageManagement.Tests
 			viewModel = new TestablePackageViewModel(packageManagementService);
 			package = viewModel.FakePackage;
 			this.packageManagementService = packageManagementService;
-			sourcePackageRepository = viewModel.FakeSourcePackageRepository;
 			packageManagementEvents = viewModel.FakePackageManagementEvents;
 			fakeLogger = viewModel.FakeLogger;
 			fakeInstallPackageTask = packageManagementService.ActionToReturnFromCreateInstallPackageAction;
@@ -66,7 +64,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackage();
 						
-			Assert.AreEqual(sourcePackageRepository, fakeInstallPackageTask.PackageRepository);
+			Assert.AreEqual(package.Repository, fakeInstallPackageTask.PackageRepository);
 		}
 		
 		[Test]
@@ -207,7 +205,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.RemovePackage();
 			
-			Assert.AreEqual(sourcePackageRepository, fakeUninstallPackageAction.PackageRepository);
+			Assert.AreEqual(package.Repository, fakeUninstallPackageAction.PackageRepository);
 		}
 		
 		[Test]
@@ -238,16 +236,16 @@ namespace PackageManagement.Tests
 		public void HasDependencies_PackageHasNoDependencies_ReturnsFalse()
 		{
 			CreateViewModel();
-			package.DependenciesList.Clear();
+			package.HasDependencies = false;
 			
 			Assert.IsFalse(viewModel.HasDependencies);
 		}
 		
 		[Test]
-		public void HasDependencies_PackageHasOneDependency_ReturnsTrue()
+		public void HasDependencies_PackageHasDependency_ReturnsTrue()
 		{
 			CreateViewModel();
-			package.DependenciesList.Add(new PackageDependency("Test"));
+			package.HasDependencies = true;
 			
 			Assert.IsTrue(viewModel.HasDependencies);
 		}
@@ -256,7 +254,7 @@ namespace PackageManagement.Tests
 		public void HasNoDependencies_PackageHasNoDependencies_ReturnsTrue()
 		{
 			CreateViewModel();
-			package.DependenciesList.Clear();
+			package.HasDependencies = false;
 			
 			Assert.IsTrue(viewModel.HasNoDependencies);
 		}
@@ -265,7 +263,7 @@ namespace PackageManagement.Tests
 		public void HasNoDependencies_PackageHasOneDependency_ReturnsFalse()
 		{
 			CreateViewModel();
-			package.DependenciesList.Add(new PackageDependency("Test"));
+			package.HasDependencies = true;
 			
 			Assert.IsFalse(viewModel.HasNoDependencies);
 		}

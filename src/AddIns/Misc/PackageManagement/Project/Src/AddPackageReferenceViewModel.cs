@@ -31,7 +31,7 @@ namespace ICSharpCode.PackageManagement
 			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
 			packageManagementEvents.AcceptLicenses += AcceptLicenses;
 			
-			var packageViewModelFactory = new PackageViewModelFactory(registeredPackageRepositories, packageManagementService, packageManagementEvents);
+			var packageViewModelFactory = new PackageViewModelFactory(packageManagementService, packageManagementEvents);
 			
 			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
 			InstalledPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);

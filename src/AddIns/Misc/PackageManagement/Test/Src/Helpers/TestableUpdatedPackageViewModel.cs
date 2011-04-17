@@ -11,7 +11,6 @@ namespace PackageManagement.Tests.Helpers
 	public class TestableUpdatedPackageViewModel : UpdatedPackageViewModel
 	{
 		public FakePackageOperationResolver FakePackageOperationResolver = new FakePackageOperationResolver();
-		public FakePackageRepository FakeSourcePackageRepository;
 		public FakePackageManagementService	FakePackageManagementService;
 		public FakePackageManagementEvents FakePackageManagementEvents;
 		public FakePackage FakePackage;
@@ -26,7 +25,6 @@ namespace PackageManagement.Tests.Helpers
 		public TestableUpdatedPackageViewModel(FakePackageManagementService packageManagementService)
 			: this(
 				new FakePackage(),
-				new FakePackageRepository(),
 				packageManagementService,
 				new FakePackageManagementEvents(),
 				new FakeLogger())
@@ -35,20 +33,17 @@ namespace PackageManagement.Tests.Helpers
 		
 		public TestableUpdatedPackageViewModel(
 			FakePackage package,
-			FakePackageRepository sourceRepository,
 			FakePackageManagementService packageManagementService,
 			FakePackageManagementEvents packageManagementEvents,
 			FakeLogger logger)
 			: base(
 				package,
-				sourceRepository,
 				packageManagementService,
 				packageManagementEvents,
 				logger)
 		{
 			this.FakePackage = package;
 			this.FakePackageManagementService = packageManagementService;
-			this.FakeSourcePackageRepository = sourceRepository;
 			this.FakeLogger = logger;
 		}
 	}

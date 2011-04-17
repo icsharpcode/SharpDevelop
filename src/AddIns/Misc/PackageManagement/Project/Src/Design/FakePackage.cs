@@ -8,7 +8,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
 {
-	public class FakePackage : IPackage
+	public class FakePackage : IPackageFromRepository
 	{		
 		public Stream Stream = null;
 		public List<string> AuthorsList = new List<string>();
@@ -128,11 +128,19 @@ namespace ICSharpCode.PackageManagement.Design
 			DependenciesList.Add(new PackageDependency(id));
 		}
 		
-		List<FrameworkAssemblyReference> frameworkAssemblies = 
+		public List<FrameworkAssemblyReference> FrameworkAssembliesList = 
 			new List<FrameworkAssemblyReference>();
 		
 		public IEnumerable<FrameworkAssemblyReference> FrameworkAssemblies {
-			get { return frameworkAssemblies; }
+			get { return FrameworkAssembliesList; }
 		}
+		
+		public FakePackageRepository FakePackageRepository = new FakePackageRepository();
+		
+		public IPackageRepository Repository {
+			get { return FakePackageRepository; }
+		}
+		
+		public bool HasDependencies { get; set; }
 	}
 }
