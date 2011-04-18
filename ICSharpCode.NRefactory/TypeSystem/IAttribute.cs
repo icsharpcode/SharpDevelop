@@ -58,18 +58,24 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		IList<IConstantValue> IAttribute.PositionalArguments {
-			get {
-				Contract.Ensures(Contract.Result<IList<IConstantValue>>() != null);
-				return null;
-			}
+		IList<IConstantValue> IAttribute.GetPositionalArguments(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			Contract.Ensures(Contract.Result<IList<IConstantValue>>() != null);
+			return null;
 		}
 		
-		IList<KeyValuePair<string, IConstantValue>> IAttribute.NamedArguments {
-			get {
-				Contract.Ensures(Contract.Result<IList<KeyValuePair<string, IConstantValue>>>() != null);
-				return null;
-			}
+		IList<KeyValuePair<string, IConstantValue>> IAttribute.GetNamedArguments(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			Contract.Ensures(Contract.Result<IList<KeyValuePair<string, IConstantValue>>>() != null);
+			return null;
+		}
+		
+		IMethod IAttribute.ResolveConstructor(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			return null;
 		}
 	}
 	#endif

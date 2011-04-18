@@ -154,6 +154,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		void IFreezable.Freeze()
 		{
 		}
+		
+		EntityType ITypeParameter.OwnerType {
+			get { return EntityType.None; }
+		}
+		
+		DomRegion ITypeParameter.Region {
+			get { return DomRegion.Empty; }
+		}
 	}
 	#endif
 }
