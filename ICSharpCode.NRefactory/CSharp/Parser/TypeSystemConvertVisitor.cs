@@ -159,6 +159,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				member.AcceptVisitor(this, data);
 			}
 			
+			td.HasExtensionMethods = td.Methods.Any(m => m.IsExtensionMethod);
+			
 			currentTypeDefinition = (DefaultTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
 			return td;
 		}
@@ -745,25 +747,36 @@ namespace ICSharpCode.NRefactory.CSharp
 			ConstantExpression c = expression.AcceptVisitor(b, null);
 			if (c == null)
 				return null;
-			// cast to the desired type
-			c = new ConstantCast(targetType, c);
-			if (c.DependsOnContext()) {
-				return new CSharpConstantValue(c, usingScope, currentTypeDefinition);
-			} else {
-				// If the expression does not depend on the context,
-				// we can resolve it immediately and store the value only.
-				return new SimpleConstantValue(targetType, c.Resolve(new CSharpResolver(MinimalResolveContext.Instance)).ConstantValue);
+			PrimitiveConstantExpression pc = c as PrimitiveConstantExpression;
+			if (pc != null && pc.Type == targetType) {
+				// Save memory by directly using a SimpleConstantValue.
+				return new SimpleConstantValue(targetType, pc.Value);
 			}
+			// cast to the desired type
+			return new CSharpConstantValue(new ConstantCast(targetType, c), usingScope, currentTypeDefinition);
 		}
 		
 		IConstantValue ConvertAttributeArgument(Expression expression)
 		{
-			throw new NotImplementedException();
+			ConstantValueBuilder b = new ConstantValueBuilder();
+			b.convertVisitor = this;
+			b.isAttributeArgument = true;
+			ConstantExpression c = expression.AcceptVisitor(b, null);
+			if (c == null)
+				return null;
+			PrimitiveConstantExpression pc = c as PrimitiveConstantExpression;
+			if (pc != null) {
+				// Save memory by directly using a SimpleConstantValue.
+				return new SimpleConstantValue(pc.Type, pc.Value);
+			} else {
+				return new CSharpConstantValue(c, usingScope, currentTypeDefinition);
+			}
 		}
 		
 		sealed class ConstantValueBuilder : DepthFirstAstVisitor<object, ConstantExpression>
 		{
 			internal TypeSystemConvertVisitor convertVisitor;
+			internal bool isAttributeArgument;
 			
 			protected override ConstantExpression VisitChildren(AstNode node, object data)
 			{
@@ -876,6 +889,40 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (left == null || right == null)
 					return null;
 				return new ConstantBinaryOperator(left, binaryOperatorExpression.Operator, right);
+			}
+			
+			static readonly GetClassTypeReference systemType = new GetClassTypeReference("System", "Type", 0);
+			
+			public override ConstantExpression VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
+			{
+				if (isAttributeArgument) {
+					return new PrimitiveConstantExpression(systemType, convertVisitor.ConvertType(typeOfExpression.Type));
+				} else {
+					return null;
+				}
+			}
+			
+			public override ConstantExpression VisitArrayCreateExpression(ArrayCreateExpression arrayObjectCreateExpression, object data)
+			{
+				var initializer = arrayObjectCreateExpression.Initializer;
+				if (isAttributeArgument && !initializer.IsNull) {
+					ITypeReference type;
+					if (arrayObjectCreateExpression.Type.IsNull)
+						type = null;
+					else
+						type = convertVisitor.ConvertType(arrayObjectCreateExpression.Type);
+					ConstantExpression[] elements = new ConstantExpression[initializer.Elements.Count];
+					int pos = 0;
+					foreach (Expression expr in initializer.Elements) {
+						ConstantExpression c = expr.AcceptVisitor(this, data);
+						if (c == null)
+							return null;
+						elements[pos++] = c;
+					}
+					return new ConstantArrayCreation(type, elements);
+				} else {
+					return null;
+				}
 			}
 		}
 		#endregion

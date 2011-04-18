@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	// Contains representations for constant C# expressions.
 	// We use these instead of storing the full AST to reduce the memory usage.
 	
-	public class CSharpConstantValue : Immutable, IConstantValue, ISupportsInterning
+	public sealed class CSharpConstantValue : Immutable, IConstantValue, ISupportsInterning
 	{
 		ConstantExpression expression;
 		UsingScope parentUsingScope;
@@ -56,7 +56,33 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		
 		public object GetValue(ITypeResolveContext context)
 		{
-			return expression.Resolve(CreateResolver(context)).ConstantValue;
+			CSharpResolver resolver = CreateResolver(context);
+			object val = expression.Resolve(resolver).ConstantValue;
+			if (resolver.Context != context) {
+				// If 'val' is a type or an array containing types, we need to map it to the new context.
+				val = MapToNewContext(val, context);
+			}
+			return val;
+		}
+		
+		static object MapToNewContext(object val, ITypeResolveContext context)
+		{
+			IType type = val as IType;
+			if (type != null) {
+				return type.AcceptVisitor(new MapTypeIntoNewContext(context));
+			}
+			object[] arr = val as object[];
+			if (arr != null) {
+				object[] newArr = new object[arr.Length];
+				bool modified = false;
+				for (int i = 0; i < arr.Length; i++) {
+					newArr[i] = MapToNewContext(arr[i], context);
+					modified |= arr[i] != newArr[i];
+				}
+				if (modified)
+					return newArr;
+			}
+			return val;
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -84,20 +110,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	public abstract class ConstantExpression
 	{
 		public abstract ResolveResult Resolve(CSharpResolver resolver);
-		
-		/// <summary>
-		/// Gets whether the returned value depends on the expression's context.
-		/// </summary>
-		public virtual bool DependsOnContext()
-		{
-			return true;
-		}
 	}
 	
+	/// <summary>
+	/// C#'s equivalent to the SimpleConstantValue.
+	/// </summary>
 	public sealed class PrimitiveConstantExpression : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference type;
 		object value;
+		
+		public ITypeReference Type {
+			get { return type; }
+		}
+		
+		public object Value {
+			get { return value; }
+		}
 		
 		public PrimitiveConstantExpression(ITypeReference type, object value)
 		{
@@ -109,17 +138,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			return new ConstantResolveResult(type.Resolve(resolver.Context), value);
-		}
-		
-		public override bool DependsOnContext()
-		{
-			// Depends on context unless the type is a known primitive type.
-			foreach (var knownTypeRef in KnownTypeReference.AllKnownTypeReferences) {
-				if (knownTypeRef == type)
-					return false;
-			}
-			return true;
+			object val = value;
+			if (val is ITypeReference)
+				val = ((ITypeReference)val).Resolve(resolver.Context);
+			return new ConstantResolveResult(type.Resolve(resolver.Context), val);
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -158,11 +180,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
 			return resolver.ResolveCast(targetType.Resolve(resolver.Context), expression.Resolve(resolver));
-		}
-		
-		public override bool DependsOnContext()
-		{
-			return expression.DependsOnContext();
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -520,6 +537,46 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 				&& this.condition == coo.condition
 				&& this.trueExpr == coo.trueExpr
 				&& this.falseExpr == coo.falseExpr;
+		}
+	}
+	
+	/// <summary>
+	/// Represents an array creation (as used within an attribute argument)
+	/// </summary>
+	public sealed class ConstantArrayCreation : ConstantExpression, ISupportsInterning
+	{
+		// type may be null when the element is being inferred
+		ITypeReference type;
+		IList<ConstantExpression> arrayElements;
+		
+		public ConstantArrayCreation(ITypeReference type, IList<ConstantExpression> arrayElements)
+		{
+			if (arrayElements == null)
+				throw new ArgumentNullException("arrayElements");
+			this.type = type;
+			this.arrayElements = arrayElements;
+		}
+		
+		public override ResolveResult Resolve(CSharpResolver resolver)
+		{
+			throw new NotImplementedException();
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			type = provider.Intern(type);
+			arrayElements = provider.InternList(arrayElements);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return (type != null ? type.GetHashCode() : 0) ^ arrayElements.GetHashCode();
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			ConstantArrayCreation cac = other as ConstantArrayCreation;
+			return cac != null && this.type == cac.type && this.arrayElements == cac.arrayElements;
 		}
 	}
 }
