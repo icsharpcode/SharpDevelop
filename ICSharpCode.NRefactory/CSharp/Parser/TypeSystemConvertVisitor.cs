@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Analysis;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -80,7 +81,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		#region Using Declarations
-		// TODO: extern aliases
+		public override IEntity VisitExternAliasDeclaration(ExternAliasDeclaration externAliasDeclaration, object data)
+		{
+			usingScope.ExternAliases.Add(externAliasDeclaration.Name);
+			return null;
+		}
 		
 		public override IEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
@@ -114,8 +119,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			return null;
 		}
 		#endregion
-		
-		// TODO: assembly attributes
 		
 		#region Type Definitions
 		DefaultTypeDefinition CreateTypeDefinition(string name)
@@ -566,6 +569,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region Attributes
+		public override IEntity VisitAttributeSection(AttributeSection attributeSection, object data)
+		{
+			// non-assembly attributes are handled by their parent entity
+			if (attributeSection.AttributeTarget == "assembly") {
+				ConvertAttributes(parsedFile.AssemblyAttributes, attributeSection);
+			}
+			return null;
+		}
+		
 		void ConvertAttributes(IList<IAttribute> outputList, IEnumerable<AttributeSection> attributes)
 		{
 			foreach (AttributeSection section in attributes) {
@@ -730,12 +742,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			ConstantValueBuilder b = new ConstantValueBuilder();
 			b.convertVisitor = this;
-			// TODO: initialize b.checkForOverflow based on the project's overflow setting
-			IConstantValue c = expression.AcceptVisitor(b, null);
-			if (c != null)
-				return new ConstantCast(targetType, c, b.checkForOverflow);
-			else
-				return c;
+			ConstantExpression c = expression.AcceptVisitor(b, null);
+			if (c == null)
+				return null;
+			// cast to the desired type
+			c = new ConstantCast(targetType, c);
+			if (c.DependsOnContext()) {
+				return new CSharpConstantValue(c, usingScope, currentTypeDefinition);
+			} else {
+				// If the expression does not depend on the context,
+				// we can resolve it immediately and store the value only.
+				return new SimpleConstantValue(targetType, c.Resolve(new CSharpResolver(MinimalResolveContext.Instance)).ConstantValue);
+			}
 		}
 		
 		IConstantValue ConvertAttributeArgument(Expression expression)
@@ -743,25 +761,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			throw new NotImplementedException();
 		}
 		
-		sealed class ConstantValueBuilder : DepthFirstAstVisitor<object, IConstantValue>
+		sealed class ConstantValueBuilder : DepthFirstAstVisitor<object, ConstantExpression>
 		{
 			internal TypeSystemConvertVisitor convertVisitor;
-			internal bool checkForOverflow;
 			
-			protected override IConstantValue VisitChildren(AstNode node, object data)
+			protected override ConstantExpression VisitChildren(AstNode node, object data)
 			{
 				return null;
 			}
 			
-			public override IConstantValue VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression, object data)
+			public override ConstantExpression VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression, object data)
 			{
-				return new SimpleConstantValue(KnownTypeReference.Object, null);
+				return new PrimitiveConstantExpression(KnownTypeReference.Object, null);
 			}
 			
-			public override IConstantValue VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
+			public override ConstantExpression VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 			{
 				TypeCode typeCode = Type.GetTypeCode(primitiveExpression.Value.GetType());
-				return new SimpleConstantValue(typeCode.ToTypeReference(), primitiveExpression.Value);
+				return new PrimitiveConstantExpression(typeCode.ToTypeReference(), primitiveExpression.Value);
 			}
 			
 			IList<ITypeReference> ConvertTypeArguments(AstNodeCollection<AstType> types)
@@ -777,12 +794,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			
-			public override IConstantValue VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
+			public override ConstantExpression VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 			{
 				return new ConstantIdentifierReference(identifierExpression.Identifier, ConvertTypeArguments(identifierExpression.TypeArguments));
 			}
 			
-			public override IConstantValue VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+			public override ConstantExpression VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 			{
 				TypeReferenceExpression tre = memberReferenceExpression.Target as TypeReferenceExpression;
 				if (tre != null) {
@@ -792,7 +809,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						memberReferenceExpression.MemberName,
 						ConvertTypeArguments(memberReferenceExpression.TypeArguments));
 				}
-				IConstantValue v = memberReferenceExpression.Target.AcceptVisitor(this, data);
+				ConstantExpression v = memberReferenceExpression.Target.AcceptVisitor(this, data);
 				if (v == null)
 					return null;
 				return new ConstantMemberReference(
@@ -800,49 +817,45 @@ namespace ICSharpCode.NRefactory.CSharp
 					ConvertTypeArguments(memberReferenceExpression.TypeArguments));
 			}
 			
-			public override IConstantValue VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
+			public override ConstantExpression VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 			{
 				return parenthesizedExpression.Expression.AcceptVisitor(this, data);
 			}
 			
-			public override IConstantValue VisitCastExpression(CastExpression castExpression, object data)
+			public override ConstantExpression VisitCastExpression(CastExpression castExpression, object data)
 			{
-				IConstantValue v = castExpression.Expression.AcceptVisitor(this, data);
+				ConstantExpression v = castExpression.Expression.AcceptVisitor(this, data);
 				if (v == null)
 					return null;
-				return new ConstantCast(convertVisitor.ConvertType(castExpression.Type), v, checkForOverflow);
+				return new ConstantCast(convertVisitor.ConvertType(castExpression.Type), v);
 			}
 			
-			public override IConstantValue VisitCheckedExpression(CheckedExpression checkedExpression, object data)
+			public override ConstantExpression VisitCheckedExpression(CheckedExpression checkedExpression, object data)
 			{
-				bool oldCheckForOverflow = checkForOverflow;
-				try {
-					checkForOverflow = true;
-					return checkedExpression.Expression.AcceptVisitor(this, data);
-				} finally {
-					checkForOverflow = oldCheckForOverflow;
-				}
+				ConstantExpression v = checkedExpression.Expression.AcceptVisitor(this, data);
+				if (v != null)
+					return new ConstantCheckedExpression(true, v);
+				else
+					return null;
 			}
 			
-			public override IConstantValue VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
+			public override ConstantExpression VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
 			{
-				bool oldCheckForOverflow = checkForOverflow;
-				try {
-					checkForOverflow = false;
-					return uncheckedExpression.Expression.AcceptVisitor(this, data);
-				} finally {
-					checkForOverflow = oldCheckForOverflow;
-				}
+				ConstantExpression v = uncheckedExpression.Expression.AcceptVisitor(this, data);
+				if (v != null)
+					return new ConstantCheckedExpression(false, v);
+				else
+					return null;
 			}
 			
-			public override IConstantValue VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
+			public override ConstantExpression VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 			{
 				return new ConstantDefaultValue(convertVisitor.ConvertType(defaultValueExpression.Type));
 			}
 			
-			public override IConstantValue VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
+			public override ConstantExpression VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 			{
-				IConstantValue v = unaryOperatorExpression.Expression.AcceptVisitor(this, data);
+				ConstantExpression v = unaryOperatorExpression.Expression.AcceptVisitor(this, data);
 				if (v == null)
 					return null;
 				switch (unaryOperatorExpression.Operator) {
@@ -850,19 +863,19 @@ namespace ICSharpCode.NRefactory.CSharp
 					case UnaryOperatorType.BitNot:
 					case UnaryOperatorType.Minus:
 					case UnaryOperatorType.Plus:
-						return new ConstantUnaryOperator(unaryOperatorExpression.Operator, v, checkForOverflow);
+						return new ConstantUnaryOperator(unaryOperatorExpression.Operator, v);
 					default:
 						return null;
 				}
 			}
 			
-			public override IConstantValue VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
+			public override ConstantExpression VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 			{
-				IConstantValue left = binaryOperatorExpression.Left.AcceptVisitor(this, data);
-				IConstantValue right = binaryOperatorExpression.Right.AcceptVisitor(this, data);
+				ConstantExpression left = binaryOperatorExpression.Left.AcceptVisitor(this, data);
+				ConstantExpression right = binaryOperatorExpression.Right.AcceptVisitor(this, data);
 				if (left == null || right == null)
 					return null;
-				return new ConstantBinaryOperator(left, binaryOperatorExpression.Operator, right, checkForOverflow);
+				return new ConstantBinaryOperator(left, binaryOperatorExpression.Operator, right);
 			}
 		}
 		#endregion

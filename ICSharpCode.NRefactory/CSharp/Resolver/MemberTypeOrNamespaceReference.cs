@@ -57,11 +57,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public NamespaceResolveResult ResolveNamespace(ITypeResolveContext context)
 		{
+			// TODO: use resolve context for original project, if possible
 			return DoResolve(context) as NamespaceResolveResult;
 		}
 		
 		public IType Resolve(ITypeResolveContext context)
 		{
+			// TODO: use resolve context for original project, if possible; then map the result type into the new context
 			TypeResolveResult rr = DoResolve(context) as TypeResolveResult;
 			return rr != null ? rr.Type : SharedTypes.UnknownType;
 		}

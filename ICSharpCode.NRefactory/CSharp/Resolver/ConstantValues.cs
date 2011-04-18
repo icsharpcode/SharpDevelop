@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Analysis;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
@@ -12,39 +14,138 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	// Contains representations for constant C# expressions.
 	// We use these instead of storing the full AST to reduce the memory usage.
 	
-	// The type system's SimpleConstantValue is used to represent PrimitiveExpressions.
-	
-	public abstract class ConstantExpression : Immutable, IConstantValue
+	public class CSharpConstantValue : Immutable, IConstantValue, ISupportsInterning
 	{
-		public abstract ResolveResult Resolve(CSharpResolver resolver);
+		ConstantExpression expression;
+		UsingScope parentUsingScope;
+		ITypeDefinition parentTypeDefinition;
 		
-		public static ResolveResult Resolve(IConstantValue constantValue, CSharpResolver resolver)
+		public CSharpConstantValue(ConstantExpression expression, UsingScope parentUsingScope, ITypeDefinition parentTypeDefinition)
 		{
-			ConstantExpression expr = constantValue as ConstantExpression;
-			if (expr != null)
-				return expr.Resolve(resolver);
-			else
-				return new ConstantResolveResult(constantValue.GetValueType(resolver.Context), constantValue.GetValue(resolver.Context));
+			if (expression == null)
+				throw new ArgumentNullException("expression");
+			this.expression = expression;
+			this.parentUsingScope = parentUsingScope;
+			this.parentTypeDefinition = parentTypeDefinition;
+		}
+		
+		CSharpResolver CreateResolver(ITypeResolveContext context)
+		{
+			// Because constants are evaluated by the compiler, we need to evaluate them in the resolve context
+			// of the project where they are defined, not in that where the constant value is used.
+			// TODO: how do we get the correct resolve context?
+			return new CSharpResolver(context) {
+				CheckForOverflow = false, // TODO: get project-wide overflow setting
+				CurrentTypeDefinition = parentTypeDefinition,
+				UsingScope = parentUsingScope
+			};
 		}
 		
 		public IType GetValueType(ITypeResolveContext context)
 		{
-			return Resolve(new CSharpResolver(context)).Type;
+			CSharpResolver resolver = CreateResolver(context);
+			IType type = expression.Resolve(resolver).Type;
+			if (resolver.Context != context) {
+				// Retrieve the equivalent type in the new resolve context.
+				// E.g. if the constant is defined in a .NET 2.0 project, type might be Int32 from mscorlib 2.0.
+				// However, the calling project might be a .NET 4.0 project, so we need to return Int32 from mscorlib 4.0.
+				return type.AcceptVisitor(new MapTypeIntoNewContext(context));
+			}
+			return type;
 		}
 		
 		public object GetValue(ITypeResolveContext context)
 		{
-			return Resolve(new CSharpResolver(context)).ConstantValue;
+			return expression.Resolve(CreateResolver(context)).ConstantValue;
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			expression = provider.Intern(expression);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return expression.GetHashCode()
+				^ (parentUsingScope != null ? parentUsingScope.GetHashCode() : 0)
+				^ (parentTypeDefinition != null ? parentTypeDefinition.GetHashCode() : 0);
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			CSharpConstantValue cv = other as CSharpConstantValue;
+			return cv != null
+				&& expression == cv.expression
+				&& parentUsingScope == cv.parentUsingScope
+				&& parentTypeDefinition == cv.parentTypeDefinition;
+		}
+	}
+	
+	public abstract class ConstantExpression
+	{
+		public abstract ResolveResult Resolve(CSharpResolver resolver);
+		
+		/// <summary>
+		/// Gets whether the returned value depends on the expression's context.
+		/// </summary>
+		public virtual bool DependsOnContext()
+		{
+			return true;
+		}
+	}
+	
+	public sealed class PrimitiveConstantExpression : ConstantExpression, ISupportsInterning
+	{
+		ITypeReference type;
+		object value;
+		
+		public PrimitiveConstantExpression(ITypeReference type, object value)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			this.type = type;
+			this.value = value;
+		}
+		
+		public override ResolveResult Resolve(CSharpResolver resolver)
+		{
+			return new ConstantResolveResult(type.Resolve(resolver.Context), value);
+		}
+		
+		public override bool DependsOnContext()
+		{
+			// Depends on context unless the type is a known primitive type.
+			foreach (var knownTypeRef in KnownTypeReference.AllKnownTypeReferences) {
+				if (knownTypeRef == type)
+					return false;
+			}
+			return true;
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			type = provider.Intern(type);
+			value = provider.Intern(value);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return type.GetHashCode() ^ (value != null ? value.GetHashCode() : 0);
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			PrimitiveConstantExpression scv = other as PrimitiveConstantExpression;
+			return scv != null && type == scv.type && value == scv.value;
 		}
 	}
 	
 	public sealed class ConstantCast : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference targetType;
-		IConstantValue expression;
-		readonly bool checkForOverflow;
+		ConstantExpression expression;
 		
-		public ConstantCast(ITypeReference targetType, IConstantValue expression, bool checkForOverflow)
+		public ConstantCast(ITypeReference targetType, ConstantExpression expression)
 		{
 			if (targetType == null)
 				throw new ArgumentNullException("targetType");
@@ -52,14 +153,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 				throw new ArgumentNullException("expression");
 			this.targetType = targetType;
 			this.expression = expression;
-			this.checkForOverflow = checkForOverflow;
 		}
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			ResolveResult rr = Resolve(expression, resolver);
-			resolver.CheckForOverflow = checkForOverflow;
-			return resolver.ResolveCast(targetType.Resolve(resolver.Context), rr);
+			return resolver.ResolveCast(targetType.Resolve(resolver.Context), expression.Resolve(resolver));
+		}
+		
+		public override bool DependsOnContext()
+		{
+			return expression.DependsOnContext();
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -71,7 +174,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
 			unchecked {
-				return targetType.GetHashCode() + expression.GetHashCode() * 1018829 + (checkForOverflow ? 614811 : 7125912);
+				return targetType.GetHashCode() + expression.GetHashCode() * 1018829;
 			}
 		}
 		
@@ -79,8 +182,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		{
 			ConstantCast cast = other as ConstantCast;
 			return cast != null
-				&& this.targetType == cast.targetType && this.expression == cast.expression
-				&& this.checkForOverflow == cast.checkForOverflow;
+				&& this.targetType == cast.targetType && this.expression == cast.expression;
 		}
 	}
 	
@@ -96,7 +198,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			this.identifier = identifier;
 			this.typeArguments = typeArguments;
 		}
-		
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
@@ -141,7 +242,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	public sealed class ConstantMemberReference : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference targetType;
-		IConstantValue targetExpression;
+		ConstantExpression targetExpression;
 		string memberName;
 		IList<ITypeReference> typeArguments;
 		
@@ -156,7 +257,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			this.typeArguments = typeArguments;
 		}
 		
-		public ConstantMemberReference(IConstantValue targetExpression, string memberName, IList<ITypeReference> typeArguments = null)
+		public ConstantMemberReference(ConstantExpression targetExpression, string memberName, IList<ITypeReference> typeArguments = null)
 		{
 			if (targetExpression == null)
 				throw new ArgumentNullException("targetExpression");
@@ -173,7 +274,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			if (targetType != null)
 				rr = new TypeResolveResult(targetType.Resolve(resolver.Context));
 			else
-				rr = Resolve(targetExpression, resolver);
+				rr = targetExpression.Resolve(resolver);
 			return resolver.ResolveMemberAccess(rr, memberName, ConstantIdentifierReference.ResolveTypes(resolver, typeArguments));
 		}
 		
@@ -206,6 +307,49 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			return cmr != null
 				&& this.targetType == cmr.targetType && this.targetExpression == cmr.targetExpression
 				&& this.memberName == cmr.memberName && this.typeArguments == cmr.typeArguments;
+		}
+	}
+	
+	public sealed class ConstantCheckedExpression : ConstantExpression, ISupportsInterning
+	{
+		bool checkForOverflow;
+		ConstantExpression expression;
+		
+		public ConstantCheckedExpression(bool checkForOverflow, ConstantExpression expression)
+		{
+			if (expression == null)
+				throw new ArgumentNullException("expression");
+			this.checkForOverflow = checkForOverflow;
+			this.expression = expression;
+		}
+		
+		public override ResolveResult Resolve(CSharpResolver resolver)
+		{
+			bool oldCheckForOverflow = resolver.CheckForOverflow;
+			try {
+				resolver.CheckForOverflow = this.checkForOverflow;
+				return expression.Resolve(resolver);
+			} finally {
+				resolver.CheckForOverflow = oldCheckForOverflow;
+			}
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			expression = provider.Intern(expression);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return expression.GetHashCode() ^ (checkForOverflow ? 161851612 : 75163517);
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			ConstantCheckedExpression cce = other as ConstantCheckedExpression;
+			return cce != null
+				&& this.expression == cce.expression
+				&& this.checkForOverflow == cce.checkForOverflow;
 		}
 	}
 	
@@ -245,23 +389,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	public sealed class ConstantUnaryOperator : ConstantExpression, ISupportsInterning
 	{
 		UnaryOperatorType operatorType;
-		IConstantValue expression;
-		bool checkForOverflow;
+		ConstantExpression expression;
 		
-		public ConstantUnaryOperator(UnaryOperatorType operatorType, IConstantValue expression, bool checkForOverflow)
+		public ConstantUnaryOperator(UnaryOperatorType operatorType, ConstantExpression expression)
 		{
 			if (expression == null)
 				throw new ArgumentNullException("expression");
 			this.operatorType = operatorType;
 			this.expression = expression;
-			this.checkForOverflow = checkForOverflow;
 		}
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			ResolveResult rr = Resolve(expression, resolver);
-			resolver.CheckForOverflow = checkForOverflow;
-			return resolver.ResolveUnaryOperator(operatorType, rr);
+			return resolver.ResolveUnaryOperator(operatorType, expression.Resolve(resolver));
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -272,7 +412,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
 			unchecked {
-				return expression.GetHashCode() * 811 + operatorType.GetHashCode() + (checkForOverflow ? 1717211 : 12751265);
+				return expression.GetHashCode() * 811 + operatorType.GetHashCode();
 			}
 		}
 		
@@ -281,19 +421,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			ConstantUnaryOperator uop = other as ConstantUnaryOperator;
 			return uop != null
 				&& this.operatorType == uop.operatorType
-				&& this.expression == uop.expression
-				&& this.checkForOverflow == uop.checkForOverflow;
+				&& this.expression == uop.expression;
 		}
 	}
 
 	public sealed class ConstantBinaryOperator : ConstantExpression, ISupportsInterning
 	{
-		IConstantValue left;
+		ConstantExpression left;
 		BinaryOperatorType operatorType;
-		IConstantValue right;
-		bool checkForOverflow;
+		ConstantExpression right;
 		
-		public ConstantBinaryOperator(IConstantValue left, BinaryOperatorType operatorType, IConstantValue right, bool checkForOverflow)
+		public ConstantBinaryOperator(ConstantExpression left, BinaryOperatorType operatorType, ConstantExpression right)
 		{
 			if (left == null)
 				throw new ArgumentNullException("left");
@@ -302,14 +440,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			this.left = left;
 			this.operatorType = operatorType;
 			this.right = right;
-			this.checkForOverflow = checkForOverflow;
 		}
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			ResolveResult lhs = Resolve(left, resolver);
-			ResolveResult rhs = Resolve(right, resolver);
-			resolver.CheckForOverflow = checkForOverflow;
+			ResolveResult lhs = left.Resolve(resolver);
+			ResolveResult rhs = right.Resolve(resolver);
 			return resolver.ResolveBinaryOperator(operatorType, lhs, rhs);
 		}
 		
@@ -322,8 +458,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
 			unchecked {
-				return left.GetHashCode() * 811 + operatorType.GetHashCode()
-					+ right.GetHashCode() * 91781 + (checkForOverflow ? 1261561 : 174811);
+				return left.GetHashCode() * 811 + operatorType.GetHashCode() + right.GetHashCode() * 91781;
 			}
 		}
 		
@@ -332,16 +467,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			ConstantBinaryOperator bop = other as ConstantBinaryOperator;
 			return bop != null
 				&& this.operatorType == bop.operatorType
-				&& this.left == bop.left && this.right == bop.right
-				&& this.checkForOverflow == bop.checkForOverflow;
+				&& this.left == bop.left && this.right == bop.right;
 		}
 	}
 	
 	public sealed class ConstantConditionalOperator : ConstantExpression, ISupportsInterning
 	{
-		IConstantValue condition, trueExpr, falseExpr;
+		ConstantExpression condition, trueExpr, falseExpr;
 		
-		public ConstantConditionalOperator(IConstantValue condition, IConstantValue trueExpr, IConstantValue falseExpr)
+		public ConstantConditionalOperator(ConstantExpression condition, ConstantExpression trueExpr, ConstantExpression falseExpr)
 		{
 			if (condition == null)
 				throw new ArgumentNullException("condition");
@@ -357,9 +491,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
 			return resolver.ResolveConditional(
-				Resolve(condition, resolver),
-				Resolve(trueExpr, resolver),
-				Resolve(falseExpr, resolver)
+				condition.Resolve(resolver),
+				trueExpr.Resolve(resolver),
+				falseExpr.Resolve(resolver)
 			);
 		}
 		

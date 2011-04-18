@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList<IAttribute> Attributes { get; }
 		
 		/// <summary>
-		/// Gets the contraints of this type parameter.
+		/// Gets the constraints of this type parameter.
 		/// </summary>
 		IList<ITypeReference> Constraints { get; }
 		
