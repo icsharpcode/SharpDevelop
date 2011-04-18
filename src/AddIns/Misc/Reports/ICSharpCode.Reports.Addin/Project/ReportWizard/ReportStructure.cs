@@ -62,8 +62,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		private void CreateGrouping(ReportSettings settings)
 		{
-			if (!String.IsNullOrEmpty(this.Grouping)){
-				GroupColumn g = new GroupColumn(Grouping,1,System.ComponentModel.ListSortDirection.Ascending);
+			if (!String.IsNullOrEmpty(this.Grouping))
+			{
+				string s = "=Fields!" + this.Grouping;
+				GroupColumn g = new GroupColumn(s,1,System.ComponentModel.ListSortDirection.Ascending);
 				settings.GroupColumnsCollection.Add(g);
 			}
 		}
@@ -165,11 +167,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					this.queryParameters = null;
 					
 				}
-				
-//				if (this.SharpQueryProcedure != null) {
-//					this.SharpQueryProcedure = null;
-//				}
-				
 			}
 		
 			// Release unmanaged resources.

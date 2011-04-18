@@ -5,6 +5,8 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
+
 namespace ICSharpCode.Reports.Core{
 	public interface IDataViewStrategy:IEnumerator,IDisposable{
 		
@@ -31,6 +33,7 @@ namespace ICSharpCode.Reports.Core{
 		int Count {get;}
 	
  		int CurrentPosition {get;set;}
- 	
+ 		
+ 		IExpressionEvaluatorFacade ExpressionEvaluator {get;}
 	}
 }

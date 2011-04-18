@@ -40,6 +40,34 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 			Assert.That(availableFieldsCollection.Count,Is.GreaterThan(0));
 		}
 		
+		#region Group by Expression
+		[Test]
+		public void Group_By_Substring()
+		{
+			GroupColumn gc = new GroupColumn("=Fields!first",1,ListSortDirection.Ascending);
+			gc.GroupExpression =  "=Substring('first',0,3)";
+			ReportSettings rs = new ReportSettings();
+			rs.GroupColumnsCollection.Add(gc);
+			IDataManager dataManager = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
+			var dataNavigator = dataManager.GetNavigator;
+			while (dataNavigator.MoveNext()) {
+				if (dataNavigator.HasChildren)
+				{
+					var childNavigator = dataNavigator.GetChildNavigator;
+					do
+					{
+						Assert.That(dataNavigator.HasChildren,Is.True);
+						DataRow r = dataNavigator.Current as DataRow;
+//						string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
+//						Console.WriteLine(v2);
+					}
+					while (childNavigator.MoveNext());
+				}
+			}
+		}
+		
+		#endregion
+		
 		#region Group by String
 		
 		[Test]
@@ -168,6 +196,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		private IDataNavigator PrepareStringGrouping ()
 		{
 			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
+			gc.GroupExpression =  "=Substring('GroupItem',0,5)";
 			ReportSettings rs = new ReportSettings();
 			rs.GroupColumnsCollection.Add(gc);
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);

@@ -149,7 +149,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		#region	Substring
 		
 		[Test]
-		public void EnumSubStrings()
+		public void Enum_With_SubStrings()
 		{
 			ReportSettings rs = new ReportSettings();
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);

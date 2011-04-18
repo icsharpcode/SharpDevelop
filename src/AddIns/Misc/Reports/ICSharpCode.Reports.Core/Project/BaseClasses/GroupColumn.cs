@@ -37,5 +37,6 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
+		public string GroupExpression {get;set;}
 	}
 }

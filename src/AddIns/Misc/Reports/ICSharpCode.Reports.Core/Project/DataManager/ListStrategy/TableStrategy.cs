@@ -16,7 +16,6 @@ namespace ICSharpCode.Reports.Core
 	internal class TableStrategy: BaseListStrategy,IEnumerable<BaseComparer>
 	{
 		private DataTable table;
-		private IExpressionEvaluatorFacade expressionEvaluator;
 		
 		public TableStrategy(DataTable table,ReportSettings reportSettings):base(reportSettings)
 		{
@@ -24,7 +23,7 @@ namespace ICSharpCode.Reports.Core
 				throw new ArgumentNullException("table");
 			}
 			this.table = table;
-			expressionEvaluator = new ExpressionEvaluatorFacade (null);
+			
 		}
 		
 		#region Methods
@@ -32,7 +31,6 @@ namespace ICSharpCode.Reports.Core
 		public override void Bind()
 		{
 			base.Bind();
-			
 			if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
 				this.Group();
 			} else {
@@ -88,31 +86,28 @@ namespace ICSharpCode.Reports.Core
 					var dataItem = item as BaseDataItem;
 					if (dataItem != null) {
 						dataItem.DBValue = ExtractValue(row,dataItem).ToString();
-						//dataItem.DBValue = row[dataItem.ColumnName].ToString();
 					}
 					return;
 				}
 			}
 		}
 		
+		
 		object ExtractValue(DataRow row,BaseDataItem item)
 		{
-			var val = row[item.ColumnName];
-			if (item.Text.StartsWith("=")) {
-//				string s = expressionEvaluator (
-				return val;
+			object val = null;
+			
+			if (item.Text.StartsWith("="))
+			{
+				return ((ExpressionEvaluatorFacade)base.ExpressionEvaluator).Evaluate(item.Text,row);
 			} else {
-				return val;
+				return row[item.ColumnName];;
 			}
-			return null;
 		}
 			 
 			
-		
-		
 		public override CurrentItemsCollection FillDataRow(int pos)
 		{
-			//this.table.Rows[pos];
 			DataRow row = (DataRow) CurrentFromPosition(pos);
 			return FillCurrentRow(row);
 		}
@@ -170,11 +165,10 @@ namespace ICSharpCode.Reports.Core
 		public override void Group ()
 		{
 			base.Group();
-			IndexList sortedIndexList = new IndexList("group");
-			sortedIndexList = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
+			IndexList groupedIndexList = new IndexList("group");
+			groupedIndexList = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
 //			ShowIndexList(sortedIndexList);
-			BuildGroup(sortedIndexList);
-			
+			BuildGroup(groupedIndexList);
 		}
 		
 		#endregion
@@ -187,20 +181,18 @@ namespace ICSharpCode.Reports.Core
 			for (int rowIndex = 0; rowIndex < this.table.Rows.Count; rowIndex++){
 				DataRow rowItem = this.table.Rows[rowIndex];
 				object[] values = new object[col.Count];
-				for (int criteriaIndex = 0; criteriaIndex < col.Count; criteriaIndex++){
-					AbstractColumn c = (AbstractColumn)col[criteriaIndex];
-					object value = rowItem[c.ColumnName];
-
-					if (value != null && value != DBNull.Value){
-						if (!(value is IComparable)){
-							throw new InvalidOperationException(value.ToString());
-						}
-						
+				for (int criteriaIndex = 0; criteriaIndex < col.Count; criteriaIndex++)
+				{
+					object value = ExtractColumnValue(rowItem,col,criteriaIndex);
+			
+					if (value != null && value != DBNull.Value)
+					{
 						values[criteriaIndex] = value;
 					}   else {
 						values[criteriaIndex] = DBNull.Value;
 					}
 				}
+				
 				arrayList.Add(new SortComparer(col, rowIndex, values));
 			}
 			
@@ -213,6 +205,27 @@ namespace ICSharpCode.Reports.Core
 				arrayList.Sort();
 			}
 			return arrayList;
+		}
+		
+		
+		object ExtractColumnValue(DataRow row,ColumnCollection col, int criteriaIndex)
+		{
+			AbstractColumn c = (AbstractColumn)col[criteriaIndex];
+			int pos  =  c.ColumnName.IndexOf("!");
+			object val = null;
+			if (pos > 0)
+			{
+				 val = ((ExpressionEvaluatorFacade)ExpressionEvaluator).Evaluate(c.ColumnName,row);
+			}
+			else 
+			{
+				val = row[c.ColumnName];
+			}
+			
+			if (!(val is IComparable)){
+				throw new InvalidOperationException(val.ToString());
+			}
+			return val;
 		}
 		
 		

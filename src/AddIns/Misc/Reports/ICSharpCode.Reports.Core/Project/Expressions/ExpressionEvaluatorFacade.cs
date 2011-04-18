@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Data;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Interfaces;
 using SimpleExpressionEvaluator;
@@ -53,6 +54,27 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			return expression;
 		}
 		
+		public string Evaluate (string expression, object row)
+		{
+			try {
+				if (CanEvaluate(expression)) {
+					IExpression compiled = compiler.CompileExpression<string>(expression);
+					
+					this.context.ContextObject =row;
+					if (compiled != null) {
+						return (compiled.Evaluate(context)).ToString();
+					}
+				}
+			} catch (Exception e) {
+				expression = e.Message;
+				Console.WriteLine("");
+				Console.WriteLine("ExpressionEvaluatorFacade.Evaluate");
+				Console.WriteLine(e.Message);
+				Console.WriteLine("");
+			}
+			
+			return expression;
+		}
 		
 		private static bool CanEvaluate (string expressionn)
 		{

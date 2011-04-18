@@ -8,6 +8,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
+
 /// <summary>
 /// BaseClass for all Datahandling Strategies
 /// </summary>
@@ -51,6 +53,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 			this.ReportSettings = reportSettings;
 			this.IndexList = new IndexList("IndexList");
+			ExpressionEvaluator = new ExpressionEvaluatorFacade (null);
 		}
 		
 		#endregion
@@ -84,7 +87,8 @@ namespace ICSharpCode.Reports.Core {
 			IndexList childList = null;
 			foreach (BaseComparer element in list)
 			{
-				string groupValue = element.ObjectArray[0].ToString();
+				string groupValue = ExtractValue (element);
+				
 				if (compVal != groupValue) {
 					childList = new IndexList();
 					GroupComparer gc = CreateGroupHeader(element);
@@ -93,9 +97,24 @@ namespace ICSharpCode.Reports.Core {
 				} else {
 					CreateGroupedChildren(childList,element);
 				}
+				
 				compVal = groupValue;
 			}
-			//ShowIndexList(IndexList);
+			ShowIndexList(IndexList);
+		}
+		
+		
+		string ExtractValue(BaseComparer element)
+		{
+			string val = String.Empty;
+			GroupColumn gc = element.ColumnCollection[0] as GroupColumn;
+			if (gc !=  null) {
+				val = element.ObjectArray[0].ToString();
+				var ex = gc.GroupExpression;
+//				Console.WriteLine("{0} - {1}",val,ex);
+				var sss = ((ExpressionEvaluatorFacade)ExpressionEvaluator).Evaluate(ex,val);
+			}
+			return val;
 		}
 		
 		
@@ -245,6 +264,8 @@ namespace ICSharpCode.Reports.Core {
 		protected ReportSettings ReportSettings {get;set;}
 		
 		public IndexList IndexList {get; set;}
+		
+		public IExpressionEvaluatorFacade ExpressionEvaluator {get;private set;}
 		
 		#endregion
 		
