@@ -10,12 +10,10 @@ namespace ICSharpCode.PackageManagement
 {
 	public interface IPackageManagementSolution
 	{
-		ISharpDevelopProjectManager CreateProjectManager(IPackageRepository repository, MSBuildBasedProject project);
-		ISharpDevelopPackageManager CreatePackageManagerForActiveProject();
-		ISharpDevelopPackageManager CreatePackageManagerForActiveProject(IPackageRepository packageRepository);
-		ISharpDevelopPackageManager CreatePackageManager(PackageSource packageSource, MSBuildBasedProject project);
-		
-		IProjectManager ActiveProjectManager { get; }
+		IPackageManagementProject GetActiveProject();
+		IPackageManagementProject CreateProject(PackageSource source, MSBuildBasedProject project);
+		IPackageManagementProject CreateProject(IPackageRepository sourceRepository, MSBuildBasedProject project);
+		IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository);
 		
 		InstallPackageAction CreateInstallPackageAction();
 		UninstallPackageAction CreateUninstallPackageAction();

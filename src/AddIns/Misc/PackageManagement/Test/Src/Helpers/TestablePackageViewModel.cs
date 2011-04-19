@@ -57,8 +57,8 @@ namespace PackageManagement.Tests.Helpers
 			var operation = new PackageOperation(FakePackage, PackageAction.Install);
 			
 			FakeSolution
-				.FakePackageManagerToReturnFromCreatePackageManager
-				.PackageOperationsToReturnFromGetInstallPackageOperations
+				.FakeProject
+				.FakeInstallOperations
 				.Add(operation);
 			
 			return operation;
@@ -68,12 +68,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			var package = new FakePackage("PackageToUninstall");			
 			var operation = new PackageOperation(package, PackageAction.Uninstall);
-			
-			FakeSolution
-				.FakePackageManagerToReturnFromCreatePackageManager
-				.PackageOperationsToReturnFromGetInstallPackageOperations
-				.Add(operation);
-			
+			FakeSolution.FakeProject.FakeInstallOperations.Add(operation);
 			return operation;
 		}
 	}

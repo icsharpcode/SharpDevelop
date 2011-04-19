@@ -26,7 +26,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void UninstallTestPackage()
 		{
-			action.PackageRepository = FakePackageRepository;
+			action.SourceRepository = FakePackageRepository;
 			action.Package = TestPackage;
 			action.Execute();
 		}
@@ -41,7 +41,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			action.PackageId = packageId;
 			action.PackageVersion = Version;
-			action.Project = Project;
+			action.MSBuildProject = Project;
 			action.ForceRemove = ForceRemove;
 			action.PackageSource = PackageSource;
 			action.RemoveDependencies = RemoveDependencies;

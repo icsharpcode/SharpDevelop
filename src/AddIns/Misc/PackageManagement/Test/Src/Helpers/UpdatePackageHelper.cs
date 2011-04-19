@@ -27,7 +27,8 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void UpdateTestPackage()
 		{
-			action.PackageRepository = PackageRepository;
+			action.SourceRepository = PackageRepository;
+			action.UpdateDependencies = UpdateDependencies;
 			action.Package = TestPackage;
 			action.Operations = PackageOperations;
 			action.Execute();
@@ -51,7 +52,7 @@ namespace PackageManagement.Tests.Helpers
 			action.PackageId = packageId;
 			action.PackageVersion = Version;
 			action.PackageSource = PackageSource;
-			action.Project = TestableProject;
+			action.MSBuildProject = TestableProject;
 			action.UpdateDependencies = UpdateDependencies;
 			action.Execute();
 		}

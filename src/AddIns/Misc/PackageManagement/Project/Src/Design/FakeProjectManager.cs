@@ -68,8 +68,11 @@ namespace ICSharpCode.PackageManagement.Design
 			throw new NotImplementedException();
 		}
 		
+		public IPackage PackagePassedToIsInstalled;
+		
 		public bool IsInstalled(IPackage package)
 		{
+			PackagePassedToIsInstalled = package;
 			return IsInstalledReturnValue;
 		}
 		

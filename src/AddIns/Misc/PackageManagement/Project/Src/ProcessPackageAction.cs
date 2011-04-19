@@ -20,14 +20,14 @@ namespace ICSharpCode.PackageManagement
 			this.packageManagementEvents = packageManagementEvents;
 		}
 		
-		public ISharpDevelopPackageManager PackageManager { get; set; }
+		public IPackageManagementProject Project { get; set; }
 		public ILogger Logger { get; set; }
 		public IPackage Package { get; set; }
 		public Version PackageVersion { get; set; }
 		public string PackageId { get; set; }
-		public IPackageRepository PackageRepository { get; set; }
+		public IPackageRepository SourceRepository { get; set; }
 		public PackageSource PackageSource { get; set; }
-		public MSBuildBasedProject Project { get; set; }
+		public MSBuildBasedProject MSBuildProject { get; set; }
 		
 		protected void OnParentPackageInstalled()
 		{
@@ -48,8 +48,8 @@ namespace ICSharpCode.PackageManagement
 		protected virtual void BeforeExecute()
 		{
 			GetLoggerIfMissing();
-			CreatePackageManager();
-			ConfigurePackageManagerLogger();
+			CreateProject();
+			ConfigureProjectLogger();
 			GetPackageIfMissing();
 		}
 		
@@ -64,29 +64,24 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		void CreatePackageManager()
+		void CreateProject()
 		{
-			if (PackageRepository == null) {
-				PackageManager = solution.CreatePackageManager(PackageSource, Project);
+			if (SourceRepository == null) {
+				Project = solution.CreateProject(PackageSource, MSBuildProject);
 			} else {
-				PackageManager = solution.CreatePackageManagerForActiveProject(PackageRepository);
+				Project = solution.GetActiveProject(SourceRepository);
 			}
 		}
 		
-		void ConfigurePackageManagerLogger()
+		void ConfigureProjectLogger()
 		{
-			PackageManager.Logger = Logger;
-			PackageManager.FileSystem.Logger = Logger;
-			
-			IProjectManager projectManager = PackageManager.ProjectManager;
-			projectManager.Logger = Logger;
-			projectManager.Project.Logger = Logger;
+			Project.Logger = Logger;
 		}
 		
 		void GetPackageIfMissing()
 		{
 			if (Package == null) {
-				Package = PackageManager.SourceRepository.FindPackage(PackageId, PackageVersion);
+				Package = Project.SourceRepository.FindPackage(PackageId, PackageVersion);
 			}
 		}
 	}

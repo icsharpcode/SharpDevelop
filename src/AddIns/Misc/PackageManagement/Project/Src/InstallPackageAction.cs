@@ -29,13 +29,13 @@ namespace ICSharpCode.PackageManagement
 		void GetPackageOperationsIfMissing()
 		{
 			if (Operations == null) {
-				Operations = PackageManager.GetInstallPackageOperations(Package, IgnoreDependencies);
+				Operations = Project.GetInstallPackageOperations(Package, IgnoreDependencies);
 			}
 		}
 		
 		protected override void ExecuteCore()
 		{
-			PackageManager.InstallPackage(Package, Operations, IgnoreDependencies);
+			Project.InstallPackage(Package, Operations, IgnoreDependencies);
 			OnParentPackageInstalled();
 		}
 	}

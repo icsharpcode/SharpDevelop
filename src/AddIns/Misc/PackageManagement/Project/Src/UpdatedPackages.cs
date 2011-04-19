@@ -13,8 +13,7 @@ namespace ICSharpCode.PackageManagement
 	public class UpdatedPackages
 	{
 		IPackageManagementSolution solution;
-		MSBuildBasedProject project;
-		IPackageRepository localRepository;
+		IPackageManagementProject project;
 		IPackageRepository sourceRepository;
 		
 		public UpdatedPackages(
@@ -27,30 +26,26 @@ namespace ICSharpCode.PackageManagement
 		public UpdatedPackages(
 			IPackageManagementSolution solution,
 			IPackageRepository aggregateRepository,
-			MSBuildBasedProject project)
+			MSBuildBasedProject msbuildProject)
 		{
 			this.solution = solution;
 			this.sourceRepository = aggregateRepository;
-			this.project = project;
-			GetRepositories();
+			project = CreateProject(msbuildProject);
 		}
 		
-		void GetRepositories()
+		IPackageManagementProject CreateProject(MSBuildBasedProject msbuildProject)
 		{
-			GetLocalRepository();
-		}
-		
-		void GetLocalRepository()
-		{
-			IProjectManager projectManager = CreateProjectManager();
-			localRepository = projectManager.LocalRepository;
+			if (msbuildProject == null) {
+				return solution.GetActiveProject();
+			}
+			return solution.CreateProject(sourceRepository, msbuildProject);				
 		}
 		
 		public string SearchTerms { get; set; }
 		
 		public IEnumerable<IPackage> GetUpdatedPackages()
 		{
-			IQueryable<IPackage> localPackages = localRepository.GetPackages();
+			IQueryable<IPackage> localPackages = project.GetPackages();
 			localPackages = FilterPackages(localPackages);
 			return GetUpdatedPackages(sourceRepository, localPackages);
 		}
@@ -63,14 +58,6 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<IPackage> GetUpdatedPackages(IPackageRepository sourceRepository, IQueryable<IPackage> localPackages)
 		{
 			return sourceRepository.GetUpdates(localPackages);
-		}
-		
-		IProjectManager CreateProjectManager()
-		{
-			if (project != null) {
-				return solution.CreateProjectManager(sourceRepository, project);
-			}
-			return solution.ActiveProjectManager;
 		}
 	}
 }

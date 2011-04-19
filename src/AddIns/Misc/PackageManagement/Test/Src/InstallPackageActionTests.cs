@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -14,7 +16,7 @@ namespace PackageManagement.Tests
 	{
 		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementEvents fakePackageManagementEvents;
-		FakePackageManager fakePackageManager;
+		FakePackageManagementProject fakeProject;
 		InstallPackageAction action;
 		InstallPackageHelper installPackageHelper;
 
@@ -22,34 +24,63 @@ namespace PackageManagement.Tests
 		{
 			fakeSolution = new FakePackageManagementSolution();
 			fakePackageManagementEvents = new FakePackageManagementEvents();
-			fakePackageManager = fakeSolution.FakePackageManagerToReturnFromCreatePackageManager;
+			fakeProject = fakeSolution.FakeProject;
 			action = new InstallPackageAction(fakeSolution, fakePackageManagementEvents);
 			installPackageHelper = new InstallPackageHelper(action);
 		}
 		
-		FakePackage AddOnePackageToPackageManagerSourceRepository(string packageId)
+		FakePackage AddOnePackageToProjectSourceRepository(string packageId)
 		{
-			return fakePackageManager
-				.FakeSourceRepository
-				.AddFakePackage(packageId);
+			return fakeProject.FakeSourceRepository.AddFakePackage(packageId);
 		}
 		
 		[Test]
-		public void Execute_PackageIsSet_CallsPackageManagerInstallPackage()
+		public void Execute_PackageIsSet_InstallsPackageIntoProject()
 		{
 			CreateAction();
 			installPackageHelper.InstallTestPackage();
 			
-			bool expectedIgnoreDependencies = false;
-			var expectedInstallPackageParameters = new FakePackageManager.InstallPackageParameters() {
-				IgnoreDependenciesPassedToInstallPackage = expectedIgnoreDependencies,
-				PackagePassedToInstallPackage = installPackageHelper.TestPackage,
-				PackageOperationsPassedToInstallPackage = installPackageHelper.PackageOperations
-			};
+			var actualPackage = fakeProject.PackagePassedToInstallPackage;
+			var expectedPackage = installPackageHelper.TestPackage;
 			
-			var actualInstallPackageParameters = fakePackageManager.ParametersPassedToInstallPackage;
+			Assert.AreEqual(expectedPackage, actualPackage);
+		}
+		
+		[Test]
+		public void Execute_PackageIsSet_InstallsPackageUsingPackageOperations()
+		{
+			CreateAction();
+			var expectedOperations = new List<PackageOperation>();
+			installPackageHelper.PackageOperations = expectedOperations;
+			installPackageHelper.InstallTestPackage();
 			
-			Assert.AreEqual(expectedInstallPackageParameters, actualInstallPackageParameters);
+			var actualOperations = fakeProject.PackageOperationsPassedToInstallPackage;
+			
+			Assert.AreEqual(expectedOperations, actualOperations);
+		}
+		
+		[Test]
+		public void Execute_PackageIsSet_InstallsPackageNotIgnoringDependencies()
+		{
+			CreateAction();
+			installPackageHelper.IgnoreDependencies = false;
+			installPackageHelper.InstallTestPackage();
+			
+			bool ignored = fakeProject.IgnoreDependenciesPassedToInstallPackage;
+			
+			Assert.IsFalse(ignored);
+		}
+		
+		[Test]
+		public void Execute_PackageIsSetAndIgnoreDependencies_IsTrueInstallsPackageIgnoringDependencies()
+		{
+			CreateAction();
+			installPackageHelper.IgnoreDependencies = true;
+			installPackageHelper.InstallTestPackage();
+			
+			bool ignored = fakeProject.IgnoreDependenciesPassedToInstallPackage;
+			
+			Assert.IsTrue(ignored);
 		}
 		
 		[Test]
@@ -59,7 +90,7 @@ namespace PackageManagement.Tests
 			installPackageHelper.InstallPackageById("PackageId");
 			
 			var expectedPackageSource = installPackageHelper.PackageSource;
-			var actualPackageSource = fakeSolution.PackageSourcePassedToCreatePackageManager;
+			var actualPackageSource = fakeSolution.PackageSourcePassedToCreateProject;
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
 		}
@@ -72,13 +103,13 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_PackageAndPackageRepositoryPassed_CreatesPackageManagerWithPackageRepository()
+		public void Execute_PackageAndPackageRepositoryPassed_CreatesProjectWithPackageRepository()
 		{
 			CreateAction();
 			installPackageHelper.InstallTestPackage();
 			
 			var expectedRepository = installPackageHelper.PackageRepository;
-			var actualRepository = fakeSolution.PackageRepositoryPassedToCreatePackageManager;
+			var actualRepository = fakeSolution.RepositoryPassedToCreateProject;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
 		}
@@ -94,35 +125,22 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}
-
-		[Test]
-		public void Execute_PackageIdAndSourceAndProjectPassed_InstallsPackageFromPackageSource()
-		{
-			CreateAction();
-			
-			var expectedPackage = AddOnePackageToPackageManagerSourceRepository("PackageId");
-			
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			var actualPackage = fakePackageManager.PackagePassedToInstallPackage;
-			
-			Assert.AreEqual(expectedPackage, actualPackage);
-		}	
 		
 		[Test]
-		public void Execute_PackageIdAndSourceAndProjectPassed_PackageOperationsRetrievedFromPackageManager()
+		public void Execute_PackageIdAndSourceAndProjectPassed_PackageOperationsRetrievedFromProject()
 		{
 			CreateAction();
+			fakeProject.AddFakeInstallOperation();
 			installPackageHelper.InstallPackageById("PackageId");
 			
 			var actualOperations = action.Operations;
-			var expectedOperations = fakePackageManager.PackageOperationsToReturnFromGetInstallPackageOperations;
+			var expectedOperations = fakeProject.FakeInstallOperations;
 			
 			Assert.AreEqual(expectedOperations, actualOperations);
 		}
 		
 		[Test]
-		public void Execute_PackageSpecifiedButNoPackageOperations_PackageUsedWhenPackageOperationsRetrievedFromPackageManager()
+		public void Execute_PackageSpecifiedButNoPackageOperations_PackageUsedWhenPackageOperationsRetrievedForProject()
 		{
 			CreateAction();
 			installPackageHelper.PackageOperations = null;
@@ -130,33 +148,21 @@ namespace PackageManagement.Tests
 			
 			var expectedPackage = installPackageHelper.TestPackage;
 			
-			var actualPackage = fakePackageManager.PackagePassedToGetInstallPackageOperations;
+			var actualPackage = fakeProject.PackagePassedToGetInstallPackageOperations;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}
 		
 		[Test]
-		public void Execute_PackageIdAndSourceAndProjectPassed_ProjectIsUsedToCreatePackageManager()
+		public void Execute_PackageIdAndSourceAndProjectPassed_ProjectIsUsedToCreateProject()
 		{
 			CreateAction();
 			installPackageHelper.InstallPackageById("PackageId");
 			
-			var actualProject = fakeSolution.ProjectPassedToCreatePackageManager;
+			var actualProject = fakeSolution.ProjectPassedToCreateProject;
 			var expectedProject = installPackageHelper.TestableProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);
-		}
-		
-		[Test]
-		public void Execute_PackageIdAndSourceAndProjectPassedAndIgnoreDependenciesIsTrue_DependenciesIgnoredWhenInstallingPackage()
-		{
-			CreateAction();
-			installPackageHelper.IgnoreDependencies = true;
-			installPackageHelper.InstallPackageById("PackageId");
-			
-			bool result = fakePackageManager.IgnoreDependenciesPassedToInstallPackage;
-			
-			Assert.IsTrue(result);
 		}
 		
 		[Test]
@@ -166,7 +172,7 @@ namespace PackageManagement.Tests
 			installPackageHelper.IgnoreDependencies = true;
 			installPackageHelper.InstallPackageById("PackageId");
 			
-			bool result = fakePackageManager.IgnoreDependenciesPassedToGetInstallPackageOperations;
+			bool result = fakeProject.IgnoreDependenciesPassedToGetInstallPackageOperations;
 			
 			Assert.IsTrue(result);
 		}
@@ -178,7 +184,7 @@ namespace PackageManagement.Tests
 			installPackageHelper.IgnoreDependencies = false;
 			installPackageHelper.InstallPackageById("PackageId");
 			
-			bool result = fakePackageManager.IgnoreDependenciesPassedToGetInstallPackageOperations;
+			bool result = fakeProject.IgnoreDependenciesPassedToGetInstallPackageOperations;
 			
 			Assert.IsFalse(result);
 		}
@@ -188,23 +194,20 @@ namespace PackageManagement.Tests
 		{
 			CreateAction();
 			
-			var recentPackage = AddOnePackageToPackageManagerSourceRepository("PackageId");
+			var recentPackage = AddOnePackageToProjectSourceRepository("PackageId");
 			recentPackage.Version = new Version("1.2.0");
 			
-			var oldPackage = AddOnePackageToPackageManagerSourceRepository("PackageId");
+			var oldPackage = AddOnePackageToProjectSourceRepository("PackageId");
 			oldPackage.Version = new Version("1.0.0");
 			
-			var package = AddOnePackageToPackageManagerSourceRepository("PackageId");
+			var package = AddOnePackageToProjectSourceRepository("PackageId");
 			var version = new Version("1.1.0");
 			package.Version = version;
 			
 			installPackageHelper.Version = version;
 			installPackageHelper.InstallPackageById("PackageId");
 			
-			var actualPackage = 
-				fakePackageManager
-				.ParametersPassedToInstallPackage
-				.PackagePassedToInstallPackage;
+			var actualPackage = fakeProject.PackagePassedToInstallPackage;
 			
 			Assert.AreEqual(package, actualPackage);
 		}

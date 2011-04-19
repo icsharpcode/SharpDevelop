@@ -11,36 +11,26 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class ExceptionThrowingPackageManagementSolution : FakePackageManagementSolution
 	{
-		public Exception ExeptionToThrowWhenActiveProjectManagerAccessed { get; set; }
-		public Exception ExeptionToThrowWhenCreateInstallPackageTaskCalled { get; set; }
-		public Exception ExeptionToThrowWhenCreateUninstallPackageActionCalled { get; set; }
-		public Exception ExceptionToThrowWhenCreatePackageManagerForActiveProjectCalled { get; set; }
+		public Exception ExceptionToThrowWhenGetActiveProjectCalled { get; set; }
+		public Exception ExceptionToThrowWhenCreateInstallPackageTaskCalled { get; set; }
+		public Exception ExceptionToThrowWhenCreateUninstallPackageActionCalled { get; set; }
 
-		public override IProjectManager ActiveProjectManager {
-			get {
-				if (ExeptionToThrowWhenActiveProjectManagerAccessed != null) {
-					throw ExeptionToThrowWhenActiveProjectManagerAccessed;
-				}
-				return base.ActiveProjectManager;
-			}
-		}
-		
 		public override InstallPackageAction CreateInstallPackageAction()
 		{
-			throw ExeptionToThrowWhenCreateInstallPackageTaskCalled;
+			throw ExceptionToThrowWhenCreateInstallPackageTaskCalled;
 		}
 		
 		public override UninstallPackageAction CreateUninstallPackageAction()
 		{
-			throw ExeptionToThrowWhenCreateUninstallPackageActionCalled;
+			throw ExceptionToThrowWhenCreateUninstallPackageActionCalled;
 		}
 		
-		public override ISharpDevelopPackageManager CreatePackageManagerForActiveProject()
+		public override IPackageManagementProject GetActiveProject()
 		{
-			if (ExceptionToThrowWhenCreatePackageManagerForActiveProjectCalled != null) {
-				throw ExceptionToThrowWhenCreatePackageManagerForActiveProjectCalled;
+			if (ExceptionToThrowWhenGetActiveProjectCalled != null) {
+				throw ExceptionToThrowWhenGetActiveProjectCalled;
 			}
-			return base.CreatePackageManagerForActiveProject();
+			return base.GetActiveProject();
 		}
 	}
 }

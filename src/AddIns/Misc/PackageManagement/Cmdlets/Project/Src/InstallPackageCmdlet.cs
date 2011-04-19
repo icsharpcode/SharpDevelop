@@ -63,7 +63,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			InstallPackageAction action = Solution.CreateInstallPackageAction();
 			action.PackageId = Id;
 			action.PackageVersion = Version;
-			action.Project = project;
+			action.MSBuildProject = project;
 			action.PackageSource = packageSource;
 			action.IgnoreDependencies = IgnoreDependencies.IsPresent;
 			return action;

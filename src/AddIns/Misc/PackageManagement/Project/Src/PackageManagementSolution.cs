@@ -16,6 +16,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagerFactory packageManagerFactory;
 		IPackageManagementProjectService projectService;
 		IPackageManagementEvents packageManagementEvents;
+		IPackageManagementProjectFactory projectFactory;
 		
 		public PackageManagementSolution(
 			IRegisteredPackageRepositories registeredPackageRepositories,
@@ -24,7 +25,8 @@ namespace ICSharpCode.PackageManagement
 				registeredPackageRepositories,
 				new SharpDevelopPackageManagerFactory(),
 				packageManagementEvents,
-				new PackageManagementProjectService())
+				new PackageManagementProjectService(),
+				new PackageManagementProjectFactory())
 		{
 		}
 		
@@ -32,60 +34,14 @@ namespace ICSharpCode.PackageManagement
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagerFactory packageManagerFactory,
 			IPackageManagementEvents packageManagementEvents,
-			IPackageManagementProjectService projectService)
+			IPackageManagementProjectService projectService,
+			IPackageManagementProjectFactory projectFactory)
 		{
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.packageManagementEvents = packageManagementEvents;
 			this.packageManagerFactory = packageManagerFactory;
+			this.projectFactory = projectFactory;
 			this.projectService = projectService;
-		}
-		
-		IPackageRepository ActivePackageRepository {
-			get { return registeredPackageRepositories.ActiveRepository; }
-		}
-		
-		public IProjectManager ActiveProjectManager {
-			get { return GetActiveProjectManager(); }
-		}
-		
-		IProjectManager GetActiveProjectManager()
-		{
-			IPackageRepository repository = ActivePackageRepository;
-			ISharpDevelopPackageManager packageManager = CreatePackageManagerForActiveProject(repository);
-			return packageManager.ProjectManager;
-		}
-		
-		public ISharpDevelopPackageManager CreatePackageManagerForActiveProject()
-		{
-			return CreatePackageManagerForActiveProject(ActivePackageRepository);
-		}
-		
-		public ISharpDevelopPackageManager CreatePackageManagerForActiveProject(IPackageRepository packageRepository)
-		{
-			MSBuildBasedProject project = projectService.CurrentProject as MSBuildBasedProject;
-			return CreatePackageManager(packageRepository, project);
-		}
-		
-		ISharpDevelopPackageManager CreatePackageManager(IPackageRepository packageRepository, MSBuildBasedProject project)
-		{
-			return packageManagerFactory.CreatePackageManager(packageRepository, project);
-		}
-		
-		public ISharpDevelopProjectManager CreateProjectManager(IPackageRepository packageRepository, MSBuildBasedProject project)
-		{
-			ISharpDevelopPackageManager packageManager = CreatePackageManager(packageRepository, project);
-			return packageManager.ProjectManager;
-		}
-		
-		public ISharpDevelopPackageManager CreatePackageManager(PackageSource packageSource, MSBuildBasedProject project)
-		{
-			IPackageRepository packageRepository = CreatePackageRepository(packageSource);
-			return CreatePackageManager(packageRepository, project);
-		}
-		
-		IPackageRepository CreatePackageRepository(PackageSource source)
-		{
-			return registeredPackageRepositories.CreateRepository(source);
 		}
 		
 		public InstallPackageAction CreateInstallPackageAction()
@@ -101,6 +57,42 @@ namespace ICSharpCode.PackageManagement
 		public UninstallPackageAction CreateUninstallPackageAction()
 		{
 			return new UninstallPackageAction(this, packageManagementEvents);
+		}
+		
+		public IPackageManagementProject GetActiveProject()
+		{
+			return GetActiveProject(ActivePackageRepository);
+		}
+		
+		IPackageRepository ActivePackageRepository {
+			get { return registeredPackageRepositories.ActiveRepository; }
+		}
+				
+		public IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository)
+		{
+			MSBuildBasedProject activeProject = GetActiveMSBuildProject();
+			return CreateProject(sourceRepository, activeProject);
+		}
+		
+		public IPackageManagementProject CreateProject(IPackageRepository sourceRepository, MSBuildBasedProject project)
+		{
+			return projectFactory.CreateProject(sourceRepository, project);
+		}
+
+		MSBuildBasedProject GetActiveMSBuildProject()
+		{
+			return projectService.CurrentProject as MSBuildBasedProject;
+		}
+		
+		public IPackageManagementProject CreateProject(PackageSource source, MSBuildBasedProject project)
+		{
+			IPackageRepository sourceRepository = CreatePackageRepository(source);
+			return CreateProject(sourceRepository, project);
+		}
+		
+		IPackageRepository CreatePackageRepository(PackageSource source)
+		{
+			return registeredPackageRepositories.CreateRepository(source);
 		}
 	}
 }

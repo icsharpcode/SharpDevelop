@@ -15,6 +15,7 @@ namespace ICSharpCode.PackageManagement
 		DelegateCommand removePackageCommand;
 		
 		IPackageManagementSolution solution;
+		IPackageManagementProject activeProject;
 		IPackageManagementEvents packageManagementEvents;
 		IPackageFromRepository package;
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
@@ -93,7 +94,16 @@ namespace ICSharpCode.PackageManagement
 		
 		bool IsPackageInstalled(IPackage package)
 		{
-			return solution.ActiveProjectManager.IsInstalled(package);
+			return ActiveProject.IsInstalled(package);
+		}
+		
+		IPackageManagementProject ActiveProject {
+			get {
+				if (activeProject == null) {
+					activeProject = solution.GetActiveProject();
+				}
+				return activeProject;
+			}
 		}
 		
 		public IEnumerable<PackageDependency> Dependencies {
@@ -159,15 +169,9 @@ namespace ICSharpCode.PackageManagement
 		
 		void GetPackageOperations()
 		{
-			ISharpDevelopPackageManager packageManager = CreatePackageManagerForActiveProject();
-			packageOperations = packageManager.GetInstallPackageOperations(package, false);
-		}
-		
-		ISharpDevelopPackageManager CreatePackageManagerForActiveProject()
-		{
-			ISharpDevelopPackageManager packageManager = solution.CreatePackageManagerForActiveProject();
-			packageManager.Logger = logger;
-			return packageManager;
+			IPackageManagementProject project = solution.GetActiveProject();
+			project.Logger = logger;
+			packageOperations = project.GetInstallPackageOperations(package, false);
 		}
 		
 		bool CanInstallPackage()
@@ -230,7 +234,7 @@ namespace ICSharpCode.PackageManagement
 			IEnumerable<PackageOperation> packageOperations)
 		{
 			InstallPackageAction task = solution.CreateInstallPackageAction();
-			task.PackageRepository = package.Repository;
+			task.SourceRepository = package.Repository;
 			task.Package = package;
 			task.Operations = packageOperations;
 			task.Execute();
@@ -260,7 +264,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			try {
 				var action = solution.CreateUninstallPackageAction();
-				action.PackageRepository = package.Repository;
+				action.SourceRepository = package.Repository;
 				action.Package = package;
 				action.Execute();
 			} catch (Exception ex) {

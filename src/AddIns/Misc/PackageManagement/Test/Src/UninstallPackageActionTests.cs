@@ -16,46 +16,44 @@ namespace PackageManagement.Tests
 		UninstallPackageAction action;
 		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementEvents fakePackageManagementEvents;
-		FakePackageManager fakePackageManager;
 		UninstallPackageHelper uninstallPackageHelper;
+		FakePackageManagementProject fakeProject;
 		
 		void CreateAction()
 		{
 			fakeSolution = new FakePackageManagementSolution();
 			fakePackageManagementEvents = new FakePackageManagementEvents();
-			fakePackageManager = fakeSolution.FakePackageManagerToReturnFromCreatePackageManager;
+			fakeProject = fakeSolution.FakeProject;
 			action = new UninstallPackageAction(fakeSolution, fakePackageManagementEvents);
 			uninstallPackageHelper = new UninstallPackageHelper(action);
 		}
 		
-		FakePackage AddOnePackageToPackageManagerSourceRepository(string packageId)
+		FakePackage AddOnePackageToProjectSourceRepository(string packageId)
 		{
-			return fakePackageManager
-				.FakeSourceRepository
-				.AddFakePackage(packageId);
+			return fakeProject.FakeSourceRepository.AddFakePackage(packageId);
 		}
 		
 		[Test]
-		public void Execute_PackageObjectPassed_CallsPackageManagerUninstallPackageWithPackage()
+		public void Execute_PackageObjectPassed_UninstallsPackageFromProject()
 		{
 			CreateAction();
 			
 			uninstallPackageHelper.UninstallTestPackage();
 			
-			var actualPackage = fakePackageManager.PackagePassedToUninstallPackage;
+			var actualPackage = fakeProject.PackagePassedToUninstallPackage;
 			var expectedPackage = uninstallPackageHelper.TestPackage;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}
 		
 		[Test]
-		public void Execute_PackageObjectPassed_PackageRepositoryUsedToCreatePackageManager()
+		public void Execute_PackageObjectPassed_PackageRepositoryUsedToCreateProject()
 		{
 			CreateAction();
 			
 			uninstallPackageHelper.UninstallTestPackage();
 			
-			var actualRepository = fakeSolution.PackageRepositoryPassedToCreatePackageManager;
+			var actualRepository = fakeSolution.RepositoryPassedToCreateProject;
 	
 			var expectedRepository = uninstallPackageHelper.FakePackageRepository;
 			
@@ -76,29 +74,55 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_PackageObjectPassed_PackageIsNotForcefullyRemoved()
+		public void Execute_PackageObjectPassedAndForceRemoveIsFalse_PackageIsNotForcefullyRemoved()
 		{
 			CreateAction();
 			
 			uninstallPackageHelper.ForceRemove = false;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
-			bool forceRemove = fakePackageManager.ForceRemovePassedToUninstallPackage;
+			bool forceRemove = fakeProject.ForceRemovePassedToUninstallPackage;
 			
 			Assert.IsFalse(forceRemove);
 		}
 		
 		[Test]
-		public void Execute_PackageObjectPassed_PackageDependenciesAreNotRemoved()
+		public void Execute_PackageObjectPassedAndForceRemoveIsTrue_PackageIsForcefullyRemoved()
+		{
+			CreateAction();
+			
+			uninstallPackageHelper.ForceRemove = true;
+			uninstallPackageHelper.UninstallPackageById("PackageId");
+			
+			bool forceRemove = fakeProject.ForceRemovePassedToUninstallPackage;
+			
+			Assert.IsTrue(forceRemove);
+		}
+		
+		[Test]
+		public void Execute_PackageObjectPassedAndRemoveDependenciesIsFalse_PackageDependenciesAreNotRemoved()
 		{
 			CreateAction();
 			
 			uninstallPackageHelper.RemoveDependencies = false;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
-			bool removeDependencies = fakePackageManager.RemoveDependenciesPassedToUninstallPackage;
+			bool removeDependencies = fakeProject.RemoveDependenciesPassedToUninstallPackage;
 			
 			Assert.IsFalse(removeDependencies);
+		}
+		
+		[Test]
+		public void Execute_PackageObjectPassedAndRemoveDependenciesIsTrue_PackageDependenciesAreRemoved()
+		{
+			CreateAction();
+			
+			uninstallPackageHelper.RemoveDependencies = true;
+			uninstallPackageHelper.UninstallPackageById("PackageId");
+			
+			bool removeDependencies = fakeProject.RemoveDependenciesPassedToUninstallPackage;
+			
+			Assert.IsTrue(removeDependencies);
 		}
 		
 		[Test]
@@ -110,13 +134,13 @@ namespace PackageManagement.Tests
 			uninstallPackageHelper.PackageSource = expectedPackageSource;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
-			var actualPackageSource = fakeSolution.PackageSourcePassedToCreatePackageManager;
+			var actualPackageSource = fakeSolution.PackageSourcePassedToCreateProject;
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
 		}
 		
 		[Test]
-		public void Execute_PackageIdSpecified_ProjectPassedIsUsedToCreateRepository()
+		public void Execute_PackageIdSpecified_MSBuildProjectPassedIsUsedToCreateRepository()
 		{
 			CreateAction();
 			var expectedProject = ProjectHelper.CreateTestProject();
@@ -124,7 +148,7 @@ namespace PackageManagement.Tests
 			
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
-			var actualProject = fakeSolution.ProjectPassedToCreatePackageManager;
+			var actualProject = fakeSolution.ProjectPassedToCreateProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);
 		}
@@ -137,7 +161,7 @@ namespace PackageManagement.Tests
 			uninstallPackageHelper.ForceRemove = true;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
-			bool forceRemove = fakePackageManager.ForceRemovePassedToUninstallPackage;
+			bool forceRemove = fakeProject.ForceRemovePassedToUninstallPackage;
 			
 			Assert.IsTrue(forceRemove);
 		}
@@ -150,7 +174,7 @@ namespace PackageManagement.Tests
 			uninstallPackageHelper.RemoveDependencies = true;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
-			bool removeDependencies = fakePackageManager.RemoveDependenciesPassedToUninstallPackage;
+			bool removeDependencies = fakeProject.RemoveDependenciesPassedToUninstallPackage;
 			
 			Assert.IsTrue(removeDependencies);
 		}
@@ -160,20 +184,20 @@ namespace PackageManagement.Tests
 		{
 			CreateAction();
 			
-			var recentPackage = AddOnePackageToPackageManagerSourceRepository("PackageId");
+			var recentPackage = AddOnePackageToProjectSourceRepository("PackageId");
 			recentPackage.Version = new Version("1.2.0");
 			
-			var oldPackage = AddOnePackageToPackageManagerSourceRepository("PackageId");
+			var oldPackage = AddOnePackageToProjectSourceRepository("PackageId");
 			oldPackage.Version = new Version("1.0.0");
 			
-			var package = AddOnePackageToPackageManagerSourceRepository("PackageId");
+			var package = AddOnePackageToProjectSourceRepository("PackageId");
 			var version = new Version("1.1.0");
 			package.Version = version;
 			
 			uninstallPackageHelper.Version = version;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
-			var actualPackage = fakePackageManager.PackagePassedToUninstallPackage;
+			var actualPackage = fakeProject.PackagePassedToUninstallPackage;
 			
 			Assert.AreEqual(package, actualPackage);
 		}

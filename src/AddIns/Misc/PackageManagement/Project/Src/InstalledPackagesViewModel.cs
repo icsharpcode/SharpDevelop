@@ -12,8 +12,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		IPackageManagementSolution solution;
 		IPackageManagementEvents packageManagementEvents;
-		IProjectManager projectManager;
-		IPackageRepository repository;
+		IPackageManagementProject project;
 		string errorMessage = String.Empty;
 
 		public InstalledPackagesViewModel(
@@ -29,13 +28,13 @@ namespace ICSharpCode.PackageManagement
 			packageManagementEvents.ParentPackageInstalled += InstalledPackagesChanged;
 			packageManagementEvents.ParentPackageUninstalled += InstalledPackagesChanged;
 			
-			GetActiveProjectManager();
+			TryGetActiveProject();
 		}
 		
-		void GetActiveProjectManager()
+		void TryGetActiveProject()
 		{
 			try {
-				this.projectManager = solution.ActiveProjectManager;
+				project = solution.GetActiveProject();
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}
@@ -52,19 +51,12 @@ namespace ICSharpCode.PackageManagement
 			packageManagementEvents.ParentPackageUninstalled -= InstalledPackagesChanged;
 		}
 		
-		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
-		{
-			if (projectManager != null) {
-				repository = projectManager.LocalRepository;
-			}
-		}
-		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			if (projectManager == null) {
+			if (project == null) {
 				ThrowOriginalExceptionWhenTryingToGetProjectManager();
 			}
-			return repository.GetPackages();
+			return project.GetPackages();
 		}
 		
 		void ThrowOriginalExceptionWhenTryingToGetProjectManager()

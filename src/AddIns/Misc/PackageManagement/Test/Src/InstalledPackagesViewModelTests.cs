@@ -62,11 +62,10 @@ namespace PackageManagement.Tests
 			taskFactory.ClearAllFakeTasks();
 		}
 		
-		FakePackage AddPackageToProjectManagerLocalPackageRepository()
+		FakePackage AddPackageToProjectLocalRepository()
 		{
 			var package = new FakePackage("Test");
-			FakePackageRepository repository = solution.FakeActiveProjectManager.FakeLocalRepository;
-			repository.FakePackages.Add(package);
+			solution.FakeProject.FakePackages.Add(package);
 			return package;
 		}
 		
@@ -76,7 +75,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
-			FakePackage package = AddPackageToProjectManagerLocalPackageRepository();
+			FakePackage package = AddPackageToProjectLocalRepository();
 			
 			ClearReadPackagesTasks();
 			packageManagementEvents.OnParentPackageInstalled(new FakePackage());
@@ -90,12 +89,12 @@ namespace PackageManagement.Tests
 		public void PackageViewModels_PackageReferenceIsRemoved_PackageViewModelsIsUpdated()
 		{
 			CreateViewModel();
-			FakePackage package = AddPackageToProjectManagerLocalPackageRepository();
+			FakePackage package = AddPackageToProjectLocalRepository();
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			
-			solution.FakeActiveProjectManager.FakeLocalRepository.FakePackages.Clear();
-			
+			solution.FakeProject.FakePackages.Clear();
+
 			ClearReadPackagesTasks();
 			packageManagementEvents.OnParentPackageUninstalled(new FakePackage());
 			CompleteReadPackagesTask();
@@ -104,10 +103,10 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ReadPackages_ActiveProjectManagerThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
+		public void ReadPackages_GetActiveProjectThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
 		{
 			CreateExceptionThrowingSolution();
-			exceptionThrowingSolution.ExeptionToThrowWhenActiveProjectManagerAccessed = new Exception("Test");
+			exceptionThrowingSolution.ExceptionToThrowWhenGetActiveProjectCalled = new Exception("Test");
 			CreateViewModel(exceptionThrowingSolution);
 			viewModel.ReadPackages();
 			
@@ -116,14 +115,14 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ReadPackages_OnePackageInLocalRepository_RepositoryIsNotCreatedByBackgroundThread()
+		public void ReadPackages_OnePackageInLocalRepository_ProjectIsNotCreatedByBackgroundThread()
 		{
 			CreateSolution();
-			solution.AddPackageToProjectLocalRepository(new FakePackage());
+			solution.AddPackageToActiveProjectLocalRepository(new FakePackage());
 			CreateViewModel(solution);
 			viewModel.ReadPackages();
 			
-			solution.FakeActiveProjectManager.FakeLocalRepository = null;
+			solution.FakeProject = null;
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
@@ -135,7 +134,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
-			FakePackage package = AddPackageToProjectManagerLocalPackageRepository();
+			FakePackage package = AddPackageToProjectLocalRepository();
 			
 			ClearReadPackagesTasks();
 			viewModel.Dispose();
@@ -149,11 +148,11 @@ namespace PackageManagement.Tests
 		public void PackageViewModels_PackageReferenceIsRemovedAfterViewModelIsDisposed_PackageViewModelsIsNotUpdated()
 		{
 			CreateViewModel();
-			FakePackage package = AddPackageToProjectManagerLocalPackageRepository();
+			FakePackage package = AddPackageToProjectLocalRepository();
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			
-			solution.FakeActiveProjectManager.FakeLocalRepository.FakePackages.Clear();
+			solution.FakeProject.FakePackages.Clear();
 			
 			ClearReadPackagesTasks();
 			viewModel.Dispose();

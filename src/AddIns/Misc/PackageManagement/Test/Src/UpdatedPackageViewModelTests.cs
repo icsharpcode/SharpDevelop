@@ -28,7 +28,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddPackage();
 						
-			Assert.AreEqual(viewModel.FakePackage.Repository, updatePackageAction.PackageRepository);
+			Assert.AreEqual(viewModel.FakePackage.Repository, updatePackageAction.SourceRepository);
 		}
 	
 		[Test]

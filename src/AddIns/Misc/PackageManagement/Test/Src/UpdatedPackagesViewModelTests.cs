@@ -54,7 +54,7 @@ namespace PackageManagement.Tests
 		FakePackage AddPackageToLocalRepository(string version)
 		{
 			var package = FakePackage.CreatePackageWithVersion(version);
-			solution.AddPackageToProjectLocalRepository(package);
+			solution.AddPackageToActiveProjectLocalRepository(package);
 			return package;
 		}
 		
@@ -99,7 +99,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ReadPackages_OneNewerPackageVersionAvailable_RepositoriesNotCreatedByBackgroundThread()
+		public void ReadPackages_OneNewerPackageVersionAvailable_ProjectNotCreatedByBackgroundThread()
 		{
 			CreateViewModel();
 			AddPackageToLocalRepository("1.0.0.0");
@@ -108,17 +108,17 @@ namespace PackageManagement.Tests
 			viewModel.ReadPackages();
 			
 			registeredPackageRepositories.FakeAggregateRepository = null;
-			solution.FakeActiveProjectManager.LocalRepository = null;
+			solution.FakeProject = null;
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
 		}
 		
 		[Test]
-		public void ReadPackages_ActiveProjectManagerThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
+		public void ReadPackages_GetActiveProjectThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
 		{
 			CreateExceptionThrowingSolution();
-			exceptionThrowingSolution.ExeptionToThrowWhenActiveProjectManagerAccessed = 
+			exceptionThrowingSolution.ExceptionToThrowWhenGetActiveProjectCalled =
 				new Exception("Test");
 			CreateViewModel(exceptionThrowingSolution);
 			viewModel.ReadPackages();

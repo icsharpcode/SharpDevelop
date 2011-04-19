@@ -122,7 +122,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualProject = fakeUpdatePackageAction.Project;
+			var actualProject = fakeUpdatePackageAction.MSBuildProject;
 			
 			Assert.AreEqual(project, actualProject);
 		}
@@ -207,7 +207,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actualProject = fakeUpdatePackageAction.Project;
+			var actualProject = fakeUpdatePackageAction.MSBuildProject;
 			var expectedProject = fakeConsoleHost.FakeProjectToReturnFromGetProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);

@@ -159,27 +159,17 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			return updatedPackages.GetUpdatedPackages().AsQueryable();
 		}
 		
-		IQueryable<IPackage> GetInstalledPackages()
-		{
-			ISharpDevelopProjectManager projectManager = CreateProjectManagerForActiveProject();
-			IQueryable<IPackage> packages = projectManager.LocalRepository.GetPackages();
-			return FilterPackages(packages);
-		}
-		
-		ISharpDevelopProjectManager CreateProjectManagerForActiveProject()
-		{
-			IPackageRepository repository = CreatePackageRepositoryForActivePackageSource();
-			return CreateProjectManagerForActiveProject(repository);
-		}
-		
-		ISharpDevelopProjectManager CreateProjectManagerForActiveProject(IPackageRepository repository)
-		{
-			return Solution.CreateProjectManager(repository, DefaultProject);
-		}
-		
 		IQueryable<IPackage> GetRecentPackages()
 		{
 			IQueryable<IPackage> packages = registeredPackageRepositories.RecentPackageRepository.GetPackages();
+			return FilterPackages(packages);
+		}
+		
+		IQueryable<IPackage> GetInstalledPackages()
+		{
+			IPackageRepository repository = CreatePackageRepositoryForActivePackageSource();
+			IPackageManagementProject project = Solution.CreateProject(repository, DefaultProject);
+			IQueryable<IPackage> packages = project.GetPackages();
 			return FilterPackages(packages);
 		}
 		

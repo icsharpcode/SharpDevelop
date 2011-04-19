@@ -62,7 +62,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		{
 			var action = Solution.CreateUpdatePackageAction();
 			action.PackageSource = packageSource;
-			action.Project = project;
+			action.MSBuildProject = project;
 			action.PackageId = Id;
 			action.PackageVersion = Version;
 			action.UpdateDependencies = !IgnoreDependencies.IsPresent;

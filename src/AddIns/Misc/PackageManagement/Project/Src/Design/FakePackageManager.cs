@@ -65,14 +65,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public void InstallPackage(IPackage package, bool ignoreDependencies)
 		{
-			PackagePassedToInstallPackage = package;
-			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
-			
-			ParametersPassedToInstallPackage = new InstallPackageParameters();
-			ParametersPassedToInstallPackage.PackagePassedToInstallPackage = package;
-			ParametersPassedToInstallPackage.IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
-			
-			IsRefreshProjectBrowserCalledWhenInstallPackageCalled = FakeProjectService.IsRefreshProjectBrowserCalled;
+			throw new NotImplementedException();
 		}
 		
 		public void InstallPackage(string packageId, Version version, bool ignoreDependencies)
@@ -98,8 +91,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public void UninstallPackage(IPackage package)
 		{
-			PackagePassedToUninstallPackage = package;
-			IsRefreshProjectBrowserCalledWhenUninstallPackageCalled = FakeProjectService.IsRefreshProjectBrowserCalled;
+			throw new NotImplementedException();
 		}
 		
 		public void UpdatePackage(IPackage oldPackage, IPackage newPackage, bool updateDependencies)
@@ -112,6 +104,8 @@ namespace ICSharpCode.PackageManagement.Design
 			throw new NotImplementedException();
 		}
 		
+		public IEnumerable<PackageOperation> PackageOperationsPassedToInstallPackage;
+		
 		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies)
 		{
 			PackagePassedToInstallPackage = package;
@@ -121,6 +115,7 @@ namespace ICSharpCode.PackageManagement.Design
 			ParametersPassedToInstallPackage.PackageOperationsPassedToInstallPackage = operations;
 			
 			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
+			PackageOperationsPassedToInstallPackage = operations;
 			
 			IsRefreshProjectBrowserCalledWhenInstallPackageCalled = FakeProjectService.IsRefreshProjectBrowserCalled;
 		}

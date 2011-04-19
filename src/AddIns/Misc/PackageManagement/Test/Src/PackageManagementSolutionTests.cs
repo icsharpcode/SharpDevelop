@@ -22,6 +22,7 @@ namespace PackageManagement.Tests
 		OneRegisteredPackageSourceHelper packageSourcesHelper;
 		FakePackageManagerFactory fakePackageManagerFactory;
 		FakePackageManagementProjectService fakeProjectService;
+		FakePackageManagementProjectFactory fakeProjectFactory;
 		TestableProject testProject;
 		
 		void CreatePackageSources()
@@ -40,6 +41,7 @@ namespace PackageManagement.Tests
 			testProject = ProjectHelper.CreateTestProject();
 			fakeRegisteredPackageRepositories = new FakeRegisteredPackageRepositories();
 			fakePackageManagerFactory = new FakePackageManagerFactory();
+			fakeProjectFactory = new FakePackageManagementProjectFactory();
 			fakeProjectService = new FakePackageManagementProjectService();
 			var packageManagementEvents = new FakePackageManagementEvents();
 			
@@ -49,7 +51,8 @@ namespace PackageManagement.Tests
 					fakeRegisteredPackageRepositories,
 					fakePackageManagerFactory,
 					packageManagementEvents,
-					fakeProjectService);
+					fakeProjectService,
+					fakeProjectFactory);
 		}
 		
 		FakePackage AddOneFakePackageToPackageRepositoryFactoryRepository(string id)
@@ -76,176 +79,172 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ActiveProjectManager_ProjectIsSelected_ReferencesSelectedProject()
+		public void GetActiveProject_ProjectIsSelected_CreatesProjectUsingCurrentProjectSelectedInSharpDevelop()
 		{
 			CreateSolution();
 			
-			IProjectManager activeProjectManager = solution.ActiveProjectManager;
-			IProject actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
+			IPackageManagementProject activeProject = solution.GetActiveProject();
+			IProject actualProject = fakeProjectFactory.ProjectPassedToCreateProject;
 			
 			Assert.AreEqual(testProject, actualProject);
 		}
 		
 		[Test]
-		public void CreateProjectManager_RepositoryAndProjectSpecified_CreatesPackageManagerFromPackageManagerFactory()
+		public void GetActiveProject_ProjectIsSelected_CreatesProjectUsingCurrentActiveRepository()
 		{
 			CreateSolution();
-			var repository = new FakePackageRepository();
-			var project = ProjectHelper.CreateTestProject();
 			
-			ISharpDevelopProjectManager projectManager = solution.CreateProjectManager(repository, project);
+			IPackageManagementProject activeProject = solution.GetActiveProject();
 			
-			var expectedProjectManager = fakePackageManagerFactory.FakePackageManager.FakeProjectManager;
-			Assert.AreEqual(expectedProjectManager, projectManager);
-		}
-		
-		[Test]
-		public void CreateProjectManager_RepositorySpecified_RepositoryUsedToCreateProjectManager()
-		{
-			CreateSolution();
-			var repository = new FakePackageRepository();
-			
-			solution.CreateProjectManager(repository, null);
-			
-			var expectedRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
+			IPackageRepository repository = fakeProjectFactory.RepositoryPassedToCreateProject;
+			IPackageRepository expectedRepository = fakeRegisteredPackageRepositories.ActiveRepository;
 			
 			Assert.AreEqual(expectedRepository, repository);
 		}
 		
 		[Test]
-		public void CreateProjectManager_ProjectSpecified_ProjectUsedToCreateProjectManager()
+		public void GetActiveProject_ProjectIsSelected_ReturnsProjectCreatedByFactory()
 		{
 			CreateSolution();
-			var project = ProjectHelper.CreateTestProject();
 			
-			solution.CreateProjectManager(null, project);
+			IPackageManagementProject activeProject = solution.GetActiveProject();
+			IPackageManagementProject expectedProject = fakeProjectFactory.FakeProject;
 			
-			var expectedProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
+			Assert.AreEqual(expectedProject, activeProject);
+		}
+		
+		[Test]
+		public void CreateProject_ProjectAndRepositoryPassed_ProjectUsedToCreateProject()
+		{
+			CreateSolution();
+			var expectedProject = ProjectHelper.CreateTestProject();
+			var repository = new FakePackageRepository();
+			solution.CreateProject(repository, expectedProject);
+			
+			var actualProject = fakeProjectFactory.ProjectPassedToCreateProject;
+			
+			Assert.AreEqual(expectedProject, actualProject);
+		}
+		
+		[Test]
+		public void CreateProject_ProjectAndRepositoryPassed_CreatesProjectUsingRepository()
+		{
+			CreateSolution();
+			var expectedRepository = new FakePackageRepository();
+			
+			solution.CreateProject(expectedRepository, null);
+			
+			IPackageRepository actualRepository = fakeProjectFactory.RepositoryPassedToCreateProject;
+			
+			Assert.AreEqual(expectedRepository, actualRepository);
+		}
+		
+		[Test]
+		public void CreateProject_ProjectAndRepositoryPassed_ReturnsProjectCreatedByFactory()
+		{
+			CreateSolution();
+			var testProject = ProjectHelper.CreateTestProject();
+			var repository = new FakePackageRepository();
+			
+			var project = solution.CreateProject(repository, testProject);
+			
+			IPackageManagementProject expectedProject = fakeProjectFactory.FakeProject;
 			
 			Assert.AreEqual(expectedProject, project);
-		}		
-		
-		[Test]
-		public void CreatePackageManagerForActiveProject_ProjectIsSelected_ReferencesSelectedProject()
-		{
-			CreateSolution();
-			
-			solution.CreatePackageManagerForActiveProject();
-			
-			IProject expectedProject = fakeProjectService.CurrentProject;
-			IProject actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
-			
-			Assert.AreEqual(expectedProject, actualProject);
 		}
 		
 		[Test]
-		public void CreatePackageManagerForActiveProject_PackageRepositoryPassed_CreatesPackageManagerWithCurrentlyActiveProject()
+		public void GetActiveProject_RepositoryPassed_CreatesProjectUsingRepository()
 		{
 			CreateSolution();
+			var expectedRepository = new FakePackageRepository();
+			solution.GetActiveProject(expectedRepository);
 			
-			var repository = new FakePackageRepository();
-			solution.CreatePackageManagerForActiveProject(repository);
+			IPackageRepository repository = fakeProjectFactory.RepositoryPassedToCreateProject;
 			
-			IProject expectedProject = fakeProjectService.CurrentProject;
-			IProject actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
-			
-			Assert.AreEqual(expectedProject, actualProject);
+			Assert.AreEqual(expectedRepository, repository);
 		}
 		
 		[Test]
-		public void CreatePackageManagerForActiveProject_PackageRepositoryPassed_PackageManagerCreatedWithRepository()
+		public void GetActiveProject_RepositoryPassed_CreatesProjectUsingCurrentActiveProject()
 		{
 			CreateSolution();
+			var expectedRepository = new FakePackageRepository();
+			var expectedProject = ProjectHelper.CreateTestProject();
+			fakeProjectService.CurrentProject = expectedProject;
 			
-			var repository = new FakePackageRepository();
-			solution.CreatePackageManagerForActiveProject(repository);
+			solution.GetActiveProject(expectedRepository);
 			
-			var actualRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
+			var project = fakeProjectFactory.ProjectPassedToCreateProject;
 			
-			Assert.AreEqual(repository, actualRepository);
+			Assert.AreEqual(expectedProject, project);
 		}
 		
 		[Test]
-		public void CreatePackageManagerForActiveProject_ProjectIsSelected_UsesActiveRepository()
+		public void GetActiveProject_RepositoryPassed_ReturnsProjectFromProjectFactory()
 		{
 			CreateSolution();
+			var expectedRepository = new FakePackageRepository();
+			var project = solution.GetActiveProject(expectedRepository);
 			
-			solution.CreatePackageManagerForActiveProject();
+			var expectedProject = fakeProjectFactory.FakeProject;
 			
-			var expectedRepository = fakeRegisteredPackageRepositories.ActiveRepository;
-			var actualRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
-			
-			Assert.AreEqual(expectedRepository, actualRepository);
+			Assert.AreEqual(expectedProject, project);
 		}
 		
 		[Test]
-		public void CreatePackageManagerForActiveProject_ProjectIsSelected_ReturnsPackageManager()
+		public void CreateProject_PackagesSourceAndProjectPassed_CreatesProjectUsingCreatedRepository()
 		{
 			CreateSolution();
+			var source = new PackageSource("http://sharpdevelop.net");
+			var testProject = ProjectHelper.CreateTestProject();
+			solution.CreateProject(source, testProject);
 			
-			ISharpDevelopPackageManager packageManager = 
-				solution.CreatePackageManagerForActiveProject();
-			
-			var expectedPackageManager = fakePackageManagerFactory.FakePackageManager;
-			
-			Assert.AreEqual(expectedPackageManager, packageManager);
-		}
-		
-		[Test]
-		public void CreatePackageManager_PackageSourceAndProjectPassed_ReturnsNewPackageManager()
-		{
-			CreateSolution();
-			
-			var packageSource = new PackageSource("test");
-			ISharpDevelopPackageManager packageManager = 
-				solution.CreatePackageManager(packageSource, testProject);
-			
-			var expectedPackageManager = fakePackageManagerFactory.FakePackageManager;
-			
-			Assert.AreEqual(expectedPackageManager, packageManager);
-		}
-		
-		[Test]
-		public void CreatePackageManager_PackageSourceAndProjectPassed_PackageSourceUsedToCreateRepository()
-		{
-			CreateSolution();
-			
-			var packageSource = new PackageSource("test");
-			ISharpDevelopPackageManager packageManager = 
-				solution.CreatePackageManager(packageSource, testProject);
-			
-			var actualPackageSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
-			
-			Assert.AreEqual(packageSource, actualPackageSource);
-		}
-		
-		[Test]
-		public void CreatePackageManager_PackageSourceAndProjectPassed_CreatedRepositoryUsedToCreatePackageManager()
-		{
-			CreateSolution();
-			
-			var packageSource = new PackageSource("test");
-			ISharpDevelopPackageManager packageManager = 
-				solution.CreatePackageManager(packageSource, testProject);
-			
-			var actualRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
+			var repository = fakeProjectFactory.RepositoryPassedToCreateProject;
 			var expectedRepository = fakeRegisteredPackageRepositories.FakePackageRepository;
 			
-			Assert.AreEqual(expectedRepository, actualRepository);
+			Assert.AreEqual(expectedRepository, repository);
 		}
 		
 		[Test]
-		public void CreatePackageManager_PackageSourceAndProjectPassed_ProjectUsedToCreatePackageManager()
+		public void CreateProject_PackagesSourceAndProjectPassed_PackageSourceUsedToCreateRepository()
 		{
 			CreateSolution();
+			var expectedSource = new PackageSource("http://sharpdevelop.net");
+			var testProject = ProjectHelper.CreateTestProject();
 			
-			var packageSource = new PackageSource("test");
-			ISharpDevelopPackageManager packageManager = 
-				solution.CreatePackageManager(packageSource, testProject);
+			solution.CreateProject(expectedSource, testProject);
 			
-			var actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
+			var source = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
 			
-			Assert.AreEqual(testProject, actualProject);
+			Assert.AreEqual(expectedSource, source);
+		}
+		
+		[Test]
+		public void CreateProject_PackagesSourceAndProjectPassed_CreatesProjectUsingProjectPassed()
+		{
+			CreateSolution();
+			var source = new PackageSource("http://sharpdevelop.net");
+			var expectedProject = ProjectHelper.CreateTestProject();
+			
+			solution.CreateProject(source, expectedProject);
+			
+			var project = fakeProjectFactory.ProjectPassedToCreateProject;
+			
+			Assert.AreEqual(expectedProject, project);
+		}
+		
+		[Test]
+		public void CreateProject_PackagesSourceAndProjectPassed_ReturnsProjectFromProjectFactory()
+		{
+			CreateSolution();
+			var source = new PackageSource("http://sharpdevelop.net");
+			var testProject = ProjectHelper.CreateTestProject();
+			var project = solution.CreateProject(source, testProject);
+			
+			var expectedProject = fakeProjectFactory.FakeProject;
+			
+			Assert.AreEqual(expectedProject, project);
 		}
 	}
 }

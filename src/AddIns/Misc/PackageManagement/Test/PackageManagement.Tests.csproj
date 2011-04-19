@@ -75,11 +75,13 @@
     <Compile Include="Src\Helpers\FakeLogger.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementEvents.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementOutputMessagesView.cs" />
+    <Compile Include="Src\Helpers\FakePackageManagementProjectFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageViewModelFactory.cs" />
     <Compile Include="Src\Helpers\TestableAddPackageReferenceCommand.cs" />
     <Compile Include="Src\PackageFromRepositoryTests.cs" />
     <Compile Include="Src\PackageManagementEventsTests.cs" />
     <Compile Include="Src\PackageManagementLoggerTests.cs" />
+    <Compile Include="Src\PackageManagementProjectTests.cs" />
     <Compile Include="Src\PackageOperationMessageTests.cs" />
     <Compile Include="Src\ProjectBrowserRefresherTests.cs" />
     <Compile Include="Src\RegisteredPackageRepositoriesTests.cs" />

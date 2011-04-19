@@ -15,15 +15,13 @@ namespace PackageManagement.Tests
 	{
 		TestableProcessPackageAction action;
 		FakePackageManagementSolution fakeSolution;
-		FakePackageManager fakePackageManager;
-		FakeLogger fakeLogger;
+		FakePackageManagementProject fakeProject;
 		
 		void CreateAction()
 		{
 			action = new TestableProcessPackageAction();
 			fakeSolution = action.FakeSolution;
-			fakeLogger = new FakeLogger();
-			fakePackageManager = fakeSolution.FakePackageManagerToReturnFromCreatePackageManager;
+			fakeProject = fakeSolution.FakeProject;
 		}
 		
 		ILogger AddLoggerToAction()
@@ -34,75 +32,39 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_LoggerIsNull_LoggerUsedByPackageManagerIsPackageManagementLogger()
+		public void Execute_LoggerIsNull_LoggerUsedByProjectIsPackageManagementLogger()
 		{
 			CreateAction();
 			action.Execute();
 			
-			ILogger actualLogger = fakePackageManager.Logger;
+			ILogger actualLogger = fakeProject.Logger;
 			Type expectedType = typeof(PackageManagementLogger);
 			
 			Assert.IsInstanceOf(expectedType, actualLogger);
 		}
 		
 		[Test]
-		public void Execute_LoggerIsDefined_LoggerDefinedIsUsedByPackageManager()
+		public void Execute_LoggerIsDefined_LoggerDefinedIsUsedByProjectManager()
 		{
 			CreateAction();
 			ILogger expectedLogger = AddLoggerToAction();
 			action.Execute();
 			
-			ILogger actualLogger = fakePackageManager.Logger;
+			ILogger actualLogger = fakeProject.Logger;
 			
 			Assert.AreEqual(expectedLogger, actualLogger);
 		}
 			
 		[Test]
-		public void BeforeExecute_LoggerIsDefined_LoggerUsedByPackageManagerIsConfiguredBeforeInstallPackageCalled()
+		public void BeforeExecute_LoggerIsDefined_LoggerUsedByProjectIsConfiguredBeforeInstallPackageCalled()
 		{
 			CreateAction();
 			ILogger expectedLogger = AddLoggerToAction();
 			action.CallBeforeExecute();
 			
-			ILogger actualLogger = fakePackageManager.Logger;
+			ILogger actualLogger = fakeProject.Logger;
 			
 			Assert.AreEqual(expectedLogger, actualLogger);
-		}
-		
-		[Test]
-		public void Execute_LoggerIsDefined_ProjectManagerUsesLogger()
-		{
-			CreateAction();
-			ILogger expectedLogger = AddLoggerToAction();
-			action.Execute();
-			
-			ILogger actualLogger = fakePackageManager.ProjectManager.Logger;
-			
-			Assert.AreEqual(expectedLogger, actualLogger);
-		}
-		
-		[Test]
-		public void Execute_LoggerIsDefined_ProjectManagerProjectSystemUsesLogger()
-		{
-			CreateAction();
-			ILogger expectedLogger = AddLoggerToAction();
-			action.Execute();
-			
-			ILogger actualLogger = fakePackageManager.ProjectManager.Project.Logger;
-			
-			Assert.AreEqual(expectedLogger, actualLogger);
-		}
-		
-		[Test]
-		public void Execute_LoggerIsDefined_PackageManagerFileSystemUsesLogger()
-		{
-			CreateAction();
-			ILogger expectedLogger = AddLoggerToAction();
-			action.Execute();
-			
-			ILogger actualLogger = fakePackageManager.FileSystem.Logger;
-			
-			Assert.AreEqual(expectedLogger, actualLogger);
-		}
+		}		
 	}
 }

@@ -53,10 +53,7 @@ namespace PackageManagement.Cmdlets.Tests
 		FakePackage AddPackageToProjectManagerLocalRepository(string id, string version)
 		{
 			var package = FakePackage.CreatePackageWithVersion(id, version);
-			fakeSolution
-				.FakeProjectManagerToReturnFromCreateProjectManager
-				.FakeLocalRepository
-				.FakePackages.Add(package);
+			fakeSolution.AddPackageToActiveProjectLocalRepository(package);
 			return package;
 		}
 		
@@ -168,14 +165,13 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			AddDefaultProjectToConsoleHost();
-			FakeProjectManager projectManager = fakeSolution.FakeProjectManagerToReturnFromCreateProjectManager;
-			projectManager.FakeLocalRepository.AddFakePackage("One");
-			projectManager.FakeLocalRepository.AddFakePackage("Two");
+			fakeSolution.AddPackageToActiveProjectLocalRepository("One");
+			fakeSolution.AddPackageToActiveProjectLocalRepository("Two");
 			
 			RunCmdlet();
 			
 			var actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
-			var expectedPackages = projectManager.FakeLocalRepository.FakePackages;
+			var expectedPackages = fakeSolution.FakeProject.FakePackages;
 			
 			Assert.AreEqual(expectedPackages, actualPackages);
 		}
@@ -201,7 +197,7 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			RunCmdlet();
 			
-			var actualRepository = fakeSolution.PackageRepositoryPassedToCreateProjectManager;
+			var actualRepository = fakeSolution.RepositoryPassedToCreateProject;
 			var expectedRepository = fakeRegisteredPackageRepositories.FakePackageRepository;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
@@ -216,7 +212,7 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			RunCmdlet();
 			
-			var actualProject = fakeSolution.ProjectPassedToCreateProjectManager;
+			var actualProject = fakeSolution.ProjectPassedToCreateProject;
 			
 			Assert.AreEqual(project, actualProject);
 		}
@@ -241,14 +237,14 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_UpdatedPackagesRequested_ActiveProjectWhenCreatingProjectManager()
+		public void ProcessRecord_UpdatedPackagesRequested_ActiveProjectUsedWhenCreatingProject()
 		{
 			CreateCmdlet();
 			var project = AddDefaultProjectToConsoleHost();
 			EnableUpdatesParameter();
 			RunCmdlet();
 			
-			var actualProject = fakeSolution.ProjectPassedToCreateProjectManager;
+			var actualProject = fakeSolution.ProjectPassedToCreateProject;
 			
 			Assert.AreEqual(project, actualProject);
 		}
@@ -261,7 +257,7 @@ namespace PackageManagement.Cmdlets.Tests
 			EnableUpdatesParameter();
 			RunCmdlet();
 			
-			var actualRepository = fakeSolution.PackageRepositoryPassedToCreateProjectManager;
+			var actualRepository = fakeSolution.RepositoryPassedToCreateProject;
 			var expectedRepository = fakeRegisteredPackageRepositories.FakeAggregateRepository;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
@@ -289,13 +285,13 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_FilterParameterPassed_InstallPackagesAreFiltered()
+		public void ProcessRecord_FilterParameterPassed_InstalledPackagesAreFiltered()
 		{
 			CreateCmdlet();
 			AddPackageSourceToConsoleHost();
-			FakeProjectManager projectManager = fakeSolution.FakeProjectManagerToReturnFromCreateProjectManager;
-			projectManager.FakeLocalRepository.AddFakePackage("A");
-			var package = projectManager.FakeLocalRepository.AddFakePackage("B");
+			
+			fakeSolution.AddPackageToActiveProjectLocalRepository("A");
+			var package = fakeSolution.AddPackageToActiveProjectLocalRepository("B");
 			
 			SetFilterParameter("B");
 			RunCmdlet();
@@ -403,10 +399,9 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			AddPackageSourceToConsoleHost();
-			FakeProjectManager projectManager = fakeSolution.FakeProjectManagerToReturnFromCreateProjectManager;
-			var packageA = projectManager.FakeLocalRepository.AddFakePackage("A");
-			var packageB = projectManager.FakeLocalRepository.AddFakePackage("B");
-			var packageC = projectManager.FakeLocalRepository.AddFakePackage("C");
+			var packageA = fakeSolution.AddPackageToActiveProjectLocalRepository("A");
+			var packageB = fakeSolution.AddPackageToActiveProjectLocalRepository("B");
+			var packageC = fakeSolution.AddPackageToActiveProjectLocalRepository("C");
 			
 			SetFilterParameter("B C");
 			RunCmdlet();

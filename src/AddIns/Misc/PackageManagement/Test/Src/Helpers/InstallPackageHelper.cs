@@ -28,8 +28,9 @@ namespace PackageManagement.Tests.Helpers
 		public void InstallTestPackage()
 		{
 			action.Package = TestPackage;
-			action.PackageRepository = PackageRepository;
+			action.SourceRepository = PackageRepository;
 			action.Operations = PackageOperations;
+			action.IgnoreDependencies = IgnoreDependencies;
 			action.Execute();
 		}
 		
@@ -50,7 +51,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			action.PackageId = packageId;
 			action.PackageVersion = Version;
-			action.Project = TestableProject;
+			action.MSBuildProject = TestableProject;
 			action.PackageSource = PackageSource;
 			action.IgnoreDependencies = IgnoreDependencies;
 			

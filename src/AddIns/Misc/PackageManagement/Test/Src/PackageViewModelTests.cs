@@ -64,7 +64,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackage();
 						
-			Assert.AreEqual(package.Repository, fakeInstallPackageTask.PackageRepository);
+			Assert.AreEqual(package.Repository, fakeInstallPackageTask.SourceRepository);
 		}
 		
 		[Test]
@@ -176,7 +176,7 @@ namespace PackageManagement.Tests
 		public void IsAdded_ProjectHasPackageAdded_ReturnsTrue()
 		{
 			CreateViewModel();
-			solution.FakeActiveProjectManager.IsInstalledReturnValue = true;
+			solution.FakeProject.IsInstalledReturnValue = true;
 			
 			Assert.IsTrue(viewModel.IsAdded);
 		}
@@ -185,9 +185,21 @@ namespace PackageManagement.Tests
 		public void IsAdded_ProjectDoesNotHavePackageInstalled_ReturnsFalse()
 		{
 			CreateViewModel();
-			solution.FakeActiveProjectManager.IsInstalledReturnValue = false;
+			solution.FakeProject.IsInstalledReturnValue = false;
 			
 			Assert.IsFalse(viewModel.IsAdded);
+		}
+		
+		[Test]
+		public void IsAdded_CalledTwice_ActiveProjectRetrievedOnce()
+		{
+			CreateViewModel();
+			bool result = viewModel.IsAdded;
+			result = viewModel.IsAdded;
+			
+			int count = solution.GetActiveProjectCallCount;
+			
+			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
@@ -205,7 +217,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.RemovePackage();
 			
-			Assert.AreEqual(package.Repository, fakeUninstallPackageAction.PackageRepository);
+			Assert.AreEqual(package.Repository, fakeUninstallPackageAction.SourceRepository);
 		}
 		
 		[Test]
@@ -364,9 +376,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			ILogger expectedLogger = viewModel.OperationLoggerCreated;
-			ILogger actualLogger = solution
-				.FakePackageManagerToReturnFromCreatePackageManager
-				.Logger;
+			ILogger actualLogger = solution.FakeProject.Logger;
 			Assert.AreEqual(expectedLogger, actualLogger);
 		}
 		
@@ -457,7 +467,7 @@ namespace PackageManagement.Tests
 			CreateViewModelWithExceptionThrowingSolution();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			Exception ex = new Exception("Test");
-			exceptionThrowingSolution.ExeptionToThrowWhenCreateInstallPackageTaskCalled = ex;
+			exceptionThrowingSolution.ExceptionToThrowWhenCreateInstallPackageTaskCalled = ex;
 			viewModel.AddPackage();
 			
 			Assert.AreEqual(ex, packageManagementEvents.ExceptionPassedToOnPackageOperationError);
@@ -479,7 +489,7 @@ namespace PackageManagement.Tests
 			CreateViewModelWithExceptionThrowingSolution();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			Exception ex = new Exception("Exception error message");
-			exceptionThrowingSolution.ExeptionToThrowWhenCreateInstallPackageTaskCalled = ex;
+			exceptionThrowingSolution.ExceptionToThrowWhenCreateInstallPackageTaskCalled = ex;
 			viewModel.AddPackage();
 			
 			string actualMessage = fakeLogger.SecondFormattedMessageLogged;
@@ -493,7 +503,7 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModelWithExceptionThrowingSolution();
 			Exception ex = new Exception("Test");
-			exceptionThrowingSolution.ExeptionToThrowWhenCreateUninstallPackageActionCalled = ex;
+			exceptionThrowingSolution.ExceptionToThrowWhenCreateUninstallPackageActionCalled = ex;
 			viewModel.RemovePackage();
 			
 			Assert.AreEqual(ex, packageManagementEvents.ExceptionPassedToOnPackageOperationError);
@@ -513,7 +523,7 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModelWithExceptionThrowingSolution();
 			Exception ex = new Exception("Exception error message");
-			exceptionThrowingSolution.ExeptionToThrowWhenCreateUninstallPackageActionCalled = ex;
+			exceptionThrowingSolution.ExceptionToThrowWhenCreateUninstallPackageActionCalled = ex;
 			viewModel.RemovePackage();
 			
 			string actualMessage = fakeLogger.SecondFormattedMessageLogged;
@@ -529,7 +539,7 @@ namespace PackageManagement.Tests
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			
 			var exception = new Exception("Test");;
-			exceptionThrowingSolution.ExceptionToThrowWhenCreatePackageManagerForActiveProjectCalled =
+			exceptionThrowingSolution.ExceptionToThrowWhenGetActiveProjectCalled =
 				exception;
 			viewModel.AddPackage();
 			
@@ -545,7 +555,7 @@ namespace PackageManagement.Tests
 			
 			var expectedPackage = package;
 			var actualPackage = solution
-				.FakePackageManagerToReturnFromCreatePackageManager
+				.FakeProject
 				.PackagePassedToGetInstallPackageOperations;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
@@ -559,7 +569,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			bool result = solution
-				.FakePackageManagerToReturnFromCreatePackageManager
+				.FakeProject
 				.IgnoreDependenciesPassedToGetInstallPackageOperations;
 			
 			Assert.IsFalse(result);

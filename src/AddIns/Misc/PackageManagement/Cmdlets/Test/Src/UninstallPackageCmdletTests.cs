@@ -108,7 +108,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualProject = uninstallPackageAction.Project;
+			var actualProject = uninstallPackageAction.MSBuildProject;
 			
 			Assert.AreEqual(project, actualProject);
 		}
@@ -205,7 +205,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actualProject = uninstallPackageAction.Project;
+			var actualProject = uninstallPackageAction.MSBuildProject;
 			var expectedProject = fakeConsoleHost.FakeProjectToReturnFromGetProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);

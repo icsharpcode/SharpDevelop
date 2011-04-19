@@ -92,13 +92,11 @@ namespace PackageManagement.Tests
 		public void InstalledPackagesViewModel_ProjectHasOneInstalledPackage_HasOnePackageViewModel()
 		{
 			CreateSolution();
-			var projectManager = new FakeProjectManager();
-			fakeSolution.FakeActiveProjectManager = projectManager;
 			FakePackage package = new FakePackage();
-			projectManager.FakeLocalRepository.FakePackages.Add(package);
+			fakeSolution.FakeProject.FakePackages.Add(package);
 			CreateViewModel(fakeSolution);
 			
-			IEnumerable<IPackage> expectedPackages = projectManager.FakeLocalRepository.FakePackages;
+			IEnumerable<IPackage> expectedPackages = fakeSolution.FakeProject.FakePackages;
 			IEnumerable<PackageViewModel> actualPackageViewModels = viewModel.InstalledPackagesViewModel.PackageViewModels;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, actualPackageViewModels);
@@ -127,7 +125,7 @@ namespace PackageManagement.Tests
 				Id = "Test",
 				Version = new Version("1.0.0.0")
 			};
-			fakeSolution.AddPackageToProjectLocalRepository(oldPackage);
+			fakeSolution.AddPackageToActiveProjectLocalRepository(oldPackage);
 			
 			var newPackage = new FakePackage() {
 				Id = "Test",

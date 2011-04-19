@@ -26,7 +26,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			FakeSolution = solution;
 			FakePackageManagementEvents = packageManagementEvents;
-			this.PackageRepository = FakePackageRepository;
+			this.SourceRepository = FakePackageRepository;
 			this.Package = FakePackage;
 		}
 		

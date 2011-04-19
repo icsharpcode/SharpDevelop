@@ -67,12 +67,17 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AcceptLicensesEventArgs.cs" />
     <Compile Include="Src\AddPackageReferenceCommand.cs" />
+    <Compile Include="Src\Design\FakePackageManagementProject.cs" />
     <Compile Include="Src\IAddPackageReferenceView.cs" />
     <Compile Include="Src\IPackageFromRepository.cs" />
     <Compile Include="Src\IPackageManagementEvents.cs" />
+    <Compile Include="Src\IPackageManagementProject.cs" />
+    <Compile Include="Src\IPackageManagementProjectFactory.cs" />
     <Compile Include="Src\PackageFromRepository.cs" />
     <Compile Include="Src\PackageManagementEvents.cs" />
     <Compile Include="Src\PackageManagementLogger.cs" />
+    <Compile Include="Src\PackageManagementProject.cs" />
+    <Compile Include="Src\PackageManagementProjectFactory.cs" />
     <Compile Include="Src\PackageOperationExceptionEventArgs.cs" />
     <Compile Include="Src\PackageOperationMessage.cs" />
     <Compile Include="Src\PackageOperationMessageLoggedEventArgs.cs" />
@@ -98,7 +103,7 @@
     <Compile Include="Src\Design\FakePackage.cs" />
     <Compile Include="Src\Design\FakePackageAssemblyReference.cs" />
     <Compile Include="Src\Design\FakePackageManagementProjectService.cs" />
-    <Compile Include="Src\Design\FakePackageManagementService.cs" />
+    <Compile Include="Src\Design\FakePackageManagementSolution.cs" />
     <Compile Include="Src\Design\FakePackageManager.cs" />
     <Compile Include="Src\Design\FakePackageRepository.cs" />
     <Compile Include="Src\Design\FakeProjectManager.cs" />
