@@ -602,6 +602,11 @@ namespace ICSharpCode.NRefactory.VB
 			return string.IsNullOrEmpty(name1) || string.Equals(name1, name2, StringComparison.OrdinalIgnoreCase);
 		}
 		
+		protected static bool MatchStringXml(string name1, string name2)
+		{
+			return string.IsNullOrEmpty(name1) || string.Equals(name1, name2, StringComparison.Ordinal);
+		}
+		
 		protected internal abstract bool DoMatch(AstNode other, PatternMatching.Match match);
 		
 		bool PatternMatching.INode.DoMatch(PatternMatching.INode other, PatternMatching.Match match)
@@ -669,6 +674,7 @@ namespace ICSharpCode.NRefactory.VB
 			// some pre defined constants for common roles
 			public static readonly Role<Identifier> Identifier = new Role<Identifier>("Identifier", Ast.Identifier.Null);
 			public static readonly Role<XmlIdentifier> XmlIdentifier = new Role<XmlIdentifier>("XmlIdentifier", Ast.XmlIdentifier.Null);
+			public static readonly Role<XmlLiteralString> XmlLiteralString = new Role<XmlLiteralString>("XmlLiteralString", Ast.XmlLiteralString.Null);
 			
 //			public static readonly Role<BlockStatement> Body = new Role<BlockStatement>("Body", CSharp.BlockStatement.Null);
 //			public static readonly Role<ParameterDeclaration> Parameter = new Role<ParameterDeclaration>("Parameter");
@@ -702,6 +708,16 @@ namespace ICSharpCode.NRefactory.VB
 			public static readonly Role<VBTokenNode> Assign = new Role<VBTokenNode>("Assign", VBTokenNode.Null);
 			public static readonly Role<VBTokenNode> Colon = new Role<VBTokenNode>("Colon", VBTokenNode.Null);
 			public static readonly Role<VBTokenNode> StatementTerminator = new Role<VBTokenNode>("StatementTerminator", VBTokenNode.Null);
+			
+			// XML
+			/// <summary>
+			/// Text: &lt;
+			/// </summary>
+			public static readonly Role<VBTokenNode> XmlOpenTag = new Role<VBTokenNode>("XmlOpenTag", VBTokenNode.Null);
+			/// <summary>
+			/// Text: &gt;
+			/// </summary>
+			public static readonly Role<VBTokenNode> XmlCloseTag = new Role<VBTokenNode>("XmlOpenTag", VBTokenNode.Null);
 			
 			public static readonly Role<Comment> Comment = new Role<Comment>("Comment");
 			

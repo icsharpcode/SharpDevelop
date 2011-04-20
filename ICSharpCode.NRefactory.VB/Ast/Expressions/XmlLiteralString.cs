@@ -5,14 +5,11 @@ using System;
 
 namespace ICSharpCode.NRefactory.VB.Ast
 {
-	/// <summary>
-	/// Description of XmlIdentifier.
-	/// </summary>
-	public class XmlIdentifier : AstNode
+	public class XmlLiteralString : AstNode
 	{
-		public static readonly new XmlIdentifier Null = new NullXmlIdentifier();
+		public static readonly new XmlLiteralString Null = new XmlLiteralString();
 		
-		class NullXmlIdentifier : XmlIdentifier
+		class NullXmlLiteralString : XmlLiteralString
 		{
 			public override bool IsNull {
 				get {
@@ -31,7 +28,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 			}
 		}
 		
-		public string Name { get; set; }
+		public string Value { get; set; }
 		
 		AstLocation startLocation;
 		public override AstLocation StartLocation {
@@ -43,30 +40,30 @@ namespace ICSharpCode.NRefactory.VB.Ast
 			get { return endLocation; }
 		}
 		
-		private XmlIdentifier()
+		private XmlLiteralString()
 		{
-			this.Name = string.Empty;
+			this.Value = string.Empty;
 		}
 		
-		public XmlIdentifier(string name, AstLocation startLocation, AstLocation endLocation)
+		public XmlLiteralString(string value, AstLocation startLocation, AstLocation endLocation)
 		{
-			this.Name = name;
+			this.Value = value;
 			this.startLocation = startLocation;
 			this.endLocation = endLocation;
 		}
 		
 		protected internal override bool DoMatch(AstNode other, ICSharpCode.NRefactory.PatternMatching.Match match)
 		{
-			var ident = other as XmlIdentifier;
+			var ident = other as XmlLiteralString;
 			return ident != null
-				&& MatchStringXml(Name, ident.Name)
+				&& MatchStringXml(Value, ident.Value)
 				&& ident.startLocation == startLocation
 				&& ident.endLocation == endLocation;
 		}
 		
 		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitXmlIdentifier(this, data);
+			return visitor.VisitXmlLiteralString(this, data);
 		}
 	}
 }

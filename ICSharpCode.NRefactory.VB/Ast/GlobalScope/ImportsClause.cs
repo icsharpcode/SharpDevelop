@@ -89,17 +89,15 @@ namespace ICSharpCode.NRefactory.VB.Ast
 			set { SetChildByRole(Roles.XmlIdentifier, value); }
 		}
 		
-		string xmlNamespace;
-		
-		public string XmlNamespace {
-			get { return xmlNamespace; }
-			set { xmlNamespace = value ?? ""; }
+		public XmlLiteralString Namespace {
+			get { return GetChildByRole(Roles.XmlLiteralString); }
+			set { SetChildByRole(Roles.XmlLiteralString, value); }
 		}
 		
 		protected internal override bool DoMatch(AstNode other, ICSharpCode.NRefactory.PatternMatching.Match match)
 		{
 			var clause = other as XmlNamespaceImportsClause;
-			return clause != null && clause.xmlNamespace == xmlNamespace && Prefix.DoMatch(clause.Prefix, match);
+			return clause != null && Namespace.DoMatch(clause.Namespace, match) && Prefix.DoMatch(clause.Prefix, match);
 		}
 		
 		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
@@ -109,7 +107,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		
 		public override string ToString()
 		{
-			return string.Format("[XmlNamespaceImportsClause Prefix={0}, XmlNamespace={1}]", Prefix, xmlNamespace);
+			return string.Format("[XmlNamespaceImportsClause Prefix={0}, Namespace={1}]", Prefix, Namespace);
 		}
 	}
 }

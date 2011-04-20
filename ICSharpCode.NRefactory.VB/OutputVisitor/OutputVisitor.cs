@@ -169,5 +169,10 @@ namespace ICSharpCode.NRefactory.VB
 		{
 			throw new NotImplementedException();
 		}
+		
+		public object VisitXmlLiteralString(ICSharpCode.NRefactory.VB.Ast.XmlLiteralString xmlLiteralString, object data)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
