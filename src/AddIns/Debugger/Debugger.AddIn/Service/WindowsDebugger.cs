@@ -905,12 +905,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void process_Modules_Added(object sender, CollectionItemEventArgs<Module> e)
 		{
-			if (ProjectService.OpenSolution == null ||
-			    ProjectService.OpenSolution.Projects == null ||
-			    ProjectService.OpenSolution.Projects.Count() == 0)
+			if (ProjectService.OpenSolution == null)
 				return;
-			
-			if (e == null || e.Item == null) return;
 			
 			ProjectService.OpenSolution.Projects
 				.Where(p => e.Item.Name.IndexOf(p.Name) >= 0)

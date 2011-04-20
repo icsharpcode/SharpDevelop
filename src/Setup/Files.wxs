@@ -1502,6 +1502,12 @@
 										<File Source="..\..\AddIns\Misc\SharpDevelopReports\itextsharp.dll" Name="itextsharp.dll" Id="itextsharp.dll" KeyPath="yes" />
 									</Component>
 								</Directory>
+								<Directory Id="ILSpyAddIn" Name="ILSpyAddIn">
+									<Component Id="ILSpyAddInFiles" Guid="F1422563-5927-4D98-B4D4-33FE5576C665" DiskId="1">
+										<File Id="ILSpyAddIn.dll" Name="ILSpyAddIn.dll" Source="..\..\AddIns\Misc\ILSpyAddIn\ILSpyAddIn.dll" KeyPath="yes" />
+										<File Id="ILSpyAddIn.addin" Name="ILSpyAddIn.addin" Source="..\..\AddIns\Misc\ILSpyAddIn\ILSpyAddIn.addin" />
+									</Component>
+								</Directory>
 								<Directory Id="PackageManagement" Name="PackageManagement">
 									<Component Id="NuGetCoreDll" Guid="AA347D26-712F-4BF7-BB74-517F6BFC563F" DiskId="1">
 										<File Id="NuGet.Core.dll" Name="NuGet.Core.dll" Source="..\..\AddIns\Misc\PackageManagement\NuGet.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.Core.dll" AssemblyManifest="NuGet.Core.dll" />
