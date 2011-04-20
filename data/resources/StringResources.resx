@@ -5807,14 +5807,17 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Language</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
+    <value>Show external methods</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
     <value>Show argument names</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentValues" xml:space="preserve">
     <value>Show argument values</value>
   </data>
-  <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
-    <value>Show external methods</value>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>Show module names</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
     <value>Ask</value>
