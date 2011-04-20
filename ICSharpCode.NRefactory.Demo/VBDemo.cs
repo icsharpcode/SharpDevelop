@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.Demo
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-			ParseButtonClick(null, null);
+			//ParseButtonClick(null, null);
 		}
 		
 		void ParseButtonClick(object sender, EventArgs e)
@@ -50,25 +50,6 @@ namespace ICSharpCode.NRefactory.Demo
 				}
 				codeView.Text = visitor.Text.Replace("\t", "  ");
 			}
-		}
-		
-		void ClearSpecialsButtonClick(object sender, EventArgs e)
-		{
-			SetSpecials(new ISpecial[0]);
-		}
-		
-		void EditNodeButtonClick(object sender, EventArgs e)
-		{
-			syntaxTree.EditSelectedNode();
-		}
-		
-		void SetSpecials(IList<ISpecial> specials)
-		{
-			savedSpecials = specials;
-			if (specials.Count == 1)
-				clearSpecialsButton.Text = "Clear 1 special";
-			else
-				clearSpecialsButton.Text = "Clear " + specials.Count + " specials";
 		}
 	}
 }
