@@ -52,7 +52,10 @@ namespace ICSharpCode.NRefactory.VB
 		
 		public object VisitCompilationUnit(ICSharpCode.NRefactory.VB.Ast.CompilationUnit compilationUnit, object data)
 		{
-			throw new NotImplementedException();
+			// don't do node tracking as we visit all children directly
+			foreach (AstNode node in compilationUnit.Children)
+				node.AcceptVisitor(this, data);
+			return null;
 		}
 		
 		public object VisitBlockStatement(ICSharpCode.NRefactory.VB.Ast.BlockStatement blockStatement, object data)
