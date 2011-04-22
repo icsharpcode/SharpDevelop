@@ -95,17 +95,24 @@ namespace ICSharpCode.Reports.Core
 		
 		object ExtractValue(DataRow row,BaseDataItem item)
 		{
-			object val = null;
+			string expression = String.Empty;
 			
-			if (item.Text.StartsWith("="))
+			if  ((! String.IsNullOrEmpty(item.Expression)) && (item.Expression.StartsWith("="))) {
+				expression = item.Expression;
+			} else
 			{
-				return ((ExpressionEvaluatorFacade)base.ExpressionEvaluator).Evaluate(item.Text,row);
-			} else {
-				return row[item.ColumnName];;
+				string colName = string.Empty;
+				if (!item.ColumnName.StartsWith ("=Fields")) {
+					expression = "=Fields!" + item.ColumnName;
+				} else {
+					expression = item.ColumnName;
+				}
 			}
+			return ((ExpressionEvaluatorFacade)base.ExpressionEvaluator).Evaluate(expression,row);
 		}
 			 
-			
+		
+		
 		public override CurrentItemsCollection FillDataRow(int pos)
 		{
 			DataRow row = (DataRow) CurrentFromPosition(pos);
@@ -211,8 +218,9 @@ namespace ICSharpCode.Reports.Core
 		object ExtractColumnValue(DataRow row,ColumnCollection col, int criteriaIndex)
 		{
 			AbstractColumn c = (AbstractColumn)col[criteriaIndex];
-			int pos  =  c.ColumnName.IndexOf("!");
 			object val = null;
+			int pos  =  c.ColumnName.IndexOf("!");
+		
 			if (pos > 0)
 			{
 				 val = ((ExpressionEvaluatorFacade)ExpressionEvaluator).Evaluate(c.ColumnName,row);

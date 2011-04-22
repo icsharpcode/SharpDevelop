@@ -93,11 +93,12 @@ namespace ICSharpCode.Reports.Core {
 					childList = new IndexList();
 					GroupComparer gc = CreateGroupHeader(element);
 					gc.IndexList = childList;
-					CreateGroupedChildren(childList,element);
-				} else {
-					CreateGroupedChildren(childList,element);
+//					CreateGroupedChildren(childList,element);
 				}
-				
+//				else {
+//					CreateGroupedChildren(childList,element);
+//				}
+				CreateGroupedChildren(childList,element);
 				compVal = groupValue;
 			}
 			ShowIndexList(IndexList);

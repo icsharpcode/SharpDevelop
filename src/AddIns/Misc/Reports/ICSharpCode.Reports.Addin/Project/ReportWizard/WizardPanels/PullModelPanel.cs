@@ -259,30 +259,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
             }
         }
 		
-        
-		///<summary>
-		/// We check if a ColumnName includes an "-" Character,
-		/// if so, suround it with []</summary>
-		///<param name="SharpQueryNodeColumn">a ColumnNode</param>
-		/// <returns>a valid ColumnName</returns>
-	/*
-		private static string InferColumnName(string node) {
-			string colName;
-			if (node != null) {
-				if (node.IndexOf("-",StringComparison.Ordinal) > -1 ){
-//					colName = node.Replace(".",".[") + "]";
-					colName = "[" + node + "]";
-				} else {
-					colName = node;
-				}
-			} else {
-				colName = String.Empty;
-			}
-			return colName;
-		}
-		*/
-		
-		
 		// check witch type of node we dragg
 		private static NodeType CheckCurrentNode (IDatabaseObjectBase node) {
 			NodeType enm;

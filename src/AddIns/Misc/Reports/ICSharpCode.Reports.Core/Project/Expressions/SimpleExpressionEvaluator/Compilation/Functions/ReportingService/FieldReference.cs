@@ -33,6 +33,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.ReportingService
 		{
 			Variable variable = Arguments[0] as Variable;
 			string retval = string.Empty;
+			
 			ISinglePage singlePage = context.ContextObject as SinglePage;
 			
 			if (singlePage != null)

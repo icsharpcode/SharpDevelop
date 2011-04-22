@@ -21,8 +21,6 @@ namespace ICSharpCode.Reports.Core
 	public class BaseDataItem : BaseTextItem, IDataRenderer, IExportColumnBuilder, IDataItem
 	{
 
-		private string columnName;
-
 		#region Constructor
 
 		public BaseDataItem() : base()
@@ -31,29 +29,12 @@ namespace ICSharpCode.Reports.Core
 
 		public BaseDataItem(string columnName) : base()
 		{
-			this.columnName = columnName;
+			this.ColumnName = columnName;
 		}
 
 		#endregion
 
-		#region privates
-
-		/*
-		private string CheckForNullValue()
-		{
 		
-			if (String.IsNullOrEmpty(this.dbValue)) {
-				if (String.IsNullOrEmpty(this.NullValue)) {
-					return GlobalValues.UnboundName;
-				} else
-					return this.NullValue;
-			}
-			
-			return this.dbValue;
-		}
-*/
-
-		#endregion
 
 		#region IExportColumnBuilder  implementation
 
@@ -86,16 +67,8 @@ namespace ICSharpCode.Reports.Core
 		[Browsable(false)]
 		public virtual string DBValue {get;set;}
 			
-		public virtual string ColumnName {
-			get {
-				return columnName;
-			}
-			set {
-				columnName = value;
-				this.Text = this.columnName;
-			}
-		}
-
+		public virtual string ColumnName {get;set;}
+			
 		///<summary>
 		/// Mappingname to Datasource
 		/// </summary>

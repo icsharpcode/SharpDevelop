@@ -100,8 +100,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
 			DataNavigator dataNav = dm.GetNavigator;
 		}
-		
-		
+	
 		
 		#region Sorting
 
@@ -149,7 +148,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		#region	Substring
 		
 		[Test]
-		public void Enum_With_SubStrings()
+		public void Expression_In_Text_Evaluate()
 		{
 			ReportSettings rs = new ReportSettings();
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
@@ -157,7 +156,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 			BaseDataItem bdi = new BaseDataItem(){
 				Name ="MyDataItem",
 				ColumnName = "last",
-				Text ="=Substring('Sharp',0,3)"
+				Text ="=Substring(Fields!last,0,3)",
+				Expression ="=Substring(Fields!last,0,3)"	
 			};
 			var ri = new ReportItemCollection();
 			ri.Add(bdi);
@@ -166,9 +166,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 			{
 				dataNav.Fill(ri);
 				DataRow r = dataNav.Current as DataRow;
-				string actual = r["first"].ToString();
-				Console.WriteLine("{0} - {1} - {2}",actual,bdi.DBValue,bdi.Text);
-				Console.WriteLine("{0} - {1}",actual,actual.Substring(0,2));
+				string actual = r["last"].ToString();
+				Assert.That(actual.Substring(0,3), Is.EqualTo(bdi.DBValue));
 			}
 		}
 		
@@ -176,27 +175,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		#endregion
 		
 		#region Standart Enumerator
-		/*
-		[Test]
-		public void IEnumerableStartFromBegin ()
-		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,
-			                                                                      new ReportSettings());
-			IDataNavigator dn = dm.GetNavigator;
-			IEnumerable ie = dn as IEnumerable;
-			IEnumerator en = ie.GetEnumerator();
-			int start = 0;
-			en.MoveNext();
-			do {
-				DataRow v = dn.Current as DataRow;
-				start ++;
-			}
-			while (dn.MoveNext());
-			Assert.AreEqual(this.table.Rows.Count,start);
-			Assert.IsFalse(dn.HasMoreData);
-		}
-		*/
-		
+	
 		[Test]
 		public void EnumeratorStartFromBegin ()
 		{

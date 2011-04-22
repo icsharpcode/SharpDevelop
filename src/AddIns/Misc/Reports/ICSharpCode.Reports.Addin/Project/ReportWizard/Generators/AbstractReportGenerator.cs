@@ -93,7 +93,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			foreach (ICSharpCode.Reports.Core.BaseSection s in ReportModel.SectionCollection) {
 				s.Size = new Size(settings.PageSize.Width - settings.LeftMargin - settings.RightMargin,
 			                        GlobalValues.DefaultSectionHeight);
-				Console.WriteLine("AdjustSectionToDefaul Size : {0}",s.Size);
+				Console.WriteLine("Adjust Section To DefaultSize : {0}",s.Size);
 			}
 		}
 		
@@ -101,7 +101,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		protected void  WriteToXml ()
 		{
 			
-			LoggingService.Debug("AbstractreportGenerator - Generate Xml friom RepotModel");
+			LoggingService.Debug("AbstractReportGenerator - Generate Xml from RepotModel");
 			
 			ReportDesignerWriter rpd = new ReportDesignerWriter();
 			StringWriterWithEncoding writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);
