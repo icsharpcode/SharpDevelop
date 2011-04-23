@@ -17,9 +17,11 @@ namespace PackageManagement.Tests.Helpers
 		public FakePowerShellHostFactory FakePowerShellHostFactory;
 		public FakePackageManagementAddInPath FakePackageManagementAddInPath;
 		public FakePackageManagementProjectService FakeProjectService;
+		public FakePackageManagementSolution FakeSolution;
 		
 		public TestablePackageManagementConsoleHost()
 			: this(
+				new FakePackageManagementSolution(),
 				new FakeScriptingConsoleWithLinesToRead(),
 				new FakePowerShellHostFactory(),
 				new FakePackageManagementProjectService(),
@@ -28,12 +30,14 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public TestablePackageManagementConsoleHost(
+			FakePackageManagementSolution solution,
 			FakeScriptingConsoleWithLinesToRead scriptingConsole,
 			FakePowerShellHostFactory powerShellHostFactory,
 			FakePackageManagementProjectService projectService,
 			FakePackageManagementAddInPath addinPath)
-			: base(powerShellHostFactory, projectService, addinPath)
+			: base(solution, powerShellHostFactory, projectService, addinPath)
 		{
+			this.FakeSolution = solution;
 			this.FakeScriptingConsole = scriptingConsole;
 			this.ScriptingConsole = scriptingConsole;
 			this.FakePowerShellHostFactory = powerShellHostFactory;

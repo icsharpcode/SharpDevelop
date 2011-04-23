@@ -44,12 +44,19 @@ namespace PackageManagement.Tests
 			var packageManagementEvents = new FakePackageManagementEvents();
 			
 			fakeProjectService.CurrentProject = testProject;
-			solution = 
+			solution =
 				new PackageManagementSolution(
 					fakeRegisteredPackageRepositories,
 					packageManagementEvents,
 					fakeProjectService,
 					fakeProjectFactory);
+		}
+		
+		TestableProject AddProjectToOpenProjects(string projectName)
+		{
+			var project = ProjectHelper.CreateTestProject(projectName);
+			fakeProjectService.OpenProjects.Add(project);
+			return project;
 		}
 		
 		[Test]
@@ -219,6 +226,60 @@ namespace PackageManagement.Tests
 			var expectedProject = fakeProjectFactory.FakeProject;
 			
 			Assert.AreEqual(expectedProject, project);
+		}
+		
+		[Test]
+		public void GetProject_PackagesSourceAndProjectNamePassed_CreatesProjectUsingFoundProjectMatchingName()
+		{
+			CreateSolution();
+			var expectedProject = AddProjectToOpenProjects("Test");
+			var source = new PackageSource("http://sharpdevelop.net");
+			
+			solution.GetProject(source, "Test");
+			
+			var project = fakeProjectFactory.ProjectPassedToCreateProject;
+			
+			Assert.AreEqual(expectedProject, project);
+		}
+		
+		[Test]
+		public void GetProject_PackagesSourceAndProjectNameWithDifferentCasePassed_CreatesProjectUsingFoundProjectMatchingName()
+		{
+			CreateSolution();
+			var expectedProject = AddProjectToOpenProjects("Test");
+			var source = new PackageSource("http://sharpdevelop.net");
+			
+			solution.GetProject(source, "TEST");
+			
+			var project = fakeProjectFactory.ProjectPassedToCreateProject;
+			
+			Assert.AreEqual(expectedProject, project);
+		}
+		
+		[Test]
+		public void GetProject_PackagesSourceAndProjectPassed_ReturnsProjectFromProjectFactory()
+		{
+			CreateSolution();
+			AddProjectToOpenProjects("Test");
+			var source = new PackageSource("http://sharpdevelop.net");
+			var project = solution.GetProject(source, "Test");
+			
+			var expectedProject = fakeProjectFactory.FakeProject;
+			
+			Assert.AreEqual(expectedProject, project);
+		}
+		
+		[Test]
+		public void GetProject_PackagesSourceAndProjectPassed_PackageSourceUsedToCreateRepository()
+		{
+			CreateSolution();
+			AddProjectToOpenProjects("Test");
+			var expectedSource = new PackageSource("http://sharpdevelop.net");
+			var project = solution.GetProject(expectedSource, "Test");
+			
+			var actualSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
+			
+			Assert.AreEqual(expectedSource, actualSource);
 		}
 	}
 }

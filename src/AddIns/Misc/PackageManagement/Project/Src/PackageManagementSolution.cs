@@ -75,5 +75,26 @@ namespace ICSharpCode.PackageManagement
 		{
 			return registeredPackageRepositories.CreateRepository(source);
 		}
+		
+		public IPackageManagementProject GetProject(PackageSource source, string projectName)
+		{
+			MSBuildBasedProject msbuildProject = GetMSBuildProject(projectName);
+			return CreateProject(source, msbuildProject);
+		}
+		
+		MSBuildBasedProject GetMSBuildProject(string name)
+		{
+			foreach (IProject project in projectService.GetOpenProjects()) {
+				if (IsProjectNameMatch(project.Name, name)) {
+					return project as MSBuildBasedProject;
+				}
+			}
+			return null;
+		}
+		
+		bool IsProjectNameMatch(string a, string b)
+		{
+			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
+		}
 	}
 }

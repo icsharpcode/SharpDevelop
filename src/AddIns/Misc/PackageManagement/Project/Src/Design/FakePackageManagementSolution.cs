@@ -58,5 +58,15 @@ namespace ICSharpCode.PackageManagement.Design
 			ProjectPassedToCreateProject = project;
 			return FakeProject;
 		}
+		
+		public PackageSource PackageSourcePassedToGetProject;
+		public string ProjectNamePassedToGetProject;
+		
+		public IPackageManagementProject GetProject(PackageSource source, string projectName)
+		{
+			PackageSourcePassedToGetProject = source;
+			ProjectNamePassedToGetProject = projectName;
+			return FakeProject;
+		}
 	}
 }

@@ -16,6 +16,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 	public class PackageManagementConsoleHost : IPackageManagementConsoleHost
 	{
 		IThread thread;
+		IPackageManagementSolution solution;
 		IPowerShellHostFactory powerShellHostFactory;
 		IPackageManagementProjectService projectService;
 		IPowerShellHost powerShellHost;
@@ -25,17 +26,20 @@ namespace ICSharpCode.PackageManagement.Scripting
 		Version nuGetVersion;
 		
 		public PackageManagementConsoleHost(
+			IPackageManagementSolution solution,
 			IPowerShellHostFactory powerShellHostFactory,
 			IPackageManagementProjectService projectService,
 			IPackageManagementAddInPath addinPath)
 		{
+			this.solution = solution;
 			this.powerShellHostFactory = powerShellHostFactory;
 			this.projectService = projectService;
 			this.addinPath = addinPath;
 		}
 		
-		public PackageManagementConsoleHost()
+		public PackageManagementConsoleHost(IPackageManagementSolution solution)
 			: this(
+				solution,
 				new PowerShellHostFactory(),
 				new PackageManagementProjectService(),
 				new PackageManagementAddInPath())
@@ -176,19 +180,28 @@ namespace ICSharpCode.PackageManagement.Scripting
 			powerShellHost.ExecuteCommand(line);
 		}
 		
-		public MSBuildBasedProject GetProject(string name)
+		public IPackageManagementProject GetProject(string packageSource, string projectName)
 		{
-			foreach (IProject project in projectService.GetOpenProjects()) {
-				if (IsProjectNameMatch(project.Name, name)) {
-					return project as MSBuildBasedProject;
-				}
-			}
-			return null;
+			PackageSource source = GetActivePackageSource(packageSource);
+			projectName = GetActiveProjectName(projectName);
+			
+			return solution.GetProject(source, projectName);
 		}
 		
-		bool IsProjectNameMatch(string a, string b)
+		public PackageSource GetActivePackageSource(string source)
 		{
-			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
+			if (source != null) {
+				return new PackageSource(source);
+			}
+			return ActivePackageSource;
+		}
+		
+		string GetActiveProjectName(string projectName)
+		{
+			if (projectName != null) {
+				return projectName;
+			}
+			return DefaultProject.Name;
 		}
 	}
 }

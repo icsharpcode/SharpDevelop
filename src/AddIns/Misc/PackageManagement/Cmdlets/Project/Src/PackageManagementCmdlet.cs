@@ -57,21 +57,5 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		{
 			TerminatingError.ThrowNoProjectOpenError();
 		}
-		
-		protected PackageSource GetActivePackageSource(string source)
-		{
-			if (source != null) {
-				return new PackageSource(source);
-			}
-			return ConsoleHost.ActivePackageSource;
-		}
-		
-		protected MSBuildBasedProject GetActiveProject(string projectName)
-		{
-			if (projectName != null) {
-				return ConsoleHost.GetProject(projectName);
-			}
-			return ConsoleHost.DefaultProject as MSBuildBasedProject;
-		}
 	}
 }

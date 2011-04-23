@@ -19,6 +19,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void Clear();
 		void Run();
 		
-		MSBuildBasedProject GetProject(string name);
+		IPackageManagementProject GetProject(string packageSource, string projectName);
+		PackageSource GetActivePackageSource(string source);
 	}
 }

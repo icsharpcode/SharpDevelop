@@ -51,19 +51,30 @@ namespace PackageManagement.Tests.Helpers
 			return source;
 		}
 		
-		public MSBuildBasedProject FakeProjectToReturnFromGetProject;
-		public string NamePassedToGetProject;
-		
-		public MSBuildBasedProject GetProject(string name)
-		{
-			NamePassedToGetProject = name;
-			return FakeProjectToReturnFromGetProject;
-		}
-		
 		public FakePackageManagementProjectService FakeProjectService = new FakePackageManagementProjectService();
 		
 		public IPackageManagementProjectService ProjectService {
 			get { return FakeProjectService; }
+		}
+		
+		public string PackageSourcePassedToGetProject;
+		public string ProjectNamePassedToGetProject;
+		public FakePackageManagementProject FakeProject = new FakePackageManagementProject();
+		
+		public IPackageManagementProject GetProject(string packageSource, string projectName)
+		{
+			PackageSourcePassedToGetProject = packageSource;
+			ProjectNamePassedToGetProject = projectName;
+			return FakeProject;
+		}
+		
+		public string PackageSourcePassedToGetActivePackageSource;
+		public PackageSource PackageSourceToReturnFromGetActivePackageSource = new PackageSource("http://sharpdevelop.com");
+		
+		public PackageSource GetActivePackageSource(string source)
+		{
+			PackageSourcePassedToGetActivePackageSource = source;
+			return PackageSourceToReturnFromGetActivePackageSource;
 		}
 	}
 }

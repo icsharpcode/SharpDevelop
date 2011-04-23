@@ -18,7 +18,6 @@ namespace PackageManagement.Cmdlets.Tests
 	{
 		TestableInstallPackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
-		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementProject fakeProject;
 		FakeInstallPackageAction fakeInstallPackageTask;
 		
@@ -27,8 +26,7 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet = new TestableInstallPackageCmdlet();
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
-			fakeSolution = cmdlet.FakeSolution;
-			fakeProject = fakeSolution.FakeProject;
+			fakeProject = fakeConsoleHost.FakeProject;
 			fakeInstallPackageTask = fakeProject.FakeInstallPackageAction;
 		}
 				
@@ -105,34 +103,6 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageIdSpecified_ActivePackageSourceUsedToInstallPackage()
-		{
-			CreateCmdletWithoutActiveProject();
-			AddDefaultProjectToConsoleHost();
-			var packageSource = AddPackageSourceToConsoleHost();
-			SetIdParameter("Test");
-			RunCmdlet();
-			
-			var actualPackageSource = fakeSolution.PackageSourcePassedToCreateProject;
-			
-			Assert.AreEqual(packageSource, actualPackageSource);
-		}
-		
-		[Test]
-		public void ProcessRecord_PackageIdSpecified_ActiveProjectUsedToCreateProject()
-		{
-			CreateCmdletWithoutActiveProject();
-			AddPackageSourceToConsoleHost();
-			var project = AddDefaultProjectToConsoleHost();
-			SetIdParameter("Test");
-			RunCmdlet();
-			
-			var actualProject = fakeSolution.ProjectPassedToCreateProject;
-			
-			Assert.AreEqual(project, actualProject);
-		}
-		
-		[Test]
 		public void ProcessRecord_IgnoreDependenciesParameterSet_IgnoreDependenciesIsTrueWhenInstallingPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
@@ -160,7 +130,7 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_SourceParameterSet_CustomSourceUsedWhenCreatingProject()
+		public void ProcessRecord_SourceParameterSet_CustomSourceUsedWhenRetrievingProject()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			
@@ -169,7 +139,7 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			var expected = "http://sharpdevelop.net/packages";
-			var actual = fakeSolution.PackageSourcePassedToCreateProject.Source;
+			var actual = fakeConsoleHost.PackageSourcePassedToGetProject;
 			
 			Assert.AreEqual(expected, actual);
 		}
@@ -206,16 +176,14 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_ProjectNameSpecified_ProjectMatchingProjectNameUsedWhenInstallingPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
-			fakeConsoleHost.FakeProjectToReturnFromGetProject = ProjectHelper.CreateTestProject();
 			
 			SetIdParameter("Test");
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actualProject = fakeSolution.ProjectPassedToCreateProject;
-			var expectedProject = fakeConsoleHost.FakeProjectToReturnFromGetProject;
+			var actualProjectName = fakeConsoleHost.ProjectNamePassedToGetProject;
 			
-			Assert.AreEqual(expectedProject, actualProject);
+			Assert.AreEqual("MyProject", actualProjectName);
 		}
 		
 		[Test]
@@ -227,7 +195,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actual = fakeConsoleHost.NamePassedToGetProject;
+			var actual = fakeConsoleHost.ProjectNamePassedToGetProject;
 			var expected = "MyProject";
 			
 			Assert.AreEqual(expected, actual);

@@ -51,16 +51,13 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		void InstallPackage()
 		{
-			PackageSource packageSource = GetActivePackageSource(Source);
-			MSBuildBasedProject project = GetActiveProject(ProjectName);
-			
-			InstallPackageAction action = CreateInstallPackageTask(packageSource, project);
+			InstallPackageAction action = CreateInstallPackageTask();
 			action.Execute();
 		}
 		
-		InstallPackageAction CreateInstallPackageTask(PackageSource packageSource, MSBuildBasedProject msbuildProject)
+		InstallPackageAction CreateInstallPackageTask()
 		{
-			IPackageManagementProject project = Solution.CreateProject(packageSource, msbuildProject);
+			IPackageManagementProject project = ConsoleHost.GetProject(Source, ProjectName);
 			InstallPackageAction action = project.CreateInstallPackageAction();
 			action.PackageId = Id;
 			action.PackageVersion = Version;

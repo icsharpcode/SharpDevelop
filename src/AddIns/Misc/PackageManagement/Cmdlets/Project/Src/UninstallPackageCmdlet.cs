@@ -51,21 +51,13 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		void UninstallPackage()
 		{
-			MSBuildBasedProject project = GetActiveProject(ProjectName);
-			PackageSource packageSource = GetActivePackageSource();
-			
-			UninstallPackageAction action = CreateUninstallPackageAction(packageSource, project);
+			UninstallPackageAction action = CreateUninstallPackageAction();
 			action.Execute();
 		}
 		
-		PackageSource GetActivePackageSource()
+		UninstallPackageAction CreateUninstallPackageAction()
 		{
-			return GetActivePackageSource(null);
-		}
-		
-		UninstallPackageAction CreateUninstallPackageAction(PackageSource packageSource, MSBuildBasedProject msbuildProject)
-		{
-			IPackageManagementProject project = Solution.CreateProject(packageSource, msbuildProject);
+			IPackageManagementProject project = ConsoleHost.GetProject(null, ProjectName);
 			UninstallPackageAction action = project.CreateUninstallPackageAction();
 			action.PackageId = Id;
 			action.PackageVersion = Version;

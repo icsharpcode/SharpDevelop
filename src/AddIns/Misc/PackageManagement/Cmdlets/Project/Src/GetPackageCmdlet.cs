@@ -138,8 +138,8 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IPackageRepository CreatePackageRepositoryForActivePackageSource()
 		{
-			PackageSource source = GetActivePackageSource(Source);
-			return registeredPackageRepositories.CreateRepository(source);
+			PackageSource packageSource = ConsoleHost.GetActivePackageSource(Source);
+			return registeredPackageRepositories.CreateRepository(packageSource);
 		}
 		
 		IQueryable<IPackage> FilterPackages(IQueryable<IPackage> packages)

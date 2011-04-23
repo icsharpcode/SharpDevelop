@@ -151,6 +151,7 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			var source = AddPackageSourceToConsoleHost();
+			fakeConsoleHost.PackageSourceToReturnFromGetActivePackageSource = source;
 			
 			EnableListAvailableParameter();
 			RunCmdlet();
@@ -181,6 +182,7 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			var source = AddPackageSourceToConsoleHost();
+			fakeConsoleHost.PackageSourceToReturnFromGetActivePackageSource = source;
 			
 			RunCmdlet();
 			
@@ -330,14 +332,15 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_ListAvailablePackagesWhenPackageSourceParameterSpecified_PackageRepositoryCreatedForPackageSourceSpecifiedByParameter()
 		{
 			CreateCmdlet();
+			var expectedPackageSource = new PackageSource("http://sharpdevelop.com/packages");
+			fakeConsoleHost.PackageSourceToReturnFromGetActivePackageSource = expectedPackageSource;
 			var repository = fakeRegisteredPackageRepositories.FakePackageRepository;
 			
 			SetSourceParameter("http://sharpdevelop.com/packages");
 			EnableListAvailableParameter();
 			RunCmdlet();
 			
-			var actualPackageSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository.Source;
-			var expectedPackageSource = "http://sharpdevelop.com/packages";
+			var actualPackageSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
 		}
@@ -350,8 +353,22 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			RunCmdlet();
 			
-			var actualPackageSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository.Source;
+			var actualPackageSource = fakeConsoleHost.PackageSourcePassedToGetActivePackageSource;
 			var expectedPackageSource = "http://test";
+			
+			Assert.AreEqual(expectedPackageSource, actualPackageSource);
+		}
+		
+		[Test]
+		public void ProcessRecord_JustSourceParameterPassed_PackageRepositoryCreatedForPackageSource()
+		{
+			CreateCmdlet();
+			SetSourceParameter("http://test");
+			
+			RunCmdlet();
+			
+			var actualPackageSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
+			var expectedPackageSource = fakeConsoleHost.PackageSourceToReturnFromGetActivePackageSource;
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
 		}

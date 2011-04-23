@@ -6,6 +6,7 @@ using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
+using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -17,11 +18,13 @@ namespace PackageManagement.Tests.Scripting
 		TestablePackageManagementConsoleHost host;
 		FakeScriptingConsoleWithLinesToRead scriptingConsole;
 		FakePowerShellHost powerShellHost;
+		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementProjectService fakeProjectService;
 		
 		void CreateHost()
 		{
 			host = new TestablePackageManagementConsoleHost();
+			fakeSolution = host.FakeSolution;
 			scriptingConsole = host.FakeScriptingConsole;
 			powerShellHost = host.FakePowerShellHostFactory.FakePowerShellHost;
 			fakeProjectService = host.FakeProjectService;
@@ -252,31 +255,72 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void GetProject_ThreeProjectsOpenAndProjectWithNameExists_ReturnsMatchingProject()
+		public void GetProject_ProjectNameAndPackageSourcePassed_ProjectNameUsedToGetProject()
 		{
 			CreateHost();
+			string source = "http://sharpdevelop.net";
+			string expectedProjectName = "Test";
 			
-			AddProject("One");
-			var expectedProject = AddProject("Two");
-			AddProject("Three");
+			host.GetProject(source, expectedProjectName);
 			
-			var actualProject = host.GetProject("Two");
+			var actualProjectName = fakeSolution.ProjectNamePassedToGetProject;
 			
-			Assert.AreEqual(expectedProject, actualProject);
+			Assert.AreEqual(expectedProjectName, actualProjectName);
 		}
 		
 		[Test]
-		public void GetProject_ProjectNameHasDifferentCase_ReturnsMatchingProjectIgnoringCase()
+		public void GetProject_ProjectNameAndPackageSourcePassed_PackageSourceUsedToGetProject()
 		{
 			CreateHost();
+			string expectedSource = "http://sharpdevelop.net";
 			
-			AddProject("One");
-			var expectedProject = AddProject("TWO");
-			AddProject("Three");
+			host.GetProject(expectedSource, "Test");
 			
-			var actualProject = host.GetProject("two");
+			var actualSource = fakeSolution.PackageSourcePassedToGetProject.Source;
 			
-			Assert.AreEqual(expectedProject, actualProject);
+			Assert.AreEqual(expectedSource, actualSource);
+		}
+		
+		[Test]
+		public void GetProject_ProjectNameAndPackageSourcePassed_ReturnsProject()
+		{
+			CreateHost();
+			string source = "http://sharpdevelop.net";
+			
+			var project = host.GetProject(source, "Test");
+			
+			var expectedProject = fakeSolution.FakeProject;
+			
+			Assert.AreEqual(expectedProject, project);
+		}
+		
+		[Test]
+		public void GetProject_NullPackageSourcePassed_UsesDefaultSourceToCreateProject()
+		{
+			CreateHost();
+			var expectedSource = new PackageSource("http://sharpdevelop.net");
+			host.ActivePackageSource = expectedSource;
+			
+			host.GetProject(null, "Test");
+			
+			var actualSource = fakeSolution.PackageSourcePassedToGetProject;
+			
+			Assert.AreEqual(expectedSource, actualSource);
+		}
+		
+		[Test]
+		public void GetProject_NullProjectPassed_UsesDefaultProjectToCreateProject()
+		{
+			CreateHost();
+			var source = "http://sharpdevelop.net";
+			var project = ProjectHelper.CreateTestProject("Test");
+			host.DefaultProject = project;
+			
+			host.GetProject(source, null);
+			
+			var projectName = fakeSolution.ProjectNamePassedToGetProject;
+			
+			Assert.AreEqual("Test", projectName);
 		}
 	}
 }
