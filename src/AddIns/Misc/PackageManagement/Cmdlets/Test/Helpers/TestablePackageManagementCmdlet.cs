@@ -12,7 +12,6 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 	{
 		public TestablePackageManagementCmdlet(FakeCmdletTerminatingError terminatingError)
 			: base(
-				new FakePackageManagementSolution(),
 				new FakePackageManagementConsoleHost(),
 				terminatingError)
 		{

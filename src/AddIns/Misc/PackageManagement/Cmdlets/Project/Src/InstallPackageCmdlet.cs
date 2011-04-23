@@ -14,17 +14,15 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 	{
 		public InstallPackageCmdlet()
 			: this(
-				PackageManagementServices.Solution,
 				PackageManagementServices.ConsoleHost,
 				null)
 		{
 		}
 		
 		public InstallPackageCmdlet(
-			IPackageManagementSolution solution,
 			IPackageManagementConsoleHost consoleHost,
 			ICmdletTerminatingError terminatingError)
-			: base(solution, consoleHost, terminatingError)
+			: base(consoleHost, terminatingError)
 		{
 		}
 		

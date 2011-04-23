@@ -12,33 +12,15 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UpdatedPackages
 	{
-		IPackageManagementSolution solution;
 		IPackageManagementProject project;
 		IPackageRepository sourceRepository;
 		
 		public UpdatedPackages(
-			IPackageManagementSolution solution,
+			IPackageManagementProject project,
 			IPackageRepository aggregateRepository)
-			: this(solution, aggregateRepository, null)
 		{
-		}
-		
-		public UpdatedPackages(
-			IPackageManagementSolution solution,
-			IPackageRepository aggregateRepository,
-			MSBuildBasedProject msbuildProject)
-		{
-			this.solution = solution;
+			this.project = project;
 			this.sourceRepository = aggregateRepository;
-			project = CreateProject(msbuildProject);
-		}
-		
-		IPackageManagementProject CreateProject(MSBuildBasedProject msbuildProject)
-		{
-			if (msbuildProject == null) {
-				return solution.GetActiveProject();
-			}
-			return solution.CreateProject(sourceRepository, msbuildProject);				
 		}
 		
 		public string SearchTerms { get; set; }

@@ -45,7 +45,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			try {
 				IPackageRepository aggregateRepository = RegisteredPackageRepositories.CreateAggregateRepository();
-				updatedPackages = new UpdatedPackages(solution, aggregateRepository);
+				IPackageManagementProject project = solution.GetActiveProject(aggregateRepository);
+				updatedPackages = new UpdatedPackages(project, aggregateRepository);
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}

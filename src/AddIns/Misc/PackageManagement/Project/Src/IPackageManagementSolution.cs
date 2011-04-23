@@ -15,5 +15,6 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementProject CreateProject(IPackageRepository sourceRepository, MSBuildBasedProject project);
 		IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository);
 		IPackageManagementProject GetProject(PackageSource source, string projectName);
+		IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName);
 	}
 }

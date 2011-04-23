@@ -281,5 +281,33 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedSource, actualSource);
 		}
+		
+		[Test]
+		public void GetProject_PackagesRepositoryAndProjectNamePassed_CreatesProjectUsingFoundProjectMatchingName()
+		{
+			CreateSolution();
+			var expectedProject = AddProjectToOpenProjects("Test");
+			var repository = new FakePackageRepository();
+			
+			solution.GetProject(repository, "Test");
+			
+			var project = fakeProjectFactory.ProjectPassedToCreateProject;
+			
+			Assert.AreEqual(expectedProject, project);
+		}
+		
+		[Test]
+		public void GetProject_RepositoryAndProjectNameWithDifferentCasePassed_CreatesProjectUsingFoundProjectMatchingName()
+		{
+			CreateSolution();
+			var expectedProject = AddProjectToOpenProjects("Test");
+			var repository = new FakePackageRepository();
+			
+			solution.GetProject(repository, "TEST");
+			
+			var project = fakeProjectFactory.ProjectPassedToCreateProject;
+			
+			Assert.AreEqual(expectedProject, project);
+		}
 	}
 }

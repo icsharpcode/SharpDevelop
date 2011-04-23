@@ -20,6 +20,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void Run();
 		
 		IPackageManagementProject GetProject(string packageSource, string projectName);
+		IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName);
 		PackageSource GetActivePackageSource(string source);
 	}
 }

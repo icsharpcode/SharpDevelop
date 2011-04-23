@@ -300,8 +300,9 @@ namespace PackageManagement.Tests.Scripting
 			CreateHost();
 			var expectedSource = new PackageSource("http://sharpdevelop.net");
 			host.ActivePackageSource = expectedSource;
+			string packageSource = null;
 			
-			host.GetProject(null, "Test");
+			host.GetProject(packageSource, "Test");
 			
 			var actualSource = fakeSolution.PackageSourcePassedToGetProject;
 			
@@ -321,6 +322,60 @@ namespace PackageManagement.Tests.Scripting
 			var projectName = fakeSolution.ProjectNamePassedToGetProject;
 			
 			Assert.AreEqual("Test", projectName);
+		}
+		
+		[Test]
+		public void GetProject_ProjectNameAndRepositoryPassed_ProjectNameUsedToGetProject()
+		{
+			CreateHost();
+			var repository = new FakePackageRepository();
+			string expectedProjectName = "Test";
+			
+			host.GetProject(repository, expectedProjectName);
+			
+			var actualProjectName = fakeSolution.ProjectNamePassedToGetProject;
+			
+			Assert.AreEqual(expectedProjectName, actualProjectName);
+		}
+		
+		[Test]
+		public void GetProject_ProjectNameAndRepositoryPassed_RepositoryUsedToGetProject()
+		{
+			CreateHost();
+			var repository = new FakePackageRepository();
+			
+			host.GetProject(repository, "Test");
+			
+			var actualRepository = fakeSolution.RepositoryPassedToGetProject;
+			
+			Assert.AreEqual(repository, actualRepository);
+		}
+		
+		[Test]
+		public void GetProject_ProjectNameAndRepositoryPassed_ReturnsProject()
+		{
+			CreateHost();
+			var repository = new FakePackageRepository();
+			
+			var project = host.GetProject(repository, "Test");
+			
+			var expectedProject = fakeSolution.FakeProject;
+			
+			Assert.AreEqual(expectedProject, project);
+		}
+		
+		[Test]
+		public void GetProject_NullProjectNameAndNonNullRepositoryPassed_UsesDefaultProjectNameToCreateProject()
+		{
+			CreateHost();
+			host.DefaultProject = ProjectHelper.CreateTestProject("MyProject");
+			var repository = new FakePackageRepository();
+			
+			var project = host.GetProject(repository, null);
+			
+			var projectName = fakeSolution.ProjectNamePassedToGetProject;
+			
+			Assert.AreEqual("MyProject", projectName);
 		}
 	}
 }

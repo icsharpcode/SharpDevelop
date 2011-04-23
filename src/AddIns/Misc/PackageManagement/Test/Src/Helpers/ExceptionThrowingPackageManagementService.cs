@@ -20,5 +20,13 @@ namespace PackageManagement.Tests.Helpers
 			}
 			return base.GetActiveProject();
 		}
+		
+		public override IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository)
+		{
+			if (ExceptionToThrowWhenGetActiveProjectCalled != null) {
+				throw ExceptionToThrowWhenGetActiveProjectCalled;
+			}
+			return base.GetActiveProject(sourceRepository);
+		}
 	}
 }

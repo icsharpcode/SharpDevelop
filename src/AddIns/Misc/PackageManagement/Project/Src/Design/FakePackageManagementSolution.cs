@@ -44,7 +44,7 @@ namespace ICSharpCode.PackageManagement.Design
 			return FakeProject;
 		}
 		
-		public IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository)
+		public virtual IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository)
 		{
 			RepositoryPassedToCreateProject = sourceRepository;
 			return FakeProject;
@@ -65,6 +65,15 @@ namespace ICSharpCode.PackageManagement.Design
 		public IPackageManagementProject GetProject(PackageSource source, string projectName)
 		{
 			PackageSourcePassedToGetProject = source;
+			ProjectNamePassedToGetProject = projectName;
+			return FakeProject;
+		}
+		
+		public IPackageRepository RepositoryPassedToGetProject;
+		
+		public IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName)
+		{
+			RepositoryPassedToGetProject = sourceRepository;
 			ProjectNamePassedToGetProject = projectName;
 			return FakeProject;
 		}

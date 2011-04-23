@@ -203,5 +203,11 @@ namespace ICSharpCode.PackageManagement.Scripting
 			}
 			return DefaultProject.Name;
 		}
+		
+		public IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName)
+		{
+			projectName = GetActiveProjectName(projectName);
+			return solution.GetProject(sourceRepository, projectName);
+		}
 	}
 }

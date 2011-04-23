@@ -23,7 +23,6 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		public GetPackageCmdlet()
 			: this(
 				PackageManagementServices.RegisteredPackageRepositories,
-				PackageManagementServices.Solution,
 				PackageManagementServices.ConsoleHost,
 				null)
 		{
@@ -31,10 +30,9 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		public GetPackageCmdlet(
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageManagementSolution solution,
 			IPackageManagementConsoleHost consoleHost,
 			ICmdletTerminatingError terminatingError)
-			: base(solution, consoleHost, terminatingError)
+			: base(consoleHost, terminatingError)
 		{
 			this.registeredPackageRepositories = registeredPackageRepositories;
 		}
@@ -74,6 +72,10 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		protected override void ProcessRecord()
 		{
 			ValidateParameters();
+			
+			if (DefaultProject == null) {
+				return;
+			}
 			
 			IQueryable<IPackage> packages = GetPackages();
 			packages = OrderPackages(packages);
@@ -154,7 +156,8 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		IQueryable<IPackage> GetUpdatedPackages()
 		{
 			IPackageRepository aggregateRepository = registeredPackageRepositories.CreateAggregateRepository();
-			var updatedPackages = new UpdatedPackages(Solution, aggregateRepository, DefaultProject);
+			IPackageManagementProject project = ConsoleHost.GetProject(aggregateRepository, DefaultProject.Name);
+			var updatedPackages = new UpdatedPackages(project, aggregateRepository);
 			updatedPackages.SearchTerms = Filter;
 			return updatedPackages.GetUpdatedPackages().AsQueryable();
 		}
@@ -167,8 +170,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IQueryable<IPackage> GetInstalledPackages()
 		{
-			IPackageRepository repository = CreatePackageRepositoryForActivePackageSource();
-			IPackageManagementProject project = Solution.CreateProject(repository, DefaultProject);
+			IPackageManagementProject project = ConsoleHost.GetProject(Source, DefaultProject.Name);
 			IQueryable<IPackage> packages = project.GetPackages();
 			return FilterPackages(packages);
 		}

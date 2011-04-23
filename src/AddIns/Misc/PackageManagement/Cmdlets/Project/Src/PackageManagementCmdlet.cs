@@ -11,22 +11,15 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 {
 	public abstract class PackageManagementCmdlet : PSCmdlet, ITerminatingCmdlet
 	{
-		IPackageManagementSolution solution;
 		IPackageManagementConsoleHost consoleHost;
 		ICmdletTerminatingError terminatingError;
 		
 		public PackageManagementCmdlet(
-			IPackageManagementSolution solution,
 			IPackageManagementConsoleHost consoleHost,
 			ICmdletTerminatingError terminatingError)
 		{
-			this.solution = solution;
 			this.consoleHost = consoleHost;
 			this.terminatingError = terminatingError;
-		}
-		
-		protected IPackageManagementSolution Solution {
-			get { return solution; }
 		}
 		
 		protected IPackageManagementConsoleHost ConsoleHost {

@@ -14,17 +14,15 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 	{
 		public UpdatePackageCmdlet()
 			: this(
-				PackageManagementServices.Solution,
 				PackageManagementServices.ConsoleHost,
 				null)
 		{
 		}
 		
 		public UpdatePackageCmdlet(
-			IPackageManagementSolution solution,
 			IPackageManagementConsoleHost consoleHost,
 			ICmdletTerminatingError terminatingError)
-			: base(solution, consoleHost, terminatingError)
+			: base(consoleHost, terminatingError)
 		{
 		}
 		

@@ -23,11 +23,14 @@ namespace PackageManagement.Cmdlets.Tests
 		void CreateCmdlet()
 		{
 			cmdlet = new TestableGetPackageCmdlet();
-			fakeSolution = cmdlet.FakeSolution;
+			fakeSolution = new FakePackageManagementSolution();
 			fakeRegisteredPackageRepositories = cmdlet.FakeRegisteredPackageRepositories;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
+			fakeConsoleHost.FakeProject = fakeSolution.FakeProject;
 			fakeCommandRuntime = cmdlet.FakeCommandRuntime;
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
+			
+			AddDefaultProjectToConsoleHost();
 		}
 		
 		void RunCmdlet()
@@ -165,65 +168,47 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_NoParametersPassed_ReturnsPackagesInstalledForProjectSelectedInConsole()
 		{
 			CreateCmdlet();
-			AddDefaultProjectToConsoleHost();
 			fakeSolution.AddPackageToActiveProjectLocalRepository("One");
 			fakeSolution.AddPackageToActiveProjectLocalRepository("Two");
 			
 			RunCmdlet();
 			
 			var actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
-			var expectedPackages = fakeSolution.FakeProject.FakePackages;
+			var expectedPackages = fakeConsoleHost.FakeProject.FakePackages;
 			
 			Assert.AreEqual(expectedPackages, actualPackages);
 		}
 		
 		[Test]
-		public void ProcessRecord_NoParametersPassed_SelectedActivePackageSourceInConsoleHostUsedToCreateRepository()
+		public void ProcessRecord_NoParametersPassed_NullPackageSourceUsedWhenCreatingProject()
 		{
 			CreateCmdlet();
-			var source = AddPackageSourceToConsoleHost();
-			fakeConsoleHost.PackageSourceToReturnFromGetActivePackageSource = source;
 			
 			RunCmdlet();
 			
-			var actualSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
+			var actualSource = fakeConsoleHost.PackageSourcePassedToGetProject;
 			
-			Assert.AreEqual(source, actualSource);
+			Assert.IsNull(actualSource);
 		}
 		
 		[Test]
-		public void ProcessRecord_NoParametersPassed_SelectedActiveRepositoryInConsoleHostUsedToCreateProjectManager()
+		public void ProcessRecord_NoParametersPassed_DefaultProjectInConsoleHostUsedToCreateProject()
 		{
 			CreateCmdlet();
-			AddPackageSourceToConsoleHost();
-			
-			RunCmdlet();
-			
-			var actualRepository = fakeSolution.RepositoryPassedToCreateProject;
-			var expectedRepository = fakeRegisteredPackageRepositories.FakePackageRepository;
-			
-			Assert.AreEqual(expectedRepository, actualRepository);
-		}
-		
-		[Test]
-		public void ProcessRecord_NoParametersPassed_DefaultProjectInConsoleHostUsedToCreateProjectManager()
-		{
-			CreateCmdlet();
-			AddPackageSourceToConsoleHost();
 			var project = AddDefaultProjectToConsoleHost();
+			project.Name = "MyProject";
 			
 			RunCmdlet();
 			
-			var actualProject = fakeSolution.ProjectPassedToCreateProject;
+			var actualProjectName = fakeConsoleHost.ProjectNamePassedToGetProject;
 			
-			Assert.AreEqual(project, actualProject);
+			Assert.AreEqual("MyProject", actualProjectName);
 		}
 		
 		[Test]
 		public void ProcessRecord_UpdatedPackagesRequested_ReturnsUpdatedPackagesForActiveProject()
 		{
 			CreateCmdlet();
-			AddDefaultProjectToConsoleHost();
 			AddPackageToProjectManagerLocalRepository("1.0.0.0");
 			var updatedPackage = AddPackageToAggregateRepository("1.1.0.0");
 			
@@ -239,27 +224,27 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_UpdatedPackagesRequested_ActiveProjectUsedWhenCreatingProject()
+		public void ProcessRecord_UpdatedPackagesRequested_ActiveProjectNameUsedWhenCreatingProject()
 		{
 			CreateCmdlet();
 			var project = AddDefaultProjectToConsoleHost();
+			project.Name = "Test";
 			EnableUpdatesParameter();
 			RunCmdlet();
 			
-			var actualProject = fakeSolution.ProjectPassedToCreateProject;
+			var actualProjectName = fakeConsoleHost.ProjectNamePassedToGetProject;
 			
-			Assert.AreEqual(project, actualProject);
+			Assert.AreEqual("Test", actualProjectName);
 		}
 		
 		[Test]
-		public void ProcessRecord_UpdatedPackagesRequested_AggregateRepositoryUsedWhenCreatingProjectManager()
+		public void ProcessRecord_UpdatedPackagesRequested_AggregateRepositoryUsedWhenCreatingProject()
 		{
 			CreateCmdlet();
-			AddDefaultProjectToConsoleHost();
 			EnableUpdatesParameter();
 			RunCmdlet();
 			
-			var actualRepository = fakeSolution.RepositoryPassedToCreateProject;
+			var actualRepository = fakeConsoleHost.PackageRepositoryPassedToGetProject;
 			var expectedRepository = fakeRegisteredPackageRepositories.FakeAggregateRepository;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
@@ -310,7 +295,6 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_UpdatedPackagesRequestedWithFilter_ReturnsFilteredUpdatedPackages()
 		{
 			CreateCmdlet();
-			AddDefaultProjectToConsoleHost();
 			AddPackageToProjectManagerLocalRepository("A", "1.0.0.0");
 			AddPackageToAggregateRepository("A", "1.1.0.0");
 			AddPackageToProjectManagerLocalRepository("B", "2.0.0.0");
@@ -346,31 +330,32 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_JustSourceParameterPassed_PackageRepositoryCreatedForPackageSourceSpecifiedByParameter()
+		public void ProcessRecord_JustSourceParameterPassed_ProjectCreatedForPackageSourceSpecifiedByParameter()
 		{
 			CreateCmdlet();
+			
 			SetSourceParameter("http://test");
 			
 			RunCmdlet();
 			
-			var actualPackageSource = fakeConsoleHost.PackageSourcePassedToGetActivePackageSource;
+			var actualPackageSource = fakeConsoleHost.PackageSourcePassedToGetProject;
 			var expectedPackageSource = "http://test";
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
 		}
 		
 		[Test]
-		public void ProcessRecord_JustSourceParameterPassed_PackageRepositoryCreatedForPackageSource()
+		public void ProcessRecord_JustSourceParameterPassed_ProjectCreatedForPackageSource()
 		{
 			CreateCmdlet();
+			fakeConsoleHost.DefaultProject.Name = "MyProject";
 			SetSourceParameter("http://test");
 			
 			RunCmdlet();
 			
-			var actualPackageSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
-			var expectedPackageSource = fakeConsoleHost.PackageSourceToReturnFromGetActivePackageSource;
+			var actualProjectName = fakeConsoleHost.ProjectNamePassedToGetProject;
 			
-			Assert.AreEqual(expectedPackageSource, actualPackageSource);
+			Assert.AreEqual("MyProject", actualProjectName);
 		}
 		
 		[Test]
@@ -436,6 +421,7 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_RetrieveUpdatesWhenNoProjectIsOpen_ThrowsTerminatingError()
 		{
 			CreateCmdlet();
+			fakeConsoleHost.DefaultProject = null;
 			EnableUpdatesParameter();
 			
 			RunCmdlet();
@@ -447,7 +433,6 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_RetrieveUpdatesWhenProjectIsActive_DoesNotThrowTerminatingError()
 		{
 			CreateCmdlet();
-			AddDefaultProjectToConsoleHost();
 			EnableUpdatesParameter();
 			
 			RunCmdlet();
@@ -459,6 +444,7 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_NoParametersSetAndNoProjectIsOpen_ThrowsNoProjectOpenTerminatingError()
 		{
 			CreateCmdlet();
+			fakeConsoleHost.DefaultProject = null;
 			RunCmdlet();
 			
 			Assert.IsTrue(fakeTerminatingError.IsThrowNoProjectOpenErrorCalled);
@@ -468,6 +454,7 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_ListAvailablePackagesAndProjectIsNotOpen_NoTerminatingErrorIsThrown()
 		{
 			CreateCmdlet();
+			fakeConsoleHost.DefaultProject = null;
 			EnableListAvailableParameter();
 			RunCmdlet();
 			
@@ -478,6 +465,7 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_RecentPackagesRequestedAndProjectIsNotOpen_NoTerminatingErrorIsThrown()
 		{
 			CreateCmdlet();
+			fakeConsoleHost.DefaultProject = null;
 			EnableRecentParameter();
 			RunCmdlet();
 			

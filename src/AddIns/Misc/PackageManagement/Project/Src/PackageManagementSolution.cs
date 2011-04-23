@@ -96,5 +96,12 @@ namespace ICSharpCode.PackageManagement
 		{
 			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
 		}
+		
+		public IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName)
+		{
+			MSBuildBasedProject msbuildProject = GetMSBuildProject(projectName);
+			CreateProject((IPackageRepository)null, msbuildProject);
+			return null;
+		}
 	}
 }

@@ -68,6 +68,15 @@ namespace PackageManagement.Tests.Helpers
 			return FakeProject;
 		}
 		
+		public IPackageRepository PackageRepositoryPassedToGetProject;
+		
+		public IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName)
+		{
+			PackageRepositoryPassedToGetProject = sourceRepository;
+			ProjectNamePassedToGetProject = projectName;
+			return FakeProject;
+		}
+		
 		public string PackageSourcePassedToGetActivePackageSource;
 		public PackageSource PackageSourceToReturnFromGetActivePackageSource = new PackageSource("http://sharpdevelop.com");
 		
