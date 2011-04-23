@@ -55,20 +55,14 @@ namespace ICSharpCode.PackageManagement
 			return CreateProject(sourceRepository, activeProject);
 		}
 		
-		public IPackageManagementProject CreateProject(IPackageRepository sourceRepository, MSBuildBasedProject project)
-		{
-			return projectFactory.CreateProject(sourceRepository, project);
-		}
-
 		MSBuildBasedProject GetActiveMSBuildProject()
 		{
 			return projectService.CurrentProject as MSBuildBasedProject;
 		}
 		
-		public IPackageManagementProject CreateProject(PackageSource source, MSBuildBasedProject project)
+		IPackageManagementProject CreateProject(IPackageRepository sourceRepository, MSBuildBasedProject project)
 		{
-			IPackageRepository sourceRepository = CreatePackageRepository(source);
-			return CreateProject(sourceRepository, project);
+			return projectFactory.CreateProject(sourceRepository, project);
 		}
 		
 		IPackageRepository CreatePackageRepository(PackageSource source)
@@ -95,6 +89,12 @@ namespace ICSharpCode.PackageManagement
 		bool IsProjectNameMatch(string a, string b)
 		{
 			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
+		}
+		
+		IPackageManagementProject CreateProject(PackageSource source, MSBuildBasedProject project)
+		{
+			IPackageRepository sourceRepository = CreatePackageRepository(source);
+			return CreateProject(sourceRepository, project);
 		}
 		
 		public IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName)

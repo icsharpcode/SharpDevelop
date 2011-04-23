@@ -34,28 +34,11 @@ namespace ICSharpCode.PackageManagement.Design
 			return FakeProject;
 		}
 		
-		public IPackageRepository RepositoryPassedToCreateProject;
-		public MSBuildBasedProject ProjectPassedToCreateProject;
-		
-		public IPackageManagementProject CreateProject(IPackageRepository sourceRepository, MSBuildBasedProject project)
-		{
-			RepositoryPassedToCreateProject = sourceRepository;
-			ProjectPassedToCreateProject = project;
-			return FakeProject;
-		}
+		public IPackageRepository RepositoryPassedToGetActiveProject;
 		
 		public virtual IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository)
 		{
-			RepositoryPassedToCreateProject = sourceRepository;
-			return FakeProject;
-		}
-		
-		public PackageSource PackageSourcePassedToCreateProject;
-		
-		public IPackageManagementProject CreateProject(PackageSource source, MSBuildBasedProject project)
-		{
-			PackageSourcePassedToCreateProject = source;
-			ProjectPassedToCreateProject = project;
+			RepositoryPassedToGetActiveProject = sourceRepository;
 			return FakeProject;
 		}
 		

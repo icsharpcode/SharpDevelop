@@ -30,7 +30,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddPackage();
 						
-			Assert.AreEqual(viewModel.FakePackage.Repository, fakeSolution.RepositoryPassedToCreateProject);
+			Assert.AreEqual(viewModel.FakePackage.Repository, fakeSolution.RepositoryPassedToGetActiveProject);
 		}
 	
 		[Test]

@@ -95,46 +95,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void CreateProject_ProjectAndRepositoryPassed_ProjectUsedToCreateProject()
-		{
-			CreateSolution();
-			var expectedProject = ProjectHelper.CreateTestProject();
-			var repository = new FakePackageRepository();
-			solution.CreateProject(repository, expectedProject);
-			
-			var actualProject = fakeProjectFactory.ProjectPassedToCreateProject;
-			
-			Assert.AreEqual(expectedProject, actualProject);
-		}
-		
-		[Test]
-		public void CreateProject_ProjectAndRepositoryPassed_CreatesProjectUsingRepository()
-		{
-			CreateSolution();
-			var expectedRepository = new FakePackageRepository();
-			
-			solution.CreateProject(expectedRepository, null);
-			
-			IPackageRepository actualRepository = fakeProjectFactory.RepositoryPassedToCreateProject;
-			
-			Assert.AreEqual(expectedRepository, actualRepository);
-		}
-		
-		[Test]
-		public void CreateProject_ProjectAndRepositoryPassed_ReturnsProjectCreatedByFactory()
-		{
-			CreateSolution();
-			var testProject = ProjectHelper.CreateTestProject();
-			var repository = new FakePackageRepository();
-			
-			var project = solution.CreateProject(repository, testProject);
-			
-			IPackageManagementProject expectedProject = fakeProjectFactory.FakeProject;
-			
-			Assert.AreEqual(expectedProject, project);
-		}
-		
-		[Test]
 		public void GetActiveProject_RepositoryPassed_CreatesProjectUsingRepository()
 		{
 			CreateSolution();
@@ -167,61 +127,6 @@ namespace PackageManagement.Tests
 			CreateSolution();
 			var expectedRepository = new FakePackageRepository();
 			var project = solution.GetActiveProject(expectedRepository);
-			
-			var expectedProject = fakeProjectFactory.FakeProject;
-			
-			Assert.AreEqual(expectedProject, project);
-		}
-		
-		[Test]
-		public void CreateProject_PackagesSourceAndProjectPassed_CreatesProjectUsingCreatedRepository()
-		{
-			CreateSolution();
-			var source = new PackageSource("http://sharpdevelop.net");
-			var testProject = ProjectHelper.CreateTestProject();
-			solution.CreateProject(source, testProject);
-			
-			var repository = fakeProjectFactory.RepositoryPassedToCreateProject;
-			var expectedRepository = fakeRegisteredPackageRepositories.FakePackageRepository;
-			
-			Assert.AreEqual(expectedRepository, repository);
-		}
-		
-		[Test]
-		public void CreateProject_PackagesSourceAndProjectPassed_PackageSourceUsedToCreateRepository()
-		{
-			CreateSolution();
-			var expectedSource = new PackageSource("http://sharpdevelop.net");
-			var testProject = ProjectHelper.CreateTestProject();
-			
-			solution.CreateProject(expectedSource, testProject);
-			
-			var source = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
-			
-			Assert.AreEqual(expectedSource, source);
-		}
-		
-		[Test]
-		public void CreateProject_PackagesSourceAndProjectPassed_CreatesProjectUsingProjectPassed()
-		{
-			CreateSolution();
-			var source = new PackageSource("http://sharpdevelop.net");
-			var expectedProject = ProjectHelper.CreateTestProject();
-			
-			solution.CreateProject(source, expectedProject);
-			
-			var project = fakeProjectFactory.ProjectPassedToCreateProject;
-			
-			Assert.AreEqual(expectedProject, project);
-		}
-		
-		[Test]
-		public void CreateProject_PackagesSourceAndProjectPassed_ReturnsProjectFromProjectFactory()
-		{
-			CreateSolution();
-			var source = new PackageSource("http://sharpdevelop.net");
-			var testProject = ProjectHelper.CreateTestProject();
-			var project = solution.CreateProject(source, testProject);
 			
 			var expectedProject = fakeProjectFactory.FakeProject;
 			

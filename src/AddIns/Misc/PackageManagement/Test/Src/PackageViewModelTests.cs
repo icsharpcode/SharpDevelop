@@ -72,7 +72,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackage();
 						
-			Assert.AreEqual(package.Repository, fakeSolution.RepositoryPassedToCreateProject);
+			Assert.AreEqual(package.Repository, fakeSolution.RepositoryPassedToGetActiveProject);
 		}
 		
 		[Test]
@@ -225,7 +225,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.RemovePackage();
 			
-			Assert.AreEqual(package.Repository, fakeSolution.RepositoryPassedToCreateProject);
+			Assert.AreEqual(package.Repository, fakeSolution.RepositoryPassedToGetActiveProject);
 		}
 		
 		[Test]
