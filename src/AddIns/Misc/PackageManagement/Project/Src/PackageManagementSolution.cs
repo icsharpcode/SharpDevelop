@@ -13,7 +13,6 @@ namespace ICSharpCode.PackageManagement
 	public class PackageManagementSolution : IPackageManagementSolution
 	{
 		IRegisteredPackageRepositories registeredPackageRepositories;
-		IPackageManagerFactory packageManagerFactory;
 		IPackageManagementProjectService projectService;
 		IPackageManagementEvents packageManagementEvents;
 		IPackageManagementProjectFactory projectFactory;
@@ -23,7 +22,6 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementEvents packageManagementEvents)
 			: this(
 				registeredPackageRepositories,
-				new SharpDevelopPackageManagerFactory(),
 				packageManagementEvents,
 				new PackageManagementProjectService(),
 				new PackageManagementProjectFactory())
@@ -32,14 +30,12 @@ namespace ICSharpCode.PackageManagement
 		
 		public PackageManagementSolution(
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageManagerFactory packageManagerFactory,
 			IPackageManagementEvents packageManagementEvents,
 			IPackageManagementProjectService projectService,
 			IPackageManagementProjectFactory projectFactory)
 		{
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.packageManagementEvents = packageManagementEvents;
-			this.packageManagerFactory = packageManagerFactory;
 			this.projectFactory = projectFactory;
 			this.projectService = projectService;
 		}

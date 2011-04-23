@@ -20,7 +20,6 @@ namespace PackageManagement.Tests
 		PackageManagementSolution solution;
 		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
 		OneRegisteredPackageSourceHelper packageSourcesHelper;
-		FakePackageManagerFactory fakePackageManagerFactory;
 		FakePackageManagementProjectService fakeProjectService;
 		FakePackageManagementProjectFactory fakeProjectFactory;
 		TestableProject testProject;
@@ -40,7 +39,6 @@ namespace PackageManagement.Tests
 		{
 			testProject = ProjectHelper.CreateTestProject();
 			fakeRegisteredPackageRepositories = new FakeRegisteredPackageRepositories();
-			fakePackageManagerFactory = new FakePackageManagerFactory();
 			fakeProjectFactory = new FakePackageManagementProjectFactory();
 			fakeProjectService = new FakePackageManagementProjectService();
 			var packageManagementEvents = new FakePackageManagementEvents();
@@ -49,33 +47,9 @@ namespace PackageManagement.Tests
 			solution = 
 				new PackageManagementSolution(
 					fakeRegisteredPackageRepositories,
-					fakePackageManagerFactory,
 					packageManagementEvents,
 					fakeProjectService,
 					fakeProjectFactory);
-		}
-		
-		FakePackage AddOneFakePackageToPackageRepositoryFactoryRepository(string id)
-		{
-			return fakeRegisteredPackageRepositories.FakePackageRepository.AddFakePackage(id);
-		}
-		
-		void MakePackageManagementSourceRepositoryAndPackageRepositoryFactoryRepositoryTheSame()
-		{
-			fakePackageManagerFactory.FakePackageManager.SourceRepository = 
-				fakeRegisteredPackageRepositories.FakePackageRepository;
-		}
-		
-		IEnumerable<PackageOperation> AddOnePackageOperationToPackageManager()
-		{		
-			var operations = fakePackageManagerFactory
-				.FakePackageManager
-				.PackageOperationsToReturnFromGetInstallPackageOperations;
-			
-			var operation = new PackageOperation(new FakePackage("A"), PackageAction.Install);
-			operations.Add(operation);
-			
-			return operations;
 		}
 		
 		[Test]
