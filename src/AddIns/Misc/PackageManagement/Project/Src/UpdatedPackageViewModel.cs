@@ -27,7 +27,6 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageManagementProject project = solution.GetActiveProject(package.Repository);
 			UpdatePackageAction action = project.CreateUpdatePackageAction();
-			action.SourceRepository = package.Repository;
 			action.Package = package;
 			action.Operations = packageOperations;
 			action.Execute();

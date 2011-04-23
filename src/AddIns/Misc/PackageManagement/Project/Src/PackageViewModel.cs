@@ -235,7 +235,6 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageManagementProject project = solution.GetActiveProject(package.Repository);
 			InstallPackageAction action = project.CreateInstallPackageAction();
-			action.SourceRepository = package.Repository;
 			action.Package = package;
 			action.Operations = packageOperations;
 			action.Execute();
@@ -264,9 +263,8 @@ namespace ICSharpCode.PackageManagement
 		void TryUninstallingPackage()
 		{
 			try {
-				IPackageManagementProject project = solution.GetActiveProject(null);
+				IPackageManagementProject project = solution.GetActiveProject(package.Repository);
 				UninstallPackageAction action = project.CreateUninstallPackageAction();
-				action.SourceRepository = package.Repository;
 				action.Package = package;
 				action.Execute();
 			} catch (Exception ex) {

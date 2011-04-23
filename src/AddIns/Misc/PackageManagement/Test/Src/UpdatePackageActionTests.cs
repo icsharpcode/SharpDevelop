@@ -13,17 +13,15 @@ namespace PackageManagement.Tests
 	public class UpdatePackageActionTests
 	{
 		UpdatePackageAction action;
-		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementEvents fakePackageManagementEvents;
 		FakePackageManagementProject fakeProject;
 		UpdatePackageHelper updatePackageHelper;
 		
 		void CreateSolution()
 		{
-			fakeSolution = new FakePackageManagementSolution();
 			fakePackageManagementEvents = new FakePackageManagementEvents();
-			fakeProject = fakeSolution.FakeProject;
-			action = new UpdatePackageAction(fakeSolution, fakePackageManagementEvents);
+			fakeProject = new FakePackageManagementProject();
+			action = new UpdatePackageAction(fakeProject, fakePackageManagementEvents);
 			updatePackageHelper = new UpdatePackageHelper(action);
 		}
 		
@@ -44,18 +42,6 @@ namespace PackageManagement.Tests
 		{
 			CreateSolution();
 			Assert.IsTrue(action.UpdateDependencies);
-		}
-		
-		[Test]
-		public void Execute_PackageAndRepositoryPassed_RepositoryUsedToCreateProject()
-		{
-			CreateSolution();
-			updatePackageHelper.UpdateTestPackage();
-			
-			var expectedRepository = updatePackageHelper.PackageRepository;
-			var actualRepository = fakeSolution.RepositoryPassedToCreateProject;
-			
-			Assert.AreEqual(expectedRepository, actualRepository);
 		}
 		
 		[Test]
@@ -103,30 +89,6 @@ namespace PackageManagement.Tests
 			var expectedPackage = updatePackageHelper.TestPackage;
 			var actualPackage = fakePackageManagementEvents.PackagePassedToOnParentPackageInstalled;
 			Assert.AreEqual(expectedPackage, actualPackage);
-		}
-		
-		[Test]
-		public void Execute_PackageIdAndSourceAndProjectPassed_PackageSourceUsedToCreateProject()
-		{
-			CreateSolution();
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			var expectedPackageSource = updatePackageHelper.PackageSource;
-			var actualPackageSource = fakeSolution.PackageSourcePassedToCreateProject;
-			
-			Assert.AreEqual(expectedPackageSource, actualPackageSource);
-		}
-		
-		[Test]
-		public void Execute_PackageIdAndSourceAndProjectPassed_ProjectIsUsedToCreatePackageManager()
-		{
-			CreateSolution();
-			updatePackageHelper.UpdatePackageById("PackageId");
-			
-			var actualProject = fakeSolution.ProjectPassedToCreateProject;
-			var expectedProject = updatePackageHelper.TestableProject;
-			
-			Assert.AreEqual(expectedProject, actualProject);
 		}
 		
 		[Test]

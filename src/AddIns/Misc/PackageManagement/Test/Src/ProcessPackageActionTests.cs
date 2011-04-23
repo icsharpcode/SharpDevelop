@@ -14,14 +14,12 @@ namespace PackageManagement.Tests
 	public class ProcessPackageActionTests
 	{
 		TestableProcessPackageAction action;
-		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementProject fakeProject;
 		
 		void CreateAction()
 		{
 			action = new TestableProcessPackageAction();
-			fakeSolution = action.FakeSolution;
-			fakeProject = fakeSolution.FakeProject;
+			fakeProject = action.FakeProject;
 		}
 		
 		ILogger AddLoggerToAction()

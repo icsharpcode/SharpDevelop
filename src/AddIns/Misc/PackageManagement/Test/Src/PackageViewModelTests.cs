@@ -65,17 +65,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void AddPackage_PackageAddedSuccessfully_PackageAddedFromSourcePackageRepository()
-		{
-			CreateViewModel();
-			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
-			
-			viewModel.AddPackage();
-						
-			Assert.AreEqual(package.Repository, fakeInstallPackageTask.SourceRepository);
-		}
-		
-		[Test]
 		public void AddPackage_PackageAddedSuccessfully_SourcePackageRepositoryUsedToCreateProject()
 		{
 			CreateViewModel();
@@ -231,12 +220,12 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void RemovePackage_PackageRemovedSuccessfully_RepositoryUsedToUninstallPackage()
+		public void RemovePackage_PackageRemovedSuccessfully_RepositoryUsedToCreateProject()
 		{
 			CreateViewModel();
 			viewModel.RemovePackage();
 			
-			Assert.AreEqual(package.Repository, fakeUninstallPackageAction.SourceRepository);
+			Assert.AreEqual(package.Repository, fakeSolution.RepositoryPassedToCreateProject);
 		}
 		
 		[Test]

@@ -28,7 +28,6 @@ namespace PackageManagement.Tests.Helpers
 		public void InstallTestPackage()
 		{
 			action.Package = TestPackage;
-			action.SourceRepository = PackageRepository;
 			action.Operations = PackageOperations;
 			action.IgnoreDependencies = IgnoreDependencies;
 			action.Execute();
@@ -43,16 +42,13 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public PackageSource PackageSource = new PackageSource("http://sharpdevelop/packages");
-		public TestableProject TestableProject = ProjectHelper.CreateTestProject();
-		public bool IgnoreDependencies;
+	public bool IgnoreDependencies;
 		public Version Version;
 		
 		public void InstallPackageById(string packageId)
 		{
 			action.PackageId = packageId;
 			action.PackageVersion = Version;
-			action.MSBuildProject = TestableProject;
-			action.PackageSource = PackageSource;
 			action.IgnoreDependencies = IgnoreDependencies;
 			
 			action.Execute();

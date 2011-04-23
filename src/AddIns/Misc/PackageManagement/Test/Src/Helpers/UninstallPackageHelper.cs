@@ -22,17 +22,13 @@ namespace PackageManagement.Tests.Helpers
 			Id = "Test"
 		};
 		
-		public FakePackageRepository FakePackageRepository = new FakePackageRepository();
-		
 		public void UninstallTestPackage()
 		{
-			action.SourceRepository = FakePackageRepository;
 			action.Package = TestPackage;
 			action.Execute();
 		}
 		
 		public Version Version;
-		public MSBuildBasedProject Project;
 		public PackageSource PackageSource = new PackageSource("http://sharpdevelop.net");
 		public bool ForceRemove;
 		public bool RemoveDependencies;
@@ -41,9 +37,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			action.PackageId = packageId;
 			action.PackageVersion = Version;
-			action.MSBuildProject = Project;
 			action.ForceRemove = ForceRemove;
-			action.PackageSource = PackageSource;
 			action.RemoveDependencies = RemoveDependencies;
 			action.Execute();
 		}

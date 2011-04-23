@@ -102,20 +102,6 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageIdSpecified_ActiveProjectUsedToUninstallPackage()
-		{
-			CreateCmdletWithoutActiveProject();
-			AddPackageSourceToConsoleHost();
-			var project = AddDefaultProjectToConsoleHost();
-			SetIdParameter("Test");
-			RunCmdlet();
-			
-			var actualProject = uninstallPackageAction.MSBuildProject;
-			
-			Assert.AreEqual(project, actualProject);
-		}
-		
-		[Test]
 		public void ProcessRecord_PackageIdSpecified_ActiveProjectUsedToCreateProject()
 		{
 			CreateCmdletWithoutActiveProject();
@@ -221,7 +207,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actualProject = uninstallPackageAction.MSBuildProject;
+			var actualProject = fakeSolution.ProjectPassedToCreateProject;
 			var expectedProject = fakeConsoleHost.FakeProjectToReturnFromGetProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);
@@ -240,20 +226,6 @@ namespace PackageManagement.Cmdlets.Tests
 			var expected = "MyProject";
 			
 			Assert.AreEqual(expected, actual);
-		}
-		
-		[Test]
-		public void ProcessRecord_PackageIdSpecified_ActivePackageSourceUsedToUninstallPackage()
-		{
-			CreateCmdletWithoutActiveProject();
-			AddDefaultProjectToConsoleHost();
-			var packageSource = AddPackageSourceToConsoleHost();
-			SetIdParameter("Test");
-			RunCmdlet();
-			
-			var actualPackageSource = uninstallPackageAction.PackageSource;
-			
-			Assert.AreEqual(packageSource, actualPackageSource);
 		}
 		
 		[Test]

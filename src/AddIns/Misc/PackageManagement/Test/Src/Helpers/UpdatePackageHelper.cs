@@ -17,7 +17,6 @@ namespace PackageManagement.Tests.Helpers
 			Id = "Test"
 		};
 		
-		public FakePackageRepository PackageRepository = new FakePackageRepository();
 		public List<PackageOperation> PackageOperations = new List<PackageOperation>();
 		
 		public UpdatePackageHelper(UpdatePackageAction action)
@@ -27,7 +26,6 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void UpdateTestPackage()
 		{
-			action.SourceRepository = PackageRepository;
 			action.UpdateDependencies = UpdateDependencies;
 			action.Package = TestPackage;
 			action.Operations = PackageOperations;
@@ -43,7 +41,6 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public PackageSource PackageSource = new PackageSource("http://sharpdevelop/packages");
-		public TestableProject TestableProject = ProjectHelper.CreateTestProject();
 		public bool UpdateDependencies;
 		public Version Version;
 		
@@ -51,8 +48,6 @@ namespace PackageManagement.Tests.Helpers
 		{
 			action.PackageId = packageId;
 			action.PackageVersion = Version;
-			action.PackageSource = PackageSource;
-			action.MSBuildProject = TestableProject;
 			action.UpdateDependencies = UpdateDependencies;
 			action.Execute();
 		}

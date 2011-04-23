@@ -69,8 +69,6 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			UninstallPackageAction action = project.CreateUninstallPackageAction();
 			action.PackageId = Id;
 			action.PackageVersion = Version;
-			action.MSBuildProject = msbuildProject;
-			action.PackageSource = packageSource;
 			action.ForceRemove = Force.IsPresent;
 			action.RemoveDependencies = RemoveDependencies.IsPresent;
 			

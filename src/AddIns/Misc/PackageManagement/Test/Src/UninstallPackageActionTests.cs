@@ -14,17 +14,15 @@ namespace PackageManagement.Tests
 	public class UninstallPackageActionTests
 	{
 		UninstallPackageAction action;
-		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementEvents fakePackageManagementEvents;
 		UninstallPackageHelper uninstallPackageHelper;
 		FakePackageManagementProject fakeProject;
 		
 		void CreateAction()
 		{
-			fakeSolution = new FakePackageManagementSolution();
 			fakePackageManagementEvents = new FakePackageManagementEvents();
-			fakeProject = fakeSolution.FakeProject;
-			action = new UninstallPackageAction(fakeSolution, fakePackageManagementEvents);
+			fakeProject = new FakePackageManagementProject();
+			action = new UninstallPackageAction(fakeProject, fakePackageManagementEvents);
 			uninstallPackageHelper = new UninstallPackageHelper(action);
 		}
 		
@@ -44,20 +42,6 @@ namespace PackageManagement.Tests
 			var expectedPackage = uninstallPackageHelper.TestPackage;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
-		}
-		
-		[Test]
-		public void Execute_PackageObjectPassed_PackageRepositoryUsedToCreateProject()
-		{
-			CreateAction();
-			
-			uninstallPackageHelper.UninstallTestPackage();
-			
-			var actualRepository = fakeSolution.RepositoryPassedToCreateProject;
-	
-			var expectedRepository = uninstallPackageHelper.FakePackageRepository;
-			
-			Assert.AreEqual(expectedRepository, actualRepository);
 		}
 		
 		[Test]
@@ -123,34 +107,6 @@ namespace PackageManagement.Tests
 			bool removeDependencies = fakeProject.RemoveDependenciesPassedToUninstallPackage;
 			
 			Assert.IsTrue(removeDependencies);
-		}
-		
-		[Test]
-		public void Execute_PackageIdSpecified_PackageSourcePassedIsUsedToCreateRepository()
-		{
-			CreateAction();
-			
-			var expectedPackageSource = new PackageSource("http://test");
-			uninstallPackageHelper.PackageSource = expectedPackageSource;
-			uninstallPackageHelper.UninstallPackageById("PackageId");
-			
-			var actualPackageSource = fakeSolution.PackageSourcePassedToCreateProject;
-			
-			Assert.AreEqual(expectedPackageSource, actualPackageSource);
-		}
-		
-		[Test]
-		public void Execute_PackageIdSpecified_MSBuildProjectPassedIsUsedToCreateRepository()
-		{
-			CreateAction();
-			var expectedProject = ProjectHelper.CreateTestProject();
-			uninstallPackageHelper.Project = expectedProject;
-			
-			uninstallPackageHelper.UninstallPackageById("PackageId");
-			
-			var actualProject = fakeSolution.ProjectPassedToCreateProject;
-			
-			Assert.AreEqual(expectedProject, actualProject);
 		}
 		
 		[Test]

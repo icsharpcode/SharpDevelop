@@ -9,16 +9,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public abstract class ProcessPackageAction
 	{
-		IPackageManagementSolution solution;
 		IPackageManagementEvents packageManagementEvents;
-		
-		public ProcessPackageAction(
-			IPackageManagementSolution solution,
-			IPackageManagementEvents packageManagementEvents)
-		{
-			this.solution = solution;
-			this.packageManagementEvents = packageManagementEvents;
-		}
 		
 		public ProcessPackageAction(
 			IPackageManagementProject project,
@@ -33,9 +24,6 @@ namespace ICSharpCode.PackageManagement
 		public IPackage Package { get; set; }
 		public Version PackageVersion { get; set; }
 		public string PackageId { get; set; }
-		public IPackageRepository SourceRepository { get; set; }
-		public PackageSource PackageSource { get; set; }
-		public MSBuildBasedProject MSBuildProject { get; set; }
 		
 		protected void OnParentPackageInstalled()
 		{
@@ -56,7 +44,6 @@ namespace ICSharpCode.PackageManagement
 		protected virtual void BeforeExecute()
 		{
 			GetLoggerIfMissing();
-			CreateProject();
 			ConfigureProjectLogger();
 			GetPackageIfMissing();
 		}
@@ -69,15 +56,6 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (Logger == null) {
 				Logger = new PackageManagementLogger(packageManagementEvents);
-			}
-		}
-		
-		void CreateProject()
-		{
-			if (SourceRepository == null) {
-				Project = solution.CreateProject(PackageSource, MSBuildProject);
-			} else {
-				Project = solution.GetActiveProject(SourceRepository);
 			}
 		}
 		

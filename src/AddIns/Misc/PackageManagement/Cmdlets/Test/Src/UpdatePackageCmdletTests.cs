@@ -102,20 +102,6 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageIdSpecified_ActivePackageSourceUsedToUpdatePackage()
-		{
-			CreateCmdletWithoutActiveProject();
-			AddDefaultProjectToConsoleHost();
-			var packageSource = AddPackageSourceToConsoleHost();
-			SetIdParameter("Test");
-			RunCmdlet();
-			
-			var actualPackageSource = fakeUpdatePackageAction.PackageSource;
-			
-			Assert.AreEqual(packageSource, actualPackageSource);
-		}
-		
-		[Test]
 		public void ProcessRecord_PackageIdSpecified_ActivePackageSourceUsedToCreateProject()
 		{
 			CreateCmdletWithoutActiveProject();
@@ -127,20 +113,6 @@ namespace PackageManagement.Cmdlets.Tests
 			var actualPackageSource = fakeSolution.PackageSourcePassedToCreateProject;
 			
 			Assert.AreEqual(packageSource, actualPackageSource);
-		}
-		
-		[Test]
-		public void ProcessRecord_PackageIdSpecified_ActiveProjectUsedToUpdatePackage()
-		{
-			CreateCmdletWithoutActiveProject();
-			AddPackageSourceToConsoleHost();
-			var project = AddDefaultProjectToConsoleHost();
-			SetIdParameter("Test");
-			RunCmdlet();
-			
-			var actualProject = fakeUpdatePackageAction.MSBuildProject;
-			
-			Assert.AreEqual(project, actualProject);
 		}
 		
 		[Test]
@@ -194,7 +166,7 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			var expected = "http://sharpdevelop.net/packages";
-			var actual = fakeUpdatePackageAction.PackageSource.Source;
+			var actual = fakeSolution.PackageSourcePassedToCreateProject.Source;
 			
 			Assert.AreEqual(expected, actual);
 		}
@@ -237,7 +209,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actualProject = fakeUpdatePackageAction.MSBuildProject;
+			var actualProject = fakeSolution.ProjectPassedToCreateProject;
 			var expectedProject = fakeConsoleHost.FakeProjectToReturnFromGetProject;
 			
 			Assert.AreEqual(expectedProject, actualProject);

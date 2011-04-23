@@ -25,15 +25,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void AddPackage_PackageAddedSuccessfully_PackageUpdatedUsingSourcePackageRepository()
-		{
-			CreateViewModel();
-			viewModel.AddPackage();
-						
-			Assert.AreEqual(viewModel.FakePackage.Repository, updatePackageAction.SourceRepository);
-		}
-		
-		[Test]
 		public void AddPackage_PackageAddedSuccessfully_ProjectCreatedUsingSourcePackageRepository()
 		{
 			CreateViewModel();
