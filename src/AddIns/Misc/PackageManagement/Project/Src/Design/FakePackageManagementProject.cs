@@ -86,5 +86,26 @@ namespace ICSharpCode.PackageManagement.Design
 			PackageOperationsPassedToUpdatePackage = operations;
 			UpdateDependenciesPassedToUpdatePackage = updateDependencies;
 		}
+		
+		public FakeInstallPackageAction FakeInstallPackageAction = new FakeInstallPackageAction();
+		
+		public virtual InstallPackageAction CreateInstallPackageAction()
+		{
+			return FakeInstallPackageAction;
+		}
+		
+		public FakeUninstallPackageAction FakeUninstallPackageAction = new FakeUninstallPackageAction();
+		
+		public virtual UninstallPackageAction CreateUninstallPackageAction()
+		{
+			return FakeUninstallPackageAction;
+		}
+		
+		public FakeUpdatePackageAction FakeUpdatePackageAction = new FakeUpdatePackageAction();
+		
+		public UpdatePackageAction CreateUpdatePackageAction()
+		{
+			return FakeUpdatePackageAction;
+		}
 	}
 }

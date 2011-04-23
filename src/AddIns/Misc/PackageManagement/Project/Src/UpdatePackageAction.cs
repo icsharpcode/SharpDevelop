@@ -18,6 +18,14 @@ namespace ICSharpCode.PackageManagement
 			UpdateDependencies = true;
 		}
 		
+		public UpdatePackageAction(
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents)
+			: base(project, packageManagementEvents)
+		{
+			UpdateDependencies = true;
+		}
+		
 		public IEnumerable<PackageOperation> Operations { get; set; }
 		public bool UpdateDependencies { get; set; }
 		

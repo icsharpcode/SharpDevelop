@@ -16,6 +16,7 @@ namespace PackageManagement.Cmdlets.Tests
 		TestableUninstallPackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
 		FakePackageManagementSolution fakeSolution;
+		FakePackageManagementProject fakeProject;
 		FakeUninstallPackageAction uninstallPackageAction;
 		
 		void CreateCmdletWithoutActiveProject()
@@ -24,7 +25,8 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
 			fakeSolution = cmdlet.FakeSolution;
-			uninstallPackageAction = fakeSolution.ActionToReturnFromCreateUninstallPackageAction;
+			fakeProject = fakeSolution.FakeProject;
+			uninstallPackageAction = fakeProject.FakeUninstallPackageAction;
 		}
 		
 		void CreateCmdletWithActivePackageSourceAndProject()
@@ -109,6 +111,20 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			var actualProject = uninstallPackageAction.MSBuildProject;
+			
+			Assert.AreEqual(project, actualProject);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_ActiveProjectUsedToCreateProject()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddPackageSourceToConsoleHost();
+			var project = AddDefaultProjectToConsoleHost();
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			var actualProject = fakeSolution.ProjectPassedToCreateProject;
 			
 			Assert.AreEqual(project, actualProject);
 		}
@@ -236,6 +252,20 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			var actualPackageSource = uninstallPackageAction.PackageSource;
+			
+			Assert.AreEqual(packageSource, actualPackageSource);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_ActivePackageSourceUsedToCreateProject()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			var packageSource = AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			var actualPackageSource = fakeSolution.PackageSourcePassedToCreateProject;
 			
 			Assert.AreEqual(packageSource, actualPackageSource);
 		}

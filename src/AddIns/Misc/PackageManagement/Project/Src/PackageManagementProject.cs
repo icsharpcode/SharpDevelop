@@ -14,13 +14,17 @@ namespace ICSharpCode.PackageManagement
 	{
 		ISharpDevelopPackageManager packageManager;
 		ISharpDevelopProjectManager projectManager;
+		IPackageManagementEvents packageManagementEvents;
 		
 		public PackageManagementProject(
 			IPackageRepository sourceRepository,
 			MSBuildBasedProject project,
+			IPackageManagementEvents packageManagementEvents,
 			IPackageManagerFactory packageManagerFactory)
 		{
 			SourceRepository = sourceRepository;
+			this.packageManagementEvents = packageManagementEvents;
+			
 			packageManager = packageManagerFactory.CreatePackageManager(sourceRepository, project);
 			projectManager = packageManager.ProjectManager;
 		}
@@ -66,6 +70,21 @@ namespace ICSharpCode.PackageManagement
 		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies)
 		{
 			packageManager.UpdatePackage(package, operations, updateDependencies);
+		}
+		
+		public InstallPackageAction CreateInstallPackageAction()
+		{
+			return new InstallPackageAction(this, packageManagementEvents);
+		}
+		
+		public UninstallPackageAction CreateUninstallPackageAction()
+		{
+			return new UninstallPackageAction(this, packageManagementEvents);
+		}
+		
+		public UpdatePackageAction CreateUpdatePackageAction()
+		{
+			return new UpdatePackageAction(this, packageManagementEvents);
 		}
 	}
 }

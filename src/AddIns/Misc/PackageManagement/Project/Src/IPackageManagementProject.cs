@@ -23,5 +23,9 @@ namespace ICSharpCode.PackageManagement
 		void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies);
 		void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies);
 		void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies);
+		
+		InstallPackageAction CreateInstallPackageAction();
+		UninstallPackageAction CreateUninstallPackageAction();
+		UpdatePackageAction CreateUpdatePackageAction();
 	}
 }

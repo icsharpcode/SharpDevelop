@@ -16,6 +16,7 @@ namespace PackageManagement.Cmdlets.Tests
 		TestableUpdatePackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
 		FakePackageManagementSolution fakeSolution;
+		FakePackageManagementProject fakeProject;
 		FakeUpdatePackageAction fakeUpdatePackageAction;
 		
 		void CreateCmdletWithoutActiveProject()
@@ -24,7 +25,8 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
 			fakeSolution = cmdlet.FakeSolution;
-			fakeUpdatePackageAction = fakeSolution.ActionToReturnFromCreateUpdatePackageAction;
+			fakeProject = fakeSolution.FakeProject;
+			fakeUpdatePackageAction = fakeProject.FakeUpdatePackageAction;
 		}
 				
 		void CreateCmdletWithActivePackageSourceAndProject()
@@ -114,6 +116,20 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
+		public void ProcessRecord_PackageIdSpecified_ActivePackageSourceUsedToCreateProject()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			var packageSource = AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			var actualPackageSource = fakeSolution.PackageSourcePassedToCreateProject;
+			
+			Assert.AreEqual(packageSource, actualPackageSource);
+		}
+		
+		[Test]
 		public void ProcessRecord_PackageIdSpecified_ActiveProjectUsedToUpdatePackage()
 		{
 			CreateCmdletWithoutActiveProject();
@@ -123,6 +139,20 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			var actualProject = fakeUpdatePackageAction.MSBuildProject;
+			
+			Assert.AreEqual(project, actualProject);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_ActiveProjectUsedToCreateProject()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddPackageSourceToConsoleHost();
+			var project = AddDefaultProjectToConsoleHost();
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			var actualProject = fakeSolution.ProjectPassedToCreateProject;
 			
 			Assert.AreEqual(project, actualProject);
 		}

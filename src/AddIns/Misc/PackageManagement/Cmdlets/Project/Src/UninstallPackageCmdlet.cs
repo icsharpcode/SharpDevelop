@@ -54,7 +54,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			MSBuildBasedProject project = GetActiveProject(ProjectName);
 			PackageSource packageSource = GetActivePackageSource();
 			
-			UninstallPackageAction action = CreateUninstallPackageAction(project, packageSource);
+			UninstallPackageAction action = CreateUninstallPackageAction(packageSource, project);
 			action.Execute();
 		}
 		
@@ -63,12 +63,13 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			return GetActivePackageSource(null);
 		}
 		
-		UninstallPackageAction CreateUninstallPackageAction(MSBuildBasedProject project, PackageSource packageSource)
+		UninstallPackageAction CreateUninstallPackageAction(PackageSource packageSource, MSBuildBasedProject msbuildProject)
 		{
-			var action = Solution.CreateUninstallPackageAction();
+			IPackageManagementProject project = Solution.CreateProject(packageSource, msbuildProject);
+			UninstallPackageAction action = project.CreateUninstallPackageAction();
 			action.PackageId = Id;
 			action.PackageVersion = Version;
-			action.MSBuildProject = project;
+			action.MSBuildProject = msbuildProject;
 			action.PackageSource = packageSource;
 			action.ForceRemove = Force.IsPresent;
 			action.RemoveDependencies = RemoveDependencies.IsPresent;

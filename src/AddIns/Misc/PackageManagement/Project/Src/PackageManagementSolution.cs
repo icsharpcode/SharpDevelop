@@ -24,7 +24,7 @@ namespace ICSharpCode.PackageManagement
 				registeredPackageRepositories,
 				packageManagementEvents,
 				new PackageManagementProjectService(),
-				new PackageManagementProjectFactory())
+				new PackageManagementProjectFactory(packageManagementEvents))
 		{
 		}
 		
@@ -38,21 +38,6 @@ namespace ICSharpCode.PackageManagement
 			this.packageManagementEvents = packageManagementEvents;
 			this.projectFactory = projectFactory;
 			this.projectService = projectService;
-		}
-		
-		public InstallPackageAction CreateInstallPackageAction()
-		{
-			return new InstallPackageAction(this, packageManagementEvents);
-		}
-		
-		public UpdatePackageAction CreateUpdatePackageAction()
-		{
-			return new UpdatePackageAction(this, packageManagementEvents);
-		}
-		
-		public UninstallPackageAction CreateUninstallPackageAction()
-		{
-			return new UninstallPackageAction(this, packageManagementEvents);
 		}
 		
 		public IPackageManagementProject GetActiveProject()

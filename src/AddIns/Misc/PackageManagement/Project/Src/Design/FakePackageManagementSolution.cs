@@ -12,22 +12,6 @@ namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakePackageManagementSolution : IPackageManagementSolution
 	{
-		public FakeInstallPackageAction ActionToReturnFromCreateInstallPackageAction =
-			new FakeInstallPackageAction();
-		
-		public virtual InstallPackageAction CreateInstallPackageAction()
-		{
-			return ActionToReturnFromCreateInstallPackageAction;
-		}
-		
-		public FakeUninstallPackageAction ActionToReturnFromCreateUninstallPackageAction =
-			new FakeUninstallPackageAction();
-		
-		public virtual UninstallPackageAction CreateUninstallPackageAction()
-		{
-			return ActionToReturnFromCreateUninstallPackageAction;
-		}
-		
 		public void AddPackageToActiveProjectLocalRepository(FakePackage package)
 		{
 			FakeProject.FakePackages.Add(package);
@@ -38,14 +22,6 @@ namespace ICSharpCode.PackageManagement.Design
 			var package = new FakePackage(packageId);
 			AddPackageToActiveProjectLocalRepository(package);
 			return package;
-		}
-		
-		public FakeUpdatePackageAction ActionToReturnFromCreateUpdatePackageAction =
-			new FakeUpdatePackageAction();
-		
-		public UpdatePackageAction CreateUpdatePackageAction()
-		{
-			return ActionToReturnFromCreateUpdatePackageAction;
 		}
 		
 		public int GetActiveProjectCallCount;

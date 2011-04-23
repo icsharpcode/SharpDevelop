@@ -12,18 +12,6 @@ namespace PackageManagement.Tests.Helpers
 	public class ExceptionThrowingPackageManagementSolution : FakePackageManagementSolution
 	{
 		public Exception ExceptionToThrowWhenGetActiveProjectCalled { get; set; }
-		public Exception ExceptionToThrowWhenCreateInstallPackageTaskCalled { get; set; }
-		public Exception ExceptionToThrowWhenCreateUninstallPackageActionCalled { get; set; }
-
-		public override InstallPackageAction CreateInstallPackageAction()
-		{
-			throw ExceptionToThrowWhenCreateInstallPackageTaskCalled;
-		}
-		
-		public override UninstallPackageAction CreateUninstallPackageAction()
-		{
-			throw ExceptionToThrowWhenCreateUninstallPackageActionCalled;
-		}
 		
 		public override IPackageManagementProject GetActiveProject()
 		{

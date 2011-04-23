@@ -17,6 +17,13 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
+		public InstallPackageAction(
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents)
+			: base(project, packageManagementEvents)
+		{
+		}
+		
 		public IEnumerable<PackageOperation> Operations { get; set; }
 		public bool IgnoreDependencies { get; set; }
 		

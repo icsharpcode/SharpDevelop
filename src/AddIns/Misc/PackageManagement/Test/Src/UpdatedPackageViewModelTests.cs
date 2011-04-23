@@ -13,13 +13,15 @@ namespace PackageManagement.Tests
 	{
 		TestableUpdatedPackageViewModel viewModel;
 		FakePackageManagementSolution fakeSolution;
+		FakePackageManagementProject fakeProject;
 		FakeUpdatePackageAction updatePackageAction;
 		
 		void CreateViewModel()
 		{
 			viewModel = new TestableUpdatedPackageViewModel();
 			fakeSolution = viewModel.FakeSolution;
-			updatePackageAction = fakeSolution.ActionToReturnFromCreateUpdatePackageAction;
+			fakeProject = fakeSolution.FakeProject;
+			updatePackageAction = fakeProject.FakeUpdatePackageAction;
 		}
 		
 		[Test]
@@ -29,6 +31,15 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 						
 			Assert.AreEqual(viewModel.FakePackage.Repository, updatePackageAction.SourceRepository);
+		}
+		
+		[Test]
+		public void AddPackage_PackageAddedSuccessfully_ProjectCreatedUsingSourcePackageRepository()
+		{
+			CreateViewModel();
+			viewModel.AddPackage();
+						
+			Assert.AreEqual(viewModel.FakePackage.Repository, fakeSolution.RepositoryPassedToCreateProject);
 		}
 	
 		[Test]

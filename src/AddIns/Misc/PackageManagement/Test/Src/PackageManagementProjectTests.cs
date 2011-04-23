@@ -20,6 +20,7 @@ namespace PackageManagement.Tests
 		PackageManagementProject project;
 		FakeProjectManager fakeProjectManager;
 		FakePackageManager fakePackageManager;
+		FakePackageManagementEvents fakePackageManagementEvents;
 		
 		void CreateProject()
 		{
@@ -28,8 +29,13 @@ namespace PackageManagement.Tests
 			fakeProjectManager = fakePackageManager.FakeProjectManager;
 			fakeSourceRepository = new FakePackageRepository();
 			fakeMSBuildProject = ProjectHelper.CreateTestProject();
+			fakePackageManagementEvents = new FakePackageManagementEvents();
 			
-			project = new PackageManagementProject(fakeSourceRepository, fakeMSBuildProject, fakePackageManagerFactory);
+			project = new PackageManagementProject(
+				fakeSourceRepository,
+				fakeMSBuildProject,
+				fakePackageManagementEvents,
+				fakePackageManagerFactory);
 		}
 		
 		[Test]

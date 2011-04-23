@@ -10,10 +10,18 @@ namespace ICSharpCode.PackageManagement
 	public class PackageManagementProjectFactory : IPackageManagementProjectFactory
 	{
 		SharpDevelopPackageManagerFactory factory = new SharpDevelopPackageManagerFactory();
+		IPackageManagementEvents packageManagementEvents;
 		
-		public IPackageManagementProject CreateProject(IPackageRepository sourceRepository, MSBuildBasedProject project)
+		public PackageManagementProjectFactory(IPackageManagementEvents packageManagementEvents)
 		{
-			return new PackageManagementProject(sourceRepository, project, factory);
+			this.packageManagementEvents = packageManagementEvents;
+		}
+		
+		public IPackageManagementProject CreateProject(
+			IPackageRepository sourceRepository,
+			MSBuildBasedProject project)
+		{
+			return new PackageManagementProject(sourceRepository, project, packageManagementEvents, factory);
 		}
 	}
 }

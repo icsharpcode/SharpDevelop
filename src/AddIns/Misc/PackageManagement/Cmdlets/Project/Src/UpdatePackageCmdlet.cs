@@ -58,11 +58,12 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			action.Execute();
 		}
 		
-		UpdatePackageAction CreateUpdatePackageAction(PackageSource packageSource, MSBuildBasedProject project)
+		UpdatePackageAction CreateUpdatePackageAction(PackageSource packageSource, MSBuildBasedProject msbuildProject)
 		{
-			var action = Solution.CreateUpdatePackageAction();
+			IPackageManagementProject project = Solution.CreateProject(packageSource, msbuildProject);
+			UpdatePackageAction action = project.CreateUpdatePackageAction();
 			action.PackageSource = packageSource;
-			action.MSBuildProject = project;
+			action.MSBuildProject = msbuildProject;
 			action.PackageId = Id;
 			action.PackageVersion = Version;
 			action.UpdateDependencies = !IgnoreDependencies.IsPresent;

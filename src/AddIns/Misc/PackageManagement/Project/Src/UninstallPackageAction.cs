@@ -9,14 +9,18 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UninstallPackageAction : ProcessPackageAction
 	{
-		IPackageManagementSolution solution;
-		
 		public UninstallPackageAction(
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents)
 			: base(solution, packageManagementEvents)
 		{
-			this.solution = solution;
+		}
+		
+		public UninstallPackageAction(
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents)
+			: base(project, packageManagementEvents)
+		{
 		}
 		
 		public bool ForceRemove { get; set; }

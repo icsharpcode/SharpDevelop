@@ -20,6 +20,14 @@ namespace ICSharpCode.PackageManagement
 			this.packageManagementEvents = packageManagementEvents;
 		}
 		
+		public ProcessPackageAction(
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents)
+		{
+			this.Project = project;
+			this.packageManagementEvents = packageManagementEvents;
+		}
+		
 		public IPackageManagementProject Project { get; set; }
 		public ILogger Logger { get; set; }
 		public IPackage Package { get; set; }

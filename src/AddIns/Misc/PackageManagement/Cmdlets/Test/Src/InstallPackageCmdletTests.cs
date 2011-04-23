@@ -19,6 +19,7 @@ namespace PackageManagement.Cmdlets.Tests
 		TestableInstallPackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
 		FakePackageManagementSolution fakeSolution;
+		FakePackageManagementProject fakeProject;
 		FakeInstallPackageAction fakeInstallPackageTask;
 		
 		void CreateCmdletWithoutActiveProject()
@@ -27,7 +28,8 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
 			fakeSolution = cmdlet.FakeSolution;
-			fakeInstallPackageTask = fakeSolution.ActionToReturnFromCreateInstallPackageAction;
+			fakeProject = fakeSolution.FakeProject;
+			fakeInstallPackageTask = fakeProject.FakeInstallPackageAction;
 		}
 				
 		void CreateCmdletWithActivePackageSourceAndProject()
@@ -131,6 +133,20 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
+		public void ProcessRecord_PackageIdSpecified_ActiveProjectUsedToCreateProject()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddPackageSourceToConsoleHost();
+			var project = AddDefaultProjectToConsoleHost();
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			var actualProject = fakeSolution.ProjectPassedToCreateProject;
+			
+			Assert.AreEqual(project, actualProject);
+		}
+		
+		[Test]
 		public void ProcessRecord_IgnoreDependenciesParameterSet_IgnoreDependenciesIsTrueWhenInstallingPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
@@ -168,6 +184,21 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			var expected = "http://sharpdevelop.net/packages";
 			var actual = fakeInstallPackageTask.PackageSource.Source;
+			
+			Assert.AreEqual(expected, actual);
+		}
+		
+		[Test]
+		public void ProcessRecord_SourceParameterSet_CustomSourceUsedWhenCreatingProject()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			
+			SetIdParameter("Test");
+			SetSourceParameter("http://sharpdevelop.net/packages");
+			RunCmdlet();
+			
+			var expected = "http://sharpdevelop.net/packages";
+			var actual = fakeSolution.PackageSourcePassedToCreateProject.Source;
 			
 			Assert.AreEqual(expected, actual);
 		}
