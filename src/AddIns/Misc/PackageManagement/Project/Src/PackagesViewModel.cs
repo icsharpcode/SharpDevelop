@@ -130,6 +130,7 @@ namespace ICSharpCode.PackageManagement
 		protected void SaveError(AggregateException ex)
 		{
 			SaveError(ex.InnerException);
+			ICSharpCode.Core.LoggingService.Debug(ex);
 		}
 		
 		protected void SaveError(Exception ex)
