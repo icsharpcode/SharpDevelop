@@ -144,7 +144,8 @@ namespace ICSharpCode.Reports.Addin
 		[Browsable(true),
 		 Category("Expression"),
 		 Description("Enter a valid Expression")]
-		
+			[EditorAttribute(typeof(DefaultTextEditor), 
+		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public string Expression {get;set;}
 		
 		#endregion

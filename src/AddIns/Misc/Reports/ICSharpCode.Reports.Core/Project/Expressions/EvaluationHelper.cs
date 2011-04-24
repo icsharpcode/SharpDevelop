@@ -56,6 +56,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			}
 		}
 		
+		
 		public static void EvaluateRow(IExpressionEvaluatorFacade evaluator,ExporterCollection row)
 		{
 			foreach (BaseExportColumn column in row) {
