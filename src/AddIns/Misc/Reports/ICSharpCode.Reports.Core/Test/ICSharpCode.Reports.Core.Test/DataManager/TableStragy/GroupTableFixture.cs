@@ -169,7 +169,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		private IDataNavigator PrepareStringGrouping ()
 		{
 			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
-			gc.GroupExpression =  "=Substring('GroupItem',0,5)";
 			ReportSettings rs = new ReportSettings();
 			rs.GroupColumnsCollection.Add(gc);
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);

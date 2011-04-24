@@ -13,7 +13,8 @@ namespace ICSharpCode.Reports.Core
 	/// <summary>
 	/// Description of TableStrategy.
 	/// </summary>
-	internal class TableStrategy: BaseListStrategy,IEnumerable<BaseComparer>
+
+	internal class TableStrategy: BaseListStrategy
 	{
 		private DataTable table;
 		
@@ -85,32 +86,24 @@ namespace ICSharpCode.Reports.Core
 				{
 					var dataItem = item as BaseDataItem;
 					if (dataItem != null) {
-						dataItem.DBValue = ExtractValue(row,dataItem).ToString();
+						dataItem.DBValue = ExtractDBValue(row,dataItem).ToString();
 					}
 					return;
 				}
 			}
 		}
 		
-		
-		object ExtractValue(DataRow row,BaseDataItem item)
+		object ExtractDBValue(DataRow row,BaseDataItem item)
 		{
 			string expression = String.Empty;
-			
-			if  ((! String.IsNullOrEmpty(item.Expression)) && (item.Expression.StartsWith("="))) {
-				expression = item.Expression;
-			} else
-			{
-				string colName = string.Empty;
-				if (!item.ColumnName.StartsWith ("=Fields")) {
-					expression = "=Fields!" + item.ColumnName;
-				} else {
-					expression = item.ColumnName;
-				}
+			if  ((!String.IsNullOrEmpty(item.Expression)) && (item.Expression.StartsWith("="))) {
+				return ExtractFromExpression(item.Expression, row);
 			}
-			return ((ExpressionEvaluatorFacade)base.ExpressionEvaluator).Evaluate(expression,row);
+			else
+			{
+				return DBValueFromRow(row, item.ColumnName);
+			}
 		}
-			 
 		
 		
 		public override CurrentItemsCollection FillDataRow(int pos)
@@ -142,6 +135,8 @@ namespace ICSharpCode.Reports.Core
 			}
 			return ci;
 		}
+		
+		
 		public override bool MoveNext()
 		{
 			return base.MoveNext();
@@ -152,7 +147,6 @@ namespace ICSharpCode.Reports.Core
 		{
 			base.Reset();
 		}
-		
 		
 		
 		public override void Sort()
@@ -191,7 +185,7 @@ namespace ICSharpCode.Reports.Core
 				for (int criteriaIndex = 0; criteriaIndex < col.Count; criteriaIndex++)
 				{
 					object value = ExtractColumnValue(rowItem,col,criteriaIndex);
-			
+					
 					if (value != null && value != DBNull.Value)
 					{
 						values[criteriaIndex] = value;
@@ -215,25 +209,48 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
+		
+		
 		object ExtractColumnValue(DataRow row,ColumnCollection col, int criteriaIndex)
 		{
 			AbstractColumn c = (AbstractColumn)col[criteriaIndex];
 			object val = null;
-			int pos  =  c.ColumnName.IndexOf("!");
+			val =  DBValueFromRow(row,c.ColumnName);
+			
+//			if (!(val is IComparable)){
+//				throw new InvalidOperationException(val.ToString());
+//			}
+			return val;
+		}
 		
+		
+		string CleanupColumnName(string colName)
+		{
+			if (colName.StartsWith("=[")) {
+				return colName.Substring(2, colName.Length - 3);
+			}
+			return colName;
+		}
+		
+		
+		object DBValueFromRow(DataRow row, string colName)
+		{
+			int pos  =  colName.IndexOf("!");
 			if (pos > 0)
 			{
-				 val = ((ExpressionEvaluatorFacade)ExpressionEvaluator).Evaluate(c.ColumnName,row);
+				return ExtractFromExpression(colName,row);
+					
+			} else {
+				var expression = CleanupColumnName(colName);
+				return row[expression];
 			}
-			else 
-			{
-				val = row[c.ColumnName];
-			}
-			
-			if (!(val is IComparable)){
-				throw new InvalidOperationException(val.ToString());
-			}
-			return val;
+		}
+		
+		
+		object ExtractFromExpression(string expression, DataRow row)
+		{
+			var v = ((ExpressionEvaluatorFacade)base.ExpressionEvaluator).Evaluate(expression, row);
+			return v;
 		}
 		
 		
@@ -248,30 +265,11 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		#region Test
-		
-		
 		public override object CurrentFromPosition (int pos)
 		{
 			return this.table.Rows[pos];
 		}
 		
-		#endregion
-		
-		
-		#region IEnumerable<BaseComparer>
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return((IEnumerable<BaseComparer>)this).GetEnumerator();
-		}
-		
-		IEnumerator<BaseComparer> IEnumerable<BaseComparer>.GetEnumerator()
-		{
-			IEnumerable<BaseComparer> e = (IEnumerable<BaseComparer>)base.IndexList;
-			return e.GetEnumerator();
-		}
-		#endregion
 		
 		
 		#region Propertys

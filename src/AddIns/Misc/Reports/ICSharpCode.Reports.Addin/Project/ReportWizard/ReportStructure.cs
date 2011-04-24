@@ -60,12 +60,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			return model;
 		}
 		
+		
 		private void CreateGrouping(ReportSettings settings)
 		{
 			if (!String.IsNullOrEmpty(this.Grouping))
 			{
-				//string s = "=[" + this.Grouping + "]";
-				GroupColumn g = new GroupColumn(this.Grouping,1,System.ComponentModel.ListSortDirection.Ascending);
+				string s = "=[" + this.Grouping + "]";
+				//GroupColumn g = new GroupColumn(this.Grouping,1,System.ComponentModel.ListSortDirection.Ascending);
+				GroupColumn g = new GroupColumn(s,1,System.ComponentModel.ListSortDirection.Ascending);
 				settings.GroupColumnsCollection.Add(g);
 			}
 		}

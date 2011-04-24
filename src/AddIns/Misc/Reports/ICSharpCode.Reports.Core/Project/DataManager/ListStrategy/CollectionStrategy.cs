@@ -277,7 +277,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 			
 		
-		#region test
+		
 
         public override object CurrentFromPosition (int pos)
         {
@@ -340,7 +340,6 @@ namespace ICSharpCode.Reports.Core {
 			return ci;
 		}
 
-		#endregion
 		
 		#region IDisposable
 		

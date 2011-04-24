@@ -133,10 +133,7 @@ namespace ICSharpCode.Reports.Addin
 		[Browsable(true),
 		 Category("Databinding"),
 		 Description("Datatype of the underlying Column")]
-		
-		
 		[DefaultValue("System.String")]
-		
 		[TypeConverter(typeof(DataTypeStringConverter))]
 
 		public string DataType {get;set;}

@@ -36,7 +36,6 @@ namespace ICSharpCode.Reports.Core
 				return groupLevel;
 			}
 		}
-		
-		public string GroupExpression {get;set;}
+
 	}
 }

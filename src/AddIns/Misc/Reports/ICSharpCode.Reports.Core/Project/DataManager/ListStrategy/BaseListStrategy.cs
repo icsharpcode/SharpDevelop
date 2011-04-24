@@ -93,11 +93,7 @@ namespace ICSharpCode.Reports.Core {
 					childList = new IndexList();
 					GroupComparer gc = CreateGroupHeader(element);
 					gc.IndexList = childList;
-//					CreateGroupedChildren(childList,element);
 				}
-//				else {
-//					CreateGroupedChildren(childList,element);
-//				}
 				CreateGroupedChildren(childList,element);
 				compVal = groupValue;
 			}
@@ -111,9 +107,6 @@ namespace ICSharpCode.Reports.Core {
 			GroupColumn gc = element.ColumnCollection[0] as GroupColumn;
 			if (gc !=  null) {
 				val = element.ObjectArray[0].ToString();
-				var ex = gc.GroupExpression;
-//				Console.WriteLine("{0} - {1}",val,ex);
-				var sss = ((ExpressionEvaluatorFacade)ExpressionEvaluator).Evaluate(ex,val);
 			}
 			return val;
 		}
