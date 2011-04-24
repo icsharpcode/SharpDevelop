@@ -1081,6 +1081,51 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void ErrorMessage_BackgroundTaskHasAggregateExceptionWithNestedInnerAggregateException_ErrorMessageTakenFromInnerException()
+		{
+			CreateViewModel();
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			
+			Exception innerEx1 = new Exception("Test1");
+			Exception innerEx2 = new Exception("Test2");
+			AggregateException innerAggregateEx = new AggregateException(innerEx1, innerEx2);
+			AggregateException aggregateEx = new AggregateException(innerAggregateEx);
+			taskFactory.FirstFakeTaskCreated.Exception = aggregateEx;
+			taskFactory.FirstFakeTaskCreated.IsFaulted = true;
+			CompleteReadPackagesTask();
+			
+			string expectedErrorMessage = 
+				"Test1\r\n" +
+				"Test2";
+			
+			Assert.AreEqual(expectedErrorMessage, viewModel.ErrorMessage);
+		}
+		
+		[Test]
+		public void ErrorMessage_BackgroundTaskHasAggregateExceptionWithTwoInnerExceptionsWhenItFinishes_ErrorMessageTakenFromAllInnerExceptions()
+		{
+			CreateViewModel();
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			
+			Exception innerEx1 = new Exception("Test1");
+			Exception innerEx2 = new Exception("Test2");
+			Exception innerEx3 = new Exception("Test3");
+			AggregateException aggregateEx = new AggregateException(innerEx1, innerEx2, innerEx3);
+			taskFactory.FirstFakeTaskCreated.Exception = aggregateEx;
+			taskFactory.FirstFakeTaskCreated.IsFaulted = true;
+			CompleteReadPackagesTask();
+			
+			string expectedErrorMessage = 
+				"Test1\r\n" +
+				"Test2\r\n" +
+				"Test3";
+			
+			Assert.AreEqual(expectedErrorMessage, viewModel.ErrorMessage);
+		}
+		
+		[Test]
 		public void HasError_ErrorMessageDisplayedAndReadPackagesRetriedAfterFailure_ReturnsFalse()
 		{
 			CreateViewModel();

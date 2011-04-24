@@ -67,6 +67,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AcceptLicensesEventArgs.cs" />
     <Compile Include="Src\AddPackageReferenceCommand.cs" />
+    <Compile Include="Src\AggregateExceptionErrorMessage.cs" />
     <Compile Include="Src\Design\FakePackageManagementProject.cs" />
     <Compile Include="Src\IAddPackageReferenceView.cs" />
     <Compile Include="Src\IPackageFromRepository.cs" />

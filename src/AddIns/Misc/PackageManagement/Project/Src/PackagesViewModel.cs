@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text;
 using System.Windows.Input;
+
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -127,16 +129,17 @@ namespace ICSharpCode.PackageManagement
 			base.OnPropertyChanged(null);
 		}
 		
-		protected void SaveError(AggregateException ex)
+		void SaveError(AggregateException ex)
 		{
-			SaveError(ex.InnerException);
+			HasError = true;
+			ErrorMessage = GetErrorMessage(ex);
 			ICSharpCode.Core.LoggingService.Debug(ex);
 		}
 		
-		protected void SaveError(Exception ex)
+		string GetErrorMessage(AggregateException ex)
 		{
-			HasError = true;
-			ErrorMessage = ex.Message;
+			var errorMessage = new AggregateExceptionErrorMessage(ex);
+			return errorMessage.ToString();
 		}
 
 		void UpdatePackagesForSelectedPage(PackagesForSelectedPageResult result)
