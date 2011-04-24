@@ -60,7 +60,7 @@ namespace ICSharpCode.Reports.Core.Project.Exporter
 			return col;
 		}
 		
-		
+		/*
 		public static Point   ConvertPlainCollection_2 (ExportContainer container,ReportItemCollection items,Point offset)
 		{
 			if (items == null) {
@@ -89,6 +89,8 @@ namespace ICSharpCode.Reports.Core.Project.Exporter
 			}
 			return offset;
 		}
+		
+		*/
 		
 		
 		public static ExportContainer ConvertToContainer (ISimpleContainer container,Point offset) 

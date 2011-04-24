@@ -101,7 +101,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		string ExtractValue(BaseComparer element)
+		static string ExtractValue(BaseComparer element)
 		{
 			string val = String.Empty;
 			GroupColumn gc = element.ColumnCollection[0] as GroupColumn;

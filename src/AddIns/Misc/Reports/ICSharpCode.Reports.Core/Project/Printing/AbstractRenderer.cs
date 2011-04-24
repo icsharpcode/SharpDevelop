@@ -205,7 +205,6 @@ namespace ICSharpCode.Reports.Core
 	
 		protected virtual Point RenderSection (ReportPageEventArgs rpea)
 		{
-			Point currentPosition	= Point.Empty;
 			
 			this.CurrentSection.Render (rpea);
 			

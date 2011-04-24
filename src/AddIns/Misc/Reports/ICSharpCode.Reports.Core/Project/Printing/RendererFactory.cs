@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Core
 	/// <summary>
 	/// Description of RendererFactory.
 	/// </summary>
-	public class PrintRendererFactory
+	public static class PrintRendererFactory
 	{
 		  
 		public static IBaseRenderer  CreateRenderer (BaseReportItem itemToConvert,IDataNavigator dataNavigator,

@@ -19,7 +19,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		private ReportingLanguageCompiler compiler;
 		private ExpressionContext context;
 		private IPageInfo singlePage;
-		 
+		
 		
 		public ExpressionEvaluatorFacade(IPageInfo pageInfo)
 		{
@@ -35,7 +35,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		public string Evaluate (string expression)
 		{
 			try {
-				if (CanEvaluate(expression)) {
+				if (EvaluationHelper.CanEvaluate(expression)) {
 					IExpression compiled = compiler.CompileExpression<string>(expression);
 					
 					this.context.ContextObject = this.SinglePage;
@@ -45,19 +45,24 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				}
 			} catch (Exception e) {
 				expression = e.Message;
-				Console.WriteLine("");
-				Console.WriteLine("ExpressionEvaluatorFacade.Evaluate");
-				Console.WriteLine(e.Message);
-				Console.WriteLine("");
+				WriteLogMessage(e);
 			}
 			
 			return expression;
+		}
+
+		static void WriteLogMessage(Exception e)
+		{
+			Console.WriteLine("");
+			Console.WriteLine("ExpressionEvaluatorFacade.Evaluate");
+			Console.WriteLine(e.Message);
+			Console.WriteLine("");
 		}
 		
 		public string Evaluate (string expression, object row)
 		{
 			try {
-				if (CanEvaluate(expression)) {
+				if (EvaluationHelper.CanEvaluate(expression)) {
 					IExpression compiled = compiler.CompileExpression<string>(expression);
 					
 					this.context.ContextObject =row;
@@ -67,21 +72,10 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				}
 			} catch (Exception e) {
 				expression = e.Message;
-				Console.WriteLine("");
-				Console.WriteLine("ExpressionEvaluatorFacade.Evaluate");
-				Console.WriteLine(e.Message);
-				Console.WriteLine("");
+				WriteLogMessage(e);
 			}
 			
 			return expression;
-		}
-		
-		private static bool CanEvaluate (string expressionn)
-		{
-			if ((!String.IsNullOrEmpty(expressionn)) && (expressionn.StartsWith("="))) {
-				return true;
-			}
-			return false;
 		}
 		
 		

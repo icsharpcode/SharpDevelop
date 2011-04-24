@@ -44,39 +44,39 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		
 		public static void EvaluateReportItems (IExpressionEvaluatorFacade  evaluator,ReportItemCollection items)
 		{
-			try {
-				foreach(BaseReportItem column in items) {
-					var container = column as ISimpleContainer ;
-					if (container != null) {
-						EvaluateReportItems(evaluator,container.Items);
-					}
-					BaseTextItem textItem = column as BaseTextItem;
-					if (textItem != null) {
-						textItem.Text = evaluator.Evaluate(textItem.Text);
-					}
+			foreach(BaseReportItem column in items) {
+				var container = column as ISimpleContainer ;
+				if (container != null) {
+					EvaluateReportItems(evaluator,container.Items);
 				}
-			} catch (Exception) {
-				throw ;
+				BaseTextItem textItem = column as BaseTextItem;
+				if (textItem != null) {
+					textItem.Text = evaluator.Evaluate(textItem.Text);
+				}
 			}
 		}
 		
 		public static void EvaluateRow(IExpressionEvaluatorFacade evaluator,ExporterCollection row)
 		{
-			try {
-				foreach (BaseExportColumn column in row) {
-					var container = column as IExportContainer;
-					if (container != null) {
-						EvaluateRow(evaluator,container.Items);
-					}
-					ExportText textItem = column as ExportText;
-					if (textItem != null) {
-						textItem.Text = evaluator.Evaluate(textItem.Text);
-					}
+			foreach (BaseExportColumn column in row) {
+				var container = column as IExportContainer;
+				if (container != null) {
+					EvaluateRow(evaluator,container.Items);
 				}
-			} catch (Exception) {
-				throw ;
+				ExportText textItem = column as ExportText;
+				if (textItem != null) {
+					textItem.Text = evaluator.Evaluate(textItem.Text);
+				}
 			}
 		}
 		
+		
+		public static bool CanEvaluate (string expressionn)
+		{
+			if ((!String.IsNullOrEmpty(expressionn)) && (expressionn.StartsWith("=",StringComparison.InvariantCultureIgnoreCase))) {
+				return true;
+			}
+			return false;
+		}
 	}
 }

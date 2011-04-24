@@ -226,7 +226,7 @@ foreach (var element in section.Items)
 		}
 		*/
 		
-		int CalculateGap(BaseReportItem oldItem, BaseReportItem item)
+		static int CalculateGap(BaseReportItem oldItem, BaseReportItem item)
 		{
 				var gap = item.Location.Y - (oldItem.Location.Y + oldItem.Size.Height) ;
 						if (gap < 0) {

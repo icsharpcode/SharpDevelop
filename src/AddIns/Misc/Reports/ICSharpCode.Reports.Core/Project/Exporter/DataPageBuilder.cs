@@ -64,8 +64,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected override void BuildReportHeader ()
 		{
-			if ((base.Pages.Count == 0) && (base.ReportModel.ReportHeader.Items.Count > 0)) {
-				var s = base.ReportModel.ReportHeader;
+			if ((base.Pages.Count == 0) && (base.ReportModel.ReportHeader.Items.Count > 0))
+			{
 				base.ReportModel.ReportHeader.SectionOffset = base.SinglePage.SectionBounds.ReportHeaderRectangle.Top;
 				ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.ReportHeader,this.dataNavigator.CurrentRow);
 				base.SectionBounds.MeasurePageHeader(base.ReportModel.ReportHeader);

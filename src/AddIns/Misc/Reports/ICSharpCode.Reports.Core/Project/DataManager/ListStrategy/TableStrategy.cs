@@ -95,8 +95,7 @@ namespace ICSharpCode.Reports.Core
 		
 		object ExtractDBValue(DataRow row,BaseDataItem item)
 		{
-			string expression = String.Empty;
-			if  ((!String.IsNullOrEmpty(item.Expression)) && (item.Expression.StartsWith("="))) {
+			if  ((!String.IsNullOrEmpty(item.Expression)) && (item.Expression.StartsWith("=",StringComparison.InvariantCultureIgnoreCase))) {
 				return ExtractFromExpression(item.Expression, row);
 			}
 			else
@@ -163,6 +162,17 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
+		private IndexList IndexBuilder(SortColumnCollection col)
+		{
+			IndexList arrayList = new IndexList();
+			for (int rowIndex = 0; rowIndex < this.table.Rows.Count; rowIndex++){
+				object[] values = new object[1];
+				arrayList.Add(new SortComparer(col, rowIndex, values));
+			}
+			return arrayList;
+		}
+		
+		
 		public override void Group ()
 		{
 			base.Group();
@@ -211,7 +221,7 @@ namespace ICSharpCode.Reports.Core
 		
 		
 		
-		object ExtractColumnValue(DataRow row,ColumnCollection col, int criteriaIndex)
+		 object  ExtractColumnValue(DataRow row,ColumnCollection col, int criteriaIndex)
 		{
 			AbstractColumn c = (AbstractColumn)col[criteriaIndex];
 			object val = null;
@@ -224,9 +234,9 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		string CleanupColumnName(string colName)
+		static string  CleanupColumnName(string colName)
 		{
-			if (colName.StartsWith("=[")) {
+			if (colName.StartsWith("=[",StringComparison.InvariantCulture)) {
 				return colName.Substring(2, colName.Length - 3);
 			}
 			return colName;
@@ -235,7 +245,7 @@ namespace ICSharpCode.Reports.Core
 		
 		object DBValueFromRow(DataRow row, string colName)
 		{
-			int pos  =  colName.IndexOf("!");
+			int pos  =  colName.IndexOf("!",StringComparison.InvariantCultureIgnoreCase);
 			if (pos > 0)
 			{
 				return ExtractFromExpression(colName,row);
@@ -253,18 +263,7 @@ namespace ICSharpCode.Reports.Core
 			return v;
 		}
 		
-		
-		private IndexList IndexBuilder(SortColumnCollection col)
-		{
-			IndexList arrayList = new IndexList();
-			for (int rowIndex = 0; rowIndex < this.table.Rows.Count; rowIndex++){
-				object[] values = new object[1];
-				arrayList.Add(new SortComparer(col, rowIndex, values));
-			}
-			return arrayList;
-		}
-		
-		
+
 		public override object CurrentFromPosition (int pos)
 		{
 			return this.table.Rows[pos];

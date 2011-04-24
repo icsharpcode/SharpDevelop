@@ -14,7 +14,7 @@ namespace ICSharpCode.Reports.Core.Globals
 	/// <summary>
 	/// Description of GlobalLists.
 	/// </summary>
-	public class GlobalLists
+	public static class GlobalLists
 	{
 		
 		public enum FunctionTypes {
