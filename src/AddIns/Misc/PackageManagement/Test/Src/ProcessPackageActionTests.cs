@@ -84,6 +84,7 @@ namespace PackageManagement.Tests
 			CreateAction();
 			var expectedProject = new FakePackageManagementProject();
 			action.Project = expectedProject;
+			action.PackageScriptSession = new FakePackageScriptSession();
 			action.Execute();
 			
 			var actualProject = action.ProjectPassedToCreateRunPackageScriptsAction;
@@ -95,9 +96,19 @@ namespace PackageManagement.Tests
 		public void Execute_MethodCalled_RunPackageScriptsActionIsDisposed()
 		{
 			CreateAction();
+			action.PackageScriptSession = new FakePackageScriptSession();
 			action.Execute();
 			
 			Assert.IsTrue(action.IsRunPackageScriptsActionDisposed);
+		}
+		
+		[Test]
+		public void Execute_NullSession_RunPackageScriptsActionIsNotCreated()
+		{
+			CreateAction();
+			action.Execute();
+			
+			Assert.IsFalse(action.IsRunPackageScriptsActionCreated);
 		}
 	}
 }

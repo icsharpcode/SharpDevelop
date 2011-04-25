@@ -40,7 +40,9 @@ namespace ICSharpCode.PackageManagement
 		public void Execute()
 		{
 			BeforeExecute();
-			using (RunPackageScriptsAction runScriptsAction = CreateRunPackageScriptsAction()) {
+			if (PackageScriptSession != null) {
+				ExecuteWithSession();
+			} else {
 				ExecuteCore();
 			}
 		}
@@ -50,6 +52,13 @@ namespace ICSharpCode.PackageManagement
 			GetLoggerIfMissing();
 			ConfigureProjectLogger();
 			GetPackageIfMissing();
+		}
+		
+		void ExecuteWithSession()
+		{
+			using (RunPackageScriptsAction runScriptsAction = CreateRunPackageScriptsAction()) {
+				ExecuteCore();
+			}
 		}
 		
 		RunPackageScriptsAction CreateRunPackageScriptsAction()
