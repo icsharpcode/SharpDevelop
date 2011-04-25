@@ -12,6 +12,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IScriptingConsole scriptingConsole;
 		
 		public const int MinimumColumns = 80;
+		public static readonly ConsoleColor NoConsoleColor = (ConsoleColor)(-1);
 		
 		public PowerShellHostRawUserInterface(IScriptingConsole scriptingConsole)
 		{
@@ -85,8 +86,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 		}
 		
 		public override ConsoleColor ForegroundColor {
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
+			get { return NoConsoleColor; }
+			set { }
 		}
 		
 		public override void FlushInputBuffer()
@@ -105,8 +106,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 		}
 		
 		public override ConsoleColor BackgroundColor {
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
+			get { return NoConsoleColor; }
+			set { }
 		}
 	}
 }

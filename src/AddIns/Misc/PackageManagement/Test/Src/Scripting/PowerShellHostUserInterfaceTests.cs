@@ -190,5 +190,39 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.AreEqual(expectedSize, actualSize);
 		}
+		
+		[Test]
+		public void RawUIForegroundColor_SetForegroundColor_DoesNotThrowException()
+		{
+			CreateHostUserInterface();
+			Assert.DoesNotThrow(() => hostUI.RawUI.ForegroundColor = ConsoleColor.Black);
+		}
+		
+		[Test]
+		public void RawUIForegroundColor_GetForegroundColor_ReturnsNoConsoleColor()
+		{
+			CreateHostUserInterface();
+			ConsoleColor color = hostUI.RawUI.ForegroundColor;
+			ConsoleColor expectedColor = PowerShellHostRawUserInterface.NoConsoleColor;
+			
+			Assert.AreEqual(expectedColor, color);
+		}
+		
+		[Test]
+		public void RawUIForegroundColor_SetBackgroundColor_DoesNotThrowException()
+		{
+			CreateHostUserInterface();
+			Assert.DoesNotThrow(() => hostUI.RawUI.BackgroundColor = ConsoleColor.Black);
+		}
+		
+		[Test]
+		public void RawUIForegroundColor_GetBackgroundColor_ReturnsNoColor()
+		{
+			CreateHostUserInterface();
+			ConsoleColor color = hostUI.RawUI.BackgroundColor;
+			ConsoleColor expectedColor = PowerShellHostRawUserInterface.NoConsoleColor;
+			
+			Assert.AreEqual(expectedColor, color);
+		}
 	}
 }
