@@ -16,23 +16,24 @@ namespace PackageManagement.Tests.Scripting
 		PackageInstallScriptFileName scriptFileName;
 		FakePackageScriptSession fakeSession;
 		PackageInstallScript script;
+		FakeFileSystem fakeFileSystem;
 		
-		void CreateScriptWithPhysicalFileSystem()
+		void CreateScript()
 		{
-			CreateScriptWithPhysicalFileSystem(@"d:\projects\myproject\packages\test");
-		}
-		
-		void CreateScriptWithPhysicalFileSystem(string packageInstallDirectory)
-		{
-			scriptFileName = new PackageInstallScriptFileName(packageInstallDirectory);
+			fakeFileSystem = new FakeFileSystem();
+			fakeFileSystem.FileExistsReturnValue = true;
+			fakeFileSystem.DirectoryExistsReturnValue = true;
+			scriptFileName = new PackageInstallScriptFileName(fakeFileSystem);
+			
 			fakeSession = new FakePackageScriptSession();
+			
 			script = new PackageInstallScript(scriptFileName, fakeSession);
 		}
 
 		[Test]
 		public void Execute_PackageInstallDirectoryIsSet_ProjectSessionVariableIsSet()
 		{
-			CreateScriptWithPhysicalFileSystem();
+			CreateScript();
 			var expectedProject = new Project();
 			var project = new FakePackageManagementProject();
 			project.DTEProject = expectedProject;
@@ -42,6 +43,30 @@ namespace PackageManagement.Tests.Scripting
 			var projectVariable = fakeSession.VariablesAdded["__project"];
 			
 			Assert.AreEqual(expectedProject, projectVariable);
+		}
+		
+		[Test]
+		public void Execute_ScriptDoesNotExist_ScriptIsNotExecuted()
+		{
+			CreateScript();
+			fakeFileSystem.FileExistsReturnValue = false;
+			script.Execute();
+			
+			bool executed = fakeSession.IsScriptExecuted;
+			
+			Assert.IsFalse(executed);
+		}
+		
+		[Test]
+		public void Execute_ScriptDoesNotExist_InstallScriptCheckedForExistence()
+		{
+			CreateScript();
+			fakeFileSystem.FileExistsReturnValue = false;
+			script.Execute();
+			
+			string fileChecked = fakeFileSystem.PathPassedToFileExists;
+			
+			Assert.AreEqual(@"tools\install.ps1", fileChecked);
 		}
 	}
 }

@@ -5,13 +5,12 @@ using System;
 
 namespace ICSharpCode.PackageManagement.Scripting
 {
-	public class PackageUninstallScript : PackageScript
+	public interface IPackageScriptFileName
 	{
-		public PackageUninstallScript(
-			IPackageScriptFileName fileName,
-			IPackageScriptSession session)
-			: base(fileName, session)
-		{
-		}
+		string PackageInstallDirectory { get; }
+		string ToString();
+		bool ScriptDirectoryExists();
+		bool FileExists();
+		string GetScriptDirectory();
 	}
 }

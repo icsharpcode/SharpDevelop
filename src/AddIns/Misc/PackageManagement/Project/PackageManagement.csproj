@@ -170,6 +170,7 @@
     <Compile Include="Src\ProcessPackageAction.cs" />
     <Compile Include="Src\Scripting\IPackageScript.cs" />
     <Compile Include="Src\Scripting\IPackageScriptFactory.cs" />
+    <Compile Include="Src\Scripting\IPackageScriptFileName.cs" />
     <Compile Include="Src\Scripting\IPackageScriptSession.cs" />
     <Compile Include="Src\Scripting\PackageInitializeScript.cs" />
     <Compile Include="Src\Scripting\PackageInitializeScriptFileName.cs" />

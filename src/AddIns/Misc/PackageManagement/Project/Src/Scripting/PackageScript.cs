@@ -10,14 +10,14 @@ namespace ICSharpCode.PackageManagement.Scripting
 	public class PackageScript : IPackageScript
 	{
 		public PackageScript(
-			PackageScriptFileName fileName,
+			IPackageScriptFileName fileName,
 			IPackageScriptSession session)
 		{
 			this.ScriptFileName = fileName;
 			this.Session = session;
 		}
 		
-		protected PackageScriptFileName ScriptFileName { get; private set; }
+		protected IPackageScriptFileName ScriptFileName { get; private set; }
 		protected IPackageScriptSession Session { get; private set; }
 		
 		public IPackage Package { get; set; }
@@ -26,13 +26,20 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public void Execute()
 		{
 			BeforeExecute();
-			AddSessionVariables();
-			ExecuteScript();
-			RemoveSessionVariables();
+			if (ScriptFileExists()) {
+				AddSessionVariables();
+				ExecuteScript();
+				RemoveSessionVariables();
+			}
 		}
 		
 		protected virtual void BeforeExecute()
 		{
+		}
+		
+		bool ScriptFileExists()
+		{
+			return ScriptFileName.FileExists();
 		}
 		
 		void AddSessionVariables()

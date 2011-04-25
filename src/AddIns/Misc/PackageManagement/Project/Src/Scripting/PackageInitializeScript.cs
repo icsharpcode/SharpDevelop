@@ -9,7 +9,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 	public class PackageInitializeScript : PackageScript
 	{
 		public PackageInitializeScript(
-			PackageInitializeScriptFileName fileName,
+			IPackageScriptFileName fileName,
 			IPackageScriptSession session)
 			: base(fileName, session)
 		{

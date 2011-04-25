@@ -7,7 +7,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement.Scripting
 {
-	public abstract class PackageScriptFileName
+	public abstract class PackageScriptFileName : IPackageScriptFileName
 	{
 		IFileSystem fileSystem;
 		string relativeScriptFilePath;

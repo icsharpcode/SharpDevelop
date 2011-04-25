@@ -13,32 +13,14 @@ namespace PackageManagement.Tests.Scripting
 	public class PackageInitializeScriptTests
 	{
 		PackageInitializeScript script;
-		PackageInitializeScriptFileName scriptFileName;
-		FakeFileSystem fakeFileSystem;
 		FakePackageScriptSession fakeSession;
+		FakePackageScriptFileName fakeScriptFileName;
 		
 		void CreateScript()
 		{
-			fakeFileSystem = new FakeFileSystem();
-			fakeFileSystem.FileExistsReturnValue = true;
-			fakeFileSystem.DirectoryExistsReturnValue = true;
-			scriptFileName = new PackageInitializeScriptFileName(fakeFileSystem);
-			
+			fakeScriptFileName = new FakePackageScriptFileName();			
 			fakeSession = new FakePackageScriptSession();
-			
-			script = new PackageInitializeScript(scriptFileName, fakeSession);
-		}
-		
-		void CreateScriptWithPhysicalFileSystem()
-		{
-			CreateScriptWithPhysicalFileSystem(@"d:\projects\myproject\packages\test");
-		}
-		
-		void CreateScriptWithPhysicalFileSystem(string packageInstallDirectory)
-		{
-			scriptFileName = new PackageInitializeScriptFileName(packageInstallDirectory);
-			fakeSession = new FakePackageScriptSession();
-			script = new PackageInitializeScript(scriptFileName, fakeSession);
+			script = new PackageInitializeScript(fakeScriptFileName, fakeSession);
 		}
 		
 		void AssertSessionVariableIsRemoved(string variableName)
@@ -51,13 +33,13 @@ namespace PackageManagement.Tests.Scripting
 		public void Execute_ExistingEnvironmentPathIsEmptyString_PathToScriptAddedToEnvironmentPath()
 		{
 			CreateScript();
-			fakeFileSystem.PathToReturnFromGetFullPath = @"d:\projects\myproject\packages\test";
+			fakeScriptFileName.GetScriptDirectoryReturnValue = @"d:\projects\myproject\packages\test\tools";
 			fakeSession.SetEnvironmentPath(String.Empty);
 			
 			script.Execute();
 			
 			string actualEnvironmentPath = fakeSession.GetEnvironmentPath();
-			string expectedEnvironmentPath = @"d:\projects\myproject\packages\test";
+			string expectedEnvironmentPath = @"d:\projects\myproject\packages\test\tools";
 			
 			Assert.AreEqual(expectedEnvironmentPath, actualEnvironmentPath);
 		}
@@ -66,13 +48,13 @@ namespace PackageManagement.Tests.Scripting
 		public void Execute_OneItemInOriginalEnvironmentPath_PathToScriptAppendedToEnvironmentPath()
 		{
 			CreateScript();
-			fakeFileSystem.PathToReturnFromGetFullPath = @"d:\projects\myproject\packages\test";
+			fakeScriptFileName.GetScriptDirectoryReturnValue = @"d:\projects\myproject\packages\test\tools";
 			fakeSession.SetEnvironmentPath(@"c:\users\sharpdevelop\ps;");
 			
 			script.Execute();
 			
 			string actualEnvironmentPath = fakeSession.GetEnvironmentPath();
-			string expectedEnvironmentPath = @"c:\users\sharpdevelop\ps;d:\projects\myproject\packages\test";
+			string expectedEnvironmentPath = @"c:\users\sharpdevelop\ps;d:\projects\myproject\packages\test\tools";
 			
 			Assert.AreEqual(expectedEnvironmentPath, actualEnvironmentPath);
 		}
@@ -81,13 +63,13 @@ namespace PackageManagement.Tests.Scripting
 		public void Execute_OneItemInOriginalEnvironmentPathMissingSemiColonAtEnd_PathToScriptAppendedToEnvironmentPathWithSemiColonAtStart()
 		{
 			CreateScript();
-			fakeFileSystem.PathToReturnFromGetFullPath = @"d:\projects\myproject\packages\test";
+			fakeScriptFileName.GetScriptDirectoryReturnValue = @"d:\projects\myproject\packages\test\tools";
 			fakeSession.SetEnvironmentPath(@"c:\users\sharpdevelop\ps");
 			
 			script.Execute();
 			
 			string actualEnvironmentPath = fakeSession.GetEnvironmentPath();
-			string expectedEnvironmentPath = @"c:\users\sharpdevelop\ps;d:\projects\myproject\packages\test";
+			string expectedEnvironmentPath = @"c:\users\sharpdevelop\ps;d:\projects\myproject\packages\test\tools";
 			
 			Assert.AreEqual(expectedEnvironmentPath, actualEnvironmentPath);
 		}
@@ -96,13 +78,13 @@ namespace PackageManagement.Tests.Scripting
 		public void Execute_OriginalEnvironmentPathIsNull_PathToScriptAppendedToEnvironmentPath()
 		{
 			CreateScript();
-			fakeFileSystem.PathToReturnFromGetFullPath = @"d:\projects\myproject\packages\test";
+			fakeScriptFileName.GetScriptDirectoryReturnValue = @"d:\projects\myproject\packages\test\tools";
 			fakeSession.SetEnvironmentPath(null);
 			
 			script.Execute();
 			
 			string actualEnvironmentPath = fakeSession.GetEnvironmentPath();
-			string expectedEnvironmentPath = @"d:\projects\myproject\packages\test";
+			string expectedEnvironmentPath = @"d:\projects\myproject\packages\test\tools";
 			
 			Assert.AreEqual(expectedEnvironmentPath, actualEnvironmentPath);
 		}
@@ -111,8 +93,8 @@ namespace PackageManagement.Tests.Scripting
 		public void Execute_ScriptDirectoryDoesNotExist_PathIsNotUpdated()
 		{
 			CreateScript();
-			fakeFileSystem.PathToReturnFromGetFullPath = @"d:\projects\myproject\packages\test";
-			fakeFileSystem.DirectoryExistsReturnValue = false;
+			fakeScriptFileName.GetScriptDirectoryReturnValue = @"d:\projects\myproject\packages\test\tools";
+			fakeScriptFileName.ScriptDirectoryExistsReturnValue = false;
 			fakeSession.SetEnvironmentPath(String.Empty);
 			
 			script.Execute();
@@ -126,7 +108,7 @@ namespace PackageManagement.Tests.Scripting
 		[Test]
 		public void Execute_PackageIsSet_PackageSessionVariableIsSet()
 		{
-			CreateScriptWithPhysicalFileSystem();
+			CreateScript();
 			var expectedPackage = new FakePackage("Test");
 			script.Package = expectedPackage;
 			script.Execute();
@@ -139,8 +121,9 @@ namespace PackageManagement.Tests.Scripting
 		[Test]
 		public void Execute_PackageInstallDirectoryIsSet_RootPathSessionVariableIsSet()
 		{
+			CreateScript();
 			string expectedRootPath = @"d:\projects\myproject\packages\test";
-			CreateScriptWithPhysicalFileSystem(expectedRootPath);
+			fakeScriptFileName.PackageInstallDirectory = expectedRootPath;
 			script.Execute();
 			
 			var rootPath = fakeSession.VariablesAdded["__rootPath"];
@@ -151,7 +134,8 @@ namespace PackageManagement.Tests.Scripting
 		[Test]
 		public void Execute_PackageInstallDirectoryIsSet_ToolsPathSessionVariableIsSet()
 		{
-			CreateScriptWithPhysicalFileSystem(@"d:\projects\myproject\packages\test");
+			CreateScript();
+			fakeScriptFileName.GetScriptDirectoryReturnValue = @"d:\projects\myproject\packages\test\tools";
 			script.Execute();
 			
 			var toolsPath = fakeSession.VariablesAdded["__toolsPath"];
@@ -163,7 +147,7 @@ namespace PackageManagement.Tests.Scripting
 		[Test]
 		public void Execute_PackageInstallDirectoryIsSet_ProjectSessionVariableIsSet()
 		{
-			CreateScriptWithPhysicalFileSystem();
+			CreateScript();
 			script.Execute();
 			
 			var project = fakeSession.VariablesAdded["__project"];
@@ -174,7 +158,8 @@ namespace PackageManagement.Tests.Scripting
 		[Test]
 		public void Execute_PackageInstallDirectoryIsSet_ScriptIsInvoked()
 		{
-			CreateScriptWithPhysicalFileSystem(@"d:\projects\myproject\packages\test");
+			CreateScript();
+			fakeScriptFileName.ToStringReturnValue = @"d:\projects\myproject\packages\test\tools\init.ps1";
 			script.Execute();
 			
 			string actualScript = fakeSession.ScriptPassedToInvokeScript;
@@ -188,7 +173,7 @@ namespace PackageManagement.Tests.Scripting
 		[Test]
 		public void Execute_PackageInstallDirectoryIsSet_PackageSessionVariableIsRemoved()
 		{
-			CreateScriptWithPhysicalFileSystem();
+			CreateScript();
 			script.Execute();
 			
 			AssertSessionVariableIsRemoved("__package");
@@ -197,7 +182,7 @@ namespace PackageManagement.Tests.Scripting
 		[Test]
 		public void Execute_PackageInstallDirectoryIsSet_RootPathSessionVariableIsRemoved()
 		{
-			CreateScriptWithPhysicalFileSystem();
+			CreateScript();
 			script.Execute();
 			
 			AssertSessionVariableIsRemoved("__rootPath");
@@ -206,7 +191,7 @@ namespace PackageManagement.Tests.Scripting
 		[Test]
 		public void Execute_PackageInstallDirectoryIsSet_ToolsPathSessionVariableIsRemoved()
 		{
-			CreateScriptWithPhysicalFileSystem();
+			CreateScript();
 			script.Execute();
 			
 			AssertSessionVariableIsRemoved("__toolsPath");
@@ -215,7 +200,7 @@ namespace PackageManagement.Tests.Scripting
 		[Test]
 		public void Execute_PackageInstallDirectoryIsSet_ProjectSessionVariableIsRemoved()
 		{
-			CreateScriptWithPhysicalFileSystem();
+			CreateScript();
 			script.Execute();
 			
 			AssertSessionVariableIsRemoved("__project");

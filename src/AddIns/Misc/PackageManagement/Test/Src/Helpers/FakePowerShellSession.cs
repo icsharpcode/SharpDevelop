@@ -35,10 +35,12 @@ namespace PackageManagement.Tests.Helpers
 			VariablesRemoved.Add(name);
 		}
 		
+		public bool IsScriptExecuted;
 		public string ScriptPassedToInvokeScript;
 		
 		public void InvokeScript(string script)
 		{
+			IsScriptExecuted = true;
 			ScriptPassedToInvokeScript = script;
 		}
 	}

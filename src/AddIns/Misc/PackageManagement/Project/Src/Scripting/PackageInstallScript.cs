@@ -8,7 +8,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 	public class PackageInstallScript : PackageScript
 	{
 		public PackageInstallScript(
-			PackageInstallScriptFileName fileName,
+			IPackageScriptFileName fileName,
 			IPackageScriptSession session)
 			: base(fileName, session)
 		{
