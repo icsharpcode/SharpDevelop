@@ -7,8 +7,8 @@ namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakeInstallPackageAction : InstallPackageAction
 	{
-		public FakeInstallPackageAction()
-			: base((IPackageManagementProject)null, null)
+		public FakeInstallPackageAction(IPackageManagementProject project)
+			: base(project, null)
 		{
 		}
 		

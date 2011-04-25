@@ -217,13 +217,27 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdletWithoutActiveProject();
 			AddDefaultProjectToConsoleHost();
-			var packageSource = AddPackageSourceToConsoleHost();
+			AddPackageSourceToConsoleHost();
 			SetIdParameter("Test");
 			RunCmdlet();
 			
 			bool executed = fakeUpdatePackageAction.IsExecuted;
 			
 			Assert.IsTrue(executed);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_CmdletUsedAsScriptSession()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			var actualSession = fakeUpdatePackageAction.PackageScriptSession;
+			
+			Assert.AreEqual(cmdlet, actualSession);
 		}
 	}
 }

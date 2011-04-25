@@ -35,9 +35,17 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
+		
+		protected virtual void OnPackageReferenceRemoved(IPackage package)
+		{
+			if (PackageReferenceRemoved != null) {
+				PackageReferenceRemoved(this, new PackageOperationEventArgs(package, String.Empty));
+			}
+		}
+		
 		#pragma warning disable 67
 		public event EventHandler<PackageOperationEventArgs> PackageReferenceAdding;
-		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
 		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving;
 		#pragma warning restore 67
 		
@@ -79,6 +87,11 @@ namespace ICSharpCode.PackageManagement.Design
 		public void FirePackageReferenceAdded(IPackage package)
 		{
 			OnPackageReferenceAdded(package);
+		}
+		
+		public void FirePackageReferenceRemoved(IPackage package)
+		{
+			OnPackageReferenceRemoved(package);
 		}
 	}
 }

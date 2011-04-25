@@ -368,5 +368,57 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedLogger, actualLogger);
 		}
+		
+		[Test]
+		public void PackageInstalled_PackagerManagerPackageInstalledEventFired_EventFiresWithPackage()
+		{
+			CreateProject();
+			PackageOperationEventArgs eventArgs = null;
+			project.PackageInstalled += (sender, e) => eventArgs = e;
+			
+			var expectedEventArgs = new PackageOperationEventArgs(new FakePackage(), String.Empty);
+			fakePackageManager.FirePackageInstalled(expectedEventArgs);
+			
+			Assert.AreEqual(expectedEventArgs, eventArgs);
+		}
+		
+		[Test]
+		public void PackageUninstalled_PackagerManagerPackageUninstalledEventFired_EventFiresWithPackage()
+		{
+			CreateProject();
+			PackageOperationEventArgs eventArgs = null;
+			project.PackageUninstalled += (sender, e) => eventArgs = e;
+			
+			var expectedEventArgs = new PackageOperationEventArgs(new FakePackage(), String.Empty);
+			fakePackageManager.FirePackageUninstalled(expectedEventArgs);
+			
+			Assert.AreEqual(expectedEventArgs, eventArgs);
+		}
+		
+		[Test]
+		public void PackageReferenceAdded_ProjectManagerPackageReferenceAddedEventFired_EventFiresWithPackage()
+		{
+			CreateProject();
+			PackageOperationEventArgs eventArgs = null;
+			project.PackageReferenceAdded += (sender, e) => eventArgs = e;
+			
+			var expectedPackage = new FakePackage();
+			fakeProjectManager.FirePackageReferenceAdded(expectedPackage);
+			
+			Assert.AreEqual(expectedPackage, eventArgs.Package);
+		}
+		
+		[Test]
+		public void PackageReferenceRemoved_ProjectManagerPackageReferenceRemovedEventFired_EventFiresWithPackage()
+		{
+			CreateProject();
+			PackageOperationEventArgs eventArgs = null;
+			project.PackageReferenceRemoved += (sender, e) => eventArgs = e;
+			
+			var expectedPackage = new FakePackage();
+			fakeProjectManager.FirePackageReferenceRemoved(expectedPackage);
+			
+			Assert.AreEqual(expectedPackage, eventArgs.Package);
+		}
 	}
 }

@@ -221,5 +221,19 @@ namespace PackageManagement.Cmdlets.Tests
 						
 			Assert.IsTrue(uninstallPackageAction.IsExecuted);
 		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_CmdletUsedAsScriptSession()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			var packageSource = AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			var actualSession = uninstallPackageAction.PackageScriptSession;
+						
+			Assert.AreEqual(cmdlet, actualSession);
+		}
 	}
 }

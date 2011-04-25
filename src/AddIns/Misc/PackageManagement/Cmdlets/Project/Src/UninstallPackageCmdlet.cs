@@ -49,19 +49,25 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		void UninstallPackage()
 		{
-			UninstallPackageAction action = CreateUninstallPackageAction();
+			IPackageManagementProject project = GetProject();
+			UninstallPackageAction action = CreateUninstallPackageAction(project);
 			action.Execute();
 		}
 		
-		UninstallPackageAction CreateUninstallPackageAction()
+		IPackageManagementProject GetProject()
 		{
 			string source = null; 
-			IPackageManagementProject project = ConsoleHost.GetProject(source, ProjectName);
+			return ConsoleHost.GetProject(source, ProjectName);
+		}
+		
+		UninstallPackageAction CreateUninstallPackageAction(IPackageManagementProject project)
+		{
 			UninstallPackageAction action = project.CreateUninstallPackageAction();
 			action.PackageId = Id;
 			action.PackageVersion = Version;
 			action.ForceRemove = Force.IsPresent;
 			action.RemoveDependencies = RemoveDependencies.IsPresent;
+			action.PackageScriptSession = this;
 			
 			return action;
 		}

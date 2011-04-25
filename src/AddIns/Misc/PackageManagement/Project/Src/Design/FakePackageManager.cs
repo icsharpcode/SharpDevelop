@@ -37,7 +37,7 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		#pragma warning disable 67
-		public event EventHandler<PackageOperationEventArgs> PackageInstalled;		
+		public event EventHandler<PackageOperationEventArgs> PackageInstalled;
 		public event EventHandler<PackageOperationEventArgs> PackageInstalling;
 		public event EventHandler<PackageOperationEventArgs> PackageUninstalled;
 		public event EventHandler<PackageOperationEventArgs> PackageUninstalling;
@@ -140,6 +140,16 @@ namespace ICSharpCode.PackageManagement.Design
 			PackagePassedToUpdatePackage = package;
 			PackageOperationsPassedToUpdatePackage = operations;
 			UpdateDependenciesPassedToUpdatePackage = updateDependencies;
+		}
+		
+		public void FirePackageInstalled(PackageOperationEventArgs e)
+		{
+			PackageInstalled(this, e);
+		}
+		
+		public void FirePackageUninstalled(PackageOperationEventArgs e)
+		{
+			PackageUninstalled(this, e);
 		}
 	}
 }

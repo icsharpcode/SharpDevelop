@@ -63,6 +63,41 @@ namespace PackageManagement.Tests
 			ILogger actualLogger = fakeProject.Logger;
 			
 			Assert.AreEqual(expectedLogger, actualLogger);
-		}		
+		}
+		
+		[Test]
+		public void Execute_MethodCalled_RunPackageScriptsActionCreatedUsingPackageScriptSession()
+		{
+			CreateAction();
+			var expectedSession = new FakePackageScriptSession();
+			action.PackageScriptSession = expectedSession;
+			action.Execute();
+			
+			var actualSession = action.SessionPassedToCreateRunPackageScriptsAction;
+			
+			Assert.AreEqual(expectedSession, actualSession);
+		}
+		
+		[Test]
+		public void Execute_MethodCalled_RunPackageScriptsActionCreatedUsingProject()
+		{
+			CreateAction();
+			var expectedProject = new FakePackageManagementProject();
+			action.Project = expectedProject;
+			action.Execute();
+			
+			var actualProject = action.ProjectPassedToCreateRunPackageScriptsAction;
+			
+			Assert.AreEqual(expectedProject, actualProject);
+		}
+		
+		[Test]
+		public void Execute_MethodCalled_RunPackageScriptsActionIsDisposed()
+		{
+			CreateAction();
+			action.Execute();
+			
+			Assert.IsTrue(action.IsRunPackageScriptsActionDisposed);
+		}
 	}
 }

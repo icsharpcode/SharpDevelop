@@ -58,6 +58,7 @@
     <Folder Include="Resources" />
     <Folder Include="Src" />
     <Folder Include="Src\Design" />
+    <Folder Include="Src\EnvDTE" />
     <Folder Include="Src\Scripting" />
   </ItemGroup>
   <ItemGroup>
@@ -167,7 +168,22 @@
     </Compile>
     <Compile Include="Src\PackagesViewModel.cs" />
     <Compile Include="Src\ProcessPackageAction.cs" />
+    <Compile Include="Src\Scripting\IPackageScript.cs" />
+    <Compile Include="Src\Scripting\IPackageScriptFactory.cs" />
+    <Compile Include="Src\Scripting\IPackageScriptSession.cs" />
+    <Compile Include="Src\Scripting\PackageInitializeScript.cs" />
+    <Compile Include="Src\Scripting\PackageInitializeScriptFileName.cs" />
+    <Compile Include="Src\Scripting\PackageInstallScript.cs" />
+    <Compile Include="Src\Scripting\PackageInstallScriptFileName.cs" />
+    <Compile Include="Src\Scripting\PackageScript.cs" />
+    <Compile Include="Src\Scripting\PackageScriptFactory.cs" />
+    <Compile Include="Src\Scripting\PackageScriptFileName.cs" />
+    <Compile Include="Src\Scripting\PackageUninstallScript.cs" />
+    <Compile Include="Src\Scripting\PackageUninstallScriptFileName.cs" />
     <Compile Include="Src\Scripting\PowerShellHostRawUserInterface.cs" />
+    <Compile Include="Src\Scripting\PowerShellSessionEnvironmentPath.cs" />
+    <Compile Include="Src\EnvDTE\Project.cs" />
+    <Compile Include="Src\Scripting\RunPackageScriptsAction.cs" />
     <Compile Include="Src\UninstallPackageAction.cs" />
     <Compile Include="Src\UpdatedPackagesViewModel.cs" />
     <Compile Include="Src\PackageViewModel.cs" />

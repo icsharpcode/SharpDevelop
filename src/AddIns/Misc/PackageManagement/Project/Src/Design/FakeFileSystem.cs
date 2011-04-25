@@ -12,16 +12,15 @@ namespace ICSharpCode.PackageManagement.Design
 	public class FakeFileSystem : IFileSystem
 	{
 		public bool FileExistsReturnValue;
+		public string PathPassedToFileExists;
 		public string FileToReturnFromOpenFile;
 		public string PathToReturnFromGetFullPath;
+		public bool DirectoryExistsReturnValue;
+		public string PathPassedToDirectoryExists;
 		
 		public ILogger Logger { get; set; }
 		
-		public string Root {
-			get {
-				throw new NotImplementedException();
-			}
-		}
+		public string Root { get; set; }
 		
 		public void DeleteDirectory(string path, bool recursive)
 		{
@@ -55,12 +54,14 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public bool FileExists(string path)
 		{
+			PathPassedToFileExists = path;
 			return FileExistsReturnValue;
 		}
 		
 		public bool DirectoryExists(string path)
 		{
-			throw new NotImplementedException();
+			PathPassedToDirectoryExists = path;
+			return DirectoryExistsReturnValue;
 		}
 		
 		public void AddFile(string path, Stream stream)

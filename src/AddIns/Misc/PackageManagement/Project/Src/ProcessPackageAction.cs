@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -24,6 +25,7 @@ namespace ICSharpCode.PackageManagement
 		public IPackage Package { get; set; }
 		public Version PackageVersion { get; set; }
 		public string PackageId { get; set; }
+		public IPackageScriptSession PackageScriptSession { get; set; }
 		
 		protected void OnParentPackageInstalled()
 		{
@@ -38,7 +40,9 @@ namespace ICSharpCode.PackageManagement
 		public void Execute()
 		{
 			BeforeExecute();
-			ExecuteCore();
+			using (RunPackageScriptsAction runScriptsAction = CreateRunPackageScriptsAction()) {
+				ExecuteCore();
+			}
 		}
 		
 		protected virtual void BeforeExecute()
@@ -46,6 +50,18 @@ namespace ICSharpCode.PackageManagement
 			GetLoggerIfMissing();
 			ConfigureProjectLogger();
 			GetPackageIfMissing();
+		}
+		
+		RunPackageScriptsAction CreateRunPackageScriptsAction()
+		{
+			return CreateRunPackageScriptsAction(PackageScriptSession, Project);
+		}
+		
+		protected virtual RunPackageScriptsAction CreateRunPackageScriptsAction(
+			IPackageScriptSession session,
+			IPackageManagementProject project)
+		{
+			return new RunPackageScriptsAction(session, project);
 		}
 		
 		protected virtual void ExecuteCore()

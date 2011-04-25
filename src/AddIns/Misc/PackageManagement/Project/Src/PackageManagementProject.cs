@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -40,6 +41,26 @@ namespace ICSharpCode.PackageManagement
 				projectManager.Logger = value;
 				projectManager.Project.Logger = value;
 			}
+		}
+		
+		public event EventHandler<PackageOperationEventArgs> PackageInstalled {
+			add { packageManager.PackageInstalled += value; }
+			remove { packageManager.PackageInstalled -= value; }
+		}
+		
+		public event EventHandler<PackageOperationEventArgs> PackageUninstalled {
+			add { packageManager.PackageUninstalled += value; }
+			remove { packageManager.PackageUninstalled -= value; }
+		}
+		
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceAdded {
+			add { projectManager.PackageReferenceAdded += value; }
+			remove { projectManager.PackageReferenceAdded -= value; }
+		}
+		
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved {
+			add { projectManager.PackageReferenceRemoved += value; }
+			remove { projectManager.PackageReferenceRemoved -= value; }
 		}
 		
 		public bool IsInstalled(IPackage package)
@@ -85,6 +106,11 @@ namespace ICSharpCode.PackageManagement
 		public UpdatePackageAction CreateUpdatePackageAction()
 		{
 			return new UpdatePackageAction(this, packageManagementEvents);
+		}
+		
+		public Project ConvertToDTEProject()
+		{
+			return null;
 		}
 	}
 }

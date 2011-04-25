@@ -77,7 +77,10 @@
     <Compile Include="Src\Helpers\FakePackageManagementEvents.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementProjectFactory.cs" />
+    <Compile Include="Src\Helpers\FakePackageScript.cs" />
+    <Compile Include="Src\Helpers\FakePackageScriptFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageViewModelFactory.cs" />
+    <Compile Include="Src\Helpers\FakePowerShellSession.cs" />
     <Compile Include="Src\Helpers\TestableAddPackageReferenceCommand.cs" />
     <Compile Include="Src\PackageFromRepositoryTests.cs" />
     <Compile Include="Src\PackageManagementEventsTests.cs" />
@@ -154,6 +157,12 @@
     <Compile Include="Src\PackageSourceViewModelTests.cs" />
     <Compile Include="Src\PackagesViewModelTests.cs" />
     <Compile Include="Src\ProcessPackageActionTests.cs" />
+    <Compile Include="Src\Scripting\PackageInitializeScriptFileNameTests.cs" />
+    <Compile Include="Src\Scripting\PackageInitializeScriptTests.cs" />
+    <Compile Include="Src\Scripting\PackageInstallScriptFileNameTests.cs" />
+    <Compile Include="Src\Scripting\PackageInstallScriptTests.cs" />
+    <Compile Include="Src\Scripting\PackageUninstallScriptFileNameTests.cs" />
+    <Compile Include="Src\Scripting\RunPackageScriptsActionTests.cs" />
     <Compile Include="Src\UninstallPackageActionTests.cs" />
     <Compile Include="Src\UpdatedPackagesViewModelTests.cs" />
     <Compile Include="Src\PackageViewModelTests.cs" />

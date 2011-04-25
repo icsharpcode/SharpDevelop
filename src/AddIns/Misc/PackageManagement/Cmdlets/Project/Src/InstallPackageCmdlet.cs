@@ -49,17 +49,23 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		void InstallPackage()
 		{
-			InstallPackageAction action = CreateInstallPackageTask();
+			IPackageManagementProject project = GetProject();
+			InstallPackageAction action = CreateInstallPackageTask(project);
 			action.Execute();
 		}
 		
-		InstallPackageAction CreateInstallPackageTask()
+		IPackageManagementProject GetProject()
 		{
-			IPackageManagementProject project = ConsoleHost.GetProject(Source, ProjectName);
+			return ConsoleHost.GetProject(Source, ProjectName);
+		}
+		
+		InstallPackageAction CreateInstallPackageTask(IPackageManagementProject project)
+		{
 			InstallPackageAction action = project.CreateInstallPackageAction();
 			action.PackageId = Id;
 			action.PackageVersion = Version;
 			action.IgnoreDependencies = IgnoreDependencies.IsPresent;
+			action.PackageScriptSession = this;
 			return action;
 		}
 	}

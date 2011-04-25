@@ -49,17 +49,23 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		void UpdatePackage()
 		{
-			UpdatePackageAction action = CreateUpdatePackageAction();
+			IPackageManagementProject project = GetProject();
+			UpdatePackageAction action = CreateUpdatePackageAction(project);
 			action.Execute();
 		}
 		
-		UpdatePackageAction CreateUpdatePackageAction()
+		IPackageManagementProject GetProject()
 		{
-			IPackageManagementProject project = ConsoleHost.GetProject(Source, ProjectName);
+			return ConsoleHost.GetProject(Source, ProjectName);
+		}
+		
+		UpdatePackageAction CreateUpdatePackageAction(IPackageManagementProject project)
+		{
 			UpdatePackageAction action = project.CreateUpdatePackageAction();
 			action.PackageId = Id;
 			action.PackageVersion = Version;
 			action.UpdateDependencies = !IgnoreDependencies.IsPresent;
+			action.PackageScriptSession = this;
 			return action;
 		}
 	}

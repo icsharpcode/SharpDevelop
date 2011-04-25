@@ -5,14 +5,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.PackageManagement.EnvDTE;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public interface IPackageManagementProject
 	{
+		event EventHandler<PackageOperationEventArgs> PackageInstalled;
+		event EventHandler<PackageOperationEventArgs> PackageUninstalled;
+		event EventHandler<PackageOperationEventArgs> PackageReferenceAdded;
+		event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
+			
 		ILogger Logger { get; set; }
 		IPackageRepository SourceRepository { get; }
+		
+		Project ConvertToDTEProject();
 		
 		bool IsInstalled(IPackage package);
 		

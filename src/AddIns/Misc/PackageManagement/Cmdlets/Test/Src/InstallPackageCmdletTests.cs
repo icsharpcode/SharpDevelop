@@ -19,7 +19,7 @@ namespace PackageManagement.Cmdlets.Tests
 		TestableInstallPackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
 		FakePackageManagementProject fakeProject;
-		FakeInstallPackageAction fakeInstallPackageTask;
+		FakeInstallPackageAction fakeInstallPackageAction;
 		
 		void CreateCmdletWithoutActiveProject()
 		{
@@ -27,7 +27,7 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
 			fakeProject = fakeConsoleHost.FakeProject;
-			fakeInstallPackageTask = fakeProject.FakeInstallPackageAction;
+			fakeInstallPackageAction = fakeProject.FakeInstallPackageAction;
 		}
 				
 		void CreateCmdletWithActivePackageSourceAndProject()
@@ -97,7 +97,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualPackageId = fakeInstallPackageTask.PackageId;
+			var actualPackageId = fakeInstallPackageAction.PackageId;
 			
 			Assert.AreEqual("Test", actualPackageId);
 		}
@@ -111,7 +111,7 @@ namespace PackageManagement.Cmdlets.Tests
 			EnableIgnoreDependenciesParameter();
 			RunCmdlet();
 			
-			bool result = fakeInstallPackageTask.IgnoreDependencies;
+			bool result = fakeInstallPackageAction.IgnoreDependencies;
 			
 			Assert.IsTrue(result);
 		}
@@ -124,7 +124,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			bool result = fakeInstallPackageTask.IgnoreDependencies;
+			bool result = fakeInstallPackageAction.IgnoreDependencies;
 			
 			Assert.IsFalse(result);
 		}
@@ -154,7 +154,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetVersionParameter(version);
 			RunCmdlet();
 			
-			var actualVersion = fakeInstallPackageTask.PackageVersion;
+			var actualVersion = fakeInstallPackageAction.PackageVersion;
 			
 			Assert.AreEqual(version, actualVersion);
 		}
@@ -167,7 +167,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualVersion = fakeInstallPackageTask.PackageVersion;
+			var actualVersion = fakeInstallPackageAction.PackageVersion;
 			
 			Assert.IsNull(actualVersion);
 		}
@@ -210,9 +210,23 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			bool result = fakeInstallPackageTask.IsExecuteCalled;
+			bool result = fakeInstallPackageAction.IsExecuteCalled;
 			
 			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_CmdletUsedAsScriptSession()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			var packageSource = AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			var actualSession = fakeInstallPackageAction.PackageScriptSession;
+			
+			Assert.AreEqual(cmdlet, actualSession);
 		}
 	}
 }

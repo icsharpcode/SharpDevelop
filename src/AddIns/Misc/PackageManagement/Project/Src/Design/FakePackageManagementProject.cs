@@ -6,12 +6,24 @@ using System.Collections.Generic;
 using System.Linq;
 
 using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.EnvDTE;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakePackageManagementProject : IPackageManagementProject
 	{
+		public FakePackageManagementProject()
+		{
+			FakeInstallPackageAction = new FakeInstallPackageAction(this);
+			FakeUninstallPackageAction = new FakeUninstallPackageAction(this);
+			FakeUpdatePackageAction = new FakeUpdatePackageAction(this);
+		}
+		
+		public FakeInstallPackageAction FakeInstallPackageAction;
+		public FakeUpdatePackageAction FakeUpdatePackageAction;
+		public FakeUninstallPackageAction FakeUninstallPackageAction;
+		
 		public bool IsInstalledReturnValue;
 		public IPackage PackagePassedToIsInstalled;
 		
@@ -87,25 +99,62 @@ namespace ICSharpCode.PackageManagement.Design
 			UpdateDependenciesPassedToUpdatePackage = updateDependencies;
 		}
 		
-		public FakeInstallPackageAction FakeInstallPackageAction = new FakeInstallPackageAction();
-		
 		public virtual InstallPackageAction CreateInstallPackageAction()
 		{
 			return FakeInstallPackageAction;
 		}
 		
-		public FakeUninstallPackageAction FakeUninstallPackageAction = new FakeUninstallPackageAction();
-		
 		public virtual UninstallPackageAction CreateUninstallPackageAction()
 		{
 			return FakeUninstallPackageAction;
 		}
-		
-		public FakeUpdatePackageAction FakeUpdatePackageAction = new FakeUpdatePackageAction();
-		
+				
 		public UpdatePackageAction CreateUpdatePackageAction()
 		{
 			return FakeUpdatePackageAction;
+		}
+		
+		public event EventHandler<PackageOperationEventArgs> PackageInstalled;
+		
+		public void FirePackageInstalledEvent(PackageOperationEventArgs e)
+		{
+			if (PackageInstalled != null) {
+				PackageInstalled(this, e);
+			}
+		}
+		
+		public event EventHandler<PackageOperationEventArgs> PackageUninstalled;
+		
+		public void FirePackageUninstalledEvent(PackageOperationEventArgs e)
+		{
+			if (PackageUninstalled != null) {
+				PackageUninstalled(this, e);
+			}
+		}
+		
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceAdded;
+		
+		public void FirePackageReferenceAddedEvent(PackageOperationEventArgs e)
+		{
+			if (PackageReferenceAdded != null) {
+				PackageReferenceAdded(this, e);
+			}
+		}
+		
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
+		
+		public void FirePackageReferenceRemovedEvent(PackageOperationEventArgs e)
+		{
+			if (PackageReferenceRemoved != null) {
+				PackageReferenceRemoved(this, e);
+			}
+		}
+		
+		public Project DTEProject = new Project();
+		
+		public Project ConvertToDTEProject()
+		{
+			return DTEProject;
 		}
 	}
 }

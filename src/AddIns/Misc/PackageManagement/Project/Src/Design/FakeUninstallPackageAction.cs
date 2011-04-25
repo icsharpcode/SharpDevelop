@@ -9,8 +9,8 @@ namespace ICSharpCode.PackageManagement.Design
 	{
 		public bool IsExecuted;
 		
-		public FakeUninstallPackageAction()
-			: base((IPackageManagementProject)null, null)
+		public FakeUninstallPackageAction(IPackageManagementProject project)
+			: base(project, null)
 		{
 		}
 		

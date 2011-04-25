@@ -9,8 +9,8 @@ namespace ICSharpCode.PackageManagement.Design
 	{
 		public bool IsExecuted;
 		
-		public FakeUpdatePackageAction()
-			: base((IPackageManagementProject)null, null)
+		public FakeUpdatePackageAction(IPackageManagementProject project)
+			: base(project, null)
 		{
 		}
 		

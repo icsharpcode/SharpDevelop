@@ -10,6 +10,11 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 {
 	public class TestablePackageManagementCmdlet : PackageManagementCmdlet
 	{
+		public TestablePackageManagementCmdlet()
+			: this(new FakeCmdletTerminatingError())
+		{
+		}
+		
 		public TestablePackageManagementCmdlet(FakeCmdletTerminatingError terminatingError)
 			: base(
 				new FakePackageManagementConsoleHost(),
@@ -21,6 +26,31 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 		public void CallThrowProjectNotOpenTerminatingError()
 		{
 			base.ThrowProjectNotOpenTerminatingError();
+		}
+		
+		public object GetSessionVariableReturnValue;
+		public string NamePassedToGetSessionVariable;
+		
+		protected override object GetSessionVariable(string name)
+		{
+			NamePassedToGetSessionVariable = name;
+			return GetSessionVariableReturnValue;
+		}
+		
+		public object ValuePassedToSetSessionVariable;
+		public string NamePassedToSetSessionVariable;
+		
+		protected override void SetSessionVariable(string name, object value)
+		{
+			NamePassedToSetSessionVariable = name;
+			ValuePassedToSetSessionVariable = value;
+		}
+		
+		public string NamePassedToRemoveVariable;
+		
+		protected override void RemoveSessionVariable(string name)
+		{
+			NamePassedToRemoveVariable = name;
 		}
 	}
 }

@@ -9,8 +9,10 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement.Cmdlets
 {
-	public abstract class PackageManagementCmdlet : PSCmdlet, ITerminatingCmdlet
+	public abstract class PackageManagementCmdlet : PSCmdlet, ITerminatingCmdlet, IPackageScriptSession
 	{
+		static readonly string EnvironmentPathVariableName = "env:path";
+		
 		IPackageManagementConsoleHost consoleHost;
 		ICmdletTerminatingError terminatingError;
 		
@@ -49,6 +51,46 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		protected void ThrowProjectNotOpenTerminatingError()
 		{
 			TerminatingError.ThrowNoProjectOpenError();
+		}
+		
+		public void SetEnvironmentPath(string path)
+		{
+			SetSessionVariable(EnvironmentPathVariableName, path);
+		}
+		
+		protected virtual void SetSessionVariable(string name, object value)
+		{
+			SessionState.PSVariable.Set(name, value);
+		}
+		
+		public string GetEnvironmentPath()
+		{
+			return (string)GetSessionVariable(EnvironmentPathVariableName);
+		}
+		
+		protected virtual object GetSessionVariable(string name)
+		{
+			return GetVariableValue(name);
+		}
+		
+		public void AddVariable(string name, object value)
+		{
+			SetSessionVariable(name, value);
+		}
+		
+		public void RemoveVariable(string name)
+		{
+			RemoveSessionVariable(name);
+		}
+		
+		protected virtual void RemoveSessionVariable(string name)
+		{
+			SessionState.PSVariable.Remove(name);
+		}
+		
+		public void InvokeScript(string script)
+		{
+			InvokeCommand.InvokeScript(script);
 		}
 	}
 }

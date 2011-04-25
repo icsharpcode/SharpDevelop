@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using ICSharpCode.PackageManagement.Scripting;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -31,6 +32,26 @@ namespace PackageManagement.Tests.Helpers
 		public void CallBeforeExecute()
 		{
 			base.BeforeExecute();
+		}
+		
+		public bool IsRunPackageScriptsActionCreated;
+		public IPackageScriptSession SessionPassedToCreateRunPackageScriptsAction;
+		public IPackageManagementProject ProjectPassedToCreateRunPackageScriptsAction;
+		public RunPackageScriptsAction RunPackageScriptsAction;
+		
+		protected override RunPackageScriptsAction CreateRunPackageScriptsAction(
+			IPackageScriptSession session,
+			IPackageManagementProject project)
+		{
+			IsRunPackageScriptsActionCreated = true;
+			SessionPassedToCreateRunPackageScriptsAction = session;
+			ProjectPassedToCreateRunPackageScriptsAction = project;
+			RunPackageScriptsAction = base.CreateRunPackageScriptsAction(session, project);
+			return RunPackageScriptsAction;
+		}
+		
+		public bool IsRunPackageScriptsActionDisposed {
+			get { return RunPackageScriptsAction.IsDisposed; }
 		}
 	}
 }
