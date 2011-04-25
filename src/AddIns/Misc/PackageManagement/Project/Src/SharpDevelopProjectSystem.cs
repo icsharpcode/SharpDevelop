@@ -213,7 +213,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			string directory = GetFullPath(path);
 			fileService.RemoveDirectory(directory);
-			project.Save();
+			projectService.Save(project);
 			LogDeletedDirectory(path);
 		}
 		
@@ -221,7 +221,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			string fileName = GetFullPath(path);
 			fileService.RemoveFile(fileName);
-			project.Save();
+			projectService.Save(project);
 			LogDeletedFileInfo(path);
 		}
 		
