@@ -55,6 +55,25 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void PropertiesItemValue_GetPostBuildEvent_ReturnsUnevaluatedPostBuildEvent()
+		{
+			CreateProject();
+			msbuildProject.SetProperty("PostBuildEvent", "$(SolutionDir)", false);
+			var postBuildEventProperty = project.Properties.Item("PostBuildEvent").Value;
+			
+			Assert.AreEqual("$(SolutionDir)", postBuildEventProperty);
+		}
+		
+		[Test]
+		public void PropertiesItemValue_GetNullProperty_ReturnsEmptyString()
+		{
+			CreateProject();
+			var property = project.Properties.Item("TestTestTest").Value;
+			
+			Assert.AreEqual(String.Empty, property);
+		}
+		
+		[Test]
 		public void PropertiesItemValue_SetPostBuildEvent_UpdatesProjectsPostBuildEvent()
 		{
 			CreateProject();

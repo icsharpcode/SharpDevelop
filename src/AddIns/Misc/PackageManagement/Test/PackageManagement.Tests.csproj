@@ -70,6 +70,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\AddPackageReferenceCommandTests.cs" />
+    <Compile Include="Src\EnvDTE\DTETests.cs" />
     <Compile Include="Src\EnvDTE\ProjectTests.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementProject.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingRegisteredPackageRepositories.cs" />

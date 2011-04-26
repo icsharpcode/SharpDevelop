@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.PackageManagement.EnvDTE;
+using DTE = ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -81,10 +81,10 @@ namespace PackageManagement.Tests.Helpers
 			return null;
 		}
 		
-		public static Project CreateDTEProject()
+		public static DTE.Project CreateDTEProject()
 		{
 			TestableProject msbuildProject = CreateTestProject();
-			return new Project(msbuildProject);
+			return new DTE.Project(msbuildProject);
 		}
 	}
 }

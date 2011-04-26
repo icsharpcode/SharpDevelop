@@ -5,10 +5,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Management.Automation;
 using System.Management.Automation.Host;
 using System.Management.Automation.Runspaces;
 using System.Threading;
 
+using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.Scripting;
 
 namespace ICSharpCode.PackageManagement.Scripting
@@ -23,7 +25,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 		Runspace runspace;
 		PowerShellHostUserInterface userInterface;
 		List<string> modulesToImport = new List<string>();
-		//SharpDevelopEnvDTE dte = new SharpDevelopEnvDTE();
 		
 		public PowerShellHost(IScriptingConsole scriptingConsole)
 		{
@@ -83,10 +84,16 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			var initialSessionState = InitialSessionState.CreateDefault();
 			initialSessionState.ImportPSModule(modulesToImport.ToArray());
-			//var options = ScopedItemOptions.AllScope | ScopedItemOptions.Constant;
-			//var variable = new SessionStateVariableEntry("DTE", dte, "SharpDevelop DTE object", options);
-			//initialSessionState.Variables.Add(variable);
+			SessionStateVariableEntry variable = CreateDTESessionVariable();
+			initialSessionState.Variables.Add(variable);
 			return initialSessionState;
+		}
+		
+		SessionStateVariableEntry CreateDTESessionVariable()
+		{
+			var dte = new DTE();
+			var options = ScopedItemOptions.AllScope | ScopedItemOptions.Constant;
+			return new SessionStateVariableEntry("DTE", dte, "SharpDevelop DTE object", options);
 		}
 		
 		public override Version Version {

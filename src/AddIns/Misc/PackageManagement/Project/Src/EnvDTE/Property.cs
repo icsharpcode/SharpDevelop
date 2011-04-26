@@ -25,12 +25,31 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public object Value {
-			get { return project.GetEvaluatedProperty(name); }
+			get { return GetProperty(name); }
 			set {
-				bool escapeValue = false;
-				project.SetProperty(name, value as string, escapeValue);
+				SetProperty(name, value);
 				SaveProject();
 			}
+		}
+		
+		string GetProperty(string name)
+		{
+			string value = project.GetUnevalatedProperty(name);
+			return EmptyStringIfNull(value);
+		}
+		
+		string EmptyStringIfNull(string value)
+		{
+			if (value != null) {
+				return value;
+			}
+			return String.Empty;
+		}
+		
+		void SetProperty(string name, object value)
+		{
+			bool escapeValue = false;
+			project.SetProperty(name, value as string, escapeValue);
 		}
 		
 		void SaveProject()
