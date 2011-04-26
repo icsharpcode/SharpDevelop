@@ -90,7 +90,13 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		public void InvokeScript(string script)
 		{
-			InvokeCommand.InvokeScript(script);
+			try {
+				InvokeCommand.InvokeScript(script);
+			} catch (RuntimeException ex) {
+				var errorMessage = new RuntimeExceptionErrorMessage(ex);
+				WriteWarning(errorMessage.ToString());
+				throw;
+			}
 		}
 	}
 }
