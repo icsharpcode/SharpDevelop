@@ -34,6 +34,17 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void ObjectReferencesAdd_AddGacAssemblyReference_MSBuildProjectIsSaved()
+		{
+			CreateProject();
+			project.Object.References.Add("System.Xml");
+			
+			bool saved = msbuildProject.IsSaved;
+			
+			Assert.IsTrue(saved);
+		}
+		
+		[Test]
 		public void PropertiesItemValue_GetPostBuildEvent_ReturnsProjectsPostBuildEvent()
 		{
 			CreateProject();
@@ -63,6 +74,17 @@ namespace PackageManagement.Tests.EnvDTE
 			string postBuildEventProperty = msbuildProject.GetUnevalatedProperty("PostBuildEvent");
 			
 			Assert.AreEqual("$(SolutionDir)", postBuildEventProperty);
+		}
+		
+		[Test]
+		public void PropertiesItemValue_SetPostBuildEvent_MSBuildProjectIsSaved()
+		{
+			CreateProject();
+			project.Properties.Item("PostBuildEvent").Value = "test";
+			
+			bool saved = msbuildProject.IsSaved;
+			
+			Assert.IsTrue(saved);
 		}
 	}
 }

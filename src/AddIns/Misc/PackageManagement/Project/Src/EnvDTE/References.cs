@@ -28,6 +28,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			var referenceItem = new ReferenceProjectItem(project, path);
 			projectService.AddProjectItem(project, referenceItem);
+			SaveProject();
+		}
+		
+		void SaveProject()
+		{
+			projectService.Save(project);
 		}
 	}
 }

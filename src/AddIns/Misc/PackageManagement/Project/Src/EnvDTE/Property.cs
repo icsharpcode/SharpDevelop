@@ -8,13 +8,20 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class Property
 	{
+		IPackageManagementProjectService projectService;
 		MSBuildBasedProject project;
 		string name;
 		
 		public Property(MSBuildBasedProject project, string name)
+			: this(project, name, new PackageManagementProjectService())
+		{
+		}
+		
+		public Property(MSBuildBasedProject project, string name, IPackageManagementProjectService projectService)
 		{
 			this.project = project;
 			this.name = name;
+			this.projectService = projectService;
 		}
 		
 		public object Value {
@@ -22,7 +29,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			set {
 				bool escapeValue = false;
 				project.SetProperty(name, value as string, escapeValue);
+				SaveProject();
 			}
+		}
+		
+		void SaveProject()
+		{
+			projectService.Save(project);
 		}
 	}
 }
