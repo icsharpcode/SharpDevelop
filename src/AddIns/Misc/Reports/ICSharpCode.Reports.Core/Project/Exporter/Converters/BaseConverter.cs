@@ -2,16 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Linq;
-
 using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
-using ICSharpCode.Reports.Core.Project.Exporter;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Exporter

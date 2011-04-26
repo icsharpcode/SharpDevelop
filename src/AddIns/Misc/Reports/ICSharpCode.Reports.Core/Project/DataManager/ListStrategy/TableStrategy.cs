@@ -2,12 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
-using System.Linq;
+
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
+
 namespace ICSharpCode.Reports.Core
 {
 	/// <summary>
@@ -93,9 +92,10 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
+		
 		object ExtractDBValue(DataRow row,BaseDataItem item)
 		{
-			if  ((!String.IsNullOrEmpty(item.Expression)) && (item.Expression.StartsWith("=",StringComparison.InvariantCultureIgnoreCase))) {
+			if (EvaluationHelper.CanEvaluate(item.Expression)) {
 				return ExtractFromExpression(item.Expression, row);
 			}
 			else
@@ -219,9 +219,7 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		
-		
-		 object  ExtractColumnValue(DataRow row,ColumnCollection col, int criteriaIndex)
+		object  ExtractColumnValue(DataRow row,ColumnCollection col, int criteriaIndex)
 		{
 			AbstractColumn c = (AbstractColumn)col[criteriaIndex];
 			object val = null;
@@ -259,7 +257,7 @@ namespace ICSharpCode.Reports.Core
 		
 		object ExtractFromExpression(string expression, DataRow row)
 		{
-			var v = ((ExpressionEvaluatorFacade)base.ExpressionEvaluator).Evaluate(expression, row);
+			var v = base.ExpressionEvaluator.Evaluate(expression, row);
 			return v;
 		}
 		

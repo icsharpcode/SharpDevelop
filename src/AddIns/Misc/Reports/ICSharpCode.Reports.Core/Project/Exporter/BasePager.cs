@@ -2,14 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-
 using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
-using ICSharpCode.Reports.Core.Project.Exporter;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Exporter
@@ -315,13 +312,24 @@ foreach (var element in section.Items)
 						EvaluateRecursive(evaluatorFassade,ec.Items);
 					}
 				}
+				/*
+			IReportExpression expr = be as IReportExpression;
+			if (expr != null)
+			{
+				if (EvaluationHelper.CanEvaluate(expr.Text)) {
+						expr.Text = evaluatorFassade.Evaluate(expr.Text);
+					}
+			}
+				 */
+				
 				ExportText et = be as ExportText;
 				
 				if ((et != null) && (!String.IsNullOrEmpty(et.Text))) {
-					if (et.Text.StartsWith("=",StringComparison.InvariantCulture)) {
+					if (EvaluationHelper.CanEvaluate(et.Text)) {
 						et.Text = evaluatorFassade.Evaluate(et.Text);
 					}
 				}
+				
 			}
 		}
 		

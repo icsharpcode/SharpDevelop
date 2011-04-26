@@ -278,7 +278,6 @@ namespace ICSharpCode.Reports.Core {
 			
 		
 		
-
         public override object CurrentFromPosition (int pos)
         {
         	return this.baseList[pos];

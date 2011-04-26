@@ -9,11 +9,9 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
-using ICSharpCode.Reports.Core.Exporter;
-using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 
-namespace ICSharpCode.Reports.Core.Project.Exporter
+namespace ICSharpCode.Reports.Core.Exporter
 {
 	/// <summary>
 	/// Description of ExportHelper.
