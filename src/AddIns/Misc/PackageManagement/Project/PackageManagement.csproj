@@ -70,6 +70,10 @@
     <Compile Include="Src\AddPackageReferenceCommand.cs" />
     <Compile Include="Src\AggregateExceptionErrorMessage.cs" />
     <Compile Include="Src\Design\FakePackageManagementProject.cs" />
+    <Compile Include="Src\EnvDTE\ProjectObject.cs" />
+    <Compile Include="Src\EnvDTE\Properties.cs" />
+    <Compile Include="Src\EnvDTE\Property.cs" />
+    <Compile Include="Src\EnvDTE\References.cs" />
     <Compile Include="Src\IAddPackageReferenceView.cs" />
     <Compile Include="Src\IPackageFromRepository.cs" />
     <Compile Include="Src\IPackageManagementEvents.cs" />

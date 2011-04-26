@@ -70,6 +70,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\AddPackageReferenceCommandTests.cs" />
+    <Compile Include="Src\EnvDTE\ProjectTests.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementProject.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingRegisteredPackageRepositories.cs" />
     <Compile Include="Src\Helpers\FakeAddPackageReferenceView.cs" />
@@ -214,6 +215,7 @@
     <Folder Include="Src\Helpers" />
     <Folder Include="Src\Helpers\Tests" />
     <Folder Include="Src" />
+    <Folder Include="Src\EnvDTE" />
     <Folder Include="Src\Scripting" />
   </ItemGroup>
   <ItemGroup>

@@ -150,7 +150,7 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
-		public Project DTEProject = new Project();
+		public Project DTEProject;
 		
 		public Project ConvertToDTEProject()
 		{

@@ -50,5 +50,9 @@ namespace ICSharpCode.PackageManagement
 		public static IPackageManagementOutputMessagesView OutputMessagesView {
 			get { return outputMessagesView; }
 		}
+		
+		public static IPackageManagementProjectService ProjectService {
+			get { return projectService; }
+		}
 	}
 }

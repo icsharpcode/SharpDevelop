@@ -6,22 +6,18 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Project
+	public class Properties
 	{
 		MSBuildBasedProject project;
 		
-		public Project(MSBuildBasedProject project)
+		public Properties(MSBuildBasedProject project)
 		{
 			this.project = project;
-			Object = new ProjectObject(project);
-			Properties = new Properties(project);
 		}
 		
-		public string Name {
-			get { return "Test"; }
+		public Property Item(string propertyName)
+		{
+			return new Property(project, propertyName);
 		}
-		
-		public ProjectObject Object { get; private set; }
-		public Properties Properties { get; private set; }
 	}
 }

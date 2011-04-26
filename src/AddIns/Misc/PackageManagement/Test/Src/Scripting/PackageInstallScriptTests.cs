@@ -34,7 +34,7 @@ namespace PackageManagement.Tests.Scripting
 		public void Execute_PackageInstallDirectoryIsSet_ProjectSessionVariableIsSet()
 		{
 			CreateScript();
-			var expectedProject = new Project();
+			var expectedProject = ProjectHelper.CreateDTEProject();
 			var project = new FakePackageManagementProject();
 			project.DTEProject = expectedProject;
 			script.Project = project;

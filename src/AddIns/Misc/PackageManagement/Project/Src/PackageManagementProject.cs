@@ -16,6 +16,7 @@ namespace ICSharpCode.PackageManagement
 		ISharpDevelopPackageManager packageManager;
 		ISharpDevelopProjectManager projectManager;
 		IPackageManagementEvents packageManagementEvents;
+		MSBuildBasedProject msbuildProject;
 		
 		public PackageManagementProject(
 			IPackageRepository sourceRepository,
@@ -24,6 +25,7 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagerFactory packageManagerFactory)
 		{
 			SourceRepository = sourceRepository;
+			msbuildProject = project;
 			this.packageManagementEvents = packageManagementEvents;
 			
 			packageManager = packageManagerFactory.CreatePackageManager(sourceRepository, project);
@@ -110,7 +112,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public Project ConvertToDTEProject()
 		{
-			return null;
+			return new Project(msbuildProject);
 		}
 	}
 }

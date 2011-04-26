@@ -420,5 +420,15 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedPackage, eventArgs.Package);
 		}
+		
+		[Test]
+		public void ConvertToDTEProject_MethodCalled_ReturnsProjectWithExpectedName()
+		{
+			CreateProject();
+			fakeMSBuildProject.Name = "Test";
+			var dteProject = project.ConvertToDTEProject();
+			
+			Assert.AreEqual("Test", dteProject.Name);
+		}
 	}
 }
