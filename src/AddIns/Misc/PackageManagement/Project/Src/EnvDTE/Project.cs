@@ -12,17 +12,24 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		IPackageManagementProjectService projectService;
 		
 		public Project(MSBuildBasedProject project)
-			: this(project, new PackageManagementProjectService())
+			: this(
+				project,
+				new PackageManagementProjectService(),
+				new PackageManagementFileService())
 		{
 		}
 		
-		public Project(MSBuildBasedProject project, IPackageManagementProjectService projectService)
+		public Project(
+			MSBuildBasedProject project,
+			IPackageManagementProjectService projectService,
+			IPackageManagementFileService fileService)
 		{
 			this.MSBuildProject = project;
 			this.projectService = projectService;
 			
 			Object = new ProjectObject(this);
 			Properties = new Properties(this);
+			ProjectItems = new ProjectItems(this, fileService);
 		}
 		
 		public string Name {
@@ -31,6 +38,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public ProjectObject Object { get; private set; }
 		public Properties Properties { get; private set; }
+		public ProjectItems ProjectItems { get; private set; }
 		
 		internal MSBuildBasedProject MSBuildProject { get; private set; }
 		
@@ -53,6 +61,25 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		internal void RemoveReference(ReferenceProjectItem referenceItem)
 		{
 			projectService.RemoveProjectItem(MSBuildProject, referenceItem);
+		}
+		
+		internal void AddFile(string include)
+		{
+			var fileProjectItem = CreateFileProjectItem(include);
+			projectService.AddProjectItem(MSBuildProject, fileProjectItem);
+		}
+		
+		FileProjectItem CreateFileProjectItem(string include)
+		{
+			ItemType itemType = GetDefaultItemType(include);
+			var fileProjectItem = new FileProjectItem(MSBuildProject, itemType);
+			fileProjectItem.Include = include;
+			return fileProjectItem;
+		}
+		
+		ItemType GetDefaultItemType(string include)
+		{
+			return MSBuildProject.GetDefaultItemType(include);
 		}
 	}
 }

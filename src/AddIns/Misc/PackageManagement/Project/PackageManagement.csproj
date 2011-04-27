@@ -72,6 +72,7 @@
     <Compile Include="Src\Design\FakePackageManagementProject.cs" />
     <Compile Include="Src\EnvDTE\DTE.cs" />
     <Compile Include="Src\EnvDTE\ItemOperations.cs" />
+    <Compile Include="Src\EnvDTE\ProjectItems.cs" />
     <Compile Include="Src\EnvDTE\ProjectObject.cs" />
     <Compile Include="Src\EnvDTE\Properties.cs" />
     <Compile Include="Src\EnvDTE\Property.cs" />

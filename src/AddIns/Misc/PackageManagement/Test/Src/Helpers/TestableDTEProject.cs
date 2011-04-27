@@ -12,6 +12,7 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public TestableProject TestableProject;
 		public FakePackageManagementProjectService FakeProjectService;
+		public FakeFileService FakeFileService;
 		
 		public TestableDTEProject()
 			: this(ProjectHelper.CreateTestProject())
@@ -19,15 +20,22 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public TestableDTEProject(TestableProject project)
-			: this(project, new FakePackageManagementProjectService())
+			: this(
+			project,
+			new FakePackageManagementProjectService(),
+			new FakeFileService(project))
 		{
 		}
 		
-		public TestableDTEProject(TestableProject project, FakePackageManagementProjectService projectService)
-			: base(project, projectService)
+		public TestableDTEProject(
+			TestableProject project,
+			FakePackageManagementProjectService projectService,
+			FakeFileService fileService)
+			: base(project, projectService, fileService)
 		{
 			this.TestableProject = project;
 			this.FakeProjectService = projectService;
+			this.FakeFileService = fileService;
 		}
 	}
 }

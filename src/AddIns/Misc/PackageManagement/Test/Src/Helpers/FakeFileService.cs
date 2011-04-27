@@ -45,5 +45,14 @@ namespace PackageManagement.Tests.Helpers
 		{
 			FileNamePassedToOpenFile = fileName;
 		}
+		
+		public string OldFileNamePassedToCopyFile;
+		public string NewFileNamePassedToCopyFile;
+		
+		public void CopyFile(string oldFileName, string newFileName)
+		{
+			OldFileNamePassedToCopyFile = oldFileName;
+			NewFileNamePassedToCopyFile = newFileName;
+		}
 	}
 }

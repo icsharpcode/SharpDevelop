@@ -38,5 +38,15 @@ namespace ICSharpCode.PackageManagement
 				FileService.OpenFile(fileName);
 			}
 		}
+		
+		public void CopyFile(string oldFileName, string newFileName)
+		{
+			if (WorkbenchSingleton.InvokeRequired) {
+				Action<string, string> action = CopyFile;
+				WorkbenchSingleton.SafeThreadAsyncCall<string, string>(action, oldFileName, newFileName);
+			} else {
+				FileService.CopyFile(oldFileName, newFileName, isDirectory: false, overwrite: false);
+			}
+		}
 	}
 }

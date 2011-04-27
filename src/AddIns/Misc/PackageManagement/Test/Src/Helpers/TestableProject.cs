@@ -25,8 +25,11 @@ namespace PackageManagement.Tests.Helpers
 			ItemsWhenSaved = Items;
 		}
 		
+		public string FileNamePassedToGetDefaultItemType;
+		
 		public override ItemType GetDefaultItemType(string fileName)
 		{
+			FileNamePassedToGetDefaultItemType = fileName;
 			return ItemTypeToReturnFromGetDefaultItemType;
 		}
 		
