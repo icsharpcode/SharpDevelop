@@ -28,5 +28,15 @@ namespace ICSharpCode.PackageManagement
 				FileService.RemoveFile(path, true);
 			}
 		}
+		
+		public void OpenFile(string fileName)
+		{
+			if (WorkbenchSingleton.InvokeRequired) {
+				Action<string> action = OpenFile;
+				WorkbenchSingleton.SafeThreadAsyncCall<string>(action, fileName);
+			} else {
+				FileService.OpenFile(fileName);
+			}
+		}
 	}
 }

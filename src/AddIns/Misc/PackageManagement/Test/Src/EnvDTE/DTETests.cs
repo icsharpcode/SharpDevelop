@@ -4,8 +4,9 @@
 using System;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
-using SD = ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
+using PackageManagement.Tests.Helpers;
+using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace PackageManagement.Tests.EnvDTE
 {
@@ -14,12 +15,14 @@ namespace PackageManagement.Tests.EnvDTE
 	{
 		DTE dte;
 		FakePackageManagementProjectService fakeProjectService;
+		FakeFileService fakeFileService;
 		
 		void CreateDTE()
 		{
 			fakeProjectService = new FakePackageManagementProjectService();
 			fakeProjectService.OpenSolution = new SD.Solution();
-			dte = new DTE(fakeProjectService);
+			fakeFileService = new FakeFileService(null);
+			dte = new DTE(fakeProjectService, fakeFileService);
 		}
 		
 		[Test]
@@ -43,6 +46,18 @@ namespace PackageManagement.Tests.EnvDTE
 			var solution = dte.Solution;
 			
 			Assert.IsNull(solution);
+		}
+		
+		[Test]
+		public void ItemOperationsOpenFile_FileNamePassed_OpensFileInSharpDevelop()
+		{
+			CreateDTE();
+			string expectedFileName = @"d:\temp\readme.txt";
+			dte.ItemOperations.OpenFile(expectedFileName);
+			
+			string actualFileName = fakeFileService.FileNamePassedToOpenFile;
+			
+			Assert.AreEqual(expectedFileName, actualFileName);
 		}
 	}
 }

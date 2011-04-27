@@ -38,5 +38,12 @@ namespace PackageManagement.Tests.Helpers
 			ProjectItem item = project.Items[0];
 			ProjectService.RemoveProjectItem(project, item);
 		}
+		
+		public string FileNamePassedToOpenFile;
+		
+		public void OpenFile(string fileName)
+		{
+			FileNamePassedToOpenFile = fileName;
+		}
 	}
 }

@@ -9,5 +9,6 @@ namespace ICSharpCode.PackageManagement
 	{
 		void RemoveFile(string path);
 		void RemoveDirectory(string path);
+		void OpenFile(string fileName);
 	}
 }

@@ -8,15 +8,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class DTE
 	{
 		IPackageManagementProjectService projectService;
+		IPackageManagementFileService fileService;
 		
 		public DTE()
-			: this(new PackageManagementProjectService())
+			: this(new PackageManagementProjectService(), new PackageManagementFileService())
 		{
 		}
 		
-		public DTE(IPackageManagementProjectService projectService)
+		public DTE(
+			IPackageManagementProjectService projectService,
+			IPackageManagementFileService fileService)
 		{
 			this.projectService = projectService;
+			this.fileService = fileService;
+			
+			ItemOperations = new ItemOperations(fileService);
 		}
 		
 		public Solution Solution {
@@ -27,5 +33,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return null;
 			}
 		}
+		
+		public ItemOperations ItemOperations { get; private set; }
 	}
 }
