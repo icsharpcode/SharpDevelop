@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Project;
@@ -15,6 +16,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 		PackageSource ActivePackageSource { get; set; }
 		IScriptingConsole ScriptingConsole { get; set; }
 		IPackageManagementProjectService ProjectService { get; }
+		
+		IEnumerable<IProject> GetOpenProjects();
 		
 		void Clear();
 		void Run();

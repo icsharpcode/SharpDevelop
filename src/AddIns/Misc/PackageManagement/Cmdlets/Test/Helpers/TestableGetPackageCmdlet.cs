@@ -14,7 +14,6 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 	{
 		public FakeRegisteredPackageRepositories FakeRegisteredPackageRepositories;
 		public FakeCommandRuntime FakeCommandRuntime;
-		public List<IPackage> PackagesPassedToWriteObject = new List<IPackage>();
 		public FakePackageManagementConsoleHost FakePackageManagementConsoleHost;
 		public FakeCmdletTerminatingError FakeCmdletTerminatingError;
 		

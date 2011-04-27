@@ -55,7 +55,7 @@ namespace PackageManagement.Tests
 		TestableProject AddProjectToOpenProjects(string projectName)
 		{
 			var project = ProjectHelper.CreateTestProject(projectName);
-			fakeProjectService.OpenProjects.Add(project);
+			fakeProjectService.FakeOpenProjects.Add(project);
 			return project;
 		}
 		

@@ -11,6 +11,9 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 	public class FakeCommandRuntime : ICommandRuntime
 	{
 		public List<object> ObjectsPassedToWriteObject = new List<object>();
+		public object FirstObjectPassedToWriteObject {
+			get { return ObjectsPassedToWriteObject[0]; }
+		}
 		
 		public PSHost Host {
 			get {
@@ -39,9 +42,12 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 			ObjectsPassedToWriteObject.Add(sendToPipeline);
 		}
 		
+		public bool EnumerateCollectionPassedToWriteObject;
+		
 		public void WriteObject(object sendToPipeline, bool enumerateCollection)
 		{
-			throw new NotImplementedException();
+			EnumerateCollectionPassedToWriteObject = enumerateCollection;
+			ObjectsPassedToWriteObject.Add(sendToPipeline);
 		}
 		
 		public void WriteProgress(ProgressRecord progressRecord)

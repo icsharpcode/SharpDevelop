@@ -3,29 +3,33 @@
 
 using System;
 using ICSharpCode.PackageManagement.Cmdlets;
-using ICSharpCode.PackageManagement.Design;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Cmdlets.Tests.Helpers
 {
-	public class TestableInstallPackageCmdlet : InstallPackageCmdlet
+	public class TestableGetProjectCmdlet : GetProjectCmdlet
 	{
 		public FakeCmdletTerminatingError FakeCmdletTerminatingError;
 		public FakePackageManagementConsoleHost FakePackageManagementConsoleHost;
+		public FakeCommandRuntime FakeCommandRuntime;
 		
-		public TestableInstallPackageCmdlet()
+		public TestableGetProjectCmdlet()
 			: this(
 				new FakePackageManagementConsoleHost(),
+				new FakeCommandRuntime(),
 				new FakeCmdletTerminatingError())
 		{
 		}
 		
-		public TestableInstallPackageCmdlet(
+		public TestableGetProjectCmdlet(
 			FakePackageManagementConsoleHost consoleHost,
+			FakeCommandRuntime commandRuntime,
 			FakeCmdletTerminatingError cmdletTerminatingError)
 			: base(consoleHost, cmdletTerminatingError)
 		{
 			this.FakePackageManagementConsoleHost = consoleHost;
+			this.FakeCommandRuntime = commandRuntime;
+			this.CommandRuntime = commandRuntime;
 			this.FakeCmdletTerminatingError = cmdletTerminatingError;
 		}
 		

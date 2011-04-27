@@ -45,9 +45,11 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\CmdletTerminatingError.cs" />
     <Compile Include="Src\GetPackageCmdlet.cs" />
+    <Compile Include="Src\GetProjectCmdlet.cs" />
     <Compile Include="Src\ICmdletTerminatingError.cs" />
     <Compile Include="Src\InstallPackageCmdlet.cs" />
     <Compile Include="Src\ITerminatingCmdlet.cs" />
+    <Compile Include="Src\OpenProjects.cs" />
     <Compile Include="Src\PackageManagementCmdlet.cs" />
     <Compile Include="Src\RuntimeExceptionErrorMessage.cs" />
     <Compile Include="Src\UninstallPackageCmdlet.cs" />

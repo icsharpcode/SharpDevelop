@@ -198,5 +198,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 			projectName = GetActiveProjectName(projectName);
 			return solution.GetProject(sourceRepository, projectName);
 		}
+		
+		public IEnumerable<IProject> GetOpenProjects()
+		{
+			return projectService.GetOpenProjects();
+		}
 	}
 }

@@ -53,16 +53,16 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
-		public List<IProject> OpenProjects = new List<IProject>();
+		public List<IProject> FakeOpenProjects = new List<IProject>();
 		
 		public void AddFakeProject(IProject project)
 		{
-			OpenProjects.Add(project);
+			FakeOpenProjects.Add(project);
 		}
 		
 		public IEnumerable<IProject> GetOpenProjects()
 		{
-			return OpenProjects;
+			return FakeOpenProjects;
 		}
 		
 		public void AddProjectItem(IProject project, ProjectItem item)

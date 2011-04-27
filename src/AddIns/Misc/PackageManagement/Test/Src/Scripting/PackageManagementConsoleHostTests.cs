@@ -377,5 +377,18 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.AreEqual("MyProject", projectName);
 		}
+		
+		[Test]
+		public void GetOpenProjects_TwoProjectsInOpenSolution_ReturnsTwoProjects()
+		{
+			CreateHost();
+			fakeProjectService.AddFakeProject(ProjectHelper.CreateTestProject("A"));
+			fakeProjectService.AddFakeProject(ProjectHelper.CreateTestProject("B"));
+			
+			var projects = host.GetOpenProjects();
+			var expectedProjects = fakeProjectService.FakeOpenProjects;
+			
+			CollectionAssert.AreEqual(expectedProjects, projects);
+		}
 	}
 }

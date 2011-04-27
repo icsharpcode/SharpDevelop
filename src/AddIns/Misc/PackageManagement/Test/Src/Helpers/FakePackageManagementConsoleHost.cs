@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
@@ -84,6 +85,20 @@ namespace PackageManagement.Tests.Helpers
 		{
 			PackageSourcePassedToGetActivePackageSource = source;
 			return PackageSourceToReturnFromGetActivePackageSource;
+		}
+		
+		public List<TestableProject> FakeOpenProjects = new List<TestableProject>();
+		
+		public TestableProject AddFakeProject(string name)
+		{
+			var project = ProjectHelper.CreateTestProject(name);
+			FakeOpenProjects.Add(project);
+			return project;
+		}
+		
+		public IEnumerable<IProject> GetOpenProjects()
+		{
+			return FakeOpenProjects;
 		}
 	}
 }
