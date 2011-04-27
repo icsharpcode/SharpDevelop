@@ -9,6 +9,11 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class FakePowerShellHost : IPowerShellHost
 	{
+		public FakePowerShellHost()
+		{
+			Version = new Version(1, 0);
+		}
+		
 		public bool IsSetRemoteSignedExecutionPolicyCalled;
 		
 		public void SetRemoteSignedExecutionPolicy()
@@ -37,5 +42,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			FormattingFilesPassedToUpdateFormatting = formattingFiles;
 		}
+		
+		public Version Version { get; set; }
 	}
 }

@@ -21,7 +21,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 		CultureInfo currentUICulture = Thread.CurrentThread.CurrentUICulture;
 		CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
 		Guid instanceId = Guid.NewGuid();
-		Version version = new Version(0, 1);
 		Runspace runspace;
 		PowerShellHostUserInterface userInterface;
 		List<string> modulesToImport = new List<string>();
@@ -97,7 +96,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		}
 		
 		public override Version Version {
-			get { return version; }
+			get { return NuGetVersion.Version; }
 		}
 		
 		public override PSHostUserInterface UI {

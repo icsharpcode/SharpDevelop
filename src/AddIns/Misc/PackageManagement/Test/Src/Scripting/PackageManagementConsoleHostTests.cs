@@ -218,7 +218,7 @@ namespace PackageManagement.Tests.Scripting
 		public void Run_TextDisplayedBeforeFirstPromptDisplayed_NuGetVersionDisplayed()
 		{
 			CreateHost();
-			host.VersionToReturnFromGetNuGetVersion = new Version("1.2.0.4");
+			powerShellHost.Version = new Version("1.2.0.4");
 			RunHost();
 			
 			string expected = "NuGet 1.2.0.4";

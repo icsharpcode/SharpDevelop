@@ -9,6 +9,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 	public interface IPowerShellHost
 	{
 		IList<string> ModulesToImport { get; }
+		Version Version { get; }
 		
 		void SetRemoteSignedExecutionPolicy();
 		void UpdateFormatting(IEnumerable<string> formattingFiles);

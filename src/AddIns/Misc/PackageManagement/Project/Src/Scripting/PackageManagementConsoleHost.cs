@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 
 using ICSharpCode.AvalonEdit;
@@ -23,7 +22,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IPackageManagementAddInPath addinPath;
 		int autoIndentSize = 0;
 		string prompt = "PM> ";
-		Version nuGetVersion;
 		
 		public PackageManagementConsoleHost(
 			IPackageManagementSolution solution,
@@ -123,17 +121,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		void WriteNuGetVersionInfo()
 		{
-			string versionInfo = String.Format("NuGet {0}", GetNuGetVersion());
+			string versionInfo = String.Format("NuGet {0}", powerShellHost.Version);
 			WriteLine(versionInfo);
-		}
-		
-		protected virtual Version GetNuGetVersion()
-		{
-			if (nuGetVersion == null) {
-				AssemblyName name = typeof(PackageSource).Assembly.GetName();
-				nuGetVersion = name.Version;
-			}
-			return nuGetVersion;
 		}
 		
 		void WriteLine(string message)

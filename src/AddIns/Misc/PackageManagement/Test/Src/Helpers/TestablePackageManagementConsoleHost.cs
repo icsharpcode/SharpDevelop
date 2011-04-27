@@ -51,13 +51,6 @@ namespace PackageManagement.Tests.Helpers
 			return FakeThread;
 		}
 		
-		public Version VersionToReturnFromGetNuGetVersion = new Version("1.2");
-		
-		protected override Version GetNuGetVersion()
-		{
-			return VersionToReturnFromGetNuGetVersion;
-		}
-		
 		public string TextToReturnFromGetHelpInfo = String.Empty;
 		
 		protected override string GetHelpInfo()
