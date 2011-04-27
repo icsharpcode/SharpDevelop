@@ -8,33 +8,26 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class Property
 	{
-		IPackageManagementProjectService projectService;
-		MSBuildBasedProject project;
+		Project project;
 		string name;
 		
-		public Property(MSBuildBasedProject project, string name)
-			: this(project, name, new PackageManagementProjectService())
-		{
-		}
-		
-		public Property(MSBuildBasedProject project, string name, IPackageManagementProjectService projectService)
+		public Property(Project project, string name)
 		{
 			this.project = project;
 			this.name = name;
-			this.projectService = projectService;
 		}
 		
 		public object Value {
 			get { return GetProperty(name); }
 			set {
 				SetProperty(name, value);
-				SaveProject();
+				project.Save();
 			}
 		}
 		
 		string GetProperty(string name)
 		{
-			string value = project.GetUnevalatedProperty(name);
+			string value = project.MSBuildProject.GetUnevalatedProperty(name);
 			return EmptyStringIfNull(value);
 		}
 		
@@ -49,12 +42,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		void SetProperty(string name, object value)
 		{
 			bool escapeValue = false;
-			project.SetProperty(name, value as string, escapeValue);
-		}
-		
-		void SaveProject()
-		{
-			projectService.Save(project);
+			project.MSBuildProject.SetProperty(name, value as string, escapeValue);
 		}
 	}
 }

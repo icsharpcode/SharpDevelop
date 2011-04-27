@@ -75,6 +75,7 @@
     <Compile Include="Src\EnvDTE\ProjectObject.cs" />
     <Compile Include="Src\EnvDTE\Properties.cs" />
     <Compile Include="Src\EnvDTE\Property.cs" />
+    <Compile Include="Src\EnvDTE\Reference.cs" />
     <Compile Include="Src\EnvDTE\References.cs" />
     <Compile Include="Src\EnvDTE\Solution.cs" />
     <Compile Include="Src\IAddPackageReferenceView.cs" />

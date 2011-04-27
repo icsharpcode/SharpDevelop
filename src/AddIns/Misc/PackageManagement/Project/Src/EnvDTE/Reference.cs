@@ -6,18 +6,25 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Properties
+	public class Reference
 	{
+		ReferenceProjectItem referenceProjectItem;
 		Project project;
 		
-		public Properties(Project project)
+		public Reference(Project project, ReferenceProjectItem referenceProjectItem)
 		{
 			this.project = project;
+			this.referenceProjectItem = referenceProjectItem;
 		}
 		
-		public Property Item(string propertyName)
+		public string Name {
+			get { return referenceProjectItem.Name; }
+		}
+		
+		public void Remove()
 		{
-			return new Property(project, propertyName);
+			project.RemoveReference(referenceProjectItem);
+			project.Save();
 		}
 	}
 }

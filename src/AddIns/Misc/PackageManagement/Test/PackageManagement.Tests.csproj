@@ -72,6 +72,9 @@
     <Compile Include="Src\AddPackageReferenceCommandTests.cs" />
     <Compile Include="Src\EnvDTE\DTETests.cs" />
     <Compile Include="Src\EnvDTE\ProjectTests.cs" />
+    <Compile Include="Src\EnvDTE\PropertyTests.cs" />
+    <Compile Include="Src\EnvDTE\ReferencesTests.cs" />
+    <Compile Include="Src\EnvDTE\ReferenceTests.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementProject.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingRegisteredPackageRepositories.cs" />
     <Compile Include="Src\Helpers\FakeAddPackageReferenceView.cs" />
@@ -85,6 +88,7 @@
     <Compile Include="Src\Helpers\FakePackageViewModelFactory.cs" />
     <Compile Include="Src\Helpers\FakePowerShellSession.cs" />
     <Compile Include="Src\Helpers\TestableAddPackageReferenceCommand.cs" />
+    <Compile Include="Src\Helpers\TestableDTEProject.cs" />
     <Compile Include="Src\PackageFromRepositoryTests.cs" />
     <Compile Include="Src\PackageManagementEventsTests.cs" />
     <Compile Include="Src\PackageManagementLoggerTests.cs" />

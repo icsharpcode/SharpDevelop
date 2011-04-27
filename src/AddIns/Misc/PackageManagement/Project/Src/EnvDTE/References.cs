@@ -2,14 +2,17 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class References
+	public class References : IEnumerable<Reference>
 	{
-		MSBuildBasedProject project;
+		MSBuildBasedProject msbuildProject;
 		IPackageManagementProjectService projectService;
+		Project project;
 		
 		public References(MSBuildBasedProject project)
 			: this(project, new PackageManagementProjectService())
@@ -20,20 +23,36 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			MSBuildBasedProject project,
 			IPackageManagementProjectService projectService)
 		{
-			this.project = project;
+			this.msbuildProject = project;
 			this.projectService = projectService;
+		}
+		
+		public References(Project project)
+		{
+			this.project = project;
 		}
 		
 		public void Add(string path)
 		{
-			var referenceItem = new ReferenceProjectItem(project, path);
-			projectService.AddProjectItem(project, referenceItem);
-			SaveProject();
+			project.AddReference(path);
+			project.Save();
 		}
 		
 		void SaveProject()
 		{
-			projectService.Save(project);
+			project.Save();
+		}
+		
+		public IEnumerator<Reference> GetEnumerator()
+		{
+			foreach (ReferenceProjectItem referenceProjectItem in project.GetReferences()) {
+				yield return new Reference(project, referenceProjectItem);
+			}
+		}
+		
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 	}
 }

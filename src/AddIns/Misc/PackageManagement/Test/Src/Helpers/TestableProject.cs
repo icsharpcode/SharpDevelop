@@ -29,5 +29,19 @@ namespace PackageManagement.Tests.Helpers
 		{
 			return ItemTypeToReturnFromGetDefaultItemType;
 		}
+		
+		public ReferenceProjectItem AddReference(string include)
+		{
+			var referenceProjectItem = new ReferenceProjectItem(this, include);
+			ProjectService.AddProjectItem(this, referenceProjectItem);
+			return referenceProjectItem;
+		}
+		
+		public FileProjectItem AddFile(string include)
+		{
+			var fileProjectItem = new FileProjectItem(this, ItemType.Compile, include);
+			ProjectService.AddProjectItem(this, fileProjectItem);
+			return fileProjectItem;
+		}
 	}
 }

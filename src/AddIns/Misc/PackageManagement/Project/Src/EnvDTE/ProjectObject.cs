@@ -8,11 +8,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class ProjectObject
 	{
-		MSBuildBasedProject project;
-		
-		public ProjectObject(MSBuildBasedProject project)
+		public ProjectObject(Project project)
 		{
-			this.project = project;
 			References = new References(project);
 		}
 		
