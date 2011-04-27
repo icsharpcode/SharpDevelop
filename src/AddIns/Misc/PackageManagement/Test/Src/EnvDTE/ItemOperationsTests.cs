@@ -6,46 +6,47 @@ using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
-using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace PackageManagement.Tests.EnvDTE
 {
 	[TestFixture]
-	public class DTETests
+	public class ItemOperationsTests
 	{
 		DTE dte;
 		FakePackageManagementProjectService fakeProjectService;
 		FakeFileService fakeFileService;
+		ItemOperations itemOperations;
 		
-		void CreateDTE()
+		void CreateItemOperations()
 		{
 			fakeProjectService = new FakePackageManagementProjectService();
-			fakeProjectService.OpenSolution = new SD.Solution();
 			fakeFileService = new FakeFileService(null);
 			dte = new DTE(fakeProjectService, fakeFileService);
+			itemOperations = dte.ItemOperations;
 		}
 		
 		[Test]
-		public void SolutionFullName_SolutionIsOpen_ReturnsSolutionFileName()
+		public void OpenFile_FileNamePassed_OpensFileInSharpDevelop()
 		{
-			CreateDTE();
-			string fileName = @"d:\projects\myproject\myproject.sln";
-			fakeProjectService.OpenSolution.FileName = fileName;
+			CreateItemOperations();
+			string expectedFileName = @"d:\temp\readme.txt";
+			itemOperations.OpenFile(expectedFileName);
 			
-			string fullName = dte.Solution.FullName;
+			string actualFileName = fakeFileService.FileNamePassedToOpenFile;
 			
-			Assert.AreEqual(fileName, fullName);
+			Assert.AreEqual(expectedFileName, actualFileName);
 		}
 		
 		[Test]
-		public void Solution_NoOpenSolution_ReturnsNull()
+		public void Navigate_UrlPassed_OpensUrlInSharpDevelop()
 		{
-			CreateDTE();
-			fakeProjectService.OpenSolution = null;
+			CreateItemOperations();
+			string expectedUrl = "http://sharpdevelop.com";
+			itemOperations.Navigate(expectedUrl);
 			
-			var solution = dte.Solution;
+			string url = fakeFileService.FileNamePassedToOpenFile;
 			
-			Assert.IsNull(solution);
+			Assert.AreEqual(expectedUrl, url);
 		}
 	}
 }

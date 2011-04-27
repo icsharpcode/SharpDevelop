@@ -18,5 +18,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			fileService.OpenFile(fileName);
 		}
+		
+		public void Navigate(string url)
+		{
+			fileService.OpenFile(url);
+		}
 	}
 }

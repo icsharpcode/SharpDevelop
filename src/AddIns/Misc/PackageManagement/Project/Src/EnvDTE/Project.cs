@@ -10,6 +10,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class Project
 	{
 		IPackageManagementProjectService projectService;
+		IPackageManagementFileService fileService;
+		DTE dte;
 		
 		public Project(MSBuildBasedProject project)
 			: this(
@@ -26,6 +28,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			this.MSBuildProject = project;
 			this.projectService = projectService;
+			this.fileService = fileService;
 			
 			Object = new ProjectObject(this);
 			Properties = new Properties(this);
@@ -39,6 +42,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public ProjectObject Object { get; private set; }
 		public Properties Properties { get; private set; }
 		public ProjectItems ProjectItems { get; private set; }
+		
+		public DTE DTE {
+			get {
+				if (dte == null) {
+					dte = new DTE(projectService, fileService);
+				}
+				return dte;
+			}
+		}
 		
 		internal MSBuildBasedProject MSBuildProject { get; private set; }
 		
