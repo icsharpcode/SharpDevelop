@@ -77,11 +77,40 @@ namespace PackageManagement.Tests.EnvDTE
 		public void ItemValue_SetPostBuildEvent_MSBuildProjectIsSaved()
 		{
 			CreateProperties();
-			project.Properties.Item("PostBuildEvent").Value = "test";
+			properties.Item("PostBuildEvent").Value = "test";
 			
 			bool saved = msbuildProject.IsSaved;
 			
 			Assert.IsTrue(saved);
+		}
+		
+		[Test]
+		public void ItemValue_GetTargetFrameworkMoniker_ReturnsNet40ClientProfile()
+		{
+			CreateProperties();
+			msbuildProject.SetProperty("TargetFrameworkVersion", "4.0");
+			msbuildProject.SetProperty("TargetFrameworkProfile", "Client");
+			
+			string targetFrameworkMoniker = properties.Item("TargetFrameworkMoniker").Value as string;
+			
+			string expectedTargetFrameworkMoniker = ".NETFramework,Version=v4.0,Profile=Client";
+			
+			Assert.AreEqual(expectedTargetFrameworkMoniker, targetFrameworkMoniker);
+		}
+		
+		[Test]
+		public void ItemValue_GetTargetFrameworkMonikerUsingIncorrectCaseAndFrameworkIdentifierIsSilverlight_ReturnsNet35Silverlight()
+		{
+			CreateProperties();
+			msbuildProject.SetProperty("TargetFrameworkIdentifier", "Silverlight");
+			msbuildProject.SetProperty("TargetFrameworkVersion", "3.5");
+			msbuildProject.SetProperty("TargetFrameworkProfile", "Full");
+			
+			string targetFrameworkMoniker = properties.Item("targetframeworkmoniker").Value as string;
+			
+			string expectedTargetFrameworkMoniker = "Silverlight,Version=v3.5,Profile=Full";
+			
+			Assert.AreEqual(expectedTargetFrameworkMoniker, targetFrameworkMoniker);
 		}
 	}
 }

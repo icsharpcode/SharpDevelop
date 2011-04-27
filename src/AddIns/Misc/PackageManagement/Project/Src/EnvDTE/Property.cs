@@ -28,7 +28,25 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		string GetProperty(string name)
 		{
 			string value = project.MSBuildProject.GetUnevalatedProperty(name);
+			if (value != null) {
+				return value;
+			}
+			
+			if (IsTargetFrameworkMoniker(name)) {
+				return GetTargetFrameworkMoniker();
+			}
 			return EmptyStringIfNull(value);
+		}
+		
+		bool IsTargetFrameworkMoniker(string name)
+		{
+			return String.Equals(name, "TargetFrameworkMoniker", StringComparison.InvariantCultureIgnoreCase);
+		}
+		
+		string GetTargetFrameworkMoniker()
+		{
+			var targetFramework = new ProjectTargetFramework(project.MSBuildProject);
+			return targetFramework.TargetFrameworkName.ToString();
 		}
 		
 		string EmptyStringIfNull(string value)
