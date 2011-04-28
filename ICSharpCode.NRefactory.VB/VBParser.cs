@@ -23,6 +23,7 @@ namespace ICSharpCode.NRefactory.VB
 	public class VBParser
 	{
 		bool hasErrors;
+		Errors errors;
 		
 		public CompilationUnit Parse(string content)
 		{
@@ -34,6 +35,7 @@ namespace ICSharpCode.NRefactory.VB
 			var parser = new ICSharpCode.NRefactory.VB.Parser.VBParser(new VBLexer(reader));
 			parser.Parse();
 			hasErrors = parser.Errors.Count > 0;
+			errors = parser.Errors;
 			return parser.CompilationUnit;
 		}
 		
@@ -44,6 +46,10 @@ namespace ICSharpCode.NRefactory.VB
 		
 		public bool HasErrors {
 			get { return hasErrors; }
+		}
+		
+		public Errors Errors {
+			get { return errors; }
 		}
 	}
 }

@@ -99,6 +99,12 @@ partial class VBParser
 				StatementTerminator();
 			}
 		}
+		while (la.kind == 137) {
+			ImportsStatement(CompilationUnit.MemberRole);
+			while (la.kind == 1 || la.kind == 21) {
+				StatementTerminator();
+			}
+		}
 	}
 
 	void StatementTerminator() {
@@ -147,6 +153,259 @@ partial class VBParser
 		NodeEnd(result, role);
 	}
 
+	void ImportsStatement(Role role) {
+		var result = new ImportsStatement(); NodeStart(result);
+		Expect(137);
+		AddTerminal(Roles.Keyword);
+		ImportsClause();
+		while (la.kind == 22) {
+			Get();
+			ImportsClause();
+		}
+		StatementTerminator();
+		NodeEnd(result, role);
+	}
+
+	void Identifier() {
+		if (StartOf(1)) {
+			IdentifierForFieldDeclaration();
+		} else if (la.kind == 98) {
+			Get();
+		} else SynErr(242);
+	}
+
+	void IdentifierForFieldDeclaration() {
+		switch (la.kind) {
+		case 2: {
+			Get();
+			break;
+		}
+		case 58: {
+			Get();
+			break;
+		}
+		case 62: {
+			Get();
+			break;
+		}
+		case 64: {
+			Get();
+			break;
+		}
+		case 65: {
+			Get();
+			break;
+		}
+		case 66: {
+			Get();
+			break;
+		}
+		case 67: {
+			Get();
+			break;
+		}
+		case 70: {
+			Get();
+			break;
+		}
+		case 87: {
+			Get();
+			break;
+		}
+		case 104: {
+			Get();
+			break;
+		}
+		case 107: {
+			Get();
+			break;
+		}
+		case 116: {
+			Get();
+			break;
+		}
+		case 121: {
+			Get();
+			break;
+		}
+		case 126: {
+			Get();
+			break;
+		}
+		case 133: {
+			Get();
+			break;
+		}
+		case 139: {
+			Get();
+			break;
+		}
+		case 143: {
+			Get();
+			break;
+		}
+		case 146: {
+			Get();
+			break;
+		}
+		case 147: {
+			Get();
+			break;
+		}
+		case 170: {
+			Get();
+			break;
+		}
+		case 176: {
+			Get();
+			break;
+		}
+		case 178: {
+			Get();
+			break;
+		}
+		case 184: {
+			Get();
+			break;
+		}
+		case 203: {
+			Get();
+			break;
+		}
+		case 212: {
+			Get();
+			break;
+		}
+		case 213: {
+			Get();
+			break;
+		}
+		case 223: {
+			Get();
+			break;
+		}
+		case 224: {
+			Get();
+			break;
+		}
+		case 230: {
+			Get();
+			break;
+		}
+		default: SynErr(243); break;
+		}
+	}
+
+	void TypeName(out AstType type) {
+		type = null;
+		if (StartOf(2)) {
+			PrimitiveTypeName(out type);
+		} else if (StartOf(3)) {
+			QualifiedTypeName(out type);
+		} else SynErr(244);
+	}
+
+	void PrimitiveTypeName(out AstType type) {
+		type = null;
+		switch (la.kind) {
+		case 168: {
+			Get();
+			type = new PrimitiveType("Object", t.Location);
+			break;
+		}
+		case 68: {
+			Get();
+			type = new PrimitiveType("Boolean", t.Location);
+			break;
+		}
+		case 99: {
+			Get();
+			type = new PrimitiveType("Date", t.Location);
+			break;
+		}
+		case 82: {
+			Get();
+			type = new PrimitiveType("Char", t.Location);
+			break;
+		}
+		case 208: {
+			Get();
+			type = new PrimitiveType("String", t.Location);
+			break;
+		}
+		case 100: {
+			Get();
+			type = new PrimitiveType("Decimal", t.Location);
+			break;
+		}
+		case 71: {
+			Get();
+			type = new PrimitiveType("Byte", t.Location);
+			break;
+		}
+		case 201: {
+			Get();
+			type = new PrimitiveType("Short", t.Location);
+			break;
+		}
+		case 141: {
+			Get();
+			type = new PrimitiveType("Integer", t.Location);
+			break;
+		}
+		case 151: {
+			Get();
+			type = new PrimitiveType("Long", t.Location);
+			break;
+		}
+		case 202: {
+			Get();
+			type = new PrimitiveType("Single", t.Location);
+			break;
+		}
+		case 109: {
+			Get();
+			type = new PrimitiveType("Double", t.Location);
+			break;
+		}
+		case 221: {
+			Get();
+			type = new PrimitiveType("UInteger", t.Location);
+			break;
+		}
+		case 222: {
+			Get();
+			type = new PrimitiveType("ULong", t.Location);
+			break;
+		}
+		case 225: {
+			Get();
+			type = new PrimitiveType("UShort", t.Location);
+			break;
+		}
+		case 196: {
+			Get();
+			type = new PrimitiveType("SByte", t.Location);
+			break;
+		}
+		default: SynErr(245); break;
+		}
+	}
+
+	void QualifiedTypeName(out AstType type) {
+		if (la.kind == 130) {
+			Get();
+		} else if (StartOf(4)) {
+			Identifier();
+		} else SynErr(246);
+		type = new SimpleType(t.val, t.Location);
+		while (la.kind == 26) {
+			Get();
+			Identifier();
+			type = new QualifiedType(type, new Identifier(t.val, t.Location));
+		}
+	}
+
 	void OnOff(OptionStatement os) {
 		if (la.kind == 171) {
 			Get();
@@ -156,7 +415,7 @@ partial class VBParser
 			Get();
 			AddTerminal(Ast.OptionStatement.OptionValueRole);
 			os.OptionValue  = OptionValue.Off;
-		} else SynErr(242);
+		} else SynErr(247);
 	}
 
 	void BinaryText(OptionStatement os) {
@@ -168,7 +427,50 @@ partial class VBParser
 			Get();
 			AddTerminal(Ast.OptionStatement.OptionValueRole);
 			os.OptionValue  = OptionValue.Binary;
-		} else SynErr(243);
+		} else SynErr(248);
+	}
+
+	void ImportsClause() {
+		if (IsAliasImportsClause()) {
+			AliasImportsClause(Ast.ImportsStatement.ImportsClauseRole);
+		} else if (StartOf(5)) {
+			MemberImportsClause(Ast.ImportsStatement.ImportsClauseRole);
+		} else if (la.kind == 10) {
+			XmlNamespaceImportsClause(Ast.ImportsStatement.ImportsClauseRole);
+		} else SynErr(249);
+		while (!(StartOf(6))) {SynErr(250); Get();}
+	}
+
+	void AliasImportsClause(Role role) {
+		var result = new AliasImportsClause(); NodeStart(result);
+		AstType alias;
+		Identifier();
+		result.Name = new Identifier(t.val, t.Location);
+		Expect(20);
+		TypeName(out alias);
+		result.Alias = alias;
+		NodeEnd(result, role);
+	}
+
+	void MemberImportsClause(Role role) {
+		var result = new MemberImportsClause(); NodeStart(result);
+		AstType member;
+		TypeName(out member);
+		result.Member = member;
+		NodeEnd(result, role);
+	}
+
+	void XmlNamespaceImportsClause(Role role) {
+		var result = new XmlNamespaceImportsClause(); NodeStart(result);
+		Expect(10);
+		AddTerminal(Roles.XmlOpenTag);
+		Identifier();
+		Expect(20);
+		AddTerminal(Roles.Assign);
+		Expect(3);
+		Expect(11);
+		AddTerminal(Roles.XmlCloseTag);
+		NodeEnd(result, role);
 	}
 
 
@@ -180,7 +482,13 @@ partial class VBParser
 	}
 
 	static readonly BitArray[] set = {
-		new BitArray(new int[] {2097155, 0, 0, 0, 0, 0, 0, 0})
+		new BitArray(new int[] {6291459, 0, 0, 0, 0, 0, 0, 0}),
+		new BitArray(new int[] {4, 1140850688, 8388687, 1108347136, 821280, 17105920, -2144335872, 65}),
+		new BitArray(new int[] {0, 0, 262288, 8216, 8396800, 256, 1610679824, 2}),
+		new BitArray(new int[] {4, 1140850688, 8388687, 1108347140, 821284, 17105920, -2144335872, 65}),
+		new BitArray(new int[] {4, 1140850688, 8388687, 1108347140, 821280, 17105920, -2144335872, 65}),
+		new BitArray(new int[] {4, 1140850688, 8650975, 1108355356, 9218084, 17106176, -533656048, 67}),
+		new BitArray(new int[] {6291459, 0, 0, 0, 0, 0, 0, 0})
 
 	};
 	
@@ -434,8 +742,15 @@ partial class VBParser
 			case 239: return "this symbol not expected in StatementTerminator";
 			case 240: return "invalid StatementTerminator";
 			case 241: return "invalid OptionStatement";
-			case 242: return "invalid OnOff";
-			case 243: return "invalid BinaryText";
+			case 242: return "invalid Identifier";
+			case 243: return "invalid IdentifierForFieldDeclaration";
+			case 244: return "invalid TypeName";
+			case 245: return "invalid PrimitiveTypeName";
+			case 246: return "invalid QualifiedTypeName";
+			case 247: return "invalid OnOff";
+			case 248: return "invalid BinaryText";
+			case 249: return "invalid ImportsClause";
+			case 250: return "this symbol not expected in ImportsClause";
 
 			default: return "error " + errorNumber;
 		}

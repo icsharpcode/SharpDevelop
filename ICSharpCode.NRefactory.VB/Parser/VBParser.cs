@@ -30,6 +30,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 			this.stack = new Stack<AstNode>();
 		}
 		
+		#region Infrastructure
 		void NodeStart(AstNode node)
 		{
 			stack.Push(node);
@@ -63,6 +64,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 				return lexer.Token;
 			}
 		}
+		
 		Token la
 		{
 			[System.Diagnostics.DebuggerStepThrough]
@@ -71,7 +73,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 			}
 		}
 
-		Token Peek (int n)
+		Token Peek(int n)
 		{
 			lexer.StartPeek();
 			Token x = la;
@@ -89,7 +91,9 @@ namespace ICSharpCode.NRefactory.VB.Parser
 			}
 			errDist = 0;
 		}
-
+		#endregion
+		
+		#region Parse
 		public void Parse()
 		{
 			ParseRoot();
@@ -149,16 +153,24 @@ namespace ICSharpCode.NRefactory.VB.Parser
 //			newType.AcceptVisitor(new SetParentVisitor(), null);
 //			return newType.Children;
 //		}
-
+		#endregion
+		
+		#region Conflict Resolvers
+		bool IsAliasImportsClause()
+		{
+			return IsIdentifierToken(la) && Peek(1).Kind == Tokens.Assign;
+		}
+		
+		static bool IsIdentifierToken(Token tk)
+		{
+			return Tokens.IdentifierTokens[tk.kind] || tk.kind == Tokens.Identifier;
+		}
+		#endregion
+		
 		/* True, if "." is followed by an ident */
 		bool DotAndIdentOrKw () {
 			int peek = Peek(1).kind;
 			return la.kind == Tokens.Dot && (peek == Tokens.Identifier || peek >= Tokens.AddHandler);
-		}
-
-		static bool IsIdentifierToken(Token tk)
-		{
-			return Tokens.IdentifierTokens[tk.kind] || tk.kind == Tokens.Identifier;
 		}
 		
 		bool IsIdentifiedExpressionRange()

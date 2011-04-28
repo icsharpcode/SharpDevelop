@@ -67,6 +67,7 @@
     <Compile Include="Ast\TypeName\AstType.cs" />
     <Compile Include="Ast\TypeName\ComposedType.cs" />
     <Compile Include="Ast\TypeName\PrimitiveType.cs" />
+    <Compile Include="Ast\TypeName\QualifiedType.cs" />
     <Compile Include="Ast\TypeName\SimpleType.cs" />
     <Compile Include="Ast\VBModifierToken.cs" />
     <Compile Include="Ast\VBTokenNode.cs" />

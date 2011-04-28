@@ -270,14 +270,16 @@ VB =
 .)
 	{ StatementTerminator }
 	{ OptionStatement<CompilationUnit.MemberRole> { StatementTerminator } }
-/*	{ ImportsStatement<CompilationUnit.MemberRole> { StatementTerminator } }
-	{ IF (IsGlobalAttrTarget()) GlobalAttributeSection { StatementTerminator } }
+	{ ImportsStatement<CompilationUnit.MemberRole> { StatementTerminator } }
+/*	{ IF (IsGlobalAttrTarget()) GlobalAttributeSection { StatementTerminator } }
 	{ NamespaceMemberDecl { StatementTerminator } } */
 .
 
 StatementTerminator = SYNC ( EOL<Roles.StatementTerminator> | ":"<Roles.StatementTerminator> ) .
 
-/* IdentifierOrKeyword<out string identifier> = ANY (. identifier = t.val; .) .
+#region Identifier
+
+//IdentifierOrKeyword<out string identifier> = ANY (. identifier = t.val; .) .
 
 // This production handles pseudo keywords that are needed in the grammar
 Identifier	=
@@ -316,30 +318,38 @@ IdentifierForFieldDeclaration =
 	| "Until"
 	| "Where"
 .
+#endregion
 
-TypeName<out AstType type> =
-	(. type = null; .)
+TypeName<out AstType type> (. type = null; .) =
+	PrimitiveTypeName<out type> |
+	QualifiedTypeName<out type>
+.
+QualifiedTypeName<out AstType type> =
+	( "Global" | Identifier ) (. type = new SimpleType(t.val, t.Location); .)
+	{ "." Identifier (. type = new QualifiedType(type, new Identifier(t.val, t.Location)); .) }
+	// TODO : add TypeArguments
 .
 
-PrimitiveTypeName<out string type>
-	(. type = String.Empty; .) =
-	"Boolean"		(. type = "System.Boolean"; .)
-	| "Date"		(. type = "System.DateTime"; .)
-	| "Char"		(. type = "System.Char"; .)
-	| "String"		(. type = "System.String"; .)
-	| "Decimal"		(. type = "System.Decimal"; .)
-	| "Byte"		(. type = "System.Byte"; .)
-	| "Short"		(. type = "System.Int16"; .)
-	| "Integer"		(. type = "System.Int32"; .)
-	| "Long"		(. type = "System.Int64"; .)
-	| "Single"		(. type = "System.Single"; .)
-	| "Double"		(. type = "System.Double"; .)
-	| "UInteger"	(. type = "System.UInt32"; .)
-	| "ULong"		(. type = "System.UInt64"; .)
-	| "UShort"		(. type = "System.UInt16"; .)
-	| "SByte"		(. type = "System.SByte"; .)
-	.
+PrimitiveTypeName<out AstType type> (. type = null; .) =
+	"Object"		(. type = new PrimitiveType("Object", t.Location); .)
+	| "Boolean"	(. type = new PrimitiveType("Boolean", t.Location); .)
+	| "Date"		(. type = new PrimitiveType("Date", t.Location); .)
+	| "Char"		(. type = new PrimitiveType("Char", t.Location); .)
+	| "String"		(. type = new PrimitiveType("String", t.Location); .)
+	| "Decimal"	(. type = new PrimitiveType("Decimal", t.Location); .)
+	| "Byte"		(. type = new PrimitiveType("Byte", t.Location); .)
+	| "Short"		(. type = new PrimitiveType("Short", t.Location); .)
+	| "Integer"	(. type = new PrimitiveType("Integer", t.Location); .)
+	| "Long"		(. type = new PrimitiveType("Long", t.Location); .)
+	| "Single"		(. type = new PrimitiveType("Single", t.Location); .)
+	| "Double"		(. type = new PrimitiveType("Double", t.Location); .)
+	| "UInteger"	(. type = new PrimitiveType("UInteger", t.Location); .)
+	| "ULong"		(. type = new PrimitiveType("ULong", t.Location); .)
+	| "UShort"		(. type = new PrimitiveType("UShort", t.Location); .)
+	| "SByte"		(. type = new PrimitiveType("SByte", t.Location); .)
+.
 
+/*
 ParameterModifier<ParamModifierList m> =
 	"ByVal"			(. m.Add(ParameterModifiers.In); .)
 	| "ByRef"			(. m.Add(ParameterModifiers.Ref); .)
@@ -391,7 +401,6 @@ PropertyAccessorAccessModifier<out Modifiers m> =
 	}
 .
 */
-
 #endregion
 
 #region Global
@@ -420,29 +429,30 @@ BinaryText<OptionStatement os> =
 #endregion
 
 #region ImportsStatement
-/*
+
 ImportsStatement<auto> =
 	"Imports"<Roles.Keyword> ImportsClause { "," ImportsClause } StatementTerminator
 .
 
 ImportsClause =
-	AliasImportsClause<Ast.ImportsStatement.ImportsClauseRole> |
+	( IF (IsAliasImportsClause())
+		AliasImportsClause<Ast.ImportsStatement.ImportsClauseRole> |
 	MemberImportsClause<Ast.ImportsStatement.ImportsClauseRole> |
-	XmlNamespaceImportsClause<Ast.ImportsStatement.ImportsClauseRole> .
+	XmlNamespaceImportsClause<Ast.ImportsStatement.ImportsClauseRole> ) SYNC .
 
-AliasImportsClause<auto> =
+AliasImportsClause<auto> (. AstType alias; .) =
 	// Type characters are not allowed in identifiers here
-	Identifier (. result.Name = t.val; .) "=" TypeName<out alias> (. result.Alias = alias; .)
+	Identifier (. result.Name = new Identifier(t.val, t.Location); .) "=" TypeName<out alias> (. result.Alias = alias; .)
 .
 
-MemberImportsClause<auto> =
+MemberImportsClause<auto> (. AstType member; .) =
 	TypeName<out member> (. result.Member = member; .)
 .
 
 XmlNamespaceImportsClause<auto> =
-	XmlOpenTag<Roles.XmlOpenTag> ident<Roles.XmlIdentifier> "="<Roles.Assign>  LiteralString<Roles.XmlLiteralString> XmlCloseTag<Roles.XmlCloseTag>
+	XmlOpenTag<Roles.XmlOpenTag> Identifier/*<Roles.XmlIdentifier>*/ "="<Roles.Assign> LiteralString/*<Roles.XmlLiteralString>*/ XmlCloseTag<Roles.XmlCloseTag>
 .
-*/
+
 #endregion
 
 #endregion

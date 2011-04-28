@@ -36,6 +36,8 @@ namespace ICSharpCode.NRefactory.Demo
 		{
 			var parser = new VBParser();
 			compilationUnit = parser.Parse(new StringReader(codeView.Text));
+			if (parser.HasErrors)
+				MessageBox.Show(parser.Errors.ErrorOutput);
 			treeView.Nodes.Clear();
 			foreach (var element in compilationUnit.Children) {
 				treeView.Nodes.Add(MakeTreeNode(element));

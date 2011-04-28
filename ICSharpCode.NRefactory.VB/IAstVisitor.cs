@@ -30,6 +30,7 @@ namespace ICSharpCode.NRefactory.VB {
 		
 		// TypeName
 		S VisitPrimitiveType(PrimitiveType primitiveType, T data);
+		S VisitQualifiedType(QualifiedType qualifiedType, T data);
 		S VisitComposedType(ComposedType composedType, T data);
 		S VisitArraySpecifier(ArraySpecifier arraySpecifier, T data);
 		S VisitSimpleType(SimpleType simpleType, T data);

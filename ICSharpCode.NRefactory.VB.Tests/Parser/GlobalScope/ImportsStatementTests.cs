@@ -10,91 +10,52 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.VB.Tests.Ast
 {
 	[TestFixture]
-	public class UsingDeclarationTests
+	public class ImportsStatementTests
 	{
-//		void CheckTwoSimpleUsings(CompilationUnit u)
-//		{
-//			Assert.AreEqual(2, u.Children.Count);
-//			Assert.IsTrue(u.Children[0] is ImportsStatement);
-//			ImportsStatement ud = (ImportsStatement)u.Children[0];
-//			Assert.AreEqual(1, ud.ImportsClauses.Count);
-//			Assert.IsTrue(!ud.ImportsClauses[0].IsAlias);
-//			Assert.AreEqual("System", ud.ImportsClauses[0].Name);
-//			
-//			
-//			Assert.IsTrue(u.Children[1] is ImportsStatement);
-//			ud = (ImportsStatement)u.Children[1];
-//			Assert.AreEqual(1, ud.ImportsClauses.Count);
-//			Assert.IsTrue(!ud.ImportsClauses[0].IsAlias);
-//			Assert.AreEqual("My.Name.Space", ud.ImportsClauses[0].Name);
-//		}
-//		
-//		void CheckAliases(CompilationUnit u)
-//		{
-//			Assert.AreEqual(3, u.Children.Count);
-//			
-//			Assert.IsTrue(u.Children[0] is ImportsStatement);
-//			ImportsStatement ud = (ImportsStatement)u.Children[0];
-//			Assert.AreEqual(1, ud.ImportsClauses.Count);
-//			Assert.IsTrue(((ImportsClause)ud.ImportsClauses[0]).IsAlias);
-//			Assert.AreEqual("TESTME", ud.ImportsClauses[0].Name);
-//			Assert.AreEqual("System", ud.ImportsClauses[0].Alias.Type);
-//			
-//			Assert.IsTrue(u.Children[1] is ImportsStatement);
-//			ud = (ImportsStatement)u.Children[1];
-//			Assert.AreEqual(1, ud.ImportsClauses.Count);
-//			Assert.IsTrue(((ImportsClause)ud.ImportsClauses[0]).IsAlias);
-//			Assert.AreEqual("myAlias", ud.ImportsClauses[0].Name);
-//			Assert.AreEqual("My.Name.Space", ud.ImportsClauses[0].Alias.Type);
-//			
-//			Assert.IsTrue(u.Children[2] is ImportsStatement);
-//			ud = (ImportsStatement)u.Children[2];
-//			Assert.AreEqual(1, ud.ImportsClauses.Count);
-//			Assert.IsTrue(((ImportsClause)ud.ImportsClauses[0]).IsAlias);
-//			Assert.AreEqual("StringCollection", ud.ImportsClauses[0].Name);
-//			Assert.AreEqual("System.Collections.Generic.List", ud.ImportsClauses[0].Alias.Type);
-//			Assert.AreEqual("System.String", ud.ImportsClauses[0].Alias.GenericTypes[0].Type);
-//		}
-//		
-//		#region VB.NET
-//		[Test]
-//		public void VBNetWrongUsingTest()
-//		{
-//			string program = "Imports\n";
-//			VBParser parser = ParserFactory.CreateParser(new StringReader(program));
-//			parser.Parse();
-//			Assert.IsTrue(parser.Errors.Count > 0);
-//			ImportsStatement u = (ImportsStatement)parser.CompilationUnit.Children[0];
-//			foreach (ImportsClause us in u.ImportsClauses) {
-//				Assert.IsNotNull(us);
-//			}
-//		}
-//		
-//		[Test]
-//		public void VBNetWrongUsing2Test()
-//		{
-//			string program = "Imports ,\n";
-//			VBParser parser = ParserFactory.CreateParser(new StringReader(program));
-//			parser.Parse();
-//			Assert.IsTrue(parser.Errors.Count > 0);
-//			ImportsStatement u = (ImportsStatement)parser.CompilationUnit.Children[0];
-//			foreach (ImportsClause us in u.ImportsClauses) {
-//				Assert.IsNotNull(us);
-//			}
-//		}
-//		
-//		[Test]
-//		public void VBNetDeclarationTest()
-//		{
-//			string program = "Imports System\n" +
-//				"Imports My.Name.Space\n";
-//			VBParser parser = ParserFactory.CreateParser(new StringReader(program));
-//			parser.Parse();
-//			
-//			Assert.AreEqual("", parser.Errors.ErrorOutput);
-//			CheckTwoSimpleUsings(parser.CompilationUnit);
-//		}
-//		
+		[Test]
+		public void InvalidImportsStatement()
+		{
+			string program = "Imports\n";
+			ParseUtil.ParseGlobal<ImportsStatement>(program, true);
+		}
+		
+		[Test]
+		public void InvalidImportsStatement2()
+		{
+			string program = "Imports ,\n";
+			ParseUtil.ParseGlobal<ImportsStatement>(program, true);
+		}
+		
+		[Test]
+		public void SimpleImportsStatement()
+		{
+			string program = "Imports System\n";
+			
+			var clause1 = new MemberImportsClause {
+				Member = new SimpleType("System")
+			};
+			
+			var node = new ImportsStatement();
+			node.AddChild(clause1, ImportsStatement.ImportsClauseRole);
+			
+			ParseUtil.AssertGlobal(program, node);
+		}
+		
+		[Test]
+		public void QualifiedTypeImportsStatement()
+		{
+			string program = "Imports My.Name.Space\n";
+			
+			var clause2 = new MemberImportsClause {
+				Member = new QualifiedType(new QualifiedType(new SimpleType("My"), new Identifier("Name", AstLocation.Empty)), new Identifier("Space", AstLocation.Empty))
+			};
+			
+			var node = new ImportsStatement();
+			node.AddChild(clause2, ImportsStatement.ImportsClauseRole);
+			
+			ParseUtil.AssertGlobal(program, node);
+		}
+//
 //		[Test]
 //		public void VBNetUsingAliasDeclarationTest()
 //		{
@@ -103,102 +64,102 @@ namespace ICSharpCode.NRefactory.VB.Tests.Ast
 //				"Imports StringCollection = System.Collections.Generic.List(Of string)\n";
 //			VBParser parser = ParserFactory.CreateParser(new StringReader(program));
 //			parser.Parse();
-//			
+//
 //			Assert.AreEqual("", parser.Errors.ErrorOutput);
 //			CheckAliases(parser.CompilationUnit);
 //		}
-//		
+//
 //		[Test]
 //		public void VBNetComplexUsingAliasDeclarationTest()
 //		{
 //			string program = "Imports NS1, AL=NS2, NS3, AL2=NS4, NS5\n";
 //			VBParser parser = ParserFactory.CreateParser(new StringReader(program));
 //			parser.Parse();
-//			
+//
 //			Assert.AreEqual("", parser.Errors.ErrorOutput);
 //			// TODO : Extend test ...
 //		}
-//		
+//
 //		[Test]
 //		public void VBNetXmlNamespaceUsingTest()
 //		{
 //			string program = "Imports <xmlns=\"http://icsharpcode.net/sharpdevelop/avalonedit\">";
 //			VBParser parser = ParserFactory.CreateParser(new StringReader(program));
 //			parser.Parse();
-//			
+//
 //			Assert.AreEqual("", parser.Errors.ErrorOutput);
 //			CompilationUnit unit = parser.CompilationUnit;
-//			
+//
 //			Assert.AreEqual(1, unit.Children.Count);
 //			Assert.IsTrue(unit.Children[0] is ImportsStatement);
 //			ImportsStatement ud = (ImportsStatement)unit.Children[0];
 //			Assert.AreEqual(1, ud.ImportsClauses.Count);
 //			Assert.IsFalse(ud.ImportsClauses[0].IsAlias);
 //			Assert.IsTrue(ud.ImportsClauses[0].IsXml);
-//			
+//
 //			Assert.AreEqual("xmlns", ud.ImportsClauses[0].XmlPrefix);
 //			Assert.AreEqual("http://icsharpcode.net/sharpdevelop/avalonedit", ud.ImportsClauses[0].Name);
 //		}
-//		
+//
 //		[Test]
 //		public void VBNetXmlNamespaceWithPrefixUsingTest()
 //		{
 //			string program = "Imports <xmlns:avalonedit=\"http://icsharpcode.net/sharpdevelop/avalonedit\">";
 //			VBParser parser = ParserFactory.CreateParser(new StringReader(program));
 //			parser.Parse();
-//			
+//
 //			Assert.AreEqual("", parser.Errors.ErrorOutput);
 //			CompilationUnit unit = parser.CompilationUnit;
-//			
+//
 //			Assert.AreEqual(1, unit.Children.Count);
 //			Assert.IsTrue(unit.Children[0] is ImportsStatement);
 //			ImportsStatement ud = (ImportsStatement)unit.Children[0];
 //			Assert.AreEqual(1, ud.ImportsClauses.Count);
 //			Assert.IsFalse(ud.ImportsClauses[0].IsAlias);
 //			Assert.IsTrue(ud.ImportsClauses[0].IsXml);
-//			
+//
 //			Assert.AreEqual("xmlns:avalonedit", ud.ImportsClauses[0].XmlPrefix);
 //			Assert.AreEqual("http://icsharpcode.net/sharpdevelop/avalonedit", ud.ImportsClauses[0].Name);
 //		}
-//		
+//
 //		[Test]
 //		public void VBNetXmlNamespaceSingleQuotedUsingTest()
 //		{
 //			string program = "Imports <xmlns='http://icsharpcode.net/sharpdevelop/avalonedit'>";
 //			VBParser parser = ParserFactory.CreateParser(new StringReader(program));
 //			parser.Parse();
-//			
+//
 //			Assert.AreEqual("", parser.Errors.ErrorOutput);
 //			CompilationUnit unit = parser.CompilationUnit;
-//			
+//
 //			Assert.AreEqual(1, unit.Children.Count);
 //			Assert.IsTrue(unit.Children[0] is ImportsStatement);
 //			ImportsStatement ud = (ImportsStatement)unit.Children[0];
 //			Assert.AreEqual(1, ud.ImportsClauses.Count);
 //			Assert.IsFalse(ud.ImportsClauses[0].IsAlias);
 //			Assert.IsTrue(ud.ImportsClauses[0].IsXml);
-//			
+//
 //			Assert.AreEqual("xmlns", ud.ImportsClauses[0].XmlPrefix);
 //			Assert.AreEqual("http://icsharpcode.net/sharpdevelop/avalonedit", ud.ImportsClauses[0].Name);
 //		}
-//		
+//
 //		[Test]
 //		public void VBNetXmlNamespaceSingleQuotedWithPrefixUsingTest()
 //		{
 //			string program = "Imports <xmlns:avalonedit='http://icsharpcode.net/sharpdevelop/avalonedit'>";
 //			VBParser parser = ParserFactory.CreateParser(new StringReader(program));
 //			parser.Parse();
-//			
+//
 //			Assert.AreEqual("", parser.Errors.ErrorOutput);
 //			CompilationUnit unit = parser.CompilationUnit;
-//			
+//
 //			Assert.AreEqual(1, unit.Children.Count);
 //			Assert.IsTrue(unit.Children[0] is ImportsStatement);
 //			ImportsStatement ud = (ImportsStatement)unit.Children[0];
 //			Assert.AreEqual(1, ud.ImportsClauses.Count);
 //			Assert.IsFalse(ud.ImportsClauses[0].IsAlias);
 //			Assert.IsTrue(ud.ImportsClauses[0].IsXml);
-//			
+//
 //			Assert.AreEqual("xmlns:avalonedit", ud.ImportsClauses[0].XmlPrefix);
 //			Assert.AreEqual("http://icsharpcode.net/sharpdevelop/avalonedit", ud.ImportsClauses[0].Name);
 //		}

@@ -177,5 +177,10 @@ namespace ICSharpCode.NRefactory.VB
 		{
 			throw new NotImplementedException();
 		}
+		
+		public object VisitQualifiedType(ICSharpCode.NRefactory.VB.Ast.QualifiedType qualifiedType, object data)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

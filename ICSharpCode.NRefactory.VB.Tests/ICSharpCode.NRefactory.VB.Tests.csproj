@@ -68,7 +68,7 @@
     <Compile Include="Lexer\XmlModeLexerTests.cs" />
     <Compile Include="Parser\GlobalScope\AttributeSectionTests.cs" />
     <Compile Include="Parser\GlobalScope\NamespaceDeclarationTests.cs" />
-    <Compile Include="Parser\GlobalScope\UsingDeclarationTests.cs" />
+    <Compile Include="Parser\GlobalScope\ImportsStatementTests.cs" />
     <Compile Include="Parser\GlobalScope\TypeDeclarationTests.cs" />
     <Compile Include="Parser\SnippetParserTests.cs" />
     <Compile Include="Parser\ParseUtil.cs" />
