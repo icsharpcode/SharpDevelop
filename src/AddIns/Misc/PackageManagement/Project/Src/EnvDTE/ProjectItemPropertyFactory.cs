@@ -23,6 +23,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public IEnumerator<Property> GetEnumerator()
 		{
 			yield return new ProjectItemProperty(projectItem, ProjectItem.CopyToOutputDirectoryPropertyName);
+			yield return new ProjectItemProperty(projectItem, "CustomTool");
 		}
 	}
 }

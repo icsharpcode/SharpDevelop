@@ -9,7 +9,7 @@ using PackageManagement.Tests.Helpers;
 namespace PackageManagement.Tests.EnvDTE
 {
 	[TestFixture]
-	public class PropertyTests
+	public class ProjectPropertyTests
 	{
 		Properties properties;
 		TestableDTEProject project;
@@ -75,7 +75,7 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		public void ItemValue_SetPostBuildEvent_MSBuildProjectIsSaved()
+		public void Value_SetPostBuildEvent_MSBuildProjectIsSaved()
 		{
 			CreateProperties();
 			properties.Item("PostBuildEvent").Value = "test";
@@ -86,7 +86,7 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		public void ItemValue_GetTargetFrameworkMoniker_ReturnsNet40ClientProfile()
+		public void Value_GetTargetFrameworkMoniker_ReturnsNet40ClientProfile()
 		{
 			CreateProperties();
 			msbuildProject.SetProperty("TargetFrameworkVersion", "4.0");
@@ -100,7 +100,7 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		public void ItemValue_GetTargetFrameworkMonikerUsingIncorrectCaseAndFrameworkIdentifierIsSilverlight_ReturnsNet35Silverlight()
+		public void Value_GetTargetFrameworkMonikerUsingIncorrectCaseAndFrameworkIdentifierIsSilverlight_ReturnsNet35Silverlight()
 		{
 			CreateProperties();
 			msbuildProject.SetProperty("TargetFrameworkIdentifier", "Silverlight");

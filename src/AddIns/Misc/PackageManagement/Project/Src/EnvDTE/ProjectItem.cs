@@ -13,6 +13,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		SD.FileProjectItem projectItem;
 		public const string CopyToOutputDirectoryPropertyName = "CopyToOutputDirectory";
+		public const string CustomToolPropertyName = "CustomTool";
 		
 		public ProjectItem(Project project, SD.FileProjectItem projectItem)
 		{
@@ -38,6 +39,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			if (name == CopyToOutputDirectoryPropertyName) {
 				return GetCopyToOutputDirectory();
+			} else if (name == CustomToolPropertyName) {
+				return projectItem.CustomTool;
 			}
 			return String.Empty;
 		}
@@ -51,6 +54,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			if (name == CopyToOutputDirectoryPropertyName) {
 				SetCopyToOutputDirectory(value);
+			} else if (name == CustomToolPropertyName) {
+				projectItem.CustomTool = value as string;
 			}
 		}
 		

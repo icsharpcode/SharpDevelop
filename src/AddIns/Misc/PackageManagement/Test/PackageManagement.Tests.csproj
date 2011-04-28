@@ -75,7 +75,7 @@
     <Compile Include="Src\EnvDTE\ProjectItemPropertyTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectItemsTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectTests.cs" />
-    <Compile Include="Src\EnvDTE\PropertyTests.cs" />
+    <Compile Include="Src\EnvDTE\ProjectPropertyTests.cs" />
     <Compile Include="Src\EnvDTE\ReferencesTests.cs" />
     <Compile Include="Src\EnvDTE\ReferenceTests.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementProject.cs" />

@@ -92,6 +92,29 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void Value_GetCustomTool_ReturnsProjectItemCustomTool()
+		{
+			CreateProjectItemProperties();
+			msbuildFileProjectItem.CustomTool = "Test";
+			
+			string customTool = properties.Item("CustomTool").Value as string;
+			
+			Assert.AreEqual("Test", customTool);
+		}
+		
+		[Test]
+		public void Value_SetCustomTool_UpdatesProjectItemCustomTool()
+		{
+			CreateProjectItemProperties();
+			
+			properties.Item("CustomTool").Value = "MyCustomTool";
+			
+			var customTool = msbuildFileProjectItem.CustomTool;
+			
+			Assert.AreEqual("MyCustomTool", customTool);
+		}
+		
+		[Test]
 		public void GetEnumerator_FindCopyToOutputDirectoryPropertyInAllProperties_ReturnsPropertyWithCopyToOutputDirectoryName()
 		{
 			CreateProjectItemProperties();
@@ -102,7 +125,6 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual("CopyToOutputDirectory", property.Name);
 		}
 		
-		
 		[Test]
 		public void GetEnumerator_FindCopyToOutputDirectoryPropertyFromUntypedEnumerator_ReturnsPropertyWithCopyToOutputDirectoryName()
 		{
@@ -111,6 +133,17 @@ namespace PackageManagement.Tests.EnvDTE
 			var projectItemProperties = properties as IEnumerable;
 			
 			AssertContainsProperty("CopyToOutputDirectory", projectItemProperties);
+		}
+		
+		[Test]
+		public void GetEnumerator_FindCustomToolInAllProperties_ReturnsCustomToolProperty()
+		{
+			CreateProjectItemProperties();
+			
+			var projectItemProperties = new List<Property>(properties);
+			var property = projectItemProperties.Find(p => p.Name == "CustomTool");
+			
+			Assert.AreEqual("CustomTool", property.Name);
 		}
 	}
 }
