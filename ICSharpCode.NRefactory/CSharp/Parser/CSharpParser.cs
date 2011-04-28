@@ -704,7 +704,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (location != null)
 					newIndexer.AddChild (new CSharpTokenNode (Convert (location[0]), 1), IndexerDeclaration.Roles.LBracket);
-				AddParameter (newIndexer, indexer.Parameters);
+				AddParameter (newIndexer, indexer.ParameterInfo);
 				if (location != null)
 					newIndexer.AddChild (new CSharpTokenNode (Convert (location[1]), 1), IndexerDeclaration.Roles.RBracket);
 				
@@ -1728,9 +1728,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (QualifiedAliasMember qualifiedAliasMember)
 			{
 				var result = new MemberType ();
-				result.Target = new SimpleType (qualifiedAliasMember.alias);
+				result.Target = new SimpleType (qualifiedAliasMember.alias, Convert (qualifiedAliasMember.Location));
 				result.IsDoubleColon = true;
-				result.AddChild (new Identifier (qualifiedAliasMember.Name, Convert (qualifiedAliasMember.Location)), MemberReferenceExpression.Roles.Identifier);
+				var location = LocationsBag.GetLocations (qualifiedAliasMember);
+				result.AddChild (new Identifier (qualifiedAliasMember.Name, location != null ? Convert (location[0]) : AstLocation.Empty), MemberReferenceExpression.Roles.Identifier);
 				return  new TypeReferenceExpression () { Type = result };
 			}
 			
