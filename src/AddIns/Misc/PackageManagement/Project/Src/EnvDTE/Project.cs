@@ -61,13 +61,30 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal void AddReference(string path)
 		{
-			var referenceItem = new ReferenceProjectItem(MSBuildProject, path);
-			projectService.AddProjectItem(MSBuildProject, referenceItem);
+			if (!HasReference(path)) {
+				var referenceItem = new ReferenceProjectItem(MSBuildProject, path);
+				projectService.AddProjectItem(MSBuildProject, referenceItem);
+			}
+		}
+		
+		bool HasReference(string include)
+		{
+			foreach (ReferenceProjectItem reference in GetReferences()) {
+				if (IsReferenceMatch(reference, include)) {
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		internal IEnumerable<ProjectItem> GetReferences()
 		{
 			return MSBuildProject.GetItemsOfType(ItemType.Reference);
+		}
+		
+		bool IsReferenceMatch(ReferenceProjectItem reference, string include)
+		{
+			return String.Equals(reference.Include, include, StringComparison.InvariantCultureIgnoreCase);
 		}
 		
 		internal void RemoveReference(ReferenceProjectItem referenceItem)

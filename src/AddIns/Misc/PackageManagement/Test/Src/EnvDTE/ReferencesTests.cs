@@ -71,6 +71,32 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void Add_AddGacAssemblyReferenceWhenReferenceAlreadyExistsInProject_ReferenceIsNotAddedToMSBuildProject()
+		{
+			CreateReferences();
+			msbuildProject.AddReference("System.Data");
+			
+			references.Add("System.Data");
+			
+			int count = msbuildProject.Items.Count;
+			
+			Assert.AreEqual(1, count);
+		}
+		
+		[Test]
+		public void Add_AddGacAssemblyReferenceWhenReferenceAlreadyExistsInProjectButWithDifferentCase_ReferenceIsNotAddedToMSBuildProject()
+		{
+			CreateReferences();
+			msbuildProject.AddReference("System.Data");
+			
+			references.Add("SYSTEM.DATA");
+			
+			int count = msbuildProject.Items.Count;
+			
+			Assert.AreEqual(1, count);
+		}
+		
+		[Test]
 		public void GetEnumerator_ProjectHasTwoReferences_TwoReferencesReturned()
 		{
 			CreateReferences();
