@@ -8,16 +8,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class Properties
 	{
-		Project project;
+		IPropertyFactory propertyFactory;
 		
-		public Properties(Project project)
+		public Properties(IPropertyFactory propertyFactory)
 		{
-			this.project = project;
+			this.propertyFactory = propertyFactory;
 		}
 		
 		public Property Item(string propertyName)
 		{
-			return new Property(project, propertyName);
+			return propertyFactory.CreateProperty(propertyName);
 		}
 	}
 }

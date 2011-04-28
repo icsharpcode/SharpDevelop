@@ -19,7 +19,8 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
-			properties = new Properties(project);
+			var factory = new ProjectPropertyFactory(project);
+			properties = new Properties(factory);
 		}
 		
 		[Test]

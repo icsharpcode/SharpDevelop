@@ -31,9 +31,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.projectService = projectService;
 			this.fileService = fileService;
 			
+			CreateProperties();
 			Object = new ProjectObject(this);
-			Properties = new Properties(this);
 			ProjectItems = new ProjectItems(this, fileService);
+		}
+		
+		void CreateProperties()
+		{
+			var propertyFactory = new ProjectPropertyFactory(this);
+			Properties = new Properties(propertyFactory);
 		}
 		
 		public string Name {
@@ -102,14 +108,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		FileProjectItem CreateFileProjectItem(string include)
 		{
 			ItemType itemType = GetDefaultItemType(include);
-			var fileProjectItem = new FileProjectItem(MSBuildProject, itemType);
-			fileProjectItem.Include = include;
-			return fileProjectItem;
+			return CreateFileProjectItem(itemType, include);
 		}
 		
 		ItemType GetDefaultItemType(string include)
 		{
 			return MSBuildProject.GetDefaultItemType(include);
+		}
+		
+		FileProjectItem CreateFileProjectItem(ItemType itemType, string include)
+		{
+			var fileProjectItem = new FileProjectItem(MSBuildProject, itemType);
+			fileProjectItem.Include = include;
+			return fileProjectItem;
 		}
 	}
 }

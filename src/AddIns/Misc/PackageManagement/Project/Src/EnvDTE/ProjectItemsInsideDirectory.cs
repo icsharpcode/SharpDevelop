@@ -45,7 +45,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				if (IsDirectory(fileItem)) {
 					return CreateDirectoryProjectItemIfDirectoryNotAlreadyIncluded(fileItem);
 				}
-				return new ProjectItem(fileItem);
+				return new ProjectItem(project, fileItem);
 			}
 			return ConvertDirectoryToProjectItem(fileItem);
 		}
@@ -74,7 +74,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			string directory = fileItem.Include;
 			if (!IsDirectoryIncludedAlready(directory)) {
 				AddIncludedDirectory(directory);
-				return new ProjectItem(fileItem);
+				return new ProjectItem(project, fileItem);
 			}
 			return null;
 		}
@@ -116,7 +116,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			var directoryItem = new SD.FileProjectItem(project.MSBuildProject, SD.ItemType.Folder);
 			directoryItem.Include = directoryName;
-			return new ProjectItem(directoryItem);
+			return new ProjectItem(project, directoryItem);
 		}
 		
 		string GetFirstSubDirectoryName(string include)

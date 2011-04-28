@@ -72,6 +72,7 @@
     <Compile Include="Src\AddPackageReferenceCommandTests.cs" />
     <Compile Include="Src\EnvDTE\DTETests.cs" />
     <Compile Include="Src\EnvDTE\ItemOperationsTests.cs" />
+    <Compile Include="Src\EnvDTE\ProjectItemPropertyTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectItemsTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectTests.cs" />
     <Compile Include="Src\EnvDTE\PropertyTests.cs" />

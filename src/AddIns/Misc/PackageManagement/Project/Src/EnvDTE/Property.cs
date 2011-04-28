@@ -8,59 +8,31 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class Property
 	{
-		Project project;
-		string name;
-		
 		public Property(Project project, string name)
 		{
-			this.project = project;
-			this.name = name;
+			this.Project = project;
+			this.Name = name;
 		}
 		
-		public object Value {
-			get { return GetProperty(name); }
+		public string Name { get; private set; }
+		
+		protected Project Project { get; private set; }
+		
+		public virtual object Value {
+			get { return GetProperty(); }
 			set {
-				SetProperty(name, value);
-				project.Save();
+				SetProperty(value);
+				Project.Save();
 			}
 		}
 		
-		string GetProperty(string name)
+		protected virtual object GetProperty()
 		{
-			string value = project.MSBuildProject.GetUnevalatedProperty(name);
-			if (value != null) {
-				return value;
-			}
-			
-			if (IsTargetFrameworkMoniker(name)) {
-				return GetTargetFrameworkMoniker();
-			}
-			return EmptyStringIfNull(value);
+			return null;
 		}
 		
-		bool IsTargetFrameworkMoniker(string name)
+		protected virtual void SetProperty(object value)
 		{
-			return String.Equals(name, "TargetFrameworkMoniker", StringComparison.InvariantCultureIgnoreCase);
-		}
-		
-		string GetTargetFrameworkMoniker()
-		{
-			var targetFramework = new ProjectTargetFramework(project.MSBuildProject);
-			return targetFramework.TargetFrameworkName.ToString();
-		}
-		
-		string EmptyStringIfNull(string value)
-		{
-			if (value != null) {
-				return value;
-			}
-			return String.Empty;
-		}
-		
-		void SetProperty(string name, object value)
-		{
-			bool escapeValue = false;
-			project.MSBuildProject.SetProperty(name, value as string, escapeValue);
 		}
 	}
 }
