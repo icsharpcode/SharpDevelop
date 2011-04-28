@@ -12,7 +12,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class ProjectItem
 	{
 		SD.FileProjectItem projectItem;
-		const string CopyToOutputDirectoryPropertyName = "CopyToOutputDirectory";
+		public const string CopyToOutputDirectoryPropertyName = "CopyToOutputDirectory";
 		
 		public ProjectItem(Project project, SD.FileProjectItem projectItem)
 		{

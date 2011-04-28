@@ -2,6 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -25,6 +28,17 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildFileProjectItem = new SD.FileProjectItem(msbuildProject, SD.ItemType.Compile);
 			projectItem = new ProjectItem(project, msbuildFileProjectItem);
 			properties = projectItem.Properties;
+		}
+		
+		void AssertContainsProperty(string propertyName, IEnumerable items)
+		{
+			var itemsList = new List<Property>();
+			foreach (Property property in items) {
+				itemsList.Add(property);
+			}
+			var matchedProperty = itemsList.Find(p => p.Name == propertyName);
+			
+			Assert.AreEqual(propertyName, matchedProperty.Name);
 		}
 		
 		[Test]
@@ -75,6 +89,28 @@ namespace PackageManagement.Tests.EnvDTE
 			bool saved = msbuildProject.IsSaved;
 			
 			Assert.IsTrue(saved);
+		}
+		
+		[Test]
+		public void GetEnumerator_FindCopyToOutputDirectoryPropertyInAllProperties_ReturnsPropertyWithCopyToOutputDirectoryName()
+		{
+			CreateProjectItemProperties();
+			
+			var projectItemProperties = new List<Property>(properties);
+			var property = projectItemProperties.Find(p => p.Name == "CopyToOutputDirectory");
+			
+			Assert.AreEqual("CopyToOutputDirectory", property.Name);
+		}
+		
+		
+		[Test]
+		public void GetEnumerator_FindCopyToOutputDirectoryPropertyFromUntypedEnumerator_ReturnsPropertyWithCopyToOutputDirectoryName()
+		{
+			CreateProjectItemProperties();
+			
+			var projectItemProperties = properties as IEnumerable;
+			
+			AssertContainsProperty("CopyToOutputDirectory", projectItemProperties);
 		}
 	}
 }

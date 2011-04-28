@@ -2,11 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Properties
+	public class Properties : IEnumerable<Property>
 	{
 		IPropertyFactory propertyFactory;
 		
@@ -18,6 +20,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public Property Item(string propertyName)
 		{
 			return propertyFactory.CreateProperty(propertyName);
+		}
+		
+		public IEnumerator<Property> GetEnumerator()
+		{
+			return propertyFactory.GetEnumerator();
+		}
+		
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 	}
 }
