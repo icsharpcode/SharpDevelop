@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Project;
+using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -77,7 +78,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return false;
 		}
 		
-		internal IEnumerable<ProjectItem> GetReferences()
+		internal IEnumerable<SD.ProjectItem> GetReferences()
 		{
 			return MSBuildProject.GetItemsOfType(ItemType.Reference);
 		}

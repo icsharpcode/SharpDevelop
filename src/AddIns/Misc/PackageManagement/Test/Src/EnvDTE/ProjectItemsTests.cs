@@ -2,7 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement.EnvDTE;
+using DTE = ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -23,6 +26,24 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject = project.TestableProject;
 			projectItems = project.ProjectItems;
 			fakeFileService = project.FakeFileService;
+		}
+		
+		void ProjectItemCollectionAssertAreEqual(string[] expectedItems, List<DTE.ProjectItem> itemsList)
+		{
+			var actualItems = new List<string>();
+			itemsList.ForEach(r => actualItems.Add(r.Name));
+			
+			CollectionAssert.AreEqual(expectedItems, actualItems);
+		}
+		
+		void ProjectItemCollectionAssertAreEqual(string[] expectedItems, IEnumerable itemsList)
+		{
+			var actualItems = new List<string>();
+			foreach (DTE.ProjectItem item in itemsList) {
+				actualItems.Add(item.Name);
+			}
+			
+			CollectionAssert.AreEqual(expectedItems, actualItems);
 		}
 		
 		[Test]
@@ -103,6 +124,181 @@ namespace PackageManagement.Tests.EnvDTE
 			};
 			
 			CollectionAssert.AreEqual(expectedFileNames, actualFileNames);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasTwoFiles_TwoFilesReturned()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"Test.cs");
+			
+			var itemsList = new List<DTE.ProjectItem>();
+			itemsList.AddRange(projectItems);
+			
+			var expectedItems = new string[] {
+				"Test.cs"
+			};
+			
+			ProjectItemCollectionAssertAreEqual(expectedItems, itemsList);
+		}
+		
+		[Test]
+		public void GetEnumerator_UseUntypedEnumeratorProjectHasOneFile_OneFileReturned()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"Program.cs");
+			
+			var enumerable = projectItems as IEnumerable;
+			
+			var expectedFiles = new string[] {
+				"Program.cs"
+			};
+			
+			ProjectItemCollectionAssertAreEqual(expectedFiles, enumerable);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasOneFileAndOneReference_OneFileReturned()
+		{
+			CreateProjectItems();
+			msbuildProject.AddReference("NUnit.Framework");
+			msbuildProject.AddFile(@"Program.cs");
+			
+			var enumerable = projectItems as IEnumerable;
+			
+			var expectedFiles = new string[] {
+				"Program.cs"
+			};
+			
+			ProjectItemCollectionAssertAreEqual(expectedFiles, enumerable);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasOneFileInSubDirectory_OneFolderReturned()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"src\Program.cs");
+			
+			var enumerable = projectItems as IEnumerable;
+			
+			var expectedItems = new string[] {
+				"src"
+			};
+			
+			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasTwoFilesInDifferentSubDirectories_TwoFoldersReturned()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"Controllers\Program.cs");
+			msbuildProject.AddFile(@"ViewModels\Program.cs");
+			
+			var enumerable = projectItems as IEnumerable;
+			
+			var expectedItems = new string[] {
+				"Controllers",
+				"ViewModels"
+			};
+			
+			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasTwoFilesInSameSubDirectory_OneFolderReturned()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"Controllers\Tests\Program1.cs");
+			msbuildProject.AddFile(@"Controllers\Tests\Program2.cs");
+			
+			var enumerable = projectItems as IEnumerable;
+			
+			var expectedItems = new string[] {
+				"Controllers",
+			};
+			
+			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasOneFolderAndOneFileInSameSubDirectory_OneFileAndOneFolderReturned()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"Controllers\Program.cs");
+			msbuildProject.AddDirectory(@"Controllers");
+			
+			var enumerable = projectItems as IEnumerable;
+			
+			var expectedItems = new string[] {
+				"Controllers",
+			};
+			
+			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasOneFolderAndOneFileInSameSubDirectoryWithDirectoryFirstInProject_OneFileAndOneFolderReturned()
+		{
+			CreateProjectItems();
+			msbuildProject.AddDirectory(@"Controllers");
+			msbuildProject.AddFile(@"Controllers\Program.cs");
+			
+			var enumerable = projectItems as IEnumerable;
+			
+			var expectedItems = new string[] {
+				"Controllers",
+			};
+			
+			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasOneLinkedFile_OneFileReturned()
+		{
+			CreateProjectItems();
+			var fileItem = msbuildProject.AddFile(@"..\..\Program.cs");
+			fileItem.SetMetadata("Link", "MyProgram.cs");
+			
+			var enumerable = projectItems as IEnumerable;
+			
+			var expectedFiles = new string[] {
+				"Program.cs"
+			};
+			
+			ProjectItemCollectionAssertAreEqual(expectedFiles, enumerable);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasFileWithRelativePath_FileIsTreatedAsLinkAndReturned()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"..\..\Program.cs");
+			
+			var enumerable = projectItems as IEnumerable;
+			
+			var expectedFiles = new string[] {
+				"Program.cs"
+			};
+			
+			ProjectItemCollectionAssertAreEqual(expectedFiles, enumerable);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasOneLinkedFileInProjectSubDirectoryAndOneDirectory_OneDirectoryReturned()
+		{
+			CreateProjectItems();
+			msbuildProject.AddDirectory("Configuration");
+			var fileItem = msbuildProject.AddFile(@"..\..\AssemblyInfo.cs");
+			fileItem.SetMetadata("Link", @"Configuration\MyAssemblyInfo.cs");
+			
+			var enumerable = projectItems as IEnumerable;
+			
+			var expectedItems = new string[] {
+				"Configuration"
+			};
+			
+			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
 		}
 	}
 }

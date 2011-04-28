@@ -2,12 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ProjectItems
+	public class ProjectItems : IEnumerable<ProjectItem>
 	{
 		Project project;
 		IPackageManagementFileService fileService;
@@ -35,6 +36,17 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		string GetFileNameInProject(string fileName)
 		{
 			return Path.Combine(project.MSBuildProject.Directory, fileName);
+		}
+		
+		public IEnumerator<ProjectItem> GetEnumerator()
+		{
+			var items = new ProjectItemsInsideDirectory(project);
+			return items.GetEnumerator();
+		}
+		
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 	}
 }

@@ -46,5 +46,12 @@ namespace PackageManagement.Tests.Helpers
 			ProjectService.AddProjectItem(this, fileProjectItem);
 			return fileProjectItem;
 		}
+		
+		public FileProjectItem AddDirectory(string include)
+		{
+			var fileProjectItem = new FileProjectItem(this, ItemType.Folder, include);
+			ProjectService.AddProjectItem(this, fileProjectItem);
+			return fileProjectItem;			
+		}
 	}
 }
