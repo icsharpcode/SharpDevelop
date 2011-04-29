@@ -85,6 +85,7 @@
     <Compile Include="Src\EnvDTE\ProjectObject.cs" />
     <Compile Include="Src\EnvDTE\ProjectProperty.cs" />
     <Compile Include="Src\EnvDTE\ProjectPropertyFactory.cs" />
+    <Compile Include="Src\EnvDTE\ProjectType.cs" />
     <Compile Include="Src\EnvDTE\Properties.cs" />
     <Compile Include="Src\EnvDTE\Property.cs" />
     <Compile Include="Src\EnvDTE\Reference.cs" />

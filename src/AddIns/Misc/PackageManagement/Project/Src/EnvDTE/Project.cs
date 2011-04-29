@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+
 using ICSharpCode.SharpDevelop.Project;
 using SD = ICSharpCode.SharpDevelop.Project;
 
@@ -65,6 +67,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				}
 				return dte;
 			}
+		}
+		
+		public string Type {
+			get { return GetProjectType(); }
+		}
+		
+		string GetProjectType()
+		{
+			var projectType = new ProjectType(this);
+			return projectType.Type;
 		}
 		
 		internal MSBuildBasedProject MSBuildProject { get; private set; }

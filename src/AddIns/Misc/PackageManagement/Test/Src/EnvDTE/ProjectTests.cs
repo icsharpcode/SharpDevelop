@@ -55,5 +55,38 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(expectedFileName, fileName);
 		}
+		
+		[Test]
+		public void Type_ProjectIsCSharpProject_ReturnsCSharp()
+		{
+			CreateProject();
+			msbuildProject.FileName = @"c:\projects\myproject\test.csproj";
+			
+			string projectType = project.Type;
+			
+			Assert.AreEqual("C#", projectType);
+		}
+		
+		[Test]
+		public void Type_ProjectIsCSharpProjectWithFileNameInUpperCase_ReturnsCSharp()
+		{
+			CreateProject();
+			msbuildProject.FileName = @"c:\projects\myproject\TEST.CSPROJ";
+			
+			string projectType = project.Type;
+			
+			Assert.AreEqual("C#", projectType);
+		}
+		
+		[Test]
+		public void Type_ProjectIsVBProject_ReturnsVBNet()
+		{
+			CreateProject();
+			msbuildProject.FileName = @"c:\projects\myproject\test.vbproj";
+			
+			string projectType = project.Type;
+			
+			Assert.AreEqual("VB.NET", projectType);
+		}
 	}
 }
