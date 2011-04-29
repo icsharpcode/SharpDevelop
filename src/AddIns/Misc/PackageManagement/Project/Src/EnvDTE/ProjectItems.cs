@@ -38,9 +38,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return Path.Combine(project.MSBuildProject.Directory, fileName);
 		}
 		
-		public IEnumerator<ProjectItem> GetEnumerator()
+		public virtual IEnumerator<ProjectItem> GetEnumerator()
 		{
-			var items = new ProjectItemsInsideDirectory(project);
+			var items = new ProjectItemsInsideProject(project);
 			return items.GetEnumerator();
 		}
 		
@@ -52,16 +52,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public ProjectItem Item(string name)
 		{
 			foreach (ProjectItem item in this) {
-				if (IsMatch(item, name)) {
+				if (item.IsMatchByName(name)) {
 					return item;
 				}
 			}
 			return null;
-		}
-		
-		bool IsMatch(ProjectItem item, string name)
-		{
-			return String.Equals(item.Name, name, StringComparison.InvariantCultureIgnoreCase);
 		}
 	}
 }

@@ -7,15 +7,16 @@ using System.Collections.Generic;
 using System.IO;
 
 using SD = ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ProjectItemsInsideDirectory : IEnumerable<ProjectItem>
+	public class ProjectItemsInsideProject : IEnumerable<ProjectItem>
 	{
 		Project project;
 		Dictionary<string, string> directoriesIncluded = new Dictionary<string, string>();
 		
-		public ProjectItemsInsideDirectory(Project project)
+		public ProjectItemsInsideProject(Project project)
 		{
 			this.project = project;
 		}
@@ -32,14 +33,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		ProjectItem ConvertToProjectItem(SD.ProjectItem item)
 		{
-			var fileItem = item as SD.FileProjectItem;
+			var fileItem = item as FileProjectItem;
 			if (fileItem != null) {
 				return ConvertFileToProjectItem(fileItem);
 			}
 			return null;
 		}
 		
-		ProjectItem ConvertFileToProjectItem(SD.FileProjectItem fileItem)
+		ProjectItem ConvertFileToProjectItem(FileProjectItem fileItem)
 		{
 			if (IsInProjectRootFolder(fileItem)) {
 				if (IsDirectory(fileItem)) {
@@ -50,7 +51,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return ConvertDirectoryToProjectItem(fileItem);
 		}
 		
-		bool IsInProjectRootFolder(SD.FileProjectItem item)
+		bool IsInProjectRootFolder(FileProjectItem item)
 		{
 			if (item.IsLink) {
 				return !HasDirectoryInPath(item.VirtualName);
@@ -64,12 +65,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return !String.IsNullOrEmpty(directoryName);
 		}
 		
-		bool IsDirectory(SD.FileProjectItem fileItem)
+		bool IsDirectory(FileProjectItem fileItem)
 		{
-			return fileItem.ItemType == SD.ItemType.Folder;
+			return fileItem.ItemType == ItemType.Folder;
 		}
 		
-		ProjectItem CreateDirectoryProjectItemIfDirectoryNotAlreadyIncluded(SD.FileProjectItem fileItem)
+		ProjectItem CreateDirectoryProjectItemIfDirectoryNotAlreadyIncluded(FileProjectItem fileItem)
 		{
 			string directory = fileItem.Include;
 			if (!IsDirectoryIncludedAlready(directory)) {
@@ -79,7 +80,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return null;
 		}
 		
-		ProjectItem ConvertDirectoryToProjectItem(SD.FileProjectItem fileItem)
+		ProjectItem ConvertDirectoryToProjectItem(FileProjectItem fileItem)
 		{
 			string subDirectoryName = GetFirstSubDirectoryName(fileItem.Include);
 			if (IsDirectoryInsideProject(subDirectoryName)) {
@@ -114,7 +115,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		ProjectItem CreateDirectoryProjectItem(string directoryName)
 		{
-			var directoryItem = new SD.FileProjectItem(project.MSBuildProject, SD.ItemType.Folder);
+			var directoryItem = new FileProjectItem(project.MSBuildProject, ItemType.Folder);
 			directoryItem.Include = directoryName;
 			return new ProjectItem(project, directoryItem);
 		}

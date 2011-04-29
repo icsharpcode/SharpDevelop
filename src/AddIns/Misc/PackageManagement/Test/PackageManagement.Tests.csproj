@@ -74,6 +74,7 @@
     <Compile Include="Src\EnvDTE\ItemOperationsTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectItemPropertyTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectItemsTests.cs" />
+    <Compile Include="Src\EnvDTE\ProjectItemTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectPropertyTests.cs" />
     <Compile Include="Src\EnvDTE\ReferencesTests.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Src\Helpers\FakePackageScriptFileName.cs" />
     <Compile Include="Src\Helpers\FakePackageViewModelFactory.cs" />
     <Compile Include="Src\Helpers\FakePowerShellSession.cs" />
+    <Compile Include="Src\Helpers\ProjectItemCollectionAssert.cs" />
     <Compile Include="Src\Helpers\TestableAddPackageReferenceCommand.cs" />
     <Compile Include="Src\Helpers\TestableDTEProject.cs" />
     <Compile Include="Src\PackageFromRepositoryTests.cs" />

@@ -28,24 +28,6 @@ namespace PackageManagement.Tests.EnvDTE
 			fakeFileService = project.FakeFileService;
 		}
 		
-		void ProjectItemCollectionAssertAreEqual(string[] expectedItems, List<DTE.ProjectItem> itemsList)
-		{
-			var actualItems = new List<string>();
-			itemsList.ForEach(r => actualItems.Add(r.Name));
-			
-			CollectionAssert.AreEqual(expectedItems, actualItems);
-		}
-		
-		void ProjectItemCollectionAssertAreEqual(string[] expectedItems, IEnumerable itemsList)
-		{
-			var actualItems = new List<string>();
-			foreach (DTE.ProjectItem item in itemsList) {
-				actualItems.Add(item.Name);
-			}
-			
-			CollectionAssert.AreEqual(expectedItems, actualItems);
-		}
-		
 		[Test]
 		public void AddFromFileCopy_AddFileNameOutsideProjectFolder_FileIsIncludedInProjectInProjectFolder()
 		{
@@ -139,7 +121,7 @@ namespace PackageManagement.Tests.EnvDTE
 				"Test.cs"
 			};
 			
-			ProjectItemCollectionAssertAreEqual(expectedItems, itemsList);
+			ProjectItemCollectionAssert.AreEqual(expectedItems, itemsList);
 		}
 		
 		[Test]
@@ -154,7 +136,7 @@ namespace PackageManagement.Tests.EnvDTE
 				"Program.cs"
 			};
 			
-			ProjectItemCollectionAssertAreEqual(expectedFiles, enumerable);
+			ProjectItemCollectionAssert.AreEqual(expectedFiles, enumerable);
 		}
 		
 		[Test]
@@ -170,7 +152,7 @@ namespace PackageManagement.Tests.EnvDTE
 				"Program.cs"
 			};
 			
-			ProjectItemCollectionAssertAreEqual(expectedFiles, enumerable);
+			ProjectItemCollectionAssert.AreEqual(expectedFiles, enumerable);
 		}
 		
 		[Test]
@@ -185,7 +167,7 @@ namespace PackageManagement.Tests.EnvDTE
 				"src"
 			};
 			
-			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
+			ProjectItemCollectionAssert.AreEqual(expectedItems, enumerable);
 		}
 		
 		[Test]
@@ -202,7 +184,7 @@ namespace PackageManagement.Tests.EnvDTE
 				"ViewModels"
 			};
 			
-			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
+			ProjectItemCollectionAssert.AreEqual(expectedItems, enumerable);
 		}
 		
 		[Test]
@@ -218,7 +200,7 @@ namespace PackageManagement.Tests.EnvDTE
 				"Controllers",
 			};
 			
-			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
+			ProjectItemCollectionAssert.AreEqual(expectedItems, enumerable);
 		}
 		
 		[Test]
@@ -234,7 +216,7 @@ namespace PackageManagement.Tests.EnvDTE
 				"Controllers",
 			};
 			
-			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
+			ProjectItemCollectionAssert.AreEqual(expectedItems, enumerable);
 		}
 		
 		[Test]
@@ -250,7 +232,7 @@ namespace PackageManagement.Tests.EnvDTE
 				"Controllers",
 			};
 			
-			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
+			ProjectItemCollectionAssert.AreEqual(expectedItems, enumerable);
 		}
 		
 		[Test]
@@ -266,7 +248,7 @@ namespace PackageManagement.Tests.EnvDTE
 				"Program.cs"
 			};
 			
-			ProjectItemCollectionAssertAreEqual(expectedFiles, enumerable);
+			ProjectItemCollectionAssert.AreEqual(expectedFiles, enumerable);
 		}
 		
 		[Test]
@@ -281,7 +263,7 @@ namespace PackageManagement.Tests.EnvDTE
 				"Program.cs"
 			};
 			
-			ProjectItemCollectionAssertAreEqual(expectedFiles, enumerable);
+			ProjectItemCollectionAssert.AreEqual(expectedFiles, enumerable);
 		}
 		
 		[Test]
@@ -298,7 +280,7 @@ namespace PackageManagement.Tests.EnvDTE
 				"Configuration"
 			};
 			
-			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
+			ProjectItemCollectionAssert.AreEqual(expectedItems, enumerable);
 		}
 		
 		[Test]

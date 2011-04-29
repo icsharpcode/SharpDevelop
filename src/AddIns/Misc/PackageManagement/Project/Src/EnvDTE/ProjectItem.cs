@@ -4,8 +4,9 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-
+using ICSharpCode.Core;
 using SD = ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -15,17 +16,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public const string CopyToOutputDirectoryPropertyName = "CopyToOutputDirectory";
 		public const string CustomToolPropertyName = "CustomTool";
 		
-		public ProjectItem(Project project, SD.FileProjectItem projectItem)
+		public ProjectItem(Project project, FileProjectItem projectItem)
 		{
 			this.projectItem = projectItem;
 			this.ContainingProject = project;
+			this.ProjectItems = new DirectoryProjectItems(this);
 			CreateProperties();
 		}
 		
 		void CreateProperties()
 		{
 			var propertyFactory = new ProjectItemPropertyFactory(this);
-			Properties = new Properties(propertyFactory);			
+			Properties = new Properties(propertyFactory);
 		}
 		
 		public string Name {
@@ -34,6 +36,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public Properties Properties { get; private set; }
 		public Project ContainingProject  { get; private set; }
+		public ProjectItems ProjectItems { get; private set; }
 		
 		internal object GetProperty(string name)
 		{
@@ -61,14 +64,30 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void SetCopyToOutputDirectory(object value)
 		{
-			SD.CopyToOutputDirectory copyToOutputDirectory = ConvertToCopyToOutputDirectory(value);
+			CopyToOutputDirectory copyToOutputDirectory = ConvertToCopyToOutputDirectory(value);
 			projectItem.CopyToOutputDirectory = copyToOutputDirectory;
 		}
 		
-		SD.CopyToOutputDirectory ConvertToCopyToOutputDirectory(object value)
+		CopyToOutputDirectory ConvertToCopyToOutputDirectory(object value)
 		{
 			string valueAsString = value.ToString();
-			return (SD.CopyToOutputDirectory)Enum.Parse(typeof(SD.CopyToOutputDirectory), valueAsString);
+			return (CopyToOutputDirectory)Enum.Parse(typeof(CopyToOutputDirectory), valueAsString);
+		}
+		
+		internal bool IsMatchByName(string name)
+		{
+			return String.Equals(this.Name, name, StringComparison.InvariantCultureIgnoreCase);
+		}
+		
+		internal virtual bool IsChildItem(SD.ProjectItem msbuildProjectItem)
+		{
+			string directory = Path.GetDirectoryName(msbuildProjectItem.Include);
+			return IsMatchByName(directory);
+		}
+		
+		internal ProjectItemRelationship GetRelationship(SD.ProjectItem msbuildProjectItem)
+		{
+			return new ProjectItemRelationship(this, msbuildProjectItem);
 		}
 	}
 }
