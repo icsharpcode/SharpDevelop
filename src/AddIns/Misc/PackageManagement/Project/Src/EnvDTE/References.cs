@@ -74,5 +74,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return String.Equals(reference.Name, identity, StringComparison.InvariantCultureIgnoreCase);
 		}
+		
+		/// <summary>
+		/// This method should be in a separate AssemblyReferences class that is exposed by web projects.
+		/// </summary>
+		public void AddFromGAC(string assemblyName)
+		{
+			Add(assemblyName);
+		}
 	}
 }

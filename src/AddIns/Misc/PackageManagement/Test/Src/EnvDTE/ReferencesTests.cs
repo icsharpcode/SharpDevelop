@@ -84,6 +84,18 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void AddFromGAC_AddGacAssemblyReference_ReferenceAddedToMSBuildProject()
+		{
+			CreateReferences();
+			references.AddFromGAC("System.Data");
+			
+			var reference = msbuildProject.Items[0] as ReferenceProjectItem;
+			string referenceName = reference.Name;
+			
+			Assert.AreEqual("System.Data", referenceName);
+		}
+		
+		[Test]
 		public void Add_AddGacAssemblyReferenceWhenReferenceAlreadyExistsInProjectButWithDifferentCase_ReferenceIsNotAddedToMSBuildProject()
 		{
 			CreateReferences();
