@@ -145,5 +145,27 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("CustomTool", property.Name);
 		}
+		
+		[Test]
+		public void Value_GetFullPath_ReturnsProjectItemFullFileName()
+		{
+			CreateProjectItemProperties();
+			msbuildFileProjectItem.FileName = @"d:\projects\test.cs";
+			
+			string path = properties.Item("FullPath").Value as string;
+			
+			Assert.AreEqual(@"d:\projects\test.cs", path);
+		}	
+		
+		[Test]
+		public void GetEnumerator_FindFullPathPropertyInAllProperties_ReturnsPropertyWithFullPathName()
+		{
+			CreateProjectItemProperties();
+			
+			var projectItemProperties = new List<Property>(properties);
+			var property = projectItemProperties.Find(p => p.Name == "FullPath");
+			
+			Assert.AreEqual("FullPath", property.Name);
+		}
 	}
 }
