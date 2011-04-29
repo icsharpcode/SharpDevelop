@@ -145,5 +145,38 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			ReferenceCollectionAssertAreEqual(expectedReferences, enumerable);
 		}
+		
+		[Test]
+		public void Find_SystemXmlWhenProjectHasSystemXmlReference_OneReferenceReturned()
+		{
+			CreateReferences();
+			msbuildProject.AddReference("System.Xml");
+			
+			Reference reference = references.Find("System.Xml");
+			
+			Assert.AreEqual("System.Xml", reference.Name);
+		}
+		
+		[Test]
+		public void Find_SystemXmlWhenProjectHasSystemXmlReferenceButWithDifferentCase_OneReferenceReturned()
+		{
+			CreateReferences();
+			msbuildProject.AddReference("System.Xml");
+			
+			Reference reference = references.Find("SYSTEM.XML");
+			
+			Assert.AreEqual("System.Xml", reference.Name);
+		}
+		
+		[Test]
+		public void Item_SystemXmlWhenProjectHasSystemXmlReference_OneReferenceReturned()
+		{
+			CreateReferences();
+			msbuildProject.AddReference("System.Xml");
+			
+			Reference reference = references.Item("System.Xml");
+			
+			Assert.AreEqual("System.Xml", reference.Name);
+		}
 	}
 }

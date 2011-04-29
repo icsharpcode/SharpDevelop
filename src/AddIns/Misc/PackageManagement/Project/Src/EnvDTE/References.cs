@@ -54,5 +54,25 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return GetEnumerator();
 		}
+		
+		public Reference Item(string identity)
+		{
+			return Find(identity);
+		}
+		
+		public Reference Find(string identity)
+		{
+			foreach (Reference reference in this) {
+				if (IsMatch(reference, identity)) {
+					return reference;
+				}
+			}
+			return null;
+		}
+		
+		bool IsMatch(Reference reference, string identity)
+		{
+			return String.Equals(reference.Name, identity, StringComparison.InvariantCultureIgnoreCase);
+		}
 	}
 }
