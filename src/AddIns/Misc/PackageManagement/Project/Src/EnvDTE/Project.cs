@@ -46,6 +46,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return MSBuildProject.Name; }
 		}
 		
+		public string FileName {
+			get { return MSBuildProject.FileName; }
+		}
+		
+		public string FullName {
+			get { return FileName; }
+		}
+		
 		public ProjectObject Object { get; private set; }
 		public Properties Properties { get; private set; }
 		public ProjectItems ProjectItems { get; private set; }

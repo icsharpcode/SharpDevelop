@@ -31,5 +31,29 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("MyApp", name);
 		}
+		
+		[Test]
+		public void FullName_ProjectFileNameIsSet_ReturnsFullFileName()
+		{
+			CreateProject();
+			string expectedFullName = @"d:\projects\myproject\myproject.csproj";
+			msbuildProject.FileName = expectedFullName;
+			
+			string fullName = project.FullName;
+			
+			Assert.AreEqual(expectedFullName, fullName);
+		}
+		
+		[Test]
+		public void FileName_ProjectFileNameIsSet_ReturnsFullFileName()
+		{
+			CreateProject();
+			string expectedFileName = @"d:\projects\myproject\myproject.csproj";
+			msbuildProject.FileName = expectedFileName;
+			
+			string fileName = project.FileName;
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
 	}
 }
