@@ -300,5 +300,29 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			ProjectItemCollectionAssertAreEqual(expectedItems, enumerable);
 		}
+		
+		[Test]
+		public void Item_GetProjectItemByName_ReturnsFileInsideProject()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile("Program.cs");
+			
+			var projectItem = projectItems.Item("Program.cs") as DTE.ProjectItem;
+			string projectItemName = projectItem.Name;
+			
+			Assert.AreEqual("Program.cs", projectItemName);
+		}
+		
+		[Test]
+		public void Item_GetProjectItemByNameWhenNameCaseDoesNotMatchFileNameInProject_ReturnsFileInsideProject()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile("Program.cs");
+			
+			var projectItem = projectItems.Item("PROGRAM.CS") as DTE.ProjectItem;
+			string projectItemName = projectItem.Name;
+			
+			Assert.AreEqual("Program.cs", projectItemName);
+		}
 	}
 }

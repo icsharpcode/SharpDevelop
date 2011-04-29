@@ -48,5 +48,20 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return GetEnumerator();
 		}
+		
+		public ProjectItem Item(string name)
+		{
+			foreach (ProjectItem item in this) {
+				if (IsMatch(item, name)) {
+					return item;
+				}
+			}
+			return null;
+		}
+		
+		bool IsMatch(ProjectItem item, string name)
+		{
+			return String.Equals(item.Name, name, StringComparison.InvariantCultureIgnoreCase);
+		}
 	}
 }
