@@ -10,9 +10,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		public ProjectObject(Project project)
 		{
+			this.Project = project;
 			References = new References(project);
 		}
 		
 		public References References { get; private set; }
+		public Project Project { get; private set; }
+		
+		public DTE DTE {
+			get { return Project.DTE; }
+		}
 	}
 }

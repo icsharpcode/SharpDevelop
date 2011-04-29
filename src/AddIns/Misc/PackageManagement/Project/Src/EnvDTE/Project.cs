@@ -69,7 +69,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal MSBuildBasedProject MSBuildProject { get; private set; }
 		
-		internal void Save()
+		public void Save()
 		{
 			projectService.Save(MSBuildProject);
 		}
