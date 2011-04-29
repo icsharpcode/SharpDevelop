@@ -38,6 +38,18 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void SolutionFileName_SolutionIsOpen_ReturnsSolutionFileName()
+		{
+			CreateDTE();
+			string expectedFileName = @"d:\projects\myproject\myproject.sln";
+			fakeProjectService.OpenSolution.FileName = expectedFileName;
+			
+			string fileName = dte.Solution.FileName;
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
 		public void Solution_NoOpenSolution_ReturnsNull()
 		{
 			CreateDTE();

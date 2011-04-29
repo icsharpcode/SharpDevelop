@@ -16,6 +16,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public string FullName {
+			get { return FileName; }
+		}
+		
+		public string FileName {
 			get { return solution.FileName; }
 		}
 	}
