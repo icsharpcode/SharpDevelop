@@ -10,6 +10,7 @@ using System;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Interfaces;
+using SimpleExpressionEvaluator;
 
 namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 {
@@ -28,14 +29,14 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		public static IExpressionEvaluatorFacade  CreateEvaluator (ISinglePage singlePage,IDataNavigator dataNavigator)
 		{
 			if (singlePage == null) {
-			
+				
 				throw new ArgumentNullException("singlePage");
 			}
-            /*
+			/*
 			if (dataNavigator == null) {
 				throw new ArgumentNullException("dataNavigator");
 			}
-             * */
+			 * */
 			singlePage.IDataNavigator = dataNavigator;
 			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(singlePage);
 			return evaluatorFacade;
@@ -49,11 +50,27 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				if (container != null) {
 					EvaluateReportItems(evaluator,container.Items);
 				}
-				BaseTextItem textItem = column as BaseTextItem;
-				if (textItem != null) {
-					textItem.Text = evaluator.Evaluate(textItem.Text);
+				
+				IReportExpression expressionItem = column as IReportExpression;
+				if (expressionItem != null) {
+					EvaluateItem(evaluator,expressionItem);
 				}
 			}
+		}
+
+		public static void EvaluateItem( IExpressionEvaluatorFacade evaluator,IReportExpression expressionItem)
+		{
+			string expr = String.Empty;
+			if (expressionItem != null)
+			{
+				if (!String.IsNullOrEmpty(expressionItem.Expression)) {
+					expr = expressionItem.Expression;
+				} else {
+					expr = expressionItem.Text; 
+				}
+			}
+
+			expressionItem.Text = evaluator.Evaluate(expr);
 		}
 		
 		
@@ -64,17 +81,17 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				if (container != null) {
 					EvaluateRow(evaluator,container.Items);
 				}
-				ExportText textItem = column as ExportText;
-				if (textItem != null) {
-					textItem.Text = evaluator.Evaluate(textItem.Text);
+				IReportExpression expressionItem = column as IReportExpression;
+				if (expressionItem != null) {
+					EvaluateItem(evaluator,expressionItem);
 				}
 			}
 		}
 		
 		
-		public static bool CanEvaluate (string expressionn)
+		public static bool CanEvaluate (string expression)
 		{
-			if ((!String.IsNullOrEmpty(expressionn)) && (expressionn.StartsWith("=",StringComparison.InvariantCultureIgnoreCase))) {
+			if ((!String.IsNullOrEmpty(expression)) && (expression.StartsWith("=",StringComparison.InvariantCultureIgnoreCase))) {
 				return true;
 			}
 			return false;

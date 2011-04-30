@@ -41,6 +41,7 @@ namespace ICSharpCode.Reports.Core
 			TextStyleDecorator st = this.CreateItemStyle();
 			ExportText item = new ExportText(st,false);
 			item.Text = this.text;
+			item.Expression = this.Expression;
 			return item;
 		}
 		

@@ -34,12 +34,8 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		{
 			try {
 				if (EvaluationHelper.CanEvaluate(expression)) {
-					IExpression compiled = compiler.CompileExpression<string>(expression);
-					
 					this.context.ContextObject = this.SinglePage;
-					if (compiled != null) {
-						return (compiled.Evaluate(context)).ToString();
-					}
+					return EvaluateExpression(expression);
 				}
 			} catch (Exception e) {
 				expression = e.Message;
@@ -49,24 +45,13 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			return expression;
 		}
 
-		static void WriteLogMessage(Exception e)
-		{
-			Console.WriteLine("");
-			Console.WriteLine("ExpressionEvaluatorFacade.Evaluate");
-			Console.WriteLine(e.Message);
-			Console.WriteLine("");
-		}
 		
 		public string Evaluate (string expression, object row)
 		{
 			try {
 				if (EvaluationHelper.CanEvaluate(expression)) {
-					IExpression compiled = compiler.CompileExpression<string>(expression);
-					
-					this.context.ContextObject =row;
-					if (compiled != null) {
-						return (compiled.Evaluate(context)).ToString();
-					}
+					this.context.ContextObject = row;
+					return EvaluateExpression (expression);
 				}
 			} catch (Exception e) {
 				expression = e.Message;
@@ -74,6 +59,25 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			}
 			
 			return expression;
+		}
+		
+		
+		string EvaluateExpression(string expression)
+		{
+			IExpression compiled = compiler.CompileExpression<string>(expression);
+			if (compiled != null) {
+				return (compiled.Evaluate(context)).ToString();
+			}
+			return expression;
+		}
+
+		
+		static void WriteLogMessage(Exception e)
+		{
+			Console.WriteLine("");
+			Console.WriteLine("ExpressionEvaluatorFacade.Evaluate");
+			Console.WriteLine(e.Message);
+			Console.WriteLine("");
 		}
 		
 		

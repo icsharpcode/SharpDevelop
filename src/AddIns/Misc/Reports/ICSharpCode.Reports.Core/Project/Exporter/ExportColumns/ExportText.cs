@@ -12,13 +12,10 @@ namespace ICSharpCode.Reports.Core.Exporter {
 	/// <summary>
 	/// Description of LineItem.
 	/// </summary>
-	public class ExportText :BaseExportColumn{
-		
-		private string text;
+	public class ExportText :BaseExportColumn,IReportExpression
+	{
 		
 		#region Constructors
-		
-
 		
 		public ExportText (BaseStyleDecorator itemStyle,bool isContainer):base(itemStyle,isContainer)
 		{
@@ -51,10 +48,10 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			iTextSharp.text.Rectangle r = base.ConvertToPdfRectangle();
 			columnText.SetSimpleColumn(r.Left, r.Top , r.Left + r.Width,r.Top - r.Height,pdfFormat.Leading,pdfFormat.Alignment);
 		
-			string formatedText = this.text;
+			string formatedText = this.Text;
 			
 			if (!String.IsNullOrEmpty(StyleDecorator.FormatString)) {
-				formatedText = StandardFormatter.FormatOutput(this.text,this.StyleDecorator.FormatString,
+				formatedText = StandardFormatter.FormatOutput(this.Text,this.StyleDecorator.FormatString,
 				                                                 this.StyleDecorator.DataType,String.Empty);
 			}
 			
@@ -95,22 +92,15 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			
 			base.DrawItem(graphics);
 			base.Decorate(graphics);
-			TextDrawer.DrawString(graphics, this.text,this.StyleDecorator);
+			TextDrawer.DrawString(graphics, this.Text,this.StyleDecorator);
 		}
 		
 		#endregion
 		
 		
-		public string Text
-		{
-			get {
-				return text;
-			}
-			set {
-				text = value;
-			}
-		}
+		public string Text {get;set;}
 		
+		public string Expression {get;set;}
 		
 		public new TextStyleDecorator StyleDecorator
 		{
@@ -125,7 +115,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 		
 		public override string ToString()
 		{
-			return this.text;
+			return this.Text;
 		}
 		
 	}

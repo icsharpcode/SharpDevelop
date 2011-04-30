@@ -12,7 +12,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public class TextStyleDecorator:BaseStyleDecorator
 	{
 		private Font font;
-		
 		private StringFormat stringFormat;
 		private StringTrimming stringTrimming;
 		private ContentAlignment contentAlignment;

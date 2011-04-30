@@ -303,33 +303,20 @@ foreach (var element in section.Items)
 		
 		private static void EvaluateRecursive (IExpressionEvaluatorFacade evaluatorFassade,ExporterCollection items)
 		{
-			foreach (BaseExportColumn be in items) {
+			foreach (BaseExportColumn exportColumn in items) {
 				
-				IExportContainer ec = be as IExportContainer;
+				IExportContainer ec = exportColumn as IExportContainer;
 				if (ec != null)
 				{
 					if (ec.Items.Count > 0) {
 						EvaluateRecursive(evaluatorFassade,ec.Items);
 					}
 				}
-				/*
-			IReportExpression expr = be as IReportExpression;
-			if (expr != null)
-			{
-				if (EvaluationHelper.CanEvaluate(expr.Text)) {
-						expr.Text = evaluatorFassade.Evaluate(expr.Text);
-					}
-			}
-				 */
-				
-				ExportText et = be as ExportText;
-				
-				if ((et != null) && (!String.IsNullOrEmpty(et.Text))) {
-					if (EvaluationHelper.CanEvaluate(et.Text)) {
-						et.Text = evaluatorFassade.Evaluate(et.Text);
-					}
+
+				IReportExpression expressionItem = exportColumn as IReportExpression;
+				if (expressionItem != null) {
+					EvaluationHelper.EvaluateItem(evaluatorFassade,expressionItem);
 				}
-				
 			}
 		}
 		
