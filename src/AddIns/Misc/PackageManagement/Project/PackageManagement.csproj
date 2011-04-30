@@ -45,6 +45,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -72,7 +73,7 @@
     <Compile Include="Src\BooleanToFontWeightConverter.cs" />
     <Compile Include="Src\DelegateCommand.cs" />
     <Compile Include="Src\Design\DesignTimeLicenseAcceptanceViewModel.cs" />
-    <Compile Include="Src\Design\DesignTimePackageManagementOptionsViewModel.cs" />
+    <Compile Include="Src\Design\DesignTimeRegisteredPackageSourcesViewModel.cs" />
     <Compile Include="Src\Design\DesignTimePackageManagementService.cs" />
     <Compile Include="Src\Design\DesignTimePackagesViewModel.cs" />
     <Compile Include="Src\Design\FakeFileSystem.cs" />
@@ -84,7 +85,9 @@
     <Compile Include="Src\Design\FakeProjectManager.cs" />
     <Compile Include="Src\Design\FakeProjectSystem.cs" />
     <Compile Include="Src\Design\WpfDesigner.cs" />
+    <Compile Include="Src\FolderBrowser.cs" />
     <Compile Include="Src\ICompilerMessageView.cs" />
+    <Compile Include="Src\IFolderBrowser.cs" />
     <Compile Include="Src\IMessageReporter.cs" />
     <Compile Include="Src\IMessageViewCategory.cs" />
     <Compile Include="Src\IPackageManagementOutputMessagesView.cs" />
@@ -117,11 +120,11 @@
     <Compile Include="Src\OpenHyperlinkCommand.cs" />
     <Compile Include="Src\PackageManagementFileService.cs" />
     <Compile Include="Src\PackageManagementOptions.cs" />
-    <Compile Include="Src\PackageManagementOptionsView.xaml.cs">
-      <DependentUpon>PackageManagementOptionsView.xaml</DependentUpon>
+    <Compile Include="Src\RegisteredPackageSourcesView.xaml.cs">
+      <DependentUpon>RegisteredPackageSourcesView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\PackageManagementOptionsViewModel.cs" />
+    <Compile Include="Src\RegisteredPackageSourcesViewModel.cs" />
     <Compile Include="Src\PackageManagementProjectService.cs" />
     <Compile Include="Src\PackageManagementEnumerableExtensions.cs" />
     <Compile Include="Src\PackageManagementService.cs" />
@@ -167,7 +170,7 @@
   <ItemGroup>
     <Page Include="Src\AddPackageReferenceView.xaml" />
     <Page Include="Src\LicenseAcceptanceView.xaml" />
-    <Page Include="Src\PackageManagementOptionsView.xaml" />
+    <Page Include="Src\RegisteredPackageSourcesView.xaml" />
     <Page Include="Src\PackagesView.xaml" />
     <Page Include="Src\PagedResultsView.xaml" />
   </ItemGroup>

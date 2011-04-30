@@ -6,20 +6,20 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
 {
-	public partial class PackageManagementOptionsView : OptionPanel
+	public partial class RegisteredPackageSourcesView : OptionPanel
 	{
-		const string ViewModelResourceName = "PackageManagementOptionsViewModel";
-		PackageManagementOptionsViewModel viewModel;
+		const string ViewModelResourceName = "RegisteredPackageSourcesViewModel";
+		RegisteredPackageSourcesViewModel viewModel;
 			
-		public PackageManagementOptionsView()
+		public RegisteredPackageSourcesView()
 		{
 			InitializeComponent();
 		}
 		
-		PackageManagementOptionsViewModel ViewModel { 
+		RegisteredPackageSourcesViewModel ViewModel { 
 			get {
 				if (viewModel == null) {
-					viewModel = MainGrid.DataContext as PackageManagementOptionsViewModel;
+					viewModel = MainGrid.DataContext as RegisteredPackageSourcesViewModel;
 				}
 				return viewModel;
 			}

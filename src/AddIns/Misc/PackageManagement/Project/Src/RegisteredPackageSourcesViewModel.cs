@@ -3,29 +3,42 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows.Input;
+
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class PackageManagementOptionsViewModel : ViewModelBase<PackageManagementOptionsViewModel>
+	public class RegisteredPackageSourcesViewModel : ViewModelBase<RegisteredPackageSourcesViewModel>
 	{
 		ObservableCollection<PackageSourceViewModel> packageSourceViewModels = 
 			new ObservableCollection<PackageSourceViewModel>();
 		PackageManagementOptions options;
+		IFolderBrowser folderBrowser;
 		
 		DelegateCommand addPackageSourceCommmand;
 		DelegateCommand removePackageSourceCommand;
 		DelegateCommand movePackageSourceUpCommand;
 		DelegateCommand movePackageSourceDownCommand;
+		DelegateCommand browsePackageFolderCommand;
 		
 		RegisteredPackageSource newPackageSource = new RegisteredPackageSource();
 		PackageSourceViewModel selectedPackageSourceViewModel;
 		
-		public PackageManagementOptionsViewModel(PackageManagementOptions options)
+		public RegisteredPackageSourcesViewModel(
+			PackageManagementOptions options)
+			: this(options, new FolderBrowser())
+		{
+		}
+		
+		public RegisteredPackageSourcesViewModel(
+			PackageManagementOptions options,
+			IFolderBrowser folderBrowser)
 		{
 			this.options = options;
+			this.folderBrowser = folderBrowser;
 			CreateCommands();
 		}
 		
@@ -46,6 +59,9 @@ namespace ICSharpCode.PackageManagement
 			movePackageSourceDownCommand =
 				new DelegateCommand(param => MovePackageSourceDown(),
 					param => CanMovePackageSourceDown);
+			
+			browsePackageFolderCommand =
+				new DelegateCommand(param => BrowsePackageFolder());
 		}
 		
 		public ICommand AddPackageSourceCommand {
@@ -62,6 +78,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public ICommand MovePackageSourceDownCommand {
 			get { return movePackageSourceDownCommand; }
+		}
+		
+		public ICommand BrowsePackageFolderCommand {
+			get { return browsePackageFolderCommand; }
 		}
 		
 		public ObservableCollection<PackageSourceViewModel> PackageSourceViewModels {
@@ -92,12 +112,18 @@ namespace ICSharpCode.PackageManagement
 		
 		public string NewPackageSourceName {
 			get { return newPackageSource.Name; }
-			set { newPackageSource.Name = value; }
+			set {
+				newPackageSource.Name = value;
+				OnPropertyChanged(viewModel => viewModel.NewPackageSourceName);
+			}
 		}
 		
 		public string NewPackageSourceUrl {
 			get { return newPackageSource.Source; }
-			set { newPackageSource.Source = value; }
+			set {
+				newPackageSource.Source = value;
+				OnPropertyChanged(viewModel => viewModel.NewPackageSourceUrl);
+			}
 		}
 		
 		public PackageSourceViewModel SelectedPackageSourceViewModel {
@@ -127,21 +153,15 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool CanAddPackageSource {
-			get {
-				return NewPackageSourceHasUrl && NewPackageSourceHasName;
-			}
+			get { return NewPackageSourceHasUrl && NewPackageSourceHasName; }
 		}
 		
 		bool NewPackageSourceHasUrl {
-			get {
-				return !String.IsNullOrEmpty(NewPackageSourceUrl);
-			}
+			get { return !String.IsNullOrEmpty(NewPackageSourceUrl); }
 		}
 		
 		bool NewPackageSourceHasName {
-			get {
-				return !String.IsNullOrEmpty(NewPackageSourceName);
-			}
+			get { return !String.IsNullOrEmpty(NewPackageSourceName); }
 		}
 		
 		public void RemovePackageSource()
@@ -208,6 +228,26 @@ namespace ICSharpCode.PackageManagement
 		PackageSourceViewModel GetLastPackageSourceViewModel()
 		{
 			return packageSourceViewModels.Last();
+		}
+		
+		public void BrowsePackageFolder()
+		{
+			string folder = folderBrowser.SelectFolder();
+			if (folder != null) {
+				UpdateNewPackageSourceUsingSelectedFolder(folder);
+			}
+		}
+		
+		void UpdateNewPackageSourceUsingSelectedFolder(string folder)
+		{
+			NewPackageSourceUrl = folder;
+			NewPackageSourceName = GetPackageSourceNameFromFolder(folder);
+			
+		}
+		
+		string GetPackageSourceNameFromFolder(string folder)
+		{
+			return Path.GetFileName(folder);
 		}
 	}
 }

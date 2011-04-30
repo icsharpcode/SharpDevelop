@@ -8,14 +8,14 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
 {
-	public class DesignTimePackageManagementOptionsViewModel : PackageManagementOptionsViewModel
+	public class DesignTimeRegisteredPackageSourcesViewModel : RegisteredPackageSourcesViewModel
 	{
-		public DesignTimePackageManagementOptionsViewModel()
+		public DesignTimeRegisteredPackageSourcesViewModel()
 			: this(new PackageManagementOptions(new Properties()))
 		{
 		}
 		
-		public DesignTimePackageManagementOptionsViewModel(PackageManagementOptions options)
+		public DesignTimeRegisteredPackageSourcesViewModel(PackageManagementOptions options)
 			: base(options)
 		{
 			options.PackageSources.Add(new PackageSource("Source2", "http://sharpdevelop.codeplex.com"));

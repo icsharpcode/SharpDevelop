@@ -72,6 +72,7 @@
     <Compile Include="Src\Helpers\ExceptionThrowingPackageOperationResolver.cs" />
     <Compile Include="Src\Helpers\FakeCompilerMessageView.cs" />
     <Compile Include="Src\Helpers\FakeFileService.cs" />
+    <Compile Include="Src\Helpers\FakeFolderBrowser.cs" />
     <Compile Include="Src\Helpers\FakeLicenseAcceptanceService.cs" />
     <Compile Include="Src\Helpers\FakeMessageCategoryView.cs" />
     <Compile Include="Src\Helpers\FakeMessageReporter.cs" />
@@ -119,7 +120,7 @@
     <Compile Include="Src\LicenseAcceptanceViewModelTests.cs" />
     <Compile Include="Src\OpenHyperlinkCommandTests.cs" />
     <Compile Include="Src\PackageManagementOptionsTests.cs" />
-    <Compile Include="Src\PackageManagementOptionsViewModelTests.cs" />
+    <Compile Include="Src\RegisteredPackageSourcesViewModelTests.cs" />
     <Compile Include="Src\PackageManagementOutputMessagesViewTests.cs" />
     <Compile Include="Src\PackageManagementServiceTests.cs" />
     <Compile Include="Src\PackageRepositoryCacheTests.cs" />

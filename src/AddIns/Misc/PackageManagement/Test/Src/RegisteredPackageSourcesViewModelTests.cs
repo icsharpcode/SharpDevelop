@@ -12,22 +12,25 @@ using PackageManagement.Tests.Helpers;
 namespace PackageManagement.Tests
 {
 	[TestFixture]
-	public class PackageManagementOptionsViewModelTests
+	public class RegisteredPackageSourcesViewModelTests
 	{
-		PackageManagementOptionsViewModel viewModel;
+		RegisteredPackageSourcesViewModel viewModel;
 		PackageManagementOptions options;
+		FakeFolderBrowser fakeFolderBrowser;
+		List<string> propertiesChanged;
 		
 		void CreateViewModel()
 		{
 			options = new PackageManagementOptions(new Properties());
 			options.PackageSources.Clear();
-			viewModel = new PackageManagementOptionsViewModel(options);
+			fakeFolderBrowser = new FakeFolderBrowser();
+			viewModel = new RegisteredPackageSourcesViewModel(options, fakeFolderBrowser);
 		}
 		
 		void CreateViewModelWithOnePackageSource()
 		{
 			CreateViewModel();
-			AddPackageSourceToOptions("Source 1", "http://url1");			
+			AddPackageSourceToOptions("Source 1", "http://url1");
 		}
 		
 		void CreateViewModelWithTwoPackageSources()
@@ -41,6 +44,12 @@ namespace PackageManagement.Tests
 		{
 			var source = new PackageSource(url, name);
 			options.PackageSources.Add(source);
+		}
+		
+		void RecordPropertyChanges()
+		{
+			propertiesChanged = new List<string>();
+			viewModel.PropertyChanged += (sender, e) => propertiesChanged.Add(e.PropertyName);
 		}
 		
 		[Test]
@@ -463,6 +472,96 @@ namespace PackageManagement.Tests
 			viewModel.AddPackageSource();
 			
 			Assert.Contains("SelectedPackageSourceViewModel", propertyNames);
+		}
+		
+		[Test]
+		public void BrowsePackageFolderCommand_UserSelectsFolder_NewPackageSourceUrlIsUpdatedWithSelectedFolder()
+		{
+			CreateViewModel();
+			viewModel.Load();
+			string expectedSourceUrl = @"d:\projects\packages";
+			fakeFolderBrowser.FolderToReturnFromSelectFolder = expectedSourceUrl;
+			
+			viewModel.BrowsePackageFolderCommand.Execute(null);
+			
+			string newSourceUrl = viewModel.NewPackageSourceUrl;
+			
+			Assert.AreEqual(expectedSourceUrl, newSourceUrl);
+		}
+		
+		[Test]
+		public void BrowsePackageFolder_UserSelectsFolder_NewPackageSourceNameIsUpdatedWithSelectedFolderName()
+		{
+			CreateViewModel();
+			viewModel.Load();
+			fakeFolderBrowser.FolderToReturnFromSelectFolder = @"d:\projects\NuGet Packages";
+			
+			viewModel.BrowsePackageFolder();
+			
+			string newName = viewModel.NewPackageSourceName;
+			
+			Assert.AreEqual("NuGet Packages", newName);
+		}
+		
+		[Test]
+		public void BrowsePackageFolder_UserDoesNotSelectFolder_NewPackageSourceUrlIsNotChanged()
+		{
+			CreateViewModel();
+			viewModel.Load();
+			string expectedSource = "http://sharpdevelop.com/packages";
+			viewModel.NewPackageSourceUrl = expectedSource;
+			fakeFolderBrowser.FolderToReturnFromSelectFolder = null;
+			
+			viewModel.BrowsePackageFolder();
+			
+			string newSource = viewModel.NewPackageSourceUrl;
+			
+			Assert.AreEqual(expectedSource, newSource);
+		}
+		
+		[Test]
+		public void BrowsePackageFolder_UserDoesNotSelectFolder_NewPackageSourceNameIsNotChanged()
+		{
+			CreateViewModel();
+			viewModel.Load();
+			viewModel.NewPackageSourceName = "Test";
+			fakeFolderBrowser.FolderToReturnFromSelectFolder = null;
+			
+			viewModel.BrowsePackageFolder();
+			
+			string name = viewModel.NewPackageSourceName;
+			
+			Assert.AreEqual("Test", name);
+		}
+		
+		[Test]
+		public void BrowsePackageFolder_UserSelectsFolder_PropertyChangedEventFiresForNewPackageSourceUrl()
+		{
+			CreateViewModel();
+			viewModel.Load();
+			fakeFolderBrowser.FolderToReturnFromSelectFolder = @"d:\projects\NuGet Packages";
+			
+			RecordPropertyChanges();
+			viewModel.BrowsePackageFolder();
+			
+			bool propertyEventFired = propertiesChanged.Contains("NewPackageSourceUrl");
+			
+			Assert.IsTrue(propertyEventFired);
+		}
+		
+		[Test]
+		public void BrowsePackageFolder_UserSelectsFolder_PropertyChangedEventFiresForNewPackageSourceName()
+		{
+			CreateViewModel();
+			viewModel.Load();
+			fakeFolderBrowser.FolderToReturnFromSelectFolder = @"d:\projects\NuGet Packages";
+			
+			RecordPropertyChanges();
+			viewModel.BrowsePackageFolder();
+			
+			bool propertyEventFired = propertiesChanged.Contains("NewPackageSourceName");
+			
+			Assert.IsTrue(propertyEventFired);
 		}
 	}
 }

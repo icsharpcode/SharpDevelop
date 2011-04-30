@@ -9,7 +9,7 @@ namespace ICSharpCode.PackageManagement
 	public class ViewModelLocator
 	{
 		AddPackageReferenceViewModel addPackageReferenceViewModel;
-		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
+		RegisteredPackageSourcesViewModel registeredPackageSourcesViewModel;
 		IPackageManagementService packageManagementService;
 		
 		public AddPackageReferenceViewModel AddPackageReferenceViewModel {
@@ -42,22 +42,22 @@ namespace ICSharpCode.PackageManagement
 			return WpfDesigner.IsInDesignMode();
 		}
 		
-		public PackageManagementOptionsViewModel PackageManagementOptionsViewModel {
+		public RegisteredPackageSourcesViewModel RegisteredPackageSourcesViewModel {
 			get {
-				if (packageManagementOptionsViewModel == null) {
-					CreatePackageManagementOptionsViewModel();
+				if (registeredPackageSourcesViewModel == null) {
+					CreateRegisteredPackageSourcesViewModel();
 				}
-				return packageManagementOptionsViewModel;
+				return registeredPackageSourcesViewModel;
 			}
 		}
 		
-		void CreatePackageManagementOptionsViewModel()
+		void CreateRegisteredPackageSourcesViewModel()
 		{
 			CreatePackageManagementService();
 			if (IsInDesignMode()) {
-				packageManagementOptionsViewModel = new DesignTimePackageManagementOptionsViewModel();
+				registeredPackageSourcesViewModel = new DesignTimeRegisteredPackageSourcesViewModel();
 			} else {
-				packageManagementOptionsViewModel = new PackageManagementOptionsViewModel(packageManagementService.Options);
+				registeredPackageSourcesViewModel = new RegisteredPackageSourcesViewModel(packageManagementService.Options);
 			}
 		}
 	}

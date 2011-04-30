@@ -1,5 +1,5 @@
 ﻿<gui:OptionPanel
-	x:Class="ICSharpCode.PackageManagement.PackageManagementOptionsView"
+	x:Class="ICSharpCode.PackageManagement.RegisteredPackageSourcesView"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
 	xmlns:pm="clr-namespace:ICSharpCode.PackageManagement"
@@ -50,7 +50,7 @@
 		</Grid.Resources>
 		
 		<Grid.DataContext>
-			<Binding Source="{StaticResource ViewModelLocator}" Path="PackageManagementOptionsViewModel"/>
+			<Binding Source="{StaticResource ViewModelLocator}" Path="RegisteredPackageSourcesViewModel"/>
 		</Grid.DataContext>
 		
 		<Grid.ColumnDefinitions>
@@ -127,7 +127,13 @@
 			<Button
 				Content="Add"
 				Command="{Binding Path=AddPackageSourceCommand}"
-				Margin="4, 2"
+				Margin="4, 6, 4, 4"
+				Padding="7, 0"/>
+			<Button
+				Content="..."
+				Command="{Binding Path=BrowsePackageFolderCommand}"
+				HorizontalAlignment="Left"
+				Margin="4, 4"
 				Padding="7, 0"/>
 		</StackPanel>
 	</Grid>
