@@ -18,21 +18,20 @@ namespace PackageManagement.Tests.Helpers.Tests
 		FakeFileSystem fakeFileSystem;
 		PackageReferenceRepositoryHelper helper;
 		
-		void CreatePackageReferenceRepository()
+		void CreatePackageReferenceRepository(string path)
 		{
 			helper = new PackageReferenceRepositoryHelper();
 			fakeFileSystem = helper.FakeProjectSystem;
+			fakeFileSystem.PathToReturnFromGetFullPath = path;
 			sourceRepository = helper.FakeSharedSourceRepository;
 			repository = new PackageReferenceRepository(fakeFileSystem, sourceRepository);
 		}
 		
 		[Test]
-		public void RegisteredIfRequired_PackageIdInConfigFileAndInSourceRepository_MethodCallWithPathToConfigFile()
+		public void RegisteredIfRequired_PackageIdInConfigFileAndInSourceRepository_MethodCalledWithPathToConfigFile()
 		{
-			CreatePackageReferenceRepository();
-			
 			string expectedPath = @"d:\temp";
-			fakeFileSystem.PathToReturnFromGetFullPath = expectedPath;
+			CreatePackageReferenceRepository(expectedPath);
 						
 			repository.RegisterIfNecessary();
 			

@@ -258,5 +258,10 @@ namespace ICSharpCode.PackageManagement
 			assemblyReference.Include = name;
 			return assemblyReference;
 		}
+		
+		public string ResolvePath(string path)
+		{
+			return path;
+		}
 	}
 }
