@@ -212,5 +212,30 @@ namespace PackageManagement.Tests
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, recentPackages);
 		}
+		
+		[Test]
+		public void Clear_OneRecentPackage_PackagesRemoved()
+		{
+			CreateRepository();
+			AddOnePackageToRepository("Test1");
+			
+			repository.Clear();
+			
+			int count = repository.GetPackages().Count();
+			
+			Assert.AreEqual(0, count);
+		}
+		
+		[Test]
+		public void Clear_OneRecentPackageInOptions_RecentPackagesAreRemovedFromOptions()
+		{
+			CreateRepositoryWithOneRecentPackageSavedInOptions();
+			
+			repository.Clear();
+			
+			int count = options.RecentPackages.Count;
+			
+			Assert.AreEqual(0, count);
+		}
 	}
 }

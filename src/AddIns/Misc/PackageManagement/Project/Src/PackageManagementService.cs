@@ -71,7 +71,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public IPackageRepository RecentPackageRepository {
+		public IRecentPackageRepository RecentPackageRepository {
 			get {
 				if (recentPackageRepository == null) {
 					CreateRecentPackageRepository();

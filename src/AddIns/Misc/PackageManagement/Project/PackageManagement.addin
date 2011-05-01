@@ -60,7 +60,8 @@
 			insertbefore="TextEditorOptions">
 			<OptionPanel
 				id="PackageManagementOptions"
-				label="General"/>
+				label="General"
+				class="ICSharpCode.PackageManagement.PackageManagementOptionsView"/>
 			<OptionPanel
 				id="PackageSources"
 				label="Package Sources"

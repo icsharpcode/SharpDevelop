@@ -88,12 +88,21 @@
     <Compile Include="Src\FolderBrowser.cs" />
     <Compile Include="Src\ICompilerMessageView.cs" />
     <Compile Include="Src\IFolderBrowser.cs" />
+    <Compile Include="Src\IMachinePackageCache.cs" />
     <Compile Include="Src\IMessageReporter.cs" />
     <Compile Include="Src\IMessageViewCategory.cs" />
     <Compile Include="Src\IPackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\IPackageRepositoryCache.cs" />
+    <Compile Include="Src\IProcess.cs" />
+    <Compile Include="Src\IRecentPackageRepository.cs" />
+    <Compile Include="Src\MachinePackageCache.cs" />
     <Compile Include="Src\PackageManagementCompilerMessageView.cs" />
     <Compile Include="Src\PackageManagementMessageViewCategory.cs" />
+    <Compile Include="Src\PackageManagementOptionsView.xaml.cs">
+      <DependentUpon>PackageManagementOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\PackageManagementOptionsViewModel.cs" />
     <Compile Include="Src\PackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\PackageRepositoryCache.cs" />
     <Compile Include="Src\PackagesForSelectedPageResult.cs" />
@@ -120,6 +129,7 @@
     <Compile Include="Src\OpenHyperlinkCommand.cs" />
     <Compile Include="Src\PackageManagementFileService.cs" />
     <Compile Include="Src\PackageManagementOptions.cs" />
+    <Compile Include="Src\Process.cs" />
     <Compile Include="Src\RegisteredPackageSourcesView.xaml.cs">
       <DependentUpon>RegisteredPackageSourcesView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -170,6 +180,7 @@
   <ItemGroup>
     <Page Include="Src\AddPackageReferenceView.xaml" />
     <Page Include="Src\LicenseAcceptanceView.xaml" />
+    <Page Include="Src\PackageManagementOptionsView.xaml" />
     <Page Include="Src\RegisteredPackageSourcesView.xaml" />
     <Page Include="Src\PackagesView.xaml" />
     <Page Include="Src\PagedResultsView.xaml" />

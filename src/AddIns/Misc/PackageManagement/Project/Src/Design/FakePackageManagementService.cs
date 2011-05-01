@@ -127,7 +127,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public FakePackageRepository FakeRecentPackageRepository = new FakePackageRepository();
 		
-		public IPackageRepository RecentPackageRepository {
+		public IRecentPackageRepository RecentPackageRepository {
 			get { return FakeRecentPackageRepository; }
 		}
 		

@@ -4,39 +4,29 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.Design;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement.Design
+namespace PackageManagement.Tests.Helpers
 {
-	public class FakePackageRepository : IRecentPackageRepository
+	public class FakeMachinePackageCache : IMachinePackageCache
 	{
 		public List<FakePackage> FakePackages = new List<FakePackage>();
-		public bool IsRemovePackageCalled;
-		public List<IPackage> PackagesAdded = new List<IPackage>();
-		
-		public IPackage FirstPackageAdded {
-			get { return PackagesAdded[0]; }
-		}
 		
 		public IQueryable<IPackage> GetPackages()
 		{
 			return FakePackages.AsQueryable();
 		}
 		
-		public void AddPackage(IPackage package)
-		{
-			PackagesAdded.Add(package);
-		}
-		
-		public void RemovePackage(IPackage package)
-		{
-			IsRemovePackageCalled = true;
-		}
-		
-		public string Source { get; set; }
+		public bool IsClearCalled;
 		
 		public void Clear()
 		{
+			IsClearCalled = true;
 		}
+		
+		public string Source { get; set; }
 	}
 }

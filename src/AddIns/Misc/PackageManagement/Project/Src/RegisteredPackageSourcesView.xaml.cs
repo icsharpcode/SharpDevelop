@@ -8,7 +8,6 @@ namespace ICSharpCode.PackageManagement
 {
 	public partial class RegisteredPackageSourcesView : OptionPanel
 	{
-		const string ViewModelResourceName = "RegisteredPackageSourcesViewModel";
 		RegisteredPackageSourcesViewModel viewModel;
 			
 		public RegisteredPackageSourcesView()

@@ -35,7 +35,7 @@ namespace ICSharpCode.PackageManagement
 		
 		protected virtual void StartProcess(string fileName)
 		{
-			Process.Start(fileName);
+			System.Diagnostics.Process.Start(fileName);
 		}
 	}
 }

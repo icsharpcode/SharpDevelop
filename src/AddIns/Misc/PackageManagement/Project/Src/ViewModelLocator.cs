@@ -10,6 +10,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		AddPackageReferenceViewModel addPackageReferenceViewModel;
 		RegisteredPackageSourcesViewModel registeredPackageSourcesViewModel;
+		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
 		IPackageManagementService packageManagementService;
 		
 		public AddPackageReferenceViewModel AddPackageReferenceViewModel {
@@ -58,6 +59,17 @@ namespace ICSharpCode.PackageManagement
 				registeredPackageSourcesViewModel = new DesignTimeRegisteredPackageSourcesViewModel();
 			} else {
 				registeredPackageSourcesViewModel = new RegisteredPackageSourcesViewModel(packageManagementService.Options);
+			}
+		}
+		
+		public PackageManagementOptionsViewModel PackageManagementOptionsViewModel {
+			get {
+				if (packageManagementOptionsViewModel == null) {
+					CreatePackageManagementService();
+					IRecentPackageRepository recentRepository = packageManagementService.RecentPackageRepository;
+					packageManagementOptionsViewModel = new PackageManagementOptionsViewModel(recentRepository);
+				}
+				return packageManagementOptionsViewModel;
 			}
 		}
 	}
