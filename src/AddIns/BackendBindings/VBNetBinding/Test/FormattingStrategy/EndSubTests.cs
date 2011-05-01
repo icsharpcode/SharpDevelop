@@ -89,6 +89,35 @@ namespace ICSharpCode.VBNetBinding.Tests
 		}
 		
 		[Test]
+		public void EndUsing()
+		{
+			string code = "Public Class Foo\r\n" +
+				"\tPublic Sub Bar\r\n" +
+				"\t\tUsing a As New StreamReader()\r\n" +
+				"\r\n" + // This extra new line is required. This is the new line just entered by the user.
+				"\tEnd Sub\r\n" +
+				"End Class";
+			
+			string bar = "Using a As New StreamReader()\r\n";
+			int cursorOffset = code.IndexOf(bar) + bar.Length;
+			
+			string expectedCode = "Public Class Foo\r\n" +
+				"\tPublic Sub Bar\r\n" +
+				"\t\tUsing a As New StreamReader()\r\n" +
+				"\t\t\t\r\n" +
+				"\t\tEnd Using\r\n" +
+				"\tEnd Sub\r\n" +
+				"End Class";
+			
+			int expectedOffset = ("Public Class Foo\r\n" +
+			                      "\tPublic Sub Bar\r\n" +
+			                      "\t\tUsing a As New StreamReader()\r\n" +
+			                      "\t\t\t").Length;
+			
+			RunTest(code, cursorOffset, expectedCode, expectedOffset, '\n');
+		}
+		
+		[Test]
 		public void SingleLineIf()
 		{
 			string code = "Public Class Foo\r\n" +
