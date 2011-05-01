@@ -150,14 +150,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds))
 			{
 				base.CurrentPosition = ForcePageBreak (exporterCollection,section);
-				Console.WriteLine("\t -new  CurPos = {0}",base.CurrentPosition);
 			}
 		}
 		
 		
 		protected override Point ForcePageBreak(ExporterCollection exporterCollection, BaseSection section)
 		{
-			Console.WriteLine("PageBreak");
 			base.ForcePageBreak(exporterCollection,section);
 			return CalculateStartPosition(section);
 			

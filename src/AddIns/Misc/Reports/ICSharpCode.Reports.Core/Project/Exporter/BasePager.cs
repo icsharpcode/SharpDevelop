@@ -81,7 +81,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			PrintHelper.AdjustSectionLocation(section);
 			var convertedSection = new ExporterCollection();
 			Offset = new Point(section.Location.X,section.SectionOffset);
-		
+		Point startOffset = Offset;
 			if (section.Items.Count > 0) {
 				section.Items.SortByLocation();
 
@@ -109,17 +109,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 						Offset = BaseConverter.ConvertContainer(convertedSection,simpleContainer,Offset.X,Offset);
 						Offset = new Point(Offset.X,Offset.Y + gap);
 					
-						//section.Size = CalculatenewSectionSize
 						Rectangle rsec = new Rectangle(section.Location,section.Size);
 						Rectangle ro = new Rectangle(section.Location,simpleContainer.Size);
 						if (!rsec.Contains(ro)) {
-							
-							Rectangle rnew = new Rectangle(section.Location.X,section.Location.Y,
-							                               section.Size.Width , ro.Location.Y + ro.Size.Height +1);
-							Console.WriteLine ("{0}",rsec);
-							Console.WriteLine ("{0}",ro);
-							Console.WriteLine ("{0}",rnew);
-							Console.WriteLine(rnew.Contains(ro));
+							Console.WriteLine("recalculate sectionsize old {0} ",section.Size);
+							section.Size = new Size(section.Size.Width,Offset.Y - startOffset.Y + gap);
+							Console.WriteLine("\t  new size  {0} ",section.Size);
 						}
 						
 					}
@@ -222,6 +217,7 @@ foreach (var element in section.Items)
 			return convertedSection;
 		}
 		*/
+	
 		
 		static int CalculateGap(BaseReportItem oldItem, BaseReportItem item)
 		{
