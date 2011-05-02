@@ -83,7 +83,7 @@ namespace ICSharpCode.VBNetBinding
 			new int[] {
 				Tokens.Class, Tokens.Module, Tokens.Namespace, Tokens.Interface, Tokens.Structure,
 				Tokens.Sub, Tokens.Function, Tokens.Operator, Tokens.Enum,
-				Tokens.If, Tokens.For, Tokens.Do, Tokens.While, Tokens.With, Tokens.Select, Tokens.Try, Tokens.Using,
+				Tokens.If, Tokens.For, Tokens.Do, Tokens.While, Tokens.With, Tokens.Select, Tokens.Try, Tokens.Using, Tokens.SyncLock, 
 				Tokens.Property, Tokens.Get, Tokens.Set
 			});
 		#endregion

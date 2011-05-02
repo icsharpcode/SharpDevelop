@@ -118,6 +118,35 @@ namespace ICSharpCode.VBNetBinding.Tests
 		}
 		
 		[Test]
+		public void EndSyncLock()
+		{
+			string code = "Public Class Foo\r\n" +
+				"\tPublic Sub Bar\r\n" +
+				"\t\tSyncLock a\r\n" +
+				"\r\n" + // This extra new line is required. This is the new line just entered by the user.
+				"\tEnd Sub\r\n" +
+				"End Class";
+			
+			string bar = "SyncLock a\r\n";
+			int cursorOffset = code.IndexOf(bar) + bar.Length;
+			
+			string expectedCode = "Public Class Foo\r\n" +
+				"\tPublic Sub Bar\r\n" +
+				"\t\tSyncLock a\r\n" +
+				"\t\t\t\r\n" +
+				"\t\tEnd SyncLock\r\n" +
+				"\tEnd Sub\r\n" +
+				"End Class";
+			
+			int expectedOffset = ("Public Class Foo\r\n" +
+			                      "\tPublic Sub Bar\r\n" +
+			                      "\t\tSyncLock a\r\n" +
+			                      "\t\t\t").Length;
+			
+			RunTest(code, cursorOffset, expectedCode, expectedOffset, '\n');
+		}
+		
+		[Test]
 		public void SingleLineIf()
 		{
 			string code = "Public Class Foo\r\n" +
