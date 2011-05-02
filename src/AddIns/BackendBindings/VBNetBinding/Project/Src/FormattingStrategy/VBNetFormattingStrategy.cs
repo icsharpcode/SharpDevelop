@@ -646,7 +646,10 @@ namespace ICSharpCode.VBNetBinding
 			for (int i = blockStart; i <= blockEnd; i++) {
 				IDocumentLine curLine = editor.Document.GetLine(i);
 				string lineText = curLine.Text.TrimStart();
-				string noComments = lineText.TrimComments().TrimEnd();
+				// preprocessor directives cannot be multiline (just as comments)
+				// and they are not included in normal block indentation ->
+				// treat preprocessor directives as comments -> remove them
+				string noComments = lineText.TrimComments().TrimPreprocessorDirectives().TrimEnd();
 				
 				// adjust indentation if the current line is not selected
 				// lines between the selection will be aligned to the selected level

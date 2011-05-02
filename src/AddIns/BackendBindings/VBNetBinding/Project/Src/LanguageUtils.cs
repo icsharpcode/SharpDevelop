@@ -26,6 +26,29 @@ namespace ICSharpCode.VBNetBinding
 			return line;
 		}
 		
+		public static string TrimPreprocessorDirectives(this string line)
+		{
+			if (string.IsNullOrEmpty(line))
+				return string.Empty;
+			
+			bool inStr = false;
+			bool wsOnly = true;
+			
+			for (int i = 0; i < line.Length; i++) {
+				if (line[i] == '#' && wsOnly) {
+					if (i < line.Length - 1) {
+						if (char.IsLetter(line[i + 1]))
+							return line.Substring(0, i);
+					} else
+						return line.Substring(0, i);
+				}
+				if (!char.IsWhiteSpace(line[i]))
+					wsOnly = false;
+			}
+			
+			return line;
+		}
+		
 		public static string TrimLine(this string line)
 		{
 			if (string.IsNullOrEmpty(line))

@@ -454,6 +454,32 @@ End Class";
 			RunFormatTest(code, expected);
 		}
 		
+		[Test]
+		public void Region()
+		{
+			string expected = @"Module Program
+	#Region Test
+	
+	#End Region
+	
+	Sub asdf()
+		
+	End Sub
+End Module";
+			
+			string code = @"Module Program
+#Region Test
+
+#End Region
+
+Sub asdf()
+
+End Sub
+End Module";
+			
+			RunFormatTest(code, expected);
+		}
+		
 		void RunFormatTest(string code, string expectedCode)
 		{
 			AvalonEditTextEditorAdapter editor = new AvalonEditTextEditorAdapter(new TextEditor());
