@@ -24,7 +24,6 @@ namespace ICSharpCode.PackageManagement
 		public PackageManagementOptions(Properties properties)
 		{
 			this.properties = properties;
-			properties.Set<Version>("MyVersion", new Version(1, 0));
 		}
 		
 		public PackageManagementOptions()
