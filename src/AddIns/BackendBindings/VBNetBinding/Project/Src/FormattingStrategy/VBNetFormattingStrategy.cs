@@ -631,7 +631,7 @@ namespace ICSharpCode.VBNetBinding
 			
 			Token t = lexer.Peek();
 			
-			while (t.Kind != Tokens.EOL)
+			while (t.Kind > Tokens.EOL) // break on EOF(0) or EOL(1)
 				t = lexer.Peek();
 			
 			return t.Location.Line;
