@@ -719,7 +719,7 @@ namespace ICSharpCode.VBNetBinding
 					
 					Token currentToken = null;
 					
-					while ((currentToken = lexer.Peek()).Kind != Tokens.EOL) {
+					while ((currentToken = lexer.Peek()).Kind > Tokens.EOL) {
 						if (currentToken.Kind == Tokens.Then)
 							return lexer.Peek().Kind == Tokens.EOL;
 					}
@@ -755,13 +755,13 @@ namespace ICSharpCode.VBNetBinding
 						return false;
 				}
 				
-				if (current.Kind == Tokens.With && prev.Kind != Tokens.EOL)
+				if (current.Kind == Tokens.With && prev.Kind > Tokens.EOL)
 					return false;
 				
 				if (current.Kind == Tokens.While && (prev.Kind == Tokens.Skip || prev.Kind == Tokens.Take))
 					return false;
 				
-				if (current.Kind == Tokens.Select && prev.Kind != Tokens.EOL)
+				if (current.Kind == Tokens.Select && prev.Kind > Tokens.EOL)
 					return false;
 				
 				if (current.Kind == Tokens.Class || current.Kind == Tokens.Structure) {
