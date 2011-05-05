@@ -287,7 +287,14 @@ ImportsStatement =
 .
 
 AttributeBlock =
-	"<" (. wasNormalAttribute = true; PushContext(Context.Attribute, la, t); .) [ ( "Assembly" | "Module" ) ":" (. wasNormalAttribute = false; .) ] { ANY } ">" (. PopContext(); .) [ EOL ]
+	"<" (. wasNormalAttribute = true; PushContext(Context.Attribute, la, t); .)
+	Attribute { "," Attribute }
+	">" (. PopContext(); .) [ EOL ]
+.
+
+Attribute =
+	[ EXPECTEDCONFLICT("Assembly") ( "Assembly" | "Module" ) ":" (. wasNormalAttribute = false; .) ]
+	Identifier { "." Identifier } [ "(" { ANY }  ")" ]
 .
 
 NamespaceMemberDeclaration =

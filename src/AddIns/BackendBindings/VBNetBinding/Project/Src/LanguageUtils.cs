@@ -31,7 +31,6 @@ namespace ICSharpCode.VBNetBinding
 			if (string.IsNullOrEmpty(line))
 				return string.Empty;
 			
-			bool inStr = false;
 			bool wsOnly = true;
 			
 			for (int i = 0; i < line.Length; i++) {
