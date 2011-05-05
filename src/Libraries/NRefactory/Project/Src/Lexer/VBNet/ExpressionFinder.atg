@@ -294,7 +294,8 @@ AttributeBlock =
 
 Attribute =
 	[ EXPECTEDCONFLICT("Assembly") ( "Assembly" | "Module" ) ":" (. wasNormalAttribute = false; .) ]
-	Identifier { "." Identifier } [ "(" { ANY }  ")" ]
+	// named arguments are implemented as BinaryOperatorExpression: Expr ":=" Expr
+	Identifier { "." Identifier } [ "(" [ Expression { "," Expression } ] ")" ]
 .
 
 NamespaceMemberDeclaration =
