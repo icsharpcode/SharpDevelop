@@ -131,6 +131,12 @@ End Class
 ",
 				@"enter Global
 	enter Attribute
+		enter Expression
+			enter Expression
+				enter Expression
+				exit Expression
+			exit Expression
+		exit Expression
 	exit Attribute
 	enter TypeDeclaration
 		enter Identifier
