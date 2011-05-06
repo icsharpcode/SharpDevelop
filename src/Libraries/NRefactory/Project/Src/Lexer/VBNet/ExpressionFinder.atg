@@ -283,7 +283,6 @@ ImportsStatement =
 	)
 	(. PopContext(); .)
 	StatementTerminator
-
 .
 
 AttributeBlock =
@@ -294,8 +293,8 @@ AttributeBlock =
 
 Attribute =
 	[ EXPECTEDCONFLICT("Assembly") ( "Assembly" | "Module" ) ":" (. wasNormalAttribute = false; .) ]
-	// named arguments are implemented as BinaryOperatorExpression: Expr ":=" Expr
-	Identifier { "." Identifier } [ "(" [ Expression { "," Expression } ] ")" ]
+	// TypeName already contains an argument list production
+	TypeName
 .
 
 NamespaceMemberDeclaration =
