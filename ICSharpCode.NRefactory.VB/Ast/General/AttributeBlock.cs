@@ -8,6 +8,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 	public class AttributeBlock : AstNode
 	{
 		public readonly static Role<AttributeBlock> AttributeBlockRole = new Role<AttributeBlock>("AttributeBlock");
+		public readonly static Role<AttributeBlock> ReturnTypeAttributeBlockRole = new Role<AttributeBlock>("ReturnTypeAttributeBlock");
 		
 		public VBTokenNode LChevron {
 			get { return GetChildByRole(Roles.LChevron); }

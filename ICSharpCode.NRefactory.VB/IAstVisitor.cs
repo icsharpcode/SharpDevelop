@@ -6,20 +6,28 @@ using ICSharpCode.NRefactory.VB.Ast;
 using Attribute = ICSharpCode.NRefactory.VB.Ast.Attribute;
 
 namespace ICSharpCode.NRefactory.VB {
-	public interface IAstVisitor<in T, out S> {
-		S VisitPatternPlaceholder(AstNode placeholder, PatternMatching.Pattern pattern, T data);
-		S VisitVBTokenNode(VBTokenNode vBTokenNode, T data);
-		S VisitCompilationUnit(CompilationUnit compilationUnit, T data);
+	public interface IAstVisitor<in T, out S>
+	{
 		S VisitBlockStatement(BlockStatement blockStatement, T data);
+		S VisitCompilationUnit(CompilationUnit compilationUnit, T data);
+		S VisitPatternPlaceholder(AstNode placeholder, PatternMatching.Pattern pattern, T data);
+		S VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration, T data);
+		S VisitParameterDeclaration(ParameterDeclaration parameterDeclaration, T data);
+		S VisitVBTokenNode(VBTokenNode vBTokenNode, T data);
 		
 		// Global scope
-		S VisitOptionStatement(OptionStatement optionStatement, T data);
-		S VisitImportsStatement(ImportsStatement importsStatement, T data);
 		S VisitAliasImportsClause(AliasImportsClause aliasImportsClause, T data);
-		S VisitMembersImportsClause(MemberImportsClause membersImportsClause, T data);
-		S VisitXmlNamespaceImportsClause(XmlNamespaceImportsClause xmlNamespaceImportsClause, T data);
 		S VisitAttribute(Attribute attribute, T data);
 		S VisitAttributeBlock(AttributeBlock attributeBlock, T data);
+		S VisitImportsStatement(ImportsStatement importsStatement, T data);
+		S VisitMembersImportsClause(MemberImportsClause membersImportsClause, T data);
+		S VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, T data);
+		S VisitOptionStatement(OptionStatement optionStatement, T data);
+		S VisitTypeDeclaration(TypeDeclaration typeDeclaration, T data);
+		S VisitXmlNamespaceImportsClause(XmlNamespaceImportsClause xmlNamespaceImportsClause, T data);
+		S VisitEnumDeclaration(EnumDeclaration enumDeclaration, T data);
+		S VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration, T data);
+		S VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, T data);
 		
 		// Expression scope
 		S VisitIdentifier(Identifier identifier, T data);

@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		MustOverride    = 0x0020,  // Members
 		Overridable     = 0x0040,
 		NotInheritable  = 0x0080,  // Types
-		NotOverridable = 0x0100,  // Members
+		NotOverridable  = 0x0100,  // Members
 		Const           = 0x0200,
 		Shared          = 0x0400,
 		Static          = 0x0800,
@@ -35,24 +35,20 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		WithEvents = 0x20000, // VB specific
 		Default    = 0x40000, // VB specific
 		
-		Dim	   = 0x100000,	// VB.NET SPECIFIC, for fields/local variables only
+		Dim	   = 0x80000,	// VB.NET SPECIFIC, for fields/local variables only
 		
 		/// <summary>Only for VB properties.</summary>
-		WriteOnly  = 0x200000, // VB specific
+		WriteOnly  = 0x100000, // VB specific
+		
+		ByVal      = 0x200000,
+		ByRef      = 0x400000,
+		ParamArray = 0x800000,
+		Optional   = 0x1000000,
 		
 		/// <summary>
 		/// Special value used to match any modifiers during pattern matching.
 		/// </summary>
 		Any = unchecked((int)0x80000000)
-	}
-	
-	public enum ClassType
-	{
-		Class,
-		Module,
-		Interface,
-		Struct,
-		Enum
 	}
 	
 	public enum ParentType
@@ -69,18 +65,6 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		In,
 		Out,
 		Ref
-	}
-	
-	[Flags]
-	public enum ParameterModifiers
-	{
-		// Values must be the same as in SharpDevelop's ParameterModifiers
-		None = 0,
-		In  = 1,
-		Out = 2,
-		Ref = 4,
-		Params = 8,
-		Optional = 16
 	}
 	
 	public enum VarianceModifier

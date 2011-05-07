@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using ICSharpCode.NRefactory.PatternMatching;
+using ICSharpCode.NRefactory.VB.Ast;
 
 namespace ICSharpCode.NRefactory.VB
 {
@@ -40,16 +41,6 @@ namespace ICSharpCode.NRefactory.VB
 			this.policy = formattingPolicy;
 		}
 		
-		public object VisitPatternPlaceholder(AstNode placeholder, Pattern pattern, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public object VisitVBTokenNode(ICSharpCode.NRefactory.VB.Ast.VBTokenNode vBTokenNode, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
 		public object VisitCompilationUnit(ICSharpCode.NRefactory.VB.Ast.CompilationUnit compilationUnit, object data)
 		{
 			// don't do node tracking as we visit all children directly
@@ -58,32 +49,32 @@ namespace ICSharpCode.NRefactory.VB
 			return null;
 		}
 		
-		public object VisitBlockStatement(ICSharpCode.NRefactory.VB.Ast.BlockStatement blockStatement, object data)
+		public object VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitOptionStatement(ICSharpCode.NRefactory.VB.Ast.OptionStatement optionStatement, object data)
+		public object VisitPatternPlaceholder(AstNode placeholder, Pattern pattern, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitImportsStatement(ICSharpCode.NRefactory.VB.Ast.ImportsStatement importsStatement, object data)
+		public object VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitAliasImportsClause(ICSharpCode.NRefactory.VB.Ast.AliasImportsClause aliasImportsClause, object data)
+		public object VisitParameterDeclaration(ParameterDeclaration parameterDeclaration, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitMembersImportsClause(ICSharpCode.NRefactory.VB.Ast.MemberImportsClause membersImportsClause, object data)
+		public object VisitVBTokenNode(VBTokenNode vBTokenNode, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitXmlNamespaceImportsClause(ICSharpCode.NRefactory.VB.Ast.XmlNamespaceImportsClause xmlNamespaceImportsClause, object data)
+		public object VisitAliasImportsClause(AliasImportsClause aliasImportsClause, object data)
 		{
 			throw new NotImplementedException();
 		}
@@ -93,47 +84,102 @@ namespace ICSharpCode.NRefactory.VB
 			throw new NotImplementedException();
 		}
 		
-		public object VisitAttributeBlock(ICSharpCode.NRefactory.VB.Ast.AttributeBlock attributeBlock, object data)
+		public object VisitAttributeBlock(AttributeBlock attributeBlock, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitIdentifier(ICSharpCode.NRefactory.VB.Ast.Identifier identifier, object data)
+		public object VisitImportsStatement(ImportsStatement importsStatement, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitXmlIdentifier(ICSharpCode.NRefactory.VB.Ast.XmlIdentifier xmlIdentifier, object data)
+		public object VisitMembersImportsClause(MemberImportsClause membersImportsClause, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitSimpleNameExpression(ICSharpCode.NRefactory.VB.Ast.SimpleNameExpression identifierExpression, object data)
+		public object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitPrimitiveExpression(ICSharpCode.NRefactory.VB.Ast.PrimitiveExpression primitiveExpression, object data)
+		public object VisitOptionStatement(OptionStatement optionStatement, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitPrimitiveType(ICSharpCode.NRefactory.VB.Ast.PrimitiveType primitiveType, object data)
+		public object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitComposedType(ICSharpCode.NRefactory.VB.Ast.ComposedType composedType, object data)
+		public object VisitXmlNamespaceImportsClause(XmlNamespaceImportsClause xmlNamespaceImportsClause, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitArraySpecifier(ICSharpCode.NRefactory.VB.Ast.ArraySpecifier arraySpecifier, object data)
+		public object VisitEnumDeclaration(EnumDeclaration enumDeclaration, object data)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public object VisitSimpleType(ICSharpCode.NRefactory.VB.Ast.SimpleType simpleType, object data)
+		public object VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitIdentifier(Identifier identifier, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitXmlIdentifier(XmlIdentifier xmlIdentifier, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitXmlLiteralString(XmlLiteralString xmlLiteralString, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitSimpleNameExpression(SimpleNameExpression identifierExpression, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitPrimitiveType(PrimitiveType primitiveType, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitQualifiedType(QualifiedType qualifiedType, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitComposedType(ComposedType composedType, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitArraySpecifier(ArraySpecifier arraySpecifier, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitSimpleType(SimpleType simpleType, object data)
 		{
 			throw new NotImplementedException();
 		}
@@ -169,16 +215,6 @@ namespace ICSharpCode.NRefactory.VB
 		}
 		
 		public object VisitIdentifierExpressionBackreference(IdentifierExpressionBackreference identifierExpressionBackreference, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public object VisitXmlLiteralString(ICSharpCode.NRefactory.VB.Ast.XmlLiteralString xmlLiteralString, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public object VisitQualifiedType(ICSharpCode.NRefactory.VB.Ast.QualifiedType qualifiedType, object data)
 		{
 			throw new NotImplementedException();
 		}

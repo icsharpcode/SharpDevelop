@@ -54,11 +54,18 @@
     <Compile Include="Ast\Expressions\XmlLiteralString.cs" />
     <Compile Include="Ast\General\Attribute.cs" />
     <Compile Include="Ast\General\AttributeBlock.cs" />
+    <Compile Include="Ast\General\AttributedNode.cs" />
     <Compile Include="Ast\General\CompilationUnit.cs" />
+    <Compile Include="Ast\General\ParameterDeclaration.cs" />
+    <Compile Include="Ast\General\TypeParameterDeclaration.cs" />
     <Compile Include="Ast\Generated.cs" />
+    <Compile Include="Ast\GlobalScope\DelegateDeclaration.cs" />
+    <Compile Include="Ast\GlobalScope\EnumDeclaration.cs" />
+    <Compile Include="Ast\GlobalScope\EnumMemberDeclaration.cs" />
     <Compile Include="Ast\GlobalScope\ImportsClause.cs" />
     <Compile Include="Ast\GlobalScope\ImportsStatement.cs" />
-    <Compile Include="Ast\GlobalScope\ModuleDeclaration.cs" />
+    <Compile Include="Ast\GlobalScope\NamespaceDeclaration.cs" />
+    <Compile Include="Ast\GlobalScope\TypeDeclaration.cs" />
     <Compile Include="Ast\GlobalScope\OptionStatement.cs" />
     <Compile Include="Ast\Identifier.cs" />
     <Compile Include="Ast\INullable.cs" />
@@ -100,7 +107,6 @@
     <Compile Include="OutputVisitor\TextWriterOutputFormatter.cs" />
     <Compile Include="OutputVisitor\VBFormattingOptions.cs" />
     <Compile Include="Parser\Errors.cs" />
-    <Compile Include="Parser\ParamModifierList.cs" />
     <Compile Include="Parser\Parser.cs">
       <DependentUpon>vb.atg</DependentUpon>
     </Compile>

@@ -58,7 +58,6 @@ namespace ICSharpCode.NRefactory.VB.Ast
 			new KeyValuePair<Modifiers, int>(Modifiers.WithEvents, "WithEvents".Length),
 			new KeyValuePair<Modifiers, int>(Modifiers.Default, "Default".Length),
 			new KeyValuePair<Modifiers, int>(Modifiers.Dim, "Dim".Length),
-
 			
 			// even though it's used for patterns only, it needs to be in this table to be usable in the AST
 			new KeyValuePair<Modifiers, int>(Modifiers.Any, "Any".Length)

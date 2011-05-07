@@ -63,18 +63,5 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		}
 	}
 	
-	public abstract class TypeDeclaration : AttributedNode
-	{
-		
-	}
-	
-	/// <summary>
-	/// Description of ModuleDeclaration.
-	/// </summary>
-	public class ModuleDeclaration
-	{
-		public ModuleDeclaration()
-		{
-		}
-	}
+
 }
