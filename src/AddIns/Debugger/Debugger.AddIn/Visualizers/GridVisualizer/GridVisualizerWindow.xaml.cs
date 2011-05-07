@@ -149,10 +149,10 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 					this.columnHider = new GridViewColumnHider((GridView)this.listView.View);
 					cmbColumns.ItemsSource = this.columnHider.HideableColumns;
 				}
-			} catch (GetValueException ex) {
-				// TODO display ex msg
-			} catch (DebuggerVisualizerException ex) {
-				// TODO display ex msg
+			} catch (GetValueException) {
+				// display ex msg
+			} catch (DebuggerVisualizerException) {
+				// display ex msg
 			}
 		}
 		
