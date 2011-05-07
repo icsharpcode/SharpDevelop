@@ -96,6 +96,26 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void PackageSources_NoPackageSourceInSavedSettings_DefaultPackageSourceAddedToSettings()
+		{
+			CreateSettings();
+			CreateOptions(fakeSettings);
+			
+			var packageSources = options.PackageSources;
+			
+			var defaultSource = RegisteredPackageSources.DefaultPackageSource;
+			
+			var expectedSavedPackageSourceSettings = new List<KeyValuePair<string, string>>();
+			string name = defaultSource.Name;
+			string sourceUrl = defaultSource.Source;
+			expectedSavedPackageSourceSettings.Add(new KeyValuePair<string, string>(name, sourceUrl));
+			
+			var actualSavedPackageSourceSettings = fakeSettings.GetValuesPassedToSetValuesForPackageSourcesSection();
+			
+			Assert.AreEqual(expectedSavedPackageSourceSettings, actualSavedPackageSourceSettings);
+		}
+		
+		[Test]
 		public void PackageSources_OnePackageSourceAdded_PackageSourceSavedInSettings()
 		{
 			CreateSettings();

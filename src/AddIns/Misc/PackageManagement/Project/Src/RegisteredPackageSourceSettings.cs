@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 
 using NuGet;
 
@@ -59,6 +60,10 @@ namespace ICSharpCode.PackageManagement
 			var savedPackageSources = GetPackageSourcesFromSettings();
 			packageSources = new RegisteredPackageSources(savedPackageSources);
 			packageSources.CollectionChanged += PackageSourcesChanged;
+			
+			if (!savedPackageSources.Any()) {
+				UpdatePackageSourceSettingsWithChanges();
+			}
 		}
 		
 		IEnumerable<PackageSource> GetPackageSourcesFromSettings()
