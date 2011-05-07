@@ -374,7 +374,14 @@ namespace ICSharpCode.PackageManagement
 		public bool ShowPackageSources { get; set; }
 		
 		public IEnumerable<PackageSource> PackageSources {
-			get { return packageManagementService.Options.PackageSources; }
+			get {
+				foreach (PackageSource packageSource in packageManagementService.Options.PackageSources) {
+					yield return packageSource;
+				}
+				if (packageManagementService.Options.PackageSources.HasMultiplePackageSources) {
+					yield return RegisteredPackageSourceSettings.AggregatePackageSource;
+				}
+			}
 		}
 		
 		public PackageSource SelectedPackageSource {

@@ -253,13 +253,26 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void PackageSources_TwoPackageSourcesInOptions_HasTwoRepositoriesInCollection()
+		public void PackageSources_TwoPackageSourcesInOptions_ReturnsTwoPackageSourcesPlusAggregatePackageSource()
 		{
 			CreatePackageManagementService();
 			AddTwoPackageSourcesToRegisteredSources();
 			CreateViewModel(packageManagementService);
 			
-			var expectedPackageSources = packageManagementService.Options.PackageSources;
+			var expectedPackageSources = new List<PackageSource>(packageManagementService.Options.PackageSources);
+			expectedPackageSources.Add(RegisteredPackageSourceSettings.AggregatePackageSource);
+			
+			PackageSourceCollectionAssert.AreEqual(expectedPackageSources, viewModel.PackageSources);
+		}
+		
+		[Test]
+		public void PackageSources_OnePackageSourceInOptions_ReturnsOnePackageSource()
+		{
+			CreatePackageManagementService();
+			AddOnePackageSourceToRegisteredSources();
+			CreateViewModel(packageManagementService);
+			
+			var expectedPackageSources = new List<PackageSource>(packageManagementService.Options.PackageSources);
 			
 			PackageSourceCollectionAssert.AreEqual(expectedPackageSources, viewModel.PackageSources);
 		}

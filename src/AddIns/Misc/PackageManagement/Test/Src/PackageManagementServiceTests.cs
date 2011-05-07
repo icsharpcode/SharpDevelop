@@ -561,7 +561,38 @@ namespace PackageManagement.Tests
 			updatePackageHelper.UpdateTestPackage();
 			
 			Assert.AreEqual(installPackageHelper.TestPackage, package);
-
+		}
+		
+		[Test]
+		public void ActivePackageRepository_ActivePackageSourceIsAggregate_ReturnsAggregatePackageRepository()
+		{
+			CreatePackageSources();
+			packageSourcesHelper.AddTwoPackageSources();
+			CreatePackageManagementService(packageSourcesHelper.Options);
+			
+			var repository1Package = new FakePackage("One");
+			var repository1 = new FakePackageRepository();
+			repository1.FakePackages.Add(repository1Package);
+			
+			fakePackageRepositoryFactory.FakePackageRepositories.Add(packageSourcesHelper.RegisteredPackageSources[0], repository1);
+			
+			var repository2Package = new FakePackage("Two");
+			var repository2 = new FakePackageRepository();
+			repository2.FakePackages.Add(repository2Package);
+			
+			fakePackageRepositoryFactory.FakePackageRepositories.Add(packageSourcesHelper.RegisteredPackageSources[1], repository2);
+			
+			packageManagementService.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+						
+			IPackageRepository repository = packageManagementService.ActivePackageRepository;
+			List<IPackage> packages = repository.GetPackages().OrderBy(x => x.Id).ToList();
+			
+			var expectedPackages = new FakePackage[] {
+				repository1Package,
+				repository2Package
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, packages);
 		}
 	}
 }
