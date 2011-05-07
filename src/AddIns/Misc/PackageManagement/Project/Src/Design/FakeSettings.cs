@@ -20,8 +20,8 @@ namespace ICSharpCode.PackageManagement.Design
 			
 		public FakeSettings()
 		{
-			Sections.Add(RegisteredPackageSources.PackageSourcesSectionName, PackageSources);
-			Sections.Add(RegisteredPackageSources.ActivePackageSourceSectionName, ActivePackageSourceSettings);
+			Sections.Add(RegisteredPackageSourceSettings.PackageSourcesSectionName, PackageSources);
+			Sections.Add(RegisteredPackageSourceSettings.ActivePackageSourceSectionName, ActivePackageSourceSettings);
 		}
 		
 		public string GetValue(string section, string key)
@@ -51,7 +51,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public KeyValuePair<string, string> GetValuePassedToSetValueForActivePackageSourceSection()
 		{
-			return SavedSectionValues[RegisteredPackageSources.ActivePackageSourceSectionName];
+			return SavedSectionValues[RegisteredPackageSourceSettings.ActivePackageSourceSectionName];
 		}
 		
 		public void SetValues(string section, IList<KeyValuePair<string, string>> values)
@@ -65,7 +65,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IList<KeyValuePair<string, string>> GetValuesPassedToSetValuesForPackageSourcesSection()
 		{
-			return SavedSectionValueLists[RegisteredPackageSources.PackageSourcesSectionName];
+			return SavedSectionValueLists[RegisteredPackageSourceSettings.PackageSourcesSectionName];
 		}
 		
 		public bool DeleteValue(string section, string key)
@@ -83,13 +83,13 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public bool IsPackageSourcesSectionDeleted {
 			get {
-				return SectionsDeleted.Contains(RegisteredPackageSources.PackageSourcesSectionName);
+				return SectionsDeleted.Contains(RegisteredPackageSourceSettings.PackageSourcesSectionName);
 			}
 		}
 		
 		public bool IsActivePackageSourceSectionDeleted {
 			get {
-				return SectionsDeleted.Contains(RegisteredPackageSources.ActivePackageSourceSectionName);
+				return SectionsDeleted.Contains(RegisteredPackageSourceSettings.ActivePackageSourceSectionName);
 			}
 		}
 		
@@ -102,14 +102,14 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public void MakeActivePackageSourceSectionNull()
 		{
-			Sections.Remove(RegisteredPackageSources.ActivePackageSourceSectionName);
-			Sections.Add(RegisteredPackageSources.ActivePackageSourceSectionName, null);
+			Sections.Remove(RegisteredPackageSourceSettings.ActivePackageSourceSectionName);
+			Sections.Add(RegisteredPackageSourceSettings.ActivePackageSourceSectionName, null);
 		}
 		
 		public void MakePackageSourceSectionsNull()
 		{
-			Sections.Remove(RegisteredPackageSources.PackageSourcesSectionName);
-			Sections.Add(RegisteredPackageSources.PackageSourcesSectionName, null);			
+			Sections.Remove(RegisteredPackageSourceSettings.PackageSourcesSectionName);
+			Sections.Add(RegisteredPackageSourceSettings.PackageSourcesSectionName, null);			
 		}
 	}
 }
