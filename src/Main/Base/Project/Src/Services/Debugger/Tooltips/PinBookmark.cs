@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 
-namespace Services.Debugger.Tooltips
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	public class PinBookmark : SDBookmark
 	{

@@ -623,5 +623,64 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual("test", projectSystem.DirectoryPassedToLogDeletedDirectory);
 		}
+		
+		[Test]
+		public void AddFrameworkReference_SystemXmlToBeAdded_ReferenceAddedToProject()
+		{
+			CreateTestProject();
+			CreateProjectSystem(project);
+			
+			projectSystem.AddFrameworkReference("System.Xml");
+			
+			ReferenceProjectItem referenceItem = ProjectHelper.GetReference(project, "System.Xml");
+			
+			ReferenceProjectItem expectedReferenceItem = new ReferenceProjectItem(project);
+			expectedReferenceItem.Include = "System.Xml";
+			
+			ReferenceProjectItemAssert.AreEqual(expectedReferenceItem, referenceItem);
+		}
+		
+		[Test]
+		public void AddFrameworkReference_SystemXmlToBeAdded_ProjectIsSaved()
+		{
+			CreateTestProject();
+			CreateProjectSystem(project);
+			
+			projectSystem.AddFrameworkReference("System.Xml");
+			
+			bool saved = project.IsSaved;
+			
+			Assert.IsTrue(saved);
+		}
+		
+		[Test]
+		public void AddFrameworkReference_SystemXmlToBeAdded_AddedReferenceIsLogged()
+		{
+			CreateTestProject();
+			CreateProjectSystem(project);
+			project.Name = "MyTestProject";	
+			
+			projectSystem.AddFrameworkReference("System.Xml");
+			
+			var expectedReferenceAndProjectName = new ReferenceAndProjectName() {
+				Reference = "System.Xml",
+				Project = "MyTestProject"
+			};
+			
+			Assert.AreEqual(expectedReferenceAndProjectName, projectSystem.ReferenceAndProjectNamePassedToLogAddedReferenceToProject);
+		}
+		
+		[Test]
+		public void ResolvePath_PathPassed_ReturnsPathUnchanged()
+		{
+			CreateTestProject();
+			CreateProjectSystem(project);
+			
+			string expectedPath = @"d:\temp";
+			
+			string path = projectSystem.ResolvePath(expectedPath);
+			
+			Assert.AreEqual(expectedPath, path);
+		}
 	}
 }

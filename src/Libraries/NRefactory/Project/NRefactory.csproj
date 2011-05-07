@@ -155,6 +155,7 @@
     <None Include="Src\Lexer\VBNet\ExpressionFinder.atg">
       <Generator>CocoParserGenerator</Generator>
       <CustomToolNamespace>ICSharpCode.NRefactory.Parser.VB</CustomToolNamespace>
+      <LastGenOutput>Parser.cs</LastGenOutput>
     </None>
     <None Include="Src\Lexer\VBNet\PushParser.frame">
       <DependentUpon>ExpressionFinder.atg</DependentUpon>

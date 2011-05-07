@@ -33,10 +33,14 @@ namespace ICSharpCode.PackageManagement
 		bool hasError;
 		string errorMessage = String.Empty;
 		
-		public PackagesViewModel(IPackageManagementService packageManagementService, ITaskFactory taskFactory)
+		public PackagesViewModel(
+			IPackageManagementService packageManagementService,
+			IMessageReporter messageReporter,
+			ITaskFactory taskFactory)
 			: this(
 				packageManagementService,
 				new LicenseAcceptanceService(),
+				messageReporter,
 				taskFactory)
 		{
 		}
@@ -44,10 +48,11 @@ namespace ICSharpCode.PackageManagement
 		public PackagesViewModel(
 			IPackageManagementService packageManagementService,
 			ILicenseAcceptanceService licenseAcceptanceService,
+			IMessageReporter messageReporter,
 			ITaskFactory taskFactory)
 			: this(
 				packageManagementService, 
-				new PackageViewModelFactory(packageManagementService, licenseAcceptanceService),
+				new PackageViewModelFactory(packageManagementService, licenseAcceptanceService, messageReporter),
 				taskFactory)
 		{
 		}
@@ -369,7 +374,14 @@ namespace ICSharpCode.PackageManagement
 		public bool ShowPackageSources { get; set; }
 		
 		public IEnumerable<PackageSource> PackageSources {
-			get { return packageManagementService.Options.PackageSources; }
+			get {
+				foreach (PackageSource packageSource in packageManagementService.Options.PackageSources) {
+					yield return packageSource;
+				}
+				if (packageManagementService.Options.PackageSources.HasMultiplePackageSources) {
+					yield return RegisteredPackageSourceSettings.AggregatePackageSource;
+				}
+			}
 		}
 		
 		public PackageSource SelectedPackageSource {

@@ -9,7 +9,6 @@ using System.Windows;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using Services.Debugger.Tooltips;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -72,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						bookmark = pin;
 						break;
 					default:
-						bookmark = new SDBookmark(fileName, new Location(columnNumber, lineNumber));
+						bookmark = new Bookmark(fileName, new Location(columnNumber, lineNumber));
 						break;
 				}
 				return bookmark;

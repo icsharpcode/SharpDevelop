@@ -15,12 +15,29 @@ namespace PackageManagement.Tests
 		PackageUpdatesViewModel viewModel;
 		FakePackageManagementService packageManagementService;
 		FakeTaskFactory taskFactory;
+		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
 		
 		void CreateViewModel()
 		{
+			CreatePackageManagementService();
+			CreateViewModel(packageManagementService);
+		}
+		
+		void CreatePackageManagementService()
+		{
 			packageManagementService = new FakePackageManagementService();
+		}
+		
+		void CreateViewModel(FakePackageManagementService packageManagementService)
+		{
 			taskFactory = new FakeTaskFactory();
-			viewModel = new PackageUpdatesViewModel(packageManagementService, taskFactory);
+			var messageReporter = new FakeMessageReporter();
+			viewModel = new PackageUpdatesViewModel(packageManagementService, messageReporter, taskFactory);
+		}
+		
+		void CreateExceptionThrowingPackageManagementService()
+		{
+			exceptionThrowingPackageManagementService = new ExceptionThrowingPackageManagementService();
 		}
 		
 		void CompleteReadPackagesTask()
@@ -102,5 +119,31 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
 		}
+		
+		[Test]
+		public void ReadPackages_ActiveProjectManagerThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
+		{
+			CreateExceptionThrowingPackageManagementService();
+			exceptionThrowingPackageManagementService.ExeptionToThrowWhenActiveProjectManagerAccessed = 
+				new Exception("Test");
+			CreateViewModel(exceptionThrowingPackageManagementService);
+			viewModel.ReadPackages();
+			
+			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
+			Assert.AreEqual("Test", ex.Message);
+		}
+		
+//		[Test]
+//		public void ReadPackages_ActiveProjectManagerThrowsException_ErrorMessageFromExceptionReturned()
+//		{
+//			CreateExceptionThrowingPackageManagementService();
+//			exceptionThrowingPackageManagementService.ExeptionToThrowWhenActiveProjectManagerAccessed = 
+//				new Exception("Test");
+//			CreateViewModel(exceptionThrowingPackageManagementService);
+//			viewModel.ReadPackages();
+//			
+//			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
+//			Assert.AreEqual("Test", ex.Message);
+//		}
 	}
 }

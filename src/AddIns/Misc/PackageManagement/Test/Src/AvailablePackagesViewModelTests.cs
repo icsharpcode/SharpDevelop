@@ -17,6 +17,7 @@ namespace PackageManagement.Tests
 		AvailablePackagesViewModel viewModel;
 		FakePackageManagementService packageManagementService;
 		FakeTaskFactory taskFactory = new FakeTaskFactory();
+		ExceptionThrowingPackageManagementService exceptionThrowingPackageManagementService;
 		
 		void CreateViewModel()
 		{
@@ -32,7 +33,13 @@ namespace PackageManagement.Tests
 		void CreateViewModel(IPackageManagementService packageManagementService)
 		{
 			taskFactory = new FakeTaskFactory();
-			viewModel = new AvailablePackagesViewModel(packageManagementService, taskFactory);
+			var messageReporter = new FakeMessageReporter();
+			viewModel = new AvailablePackagesViewModel(packageManagementService, messageReporter, taskFactory);
+		}
+		
+		void CreateExceptionThrowingPackageManagementService()
+		{
+			exceptionThrowingPackageManagementService = new ExceptionThrowingPackageManagementService();
 		}
 		
 		void CompleteReadPackagesTask()
@@ -246,13 +253,26 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void PackageSources_TwoPackageSourcesInOptions_HasTwoRepositoriesInCollection()
+		public void PackageSources_TwoPackageSourcesInOptions_ReturnsTwoPackageSourcesPlusAggregatePackageSource()
 		{
 			CreatePackageManagementService();
 			AddTwoPackageSourcesToRegisteredSources();
 			CreateViewModel(packageManagementService);
 			
-			var expectedPackageSources = packageManagementService.Options.PackageSources;
+			var expectedPackageSources = new List<PackageSource>(packageManagementService.Options.PackageSources);
+			expectedPackageSources.Add(RegisteredPackageSourceSettings.AggregatePackageSource);
+			
+			PackageSourceCollectionAssert.AreEqual(expectedPackageSources, viewModel.PackageSources);
+		}
+		
+		[Test]
+		public void PackageSources_OnePackageSourceInOptions_ReturnsOnePackageSource()
+		{
+			CreatePackageManagementService();
+			AddOnePackageSourceToRegisteredSources();
+			CreateViewModel(packageManagementService);
+			
+			var expectedPackageSources = new List<PackageSource>(packageManagementService.Options.PackageSources);
 			
 			PackageSourceCollectionAssert.AreEqual(expectedPackageSources, viewModel.PackageSources);
 		}
@@ -358,6 +378,19 @@ namespace PackageManagement.Tests
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void ReadPackages_ExceptionThrownWhenAccessingActiveRepository_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
+		{
+			CreateExceptionThrowingPackageManagementService();
+			exceptionThrowingPackageManagementService.ExeptionToThrowWhenActiveRepositoryAccessed = 
+				new Exception("Test");
+			CreateViewModel(exceptionThrowingPackageManagementService);
+			viewModel.ReadPackages();
+			
+			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
+			Assert.AreEqual("Test", ex.Message);
 		}
 	}
 }

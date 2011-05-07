@@ -68,10 +68,15 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementService.cs" />
+    <Compile Include="Src\Helpers\ExceptionThrowingPackageOperationResolver.cs" />
     <Compile Include="Src\Helpers\FakeCompilerMessageView.cs" />
     <Compile Include="Src\Helpers\FakeFileService.cs" />
+    <Compile Include="Src\Helpers\FakeFolderBrowser.cs" />
     <Compile Include="Src\Helpers\FakeLicenseAcceptanceService.cs" />
+    <Compile Include="Src\Helpers\FakeMachinePackageCache.cs" />
     <Compile Include="Src\Helpers\FakeMessageCategoryView.cs" />
+    <Compile Include="Src\Helpers\FakeMessageReporter.cs" />
     <Compile Include="Src\Helpers\FakePackageManager.cs" />
     <Compile Include="Src\Helpers\FakePackageManagerFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageOperationResolver.cs" />
@@ -79,6 +84,8 @@
     <Compile Include="Src\Helpers\FakePackageManagementProjectService.cs" />
     <Compile Include="Src\Helpers\FakePackagePathResolver.cs" />
     <Compile Include="Src\Helpers\FakePackageTests.cs" />
+    <Compile Include="Src\Helpers\FakeProcess.cs" />
+    <Compile Include="Src\Helpers\FakeRecentPackageRepository.cs" />
     <Compile Include="Src\Helpers\FakeTask.cs" />
     <Compile Include="Src\Helpers\FakeTaskFactory.cs" />
     <Compile Include="Src\Helpers\FileNameAndDirectory.cs" />
@@ -90,6 +97,7 @@
     <Compile Include="Src\Helpers\RecentPackageInfoCollectionAssert.cs" />
     <Compile Include="Src\Helpers\ReferenceAndProjectName.cs" />
     <Compile Include="Src\Helpers\ReferenceProjectItemAssert.cs" />
+    <Compile Include="Src\Helpers\TestablePackageManagementOptions.cs" />
     <Compile Include="Src\Helpers\TestablePackagesViewModel.cs" />
     <Compile Include="Src\Helpers\TestablePackageViewModel.cs" />
     <Compile Include="Src\Helpers\TestableProject.cs" />
@@ -103,6 +111,7 @@
     <Compile Include="Src\Helpers\TestableOpenHyperlinkCommand.cs" />
     <Compile Include="Src\Helpers\TestableSelectedListBoxItemScrollingBehaviour.cs" />
     <Compile Include="Src\Helpers\TestableSharpDevelopProjectSystem.cs" />
+    <Compile Include="Src\Helpers\TestableUpdatedPackageViewModel.cs" />
     <Compile Include="Src\Helpers\TestableViewModelBase.cs" />
     <Compile Include="Src\Helpers\Tests\PackageReferenceRepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -110,11 +119,13 @@
     <Compile Include="Src\AvailablePackagesViewModelTests.cs" />
     <Compile Include="Src\BooleanToFontWeightConverterTests.cs" />
     <Compile Include="Src\DelegateCommandTests.cs" />
+    <Compile Include="Src\Helpers\UpdatePackageHelper.cs" />
     <Compile Include="Src\InstalledPackagesViewModelTests.cs" />
     <Compile Include="Src\LicenseAcceptanceViewModelTests.cs" />
     <Compile Include="Src\OpenHyperlinkCommandTests.cs" />
     <Compile Include="Src\PackageManagementOptionsTests.cs" />
     <Compile Include="Src\PackageManagementOptionsViewModelTests.cs" />
+    <Compile Include="Src\RegisteredPackageSourcesViewModelTests.cs" />
     <Compile Include="Src\PackageManagementOutputMessagesViewTests.cs" />
     <Compile Include="Src\PackageManagementServiceTests.cs" />
     <Compile Include="Src\PackageRepositoryCacheTests.cs" />
@@ -127,12 +138,12 @@
     <Compile Include="Src\RecentPackageInfoTests.cs" />
     <Compile Include="Src\RecentPackageRepositoryTests.cs" />
     <Compile Include="Src\RecentPackagesViewModelTests.cs" />
-    <Compile Include="Src\RegisteredPackageSourcesTests.cs" />
     <Compile Include="Src\SelectedListBoxItemScrollingBehaviourTests.cs" />
     <Compile Include="Src\SharpDevelopPackageManagerFactoryTests.cs" />
     <Compile Include="Src\SharpDevelopPackageManagerTests.cs" />
     <Compile Include="Src\SharpDevelopProjectSystemTests.cs" />
     <Compile Include="Src\StringToStringCollectionConverterTests.cs" />
+    <Compile Include="Src\UpdatedPackageViewModelTests.cs" />
     <Compile Include="Src\ViewModelBaseTests.cs" />
   </ItemGroup>
   <ItemGroup>

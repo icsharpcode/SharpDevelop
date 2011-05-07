@@ -10,10 +10,32 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public class ParameterListComparer : IEqualityComparer<IMethod>
 	{
+		Dictionary<IMethod, int> cachedHashes;
+		
+		/// <summary>
+		/// Gets/Sets whether to cache hashcodes. This can improve performance for
+		/// algorithms that repeatedly request the hash of a parameter list.
+		/// </summary>
+		/// <remarks>
+		/// This class is thread-safe only when not using cached hashes.
+		/// Also, cached hashes may cause a memory leak when the ParameterListComparer
+		/// instance is kept alive.
+		/// </remarks>
+		public bool UseCachedHashes {
+			get {
+				return cachedHashes != null;
+			}
+			set {
+				cachedHashes = value ? new Dictionary<IMethod, int>() : null;
+			}
+		}
+		
 		public bool Equals(IMethod x, IMethod y)
 		{
-			if (GetHashCode(x) != GetHashCode(y))
-				return false;
+			if (cachedHashes != null) {
+				if (GetHashCode(x) != GetHashCode(y))
+					return false;
+			}
 			var paramsX = x.Parameters;
 			var paramsY = y.Parameters;
 			if (paramsX.Count != paramsY.Count)
@@ -31,12 +53,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return true;
 		}
 		
-		Dictionary<IMethod, int> cachedHashes = new Dictionary<IMethod, int>();
-		
 		public int GetHashCode(IMethod obj)
 		{
 			int hashCode;
-			if (cachedHashes.TryGetValue(obj, out hashCode))
+			if (cachedHashes != null && cachedHashes.TryGetValue(obj, out hashCode))
 				return hashCode;
 			hashCode = obj.TypeParameters.Count;
 			unchecked {
@@ -49,7 +69,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 				}
 			}
-			cachedHashes[obj] = hashCode;
+			if (cachedHashes != null)
+				cachedHashes[obj] = hashCode;
 			return hashCode;
 		}
 	}

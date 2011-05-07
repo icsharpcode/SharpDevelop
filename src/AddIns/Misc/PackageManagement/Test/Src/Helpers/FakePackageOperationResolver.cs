@@ -11,7 +11,7 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public List<PackageOperation> PackageOperations = new List<PackageOperation>();
 		
-		public IEnumerable<PackageOperation> ResolveOperations(IPackage package)
+		public virtual IEnumerable<PackageOperation> ResolveOperations(IPackage package)
 		{
 			return PackageOperations;
 		}

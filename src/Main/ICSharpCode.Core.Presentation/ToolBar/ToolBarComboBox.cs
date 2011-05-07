@@ -7,20 +7,35 @@ using System.Windows.Controls;
 
 namespace ICSharpCode.Core.Presentation
 {
-	sealed class ToolBarComboBox : ComboBox
+	sealed class ToolBarComboBox : ComboBox, IStatusUpdate
 	{
 		IComboBoxCommand menuCommand;
+		readonly Codon codon;
 		
 		public ToolBarComboBox(Codon codon, object caller)
 		{
 			if (codon == null)
 				throw new ArgumentNullException("codon");
+			this.codon = codon;
+			ToolTipService.SetShowOnDisabled(this, true);
 			this.IsEditable = false;
 			menuCommand = (IComboBoxCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
 			menuCommand.ComboBox = this;
 			menuCommand.Owner = caller;
+			UpdateText();
 			
 			SetResourceReference(FrameworkElement.StyleProperty, ToolBar.ComboBoxStyleKey);
+		}
+		
+		public void UpdateText()
+		{
+			if (codon.Properties.Contains("tooltip")) {
+				this.ToolTip = StringParser.Parse(codon.Properties["tooltip"]);
+			}
+		}
+		
+		public void UpdateStatus()
+		{
 		}
 		
 		protected override void OnSelectionChanged(SelectionChangedEventArgs e)

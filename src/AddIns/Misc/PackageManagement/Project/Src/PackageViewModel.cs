@@ -16,6 +16,7 @@ namespace ICSharpCode.PackageManagement
 		
 		IPackageManagementService packageManagementService;
 		ILicenseAcceptanceService licenseAcceptanceService;
+		IMessageReporter messageReporter;
 		IPackage package;
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
 		IPackageRepository sourcePackageRepository;
@@ -25,12 +26,14 @@ namespace ICSharpCode.PackageManagement
 		public PackageViewModel(
 			IPackage package,
 			IPackageManagementService packageManagementService,
-			ILicenseAcceptanceService licenseAcceptanceService)
+			ILicenseAcceptanceService licenseAcceptanceService,
+			IMessageReporter messageReporter)
 		{
 			this.package = package;
 			this.sourcePackageRepository = packageManagementService.ActivePackageRepository;
 			this.packageManagementService = packageManagementService;
 			this.licenseAcceptanceService = licenseAcceptanceService;
+			this.messageReporter = messageReporter;
 			
 			CreateCommands();
 		}
@@ -166,12 +169,15 @@ namespace ICSharpCode.PackageManagement
 		
 		public void AddPackage()
 		{
+			ClearReportedMessages();
 			LogAddingPackage();
-			GetPackageOperations();
-			if (CanInstallPackage()) {
-				InstallPackage();
-			}
+			TryInstallingPackage();
 			LogAfterPackageOperationCompletes();
+		}
+		
+		void ClearReportedMessages()
+		{
+			messageReporter.ClearMessage();
 		}
 		
 		void LogAddingPackage()
@@ -276,16 +282,43 @@ namespace ICSharpCode.PackageManagement
 			return package.RequireLicenseAcceptance && !IsPackageInstalled(package);
 		}
 		
+		void TryInstallingPackage()
+		{
+			try {
+				GetPackageOperations();
+				if (CanInstallPackage()) {
+					InstallPackage();
+				}
+			} catch (Exception ex) {
+				ReportError(ex);
+				Log(ex.ToString());
+			}
+		}
+		
 		void InstallPackage()
 		{
-			packageManagementService.InstallPackage(sourcePackageRepository, package, packageOperations);
+			InstallPackage(sourcePackageRepository, package, packageOperations);
 			OnPropertyChanged(model => model.IsAdded);
+		}
+		
+		protected virtual void InstallPackage(
+			IPackageRepository sourcePackageRepository,
+			IPackage package,
+			IEnumerable<PackageOperation> packageOperations)
+		{
+			packageManagementService.InstallPackage(sourcePackageRepository, package, packageOperations);
+		}
+		
+		void ReportError(Exception ex)
+		{
+			messageReporter.ShowErrorMessage(ex.Message);
 		}
 		
 		public void RemovePackage()
 		{
+			ClearReportedMessages();
 			LogRemovingPackage();
-			packageManagementService.UninstallPackage(sourcePackageRepository, package);
+			TryUninstallingPackage();
 			LogAfterPackageOperationCompletes();
 			
 			OnPropertyChanged(model => model.IsAdded);
@@ -299,6 +332,16 @@ namespace ICSharpCode.PackageManagement
 				
 		protected virtual string RemovingPackageMessageFormat {
 			get { return "Uninstalling...{0}"; }
+		}
+		
+		void TryUninstallingPackage()
+		{
+			try {
+				packageManagementService.UninstallPackage(sourcePackageRepository, package);
+			} catch (Exception ex) {
+				ReportError(ex);
+				Log(ex.ToString());
+			}
 		}
 	}
 }

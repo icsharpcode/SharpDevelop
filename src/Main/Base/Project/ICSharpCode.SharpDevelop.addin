@@ -422,15 +422,20 @@
 				<Or>
 					<Condition name = "Ownerstate" ownerstate = "InProject"/>
 					<Condition name = "Ownerstate" ownerstate = "None"/>
+					<Condition name = "Ownerstate" ownerstate = "BehindFile"/>
 				</Or>
-				<Condition name = "Ownerstate" ownerstate = "InProject">
+				<ComplexCondition>
+					<Or>
+						<Condition name = "Ownerstate" ownerstate = "InProject"/>
+						<Condition name = "Ownerstate" ownerstate = "BehindFile"/>
+					</Or>
 					<MenuItem id    = "ExcludeFile"
 					          label = "${res:ProjectComponent.ContextMenu.ExcludeFileFromProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
 					<MenuItem id     = "ExecuteCustomTool"
 					          label  = "${res:ProjectComponent.ContextMenu.ExecuteCustomTool}"
 					          class  = "ICSharpCode.SharpDevelop.Project.ExecuteCustomToolCommand"/>
-				</Condition>
+				</ComplexCondition>
 				
 				<Condition name = "Ownerstate" ownerstate = "None">
 					<MenuItem id    = "IncludeFile"
@@ -1973,17 +1978,16 @@
 		             icon    = "Bookmarks.GotoNext"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoNext.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmarkPadCommand"/>
-		<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
+		<!--<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
 		<ToolbarItem id      = "EnableDisableAll"
 		             icon    = "Bookmarks.EnableDisableAll"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.EnableDisableAll.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>-->
 		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
 		<ToolbarItem id      = "DeleteMark"
 		             icon    = "Bookmarks.DeleteMark"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteMark.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteMark"/>
-		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
 		<ToolbarItem id      = "DeleteAllMarks"
 		             icon    = "Bookmarks.DeleteAllMarks"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteAllMarks.ToolTip}"

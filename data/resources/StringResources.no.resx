@@ -6058,27 +6058,6 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Slett alle webreferanser</value>
   </data>
-  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
-    <value>Åpne .NET Reflector</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
-    <value>Reflector er ikke på den angitte plasseringen, eller SharpDevelop har ikke de nødvendige tilgangsrettigheter dit.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
-    <value>Stien til Reflector er ikke angitt.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorRemotingFailed" xml:space="preserve">
-    <value>Kunne ikke koble til Reflector.</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.PathToReflectorExe" xml:space="preserve">
-    <value>Full sti til Reflector.exe</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.ReflectorInfo" xml:space="preserve">
-    <value>Denne funksjonen krever Red Gate's .NET Refledtor. Hvis du ikke har den ennå, kan du laste den ned gratis her:</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialogTitle" xml:space="preserve">
-    <value>Angi sti til Reflector</value>
-  </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>Samlinger (*.dll)|*.dll</value>
   </data>

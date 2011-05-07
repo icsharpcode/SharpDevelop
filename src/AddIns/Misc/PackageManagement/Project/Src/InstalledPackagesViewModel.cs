@@ -16,8 +16,9 @@ namespace ICSharpCode.PackageManagement
 
 		public InstalledPackagesViewModel(
 			IPackageManagementService packageManagementService,
+			IMessageReporter messageReporter,
 			ITaskFactory taskFactory)
-			: base(packageManagementService, taskFactory)
+			: base(packageManagementService, messageReporter, taskFactory)
 		{
 			packageManagementService.PackageInstalled += PackageInstalled;
 			packageManagementService.PackageUninstalled += PackageUninstalled;
@@ -30,8 +31,7 @@ namespace ICSharpCode.PackageManagement
 			try {
 				this.projectManager = PackageManagementService.ActiveProjectManager;
 			} catch (Exception ex) {
-				SaveError(ex);
-				errorMessage = ErrorMessage;
+				errorMessage = ex.Message;
 			}
 		}
 

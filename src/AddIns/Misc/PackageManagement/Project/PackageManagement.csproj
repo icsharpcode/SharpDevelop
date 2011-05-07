@@ -45,6 +45,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -72,7 +73,7 @@
     <Compile Include="Src\BooleanToFontWeightConverter.cs" />
     <Compile Include="Src\DelegateCommand.cs" />
     <Compile Include="Src\Design\DesignTimeLicenseAcceptanceViewModel.cs" />
-    <Compile Include="Src\Design\DesignTimePackageManagementOptionsViewModel.cs" />
+    <Compile Include="Src\Design\DesignTimeRegisteredPackageSourcesViewModel.cs" />
     <Compile Include="Src\Design\DesignTimePackageManagementService.cs" />
     <Compile Include="Src\Design\DesignTimePackagesViewModel.cs" />
     <Compile Include="Src\Design\FakeFileSystem.cs" />
@@ -83,13 +84,26 @@
     <Compile Include="Src\Design\FakePackageRepository.cs" />
     <Compile Include="Src\Design\FakeProjectManager.cs" />
     <Compile Include="Src\Design\FakeProjectSystem.cs" />
+    <Compile Include="Src\Design\FakeSettings.cs" />
     <Compile Include="Src\Design\WpfDesigner.cs" />
+    <Compile Include="Src\FolderBrowser.cs" />
     <Compile Include="Src\ICompilerMessageView.cs" />
+    <Compile Include="Src\IFolderBrowser.cs" />
+    <Compile Include="Src\IMachinePackageCache.cs" />
+    <Compile Include="Src\IMessageReporter.cs" />
     <Compile Include="Src\IMessageViewCategory.cs" />
     <Compile Include="Src\IPackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\IPackageRepositoryCache.cs" />
+    <Compile Include="Src\IProcess.cs" />
+    <Compile Include="Src\IRecentPackageRepository.cs" />
+    <Compile Include="Src\MachinePackageCache.cs" />
     <Compile Include="Src\PackageManagementCompilerMessageView.cs" />
     <Compile Include="Src\PackageManagementMessageViewCategory.cs" />
+    <Compile Include="Src\PackageManagementOptionsView.xaml.cs">
+      <DependentUpon>PackageManagementOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\PackageManagementOptionsViewModel.cs" />
     <Compile Include="Src\PackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\PackageRepositoryCache.cs" />
     <Compile Include="Src\PackagesForSelectedPageResult.cs" />
@@ -116,11 +130,13 @@
     <Compile Include="Src\OpenHyperlinkCommand.cs" />
     <Compile Include="Src\PackageManagementFileService.cs" />
     <Compile Include="Src\PackageManagementOptions.cs" />
-    <Compile Include="Src\PackageManagementOptionsView.xaml.cs">
-      <DependentUpon>PackageManagementOptionsView.xaml</DependentUpon>
+    <Compile Include="Src\Process.cs" />
+    <Compile Include="Src\RegisteredPackageSourceSettings.cs" />
+    <Compile Include="Src\RegisteredPackageSourcesView.xaml.cs">
+      <DependentUpon>RegisteredPackageSourcesView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\PackageManagementOptionsViewModel.cs" />
+    <Compile Include="Src\RegisteredPackageSourcesViewModel.cs" />
     <Compile Include="Src\PackageManagementProjectService.cs" />
     <Compile Include="Src\PackageManagementEnumerableExtensions.cs" />
     <Compile Include="Src\PackageManagementService.cs" />
@@ -158,6 +174,8 @@
     <Compile Include="Src\SharpDevelopProjectSystem.cs" />
     <Compile Include="Src\SharpDevelopProjectSystemFactory.cs" />
     <Compile Include="Src\StringToStringCollectionConverter.cs" />
+    <Compile Include="Src\UpdatedPackageViewModel.cs" />
+    <Compile Include="Src\UpdatedPackageViewModelFactory.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
     <Compile Include="Src\ViewModelLocator.cs" />
   </ItemGroup>
@@ -165,6 +183,7 @@
     <Page Include="Src\AddPackageReferenceView.xaml" />
     <Page Include="Src\LicenseAcceptanceView.xaml" />
     <Page Include="Src\PackageManagementOptionsView.xaml" />
+    <Page Include="Src\RegisteredPackageSourcesView.xaml" />
     <Page Include="Src\PackagesView.xaml" />
     <Page Include="Src\PagedResultsView.xaml" />
   </ItemGroup>
@@ -198,6 +217,7 @@
     <Resource Include="Resources\resultset_next.png" />
     <Resource Include="Resources\resultset_previous.png" />
     <Resource Include="Resources\accept.png" />
+    <Resource Include="Resources\exclamation.png" />
     <None Include="Resources\license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

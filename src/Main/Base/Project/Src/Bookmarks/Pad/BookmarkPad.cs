@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			instance = this;			
 			myPanel.Children.Add(CreateToolBar());
-			listView.HideColumns(3, 0);
+			listView.HideColumns(2, 0);
 		}
 	}
 	
@@ -96,9 +96,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public ListViewPadItemModel PrevItem {
+		public ListViewPadItemModel PreviousItem {
 			get {
-				return this.listView.PrevItem;
+				return this.listView.PreviousItem;
 			}
 		}
 		

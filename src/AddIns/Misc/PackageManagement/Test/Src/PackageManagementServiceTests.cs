@@ -24,6 +24,7 @@ namespace PackageManagement.Tests
 		FakePackageManagementProjectService fakeProjectService;
 		TestableProject testProject;
 		InstallPackageHelper installPackageHelper;
+		UpdatePackageHelper updatePackageHelper;
 		FakePackageManagementOutputMessagesView fakeOutputMessagesView;
 		
 		void CreatePackageSources()
@@ -53,6 +54,7 @@ namespace PackageManagement.Tests
 					fakeOutputMessagesView);
 
 			installPackageHelper = new InstallPackageHelper(packageManagementService);
+			updatePackageHelper = new UpdatePackageHelper(packageManagementService);
 		}
 		
 		[Test]
@@ -203,7 +205,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void PackageInstalled_PackageIsInstalled_EventFiresAfterPackageInstalled()
+		public void InstallPackage_PackageIsInstalled_EventFiresAfterPackageInstalled()
 		{
 			CreatePackageManagementService();
 			
@@ -217,7 +219,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void PackageUninstalled_PackageIsUninstalled_EventFiresAfterPackageUninstalled()
+		public void UninstallPackage_PackageIsUninstalled_EventFiresAfterPackageUninstalled()
 		{
 			CreatePackageManagementService();
 			
@@ -483,6 +485,114 @@ namespace PackageManagement.Tests
 			};
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, recentPackages);
+		}
+		
+		[Test]
+		public void UpdatePackage_PackageAndRepositoryPassed_PackageInstalled()
+		{
+			CreatePackageManagementService();
+			updatePackageHelper.UpdateTestPackage();
+			
+			var expectedPackage = updatePackageHelper.TestPackage;
+			var actualPackage = fakePackageManagerFactory.FakePackageManager.PackagePassedToUpdatePackage;
+			
+			Assert.AreEqual(expectedPackage, actualPackage);
+		}
+		
+		[Test]
+		public void UpdatePackage_PackageAndRepositoryPassed_RepositoryUsedToCreatePackageManager()
+		{
+			CreatePackageManagementService();
+			updatePackageHelper.UpdateTestPackage();
+			
+			var expectedRepository = updatePackageHelper.PackageRepository;
+			var actualRepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
+			
+			Assert.AreEqual(expectedRepository, actualRepository);
+		}
+		
+		[Test]
+		public void UpdatePackage_PackageAndRepositoryPassed_PackageOperationsUsedToUpdatePackage()
+		{
+			CreatePackageManagementService();
+			updatePackageHelper.UpdateTestPackage();
+			
+			var expectedOperations = updatePackageHelper.PackageOperations;
+			var actualOperations = fakePackageManagerFactory.FakePackageManager.PackageOperationsPassedToUpdatePackage;
+			
+			Assert.AreEqual(expectedOperations, actualOperations);
+		}
+		
+		[Test]
+		public void UpdatePackage_PackageAndRepositoryPassed_ProjectBrowserIsRefreshed()
+		{
+			CreatePackageManagementService();
+			updatePackageHelper.UpdateTestPackage();
+			
+			bool refreshed = fakeProjectService.IsRefreshProjectBrowserCalled;
+			
+			Assert.IsTrue(refreshed);
+		}
+		
+		[Test]
+		public void UpdatePackage_PackageAndRepositoryPassed_PackageUpdateIsAddedToRecentPackagesRepository()
+		{
+			CreatePackageManagementService();
+			updatePackageHelper.UpdateTestPackage();
+			
+			var recentPackages = packageManagementService.RecentPackageRepository.GetPackages();
+			
+			var expectedPackages = new FakePackage[] {
+				updatePackageHelper.TestPackage
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, recentPackages);
+		}
+		
+		[Test]
+		public void UpdatePackage_PackageAndRepositoryPassed_PackageInstalledEventIsFired()
+		{
+			CreatePackageManagementService();
+			
+			IPackage package = null;
+			packageManagementService.PackageInstalled += (sender, e) => {
+				package = fakePackageManagerFactory.FakePackageManager.PackagePassedToUpdatePackage;
+			};
+			updatePackageHelper.UpdateTestPackage();
+			
+			Assert.AreEqual(installPackageHelper.TestPackage, package);
+		}
+		
+		[Test]
+		public void ActivePackageRepository_ActivePackageSourceIsAggregate_ReturnsAggregatePackageRepository()
+		{
+			CreatePackageSources();
+			packageSourcesHelper.AddTwoPackageSources();
+			CreatePackageManagementService(packageSourcesHelper.Options);
+			
+			var repository1Package = new FakePackage("One");
+			var repository1 = new FakePackageRepository();
+			repository1.FakePackages.Add(repository1Package);
+			
+			fakePackageRepositoryFactory.FakePackageRepositories.Add(packageSourcesHelper.RegisteredPackageSources[0], repository1);
+			
+			var repository2Package = new FakePackage("Two");
+			var repository2 = new FakePackageRepository();
+			repository2.FakePackages.Add(repository2Package);
+			
+			fakePackageRepositoryFactory.FakePackageRepositories.Add(packageSourcesHelper.RegisteredPackageSources[1], repository2);
+			
+			packageManagementService.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+						
+			IPackageRepository repository = packageManagementService.ActivePackageRepository;
+			List<IPackage> packages = repository.GetPackages().OrderBy(x => x.Id).ToList();
+			
+			var expectedPackages = new FakePackage[] {
+				repository1Package,
+				repository2Package
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, packages);
 		}
 	}
 }

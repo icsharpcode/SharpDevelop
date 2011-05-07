@@ -17,6 +17,9 @@ namespace PackageManagement.Tests.Helpers
 		public bool ForcePassedToRemovePackageReference;
 		public bool RemoveDependenciesPassedToRemovePackageReference;
 		
+		public IPackage PackagePassedToUpdatePackageReference;
+		public bool UpdateDependenciesPassedToUpdatePackageReference;
+		
 		public FakePackageRepository FakeLocalRepository {
 			get { return LocalRepository as FakePackageRepository; }
 		}
@@ -38,17 +41,27 @@ namespace PackageManagement.Tests.Helpers
 			IgnoreDependenciesPassedToAddPackageReference = ignoreDependencies;
 		}
 		
-		protected override void AddPackageReference(IPackage package, bool ignoreDependencies)
+		public override void AddPackageReference(IPackage package, bool ignoreDependencies)
 		{
 			PackagePassedToAddPackageReference = package;
 			IgnoreDependenciesPassedToAddPackageReference = ignoreDependencies;
 		}
 		
-		protected override void RemovePackageReference(IPackage package, bool force, bool removeDependencies)
+		public override void RemovePackageReference(IPackage package, bool force, bool removeDependencies)
 		{
 			PackagePassedToRemovePackageReference = package;
 			ForcePassedToRemovePackageReference = force;
 			RemoveDependenciesPassedToRemovePackageReference = removeDependencies;
+		}
+		
+		public override void UpdatePackageReference(string packageId, Version version, bool updateDependencies)
+		{
+			var package = new FakePackage();
+			package.Id = packageId;
+			package.Version = version;
+			
+			PackagePassedToUpdatePackageReference = package;
+			UpdateDependenciesPassedToUpdatePackageReference = updateDependencies;
 		}
 	}
 }

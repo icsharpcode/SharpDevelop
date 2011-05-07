@@ -48,8 +48,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(ClassDefinition classDefinition)
 		{
-			PythonClass c = new PythonClass(compilationUnit, classDefinition);
-			WalkClassBody(c, classDefinition.Body);
+			if (classDefinition.Parent != null) {
+				PythonClass c = new PythonClass(compilationUnit, classDefinition);
+				WalkClassBody(c, classDefinition.Body);
+			}
 			return false;
 		}
 		

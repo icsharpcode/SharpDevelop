@@ -6086,36 +6086,6 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Alle Webreferenzen löschen</value>
   </data>
-  <data name="ReflectorAddIn.IdeOptions.FindReflectorPath" xml:space="preserve">
-    <value>Pfad zu Reflector auswählen</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.ReflectorFoundInPath" xml:space="preserve">
-    <value>Reflector wurde im folgenden Verzeichnis gefunden:</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.ReflectorTitle" xml:space="preserve">
-    <value>Reflector</value>
-  </data>
-  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
-    <value>.NET Reflector öffnen</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
-    <value>Reflector konnte am angegebenen Ort nicht gefunden werden, oder SharpDevelop hat keine ausreichenden Rechte, um darauf zuzugreifen.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
-    <value>Der Pfad zu Reflector wurde noch nicht festgelegt.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorRemotingFailed" xml:space="preserve">
-    <value>Die Verbindung zu Reflector konnte nicht hergestellt werden.</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.PathToReflectorExe" xml:space="preserve">
-    <value>Voller Pfad zu Reflector.exe</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.ReflectorInfo" xml:space="preserve">
-    <value>Dieses Feature benötigt den .NET Reflector von Red Gate. Falls Sie ihn noch nicht haben, können Sie ihn dort kostenlos herunterladen:</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialogTitle" xml:space="preserve">
-    <value>Pfad zu Reflector festlegen</value>
-  </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>Assemblies (*.dll)|*.dll</value>
   </data>

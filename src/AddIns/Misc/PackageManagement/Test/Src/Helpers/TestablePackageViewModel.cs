@@ -14,31 +14,36 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackageRepository FakeSourcePackageRepository;
 		public FakePackageManagementService	FakePackageManagementService;
 		public FakeLicenseAcceptanceService	FakeLicenseAcceptanceService;
+		public FakeMessageReporter FakeMessageReporter;
 		public FakePackage FakePackage;
 		public ILogger LoggerUsedWhenCreatingPackageResolver;
 		public string PackageViewModelAddingPackageMessageFormat = String.Empty;
 		public string PackageViewModelRemovingPackageMessageFormat = String.Empty;
 		
-		public TestablePackageViewModel()
+		public TestablePackageViewModel(FakePackageManagementService packageManagementService)
 			: this(
 				new FakePackage(),
-				new FakePackageManagementService(),
-				new FakeLicenseAcceptanceService())
-		{
+				packageManagementService,
+				new FakeLicenseAcceptanceService(),
+				new FakeMessageReporter())
+		{		
 		}
 		
 		public TestablePackageViewModel(
 			FakePackage package,
 			FakePackageManagementService packageManagementService,
-			FakeLicenseAcceptanceService licenseAcceptanceService)
+			FakeLicenseAcceptanceService licenseAcceptanceService,
+			FakeMessageReporter messageReporter)
 			: base(
 				package,
 				packageManagementService,
-				licenseAcceptanceService)
+				licenseAcceptanceService,
+				messageReporter)
 		{
 			this.FakePackage = package;
 			this.FakePackageManagementService = packageManagementService;
 			this.FakeLicenseAcceptanceService = licenseAcceptanceService;
+			this.FakeMessageReporter = messageReporter;
 			this.FakeSourcePackageRepository = FakePackageManagementService.FakeActivePackageRepository;
 		}
 		

@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls
 			}
 		}
 		
-		public ListViewPadItemModel PrevItem {
+		public ListViewPadItemModel PreviousItem {
 			get {
 				bool found = false;
 				ListViewPadItemModel prev = null;
@@ -218,6 +218,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls
 				tag = value;
 				NotifyPropertyChanged("Tag");
 			}
+		}
+		
+		public override string ToString()
+		{
+			return Location;
 		}
 		
 		private string GetLocation(SDBookmark bookmark)

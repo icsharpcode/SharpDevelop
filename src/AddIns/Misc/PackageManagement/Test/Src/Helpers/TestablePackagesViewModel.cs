@@ -31,7 +31,7 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public TestablePackagesViewModel(FakePackageManagementService packageManagementService, FakeTaskFactory taskFactory)
-			: base(packageManagementService, taskFactory)
+			: base(packageManagementService, new FakeMessageReporter(), taskFactory)
 		{
 			FakePackageManagementService = packageManagementService;
 			FakeTaskFactory = taskFactory;

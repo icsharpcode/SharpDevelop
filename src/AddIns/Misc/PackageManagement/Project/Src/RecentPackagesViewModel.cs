@@ -11,8 +11,11 @@ namespace ICSharpCode.PackageManagement
 	{
 		IPackageRepository recentPackageRepository;
 		
-		public RecentPackagesViewModel(IPackageManagementService packageManagementService, ITaskFactory taskFactory)
-			: base(packageManagementService, taskFactory)
+		public RecentPackagesViewModel(
+			IPackageManagementService packageManagementService,
+			IMessageReporter messageReporter,
+			ITaskFactory taskFactory)
+			: base(packageManagementService, messageReporter, taskFactory)
 		{
 			recentPackageRepository = packageManagementService.RecentPackageRepository;
 			packageManagementService.PackageInstalled += PackageInstalled;

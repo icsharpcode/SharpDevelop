@@ -22,5 +22,15 @@ namespace PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException();
 		}
+		
+		public string GetPackageDirectory(string packageId, Version version)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public string GetPackageFileName(string packageId, Version version)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

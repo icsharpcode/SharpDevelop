@@ -20,7 +20,6 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using Services.Debugger.Tooltips;
 
 namespace Debugger.AddIn.Tooltips
 {

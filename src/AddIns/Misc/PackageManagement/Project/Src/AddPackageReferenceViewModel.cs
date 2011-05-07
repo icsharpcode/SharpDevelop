@@ -8,13 +8,15 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class AddPackageReferenceViewModel : ViewModelBase<AddPackageReferenceViewModel>
+	public class AddPackageReferenceViewModel : ViewModelBase<AddPackageReferenceViewModel>, IMessageReporter
 	{
 		IPackageManagementService packageManagementService;
 		InstalledPackagesViewModel installedPackagesViewModel;
 		AvailablePackagesViewModel availablePackagesViewModel;
 		PackageUpdatesViewModel packageUpdatesViewModel;
 		RecentPackagesViewModel recentPackagesViewModel;
+		string message;
+		bool hasError;
 		
 		public AddPackageReferenceViewModel(
 			IPackageManagementService packageManagementService,
@@ -23,10 +25,10 @@ namespace ICSharpCode.PackageManagement
 			this.packageManagementService = packageManagementService;
 			this.packageManagementService.OutputMessagesView.Clear();
 			
-			availablePackagesViewModel = new AvailablePackagesViewModel(packageManagementService, taskFactory);
-			installedPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, taskFactory);
-			packageUpdatesViewModel = new PackageUpdatesViewModel(packageManagementService, taskFactory);
-			recentPackagesViewModel = new RecentPackagesViewModel(packageManagementService, taskFactory);
+			availablePackagesViewModel = new AvailablePackagesViewModel(packageManagementService, this, taskFactory);
+			installedPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, this, taskFactory);
+			packageUpdatesViewModel = new PackageUpdatesViewModel(packageManagementService, this, taskFactory);
+			recentPackagesViewModel = new RecentPackagesViewModel(packageManagementService, this, taskFactory);
 			
 			availablePackagesViewModel.ReadPackages();
 			installedPackagesViewModel.ReadPackages();
@@ -48,6 +50,34 @@ namespace ICSharpCode.PackageManagement
 		
 		public RecentPackagesViewModel RecentPackagesViewModel {
 			get { return recentPackagesViewModel; }
+		}
+		
+		public void ShowErrorMessage(string message)
+		{
+			this.Message = message;
+			this.HasError = true;
+		}
+		
+		public string Message {
+			get { return message; }
+			set {
+				message = value;
+				OnPropertyChanged(model => model.Message);
+			}
+		}
+		
+		public bool HasError {
+			get { return hasError; }
+			set {
+				hasError = value;
+				OnPropertyChanged(model => model.HasError);
+			}
+		}
+		
+		public void ClearMessage()
+		{
+			this.Message = null;
+			this.HasError = false;
 		}
 	}
 }

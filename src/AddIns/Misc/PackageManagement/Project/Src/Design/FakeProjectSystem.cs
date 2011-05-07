@@ -17,9 +17,7 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public string ProjectName {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return String.Empty; }
 		}
 		
 		public dynamic GetPropertyValue(string propertyName)
@@ -43,6 +41,16 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public bool IsSupportedFile(string path)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void AddFrameworkReference(string name)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public string ResolvePath(string path)
 		{
 			throw new NotImplementedException();
 		}

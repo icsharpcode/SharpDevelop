@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string DocumentationTag {
 			get {
-				return "E:" + this.DotNetName;
+				return "E:" + this.DotNetName.Replace('+', '.');
 			}
 		}
 		

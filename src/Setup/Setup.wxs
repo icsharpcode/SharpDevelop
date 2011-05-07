@@ -374,6 +374,7 @@
 				<ComponentRef Id="RegExToolkitFiles"/>
 				<ComponentRef Id="ResourceToolkitFiles"/>
 				<ComponentRef Id="SearchAndReplaceFiles"/>
+				<ComponentRef Id="ILSpyAddInFiles"/>
 
 				<ComponentRef Id="StartPageAddInFiles"/>
 				<ComponentRef Id="SubversionAddInDll"/>
@@ -407,13 +408,15 @@
 				<ComponentRef Id="IpyExe"/>	
 				<ComponentRef Id="IronPythonModulesDll"/>	
 				<ComponentRef Id="IronPythonModulesXml"/>	
-				<ComponentRef Id="IronPythonDll"/>	
-				<ComponentRef Id="IronPythonXml"/>	
+				<ComponentRef Id="IronPythonDll"/>
+				<ComponentRef Id="IronPythonXml"/>
+				<ComponentRef Id="IronPythonWpfDll"/>
+				<ComponentRef Id="IronPythonLicenseRtf"/>
 				<ComponentRef Id="PythonChironExe"/>
 				<ComponentRef Id="PythonChironExeConfig"/>
 				<ComponentRef Id="MicrosoftDynamicDll"/>
 				<ComponentRef Id="MicrosoftScriptingDll"/>	
-				<ComponentRef Id="MicrosoftScriptingDebuggingDll"/>	
+				<ComponentRef Id="MicrosoftScriptingMetadataDll"/>	
 				<ComponentRef Id="PythonBuildTasksDll"/>	
 				<ComponentRef Id="PythonBindingAddin"/>	
 				<ComponentRef Id="PythonBindingDll"/>

@@ -8,28 +8,27 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageViewModelFactory : IPackageViewModelFactory
 	{
-		IPackageManagementService packageManagementService;
-		ILicenseAcceptanceService licenseAcceptanceService;
-		
-		public PackageViewModelFactory(IPackageManagementService packageManagementService)
-			: this(packageManagementService, null)
-		{
-		}
-		
 		public PackageViewModelFactory(
 			IPackageManagementService packageManagementService,
-			ILicenseAcceptanceService licenseAcceptanceService)
+			ILicenseAcceptanceService licenseAcceptanceService,
+			IMessageReporter messageReporter)
 		{
-			this.packageManagementService = packageManagementService;
-			this.licenseAcceptanceService = licenseAcceptanceService;
+			this.PackageManagementService = packageManagementService;
+			this.LicenseAcceptanceService = licenseAcceptanceService;
+			this.MessageReporter = messageReporter;
 		}
 		
-		public PackageViewModel CreatePackageViewModel(IPackage package)
+		public virtual PackageViewModel CreatePackageViewModel(IPackage package)
 		{
 			return new PackageViewModel(
 				package, 
-				packageManagementService, 
-				licenseAcceptanceService);
+				PackageManagementService, 
+				LicenseAcceptanceService,
+				MessageReporter);
 		}
+		
+		protected IPackageManagementService PackageManagementService { get; private set; }
+		protected ILicenseAcceptanceService LicenseAcceptanceService { get; private set; }
+		protected IMessageReporter MessageReporter { get; private set; }
 	}
 }

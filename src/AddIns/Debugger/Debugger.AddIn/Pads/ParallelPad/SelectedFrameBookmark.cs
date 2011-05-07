@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 
-namespace Debugger.AddIn.Pads.ParallelPad
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	public class SelectedFrameBookmark : SDMarkerBookmark
 	{
