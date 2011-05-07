@@ -19,11 +19,18 @@ namespace ICSharpCode.PackageManagement
 
 		RegisteredPackageSources packageSources;
 		Properties properties;
+		ISettings settings;
 		List<RecentPackageInfo> recentPackages;
 		
-		public PackageManagementOptions(Properties properties)
+		public PackageManagementOptions(Properties properties, ISettings settings)
 		{
 			this.properties = properties;
+			this.settings = settings;
+		}
+		
+		public PackageManagementOptions(Properties properties)
+			: this(properties, Settings.UserSettings)
+		{
 		}
 		
 		public PackageManagementOptions()
@@ -34,8 +41,7 @@ namespace ICSharpCode.PackageManagement
 		public RegisteredPackageSources PackageSources {
 			get {
 				if (packageSources == null) {
-					packageSources = new RegisteredPackageSources(GetSavedPackageSources());
-					packageSources.CollectionChanged += PackageSourcesChanged;
+					packageSources = new RegisteredPackageSources(settings);
 				}
 				return packageSources;
 			}
@@ -74,24 +80,8 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public PackageSource ActivePackageSource {
-			get {
-				if (properties.Contains(ActivePackageSourcePropertyName)) {
-					var registeredPackageSource = properties.Get<RegisteredPackageSource>(ActivePackageSourcePropertyName, null);
-					var packageSource = registeredPackageSource.ToPackageSource();
-					if (PackageSources.Contains(packageSource)) {
-						return packageSource;
-					}
-				}
-				return null;
-			}
-			set {
-				if (value == null) {
-					properties.Remove(ActivePackageSourcePropertyName);
-				} else {
-					var packageSource = new RegisteredPackageSource(value);
-					properties.Set(ActivePackageSourcePropertyName, packageSource);
-				}
-			}
+			get { return PackageSources.ActivePackageSource; }
+			set { PackageSources.ActivePackageSource = value; }
 		}
 		
 		public IList<RecentPackageInfo> RecentPackages {

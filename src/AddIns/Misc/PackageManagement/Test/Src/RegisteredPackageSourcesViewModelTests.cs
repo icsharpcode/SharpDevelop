@@ -21,7 +21,7 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel()
 		{
-			options = new PackageManagementOptions(new Properties());
+			options = new TestablePackageManagementOptions();
 			options.PackageSources.Clear();
 			fakeFolderBrowser = new FakeFolderBrowser();
 			viewModel = new RegisteredPackageSourcesViewModel(options, fakeFolderBrowser);

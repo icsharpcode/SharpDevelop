@@ -84,6 +84,7 @@
     <Compile Include="Src\Design\FakePackageRepository.cs" />
     <Compile Include="Src\Design\FakeProjectManager.cs" />
     <Compile Include="Src\Design\FakeProjectSystem.cs" />
+    <Compile Include="Src\Design\FakeSettings.cs" />
     <Compile Include="Src\Design\WpfDesigner.cs" />
     <Compile Include="Src\FolderBrowser.cs" />
     <Compile Include="Src\ICompilerMessageView.cs" />

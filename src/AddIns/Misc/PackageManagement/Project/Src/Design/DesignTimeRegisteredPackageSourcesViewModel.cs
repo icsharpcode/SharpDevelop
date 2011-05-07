@@ -11,7 +11,7 @@ namespace ICSharpCode.PackageManagement.Design
 	public class DesignTimeRegisteredPackageSourcesViewModel : RegisteredPackageSourcesViewModel
 	{
 		public DesignTimeRegisteredPackageSourcesViewModel()
-			: this(new PackageManagementOptions(new Properties()))
+			: this(new PackageManagementOptions(new Properties(), new FakeSettings()))
 		{
 		}
 		
