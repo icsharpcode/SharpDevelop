@@ -271,5 +271,18 @@ namespace PackageManagement.Tests
 			
 			Assert.DoesNotThrow(() => SaveOptions());
 		}
+		
+		[Test]
+		public void ActivePackageSource_AggregatePackageSourceIsActivePackageSourceInSettings_ReturnsAggregatePackageSource()
+		{
+			CreateSettings();
+			var expectedPackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+			fakeSettings.SetFakeActivePackageSource(expectedPackageSource);
+			CreateOptions(fakeSettings);
+			
+			var activePackageSource = options.ActivePackageSource;
+			
+			Assert.AreEqual(expectedPackageSource, activePackageSource);
+		}
 	}
 }

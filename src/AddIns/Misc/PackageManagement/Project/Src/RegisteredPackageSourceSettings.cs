@@ -14,6 +14,9 @@ namespace ICSharpCode.PackageManagement
 		public static readonly string PackageSourcesSectionName = "packageSources";
 		public static readonly string ActivePackageSourceSectionName = "activePackageSource";
 		
+		public static readonly PackageSource AggregatePackageSource = 
+			new PackageSource("(Aggregate source)", "All") { IsAggregate = true };
+		
 		ISettings settings;
 		RegisteredPackageSources packageSources;
 		PackageSource activePackageSource;
@@ -28,6 +31,18 @@ namespace ICSharpCode.PackageManagement
 		{
 			IList<KeyValuePair<string, string>> packageSources = settings.GetValues(ActivePackageSourceSectionName);
 			activePackageSource = PackageSourceConverter.ConvertFromFirstKeyValuePair(packageSources);
+			
+			if (IsActivePackageSourceAggregatePackageSource()) {
+				activePackageSource.IsAggregate = true;
+			}
+		}
+		
+		bool IsActivePackageSourceAggregatePackageSource()
+		{
+			if (activePackageSource != null) {
+				return activePackageSource.Source == AggregatePackageSource.Source;
+			}
+			return false;
 		}
 		
 		public RegisteredPackageSources PackageSources {
@@ -81,8 +96,13 @@ namespace ICSharpCode.PackageManagement
 		
 		public PackageSource ActivePackageSource {
 			get {
-				if (PackageSources.Contains(activePackageSource)) {
-					return activePackageSource;
+				if (activePackageSource != null) {
+					if (activePackageSource.IsAggregate) {
+						return activePackageSource;
+					}
+					if (PackageSources.Contains(activePackageSource)) {
+						return activePackageSource;
+					}
 				}
 				return null;
 			}
