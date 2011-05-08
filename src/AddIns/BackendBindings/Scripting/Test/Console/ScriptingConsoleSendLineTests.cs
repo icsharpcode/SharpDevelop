@@ -52,33 +52,10 @@ namespace ICSharpCode.Scripting.Tests.Console
 		public void SendLine_NoUnreadLines_LineWrittenToConsoleTextEditor()
 		{
 			SendLineToConsole("test");
-			string text = FakeConsoleTextEditor.TextPassedToWrite;
+			string text = FakeConsoleTextEditor.TextPassedToAppend;
 			string expectedTextWritten = "test\r\n";
 			
 			Assert.AreEqual(expectedTextWritten, text);
-		}
-		
-		[Test]
-		public void SendLine_TwoLinesInConsoleTextEditorCursorOnFirstLine_CursorMovedToEndOfLastLineBeforeTextWritten()
-		{
-			base.CreateConsole();
-			WritePrompt();
-			FakeConsoleTextEditor.Text = 
-				">>> first\r\n" +
-				">>> second\r\n" +
-				">>> ";
-			
-			FakeConsoleTextEditor.Line = 0;
-			FakeConsoleTextEditor.Column = 0;
-			TestableScriptingConsole.SendLine("test");
-			
-			int expectedLine = 2;
-			int expectedColumn = 4;
-			Location expectedLocation = new Location(expectedColumn, expectedLine);
-			
-			Location location = FakeConsoleTextEditor.CursorLocationWhenWriteTextCalled;
-			
-			Assert.AreEqual(expectedLocation, location);			
 		}
 		
 		[Test]
@@ -86,7 +63,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 		{
 			base.CreateConsole();
 			TestableScriptingConsole.SendLine("test");
-			string text = FakeConsoleTextEditor.TextPassedToWrite;
+			string text = FakeConsoleTextEditor.TextPassedToAppend;
 			
 			Assert.IsNull(text);
 		}

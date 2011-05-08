@@ -26,40 +26,40 @@ namespace ICSharpCode.Scripting.Tests.Utils.Tests
 		}
 		
 		[Test]
-		public void TextReturnsTextWritten()
+		public void TextReturnsTextAppended()
 		{
-			textEditor.Write("abc");
+			textEditor.Append("abc");
 			Assert.AreEqual("abc", textEditor.Text);
 		}
 		
 		[Test]
-		public void ColumnReturnsPositionAfterTextWritten()
+		public void ColumnReturnsPositionAfterTextAppended()
 		{
-			textEditor.Write("ab");
+			textEditor.Append("ab");
 			Assert.AreEqual(2, textEditor.Column);
 		}
 		
 		[Test]
-		public void TextReturnsAllTextWritten()
+		public void TextReturnsAllTextAppended()
 		{
-			textEditor.Write("a");
-			textEditor.Write("b");
+			textEditor.Append("a");
+			textEditor.Append("b");
 			Assert.AreEqual("ab", textEditor.Text);
 		}
 		
 		[Test]
-		public void ColumnReturnsPositionAfterTextWhenWriteCalledTwice()
+		public void ColumnReturnsPositionAfterTextWhenAppendCalledTwice()
 		{
-			textEditor.Write("a");
-			textEditor.Write("bb");
+			textEditor.Append("a");
+			textEditor.Append("bb");
 			Assert.AreEqual(3, textEditor.Column);
 		}
 		
 		[Test]
-		public void IsWriteCalledReturnsTrueAfterWriteMethodCalled()
+		public void IsAppendCalledReturnsTrueAfterAppendMethodCalled()
 		{
-			textEditor.Write("a");
-			Assert.IsTrue(textEditor.IsWriteCalled);
+			textEditor.Append("a");
+			Assert.IsTrue(textEditor.IsAppendCalled);
 		}
 		
 		[Test]
