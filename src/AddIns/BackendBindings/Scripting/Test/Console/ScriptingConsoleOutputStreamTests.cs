@@ -52,7 +52,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 			byte[] bytes = UTF8Encoding.UTF8.GetBytes("test");
 			stream.Write(bytes, 0, bytes.Length);
 			
-			string text = textEditor.TextPassedToWrite;
+			string text = textEditor.TextPassedToAppend;
 			
 			string expectedText = "test";
 			Assert.AreEqual(expectedText, text);
@@ -65,7 +65,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 			byte[] bytes = UTF8Encoding.UTF8.GetBytes("0output1");
 			stream.Write(bytes, 1, bytes.Length - 2);
 			
-			string text = textEditor.TextPassedToWrite;
+			string text = textEditor.TextPassedToAppend;
 			string expectedText = "output";
 			
 			Assert.AreEqual(expectedText, text);

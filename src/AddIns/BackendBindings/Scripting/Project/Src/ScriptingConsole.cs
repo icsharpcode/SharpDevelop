@@ -70,7 +70,7 @@ namespace ICSharpCode.Scripting
 		/// </summary>
 		public void Write(string text, ScriptingStyle style)
 		{
-			textEditor.Write(text);
+			textEditor.Append(text);
 			if (style == ScriptingStyle.Prompt) {
 				firstPromptDisplayed = true;
 				promptLength = text.Length;
@@ -89,7 +89,7 @@ namespace ICSharpCode.Scripting
 		{
 			if (textSent.HasLine) {
 				string line = textSent.RemoveFirstLine();
-				textEditor.Write(line);
+				textEditor.Append(line);
 			}
 		}
 		

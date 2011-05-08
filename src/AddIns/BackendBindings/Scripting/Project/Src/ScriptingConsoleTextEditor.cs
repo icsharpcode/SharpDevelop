@@ -44,16 +44,9 @@ namespace ICSharpCode.Scripting
 			textEditor.PreviewKeyDown -= OnTextEditorPreviewKeyDown;
 		}
 		
-		public void Write(string text)
+		public void Append(string text)
 		{
-			TextLocation location = GetCurrentCursorLocation();
-			int offset = textEditor.Document.GetOffset(location);
-			textEditor.Document.Insert(offset, text);
-		}
-		
-		TextLocation GetCurrentCursorLocation()
-		{
-			return new TextLocation(Line + 1, Column + 1);
+			textEditor.AppendText(text);
 		}
 		
 		public int Column {
