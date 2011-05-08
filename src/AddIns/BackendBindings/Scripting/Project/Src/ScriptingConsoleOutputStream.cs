@@ -69,7 +69,7 @@ namespace ICSharpCode.Scripting
 		void ThreadSafeTextEditorWrite(string text)
 		{
 			if (dispatcher.CheckAccess()) {
-				textEditor.Write(text);
+				textEditor.Append(text);
 			} else {
 				Action<string> action = ThreadSafeTextEditorWrite;
 				dispatcher.Invoke(action, text);
