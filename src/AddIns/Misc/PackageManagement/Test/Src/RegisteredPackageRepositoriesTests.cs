@@ -247,6 +247,20 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedPackageSources, packageSources);
 		}
+		
+		[Test]
+		public void ActivePackageRepository_ActivePackageSourceIsAggregate_ReturnsAggregatePackageRepository()
+		{
+			CreateRegisteredPackageRepositories();
+			packageSourcesHelper.AddTwoPackageSources();
+			
+			registeredRepositories.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+						
+			var repository = registeredRepositories.ActiveRepository;
+			var expectedRepository = fakeRepositoryCache.FakeAggregateRepository;
+			
+			Assert.AreEqual(expectedRepository, repository);
+		}
 	}
 }
 

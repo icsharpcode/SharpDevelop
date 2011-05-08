@@ -48,18 +48,23 @@
     </Reference>
     <Reference Include="IronPython">
       <HintPath>..\..\RequiredLibraries\IronPython.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="IronPython.Modules">
       <HintPath>..\..\RequiredLibraries\IronPython.Modules.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Dynamic">
       <HintPath>..\..\RequiredLibraries\Microsoft.Dynamic.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting.Metadata">
       <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.Metadata.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -186,6 +191,10 @@
       <Link>Chiron.exe.Config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\RequiredLibraries\DLLs\IronPython.Wpf.dll">
+      <Link>DLLs\IronPython.Wpf.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\RequiredLibraries\License.Rtf">
       <Link>License.Rtf</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -245,6 +254,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Lib" />
+    <Folder Include="DLLs" />
     <Folder Include="TestRunner" />
     <Folder Include="Templates" />
     <Folder Include="Resources" />

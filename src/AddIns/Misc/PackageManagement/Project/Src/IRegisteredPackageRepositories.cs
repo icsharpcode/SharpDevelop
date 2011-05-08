@@ -9,7 +9,7 @@ namespace ICSharpCode.PackageManagement
 	public interface IRegisteredPackageRepositories
 	{
 		IPackageRepository ActiveRepository { get; }
-		IPackageRepository RecentPackageRepository { get; }
+		IRecentPackageRepository RecentPackageRepository { get; }
 		
 		IPackageRepository CreateRepository(PackageSource source);
 		IPackageRepository CreateAggregateRepository();

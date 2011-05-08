@@ -5,31 +5,33 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
-namespace Debugger.AddIn.Visualizers.Common
+namespace Debugger.AddIn.Visualizers
 {
 	/// <summary>
-	/// Wrapper of ObservableCollection&lt;IEvaluate&gt; 
-	/// with lazy indexer, suitable for Controls that use indexer to query for data as needed (eg. ListView).
+	/// Proxy wrapping ObservableCollection&lt;IEvaluate&gt;
+	/// with lazy indexer, suitable for Controls that use indexer to query data as needed (eg. ListView).
 	/// </summary>
 	public class VirtualizingObservableCollection<T> : ObservableCollection<T>, IList<T>, IList
 	{
-		ObservableCollection<T> lazifiedCollection;
+		ObservableCollection<T> collection;
 
-		public VirtualizingObservableCollection(ObservableCollection<T> lazifiedCollection)
+		public VirtualizingObservableCollection(ObservableCollection<T> collection)
 		{
-			this.lazifiedCollection = lazifiedCollection;
-			this.lazifiedCollection.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(lazifiedCollection_CollectionChanged);
+			this.collection = collection;
+			this.collection.CollectionChanged += UnderlyingCollection_Changed;
 		}
 
-		void lazifiedCollection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		void UnderlyingCollection_Changed(object sender, NotifyCollectionChangedEventArgs e)
 		{
+			// Notify when someone changes the underlying collection, so that UI always stays in sync
 			OnCollectionChanged(e);
 		}
 
 		public new int Count
 		{
-			get { return this.lazifiedCollection.Count; }
+			get { return this.collection.Count; }
 		}
 
 		/// <summary>
@@ -39,16 +41,12 @@ namespace Debugger.AddIn.Visualizers.Common
 		{
 			get
 			{
-				var underlyingItem = this.lazifiedCollection[index];
+				var underlyingItem = this.collection[index];
 				IEvaluate itemLazy = underlyingItem as IEvaluate;
-				if (itemLazy != null)
-				{
-					if (!itemLazy.IsEvaluated)
-					{
-						itemLazy.Evaluate();
-					}
+				if (itemLazy != null && (!itemLazy.IsEvaluated)) {
+					itemLazy.Evaluate();
 				}
-				// return item, evaluated if it was IEvaluate
+				// return evaluated items
 				return underlyingItem;
 			}
 			set

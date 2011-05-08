@@ -13,10 +13,12 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Graph.Layout;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
-using ICSharpCode.NRefactory.Ast;
+using Log = ICSharpCode.Core.LoggingService;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
@@ -25,32 +27,31 @@ namespace Debugger.AddIn.Visualizers.Graph
 	/// </summary>
 	public partial class ObjectGraphControl : UserControl
 	{
-		private WindowsDebugger debuggerService;
-		private EnumViewModel<LayoutDirection> layoutViewModel;
-		private ObjectGraph objectGraph;
-		private ObjectGraphBuilder objectGraphBuilder;
+		WindowsDebugger debuggerService;
+		EnumViewModel<LayoutDirection> layoutViewModel;
+		ObjectGraph objectGraph;
+		ObjectGraphBuilder objectGraphBuilder;
 		
-		private PositionedGraph oldPosGraph;
-		private PositionedGraph currentPosGraph;
-		private GraphDrawer graphDrawer;
-		private Layout.TreeLayouter layouter;
+		PositionedGraph oldPosGraph;
+		PositionedGraph currentPosGraph;
+		GraphDrawer graphDrawer;
+		
+		static double mouseWheelZoomSpeed = 0.05;
 		
 		/// <summary> Long-lived map telling which graph nodes and content nodes the user expanded. </summary>
-		private Expanded expanded = new Expanded();
+		static Expanded expanded = new Expanded();
 
 		public ObjectGraphControl()
 		{
 			InitializeComponent();
 			
 			debuggerService = DebuggerService.CurrentDebugger as WindowsDebugger;
-			if (debuggerService == null)
-				throw new ApplicationException("Only windows debugger is currently supported");
+			if (debuggerService == null) throw new ApplicationException("Only windows debugger is currently supported");
 			
 			this.layoutViewModel = new EnumViewModel<LayoutDirection>();
 			this.layoutViewModel.PropertyChanged += new PropertyChangedEventHandler(layoutViewModel_PropertyChanged);
 			this.cmbLayoutDirection.DataContext = this.layoutViewModel;
 			
-			this.layouter = new TreeLayouter();
 			this.graphDrawer = new GraphDrawer(this.canvas);
 		}
 		
@@ -61,7 +62,44 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public void Refresh()
 		{
-			refreshGraph();
+			// Almost all of the blocking is done ContentPropertyNode.Evaluate,
+			// which is being called by WPF for all the properties.
+			// It would be better if we were filling the node texts ourselves in a loop,
+			// so that we could cancel any time. UI would redraw gradually thanks to INotifyPropertyChanged.
+			try {
+				Debugger.AddIn.TreeModel.Utils.DoEvents(debuggerService.DebuggedProcess);
+			} catch(AbortedBecauseDebuggeeResumedException) { 
+				Log.Warn("Object graph - debuggee resumed, cancelling refresh.");
+				this.graphDrawer.ClearCanvas();
+				return;
+			}
+			
+			ClearErrorMessage();
+			if (string.IsNullOrEmpty(txtExpression.Text)) {
+				this.graphDrawer.ClearCanvas();
+				return;
+			}
+			if (debuggerService.IsProcessRunning) {
+				// "Process not paused" exception still occurs
+				ErrorMessage("Cannot inspect when the process is running.");
+				return;
+			}
+			bool isSuccess = true;
+			try	{
+				this.objectGraph = RebuildGraph(txtExpression.Text);
+			} catch(DebuggerVisualizerException ex)	{
+				isSuccess = false;
+				ErrorMessage(ex.Message);
+			} catch(Debugger.GetValueException ex)	{
+				isSuccess = false;
+				ErrorMessage("Expression cannot be evaluated - " + ex.Message);
+			}
+			
+			if (isSuccess) {
+				LayoutGraph(this.objectGraph);
+			} else {
+				this.graphDrawer.ClearCanvas();
+			}
 		}
 		
 		private ICSharpCode.NRefactory.Ast.Expression shownExpression;
@@ -97,100 +135,57 @@ namespace Debugger.AddIn.Visualizers.Graph
 			this.Refresh();
 		}
 		
-		void refreshGraph()
-		{
-			clearErrorMessage();
-			if (string.IsNullOrEmpty(txtExpression.Text))
-			{
-				this.graphDrawer.ClearCanvas();
-				return;
-			}
-			if (debuggerService.IsProcessRunning)		// "Process not paused" exception still occurs
-			{
-				showErrorMessage("Cannot inspect when the process is running.");
-				return;
-			}
-			bool graphBuiltOk = true;
-			try
-			{
-				this.objectGraph = rebuildGraph(txtExpression.Text);
-			}
-			catch(DebuggerVisualizerException ex)
-			{
-				graphBuiltOk = false;
-				showErrorMessage(ex.Message);
-			}
-			catch(Debugger.GetValueException ex)
-			{
-				graphBuiltOk = false;
-				showErrorMessage("Expression cannot be evaluated - " + ex.Message);
-			}
-			if (graphBuiltOk)
-			{
-				layoutGraph(this.objectGraph);
-			}
-			else
-			{
-				this.graphDrawer.ClearCanvas();
-			}
-		}
-		
-		ObjectGraph rebuildGraph(string expression)
+		ObjectGraph RebuildGraph(string expression)
 		{
 			this.objectGraphBuilder = new ObjectGraphBuilder(debuggerService);
-			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Building graph for expression: " + txtExpression.Text);
-			return this.objectGraphBuilder.BuildGraphForExpression(expression, this.expanded.Expressions);
+			Log.Debug("Debugger visualizer: Building graph for expression: " + txtExpression.Text);
+			return this.objectGraphBuilder.BuildGraphForExpression(expression, expanded.Expressions);
 		}
 		
-		void layoutGraph(ObjectGraph graph)
+		void LayoutGraph(ObjectGraph graph)
 		{
-			if (this.oldPosGraph != null)
-			{
-				foreach (var oldNode in this.oldPosGraph.Nodes)
-				{
+			if (this.oldPosGraph != null) {
+				foreach (var oldNode in this.oldPosGraph.Nodes) {
 					// controls from old graph would be garbage collected, reuse them
 					NodeControlCache.Instance.ReturnForReuse(oldNode.NodeVisualControl);
 				}
 			}
 			this.oldPosGraph = this.currentPosGraph;
-			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Calculating graph layout");
-			this.currentPosGraph = this.layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue, this.expanded);
-			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Graph layout done");
-			registerExpandCollapseEvents(this.currentPosGraph);
+			Log.Debug("Debugger visualizer: Calculating graph layout");
+			var layoutDirection = layoutViewModel.SelectedEnumValue;
+			this.currentPosGraph = new TreeLayout(layoutDirection).CalculateLayout(graph, expanded);
+			Log.Debug("Debugger visualizer: Graph layout done");
+			RegisterExpandCollapseEvents(this.currentPosGraph);
 			
 			var graphDiff = new GraphMatcher().MatchGraphs(oldPosGraph, currentPosGraph);
-			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: starting graph animation");
+			Log.Debug("Debugger visualizer: starting graph animation");
 			this.graphDrawer.StartAnimation(oldPosGraph, currentPosGraph, graphDiff);
-			//this.graphDrawer.Draw(this.currentPosGraph);	// buggy layout with NodeControlCache
 		}
 		
 		void layoutViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "SelectedEnumValue")	// TODO special event for enum value change
-			{
-				if (this.objectGraph != null)
-				{
-					layoutGraph(this.objectGraph);
+			if (e.PropertyName == "SelectedEnumValue") {
+				if (this.objectGraph != null) {
+					LayoutGraph(this.objectGraph);
 				}
 			}
 		}
 		
-		void clearErrorMessage()
+		void ClearErrorMessage()
 		{
 			this.pnlError.Visibility = Visibility.Collapsed;
 		}
 		
-		void showErrorMessage(string message)
+		void ErrorMessage(string message)
 		{
 			this.txtError.Text = message;
 			this.pnlError.Visibility = Visibility.Visible;
 			//MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
 		}
 		
-		void registerExpandCollapseEvents(PositionedGraph posGraph)
+		void RegisterExpandCollapseEvents(PositionedGraph posGraph)
 		{
-			foreach (var node in posGraph.Nodes)
-			{
+			foreach (var node in posGraph.Nodes) {
 				node.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(node_PropertyExpanded);
 				node.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(node_PropertyCollapsed);
 				node.ContentNodeExpanded += new EventHandler<ContentNodeEventArgs>(node_ContentNodeExpanded);
@@ -201,13 +196,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 		void node_ContentNodeExpanded(object sender, ContentNodeEventArgs e)
 		{
 			expanded.ContentNodes.SetExpanded(e.Node);
-			layoutGraph(this.objectGraph);
+			LayoutGraph(this.objectGraph);
 		}
 
 		void node_ContentNodeCollapsed(object sender, ContentNodeEventArgs e)
 		{
 			expanded.ContentNodes.SetCollapsed(e.Node);
-			layoutGraph(this.objectGraph);
+			LayoutGraph(this.objectGraph);
 		}
 
 		void node_PropertyExpanded(object sender, PositionedPropertyEventArgs e)
@@ -218,7 +213,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			// add edge (+ possibly nodes) to underlying object graph (no need to fully rebuild)
 			// TODO can add more nodes if they are expanded - now this adds always one node
 			e.Property.ObjectGraphProperty.TargetNode = this.objectGraphBuilder.ObtainNodeForExpression(e.Property.Expression);
-			layoutGraph(this.objectGraph);
+			LayoutGraph(this.objectGraph);
 		}
 		
 		void node_PropertyCollapsed(object sender, PositionedPropertyEventArgs e)
@@ -228,7 +223,14 @@ namespace Debugger.AddIn.Visualizers.Graph
 			
 			// just remove edge from underlying object graph (no need to fully rebuild)
 			e.Property.ObjectGraphProperty.TargetNode = null;
-			layoutGraph(this.objectGraph);
+			LayoutGraph(this.objectGraph);
+		}
+		
+		void Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
+		{
+			if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
+				zoomSlider.Value += e.Delta > 0 ? mouseWheelZoomSpeed : -mouseWheelZoomSpeed;
+			}
 		}
 	}
 }

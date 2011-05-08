@@ -93,5 +93,15 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			OnPackageReferenceRemoved(package);
 		}
+		
+		public void AddPackageReference(IPackage package, bool ignoreDependencies)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void RemovePackageReference(IPackage package, bool forceRemove, bool removeDependencies)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

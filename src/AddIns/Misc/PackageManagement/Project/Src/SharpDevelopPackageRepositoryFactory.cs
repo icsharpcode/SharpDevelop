@@ -28,7 +28,7 @@ namespace ICSharpCode.PackageManagement
 			return new SharedPackageRepository(pathResolver, fileSystem);
 		}
 		
-		public IPackageRepository CreateRecentPackageRepository(
+		public IRecentPackageRepository CreateRecentPackageRepository(
 			IList<RecentPackageInfo> recentPackages,
 			IPackageRepository aggregateRepository)
 		{

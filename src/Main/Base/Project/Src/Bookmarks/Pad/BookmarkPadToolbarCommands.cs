@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			var bookmarkBase = (BookmarkPadBase)Owner;			
 			var nextItem = bookmarkBase.NextItem;
 			
-			base.Run(nextItem);
+			Run(nextItem);
 		}
 	}
 	
@@ -65,9 +65,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		public override void Run()
 		{
 			var bookmarkBase = (BookmarkPadBase)Owner;			
-			var prevItem = bookmarkBase.PrevItem;
+			var prevItem = bookmarkBase.PreviousItem;
 			
-			base.Run(prevItem);	
+			Run(prevItem);	
 		}
 	}
 	#endregion Goto Commands

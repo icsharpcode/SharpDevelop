@@ -10,6 +10,7 @@ namespace ICSharpCode.PackageManagement
 	public class PackageManagementViewModels
 	{
 		AddPackageReferenceViewModel addPackageReferenceViewModel;
+		RegisteredPackageSourcesViewModel registeredPackageSourcesViewModel;
 		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
 		PackageManagementConsoleViewModel packageManagementConsoleViewModel;
 		IPackageManagementSolution solution;
@@ -62,22 +63,33 @@ namespace ICSharpCode.PackageManagement
 			return WpfDesigner.IsInDesignMode();
 		}
 		
-		public PackageManagementOptionsViewModel PackageManagementOptionsViewModel {
+		public RegisteredPackageSourcesViewModel RegisteredPackageSourcesViewModel {
 			get {
-				if (packageManagementOptionsViewModel == null) {
-					CreatePackageManagementOptionsViewModel();
+				if (registeredPackageSourcesViewModel == null) {
+					CreateRegisteredPackageSourcesViewModel();
 				}
-				return packageManagementOptionsViewModel;
+				return registeredPackageSourcesViewModel;
 			}
 		}
 		
-		void CreatePackageManagementOptionsViewModel()
+		void CreateRegisteredPackageSourcesViewModel()
 		{
-			CreateSolution();
+			CreateRegisteredPackageRepositories();
 			if (IsInDesignMode()) {
-				packageManagementOptionsViewModel = new DesignTimePackageManagementOptionsViewModel();
+				registeredPackageSourcesViewModel = new DesignTimeRegisteredPackageSourcesViewModel();
 			} else {
-				packageManagementOptionsViewModel = new PackageManagementOptionsViewModel(PackageManagementServices.Options);
+				registeredPackageSourcesViewModel = new RegisteredPackageSourcesViewModel(PackageManagementServices.Options);
+			}
+		}
+		
+		public PackageManagementOptionsViewModel PackageManagementOptionsViewModel {
+			get {
+				if (packageManagementOptionsViewModel == null) {
+					CreateRegisteredPackageRepositories();
+					IRecentPackageRepository recentRepository = registeredPackageRepositories.RecentPackageRepository;
+					packageManagementOptionsViewModel = new PackageManagementOptionsViewModel(recentRepository);
+				}
+				return packageManagementOptionsViewModel;
 			}
 		}
 		
@@ -93,10 +105,11 @@ namespace ICSharpCode.PackageManagement
 		void CreatePackageManagementConsoleViewModel()
 		{
 			CreateSolution();
+			CreateRegisteredPackageRepositories();
 			var consoleHost = PackageManagementServices.ConsoleHost;
 			packageManagementConsoleViewModel = 
 				new PackageManagementConsoleViewModel(
-					PackageManagementServices.RegisteredPackageRepositories.PackageSources,
+					registeredPackageRepositories.PackageSources,
 					consoleHost);
 		}
 	}

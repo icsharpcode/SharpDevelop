@@ -28,7 +28,7 @@ namespace ICSharpCode.PackageManagement
 			registeredPackageSources = options.PackageSources;
 		}
 		
-		public IPackageRepository RecentPackageRepository {
+		public IRecentPackageRepository RecentPackageRepository {
 			get { return repositoryCache.RecentPackageRepository; }
 		}
 		
@@ -78,7 +78,11 @@ namespace ICSharpCode.PackageManagement
 		
 		void CreateActiveRepository()
 		{
-			activePackageRepository = repositoryCache.CreateRepository(ActivePackageSource);
+			if (ActivePackageSource.IsAggregate) {
+				activePackageRepository = CreateAggregateRepository();
+			} else {
+				activePackageRepository = repositoryCache.CreateRepository(ActivePackageSource);
+			}
 		}
 	}
 }

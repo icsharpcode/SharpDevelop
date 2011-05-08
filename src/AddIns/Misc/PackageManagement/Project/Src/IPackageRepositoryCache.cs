@@ -8,7 +8,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public interface IPackageRepositoryCache : ISharpDevelopPackageRepositoryFactory
 	{
-		IPackageRepository RecentPackageRepository { get; }
+		IRecentPackageRepository RecentPackageRepository { get; }
 		IPackageRepository CreateAggregateRepository();
 	}
 }

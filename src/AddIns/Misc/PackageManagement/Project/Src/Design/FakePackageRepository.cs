@@ -8,7 +8,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
 {
-	public class FakePackageRepository : IPackageRepository
+	public class FakePackageRepository : IRecentPackageRepository
 	{
 		public List<FakePackage> FakePackages = new List<FakePackage>();
 		public bool IsRemovePackageCalled;
@@ -47,6 +47,10 @@ namespace ICSharpCode.PackageManagement.Design
 			var package = FakePackage.CreatePackageWithVersion(packageId, version);
 			FakePackages.Add(package);
 			return package;
+		}
+		
+		public void Clear()
+		{
 		}
 	}
 }

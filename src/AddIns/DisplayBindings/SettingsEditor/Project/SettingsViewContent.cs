@@ -194,8 +194,9 @@ namespace ICSharpCode.SettingsEditor
 			settings.RemoveAll();
 			foreach (SettingsEntry entry in entries) {
 				XElement setting = new XElement("setting", new XAttribute("name", entry.Name));
-				settings.Add(new XAttribute("serializeAs", "String"));
-				settings.Add(new XElement("value", entry.SerializedValue));
+				setting.Add(new XAttribute("serializeAs", "String"));
+				setting.Add(new XElement("value", entry.SerializedValue));
+				settings.Add(setting);
 			}
 			settings.ReplaceWith(settings.FormatXml(2));
 		}

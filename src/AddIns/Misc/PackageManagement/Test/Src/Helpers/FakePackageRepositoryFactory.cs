@@ -47,11 +47,11 @@ namespace PackageManagement.Tests.Helpers
 			return FakeAggregateRepository;
 		}
 		
-		public FakePackageRepository FakeRecentPackageRepository = new FakePackageRepository();
+		public FakeRecentPackageRepository FakeRecentPackageRepository = new FakeRecentPackageRepository();
 		public IList<RecentPackageInfo> RecentPackagesPassedToCreateRecentPackageRepository;
 		public IPackageRepository AggregateRepositoryPassedToCreateRecentPackageRepository;
 		
-		public IPackageRepository CreateRecentPackageRepository(
+		public IRecentPackageRepository CreateRecentPackageRepository(
 			IList<RecentPackageInfo> recentPackages,
 			IPackageRepository aggregateRepository)
 		{
@@ -76,7 +76,7 @@ namespace PackageManagement.Tests.Helpers
 			return repository;
 		}
 		
-		public IPackageRepository RecentPackageRepository {
+		public IRecentPackageRepository RecentPackageRepository {
 			get { return FakeRecentPackageRepository; }
 		}
 	}

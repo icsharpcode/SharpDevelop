@@ -45,6 +45,8 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		public bool IsUsed { get; set; }
 		public bool IsAvailable { get { return !IsUsed && !IsEdgeEndpoint; } }
 		
+		public double Penalization { get; set; }
+		
 		public void Reset()
 		{
 			Distance = 10e+6;

@@ -12,7 +12,7 @@ namespace ICSharpCode.PackageManagement
 		ISharpDevelopPackageRepositoryFactory factory;
 		RegisteredPackageSources registeredPackageSources;
 		IList<RecentPackageInfo> recentPackages;
-		IPackageRepository recentPackageRepository;
+		IRecentPackageRepository recentPackageRepository;
 		Dictionary<PackageSource, IPackageRepository> repositories =
 			new Dictionary<PackageSource, IPackageRepository>();
 		
@@ -84,7 +84,7 @@ namespace ICSharpCode.PackageManagement
 			return factory.CreateAggregateRepository(repositories);
 		}
 		
-		public IPackageRepository RecentPackageRepository {
+		public IRecentPackageRepository RecentPackageRepository {
 			get {
 				CreateRecentPackageRepository();
 				return recentPackageRepository;
@@ -99,7 +99,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public IPackageRepository CreateRecentPackageRepository(
+		public IRecentPackageRepository CreateRecentPackageRepository(
 			IList<RecentPackageInfo> recentPackages,
 			IPackageRepository aggregateRepository)
 		{

@@ -17,7 +17,6 @@ using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Services;
-using Services.Debugger.Tooltips;
 
 namespace Debugger.AddIn.Tooltips
 {

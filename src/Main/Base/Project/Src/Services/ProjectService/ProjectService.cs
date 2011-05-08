@@ -628,6 +628,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (project != null) {
 				OpenSolution.RemoveProjectConfigurations(project.IdGuid);
 				ParserService.RemoveProjectContentForRemovedProject(project);
+				OnProjectRemoved(new ProjectEventArgs(project));
 				project.Dispose();
 			}
 			if (folder is ISolutionFolderContainer) {
@@ -661,6 +662,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				ProjectAdded(null, e);
 			}
 		}
+		static void OnProjectRemoved(ProjectEventArgs e)
+		{
+			if (ProjectRemoved != null) {
+				ProjectRemoved(null, e);
+			}
+		}
 		internal static void OnProjectCreated(ProjectEventArgs e)
 		{
 			if (ProjectCreated != null) {
@@ -682,6 +689,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Is raised when a new or existing project is added to the solution.
 		/// </summary>
 		public static event ProjectEventHandler ProjectAdded;
+		/// <summary>
+		/// Is raised when a project is removed from the solution.
+		/// </summary>
+		public static event ProjectEventHandler ProjectRemoved;
+		
+		/// <summary>
+		/// Is raised when a solution folder is removed from the solution.
+		/// This might remove multiple projects from the solution.
+		/// </summary>
 		public static event SolutionFolderEventHandler SolutionFolderRemoved;
 		
 		public static event EventHandler<BuildEventArgs> BuildStarted;

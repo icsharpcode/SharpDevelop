@@ -1,19 +1,21 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
@@ -292,7 +294,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Children.Add(editor);
 			
 			editor.TextArea.ReadOnlySectionProvider = readOnlyRegion = new BeginReadOnlySectionProvider();
-			
 			editor.TextArea.TextEntered += new TextCompositionEventHandler(editor_TextArea_TextEntered);
 			editor.TextArea.PreviewKeyDown += new KeyEventHandler(editor_TextArea_PreviewKeyDown);
 		}
@@ -301,6 +302,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get {
 				return editorAdapter;
 			}
+		}
+		
+		public Encoding Encoding {
+			get {
+				return this.editor.Encoding;
+			}
+			set {
+				this.editor.Encoding = value;
+			}
+		}
+		
+		public void SelectText(int line, int column, int length)
+		{
+			int offset = this.editor.Document.GetOffset(new TextLocation(line, column));
+			this.editor.Select(offset, length);
 		}
 		
 		public void SetHighlighting(string language)
@@ -338,6 +354,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.editor.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 		}
 		
+		public void JumpToLine(int line)
+		{
+			this.editor.ScrollToLine(line);
+		}
+		
 		public int CommandOffset {
 			get { return readOnlyRegion.EndOffset; }
 		}
@@ -368,6 +389,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (handler != null)
 				handler(this, e);
+		}
+		
+		public void Clear()
+		{
+			editor.Clear();
 		}
 	}
 	

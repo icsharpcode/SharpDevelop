@@ -287,7 +287,15 @@ ImportsStatement =
 .
 
 AttributeBlock =
-	"<" (. wasNormalAttribute = true; PushContext(Context.Attribute, la, t); .) [ ( "Assembly" | "Module" ) ":" (. wasNormalAttribute = false; .) ] { ANY } ">" (. PopContext(); .) [ EOL ]
+	"<" (. wasNormalAttribute = true; PushContext(Context.Attribute, la, t); .)
+	Attribute { "," Attribute }
+	">" (. PopContext(); .) [ EOL ]
+.
+
+Attribute =
+	[ EXPECTEDCONFLICT("Assembly") ( "Assembly" | "Module" ) ":" (. wasNormalAttribute = false; .) ]
+	// named arguments are implemented as BinaryOperatorExpression: Expr ":=" Expr
+	Identifier { "." Identifier } [ "(" [ Expression { "," Expression } ] ")" ]
 .
 
 NamespaceMemberDeclaration =
@@ -512,6 +520,7 @@ Parameter =
 	(. PushContext(Context.Parameter, la, t); .)
 	{ AttributeBlock } { ParameterModifier }
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	[ "?" ] { "(" { "," } ")" }
 	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
 	[ "=" Expression ]
 	(. PopContext(); .)

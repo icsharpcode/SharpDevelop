@@ -13,7 +13,7 @@ namespace ICSharpCode.PackageManagement
 			IPackagePathResolver pathResolver,
 			IFileSystem fileSystem);
 		
-		IPackageRepository CreateRecentPackageRepository(
+		IRecentPackageRepository CreateRecentPackageRepository(
 			IList<RecentPackageInfo> recentPackages,
 			IPackageRepository aggregateRepository);
 		

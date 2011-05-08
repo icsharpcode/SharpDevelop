@@ -454,6 +454,76 @@ End Class";
 			RunFormatTest(code, expected);
 		}
 		
+		[Test]
+		public void Region()
+		{
+			string expected = @"Module Program
+	#Region Test
+	
+	#End Region
+	
+	Sub asdf()
+		
+	End Sub
+End Module";
+			
+			string code = @"Module Program
+#Region Test
+
+#End Region
+
+Sub asdf()
+
+End Sub
+End Module";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test]
+		public void Attribute()
+		{
+			string expected = @"Module Core
+	<STAThreadAttribute> _
+	Sub Main
+		
+	End Sub
+End Module";
+			
+			string code = @"Module Core
+<STAThreadAttribute> _
+Sub Main
+
+End Sub
+End Module";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test]
+		public void Attribute2()
+		{
+			string expected = @"Module Core
+	<AttributeUsage(
+		bla.bla
+		)> _
+	Sub Main
+		
+	End Sub
+End Module";
+			
+			string code = @"Module Core
+<AttributeUsage(
+bla.bla
+)> _
+Sub Main
+
+End Sub
+End Module";
+			
+			RunFormatTest(code, expected);
+		}
+		
 		void RunFormatTest(string code, string expectedCode)
 		{
 			AvalonEditTextEditorAdapter editor = new AvalonEditTextEditorAdapter(new TextEditor());

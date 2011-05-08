@@ -3,9 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
-using NuGet;
+using ICSharpCode.PackageManagement.Design;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -15,454 +14,264 @@ namespace PackageManagement.Tests
 	public class PackageManagementOptionsViewModelTests
 	{
 		PackageManagementOptionsViewModel viewModel;
-		PackageManagementOptions options;
+		FakeRecentPackageRepository fakeRecentRepository;
+		FakeMachinePackageCache fakeMachineCache;
+		FakeProcess fakeProcess;
+		List<string> propertiesChanged;
 		
-		void CreateViewModel()
+		void CreateRecentRepository()
 		{
-			options = new PackageManagementOptions(new Properties());
-			options.PackageSources.Clear();
-			viewModel = new PackageManagementOptionsViewModel(options);
+			fakeRecentRepository = new FakeRecentPackageRepository();			
 		}
 		
-		void CreateViewModelWithOnePackageSource()
+		void CreateMachineCache()
 		{
-			CreateViewModel();
-			AddPackageSourceToOptions("Source 1", "http://url1");			
+			fakeMachineCache = new FakeMachinePackageCache();
 		}
 		
-		void CreateViewModelWithTwoPackageSources()
+		void CreateViewModelUsingCreatedMachineCache()
 		{
-			CreateViewModel();
-			AddPackageSourceToOptions("Source 1", "http://url1");
-			AddPackageSourceToOptions("Source 2", "http://url2");
+			CreateRecentRepository();
+			fakeProcess = new FakeProcess();
+			viewModel = new PackageManagementOptionsViewModel(fakeRecentRepository, fakeMachineCache, fakeProcess);			
 		}
 		
-		void AddPackageSourceToOptions(string name, string url)
+		void CreateViewModelUsingCreatedRecentRepository()
 		{
-			var source = new PackageSource(url, name);
-			options.PackageSources.Add(source);
+			CreateMachineCache();
+			fakeProcess = new FakeProcess();
+			viewModel = new PackageManagementOptionsViewModel(fakeRecentRepository, fakeMachineCache, fakeProcess);			
 		}
 		
-		[Test]
-		public void Constructor_InstanceCreated_NoPackageSourceViewModels()
+		void AddPackageToRecentRepository()
 		{
-			CreateViewModel();
-			
-			Assert.AreEqual(0, viewModel.PackageSourceViewModels.Count);
+			fakeRecentRepository.FakePackages.Add(new FakePackage());
 		}
 		
-		[Test]
-		public void Load_OptionsHasOneRegisteredPackageSource_ViewModelHasOnePackageSourceViewModel()
+		void AddPackageToMachineCache()
 		{
-			CreateViewModelWithOnePackageSource();
-			viewModel.Load();
-			
-			Assert.AreEqual(1, viewModel.PackageSourceViewModels.Count);
+			fakeMachineCache.FakePackages.Add(new FakePackage());
 		}
 		
-		[Test]
-		public void Load_OptionsHasOneRegisteredPackageSource_ViewModelHasOnePackageSourceViewModelWithPackageSourceFromOptions()
+		void RecordPropertyChanges()
 		{
-			CreateViewModelWithOnePackageSource();
-			viewModel.Load();
-			
-			var expectedSources = new PackageSource[] {
-				options.PackageSources[0]
-			};
-			
-			PackageSourceCollectionAssert.AreEqual(expectedSources, viewModel.PackageSourceViewModels);
+			propertiesChanged = new List<string>();
+			viewModel.PropertyChanged += (sender, e) => propertiesChanged.Add(e.PropertyName);
 		}
 		
 		[Test]
-		public void Load_OptionsHasTwoRegisteredPackageSources_ViewModelHasTwoPackageSourceViewModelWithPackageSourcesFromOptions()
+		public void HasNoRecentPackages_RecentPackageRepositoryHasNoPackages_ReturnsTrue()
 		{
-			CreateViewModelWithTwoPackageSources();
-			viewModel.Load();
+			CreateRecentRepository();
+			CreateViewModelUsingCreatedRecentRepository();
 			
-			var expectedSources = new PackageSource[] {
-				options.PackageSources[0],
-				options.PackageSources[1]
-			};
+			bool hasPackages = viewModel.HasNoRecentPackages;
 			
-			PackageSourceCollectionAssert.AreEqual(expectedSources, viewModel.PackageSourceViewModels);
+			Assert.IsTrue(hasPackages);
 		}
 		
 		[Test]
-		public void Load_PackageSourceModifiedAfterLoadAndSaveNotCalled_RegisteredPackageSourcesInOptionsUnchanged()
+		public void HasNoRecentPackages_RecentPackageRepositoryHasOnePackage_ReturnsFalse()
 		{
-			CreateViewModel();
-			AddPackageSourceToOptions("Test", "http://sharpdevelop.com");
-			viewModel.Load();
+			CreateRecentRepository();
+			AddPackageToRecentRepository();
+			CreateViewModelUsingCreatedRecentRepository();
 			
-			PackageSourceViewModel packageSourceViewModel = viewModel.PackageSourceViewModels[0];
-			packageSourceViewModel.Name = "Changed-Name";
-			packageSourceViewModel.SourceUrl = "changed-url";
+			bool hasPackages = viewModel.HasNoRecentPackages;
 			
-			var expectedSources = new PackageSource[] {
-				new PackageSource("http://sharpdevelop.com", "Test")
-			};
-			
-			PackageSourceCollectionAssert.AreEqual(expectedSources, options.PackageSources);
+			Assert.IsFalse(hasPackages);
 		}
 		
 		[Test]
-		public void Save_PackageSourceModifiedAfterLoad_RegisteredPackageSourcesInOptionsUpdated()
+		public void HasNoCachedPackages_MachinePackageCacheHasNoPackages_ReturnsTrue()
 		{
-			CreateViewModel();
-			AddPackageSourceToOptions("Test", "http://sharpdevelop.com");
-			viewModel.Load();
+			CreateMachineCache();
+			CreateViewModelUsingCreatedMachineCache();
 			
-			PackageSourceViewModel packageSourceViewModel = viewModel.PackageSourceViewModels[0];
-			packageSourceViewModel.Name = "Test-updated";
-			packageSourceViewModel.SourceUrl = "url-updated";
+			bool hasPackages = viewModel.HasNoCachedPackages;
 			
-			viewModel.Save();
-			
-			var expectedSources = new PackageSource[] {
-				new PackageSource("url-updated", "Test-updated")
-			};
-			
-			PackageSourceCollectionAssert.AreEqual(expectedSources, options.PackageSources);
+			Assert.IsTrue(hasPackages);
 		}
 		
 		[Test]
-		public void Save_OnePackageSourceAddedAfterLoadAndBeforeSave_TwoRegisteredPackageSourcesInOptions()
+		public void HasNoCachedPackages_MachinePackageCacheHasOnePackage_ReturnsFalse()
 		{
-			CreateViewModel();
-			AddPackageSourceToOptions("Test", "http://sharpdevelop.com/1");
-			viewModel.Load();
+			CreateMachineCache();
+			AddPackageToMachineCache();
+			CreateViewModelUsingCreatedMachineCache();
 			
-			var newSource = new PackageSource("http://sharpdevelop.com/2", "Test");
+			bool hasPackages = viewModel.HasNoCachedPackages;
 			
-			var newPackageSourceViewModel = new PackageSourceViewModel(newSource);
-			viewModel.PackageSourceViewModels.Add(newPackageSourceViewModel);
-			
-			viewModel.Save();
-			
-			var expectedSource = new PackageSource("http://sharpdevelop.com/1", "Test");
-			
-			var expectedSources = new PackageSource[] {
-				expectedSource,
-				newSource
-			};
-			
-			PackageSourceCollectionAssert.AreEqual(expectedSources, options.PackageSources);
+			Assert.IsFalse(hasPackages);
 		}
 		
 		[Test]
-		public void AddPackageSourceCommand_CommandExecuted_AddsPackageSourceToPackageSourceViewModelsCollection()
+		public void ClearRecentPackagesCommandCanExecute_OneRecentPackage_CanExecuteReturnsTrue()
 		{
-			CreateViewModel();
-			viewModel.Load();
-			viewModel.NewPackageSourceName = "Test";
-			viewModel.NewPackageSourceUrl = "http://sharpdevelop.com";
+			CreateRecentRepository();
+			AddPackageToRecentRepository();
+			CreateViewModelUsingCreatedRecentRepository();
 			
-			viewModel.AddPackageSourceCommand.Execute(null);
+			bool canExecute = viewModel.ClearRecentPackagesCommand.CanExecute(null);
 			
-			var expectedSources = new PackageSource[] {
-				new PackageSource("http://sharpdevelop.com", "Test")
-			};
-			
-			PackageSourceCollectionAssert.AreEqual(expectedSources, viewModel.PackageSourceViewModels);
+			Assert.IsTrue(canExecute);
 		}
 		
 		[Test]
-		public void AddPackageSourceCommand_NewPackageSourceHasNameButNoUrl_CanExecuteReturnsFalse()
+		public void ClearRecentPackagesCommandCanExecute_NoRecentPackages_CanExecuteReturnsFalse()
 		{
-			CreateViewModel();
-			viewModel.Load();
-			viewModel.NewPackageSourceName = "Test";
-			viewModel.NewPackageSourceUrl = null;
+			CreateRecentRepository();
+			CreateViewModelUsingCreatedRecentRepository();
 			
-			bool result = viewModel.AddPackageSourceCommand.CanExecute(null);
+			bool canExecute = viewModel.ClearRecentPackagesCommand.CanExecute(null);
 			
-			Assert.IsFalse(result);
+			Assert.IsFalse(canExecute);
 		}
 		
 		[Test]
-		public void AddPackageSourceCommand_NewPackageSourceHasNameAndUrl_CanExecuteReturnsTrue()
+		public void ClearCachedPackagesCommandCanExecute_OneCachedPackage_CanExecuteReturnsTrue()
 		{
-			CreateViewModel();
-			viewModel.Load();
-			viewModel.NewPackageSourceName = "Test";
-			viewModel.NewPackageSourceUrl = "http://codeplex.com";
+			CreateMachineCache();
+			AddPackageToMachineCache();
+			CreateViewModelUsingCreatedMachineCache();
 			
-			bool result = viewModel.AddPackageSourceCommand.CanExecute(null);
+			bool canExecute = viewModel.ClearCachedPackagesCommand.CanExecute(null);
 			
-			Assert.IsTrue(result);
+			Assert.IsTrue(canExecute);
 		}
 		
 		[Test]
-		public void AddPackageSourceCommand_NewPackageSourceHasUrlButNoName_CanExecuteReturnsFalse()
+		public void ClearCachedPackagesCommandCanExecute_NoCachedPackages_CanExecuteReturnsFalse()
 		{
-			CreateViewModel();
-			viewModel.Load();
-			viewModel.NewPackageSourceName = null;
-			viewModel.NewPackageSourceUrl = "http://codeplex.com";
+			CreateMachineCache();
+			CreateViewModelUsingCreatedMachineCache();
 			
-			bool result = viewModel.AddPackageSourceCommand.CanExecute(null);
+			bool canExecute = viewModel.ClearCachedPackagesCommand.CanExecute(null);
 			
-			Assert.IsFalse(result);
+			Assert.IsFalse(canExecute);
 		}
 		
 		[Test]
-		public void AddPackageSource_NoExistingPackageSources_SelectsPackageSourceViewModel()
+		public void ClearCachedPackagesCommandExecute_OneCachedPackage_ClearsPackagesFromCache()
 		{
-			CreateViewModel();
-			viewModel.Load();
-			viewModel.NewPackageSourceUrl = "http://url";
-			viewModel.NewPackageSourceName = "abc";
+			CreateMachineCache();
+			AddPackageToMachineCache();
+			CreateViewModelUsingCreatedMachineCache();
 			
-			viewModel.AddPackageSource();
+			viewModel.ClearCachedPackagesCommand.Execute(null);
 			
-			PackageSourceViewModel expectedViewModel = viewModel.PackageSourceViewModels[0];
-			
-			Assert.AreEqual(expectedViewModel, viewModel.SelectedPackageSourceViewModel);
+			Assert.IsTrue(fakeMachineCache.IsClearCalled);
 		}
 		
 		[Test]
-		public void NewPackageSourceName_Changed_NewPackageSourceNameUpdated()
+		public void ClearRecentPackagesCommandExecute_OneRecentPackage_ClearsPackages()
 		{
-			CreateViewModel();
-			viewModel.Load();
-			viewModel.NewPackageSourceName = "Test";
+			CreateMachineCache();
+			AddPackageToRecentRepository();
+			CreateViewModelUsingCreatedRecentRepository();
 			
-			Assert.AreEqual("Test", viewModel.NewPackageSourceName);
+			viewModel.ClearRecentPackagesCommand.Execute(null);
+			
+			Assert.IsTrue(fakeRecentRepository.IsClearCalled);
 		}
 		
 		[Test]
-		public void NewPackageSourceUrl_Changed_NewPackageSourceUrlUpdated()
+		public void ClearRecentPackages_OneRecentPackage_HasNoRecentPackagesIsTrue()
 		{
-			CreateViewModel();
-			viewModel.Load();
-			viewModel.NewPackageSourceUrl = "Test";
+			CreateRecentRepository();
+			AddPackageToRecentRepository();
+			CreateViewModelUsingCreatedRecentRepository();
 			
-			Assert.AreEqual("Test", viewModel.NewPackageSourceUrl);
+			RecordPropertyChanges();
+			viewModel.ClearRecentPackages();
+			
+			bool hasPackages = viewModel.HasNoRecentPackages;
+			
+			Assert.IsTrue(hasPackages);
 		}
 		
 		[Test]
-		public void RemovePackageSourceCommand_TwoPackagesSourcesInListAndOnePackageSourceSelected_PackageSourceIsRemoved()
+		public void ClearCachedPackages_OneCachedPackage_HasNoCachedPackagesReturnsTrue()
 		{
-			CreateViewModelWithTwoPackageSources();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels[0];
+			CreateMachineCache();
+			AddPackageToMachineCache();
+			CreateViewModelUsingCreatedMachineCache();
 			
-			viewModel.RemovePackageSourceCommand.Execute(null);
+			RecordPropertyChanges();
+			viewModel.ClearCachedPackages();
 			
-			var expectedSources = new PackageSource[] {
-				options.PackageSources[1]
-			};
+			bool hasPackages = viewModel.HasNoCachedPackages;
 			
-			PackageSourceCollectionAssert.AreEqual(expectedSources, viewModel.PackageSourceViewModels);
+			Assert.IsTrue(hasPackages);
 		}
 		
 		[Test]
-		public void RemovePackageSourceCommand_NoPackageSourceSelected_CanExecuteReturnsFalse()
+		public void ClearRecentPackages_OneRecentPackage_HasNoRecentPackagesPropertyChangedEventFired()
 		{
-			CreateViewModel();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = null;
+			CreateRecentRepository();
+			AddPackageToRecentRepository();
+			CreateViewModelUsingCreatedMachineCache();
 			
-			bool result = viewModel.RemovePackageSourceCommand.CanExecute(null);
+			RecordPropertyChanges();
+			viewModel.ClearRecentPackages();
 			
-			Assert.IsFalse(result);
+			bool fired = propertiesChanged.Contains("HasNoRecentPackages");
+			
+			Assert.IsTrue(fired);
 		}
 		
 		[Test]
-		public void RemovePackageSourceCommand_PackageSourceSelected_CanExecuteReturnsTrue()
+		public void ClearCachedPackages_OneCachedPackage_HasNoCachedPackagesPropertyChangedEventFired()
 		{
-			CreateViewModelWithOnePackageSource();
+			CreateMachineCache();
+			AddPackageToMachineCache();
+			CreateViewModelUsingCreatedMachineCache();
 			
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels[0];
+			RecordPropertyChanges();
+			viewModel.ClearCachedPackages();
 			
-			bool result = viewModel.RemovePackageSourceCommand.CanExecute(null);
+			bool fired = propertiesChanged.Contains("HasNoCachedPackages");
 			
-			Assert.IsTrue(result);
+			Assert.IsTrue(fired);
 		}
 		
 		[Test]
-		public void SelectedPackageSourceViewModel_Changed_PropertyChangedEventFiredForCanAddPackageSource()
+		public void BrowseCachedPackagesCommandCanExecute_OneCachedPackage_ReturnsTrue()
 		{
-			CreateViewModelWithOnePackageSource();
-			viewModel.Load();
+			CreateMachineCache();
+			AddPackageToMachineCache();
+			CreateViewModelUsingCreatedMachineCache();
 			
-			string propertyName = null;
-			viewModel.PropertyChanged += (sender, e) => propertyName = e.PropertyName;
+			bool canExecute = viewModel.BrowseCachedPackagesCommand.CanExecute(null);
 			
-			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels[0];
-			
-			Assert.AreEqual("CanAddPackageSource", propertyName);
+			Assert.IsTrue(canExecute);
 		}
 		
 		[Test]
-		public void MovePackageSourceUpCommand_TwoPackagesSourcesInListAndLastPackageSourceSelected_PackageSourceIsMovedUp()
+		public void BrowseCachedPackagesCommandCanExecute_NoCachedPackages_ReturnsFalse()
 		{
-			CreateViewModelWithTwoPackageSources();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels[1];
+			CreateMachineCache();
+ 			CreateViewModelUsingCreatedMachineCache();
 			
-			viewModel.MovePackageSourceUpCommand.Execute(null);
+			bool canExecute = viewModel.BrowseCachedPackagesCommand.CanExecute(null);
 			
-			var expectedSources = new PackageSource[] {
-				options.PackageSources[1],
-				options.PackageSources[0]
-			};
-			
-			PackageSourceCollectionAssert.AreEqual(expectedSources, viewModel.PackageSourceViewModels);
+			Assert.IsFalse(canExecute);
 		}
 		
 		[Test]
-		public void MovePackageSourceUpCommand_FirstPackageSourceSelected_CanExecuteReturnsFalse()
+		public void BrowseCachedPackagesCommandExecute_OneCachedPackage_StartsProcessToOpenMachineCacheFolder()
 		{
-			CreateViewModelWithTwoPackageSources();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels[0];
+			CreateMachineCache();
+			CreateViewModelUsingCreatedMachineCache();
 			
-			bool result = viewModel.MovePackageSourceUpCommand.CanExecute(null);
+			string expectedFileName = @"d:\projects\nugetpackages";
+			fakeMachineCache.Source = expectedFileName;
 			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void MovePackageSourceUpCommand_LastPackageSourceSelected_CanExecuteReturnsTrue()
-		{
-			CreateViewModelWithTwoPackageSources();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels[1];
+			viewModel.BrowseCachedPackagesCommand.Execute(null);
 			
-			bool result = viewModel.MovePackageSourceUpCommand.CanExecute(null);
+			string fileName = fakeProcess.FileNamePassedToStart;
 			
-			Assert.IsTrue(result);
-		}
-		
-		[Test]
-		public void CanMovePackageSourceUp_NoPackages_ReturnsFalse()
-		{
-			CreateViewModel();
-			viewModel.Load();
-			
-			bool result = viewModel.CanMovePackageSourceUp;
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void MovePackageSourceDownCommand_TwoPackagesSourcesAndFirstPackageSourceSelected_PackageSourceIsMovedDown()
-		{
-			CreateViewModelWithTwoPackageSources();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels[0];
-			
-			viewModel.MovePackageSourceDownCommand.Execute(null);
-			
-			var expectedSources = new PackageSource[] {
-				options.PackageSources[1],
-				options.PackageSources[0]
-			};
-			
-			PackageSourceCollectionAssert.AreEqual(expectedSources, viewModel.PackageSourceViewModels);
-		}
-		
-		[Test]
-		public void MovePackageSourceDownCommand_TwoPackageSourcesAndLastPackageSourceSelected_CanExecuteReturnsFalse()
-		{
-			CreateViewModelWithTwoPackageSources();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels[1];
-			
-			bool result = viewModel.MovePackageSourceDownCommand.CanExecute(null);
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void MovePackageSourceDownCommand_TwoPackageSourcesAndFirstPackageSourceSelected_CanExecuteReturnsTrue()
-		{
-			CreateViewModelWithTwoPackageSources();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels[0];
-			
-			bool result = viewModel.MovePackageSourceDownCommand.CanExecute(null);
-			
-			Assert.IsTrue(result);
-		}
-		
-		[Test]
-		public void CanMovePackageSourceDown_NoPackageSources_ReturnFalse()
-		{
-			CreateViewModel();
-			viewModel.Load();
-			
-			bool result = viewModel.CanMovePackageSourceDown;
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void CanMovePackageSourceDown_OnePackageSourceAndPackageSourceIsSelected_ReturnsFalse()
-		{
-			CreateViewModelWithOnePackageSource();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels[0];
-			
-			bool result = viewModel.CanMovePackageSourceDown;
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void CanMovePackageSourceDown_OnePackageSourceAndNothingIsSelected_ReturnsFalse()
-		{
-			CreateViewModelWithOnePackageSource();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = null;
-			
-			bool result = viewModel.CanMovePackageSourceDown;
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void CanMovePackageSourceUp_OnePackageSourceAndNothingIsSelected_ReturnsFalse()
-		{
-			CreateViewModelWithOnePackageSource();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = null;
-			
-			bool result = viewModel.CanMovePackageSourceUp;
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void SelectedPackageSourceViewModel_PropertyChanged_FiresPropertyChangedEvent()
-		{
-			CreateViewModelWithOnePackageSource();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels[0];
-			
-			List<string> propertyNames = new List<string>();
-			viewModel.PropertyChanged += (sender, e) => propertyNames.Add(e.PropertyName);
-			viewModel.SelectedPackageSourceViewModel = null;
-			
-			Assert.Contains("SelectedPackageSourceViewModel", propertyNames);
-		}
-		
-		[Test]
-		public void AddPackageSource_OneExistingPackageSources_FiresPropertyChangedEventForSelectedPackageSource()
-		{
-			CreateViewModelWithOnePackageSource();
-			viewModel.Load();
-			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels[0];
-			viewModel.NewPackageSourceUrl = "http://url";
-			viewModel.NewPackageSourceName = "Test";
-			
-			List<string> propertyNames = new List<string>();
-			viewModel.PropertyChanged += (sender, e) => propertyNames.Add(e.PropertyName);
-			viewModel.AddPackageSource();
-			
-			Assert.Contains("SelectedPackageSourceViewModel", propertyNames);
+			Assert.AreEqual(expectedFileName, fileName);
 		}
 	}
 }

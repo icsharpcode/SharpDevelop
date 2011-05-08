@@ -105,7 +105,9 @@
     <Compile Include="Src\Helpers\ExceptionThrowingPackageOperationResolver.cs" />
     <Compile Include="Src\Helpers\FakeCompilerMessageView.cs" />
     <Compile Include="Src\Helpers\FakeFileService.cs" />
+    <Compile Include="Src\Helpers\FakeFolderBrowser.cs" />
     <Compile Include="Src\Helpers\FakeLicenseAcceptanceService.cs" />
+    <Compile Include="Src\Helpers\FakeMachinePackageCache.cs" />
     <Compile Include="Src\Helpers\FakeMessageCategoryView.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementAddInPath.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementConsoleHost.cs" />
@@ -118,6 +120,8 @@
     <Compile Include="Src\Helpers\FakePowerShellHost.cs" />
     <Compile Include="Src\Helpers\FakePowerShellHostFactory.cs" />
     <Compile Include="Src\Helpers\FakeScriptingConsoleWithLinesToRead.cs" />
+    <Compile Include="Src\Helpers\FakeProcess.cs" />
+    <Compile Include="Src\Helpers\FakeRecentPackageRepository.cs" />
     <Compile Include="Src\Helpers\FakeTask.cs" />
     <Compile Include="Src\Helpers\FakeTaskFactory.cs" />
     <Compile Include="Src\Helpers\FakeThread.cs" />
@@ -132,6 +136,7 @@
     <Compile Include="Src\Helpers\ReferenceProjectItemAssert.cs" />
     <Compile Include="Src\Helpers\TestablePackageManagementConsoleHost.cs" />
     <Compile Include="Src\Helpers\TestablePackageManagementConsoleViewModel.cs" />
+    <Compile Include="Src\Helpers\TestablePackageManagementOptions.cs" />
     <Compile Include="Src\Helpers\TestablePackagesViewModel.cs" />
     <Compile Include="Src\Helpers\TestablePackageViewModel.cs" />
     <Compile Include="Src\Helpers\TestableProcessPackageAction.cs" />
@@ -162,6 +167,7 @@
     <Compile Include="Src\OpenHyperlinkCommandTests.cs" />
     <Compile Include="Src\PackageManagementOptionsTests.cs" />
     <Compile Include="Src\PackageManagementOptionsViewModelTests.cs" />
+    <Compile Include="Src\RegisteredPackageSourcesViewModelTests.cs" />
     <Compile Include="Src\PackageManagementOutputMessagesViewTests.cs" />
     <Compile Include="Src\PackageManagementSolutionTests.cs" />
     <Compile Include="Src\PackageRepositoryCacheTests.cs" />
@@ -182,7 +188,6 @@
     <Compile Include="Src\RecentPackageInfoTests.cs" />
     <Compile Include="Src\RecentPackageRepositoryTests.cs" />
     <Compile Include="Src\RecentPackagesViewModelTests.cs" />
-    <Compile Include="Src\RegisteredPackageSourcesTests.cs" />
     <Compile Include="Src\Scripting\PackageManagementConsoleHostTests.cs" />
     <Compile Include="Src\Scripting\PackageManagementConsoleViewModelTests.cs" />
     <Compile Include="Src\Scripting\PowerShellHostUserInterfaceTests.cs" />

@@ -284,7 +284,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					}
 					// Special case for Attributes
 					if (insertedText.EndsWith("Attribute") && IsInAttributeContext(editor, context.StartOffset)) {
-						insertedText = insertedText.RemoveEnd("Attribute");
+						insertedText = insertedText.RemoveFromEnd("Attribute");
 					}
 				} else if (this.Entity is IMethod) {
 					addUsing = !IsKnownName(nameResult);

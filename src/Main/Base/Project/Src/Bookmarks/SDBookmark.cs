@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// A bookmark that is persistant across SharpDevelop sessions.
 	/// </summary>
 	[TypeConverter(typeof(BookmarkConverter))]
-	public class SDBookmark : BookmarkBase
+	public abstract class SDBookmark : BookmarkBase
 	{
 		public SDBookmark(FileName fileName, Location location) : base(location)
 		{
@@ -89,6 +89,16 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		protected override void RemoveMark()
 		{
 			BookmarkManager.RemoveMark(this);
+		}
+	}
+	
+	/// <summary>
+	/// Bookmark class.
+	/// </summary>
+	public sealed class Bookmark : SDBookmark
+	{ 
+		public Bookmark(FileName fileName, Location location) : base(fileName, location)
+		{
 		}
 	}
 }

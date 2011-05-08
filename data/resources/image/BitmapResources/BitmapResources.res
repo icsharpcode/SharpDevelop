@@ -46,6 +46,10 @@ ParallelStacks.ZoomControl  		     = PadIcons\ZoomControl.png
 OutputPad.Toolbar.ClearOutputWindow = OutputPadIcons\ClearOutputWindow.png
 OutputPad.Toolbar.ToggleWordWrap    = OutputPadIcons\ToggleWordWrap.png
 
+#Memory pad
+MemoryPad.Icon  		    		 			= PadIcons\memory.png
+MemoryPad.NextMemoryIcon  		     			= PadIcons\nextmemory.png
+MemoryPad.PreviousMemoryIcon	     			= PadIcons\previousmemory.png
 
 Icons.16x16.OpenFolderBitmap                      = ProjectBrowserIcons\Folder.Open.png
 Icons.16x16.ClosedFolderBitmap                    = ProjectBrowserIcons\Folder.Closed.png
@@ -233,6 +237,7 @@ Icons.16x16.DeleteHistory                         = BitmapResources-data\Icons.1
 Icons.48x48.CurrentFrame 						  = BitmapResources-data\Icons.48x48.CurrentFrame.png
 Icons.16x16.Refresh                         	  = BitmapResources-data\Icons.16x16.Refresh.png
 Icons.Magnifier									  = BitmapResources-data\magnifier.png
+ILSpy = BitmapResources-data\ILSpy.png
 
 #pad icons
 PadIcons.ErrorList                                = PadIcons\ErrorList.png

@@ -118,7 +118,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					AddChildren(stack);
 				}
 				
-				surface.SetGraph(graph);
+				if (graph.VertexCount > 0)
+					surface.SetGraph(graph);
 			}
 		}
 		

@@ -31,7 +31,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public static List<CustomizedHighlightingColor> LoadColors()
 		{
-			return PropertyService.Get("CustomizedHighlightingRules", new List<CustomizedHighlightingColor>());
+			var list = PropertyService.Get("CustomizedHighlightingRules", new List<CustomizedHighlightingColor>());
+			// Always make a copy of the list so that the original list cannot be modified without using SaveColors().
+			return new List<CustomizedHighlightingColor>(list);
 		}
 		
 		/// <summary>

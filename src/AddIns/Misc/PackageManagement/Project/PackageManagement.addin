@@ -52,12 +52,21 @@
 	</Path>
 
 	<!-- Tools options -->
-	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog">
 		<OptionPanel
-			id="PackageManagementOptions"
+			id="PackageManagement"
 			label="Package Management"
-			class="ICSharpCode.PackageManagement.PackageManagementOptionsView"
-		/>
+			insertafter="Debugging"
+			insertbefore="TextEditorOptions">
+			<OptionPanel
+				id="PackageManagementOptions"
+				label="General"
+				class="ICSharpCode.PackageManagement.PackageManagementOptionsView"/>
+			<OptionPanel
+				id="PackageSources"
+				label="Package Sources"
+				class="ICSharpCode.PackageManagement.RegisteredPackageSourcesView"/>
+		</OptionPanel>
 	</Path>
 
 	<Path name="/SharpDevelop/Workbench/Pads">

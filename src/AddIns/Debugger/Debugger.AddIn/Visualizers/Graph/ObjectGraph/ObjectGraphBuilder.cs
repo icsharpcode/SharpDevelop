@@ -4,13 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
-using Debugger.AddIn.Visualizers.Common;
+using Debugger.AddIn.TreeModel;
+using Debugger.AddIn.Visualizers.Graph.Layout;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers.Graph
@@ -58,7 +59,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Binding flags for getting member expressions.
 		/// </summary>
-		private readonly BindingFlags memberBindingFlags =
+		private readonly BindingFlags publicInstanceMemberFlags =
 			BindingFlags.Public | BindingFlags.Instance;
 		
 		private readonly BindingFlags nonPublicInstanceMemberFlags =
@@ -143,57 +144,57 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="thisNode"></param>
 		private void loadContent(ObjectGraphNode thisNode)
 		{
-			thisNode.Content = new ThisNode();
-			ThisNode contentRoot = thisNode.Content;
+			var contentRoot = new ThisNode();
+			thisNode.Content = contentRoot;
 			
-			DebugType iListType;
-			DebugType listItemType;
-			if (thisNode.PermanentReference.Type.ResolveIListImplementation(out iListType, out listItemType))
+			DebugType collectionType;
+			DebugType itemType;
+			if (thisNode.PermanentReference.Type.ResolveIListImplementation(out collectionType, out itemType))
 			{
-				// it is a collection
-				loadNodeCollectionContent(contentRoot, thisNode.Expression, iListType);
-			}
-			else
-			{
+				//AddRawViewNode(contentRoot, thisNode);
+				// it is an IList
+				LoadNodeCollectionContent(contentRoot, thisNode.Expression, collectionType);
+			} else if (thisNode.PermanentReference.Type.ResolveIEnumerableImplementation(out collectionType, out itemType)) {
+				//AddRawViewNode(contentRoot, thisNode);
+				// it is an IEnumerable
+				DebugType debugListType;
+				var debugListExpression = DebuggerHelpers.CreateDebugListExpression(thisNode.Expression, itemType, out debugListType);
+				LoadNodeCollectionContent(contentRoot, debugListExpression, debugListType);
+			} else {
 				// it is an object
-				loadNodeObjectContent(contentRoot, thisNode.Expression, thisNode.PermanentReference.Type);
+				LoadNodeObjectContent(contentRoot, thisNode.Expression, thisNode.PermanentReference.Type);
 			}
 		}
-		
-		private void loadNodeCollectionContent(AbstractNode node, Expression thisObject, DebugType iListType)
+
+		void AddRawViewNode(AbstractNode contentRoot, ObjectGraphNode thisNode)
 		{
-			int listCount = getIListCount(thisObject, iListType);
+			var rawViewNode = new RawViewNode();
+			contentRoot.AddChild(rawViewNode);
+			LoadNodeObjectContent(rawViewNode, thisNode.Expression, thisNode.PermanentReference.Type);
+		}
+		
+		void LoadNodeCollectionContent(AbstractNode node, Expression thisObject, DebugType iListType)
+		{
+			thisObject = thisObject.CastToIList();
+			int listCount = thisObject.GetIListCount();
+			PropertyInfo indexerProp = iListType.GetProperty("Item");
 			
-			for (int i = 0; i < listCount; i++)
-			{
+			for (int i = 0; i < listCount; i++)	{
 				Expression itemExpr = thisObject.AppendIndexer(i);
-				
 				PropertyNode itemNode = new PropertyNode(
-					new ObjectGraphProperty {	Name = "[" + i + "]", Expression = itemExpr, Value = "", IsAtomic = true, TargetNode = null });
+					new ObjectGraphProperty { Name = "[" + i + "]", MemberInfo = indexerProp, Expression = itemExpr, Value = "", IsAtomic = true, TargetNode = null });
 				node.AddChild(itemNode);
 			}
 		}
 		
-		private int getIListCount(Expression targetObject, DebugType iListType)
-		{
-			PropertyInfo countProperty = iListType.GetGenericInterface("System.Collections.Generic.ICollection").GetProperty("Count");
-			try {
-				// Do not get string representation since it can be printed in hex later
-				Value countValue = targetObject.Evaluate(WindowsDebugger.CurrentProcess).GetPropertyValue(countProperty);
-				return (int)countValue.PrimitiveValue;
-			} catch (GetValueException) {
-				return -1;
-			}
-		}
-		
-		private void loadNodeObjectContent(AbstractNode node, Expression expression, DebugType type)
+		void LoadNodeObjectContent(AbstractNode node, Expression expression, DebugType type)
 		{
 			// base
 			if (type.BaseType != null && type.BaseType.FullName != "System.Object")
 			{
 				var baseClassNode = new BaseClassNode(type.BaseType.FullName, type.BaseType.Name);
 				node.AddChild(baseClassNode);
-				loadNodeObjectContent(baseClassNode, expression, (DebugType)type.BaseType);
+				LoadNodeObjectContent(baseClassNode, expression, (DebugType)type.BaseType);
 			}
 			
 			// non-public members
@@ -209,15 +210,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 			
 			// public members
-			foreach (var property in getPublicProperties(expression, type))
+			foreach (var property in getProperties(expression, type, this.publicInstanceMemberFlags))
 			{
 				node.AddChild(new PropertyNode(property));
 			}
-		}
-		
-		private List<ObjectGraphProperty> getPublicProperties(Expression expression, DebugType shownType)
-		{
-			return getProperties(expression, shownType, this.memberBindingFlags);
 		}
 		
 		private List<ObjectGraphProperty> getProperties(Expression expression, DebugType shownType, BindingFlags flags)
@@ -226,18 +222,23 @@ namespace Debugger.AddIn.Visualizers.Graph
 			
 			foreach (MemberInfo memberProp in shownType.GetFieldsAndNonIndexedProperties(flags))
 			{
-				// skip backing fields
-				if (memberProp.Name.Contains("<"))
+				if (memberProp.Name.Contains("<")) {
+					// skip backing fields
 					continue;
+				}
+				if (memberProp.DeclaringType != shownType) {
+					// skip properties declared in the base type
+					continue;
+				}
 
 				// ObjectGraphProperty needs an expression
-				// to use expanded / nonexpanded (and to evaluate?)
+				// to know whether it is expanded, and to evaluate
 				Expression propExpression = expression.AppendMemberReference((IDebugMemberInfo)memberProp);
 				// Value, IsAtomic are lazy evaluated
 				propertyList.Add(new ObjectGraphProperty
 				                 { Name = memberProp.Name,
 				                 	Expression = propExpression, Value = "",
-				                 	/*PropInfo = memberProp,*/ IsAtomic = true, TargetNode = null });
+				                 	MemberInfo = memberProp, IsAtomic = true, TargetNode = null });
 				
 			}
 			return propertyList.Sorted(ObjectPropertyComparer.Instance);
@@ -250,17 +251,16 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="expandedNodes"></param>
 		private void loadNeighborsRecursive(ObjectGraphNode thisNode, ExpandedExpressions expandedNodes)
 		{
-			//foreach(ObjectGraphProperty complexProperty in thisNode.ComplexProperties)
-			foreach(ObjectGraphProperty complexProperty in thisNode.Properties)
+			// evaluate properties first in case property getters are changing some fields - the fields will then have correct values
+			foreach(ObjectGraphProperty complexProperty in thisNode.PropertiesFirstThenFields)
 			{
 				ObjectGraphNode targetNode = null;
-				// we are only evaluating expanded nodes here
-				// (we have to do this to know the "shape" of the graph)
-				// property laziness makes sense, as we are not evaluating atomic and non-expanded properties out of user's view
-				if (/*!complexProperty.IsNull && we dont know yet if it's null */expandedNodes.IsExpanded(complexProperty.Expression))
+				// We are only evaluating expanded nodes here.
+				// We have to do this to know the "shape" of the graph.
+				// We do not evaluate atomic and non-expanded properties, those will be lazy evaluated when drawn.
+				if (expandedNodes.IsExpanded(complexProperty.Expression))
 				{
 					// if expanded, evaluate this property
-					// complexProperty.Evaluate(); // consider
 					Value memberValue = complexProperty.Expression.Evaluate(this.debuggerService.DebuggedProcess);
 					if (memberValue.IsNull)
 					{
@@ -297,7 +297,12 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <returns>New empty object node representing the value.</returns>
 		private ObjectGraphNode createNewNode(Value permanentReference, Expression expression)
 		{
+			if (permanentReference == null)	throw new ArgumentNullException("permanentReference");
+			
 			ObjectGraphNode newNode = new ObjectGraphNode();
+			if (permanentReference.Type != null) {
+				newNode.TypeName = permanentReference.Type.FormatNameCSharp();
+			}
 			newNode.HashCode = permanentReference.InvokeDefaultGetHashCode();
 			
 			resultGraph.AddNode(newNode);
@@ -360,7 +365,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 			DebugType typeOfValue = expr.Evaluate(debuggerService.DebuggedProcess).Type;
 			if (typeOfValue.IsArray)
 			{
-				// arrays will be supported of course in the final version
 				throw new DebuggerVisualizerException("Arrays are not supported yet");
 			}
 		}

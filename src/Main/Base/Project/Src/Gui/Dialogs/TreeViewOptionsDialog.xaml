@@ -5,6 +5,7 @@
         Width="552"
         MinHeight="260"
         MinWidth="480"
+        WindowStartupLocation="CenterOwner"
         Style="{x:Static core:GlobalStyles.DialogWindowStyle}">
 	<Grid>
 		<Grid.RowDefinitions>

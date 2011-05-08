@@ -362,6 +362,10 @@ namespace Debugger
 			get { return pauseSession == null; }
 		}
 		
+		public uint Id {
+			get { return corProcess.GetID(); }
+		}
+		
 		public bool IsPaused {
 			get { return !IsRunning; }
 		}
@@ -529,6 +533,19 @@ namespace Debugger
 			
 			// Do not mark the process as exited
 			// This is done once ExitProcess callback is received
+		}
+		
+		/// <summary>
+		/// Clears the internal Expression cache used too speed up Expression evaluation.
+		/// Use this if your code evaluates expressions in a way which would cause
+		/// the cache to grow too large. The cache holds PermanentReferences so it
+		/// shouldn't grow larger than a few hundred items.
+		/// </summary>
+		public void ClearExpressionCache()
+		{
+			if (this.ExpressionsCache != null ){
+				this.ExpressionsCache.Clear();
+			}
 		}
 		
 		void SelectSomeThread()

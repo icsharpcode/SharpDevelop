@@ -3,30 +3,57 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public static class PackageSourceConverter
 	{
-		public static IEnumerable<PackageSource> ConvertFromRegisteredPackageSources(IEnumerable<RegisteredPackageSource> registeredPackageSources)
+		public static IEnumerable<PackageSource> ConvertFromKeyValuePairs(IEnumerable<KeyValuePair<string, string>> packageSources)
 		{
-			foreach (RegisteredPackageSource registeredPackageSource in registeredPackageSources) {
-				yield return registeredPackageSource.ToPackageSource();
+			if (HasAny(packageSources)) {
+				foreach (KeyValuePair<string, string> packageSource in packageSources) {
+					yield return CreatePackageSourceFromKeyValuePair(packageSource);
+				}
 			}
 		}
 		
-		public static IEnumerable<RegisteredPackageSource> ConvertToRegisteredPackageSources(IEnumerable<PackageSource> packageSources)
+		static bool HasAny(IEnumerable<KeyValuePair<string, string>> packageSources)
 		{
-			foreach (PackageSource packageSource in packageSources) {
-				yield return new RegisteredPackageSource(packageSource);
+			if (packageSources != null) {
+				return packageSources.Any();
 			}
+			return false;
 		}
 		
-		public static IList<RegisteredPackageSource> ConvertToRegisteredPackageSourcesList(IEnumerable<PackageSource> packageSources)
+		static PackageSource CreatePackageSourceFromKeyValuePair(KeyValuePair<string, string> savedPackageSource)
 		{
-			IEnumerable<RegisteredPackageSource> convertedPackageSources = ConvertToRegisteredPackageSources(packageSources);
-			return new List<RegisteredPackageSource>(convertedPackageSources);
+			string source = savedPackageSource.Value;
+			string name = savedPackageSource.Key;
+			return new PackageSource(source, name);
+		}
+		
+		public static PackageSource ConvertFromFirstKeyValuePair(IEnumerable<KeyValuePair<string, string>> packageSources)
+		{
+			if (HasAny(packageSources)) {
+				return CreatePackageSourceFromKeyValuePair(packageSources.First());
+			}
+			return null;
+		}
+		
+		public static IList<KeyValuePair<string, string>> ConvertToKeyValuePairList(IEnumerable<PackageSource> packageSources)
+		{
+			var convertedPackageSources = new List<KeyValuePair<string, string>>();
+			foreach (PackageSource source in packageSources) {
+				convertedPackageSources.Add(ConvertToKeyValuePair(source));
+			}
+			return convertedPackageSources;
+		}
+		
+		public static KeyValuePair<string, string> ConvertToKeyValuePair(PackageSource source)
+		{
+			return new KeyValuePair<string, string>(source.Name, source.Source);
 		}
 	}
 }

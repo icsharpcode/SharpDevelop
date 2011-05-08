@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Debugger.AddIn.Visualizers.Common
+namespace Debugger.AddIn.Visualizers
 {
 	/// <summary>
 	/// Can provide individial items for a lazy collection, as well as total count of items.
