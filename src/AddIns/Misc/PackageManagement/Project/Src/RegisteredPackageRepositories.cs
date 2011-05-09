@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -54,7 +55,9 @@ namespace ICSharpCode.PackageManagement
 			get {
 				activePackageSource = options.ActivePackageSource;
 				if (activePackageSource == null) {
-					activePackageSource = options.PackageSources[0];
+					if (options.PackageSources.Any()) {
+						activePackageSource = options.PackageSources[0];
+					}
 				}
 				return activePackageSource;
 			}

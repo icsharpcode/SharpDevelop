@@ -261,6 +261,18 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedRepository, repository);
 		}
+		
+		[Test]
+		public void ActivePackageSource_AllPackageSourcesCleared_ReturnsNullAndDoesNotThrowArgumentOutOfRangeException()
+		{
+			CreateRegisteredPackageRepositories();
+			packageSourcesHelper.Options.ActivePackageSource = null;
+			registeredRepositories.PackageSources.Clear();
+			
+			var activePackageSource = registeredRepositories.ActivePackageSource;
+			
+			Assert.IsNull(activePackageSource);
+		}
 	}
 }
 
