@@ -20,6 +20,7 @@ namespace PackageManagement.Tests.Scripting
 		FakePowerShellHost powerShellHost;
 		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementProjectService fakeProjectService;
+		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
 		
 		void CreateHost()
 		{
@@ -28,6 +29,7 @@ namespace PackageManagement.Tests.Scripting
 			scriptingConsole = host.FakeScriptingConsole;
 			powerShellHost = host.FakePowerShellHostFactory.FakePowerShellHost;
 			fakeProjectService = host.FakeProjectService;
+			fakeRegisteredPackageRepositories = host.FakeRegisteredPackageRepositories;
 		}
 		
 		void RunHost()
@@ -389,6 +391,30 @@ namespace PackageManagement.Tests.Scripting
 			var expectedProjects = fakeProjectService.FakeOpenProjects;
 			
 			CollectionAssert.AreEqual(expectedProjects, projects);
+		}
+		
+		[Test]
+		public void ActivePackageSource_ConsoleHostCreated_ReturnsRegisteredPackageSourcesActivePackageSource()
+		{
+			CreateHost();
+			var expectedPackageSource = new PackageSource("Test");
+			fakeRegisteredPackageRepositories.ActivePackageSource = expectedPackageSource;
+			
+			var actualPackageSource = host.ActivePackageSource;
+			
+			Assert.AreEqual(expectedPackageSource, actualPackageSource);
+		}
+		
+		[Test]
+		public void ActivePackageSource_ActivePackageSourcechanged_RegisteredPackageSourcesActivePackageSourceIsUpdated()
+		{
+			CreateHost();
+			var expectedPackageSource = new PackageSource("Test");
+			host.ActivePackageSource = expectedPackageSource;
+			
+			var actualPackageSource = fakeRegisteredPackageRepositories.ActivePackageSource;
+			
+			Assert.AreEqual(expectedPackageSource, actualPackageSource);
 		}
 	}
 }

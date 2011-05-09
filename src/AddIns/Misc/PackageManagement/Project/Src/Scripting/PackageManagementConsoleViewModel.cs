@@ -80,16 +80,42 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void UpdatePackageSourceViewModels()
 		{
 			packageSources.Clear();
+			AddRegisteredPackageSourceViewModels();
+			AddAggregatePackageSourceViewModelIfMoreThanOnePackageSourceViewModelAdded();
+			SelectActivePackageSource();
+		}
+
+		void AddRegisteredPackageSourceViewModels()
+		{
 			foreach (PackageSource packageSource in registeredPackageSources) {
 				AddPackageSourceViewModel(packageSource);
 			}
-			SelectFirstActivePackageSource();
 		}
 		
 		void AddPackageSourceViewModel(PackageSource packageSource)
 		{
 			var viewModel = new PackageSourceViewModel(packageSource);
 			packageSources.Add(viewModel);
+		}
+		
+		void AddAggregatePackageSourceViewModelIfMoreThanOnePackageSourceViewModelAdded()
+		{
+			if (packageSources.Count > 1) {
+				AddPackageSourceViewModel(RegisteredPackageSourceSettings.AggregatePackageSource);
+			}
+		}
+		
+		void SelectActivePackageSource()
+		{
+			PackageSource activePackageSource = consoleHost.ActivePackageSource;
+			foreach (PackageSourceViewModel packageSourceViewModel in packageSources) {
+				if (packageSourceViewModel.GetPackageSource().Equals(activePackageSource)) {
+					ActivePackageSource = packageSourceViewModel;
+					return;
+				}
+			}
+			
+			SelectFirstActivePackageSource();
 		}
 		
 		void SelectFirstActivePackageSource()

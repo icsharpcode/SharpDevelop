@@ -39,11 +39,41 @@ namespace PackageManagement.Tests.Scripting
 			viewModel = new TestablePackageManagementConsoleViewModel(consoleHost);
 		}
 		
+		void CreateViewModel(IEnumerable<PackageSource> packageSources, IPackageManagementConsoleHost consoleHost)
+		{
+			viewModel = new TestablePackageManagementConsoleViewModel(packageSources, consoleHost);
+		}
+		
 		void CreateViewModelWithOneRegisteredPackageSource()
 		{
 			CreateConsoleHost();
-			AddOnePackageSourceAndRemoveAnyExistingPackageSources();
-			CreateViewModel(consoleHost);
+			var packageSources = new List<PackageSource>();
+			packageSources.Add(new PackageSource("First source"));
+			CreateViewModel(packageSources, consoleHost);
+		}
+		
+		void CreateViewModelWithTwoRegisteredPackageSources()
+		{
+			CreateConsoleHost();
+			var packageSources = new List<PackageSource>();
+			packageSources.Add(new PackageSource("First source"));
+			packageSources.Add(new PackageSource("Second source"));
+			CreateViewModel(packageSources, consoleHost);
+		}
+		
+		PackageSource CreateViewModelWithTwoRegisteredPackageSourcesAndLastOneIsActivePackageSource()
+		{
+			CreateConsoleHost();
+			var packageSources = new List<PackageSource>();
+			packageSources.Add(new PackageSource("First source"));
+			var activePackageSource = new PackageSource("Second source");
+			packageSources.Add(activePackageSource);
+			
+			consoleHost.ActivePackageSource = activePackageSource;
+			
+			CreateViewModel(packageSources, consoleHost);
+			
+			return activePackageSource;
 		}
 		
 		Solution CreateViewModelWithOneProjectOpen()
@@ -65,20 +95,22 @@ namespace PackageManagement.Tests.Scripting
 			return solution;
 		}
 		
-		void AddOnePackageSourceAndRemoveAnyExistingPackageSources()
+		PackageSource AddOnePackageSourceAndRemoveAnyExistingPackageSources()
 		{
 			viewModel.RegisteredPackageSources.Clear();
-			AddOnePackageSource();
+			return AddOnePackageSource();
 		}
 		
-		void AddOnePackageSource()
+		PackageSource AddOnePackageSource()
 		{
-			AddOnePackageSource("NewSource");
+			return AddOnePackageSource("NewSource");
 		}
 		
-		void AddOnePackageSource(string name)
+		PackageSource AddOnePackageSource(string name)
 		{
-			viewModel.RegisteredPackageSources.Add(new PackageSource(name));
+			var source = new PackageSource(name);
+			viewModel.RegisteredPackageSources.Add(source);
+			return source;
 		}
 		
 		PackageSourceViewModel SelectSecondPackageSource()
@@ -157,6 +189,16 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
+		public void ActivePackageSource_TwoRegisteredPackageSourcesAndLastOneIsActiveWhenConsoleCreated_SecondPackageSourceIsActiveInViewModel()
+		{
+			var expectedPackageSource = CreateViewModelWithTwoRegisteredPackageSourcesAndLastOneIsActivePackageSource();
+			
+			var actualPackageSource = viewModel.ActivePackageSource.GetPackageSource();
+			
+			Assert.AreEqual(expectedPackageSource, actualPackageSource);
+		}
+		
+		[Test]
 		public void PackageSources_OriginalPackageSourceRemovedAndOnePackageSourceAddedAfterConsoleCreated_NewPackageSourceIsDisplayed()
 		{
 			CreateViewModel();
@@ -164,6 +206,19 @@ namespace PackageManagement.Tests.Scripting
 			
 			var expectedPackageSources = viewModel.RegisteredPackageSources;
 			var actualPackageSources = viewModel.PackageSources;
+			
+			PackageSourceCollectionAssert.AreEqual(expectedPackageSources, actualPackageSources);
+		}
+		
+		[Test]
+		public void PackageSources_TwoRegisteredPackageSourcesWhenConsoleCreated_ThreePackageSourcesReturnedIncludingAggregatePackageSource()
+		{
+			CreateViewModelWithTwoRegisteredPackageSources();
+			
+			var actualPackageSources = viewModel.PackageSources;
+			
+			var expectedPackageSources = new List<PackageSource>(viewModel.RegisteredPackageSources);
+			expectedPackageSources.Add(RegisteredPackageSourceSettings.AggregatePackageSource);
 			
 			PackageSourceCollectionAssert.AreEqual(expectedPackageSources, actualPackageSources);
 		}
@@ -201,20 +256,6 @@ namespace PackageManagement.Tests.Scripting
 			var actualPackageSource = viewModel.ActivePackageSource;
 			
 			Assert.AreEqual(selectedPackageSource, actualPackageSource);
-		}
-		
-		[Test]
-		public void ActivePackageSource_OnePackageSourceAddedAfterSelectingSecondPackageSource_ActivePackageSourceIsChangedToFirstPackageSource()
-		{
-			CreateViewModel();
-			AddOnePackageSource();
-			SelectSecondPackageSource();
-			AddOnePackageSource("ThirdPackageSource");
-			
-			var expectedPackageSource = viewModel.PackageSources[0];
-			var actualPackageSource = viewModel.ActivePackageSource;
-			
-			Assert.AreEqual(expectedPackageSource, actualPackageSource);
 		}
 		
 		[Test]

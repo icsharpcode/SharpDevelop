@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.Scripting;
@@ -19,6 +20,13 @@ namespace PackageManagement.Tests.Helpers
 		
 		public TestablePackageManagementConsoleViewModel(IPackageManagementConsoleHost consoleHost)
 			: this(new RegisteredPackageSources(new PackageSource[0]), consoleHost)
+		{
+		}
+		
+		public TestablePackageManagementConsoleViewModel(
+			IEnumerable<PackageSource> packageSources,
+			IPackageManagementConsoleHost consoleHost)
+			: this(new RegisteredPackageSources(packageSources), consoleHost)
 		{
 		}
 		

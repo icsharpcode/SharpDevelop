@@ -23,7 +23,7 @@ namespace ICSharpCode.PackageManagement
 			registeredPackageRepositories = new RegisteredPackageRepositories(options);
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
 			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
-			consoleHost = new PackageManagementConsoleHost(solution);
+			consoleHost = new PackageManagementConsoleHost(solution, registeredPackageRepositories);
 			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
 		}
 		

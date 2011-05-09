@@ -16,6 +16,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 	{
 		IThread thread;
 		IPackageManagementSolution solution;
+		IRegisteredPackageRepositories registeredRepositories;
 		IPowerShellHostFactory powerShellHostFactory;
 		IPackageManagementProjectService projectService;
 		IPowerShellHost powerShellHost;
@@ -25,19 +26,24 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		public PackageManagementConsoleHost(
 			IPackageManagementSolution solution,
+			IRegisteredPackageRepositories registeredRepositories,
 			IPowerShellHostFactory powerShellHostFactory,
 			IPackageManagementProjectService projectService,
 			IPackageManagementAddInPath addinPath)
 		{
 			this.solution = solution;
+			this.registeredRepositories = registeredRepositories;
 			this.powerShellHostFactory = powerShellHostFactory;
 			this.projectService = projectService;
 			this.addinPath = addinPath;
 		}
 		
-		public PackageManagementConsoleHost(IPackageManagementSolution solution)
+		public PackageManagementConsoleHost(
+			IPackageManagementSolution solution,
+			IRegisteredPackageRepositories registeredRepositories)
 			: this(
 				solution,
+				registeredRepositories,
 				new PowerShellHostFactory(),
 				new PackageManagementProjectService(),
 				new PackageManagementAddInPath())
@@ -45,7 +51,12 @@ namespace ICSharpCode.PackageManagement.Scripting
 		}
 		
 		public IProject DefaultProject { get; set; }
-		public PackageSource ActivePackageSource { get; set; }
+		
+		public PackageSource ActivePackageSource {
+			get { return registeredRepositories.ActivePackageSource; }
+			set { registeredRepositories.ActivePackageSource = value; }
+		}
+		
 		public IScriptingConsole ScriptingConsole { get; set; }
 		
 		public IPackageManagementProjectService ProjectService {
