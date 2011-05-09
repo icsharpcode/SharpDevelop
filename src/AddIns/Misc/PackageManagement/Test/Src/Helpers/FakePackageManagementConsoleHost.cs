@@ -19,6 +19,12 @@ namespace PackageManagement.Tests.Helpers
 		public PackageSource ActivePackageSource { get; set; }
 		public IScriptingConsole ScriptingConsole { get; set; }
 		
+		public IPackageManagementSolution Solution {
+			get { return FakeSolution; }
+		}
+		
+		public FakePackageManagementSolution FakeSolution = new FakePackageManagementSolution();
+		
 		public bool IsDisposeCalled;
 		public bool IsClearCalled;
 		public bool IsRunCalled;
@@ -53,11 +59,7 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public FakePackageManagementProjectService FakeProjectService = new FakePackageManagementProjectService();
-		
-		public IPackageManagementProjectService ProjectService {
-			get { return FakeProjectService; }
-		}
-		
+
 		public string PackageSourcePassedToGetProject;
 		public string ProjectNamePassedToGetProject;
 		public FakePackageManagementProject FakeProject = new FakePackageManagementProject();
@@ -85,20 +87,6 @@ namespace PackageManagement.Tests.Helpers
 		{
 			PackageSourcePassedToGetActivePackageSource = source;
 			return PackageSourceToReturnFromGetActivePackageSource;
-		}
-		
-		public List<TestableProject> FakeOpenProjects = new List<TestableProject>();
-		
-		public TestableProject AddFakeProject(string name)
-		{
-			var project = ProjectHelper.CreateTestProject(name);
-			FakeOpenProjects.Add(project);
-			return project;
-		}
-		
-		public IEnumerable<IProject> GetOpenProjects()
-		{
-			return FakeOpenProjects;
 		}
 	}
 }

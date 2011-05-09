@@ -56,7 +56,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 
 		IEnumerable<Project> GetAllProjects()
 		{
-			var projects = new OpenProjects(ConsoleHost);
+			var projects = new OpenProjects(ConsoleHost.Solution);
 			return projects.GetAllProjects();
 		}
 		
@@ -74,7 +74,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IEnumerable<Project> GetFilteredProjects()
 		{
-			var projects = new OpenProjects(ConsoleHost);
+			var projects = new OpenProjects(ConsoleHost.Solution);
 			return projects.GetFilteredProjects(Name);
 		}
 		

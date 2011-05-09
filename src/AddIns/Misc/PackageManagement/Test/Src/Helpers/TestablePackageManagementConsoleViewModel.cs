@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
@@ -17,6 +18,7 @@ namespace PackageManagement.Tests.Helpers
 			new PackageManagementConsole(new FakeScriptingConsole(), new FakeControlDispatcher());
 		
 		public RegisteredPackageSources RegisteredPackageSources;
+		public FakePackageManagementProjectService FakeProjectService;
 		
 		public TestablePackageManagementConsoleViewModel(IPackageManagementConsoleHost consoleHost)
 			: this(new RegisteredPackageSources(new PackageSource[0]), consoleHost)
@@ -26,16 +28,25 @@ namespace PackageManagement.Tests.Helpers
 		public TestablePackageManagementConsoleViewModel(
 			IEnumerable<PackageSource> packageSources,
 			IPackageManagementConsoleHost consoleHost)
-			: this(new RegisteredPackageSources(packageSources), consoleHost)
+			: this(new RegisteredPackageSources(packageSources), consoleHost, new FakePackageManagementProjectService())
+		{
+		}
+		
+		public TestablePackageManagementConsoleViewModel(
+			IPackageManagementConsoleHost consoleHost,
+			FakePackageManagementProjectService projectService)
+			: this(new RegisteredPackageSources(new PackageSource[0]), consoleHost, projectService)
 		{
 		}
 		
 		public TestablePackageManagementConsoleViewModel(
 			RegisteredPackageSources registeredPackageSources,
-			IPackageManagementConsoleHost consoleHost)
-			: base(registeredPackageSources, consoleHost)
+			IPackageManagementConsoleHost consoleHost,
+			FakePackageManagementProjectService projectService)
+			: base(registeredPackageSources, projectService, consoleHost)
 		{
 			this.RegisteredPackageSources = registeredPackageSources;
+			this.FakeProjectService = projectService;
 		}
 		
 		protected override PackageManagementConsole CreateConsole()

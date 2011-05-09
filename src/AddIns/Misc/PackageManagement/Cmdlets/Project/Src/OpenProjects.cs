@@ -13,16 +13,16 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 {
 	public class OpenProjects
 	{
-		IPackageManagementConsoleHost consoleHost;
+		IPackageManagementSolution solution;
 		
-		public OpenProjects(IPackageManagementConsoleHost consoleHost)
+		public OpenProjects(IPackageManagementSolution solution)
 		{
-			this.consoleHost = consoleHost;
+			this.solution = solution;
 		}
 		
 		public IEnumerable<Project> GetAllProjects()
 		{
-			foreach (IProject project in consoleHost.GetOpenProjects()) {
+			foreach (IProject project in solution.GetMSBuildProjects()) {
 				yield return CreateProject(project);
 			}
 		}

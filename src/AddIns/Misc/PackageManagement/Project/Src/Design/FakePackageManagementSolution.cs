@@ -60,5 +60,12 @@ namespace ICSharpCode.PackageManagement.Design
 			ProjectNamePassedToGetProject = projectName;
 			return FakeProject;
 		}
+		
+		public List<IProject> FakeMSBuildProjects = new List<IProject>();
+		
+		public IEnumerable<IProject> GetMSBuildProjects()
+		{
+			return FakeMSBuildProjects;
+		}
 	}
 }

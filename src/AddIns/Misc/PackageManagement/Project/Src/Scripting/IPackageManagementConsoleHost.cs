@@ -15,9 +15,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IProject DefaultProject { get; set; }
 		PackageSource ActivePackageSource { get; set; }
 		IScriptingConsole ScriptingConsole { get; set; }
-		IPackageManagementProjectService ProjectService { get; }
-		
-		IEnumerable<IProject> GetOpenProjects();
+		IPackageManagementSolution Solution { get; }
 		
 		void Clear();
 		void Run();

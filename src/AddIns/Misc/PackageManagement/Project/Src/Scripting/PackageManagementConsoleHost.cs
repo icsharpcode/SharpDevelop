@@ -15,10 +15,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 	public class PackageManagementConsoleHost : IPackageManagementConsoleHost
 	{
 		IThread thread;
-		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredRepositories;
 		IPowerShellHostFactory powerShellHostFactory;
-		IPackageManagementProjectService projectService;
 		IPowerShellHost powerShellHost;
 		IPackageManagementAddInPath addinPath;
 		int autoIndentSize = 0;
@@ -28,13 +26,11 @@ namespace ICSharpCode.PackageManagement.Scripting
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredRepositories,
 			IPowerShellHostFactory powerShellHostFactory,
-			IPackageManagementProjectService projectService,
 			IPackageManagementAddInPath addinPath)
 		{
-			this.solution = solution;
+			this.Solution = solution;
 			this.registeredRepositories = registeredRepositories;
 			this.powerShellHostFactory = powerShellHostFactory;
-			this.projectService = projectService;
 			this.addinPath = addinPath;
 		}
 		
@@ -45,7 +41,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 				solution,
 				registeredRepositories,
 				new PowerShellHostFactory(),
-				new PackageManagementProjectService(),
 				new PackageManagementAddInPath())
 		{
 		}
@@ -58,10 +53,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		}
 		
 		public IScriptingConsole ScriptingConsole { get; set; }
-		
-		public IPackageManagementProjectService ProjectService {
-			get { return projectService; }
-		}
+		public IPackageManagementSolution Solution { get; private set; }
 		
 		public void Dispose()
 		{
@@ -185,7 +177,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			PackageSource source = GetActivePackageSource(packageSource);
 			projectName = GetActiveProjectName(projectName);
 			
-			return solution.GetProject(source, projectName);
+			return Solution.GetProject(source, projectName);
 		}
 		
 		public PackageSource GetActivePackageSource(string source)
@@ -207,12 +199,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName)
 		{
 			projectName = GetActiveProjectName(projectName);
-			return solution.GetProject(sourceRepository, projectName);
-		}
-		
-		public IEnumerable<IProject> GetOpenProjects()
-		{
-			return projectService.GetOpenProjects();
+			return Solution.GetProject(sourceRepository, projectName);
 		}
 	}
 }

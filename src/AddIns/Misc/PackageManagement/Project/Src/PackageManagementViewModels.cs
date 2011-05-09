@@ -110,6 +110,7 @@ namespace ICSharpCode.PackageManagement
 			packageManagementConsoleViewModel = 
 				new PackageManagementConsoleViewModel(
 					registeredPackageRepositories.PackageSources,
+					PackageManagementServices.ProjectService,
 					consoleHost);
 		}
 	}

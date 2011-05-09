@@ -32,10 +32,11 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		public PackageManagementConsoleViewModel(
 			RegisteredPackageSources registeredPackageSources,
+			IPackageManagementProjectService projectService,
 			IPackageManagementConsoleHost consoleHost)
 		{
 			this.registeredPackageSources = registeredPackageSources;
-			this.projectService = consoleHost.ProjectService;
+			this.projectService = projectService;
 			this.consoleHost = consoleHost;
 			
 			Init();

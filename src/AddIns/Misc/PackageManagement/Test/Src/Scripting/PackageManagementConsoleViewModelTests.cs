@@ -25,7 +25,6 @@ namespace PackageManagement.Tests.Scripting
 		void CreateConsoleHost()
 		{
 			consoleHost = new FakePackageManagementConsoleHost();
-			projectService = consoleHost.FakeProjectService;
 		}
 		
 		void CreateViewModel()
@@ -37,11 +36,18 @@ namespace PackageManagement.Tests.Scripting
 		void CreateViewModel(IPackageManagementConsoleHost consoleHost)
 		{
 			viewModel = new TestablePackageManagementConsoleViewModel(consoleHost);
+			projectService = viewModel.FakeProjectService;
 		}
 		
 		void CreateViewModel(IEnumerable<PackageSource> packageSources, IPackageManagementConsoleHost consoleHost)
 		{
 			viewModel = new TestablePackageManagementConsoleViewModel(packageSources, consoleHost);
+			projectService = viewModel.FakeProjectService;
+		}
+		
+		void CreateViewModel(IPackageManagementConsoleHost consoleHost, FakePackageManagementProjectService projectService)
+		{
+			viewModel = new TestablePackageManagementConsoleViewModel(consoleHost, projectService);
 		}
 		
 		void CreateViewModelWithOneRegisteredPackageSource()
@@ -80,8 +86,9 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateConsoleHost();
 			Solution solution = CreateSolutionWithOneProject();
+			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
-			CreateViewModel(consoleHost);
+			CreateViewModel(consoleHost, projectService);
 			
 			return solution;
 		}
@@ -126,18 +133,13 @@ namespace PackageManagement.Tests.Scripting
 			viewModel.PropertyChanged += (sender, e) => propertiesChanged.Add(e.PropertyName);
 		}
 		
-		Solution CreateConsoleHostWithEmptySolutionOpen()
+		Solution CreateViewModelWithEmptySolutionOpen()
 		{
 			CreateConsoleHost();
 			var solution = new Solution();
+			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
-			return solution;
-		}
-		
-		Solution CreateViewModelWithEmptySolutionOpen()
-		{
-			var solution = CreateConsoleHostWithEmptySolutionOpen();
-			CreateViewModel(consoleHost);
+			CreateViewModel(consoleHost, projectService);
 			return solution;
 		}
 		
@@ -293,10 +295,14 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Constructor_EmptySolutionOpenWhenConsoleCreated_DoesNotThrowException()
+		public void Constructor_EmptySolutionOpenWhenConsoleViewModelCreated_DoesNotThrowException()
 		{
-			CreateConsoleHostWithEmptySolutionOpen();
-			Assert.DoesNotThrow(() => CreateViewModel(consoleHost));
+			CreateConsoleHost();
+			projectService = new FakePackageManagementProjectService();
+			var solution = new Solution();
+			projectService.OpenSolution = solution;
+
+			Assert.DoesNotThrow(() => CreateViewModel(consoleHost, projectService));
 		}
 		
 		[Test]

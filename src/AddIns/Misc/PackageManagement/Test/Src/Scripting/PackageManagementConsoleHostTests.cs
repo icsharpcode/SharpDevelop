@@ -19,7 +19,6 @@ namespace PackageManagement.Tests.Scripting
 		FakeScriptingConsoleWithLinesToRead scriptingConsole;
 		FakePowerShellHost powerShellHost;
 		FakePackageManagementSolution fakeSolution;
-		FakePackageManagementProjectService fakeProjectService;
 		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
 		
 		void CreateHost()
@@ -28,7 +27,6 @@ namespace PackageManagement.Tests.Scripting
 			fakeSolution = host.FakeSolution;
 			scriptingConsole = host.FakeScriptingConsole;
 			powerShellHost = host.FakePowerShellHostFactory.FakePowerShellHost;
-			fakeProjectService = host.FakeProjectService;
 			fakeRegisteredPackageRepositories = host.FakeRegisteredPackageRepositories;
 		}
 		
@@ -36,13 +34,6 @@ namespace PackageManagement.Tests.Scripting
 		{
 			host.Run();
 			host.ThreadStartPassedToCreateThread.Invoke();
-		}
-		
-		TestableProject AddProject(string name)
-		{
-			var project = ProjectHelper.CreateTestProject(name);
-			fakeProjectService.AddFakeProject(project);
-			return project;
 		}
 		
 		[Test]
@@ -378,19 +369,6 @@ namespace PackageManagement.Tests.Scripting
 			var projectName = fakeSolution.ProjectNamePassedToGetProject;
 			
 			Assert.AreEqual("MyProject", projectName);
-		}
-		
-		[Test]
-		public void GetOpenProjects_TwoProjectsInOpenSolution_ReturnsTwoProjects()
-		{
-			CreateHost();
-			fakeProjectService.AddFakeProject(ProjectHelper.CreateTestProject("A"));
-			fakeProjectService.AddFakeProject(ProjectHelper.CreateTestProject("B"));
-			
-			var projects = host.GetOpenProjects();
-			var expectedProjects = fakeProjectService.FakeOpenProjects;
-			
-			CollectionAssert.AreEqual(expectedProjects, projects);
 		}
 		
 		[Test]

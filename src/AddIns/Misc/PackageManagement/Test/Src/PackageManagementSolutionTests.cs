@@ -242,5 +242,18 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
 		}
+		
+		[Test]
+		public void GetMSBuildProjects_TwoProjectsInOpenSolution_ReturnsTwoProjects()
+		{
+			CreateSolution();
+			AddProjectToOpenProjects("A");
+			AddProjectToOpenProjects("B");
+			
+			var projects = solution.GetMSBuildProjects();
+			var expectedProjects = fakeProjectService.FakeOpenProjects;
+			
+			CollectionAssert.AreEqual(expectedProjects, projects);
+		}
 	}
 }

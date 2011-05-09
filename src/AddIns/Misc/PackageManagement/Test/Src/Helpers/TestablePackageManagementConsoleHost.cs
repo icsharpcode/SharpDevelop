@@ -16,7 +16,6 @@ namespace PackageManagement.Tests.Helpers
 		public ThreadStart ThreadStartPassedToCreateThread;
 		public FakePowerShellHostFactory FakePowerShellHostFactory;
 		public FakePackageManagementAddInPath FakePackageManagementAddInPath;
-		public FakePackageManagementProjectService FakeProjectService;
 		public FakePackageManagementSolution FakeSolution;
 		public FakeRegisteredPackageRepositories FakeRegisteredPackageRepositories;
 		
@@ -26,7 +25,6 @@ namespace PackageManagement.Tests.Helpers
 				new FakeRegisteredPackageRepositories(),
 				new FakeScriptingConsoleWithLinesToRead(),
 				new FakePowerShellHostFactory(),
-				new FakePackageManagementProjectService(),
 				new FakePackageManagementAddInPath())
 		{
 		}
@@ -36,15 +34,13 @@ namespace PackageManagement.Tests.Helpers
 			FakeRegisteredPackageRepositories registeredPackageRepositories,
 			FakeScriptingConsoleWithLinesToRead scriptingConsole,
 			FakePowerShellHostFactory powerShellHostFactory,
-			FakePackageManagementProjectService projectService,
 			FakePackageManagementAddInPath addinPath)
-			: base(solution, registeredPackageRepositories, powerShellHostFactory, projectService, addinPath)
+			: base(solution, registeredPackageRepositories, powerShellHostFactory, addinPath)
 		{
 			this.FakeSolution = solution;
 			this.FakeScriptingConsole = scriptingConsole;
 			this.ScriptingConsole = scriptingConsole;
 			this.FakePowerShellHostFactory = powerShellHostFactory;
-			this.FakeProjectService = projectService;
 			this.FakeRegisteredPackageRepositories = registeredPackageRepositories;
 			this.FakePackageManagementAddInPath = addinPath;
 		}

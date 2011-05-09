@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.PackageManagement.Cmdlets;
+using ICSharpCode.PackageManagement.Design;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Cmdlets.Tests.Helpers
@@ -12,6 +13,7 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 		public FakeCmdletTerminatingError FakeCmdletTerminatingError;
 		public FakePackageManagementConsoleHost FakePackageManagementConsoleHost;
 		public FakeCommandRuntime FakeCommandRuntime;
+		public FakePackageManagementSolution FakeSolution;
 		
 		public TestableGetProjectCmdlet()
 			: this(
@@ -31,6 +33,7 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 			this.FakeCommandRuntime = commandRuntime;
 			this.CommandRuntime = commandRuntime;
 			this.FakeCmdletTerminatingError = cmdletTerminatingError;
+			this.FakeSolution = consoleHost.FakeSolution;
 		}
 		
 		public void CallProcessRecord()

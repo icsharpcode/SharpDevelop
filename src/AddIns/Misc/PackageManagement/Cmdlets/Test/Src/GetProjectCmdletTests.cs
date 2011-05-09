@@ -4,7 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Management.Automation;
+
+using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
+using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PackageManagement.Cmdlets.Tests.Helpers;
 using PackageManagement.Tests.Helpers;
@@ -18,6 +21,7 @@ namespace PackageManagement.Cmdlets.Tests
 		FakeCmdletTerminatingError fakeTerminatingError;
 		TestableProject defaultProject;
 		FakeCommandRuntime fakeCommandRuntime;
+		FakePackageManagementSolution fakeSolution;
 		
 		void CreateCmdletWithoutActiveProject()
 		{
@@ -31,7 +35,15 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeCommandRuntime = cmdlet.FakeCommandRuntime;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
+			fakeSolution = cmdlet.FakeSolution;
 			defaultProject = base.AddDefaultProjectToConsoleHost();
+		}
+		
+		TestableProject AddFakeProject(string name)
+		{
+			var project = ProjectHelper.CreateTestProject(name);
+			fakeSolution.FakeMSBuildProjects.Add(project);
+			return project;
 		}
 		
 		void RunCmdlet()
@@ -44,10 +56,10 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.All = new SwitchParameter(true);
 		}
 		
-		void ProjectCollectionAssertAreEqual(IEnumerable<TestableProject> expectedProjects, IEnumerable<Project> actualProjects)
+		void ProjectCollectionAssertAreEqual(IEnumerable<IProject> expectedProjects, IEnumerable<Project> actualProjects)
 		{
 			var expectedProjectNames = new List<string>();
-			foreach (TestableProject testableProject in expectedProjects) {
+			foreach (IProject testableProject in expectedProjects) {
 				expectedProjectNames.Add(testableProject.Name);
 			}
 			
@@ -87,12 +99,12 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdlet();
 			EnableAllParameter();
 			
-			fakeConsoleHost.AddFakeProject("A");
-			fakeConsoleHost.AddFakeProject("B");
+			AddFakeProject("A");
+			AddFakeProject("B");
 			
 			RunCmdlet();
 			
-			var expectedProjects = fakeConsoleHost.FakeOpenProjects;
+			var expectedProjects = fakeSolution.FakeMSBuildProjects;
 			var projects = fakeCommandRuntime.FirstObjectPassedToWriteObject as IEnumerable<Project>;
 			
 			ProjectCollectionAssertAreEqual(expectedProjects, projects);
@@ -104,8 +116,8 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdlet();
 			EnableAllParameter();
 			
-			fakeConsoleHost.AddFakeProject("A");
-			fakeConsoleHost.AddFakeProject("B");
+			AddFakeProject("A");
+			AddFakeProject("B");
 			
 			RunCmdlet();
 			
@@ -120,8 +132,8 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdlet();
 			cmdlet.Name = new string[] { "B" };
 			
-			fakeConsoleHost.AddFakeProject("A");
-			var projectB = fakeConsoleHost.AddFakeProject("B");
+			AddFakeProject("A");
+			var projectB = AddFakeProject("B");
 			
 			RunCmdlet();
 			
@@ -139,8 +151,8 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdlet();
 			cmdlet.Name = new string[] { "b" };
 			
-			fakeConsoleHost.AddFakeProject("A");
-			var projectB = fakeConsoleHost.AddFakeProject("B");
+			AddFakeProject("A");
+			var projectB = AddFakeProject("B");
 			
 			RunCmdlet();
 			
@@ -158,9 +170,9 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdlet();
 			cmdlet.Name = new string[] { "B", "C" };
 			
-			fakeConsoleHost.AddFakeProject("A");
-			var projectB = fakeConsoleHost.AddFakeProject("B");
-			var projectC = fakeConsoleHost.AddFakeProject("C");
+			AddFakeProject("A");
+			var projectB = AddFakeProject("B");
+			var projectC = AddFakeProject("C");
 			
 			RunCmdlet();
 			
@@ -179,9 +191,9 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdlet();
 			cmdlet.Name = new string[] { "B", "C" };
 			
-			fakeConsoleHost.AddFakeProject("A");
-			var projectB = fakeConsoleHost.AddFakeProject("B");
-			var projectC = fakeConsoleHost.AddFakeProject("C");
+			AddFakeProject("A");
+			var projectB = AddFakeProject("B");
+			var projectC = AddFakeProject("C");
 			
 			RunCmdlet();
 			
@@ -196,9 +208,9 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdlet();
 			cmdlet.Name = new string[] { "B*", "C*" };
 			
-			fakeConsoleHost.AddFakeProject("A");
-			var projectB = fakeConsoleHost.AddFakeProject("B");
-			var projectC = fakeConsoleHost.AddFakeProject("C");
+			AddFakeProject("A");
+			var projectB = AddFakeProject("B");
+			var projectC = AddFakeProject("C");
 			
 			RunCmdlet();
 			
