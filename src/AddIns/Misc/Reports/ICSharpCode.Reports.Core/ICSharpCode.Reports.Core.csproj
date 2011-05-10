@@ -62,6 +62,15 @@
     <Reference Include="NUnit.Framework">
       <HintPath>$(SharpDevelopBinPath)\Tools\NUnit\NUnit.Framework.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="ReachFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -70,13 +79,25 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Printing">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Presentation">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +172,7 @@
     <Compile Include="Project\Exporter\Converters\GroupedTableConverter.cs" />
     <Compile Include="Project\Exporter\ExportColumns\ExportGraphicContainer.cs" />
     <Compile Include="Project\Exporter\ExportHelper.cs" />
+    <Compile Include="Project\Exporter\ExportRenderer\FixedDocumentRenderer.cs" />
     <Compile Include="Project\Expressions\EvaluationHelper.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\FieldReference.cs" />
     <Compile Include="Project\Exporter\BasePager.cs" />
@@ -163,7 +185,7 @@
     <Compile Include="Project\Exporter\ExportColumns\IExportContainer.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\HTMLRenderer.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\PdfRenderer.cs" />
-    <Compile Include="Project\Exporter\ExportRenderer\XPSRenderer.cs" />
+    <Compile Include="Project\Exporter\ExportRenderer\FlowDocumentRenderer.cs" />
     <Compile Include="Project\Exporter\FormPageBuilder.cs" />
     <Compile Include="Project\Expressions\ExpressionEvaluatorFacade.cs" />
     <Compile Include="Project\Expressions\IExpressionEvaluatorFacade.cs" />
@@ -346,6 +368,8 @@
     <Compile Include="Project\ReportViewer\ReportViewer.designer.cs">
       <DependentUpon>ReportViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Project\WPF\FixedDocumentCreator.cs" />
+    <Compile Include="Project\WPF\FlowDocumentCreator.cs" />
     <Compile Include="Project\Xml\BaseItemLoader.cs" />
     <Compile Include="Project\Xml\MycroParser.cs" />
     <Compile Include="Project\Xml\MycroWriter.cs" />
@@ -365,6 +389,8 @@
     <None Include="Project\ReportViewer\Resources\Icons\Last.bmp" />
     <None Include="Project\ReportViewer\Resources\Icons\Next.bmp" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Project\WPF" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -59,15 +59,24 @@
     <Reference Include="itextsharp">
       <HintPath>..\Libraries\itextsharp.dll</HintPath>
     </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing.Design" />
-    <Reference Include="System.Xaml" />
+    <Reference Include="System.Printing">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -256,6 +265,7 @@
     <Compile Include="Project\Toolbox\SideTabItemDesigner.cs" />
     <Compile Include="Project\Toolbox\ToolboxProvider.cs" />
     <Compile Include="Project\UndoRedo\UndoEngine.cs" />
+    <Compile Include="Project\WPF\WPFReportPreview.cs" />
     <Compile Include="Project\Xml\MycroWriter.cs" />
     <Compile Include="Project\Xml\ReportDefinitionParser.cs" />
     <Compile Include="Project\Xml\ReportDesignerWriter.cs" />
@@ -349,6 +359,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Project\WPF" />
     <Folder Include="Project\ReportItems\TypeProviders" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

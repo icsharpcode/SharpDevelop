@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Addin.Commands;
 using ICSharpCode.Reports.Addin.Designer;
+using ICSharpCode.Reports.Addin.Project.WPF;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Exporter;
@@ -91,6 +92,10 @@ namespace ICSharpCode.Reports.Addin
 			SecondaryViewContents.Add(preview);
 			reportViewer = new ReportViewerSecondaryView(loader,this);
 			SecondaryViewContents.Add(reportViewer);
+			
+			var p = new WPFReportPreview(loader,this);
+			SecondaryViewContents.Add(p);
+			
 		}
 		
 		#endregion
