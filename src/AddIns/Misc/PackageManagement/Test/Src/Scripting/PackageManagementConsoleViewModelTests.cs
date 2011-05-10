@@ -477,6 +477,15 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
+		public void ClearConsole_CommandExecuted_WritesPrompt()
+		{
+			CreateViewModel();
+			viewModel.ClearConsole();
+			
+			Assert.IsTrue(consoleHost.IsWritePromptCalled);
+		}
+		
+		[Test]
 		public void Constructor_NewViewModelCreated_ConsoleSetOnConsoleHost()
 		{
 			CreateViewModel();

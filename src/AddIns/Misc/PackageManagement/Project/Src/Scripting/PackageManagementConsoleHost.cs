@@ -70,7 +70,11 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public void Clear()
 		{
 			ScriptingConsole.Clear();
-			WritePrompt();
+		}
+		
+		public void WritePrompt()
+		{
+			ScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 		}
 		
 		public void Run()
@@ -98,6 +102,19 @@ namespace ICSharpCode.PackageManagement.Scripting
 			AddModulesToImport();
 			powerShellHost.SetRemoteSignedExecutionPolicy();
 			UpdateFormatting();
+			RedefineClearHostFunction();
+		}
+		
+		void CreatePowerShellHost()
+		{
+			var clearConsoleHostCommand = new ClearPackageManagementConsoleHostCommand(this);
+			powerShellHost = powerShellHostFactory.CreatePowerShellHost(this, clearConsoleHostCommand);
+		}
+		
+		void AddModulesToImport()
+		{
+			string module = addinPath.CmdletsAssemblyFileName;
+			powerShellHost.ModulesToImport.Add(module);
 		}
 		
 		void UpdateFormatting()
@@ -106,15 +123,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 			powerShellHost.UpdateFormatting(fileNames);
 		}
 		
-		void CreatePowerShellHost()
+		void RedefineClearHostFunction()
 		{
-			powerShellHost = powerShellHostFactory.CreatePowerShellHost(ScriptingConsole);
-		}
-		
-		void AddModulesToImport()
-		{
-			string module = addinPath.CmdletsAssemblyFileName;
-			powerShellHost.ModulesToImport.Add(module);
+			string command = "function Clear-Host { $host.PrivateData.ClearHost() }";
+			powerShellHost.ExecuteCommand(command);
 		}
 		
 		void WriteInfoBeforeFirstPrompt()
@@ -149,11 +161,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 		protected virtual string GetHelpInfo()
 		{
 			return "Type 'get-help NuGet' for more information.";
-		}
-		
-		void WritePrompt()
-		{
-			ScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 		}
 		
 		void ProcessUserCommands()

@@ -27,6 +27,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public bool IsDisposeCalled;
 		public bool IsClearCalled;
+		public bool IsWritePromptCalled;
 		public bool IsRunCalled;
 		
 		public void Dispose()
@@ -37,6 +38,11 @@ namespace PackageManagement.Tests.Helpers
 		public void Clear()
 		{
 			IsClearCalled = true;
+		}
+		
+		public void WritePrompt()
+		{
+			IsWritePromptCalled = true;
 		}
 		
 		public void Run()

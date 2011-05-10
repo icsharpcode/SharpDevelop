@@ -92,10 +92,21 @@ namespace PackageManagement.Tests.Scripting
 			CreateHost();
 			RunHost();
 			
-			var actualConsole = host.FakePowerShellHostFactory.ScriptingConsolePassedToCreatePowerShellHost;
-			var expectedConsole = scriptingConsole;
+			var actualHost = host.FakePowerShellHostFactory.ConsoleHostPassedToCreatePowerShellHost;
+			var expectedHost = host;
 			
-			Assert.AreSame(expectedConsole, actualConsole);
+			Assert.AreSame(expectedHost, actualHost);
+		}
+		
+		[Test]
+		public void Run_ConsoleExitsOnFirstRead_PrivateDataIsSetToClearConsoleHostCommandObject()
+		{
+			CreateHost();
+			RunHost();
+			
+			var privateDataObject = host.FakePowerShellHostFactory.PrivateDataPassedToCreatePowerShellHost;
+			
+			Assert.IsInstanceOf(typeof(ClearPackageManagementConsoleHostCommand), privateDataObject);
 		}
 		
 		[Test]
@@ -105,6 +116,20 @@ namespace PackageManagement.Tests.Scripting
 			RunHost();
 			
 			Assert.IsTrue(powerShellHost.IsSetRemoteSignedExecutionPolicyCalled);
+		}
+		
+		[Test]
+		public void Run_ConsoleExitsOnFirstRead_ClearHostFunctionIsRedefined()
+		{
+			CreateHost();
+			RunHost();
+			
+			string expectedExecutedScript = 
+				"function Clear-Host { $host.PrivateData.ClearHost() }";
+			
+			bool executed = powerShellHost.AllCommandsPassedToExecuteCommand.Contains(expectedExecutedScript);
+			
+			Assert.IsTrue(executed);
 		}
 		
 		[Test]
@@ -151,17 +176,7 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Run_ConsoleExitsOnFirstRead_NoCommandsPassedToPowerShellHost()
-		{
-			CreateHost();
-			powerShellHost.CommandPassedToExecuteCommand = "test";
-			RunHost();
-			
-			Assert.AreEqual("test", powerShellHost.CommandPassedToExecuteCommand);
-		}
-		
-		[Test]
-		public void Run_TwoCommandsEnteredByUser_BothCommandsExecuted()
+		public void Run_TwoCommandsEnteredByUser_FirstCommandExecuted()
 		{
 			CreateHost();
 			var commands = new string[] { "one", "two" };
@@ -170,7 +185,24 @@ namespace PackageManagement.Tests.Scripting
 			host.ScriptingConsole = scriptingConsole;
 			RunHost();
 			
-			Assert.AreEqual(commands, powerShellHost.AllCommandsPassedToExecuteCommand);
+			bool executed = powerShellHost.AllCommandsPassedToExecuteCommand.Contains("one");
+			
+			Assert.IsTrue(executed);
+		}
+		
+		[Test]
+		public void Run_TwoCommandsEnteredByUser_SecondCommandExecuted()
+		{
+			CreateHost();
+			var commands = new string[] { "one", "two" };
+			scriptingConsole.AllTextToReturnFromReadLine.AddRange(commands);
+			
+			host.ScriptingConsole = scriptingConsole;
+			RunHost();
+			
+			bool executed = powerShellHost.AllCommandsPassedToExecuteCommand.Contains("two");
+			
+			Assert.IsTrue(executed);
 		}
 		
 		[Test]
@@ -407,10 +439,11 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Clear_ConsoleWindowHasOutputText_PromptWritten()
+		public void WritePrompt_ConsoleWindowHasOutputText_PromptWritten()
 		{
 			CreateHost();
 			host.Clear();
+			host.WritePrompt();
 			
 			var expectedTextPassedToWrite = new String[] { "PM> "};
 			var actualTextPassedToWrite = scriptingConsole.AllTextPassedToWrite;

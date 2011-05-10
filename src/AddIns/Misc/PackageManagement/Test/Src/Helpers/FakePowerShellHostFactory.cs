@@ -9,12 +9,16 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class FakePowerShellHostFactory : IPowerShellHostFactory
 	{
-		public IScriptingConsole ScriptingConsolePassedToCreatePowerShellHost;
+		public IPackageManagementConsoleHost ConsoleHostPassedToCreatePowerShellHost;
+		public object PrivateDataPassedToCreatePowerShellHost;
 		public FakePowerShellHost FakePowerShellHost = new FakePowerShellHost();
 		
-		public IPowerShellHost CreatePowerShellHost(IScriptingConsole scriptingConsole)
+		public IPowerShellHost CreatePowerShellHost(
+			IPackageManagementConsoleHost consoleHost,
+			object privateData)
 		{
-			ScriptingConsolePassedToCreatePowerShellHost = scriptingConsole;
+			ConsoleHostPassedToCreatePowerShellHost = consoleHost;
+			PrivateDataPassedToCreatePowerShellHost = privateData;
 			return FakePowerShellHost;
 		}
 	}

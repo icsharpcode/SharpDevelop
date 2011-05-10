@@ -204,6 +204,7 @@
     </Compile>
     <Compile Include="Src\PackagesViewModel.cs" />
     <Compile Include="Src\ProcessPackageAction.cs" />
+    <Compile Include="Src\Scripting\ClearPackageManagementConsoleHostCommand.cs" />
     <Compile Include="Src\Scripting\IPackageScript.cs" />
     <Compile Include="Src\Scripting\IPackageScriptFactory.cs" />
     <Compile Include="Src\Scripting\IPackageScriptFileName.cs" />

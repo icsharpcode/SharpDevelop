@@ -18,6 +18,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IPackageManagementSolution Solution { get; }
 		
 		void Clear();
+		void WritePrompt();
 		void Run();
 		
 		IPackageManagementProject GetProject(string packageSource, string projectName);

@@ -17,18 +17,26 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PowerShellHost : PSHost, IPowerShellHost
 	{
-		IScriptingConsole scriptingConsole;
+		IPackageManagementConsoleHost consoleHost;
 		CultureInfo currentUICulture = Thread.CurrentThread.CurrentUICulture;
 		CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
 		Guid instanceId = Guid.NewGuid();
 		Runspace runspace;
 		PowerShellHostUserInterface userInterface;
 		List<string> modulesToImport = new List<string>();
+		PSObject privateData;
 		
-		public PowerShellHost(IScriptingConsole scriptingConsole)
+		public PowerShellHost(
+			IPackageManagementConsoleHost consoleHost,
+			object privateData)
 		{
-			this.scriptingConsole = scriptingConsole;
-			userInterface = new PowerShellHostUserInterface(scriptingConsole);
+			this.consoleHost = consoleHost;
+			this.privateData = new PSObject(privateData);
+			userInterface = new PowerShellHostUserInterface(consoleHost.ScriptingConsole);
+		}
+		
+		public override PSObject PrivateData {
+			get { return privateData; }
 		}
 		
 		public IList<string> ModulesToImport {
@@ -57,7 +65,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 				pipeline.Invoke();
 				
 			} catch (Exception ex) {
-				scriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
+				consoleHost.ScriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
 			}
 		}
 		
@@ -155,7 +163,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 				pipeline.Invoke(input);
 				
 			} catch (Exception ex) {
-				scriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
+				consoleHost.ScriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
 			}
 		}
 	}

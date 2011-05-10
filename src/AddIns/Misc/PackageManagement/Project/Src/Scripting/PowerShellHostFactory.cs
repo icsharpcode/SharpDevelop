@@ -8,9 +8,11 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PowerShellHostFactory : IPowerShellHostFactory
 	{
-		public IPowerShellHost CreatePowerShellHost(IScriptingConsole scriptingConsole)
+		public IPowerShellHost CreatePowerShellHost(
+			IPackageManagementConsoleHost consoleHost,
+			object privateData)
 		{
-			return new PowerShellHost(scriptingConsole);
+			return new PowerShellHost(consoleHost, privateData);
 		}
 	}
 }

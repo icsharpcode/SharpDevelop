@@ -175,6 +175,7 @@
     <Compile Include="Src\PackageSourceViewModelTests.cs" />
     <Compile Include="Src\PackagesViewModelTests.cs" />
     <Compile Include="Src\ProcessPackageActionTests.cs" />
+    <Compile Include="Src\Scripting\ClearPackageManagementConsoleHostCommandTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializeScriptFileNameTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializeScriptTests.cs" />
     <Compile Include="Src\Scripting\PackageInstallScriptFileNameTests.cs" />
