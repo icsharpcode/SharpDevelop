@@ -183,5 +183,10 @@ namespace ICSharpCode.Scripting
 				textEditor.FontWeight,
 				textEditor.FontStretch);
 		}
+		
+		public void Clear()
+		{
+			textEditor.Clear();
+		}
 	}
 }

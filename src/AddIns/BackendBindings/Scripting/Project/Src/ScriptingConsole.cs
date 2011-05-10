@@ -357,5 +357,10 @@ namespace ICSharpCode.Scripting
 		{
 			return textEditor.GetMaximumVisibleColumns();
 		}
+		
+		public void Clear()
+		{
+			textEditor.Clear();
+		}
 	}
 }

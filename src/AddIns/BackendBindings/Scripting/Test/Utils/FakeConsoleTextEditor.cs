@@ -207,5 +207,12 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 			return MaximumVisibleColumns;
 		}
+		
+		public bool IsClearCalled;
+		
+		public void Clear()
+		{
+			IsClearCalled = true;
+		}
 	}
 }

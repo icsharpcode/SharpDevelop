@@ -83,5 +83,16 @@ namespace ICSharpCode.Scripting.Tests.Console
 		{
 			Assert.IsTrue(TestableScriptingConsole.ScrollToEndWhenTextWritten);
 		}
+		
+		[Test]
+		public void Clear_TextEditorHasText_RemovesAllText()
+		{
+			TestableScriptingConsole.Write("a", ScriptingStyle.Prompt);
+			TestableScriptingConsole.Clear();
+			
+			bool cleared = FakeConsoleTextEditor.IsClearCalled;
+			
+			Assert.IsTrue(cleared);
+		}
 	}
 }

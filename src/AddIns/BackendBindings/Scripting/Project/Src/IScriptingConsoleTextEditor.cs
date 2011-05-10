@@ -29,6 +29,11 @@ namespace ICSharpCode.Scripting
 		void Append(string text);
 		
 		/// <summary>
+		/// Clears all the text in the text editor.
+		/// </summary>
+		void Clear();
+		
+		/// <summary>
 		/// Replaces the text at the specified index on the current line with the specified text.
 		/// </summary>
 		void Replace(int index, int length, string text);

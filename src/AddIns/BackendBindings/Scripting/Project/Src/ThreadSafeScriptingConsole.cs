@@ -144,5 +144,15 @@ namespace ICSharpCode.Scripting
 				return (int)dispatcher.Invoke(action);
 			}
 		}
+		
+		public void Clear()
+		{
+			if (dispatcher.CheckAccess()) {
+				nonThreadSafeScriptingConsole.Clear();
+			} else {
+				Action action = Clear;
+				dispatcher.Invoke(action);
+			}
+		}
 	}
 }

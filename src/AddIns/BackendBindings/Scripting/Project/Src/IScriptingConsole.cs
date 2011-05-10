@@ -11,6 +11,7 @@ namespace ICSharpCode.Scripting
 				
 		bool ScrollToEndWhenTextWritten { get; set; }
 		
+		void Clear();
 		void SendLine(string line);
 		void SendText(string text);
 		void WriteLine();

@@ -384,7 +384,7 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void ActivePackageSource_ActivePackageSourcechanged_RegisteredPackageSourcesActivePackageSourceIsUpdated()
+		public void ActivePackageSource_ActivePackageSourceChanged_RegisteredPackageSourcesActivePackageSourceIsUpdated()
 		{
 			CreateHost();
 			var expectedPackageSource = new PackageSource("Test");
@@ -393,6 +393,29 @@ namespace PackageManagement.Tests.Scripting
 			var actualPackageSource = fakeRegisteredPackageRepositories.ActivePackageSource;
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
+		}
+		
+		[Test]
+		public void Clear_ConsoleWindowHasOutputText_ScriptingConsoleIsCleared()
+		{
+			CreateHost();
+			host.Clear();
+			
+			bool cleared = scriptingConsole.IsClearCalled;
+			
+			Assert.IsTrue(cleared);
+		}
+		
+		[Test]
+		public void Clear_ConsoleWindowHasOutputText_PromptWritten()
+		{
+			CreateHost();
+			host.Clear();
+			
+			var expectedTextPassedToWrite = new String[] { "PM> "};
+			var actualTextPassedToWrite = scriptingConsole.AllTextPassedToWrite;
+			
+			CollectionAssert.AreEqual(expectedTextPassedToWrite, actualTextPassedToWrite);
 		}
 	}
 }

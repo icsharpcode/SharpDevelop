@@ -410,5 +410,29 @@ namespace ICSharpCode.Scripting.Tests.Console
 			
 			Assert.AreEqual(10, columns);
 		}
+		
+		[Test]
+		public void Clear_DispatcherCheckAccessReturnsTrue_NonThreadSafeScriptingConsoleClearMethodIsCalled()
+		{
+			CreateThreadSafeScriptingConsole();
+			
+			dispatcher.CheckAccessReturnValue = true;
+			threadSafeConsole.Clear();
+			
+			Assert.IsTrue(nonThreadSafeScriptingConsole.IsClearCalled);
+		}
+		
+		[Test]
+		public void Clear_DispatcherCheckAccessReturnsFalse_MethodIsInvoked()
+		{
+			CreateThreadSafeScriptingConsole();
+			
+			dispatcher.CheckAccessReturnValue = false;
+			dispatcher.MethodInvoked = null;
+			
+			threadSafeConsole.Clear();
+			
+			Assert.IsNotNull(dispatcher.MethodInvoked);
+		}
 	}
 }

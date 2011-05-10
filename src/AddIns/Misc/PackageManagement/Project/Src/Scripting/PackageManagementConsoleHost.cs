@@ -69,6 +69,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		public void Clear()
 		{
+			ScriptingConsole.Clear();
+			WritePrompt();
 		}
 		
 		public void Run()

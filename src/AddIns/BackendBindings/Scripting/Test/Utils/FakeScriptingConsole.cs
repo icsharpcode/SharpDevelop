@@ -25,6 +25,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public bool IsReadLineCalled;
 		public bool IsDisposeCalled;
 		public int MaximumVisibleColumns;
+		public bool IsClearCalled;
 		
 		public string LastLinePassedToWriteLine {
 			get { return AllTextPassedToWriteLine[AllTextPassedToWriteLine.Count - 1]; }
@@ -89,6 +90,11 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public int GetMaximumVisibleColumns()
 		{
 			return MaximumVisibleColumns;
+		}
+		
+		public void Clear()
+		{
+			IsClearCalled = true;
 		}
 	}
 }
