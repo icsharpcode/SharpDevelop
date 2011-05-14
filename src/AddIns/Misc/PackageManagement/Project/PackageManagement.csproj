@@ -195,7 +195,11 @@
     <Compile Include="Src\PackageManagementSolution.cs" />
     <Compile Include="Src\PackageManagementTask.cs" />
     <Compile Include="Src\PackageManagementTaskFactory.cs" />
-    <Compile Include="Src\PackageRepositoryPaths.cs" />
+    <Compile Include="Src\Scripting\ISolutionPackageRepository.cs" />
+    <Compile Include="Src\Scripting\PackageInitializationScripts.cs" />
+    <Compile Include="Src\Scripting\PackageInitializationScriptsFactory.cs" />
+    <Compile Include="Src\Scripting\PowerShellPackageScriptSession.cs" />
+    <Compile Include="Src\SolutionPackageRepositoryPath.cs" />
     <Compile Include="Src\PackageSourceConverter.cs" />
     <Compile Include="Src\PackageSourceViewModel.cs" />
     <Compile Include="Src\PackagesView.xaml.cs">
@@ -205,11 +209,14 @@
     <Compile Include="Src\PackagesViewModel.cs" />
     <Compile Include="Src\ProcessPackageAction.cs" />
     <Compile Include="Src\Scripting\ClearPackageManagementConsoleHostCommand.cs" />
+    <Compile Include="Src\Scripting\IPackageInitializationScripts.cs" />
+    <Compile Include="Src\Scripting\IPackageInitializationScriptsFactory.cs" />
     <Compile Include="Src\Scripting\IPackageScript.cs" />
     <Compile Include="Src\Scripting\IPackageScriptFactory.cs" />
     <Compile Include="Src\Scripting\IPackageScriptFileName.cs" />
     <Compile Include="Src\Scripting\IPackageScriptSession.cs" />
     <Compile Include="Src\Scripting\NuGetVersion.cs" />
+    <Compile Include="Src\Scripting\PackageInitializationScriptsRunnerForOpenedSolution.cs" />
     <Compile Include="Src\Scripting\PackageInitializeScript.cs" />
     <Compile Include="Src\Scripting\PackageInitializeScriptFileName.cs" />
     <Compile Include="Src\Scripting\PackageInstallScript.cs" />
@@ -223,6 +230,7 @@
     <Compile Include="Src\Scripting\PowerShellSessionEnvironmentPath.cs" />
     <Compile Include="Src\EnvDTE\Project.cs" />
     <Compile Include="Src\Scripting\RunPackageScriptsAction.cs" />
+    <Compile Include="Src\SolutionPackageRepository.cs" />
     <Compile Include="Src\UninstallPackageAction.cs" />
     <Compile Include="Src\UpdatedPackagesViewModel.cs" />
     <Compile Include="Src\PackageViewModel.cs" />

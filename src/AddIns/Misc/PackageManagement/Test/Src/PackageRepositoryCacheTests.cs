@@ -109,13 +109,21 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void CreateSharedRepository_MethodCalled_ReturnsSharedPackageRepository()
+		{
+			CreateCache();
+			ISharedPackageRepository repository = cache.CreateSharedRepository(null, null);
+			Assert.IsNotNull(repository);
+		}
+		
+		[Test]
 		public void CreatedSharedRepository_PathResolverPassed_PathResolverUsedToCreatedSharedRepository()
 		{
 			CreateCache();
 			FakePackagePathResolver resolver = new FakePackagePathResolver();
-			FakeSharedPackageRepository repository = cache.CreateSharedRepository(resolver, null) as FakeSharedPackageRepository;
+			cache.CreateSharedRepository(resolver, null);
 			
-			Assert.AreEqual(resolver, repository.PackagePathResolverPassedToConstructor);
+			Assert.AreEqual(resolver, fakePackageRepositoryFactory.PathResolverPassedToCreateSharedRepository);
 		}
 		
 		[Test]
@@ -123,9 +131,9 @@ namespace PackageManagement.Tests
 		{
 			CreateCache();
 			FakeFileSystem fileSystem = new FakeFileSystem();
-			FakeSharedPackageRepository repository = cache.CreateSharedRepository(null, fileSystem) as FakeSharedPackageRepository;
+			cache.CreateSharedRepository(null, fileSystem);
 			
-			Assert.AreEqual(fileSystem, repository.FileSystemPassedToConstructor);
+			Assert.AreEqual(fileSystem, fakePackageRepositoryFactory.FileSystemPassedToCreateSharedRepository);
 		}
 		
 		[Test]

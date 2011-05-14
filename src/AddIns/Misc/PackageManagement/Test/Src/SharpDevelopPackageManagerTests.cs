@@ -21,7 +21,7 @@ namespace PackageManagement.Tests
 		FakeSharedPackageRepository fakeSolutionSharedRepository;
 		IProject testProject;
 		PackageManagementOptions options;
-		PackageRepositoryPaths repositoryPaths;
+		SolutionPackageRepositoryPath repositoryPaths;
 		PackageReferenceRepositoryHelper packageRefRepositoryHelper;
 		TestableProjectManager testableProjectManager;
 		FakeFileSystem fakeFileSystem;
@@ -32,8 +32,8 @@ namespace PackageManagement.Tests
 			options = new TestablePackageManagementOptions();
 			options.PackagesDirectory = "packages";
 			
-			repositoryPaths = new PackageRepositoryPaths(project, options);
-			var pathResolver = new DefaultPackagePathResolver(repositoryPaths.SolutionPackagesPath);
+			repositoryPaths = new SolutionPackageRepositoryPath(project, options);
+			var pathResolver = new DefaultPackagePathResolver(repositoryPaths.PackageRepositoryPath);
 			
 			fakeFileSystem = new FakeFileSystem();
 			

@@ -17,6 +17,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PowerShellHost : PSHost, IPowerShellHost
 	{
+		public static readonly string EnvironmentPathVariableName = "env:path";
+		
 		IPackageManagementConsoleHost consoleHost;
 		CultureInfo currentUICulture = Thread.CurrentThread.CurrentUICulture;
 		CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
@@ -165,6 +167,31 @@ namespace ICSharpCode.PackageManagement.Scripting
 			} catch (Exception ex) {
 				consoleHost.ScriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
 			}
+		}
+		
+		public void SetEnvironmentPath(string path)
+		{
+			Environment.SetEnvironmentVariable(EnvironmentPathVariableName, path);
+		}
+		
+		public string GetEnvironmentPath()
+		{
+			return Environment.GetEnvironmentVariable(EnvironmentPathVariableName);
+		}
+		
+		public void AddVariable(string name, object value)
+		{
+			runspace.SessionStateProxy.SetVariable(name, value);
+		}
+		
+		public void RemoveVariable(string name)
+		{
+			runspace.SessionStateProxy.PSVariable.Remove(name);
+		}
+		
+		public void InvokeScript(string script)
+		{
+			consoleHost.ScriptingConsole.SendLine(script);
 		}
 	}
 }

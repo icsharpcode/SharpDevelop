@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
@@ -9,27 +10,52 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class FakePackageScriptFactory : IPackageScriptFactory
 	{
-		public string PackageInstallDirectoryPassed;
-		public FakePackageScript FakePackageInitializeScript = new FakePackageScript();
-		public FakePackageScript FakePackageInstallScript = new FakePackageScript();
-		public FakePackageScript FakePackageUninstallScript = new FakePackageScript();
+		public List<string> PackageInstallDirectoriesPassed = new List<string>();
+		
+		public string FirstPackageInstallDirectoryPassed {
+			get { return PackageInstallDirectoriesPassed[0]; }
+		}
+		
+		public List<FakePackageScript> FakePackageInitializeScriptsCreated = new List<FakePackageScript>();
+		
+		public FakePackageScript FirstPackageInitializeScriptCreated {
+			get { return FakePackageInitializeScriptsCreated[0]; }
+		}
+		
+		public List<FakePackageScript> FakePackageInstallScriptsCreated = new List<FakePackageScript>();
+		
+		public FakePackageScript FirstPackageInstallScriptCreated {
+			get { return FakePackageInstallScriptsCreated[0]; }
+		}
+		
+		public List<FakePackageScript> FakePackageUninstallScriptsCreated = new List<FakePackageScript>();
+		
+		public FakePackageScript FirstPackageUninstallScriptCreated {
+			get { return FakePackageUninstallScriptsCreated[0]; }
+		}
 		
 		public IPackageScript CreatePackageInitializeScript(string packageInstallDirectory)
 		{
-			PackageInstallDirectoryPassed = packageInstallDirectory;
-			return FakePackageInitializeScript;
+			PackageInstallDirectoriesPassed.Add(packageInstallDirectory);
+			var script = new FakePackageScript();
+			FakePackageInitializeScriptsCreated.Add(script);
+			return script;
 		}
 		
 		public IPackageScript CreatePackageUninstallScript(string packageInstallDirectory)
 		{
-			PackageInstallDirectoryPassed = packageInstallDirectory;
-			return FakePackageUninstallScript;
+			PackageInstallDirectoriesPassed.Add(packageInstallDirectory);
+			var script = new FakePackageScript();
+			FakePackageUninstallScriptsCreated.Add(script);
+			return script;
 		}
 		
 		public IPackageScript CreatePackageInstallScript(string packageInstallDirectory)
 		{
-			PackageInstallDirectoryPassed = packageInstallDirectory;
-			return FakePackageInstallScript;
+			PackageInstallDirectoriesPassed.Add(packageInstallDirectory);
+			var script = new FakePackageScript();
+			FakePackageInstallScriptsCreated.Add(script);
+			return script;
 		}
 	}
 }

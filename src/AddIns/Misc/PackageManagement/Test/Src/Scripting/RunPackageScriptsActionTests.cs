@@ -43,7 +43,7 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageInstalledEvent(eventArgs);
 			
-			bool executed = fakeScriptFactory.FakePackageInitializeScript.IsExecuted;
+			bool executed = fakeScriptFactory.FirstPackageInitializeScriptCreated.IsExecuted;
 			
 			Assert.IsTrue(executed);
 		}
@@ -56,7 +56,7 @@ namespace PackageManagement.Tests.Scripting
 
 			fakeProject.FirePackageInstalledEvent(eventArgs);
 			
-			string path = fakeScriptFactory.PackageInstallDirectoryPassed;
+			string path = fakeScriptFactory.FirstPackageInstallDirectoryPassed;
 			
 			Assert.AreEqual(@"d:\projects\myproject\packages\test", path);
 		}
@@ -70,9 +70,9 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageInstalledEvent(eventArgs);
 			
-			bool executed = fakeScriptFactory.FakePackageInitializeScript.IsExecuted;
+			int count = fakeScriptFactory.FakePackageInstallScriptsCreated.Count;
 			
-			Assert.IsFalse(executed);
+			Assert.AreEqual(0, count);
 		}
 		
 		[Test]
@@ -82,7 +82,7 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceAddedEvent(eventArgs);
 			
-			bool executed = fakeScriptFactory.FakePackageInstallScript.IsExecuted;
+			bool executed = fakeScriptFactory.FirstPackageInstallScriptCreated.IsExecuted;
 			
 			Assert.IsTrue(executed);
 		}
@@ -94,7 +94,7 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs(@"d:\projects\myproject\packages\test");
 			fakeProject.FirePackageReferenceAddedEvent(eventArgs);
 			
-			string path = fakeScriptFactory.PackageInstallDirectoryPassed;
+			string path = fakeScriptFactory.FirstPackageInstallDirectoryPassed;
 			
 			Assert.AreEqual(@"d:\projects\myproject\packages\test", path);
 		}
@@ -108,9 +108,9 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceAddedEvent(eventArgs);
 			
-			bool executed = fakeScriptFactory.FakePackageInstallScript.IsExecuted;
+			int count = fakeScriptFactory.FakePackageInstallScriptsCreated.Count;
 			
-			Assert.IsFalse(executed);
+			Assert.AreEqual(0, count);
 		}
 		
 		[Test]
@@ -120,7 +120,7 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceAddedEvent(eventArgs);
 			
-			var project = fakeScriptFactory.FakePackageInstallScript.Project;
+			var project = fakeScriptFactory.FirstPackageInstallScriptCreated.Project;
 			
 			Assert.AreEqual(fakeProject, project);
 		}
@@ -132,7 +132,7 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
 			
-			bool executed = fakeScriptFactory.FakePackageUninstallScript.IsExecuted;
+			bool executed = fakeScriptFactory.FirstPackageUninstallScriptCreated.IsExecuted;
 			
 			Assert.IsTrue(executed);
 		}
@@ -144,7 +144,7 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs(@"d:\projects\myproject\packages\test");
 			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
 			
-			string path = fakeScriptFactory.PackageInstallDirectoryPassed;
+			string path = fakeScriptFactory.FirstPackageInstallDirectoryPassed;
 			
 			Assert.AreEqual(@"d:\projects\myproject\packages\test", path);
 		}
@@ -158,9 +158,9 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
 			
-			bool executed = fakeScriptFactory.FakePackageUninstallScript.IsExecuted;
+			int count = fakeScriptFactory.FakePackageUninstallScriptsCreated.Count;
 			
-			Assert.IsFalse(executed);
+			Assert.AreEqual(0, count);
 		}
 		
 		[Test]
@@ -170,7 +170,7 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
 			
-			var project = fakeScriptFactory.FakePackageUninstallScript.Project;
+			var project = fakeScriptFactory.FirstPackageUninstallScriptCreated.Project;
 			
 			Assert.AreEqual(fakeProject, project);
 		}

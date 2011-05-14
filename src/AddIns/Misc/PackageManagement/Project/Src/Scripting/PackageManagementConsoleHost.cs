@@ -55,6 +55,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public IScriptingConsole ScriptingConsole { get; set; }
 		public IPackageManagementSolution Solution { get; private set; }
 		
+		public IPowerShellHost PowerShellHost {
+			get { return powerShellHost; }
+		}
+		
 		public void Dispose()
 		{
 			if (ScriptingConsole != null) {

@@ -11,8 +11,6 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 {
 	public abstract class PackageManagementCmdlet : PSCmdlet, ITerminatingCmdlet, IPackageScriptSession
 	{
-		static readonly string EnvironmentPathVariableName = "env:path";
-		
 		IPackageManagementConsoleHost consoleHost;
 		ICmdletTerminatingError terminatingError;
 		
@@ -55,7 +53,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		public void SetEnvironmentPath(string path)
 		{
-			SetSessionVariable(EnvironmentPathVariableName, path);
+			SetSessionVariable(PowerShellHost.EnvironmentPathVariableName, path);
 		}
 		
 		protected virtual void SetSessionVariable(string name, object value)
@@ -65,7 +63,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		public string GetEnvironmentPath()
 		{
-			return (string)GetSessionVariable(EnvironmentPathVariableName);
+			return (string)GetSessionVariable(PowerShellHost.EnvironmentPathVariableName);
 		}
 		
 		protected virtual object GetSessionVariable(string name)

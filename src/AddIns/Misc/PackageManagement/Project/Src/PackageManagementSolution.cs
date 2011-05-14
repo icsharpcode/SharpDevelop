@@ -100,12 +100,17 @@ namespace ICSharpCode.PackageManagement
 		public IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName)
 		{
 			MSBuildBasedProject msbuildProject = GetMSBuildProject(projectName);
-			return CreateProject(sourceRepository, msbuildProject);			
+			return CreateProject(sourceRepository, msbuildProject);
 		}
 		
 		public IEnumerable<IProject> GetMSBuildProjects()
 		{
 			return projectService.GetOpenProjects();
+		}
+		
+		public void RunPackageInitializationScripts()
+		{
+			
 		}
 	}
 }

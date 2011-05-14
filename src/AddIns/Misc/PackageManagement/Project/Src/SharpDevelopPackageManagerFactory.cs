@@ -39,8 +39,8 @@ namespace ICSharpCode.PackageManagement
 		
 		IFileSystem CreateFileSystemThatWillContainPackages(MSBuildBasedProject project)
 		{
-			var repositoryPaths = new PackageRepositoryPaths(project, options);
-			return new PhysicalFileSystem(repositoryPaths.SolutionPackagesPath);
+			var repositoryPath = new SolutionPackageRepositoryPath(project, options);
+			return new PhysicalFileSystem(repositoryPath.PackageRepositoryPath);
 		}
 		
 		ISharpDevelopPackageManager CreatePackageManager(

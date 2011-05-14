@@ -44,5 +44,25 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public Version Version { get; set; }
+		
+		public void SetEnvironmentPath(string path)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public string GetEnvironmentPath()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void AddVariable(string name, object value)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void RemoveVariable(string name)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

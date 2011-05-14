@@ -14,5 +14,9 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void SetRemoteSignedExecutionPolicy();
 		void UpdateFormatting(IEnumerable<string> formattingFiles);
 		void ExecuteCommand(string command);
+		void SetEnvironmentPath(string path);
+		string GetEnvironmentPath();		
+		void AddVariable(string name, object value);
+		void RemoveVariable(string name);
 	}
 }

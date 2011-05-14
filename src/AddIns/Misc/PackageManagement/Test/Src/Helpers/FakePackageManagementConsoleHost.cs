@@ -94,5 +94,11 @@ namespace PackageManagement.Tests.Helpers
 			PackageSourcePassedToGetActivePackageSource = source;
 			return PackageSourceToReturnFromGetActivePackageSource;
 		}
+		
+		public IPowerShellHost PowerShellHost {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
