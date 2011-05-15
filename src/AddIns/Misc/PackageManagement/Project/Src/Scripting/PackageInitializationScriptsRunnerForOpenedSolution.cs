@@ -30,25 +30,31 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		void SolutionLoaded(object sender, SolutionEventArgs e)
 		{
-			RunScripts(e.Solution);
+			RunPackageInitializationScripts(e.Solution);
 		}
 		
-		void RunScripts(Solution solution)
+		void RunPackageInitializationScripts(Solution solution)
+		{
+			if (SolutionHasPackageInitializationScripts(solution)) {
+				RunInitializePackagesCmdlet();
+			}
+		}
+		
+		bool SolutionHasPackageInitializationScripts(Solution solution)
 		{
 			IPackageInitializationScripts scripts = CreatePackageInitializationScripts(solution);
-			scripts.Run();
+			return scripts.Any();
+		}
+		
+		void RunInitializePackagesCmdlet()
+		{
+			string command = "Invoke-InitializePackages";
+			consoleHost.ScriptingConsole.SendLine(command);
 		}
 		
 		IPackageInitializationScripts CreatePackageInitializationScripts(Solution solution)
 		{
-			PowerShellPackageScriptSession session = CreateScriptSession();
-			return scriptsFactory.CreatePackageInitializationScripts(solution, session);
-		}
-		
-		PowerShellPackageScriptSession CreateScriptSession()
-		{
-			IPowerShellHost powerShellHost = consoleHost.PowerShellHost;
-			return new PowerShellPackageScriptSession(powerShellHost, consoleHost.ScriptingConsole);
+			return scriptsFactory.CreatePackageInitializationScripts(solution, null);
 		}
 	}
 }

@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -17,11 +18,14 @@ namespace PackageManagement.Tests.Scripting
 		FakePackageManagementProjectService fakeProjectService;
 		PackageInitializationScriptsRunnerForOpenedSolution runner;
 		FakePackageManagementConsoleHost fakeConsoleHost;
+		FakeScriptingConsole fakeScriptingConsole;
 		
 		void CreateRunner()
 		{
 			fakeProjectService = new FakePackageManagementProjectService();
 			fakeConsoleHost = new FakePackageManagementConsoleHost();
+			fakeScriptingConsole = new FakeScriptingConsole();
+			fakeConsoleHost.ScriptingConsole = fakeScriptingConsole;
 			fakeScriptsFactory = new FakePackageInitializationScriptsFactory();
 			runner = new PackageInitializationScriptsRunnerForOpenedSolution(fakeProjectService, fakeConsoleHost, fakeScriptsFactory);
 		}
@@ -32,17 +36,6 @@ namespace PackageManagement.Tests.Scripting
 			solution.FileName = @"d:\projects\myprojects\test.csproj";
 			fakeProjectService.FireSolutionLoadedEvent(solution);
 			return solution;
-		}
-		
-		[Test]
-		public void Instance_SolutionIsOpened_PackageInitializationScriptsAreExecuted()
-		{
-			CreateRunner();
-			OpenSolution();
-			
-			bool run = fakeScriptsFactory.FakePackageInitializationScripts.IsRunCalled;
-			
-			Assert.IsTrue(run);
 		}
 		
 		[Test]
@@ -57,14 +50,28 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Instance_SolutionIsOpened_PowerShellPackageScriptSessionIsUsedToCreatePackageInitializationScripts()
+		public void Instance_SolutionOpenedAndHasPackageInitializationScripts_InvokeInitializePackagesCmdletIsRun()
 		{
 			CreateRunner();
+			fakeScriptsFactory.FakePackageInitializationScripts.AnyReturnValue = true;
 			OpenSolution();
 			
-			PowerShellPackageScriptSession session = fakeScriptsFactory.ScriptSessionPassedToCreatePackageInitializationScripts as PowerShellPackageScriptSession;
+			string command = fakeScriptingConsole.TextPassedToSendLine;
+			string expectedCommand = "Invoke-InitializePackages";
 			
-			Assert.IsNotNull(session);
+			Assert.AreEqual(expectedCommand, command);
+		}
+		
+		[Test]
+		public void Instance_SolutionOpenedAndHasNoPackageInitializationScripts_InvokeInitializePackagesCmdletIsNotRun()
+		{
+			CreateRunner();
+			fakeScriptsFactory.FakePackageInitializationScripts.AnyReturnValue = false;
+			OpenSolution();
+			
+			string command = fakeScriptingConsole.TextPassedToSendLine;
+			
+			Assert.IsNull(command);
 		}
 	}
 }

@@ -8,18 +8,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PackageInitializationScriptsFactory : IPackageInitializationScriptsFactory
 	{
-		IPackageManagementConsoleHost consoleHost;
-		
-		public PackageInitializationScriptsFactory()
-			: this(PackageManagementServices.ConsoleHost)
-		{
-		}
-		
-		public PackageInitializationScriptsFactory(IPackageManagementConsoleHost consoleHost)
-		{
-			this.consoleHost = consoleHost;
-		}
-		
 		public IPackageInitializationScripts CreatePackageInitializationScripts(
 			Solution solution,
 			IPackageScriptSession scriptSession)

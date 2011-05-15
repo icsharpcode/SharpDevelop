@@ -17,7 +17,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		public InvokeInitializePackagesCmdlet()
 			: this(
 				PackageManagementServices.ProjectService,
-				new PackageInitializationScriptsFactory(PackageManagementServices.ConsoleHost),
+				new PackageInitializationScriptsFactory(),
 				PackageManagementServices.ConsoleHost,
 				null)
 		{
