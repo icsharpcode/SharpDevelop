@@ -19,15 +19,16 @@ namespace PackageManagement.Tests.Scripting
 		PackageInitializationScriptsRunnerForOpenedSolution runner;
 		FakePackageManagementConsoleHost fakeConsoleHost;
 		FakeScriptingConsole fakeScriptingConsole;
+		TestablePackageInitializationScriptsConsole scriptsConsole;
 		
 		void CreateRunner()
 		{
 			fakeProjectService = new FakePackageManagementProjectService();
-			fakeConsoleHost = new FakePackageManagementConsoleHost();
-			fakeScriptingConsole = new FakeScriptingConsole();
-			fakeConsoleHost.ScriptingConsole = fakeScriptingConsole;
+			scriptsConsole = new TestablePackageInitializationScriptsConsole();
+			fakeConsoleHost = scriptsConsole.FakeConsoleHost;
+			fakeScriptingConsole = scriptsConsole.FakeScriptingConsole;
 			fakeScriptsFactory = new FakePackageInitializationScriptsFactory();
-			runner = new PackageInitializationScriptsRunnerForOpenedSolution(fakeProjectService, fakeConsoleHost, fakeScriptsFactory);
+			runner = new PackageInitializationScriptsRunnerForOpenedSolution(fakeProjectService, scriptsConsole, fakeScriptsFactory);
 		}
 		
 		Solution OpenSolution()

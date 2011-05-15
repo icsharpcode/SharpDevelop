@@ -450,5 +450,24 @@ namespace PackageManagement.Tests.Scripting
 			
 			CollectionAssert.AreEqual(expectedTextPassedToWrite, actualTextPassedToWrite);
 		}
+		
+		[Test]
+		public void IsRunning_BeforeRunCalled_ReturnsFalse()
+		{
+			CreateHost();
+			bool running = host.IsRunning;
+			
+			Assert.IsFalse(running);
+		}
+		
+		[Test]
+		public void IsRunning_AfterRunCalled_ReturnsFalse()
+		{
+			CreateHost();
+			RunHost();
+			bool running = host.IsRunning;
+			
+			Assert.IsTrue(running);
+		}
 	}
 }

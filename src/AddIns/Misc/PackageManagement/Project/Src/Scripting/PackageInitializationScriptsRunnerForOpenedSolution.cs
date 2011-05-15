@@ -9,22 +9,24 @@ namespace ICSharpCode.PackageManagement.Scripting
 	public class PackageInitializationScriptsRunnerForOpenedSolution
 	{
 		IPackageInitializationScriptsFactory scriptsFactory;
-		IPackageManagementConsoleHost consoleHost;
+		PackageInitializationScriptsConsole scriptsConsole;
 		
 		public PackageInitializationScriptsRunnerForOpenedSolution(
-			IPackageManagementProjectService projectService,
-			IPackageManagementConsoleHost consoleHost)
-			: this(projectService, consoleHost, new PackageInitializationScriptsFactory())
+			IPackageManagementProjectService projectService)
+			: this(
+				projectService,
+				new PackageInitializationScriptsConsole(PackageManagementServices.ConsoleHost),
+				new PackageInitializationScriptsFactory())
 		{
 		}
 		
 		public PackageInitializationScriptsRunnerForOpenedSolution(
 			IPackageManagementProjectService projectService,
-			IPackageManagementConsoleHost consoleHost,
+			PackageInitializationScriptsConsole scriptsConsole,
 			IPackageInitializationScriptsFactory scriptsFactory)
 		{
 			projectService.SolutionLoaded += SolutionLoaded;
-			this.consoleHost = consoleHost;
+			this.scriptsConsole = scriptsConsole;
 			this.scriptsFactory = scriptsFactory;
 		}
 		
@@ -49,7 +51,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void RunInitializePackagesCmdlet()
 		{
 			string command = "Invoke-InitializePackages";
-			consoleHost.ScriptingConsole.SendLine(command);
+			scriptsConsole.ExecuteCommand(command);
 		}
 		
 		IPackageInitializationScripts CreatePackageInitializationScripts(Solution solution)

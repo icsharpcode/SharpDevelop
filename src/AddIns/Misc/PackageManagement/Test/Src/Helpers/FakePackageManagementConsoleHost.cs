@@ -95,10 +95,6 @@ namespace PackageManagement.Tests.Helpers
 			return PackageSourceToReturnFromGetActivePackageSource;
 		}
 		
-		public FakePowerShellHost FakePowerShellHost = new FakePowerShellHost();
-		
-		public IPowerShellHost PowerShellHost {
-			get { return FakePowerShellHost; }
-		}
+		public bool IsRunning { get; set; }
 	}
 }

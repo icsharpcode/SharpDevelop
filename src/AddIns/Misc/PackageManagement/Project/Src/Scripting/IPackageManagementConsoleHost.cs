@@ -16,7 +16,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		PackageSource ActivePackageSource { get; set; }
 		IScriptingConsole ScriptingConsole { get; set; }
 		IPackageManagementSolution Solution { get; }
-		IPowerShellHost PowerShellHost { get; }
+		bool IsRunning { get; }
 		
 		void Clear();
 		void WritePrompt();

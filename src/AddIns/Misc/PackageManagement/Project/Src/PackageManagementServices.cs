@@ -26,8 +26,7 @@ namespace ICSharpCode.PackageManagement
 			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
 			consoleHost = new PackageManagementConsoleHost(solution, registeredPackageRepositories);
 			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
-			packageInitializationScriptsRunner = 
-				new PackageInitializationScriptsRunnerForOpenedSolution(projectService, consoleHost);
+			packageInitializationScriptsRunner = new PackageInitializationScriptsRunnerForOpenedSolution(projectService);
 		}
 		
 		public static PackageManagementOptions Options {

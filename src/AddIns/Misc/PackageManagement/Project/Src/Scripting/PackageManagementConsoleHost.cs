@@ -45,6 +45,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 		}
 		
+		public bool IsRunning { get; private set; }
 		public IProject DefaultProject { get; set; }
 		
 		public PackageSource ActivePackageSource {
@@ -54,10 +55,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		public IScriptingConsole ScriptingConsole { get; set; }
 		public IPackageManagementSolution Solution { get; private set; }
-		
-		public IPowerShellHost PowerShellHost {
-			get { return powerShellHost; }
-		}
 		
 		public void Dispose()
 		{
@@ -85,6 +82,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			thread = CreateThread(RunSynchronous);
 			thread.Start();
+			IsRunning = true;
 		}
 		
 		protected virtual IThread CreateThread(ThreadStart threadStart)
