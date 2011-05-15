@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using NuGet;
 
@@ -13,8 +14,8 @@ namespace ICSharpCode.PackageManagement
 		RegisteredPackageSources registeredPackageSources;
 		IList<RecentPackageInfo> recentPackages;
 		IRecentPackageRepository recentPackageRepository;
-		Dictionary<PackageSource, IPackageRepository> repositories =
-			new Dictionary<PackageSource, IPackageRepository>();
+		ConcurrentDictionary<PackageSource, IPackageRepository> repositories =
+			new ConcurrentDictionary<PackageSource, IPackageRepository>();
 		
 		public PackageRepositoryCache(
 			ISharpDevelopPackageRepositoryFactory factory,
@@ -57,7 +58,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository CreateNewCachedRepository(PackageSource packageSource)
 		{
 			IPackageRepository repository = factory.CreateRepository(packageSource);
-			repositories.Add(packageSource, repository);
+			repositories.TryAdd(packageSource, repository);
 			return repository;
 		}
 		
