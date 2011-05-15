@@ -32,17 +32,27 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Property tree of this node.
 		/// </summary>
-		public ThisNode Content
-		{
-			get; set;
-		}
+		public ThisNode Content { get; set; }
 		
+		/// <summary>
+		/// Name of the Type in the debuggee.
+		/// </summary>
+		public string TypeName { get; set; }
+		
+		/// <summary>
+		/// All ObjectGraphProperties in the property tree of this node.
+		/// </summary>
 		public IEnumerable<ObjectGraphProperty> Properties
 		{
-			get
-			{
-				return this.Content.FlattenPropertyNodes().Select(node => {return node.Property; });
-			}
+			get	{ return this.Content.FlattenPropertyNodes().Select(node => {return node.Property; });	}
+		}
+		
+		/// <summary>
+		/// Same as <see cref="Properties" /> but sorted so that .NET properties come first, and .NET fields after them.
+		/// </summary>
+		public IEnumerable<ObjectGraphProperty> PropertiesFirstThenFields
+		{
+			get { return this.Properties.OrderBy(prop => prop.MemberInfo, PropertiesFirstComparer.Instance); }
 		}
 	}
 }

@@ -28,7 +28,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 			TestableScriptingConsole.ReadLine(indent);
 			
 			string expectedText = "  ";
-			Assert.AreEqual(expectedText, FakeConsoleTextEditor.TextPassedToWrite);
+			Assert.AreEqual(expectedText, FakeConsoleTextEditor.TextPassedToAppend);
 		}
 		
 		[Test]
@@ -38,11 +38,11 @@ namespace ICSharpCode.Scripting.Tests.Console
 			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
 			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			
-			FakeConsoleTextEditor.IsWriteCalled = false;
+			FakeConsoleTextEditor.IsAppendCalled = false;
 			
 			TestableScriptingConsole.ReadLine(0);
 			
-			Assert.IsFalse(FakeConsoleTextEditor.IsWriteCalled);
+			Assert.IsFalse(FakeConsoleTextEditor.IsAppendCalled);
 		}
 		
 		[Test]

@@ -15,7 +15,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository CreateAggregatePackageRepository();
 		IPackageRepository ActivePackageRepository { get; }
 		IProjectManager ActiveProjectManager { get; }
-		IPackageRepository RecentPackageRepository { get; }
+		IRecentPackageRepository RecentPackageRepository { get; }
 		
 		void InstallPackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations);
 		void UninstallPackage(IPackageRepository repository, IPackage package);

@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.Design;
 using NuGet;
 
 namespace PackageManagement.Tests.Helpers
@@ -11,7 +12,8 @@ namespace PackageManagement.Tests.Helpers
 	public class OneRegisteredPackageSourceHelper
 	{
 		public RegisteredPackageSources RegisteredPackageSources;
-		public PackageManagementOptions Options;
+		public TestablePackageManagementOptions Options;
+		public FakeSettings FakeSettings;
 		public PackageSource PackageSource = new PackageSource("http://sharpdevelop.com", "Test Package Source");
 		
 		public OneRegisteredPackageSourceHelper()
@@ -22,7 +24,8 @@ namespace PackageManagement.Tests.Helpers
 		void CreateOneRegisteredPackageSource()
 		{
 			Properties properties = new Properties();
-			Options = new PackageManagementOptions(properties);
+			Options = new TestablePackageManagementOptions();
+			FakeSettings = Options.FakeSettings;
 			RegisteredPackageSources = Options.PackageSources;
 			AddOnePackageSource();
 		}

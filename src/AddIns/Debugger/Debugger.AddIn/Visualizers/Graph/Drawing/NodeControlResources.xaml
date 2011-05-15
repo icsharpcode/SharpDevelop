@@ -2,13 +2,16 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="clr-namespace:Debugger.AddIn.Visualizers"
 >
-	<local:TooltipVisibilityConverter x:Key="toolVisConverter"></local:TooltipVisibilityConverter>
+	<local:TooltipVisibilityConverter x:Key="TooltipVisibilityConverter"></local:TooltipVisibilityConverter>
+	<local:BoolToBoldConverter x:Key="BoolToBoldConverter"></local:BoolToBoldConverter>
+	
+	
 	<DataTemplate x:Key="valueColumnTemplate">
         <TextBlock Text="{Binding Text}" MaxWidth="200">
             <TextBlock.ToolTip>
                 <ToolTip 
                         DataContext="{Binding Path=PlacementTarget, RelativeSource={x:Static RelativeSource.Self}}" 
-                        Visibility="{Binding Converter={StaticResource toolVisConverter}, ConverterParameter=2}">
+                        Visibility="{Binding Converter={StaticResource TooltipVisibilityConverter}, ConverterParameter=2}">
                     <TextBlock Text="{Binding Text}"></TextBlock>
                 </ToolTip>
             </TextBlock.ToolTip>

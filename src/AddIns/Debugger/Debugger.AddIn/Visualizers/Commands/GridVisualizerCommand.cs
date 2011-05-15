@@ -17,8 +17,11 @@ namespace Debugger.AddIn.Visualizers
 	{
 		public bool IsVisualizerAvailable(DebugType type)
 		{
+			if (type.IsAtomic()) {
+				return false;
+			}
 			DebugType collectionType, itemType;
-			// Visualizer available for IEnumerable<T> (that means also IList<T>)
+			// Visualizer available for IEnumerable<T> (that is, also IList<T>)
 			return type.ResolveIEnumerableImplementation(out collectionType, out itemType);
 		}
 		
@@ -49,8 +52,7 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
-			if (this.Expression != null)
-			{
+			if (this.Expression != null) {
 				var gridVisualizerWindow = GridVisualizerWindow.EnsureShown();
 				gridVisualizerWindow.ShownExpression = this.Expression;
 			}

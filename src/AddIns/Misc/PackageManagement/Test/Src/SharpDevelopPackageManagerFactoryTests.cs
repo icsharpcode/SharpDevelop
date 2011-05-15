@@ -25,7 +25,7 @@ namespace PackageManagement.Tests
 		
 		void CreateFactory()
 		{
-			options = new PackageManagementOptions(new Properties());
+			options = new TestablePackageManagementOptions();
 			fakePackageRepositoryFactory = new FakePackageRepositoryFactory();
 			fakeProjectSystemFactory = new FakeProjectSystemFactory();
 			factory = new SharpDevelopPackageManagerFactory(fakePackageRepositoryFactory, fakeProjectSystemFactory, options);

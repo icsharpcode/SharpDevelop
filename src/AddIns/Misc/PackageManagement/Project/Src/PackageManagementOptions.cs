@@ -12,19 +12,22 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementOptions
 	{
-		const string PackageSourcesPropertyName = "PackageSources";
 		const string PackageDirectoryPropertyName = "PackagesDirectory";
-		const string ActivePackageSourcePropertyName = "ActivePackageSource";
 		const string RecentPackagesPropertyName = "RecentPackages";
 
-		RegisteredPackageSources packageSources;
+		RegisteredPackageSourceSettings registeredPackageSourceSettings;
 		Properties properties;
 		List<RecentPackageInfo> recentPackages;
 		
-		public PackageManagementOptions(Properties properties)
+		public PackageManagementOptions(Properties properties, ISettings settings)
 		{
 			this.properties = properties;
-			properties.Set<Version>("MyVersion", new Version(1, 0));
+			registeredPackageSourceSettings = new RegisteredPackageSourceSettings(settings);
+		}
+		
+		public PackageManagementOptions(Properties properties)
+			: this(properties, Settings.UserSettings)
+		{
 		}
 		
 		public PackageManagementOptions()
@@ -33,40 +36,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public RegisteredPackageSources PackageSources {
-			get {
-				if (packageSources == null) {
-					packageSources = new RegisteredPackageSources(GetSavedPackageSources());
-					packageSources.CollectionChanged += PackageSourcesChanged;
-				}
-				return packageSources;
-			}
-		}
-		
-		IEnumerable<PackageSource> GetSavedPackageSources()
-		{
-			return PackageSourceConverter.ConvertFromRegisteredPackageSources(SavedRegisteredPackageSources);
-		}
-
-		void PackageSourcesChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			UpdateSavedPackageSources();
-		}
-		
-		void UpdateSavedPackageSources()
-		{
-			SavedRegisteredPackageSources = 
-				PackageSourceConverter.ConvertToRegisteredPackageSourcesList(packageSources);
-		}
-		
-		/// <summary>
-		/// Use RegisteredPackageSource since PackageSource cannot be serialized.
-		/// </summary>
-		IList<RegisteredPackageSource> SavedRegisteredPackageSources {
-			get { 
-				List<RegisteredPackageSource> defaultSources = new List<RegisteredPackageSource>();
-				return properties.Get<List<RegisteredPackageSource>>(PackageSourcesPropertyName, defaultSources);
-			}
-			set { properties.Set(PackageSourcesPropertyName, value); }
+			get { return registeredPackageSourceSettings.PackageSources; }
 		}
 		
 		public string PackagesDirectory {
@@ -75,24 +45,8 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public PackageSource ActivePackageSource {
-			get {
-				if (properties.Contains(ActivePackageSourcePropertyName)) {
-					var registeredPackageSource = properties.Get<RegisteredPackageSource>(ActivePackageSourcePropertyName, null);
-					var packageSource = registeredPackageSource.ToPackageSource();
-					if (PackageSources.Contains(packageSource)) {
-						return packageSource;
-					}
-				}
-				return null;
-			}
-			set {
-				if (value == null) {
-					properties.Remove(ActivePackageSourcePropertyName);
-				} else {
-					var packageSource = new RegisteredPackageSource(value);
-					properties.Set(ActivePackageSourcePropertyName, packageSource);
-				}
-			}
+			get { return registeredPackageSourceSettings.ActivePackageSource; }
+			set { registeredPackageSourceSettings.ActivePackageSource = value; }
 		}
 		
 		public IList<RecentPackageInfo> RecentPackages {

@@ -41,13 +41,13 @@ namespace PackageManagement.Tests.Helpers
 			IgnoreDependenciesPassedToAddPackageReference = ignoreDependencies;
 		}
 		
-		protected override void AddPackageReference(IPackage package, bool ignoreDependencies)
+		public override void AddPackageReference(IPackage package, bool ignoreDependencies)
 		{
 			PackagePassedToAddPackageReference = package;
 			IgnoreDependenciesPassedToAddPackageReference = ignoreDependencies;
 		}
 		
-		protected override void RemovePackageReference(IPackage package, bool force, bool removeDependencies)
+		public override void RemovePackageReference(IPackage package, bool force, bool removeDependencies)
 		{
 			PackagePassedToRemovePackageReference = package;
 			ForcePassedToRemovePackageReference = force;

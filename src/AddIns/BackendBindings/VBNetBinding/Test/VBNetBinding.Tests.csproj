@@ -56,6 +56,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LanguageUtilsTests.cs" />
     <Compile Include="MockTextEditor.cs" />
     <Compile Include="TextEditorBasedTests.cs" />
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">

@@ -8,7 +8,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class RecentPackageRepository : IPackageRepository
+	public class RecentPackageRepository : IRecentPackageRepository
 	{
 		public const int DefaultMaximumPackagesCount = 20;
 		
@@ -144,6 +144,12 @@ namespace ICSharpCode.PackageManagement
 		public int MaximumPackagesCount {
 			get { return maximumPackagesCount; }
 			set { maximumPackagesCount = value; }
+		}
+		
+		public void Clear()
+		{
+			packages.Clear();
+			UpdateRecentPackagesInOptions();
 		}
 	}
 }

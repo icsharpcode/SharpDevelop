@@ -25,7 +25,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 			return list;
 		}
 		
-		public static List<T> ToList<T>(this T singleItem)
+		public static List<T> SingleItemList<T>(this T singleItem)
 		{
 			var newList = new List<T>();
 			newList.Add(singleItem);

@@ -54,21 +54,20 @@
 			<Reference Include="IronPython.Modules">
 				<HintPath>${addinpath:ICSharpCode.PythonBinding}\IronPython.Modules.dll</HintPath>
 			</Reference>
+			<Reference Include="IronPython.Wpf">
+				<HintPath>${addinpath:ICSharpCode.PythonBinding}\DLLs\IronPython.Wpf.dll</HintPath>
+			</Reference>
 		</ProjectItems>		
 		<Files>
 			<File 
 				name="Application.py"
 				SubType="Code">
-<![CDATA[import clr
+<![CDATA[import wpf
 
-clr.AddReference('PresentationFramework')
-
-from System.IO import FileMode, FileStream
 from System.Windows import Application
-from System.Windows.Markup import XamlReader
+from Window1 import Window1
 
-stream = FileStream('Window1.xaml', FileMode.Open)
-window = XamlReader.Load(stream)
+window = Window1()
 app = Application()
 app.Run(window)
 ]]></File>
@@ -86,6 +85,18 @@ app.Run(window)
 		
 	</Grid>
 </Window>]]></File>
+			<File 
+				name="Window1.py"
+				SubType="Code">
+<![CDATA[import wpf
+
+from System.Windows import Window
+
+class Window1 (Window):
+	def __init__(self):
+		wpf.LoadComponent(self, 'Window1.xaml')
+
+]]></File>
 		</Files>
 	</Project>
 </Template>

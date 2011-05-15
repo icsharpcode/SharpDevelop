@@ -669,5 +669,18 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedReferenceAndProjectName, projectSystem.ReferenceAndProjectNamePassedToLogAddedReferenceToProject);
 		}
+		
+		[Test]
+		public void ResolvePath_PathPassed_ReturnsPathUnchanged()
+		{
+			CreateTestProject();
+			CreateProjectSystem(project);
+			
+			string expectedPath = @"d:\temp";
+			
+			string path = projectSystem.ResolvePath(expectedPath);
+			
+			Assert.AreEqual(expectedPath, path);
+		}
 	}
 }

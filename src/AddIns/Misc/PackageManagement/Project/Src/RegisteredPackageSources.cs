@@ -4,8 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using ICSharpCode.Core;
+
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -23,7 +22,7 @@ namespace ICSharpCode.PackageManagement
 			AddPackageSources(packageSources);
 			AddDefaultPackageSourceIfNoRegisteredPackageSources();
 		}
-
+		
 		void AddPackageSources(IEnumerable<PackageSource> packageSources)
 		{
 			foreach (PackageSource source in packageSources) {

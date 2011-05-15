@@ -14,14 +14,14 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
-using Debugger.AddIn.Visualizers.Common;
+using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.PresentationBindings;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
-using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
@@ -105,54 +105,60 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		
 		public void Refresh()
 		{
-			// clear ListView
-			listView.ItemsSource = null;
-			ScrollViewer listViewScroller = listView.GetScrollViewer();
-			if (listViewScroller != null) {
-				listViewScroller.ScrollToVerticalOffset(0);
-			}
-			Value shownValue = null;
-			ICSharpCode.NRefactory.Ast.Expression shownExpr = null;
-			try	{
-				shownExpr = debuggerService.GetExpression(txtExpression.Text);
-				shownValue = shownExpr.Evaluate(debuggerService.DebuggedProcess);
-			} catch(GetValueException) {
-				// display ex.Message
-			}
-			if (shownValue != null && !shownValue.IsNull) {
-				GridValuesProvider gridValuesProvider;
-				// Value is IList
-				DebugType iListType, listItemType;
-				if (shownValue.Type.ResolveIListImplementation(out iListType, out listItemType)) {
-					gridValuesProvider = CreateListValuesProvider(shownExpr, iListType, listItemType);
-				} else	{
-					// Value is IEnumerable
-					DebugType iEnumerableType, itemType;
-					if (shownValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
-						// original
-						/*var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, initialIEnumerableItemsCount);
-						var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
-						lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
-						gridValuesProvider = enumerableValuesProvider;*/
-						DebugType debugListType;
-						var debugListExpression = DebuggerHelpers.CreateDebugListExpression(shownExpr, itemType, out debugListType);
-						gridValuesProvider = CreateListValuesProvider(debugListExpression, debugListType, itemType);
-					} else	{
-						// Value cannot be displayed in GridVisualizer
-						return;
-					}
+			try {
+				// clear ListView
+				listView.ItemsSource = null;
+				ScrollViewer listViewScroller = listView.GetScrollViewer();
+				if (listViewScroller != null) {
+					listViewScroller.ScrollToVerticalOffset(0);
 				}
-				
-				IList<MemberInfo> itemTypeMembers = gridValuesProvider.GetItemTypeMembers();
-				InitializeColumns((GridView)this.listView.View, itemTypeMembers);
-				this.columnHider = new GridViewColumnHider((GridView)this.listView.View);
-				cmbColumns.ItemsSource = this.columnHider.HideableColumns;
+				Value shownValue = null;
+				ICSharpCode.NRefactory.Ast.Expression shownExpr = null;
+				try	{
+					shownExpr = debuggerService.GetExpression(txtExpression.Text);
+					shownValue = shownExpr.Evaluate(debuggerService.DebuggedProcess);
+				} catch(GetValueException) {
+					// display ex.Message
+				}
+				if (shownValue != null && !shownValue.IsNull) {
+					GridValuesProvider gridValuesProvider;
+					// Value is IList
+					DebugType iListType, listItemType;
+					if (shownValue.Type.ResolveIListImplementation(out iListType, out listItemType)) {
+						gridValuesProvider = CreateListValuesProvider(shownExpr.CastToIList(), listItemType);
+					} else	{
+						// Value is IEnumerable
+						DebugType iEnumerableType, itemType;
+						if (shownValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
+							// original
+							/*var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, initialIEnumerableItemsCount);
+							var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
+							lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
+							gridValuesProvider = enumerableValuesProvider;*/
+							DebugType debugListType;
+							var debugListExpression = DebuggerHelpers.CreateDebugListExpression(shownExpr, itemType, out debugListType);
+							gridValuesProvider = CreateListValuesProvider(debugListExpression, itemType);
+						} else	{
+							// Value cannot be displayed in GridVisualizer
+							return;
+						}
+					}
+					
+					IList<MemberInfo> itemTypeMembers = gridValuesProvider.GetItemTypeMembers();
+					InitializeColumns((GridView)this.listView.View, itemTypeMembers);
+					this.columnHider = new GridViewColumnHider((GridView)this.listView.View);
+					cmbColumns.ItemsSource = this.columnHider.HideableColumns;
+				}
+			} catch (GetValueException) {
+				// display ex msg
+			} catch (DebuggerVisualizerException) {
+				// display ex msg
 			}
 		}
 		
-		ListValuesProvider CreateListValuesProvider(ICSharpCode.NRefactory.Ast.Expression targetObject, DebugType iListType, DebugType listItemType)
+		ListValuesProvider CreateListValuesProvider(ICSharpCode.NRefactory.Ast.Expression targetExpression, DebugType listItemType)
 		{
-			var listValuesProvider = new ListValuesProvider(targetObject, iListType, listItemType);
+			var listValuesProvider = new ListValuesProvider(targetExpression, listItemType);
 			var virtCollection = new VirtualizingCollection<ObjectValue>(listValuesProvider);
 			this.listView.ItemsSource = virtCollection;
 			return listValuesProvider;

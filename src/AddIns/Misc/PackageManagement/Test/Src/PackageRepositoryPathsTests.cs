@@ -29,7 +29,7 @@ namespace PackageManagement.Tests
 		
 		void CreatePackageManagementOptions()
 		{
-			options = new PackageManagementOptions(new Properties());
+			options = new TestablePackageManagementOptions();
 		}
 		
 		[Test]

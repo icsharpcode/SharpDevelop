@@ -25,7 +25,8 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public void ReturnForReuse(PositionedGraphNodeControl controlToReuse)
 		{
-			controls.Push(controlToReuse);
+			// not used now, avoid leaking!
+			//controls.Push(controlToReuse);
 		}
 		
 		public PositionedGraphNodeControl GetNodeControl()

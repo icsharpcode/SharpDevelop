@@ -15,7 +15,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 	{
 		static readonly double boxPadding = 15;
 		//static readonly double boxSafetyMargin = 5;	// inflate boxes for collision testing
-		static readonly double multiEdgeGap = 10;
+		static readonly double multiEdgeGap = 15;
 		
 		List<IRect> boxes = new List<IRect>();
 		public List<IRect> Boxes {
@@ -27,21 +27,28 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 			get { return vertices; }
 		}
 		
-		AStarShortestPathFinder pathFinder;
+		DijkstraShortestPathFinder pathFinder;
 		
 		public RouteGraph()
 		{
-			pathFinder = new AStarShortestPathFinder(this);
+			pathFinder = new DijkstraShortestPathFinder(this);
 		}
 		
-		public static RouteGraph InitializeVertices(IEnumerable<IRect> nodes, IEnumerable<IEdge> edges)
+		/// <summary>
+		/// Initializes the RouteGraph by vertices close to node corners.
+		/// </summary>
+		/// <param name="boundX">X coordinates of vertices cannot be lower than this value (so that edges stay in boundaries).</param>
+		/// <param name="boundY">Y coordinates of vertices cannot be lower than this value (so that edges stay in boundaries).</param>
+		public static RouteGraph InitializeVertices(IEnumerable<IRect> nodes, IEnumerable<IEdge> edges, int boundX, int boundY)
 		{
 			var graph = new RouteGraph();
 			// add vertices for node corners
 			foreach (var node in nodes) {
 				graph.Boxes.Add(node);
 				foreach (var vertex in GetRectCorners(node, boxPadding)) {
-					graph.Vertices.Add(vertex);
+					if (vertex.X >= boundX && vertex.Y >= boundY) {
+						graph.Vertices.Add(vertex);
+					}
 				}
 			}
 			// add vertices for egde endpoints
@@ -104,7 +111,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		{
 			if (edgeStart == null || edgeEnd == null) {
 				// should not happen
-				return;
+				throw new System.Exception("The line between box centers does not intersect the boxes!");
 			}
 			var startPoint = new RouteVertex(edgeStart.Value.X, edgeStart.Value.Y);
 			startPoint.IsEdgeEndpoint = true;
@@ -208,12 +215,17 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		
 		static double GetMultiEdgeSpan(double space, int multiEdgeCount, double multiEdgeGap)
 		{
-			if ((multiEdgeCount + 1) * multiEdgeGap < space)
+			if (multiEdgeCount <= 1) {
+				// 1 edge, no spacing needed
+				return 0;
+			}
+			if ((multiEdgeCount + 1) * multiEdgeGap < space) {
 				// the edges fit, maintain the gap
 				return (multiEdgeCount - 1) * multiEdgeGap;
-			else
+			} else {
 				// there are too many edges, we have to make smaller gaps to fit edges into given space
 				return space - multiEdgeGap;
+			}
 		}
 	}
 }

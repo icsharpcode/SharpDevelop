@@ -28,7 +28,7 @@ namespace PackageManagement.Tests
 		
 		void CreatePackageManager(IProject project, PackageReferenceRepositoryHelper packageRefRepositoryHelper)
 		{
-			options = new PackageManagementOptions(new Properties());
+			options = new TestablePackageManagementOptions();
 			options.PackagesDirectory = "packages";
 			
 			repositoryPaths = new PackageRepositoryPaths(project, options);

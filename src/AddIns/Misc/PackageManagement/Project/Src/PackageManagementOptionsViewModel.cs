@@ -2,212 +2,81 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementOptionsViewModel : ViewModelBase<PackageManagementOptionsViewModel>
 	{
-		ObservableCollection<PackageSourceViewModel> packageSourceViewModels = 
-			new ObservableCollection<PackageSourceViewModel>();
-		PackageManagementOptions options;
+		IRecentPackageRepository recentPackageRepository;
+		IMachinePackageCache machinePackageCache;
+		IProcess process;
 		
-		DelegateCommand addPackageSourceCommmand;
-		DelegateCommand removePackageSourceCommand;
-		DelegateCommand movePackageSourceUpCommand;
-		DelegateCommand movePackageSourceDownCommand;
-		
-		RegisteredPackageSource newPackageSource = new RegisteredPackageSource();
-		PackageSourceViewModel selectedPackageSourceViewModel;
-		
-		public PackageManagementOptionsViewModel(PackageManagementOptions options)
+		public PackageManagementOptionsViewModel(IRecentPackageRepository recentPackageRepository)
+			: this(recentPackageRepository, new MachinePackageCache(), new Process())
 		{
-			this.options = options;
+		}
+		
+		public PackageManagementOptionsViewModel(
+			IRecentPackageRepository recentPackageRepository,
+			IMachinePackageCache machinePackageCache,
+			IProcess process)
+		{
+			this.recentPackageRepository = recentPackageRepository;
+			this.machinePackageCache = machinePackageCache;
+			this.process = process;
+			
+			this.HasNoRecentPackages = !RecentPackageRepositoryHasPackages();
+			this.HasNoCachedPackages = !MachinePackageCacheHasPackages();
+			
 			CreateCommands();
+		}
+		
+		public bool HasNoRecentPackages { get; private set; }
+		public bool HasNoCachedPackages { get; private set; }
+		
+		bool MachinePackageCacheHasPackages()
+		{
+			return machinePackageCache.GetPackages().Any();
+		}
+		
+		bool RecentPackageRepositoryHasPackages()
+		{
+			return recentPackageRepository.GetPackages().Any();
 		}
 		
 		void CreateCommands()
 		{
-			addPackageSourceCommmand =
-				new DelegateCommand(param => AddPackageSource(),
-					param => CanAddPackageSource);
-			
-			removePackageSourceCommand =
-				new DelegateCommand(param => RemovePackageSource(),
-					param => CanRemovePackageSource);
-			
-			movePackageSourceUpCommand =
-				new DelegateCommand(param => MovePackageSourceUp(),
-					param => CanMovePackageSourceUp);
-			
-			movePackageSourceDownCommand =
-				new DelegateCommand(param => MovePackageSourceDown(),
-					param => CanMovePackageSourceDown);
+			ClearRecentPackagesCommand =
+				new DelegateCommand(param => ClearRecentPackages(), param => !HasNoRecentPackages);
+			ClearCachedPackagesCommand =
+				new DelegateCommand(param => ClearCachedPackages(), param => !HasNoCachedPackages);
+			BrowseCachedPackagesCommand =
+				new DelegateCommand(param => BrowseCachedPackages(), param => !HasNoCachedPackages);
 		}
 		
-		public ICommand AddPackageSourceCommand {
-			get { return addPackageSourceCommmand; }
-		}
+		public ICommand ClearRecentPackagesCommand { get; private set; }
+		public ICommand ClearCachedPackagesCommand { get; private set; }
+		public ICommand BrowseCachedPackagesCommand { get; private set; }
 		
-		public ICommand RemovePackageSourceCommand {
-			get { return removePackageSourceCommand; }
-		}
-		
-		public ICommand MovePackageSourceUpCommand {
-			get { return movePackageSourceUpCommand; }
-		}
-		
-		public ICommand MovePackageSourceDownCommand {
-			get { return movePackageSourceDownCommand; }
-		}
-		
-		public ObservableCollection<PackageSourceViewModel> PackageSourceViewModels {
-			get { return packageSourceViewModels; }
-		}
-		
-		public void Load()
+		public void ClearRecentPackages()
 		{
-			foreach (PackageSource packageSource in options.PackageSources) {
-				AddPackageSourceToViewModel(packageSource);
-			}
+			recentPackageRepository.Clear();
+			HasNoRecentPackages = true;
+			OnPropertyChanged(viewModel => viewModel.HasNoRecentPackages);
 		}
 		
-		void AddPackageSourceToViewModel(PackageSource packageSource)
+		public void ClearCachedPackages()
 		{
-			var packageSourceViewModel = new PackageSourceViewModel(packageSource);
-			packageSourceViewModels.Add(packageSourceViewModel);
+			machinePackageCache.Clear();
+			HasNoCachedPackages = true;
+			OnPropertyChanged(viewModel => viewModel.HasNoCachedPackages);
 		}
 		
-		public void Save()
+		public void BrowseCachedPackages()
 		{
-			options.PackageSources.Clear();
-			foreach (PackageSourceViewModel packageSourceViewModel in packageSourceViewModels) {
-				PackageSource source = packageSourceViewModel.GetPackageSource();
-				options.PackageSources.Add(source);
-			}
-		}
-		
-		public string NewPackageSourceName {
-			get { return newPackageSource.Name; }
-			set { newPackageSource.Name = value; }
-		}
-		
-		public string NewPackageSourceUrl {
-			get { return newPackageSource.Source; }
-			set { newPackageSource.Source = value; }
-		}
-		
-		public PackageSourceViewModel SelectedPackageSourceViewModel {
-			get { return selectedPackageSourceViewModel; }
-			set {
-				selectedPackageSourceViewModel = value;
-				OnPropertyChanged(viewModel => viewModel.SelectedPackageSourceViewModel);
-				OnPropertyChanged(viewModel => viewModel.CanAddPackageSource);
-			}
-		}
-		
-		public void AddPackageSource()
-		{
-			AddNewPackageSourceToViewModel();
-			SelectLastPackageSourceViewModel();
-		}
-		
-		void AddNewPackageSourceToViewModel()
-		{
-			var packageSource = newPackageSource.ToPackageSource();
-			AddPackageSourceToViewModel(packageSource);
-		}
-		
-		void SelectLastPackageSourceViewModel()
-		{
-			SelectedPackageSourceViewModel = GetLastPackageSourceViewModel();
-		}
-		
-		public bool CanAddPackageSource {
-			get {
-				return NewPackageSourceHasUrl && NewPackageSourceHasName;
-			}
-		}
-		
-		bool NewPackageSourceHasUrl {
-			get {
-				return !String.IsNullOrEmpty(NewPackageSourceUrl);
-			}
-		}
-		
-		bool NewPackageSourceHasName {
-			get {
-				return !String.IsNullOrEmpty(NewPackageSourceName);
-			}
-		}
-		
-		public void RemovePackageSource()
-		{
-			RemoveSelectedPackageSourceViewModel();
-		}
-		
-		public bool CanRemovePackageSource {
-			get { return selectedPackageSourceViewModel != null; }
-		}
-		
-		void RemoveSelectedPackageSourceViewModel()
-		{
-			packageSourceViewModels.Remove(selectedPackageSourceViewModel);
-		}
-		
-		public void MovePackageSourceUp()
-		{
-			int selectedPackageSourceIndex = GetSelectedPackageSourceViewModelIndex();
-			int destinationPackageSourceIndex = selectedPackageSourceIndex--;
-			packageSourceViewModels.Move(selectedPackageSourceIndex, destinationPackageSourceIndex);
-		}
-		
-		int GetSelectedPackageSourceViewModelIndex()
-		{
-			return packageSourceViewModels.IndexOf(selectedPackageSourceViewModel);
-		}
-		
-		public bool CanMovePackageSourceUp {
-			get {
-				return HasAtLeastTwoPackageSources() && !IsFirstPackageSourceSelected();
-			}
-		}
-		
-		bool IsFirstPackageSourceSelected()
-		{
-			return selectedPackageSourceViewModel == packageSourceViewModels[0];
-		}
-		
-		public void MovePackageSourceDown()
-		{
-			int selectedPackageSourceIndex = GetSelectedPackageSourceViewModelIndex();
-			int destinationPackageSourceIndex = selectedPackageSourceIndex++;
-			packageSourceViewModels.Move(selectedPackageSourceIndex, destinationPackageSourceIndex);			
-		}
-		
-		public bool CanMovePackageSourceDown {
-			get {
-				return HasAtLeastTwoPackageSources() && !IsLastPackageSourceSelected();
-			}
-		}
-		
-		bool HasAtLeastTwoPackageSources()
-		{
-			return packageSourceViewModels.Count >= 2;
-		}
-		
-		bool IsLastPackageSourceSelected()
-		{
-			PackageSourceViewModel lastViewModel = GetLastPackageSourceViewModel();
-			return lastViewModel == selectedPackageSourceViewModel;
-		}
-		
-		PackageSourceViewModel GetLastPackageSourceViewModel()
-		{
-			return packageSourceViewModels.Last();
+			process.Start(machinePackageCache.Source);
 		}
 	}
 }

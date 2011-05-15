@@ -2,11 +2,15 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using System.Collections;
 using System.Diagnostics;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Threading;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.TreeModel
 {

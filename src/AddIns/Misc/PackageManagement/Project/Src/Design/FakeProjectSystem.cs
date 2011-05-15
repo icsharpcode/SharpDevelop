@@ -49,5 +49,10 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			throw new NotImplementedException();
 		}
+		
+		public string ResolvePath(string path)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

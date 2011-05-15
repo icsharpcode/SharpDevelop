@@ -13,7 +13,7 @@ namespace ICSharpCode.PackageManagement.Design
 	{
 		public event EventHandler PackageInstalled;
 		
-		PackageManagementOptions options = new PackageManagementOptions(new Properties());
+		PackageManagementOptions options = new PackageManagementOptions(new Properties(), new FakeSettings());
 		public List<PackageOperation> PackageOperationsPassedToInstallPackage = new List<PackageOperation>();
 		
 		protected virtual void OnPackageInstalled()
@@ -127,7 +127,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public FakePackageRepository FakeRecentPackageRepository = new FakePackageRepository();
 		
-		public IPackageRepository RecentPackageRepository {
+		public IRecentPackageRepository RecentPackageRepository {
 			get { return FakeRecentPackageRepository; }
 		}
 		

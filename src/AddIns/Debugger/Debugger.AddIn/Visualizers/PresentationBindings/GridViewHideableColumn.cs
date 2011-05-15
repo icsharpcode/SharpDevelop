@@ -14,9 +14,11 @@ namespace Debugger.AddIn.Visualizers.PresentationBindings
 	public class GridViewHideableColumn : GridViewColumn
 	{
 		public bool CanBeHidden { get; set; }
+		public bool IsVisibleDefault { get; set; }
 		
 		public GridViewHideableColumn()
 		{
+			this.IsVisibleDefault = true;
 		}
 	}
 }

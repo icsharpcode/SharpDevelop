@@ -9,14 +9,13 @@ namespace ICSharpCode.PackageManagement
 	public class ViewModelLocator
 	{
 		AddPackageReferenceViewModel addPackageReferenceViewModel;
+		RegisteredPackageSourcesViewModel registeredPackageSourcesViewModel;
 		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
 		IPackageManagementService packageManagementService;
 		
 		public AddPackageReferenceViewModel AddPackageReferenceViewModel {
 			get {
-				if (addPackageReferenceViewModel == null) {
-					CreateAddPackageReferenceViewModel();
-				}
+				CreateAddPackageReferenceViewModel();
 				return addPackageReferenceViewModel;
 			}
 		}
@@ -42,22 +41,33 @@ namespace ICSharpCode.PackageManagement
 			return WpfDesigner.IsInDesignMode();
 		}
 		
-		public PackageManagementOptionsViewModel PackageManagementOptionsViewModel {
+		public RegisteredPackageSourcesViewModel RegisteredPackageSourcesViewModel {
 			get {
-				if (packageManagementOptionsViewModel == null) {
-					CreatePackageManagementOptionsViewModel();
+				if (registeredPackageSourcesViewModel == null) {
+					CreateRegisteredPackageSourcesViewModel();
 				}
-				return packageManagementOptionsViewModel;
+				return registeredPackageSourcesViewModel;
 			}
 		}
 		
-		void CreatePackageManagementOptionsViewModel()
+		void CreateRegisteredPackageSourcesViewModel()
 		{
 			CreatePackageManagementService();
 			if (IsInDesignMode()) {
-				packageManagementOptionsViewModel = new DesignTimePackageManagementOptionsViewModel();
+				registeredPackageSourcesViewModel = new DesignTimeRegisteredPackageSourcesViewModel();
 			} else {
-				packageManagementOptionsViewModel = new PackageManagementOptionsViewModel(packageManagementService.Options);
+				registeredPackageSourcesViewModel = new RegisteredPackageSourcesViewModel(packageManagementService.Options);
+			}
+		}
+		
+		public PackageManagementOptionsViewModel PackageManagementOptionsViewModel {
+			get {
+				if (packageManagementOptionsViewModel == null) {
+					CreatePackageManagementService();
+					IRecentPackageRepository recentRepository = packageManagementService.RecentPackageRepository;
+					packageManagementOptionsViewModel = new PackageManagementOptionsViewModel(recentRepository);
+				}
+				return packageManagementOptionsViewModel;
 			}
 		}
 	}

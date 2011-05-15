@@ -408,8 +408,9 @@
 				<ComponentRef Id="IpyExe"/>	
 				<ComponentRef Id="IronPythonModulesDll"/>	
 				<ComponentRef Id="IronPythonModulesXml"/>	
-				<ComponentRef Id="IronPythonDll"/>	
+				<ComponentRef Id="IronPythonDll"/>
 				<ComponentRef Id="IronPythonXml"/>
+				<ComponentRef Id="IronPythonWpfDll"/>
 				<ComponentRef Id="IronPythonLicenseRtf"/>
 				<ComponentRef Id="PythonChironExe"/>
 				<ComponentRef Id="PythonChironExeConfig"/>

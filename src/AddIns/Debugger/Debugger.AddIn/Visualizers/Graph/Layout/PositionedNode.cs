@@ -13,18 +13,17 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// ObjectNode with added position information.
 	/// </summary>
-	public class PositionedGraphNode : SplineRouting.IRect
+	public class PositionedNode : SplineRouting.IRect
 	{
-		public static readonly double MaxHeight = 300;
-		
 		/// <summary>
 		/// Creates new PositionedNode.
 		/// </summary>
 		/// <param name="objectNode">Underlying ObjectNode.</param>
-		public PositionedGraphNode(ObjectGraphNode objectNode)
+		public PositionedNode(ObjectGraphNode objectNode, Expanded expanded)
 		{
-			this.objectNode = objectNode;
-			initVisualControl();
+			this.ObjectNode = objectNode;
+			InitVisualControl();
+			InitContentFromObjectNode(expanded);
 		}
 		
 		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
@@ -32,89 +31,78 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public event EventHandler<ContentNodeEventArgs> ContentNodeExpanded;
 		public event EventHandler<ContentNodeEventArgs> ContentNodeCollapsed;
 		
-		private ObjectGraphNode objectNode;
 		/// <summary>
 		/// Underlying ObjectNode.
 		/// </summary>
-		public ObjectGraphNode ObjectNode
-		{
-			get { return objectNode; }
-		}
+		public ObjectGraphNode ObjectNode { get; private set; }
 		
 		/// <summary>
 		/// Tree-of-properties content of this node.
 		/// </summary>
-		public ContentNode Content
-		{
-			get; set;
-		}
+		public ContentNode Content { get; set; }
 		
-		private PositionedGraphNodeControl nodeVisualControl;
+		/// <summary>
+		/// Name of the Type in the debuggee.
+		/// </summary>
+		public string TypeName { get { return this.ObjectNode.TypeName; } }
+		
+		/// <summary>
+		/// The size of the subtree of this node in the layout.
+		/// </summary>
+		public double SubtreeSize { get; set; }
+		
 		/// <summary>
 		/// Visual control to be shown for this node.
 		/// </summary>
-		public PositionedGraphNodeControl NodeVisualControl
+		public PositionedGraphNodeControl NodeVisualControl { get; private set; }
+		
+		public void ReleaseNodeVisualControl()
 		{
-			get
-			{
-				return this.nodeVisualControl;
-			}
+			this.NodeVisualControl.SetDataContext(null);
+			this.NodeVisualControl = null;
 		}
 		
-		// TODO for speedup of re-layout only, posNodeForObjectGraphNode will be a service, that will return existing posNodes or create empty new
-		public void InitContentFromObjectNode(Expanded expanded)
+		void InitContentFromObjectNode(Expanded expanded)
 		{
 			this.Content = new ContentNode(this, null);
-			this.Content.InitFrom(this.ObjectNode.Content, expanded);
-			this.nodeVisualControl.Root = this.Content;
+			this.Content.InitOverride(this.ObjectNode.Content, expanded);
+			this.NodeVisualControl.SetDataContext(this);
 		}
 		
-		private void initVisualControl()
+		void InitVisualControl()
 		{
-			this.nodeVisualControl = NodeControlCache.Instance.GetNodeControl();
-			this.nodeVisualControl.MaxHeight = MaxHeight;
-			
+			this.NodeVisualControl = NodeControlCache.Instance.GetNodeControl();
 			// propagate events from nodeVisualControl
-			this.nodeVisualControl.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyExpanded);
-			this.nodeVisualControl.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyCollapsed);
-			this.nodeVisualControl.ContentNodeExpanded += new EventHandler<ContentNodeEventArgs>(NodeVisualControl_ContentNodeExpanded);
-			this.nodeVisualControl.ContentNodeCollapsed += new EventHandler<ContentNodeEventArgs>(NodeVisualControl_ContentNodeCollapsed);
+			this.NodeVisualControl.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyExpanded);
+			this.NodeVisualControl.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyCollapsed);
+			this.NodeVisualControl.ContentNodeExpanded += new EventHandler<ContentNodeEventArgs>(NodeVisualControl_ContentNodeExpanded);
+			this.NodeVisualControl.ContentNodeCollapsed += new EventHandler<ContentNodeEventArgs>(NodeVisualControl_ContentNodeCollapsed);
 		}
 		
 		public IEnumerable<PositionedNodeProperty> Properties
 		{
-			get
-			{
-				return this.Content.FlattenProperties();
-			}
+			get	{ return this.Content.FlattenProperties();	}
 		}
 		
 		public virtual IEnumerable<PositionedEdge> Edges
 		{
-			get
-			{
-				foreach	(PositionedNodeProperty property in this.Properties)
-				{
+			get	{
+				foreach	(PositionedNodeProperty property in this.Properties) {
 					if (property.Edge != null)
 						yield return property.Edge;
 				}
 			}
 		}
 		
-		public void Measure()
-		{
-			this.nodeVisualControl.Measure(new Size(800, 800));
-		}
-		
 		public double Left { get; set; }
 		public double Top { get; set; }
 		public double Width
 		{
-			get { return NodeVisualControl.DesiredSize.Width; }
+			get { return NodeVisualControl.Width; }
 		}
 		public double Height
 		{
-			get { return NodeVisualControl.DesiredSize.Height; }
+			get { return NodeVisualControl.Height; }
 		}
 		
 		public Point LeftTop
@@ -161,6 +149,13 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			if (box == null)
 				box = new SplineRouting.Box(this);
 			return box.Inflated(padding);
+		}
+		
+		public void MeasureVisualControl()
+		{
+			if ((this.NodeVisualControl != null)) {
+				this.NodeVisualControl.CalculateWidthHeight();
+			}
 		}
 	}
 }

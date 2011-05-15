@@ -178,7 +178,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return this;
 			}
 
-			string currentPath = relativePath.Trim('/', '\\').RemoveStart(targets[0]).Trim('/', '\\');
+			string currentPath = relativePath.Trim('/', '\\').RemoveFromStart(targets[0]).Trim('/', '\\');
 			//LoggingService.Debug("entering depth loop...");
 			//LoggingService.DebugFormatted(@"\- looking for '{0}'", relativePath);
 			//LoggingService.DebugFormatted(@"\- starting at '{0}'", targetNode != null ? targetNode.Text : "null");

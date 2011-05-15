@@ -24,9 +24,9 @@ namespace ICSharpCode.Scripting
 		event ConsoleTextEditorKeyEventHandler PreviewKeyDown;
 		
 		/// <summary>
-		/// Inserts text at the current cursor location.
+		/// Appends text to the end of the text editor.
 		/// </summary>
-		void Write(string text);
+		void Append(string text);
 		
 		/// <summary>
 		/// Replaces the text at the specified index on the current line with the specified text.

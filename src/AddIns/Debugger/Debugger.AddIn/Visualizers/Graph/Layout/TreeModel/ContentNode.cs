@@ -1,12 +1,14 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
-using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
+
 using Debugger.AddIn.Visualizers.Utils;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -15,7 +17,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class ContentNode : Utils.ITreeNode<ContentNode>
 	{
-		public ContentNode(PositionedGraphNode containingNode, ContentNode parent)
+		public ContentNode(PositionedNode containingNode, ContentNode parent)
 		{
 			if (containingNode == null)
 				throw new ArgumentNullException("containingNode");
@@ -23,6 +25,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.containingNode = containingNode;
 			this.parent = parent;
 		}
+		
+		/// <summary>
+		/// Icon next to the name - didn't add much value
+		/// </summary>
+		public ImageSource MemberIcon { get; set; }
 		
 		/// <summary>
 		/// Path to this content node in the whole <see cref="PositionedGraph"></see>.
@@ -74,11 +81,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		private List<ContentNode> children = new List<ContentNode>();		
 		public List<ContentNode> Children { get { return this.children; } }
 	
-		PositionedGraphNode containingNode;
+		PositionedNode containingNode;
 		/// <summary>
 		/// PositionedGraphNode that contains this PropertyNodeViewModel.
 		/// </summary>
-		public PositionedGraphNode ContainingNode
+		public PositionedNode ContainingNode
 		{
 			get { return this.containingNode; }
 		}
@@ -88,11 +95,22 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		public virtual bool ShowExpandPropertyButton
 		{
-			get 
-			{
-				// this is NestedNodeViewModel -> no property, don't show expand button
+			get  {
+				// this is ContentNode -> no property, don't show expand button
 				return false;
 			}
+		}
+		
+		/// <summary>
+		/// Is this an expanded Property node?
+		/// </summary>
+		public virtual bool IsPropertyExpanded
+		{
+			get  {
+				// this is ContentNode -> no property, don't show expand button
+				return false;
+			}
+			set { throw new InvalidOperationException("Cannot set IsPropertyExpanded on " + typeof(ContentNode).Name); }
 		}
 		
 		/// <summary>
@@ -126,7 +144,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public IEnumerable<PositionedNodeProperty> FlattenProperties()
 		{
 			return Utils.TreeFlattener.Flatten(this).Where(node => node is ContentPropertyNode).
-				Select(	propertyNode => ((ContentPropertyNode)propertyNode).Property);
+				Select(propertyNode => ((ContentPropertyNode)propertyNode).Property);
 		}
 		
 		#region Utils.ITreeNode implementation
@@ -136,51 +154,43 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		}
 		#endregion
 		
-		public virtual void InitFrom(AbstractNode source, Expanded expanded)
+		public virtual void InitOverride(AbstractNode source, Expanded expanded)
 		{
-			this.Name = getContentNodeName(source);
+			this.Name = GetContentNodeName(source);
 			this.Text = "";			// lazy evaluated later
 			this.IsNested = true;
 			this.path = this.Parent == null ? this.Name : this.Parent.Path + "." + this.Name;
 			this.IsExpanded = (source is ThisNode) || expanded.ContentNodes.IsExpanded(this);
 				
-			foreach (AbstractNode child in source.Children)
-			{
-				if (child is PropertyNode)
-				{
-					var newChild = new ContentPropertyNode(this.ContainingNode, this);
-					newChild.InitFrom(child, expanded);
-					this.Children.Add(newChild);
+			foreach (AbstractNode child in source.Children) {
+				ContentNode newChild = null;
+				if (child is PropertyNode) {
+					newChild = new ContentPropertyNode(this.ContainingNode, this);
+				} else {
+					newChild = new ContentNode(this.ContainingNode, this);
 				}
-				else
-				{
-					var newChild = new ContentNode(this.ContainingNode, this);
-					newChild.InitFrom(child, expanded);
-					this.Children.Add(newChild);					
-				}
+				newChild.InitOverride(child, expanded);
+				this.Children.Add(newChild);
 			}
 		}
 		
-		private string getContentNodeName(AbstractNode source)
+		string GetContentNodeName(AbstractNode source)
 		{
-			if (source is ThisNode)
-			{
+			if (source is ThisNode)	{
 				return "this";
 			}
-			
-			if (source is NonPublicMembersNode)
-			{
+			if (source is NonPublicMembersNode)	{
 				return StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicMembers}");
 			}
-			
-			var sourceBaseClassNode = source as BaseClassNode;
-			if (sourceBaseClassNode != null)
-			{
-				//return StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}") + " " + sourceBaseClassNode.TypeName;
-				return sourceBaseClassNode.TypeName;
+			if (source is RawViewNode)	{
+				return StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.RawView}");
 			}
-
-			throw new ApplicationException("Unknown AbstractNode.");
+			var sourceBaseClassNode = source as BaseClassNode;
+			if (sourceBaseClassNode != null) {
+				string baseClassString = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}");
+				return string.Format("{0} ({1})", sourceBaseClassNode.TypeName, baseClassString);
+			}
+			throw new ApplicationException("Unknown AbstractNode: " + source.GetType());
 		}
 	}
 }
