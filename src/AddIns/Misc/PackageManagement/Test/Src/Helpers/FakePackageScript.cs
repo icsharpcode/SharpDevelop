@@ -9,6 +9,8 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class FakePackageScript : IPackageScript
 	{
+		public IPackageManagementProject Project { get; set; }
+		
 		public bool IsExecuted;
 		
 		public void Execute()
@@ -16,6 +18,11 @@ namespace PackageManagement.Tests.Helpers
 			IsExecuted = true;
 		}
 		
-		public IPackageManagementProject Project { get; set; }
+		public bool ExistsReturnValue = true;
+		
+		public bool Exists()
+		{
+			return ExistsReturnValue;
+		}	
 	}
 }

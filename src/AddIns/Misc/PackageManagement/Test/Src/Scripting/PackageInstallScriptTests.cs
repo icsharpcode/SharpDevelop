@@ -58,6 +58,28 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
+		public void Exists_ScriptDoesNotExist_ReturnsFalse()
+		{
+			CreateScript();
+			fakeFileSystem.FileExistsReturnValue = false;
+			
+			bool exists = script.Exists();
+			
+			Assert.IsFalse(exists);
+		}
+		
+		[Test]
+		public void Exists_ScriptDoesExist_ReturnsTrue()
+		{
+			CreateScript();
+			fakeFileSystem.FileExistsReturnValue = true;
+			
+			bool exists = script.Exists();
+			
+			Assert.IsTrue(exists);
+		}
+		
+		[Test]
 		public void Execute_ScriptDoesNotExist_InstallScriptCheckedForExistence()
 		{
 			CreateScript();

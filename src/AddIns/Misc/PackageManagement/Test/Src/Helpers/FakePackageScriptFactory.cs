@@ -10,6 +10,8 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class FakePackageScriptFactory : IPackageScriptFactory
 	{
+		public bool ScriptFileExistsReturnValue = true;
+		
 		public List<string> PackageInstallDirectoriesPassed = new List<string>();
 		
 		public string FirstPackageInstallDirectoryPassed {
@@ -38,6 +40,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			PackageInstallDirectoriesPassed.Add(packageInstallDirectory);
 			var script = new FakePackageScript();
+			script.ExistsReturnValue = ScriptFileExistsReturnValue;
 			FakePackageInitializeScriptsCreated.Add(script);
 			return script;
 		}
@@ -46,6 +49,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			PackageInstallDirectoriesPassed.Add(packageInstallDirectory);
 			var script = new FakePackageScript();
+			script.ExistsReturnValue = ScriptFileExistsReturnValue;
 			FakePackageUninstallScriptsCreated.Add(script);
 			return script;
 		}
@@ -54,6 +58,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			PackageInstallDirectoriesPassed.Add(packageInstallDirectory);
 			var script = new FakePackageScript();
+			script.ExistsReturnValue = ScriptFileExistsReturnValue;
 			FakePackageInstallScriptsCreated.Add(script);
 			return script;
 		}

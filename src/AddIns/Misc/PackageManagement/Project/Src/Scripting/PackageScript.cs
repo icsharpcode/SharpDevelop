@@ -23,10 +23,15 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public IPackage Package { get; set; }
 		public IPackageManagementProject Project { get; set; }
 		
+		public bool Exists()
+		{
+			return ScriptFileName.FileExists();
+		}
+		
 		public void Execute()
 		{
 			BeforeExecute();
-			if (ScriptFileExists()) {
+			if (Exists()) {
 				AddSessionVariables();
 				ExecuteScript();
 				RemoveSessionVariables();
@@ -35,11 +40,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		protected virtual void BeforeExecute()
 		{
-		}
-		
-		bool ScriptFileExists()
-		{
-			return ScriptFileName.FileExists();
 		}
 		
 		void AddSessionVariables()

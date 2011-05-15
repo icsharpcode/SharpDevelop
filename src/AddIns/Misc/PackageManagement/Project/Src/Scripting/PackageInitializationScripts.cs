@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using NuGet;
 
 namespace ICSharpCode.PackageManagement.Scripting
@@ -11,6 +12,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 	{
 		ISolutionPackageRepository solutionPackageRepository;
 		IPackageScriptFactory scriptFactory;
+		List<IPackageScript> scripts;
 		
 		public PackageInitializationScripts(
 			ISolutionPackageRepository solutionPackageRepository,
@@ -22,9 +24,27 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		public void Run()
 		{
+			foreach (IPackageScript script in GetScripts()) {
+				script.Execute();
+			}
+		}
+		
+		List<IPackageScript> GetScripts()
+		{
+			if (scripts == null) {
+				CreatePackageInitializationScripts();
+			}
+			return scripts;
+		}
+		
+		void CreatePackageInitializationScripts()
+		{
+			scripts = new List<IPackageScript>();
 			foreach (IPackage package in GetPackages()) {
 				IPackageScript script = CreateInitializeScript(package);
-				script.Execute();
+				if (script.Exists()) {
+					scripts.Add(script);
+				}
 			}
 		}
 		
@@ -37,6 +57,12 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			string packageInstallDirectory = solutionPackageRepository.GetInstallPath(package);
 			return scriptFactory.CreatePackageInitializeScript(packageInstallDirectory);
+		}
+		
+		public bool Any()
+		{
+			List<IPackageScript> scripts = GetScripts();
+			return scripts.Count > 0;
 		}
 	}
 }

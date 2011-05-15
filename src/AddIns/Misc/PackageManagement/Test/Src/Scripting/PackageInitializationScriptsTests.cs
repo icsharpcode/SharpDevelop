@@ -16,12 +16,18 @@ namespace PackageManagement.Tests.Scripting
 		PackageInitializationScripts scripts;
 		FakePackageScriptFactory fakeScriptFactory;
 		FakeSolutionPackageRepository fakeSolutionPackageRepository;
+		FakePackageScriptFactoryWithPredefinedPackageScripts fakeScriptFactoryWithPredefinedPackageScripts;
 		
 		void CreateScripts()
 		{
-			fakeSolutionPackageRepository = new FakeSolutionPackageRepository();
 			fakeScriptFactory = new FakePackageScriptFactory();
-			scripts = new PackageInitializationScripts(fakeSolutionPackageRepository, fakeScriptFactory);
+			CreateScripts(fakeScriptFactory);
+		}
+		
+		void CreateScripts(IPackageScriptFactory scriptFactory)
+		{
+			fakeSolutionPackageRepository = new FakeSolutionPackageRepository();
+			scripts = new PackageInitializationScripts(fakeSolutionPackageRepository, scriptFactory);
 		}
 		
 		FakePackage AddPackageToRepository(string packageId)
@@ -29,6 +35,25 @@ namespace PackageManagement.Tests.Scripting
 			var package = new FakePackage(packageId);
 			fakeSolutionPackageRepository.FakePackages.Add(package);
 			return package;
+		}
+		
+		void CreateScriptsUsingScriptFactoryWithPredefinedScripts()
+		{
+			fakeScriptFactoryWithPredefinedPackageScripts = new FakePackageScriptFactoryWithPredefinedPackageScripts();
+			CreateScripts(fakeScriptFactoryWithPredefinedPackageScripts);
+		}
+		
+		void CreateScriptsWithTwoPackagesInRepositoryAndLastPackageScriptFileExistsButNotFirst()
+		{
+			CreateScriptsUsingScriptFactoryWithPredefinedScripts();
+			AddPackageToRepository("A");
+			AddPackageToRepository("B");
+			
+			var scriptForPackageA = fakeScriptFactoryWithPredefinedPackageScripts.AddFakeInitializationScript();
+			scriptForPackageA.ExistsReturnValue = false;
+			
+			var scriptForPackageB = fakeScriptFactoryWithPredefinedPackageScripts.AddFakeInitializationScript();
+			scriptForPackageB.ExistsReturnValue = true;			
 		}
 		
 		[Test]
@@ -81,6 +106,52 @@ namespace PackageManagement.Tests.Scripting
 			bool executed = fakeScriptFactory.FakePackageInitializeScriptsCreated[1].IsExecuted;
 			
 			Assert.IsTrue(executed);
+		}
+		
+		[Test]
+		public void Any_OnePackageInRepositoryAndScriptFileExists_ReturnsTrue()
+		{
+			CreateScripts();
+			AddPackageToRepository("A");
+			fakeScriptFactory.ScriptFileExistsReturnValue = true;
+			
+			bool result = scripts.Any();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void Any_OnePackageInRepositoryAndScriptFileDoesNotExist_ReturnsFalse()
+		{
+			CreateScripts();
+			AddPackageToRepository("A");
+			fakeScriptFactory.ScriptFileExistsReturnValue = false;
+			
+			bool result = scripts.Any();
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Any_TwoPackagesInRepositoryAndLastPackageScriptFileExistsButNotFirst_ReturnsTrue()
+		{
+			CreateScriptsWithTwoPackagesInRepositoryAndLastPackageScriptFileExistsButNotFirst();
+			
+			bool result = scripts.Any();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void Run_TwoPackagesInRepositoryAndLastPackageScriptFileExistsButNotFirst_FirstScriptNotExecuted()
+		{
+			CreateScriptsWithTwoPackagesInRepositoryAndLastPackageScriptFileExistsButNotFirst();
+			FakePackageScript firstScript = fakeScriptFactoryWithPredefinedPackageScripts.FakeInitializeScripts[0];
+			scripts.Run();
+			
+			bool executed = firstScript.IsExecuted;
+			
+			Assert.IsFalse(executed);
 		}
 	}
 }
