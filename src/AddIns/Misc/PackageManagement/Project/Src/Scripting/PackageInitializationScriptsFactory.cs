@@ -20,12 +20,12 @@ namespace ICSharpCode.PackageManagement.Scripting
 			this.consoleHost = consoleHost;
 		}
 		
-		public IPackageInitializationScripts CreatePackageInitializationScripts(Solution solution)
+		public IPackageInitializationScripts CreatePackageInitializationScripts(
+			Solution solution,
+			IPackageScriptSession scriptSession)
 		{
-			IPowerShellHost powerShellHost = consoleHost.PowerShellHost;
-			var session = new PowerShellPackageScriptSession(powerShellHost, consoleHost.ScriptingConsole);
 			var repository = new SolutionPackageRepository(solution);
-			var scriptFactory = new PackageScriptFactory(session);
+			var scriptFactory = new PackageScriptFactory(scriptSession);
 			return new PackageInitializationScripts(repository, scriptFactory);
 		}
 	}

@@ -48,6 +48,7 @@
     <Compile Include="Src\GetProjectCmdlet.cs" />
     <Compile Include="Src\ICmdletTerminatingError.cs" />
     <Compile Include="Src\InstallPackageCmdlet.cs" />
+    <Compile Include="Src\InvokeInitializePackagesCmdlet.cs" />
     <Compile Include="Src\ITerminatingCmdlet.cs" />
     <Compile Include="Src\OpenProjects.cs" />
     <Compile Include="Src\PackageManagementCmdlet.cs" />

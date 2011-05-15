@@ -9,17 +9,22 @@ namespace ICSharpCode.PackageManagement.Scripting
 	public class PackageInitializationScriptsRunnerForOpenedSolution
 	{
 		IPackageInitializationScriptsFactory scriptsFactory;
+		IPackageManagementConsoleHost consoleHost;
 		
-		public PackageInitializationScriptsRunnerForOpenedSolution(IPackageManagementProjectService projectService)
-			: this(projectService, new PackageInitializationScriptsFactory())
+		public PackageInitializationScriptsRunnerForOpenedSolution(
+			IPackageManagementProjectService projectService,
+			IPackageManagementConsoleHost consoleHost)
+			: this(projectService, consoleHost, new PackageInitializationScriptsFactory())
 		{
 		}
 		
 		public PackageInitializationScriptsRunnerForOpenedSolution(
 			IPackageManagementProjectService projectService,
+			IPackageManagementConsoleHost consoleHost,
 			IPackageInitializationScriptsFactory scriptsFactory)
 		{
 			projectService.SolutionLoaded += SolutionLoaded;
+			this.consoleHost = consoleHost;
 			this.scriptsFactory = scriptsFactory;
 		}
 		
@@ -30,8 +35,20 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		void RunScripts(Solution solution)
 		{
-			IPackageInitializationScripts scripts = scriptsFactory.CreatePackageInitializationScripts(solution);
+			IPackageInitializationScripts scripts = CreatePackageInitializationScripts(solution);
 			scripts.Run();
+		}
+		
+		IPackageInitializationScripts CreatePackageInitializationScripts(Solution solution)
+		{
+			PowerShellPackageScriptSession session = CreateScriptSession();
+			return scriptsFactory.CreatePackageInitializationScripts(solution, session);
+		}
+		
+		PowerShellPackageScriptSession CreateScriptSession()
+		{
+			IPowerShellHost powerShellHost = consoleHost.PowerShellHost;
+			return new PowerShellPackageScriptSession(powerShellHost, consoleHost.ScriptingConsole);
 		}
 	}
 }

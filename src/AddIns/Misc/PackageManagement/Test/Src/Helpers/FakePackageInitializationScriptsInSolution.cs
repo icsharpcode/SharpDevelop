@@ -14,5 +14,12 @@ namespace PackageManagement.Tests.Helpers
 		{
 			IsRunCalled = true;
 		}
+		
+		public bool AnyReturnValue = true;
+		
+		public bool Any()
+		{
+			return AnyReturnValue;
+		}
 	}
 }

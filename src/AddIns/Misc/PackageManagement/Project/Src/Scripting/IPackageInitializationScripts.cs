@@ -7,6 +7,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public interface IPackageInitializationScripts
 	{
+		bool Any();
 		void Run();
 	}
 }

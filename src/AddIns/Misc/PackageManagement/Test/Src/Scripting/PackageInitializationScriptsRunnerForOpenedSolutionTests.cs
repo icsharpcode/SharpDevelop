@@ -16,12 +16,14 @@ namespace PackageManagement.Tests.Scripting
 		FakePackageInitializationScriptsFactory fakeScriptsFactory;
 		FakePackageManagementProjectService fakeProjectService;
 		PackageInitializationScriptsRunnerForOpenedSolution runner;
+		FakePackageManagementConsoleHost fakeConsoleHost;
 		
 		void CreateRunner()
 		{
-			fakeScriptsFactory = new FakePackageInitializationScriptsFactory();
 			fakeProjectService = new FakePackageManagementProjectService();
-			runner = new PackageInitializationScriptsRunnerForOpenedSolution(fakeProjectService, fakeScriptsFactory);
+			fakeConsoleHost = new FakePackageManagementConsoleHost();
+			fakeScriptsFactory = new FakePackageInitializationScriptsFactory();
+			runner = new PackageInitializationScriptsRunnerForOpenedSolution(fakeProjectService, fakeConsoleHost, fakeScriptsFactory);
 		}
 		
 		Solution OpenSolution()
@@ -47,11 +49,22 @@ namespace PackageManagement.Tests.Scripting
 		public void Instance_SolutionIsOpened_PackageInitializationScriptsCreatedUsingSolution()
 		{
 			CreateRunner();
-			var expectedSolution = OpenSolution();
+			Solution expectedSolution = OpenSolution();
 			
-			var actualSolution = fakeScriptsFactory.SolutionPassedToCreatePackageInitializationScripts;
+			Solution actualSolution = fakeScriptsFactory.SolutionPassedToCreatePackageInitializationScripts;
 			
 			Assert.AreEqual(expectedSolution, actualSolution);
+		}
+		
+		[Test]
+		public void Instance_SolutionIsOpened_PowerShellPackageScriptSessionIsUsedToCreatePackageInitializationScripts()
+		{
+			CreateRunner();
+			OpenSolution();
+			
+			PowerShellPackageScriptSession session = fakeScriptsFactory.ScriptSessionPassedToCreatePackageInitializationScripts as PowerShellPackageScriptSession;
+			
+			Assert.IsNotNull(session);
 		}
 	}
 }
