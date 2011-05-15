@@ -98,7 +98,6 @@
     <Compile Include="Src\Helpers\ProjectItemCollectionAssert.cs" />
     <Compile Include="Src\Helpers\TestableAddPackageReferenceCommand.cs" />
     <Compile Include="Src\Helpers\TestableDTEProject.cs" />
-    <Compile Include="Src\Helpers\TestablePackageInitializationScriptsConsole.cs" />
     <Compile Include="Src\PackageFromRepositoryTests.cs" />
     <Compile Include="Src\PackageManagementEventsTests.cs" />
     <Compile Include="Src\PackageManagementLoggerTests.cs" />

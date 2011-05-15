@@ -469,5 +469,33 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.IsTrue(running);
 		}
+		
+		[Test]
+		public void Run_SolutionOpenWhenConsoleRun_InvokeInitializePackagesCmdletIsRun()
+		{
+			CreateHost();
+			fakeSolution.IsOpen = true;
+			RunHost();
+			
+			string expectedExecutedCommand = "Invoke-InitializePackages";
+			
+			bool executed = powerShellHost.AllCommandsPassedToExecuteCommand.Contains(expectedExecutedCommand);
+			
+			Assert.IsTrue(executed);
+		}
+		
+		[Test]
+		public void Run_SolutionIsNotOpenWhenConsoleRun_InvokeInitializePackagesCmdletIsNotRun()
+		{
+			CreateHost();
+			fakeSolution.IsOpen = false;
+			RunHost();
+			
+			string command = "Invoke-InitializePackages";
+			
+			bool executed = powerShellHost.AllCommandsPassedToExecuteCommand.Contains(command);
+			
+			Assert.IsFalse(executed);
+		}
 	}
 }

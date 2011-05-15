@@ -94,6 +94,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			InitPowerShell();
 			WriteInfoBeforeFirstPrompt();
+			InitializePackageScriptsForOpenSolution();
 			WritePrompt();
 			ProcessUserCommands();
 		}
@@ -129,6 +130,14 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			string command = "function Clear-Host { $host.PrivateData.ClearHost() }";
 			powerShellHost.ExecuteCommand(command);
+		}
+		
+		void InitializePackageScriptsForOpenSolution()
+		{
+			if (Solution.IsOpen) {
+				string command = "Invoke-InitializePackages";
+				powerShellHost.ExecuteCommand(command);
+			}
 		}
 		
 		void WriteInfoBeforeFirstPrompt()

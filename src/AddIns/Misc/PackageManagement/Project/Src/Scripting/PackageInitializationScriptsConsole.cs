@@ -2,8 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement.Scripting
 {
@@ -19,21 +17,9 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		public void ExecuteCommand(string command)
 		{
-			CreateConsolePadIfConsoleHostNotRunning();
-			consoleHost.ScriptingConsole.SendLine(command);
-		}
-		
-		void CreateConsolePadIfConsoleHostNotRunning()
-		{
-			if (!consoleHost.IsRunning) {
-				CreateConsolePad();
+			if (consoleHost.IsRunning) {
+				consoleHost.ScriptingConsole.SendLine(command);
 			}
-		}
-		
-		protected virtual void CreateConsolePad()
-		{
-			PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(PackageManagementConsolePad));
-			PackageManagementConsolePad consolePad = pad.PadContent.Control as PackageManagementConsolePad;
 		}
 	}
 }

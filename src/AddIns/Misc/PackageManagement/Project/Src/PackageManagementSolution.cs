@@ -108,9 +108,8 @@ namespace ICSharpCode.PackageManagement
 			return projectService.GetOpenProjects();
 		}
 		
-		public void RunPackageInitializationScripts()
-		{
-			
+		public bool IsOpen {
+			get { return projectService.OpenSolution != null; }
 		}
 	}
 }

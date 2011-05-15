@@ -12,15 +12,16 @@ namespace PackageManagement.Tests.Scripting
 	[TestFixture]
 	public class PackageInitializationScriptsConsoleTests
 	{
-		TestablePackageInitializationScriptsConsole console;
+		PackageInitializationScriptsConsole console;
 		FakePackageManagementConsoleHost fakeConsoleHost;
 		FakeScriptingConsole fakeScriptingConsole;
 		
 		void CreateConsole()
 		{
-			console = new TestablePackageInitializationScriptsConsole();
-			fakeConsoleHost = console.FakeConsoleHost;
-			fakeScriptingConsole = console.FakeScriptingConsole;
+			fakeConsoleHost = new FakePackageManagementConsoleHost();
+			fakeScriptingConsole = new FakeScriptingConsole();
+			fakeConsoleHost.ScriptingConsole = fakeScriptingConsole;
+			console = new PackageInitializationScriptsConsole(fakeConsoleHost);
 		}
 		
 		[Test]
@@ -36,27 +37,15 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void ExecuteCommand_ConsoleHostAlreadyRunning_ConsolePadIsNotCreated()
-		{
-			CreateConsole();
-			fakeConsoleHost.IsRunning = true;
-			console.ExecuteCommand("Test");
-			
-			bool created = console.IsCreateConsolePadCalled;
-			
-			Assert.IsFalse(created);
-		}
-		
-		[Test]
-		public void ExecuteCommand_ConsoleHostNotRunning_ConsolePadIsCreated()
+		public void ExecuteCommand_ConsoleHostNotRunning_CommandNotSentToScriptingConsole()
 		{
 			CreateConsole();
 			fakeConsoleHost.IsRunning = false;
 			console.ExecuteCommand("Test");
 			
-			bool created = console.IsCreateConsolePadCalled;
+			string command = fakeScriptingConsole.TextPassedToSendLine;
 			
-			Assert.IsTrue(created);
+			Assert.IsNull(command);
 		}
 	}
 }

@@ -19,14 +19,15 @@ namespace PackageManagement.Tests.Scripting
 		PackageInitializationScriptsRunnerForOpenedSolution runner;
 		FakePackageManagementConsoleHost fakeConsoleHost;
 		FakeScriptingConsole fakeScriptingConsole;
-		TestablePackageInitializationScriptsConsole scriptsConsole;
+		PackageInitializationScriptsConsole scriptsConsole;
 		
 		void CreateRunner()
 		{
 			fakeProjectService = new FakePackageManagementProjectService();
-			scriptsConsole = new TestablePackageInitializationScriptsConsole();
-			fakeConsoleHost = scriptsConsole.FakeConsoleHost;
-			fakeScriptingConsole = scriptsConsole.FakeScriptingConsole;
+			fakeConsoleHost = new FakePackageManagementConsoleHost();
+			fakeScriptingConsole = new FakeScriptingConsole();
+			fakeConsoleHost.ScriptingConsole = fakeScriptingConsole;
+			scriptsConsole = new PackageInitializationScriptsConsole(fakeConsoleHost);
 			fakeScriptsFactory = new FakePackageInitializationScriptsFactory();
 			runner = new PackageInitializationScriptsRunnerForOpenedSolution(fakeProjectService, scriptsConsole, fakeScriptsFactory);
 		}
@@ -55,6 +56,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateRunner();
 			fakeScriptsFactory.FakePackageInitializationScripts.AnyReturnValue = true;
+			fakeConsoleHost.IsRunning = true;
 			OpenSolution();
 			
 			string command = fakeScriptingConsole.TextPassedToSendLine;
@@ -68,6 +70,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateRunner();
 			fakeScriptsFactory.FakePackageInitializationScripts.AnyReturnValue = false;
+			fakeConsoleHost.IsRunning = true;
 			OpenSolution();
 			
 			string command = fakeScriptingConsole.TextPassedToSendLine;

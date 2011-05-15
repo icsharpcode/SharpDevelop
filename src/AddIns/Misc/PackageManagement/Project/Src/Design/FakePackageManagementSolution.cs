@@ -68,5 +68,7 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			return FakeMSBuildProjects;
 		}
+		
+		public bool IsOpen { get; set; }
 	}
 }

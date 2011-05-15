@@ -255,5 +255,27 @@ namespace PackageManagement.Tests
 			
 			CollectionAssert.AreEqual(expectedProjects, projects);
 		}
+		
+		[Test]
+		public void IsOpen_NoSolutionOpen_ReturnsFalse()
+		{
+			CreateSolution();
+			fakeProjectService.OpenSolution = null;
+			
+			bool open = solution.IsOpen;
+			
+			Assert.IsFalse(open);
+		}
+		
+		[Test]
+		public void IsOpen_SolutionIsOpen_ReturnsTrue()
+		{
+			CreateSolution();
+			fakeProjectService.OpenSolution = new Solution();
+			
+			bool open = solution.IsOpen;
+			
+			Assert.IsTrue(open);
+		}
 	}
 }
