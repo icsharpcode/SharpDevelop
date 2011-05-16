@@ -6,12 +6,12 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.Scripting
 {
-	public class PackageInitializationScriptsRunnerForOpenedSolution
+	public class RunPackageInitializationScriptsOnSolutionOpen
 	{
 		IPackageInitializationScriptsFactory scriptsFactory;
 		PackageInitializationScriptsConsole scriptsConsole;
 		
-		public PackageInitializationScriptsRunnerForOpenedSolution(
+		public RunPackageInitializationScriptsOnSolutionOpen(
 			IPackageManagementProjectService projectService)
 			: this(
 				projectService,
@@ -20,7 +20,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 		}
 		
-		public PackageInitializationScriptsRunnerForOpenedSolution(
+		public RunPackageInitializationScriptsOnSolutionOpen(
 			IPackageManagementProjectService projectService,
 			PackageInitializationScriptsConsole scriptsConsole,
 			IPackageInitializationScriptsFactory scriptsFactory)

@@ -16,7 +16,7 @@ namespace ICSharpCode.PackageManagement
 		static readonly PackageManagementProjectService projectService = new PackageManagementProjectService();
 		static readonly ProjectBrowserRefresher projectBrowserRefresher;
 		static readonly PackageManagementOutputMessagesView outputMessagesView;
-		static readonly PackageInitializationScriptsRunnerForOpenedSolution packageInitializationScriptsRunner;
+		static readonly RunPackageInitializationScriptsOnSolutionOpen runPackageInitializationScripts;
 		static readonly ResetPowerShellWorkingDirectoryOnSolutionClosed resetPowerShellWorkingDirectory;
 		
 		static PackageManagementServices()
@@ -27,7 +27,7 @@ namespace ICSharpCode.PackageManagement
 			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
 			consoleHost = new PackageManagementConsoleHost(solution, registeredPackageRepositories);
 			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
-			packageInitializationScriptsRunner = new PackageInitializationScriptsRunnerForOpenedSolution(projectService);
+			runPackageInitializationScripts = new RunPackageInitializationScriptsOnSolutionOpen(projectService);
 			resetPowerShellWorkingDirectory = new ResetPowerShellWorkingDirectoryOnSolutionClosed(projectService, consoleHost);
 		}
 		

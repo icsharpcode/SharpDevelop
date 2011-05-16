@@ -218,7 +218,7 @@
     <Compile Include="Src\Scripting\IPackageScriptFileName.cs" />
     <Compile Include="Src\Scripting\IPackageScriptSession.cs" />
     <Compile Include="Src\Scripting\NuGetVersion.cs" />
-    <Compile Include="Src\Scripting\PackageInitializationScriptsRunnerForOpenedSolution.cs" />
+    <Compile Include="Src\Scripting\RunPackageInitializationScriptsOnSolutionOpen.cs" />
     <Compile Include="Src\Scripting\PackageInitializeScript.cs" />
     <Compile Include="Src\Scripting\PackageInitializeScriptFileName.cs" />
     <Compile Include="Src\Scripting\PackageInstallScript.cs" />
