@@ -42,19 +42,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		void UpdateWorkingDirectory()
 		{
-			string directory = GetWorkingDirectory();
-			UpdateWorkingDirectory(directory);
-		}
-		
-		string GetWorkingDirectory()
-		{
-			var workingDirectory = new PowerShellWorkingDirectory(projectService);
-			return workingDirectory.GetWorkingDirectory();
-		}
-		
-		void UpdateWorkingDirectory(string directory)
-		{
-			string command = String.Format("Set-Location '{0}'", directory);
+			string command = "Invoke-UpdateWorkingDirectory";
 			InvokeScript(command);
 		}
 		
@@ -63,7 +51,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			IPackageInitializationScripts scripts = GetPackageInitializationScripts();
 			if (scripts.Any()) {
 				scripts.Run();
-			}			
+			}
 		}
 		
 		IPackageInitializationScripts GetPackageInitializationScripts()

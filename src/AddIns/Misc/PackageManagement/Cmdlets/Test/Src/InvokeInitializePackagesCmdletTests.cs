@@ -91,16 +91,15 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_SolutionHasPackageInitializationScripts_PowerShellWorkingDirectoryIsSetToSolutionDirectory()
+		public void ProcessRecord_SolutionHasPackageInitializationScripts_PowerShellWorkingDirectoryIsUpdated()
 		{
 			CreateCmdlet();
-			SolutionHasPackageInitializationScripts();
-			fakeProjectService.OpenSolution.FileName = @"d:\projects\MySolution\MySolution.sln";
+			fakeProjectService.OpenSolution = null;
 			RunCmdlet();
 			
 			string commandExecuted = cmdlet.ScriptPassedToInvokeScript;
 			
-			string expectedCommandExecuted = @"Set-Location 'd:\projects\MySolution'";
+			string expectedCommandExecuted = @"Invoke-UpdateWorkingDirectory";
 			
 			Assert.AreEqual(expectedCommandExecuted, commandExecuted);
 		}
