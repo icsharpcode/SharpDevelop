@@ -200,6 +200,7 @@
     <Compile Include="Src\Scripting\PackageInitializationScriptsConsole.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsFactory.cs" />
     <Compile Include="Src\Scripting\PowerShellWorkingDirectory.cs" />
+    <Compile Include="Src\Scripting\ResetPowerShellWorkingDirectoryOnSolutionClosed.cs" />
     <Compile Include="Src\SolutionPackageRepositoryPath.cs" />
     <Compile Include="Src\PackageSourceConverter.cs" />
     <Compile Include="Src\PackageSourceViewModel.cs" />

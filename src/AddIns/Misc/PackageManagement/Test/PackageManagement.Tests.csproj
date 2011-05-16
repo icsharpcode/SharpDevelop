@@ -178,6 +178,7 @@
     <Compile Include="Src\Scripting\PackageInitializationScriptsConsoleTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsTests.cs" />
     <Compile Include="Src\Scripting\PowerShellWorkingDirectoryTests.cs" />
+    <Compile Include="Src\Scripting\ResetPowerShellWorkingDirectoryOnSolutionClosedTests.cs" />
     <Compile Include="Src\SolutionPackageRepositoryPathTests.cs" />
     <Compile Include="Src\PackageSourceViewModelTests.cs" />
     <Compile Include="Src\PackagesViewModelTests.cs" />
