@@ -50,7 +50,7 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			string commandExecuted = cmdlet.ScriptPassedToInvokeScript;
 			
-			string expectedCommandExecuted = @"Set-Location '$env:USERPROFILE'";
+			string expectedCommandExecuted = @"Set-Location $env:USERPROFILE";
 			
 			Assert.AreEqual(expectedCommandExecuted, commandExecuted);
 		}

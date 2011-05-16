@@ -497,5 +497,33 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.IsFalse(executed);
 		}
+		
+		[Test]
+		public void Run_SolutionIsNotOpenWhenConsoleRun_PowerShellWorkingDirectoryIsUpdated()
+		{
+			CreateHost();
+			fakeSolution.IsOpen = false;
+			RunHost();
+			
+			string command = "Invoke-UpdateWorkingDirectory";
+			
+			bool executed = powerShellHost.AllCommandsPassedToExecuteCommand.Contains(command);
+			
+			Assert.IsTrue(executed);
+		}
+		
+		[Test]
+		public void Run_SolutionIsOpenWhenConsoleRun_PowerShellWorkingDirectoryIsUpdated()
+		{
+			CreateHost();
+			fakeSolution.IsOpen = true;
+			RunHost();
+			
+			string command = "Invoke-UpdateWorkingDirectory";
+			
+			bool executed = powerShellHost.AllCommandsPassedToExecuteCommand.Contains(command);
+			
+			Assert.IsTrue(executed);
+		}
 	}
 }

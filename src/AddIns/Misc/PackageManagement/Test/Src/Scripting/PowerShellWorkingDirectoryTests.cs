@@ -44,7 +44,7 @@ namespace PackageManagement.Tests.Scripting
 			
 			string directory = workingDirectory.GetWorkingDirectory();
 			
-			string expectedDirectory = @"d:\projects\MyProject";
+			string expectedDirectory = @"'d:\projects\MyProject'";
 			
 			Assert.AreEqual(expectedDirectory, directory);
 		}

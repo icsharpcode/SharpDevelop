@@ -48,7 +48,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		void UpdateWorkingDirectory(string directory)
 		{
-			string command = String.Format("Set-Location '{0}'", directory);
+			string command = String.Format("Set-Location {0}", directory);
 			InvokeScript(command);
 		}
 	}

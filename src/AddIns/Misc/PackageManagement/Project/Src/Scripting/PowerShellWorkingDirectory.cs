@@ -19,9 +19,14 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			Solution solution = projectService.OpenSolution;
 			if (solution != null) {
-				return solution.Directory;
+				return QuotedDirectory(solution.Directory);
 			}
 			return "$env:USERPROFILE";
+		}
+		
+		string QuotedDirectory(string directory)
+		{
+			return String.Format("'{0}'", directory);
 		}
 	}
 }

@@ -106,6 +106,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			powerShellHost.SetRemoteSignedExecutionPolicy();
 			UpdateFormatting();
 			RedefineClearHostFunction();
+			UpdateWorkingDirectory();
 		}
 		
 		void CreatePowerShellHost()
@@ -132,14 +133,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 			powerShellHost.ExecuteCommand(command);
 		}
 		
-		void InitializePackageScriptsForOpenSolution()
-		{
-			if (Solution.IsOpen) {
-				string command = "Invoke-InitializePackages";
-				powerShellHost.ExecuteCommand(command);
-			}
-		}
-		
 		void WriteInfoBeforeFirstPrompt()
 		{
 			WriteNuGetVersionInfo();
@@ -151,6 +144,20 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			string versionInfo = String.Format("NuGet {0}", powerShellHost.Version);
 			WriteLine(versionInfo);
+		}
+		
+		void UpdateWorkingDirectory()
+		{
+			string command = "Invoke-UpdateWorkingDirectory";
+			powerShellHost.ExecuteCommand(command);
+		}
+		
+		void InitializePackageScriptsForOpenSolution()
+		{
+			if (Solution.IsOpen) {
+				string command = "Invoke-InitializePackages";
+				powerShellHost.ExecuteCommand(command);
+			}
 		}
 		
 		void WriteLine(string message)
