@@ -11,6 +11,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public event EventHandler LineReceived;
 		
 		public string TextPassedToSendLine;
+		public List<string> AllTextPassedToSendLine = new List<string>();
 		public string TextPassedToSendText;
 		public bool IsWriteLineCalled;
 		public string TextPassedToWriteLine;
@@ -31,11 +32,20 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			get { return AllTextPassedToWriteLine[AllTextPassedToWriteLine.Count - 1]; }
 		}
 		
+		public string FirstLinePassedToSendLine {
+			get { return AllTextPassedToSendLine[0]; }
+		}
+		
+		public string LastLinePassedToSendLine {
+			get { return AllTextPassedToSendLine[AllTextPassedToSendLine.Count - 1]; }
+		}
+		
 		public bool ScrollToEndWhenTextWritten { get; set; }
 		
 		public void SendLine(string text)
 		{
 			TextPassedToSendLine = text;
+			AllTextPassedToSendLine.Add(text);
 		}
 		
 		public void SendText(string text)

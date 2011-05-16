@@ -89,5 +89,20 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			Assert.AreEqual(cmdlet, session);
 		}
+		
+		[Test]
+		public void ProcessRecord_SolutionHasPackageInitializationScripts_PowerShellWorkingDirectoryIsSetToSolutionDirectory()
+		{
+			CreateCmdlet();
+			SolutionHasPackageInitializationScripts();
+			fakeProjectService.OpenSolution.FileName = @"d:\projects\MySolution\MySolution.sln";
+			RunCmdlet();
+			
+			string commandExecuted = cmdlet.ScriptPassedToInvokeScript;
+			
+			string expectedCommandExecuted = @"Set-Location 'd:\projects\MySolution'";
+			
+			Assert.AreEqual(expectedCommandExecuted, commandExecuted);
+		}
 	}		
 }

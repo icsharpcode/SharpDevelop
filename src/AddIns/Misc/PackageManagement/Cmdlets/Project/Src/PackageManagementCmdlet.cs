@@ -86,7 +86,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			SessionState.PSVariable.Remove(name);
 		}
 		
-		public void InvokeScript(string script)
+		public virtual void InvokeScript(string script)
 		{
 			try {
 				InvokeCommand.InvokeScript(script);

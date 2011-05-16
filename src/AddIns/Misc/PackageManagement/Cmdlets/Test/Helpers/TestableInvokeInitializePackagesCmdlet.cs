@@ -47,5 +47,12 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 		{
 			base.ProcessRecord();
 		}
+		
+		public string ScriptPassedToInvokeScript;
+		
+		public override void InvokeScript(string script)
+		{
+			ScriptPassedToInvokeScript = script;
+		}
 	}
 }

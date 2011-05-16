@@ -36,7 +36,26 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		protected override void ProcessRecord()
 		{
+			UpdateWorkingDirectory();
 			RunPackageInitializationScripts();
+		}
+		
+		void UpdateWorkingDirectory()
+		{
+			string directory = GetWorkingDirectory();
+			UpdateWorkingDirectory(directory);
+		}
+		
+		string GetWorkingDirectory()
+		{
+			var workingDirectory = new PowerShellWorkingDirectory(projectService);
+			return workingDirectory.GetWorkingDirectory();
+		}
+		
+		void UpdateWorkingDirectory(string directory)
+		{
+			string command = String.Format("Set-Location '{0}'", directory);
+			InvokeScript(command);
 		}
 		
 		void RunPackageInitializationScripts()

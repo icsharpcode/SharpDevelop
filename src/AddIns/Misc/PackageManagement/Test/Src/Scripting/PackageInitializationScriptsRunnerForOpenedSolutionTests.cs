@@ -40,6 +40,16 @@ namespace PackageManagement.Tests.Scripting
 			return solution;
 		}
 		
+		void SolutionHasPackageInitializationScripts()
+		{
+			fakeScriptsFactory.FakePackageInitializationScripts.AnyReturnValue = true;
+		}
+		
+		void SolutionHasNoPackageInitializationScripts()
+		{
+			fakeScriptsFactory.FakePackageInitializationScripts.AnyReturnValue = false;
+		}
+		
 		[Test]
 		public void Instance_SolutionIsOpened_PackageInitializationScriptsCreatedUsingSolution()
 		{
@@ -55,11 +65,11 @@ namespace PackageManagement.Tests.Scripting
 		public void Instance_SolutionOpenedAndHasPackageInitializationScripts_InvokeInitializePackagesCmdletIsRun()
 		{
 			CreateRunner();
-			fakeScriptsFactory.FakePackageInitializationScripts.AnyReturnValue = true;
+			SolutionHasPackageInitializationScripts();
 			fakeConsoleHost.IsRunning = true;
 			OpenSolution();
 			
-			string command = fakeScriptingConsole.TextPassedToSendLine;
+			string command = fakeScriptingConsole.LastLinePassedToSendLine;
 			string expectedCommand = "Invoke-InitializePackages";
 			
 			Assert.AreEqual(expectedCommand, command);
@@ -69,13 +79,13 @@ namespace PackageManagement.Tests.Scripting
 		public void Instance_SolutionOpenedAndHasNoPackageInitializationScripts_InvokeInitializePackagesCmdletIsNotRun()
 		{
 			CreateRunner();
-			fakeScriptsFactory.FakePackageInitializationScripts.AnyReturnValue = false;
+			SolutionHasNoPackageInitializationScripts();
 			fakeConsoleHost.IsRunning = true;
 			OpenSolution();
 			
-			string command = fakeScriptingConsole.TextPassedToSendLine;
+			bool contains = fakeScriptingConsole.AllTextPassedToSendLine.Contains("Invoke-InitializePackages");
 			
-			Assert.IsNull(command);
+			Assert.IsFalse(contains);
 		}
 	}
 }
