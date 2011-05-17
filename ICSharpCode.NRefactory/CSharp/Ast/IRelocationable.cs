@@ -1,5 +1,5 @@
 // 
-// EmptyExpression.cs
+// IRelocationable.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -27,50 +27,9 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	/// <summary>
-	/// Type&lt;[EMPTY]&gt;
-	/// </summary>
-	public class EmptyExpression : Expression, IRelocationable
+	public interface IRelocationable
 	{
-		AstLocation location;
-
-		public override AstLocation StartLocation {
-			get {
-				return location;
-			}
-		}
-		
-		public override AstLocation EndLocation {
-			get {
-				return location;
-			}
-		}
-
-		public EmptyExpression ()
-		{
-		}
-
-		public EmptyExpression (AstLocation location)
-		{
-			this.location = location;
-		}
-		
-		#region IRelocationable implementation
-		void IRelocationable.SetStartLocation (AstLocation startLocation)
-		{
-			this.location = startLocation;
-		}
-		#endregion
-		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
-		{
-			return visitor.VisitEmptyExpression (this, data);
-		}
-
-		protected internal override bool DoMatch (AstNode other, PatternMatching.Match match)
-		{
-			var o = other as EmptyExpression;
-			return o != null;
-		}
+		void SetStartLocation (AstLocation startLocation);
 	}
 }
+
