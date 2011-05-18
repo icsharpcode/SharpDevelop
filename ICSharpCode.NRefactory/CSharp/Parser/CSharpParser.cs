@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CSharpParser.cs
 //
 // Author:
@@ -2946,8 +2946,8 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public static void AdjustLineLocations (AstNode node, int line)
 		{
-			if (node is IRelocationable) {
-				((IRelocationable)node).SetStartLocation (new AstLocation (node.StartLocation.Line + line, node.StartLocation.Column));
+			if (node is IRelocatable) {
+				((IRelocatable)node).SetStartLocation (new AstLocation (node.StartLocation.Line + line, node.StartLocation.Column));
 			}
 			foreach (var child in node.Children) {
 				AdjustLineLocations (child, line);
