@@ -21,20 +21,22 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			
 			if (item == null) return;
 			
-			// get next bookmark						
-			int line = (item.Mark as SDBookmark).LineNumber;
+			// get current mark
+			var mark = item.Mark as SDBookmark;
+			int line = mark.LineNumber;
+			string fileName = mark.FileName;
 			
 			SDBookmark bookmark;
 			if (item.Mark is BreakpointBookmark) {
 				var bookmarks = DebuggerService.Breakpoints;
-				bookmark = bookmarks.FirstOrDefault(b => b.LineNumber == line);
+				bookmark = bookmarks.FirstOrDefault(b => b.LineNumber == line && b.FileName == fileName);
 				if (bookmark == null && bookmarks.Count > 0) {
 					bookmark = bookmarks[0]; // jump around to first bookmark
 				}
 			}
 			else {
 				var bookmarks = BookmarkManager.Bookmarks;
-				bookmark = bookmarks.FirstOrDefault(b => b.LineNumber == line);
+				bookmark = bookmarks.FirstOrDefault(b => b.LineNumber == line && b.FileName == fileName);
 				if (bookmark == null && bookmarks.Count > 0) {
 					bookmark = bookmarks[0]; // jump around to first bookmark
 				}
