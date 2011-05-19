@@ -104,12 +104,6 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items)
 			{
 				baseExportColumn.DrawItem(this.pdfWriter,this.pdfUnitConverter);
-//				IExportContainer container = baseExportColumn as ExportContainer;
-//				if (container == null) {
-//					baseExportColumn.DrawItem(this.pdfWriter,this.pdfUnitConverter);
-//				} else {
-//					container.DrawItem(this.pdfWriter,this.pdfUnitConverter);
-//				}
 			}
 		}
 		

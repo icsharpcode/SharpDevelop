@@ -20,7 +20,6 @@ namespace ICSharpCode.Reports.Addin
 		ReportDesignerLoader designerLoader;
 		ICSharpCode.Reports.Core.ReportViewer.PreviewControl control;
 
-		
 		public ReportViewerSecondaryView(ReportDesignerLoader designerLoader,IViewContent content):base(content)
 		{
 			if (designerLoader == null) {
@@ -48,6 +47,7 @@ namespace ICSharpCode.Reports.Addin
 		{
 			ReportModel model = designerLoader.CreateRenderableModel();
 			AbstractPreviewCommand cmd = null;
+		
 			switch (model.DataModel) {
 					case GlobalEnums.PushPullModel.FormSheet : {
 						cmd = new FormSheetToReportViewerCommand (model,control);

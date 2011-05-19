@@ -294,7 +294,6 @@
     <Compile Include="Project\Interfaces\IItemConverter.cs" />
     <Compile Include="Project\Interfaces\ILayouter.cs" />
     <Compile Include="Project\Interfaces\IReportItem.cs" />
-    <Compile Include="Project\Interfaces\IMeasurementService.cs" />
     <Compile Include="Project\Interfaces\IReportModel.cs" />
     <Compile Include="Project\Interfaces\ISinglePage.cs" />
     <Compile Include="Project\IReportCreator.cs" />
@@ -314,6 +313,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Project\ReportEngine.cs" />
+    <Compile Include="Project\ReportViewer\IPreviewControl.cs" />
     <Compile Include="Project\ReportViewer\NumericToolStripTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -368,6 +368,10 @@
     <Compile Include="Project\ReportViewer\ReportViewer.designer.cs">
       <DependentUpon>ReportViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Project\WpfReportViewer\WpfReportViewer.xaml.cs">
+      <DependentUpon>WpfReportViewer.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Project\WPF\FixedDocumentCreator.cs" />
     <Compile Include="Project\WPF\FlowDocumentCreator.cs" />
     <Compile Include="Project\Xml\BaseItemLoader.cs" />
@@ -390,7 +394,11 @@
     <None Include="Project\ReportViewer\Resources\Icons\Next.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Project\WpfReportViewer" />
     <Folder Include="Project\WPF" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Project\WpfReportViewer\WpfReportViewer.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

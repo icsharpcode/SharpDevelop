@@ -77,8 +77,9 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			var h = printDialog.PrintableAreaWidth;
 			Console.WriteLine(new System.Windows.Size(w,h));
 
-			PageSize = new System.Windows.Size(reportSettings.PageSize.Width,reportSettings.PageSize.Height);
-			document.DocumentPaginator.PageSize = PageSize;
+			docCreator.PageSize = new System.Windows.Size(reportSettings.PageSize.Width,reportSettings.PageSize.Height);
+			document.DocumentPaginator.PageSize = docCreator.PageSize;
+			
 		}
 		
 	
@@ -101,7 +102,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			
 //			http://stackoverflow.com/questions/3671724/wpf-flowdocument-page-break-positioning
 //		http://wpf.2000things.com/tag/drawingvisual/
-http://wpf.2000things.com/2011/03/25/256-use-a-fixeddocument-to-display-content-at-fixed-locations/
+//http://wpf.2000things.com/2011/03/25/256-use-a-fixeddocument-to-display-content-at-fixed-locations/
 
 //http://wpf.2000things.com/2011/03/25/256-use-a-fixeddocument-to-display-content-at-fixed-locations/
 //http://www.neodynamic.com/ND/FaqsTipsTricks.aspx?tabid=66&prodid=0&sid=99
@@ -110,30 +111,17 @@ http://wpf.2000things.com/2011/03/25/256-use-a-fixeddocument-to-display-content-
 //http://www.eggheadcafe.com/tutorials/aspnet/9cbb4841-8677-49e9-a3a8-46031e699b2e/wpf-printing-and-print-pr.aspx
 //
 //http://www.eggheadcafe.com/tutorials/aspnet/22ac97f3-4a3d-4fee-a411-e456f77f6a90/wpf-report-engine-part-3.aspx
-			/*
-			System.Windows.Controls.Border b = new System.Windows.Controls.Border();
-			b.BorderThickness = new Thickness(2);
-			b.BorderBrush = System.Windows.Media.Brushes.Black;
-			b.Padding = new Thickness(15);
-			b.Child = page2Text;
-			FixedPage.SetLeft(b, 2 * 96 * 0.75 );
-			FixedPage.SetTop(b,3 * 96 * 0.75 );
-
-			page.Children.Add((UIElement)b);
-		*/
-	/*	
-*/
+			
 			Document = document;
 		}
 		
 	
 		
-		void AddPageToDocument(FixedDocument doc,FixedPage page)
+		void AddPageToDocument(FixedDocument fixedDocument,FixedPage page)
 		{
-			Console.WriteLine("AddPageToDocument");
 			PageContent pageContent = new PageContent();
 			((IAddChild)pageContent).AddChild(page);
-			doc.Pages.Add(pageContent);
+			fixedDocument.Pages.Add(pageContent);
 		}
 		
 		
@@ -143,7 +131,6 @@ http://wpf.2000things.com/2011/03/25/256-use-a-fixeddocument-to-display-content-
 			Console.WriteLine("FixedDocumentRenderer - End");		
 		}
 			
-		public Size PageSize {get;private set;}
 		public IDocumentPaginatorSource Document {get;private set;}
 		
 		#endregion

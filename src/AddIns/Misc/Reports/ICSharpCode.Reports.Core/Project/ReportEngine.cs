@@ -222,57 +222,6 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		
-		#region Public Datahandling
-		/*
-		public static IDataManager CreateDataManager (ReportSettings reportSettings,ConnectionObject connectionObject)
-		{
-			if (reportSettings == null) {
-				throw new ArgumentNullException("reportSettings");
-			}
-			
-			if (connectionObject == null) {
-				throw new ArgumentNullException("connectionObject");
-			}
-			IDataManager dataMan = null;
-			
-			if (!String.IsNullOrEmpty(connectionObject.Connection.ConnectionString)) {
-				SqlDataAccessStrategy sda = new SqlDataAccessStrategy(reportSettings,connectionObject);
-				dataMan = DataManager.CreateInstance(reportSettings,sda);
-			}
-			if (dataMan == null) {
-				throw new MissingDataManagerException();
-			}
-			return dataMan;
-		}
-		
-		
-		
-		/// <summary>
-		/// Return a valid <see cref="Datamanager"></see>
-		/// </summary>
-		/// <param name="model"></param>
-		/// <returns></returns>
-		public static IDataManager CreateDataManager (ReportSettings reportSettings) 
-		{
-			if (reportSettings == null) {
-				throw new ArgumentNullException("reportSettings");
-			}
-			IDataManager dataMan = null;
-
-			if (!String.IsNullOrEmpty(reportSettings.CommandText)) {
-				SqlDataAccessStrategy sda = new SqlDataAccessStrategy(reportSettings,null);
-				dataMan = DataManager.CreateInstance(reportSettings,sda);
-			}
-			
-			if (dataMan == null) {
-				throw new MissingDataManagerException();
-			}
-			return dataMan;
-		}
-		*/
-		#endregion
-		
-		
 		#region Parameter Handling
 		
 		///<summary>
@@ -528,7 +477,7 @@ namespace ICSharpCode.Reports.Core {
 		/// <param name="reportParameters"></param>
 		/// <returns></returns>
 		
-		public static  IReportCreator CreatePageBuilder (IReportModel reportModel,
+		public static IReportCreator CreatePageBuilder (IReportModel reportModel,
 		                                         DataTable dataTable,
 		                                         ReportParameters reportParameters)
 		{
@@ -557,8 +506,8 @@ namespace ICSharpCode.Reports.Core {
 		/// <param name="reportParameters"></param>
 		/// <returns></returns>
 		public static  IReportCreator CreatePageBuilder (IReportModel reportModel,
-		                                         IList list,
-		                                         ReportParameters reportParameters)
+		                                                 IList list,
+		                                                 ReportParameters reportParameters)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
@@ -704,16 +653,6 @@ namespace ICSharpCode.Reports.Core {
 				return this.previewControl;
 			}
 		}
-		
-		
-//		public ConnectionObject ConnectionObject {
-//			get {
-//				return connectionObject;
-//			}
-//			set {
-//				connectionObject = value;
-//			}
-//		}
 		
 		#endregion
 		
