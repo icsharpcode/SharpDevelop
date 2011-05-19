@@ -85,7 +85,8 @@ namespace ICSharpCode.Reports.Core.WPF
 			FixedPage.SetTop(canvas,column.StyleDecorator.Location.Y);
 			
 			var conv = new BrushConverter();
-			SolidColorBrush b = conv.ConvertFromString(System.Drawing.Color.LightGray.Name) as SolidColorBrush;
+//			SolidColorBrush b = conv.ConvertFromString(System.Drawing.Color.LightGray.Name) as SolidColorBrush;
+			SolidColorBrush b = conv.ConvertFromString(column.StyleDecorator.BackColor.Name) as SolidColorBrush;
 			canvas.Background = b;
 			foreach (var element in container.Items) {
 				var text = element as ExportText;
