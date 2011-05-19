@@ -63,8 +63,9 @@ namespace ICSharpCode.PackageManagement.Scripting
 			try {
 				CreateRunspace();
 				
-				Pipeline pipeline = CreatePipeline(command);
-				pipeline.Invoke();
+				using (Pipeline pipeline = CreatePipeline(command)) {
+					pipeline.Invoke();
+				}
 				
 			} catch (Exception ex) {
 				consoleHost.ScriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
@@ -161,8 +162,9 @@ namespace ICSharpCode.PackageManagement.Scripting
 					"$input | ForEach-Object {$__args += $_}; " +
 					"& '" + fileName + "' $__args[0] $__args[1] $__args[2] $__args[3]" +
 					"Remove-Variable __args -Scope 0";
-				Pipeline pipeline = CreatePipeline(command);
-				pipeline.Invoke(input);
+				using (Pipeline pipeline = CreatePipeline(command)) {
+					pipeline.Invoke(input);
+				}
 				
 			} catch (Exception ex) {
 				consoleHost.ScriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
