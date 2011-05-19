@@ -500,5 +500,15 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.IsTrue(consoleHost.IsRunCalled);
 		}
+		
+		[Test]
+		public void ShutdownConsole_NewViewModelCreated_ScriptingConsoleIsShutdown()
+		{
+			CreateViewModel();
+			viewModel.ShutdownConsole();
+			
+			bool shutdownConsole = consoleHost.IsShutdownConsoleCalled;
+			Assert.IsTrue(shutdownConsole);
+		}
 	}
 }

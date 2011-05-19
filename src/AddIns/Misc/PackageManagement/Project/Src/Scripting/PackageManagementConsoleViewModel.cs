@@ -224,5 +224,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			consoleHost.Dispose();
 		}
+		
+		public void ShutdownConsole()
+		{
+			consoleHost.ShutdownConsole();
+		}
 	}
 }

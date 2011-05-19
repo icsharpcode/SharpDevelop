@@ -525,5 +525,25 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.IsTrue(executed);
 		}
+		
+		[Test]
+		public void ShutdownConsole_ScriptingConsoleCreated_DisposesScriptingConsole()
+		{
+			CreateHost();
+			host.ShutdownConsole();
+			
+			bool disposed = host.FakeScriptingConsole.IsDisposeCalled;
+			
+			Assert.IsTrue(disposed);
+		}
+		
+		[Test]
+		public void ShutdownConsole_ScriptingConsoleIsNull_NullReferenceExceptionIsNotThrown()
+		{
+			CreateHost();
+			host.ScriptingConsole = null;
+			
+			Assert.DoesNotThrow(() => host.ShutdownConsole());
+		}
 	}
 }

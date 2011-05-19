@@ -58,9 +58,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		public void Dispose()
 		{
-			if (ScriptingConsole != null) {
-				ScriptingConsole.Dispose();
-			}
+			ShutdownConsole();
 			
 			if (thread != null) {
 				thread.Join();
@@ -227,6 +225,13 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			projectName = GetActiveProjectName(projectName);
 			return Solution.GetProject(sourceRepository, projectName);
+		}
+		
+		public void ShutdownConsole()
+		{
+			if (ScriptingConsole != null) {
+				ScriptingConsole.Dispose();
+			}
 		}
 	}
 }

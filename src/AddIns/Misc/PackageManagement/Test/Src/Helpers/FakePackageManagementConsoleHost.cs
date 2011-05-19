@@ -96,5 +96,12 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public bool IsRunning { get; set; }
+		
+		public bool IsShutdownConsoleCalled;
+		
+		public void ShutdownConsole()
+		{
+			IsShutdownConsoleCalled = true;
+		}
 	}
 }
