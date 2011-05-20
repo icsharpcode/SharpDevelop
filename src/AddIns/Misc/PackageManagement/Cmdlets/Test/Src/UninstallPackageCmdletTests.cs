@@ -4,6 +4,7 @@
 using System;
 using System.Management.Automation;
 using ICSharpCode.PackageManagement.Design;
+using ICSharpCode.PackageManagement.Scripting;
 using NUnit.Framework;
 using PackageManagement.Cmdlets.Tests.Helpers;
 using PackageManagement.Tests.Helpers;
@@ -223,7 +224,7 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageIdSpecified_CmdletUsedAsScriptSession()
+		public void ProcessRecord_PackageIdSpecified_CmdletUsedAsScriptRunner()
 		{
 			CreateCmdletWithoutActiveProject();
 			AddDefaultProjectToConsoleHost();
@@ -231,9 +232,9 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualSession = uninstallPackageAction.PackageScriptSession;
+			IPackageScriptRunner scriptRunner = uninstallPackageAction.PackageScriptRunner;
 						
-			Assert.AreEqual(cmdlet, actualSession);
+			Assert.AreEqual(cmdlet, scriptRunner);
 		}
 	}
 }

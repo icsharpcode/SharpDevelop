@@ -35,18 +35,18 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public bool IsRunPackageScriptsActionCreated;
-		public IPackageScriptSession SessionPassedToCreateRunPackageScriptsAction;
+		public IPackageScriptRunner ScriptRunnerPassedToCreateRunPackageScriptsAction;
 		public IPackageManagementProject ProjectPassedToCreateRunPackageScriptsAction;
 		public RunPackageScriptsAction RunPackageScriptsAction;
 		
 		protected override RunPackageScriptsAction CreateRunPackageScriptsAction(
-			IPackageScriptSession session,
+			IPackageScriptRunner scriptRunner,
 			IPackageManagementProject project)
 		{
 			IsRunPackageScriptsActionCreated = true;
-			SessionPassedToCreateRunPackageScriptsAction = session;
+			ScriptRunnerPassedToCreateRunPackageScriptsAction = scriptRunner;
 			ProjectPassedToCreateRunPackageScriptsAction = project;
-			RunPackageScriptsAction = base.CreateRunPackageScriptsAction(session, project);
+			RunPackageScriptsAction = base.CreateRunPackageScriptsAction(scriptRunner, project);
 			return RunPackageScriptsAction;
 		}
 		

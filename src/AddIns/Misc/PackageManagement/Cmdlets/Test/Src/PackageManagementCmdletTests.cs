@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement.Scripting;
 using NUnit.Framework;
 using PackageManagement.Cmdlets.Tests.Helpers;
+using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Cmdlets.Tests
 {
@@ -108,6 +110,19 @@ namespace PackageManagement.Cmdlets.Tests
 			string name = cmdlet.NamePassedToRemoveVariable;
 			
 			Assert.AreEqual("Test", name);
+		}
+		
+		[Test]
+		public void Run_PackageScriptPassed_RunsScriptUsingCmdletAsSession()
+		{
+			CreateCmdlet();
+			
+			var script = new FakePackageScript();
+			cmdlet.Run(script);
+			
+			IPackageScriptSession session = script.SessionPassedToExecute;
+			
+			Assert.AreEqual(cmdlet, session);
 		}
 	}
 }

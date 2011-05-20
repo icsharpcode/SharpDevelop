@@ -16,14 +16,14 @@ namespace PackageManagement.Tests.Scripting
 		RunPackageScriptsAction action;
 		FakePackageManagementProject fakeProject;
 		FakePackageScriptFactory fakeScriptFactory;
-		FakePackageScriptSession fakeSession;
+		FakePackageScriptRunner fakeScriptRunner;
 			
 		void CreateAction()
 		{
 			fakeProject = new FakePackageManagementProject();
-			fakeSession = new FakePackageScriptSession();
 			fakeScriptFactory = new FakePackageScriptFactory();
-			action = new RunPackageScriptsAction(fakeProject, fakeSession, fakeScriptFactory);
+			fakeScriptRunner = new FakePackageScriptRunner();
+			action = new RunPackageScriptsAction(fakeProject, fakeScriptRunner, fakeScriptFactory);
 		}
 		
 		PackageOperationEventArgs CreatePackageOperationEventArgs()
@@ -45,10 +45,10 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageInstalledEvent(eventArgs);
 			
-			IPackageScriptSession session = fakeScriptFactory.FirstPackageInitializeScriptCreated.SessionPassedToExecute;
-			FakePackageScriptSession expectedSession = fakeSession;
+			IPackageScript actualScript = fakeScriptRunner.FirstScriptRun;
+			FakePackageScript expectedScript = fakeScriptFactory.FirstPackageInitializeScriptCreated;
 			
-			Assert.AreEqual(expectedSession, session);
+			Assert.AreEqual(expectedScript, actualScript);
 		}
 		
 		[Test]
@@ -85,10 +85,10 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceAddedEvent(eventArgs);
 			
-			IPackageScriptSession session = fakeScriptFactory.FirstPackageInstallScriptCreated.SessionPassedToExecute;
-			FakePackageScriptSession expectedSession = fakeSession;
+			IPackageScript actualScript = fakeScriptRunner.FirstScriptRun;
+			FakePackageScript expectedScript = fakeScriptFactory.FirstPackageInstallScriptCreated;
 			
-			Assert.AreEqual(expectedSession, session);
+			Assert.AreEqual(expectedScript, actualScript);
 		}
 		
 		[Test]
@@ -136,10 +136,10 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
 			
-			IPackageScriptSession session = fakeScriptFactory.FirstPackageUninstallScriptCreated.SessionPassedToExecute;
-			FakePackageScriptSession expectedSession = fakeSession;
+			IPackageScript actualScript = fakeScriptRunner.FirstScriptRun;
+			FakePackageScript expectedScript = fakeScriptFactory.FirstPackageUninstallScriptCreated;
 			
-			Assert.AreEqual(expectedSession, session);
+			Assert.AreEqual(expectedScript, actualScript);
 		}
 		
 		[Test]

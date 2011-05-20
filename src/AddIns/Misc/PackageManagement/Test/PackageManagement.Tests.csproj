@@ -92,6 +92,7 @@
     <Compile Include="Src\Helpers\FakePackageScriptFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageScriptFactoryWithPredefinedPackageScripts.cs" />
     <Compile Include="Src\Helpers\FakePackageScriptFileName.cs" />
+    <Compile Include="Src\Helpers\FakePackageScriptRunner.cs" />
     <Compile Include="Src\Helpers\FakePackageViewModelFactory.cs" />
     <Compile Include="Src\Helpers\FakePowerShellSession.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepository.cs" />

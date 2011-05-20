@@ -9,7 +9,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement.Cmdlets
 {
-	public abstract class PackageManagementCmdlet : PSCmdlet, ITerminatingCmdlet, IPackageScriptSession
+	public abstract class PackageManagementCmdlet : PSCmdlet, ITerminatingCmdlet, IPackageScriptSession, IPackageScriptRunner
 	{
 		IPackageManagementConsoleHost consoleHost;
 		ICmdletTerminatingError terminatingError;
@@ -95,6 +95,11 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 				WriteWarning(errorMessage.ToString());
 				throw;
 			}
+		}
+		
+		public void Run(IPackageScript script)
+		{
+			script.Execute(this);
 		}
 	}
 }

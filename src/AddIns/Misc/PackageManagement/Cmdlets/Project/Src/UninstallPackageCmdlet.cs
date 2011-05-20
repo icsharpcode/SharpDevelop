@@ -67,7 +67,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			action.PackageVersion = Version;
 			action.ForceRemove = Force.IsPresent;
 			action.RemoveDependencies = RemoveDependencies.IsPresent;
-			action.PackageScriptSession = this;
+			action.PackageScriptRunner = this;
 			
 			return action;
 		}

@@ -25,7 +25,7 @@ namespace ICSharpCode.PackageManagement
 		public IPackage Package { get; set; }
 		public Version PackageVersion { get; set; }
 		public string PackageId { get; set; }
-		public IPackageScriptSession PackageScriptSession { get; set; }
+		public IPackageScriptRunner PackageScriptRunner { get; set; }
 		
 		protected void OnParentPackageInstalled()
 		{
@@ -40,8 +40,8 @@ namespace ICSharpCode.PackageManagement
 		public void Execute()
 		{
 			BeforeExecute();
-			if (PackageScriptSession != null) {
-				ExecuteWithSession();
+			if (PackageScriptRunner != null) {
+				ExecuteWithScriptRunner();
 			} else {
 				ExecuteCore();
 			}
@@ -54,7 +54,7 @@ namespace ICSharpCode.PackageManagement
 			GetPackageIfMissing();
 		}
 		
-		void ExecuteWithSession()
+		void ExecuteWithScriptRunner()
 		{
 			using (RunPackageScriptsAction runScriptsAction = CreateRunPackageScriptsAction()) {
 				ExecuteCore();
@@ -63,14 +63,14 @@ namespace ICSharpCode.PackageManagement
 		
 		RunPackageScriptsAction CreateRunPackageScriptsAction()
 		{
-			return CreateRunPackageScriptsAction(PackageScriptSession, Project);
+			return CreateRunPackageScriptsAction(PackageScriptRunner, Project);
 		}
 		
 		protected virtual RunPackageScriptsAction CreateRunPackageScriptsAction(
-			IPackageScriptSession session,
+			IPackageScriptRunner scriptRunner,
 			IPackageManagementProject project)
 		{
-			return new RunPackageScriptsAction(session, project);
+			return new RunPackageScriptsAction(scriptRunner, project);
 		}
 		
 		protected virtual void ExecuteCore()

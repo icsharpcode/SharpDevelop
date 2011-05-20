@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -66,16 +67,16 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_MethodCalled_RunPackageScriptsActionCreatedUsingPackageScriptSession()
+		public void Execute_MethodCalled_RunPackageScriptsActionCreatedUsingPackageScriptRunner()
 		{
 			CreateAction();
-			var expectedSession = new FakePackageScriptSession();
-			action.PackageScriptSession = expectedSession;
+			var expectedRunner = new FakePackageScriptRunner();
+			action.PackageScriptRunner = expectedRunner;
 			action.Execute();
 			
-			var actualSession = action.SessionPassedToCreateRunPackageScriptsAction;
+			IPackageScriptRunner actualRunner = action.ScriptRunnerPassedToCreateRunPackageScriptsAction;
 			
-			Assert.AreEqual(expectedSession, actualSession);
+			Assert.AreEqual(expectedRunner, actualRunner);
 		}
 		
 		[Test]
@@ -84,7 +85,7 @@ namespace PackageManagement.Tests
 			CreateAction();
 			var expectedProject = new FakePackageManagementProject();
 			action.Project = expectedProject;
-			action.PackageScriptSession = new FakePackageScriptSession();
+			action.PackageScriptRunner = new FakePackageScriptRunner();
 			action.Execute();
 			
 			var actualProject = action.ProjectPassedToCreateRunPackageScriptsAction;
@@ -96,7 +97,7 @@ namespace PackageManagement.Tests
 		public void Execute_MethodCalled_RunPackageScriptsActionIsDisposed()
 		{
 			CreateAction();
-			action.PackageScriptSession = new FakePackageScriptSession();
+			action.PackageScriptRunner = new FakePackageScriptRunner();
 			action.Execute();
 			
 			Assert.IsTrue(action.IsRunPackageScriptsActionDisposed);

@@ -216,7 +216,7 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageIdSpecified_CmdletUsedAsScriptSession()
+		public void ProcessRecord_PackageIdSpecified_CmdletUsedAsScriptRunner()
 		{
 			CreateCmdletWithoutActiveProject();
 			AddDefaultProjectToConsoleHost();
@@ -224,9 +224,9 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualSession = fakeInstallPackageAction.PackageScriptSession;
+			IPackageScriptRunner scriptRunner = fakeInstallPackageAction.PackageScriptRunner;
 			
-			Assert.AreEqual(cmdlet, actualSession);
+			Assert.AreEqual(cmdlet, scriptRunner);
 		}
 	}
 }

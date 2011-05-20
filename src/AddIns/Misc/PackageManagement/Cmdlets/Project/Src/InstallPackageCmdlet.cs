@@ -65,7 +65,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			action.PackageId = Id;
 			action.PackageVersion = Version;
 			action.IgnoreDependencies = IgnoreDependencies.IsPresent;
-			action.PackageScriptSession = this;
+			action.PackageScriptRunner = this;
 			return action;
 		}
 	}
