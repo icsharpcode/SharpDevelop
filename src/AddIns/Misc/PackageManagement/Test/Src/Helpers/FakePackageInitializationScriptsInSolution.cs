@@ -8,11 +8,11 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class FakePackageInitializationScripts : IPackageInitializationScripts
 	{
-		public bool IsRunCalled;
+		public IPackageScriptSession SessionPassedToRun;
 		
-		public void Run()
+		public void Run(IPackageScriptSession session)
 		{
-			IsRunCalled = true;
+			SessionPassedToRun = session;
 		}
 		
 		public bool AnyReturnValue = true;

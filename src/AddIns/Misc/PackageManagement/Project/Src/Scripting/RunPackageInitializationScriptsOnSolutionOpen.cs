@@ -56,7 +56,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		IPackageInitializationScripts CreatePackageInitializationScripts(Solution solution)
 		{
-			return scriptsFactory.CreatePackageInitializationScripts(solution, null);
+			return scriptsFactory.CreatePackageInitializationScripts(solution);
 		}
 	}
 }

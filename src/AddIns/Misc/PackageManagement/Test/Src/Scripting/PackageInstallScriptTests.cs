@@ -27,7 +27,12 @@ namespace PackageManagement.Tests.Scripting
 			
 			fakeSession = new FakePackageScriptSession();
 			
-			script = new PackageInstallScript(scriptFileName, fakeSession);
+			script = new PackageInstallScript(scriptFileName);
+		}
+		
+		void ExecuteScript()
+		{
+			script.Execute(fakeSession);
 		}
 
 		[Test]
@@ -38,7 +43,7 @@ namespace PackageManagement.Tests.Scripting
 			var project = new FakePackageManagementProject();
 			project.DTEProject = expectedProject;
 			script.Project = project;
-			script.Execute();
+			ExecuteScript();
 			
 			var projectVariable = fakeSession.VariablesAdded["__project"];
 			
@@ -50,7 +55,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateScript();
 			fakeFileSystem.FileExistsReturnValue = false;
-			script.Execute();
+			ExecuteScript();
 			
 			bool executed = fakeSession.IsScriptExecuted;
 			
@@ -84,7 +89,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateScript();
 			fakeFileSystem.FileExistsReturnValue = false;
-			script.Execute();
+			ExecuteScript();
 			
 			string fileChecked = fakeFileSystem.PathPassedToFileExists;
 			

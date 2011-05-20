@@ -22,11 +22,11 @@ namespace ICSharpCode.PackageManagement.Scripting
 			this.scriptFactory = scriptFactory;
 		}
 		
-		public void Run()
+		public void Run(IPackageScriptSession session)
 		{
 			foreach (IPackageScript script in GetScripts()) {
-				script.Execute();
-			}
+				script.Execute(session);
+			}			
 		}
 		
 		List<IPackageScript> GetScripts()

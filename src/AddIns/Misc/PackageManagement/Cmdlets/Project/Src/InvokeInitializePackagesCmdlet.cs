@@ -50,14 +50,14 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		{
 			IPackageInitializationScripts scripts = GetPackageInitializationScripts();
 			if (scripts.Any()) {
-				scripts.Run();
+				scripts.Run(this);
 			}
 		}
 		
 		IPackageInitializationScripts GetPackageInitializationScripts()
 		{
 			Solution solution = projectService.OpenSolution;
-			return scriptsFactory.CreatePackageInitializationScripts(solution, this);
+			return scriptsFactory.CreatePackageInitializationScripts(solution);
 		}
 	}
 }

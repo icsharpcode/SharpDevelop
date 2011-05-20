@@ -9,11 +9,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 	public class PackageInitializationScriptsFactory : IPackageInitializationScriptsFactory
 	{
 		public IPackageInitializationScripts CreatePackageInitializationScripts(
-			Solution solution,
-			IPackageScriptSession scriptSession)
+			Solution solution)
 		{
 			var repository = new SolutionPackageRepository(solution);
-			var scriptFactory = new PackageScriptFactory(scriptSession);
+			var scriptFactory = new PackageScriptFactory();
 			return new PackageInitializationScripts(repository, scriptFactory);
 		}
 	}

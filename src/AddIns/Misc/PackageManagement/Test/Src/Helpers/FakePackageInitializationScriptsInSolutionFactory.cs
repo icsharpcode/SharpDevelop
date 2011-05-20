@@ -13,14 +13,11 @@ namespace PackageManagement.Tests.Helpers
 			new FakePackageInitializationScripts();
 		
 		public Solution SolutionPassedToCreatePackageInitializationScripts;
-		public IPackageScriptSession ScriptSessionPassedToCreatePackageInitializationScripts;
 		
 		public IPackageInitializationScripts CreatePackageInitializationScripts(
-			Solution solution,
-			IPackageScriptSession scriptSession)
+			Solution solution)
 		{
 			SolutionPassedToCreatePackageInitializationScripts = solution;
-			ScriptSessionPassedToCreatePackageInitializationScripts = scriptSession;
 			return FakePackageInitializationScripts;
 		}
 	}

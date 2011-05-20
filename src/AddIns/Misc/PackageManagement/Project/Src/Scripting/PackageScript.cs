@@ -9,12 +9,9 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PackageScript : IPackageScript
 	{
-		public PackageScript(
-			IPackageScriptFileName fileName,
-			IPackageScriptSession session)
+		public PackageScript(IPackageScriptFileName fileName)
 		{
 			this.ScriptFileName = fileName;
-			this.Session = session;
 		}
 		
 		protected IPackageScriptFileName ScriptFileName { get; private set; }
@@ -28,7 +25,13 @@ namespace ICSharpCode.PackageManagement.Scripting
 			return ScriptFileName.FileExists();
 		}
 		
-		public void Execute()
+		public void Execute(IPackageScriptSession session)
+		{
+			this.Session = session;
+			Execute();
+		}
+		
+		void Execute()
 		{
 			BeforeExecute();
 			if (Exists()) {

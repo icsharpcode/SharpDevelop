@@ -10,6 +10,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IPackageManagementProject Project { get; set; }
 		
 		bool Exists();
-		void Execute();
+		void Execute(IPackageScriptSession session);
 	}
 }

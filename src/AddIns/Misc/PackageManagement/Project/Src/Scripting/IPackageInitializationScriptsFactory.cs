@@ -9,7 +9,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 	public interface IPackageInitializationScriptsFactory
 	{
 		IPackageInitializationScripts CreatePackageInitializationScripts(
-			Solution solution,
-			IPackageScriptSession scriptSession);
+			Solution solution);
 	}
 }

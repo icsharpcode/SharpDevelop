@@ -11,11 +11,13 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public IPackageManagementProject Project { get; set; }
 		
-		public bool IsExecuted;
+		public bool IsExecuted;		
+		public IPackageScriptSession SessionPassedToExecute;
 		
-		public void Execute()
+		public void Execute(IPackageScriptSession session)
 		{
 			IsExecuted = true;
+			SessionPassedToExecute = session;
 		}
 		
 		public bool ExistsReturnValue = true;

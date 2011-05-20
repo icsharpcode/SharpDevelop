@@ -16,6 +16,7 @@ namespace PackageManagement.Tests.Scripting
 		PackageInitializationScripts scripts;
 		FakePackageScriptFactory fakeScriptFactory;
 		FakeSolutionPackageRepository fakeSolutionPackageRepository;
+		FakePackageScriptSession fakeSession;
 		FakePackageScriptFactoryWithPredefinedPackageScripts fakeScriptFactoryWithPredefinedPackageScripts;
 		
 		void CreateScripts()
@@ -27,6 +28,7 @@ namespace PackageManagement.Tests.Scripting
 		void CreateScripts(IPackageScriptFactory scriptFactory)
 		{
 			fakeSolutionPackageRepository = new FakeSolutionPackageRepository();
+			fakeSession = new FakePackageScriptSession();
 			scripts = new PackageInitializationScripts(fakeSolutionPackageRepository, scriptFactory);
 		}
 		
@@ -61,11 +63,12 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateScripts();
 			AddPackageToRepository("Test");
-			scripts.Run();
+			scripts.Run(fakeSession);
 			
-			bool executed = fakeScriptFactory.FirstPackageInitializeScriptCreated.IsExecuted;
+			IPackageScriptSession session = fakeScriptFactory.FirstPackageInitializeScriptCreated.SessionPassedToExecute;
+			FakePackageScriptSession expectedSession = fakeSession;
 			
-			Assert.IsTrue(executed);
+			Assert.AreEqual(expectedSession, session);
 		}
 		
 		[Test]
@@ -76,7 +79,7 @@ namespace PackageManagement.Tests.Scripting
 			string expectedDirectory = @"d:\projects\myproject\packages\Test.1.0";
 			fakeSolutionPackageRepository.InstallPathToReturn = expectedDirectory;
 			
-			scripts.Run();
+			scripts.Run(fakeSession);
 			
 			string actualDirectory = fakeScriptFactory.FirstPackageInstallDirectoryPassed;
 			
@@ -88,7 +91,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateScripts();
 			FakePackage package = AddPackageToRepository("Test");			
-			scripts.Run();
+			scripts.Run(fakeSession);
 			
 			IPackage actualPackage = fakeSolutionPackageRepository.PackagePassedToGetInstallPath;
 			
@@ -101,11 +104,12 @@ namespace PackageManagement.Tests.Scripting
 			CreateScripts();
 			AddPackageToRepository("A");
 			AddPackageToRepository("B");
-			scripts.Run();
+			scripts.Run(fakeSession);
 			
-			bool executed = fakeScriptFactory.FakePackageInitializeScriptsCreated[1].IsExecuted;
+			IPackageScriptSession session = fakeScriptFactory.FakePackageInitializeScriptsCreated[1].SessionPassedToExecute;
+			FakePackageScriptSession expectedSession = fakeSession;
 			
-			Assert.IsTrue(executed);
+			Assert.AreEqual(expectedSession, session);
 		}
 		
 		[Test]
@@ -147,7 +151,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateScriptsWithTwoPackagesInRepositoryAndLastPackageScriptFileExistsButNotFirst();
 			FakePackageScript firstScript = fakeScriptFactoryWithPredefinedPackageScripts.FakeInitializeScripts[0];
-			scripts.Run();
+			scripts.Run(fakeSession);
 			
 			bool executed = firstScript.IsExecuted;
 			

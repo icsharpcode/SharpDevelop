@@ -49,9 +49,9 @@ namespace PackageManagement.Cmdlets.Tests
 			SolutionHasPackageInitializationScripts();
 			RunCmdlet();
 			
-			bool run = scriptsFactory.FakePackageInitializationScripts.IsRunCalled;
+			IPackageScriptSession session = scriptsFactory.FakePackageInitializationScripts.SessionPassedToRun;
 			
-			Assert.IsTrue(run);
+			Assert.AreEqual(cmdlet, session);
 		}
 		
 		[Test]
@@ -61,9 +61,9 @@ namespace PackageManagement.Cmdlets.Tests
 			SolutionHasNoPackageInitializationScripts();
 			RunCmdlet();
 			
-			bool run = scriptsFactory.FakePackageInitializationScripts.IsRunCalled;
+			IPackageScriptSession session = scriptsFactory.FakePackageInitializationScripts.SessionPassedToRun;
 			
-			Assert.IsFalse(run);
+			Assert.IsNull(session);
 		}
 		
 		[Test]
@@ -76,18 +76,6 @@ namespace PackageManagement.Cmdlets.Tests
 			Solution actualSolution = scriptsFactory.SolutionPassedToCreatePackageInitializationScripts;
 			
 			Assert.AreEqual(expectedSolution, actualSolution);
-		}
-		
-		[Test]
-		public void ProcessRecord_SolutionHasPackageInitializationScripts_PackageScriptSessionIsCmdlet()
-		{
-			CreateCmdlet();
-			SolutionHasPackageInitializationScripts();
-			RunCmdlet();
-			
-			IPackageScriptSession session = scriptsFactory.ScriptSessionPassedToCreatePackageInitializationScripts;
-			
-			Assert.AreEqual(cmdlet, session);
 		}
 		
 		[Test]

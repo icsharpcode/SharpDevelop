@@ -8,10 +8,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PackageInitializeScript : PackageScript
 	{
-		public PackageInitializeScript(
-			IPackageScriptFileName fileName,
-			IPackageScriptSession session)
-			: base(fileName, session)
+		public PackageInitializeScript(IPackageScriptFileName fileName)
+			: base(fileName)
 		{
 		}
 		

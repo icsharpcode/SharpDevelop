@@ -16,12 +16,14 @@ namespace PackageManagement.Tests.Scripting
 		RunPackageScriptsAction action;
 		FakePackageManagementProject fakeProject;
 		FakePackageScriptFactory fakeScriptFactory;
+		FakePackageScriptSession fakeSession;
 			
 		void CreateAction()
 		{
 			fakeProject = new FakePackageManagementProject();
+			fakeSession = new FakePackageScriptSession();
 			fakeScriptFactory = new FakePackageScriptFactory();
-			action = new RunPackageScriptsAction(fakeProject, fakeScriptFactory);
+			action = new RunPackageScriptsAction(fakeProject, fakeSession, fakeScriptFactory);
 		}
 		
 		PackageOperationEventArgs CreatePackageOperationEventArgs()
@@ -43,9 +45,10 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageInstalledEvent(eventArgs);
 			
-			bool executed = fakeScriptFactory.FirstPackageInitializeScriptCreated.IsExecuted;
+			IPackageScriptSession session = fakeScriptFactory.FirstPackageInitializeScriptCreated.SessionPassedToExecute;
+			FakePackageScriptSession expectedSession = fakeSession;
 			
-			Assert.IsTrue(executed);
+			Assert.AreEqual(expectedSession, session);
 		}
 		
 		[Test]
@@ -82,9 +85,10 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceAddedEvent(eventArgs);
 			
-			bool executed = fakeScriptFactory.FirstPackageInstallScriptCreated.IsExecuted;
+			IPackageScriptSession session = fakeScriptFactory.FirstPackageInstallScriptCreated.SessionPassedToExecute;
+			FakePackageScriptSession expectedSession = fakeSession;
 			
-			Assert.IsTrue(executed);
+			Assert.AreEqual(expectedSession, session);
 		}
 		
 		[Test]
@@ -132,9 +136,10 @@ namespace PackageManagement.Tests.Scripting
 			var eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
 			
-			bool executed = fakeScriptFactory.FirstPackageUninstallScriptCreated.IsExecuted;
+			IPackageScriptSession session = fakeScriptFactory.FirstPackageUninstallScriptCreated.SessionPassedToExecute;
+			FakePackageScriptSession expectedSession = fakeSession;
 			
-			Assert.IsTrue(executed);
+			Assert.AreEqual(expectedSession, session);
 		}
 		
 		[Test]

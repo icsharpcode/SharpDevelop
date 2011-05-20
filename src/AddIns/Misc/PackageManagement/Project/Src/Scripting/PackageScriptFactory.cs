@@ -8,29 +8,22 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PackageScriptFactory : IPackageScriptFactory
 	{
-		IPackageScriptSession session;
-		
-		public PackageScriptFactory(IPackageScriptSession session)
-		{
-			this.session = session;
-		}
-		
 		public IPackageScript CreatePackageInitializeScript(string packageInstallDirectory)
 		{
 			var scriptFileName = new PackageInitializeScriptFileName(packageInstallDirectory);
-			return new PackageInitializeScript(scriptFileName, session);
+			return new PackageInitializeScript(scriptFileName);
 		}
 		
 		public IPackageScript CreatePackageUninstallScript(string packageInstallDirectory)
 		{
 			var scriptFileName = new PackageUninstallScriptFileName(packageInstallDirectory);
-			return new PackageUninstallScript(scriptFileName, session);
+			return new PackageUninstallScript(scriptFileName);
 		}
 		
 		public IPackageScript CreatePackageInstallScript(string packageInstallDirectory)
 		{
 			var scriptFileName = new PackageInstallScriptFileName(packageInstallDirectory);
-			return new PackageInstallScript(scriptFileName, session);
+			return new PackageInstallScript(scriptFileName);
 		}
 	}
 }

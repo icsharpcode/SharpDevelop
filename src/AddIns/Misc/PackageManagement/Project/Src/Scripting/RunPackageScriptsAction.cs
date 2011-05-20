@@ -10,19 +10,22 @@ namespace ICSharpCode.PackageManagement.Scripting
 	{
 		IPackageManagementProject project;
 		IPackageScriptFactory scriptFactory;
+		IPackageScriptSession scriptSession;
 		
 		public RunPackageScriptsAction(
 			IPackageScriptSession session,
 			IPackageManagementProject project)
-			: this(project, new PackageScriptFactory(session))
+			: this(project, session, new PackageScriptFactory())
 		{
 		}
 		
 		public RunPackageScriptsAction(
 			IPackageManagementProject project,
+			IPackageScriptSession session,
 			IPackageScriptFactory scriptFactory)
 		{
 			this.project = project;
+			this.scriptSession = session;
 			this.scriptFactory = scriptFactory;
 			
 			RegisterEvents();
@@ -60,21 +63,21 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void RunInitScript(PackageOperationEventArgs e)
 		{
 			IPackageScript script = scriptFactory.CreatePackageInitializeScript(e.InstallPath);
-			script.Execute();
+			script.Execute(scriptSession);
 		}
 		
 		void RunUninstallScript(PackageOperationEventArgs e)
 		{
 			IPackageScript script = scriptFactory.CreatePackageUninstallScript(e.InstallPath);
 			script.Project = project;
-			script.Execute();
+			script.Execute(scriptSession);
 		}
 		
 		void RunInstallScript(PackageOperationEventArgs e)
 		{
 			IPackageScript script = scriptFactory.CreatePackageInstallScript(e.InstallPath);
 			script.Project = project;
-			script.Execute();
+			script.Execute(scriptSession);
 		}
 		
 		public void Dispose()

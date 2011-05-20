@@ -7,10 +7,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PackageUninstallScript : PackageScript
 	{
-		public PackageUninstallScript(
-			IPackageScriptFileName fileName,
-			IPackageScriptSession session)
-			: base(fileName, session)
+		public PackageUninstallScript(IPackageScriptFileName fileName)
+			: base(fileName)
 		{
 		}
 	}
