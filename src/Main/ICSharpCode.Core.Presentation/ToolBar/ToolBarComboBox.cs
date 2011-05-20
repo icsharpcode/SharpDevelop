@@ -11,12 +11,14 @@ namespace ICSharpCode.Core.Presentation
 	{
 		IComboBoxCommand menuCommand;
 		readonly Codon codon;
+		readonly object caller;
 		
 		public ToolBarComboBox(Codon codon, object caller)
 		{
 			if (codon == null)
 				throw new ArgumentNullException("codon");
 			this.codon = codon;
+			this.caller = caller;
 			ToolTipService.SetShowOnDisabled(this, true);
 			this.IsEditable = false;
 			menuCommand = (IComboBoxCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
@@ -36,6 +38,10 @@ namespace ICSharpCode.Core.Presentation
 		
 		public void UpdateStatus()
 		{
+			if (codon.GetFailedAction(caller) == ConditionFailedAction.Exclude)
+				this.Visibility = Visibility.Collapsed;
+			else
+				this.Visibility = Visibility.Visible;
 		}
 		
 		protected override void OnSelectionChanged(SelectionChangedEventArgs e)
