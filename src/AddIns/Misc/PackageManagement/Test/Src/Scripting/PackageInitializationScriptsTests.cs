@@ -59,13 +59,13 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Run_OnePackageInRepository_OnePackageScriptExecuted()
+		public void Run_OnePackageInRepository_OnePackageScriptIsRun()
 		{
 			CreateScripts();
 			AddPackageToRepository("Test");
 			scripts.Run(fakeSession);
 			
-			IPackageScriptSession session = fakeScriptFactory.FirstPackageInitializeScriptCreated.SessionPassedToExecute;
+			IPackageScriptSession session = fakeScriptFactory.FirstPackageInitializeScriptCreated.SessionPassedToRun;
 			FakePackageScriptSession expectedSession = fakeSession;
 			
 			Assert.AreEqual(expectedSession, session);
@@ -99,14 +99,14 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Run_TwoPackagesInRepository_SecondScriptIsExecuted()
+		public void Run_TwoPackagesInRepository_SecondScriptIsRun()
 		{
 			CreateScripts();
 			AddPackageToRepository("A");
 			AddPackageToRepository("B");
 			scripts.Run(fakeSession);
 			
-			IPackageScriptSession session = fakeScriptFactory.FakePackageInitializeScriptsCreated[1].SessionPassedToExecute;
+			IPackageScriptSession session = fakeScriptFactory.FakePackageInitializeScriptsCreated[1].SessionPassedToRun;
 			FakePackageScriptSession expectedSession = fakeSession;
 			
 			Assert.AreEqual(expectedSession, session);
@@ -147,15 +147,15 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Run_TwoPackagesInRepositoryAndLastPackageScriptFileExistsButNotFirst_FirstScriptNotExecuted()
+		public void Run_TwoPackagesInRepositoryAndLastPackageScriptFileExistsButNotFirst_FirstScriptNotRun()
 		{
 			CreateScriptsWithTwoPackagesInRepositoryAndLastPackageScriptFileExistsButNotFirst();
 			FakePackageScript firstScript = fakeScriptFactoryWithPredefinedPackageScripts.FakeInitializeScripts[0];
 			scripts.Run(fakeSession);
 			
-			bool executed = firstScript.IsExecuted;
+			bool run = firstScript.IsRun;
 			
-			Assert.IsFalse(executed);
+			Assert.IsFalse(run);
 		}
 	}
 }

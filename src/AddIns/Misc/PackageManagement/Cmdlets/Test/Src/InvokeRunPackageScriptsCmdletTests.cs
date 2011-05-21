@@ -42,9 +42,9 @@ namespace PackageManagement.Cmdlets.Tests
 			FakePackageScript script = AddScript();
 			RunCmdlet();
 			
-			bool executed = script.IsExecuted;
+			bool run = script.IsRun;
 			
-			Assert.IsTrue(executed);
+			Assert.IsTrue(run);
 		}
 		
 		[Test]
@@ -55,9 +55,9 @@ namespace PackageManagement.Cmdlets.Tests
 			FakePackageScript script = AddScript();
 			RunCmdlet();
 			
-			bool executed = script.IsExecuted;
+			bool run = script.IsRun;
 			
-			Assert.IsTrue(executed);
+			Assert.IsTrue(run);
 		}
 		
 		[Test]
@@ -67,7 +67,7 @@ namespace PackageManagement.Cmdlets.Tests
 			FakePackageScript script = AddScript();
 			RunCmdlet();
 			
-			IPackageScriptSession session = script.SessionPassedToExecute;
+			IPackageScriptSession session = script.SessionPassedToRun;
 			
 			Assert.AreEqual(cmdlet, session);
 		}
@@ -80,7 +80,7 @@ namespace PackageManagement.Cmdlets.Tests
 			FakePackageScript script = AddScript();
 			RunCmdlet();
 			
-			IPackageScriptSession session = script.SessionPassedToExecute;
+			IPackageScriptSession session = script.SessionPassedToRun;
 			
 			Assert.AreEqual(cmdlet, session);
 		}

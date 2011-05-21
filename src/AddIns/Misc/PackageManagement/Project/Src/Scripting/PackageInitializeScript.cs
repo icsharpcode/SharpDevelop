@@ -13,7 +13,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 		}
 		
-		protected override void BeforeExecute()
+		protected override void BeforeRun()
 		{
 			AddScriptDirectoryToEnvironmentPath();
 		}

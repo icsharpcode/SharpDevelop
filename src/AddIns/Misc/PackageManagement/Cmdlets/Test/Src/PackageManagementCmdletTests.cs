@@ -120,7 +120,7 @@ namespace PackageManagement.Cmdlets.Tests
 			var script = new FakePackageScript();
 			cmdlet.Run(script);
 			
-			IPackageScriptSession session = script.SessionPassedToExecute;
+			IPackageScriptSession session = script.SessionPassedToRun;
 			
 			Assert.AreEqual(cmdlet, session);
 		}
@@ -134,9 +134,9 @@ namespace PackageManagement.Cmdlets.Tests
 			script.ExistsReturnValue = false;
 			cmdlet.Run(script);
 			
-			bool executed = script.IsExecuted;
+			bool run = script.IsRun;
 			
-			Assert.IsFalse(executed);
+			Assert.IsFalse(run);
 		}
 	}
 }

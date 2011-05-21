@@ -32,7 +32,7 @@ namespace PackageManagement.Tests.Scripting
 		
 		void ExecuteScript()
 		{
-			script.Execute(fakeSession);
+			script.Run(fakeSession);
 		}
 
 		[Test]

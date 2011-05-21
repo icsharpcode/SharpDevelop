@@ -25,23 +25,23 @@ namespace ICSharpCode.PackageManagement.Scripting
 			return ScriptFileName.FileExists();
 		}
 		
-		public void Execute(IPackageScriptSession session)
+		public void Run(IPackageScriptSession session)
 		{
 			this.Session = session;
-			Execute();
+			Run();
 		}
 		
-		void Execute()
+		void Run()
 		{
-			BeforeExecute();
+			BeforeRun();
 			if (Exists()) {
 				AddSessionVariables();
-				ExecuteScript();
+				RunScript();
 				RemoveSessionVariables();
 			}
 		}
 		
-		protected virtual void BeforeExecute()
+		protected virtual void BeforeRun()
 		{
 		}
 		
@@ -61,7 +61,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			return null;
 		}
 		
-		void ExecuteScript()
+		void RunScript()
 		{
 			string script = GetScript();
 			Session.InvokeScript(script);

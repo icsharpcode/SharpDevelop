@@ -29,19 +29,19 @@ namespace PackageManagement.Tests.Scripting
 			Assert.IsTrue(removed);			
 		}
 		
-		void ExecuteScript()
+		void RunScript()
 		{
-			script.Execute(fakeSession);
+			script.Run(fakeSession);
 		}
 		
 		[Test]
-		public void Execute_ExistingEnvironmentPathIsEmptyString_PathToScriptAddedToEnvironmentPath()
+		public void Run_ExistingEnvironmentPathIsEmptyString_PathToScriptAddedToEnvironmentPath()
 		{
 			CreateScript();
 			fakeScriptFileName.GetScriptDirectoryReturnValue = @"d:\projects\myproject\packages\test\tools";
 			fakeSession.SetEnvironmentPath(String.Empty);
 			
-			ExecuteScript();
+			RunScript();
 			
 			string actualEnvironmentPath = fakeSession.GetEnvironmentPath();
 			string expectedEnvironmentPath = @"d:\projects\myproject\packages\test\tools";
@@ -50,13 +50,13 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Execute_OneItemInOriginalEnvironmentPath_PathToScriptAppendedToEnvironmentPath()
+		public void Run_OneItemInOriginalEnvironmentPath_PathToScriptAppendedToEnvironmentPath()
 		{
 			CreateScript();
 			fakeScriptFileName.GetScriptDirectoryReturnValue = @"d:\projects\myproject\packages\test\tools";
 			fakeSession.SetEnvironmentPath(@"c:\users\sharpdevelop\ps;");
 			
-			ExecuteScript();
+			RunScript();
 			
 			string actualEnvironmentPath = fakeSession.GetEnvironmentPath();
 			string expectedEnvironmentPath = @"c:\users\sharpdevelop\ps;d:\projects\myproject\packages\test\tools";
@@ -65,13 +65,13 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Execute_OneItemInOriginalEnvironmentPathMissingSemiColonAtEnd_PathToScriptAppendedToEnvironmentPathWithSemiColonAtStart()
+		public void Run_OneItemInOriginalEnvironmentPathMissingSemiColonAtEnd_PathToScriptAppendedToEnvironmentPathWithSemiColonAtStart()
 		{
 			CreateScript();
 			fakeScriptFileName.GetScriptDirectoryReturnValue = @"d:\projects\myproject\packages\test\tools";
 			fakeSession.SetEnvironmentPath(@"c:\users\sharpdevelop\ps");
 			
-			ExecuteScript();
+			RunScript();
 			
 			string actualEnvironmentPath = fakeSession.GetEnvironmentPath();
 			string expectedEnvironmentPath = @"c:\users\sharpdevelop\ps;d:\projects\myproject\packages\test\tools";
@@ -80,13 +80,13 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Execute_OriginalEnvironmentPathIsNull_PathToScriptAppendedToEnvironmentPath()
+		public void Run_OriginalEnvironmentPathIsNull_PathToScriptAppendedToEnvironmentPath()
 		{
 			CreateScript();
 			fakeScriptFileName.GetScriptDirectoryReturnValue = @"d:\projects\myproject\packages\test\tools";
 			fakeSession.SetEnvironmentPath(null);
 			
-			ExecuteScript();
+			RunScript();
 			
 			string actualEnvironmentPath = fakeSession.GetEnvironmentPath();
 			string expectedEnvironmentPath = @"d:\projects\myproject\packages\test\tools";
@@ -95,14 +95,14 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Execute_ScriptDirectoryDoesNotExist_PathIsNotUpdated()
+		public void Run_ScriptDirectoryDoesNotExist_PathIsNotUpdated()
 		{
 			CreateScript();
 			fakeScriptFileName.GetScriptDirectoryReturnValue = @"d:\projects\myproject\packages\test\tools";
 			fakeScriptFileName.ScriptDirectoryExistsReturnValue = false;
 			fakeSession.SetEnvironmentPath(String.Empty);
 			
-			ExecuteScript();
+			RunScript();
 			
 			string actualEnvironmentPath = fakeSession.GetEnvironmentPath();
 			string expectedEnvironmentPath = String.Empty;
@@ -111,12 +111,12 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Execute_PackageIsSet_PackageSessionVariableIsSet()
+		public void Run_PackageIsSet_PackageSessionVariableIsSet()
 		{
 			CreateScript();
 			var expectedPackage = new FakePackage("Test");
 			script.Package = expectedPackage;
-			ExecuteScript();
+			RunScript();
 			
 			var actualPackage = fakeSession.VariablesAdded["__package"];
 			
@@ -124,12 +124,12 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Execute_PackageInstallDirectoryIsSet_RootPathSessionVariableIsSet()
+		public void Run_PackageInstallDirectoryIsSet_RootPathSessionVariableIsSet()
 		{
 			CreateScript();
 			string expectedRootPath = @"d:\projects\myproject\packages\test";
 			fakeScriptFileName.PackageInstallDirectory = expectedRootPath;
-			ExecuteScript();
+			RunScript();
 			
 			var rootPath = fakeSession.VariablesAdded["__rootPath"];
 			
@@ -137,11 +137,11 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Execute_PackageInstallDirectoryIsSet_ToolsPathSessionVariableIsSet()
+		public void Run_PackageInstallDirectoryIsSet_ToolsPathSessionVariableIsSet()
 		{
 			CreateScript();
 			fakeScriptFileName.GetScriptDirectoryReturnValue = @"d:\projects\myproject\packages\test\tools";
-			ExecuteScript();
+			RunScript();
 			
 			var toolsPath = fakeSession.VariablesAdded["__toolsPath"];
 			string expectedToolsPath = @"d:\projects\myproject\packages\test\tools";
@@ -150,10 +150,10 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Execute_PackageInstallDirectoryIsSet_ProjectSessionVariableIsSet()
+		public void Run_PackageInstallDirectoryIsSet_ProjectSessionVariableIsSet()
 		{
 			CreateScript();
-			ExecuteScript();
+			RunScript();
 			
 			var project = fakeSession.VariablesAdded["__project"];
 			
@@ -161,11 +161,11 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Execute_PackageInstallDirectoryIsSet_ScriptIsInvoked()
+		public void Run_PackageInstallDirectoryIsSet_ScriptIsInvoked()
 		{
 			CreateScript();
 			fakeScriptFileName.ToStringReturnValue = @"d:\projects\myproject\packages\test\tools\init.ps1";
-			ExecuteScript();
+			RunScript();
 			
 			string actualScript = fakeSession.ScriptPassedToInvokeScript;
 			
@@ -176,37 +176,37 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Execute_PackageInstallDirectoryIsSet_PackageSessionVariableIsRemoved()
+		public void Run_PackageInstallDirectoryIsSet_PackageSessionVariableIsRemoved()
 		{
 			CreateScript();
-			ExecuteScript();
+			RunScript();
 			
 			AssertSessionVariableIsRemoved("__package");
 		}
 		
 		[Test]
-		public void Execute_PackageInstallDirectoryIsSet_RootPathSessionVariableIsRemoved()
+		public void Run_PackageInstallDirectoryIsSet_RootPathSessionVariableIsRemoved()
 		{
 			CreateScript();
-			ExecuteScript();
+			RunScript();
 			
 			AssertSessionVariableIsRemoved("__rootPath");
 		}
 		
 		[Test]
-		public void Execute_PackageInstallDirectoryIsSet_ToolsPathSessionVariableIsRemoved()
+		public void Run_PackageInstallDirectoryIsSet_ToolsPathSessionVariableIsRemoved()
 		{
 			CreateScript();
-			ExecuteScript();
+			RunScript();
 			
 			AssertSessionVariableIsRemoved("__toolsPath");
 		}
 		
 		[Test]
-		public void Execute_PackageInstallDirectoryIsSet_ProjectSessionVariableIsRemoved()
+		public void Run_PackageInstallDirectoryIsSet_ProjectSessionVariableIsRemoved()
 		{
 			CreateScript();
-			ExecuteScript();
+			RunScript();
 			
 			AssertSessionVariableIsRemoved("__project");
 		}

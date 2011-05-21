@@ -100,7 +100,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		public void Run(IPackageScript script)
 		{
 			if (script.Exists()) {
-				script.Execute(this);
+				script.Run(this);
 			}
 		}
 	}
