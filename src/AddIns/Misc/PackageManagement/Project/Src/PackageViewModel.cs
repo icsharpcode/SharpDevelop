@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -20,16 +21,19 @@ namespace ICSharpCode.PackageManagement
 		IPackageFromRepository package;
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
 		PackageViewModelOperationLogger logger;
+		IPackageScriptRunner scriptRunner;
 		
 		public PackageViewModel(
 			IPackageFromRepository package,
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
+			IPackageScriptRunner scriptRunner,
 			ILogger logger)
 		{
 			this.package = package;
 			this.solution = solution;
 			this.packageManagementEvents = packageManagementEvents;
+			this.scriptRunner = scriptRunner;
 			this.logger = CreateLogger(logger);
 			
 			CreateCommands();
@@ -237,6 +241,7 @@ namespace ICSharpCode.PackageManagement
 			InstallPackageAction action = project.CreateInstallPackageAction();
 			action.Package = package;
 			action.Operations = packageOperations;
+			action.PackageScriptRunner = scriptRunner;
 			action.Execute();
 		}
 		
@@ -266,6 +271,7 @@ namespace ICSharpCode.PackageManagement
 				IPackageManagementProject project = solution.GetActiveProject(package.Repository);
 				UninstallPackageAction action = project.CreateUninstallPackageAction();
 				action.Package = package;
+				action.PackageScriptRunner = scriptRunner;
 				action.Execute();
 			} catch (Exception ex) {
 				ReportError(ex);

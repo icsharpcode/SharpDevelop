@@ -32,6 +32,7 @@ namespace ICSharpCode.PackageManagement
 					solution,
 					registeredPackageRepositories,
 					PackageManagementServices.PackageManagementEvents,
+					PackageManagementServices.ConsolePackageScriptRunner,
 					new LicenseAcceptanceService(),
 					new PackageManagementTaskFactory());
 		}

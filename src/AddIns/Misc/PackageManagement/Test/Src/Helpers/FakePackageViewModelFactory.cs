@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
 namespace PackageManagement.Tests.Helpers
@@ -13,6 +14,7 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackageManagementSolution FakeSolution = new FakePackageManagementSolution();
 		public FakePackageManagementEvents FakePackageManagementEvents = new FakePackageManagementEvents();
 		public FakeLogger FakeLogger = new FakeLogger();
+		public FakePackageScriptRunner FakeScriptRunner = new FakePackageScriptRunner();
 		
 		public PackageViewModel CreatePackageViewModel(IPackageFromRepository package)
 		{
@@ -20,6 +22,7 @@ namespace PackageManagement.Tests.Helpers
 				package,
 				FakeSolution,
 				FakePackageManagementEvents,
+				FakeScriptRunner,
 				FakeLogger);
 		}
 		
@@ -29,6 +32,10 @@ namespace PackageManagement.Tests.Helpers
 		
 		public IPackageManagementEvents PackageManagementEvents {
 			get { return FakePackageManagementEvents; }
+		}
+		
+		public IPackageScriptRunner PackageScriptRunner {
+			get { return FakeScriptRunner; }
 		}
 	}
 }

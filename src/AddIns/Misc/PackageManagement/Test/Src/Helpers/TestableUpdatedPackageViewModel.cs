@@ -16,6 +16,7 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackage FakePackage;
 		public FakeLogger FakeLogger;
 		public ILogger LoggerUsedWhenCreatingPackageResolver;
+		public FakePackageScriptRunner FakeScriptRunner;
 		
 		public TestableUpdatedPackageViewModel()
 			: this(new FakePackageManagementSolution())
@@ -27,6 +28,7 @@ namespace PackageManagement.Tests.Helpers
 				new FakePackage(),
 				solution,
 				new FakePackageManagementEvents(),
+				new FakePackageScriptRunner(),
 				new FakeLogger())
 		{		
 		}
@@ -35,15 +37,18 @@ namespace PackageManagement.Tests.Helpers
 			FakePackage package,
 			FakePackageManagementSolution solution,
 			FakePackageManagementEvents packageManagementEvents,
+			FakePackageScriptRunner scriptRunner,
 			FakeLogger logger)
 			: base(
 				package,
 				solution,
 				packageManagementEvents,
+				scriptRunner,
 				logger)
 		{
 			this.FakePackage = package;
 			this.FakeSolution = solution;
+			this.FakeScriptRunner = scriptRunner;
 			this.FakeLogger = logger;
 		}
 	}

@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.PackageManagement.Design;
+using ICSharpCode.PackageManagement.Scripting;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -15,6 +16,7 @@ namespace PackageManagement.Tests
 		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementProject fakeProject;
 		FakeUpdatePackageAction updatePackageAction;
+		FakePackageScriptRunner fakeScriptRunner;
 		
 		void CreateViewModel()
 		{
@@ -22,6 +24,7 @@ namespace PackageManagement.Tests
 			fakeSolution = viewModel.FakeSolution;
 			fakeProject = fakeSolution.FakeProject;
 			updatePackageAction = fakeProject.FakeUpdatePackageAction;
+			fakeScriptRunner = viewModel.FakeScriptRunner;
 		}
 		
 		[Test]
@@ -64,6 +67,18 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			Assert.IsTrue(updatePackageAction.IsExecuted);
+		}
+		
+		[Test]
+		public void AddPackage_PackageAddedSuccessfully_PackageScriptRunnerIsUsedWhenUpdatingPackages()
+		{
+			CreateViewModel();
+			viewModel.AddPackage();
+			
+			IPackageScriptRunner scriptRunner = updatePackageAction.PackageScriptRunner;
+			FakePackageScriptRunner expectedScriptRunner = fakeScriptRunner;
+			
+			Assert.AreEqual(expectedScriptRunner, scriptRunner);
 		}
 	}
 }

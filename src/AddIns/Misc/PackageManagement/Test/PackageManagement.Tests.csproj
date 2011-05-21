@@ -88,6 +88,7 @@
     <Compile Include="Src\Helpers\FakePackageManagementEvents.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementProjectFactory.cs" />
+    <Compile Include="Src\Helpers\FakePackageManagementWorkbench.cs" />
     <Compile Include="Src\Helpers\FakePackageScript.cs" />
     <Compile Include="Src\Helpers\FakePackageScriptFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageScriptFactoryWithPredefinedPackageScripts.cs" />
@@ -176,6 +177,7 @@
     <Compile Include="Src\PackageManagementOutputMessagesViewTests.cs" />
     <Compile Include="Src\PackageManagementSolutionTests.cs" />
     <Compile Include="Src\PackageRepositoryCacheTests.cs" />
+    <Compile Include="Src\Scripting\ConsolePackageScriptRunnerTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsConsoleTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsTests.cs" />
     <Compile Include="Src\Scripting\PackageScriptsToRunTests.cs" />

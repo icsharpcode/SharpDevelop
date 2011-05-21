@@ -3,16 +3,17 @@
 
 using System;
 using ICSharpCode.PackageManagement.Scripting;
-using NuGet;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IPackageViewModelFactory
+	public class PackageManagementWorkbench : IPackageManagementWorkbench
 	{
-		PackageViewModel CreatePackageViewModel(IPackageFromRepository package);
-		
-		IPackageManagementSolution Solution { get; }
-		IPackageManagementEvents PackageManagementEvents { get; }
-		IPackageScriptRunner PackageScriptRunner { get; }
+		public void CreateConsolePad()
+		{
+			PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(PackageManagementConsolePad));
+			pad.BringPadToFront();
+		}
 	}
 }

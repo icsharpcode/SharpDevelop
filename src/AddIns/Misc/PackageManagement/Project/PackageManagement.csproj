@@ -97,11 +97,13 @@
     <Compile Include="Src\IPackageManagementEvents.cs" />
     <Compile Include="Src\IPackageManagementProject.cs" />
     <Compile Include="Src\IPackageManagementProjectFactory.cs" />
+    <Compile Include="Src\IPackageManagementWorkbench.cs" />
     <Compile Include="Src\PackageFromRepository.cs" />
     <Compile Include="Src\PackageManagementEvents.cs" />
     <Compile Include="Src\PackageManagementLogger.cs" />
     <Compile Include="Src\PackageManagementProject.cs" />
     <Compile Include="Src\PackageManagementProjectFactory.cs" />
+    <Compile Include="Src\PackageManagementWorkbench.cs" />
     <Compile Include="Src\PackageOperationExceptionEventArgs.cs" />
     <Compile Include="Src\PackageOperationMessage.cs" />
     <Compile Include="Src\PackageOperationMessageLoggedEventArgs.cs" />
@@ -195,6 +197,7 @@
     <Compile Include="Src\PackageManagementSolution.cs" />
     <Compile Include="Src\PackageManagementTask.cs" />
     <Compile Include="Src\PackageManagementTaskFactory.cs" />
+    <Compile Include="Src\Scripting\ConsolePackageScriptRunner.cs" />
     <Compile Include="Src\Scripting\IPackageScriptRunner.cs" />
     <Compile Include="Src\Scripting\ISolutionPackageRepository.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScripts.cs" />

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -11,16 +12,19 @@ namespace ICSharpCode.PackageManagement
 		public PackageViewModelFactory(IPackageViewModelFactory packageViewModelFactory)
 			: this(
 				packageViewModelFactory.Solution,
-				packageViewModelFactory.PackageManagementEvents)
+				packageViewModelFactory.PackageManagementEvents,
+				packageViewModelFactory.PackageScriptRunner)
 		{
 		}
 		
 		public PackageViewModelFactory(
 			IPackageManagementSolution solution,
-			IPackageManagementEvents packageManagementEvents)
+			IPackageManagementEvents packageManagementEvents,
+			IPackageScriptRunner scriptRunner)
 		{
 			this.Solution = solution;
 			this.PackageManagementEvents = packageManagementEvents;
+			this.PackageScriptRunner = scriptRunner;
 			this.Logger = new PackageManagementLogger(packageManagementEvents);
 		}
 		
@@ -30,11 +34,13 @@ namespace ICSharpCode.PackageManagement
 				package,
 				Solution,
 				PackageManagementEvents,
+				PackageScriptRunner,
 				Logger);
 		}
 		
 		public IPackageManagementSolution Solution { get; private set; }
 		public IPackageManagementEvents PackageManagementEvents { get; private set; }
 		public ILogger Logger { get; private set; }
+		public IPackageScriptRunner PackageScriptRunner { get; private set; }
 	}
 }

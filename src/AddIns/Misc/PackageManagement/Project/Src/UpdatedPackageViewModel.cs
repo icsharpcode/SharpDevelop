@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -10,15 +11,18 @@ namespace ICSharpCode.PackageManagement
 	public class UpdatedPackageViewModel : PackageViewModel
 	{
 		IPackageManagementSolution solution;
+		IPackageScriptRunner scriptRunner;
 		
 		public UpdatedPackageViewModel(
 			IPackageFromRepository package,
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
+			IPackageScriptRunner scriptRunner,
 			ILogger logger)
-			: base(package, solution, packageManagementEvents, logger)
+			: base(package, solution, packageManagementEvents, scriptRunner, logger)
 		{
 			this.solution = solution;
+			this.scriptRunner = scriptRunner;
 		}
 		
 		protected override void InstallPackage(
@@ -29,6 +33,7 @@ namespace ICSharpCode.PackageManagement
 			UpdatePackageAction action = project.CreateUpdatePackageAction();
 			action.Package = package;
 			action.Operations = packageOperations;
+			action.PackageScriptRunner = scriptRunner;
 			action.Execute();
 		}
 	}

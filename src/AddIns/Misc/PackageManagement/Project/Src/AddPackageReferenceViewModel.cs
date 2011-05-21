@@ -4,6 +4,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+
+using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -20,6 +22,7 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagementEvents packageManagementEvents,
+			IPackageScriptRunner scriptRunner,
 			ILicenseAcceptanceService licenseAcceptanceService,
 			ITaskFactory taskFactory)
 		{
@@ -31,7 +34,7 @@ namespace ICSharpCode.PackageManagement
 			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
 			packageManagementEvents.AcceptLicenses += AcceptLicenses;
 			
-			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents);
+			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents, scriptRunner);
 			
 			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
 			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);

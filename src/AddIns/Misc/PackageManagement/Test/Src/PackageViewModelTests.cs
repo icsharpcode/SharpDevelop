@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -19,9 +20,10 @@ namespace PackageManagement.Tests
 		FakePackageManagementEvents packageManagementEvents;
 		ExceptionThrowingPackageManagementSolution exceptionThrowingSolution;
 		ExceptionThrowingPackageManagementProject exceptionThrowingProject;
-		FakeInstallPackageAction fakeInstallPackageTask;
+		FakeInstallPackageAction fakeInstallPackageAction;
 		FakeUninstallPackageAction fakeUninstallPackageAction;
 		FakeLogger fakeLogger;
+		FakePackageScriptRunner fakeScriptRunner;
 		
 		void CreateViewModel()
 		{
@@ -49,8 +51,9 @@ namespace PackageManagement.Tests
 			this.fakeSolution = solution;
 			packageManagementEvents = viewModel.FakePackageManagementEvents;
 			fakeLogger = viewModel.FakeLogger;
-			fakeInstallPackageTask = solution.FakeProject.FakeInstallPackageAction;
+			fakeInstallPackageAction = solution.FakeProject.FakeInstallPackageAction;
 			fakeUninstallPackageAction = solution.FakeProject.FakeUninstallPackageAction;
+			fakeScriptRunner = viewModel.FakeScriptRunner;
 		}
 
 		[Test]
@@ -61,7 +64,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackageCommand.Execute(null);
 						
-			Assert.AreEqual(package, fakeInstallPackageTask.Package);
+			Assert.AreEqual(package, fakeInstallPackageAction.Package);
 		}
 		
 		[Test]
@@ -83,7 +86,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackage();
 						
-			Assert.IsTrue(fakeInstallPackageTask.IsExecuteCalled);
+			Assert.IsTrue(fakeInstallPackageAction.IsExecuteCalled);
 		}
 		
 		[Test]
@@ -97,7 +100,7 @@ namespace PackageManagement.Tests
 				new PackageOperation(package, PackageAction.Install)
 			};
 			
-			CollectionAssert.AreEqual(expectedOperations, fakeInstallPackageTask.Operations);
+			CollectionAssert.AreEqual(expectedOperations, fakeInstallPackageAction.Operations);
 		}
 		
 		[Test]
@@ -119,7 +122,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			IPackage packagePassedToInstallPackageWhenPropertyNameChanged = null;
 			viewModel.PropertyChanged += (sender, e) => {
-				packagePassedToInstallPackageWhenPropertyNameChanged = fakeInstallPackageTask.Package;
+				packagePassedToInstallPackageWhenPropertyNameChanged = fakeInstallPackageAction.Package;
 			};
 			viewModel.AddPackage();
 			
@@ -345,7 +348,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackage();
 			
-			Assert.IsFalse(fakeInstallPackageTask.IsExecuteCalled);
+			Assert.IsFalse(fakeInstallPackageAction.IsExecuteCalled);
 		}
 		
 		[Test]
@@ -569,6 +572,19 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void AddPackage_PackagesInstalledSuccessfully_ScriptRunnerUsedWhenInstallingPackage()
+		{
+			CreateViewModel();
+			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
+			viewModel.AddPackage();
+			
+			IPackageScriptRunner scriptRunner = fakeInstallPackageAction.PackageScriptRunner;
+			FakePackageScriptRunner expectedScriptRunner = fakeScriptRunner;
+			
+			Assert.AreEqual(expectedScriptRunner, scriptRunner);
+		}
+		
+		[Test]
 		public void AddPackage_PackagesInstalledSuccessfully_PackageDependenciesNotIgnoredWhenCheckingForPackageOperations()
 		{
 			CreateViewModel();
@@ -590,6 +606,19 @@ namespace PackageManagement.Tests
 			viewModel.RemovePackage();
 			
 			Assert.IsTrue(fakeUninstallPackageAction.IsExecuted);
+		}
+		
+		[Test]
+		public void RemovePackage_PackageRemovedSuccessfully_PackageScriptRunnerIsUsedWhenUninstalling()
+		{
+			CreateViewModel();
+			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
+			viewModel.RemovePackage();
+			
+			IPackageScriptRunner scriptRunner = fakeUninstallPackageAction.PackageScriptRunner;
+			FakePackageScriptRunner expectedScriptRunner = fakeScriptRunner;
+			
+			Assert.AreEqual(expectedScriptRunner, scriptRunner);
 		}
 	}
 }
