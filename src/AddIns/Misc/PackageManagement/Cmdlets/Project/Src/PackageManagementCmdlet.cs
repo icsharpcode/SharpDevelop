@@ -99,7 +99,9 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		public void Run(IPackageScript script)
 		{
-			script.Execute(this);
+			if (script.Exists()) {
+				script.Execute(this);
+			}
 		}
 	}
 }

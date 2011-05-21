@@ -124,5 +124,19 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			Assert.AreEqual(cmdlet, session);
 		}
+		
+		[Test]
+		public void Run_PackageScriptDoesNotExist_ScriptIsNotRun()
+		{
+			CreateCmdlet();
+			
+			var script = new FakePackageScript();
+			script.ExistsReturnValue = false;
+			cmdlet.Run(script);
+			
+			bool executed = script.IsExecuted;
+			
+			Assert.IsFalse(executed);
+		}
 	}
 }

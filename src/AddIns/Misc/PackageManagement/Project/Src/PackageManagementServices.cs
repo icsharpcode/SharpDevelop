@@ -18,6 +18,7 @@ namespace ICSharpCode.PackageManagement
 		static readonly PackageManagementOutputMessagesView outputMessagesView;
 		static readonly RunPackageInitializationScriptsOnSolutionOpen runPackageInitializationScripts;
 		static readonly ResetPowerShellWorkingDirectoryOnSolutionClosed resetPowerShellWorkingDirectory;
+		static readonly PackageScriptsToRun packageScriptsToRun = new PackageScriptsToRun();
 		
 		static PackageManagementServices()
 		{
@@ -57,6 +58,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public static IPackageManagementProjectService ProjectService {
 			get { return projectService; }
+		}
+		
+		public static PackageScriptsToRun PackageScriptsToRun {
+			get { return packageScriptsToRun; }
 		}
 	}
 }
