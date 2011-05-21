@@ -14,6 +14,13 @@ namespace ICSharpCode.PackageManagement
 		{
 			PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(PackageManagementConsolePad));
 			pad.BringPadToFront();
+			EnsurePackageManagementConsoleViewModelIsCreated(pad);
+		}
+		
+		void EnsurePackageManagementConsoleViewModelIsCreated(PadDescriptor pad)
+		{
+			// Force creation of view model.
+			object control = pad.PadContent.Control;
 		}
 	}
 }
