@@ -29,7 +29,7 @@ namespace PackageManagement.Tests.Scripting
 		
 		bool IsWorkingDirectoryUpdated()
 		{
-			return fakeScriptingConsole.AllTextPassedToSendLine.Contains("Invoke-UpdateWorkingDirectory");
+			return fakeConsoleHost.CommandsExecuted.Contains("Invoke-UpdateWorkingDirectory");
 		}
 		
 		[Test]

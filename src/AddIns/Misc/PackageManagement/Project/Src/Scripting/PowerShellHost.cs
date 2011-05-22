@@ -170,30 +170,5 @@ namespace ICSharpCode.PackageManagement.Scripting
 				consoleHost.ScriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
 			}
 		}
-		
-		public void SetEnvironmentPath(string path)
-		{
-			Environment.SetEnvironmentVariable(EnvironmentPathVariableName, path);
-		}
-		
-		public string GetEnvironmentPath()
-		{
-			return Environment.GetEnvironmentVariable(EnvironmentPathVariableName);
-		}
-		
-		public void AddVariable(string name, object value)
-		{
-			runspace.SessionStateProxy.SetVariable(name, value);
-		}
-		
-		public void RemoveVariable(string name)
-		{
-			runspace.SessionStateProxy.PSVariable.Remove(name);
-		}
-		
-		public void InvokeScript(string script)
-		{
-			consoleHost.ScriptingConsole.SendLine(script);
-		}
 	}
 }

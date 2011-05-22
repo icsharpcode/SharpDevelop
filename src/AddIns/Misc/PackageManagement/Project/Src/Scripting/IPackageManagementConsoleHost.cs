@@ -22,6 +22,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void WritePrompt();
 		void Run();
 		void ShutdownConsole();
+		void ExecuteCommand(string command);
 		
 		IPackageManagementProject GetProject(string packageSource, string projectName);
 		IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName);

@@ -95,7 +95,7 @@ namespace PackageManagement.Tests.Scripting
 			ConsoleHostIsRunning();
 			RunScriptThatExists();
 			
-			string command = fakeScriptingConsole.TextPassedToSendLine;
+			string command = fakeConsoleHost.FirstCommandExecuted;
 			string expectedCommand = "Invoke-RunPackageScripts";
 			
 			Assert.AreEqual(expectedCommand, command);
@@ -108,9 +108,9 @@ namespace PackageManagement.Tests.Scripting
 			ConsoleHostIsRunning();
 			RunScriptThatDoesNotExist();
 			
-			string command = fakeScriptingConsole.TextPassedToSendLine;
+			int count = fakeConsoleHost.CommandsExecuted.Count;
 			
-			Assert.IsNull(command);
+			Assert.AreEqual(0, count);
 		}
 		
 		[Test]

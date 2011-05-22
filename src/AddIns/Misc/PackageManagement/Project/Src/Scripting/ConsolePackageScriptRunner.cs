@@ -57,7 +57,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void InvokeRunPackageScriptsCmdlet()
 		{
 			string command = "Invoke-RunPackageScripts";
-			consoleHost.ScriptingConsole.SendLine(command);
+			consoleHost.ExecuteCommand(command);
 		}
 	}
 }

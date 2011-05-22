@@ -545,5 +545,17 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.DoesNotThrow(() => host.ShutdownConsole());
 		}
+		
+		[Test]
+		public void ExecuteCommand_ScriptingConsoleCreated_SendsCommandToScriptingConsole()
+		{
+			CreateHost();
+			host.ExecuteCommand("test");
+			
+			string text = host.FakeScriptingConsole.TextPassedToSendLine;
+			string expectedText = "test";
+			
+			Assert.AreEqual(expectedText, text);
+		}
 	}
 }

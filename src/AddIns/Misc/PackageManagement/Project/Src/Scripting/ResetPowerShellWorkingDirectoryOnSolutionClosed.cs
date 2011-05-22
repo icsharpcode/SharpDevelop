@@ -27,7 +27,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void UpdateWorkingDirectory()
 		{
 			string command = "Invoke-UpdateWorkingDirectory";
-			consoleHost.ScriptingConsole.SendLine(command);
+			consoleHost.ExecuteCommand(command);
 		}
 	}
 }

@@ -18,7 +18,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public void ExecuteCommand(string command)
 		{
 			if (consoleHost.IsRunning) {
-				consoleHost.ScriptingConsole.SendLine(command);
+				consoleHost.ExecuteCommand(command);
 			}
 		}
 	}

@@ -103,5 +103,20 @@ namespace PackageManagement.Tests.Helpers
 		{
 			IsShutdownConsoleCalled = true;
 		}
+		
+		public List<string> CommandsExecuted = new List<string>();
+		
+		public string FirstCommandExecuted {
+			get { return CommandsExecuted[0]; }
+		}
+		
+		public string LastCommandExecuted {
+			get { return CommandsExecuted[CommandsExecuted.Count - 1]; }
+		}
+		
+		public void ExecuteCommand(string command)
+		{
+			CommandsExecuted.Add(command);
+		}
 	}
 }

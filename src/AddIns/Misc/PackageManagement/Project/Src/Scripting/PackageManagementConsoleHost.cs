@@ -233,5 +233,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 				ScriptingConsole.Dispose();
 			}
 		}
+		
+		public void ExecuteCommand(string command)
+		{
+			ScriptingConsole.SendLine(command);
+		}
 	}
 }

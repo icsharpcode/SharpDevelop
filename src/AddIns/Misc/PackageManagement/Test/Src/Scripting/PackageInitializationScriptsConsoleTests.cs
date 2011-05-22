@@ -25,13 +25,13 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void ExecuteCommand_ConsoleHostAlreadyRunning_CommandSentToScriptingConsole()
+		public void ExecuteCommand_ConsoleHostAlreadyRunning_CommandIsExecuted()
 		{
 			CreateConsole();
 			fakeConsoleHost.IsRunning = true;
 			console.ExecuteCommand("Test");
 			
-			string command = fakeScriptingConsole.TextPassedToSendLine;
+			string command = fakeConsoleHost.FirstCommandExecuted;
 			
 			Assert.AreEqual("Test", command);
 		}
