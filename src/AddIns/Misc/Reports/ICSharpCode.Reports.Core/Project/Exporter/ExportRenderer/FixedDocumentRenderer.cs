@@ -28,8 +28,6 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 		private FixedDocument document ;
 		private FixedDocumentCreator docCreator;
 	
-//		http://www.nbdtech.com/Blog/archive/2009/04/20/wpf-printing-part-2-the-fixed-document.aspx
-		
 	
 		public static FixedDocumentRenderer CreateInstance (ReportSettings reportSettings,PagesCollection pages)
 		{
@@ -37,12 +35,12 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			return instance;
 		}
 		
+		
 		private FixedDocumentRenderer(ReportSettings reportSettings,PagesCollection pages):base(pages)
 		{
 			this.pages  = pages;
 			this.reportSettings = reportSettings;
 			this.docCreator = new FixedDocumentCreator();
-			
 		}
 		
 		
@@ -52,7 +50,6 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 		public override void Start()
 		{
 			base.Start();
-			Console.WriteLine("FixedDocumentRenderer - Start");
 			document = new FixedDocument();
 			
 
@@ -95,28 +92,10 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 				docCreator.ArrangePage(document.DocumentPaginator.PageSize,fixedPage);
 				AddPageToDocument(document,fixedPage);
 			}
-			
-//http://www.ericsink.com/wpf3d/B_Printing.html
-//			http://www.switchonthecode.com/tutorials/wpf-printing-part-2-pagination
-		
-			
-//			http://stackoverflow.com/questions/3671724/wpf-flowdocument-page-break-positioning
-//		http://wpf.2000things.com/tag/drawingvisual/
-//http://wpf.2000things.com/2011/03/25/256-use-a-fixeddocument-to-display-content-at-fixed-locations/
-
-//http://wpf.2000things.com/2011/03/25/256-use-a-fixeddocument-to-display-content-at-fixed-locations/
-//http://www.neodynamic.com/ND/FaqsTipsTricks.aspx?tabid=66&prodid=0&sid=99
-
-//http://www.eggheadcafe.com/tutorials/aspnet/9cbb4841-8677-49e9-a3a8-46031e699b2e/wpf-printing-and-print-pr.aspx
-//http://www.eggheadcafe.com/tutorials/aspnet/9cbb4841-8677-49e9-a3a8-46031e699b2e/wpf-printing-and-print-pr.aspx
-//
-//http://www.eggheadcafe.com/tutorials/aspnet/22ac97f3-4a3d-4fee-a411-e456f77f6a90/wpf-report-engine-part-3.aspx
-			
 			Document = document;
 		}
 		
 	
-		
 		void AddPageToDocument(FixedDocument fixedDocument,FixedPage page)
 		{
 			PageContent pageContent = new PageContent();
@@ -128,7 +107,6 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 		public override void End()
 		{
 			base.End();
-			Console.WriteLine("FixedDocumentRenderer - End");		
 		}
 			
 		public IDocumentPaginatorSource Document {get;private set;}

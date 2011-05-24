@@ -21,7 +21,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 	/// <summary>
 	/// Description of UserControl1.
 	/// </summary>
-	public partial class PreviewControl : IPreviewControl
+	public partial class PreviewControl : IPreviewModel
 	{
 		public event EventHandler<EventArgs> PreviewLayoutChanged;
 

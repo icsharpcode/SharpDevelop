@@ -18,7 +18,7 @@ using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Core.ReportViewer
 {
-	public interface IPreviewControl
+	public interface IPreviewModel
 	{
 		void RunReport(string fileName, ReportParameters parameters);
 		void RunReport(ReportModel reportModel, ReportParameters parameters);

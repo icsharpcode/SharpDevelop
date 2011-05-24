@@ -7,6 +7,8 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -29,14 +31,8 @@ namespace ICSharpCode.Reports.Core.WPF
 		
 		public FixedPage CreatePage(ExporterPage exporterPage)
 		{
-			Console.WriteLine("\tCreatepage with {0} items ",exporterPage.Items.Count);
 			FixedPage page = new FixedPage();
-			//http://www.bing.com/search?q=Convert+Windows+Forms+to+WPF&FORM=QSRE
-			
 			CreatePageInternal (page,exporterPage.Items);
-			
-			
-			Console.WriteLine("\tPage created with with {0} items ",page.Children.Count);
 			return page;
 		}
 		
@@ -45,9 +41,10 @@ namespace ICSharpCode.Reports.Core.WPF
 		{
 			foreach (var element in items)
 			{
-				var cont = element as ExportContainer;
 				var item = ItemFactory(element);
 				if (item != null) {
+					FixedPage.SetLeft(item,element.StyleDecorator.Location.X );
+					FixedPage.SetTop(item,element.StyleDecorator.Location.Y);
 					page.Children.Add(item);
 				}
 			}
@@ -56,13 +53,12 @@ namespace ICSharpCode.Reports.Core.WPF
 		
 		UIElement ItemFactory (BaseExportColumn column)
 		{
-			Console.WriteLine(" Create {0}",column.ToString());
 			UIElement element = null;
 			
 			var container = column as ExportContainer;
 			
 			if (container != null) {
-				element = CreateContainer(column);
+				element = CreateContainer(container);
 			}
 			
 			var text = column as ExportText;
@@ -70,46 +66,37 @@ namespace ICSharpCode.Reports.Core.WPF
 			if (text != null) {
 				element = CreateTextColumn(text);
 			}
+			
+
+			var image = column as ExportImage;
+			
+			if (image != null)
+			{
+				element = CreateImageColumn(image);
+			}
 			return element;
 		}
 		
-
-		private UIElement CreateContainer(BaseExportColumn column)
+		
+		private UIElement CreateContainer(ExportContainer container)
 		{
-			ExportContainer container = column as ExportContainer;
+			//ExportContainer container = column as ExportContainer;
 			var canvas = new Canvas();
-			canvas.Width = column.StyleDecorator.DisplayRectangle.Width;
-			canvas.Height = column.StyleDecorator.DisplayRectangle.Height;
-			
-			FixedPage.SetLeft(canvas,column.StyleDecorator.Location.X);
-			FixedPage.SetTop(canvas,column.StyleDecorator.Location.Y);
+			canvas.Width = container.StyleDecorator.DisplayRectangle.Width;
+			canvas.Height = container.StyleDecorator.DisplayRectangle.Height;
 			
 			var conv = new BrushConverter();
-//			SolidColorBrush b = conv.ConvertFromString(System.Drawing.Color.LightGray.Name) as SolidColorBrush;
-			SolidColorBrush b = conv.ConvertFromString(column.StyleDecorator.BackColor.Name) as SolidColorBrush;
-			canvas.Background = b;
-			foreach (var element in container.Items) {
-				var text = element as ExportText;
-				if (text != null)
-				{
-					var textBlock = CreateTextBlock (text);
-					
-//					textBlock.ClipToBounds = true;
-					textBlock.TextWrapping = TextWrapping.Wrap;
-					
-					Canvas.SetLeft(textBlock,element.StyleDecorator.Location.X - column.StyleDecorator.Location.X);
-					Canvas.SetTop(textBlock,element.StyleDecorator.Location.Y - column.StyleDecorator.Location.Y);
-					
-//					var m  = new System.Windows.Thickness(text.StyleDecorator.Location.X - column.StyleDecorator.Location.X,
-//					                                      text.StyleDecorator.Location.Y - column.StyleDecorator.Location.Y,0,0);
-//					t.Margin = m;
-					Console.WriteLine("{0} - {1} - {2} ",textBlock.Text,textBlock.Width,textBlock.MaxWidth);
-					                  
-					                  
-					                  
-					canvas.Children.Add(textBlock);
-				}
+			
+			SolidColorBrush backgroundBrush = conv.ConvertFromString(container.StyleDecorator.BackColor.Name) as SolidColorBrush;
+			canvas.Background = backgroundBrush;
+			
+			foreach (var exportElement in container.Items) {
+				var uiElement = ItemFactory (exportElement);
+				Canvas.SetLeft(uiElement,exportElement.StyleDecorator.Location.X - container.StyleDecorator.Location.X);
+				Canvas.SetTop(uiElement,exportElement.StyleDecorator.Location.Y - container.StyleDecorator.Location.Y);
+				canvas.Children.Add(uiElement);
 			}
+			
 			canvas.Measure(PageSize);
 			canvas.Arrange(new Rect(new System.Windows.Point(), PageSize));
 			canvas.UpdateLayout();
@@ -120,12 +107,33 @@ namespace ICSharpCode.Reports.Core.WPF
 		UIElement CreateTextColumn(ExportText et)
 		{
 			TextBlock tb = CreateTextBlock(et);
-			
-			FixedPage.SetLeft(tb,et.StyleDecorator.Location.X );
-			FixedPage.SetTop(tb,et.StyleDecorator.Location.Y);
 			return tb;
 		}
 
+		
+		UIElement CreateImageColumn(ExportImage exportImage)
+		{
+			System.Windows.Media.Imaging.BitmapImage bitmap = BitmapFromImage(exportImage);
+			Image image = new Image();
+			image.Source = bitmap;
+			image.Width = exportImage.StyleDecorator.DisplayRectangle.Width;
+			image.Height = exportImage.StyleDecorator.DisplayRectangle.Height;
+			image.Stretch = System.Windows.Media.Stretch.Fill;
+			return image;
+		}
+
+		
+		System.Windows.Media.Imaging.BitmapImage BitmapFromImage(ExportImage image)
+		{
+			var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+			bitmap.BeginInit();
+			MemoryStream memoryStream = new MemoryStream();
+			image.Image.Save(memoryStream, ImageFormat.Bmp);
+			memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
+			bitmap.StreamSource = memoryStream;
+			bitmap.EndInit();
+			return bitmap;
+		}
 		
 		TextBlock CreateTextBlock(ExportText et)
 		{
@@ -139,51 +147,21 @@ namespace ICSharpCode.Reports.Core.WPF
 			return tb;
 		}
 		
-		//points = pixels * 96 / 72 
 		
 		void SetFont(TextBlock tb, TextStyleDecorator styleDecorator)
 		{
-//
-//			http://msdn.microsoft.com/en-us/library/system.windows.textdecorations.aspx
-//			http://stackoverflow.com/questions/637636/using-a-system-drawing-font-with-a-wpf-label
-			
-//			var s = NewTypeFaceFromFont (styleDecorator.Font);
-			
-//			 FontFamilyConverter conv = new FontFamilyConverter();
-//			   FontFamily mfont1 = conv.ConvertFromString(styleDecorator.Font.Name) as FontFamily;
-//			   tb.FontFamily = mfont1;
+
 			tb.FontFamily = new FontFamily(styleDecorator.Font.FontFamily.Name);
-//			var s = styleDecorator.Font.GetHeight();
-//			var a = s /97*72;
 			var b = styleDecorator.Font.Size;
-			//tb.FontSize = (int)styleDecorator.Font.GetHeight();
 			tb.FontSize = b * 96/72;
 			if (styleDecorator.Font.Bold) {
 				tb.FontWeight = FontWeights.Bold;
 			}
-			
-			Console.WriteLine ("{0} - {1}",styleDecorator.Font.FontFamily.Name,styleDecorator.Font.GetHeight());
 		}
-	
-/*
-	using System.Drawing;
-using Media = System.Windows.Media;
-
- Font font = new Font(new System.Drawing.FontFamily("Comic Sans MS"), 10);
-            //option 1
-            Media.FontFamily mfont = new Media.FontFamily(font.Name);
-            //option 2 does the same thing
-            Media.FontFamilyConverter conv = new Media.FontFamilyConverter();
-            Media.FontFamily mfont1 = conv.ConvertFromString(font.Name) as Media.FontFamily;
-            //option 3
-            Media.FontFamily mfont2 = Media.Fonts.SystemFontFamilies.Where(x => x.Source == font.Name).FirstOrDefault();
-	
 		
 		
-*/		
 		public void ArrangePage(Size pageSize, FixedPage page)
 		{
-			Console.WriteLine("Arrange page with Size {0}",pageSize);
 			page.Measure(pageSize);
 			page.Arrange(new Rect(new System.Windows.Point(), pageSize));
 			page.UpdateLayout();
