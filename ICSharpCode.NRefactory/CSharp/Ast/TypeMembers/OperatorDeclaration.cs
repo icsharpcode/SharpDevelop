@@ -23,13 +23,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public enum OperatorType {
+	public enum OperatorType
+	{
 		// Unary operators
 		LogicalNot,
 		OnesComplement,
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	
 	public class OperatorDeclaration : AttributedNode
 	{
-		public static readonly Role<CSharpTokenNode> OperatorTypeRole = new Role<CSharpTokenNode>("OperatorType", CSharpTokenNode.Null);
+		public static readonly Role<CSharpTokenNode> OperatorTypeRole = new Role<CSharpTokenNode> ("OperatorType", CSharpTokenNode.Null);
 		public static readonly Role<CSharpTokenNode> OperatorKeywordRole = Roles.Keyword;
 		
 		public OperatorType OperatorType {
@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public AstType ReturnType {
 			get { return GetChildByRole (Roles.Type); }
-			set { SetChildByRole(Roles.Type, value); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
 		public CSharpTokenNode LParToken {
@@ -98,14 +98,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (Roles.Body, value); }
 		}
 		
-		public static string GetName(OperatorType type)
+		/// <summary>
+		/// Gets the operator type from the method name, or null, if the method does not represent one of the known operator types.
+		/// </summary>
+		public static OperatorType? GetOperatorType (string methodName)
 		{
-			return Mono.CSharp.Operator.GetMetadataName((Mono.CSharp.Operator.OpType)type);
+			return (OperatorType?)Mono.CSharp.Operator.GetType (methodName);
+		}
+
+		public static string GetName (OperatorType type)
+		{
+			return Mono.CSharp.Operator.GetMetadataName ((Mono.CSharp.Operator.OpType)type);
 		}
 		
-		public static string GetToken(OperatorType type)
+		public static string GetToken (OperatorType type)
 		{
-			return Mono.CSharp.Operator.GetName((Mono.CSharp.Operator.OpType)type);
+			return Mono.CSharp.Operator.GetName ((Mono.CSharp.Operator.OpType)type);
 		}
 		
 		public override NodeType NodeType {
@@ -118,15 +126,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public string Name {
-			get { return GetName(this.OperatorType); }
+			get { return GetName (this.OperatorType); }
 		}
 		
-		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
+		protected internal override bool DoMatch (AstNode other, PatternMatching.Match match)
 		{
 			OperatorDeclaration o = other as OperatorDeclaration;
-			return o != null && this.MatchAttributesAndModifiers(o, match) && this.OperatorType == o.OperatorType
-				&& this.ReturnType.DoMatch(o.ReturnType, match)
-				&& this.Parameters.DoMatch(o.Parameters, match) && this.Body.DoMatch(o.Body, match);
+			return o != null && this.MatchAttributesAndModifiers (o, match) && this.OperatorType == o.OperatorType
+				&& this.ReturnType.DoMatch (o.ReturnType, match)
+				&& this.Parameters.DoMatch (o.Parameters, match) && this.Body.DoMatch (o.Body, match);
 		}
 	}
 }

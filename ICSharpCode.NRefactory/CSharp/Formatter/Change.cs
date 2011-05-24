@@ -35,6 +35,7 @@ namespace ICSharpCode.NRefactory
 		}
 		
 		int removedChars;
+
 		public int RemovedChars {
 			get { 
 				return removedChars; 
@@ -60,6 +61,11 @@ namespace ICSharpCode.NRefactory
 			this.removedChars = removedChars;
 			this.Offset = offset;
 			this.InsertedText = insertedText;
+		}
+
+		public void PerformChange (ITextEditorAdapter adapter)
+		{
+			adapter.Replace (Offset, RemovedChars, InsertedText);
 		}
 		
 		public override string ToString ()
