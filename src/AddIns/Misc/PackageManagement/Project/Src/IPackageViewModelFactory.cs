@@ -13,6 +13,6 @@ namespace ICSharpCode.PackageManagement
 		
 		IPackageManagementSolution Solution { get; }
 		IPackageManagementEvents PackageManagementEvents { get; }
-		IPackageScriptRunner PackageScriptRunner { get; }
+		IPackageActionRunner PackageActionRunner { get; }
 	}
 }

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -29,6 +30,14 @@ namespace PackageManagement.Tests
 		FakePackage AddOnePackageToProjectSourceRepository(string packageId)
 		{
 			return fakeProject.FakeSourceRepository.AddFakePackage(packageId);
+		}
+		
+		void AddFileToPackageBeingUninstalled(string fileName)
+		{
+			var package = new FakePackage();
+			package.AddFile(fileName);
+			
+			action.Package = package;
 		}
 		
 		[Test]
@@ -170,6 +179,39 @@ namespace PackageManagement.Tests
 		{
 			CreateAction();
 			Assert.IsFalse(action.RemoveDependencies);
+		}
+		
+		[Test]
+		public void HasPackageScriptsToRun_OnePackageInOperationsHasUninstallPowerShellScript_ReturnsTrue()
+		{
+			CreateAction();
+			AddFileToPackageBeingUninstalled(@"tools\uninstall.ps1");
+			
+			bool hasPackageScripts = action.HasPackageScriptsToRun();
+			
+			Assert.IsTrue(hasPackageScripts);
+		}
+		
+		[Test]
+		public void HasPackageScriptsToRun_OnePackageInOperationsHasNoFiles_ReturnsFalse()
+		{
+			CreateAction();
+			action.Package = new FakePackage();
+			
+			bool hasPackageScripts = action.HasPackageScriptsToRun();
+			
+			Assert.IsFalse(hasPackageScripts);
+		}
+		
+		[Test]
+		public void HasPackageScriptsToRun_OnePackageInOperationsHasUninstallPowerShellScriptInUpperCase_ReturnsTrue()
+		{
+			CreateAction();
+			AddFileToPackageBeingUninstalled(@"tools\UNINSTALL.PS1");
+			
+			bool hasPackageScripts = action.HasPackageScriptsToRun();
+			
+			Assert.IsTrue(hasPackageScripts);
 		}
 	}
 }

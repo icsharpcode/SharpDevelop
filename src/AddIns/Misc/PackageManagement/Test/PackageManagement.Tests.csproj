@@ -70,6 +70,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\AddPackageReferenceCommandTests.cs" />
+    <Compile Include="Src\ConsolePackageActionRunnerTests.cs" />
     <Compile Include="Src\EnvDTE\DTETests.cs" />
     <Compile Include="Src\EnvDTE\ItemOperationsTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectItemPropertyTests.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Src\Helpers\ExceptionThrowingRegisteredPackageRepositories.cs" />
     <Compile Include="Src\Helpers\FakeAddPackageReferenceView.cs" />
     <Compile Include="Src\Helpers\FakeLogger.cs" />
+    <Compile Include="Src\Helpers\FakePackageActionRunner.cs" />
     <Compile Include="Src\Helpers\FakePackageInitializationScriptsInSolution.cs" />
     <Compile Include="Src\Helpers\FakePackageInitializationScriptsInSolutionFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementEvents.cs" />
@@ -100,6 +102,9 @@
     <Compile Include="Src\Helpers\ProjectItemCollectionAssert.cs" />
     <Compile Include="Src\Helpers\TestableAddPackageReferenceCommand.cs" />
     <Compile Include="Src\Helpers\TestableDTEProject.cs" />
+    <Compile Include="Src\PackageActionRunnerTests.cs" />
+    <Compile Include="Src\PackageActionsToRunTests.cs" />
+    <Compile Include="Src\PackageFilesTests.cs" />
     <Compile Include="Src\PackageFromRepositoryTests.cs" />
     <Compile Include="Src\PackageManagementEventsTests.cs" />
     <Compile Include="Src\PackageManagementLoggerTests.cs" />
@@ -177,10 +182,8 @@
     <Compile Include="Src\PackageManagementOutputMessagesViewTests.cs" />
     <Compile Include="Src\PackageManagementSolutionTests.cs" />
     <Compile Include="Src\PackageRepositoryCacheTests.cs" />
-    <Compile Include="Src\Scripting\ConsolePackageScriptRunnerTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsConsoleTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsTests.cs" />
-    <Compile Include="Src\Scripting\PackageScriptsToRunTests.cs" />
     <Compile Include="Src\Scripting\PowerShellWorkingDirectoryTests.cs" />
     <Compile Include="Src\Scripting\ResetPowerShellWorkingDirectoryOnSolutionClosedTests.cs" />
     <Compile Include="Src\SolutionPackageRepositoryPathTests.cs" />

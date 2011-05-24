@@ -14,14 +14,14 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackageManagementEvents FakePackageManagementEvents;
 		public FakePackage FakePackage;
 		public FakeLogger FakeLogger;
-		public FakePackageScriptRunner FakeScriptRunner;
+		public FakePackageActionRunner FakeActionRunner;
 		
 		public TestablePackageViewModel(FakePackageManagementSolution solution)
 			: this(
 				new FakePackage(),
 				solution,
 				new FakePackageManagementEvents(),
-				new FakePackageScriptRunner(),
+				new FakePackageActionRunner(),
 				new FakeLogger())
 		{
 		}
@@ -30,19 +30,19 @@ namespace PackageManagement.Tests.Helpers
 			FakePackage package,
 			FakePackageManagementSolution solution,
 			FakePackageManagementEvents packageManagementEvents,
-			FakePackageScriptRunner scriptRunner,
+			FakePackageActionRunner actionRunner,
 			FakeLogger logger)
 			: base(
 				package,
 				solution,
 				packageManagementEvents,
-				scriptRunner,
+				actionRunner,
 				logger)
 		{
 			this.FakePackage = package;
 			this.FakeSolution = solution;
 			this.FakePackageManagementEvents = packageManagementEvents;
-			this.FakeScriptRunner = scriptRunner;
+			this.FakeActionRunner = actionRunner;
 			this.FakeLogger = logger;
 		}
 		

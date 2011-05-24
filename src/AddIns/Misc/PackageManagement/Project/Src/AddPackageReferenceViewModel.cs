@@ -22,7 +22,7 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagementEvents packageManagementEvents,
-			IPackageScriptRunner scriptRunner,
+			IPackageActionRunner actionRunner,
 			ILicenseAcceptanceService licenseAcceptanceService,
 			ITaskFactory taskFactory)
 		{
@@ -34,7 +34,7 @@ namespace ICSharpCode.PackageManagement
 			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
 			packageManagementEvents.AcceptLicenses += AcceptLicenses;
 			
-			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents, scriptRunner);
+			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents, actionRunner);
 			
 			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
 			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);

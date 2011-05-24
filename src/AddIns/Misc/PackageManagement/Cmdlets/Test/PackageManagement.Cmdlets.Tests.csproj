@@ -50,7 +50,7 @@
     <Compile Include="Helpers\TestableGetProjectCmdlet.cs" />
     <Compile Include="Helpers\TestableInstallPackageCmdlet.cs" />
     <Compile Include="Helpers\TestableInvokeInitializePackagesCmdlet.cs" />
-    <Compile Include="Helpers\TestableInvokeRunPackageScriptsCmdlet.cs" />
+    <Compile Include="Helpers\TestableInvokeProcessPackageActionsCmdlet.cs" />
     <Compile Include="Helpers\TestableInvokeUpdateWorkingDirectoryCmdlet.cs" />
     <Compile Include="Helpers\TestablePackageManagementCmdlet.cs" />
     <Compile Include="Helpers\TestableUninstallPackageCmdlet.cs" />
@@ -61,7 +61,7 @@
     <Compile Include="Src\InvokeInitializePackagesCmdletTests.cs" />
     <Compile Include="Src\InstallPackageCmdletTests.cs" />
     <Compile Include="Src\CmdletTestsBase.cs" />
-    <Compile Include="Src\InvokeRunPackageScriptsCmdletTests.cs" />
+    <Compile Include="Src\InvokeProcessPackageActionsCmdletTests.cs" />
     <Compile Include="Src\InvokeUpdateWorkingDirectoryCmdletTests.cs" />
     <Compile Include="Src\PackageManagementCmdletTests.cs" />
     <Compile Include="Src\UninstallPackageCmdletTests.cs" />

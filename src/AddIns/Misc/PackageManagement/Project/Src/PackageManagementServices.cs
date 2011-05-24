@@ -18,8 +18,8 @@ namespace ICSharpCode.PackageManagement
 		static readonly PackageManagementOutputMessagesView outputMessagesView;
 		static readonly RunPackageInitializationScriptsOnSolutionOpen runPackageInitializationScripts;
 		static readonly ResetPowerShellWorkingDirectoryOnSolutionClosed resetPowerShellWorkingDirectory;
-		static readonly PackageScriptsToRun packageScriptsToRun = new PackageScriptsToRun();
-		static readonly ConsolePackageScriptRunner consolePackageScriptRunner;
+		static readonly PackageActionsToRun packageActionsToRun = new PackageActionsToRun();
+		static readonly PackageActionRunner packageActionRunner;
 		
 		static PackageManagementServices()
 		{
@@ -31,7 +31,8 @@ namespace ICSharpCode.PackageManagement
 			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
 			runPackageInitializationScripts = new RunPackageInitializationScriptsOnSolutionOpen(projectService);
 			resetPowerShellWorkingDirectory = new ResetPowerShellWorkingDirectoryOnSolutionClosed(projectService, consoleHost);
-			consolePackageScriptRunner = new ConsolePackageScriptRunner(consoleHost, packageScriptsToRun);
+			var consolePackageActionRunner = new ConsolePackageActionRunner(consoleHost, packageActionsToRun);
+			packageActionRunner = new PackageActionRunner(consolePackageActionRunner);
 		}
 		
 		public static PackageManagementOptions Options {
@@ -62,12 +63,12 @@ namespace ICSharpCode.PackageManagement
 			get { return projectService; }
 		}
 		
-		public static PackageScriptsToRun PackageScriptsToRun {
-			get { return packageScriptsToRun; }
+		public static PackageActionsToRun PackageActionsToRun {
+			get { return packageActionsToRun; }
 		}
 		
-		public static IPackageScriptRunner ConsolePackageScriptRunner {
-			get { return consolePackageScriptRunner; }
+		public static IPackageActionRunner PackageActionRunner {
+			get { return packageActionRunner; }
 		}
 	}
 }

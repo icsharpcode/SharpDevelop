@@ -3,12 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class InstallPackageAction : ProcessPackageAction
+	public class InstallPackageAction : ProcessPackageOperationsAction
 	{
 		public InstallPackageAction(
 			IPackageManagementProject project,
@@ -17,20 +18,11 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public IEnumerable<PackageOperation> Operations { get; set; }
 		public bool IgnoreDependencies { get; set; }
 		
-		protected override void BeforeExecute()
+		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
-			base.BeforeExecute();
-			GetPackageOperationsIfMissing();
-		}
-				
-		void GetPackageOperationsIfMissing()
-		{
-			if (Operations == null) {
-				Operations = Project.GetInstallPackageOperations(Package, IgnoreDependencies);
-			}
+			return Project.GetInstallPackageOperations(Package, IgnoreDependencies);
 		}
 		
 		protected override void ExecuteCore()

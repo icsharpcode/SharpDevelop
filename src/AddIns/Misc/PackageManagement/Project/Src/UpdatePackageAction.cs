@@ -7,7 +7,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class UpdatePackageAction : ProcessPackageAction
+	public class UpdatePackageAction : ProcessPackageOperationsAction
 	{
 		public UpdatePackageAction(
 			IPackageManagementProject project,
@@ -17,20 +17,11 @@ namespace ICSharpCode.PackageManagement
 			UpdateDependencies = true;
 		}
 		
-		public IEnumerable<PackageOperation> Operations { get; set; }
 		public bool UpdateDependencies { get; set; }
 		
-		protected override void BeforeExecute()
+		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
-			base.BeforeExecute();
-			GetPackageOperationsIfMissing();
-		}
-				
-		void GetPackageOperationsIfMissing()
-		{
-			if (Operations == null) {
-				Operations = Project.GetInstallPackageOperations(Package, !UpdateDependencies);
-			}
+			return Project.GetInstallPackageOperations(Package, !UpdateDependencies);
 		}
 		
 		protected override void ExecuteCore()

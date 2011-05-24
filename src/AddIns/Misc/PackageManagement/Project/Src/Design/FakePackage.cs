@@ -142,5 +142,12 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public bool HasDependencies { get; set; }
+		
+		public void AddFile(string fileName)
+		{
+			var file = new PhysicalPackageFile();
+			file.TargetPath = fileName;
+			FilesList.Add(file);
+		}
 	}
 }

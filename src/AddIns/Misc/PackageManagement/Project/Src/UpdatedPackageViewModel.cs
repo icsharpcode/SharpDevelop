@@ -10,31 +10,20 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UpdatedPackageViewModel : PackageViewModel
 	{
-		IPackageManagementSolution solution;
-		IPackageScriptRunner scriptRunner;
-		
 		public UpdatedPackageViewModel(
 			IPackageFromRepository package,
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
-			IPackageScriptRunner scriptRunner,
+			IPackageActionRunner actionRunner,
 			ILogger logger)
-			: base(package, solution, packageManagementEvents, scriptRunner, logger)
+			: base(package, solution, packageManagementEvents, actionRunner, logger)
 		{
-			this.solution = solution;
-			this.scriptRunner = scriptRunner;
 		}
 		
-		protected override void InstallPackage(
-			IPackageFromRepository package,
-			IEnumerable<PackageOperation> packageOperations)
+		protected override ProcessPackageOperationsAction CreateInstallPackageAction(
+			IPackageManagementProject project)
 		{
-			IPackageManagementProject project = solution.GetActiveProject(package.Repository);
-			UpdatePackageAction action = project.CreateUpdatePackageAction();
-			action.Package = package;
-			action.Operations = packageOperations;
-			action.PackageScriptRunner = scriptRunner;
-			action.Execute();
+			return project.CreateUpdatePackageAction();
 		}
 	}
 }

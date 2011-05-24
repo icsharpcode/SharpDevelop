@@ -19,7 +19,7 @@ namespace ICSharpCode.PackageManagement
 				package,
 				Solution,
 				PackageManagementEvents,
-				PackageScriptRunner,
+				PackageActionRunner,
 				Logger);
 		}
 	}

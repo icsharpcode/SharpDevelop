@@ -70,6 +70,7 @@
     <Compile Include="Src\AcceptLicensesEventArgs.cs" />
     <Compile Include="Src\AddPackageReferenceCommand.cs" />
     <Compile Include="Src\AggregateExceptionErrorMessage.cs" />
+    <Compile Include="Src\ConsolePackageActionRunner.cs" />
     <Compile Include="Src\Design\FakePackageManagementProject.cs" />
     <Compile Include="Src\EnvDTE\DirectoryProjectItem.cs" />
     <Compile Include="Src\EnvDTE\DirectoryProjectItems.cs" />
@@ -93,11 +94,16 @@
     <Compile Include="Src\EnvDTE\References.cs" />
     <Compile Include="Src\EnvDTE\Solution.cs" />
     <Compile Include="Src\IAddPackageReferenceView.cs" />
+    <Compile Include="Src\IPackageActionRunner.cs" />
     <Compile Include="Src\IPackageFromRepository.cs" />
     <Compile Include="Src\IPackageManagementEvents.cs" />
     <Compile Include="Src\IPackageManagementProject.cs" />
     <Compile Include="Src\IPackageManagementProjectFactory.cs" />
     <Compile Include="Src\IPackageManagementWorkbench.cs" />
+    <Compile Include="Src\PackageActionRunner.cs" />
+    <Compile Include="Src\PackageActionsToRun.cs" />
+    <Compile Include="Src\PackageFiles.cs" />
+    <Compile Include="Src\PackageFilesForOperations.cs" />
     <Compile Include="Src\PackageFromRepository.cs" />
     <Compile Include="Src\PackageManagementEvents.cs" />
     <Compile Include="Src\PackageManagementLogger.cs" />
@@ -109,6 +115,7 @@
     <Compile Include="Src\PackageOperationMessageLoggedEventArgs.cs" />
     <Compile Include="Src\PackageViewModelOperationLogger.cs" />
     <Compile Include="Src\ParentPackageOperationEventArgs.cs" />
+    <Compile Include="Src\ProcessPackageOperationsAction.cs" />
     <Compile Include="Src\ProjectBrowserRefresher.cs" />
     <Compile Include="Src\RegisteredPackageRepositories.cs" />
     <Compile Include="Src\AddPackageReferenceView.xaml.cs">
@@ -125,7 +132,7 @@
     <Compile Include="Src\Design\DesignTimePackagesViewModel.cs" />
     <Compile Include="Src\Design\FakeRegisteredPackageRepositories.cs" />
     <Compile Include="Src\Design\FakeFileSystem.cs" />
-    <Compile Include="Src\Design\FakeInstallPackageTask.cs" />
+    <Compile Include="Src\Design\FakeInstallPackageAction.cs" />
     <Compile Include="Src\Design\FakePackage.cs" />
     <Compile Include="Src\Design\FakePackageAssemblyReference.cs" />
     <Compile Include="Src\Design\FakePackageManagementProjectService.cs" />
@@ -197,13 +204,11 @@
     <Compile Include="Src\PackageManagementSolution.cs" />
     <Compile Include="Src\PackageManagementTask.cs" />
     <Compile Include="Src\PackageManagementTaskFactory.cs" />
-    <Compile Include="Src\Scripting\ConsolePackageScriptRunner.cs" />
     <Compile Include="Src\Scripting\IPackageScriptRunner.cs" />
     <Compile Include="Src\Scripting\ISolutionPackageRepository.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScripts.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsConsole.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsFactory.cs" />
-    <Compile Include="Src\Scripting\PackageScriptsToRun.cs" />
     <Compile Include="Src\Scripting\PowerShellWorkingDirectory.cs" />
     <Compile Include="Src\Scripting\ResetPowerShellWorkingDirectoryOnSolutionClosed.cs" />
     <Compile Include="Src\SolutionPackageRepositoryPath.cs" />

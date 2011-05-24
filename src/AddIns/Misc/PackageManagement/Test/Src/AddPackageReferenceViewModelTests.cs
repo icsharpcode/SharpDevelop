@@ -22,7 +22,7 @@ namespace PackageManagement.Tests
 		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
 		FakeTaskFactory taskFactory;
 		List<FakePackage> packagesPassedToOnAcceptLicenses;
-		FakePackageScriptRunner fakeScriptRunner;
+		FakePackageActionRunner fakeActionRunner;
 		
 		void CreateSolution()
 		{
@@ -41,12 +41,12 @@ namespace PackageManagement.Tests
 			taskFactory = new FakeTaskFactory();
 			packageManagementEvents = new PackageManagementEvents();
 			fakeLicenseAcceptanceSevice = new FakeLicenseAcceptanceService();
-			fakeScriptRunner = new FakePackageScriptRunner();
+			fakeActionRunner = new FakePackageActionRunner();
 			viewModel = new AddPackageReferenceViewModel(
 				solution,
 				fakeRegisteredPackageRepositories,
 				packageManagementEvents,
-				fakeScriptRunner,
+				fakeActionRunner,
 				fakeLicenseAcceptanceSevice,
 				taskFactory);
 			taskFactory.ExecuteAllFakeTasks();

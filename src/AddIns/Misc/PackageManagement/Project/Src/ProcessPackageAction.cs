@@ -27,6 +27,11 @@ namespace ICSharpCode.PackageManagement
 		public string PackageId { get; set; }
 		public IPackageScriptRunner PackageScriptRunner { get; set; }
 		
+		public virtual bool HasPackageScriptsToRun()
+		{
+			return false;
+		}
+		
 		protected void OnParentPackageInstalled()
 		{
 			packageManagementEvents.OnParentPackageInstalled(Package);

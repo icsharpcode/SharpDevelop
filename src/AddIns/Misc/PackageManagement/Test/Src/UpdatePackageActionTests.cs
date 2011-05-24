@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -23,6 +25,18 @@ namespace PackageManagement.Tests
 			fakeProject = new FakePackageManagementProject();
 			action = new UpdatePackageAction(fakeProject, fakePackageManagementEvents);
 			updatePackageHelper = new UpdatePackageHelper(action);
+		}
+		
+		void AddInstallOperationWithFile(string fileName)
+		{
+			var package = new FakePackage();
+			package.AddFile(fileName);
+			
+			var operation = new PackageOperation(package, PackageAction.Install);
+			var operations = new List<PackageOperation>();
+			operations.Add(operation);
+			
+			action.Operations = operations;
 		}
 		
 		[Test]
@@ -179,5 +193,27 @@ namespace PackageManagement.Tests
 			
 			Assert.IsNull(actualPackage);
 		}
+	
+		[Test]
+		public void HasPackageScriptsToRun_OnePackageInOperationsHasInitPowerShellScript_ReturnsTrue()
+		{
+			CreateSolution();
+			AddInstallOperationWithFile(@"tools\init.ps1");
+			
+			bool hasPackageScripts = action.HasPackageScriptsToRun();
+			
+			Assert.IsTrue(hasPackageScripts);
+		}
+		
+		[Test]
+		public void HasPackageScriptsToRun_OnePackageInOperationsHasNoFiles_ReturnsFalse()
+		{
+			CreateSolution();
+			action.Operations = new List<PackageOperation>();
+			
+			bool hasPackageScripts = action.HasPackageScriptsToRun();
+			
+			Assert.IsFalse(hasPackageScripts);
+		}		
 	}
 }

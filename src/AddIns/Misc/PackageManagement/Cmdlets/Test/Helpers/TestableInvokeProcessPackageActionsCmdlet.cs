@@ -2,33 +2,34 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Cmdlets;
 using ICSharpCode.PackageManagement.Scripting;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Cmdlets.Tests.Helpers
 {
-	public class TestableInvokeRunPackageScriptsCmdlet : InvokeRunPackageScriptsCmdlet
+	public class TestableInvokeProcessPackageActionsCmdlet : InvokeProcessPackageActionsCmdlet
 	{
 		public FakeCmdletTerminatingError FakeCmdletTerminatingError;
 		public FakePackageManagementConsoleHost FakePackageManagementConsoleHost;
-		public PackageScriptsToRun ScriptsToBeRun;
+		public PackageActionsToRun ActionsToRun;
 		
-		public TestableInvokeRunPackageScriptsCmdlet()
+		public TestableInvokeProcessPackageActionsCmdlet()
 			: this(
-				new PackageScriptsToRun(),
+				new PackageActionsToRun(),
 				new FakePackageManagementConsoleHost(),
 				new FakeCmdletTerminatingError())
 		{
 		}
 		
-		public TestableInvokeRunPackageScriptsCmdlet(
-			PackageScriptsToRun scriptsToBeRun,
+		public TestableInvokeProcessPackageActionsCmdlet(
+			PackageActionsToRun actionsToRun,
 			FakePackageManagementConsoleHost consoleHost,
 			FakeCmdletTerminatingError cmdletTerminatingError)
-			: base(scriptsToBeRun, consoleHost, cmdletTerminatingError)
+			: base(actionsToRun, consoleHost, cmdletTerminatingError)
 		{
-			this.ScriptsToBeRun = scriptsToBeRun;
+			this.ActionsToRun = actionsToRun;
 			this.FakePackageManagementConsoleHost = consoleHost;
 			this.FakeCmdletTerminatingError = cmdletTerminatingError;
 		}

@@ -23,7 +23,7 @@ namespace PackageManagement.Tests
 		FakeInstallPackageAction fakeInstallPackageAction;
 		FakeUninstallPackageAction fakeUninstallPackageAction;
 		FakeLogger fakeLogger;
-		FakePackageScriptRunner fakeScriptRunner;
+		FakePackageActionRunner fakeActionRunner;
 		
 		void CreateViewModel()
 		{
@@ -53,7 +53,7 @@ namespace PackageManagement.Tests
 			fakeLogger = viewModel.FakeLogger;
 			fakeInstallPackageAction = solution.FakeProject.FakeInstallPackageAction;
 			fakeUninstallPackageAction = solution.FakeProject.FakeUninstallPackageAction;
-			fakeScriptRunner = viewModel.FakeScriptRunner;
+			fakeActionRunner = viewModel.FakeActionRunner;
 		}
 
 		[Test]
@@ -85,8 +85,10 @@ namespace PackageManagement.Tests
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			
 			viewModel.AddPackage();
-						
-			Assert.IsTrue(fakeInstallPackageAction.IsExecuteCalled);
+			
+			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
+			
+			Assert.AreEqual(fakeInstallPackageAction, actionExecuted);
 		}
 		
 		[Test]
@@ -572,19 +574,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void AddPackage_PackagesInstalledSuccessfully_ScriptRunnerUsedWhenInstallingPackage()
-		{
-			CreateViewModel();
-			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
-			viewModel.AddPackage();
-			
-			IPackageScriptRunner scriptRunner = fakeInstallPackageAction.PackageScriptRunner;
-			FakePackageScriptRunner expectedScriptRunner = fakeScriptRunner;
-			
-			Assert.AreEqual(expectedScriptRunner, scriptRunner);
-		}
-		
-		[Test]
 		public void AddPackage_PackagesInstalledSuccessfully_PackageDependenciesNotIgnoredWhenCheckingForPackageOperations()
 		{
 			CreateViewModel();
@@ -605,20 +594,9 @@ namespace PackageManagement.Tests
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			viewModel.RemovePackage();
 			
-			Assert.IsTrue(fakeUninstallPackageAction.IsExecuted);
-		}
-		
-		[Test]
-		public void RemovePackage_PackageRemovedSuccessfully_PackageScriptRunnerIsUsedWhenUninstalling()
-		{
-			CreateViewModel();
-			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
-			viewModel.RemovePackage();
+			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
 			
-			IPackageScriptRunner scriptRunner = fakeUninstallPackageAction.PackageScriptRunner;
-			FakePackageScriptRunner expectedScriptRunner = fakeScriptRunner;
-			
-			Assert.AreEqual(expectedScriptRunner, scriptRunner);
+			Assert.AreEqual(fakeUninstallPackageAction, actionExecuted);
 		}
 	}
 }

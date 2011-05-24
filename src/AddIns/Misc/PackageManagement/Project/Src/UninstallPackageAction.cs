@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.IO;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -28,6 +29,12 @@ namespace ICSharpCode.PackageManagement
 		{
 			Project.UninstallPackage(Package, ForceRemove, RemoveDependencies);
 			OnParentPackageUninstalled();
+		}
+		
+		public override bool HasPackageScriptsToRun()
+		{
+			var files = new PackageFiles(Package);
+			return files.HasUninstallPackageScript();
 		}
 	}
 }

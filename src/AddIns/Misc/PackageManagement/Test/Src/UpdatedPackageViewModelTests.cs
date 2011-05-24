@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using NUnit.Framework;
@@ -16,7 +17,7 @@ namespace PackageManagement.Tests
 		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementProject fakeProject;
 		FakeUpdatePackageAction updatePackageAction;
-		FakePackageScriptRunner fakeScriptRunner;
+		FakePackageActionRunner fakeActionRunner;
 		
 		void CreateViewModel()
 		{
@@ -24,7 +25,7 @@ namespace PackageManagement.Tests
 			fakeSolution = viewModel.FakeSolution;
 			fakeProject = fakeSolution.FakeProject;
 			updatePackageAction = fakeProject.FakeUpdatePackageAction;
-			fakeScriptRunner = viewModel.FakeScriptRunner;
+			fakeActionRunner = viewModel.FakeActionRunner;
 		}
 		
 		[Test]
@@ -66,19 +67,9 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddPackage();
 			
-			Assert.IsTrue(updatePackageAction.IsExecuted);
-		}
-		
-		[Test]
-		public void AddPackage_PackageAddedSuccessfully_PackageScriptRunnerIsUsedWhenUpdatingPackages()
-		{
-			CreateViewModel();
-			viewModel.AddPackage();
-			
-			IPackageScriptRunner scriptRunner = updatePackageAction.PackageScriptRunner;
-			FakePackageScriptRunner expectedScriptRunner = fakeScriptRunner;
-			
-			Assert.AreEqual(expectedScriptRunner, scriptRunner);
+			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
+
+			Assert.AreEqual(updatePackageAction, actionExecuted);
 		}
 	}
 }

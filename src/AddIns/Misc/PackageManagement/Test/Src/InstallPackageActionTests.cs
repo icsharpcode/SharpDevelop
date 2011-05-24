@@ -32,6 +32,18 @@ namespace PackageManagement.Tests
 			return fakeProject.FakeSourceRepository.AddFakePackage(packageId);
 		}
 		
+		void AddInstallOperationWithFile(string fileName)
+		{
+			var package = new FakePackage();
+			package.AddFile(fileName);
+			
+			var operation = new PackageOperation(package, PackageAction.Install);
+			var operations = new List<PackageOperation>();
+			operations.Add(operation);
+			
+			action.Operations = operations;
+		}
+		
 		[Test]
 		public void Execute_PackageIsSet_InstallsPackageIntoProject()
 		{
@@ -172,6 +184,61 @@ namespace PackageManagement.Tests
 			var actualPackage = fakeProject.PackagePassedToInstallPackage;
 			
 			Assert.AreEqual(package, actualPackage);
+		}
+		
+		[Test]
+		public void HasPackageScriptsToRun_OnePackageInOperationsHasInitPowerShellScript_ReturnsTrue()
+		{
+			CreateAction();
+			AddInstallOperationWithFile(@"tools\init.ps1");
+			
+			bool hasPackageScripts = action.HasPackageScriptsToRun();
+			
+			Assert.IsTrue(hasPackageScripts);
+		}
+		
+		[Test]
+		public void HasPackageScriptsToRun_OnePackageInOperationsHasNoFiles_ReturnsFalse()
+		{
+			CreateAction();
+			action.Operations = new List<PackageOperation>();
+			
+			bool hasPackageScripts = action.HasPackageScriptsToRun();
+			
+			Assert.IsFalse(hasPackageScripts);
+		}
+		
+		[Test]
+		public void HasPackageScriptsToRun_OnePackageInOperationsHasInitPowerShellScriptInUpperCase_ReturnsTrue()
+		{
+			CreateAction();
+			AddInstallOperationWithFile(@"tools\INIT.PS1");
+			
+			bool hasPackageScripts = action.HasPackageScriptsToRun();
+			
+			Assert.IsTrue(hasPackageScripts);
+		}
+		
+		[Test]
+		public void HasPackageScriptsToRun_OnePackageInOperationsHasInstallPowerShellScriptInUpperCase_ReturnsTrue()
+		{
+			CreateAction();
+			AddInstallOperationWithFile(@"tools\INSTALL.PS1");
+			
+			bool hasPackageScripts = action.HasPackageScriptsToRun();
+			
+			Assert.IsTrue(hasPackageScripts);
+		}
+		
+		[Test]
+		public void HasPackageScriptsToRun_OnePackageInOperationsHasUninstallPowerShellScriptInUpperCase_ReturnsTrue()
+		{
+			CreateAction();
+			AddInstallOperationWithFile(@"tools\UNINSTALL.PS1");
+			
+			bool hasPackageScripts = action.HasPackageScriptsToRun();
+			
+			Assert.IsTrue(hasPackageScripts);
 		}
 	}
 }

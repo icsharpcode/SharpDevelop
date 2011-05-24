@@ -13,18 +13,18 @@ namespace ICSharpCode.PackageManagement
 			: this(
 				packageViewModelFactory.Solution,
 				packageViewModelFactory.PackageManagementEvents,
-				packageViewModelFactory.PackageScriptRunner)
+				packageViewModelFactory.PackageActionRunner)
 		{
 		}
 		
 		public PackageViewModelFactory(
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
-			IPackageScriptRunner scriptRunner)
+			IPackageActionRunner actionRunner)
 		{
 			this.Solution = solution;
 			this.PackageManagementEvents = packageManagementEvents;
-			this.PackageScriptRunner = scriptRunner;
+			this.PackageActionRunner = actionRunner;
 			this.Logger = new PackageManagementLogger(packageManagementEvents);
 		}
 		
@@ -34,13 +34,13 @@ namespace ICSharpCode.PackageManagement
 				package,
 				Solution,
 				PackageManagementEvents,
-				PackageScriptRunner,
+				PackageActionRunner,
 				Logger);
 		}
 		
 		public IPackageManagementSolution Solution { get; private set; }
 		public IPackageManagementEvents PackageManagementEvents { get; private set; }
 		public ILogger Logger { get; private set; }
-		public IPackageScriptRunner PackageScriptRunner { get; private set; }
+		public IPackageActionRunner PackageActionRunner { get; private set; }
 	}
 }

@@ -21,19 +21,19 @@ namespace ICSharpCode.PackageManagement
 		IPackageFromRepository package;
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
 		PackageViewModelOperationLogger logger;
-		IPackageScriptRunner scriptRunner;
+		IPackageActionRunner actionRunner;
 		
 		public PackageViewModel(
 			IPackageFromRepository package,
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
-			IPackageScriptRunner scriptRunner,
+			IPackageActionRunner actionRunner,
 			ILogger logger)
 		{
 			this.package = package;
 			this.solution = solution;
 			this.packageManagementEvents = packageManagementEvents;
-			this.scriptRunner = scriptRunner;
+			this.actionRunner = actionRunner;
 			this.logger = CreateLogger(logger);
 			
 			CreateCommands();
@@ -233,16 +233,21 @@ namespace ICSharpCode.PackageManagement
 			OnPropertyChanged(model => model.IsAdded);
 		}
 		
-		protected virtual void InstallPackage(
+		void InstallPackage(
 			IPackageFromRepository package,
 			IEnumerable<PackageOperation> packageOperations)
 		{
 			IPackageManagementProject project = solution.GetActiveProject(package.Repository);
-			InstallPackageAction action = project.CreateInstallPackageAction();
+			ProcessPackageOperationsAction action = CreateInstallPackageAction(project);
 			action.Package = package;
 			action.Operations = packageOperations;
-			action.PackageScriptRunner = scriptRunner;
-			action.Execute();
+			actionRunner.Run(action);
+		}
+		
+		protected virtual ProcessPackageOperationsAction CreateInstallPackageAction(
+			IPackageManagementProject project)
+		{
+			return project.CreateInstallPackageAction();
 		}
 		
 		void ReportError(Exception ex)
@@ -271,8 +276,7 @@ namespace ICSharpCode.PackageManagement
 				IPackageManagementProject project = solution.GetActiveProject(package.Repository);
 				UninstallPackageAction action = project.CreateUninstallPackageAction();
 				action.Package = package;
-				action.PackageScriptRunner = scriptRunner;
-				action.Execute();
+				actionRunner.Run(action);
 			} catch (Exception ex) {
 				ReportError(ex);
 				logger.LogError(ex);
