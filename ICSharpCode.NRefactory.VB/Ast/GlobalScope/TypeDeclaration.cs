@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 		
 		public ClassType ClassType { get; set; }
 		
-		public Identifier Name {
+		public Identifier NameToken {
 			get { return GetChildByRole(Roles.Identifier); }
 			set { SetChildByRole(Roles.Identifier, value); }
 		}
