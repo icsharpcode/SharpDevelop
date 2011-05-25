@@ -427,8 +427,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			BlockStatement block = embeddedStatement as BlockStatement;
 			if (block != null)
 				VisitBlockStatement(block, null);
-			else
+			else {
+				// put embedded statements into next line: TODO: Add a formatting option for that.
+				NewLine();
+				formatter.Indent();
 				embeddedStatement.AcceptVisitor(this, null);
+				formatter.Unindent();
+			}
 		}
 		
 		void WriteMethodBody(BlockStatement body)
