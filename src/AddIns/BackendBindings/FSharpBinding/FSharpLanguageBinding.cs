@@ -21,5 +21,11 @@ namespace FSharpBinding
 		{
 			return new FSharpProject(info);
 		}
+		
+		public bool HandlingMissingProject {
+			get { 
+				return false; 
+			}
+		}
 	}
 }

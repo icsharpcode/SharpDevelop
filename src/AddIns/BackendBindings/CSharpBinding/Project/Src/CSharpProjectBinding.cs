@@ -27,5 +27,11 @@ namespace CSharpBinding
 		{
 			return new CSharpProject(info);
 		}
+		
+		public bool HandlingMissingProject {
+			get { 
+				return false; 
+			}
+		}
 	}
 }

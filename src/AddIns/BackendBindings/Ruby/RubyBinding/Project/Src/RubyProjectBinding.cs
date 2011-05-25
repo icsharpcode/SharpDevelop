@@ -28,5 +28,11 @@ namespace ICSharpCode.RubyBinding
 		{
 			return new RubyProject(info);
 		}
+		
+		public bool HandlingMissingProject {
+			get { 
+				return false; 
+			}
+		}
 	}
 }

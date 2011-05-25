@@ -95,12 +95,12 @@ namespace ICSharpCode.SharpDevelop
 			
 			progressMonitor.CancellationToken.ThrowIfCancellationRequested();
 			
+			IProjectBinding binding = ProjectBindingService.GetBindingPerProjectFile(location);
 			IProject newProject;
-			if (!File.Exists(location)) {
+			if (!(binding != null && binding.HandlingMissingProject) && !File.Exists(location)) {
 				newProject = new MissingProject(location, title);
 				newProject.TypeGuid = loadInformation.TypeGuid;
 			} else {
-				IProjectBinding binding = ProjectBindingService.GetBindingPerProjectFile(location);
 				if (binding != null) {
 					try {
 						newProject = binding.LoadProject(loadInformation);

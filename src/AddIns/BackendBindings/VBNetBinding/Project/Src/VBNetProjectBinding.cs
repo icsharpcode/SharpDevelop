@@ -28,5 +28,11 @@ namespace ICSharpCode.VBNetBinding
 		{
 			return new VBNetProject(info);
 		}
+		
+		public bool HandlingMissingProject {
+			get { 
+				return false; 
+			}
+		}
 	}
 }

@@ -564,6 +564,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			for(int i=0; i<projectsToLoad.Count; i++) {
 				ProjectLoadInformation loadInfo = projectsToLoad[i];
 				IList<ProjectSection> projectSections = readProjectSections[i];
+				loadInfo.ProjectSections = projectSections;
 				
 				// set the target platform
 				SolutionItem projectConfig = newSolution.GetProjectConfiguration(loadInfo.Guid);

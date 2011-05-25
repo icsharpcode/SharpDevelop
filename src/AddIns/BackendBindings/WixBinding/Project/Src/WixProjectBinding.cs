@@ -27,5 +27,11 @@ namespace ICSharpCode.WixBinding
 		{
 			return new WixProject(info);
 		}
+		
+		public bool HandlingMissingProject {
+			get { 
+				return false; 
+			}
+		}
 	}
 }

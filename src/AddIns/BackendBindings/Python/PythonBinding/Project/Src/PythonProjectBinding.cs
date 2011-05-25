@@ -31,5 +31,11 @@ namespace ICSharpCode.PythonBinding
 		{
 			return new PythonProject(info);
 		}
+		
+		public bool HandlingMissingProject {
+			get { 
+				return false; 
+			}
+		}
 	}
 }

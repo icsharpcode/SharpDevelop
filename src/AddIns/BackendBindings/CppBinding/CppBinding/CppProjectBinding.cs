@@ -30,5 +30,11 @@ namespace ICSharpCode.CppBinding
 			info.Platform = "Win32";
 			return new CppProject(info);
 		}
+		
+		public bool HandlingMissingProject {
+			get { 
+				return false; 
+			}
+		}
 	}
 }
