@@ -36,6 +36,7 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="NuGet.Core">
       <HintPath>..\RequiredLibraries\NuGet.Core.dll</HintPath>
     </Reference>

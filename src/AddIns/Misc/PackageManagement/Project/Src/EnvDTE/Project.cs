@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.Construction;
 using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
@@ -141,6 +142,17 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			var fileProjectItem = new FileProjectItem(MSBuildProject, itemType);
 			fileProjectItem.Include = include;
 			return fileProjectItem;
+		}
+		
+		internal IList<string> GetAllPropertyNames()
+		{
+			var names = new List<string>();
+			lock (MSBuildProject.SyncRoot) {
+				foreach (ProjectPropertyElement propertyElement in MSBuildProject.MSBuildProjectFile.Properties) {
+					names.Add(propertyElement.Name);
+				}
+			}
+			return names;
 		}
 	}
 }

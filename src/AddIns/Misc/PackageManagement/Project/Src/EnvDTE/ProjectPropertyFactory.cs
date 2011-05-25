@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.Construction;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -22,7 +24,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public IEnumerator<Property> GetEnumerator()
 		{
-			throw new NotImplementedException();
+			foreach (string propertyName in project.GetAllPropertyNames()) {
+				yield return CreateProperty(propertyName);
+			}
 		}
 	}
 }

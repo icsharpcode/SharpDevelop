@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -112,6 +113,18 @@ namespace PackageManagement.Tests.EnvDTE
 			string expectedTargetFrameworkMoniker = "Silverlight,Version=v3.5,Profile=Full";
 			
 			Assert.AreEqual(expectedTargetFrameworkMoniker, targetFrameworkMoniker);
+		}
+		
+		[Test]
+		public void GetEnumerator_TargetFrameworkVersionSetTo40_TargetFrameworkVersionPropertyReturned()
+		{
+			CreateProperties();
+			msbuildProject.SetProperty("TargetFrameworkVersion", "4.0");
+			
+			Property targetFrameworkVersionProperty = project.Properties.First(p => p.Name == "TargetFrameworkVersion");
+			string targetFrameworkVersion = targetFrameworkVersionProperty.Value as string;
+			
+			Assert.AreEqual("4.0", targetFrameworkVersion);
 		}
 	}
 }
