@@ -63,21 +63,26 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void RunInitScript(PackageOperationEventArgs e)
 		{
 			IPackageScript script = scriptFactory.CreatePackageInitializeScript(e.InstallPath);
+			RunScript(script, e.Package);
+		}
+		
+		void RunScript(IPackageScript script, IPackage package)
+		{
+			script.Project = project;
+			script.Package = package;
 			scriptRunner.Run(script);
 		}
 		
 		void RunUninstallScript(PackageOperationEventArgs e)
 		{
 			IPackageScript script = scriptFactory.CreatePackageUninstallScript(e.InstallPath);
-			script.Project = project;
-			scriptRunner.Run(script);
+			RunScript(script, e.Package);
 		}
 		
 		void RunInstallScript(PackageOperationEventArgs e)
 		{
 			IPackageScript script = scriptFactory.CreatePackageInstallScript(e.InstallPath);
-			script.Project = project;
-			scriptRunner.Run(script);
+			RunScript(script, e.Package);
 		}
 		
 		public void Dispose()

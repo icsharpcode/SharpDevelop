@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
@@ -34,6 +35,17 @@ namespace PackageManagement.Tests.Scripting
 		PackageOperationEventArgs CreatePackageOperationEventArgs(string installPath)
 		{
 			var package = new FakePackage("Test");
+			return CreatePackageOperationEventArgs(package, installPath);
+		}
+		
+		PackageOperationEventArgs CreatePackageOperationEventArgs(FakePackage package)
+		{
+			string installPath = @"d:\projects\myproject\packages\test";
+			return CreatePackageOperationEventArgs(package, installPath);
+		}
+		
+		PackageOperationEventArgs CreatePackageOperationEventArgs(FakePackage package, string installPath)
+		{
 			string targetPath = @"d:\projects\myproject\packages\target";
 			return new PackageOperationEventArgs(package, targetPath, installPath);
 		}
@@ -42,7 +54,7 @@ namespace PackageManagement.Tests.Scripting
 		public void Constructor_PackageIsInstalled_PackageInitScriptIsRun()
 		{
 			CreateAction();
-			var eventArgs = CreatePackageOperationEventArgs();
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageInstalledEvent(eventArgs);
 			
 			IPackageScript actualScript = fakeScriptRunner.FirstScriptRun;
@@ -55,7 +67,7 @@ namespace PackageManagement.Tests.Scripting
 		public void Constructor_PackageIsInstalled_PackageInitScriptIsCreated()
 		{
 			CreateAction();
-			var eventArgs = CreatePackageOperationEventArgs(@"d:\projects\myproject\packages\test");
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs(@"d:\projects\myproject\packages\test");
 
 			fakeProject.FirePackageInstalledEvent(eventArgs);
 			
@@ -70,7 +82,7 @@ namespace PackageManagement.Tests.Scripting
 			CreateAction();
 			action.Dispose();
 			
-			var eventArgs = CreatePackageOperationEventArgs();
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageInstalledEvent(eventArgs);
 			
 			int count = fakeScriptFactory.FakePackageInstallScriptsCreated.Count;
@@ -79,10 +91,23 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
+		public void Constructor_PackageIsInstalled_PackageInitScriptIsPassedPackage()
+		{
+			CreateAction();
+			var expectedPackage = new FakePackage();
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs(expectedPackage);
+			fakeProject.FirePackageInstalledEvent(eventArgs);
+			
+			IPackage package = fakeScriptFactory.FirstPackageInitializeScriptCreated.Package;
+			
+			Assert.AreEqual(expectedPackage, package);
+		}
+		
+		[Test]
 		public void Constructor_PackageReferenceIsAdded_PackageInstallScriptIsRun()
 		{
 			CreateAction();
-			var eventArgs = CreatePackageOperationEventArgs();
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceAddedEvent(eventArgs);
 			
 			IPackageScript actualScript = fakeScriptRunner.FirstScriptRun;
@@ -95,7 +120,7 @@ namespace PackageManagement.Tests.Scripting
 		public void Constructor_PackageReferenceIsAdded_PackageInstallScriptIsCreated()
 		{
 			CreateAction();
-			var eventArgs = CreatePackageOperationEventArgs(@"d:\projects\myproject\packages\test");
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs(@"d:\projects\myproject\packages\test");
 			fakeProject.FirePackageReferenceAddedEvent(eventArgs);
 			
 			string path = fakeScriptFactory.FirstPackageInstallDirectoryPassed;
@@ -109,7 +134,7 @@ namespace PackageManagement.Tests.Scripting
 			CreateAction();
 			action.Dispose();
 			
-			var eventArgs = CreatePackageOperationEventArgs();
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceAddedEvent(eventArgs);
 			
 			int count = fakeScriptFactory.FakePackageInstallScriptsCreated.Count;
@@ -121,19 +146,32 @@ namespace PackageManagement.Tests.Scripting
 		public void Constructor_PackageReferenceIsAdded_InstallScriptIsPassedProject()
 		{
 			CreateAction();
-			var eventArgs = CreatePackageOperationEventArgs();
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceAddedEvent(eventArgs);
 			
-			var project = fakeScriptFactory.FirstPackageInstallScriptCreated.Project;
+			IPackageManagementProject project = fakeScriptFactory.FirstPackageInstallScriptCreated.Project;
 			
 			Assert.AreEqual(fakeProject, project);
+		}
+		
+		[Test]
+		public void Constructor_PackageReferenceIsAdded_InstallScriptIsPassedPackageFromPackageOperationEventArgs()
+		{
+			CreateAction();
+			var expectedPackage = new FakePackage();
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs(expectedPackage);
+			fakeProject.FirePackageReferenceAddedEvent(eventArgs);
+			
+			IPackage package = fakeScriptFactory.FirstPackageInstallScriptCreated.Package;
+			
+			Assert.AreEqual(expectedPackage, package);
 		}
 		
 		[Test]
 		public void Constructor_PackageReferenceIsRemoved_PackageUninstallScriptIsRun()
 		{
 			CreateAction();
-			var eventArgs = CreatePackageOperationEventArgs();
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
 			
 			IPackageScript actualScript = fakeScriptRunner.FirstScriptRun;
@@ -146,7 +184,7 @@ namespace PackageManagement.Tests.Scripting
 		public void Constructor_PackageReferenceIsRemoved_PackageUninstallScriptIsCreated()
 		{
 			CreateAction();
-			var eventArgs = CreatePackageOperationEventArgs(@"d:\projects\myproject\packages\test");
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs(@"d:\projects\myproject\packages\test");
 			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
 			
 			string path = fakeScriptFactory.FirstPackageInstallDirectoryPassed;
@@ -160,7 +198,7 @@ namespace PackageManagement.Tests.Scripting
 			CreateAction();
 			action.Dispose();
 			
-			var eventArgs = CreatePackageOperationEventArgs();
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
 			
 			int count = fakeScriptFactory.FakePackageUninstallScriptsCreated.Count;
@@ -172,12 +210,25 @@ namespace PackageManagement.Tests.Scripting
 		public void Constructor_PackageReferenceIsRemoved_UninstallScriptIsPassedProject()
 		{
 			CreateAction();
-			var eventArgs = CreatePackageOperationEventArgs();
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs();
 			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
 			
-			var project = fakeScriptFactory.FirstPackageUninstallScriptCreated.Project;
+			IPackageManagementProject project = fakeScriptFactory.FirstPackageUninstallScriptCreated.Project;
 			
 			Assert.AreEqual(fakeProject, project);
+		}
+		
+		[Test]
+		public void Constructor_PackageReferenceIsRemoved_UninstallScriptIsPassedPackageFromPackageOperationEventArgs()
+		{
+			CreateAction();
+			var expectedPackage = new FakePackage();
+			PackageOperationEventArgs eventArgs = CreatePackageOperationEventArgs(expectedPackage);
+			fakeProject.FirePackageReferenceRemovedEvent(eventArgs);
+			
+			IPackage package = fakeScriptFactory.FirstPackageUninstallScriptCreated.Package;
+			
+			Assert.AreEqual(expectedPackage, package);
 		}
 	}
 }

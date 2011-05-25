@@ -4,12 +4,14 @@
 using System;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Scripting;
+using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
 	public class FakePackageScript : IPackageScript
 	{
 		public IPackageManagementProject Project { get; set; }
+		public IPackage Package { get; set; }
 		
 		public bool IsRun;		
 		public IPackageScriptSession SessionPassedToRun;

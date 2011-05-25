@@ -157,5 +157,17 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.IsFalse(run);
 		}
+		
+		[Test]
+		public void Run_OnePackageInRepository_PackageScriptSetsPackageInSession()
+		{
+			CreateScripts();
+			FakePackage expectedPackage = AddPackageToRepository("Test");
+			scripts.Run(fakeSession);
+			
+			var package = fakeScriptFactory.FirstPackageInitializeScriptCreated.Package;
+			
+			Assert.AreEqual(expectedPackage, package);
+		}
 	}
 }
