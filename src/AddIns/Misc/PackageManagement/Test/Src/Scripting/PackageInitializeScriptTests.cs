@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
+using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -15,12 +16,14 @@ namespace PackageManagement.Tests.Scripting
 		PackageInitializeScript script;
 		FakePackageScriptSession fakeSession;
 		FakePackageScriptFileName fakeScriptFileName;
+		FakePackage fakePackage;
 		
 		void CreateScript()
 		{
 			fakeScriptFileName = new FakePackageScriptFileName();			
 			fakeSession = new FakePackageScriptSession();
-			script = new PackageInitializeScript(fakeScriptFileName);
+			fakePackage = new FakePackage();
+			script = new PackageInitializeScript(fakePackage, fakeScriptFileName);
 		}
 		
 		void AssertSessionVariableIsRemoved(string variableName)
@@ -209,6 +212,16 @@ namespace PackageManagement.Tests.Scripting
 			RunScript();
 			
 			AssertSessionVariableIsRemoved("__project");
+		}
+		
+		[Test]
+		public void Package_PackagePassedToConstructor_ReturnsPackagePassedToConstructor()
+		{
+			CreateScript();
+			
+			IPackage package = script.Package;
+			
+			Assert.AreEqual(fakePackage, package);
 		}
 	}
 }

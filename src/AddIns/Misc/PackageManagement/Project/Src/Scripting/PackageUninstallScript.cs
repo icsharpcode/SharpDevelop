@@ -2,13 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PackageUninstallScript : PackageScript
 	{
-		public PackageUninstallScript(IPackageScriptFileName fileName)
-			: base(fileName)
+		public PackageUninstallScript(IPackage package, IPackageScriptFileName fileName)
+			: base(package, fileName)
 		{
 		}
 	}

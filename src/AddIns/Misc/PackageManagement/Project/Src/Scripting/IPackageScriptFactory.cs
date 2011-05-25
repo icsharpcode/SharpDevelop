@@ -8,8 +8,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public interface IPackageScriptFactory
 	{
-		IPackageScript CreatePackageInitializeScript(string packageInstallDirectory);
-		IPackageScript CreatePackageUninstallScript(string packageInstallDirectory);
-		IPackageScript CreatePackageInstallScript(string packageInstallDirectory);
+		IPackageScript CreatePackageInitializeScript(IPackage package, string packageInstallDirectory);
+		IPackageScript CreatePackageUninstallScript(IPackage package, string packageInstallDirectory);
+		IPackageScript CreatePackageInstallScript(IPackage package, string packageInstallDirectory);
 	}
 }

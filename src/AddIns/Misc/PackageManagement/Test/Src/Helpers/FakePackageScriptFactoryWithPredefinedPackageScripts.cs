@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement.Scripting;
+using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -18,19 +19,19 @@ namespace PackageManagement.Tests.Helpers
 			return script;
 		}
 		
-		public IPackageScript CreatePackageInitializeScript(string packageInstallDirectory)
+		public IPackageScript CreatePackageInitializeScript(IPackage package, string packageInstallDirectory)
 		{
 			FakePackageScript script = FakeInitializeScripts[0];
 			FakeInitializeScripts.RemoveAt(0);
 			return script;
 		}
 		
-		public IPackageScript CreatePackageUninstallScript(string packageInstallDirectory)
+		public IPackageScript CreatePackageUninstallScript(IPackage package, string packageInstallDirectory)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public IPackageScript CreatePackageInstallScript(string packageInstallDirectory)
+		public IPackageScript CreatePackageInstallScript(IPackage package, string packageInstallDirectory)
 		{
 			throw new NotImplementedException();
 		}

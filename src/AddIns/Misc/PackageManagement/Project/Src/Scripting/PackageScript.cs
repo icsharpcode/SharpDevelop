@@ -9,8 +9,9 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PackageScript : IPackageScript
 	{
-		public PackageScript(IPackageScriptFileName fileName)
+		public PackageScript(IPackage package, IPackageScriptFileName fileName)
 		{
+			this.Package = package;
 			this.ScriptFileName = fileName;
 		}
 		

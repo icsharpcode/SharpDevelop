@@ -5,6 +5,7 @@ using System;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.PackageManagement.Scripting;
+using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -17,6 +18,7 @@ namespace PackageManagement.Tests.Scripting
 		FakePackageScriptSession fakeSession;
 		PackageInstallScript script;
 		FakeFileSystem fakeFileSystem;
+		FakePackage fakePackage;
 		
 		void CreateScript()
 		{
@@ -26,8 +28,9 @@ namespace PackageManagement.Tests.Scripting
 			scriptFileName = new PackageInstallScriptFileName(fakeFileSystem);
 			
 			fakeSession = new FakePackageScriptSession();
+			fakePackage = new FakePackage();
 			
-			script = new PackageInstallScript(scriptFileName);
+			script = new PackageInstallScript(fakePackage, scriptFileName);
 		}
 		
 		void ExecuteScript()
@@ -94,6 +97,16 @@ namespace PackageManagement.Tests.Scripting
 			string fileChecked = fakeFileSystem.PathPassedToFileExists;
 			
 			Assert.AreEqual(@"tools\install.ps1", fileChecked);
+		}
+		
+		[Test]
+		public void Package_PackagePassedToConstructor_ReturnsPackagePassedToConstructor()
+		{
+			CreateScript();
+			
+			IPackage package = script.Package;
+			
+			Assert.AreEqual(fakePackage, package);
 		}
 	}
 }

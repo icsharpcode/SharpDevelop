@@ -56,9 +56,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IPackageScript CreateInitializeScript(IPackage package)
 		{
 			string packageInstallDirectory = solutionPackageRepository.GetInstallPath(package);
-			IPackageScript script = scriptFactory.CreatePackageInitializeScript(packageInstallDirectory);
-			script.Package = package;
-			return script;
+			return scriptFactory.CreatePackageInitializeScript(package, packageInstallDirectory);
 		}
 		
 		public bool Any()

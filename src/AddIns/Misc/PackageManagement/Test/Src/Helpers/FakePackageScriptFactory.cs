@@ -36,28 +36,31 @@ namespace PackageManagement.Tests.Helpers
 			get { return FakePackageUninstallScriptsCreated[0]; }
 		}
 		
-		public IPackageScript CreatePackageInitializeScript(string packageInstallDirectory)
+		public IPackageScript CreatePackageInitializeScript(IPackage package, string packageInstallDirectory)
 		{
 			PackageInstallDirectoriesPassed.Add(packageInstallDirectory);
 			var script = new FakePackageScript();
+			script.Package = package;
 			script.ExistsReturnValue = ScriptFileExistsReturnValue;
 			FakePackageInitializeScriptsCreated.Add(script);
 			return script;
 		}
 		
-		public IPackageScript CreatePackageUninstallScript(string packageInstallDirectory)
+		public IPackageScript CreatePackageUninstallScript(IPackage package, string packageInstallDirectory)
 		{
 			PackageInstallDirectoriesPassed.Add(packageInstallDirectory);
 			var script = new FakePackageScript();
+			script.Package = package;
 			script.ExistsReturnValue = ScriptFileExistsReturnValue;
 			FakePackageUninstallScriptsCreated.Add(script);
 			return script;
 		}
 		
-		public IPackageScript CreatePackageInstallScript(string packageInstallDirectory)
+		public IPackageScript CreatePackageInstallScript(IPackage package, string packageInstallDirectory)
 		{
 			PackageInstallDirectoriesPassed.Add(packageInstallDirectory);
 			var script = new FakePackageScript();
+			script.Package = package;
 			script.ExistsReturnValue = ScriptFileExistsReturnValue;
 			FakePackageInstallScriptsCreated.Add(script);
 			return script;

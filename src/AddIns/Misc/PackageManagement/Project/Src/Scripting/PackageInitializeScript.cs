@@ -8,8 +8,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PackageInitializeScript : PackageScript
 	{
-		public PackageInitializeScript(IPackageScriptFileName fileName)
-			: base(fileName)
+		public PackageInitializeScript(IPackage package, IPackageScriptFileName fileName)
+			: base(package, fileName)
 		{
 		}
 		
