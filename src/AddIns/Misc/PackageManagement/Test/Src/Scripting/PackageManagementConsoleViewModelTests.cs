@@ -510,5 +510,12 @@ namespace PackageManagement.Tests.Scripting
 			bool shutdownConsole = consoleHost.IsShutdownConsoleCalled;
 			Assert.IsTrue(shutdownConsole);
 		}
+		
+		[Test]
+		public void ActivePackageSource_SetToNullWhenPackageSourcesCleared_DoesNotThrowNullReferenceException()
+		{
+			CreateViewModel();
+			Assert.DoesNotThrow(() => viewModel.ActivePackageSource = null);
+		}
 	}
 }

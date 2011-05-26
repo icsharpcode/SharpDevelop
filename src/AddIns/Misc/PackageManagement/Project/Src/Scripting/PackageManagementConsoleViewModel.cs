@@ -199,9 +199,17 @@ namespace ICSharpCode.PackageManagement.Scripting
 			get { return activePackageSource; }
 			set {
 				activePackageSource = value;
-				consoleHost.ActivePackageSource = activePackageSource.GetPackageSource();
+				consoleHost.ActivePackageSource = GetPackageSourceForViewModel(activePackageSource);
 				OnPropertyChanged(viewModel => viewModel.ActivePackageSource);
 			}
+		}
+		
+		PackageSource GetPackageSourceForViewModel(PackageSourceViewModel activePackageSource)
+		{
+			if (activePackageSource != null) {
+				return activePackageSource.GetPackageSource();
+			}
+			return null;
 		}
 		
 		public ObservableCollection<IProject> Projects {
