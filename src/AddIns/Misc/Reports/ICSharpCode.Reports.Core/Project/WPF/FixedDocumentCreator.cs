@@ -24,8 +24,12 @@ namespace ICSharpCode.Reports.Core.WPF
 	/// </summary>
 	public class FixedDocumentCreator
 	{
+		
+		BrushConverter brushConverter ;
+		
 		public FixedDocumentCreator()
 		{
+			brushConverter = new BrushConverter();
 		}
 		
 		
@@ -85,9 +89,9 @@ namespace ICSharpCode.Reports.Core.WPF
 			canvas.Width = container.StyleDecorator.DisplayRectangle.Width;
 			canvas.Height = container.StyleDecorator.DisplayRectangle.Height;
 			
-			var conv = new BrushConverter();
 			
-			SolidColorBrush backgroundBrush = conv.ConvertFromString(container.StyleDecorator.BackColor.Name) as SolidColorBrush;
+			
+			SolidColorBrush backgroundBrush = brushConverter.ConvertFromString(container.StyleDecorator.BackColor.Name) as SolidColorBrush;
 			canvas.Background = backgroundBrush;
 			
 			foreach (var exportElement in container.Items) {
@@ -150,13 +154,54 @@ namespace ICSharpCode.Reports.Core.WPF
 		
 		void SetFont(TextBlock tb, TextStyleDecorator styleDecorator)
 		{
-
 			tb.FontFamily = new FontFamily(styleDecorator.Font.FontFamily.Name);
 			var b = styleDecorator.Font.Size;
 			tb.FontSize = b * 96/72;
+			tb.Foreground = brushConverter.ConvertFromString(styleDecorator.ForeColor.Name) as SolidColorBrush;
 			if (styleDecorator.Font.Bold) {
 				tb.FontWeight = FontWeights.Bold;
 			}
+			if (styleDecorator.Font.Underline) {
+				CreateUnderline(tb,styleDecorator);
+			}
+			
+			if (styleDecorator.Font.Italic) {
+				tb.FontStyle = System.Windows.FontStyles.Italic ;
+			}
+			if (styleDecorator.Font.Strikeout) {
+				 CreateStrikeout(tb,styleDecorator);
+			}
+		}
+		
+		
+		void CreateStrikeout (TextBlock tb, TextStyleDecorator styleDecorator)
+		{
+			TextDecoration strikeOut = new TextDecoration();
+			strikeOut.Location = TextDecorationLocation.Strikethrough;
+
+			Pen p = CreateWpfPen(styleDecorator);
+			strikeOut.Pen = p ;
+			strikeOut.PenThicknessUnit = TextDecorationUnit.FontRecommended;
+			tb.TextDecorations.Add(strikeOut);
+		}
+		
+		void CreateUnderline(TextBlock tb,TextStyleDecorator styleDecorator)
+		{
+			TextDecoration underLine = new TextDecoration();
+			Pen p = CreateWpfPen(styleDecorator);
+			underLine.Pen = p ;
+			underLine.PenThicknessUnit = TextDecorationUnit.FontRecommended;
+			tb.TextDecorations.Add(underLine);
+		}
+
+
+	    Pen CreateWpfPen(TextStyleDecorator styleDecorator)
+		{
+			Pen myPen = new Pen();
+			SolidColorBrush underlineBrush = brushConverter.ConvertFromString(styleDecorator.ForeColor.Name) as SolidColorBrush;
+			myPen.Brush = underlineBrush;
+			myPen.Thickness = 1.5;
+			return myPen;
 		}
 		
 		
