@@ -27,9 +27,17 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			project.Save();
 		}
 		
+		void ThrowExceptionIfFileExists(string filePath)
+		{
+			if (fileService.FileExists(filePath)) {
+				throw new FileExistsException(filePath);
+			}
+		}
+		
 		void CopyFileIntoProject(string oldFileName, string fileName)
 		{
 			string newFileName = GetFileNameInProject(fileName);
+			ThrowExceptionIfFileExists(newFileName);
 			fileService.CopyFile(oldFileName, newFileName);
 		}
 		

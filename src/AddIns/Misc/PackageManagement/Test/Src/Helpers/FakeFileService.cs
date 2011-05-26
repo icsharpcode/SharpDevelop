@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -53,6 +54,13 @@ namespace PackageManagement.Tests.Helpers
 		{
 			OldFileNamePassedToCopyFile = oldFileName;
 			NewFileNamePassedToCopyFile = newFileName;
+		}
+		
+		public List<string> ExistingFileNames = new List<string>();
+		
+		public bool FileExists(string fileName)
+		{
+			return ExistingFileNames.Contains(fileName);
 		}
 	}
 }

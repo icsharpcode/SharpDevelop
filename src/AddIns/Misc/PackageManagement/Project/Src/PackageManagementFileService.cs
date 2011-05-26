@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.IO;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -47,6 +48,11 @@ namespace ICSharpCode.PackageManagement
 			} else {
 				FileService.CopyFile(oldFileName, newFileName, isDirectory: false, overwrite: false);
 			}
+		}
+		
+		public bool FileExists(string fileName)
+		{
+			return File.Exists(fileName);
 		}
 	}
 }

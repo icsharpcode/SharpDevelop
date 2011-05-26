@@ -94,6 +94,7 @@
     <Compile Include="Src\EnvDTE\Reference.cs" />
     <Compile Include="Src\EnvDTE\References.cs" />
     <Compile Include="Src\EnvDTE\Solution.cs" />
+    <Compile Include="Src\FileExistsException.cs" />
     <Compile Include="Src\IAddPackageReferenceView.cs" />
     <Compile Include="Src\IPackageActionRunner.cs" />
     <Compile Include="Src\IPackageFromRepository.cs" />

@@ -4,11 +4,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
-using DTE = ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using DTE = ICSharpCode.PackageManagement.EnvDTE;
 
 namespace PackageManagement.Tests.EnvDTE
 {
@@ -305,6 +307,23 @@ namespace PackageManagement.Tests.EnvDTE
 			string projectItemName = projectItem.Name;
 			
 			Assert.AreEqual("Program.cs", projectItemName);
+		}
+		
+		[Test]
+		public void AddFileFromCopy_FileAlreadyExistsOnFileSystem_ThrowsException()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
+			
+			string existingFile = @"d:\projects\myproject\myproject\test.cs";
+			fakeFileService.ExistingFileNames.Add(existingFile);
+			
+			Exception ex = 
+				Assert.Throws(typeof(FileExistsException), () => projectItems.AddFromFileCopy(fileName));
+			
+			bool contains = ex.Message.Contains("'test.cs'");
+			Assert.IsTrue(contains);
 		}
 	}
 }

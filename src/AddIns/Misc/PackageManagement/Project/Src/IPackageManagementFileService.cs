@@ -11,5 +11,6 @@ namespace ICSharpCode.PackageManagement
 		void RemoveDirectory(string path);
 		void OpenFile(string fileName);
 		void CopyFile(string oldFileName, string newFileName);
+		bool FileExists(string fileName);
 	}
 }
