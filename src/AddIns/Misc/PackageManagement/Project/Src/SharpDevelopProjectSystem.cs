@@ -108,13 +108,29 @@ namespace ICSharpCode.PackageManagement
 		
 		ReferenceProjectItem FindReference(string name)
 		{
-			string referenceName = Path.GetFileNameWithoutExtension(name);
+			string referenceName = GetReferenceName(name);
 			foreach (ReferenceProjectItem referenceProjectItem in project.GetItemsOfType(ItemType.Reference)) {
 				if (IsMatchIgnoringCase(referenceProjectItem.Include, referenceName)) {
 					return referenceProjectItem;
 				}
 			}
 			return null;
+		}
+		
+		string GetReferenceName(string name)
+		{
+			if (HasDllOrExeFileExtension(name)) {
+				return Path.GetFileNameWithoutExtension(name);
+			}
+			return name;
+		}
+		
+		bool HasDllOrExeFileExtension(string name)
+		{
+			string extension = Path.GetExtension(name);
+			return
+				IsMatchIgnoringCase(extension, ".dll") ||
+				IsMatchIgnoringCase(extension, ".exe");
 		}
 		
 		bool IsMatchIgnoringCase(string lhs, string rhs)
