@@ -356,6 +356,7 @@
     <Compile Include="CSharp\Ast\Expressions\AnonymousTypeCreateExpression.cs" />
     <Compile Include="CSharp\Ast\Expressions\UndocumentedExpression.cs" />
     <Compile Include="CSharp\Ast\IRelocatable.cs" />
+    <Compile Include="CSharp\Ast\ObservableAstVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
