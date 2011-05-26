@@ -3,6 +3,7 @@
 
 using System;
 using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
@@ -88,13 +89,8 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		public virtual void InvokeScript(string script)
 		{
-			try {
-				InvokeCommand.InvokeScript(script);
-			} catch (RuntimeException ex) {
-				var errorMessage = new RuntimeExceptionErrorMessage(ex);
-				WriteWarning(errorMessage.ToString());
-				throw;
-			}
+			var resultTypes = PipelineResultTypes.Error | PipelineResultTypes.Output;
+			InvokeCommand.InvokeScript(script, false, resultTypes, null, null);
 		}
 		
 		public void Run(IPackageScript script)
