@@ -2,15 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.PackageManagement.Cmdlets;
 
 namespace PackageManagement.Cmdlets.Tests.Helpers
 {
-	public class FakeCmdletTerminatingError : ICmdletTerminatingError
+	public class FakeCmdletTerminatingErrorException : Exception
 	{
-		public void ThrowNoProjectOpenError()
+		public FakeCmdletTerminatingErrorException(string message)
+			: base(message)
 		{
-			throw new FakeCmdletTerminatingErrorException("ThrowNoProjectOpenError");
 		}
 	}
 }

@@ -112,6 +112,23 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
+		public void ProcessRecord_ListAvailablePackagesWhenDefaultPackageSourceHasOnePackageAndNoDefaultProjectIsSet_OutputIsPackagesFromPackageSourceRepository()
+		{
+			CreateCmdlet();
+			fakeConsoleHost.DefaultProject = null;
+			var repository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			repository.AddFakePackage("Test");
+			
+			EnableListAvailableParameter();
+			RunCmdlet();
+			
+			var actualPackages = fakeCommandRuntime.ObjectsPassedToWriteObject;
+			var expectedPackages = repository.FakePackages;
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
 		public void ProcessRecord_ListAvailablePackagesWhenDefaultPackageSourceHasThreePackages_OutputIsPackagesFromPackageSourceRepository()
 		{
 			CreateCmdlet();
@@ -424,20 +441,7 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeConsoleHost.DefaultProject = null;
 			EnableUpdatesParameter();
 			
-			RunCmdlet();
-			
-			Assert.IsTrue(fakeTerminatingError.IsThrowNoProjectOpenErrorCalled);
-		}
-		
-		[Test]
-		public void ProcessRecord_RetrieveUpdatesWhenProjectIsActive_DoesNotThrowTerminatingError()
-		{
-			CreateCmdlet();
-			EnableUpdatesParameter();
-			
-			RunCmdlet();
-			
-			Assert.IsFalse(fakeTerminatingError.IsThrowNoProjectOpenErrorCalled);
+			Assert.Throws(typeof(FakeCmdletTerminatingErrorException), () => RunCmdlet());
 		}
 		
 		[Test]
@@ -445,31 +449,8 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdlet();
 			fakeConsoleHost.DefaultProject = null;
-			RunCmdlet();
 			
-			Assert.IsTrue(fakeTerminatingError.IsThrowNoProjectOpenErrorCalled);
-		}
-		
-		[Test]
-		public void ProcessRecord_ListAvailablePackagesAndProjectIsNotOpen_NoTerminatingErrorIsThrown()
-		{
-			CreateCmdlet();
-			fakeConsoleHost.DefaultProject = null;
-			EnableListAvailableParameter();
-			RunCmdlet();
-			
-			Assert.IsFalse(fakeTerminatingError.IsThrowNoProjectOpenErrorCalled);
-		}
-		
-		[Test]
-		public void ProcessRecord_RecentPackagesRequestedAndProjectIsNotOpen_NoTerminatingErrorIsThrown()
-		{
-			CreateCmdlet();
-			fakeConsoleHost.DefaultProject = null;
-			EnableRecentParameter();
-			RunCmdlet();
-			
-			Assert.IsFalse(fakeTerminatingError.IsThrowNoProjectOpenErrorCalled);
+			Assert.Throws(typeof(FakeCmdletTerminatingErrorException), () => RunCmdlet());
 		}
 		
 		[Test]

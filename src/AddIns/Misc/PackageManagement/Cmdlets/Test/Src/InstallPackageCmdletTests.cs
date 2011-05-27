@@ -73,20 +73,8 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdletWithoutActiveProject();
 			AddPackageSourceToConsoleHost();
 			SetIdParameter("Test");
-			RunCmdlet();
-						
-			Assert.IsTrue(fakeTerminatingError.IsThrowNoProjectOpenErrorCalled);
-		}
-		
-		[Test]
-		public void ProcessRecord_ProjectIsActiveInConsoleHost_NoTerminatingErrorThrown()
-		{
-			CreateCmdletWithActivePackageSourceAndProject();
 			
-			SetIdParameter("Test");
-			RunCmdlet();
-			
-			Assert.IsFalse(fakeTerminatingError.IsThrowNoProjectOpenErrorCalled);
+			Assert.Throws(typeof(FakeCmdletTerminatingErrorException), () => RunCmdlet());
 		}
 		
 		[Test]

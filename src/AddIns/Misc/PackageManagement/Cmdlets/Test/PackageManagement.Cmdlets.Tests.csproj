@@ -44,6 +44,7 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Helpers\FakeCmdletTerminatingError.cs" />
+    <Compile Include="Helpers\FakeCmdletTerminatingErrorException.cs" />
     <Compile Include="Helpers\FakeCommandRuntime.cs" />
     <Compile Include="Helpers\FakeTerminatingCmdlet.cs" />
     <Compile Include="Helpers\TestableGetPackageCmdlet.cs" />

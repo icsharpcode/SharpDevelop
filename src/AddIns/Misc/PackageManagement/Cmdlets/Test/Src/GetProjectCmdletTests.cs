@@ -75,9 +75,8 @@ namespace PackageManagement.Cmdlets.Tests
 		public void ProcessRecord_NoActiveProject_ThrowsNoProjectOpenTerminatingError()
 		{
 			CreateCmdletWithoutActiveProject();
-			RunCmdlet();
-						
-			Assert.IsTrue(fakeTerminatingError.IsThrowNoProjectOpenErrorCalled);
+			
+			Assert.Throws(typeof(FakeCmdletTerminatingErrorException), () => RunCmdlet());
 		}
 		
 		[Test]

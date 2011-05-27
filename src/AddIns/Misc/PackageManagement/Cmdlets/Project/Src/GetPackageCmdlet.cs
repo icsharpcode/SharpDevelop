@@ -73,10 +73,6 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		{
 			ValidateParameters();
 			
-			if (DefaultProject == null) {
-				return;
-			}
-			
 			IQueryable<IPackage> packages = GetPackages();
 			packages = OrderPackages(packages);
 			packages = SelectPackageRange(packages);
