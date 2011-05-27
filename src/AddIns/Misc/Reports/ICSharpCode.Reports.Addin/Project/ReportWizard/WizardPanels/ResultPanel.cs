@@ -105,10 +105,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			if (t != null) {
 				str = t.Name;
 			}
-			
 			else
 			{
-				//str = reportStructure.IDatabaseObjectBase.Parent.Name;
 				str = "Table1";
 			}
 			return str;
@@ -276,13 +274,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		{
 			if (this.resultDataSet != null) {
 				this.grdQuery.DataSource = this.resultDataSet.Tables[0];
-				foreach (DataGridViewColumn dd in this.grdQuery.Columns) {
-					DataGridViewColumnHeaderCheckBoxCell cb = new DataGridViewColumnHeaderCheckBoxCell();
-					cb.CheckBoxAlignment = HorizontalAlignment.Right;
-					cb.Checked = true;
-					dd.HeaderCell = cb;
-					dd.SortMode = DataGridViewColumnSortMode.NotSortable;
-				}
+				WizardHelper.SetupGridView(this.grdQuery);
 				this.grdQuery.AllowUserToOrderColumns = true;
 			}
 		}
@@ -290,55 +282,35 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		private void WriteResult ()
 		{
-				if (this.resultDataSet != null) {
-					// check reordering of columns
-					DataGridViewColumn[] displayCols;
-					DataGridViewColumnCollection dc = this.grdQuery.Columns;
-					
-					displayCols = new DataGridViewColumn[dc.Count];
-					for (int i = 0; i < dc.Count; i++){
-						if (dc[i].Visible) {
-							displayCols[dc[i].DisplayIndex] = dc[i];
-						}
+			if (this.resultDataSet != null) {
+				// check reordering of columns
+				DataGridViewColumn[] displayCols;
+				DataGridViewColumnCollection dc = this.grdQuery.Columns;
+				
+				displayCols = new DataGridViewColumn[dc.Count];
+				for (int i = 0; i < dc.Count; i++){
+					if (dc[i].Visible) {
+						displayCols[dc[i].DisplayIndex] = dc[i];
 					}
-					
-					
-					ReportItemCollection sourceItems = WizardHelper.ReportItemCollection(this.resultDataSet);
-					
-					AvailableFieldsCollection abstractColumns = WizardHelper.AvailableFieldsCollection(this.resultDataSet);
-					
-					ReportItemCollection destItems = new ReportItemCollection();
-					
-					// only checked columns are used in the report
-					foreach (DataGridViewColumn cc in displayCols) {
-						DataGridViewColumnHeaderCheckBoxCell hc= (DataGridViewColumnHeaderCheckBoxCell)cc.HeaderCell;
-						if (hc.Checked) {
-							BaseReportItem br = (BaseReportItem)sourceItems.Find(cc.HeaderText);
-							destItems.Add(br);
-						}
-					}
-					
-					reportStructure.ReportItemCollection.Clear();
-					reportStructure.ReportItemCollection.AddRange(destItems);
-					/*
-					if ((this.sqlParamsCollection != null) && (this.sqlParamsCollection.Count > 0)) {
-						reportStructure.SqlQueryParameters.AddRange(sqlParamsCollection);
-					}
-					*/
-					if (abstractColumns != null) {
-						reportStructure.AvailableFieldsCollection.Clear();
-						reportStructure.AvailableFieldsCollection.AddRange(abstractColumns);
-					}
-					/*
-					if ((this.sqlParamsCollection != null) && (this.sqlParamsCollection.Count > 0)) {
-						reportStructure.SqlQueryParameters.Clear();
-						reportStructure.SqlQueryParameters.AddRange(sqlParamsCollection);
-					}
-					*/
 				}
-				base.EnableNext = true;
-				base.EnableFinish = true;
+				
+				ReportItemCollection destItems = WizardHelper.CreateItemsCollection(this.resultDataSet,displayCols);
+				reportStructure.ReportItemCollection.Clear();
+				reportStructure.ReportItemCollection.AddRange(destItems);
+				
+				
+				var abstractColumns = WizardHelper.AvailableFieldsCollection(this.resultDataSet);
+				if (abstractColumns != null) {
+					reportStructure.AvailableFieldsCollection.Clear();
+					reportStructure.AvailableFieldsCollection.AddRange(abstractColumns);
+				}
+				
+			}
+			base.EnableNext = true;
+			base.EnableFinish = true;
 		}
+		
+		
 		#endregion
 		
 		protected override void Dispose(bool disposing)
