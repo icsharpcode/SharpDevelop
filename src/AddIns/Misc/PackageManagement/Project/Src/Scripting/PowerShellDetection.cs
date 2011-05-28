@@ -12,17 +12,26 @@ namespace ICSharpCode.PackageManagement.Scripting
 			@"SOFTWARE\Microsoft\PowerShell\1\PowerShellEngine";
 		
 		public static readonly string PowerShellVersionRegistryValueName =
-			"PowerShellVersion2";
+			"PowerShellVersion";
+		
+		public bool? installed;
 		
 		public bool IsPowerShell2Installed()
+		{
+			if (!installed.HasValue) {
+				CheckIfPowerShell2IsInstalled();
+			}
+			return installed.Value;
+		}
+		
+		void CheckIfPowerShell2IsInstalled()
 		{
 			RegistryKey key = OpenPowerShellRegistryKey();
 			if (key != null) {
 				using (key) {
-					return IsPowerShell2Installed(key);
+					installed = IsPowerShell2Installed(key);
 				}
 			}
-			return false;
 		}
 		
 		RegistryKey OpenPowerShellRegistryKey()

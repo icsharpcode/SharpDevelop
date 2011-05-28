@@ -17,11 +17,15 @@ namespace PackageManagement.Tests
 		FakePackageActionRunner fakeConsoleActionRunner;
 		PackageActionRunner runner;
 		FakeInstallPackageAction fakeAction;
+		FakePowerShellDetection powerShellDetection;
+		FakePackageManagementEvents fakeEvents;
 		
 		void CreateRunner()
 		{
 			fakeConsoleActionRunner = new FakePackageActionRunner();
-			runner = new PackageActionRunner(fakeConsoleActionRunner);	
+			powerShellDetection = new FakePowerShellDetection();
+			fakeEvents = new FakePackageManagementEvents();
+			runner = new PackageActionRunner(fakeConsoleActionRunner, fakeEvents, powerShellDetection);
 		}
 		
 		void CreateInstallActionWithNoPowerShellScripts()
@@ -67,6 +71,7 @@ namespace PackageManagement.Tests
 		{
 			CreateRunner();
 			CreateInstallActionWithOnePowerShellScript();
+			powerShellDetection.IsPowerShell2InstalledReturnValue = true;
 			Run();
 			
 			ProcessPackageAction action = fakeConsoleActionRunner.ActionPassedToRun;
@@ -79,11 +84,42 @@ namespace PackageManagement.Tests
 		{
 			CreateRunner();
 			CreateInstallActionWithOnePowerShellScript();
+			powerShellDetection.IsPowerShell2InstalledReturnValue = true;
 			Run();
 			
 			bool executed = fakeAction.IsExecuteCalled;
 			
 			Assert.IsFalse(executed);
+		}
+		
+		[Test]
+		public void Run_InstallActionHasOnePowerShellScriptAndPowerShellIsNotInstalled_ActionIsExecutedDirectly()
+		{
+			CreateRunner();
+			CreateInstallActionWithOnePowerShellScript();
+			powerShellDetection.IsPowerShell2InstalledReturnValue = false;
+			
+			Run();
+			
+			bool executed = fakeAction.IsExecuteCalled;
+			
+			Assert.IsTrue(executed);
+		}
+		
+		[Test]
+		public void Run_InstallActionHasOnePowerShellScriptAndPowerShellIsNotInstalled_MessageIsReportedThatPowerShellScriptsCannotBeRun()
+		{
+			CreateRunner();
+			CreateInstallActionWithOnePowerShellScript();
+			powerShellDetection.IsPowerShell2InstalledReturnValue = false;
+			
+			Run();
+			
+			string message = fakeEvents.FormattedStringPassedToOnPackageOperationMessageLogged;
+			string expectedMessage = 
+				"PowerShell is not installed. PowerShell scripts will not be run for the package.";
+			
+			Assert.AreEqual(expectedMessage, message);
 		}
 	}
 }

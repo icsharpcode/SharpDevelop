@@ -32,7 +32,7 @@ namespace ICSharpCode.PackageManagement
 			runPackageInitializationScripts = new RunPackageInitializationScriptsOnSolutionOpen(projectService);
 			resetPowerShellWorkingDirectory = new ResetPowerShellWorkingDirectoryOnSolutionClosed(projectService, ConsoleHost);
 			var consolePackageActionRunner = new ConsolePackageActionRunner(ConsoleHost, packageActionsToRun);
-			packageActionRunner = new PackageActionRunner(consolePackageActionRunner);
+			packageActionRunner = new PackageActionRunner(consolePackageActionRunner, packageManagementEvents);
 		}
 		
 		public static PackageManagementOptions Options {
