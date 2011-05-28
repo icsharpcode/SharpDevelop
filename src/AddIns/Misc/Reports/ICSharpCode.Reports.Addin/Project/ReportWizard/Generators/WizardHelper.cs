@@ -89,21 +89,20 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			ReportItemCollection destItems = new ReportItemCollection();
 			
 			foreach (DataTable tbl in dataSet.Tables) {
-				foreach (DataColumn col  in tbl.Columns) {
-					if (col.DataType == typeof(System.Byte[])) {
+				foreach (DataColumn col  in tbl.Columns)
+				{
+					if (col.DataType == typeof(System.Byte[]))
+					{
 						ICSharpCode.Reports.Core.BaseImageItem rItem = new ICSharpCode.Reports.Core.BaseImageItem();
+						InitializeItem(rItem,col);
 						rItem.ColumnName = col.ColumnName;
-						rItem.BaseTableName = tbl.TableName;
-						rItem.Name = col.ColumnName;
 						rItem.ScaleImageToSize = false;
 						destItems.Add (rItem);
-					} else {
+					} else
+					{
 						ICSharpCode.Reports.Core.BaseDataItem rItem = new ICSharpCode.Reports.Core.BaseDataItem();
-						rItem.ColumnName = col.ColumnName;
+						InitializeItem(rItem,col);
 						rItem.DBValue = col.ColumnName;
-						rItem.BaseTableName = tbl.TableName;
-						rItem.DataType = col.DataType.ToString();
-						rItem.Name = col.ColumnName;
 						rItem.Text = "=[" + col.ColumnName + "]";
 						destItems.Add (rItem);
 					}
@@ -111,6 +110,16 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 			return destItems;
 		}
+		
+		
+		static void  InitializeItem (IDataItem rItem, DataColumn col)
+		{
+			rItem.ColumnName = col.ColumnName;
+			rItem.Name = col.ColumnName;
+			rItem.BaseTableName = col.Table.TableName;
+			rItem.DataType = col.DataType.ToString();
+		}
+		
 		
 		
 		internal static ICSharpCode.Reports.Core.BaseTextItem CreateTextItem (string text)

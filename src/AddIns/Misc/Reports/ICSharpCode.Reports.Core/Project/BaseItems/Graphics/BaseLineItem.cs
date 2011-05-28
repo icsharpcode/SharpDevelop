@@ -20,11 +20,11 @@ namespace ICSharpCode.Reports.Core {
 	public class BaseLineItem : BaseGraphicItem,IExportColumnBuilder {
 		
 		private LineShape shape  = new LineShape();
-		private Point fromPoint;
-		private Point toPoint;
-		private LineCap startLineCap;
-		private LineCap endLineCap;
-		private DashCap dashLineCap;
+//		private Point fromPoint;
+//		private Point toPoint;
+//		private LineCap startLineCap;
+//		private LineCap endLineCap;
+//		private DashCap dashLineCap;
 		
 		#region Constructor
 		
@@ -55,19 +55,19 @@ namespace ICSharpCode.Reports.Core {
 			
 			decorator.Thickness = base.Thickness;
 			decorator.DashStyle = base.DashStyle;
-			decorator.From = this.fromPoint;
-			decorator.To = this.toPoint;
+			decorator.From = this.FromPoint;
+			decorator.To = this.ToPoint;
 			return decorator;
 		}
 		
 		Size CalculateLineSize()
 		{
 			int dif = 0;
-			if (fromPoint.Y < toPoint.Y) {
+			if (FromPoint.Y < ToPoint.Y) {
 				//
-				dif = toPoint.Y - fromPoint.Y;
+				dif = ToPoint.Y - FromPoint.Y;
 			} else {
-				dif = fromPoint.Y - toPoint.Y;
+				dif = FromPoint.Y - ToPoint.Y;
 			}
 			return new Size (Size.Width, dif + ICSharpCode.Reports.Core.Globals.GlobalValues.GapBetweenContainer);
 		}
@@ -84,10 +84,10 @@ namespace ICSharpCode.Reports.Core {
 			shape.DrawShape (rpea.PrintPageEventArgs.Graphics,
 			                 new BaseLine (this.ForeColor,base.DashStyle,
 			                               base.Thickness,
-			                               this.startLineCap,
-			                               this.endLineCap,
-			                               this.dashLineCap),
-			                 new Point(base.DisplayRectangle.Left + this.fromPoint.X,
+			                               this.StartLineCap,
+			                               this.EndLineCap,
+			                               this.DashLineCap),
+			                 new Point(base.DisplayRectangle.Left + this.FromPoint.X,
 			                           this.FromPoint.Y + base.DisplayRectangle.Top),
 			                 new Point (base.DisplayRectangle.Left + this.ToPoint.X,
 			                            this.ToPoint.Y + base.DisplayRectangle.Top));
@@ -100,39 +100,15 @@ namespace ICSharpCode.Reports.Core {
 			return "BaseLineItem";
 		}
 		
-		public virtual Point FromPoint {
-			get { 
-				return this.fromPoint;
-			}
-			set { 
-				fromPoint = value;
-			}
-		}
+		public virtual Point FromPoint {get;set;}
 		
+		public virtual Point ToPoint {get;set;}
+			
+		public LineCap StartLineCap {get;set;}
 		
-		public virtual Point ToPoint {
-			get {
-				return this.toPoint;
-			}
-			set {
-				toPoint = value;
-			}
-		}
+		public LineCap EndLineCap {get;set;}
 		
+		public DashCap DashLineCap {get;set;}
 		
-		public LineCap StartLineCap {
-			get { return startLineCap; }
-			set { startLineCap = value; }
-		}
-		
-		public LineCap EndLineCap {
-			get { return endLineCap; }
-			set { endLineCap = value; }
-		}
-		
-		public DashCap DashLineCap {
-			get { return dashLineCap; }
-			set { dashLineCap = value; }
-		}
 	}
 }
