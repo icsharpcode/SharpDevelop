@@ -13,7 +13,7 @@ namespace ICSharpCode.PackageManagement
 	public class AddPackageReferenceViewModel : ViewModelBase<AddPackageReferenceViewModel>, IDisposable
 	{
 		IPackageManagementSolution solution;
-		IPackageManagementEvents packageManagementEvents;
+		IThreadSafePackageManagementEvents packageManagementEvents;
 		ILicenseAcceptanceService licenseAcceptanceService;
 		string message;
 		bool hasError;
@@ -21,7 +21,7 @@ namespace ICSharpCode.PackageManagement
 		public AddPackageReferenceViewModel(
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageManagementEvents packageManagementEvents,
+			IThreadSafePackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
 			ILicenseAcceptanceService licenseAcceptanceService,
 			ITaskFactory taskFactory)
@@ -62,6 +62,7 @@ namespace ICSharpCode.PackageManagement
 			packageManagementEvents.AcceptLicenses -= AcceptLicenses;
 			packageManagementEvents.PackageOperationError -= PackageOperationError;
 			packageManagementEvents.PackageOperationsStarting -= PackageOperationsStarting;
+			packageManagementEvents.Dispose();
 		}
 		
 		void PackageOperationError(object sender, PackageOperationExceptionEventArgs e)

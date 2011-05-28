@@ -199,6 +199,7 @@
     <Compile Include="Src\Scripting\PackageUninstallScriptFileNameTests.cs" />
     <Compile Include="Src\Scripting\RunPackageScriptsActionTests.cs" />
     <Compile Include="Src\SolutionPackageRepositoryTests.cs" />
+    <Compile Include="Src\ThreadSafePackageManagementEventsTests.cs" />
     <Compile Include="Src\UninstallPackageActionTests.cs" />
     <Compile Include="Src\UpdatedPackagesViewModelTests.cs" />
     <Compile Include="Src\PackageViewModelTests.cs" />

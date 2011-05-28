@@ -5,11 +5,7 @@ using System;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IPackageManagementWorkbench
+	public interface IThreadSafePackageManagementEvents : IPackageManagementEvents, IDisposable
 	{
-		bool InvokeRequired { get; }
-		
-		void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2);
-		void CreateConsolePad();
 	}
 }

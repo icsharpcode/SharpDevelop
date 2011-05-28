@@ -8,7 +8,7 @@ using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
-	public class FakePackageManagementEvents : IPackageManagementEvents
+	public class FakePackageManagementEvents : IThreadSafePackageManagementEvents
 	{
 		#pragma warning disable 0067
 		public event EventHandler PackageOperationsStarting;
@@ -65,6 +65,13 @@ namespace PackageManagement.Tests.Helpers
 		{
 			MessageLevelPassedToOnPackageOperationMessageLogged = level;
 			FormattedStringPassedToOnPackageOperationMessageLogged = String.Format(message, args);
+		}
+		
+		public bool IsDisposed;
+		
+		public void Dispose()
+		{
+			IsDisposed = true;
 		}
 	}
 }

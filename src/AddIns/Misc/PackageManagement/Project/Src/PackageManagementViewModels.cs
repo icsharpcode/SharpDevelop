@@ -27,11 +27,12 @@ namespace ICSharpCode.PackageManagement
 		{
 			CreateRegisteredPackageRepositories();
 			CreateSolution();
+			var packageManagementEvents = new ThreadSafePackageManagementEvents(PackageManagementServices.PackageManagementEvents);
 			addPackageReferenceViewModel = 
 				new AddPackageReferenceViewModel(
 					solution,
 					registeredPackageRepositories,
-					PackageManagementServices.PackageManagementEvents,
+					packageManagementEvents,
 					PackageManagementServices.PackageActionRunner,
 					new LicenseAcceptanceService(),
 					new PackageManagementTaskFactory());

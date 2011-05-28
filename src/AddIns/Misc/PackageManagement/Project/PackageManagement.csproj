@@ -102,6 +102,7 @@
     <Compile Include="Src\IPackageManagementProject.cs" />
     <Compile Include="Src\IPackageManagementProjectFactory.cs" />
     <Compile Include="Src\IPackageManagementWorkbench.cs" />
+    <Compile Include="Src\IThreadSafePackageManagementEvents.cs" />
     <Compile Include="Src\PackageActionRunner.cs" />
     <Compile Include="Src\PackageActionsToRun.cs" />
     <Compile Include="Src\PackageFiles.cs" />
@@ -245,6 +246,7 @@
     <Compile Include="Src\EnvDTE\Project.cs" />
     <Compile Include="Src\Scripting\RunPackageScriptsAction.cs" />
     <Compile Include="Src\SolutionPackageRepository.cs" />
+    <Compile Include="Src\ThreadSafePackageManagementEvents.cs" />
     <Compile Include="Src\UninstallPackageAction.cs" />
     <Compile Include="Src\UpdatedPackagesViewModel.cs" />
     <Compile Include="Src\PackageViewModel.cs" />

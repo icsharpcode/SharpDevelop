@@ -23,6 +23,7 @@ namespace PackageManagement.Tests
 		FakeTaskFactory taskFactory;
 		List<FakePackage> packagesPassedToOnAcceptLicenses;
 		FakePackageActionRunner fakeActionRunner;
+		FakePackageManagementEvents fakeThreadSafeEvents;
 		
 		void CreateSolution()
 		{
@@ -38,8 +39,14 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel(FakePackageManagementSolution solution)
 		{
-			taskFactory = new FakeTaskFactory();
 			packageManagementEvents = new PackageManagementEvents();
+			var threadSafeEvents = new ThreadSafePackageManagementEvents(packageManagementEvents, new FakePackageManagementWorkbench());
+			CreateViewModel(fakeSolution, threadSafeEvents);
+		}
+		
+		void CreateViewModel(FakePackageManagementSolution solution, IThreadSafePackageManagementEvents packageManagementEvents)
+		{
+			taskFactory = new FakeTaskFactory();
 			fakeLicenseAcceptanceSevice = new FakeLicenseAcceptanceService();
 			fakeActionRunner = new FakePackageActionRunner();
 			viewModel = new AddPackageReferenceViewModel(
@@ -50,6 +57,13 @@ namespace PackageManagement.Tests
 				fakeLicenseAcceptanceSevice,
 				taskFactory);
 			taskFactory.ExecuteAllFakeTasks();
+		}
+		
+		void CreateViewModelWithFakeThreadSafePackageManagementEvents()
+		{
+			CreateSolution();
+			fakeThreadSafeEvents = new FakePackageManagementEvents();
+			CreateViewModel(fakeSolution, fakeThreadSafeEvents);
 		}
 		
 		List<string> RecordViewModelPropertiesChanged()
@@ -344,6 +358,17 @@ namespace PackageManagement.Tests
 			RaisePackageOperationsStartingEvent();
 			
 			Assert.AreEqual("Test", viewModel.Message);
+		}
+		
+		[Test]
+		public void Dispose_MethodCalled_DisposesThreadSafePackageManagementEvents()
+		{
+			CreateViewModelWithFakeThreadSafePackageManagementEvents();
+			viewModel.Dispose();
+			
+			bool disposed = fakeThreadSafeEvents.IsDisposed;
+			
+			Assert.IsTrue(disposed);
 		}
 	}
 }

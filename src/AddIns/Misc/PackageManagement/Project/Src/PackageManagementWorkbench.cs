@@ -22,5 +22,14 @@ namespace ICSharpCode.PackageManagement
 			// Force creation of view model.
 			object control = pad.PadContent.Control;
 		}
+		
+		public bool InvokeRequired {
+			get { return WorkbenchSingleton.InvokeRequired; }
+		}
+		
+		public void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2)
+		{
+			WorkbenchSingleton.SafeThreadAsyncCall<A, B>(method, arg1, arg2);
+		}
 	}
 }
