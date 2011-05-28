@@ -97,11 +97,13 @@
     <Compile Include="Src\Helpers\FakePackageScriptFileName.cs" />
     <Compile Include="Src\Helpers\FakePackageScriptRunner.cs" />
     <Compile Include="Src\Helpers\FakePackageViewModelFactory.cs" />
+    <Compile Include="Src\Helpers\FakePowerShellDetection.cs" />
     <Compile Include="Src\Helpers\FakePowerShellSession.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepository.cs" />
     <Compile Include="Src\Helpers\ProjectItemCollectionAssert.cs" />
     <Compile Include="Src\Helpers\TestableAddPackageReferenceCommand.cs" />
     <Compile Include="Src\Helpers\TestableDTEProject.cs" />
+    <Compile Include="Src\Helpers\TestablePowerShellMissingConsoleHost.cs" />
     <Compile Include="Src\PackageActionRunnerTests.cs" />
     <Compile Include="Src\PackageActionsToRunTests.cs" />
     <Compile Include="Src\PackageFilesTests.cs" />
@@ -184,6 +186,8 @@
     <Compile Include="Src\PackageRepositoryCacheTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsConsoleTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsTests.cs" />
+    <Compile Include="Src\Scripting\PackageManagementConsoleHostProviderTests.cs" />
+    <Compile Include="Src\Scripting\PowerShellMissingConsoleHostTests.cs" />
     <Compile Include="Src\Scripting\PowerShellWorkingDirectoryTests.cs" />
     <Compile Include="Src\Scripting\ResetPowerShellWorkingDirectoryOnSolutionClosedTests.cs" />
     <Compile Include="Src\SolutionPackageRepositoryPathTests.cs" />

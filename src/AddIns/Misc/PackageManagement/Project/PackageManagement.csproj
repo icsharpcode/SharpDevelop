@@ -208,10 +208,14 @@
     <Compile Include="Src\PackageManagementTask.cs" />
     <Compile Include="Src\PackageManagementTaskFactory.cs" />
     <Compile Include="Src\Scripting\IPackageScriptRunner.cs" />
+    <Compile Include="Src\Scripting\IPowerShellDetection.cs" />
     <Compile Include="Src\Scripting\ISolutionPackageRepository.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScripts.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsConsole.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsFactory.cs" />
+    <Compile Include="Src\Scripting\PackageManagementConsoleHostProvider.cs" />
+    <Compile Include="Src\Scripting\PowerShellDetection.cs" />
+    <Compile Include="Src\Scripting\PowerShellMissingConsoleHost.cs" />
     <Compile Include="Src\Scripting\PowerShellWorkingDirectory.cs" />
     <Compile Include="Src\Scripting\ResetPowerShellWorkingDirectoryOnSolutionClosed.cs" />
     <Compile Include="Src\SolutionPackageRepositoryPath.cs" />

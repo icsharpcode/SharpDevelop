@@ -10,7 +10,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		static readonly PackageManagementOptions options;
 		static readonly PackageManagementSolution solution;
-		static readonly PackageManagementConsoleHost consoleHost;
+		static readonly PackageManagementConsoleHostProvider consoleHostProvider;
 		static readonly RegisteredPackageRepositories registeredPackageRepositories;
 		static readonly PackageManagementEvents packageManagementEvents = new PackageManagementEvents();
 		static readonly PackageManagementProjectService projectService = new PackageManagementProjectService();
@@ -27,11 +27,11 @@ namespace ICSharpCode.PackageManagement
 			registeredPackageRepositories = new RegisteredPackageRepositories(options);
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
 			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
-			consoleHost = new PackageManagementConsoleHost(solution, registeredPackageRepositories);
+			consoleHostProvider = new PackageManagementConsoleHostProvider(solution, registeredPackageRepositories);
 			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
 			runPackageInitializationScripts = new RunPackageInitializationScriptsOnSolutionOpen(projectService);
-			resetPowerShellWorkingDirectory = new ResetPowerShellWorkingDirectoryOnSolutionClosed(projectService, consoleHost);
-			var consolePackageActionRunner = new ConsolePackageActionRunner(consoleHost, packageActionsToRun);
+			resetPowerShellWorkingDirectory = new ResetPowerShellWorkingDirectoryOnSolutionClosed(projectService, ConsoleHost);
+			var consolePackageActionRunner = new ConsolePackageActionRunner(ConsoleHost, packageActionsToRun);
 			packageActionRunner = new PackageActionRunner(consolePackageActionRunner);
 		}
 		
@@ -44,7 +44,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public static IPackageManagementConsoleHost ConsoleHost {
-			get { return consoleHost; }
+			get { return consoleHostProvider.ConsoleHost; }
 		}
 		
 		public static IRegisteredPackageRepositories RegisteredPackageRepositories {
