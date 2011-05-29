@@ -8,31 +8,35 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class Property
 	{
-		public Property(Project project, string name)
+		public Property(string name)
 		{
-			this.Project = project;
 			this.Name = name;
 		}
 		
 		public string Name { get; private set; }
 		
-		protected Project Project { get; private set; }
-		
-		public virtual object Value {
-			get { return GetProperty(); }
-			set {
-				SetProperty(value);
-				Project.Save();
-			}
+		public object Value {
+			get { return GetValue(); }
+			set { SetValue(value); }
 		}
 		
-		protected virtual object GetProperty()
+		protected virtual object GetValue()
 		{
 			return null;
 		}
 		
-		protected virtual void SetProperty(object value)
+		protected virtual void SetValue(object value)
 		{
+		}
+		
+		public object Object {
+			get { return GetObject(); }
+			set { }
+		}
+		
+		protected virtual object GetObject()
+		{
+			return null;
 		}
 	}
 }

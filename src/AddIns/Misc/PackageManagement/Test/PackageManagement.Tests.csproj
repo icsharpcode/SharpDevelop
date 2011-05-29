@@ -71,7 +71,10 @@
     </Compile>
     <Compile Include="Src\AddPackageReferenceCommandTests.cs" />
     <Compile Include="Src\ConsolePackageActionRunnerTests.cs" />
+    <Compile Include="Src\EnvDTE\ColorableItemsTests.cs" />
     <Compile Include="Src\EnvDTE\DTETests.cs" />
+    <Compile Include="Src\EnvDTE\FakeCustomizedHighlightingRules.cs" />
+    <Compile Include="Src\EnvDTE\FontsAndColorItemsTests.cs" />
     <Compile Include="Src\EnvDTE\ItemOperationsTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectItemPropertyTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectItemsTests.cs" />
@@ -80,6 +83,10 @@
     <Compile Include="Src\EnvDTE\ProjectPropertyTests.cs" />
     <Compile Include="Src\EnvDTE\ReferencesTests.cs" />
     <Compile Include="Src\EnvDTE\ReferenceTests.cs" />
+    <Compile Include="Src\EnvDTE\TextEditorFontsAndColorsItemsPropertyTests.cs" />
+    <Compile Include="Src\EnvDTE\TextEditorFontsAndColorsPropertyFactoryTests.cs" />
+    <Compile Include="Src\EnvDTE\TextEditorFontSizePropertyTests.cs" />
+    <Compile Include="Src\Helpers\ColorHelper.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementProject.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingRegisteredPackageRepositories.cs" />
     <Compile Include="Src\Helpers\FakeAddPackageReferenceView.cs" />
@@ -100,6 +107,7 @@
     <Compile Include="Src\Helpers\FakePowerShellDetection.cs" />
     <Compile Include="Src\Helpers\FakePowerShellSession.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepository.cs" />
+    <Compile Include="Src\Helpers\FakeTextEditorOptions.cs" />
     <Compile Include="Src\Helpers\ProjectItemCollectionAssert.cs" />
     <Compile Include="Src\Helpers\TestableAddPackageReferenceCommand.cs" />
     <Compile Include="Src\Helpers\TestableDTEProject.cs" />
@@ -243,6 +251,10 @@
     <ProjectReference Include="..\..\..\BackendBindings\Scripting\Test\ICSharpCode.Scripting.Tests.csproj">
       <Project>{85C09AD8-183B-403A-869A-7226646218A9}</Project>
       <Name>ICSharpCode.Scripting.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
+      <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
+      <Name>AvalonEdit.AddIn</Name>
     </ProjectReference>
     <ProjectReference Include="..\Project\PackageManagement.csproj">
       <Project>{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}</Project>

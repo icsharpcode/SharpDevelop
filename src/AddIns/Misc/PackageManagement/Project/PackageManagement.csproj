@@ -46,6 +46,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Management.Automation" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml">
@@ -73,11 +74,17 @@
     <Compile Include="Src\AggregateExceptionErrorMessage.cs" />
     <Compile Include="Src\ConsolePackageActionRunner.cs" />
     <Compile Include="Src\Design\FakePackageManagementProject.cs" />
+    <Compile Include="Src\EnvDTE\ColorableItems.cs" />
+    <Compile Include="Src\EnvDTE\CustomizedHighlightingRules.cs" />
     <Compile Include="Src\EnvDTE\DirectoryProjectItem.cs" />
     <Compile Include="Src\EnvDTE\DirectoryProjectItems.cs" />
     <Compile Include="Src\EnvDTE\DTE.cs" />
+    <Compile Include="Src\EnvDTE\DTEProperties.cs" />
+    <Compile Include="Src\EnvDTE\FontsAndColorsItems.cs" />
+    <Compile Include="Src\EnvDTE\ICustomizedHighlightingRules.cs" />
     <Compile Include="Src\EnvDTE\IPropertyFactory.cs" />
     <Compile Include="Src\EnvDTE\ItemOperations.cs" />
+    <Compile Include="Src\EnvDTE\ITextEditorOptions.cs" />
     <Compile Include="Src\EnvDTE\ProjectItem.cs" />
     <Compile Include="Src\EnvDTE\ProjectItemProperty.cs" />
     <Compile Include="Src\EnvDTE\ProjectItemPropertyFactory.cs" />
@@ -94,6 +101,10 @@
     <Compile Include="Src\EnvDTE\Reference.cs" />
     <Compile Include="Src\EnvDTE\References.cs" />
     <Compile Include="Src\EnvDTE\Solution.cs" />
+    <Compile Include="Src\EnvDTE\TextEditorFontsAndColorsItemsProperty.cs" />
+    <Compile Include="Src\EnvDTE\TextEditorFontsAndColorsPropertyFactory.cs" />
+    <Compile Include="Src\EnvDTE\TextEditorFontSizeProperty.cs" />
+    <Compile Include="Src\EnvDTE\TextEditorOptions.cs" />
     <Compile Include="Src\FileExistsException.cs" />
     <Compile Include="Src\IAddPackageReferenceView.cs" />
     <Compile Include="Src\IPackageActionRunner.cs" />
@@ -334,6 +345,11 @@
     <ProjectReference Include="..\..\..\BackendBindings\Scripting\Project\ICSharpCode.Scripting.csproj">
       <Project>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</Project>
       <Name>ICSharpCode.Scripting</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
+      <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
+      <Name>AvalonEdit.AddIn</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

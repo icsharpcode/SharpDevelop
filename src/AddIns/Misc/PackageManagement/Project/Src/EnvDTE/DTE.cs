@@ -35,5 +35,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public ItemOperations ItemOperations { get; private set; }
+		
+		public Properties Properties(string category, string page)
+		{
+			var properties = new DTEProperties();
+			return properties.GetProperties(category, page);
+		}
 	}
 }

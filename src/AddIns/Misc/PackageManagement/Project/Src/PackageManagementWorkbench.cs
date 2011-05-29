@@ -27,6 +27,11 @@ namespace ICSharpCode.PackageManagement
 			get { return WorkbenchSingleton.InvokeRequired; }
 		}
 		
+		public void SafeThreadAsyncCall<A>(Action<A> method, A arg1)
+		{
+			WorkbenchSingleton.SafeThreadAsyncCall<A>(method, arg1);
+		}
+		
 		public void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2)
 		{
 			WorkbenchSingleton.SafeThreadAsyncCall<A, B>(method, arg1, arg2);

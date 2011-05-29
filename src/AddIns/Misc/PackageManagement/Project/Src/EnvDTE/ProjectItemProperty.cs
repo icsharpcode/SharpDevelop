@@ -10,19 +10,20 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		ProjectItem projectItem;
 		
 		public ProjectItemProperty(ProjectItem projectItem, string name)
-			: base(projectItem.ContainingProject, name)
+			: base(name)
 		{
 			this.projectItem = projectItem;
 		}
 		
-		protected override object GetProperty()
+		protected override object GetValue()
 		{
 			return projectItem.GetProperty(Name);
 		}
 		
-		protected override void SetProperty(object value)
+		protected override void SetValue(object value)
 		{
 			projectItem.SetProperty(Name, value);
+			projectItem.ContainingProject.Save();
 		}
 	}
 }

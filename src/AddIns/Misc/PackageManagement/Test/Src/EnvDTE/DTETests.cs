@@ -55,9 +55,39 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateDTE();
 			fakeProjectService.OpenSolution = null;
 			
-			var solution = dte.Solution;
+			Solution solution = dte.Solution;
 			
 			Assert.IsNull(solution);
+		}
+		
+		[Test]
+		public void Properties_LookForFontsAndColorsCategoryInTextEditorPage_ReturnsProperties()
+		{
+			CreateDTE();
+			
+			Properties properties = dte.Properties("FontsAndColors", "TextEditor");
+			
+			Assert.IsNotNull(properties);
+		}
+		
+		[Test]
+		public void Properties_LookForUnknownCategoryAndPage_ReturnsNull()
+		{
+			CreateDTE();
+			
+			Properties properties = dte.Properties("UnknownCategory", "UnknownPage");
+			
+			Assert.IsNull(properties);
+		}
+		
+		[Test]
+		public void Properties_LookForFontsAndColorsCategoryInTextEditorPageInUpperCase_ReturnsTextEditorFontsAndColorsProperties()
+		{
+			CreateDTE();
+			
+			Properties properties = dte.Properties("FONTSANDCOLORS", "TEXTEDITOR");
+			
+			Assert.IsNotNull(properties);
 		}
 	}
 }

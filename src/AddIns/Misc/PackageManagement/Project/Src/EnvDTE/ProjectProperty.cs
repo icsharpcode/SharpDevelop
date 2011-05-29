@@ -2,19 +2,23 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class ProjectProperty : Property
 	{
+		Project project;
+		
 		public ProjectProperty(Project project, string name)
-			: base(project, name)
+			: base(name)
 		{
+			this.project = project;
 		}
 		
-		protected override object GetProperty()
+		protected override object GetValue()
 		{
-			string value = Project.MSBuildProject.GetUnevalatedProperty(Name);
+			string value = project.MSBuildProject.GetUnevalatedProperty(Name);
 			if (value != null) {
 				return value;
 			}
@@ -32,8 +36,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		string GetTargetFrameworkMoniker()
 		{
-			var targetFramework = new ProjectTargetFramework(Project.MSBuildProject);
+			var targetFramework = new ProjectTargetFramework(MSBuildProject);
 			return targetFramework.TargetFrameworkName.ToString();
+		}
+		
+		MSBuildBasedProject MSBuildProject {
+			get { return project.MSBuildProject; }
 		}
 		
 		string EmptyStringIfNull(string value)
@@ -44,10 +52,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return String.Empty;
 		}
 		
-		protected override void SetProperty(object value)
+		protected override void SetValue(object value)
 		{
 			bool escapeValue = false;
-			Project.MSBuildProject.SetProperty(Name, value as string, escapeValue);
+			MSBuildProject.SetProperty(Name, value as string, escapeValue);
+			project.Save();
 		}
 	}
 }

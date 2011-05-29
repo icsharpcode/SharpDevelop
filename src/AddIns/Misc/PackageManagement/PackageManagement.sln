@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement.Cmdlets",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement.Cmdlets.Tests", "Cmdlets\Test\PackageManagement.Cmdlets.Tests.csproj", "{11115C83-3DB1-431F-8B98-59040359238D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonEdit.AddIn", "..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj", "{0162E499-42D0-409B-AA25-EED21F75336B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -152,5 +154,13 @@ Global
 		{11115C83-3DB1-431F-8B98-59040359238D}.Release|x86.ActiveCfg = Release|x86
 		{11115C83-3DB1-431F-8B98-59040359238D}.Release|Any CPU.Build.0 = Release|x86
 		{11115C83-3DB1-431F-8B98-59040359238D}.Release|Any CPU.ActiveCfg = Release|x86
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Debug|x86.Build.0 = Debug|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|x86.Build.0 = Release|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|x86.ActiveCfg = Release|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -25,6 +25,12 @@ namespace PackageManagement.Tests.Helpers
 		public object Arg1PassedToSafeThreadAsyncCall;
 		public object Arg2PassedToSafeThreadAsyncCall;
 		
+		public void SafeThreadAsyncCall<A>(Action<A> method, A arg1)
+		{
+			IsSafeThreadAsyncCallMade = true;
+			Arg1PassedToSafeThreadAsyncCall = arg1;
+		}
+		
 		public void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2)
 		{
 			IsSafeThreadAsyncCallMade = true;
