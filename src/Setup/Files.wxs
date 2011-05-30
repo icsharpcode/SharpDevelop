@@ -1526,6 +1526,20 @@
 									<Component Id="PackageManagementDll" Guid="24C9BEEB-0B51-42F9-A3FA-C4830B28BABD" DiskId="1">
 										<File Id="PackageManagement.dll" Name="PackageManagement.dll" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.dll" AssemblyManifest="PackageManagement.dll" />
 									</Component>
+									<Component Id="AboutNuGetCmdletsHelpTxt" Guid="9A761C90-C10B-4E69-A0C3-6E417CBBAE94" DiskId="1">
+										<File Id="about_NuGet.Cmdlets.help.txt" Name="about_NuGet.Cmdlets.help.txt" Source="..\..\AddIns\Misc\PackageManagement\about_NuGet.Cmdlets.help.txt" KeyPath="yes" />
+									</Component>
+									<Component Id="PackageManagementCmdletsDll" Guid="BAFE4038-7ADC-4E67-A73E-BA335860168E" DiskId="1">
+										<File Id="PackageManagement.Cmdlets.dll" Name="PackageManagement.Cmdlets.dll" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.Cmdlets.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.Cmdlets.dll" AssemblyManifest="PackageManagement.Cmdlets.dll" />
+									</Component>
+									<Component Id="PackageManagementCmdletsDllHelpXml" Guid="636FB699-BD74-48E6-8272-38CBA5E64852" DiskId="1">
+										<File Id="PackageManagement.Cmdlets.dll_Help.xml" Name="PackageManagement.Cmdlets.dll-Help.xml" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.Cmdlets.dll-Help.xml" KeyPath="yes" />
+									</Component>
+									<Directory Id="PackageManagementScriptsFolder" Name="Scripts">
+										<Component Id="PackageFormatPs1Xml" Guid="1C940A6A-5AF2-4E83-84AD-78DB38F763AC" DiskId="1">
+											<File Id="Package.Format.ps1xml" Name="Package.Format.ps1xml" Source="..\..\AddIns\Misc\PackageManagement\Scripts\Package.Format.ps1xml" KeyPath="yes" />
+										</Component>
+									</Directory>
 								</Directory>
 							</Directory>
 							<Directory Id="VersionControlAddInsFolder" Name="VersionControl">
