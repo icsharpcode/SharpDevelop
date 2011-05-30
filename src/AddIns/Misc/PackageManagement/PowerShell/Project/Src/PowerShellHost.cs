@@ -38,6 +38,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			this.scriptingConsole = scriptingConsole;
 			this.version = version;
 			this.privateData = new PSObject(privateData);
+			this.dte = dte;
 			userInterface = new PowerShellHostUserInterface(scriptingConsole);
 		}
 		
