@@ -244,19 +244,9 @@ partial class ExpressionFinder {
 			case 482:
 				return set[19];
 			case 42:
-			case 177:
-			case 184:
-			case 189:
-			case 253:
-			case 424:
-			case 452:
-			case 474:
-			case 477:
-			case 590:
-			case 591:
-			case 643:
 				{
 					BitArray a = new BitArray(239);
+					a.Set(33, true);
 					a.Set(37, true);
 					return a;
 				}
@@ -863,6 +853,22 @@ partial class ExpressionFinder {
 				{
 					BitArray a = new BitArray(239);
 					a.Set(135, true);
+					return a;
+				}
+			case 177:
+			case 184:
+			case 189:
+			case 253:
+			case 424:
+			case 452:
+			case 474:
+			case 477:
+			case 590:
+			case 591:
+			case 643:
+				{
+					BitArray a = new BitArray(239);
+					a.Set(37, true);
 					return a;
 				}
 			case 183:
@@ -1972,7 +1978,7 @@ partial class ExpressionFinder {
 			}
 			case 38: {
 				if (la == null) { currentState = 38; break; }
-				if (la.kind == 37) {
+				if (la.kind == 33 || la.kind == 37) {
 					stateStack.Push(38);
 					goto case 42;
 				} else {
@@ -1995,7 +2001,7 @@ partial class ExpressionFinder {
 			}
 			case 41: {
 				if (la == null) { currentState = 41; break; }
-				if (la.kind == 37) {
+				if (la.kind == 33 || la.kind == 37) {
 					stateStack.Push(41);
 					goto case 42;
 				} else {
@@ -2004,9 +2010,17 @@ partial class ExpressionFinder {
 			}
 			case 42: {
 				if (la == null) { currentState = 42; break; }
-				Expect(37, la); // "("
-				currentState = 43;
-				break;
+				if (la.kind == 33) {
+					currentState = stateStack.Pop();
+					break;
+				} else {
+					if (la.kind == 37) {
+						currentState = 43;
+						break;
+					} else {
+						goto case 6;
+					}
+				}
 			}
 			case 43: {
 				PushContext(Context.Expression, la, t);
@@ -8355,7 +8369,7 @@ partial class ExpressionFinder {
 			}
 			case 742: {
 				if (la == null) { currentState = 742; break; }
-				if (la.kind == 37) {
+				if (la.kind == 33 || la.kind == 37) {
 					stateStack.Push(742);
 					goto case 42;
 				} else {
@@ -8452,7 +8466,7 @@ partial class ExpressionFinder {
 		new BitArray(new int[] {-2, -1, -1, -1, -1, -1, -1, -1}),
 		new BitArray(new int[] {2097154, -2147483616, 0, 0, 0, 0, 0, 0}),
 		new BitArray(new int[] {4, 1140850690, 8650975, 1108355356, 9218084, 17106176, -533656048, 67}),
-		new BitArray(new int[] {-940564478, 889192445, 65, 1074825472, 72844640, 231424, 22030368, 4704}),
+		new BitArray(new int[] {-940564478, 889192447, 65, 1074825472, 72844640, 231424, 22030368, 4704}),
 		new BitArray(new int[] {-940564478, 889192413, 65, 1074825472, 72844640, 231424, 22030368, 4704}),
 		new BitArray(new int[] {4, -16777216, -1, -1, -1, -1, -1, 16383}),
 		new BitArray(new int[] {-61995012, 1174405224, -51384097, -972018405, -1030969182, 17106740, -97186288, 8259}),
@@ -8563,7 +8577,7 @@ partial class ExpressionFinder {
 		new BitArray(new int[] {7340034, -2147483616, 0, 0, 0, 0, 0, 0}),
 		new BitArray(new int[] {0, 256, 1048576, 537526400, 402669568, 444596289, 131200, 0}),
 		new BitArray(new int[] {1028, 1140850688, 8650975, 1108355356, 9218084, 17106176, -533656048, 67}),
-		new BitArray(new int[] {70254594, 32, 0, 0, 0, 0, 0, 0}),
+		new BitArray(new int[] {70254594, 34, 0, 0, 0, 0, 0, 0}),
 		new BitArray(new int[] {0, 0, 8388608, 33554432, 2048, 0, 32768, 0}),
 		new BitArray(new int[] {2097154, 0, 0, 0, 0, 3072, 0, 0}),
 		new BitArray(new int[] {0, 0, 0, 536870912, 268435456, 444596288, 128, 0}),

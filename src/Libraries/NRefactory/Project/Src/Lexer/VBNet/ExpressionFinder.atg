@@ -860,7 +860,7 @@ PrimitiveTypeName =
 	
 TypeName = ( "Global" | Identifier | PrimitiveTypeName | "?" /* used for ? = completion */ ) { TypeSuffix } { "." IdentifierOrKeyword { TypeSuffix } } .
 
-TypeSuffix = "(" (. PushContext(Context.Expression, la, t); .) ( "Of" [ (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] { "," [ (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] } | [ ArgumentList ] ) (. PopContext(); .) ")" .
+TypeSuffix = "?" | "(" (. PushContext(Context.Expression, la, t); .) ( "Of" [ (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] { "," [ (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] } | [ ArgumentList ] ) (. PopContext(); .) ")" .
 
 IdentifierOrKeyword = ident
 | "AddHandler"
