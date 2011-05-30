@@ -54,7 +54,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		public void SetEnvironmentPath(string path)
 		{
-			SetSessionVariable(PowerShellHost.EnvironmentPathVariableName, path);
+			SetSessionVariable("env:path", path);
 		}
 		
 		protected virtual void SetSessionVariable(string name, object value)
@@ -64,7 +64,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		public string GetEnvironmentPath()
 		{
-			return (string)GetSessionVariable(PowerShellHost.EnvironmentPathVariableName);
+			return (string)GetSessionVariable("env:path");
 		}
 		
 		protected virtual object GetSessionVariable(string name)

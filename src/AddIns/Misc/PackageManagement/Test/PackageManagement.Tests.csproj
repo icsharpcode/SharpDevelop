@@ -256,6 +256,10 @@
       <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
       <Name>AvalonEdit.AddIn</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PowerShell\Project\PackageManagement.PowerShell.csproj">
+      <Project>{A406803B-C584-43A3-BCEE-A0BB3132CB5F}</Project>
+      <Name>PackageManagement.PowerShell</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Project\PackageManagement.csproj">
       <Project>{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}</Project>
       <Name>PackageManagement</Name>

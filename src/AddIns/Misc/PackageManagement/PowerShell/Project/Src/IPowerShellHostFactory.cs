@@ -6,13 +6,12 @@ using ICSharpCode.Scripting;
 
 namespace ICSharpCode.PackageManagement.Scripting
 {
-	public class PowerShellHostFactory : IPowerShellHostFactory
+	public interface IPowerShellHostFactory
 	{
-		public IPowerShellHost CreatePowerShellHost(
-			IPackageManagementConsoleHost consoleHost,
-			object privateData)
-		{
-			return new PowerShellHost(consoleHost, privateData);
-		}
+		IPowerShellHost CreatePowerShellHost(
+			IScriptingConsole scriptingConsole,
+			Version version,
+			object privateData,
+			object dte);
 	}
 }

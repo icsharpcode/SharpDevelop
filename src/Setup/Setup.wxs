@@ -519,6 +519,7 @@
 				<ComponentRef Id="PackageManagementCmdletsDll"/>
 				<ComponentRef Id="PackageManagementCmdletsDllHelpXml"/>
 				<ComponentRef Id="PackageManagementDll"/>
+				<ComponentRef Id="PackageManagementPowerShellDll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

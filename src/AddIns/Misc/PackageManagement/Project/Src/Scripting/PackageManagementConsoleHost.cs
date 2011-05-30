@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
@@ -110,7 +110,17 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void CreatePowerShellHost()
 		{
 			var clearConsoleHostCommand = new ClearPackageManagementConsoleHostCommand(this);
-			powerShellHost = powerShellHostFactory.CreatePowerShellHost(this, clearConsoleHostCommand);
+			powerShellHost = 
+				powerShellHostFactory.CreatePowerShellHost(
+					this.ScriptingConsole,
+					GetNuGetVersion(),
+					clearConsoleHostCommand,
+					new DTE());
+		}
+		
+		protected virtual Version GetNuGetVersion()
+		{
+			return NuGetVersion.Version;
 		}
 		
 		void AddModulesToImport()

@@ -47,7 +47,6 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Management.Automation" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
@@ -218,6 +217,7 @@
     <Compile Include="Src\PackageManagementSolution.cs" />
     <Compile Include="Src\PackageManagementTask.cs" />
     <Compile Include="Src\PackageManagementTaskFactory.cs" />
+    <Compile Include="Src\Scripting\IPackageManagementConsoleHost.cs" />
     <Compile Include="Src\Scripting\IPackageScriptRunner.cs" />
     <Compile Include="Src\Scripting\IPowerShellDetection.cs" />
     <Compile Include="Src\Scripting\ISolutionPackageRepository.cs" />
@@ -256,7 +256,6 @@
     <Compile Include="Src\Scripting\PackageScriptFileName.cs" />
     <Compile Include="Src\Scripting\PackageUninstallScript.cs" />
     <Compile Include="Src\Scripting\PackageUninstallScriptFileName.cs" />
-    <Compile Include="Src\Scripting\PowerShellHostRawUserInterface.cs" />
     <Compile Include="Src\Scripting\PowerShellSessionEnvironmentPath.cs" />
     <Compile Include="Src\EnvDTE\Project.cs" />
     <Compile Include="Src\Scripting\RunPackageScriptsAction.cs" />
@@ -279,9 +278,6 @@
     <Compile Include="Src\RegisteredPackageSource.cs" />
     <Compile Include="Src\RegisteredPackageSources.cs" />
     <Compile Include="Src\Scripting\IPackageManagementAddInPath.cs" />
-    <Compile Include="Src\Scripting\IPackageManagementConsoleHost.cs" />
-    <Compile Include="Src\Scripting\IPowerShellHost.cs" />
-    <Compile Include="Src\Scripting\IPowerShellHostFactory.cs" />
     <Compile Include="Src\Scripting\IThread.cs" />
     <Compile Include="Src\Scripting\PackageManagementAddInPath.cs" />
     <Compile Include="Src\Scripting\PackageManagementConsole.cs" />
@@ -293,9 +289,6 @@
     </Compile>
     <Compile Include="Src\Scripting\PackageManagementConsoleViewModel.cs" />
     <Compile Include="Src\Scripting\PackageManagementThread.cs" />
-    <Compile Include="Src\Scripting\PowerShellHost.cs" />
-    <Compile Include="Src\Scripting\PowerShellHostFactory.cs" />
-    <Compile Include="Src\Scripting\PowerShellHostUserInterface.cs" />
     <Compile Include="Src\SelectedListBoxItemScrollingBehaviour.cs" />
     <Compile Include="Src\PackageManagementServices.cs" />
     <Compile Include="Src\SharpDevelopPackageManager.cs" />
@@ -351,6 +344,10 @@
       <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
       <Name>AvalonEdit.AddIn</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\PowerShell\Project\PackageManagement.PowerShell.csproj">
+      <Project>{A406803B-C584-43A3-BCEE-A0BB3132CB5F}</Project>
+      <Name>PackageManagement.PowerShell</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
@@ -92,10 +95,10 @@ namespace PackageManagement.Tests.Scripting
 			CreateHost();
 			RunHost();
 			
-			var actualHost = host.FakePowerShellHostFactory.ConsoleHostPassedToCreatePowerShellHost;
-			var expectedHost = host;
+			IScriptingConsole scriptingConsole = host.FakePowerShellHostFactory.ScriptingConsolePassedToCreatePowerShellHost;
+			IScriptingConsole expectedScriptingConsole = scriptingConsole;
 			
-			Assert.AreSame(expectedHost, actualHost);
+			Assert.AreSame(expectedScriptingConsole, scriptingConsole);
 		}
 		
 		[Test]
@@ -104,9 +107,33 @@ namespace PackageManagement.Tests.Scripting
 			CreateHost();
 			RunHost();
 			
-			var privateDataObject = host.FakePowerShellHostFactory.PrivateDataPassedToCreatePowerShellHost;
+			object privateDataObject = host.FakePowerShellHostFactory.PrivateDataPassedToCreatePowerShellHost;
 			
 			Assert.IsInstanceOf(typeof(ClearPackageManagementConsoleHostCommand), privateDataObject);
+		}
+		
+		[Test]
+		public void Run_ConsoleExitsOnFirstRead_DteObjectIsSet()
+		{
+			CreateHost();
+			RunHost();
+			
+			object dte = host.FakePowerShellHostFactory.DtePassedToCreatePowerShellHost;
+			
+			Assert.IsInstanceOf(typeof(DTE), dte);
+		}
+		
+		[Test]
+		public void Run_ConsoleExitsOnFirstRead_PowerShellVersionIsSetToNuGetVersion()
+		{
+			CreateHost();
+			var expectedVersion = new Version("1.0.1.3");
+			host.NuGetVersionToReturn = expectedVersion;
+			RunHost();
+			
+			Version version = host.FakePowerShellHostFactory.VersionPassedToCreatePowerShellHost;
+			
+			Assert.AreEqual(expectedVersion, version);
 		}
 		
 		[Test]
@@ -138,7 +165,7 @@ namespace PackageManagement.Tests.Scripting
 			CreateHost();
 			RunHost();
 			var expectedTextPassedToWrite = new String[] { "PM> "};
-			var actualTextPassedToWrite = scriptingConsole.AllTextPassedToWrite;
+			List<string> actualTextPassedToWrite = scriptingConsole.AllTextPassedToWrite;
 			
 			CollectionAssert.AreEqual(expectedTextPassedToWrite, actualTextPassedToWrite);
 		}
@@ -170,7 +197,7 @@ namespace PackageManagement.Tests.Scripting
 			RunHost();
 			
 			var expectedTextPassedToWrite = new String[] { "PM> ", "PM> "};
-			var actualTextPassedToWrite = scriptingConsole.AllTextPassedToWrite;
+			List<string> actualTextPassedToWrite = scriptingConsole.AllTextPassedToWrite;
 			
 			CollectionAssert.AreEqual(expectedTextPassedToWrite, actualTextPassedToWrite);
 		}
@@ -217,7 +244,7 @@ namespace PackageManagement.Tests.Scripting
 			var expectedModules = new string[] {
 				cmdletsAssemblyFileName
 			};
-			var actualModules = powerShellHost.ModulesToImport;
+			IList<string> actualModules = powerShellHost.ModulesToImport;
 			
 			CollectionAssert.AreEqual(expectedModules, actualModules);
 		}
@@ -234,7 +261,7 @@ namespace PackageManagement.Tests.Scripting
 			
 			RunHost();
 			
-			var actualFiles = powerShellHost.FormattingFilesPassedToUpdateFormatting;
+			IEnumerable<string> actualFiles = powerShellHost.FormattingFilesPassedToUpdateFormatting;
 			
 			CollectionAssert.AreEqual(files, actualFiles);
 		}
@@ -288,7 +315,7 @@ namespace PackageManagement.Tests.Scripting
 			
 			host.GetProject(source, expectedProjectName);
 			
-			var actualProjectName = fakeSolution.ProjectNamePassedToGetProject;
+			string actualProjectName = fakeSolution.ProjectNamePassedToGetProject;
 			
 			Assert.AreEqual(expectedProjectName, actualProjectName);
 		}
@@ -301,7 +328,7 @@ namespace PackageManagement.Tests.Scripting
 			
 			host.GetProject(expectedSource, "Test");
 			
-			var actualSource = fakeSolution.PackageSourcePassedToGetProject.Source;
+			string actualSource = fakeSolution.PackageSourcePassedToGetProject.Source;
 			
 			Assert.AreEqual(expectedSource, actualSource);
 		}
@@ -312,9 +339,9 @@ namespace PackageManagement.Tests.Scripting
 			CreateHost();
 			string source = "http://sharpdevelop.net";
 			
-			var project = host.GetProject(source, "Test");
+			IPackageManagementProject project = host.GetProject(source, "Test");
 			
-			var expectedProject = fakeSolution.FakeProject;
+			FakePackageManagementProject expectedProject = fakeSolution.FakeProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -329,7 +356,7 @@ namespace PackageManagement.Tests.Scripting
 			
 			host.GetProject(packageSource, "Test");
 			
-			var actualSource = fakeSolution.PackageSourcePassedToGetProject;
+			PackageSource actualSource = fakeSolution.PackageSourcePassedToGetProject;
 			
 			Assert.AreEqual(expectedSource, actualSource);
 		}
@@ -338,13 +365,13 @@ namespace PackageManagement.Tests.Scripting
 		public void GetProject_NullProjectPassed_UsesDefaultProjectToCreateProject()
 		{
 			CreateHost();
-			var source = "http://sharpdevelop.net";
-			var project = ProjectHelper.CreateTestProject("Test");
+			string source = "http://sharpdevelop.net";
+			TestableProject project = ProjectHelper.CreateTestProject("Test");
 			host.DefaultProject = project;
 			
 			host.GetProject(source, null);
 			
-			var projectName = fakeSolution.ProjectNamePassedToGetProject;
+			string projectName = fakeSolution.ProjectNamePassedToGetProject;
 			
 			Assert.AreEqual("Test", projectName);
 		}
@@ -358,7 +385,7 @@ namespace PackageManagement.Tests.Scripting
 			
 			host.GetProject(repository, expectedProjectName);
 			
-			var actualProjectName = fakeSolution.ProjectNamePassedToGetProject;
+			string actualProjectName = fakeSolution.ProjectNamePassedToGetProject;
 			
 			Assert.AreEqual(expectedProjectName, actualProjectName);
 		}
@@ -371,7 +398,7 @@ namespace PackageManagement.Tests.Scripting
 			
 			host.GetProject(repository, "Test");
 			
-			var actualRepository = fakeSolution.RepositoryPassedToGetProject;
+			IPackageRepository actualRepository = fakeSolution.RepositoryPassedToGetProject;
 			
 			Assert.AreEqual(repository, actualRepository);
 		}
@@ -382,7 +409,7 @@ namespace PackageManagement.Tests.Scripting
 			CreateHost();
 			var repository = new FakePackageRepository();
 			
-			var project = host.GetProject(repository, "Test");
+			IPackageManagementProject project = host.GetProject(repository, "Test");
 			
 			var expectedProject = fakeSolution.FakeProject;
 			
@@ -396,9 +423,9 @@ namespace PackageManagement.Tests.Scripting
 			host.DefaultProject = ProjectHelper.CreateTestProject("MyProject");
 			var repository = new FakePackageRepository();
 			
-			var project = host.GetProject(repository, null);
+			IPackageManagementProject project = host.GetProject(repository, null);
 			
-			var projectName = fakeSolution.ProjectNamePassedToGetProject;
+			string projectName = fakeSolution.ProjectNamePassedToGetProject;
 			
 			Assert.AreEqual("MyProject", projectName);
 		}
@@ -410,7 +437,7 @@ namespace PackageManagement.Tests.Scripting
 			var expectedPackageSource = new PackageSource("Test");
 			fakeRegisteredPackageRepositories.ActivePackageSource = expectedPackageSource;
 			
-			var actualPackageSource = host.ActivePackageSource;
+			PackageSource actualPackageSource = host.ActivePackageSource;
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
 		}
@@ -422,7 +449,7 @@ namespace PackageManagement.Tests.Scripting
 			var expectedPackageSource = new PackageSource("Test");
 			host.ActivePackageSource = expectedPackageSource;
 			
-			var actualPackageSource = fakeRegisteredPackageRepositories.ActivePackageSource;
+			PackageSource actualPackageSource = fakeRegisteredPackageRepositories.ActivePackageSource;
 			
 			Assert.AreEqual(expectedPackageSource, actualPackageSource);
 		}
@@ -446,7 +473,7 @@ namespace PackageManagement.Tests.Scripting
 			host.WritePrompt();
 			
 			var expectedTextPassedToWrite = new String[] { "PM> "};
-			var actualTextPassedToWrite = scriptingConsole.AllTextPassedToWrite;
+			List<string> actualTextPassedToWrite = scriptingConsole.AllTextPassedToWrite;
 			
 			CollectionAssert.AreEqual(expectedTextPassedToWrite, actualTextPassedToWrite);
 		}

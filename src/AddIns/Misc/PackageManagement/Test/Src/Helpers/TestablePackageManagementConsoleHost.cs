@@ -18,6 +18,7 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackageManagementAddInPath FakePackageManagementAddInPath;
 		public FakePackageManagementSolution FakeSolution;
 		public FakeRegisteredPackageRepositories FakeRegisteredPackageRepositories;
+		public Version NuGetVersionToReturn;
 		
 		public TestablePackageManagementConsoleHost()
 			: this(
@@ -56,6 +57,11 @@ namespace PackageManagement.Tests.Helpers
 		protected override string GetHelpInfo()
 		{
 			return TextToReturnFromGetHelpInfo;
+		}
+		
+		protected override Version GetNuGetVersion()
+		{
+			return NuGetVersionToReturn;
 		}
 	}
 }

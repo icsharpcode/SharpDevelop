@@ -1540,6 +1540,9 @@
 											<File Id="Package.Format.ps1xml" Name="Package.Format.ps1xml" Source="..\..\AddIns\Misc\PackageManagement\Scripts\Package.Format.ps1xml" KeyPath="yes" />
 										</Component>
 									</Directory>
+									<Component Id="PackageManagementPowerShellDll" Guid="78A57EFC-EB7D-4982-A6DA-42F061BCA2D2" DiskId="1">
+										<File Id="PackageManagement.PowerShell.dll" Name="PackageManagement.PowerShell.dll" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.PowerShell.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.PowerShell.dll" AssemblyManifest="PackageManagement.PowerShell.dll" />
+									</Component>
 								</Directory>
 							</Directory>
 							<Directory Id="VersionControlAddInsFolder" Name="VersionControl">

@@ -10,7 +10,6 @@ using System.Management.Automation.Host;
 using System.Management.Automation.Runspaces;
 using System.Threading;
 
-using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.Scripting;
 
 namespace ICSharpCode.PackageManagement.Scripting
@@ -19,7 +18,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 	{
 		public static readonly string EnvironmentPathVariableName = "env:path";
 		
-		IPackageManagementConsoleHost consoleHost;
+		IScriptingConsole scriptingConsole;
 		CultureInfo currentUICulture = Thread.CurrentThread.CurrentUICulture;
 		CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
 		Guid instanceId = Guid.NewGuid();
@@ -27,14 +26,19 @@ namespace ICSharpCode.PackageManagement.Scripting
 		PowerShellHostUserInterface userInterface;
 		List<string> modulesToImport = new List<string>();
 		PSObject privateData;
+		object dte;
+		Version version;
 		
 		public PowerShellHost(
-			IPackageManagementConsoleHost consoleHost,
-			object privateData)
+			IScriptingConsole scriptingConsole,
+			Version version,
+			object privateData,
+			object dte)
 		{
-			this.consoleHost = consoleHost;
+			this.scriptingConsole = scriptingConsole;
+			this.version = version;
 			this.privateData = new PSObject(privateData);
-			userInterface = new PowerShellHostUserInterface(consoleHost.ScriptingConsole);
+			userInterface = new PowerShellHostUserInterface(scriptingConsole);
 		}
 		
 		public override PSObject PrivateData {
@@ -68,7 +72,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 				}
 				
 			} catch (Exception ex) {
-				consoleHost.ScriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
+				scriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
 			}
 		}
 		
@@ -101,13 +105,12 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		SessionStateVariableEntry CreateDTESessionVariable()
 		{
-			var dte = new DTE();
 			var options = ScopedItemOptions.AllScope | ScopedItemOptions.Constant;
 			return new SessionStateVariableEntry("DTE", dte, "SharpDevelop DTE object", options);
 		}
 		
 		public override Version Version {
-			get { return NuGetVersion.Version; }
+			get { return version; }
 		}
 		
 		public override PSHostUserInterface UI {
@@ -167,7 +170,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 				}
 				
 			} catch (Exception ex) {
-				consoleHost.ScriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
+				scriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
 			}
 		}
 	}
