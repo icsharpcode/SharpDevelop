@@ -19,19 +19,20 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public bool IsPowerShell2Installed()
 		{
 			if (!installed.HasValue) {
-				CheckIfPowerShell2IsInstalled();
+				installed = CheckIfPowerShell2IsInstalled();
 			}
 			return installed.Value;
 		}
 		
-		void CheckIfPowerShell2IsInstalled()
+		bool CheckIfPowerShell2IsInstalled()
 		{
 			RegistryKey key = OpenPowerShellRegistryKey();
 			if (key != null) {
 				using (key) {
-					installed = IsPowerShell2Installed(key);
+					return IsPowerShell2Installed(key);
 				}
 			}
+			return false;
 		}
 		
 		RegistryKey OpenPowerShellRegistryKey()
