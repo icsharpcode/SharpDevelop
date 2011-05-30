@@ -58,9 +58,10 @@ namespace ICSharpCode.Reports.Core.WPF
 		UIElement ItemFactory (BaseExportColumn column)
 		{
 			UIElement element = null;
+			System.Windows.Controls.Border border = null;
+			
 			
 			var container = column as ExportContainer;
-			
 			if (container != null) {
 				element = CreateContainer(container);
 			}
@@ -68,7 +69,20 @@ namespace ICSharpCode.Reports.Core.WPF
 			var text = column as ExportText;
 			
 			if (text != null) {
-				element = CreateTextColumn(text);
+				
+				if (column.StyleDecorator.DrawBorder) {
+					border = new System.Windows.Controls.Border();
+					border.Padding = new Thickness(1);
+					border.BorderThickness = new Thickness(2);
+					border.CornerRadius = new CornerRadius(2);
+					border.BorderBrush = brushConverter.ConvertFromString(column.StyleDecorator.ForeColor.Name) as SolidColorBrush;
+					var t = CreateTextBlock(text);
+					border.Child = t;
+					element = border;
+				} else {
+					
+					element = CreateTextBlock (text);
+				}
 			}
 			
 
@@ -78,6 +92,8 @@ namespace ICSharpCode.Reports.Core.WPF
 			{
 				element = CreateImageColumn(image);
 			}
+			
+			
 			return element;
 		}
 		
