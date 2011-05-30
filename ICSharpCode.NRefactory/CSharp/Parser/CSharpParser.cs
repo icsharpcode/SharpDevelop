@@ -103,7 +103,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 			AstType ConvertToType (Mono.CSharp.Expression typeName)
 			{
-				Console.WriteLine (typeName);
 				if (typeName is TypeExpression) {
 					var typeExpr = (Mono.CSharp.TypeExpression)typeName;
 					return new PrimitiveType (typeExpr.GetSignatureForError (), Convert (typeExpr.Location));
@@ -127,7 +126,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					var memberType = new MemberType ();
 					memberType.AddChild (ConvertToType (ma.LeftExpression), MemberType.TargetRole);
-					memberType.MemberName = ma.Name;
+					memberType.MemberNameToken = new Identifier (ma.Name, Convert (ma.Location));
 					
 					AddTypeArguments (ma, memberType);
 					return memberType;
