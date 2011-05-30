@@ -7,12 +7,12 @@
 	
 	<Grid>
 		<Grid.Resources>
-			<pm:ViewModelLocator x:Key="ViewModelLocator"/>
+			<pm:PackageManagementViewModels x:Key="ViewModels"/>
 			<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
 		</Grid.Resources>
 		
 		<Grid.DataContext>
-			<Binding Source="{StaticResource ViewModelLocator}" Path="PackageManagementOptionsViewModel"/>
+			<Binding Source="{StaticResource ViewModels}" Path="PackageManagementOptionsViewModel"/>
 		</Grid.DataContext>
 		
 		<Grid.RowDefinitions>

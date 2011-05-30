@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.Scripting
 {
-	public class ThreadSafeScriptingConsole : IScriptingConsole, IDisposable
+	public class ThreadSafeScriptingConsole : IScriptingConsole
 	{
 		IScriptingConsole nonThreadSafeScriptingConsole;
 		IControlDispatcher dispatcher;
@@ -13,6 +13,7 @@ namespace ICSharpCode.Scripting
 		
 		delegate string ThreadSafeReadLineInvoker(int autoIndentSize);
 		delegate string ThreadSafeReadFirstUnreadLineInvoker();
+		delegate int ThreadSafeGetMaximumVisibleColumnsInvoker();
 		
 		public ThreadSafeScriptingConsole(IScriptingConsole nonThreadSafeScriptingConsole, IControlDispatcher dispatcher)
 			: this(nonThreadSafeScriptingConsole, new ThreadSafeScriptingConsoleEvents(), dispatcher)
@@ -33,6 +34,11 @@ namespace ICSharpCode.Scripting
 		void NonThreadSafeScriptingConsoleLineReceived(object source, EventArgs e)
 		{
 			consoleEvents.SetLineReceivedEvent();
+		}
+		
+		public bool ScrollToEndWhenTextWritten {
+			get { return nonThreadSafeScriptingConsole.ScrollToEndWhenTextWritten; }
+			set { nonThreadSafeScriptingConsole.ScrollToEndWhenTextWritten = value; }
 		}
 		
 		public void WriteLine()
@@ -127,6 +133,26 @@ namespace ICSharpCode.Scripting
 		public string ReadFirstUnreadLine()
 		{
 			return nonThreadSafeScriptingConsole.ReadFirstUnreadLine();
+		}
+		
+		public int GetMaximumVisibleColumns()
+		{
+			if (dispatcher.CheckAccess()) {
+				return nonThreadSafeScriptingConsole.GetMaximumVisibleColumns();
+			} else {
+				ThreadSafeGetMaximumVisibleColumnsInvoker action = GetMaximumVisibleColumns;
+				return (int)dispatcher.Invoke(action);
+			}
+		}
+		
+		public void Clear()
+		{
+			if (dispatcher.CheckAccess()) {
+				nonThreadSafeScriptingConsole.Clear();
+			} else {
+				Action action = Clear;
+				dispatcher.Invoke(action);
+			}
 		}
 	}
 }

@@ -4,55 +4,73 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+
+using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class AddPackageReferenceViewModel : ViewModelBase<AddPackageReferenceViewModel>, IMessageReporter
+	public class AddPackageReferenceViewModel : ViewModelBase<AddPackageReferenceViewModel>, IDisposable
 	{
-		IPackageManagementService packageManagementService;
-		InstalledPackagesViewModel installedPackagesViewModel;
-		AvailablePackagesViewModel availablePackagesViewModel;
-		PackageUpdatesViewModel packageUpdatesViewModel;
-		RecentPackagesViewModel recentPackagesViewModel;
+		IPackageManagementSolution solution;
+		IThreadSafePackageManagementEvents packageManagementEvents;
+		ILicenseAcceptanceService licenseAcceptanceService;
 		string message;
 		bool hasError;
 		
 		public AddPackageReferenceViewModel(
-			IPackageManagementService packageManagementService,
+			IPackageManagementSolution solution,
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IThreadSafePackageManagementEvents packageManagementEvents,
+			IPackageActionRunner actionRunner,
+			ILicenseAcceptanceService licenseAcceptanceService,
 			ITaskFactory taskFactory)
 		{
-			this.packageManagementService = packageManagementService;
-			this.packageManagementService.OutputMessagesView.Clear();
+			this.solution = solution;
+			this.packageManagementEvents = packageManagementEvents;
+			this.licenseAcceptanceService = licenseAcceptanceService;
 			
-			availablePackagesViewModel = new AvailablePackagesViewModel(packageManagementService, this, taskFactory);
-			installedPackagesViewModel = new InstalledPackagesViewModel(packageManagementService, this, taskFactory);
-			packageUpdatesViewModel = new PackageUpdatesViewModel(packageManagementService, this, taskFactory);
-			recentPackagesViewModel = new RecentPackagesViewModel(packageManagementService, this, taskFactory);
+			packageManagementEvents.PackageOperationError += PackageOperationError;
+			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
+			packageManagementEvents.AcceptLicenses += AcceptLicenses;
 			
-			availablePackagesViewModel.ReadPackages();
-			installedPackagesViewModel.ReadPackages();
-			packageUpdatesViewModel.ReadPackages();
-			recentPackagesViewModel.ReadPackages();
+			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents, actionRunner);
+			
+			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			RecentPackagesViewModel = new RecentPackagesViewModel(packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			
+			AvailablePackagesViewModel.ReadPackages();
+			InstalledPackagesViewModel.ReadPackages();
+			UpdatedPackagesViewModel.ReadPackages();
+			RecentPackagesViewModel.ReadPackages();
 		}
 		
-		public InstalledPackagesViewModel InstalledPackagesViewModel {
-			get { return installedPackagesViewModel; }
+		public AvailablePackagesViewModel AvailablePackagesViewModel { get; private set; }
+		public InstalledPackagesViewModel InstalledPackagesViewModel { get; private set; }
+		public RecentPackagesViewModel RecentPackagesViewModel { get; private set; }
+		public UpdatedPackagesViewModel UpdatedPackagesViewModel { get; private set; }
+		
+		public void Dispose()
+		{
+			AvailablePackagesViewModel.Dispose();
+			InstalledPackagesViewModel.Dispose();
+			RecentPackagesViewModel.Dispose();
+			UpdatedPackagesViewModel.Dispose();
+			
+			packageManagementEvents.AcceptLicenses -= AcceptLicenses;
+			packageManagementEvents.PackageOperationError -= PackageOperationError;
+			packageManagementEvents.PackageOperationsStarting -= PackageOperationsStarting;
+			packageManagementEvents.Dispose();
 		}
 		
-		public AvailablePackagesViewModel AvailablePackagesViewModel {
-			get { return availablePackagesViewModel; }
+		void PackageOperationError(object sender, PackageOperationExceptionEventArgs e)
+		{
+			ShowErrorMessage(e.Exception.Message);
 		}
 		
-		public PackageUpdatesViewModel PackageUpdatesViewModel {
-			get { return packageUpdatesViewModel; }
-		}
-		
-		public RecentPackagesViewModel RecentPackagesViewModel {
-			get { return recentPackagesViewModel; }
-		}
-		
-		public void ShowErrorMessage(string message)
+		void ShowErrorMessage(string message)
 		{
 			this.Message = message;
 			this.HasError = true;
@@ -74,10 +92,20 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public void ClearMessage()
+		void PackageOperationsStarting(object sender, EventArgs e)
+		{
+			ClearMessage();
+		}
+		
+		void ClearMessage()
 		{
 			this.Message = null;
 			this.HasError = false;
+		}
+		
+		void AcceptLicenses(object sender, AcceptLicensesEventArgs e)
+		{
+			e.IsAccepted = licenseAcceptanceService.AcceptLicenses(e.Packages);
 		}
 	}
 }

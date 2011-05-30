@@ -13,25 +13,21 @@ namespace PackageManagement.Tests
 	public class RecentPackagesViewModelTests
 	{
 		RecentPackagesViewModel viewModel;
-		FakePackageManagementService packageManagementService;
+		PackageManagementEvents packageManagementEvents;
+		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		FakeTaskFactory taskFactory;
 		
 		void CreateViewModel()
 		{
-			CreatePackageManagementService();
-			CreateViewModel(packageManagementService);
-		}
-		
-		void CreatePackageManagementService()
-		{
-			packageManagementService = new FakePackageManagementService();
-		}
-		
-		void CreateViewModel(FakePackageManagementService packageManagementService)
-		{
+			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 			taskFactory = new FakeTaskFactory();
-			var messageReporter = new FakeMessageReporter();
-			viewModel = new RecentPackagesViewModel(packageManagementService, messageReporter, taskFactory);			
+			var packageViewModelFactory = new FakePackageViewModelFactory();
+			packageManagementEvents = new PackageManagementEvents();
+			viewModel = new RecentPackagesViewModel(
+				packageManagementEvents,
+				registeredPackageRepositories,
+				packageViewModelFactory,
+				taskFactory);
 		}
 		
 		void CompleteReadPackagesTask()
@@ -43,6 +39,14 @@ namespace PackageManagement.Tests
 		{
 			taskFactory.ClearAllFakeTasks();
 		}
+		
+		FakePackage AddPackageToRecentPackageRepository()
+		{
+			var package = new FakePackage("Test");
+			FakePackageRepository repository = registeredPackageRepositories.FakeRecentPackageRepository;
+			repository.FakePackages.Add(package);
+			return package;
+		}
 
 		[Test]
 		public void PackageViewModels_PackageIsInstalledAfterRecentPackagesDisplayed_PackagesOnDisplayAreUpdated()
@@ -50,18 +54,16 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
-			var package = new FakePackage("Test");
-			FakePackageRepository repository = packageManagementService.FakeRecentPackageRepository;
-			repository.FakePackages.Add(package);
+			var package = AddPackageToRecentPackageRepository();
 			
 			ClearReadPackagesTasks();
-			packageManagementService.FirePackageInstalled();
+			packageManagementEvents.OnParentPackageInstalled(new FakePackage());
 			CompleteReadPackagesTask();
 			
 			var expectedPackages = new FakePackage[] {
 				package
 			};
-		
+			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
 		
@@ -71,19 +73,51 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
-			var package = new FakePackage("Test");
-			FakePackageRepository repository = packageManagementService.FakeRecentPackageRepository;
-			repository.FakePackages.Add(package);
+			var package = AddPackageToRecentPackageRepository();
 			
 			ClearReadPackagesTasks();
-			packageManagementService.FirePackageUninstalled();
+			packageManagementEvents.OnParentPackageUninstalled(new FakePackage());
 			CompleteReadPackagesTask();
 			
 			var expectedPackages = new FakePackage[] {
 				package
 			};
-		
+			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void PackageViewModels_PackageIsUninstalledAfterViewModelIsDisposed_PackagesOnDisplayAreNotUpdated()
+		{
+			CreateViewModel();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			AddPackageToRecentPackageRepository();
+			
+			ClearReadPackagesTasks();
+			viewModel.Dispose();
+			
+			packageManagementEvents.OnParentPackageUninstalled(new FakePackage());
+			CompleteReadPackagesTask();
+			
+			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void PackageViewModels_PackageIsInstalledAfterViewModelIsDisposed_PackagesOnDisplayAreNotUpdated()
+		{
+			CreateViewModel();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			AddPackageToRecentPackageRepository();
+			
+			ClearReadPackagesTasks();
+			
+			viewModel.Dispose();
+			packageManagementEvents.OnParentPackageInstalled(new FakePackage());
+			CompleteReadPackagesTask();
+			
+			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
 		}
 	}
 }

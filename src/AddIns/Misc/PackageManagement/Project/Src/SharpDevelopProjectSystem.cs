@@ -17,17 +17,22 @@ namespace ICSharpCode.PackageManagement
 		MSBuildBasedProject project;
 		ProjectTargetFramework targetFramework;
 		IPackageManagementFileService fileService;
+		IPackageManagementProjectService projectService;
 		
 		public SharpDevelopProjectSystem(MSBuildBasedProject project)
-			: this(project, new PackageManagementFileService())
+			: this(project, new PackageManagementFileService(), new PackageManagementProjectService())
 		{
 		}
 		
-		public SharpDevelopProjectSystem(MSBuildBasedProject project, IPackageManagementFileService fileService)
+		public SharpDevelopProjectSystem(
+			MSBuildBasedProject project,
+			IPackageManagementFileService fileService,
+			IPackageManagementProjectService projectService)
 			: base(AppendTrailingSlashToDirectory(project.Directory))
 		{
 			this.project = project;
 			this.fileService = fileService;
+			this.projectService = projectService;
 		}
 		
 		static string AppendTrailingSlashToDirectory(string directory)
@@ -72,8 +77,8 @@ namespace ICSharpCode.PackageManagement
 		
 		void AddReferenceToProject(ReferenceProjectItem assemblyReference)
 		{
-			ProjectService.AddProjectItem(project, assemblyReference);
-			project.Save();
+			projectService.AddProjectItem(project, assemblyReference);
+			projectService.Save(project);
 			LogAddedReferenceToProject(assemblyReference);
 		}
 		
@@ -103,13 +108,29 @@ namespace ICSharpCode.PackageManagement
 		
 		ReferenceProjectItem FindReference(string name)
 		{
-			string referenceName = Path.GetFileNameWithoutExtension(name);
+			string referenceName = GetReferenceName(name);
 			foreach (ReferenceProjectItem referenceProjectItem in project.GetItemsOfType(ItemType.Reference)) {
 				if (IsMatchIgnoringCase(referenceProjectItem.Include, referenceName)) {
 					return referenceProjectItem;
 				}
 			}
 			return null;
+		}
+		
+		string GetReferenceName(string name)
+		{
+			if (HasDllOrExeFileExtension(name)) {
+				return Path.GetFileNameWithoutExtension(name);
+			}
+			return name;
+		}
+		
+		bool HasDllOrExeFileExtension(string name)
+		{
+			string extension = Path.GetExtension(name);
+			return
+				IsMatchIgnoringCase(extension, ".dll") ||
+				IsMatchIgnoringCase(extension, ".exe");
 		}
 		
 		bool IsMatchIgnoringCase(string lhs, string rhs)
@@ -121,8 +142,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			ReferenceProjectItem referenceProjectItem = FindReference(name);
 			if (referenceProjectItem != null) {
-				ProjectService.RemoveProjectItem(project, referenceProjectItem);
-				project.Save();
+				projectService.RemoveProjectItem(project, referenceProjectItem);
+				projectService.Save(project);
 				LogRemovedReferenceFromProject(referenceProjectItem);
 			}
 		}
@@ -182,8 +203,8 @@ namespace ICSharpCode.PackageManagement
 		void AddFileToProject(string path)
 		{
 			FileProjectItem fileItem = CreateFileProjectItem(path);
-			ProjectService.AddProjectItem(project, fileItem);
-			project.Save();
+			projectService.AddProjectItem(project, fileItem);
+			projectService.Save(project);
 		}
 		
 		FileProjectItem CreateFileProjectItem(string path)
@@ -208,7 +229,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			string directory = GetFullPath(path);
 			fileService.RemoveDirectory(directory);
-			project.Save();
+			projectService.Save(project);
 			LogDeletedDirectory(path);
 		}
 		
@@ -216,7 +237,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			string fileName = GetFullPath(path);
 			fileService.RemoveFile(fileName);
-			project.Save();
+			projectService.Save(project);
 			LogDeletedFileInfo(path);
 		}
 		

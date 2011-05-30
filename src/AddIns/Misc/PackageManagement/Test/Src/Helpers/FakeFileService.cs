@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -37,6 +38,29 @@ namespace PackageManagement.Tests.Helpers
 		{
 			ProjectItem item = project.Items[0];
 			ProjectService.RemoveProjectItem(project, item);
+		}
+		
+		public string FileNamePassedToOpenFile;
+		
+		public void OpenFile(string fileName)
+		{
+			FileNamePassedToOpenFile = fileName;
+		}
+		
+		public string OldFileNamePassedToCopyFile;
+		public string NewFileNamePassedToCopyFile;
+		
+		public void CopyFile(string oldFileName, string newFileName)
+		{
+			OldFileNamePassedToCopyFile = oldFileName;
+			NewFileNamePassedToCopyFile = newFileName;
+		}
+		
+		public List<string> ExistingFileNames = new List<string>();
+		
+		public bool FileExists(string fileName)
+		{
+			return ExistingFileNames.Contains(fileName);
 		}
 	}
 }

@@ -36,10 +36,30 @@ namespace PackageManagement.Tests.Helpers
 			RegisteredPackageSources.Add(PackageSource);
 		}
 		
+		public void AddOnePackageSource(string source)
+		{
+			RegisteredPackageSources.Clear();
+			AddPackageSource(source);
+		}
+		
 		public void AddTwoPackageSources()
 		{			
 			AddOnePackageSource();
-			RegisteredPackageSources.Add(new PackageSource("http://second.codeplex.com", "second"));
+			var packageSource = new PackageSource("http://second.codeplex.com", "second");
+			RegisteredPackageSources.Add(packageSource);
+		}
+		
+		public void AddTwoPackageSources(string source1, string source2)
+		{
+			RegisteredPackageSources.Clear();
+			AddPackageSource(source1);
+			AddPackageSource(source2);
+		}
+		
+		void AddPackageSource(string source)
+		{
+			var packageSource = new PackageSource(source);
+			RegisteredPackageSources.Add(packageSource);
 		}
 	}
 }

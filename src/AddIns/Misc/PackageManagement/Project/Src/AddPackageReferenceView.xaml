@@ -14,18 +14,18 @@
 	
 	<Window.Resources>
 		<Style TargetType="Button" BasedOn="{x:Static core:GlobalStyles.ButtonStyle}"/>
-		<pm:ViewModelLocator x:Key="ViewModelLocator"/>
+		<pm:PackageManagementViewModels x:Key="ViewModels"/>
 		<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
 		
 		<BitmapImage x:Key="ErrorIcon"
 			UriSource="pack://application:,,,/PackageManagement;component/Resources/exclamation.png"/>
     </Window.Resources>
 	
-	<DockPanel>
+	<DockPanel x:Name="MainPanel">
 		<!-- Use DockPanel.DataContext instead of Window.DataContext otherwise Visual Studio does not show
 			design time data -->
 		<DockPanel.DataContext>
-			<Binding Source="{StaticResource ViewModelLocator}" Path="AddPackageReferenceViewModel"/>
+			<Binding Source="{StaticResource ViewModels}" Path="AddPackageReferenceViewModel"/>
 		</DockPanel.DataContext>
 		<Grid
 			DockPanel.Dock="Bottom"
@@ -54,22 +54,22 @@
 		<TabControl>
 			<TabItem Header="Available">
 				<pm:PackagesView
-					x:Name="availablePackagesView"
+					x:Name="AvailablePackagesView"
 					DataContext="{Binding Path=AvailablePackagesViewModel}"/>
 			</TabItem>
 			<TabItem Header="Installed">
 				<pm:PackagesView
-					x:Name="installedPackagesView"
+					x:Name="InstalledPackagesView"
 					DataContext="{Binding Path=InstalledPackagesViewModel}"/>
 			</TabItem>
 			<TabItem Header="Updates">
 				<pm:PackagesView
-					x:Name="packageUpdatesView"
-					DataContext="{Binding Path=PackageUpdatesViewModel}"/>
+					x:Name="PackageUpdatesView"
+					DataContext="{Binding Path=UpdatedPackagesViewModel}"/>
 			</TabItem>
 			<TabItem Header="Recent">
 				<pm:PackagesView
-					x:Name="recentPackagesView"
+					x:Name="RecentPackagesView"
 					DataContext="{Binding Path=RecentPackagesViewModel}"/>
 			</TabItem>
 		</TabControl>

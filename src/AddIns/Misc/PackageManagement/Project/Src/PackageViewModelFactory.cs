@@ -2,33 +2,45 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class PackageViewModelFactory : IPackageViewModelFactory
 	{
-		public PackageViewModelFactory(
-			IPackageManagementService packageManagementService,
-			ILicenseAcceptanceService licenseAcceptanceService,
-			IMessageReporter messageReporter)
+		public PackageViewModelFactory(IPackageViewModelFactory packageViewModelFactory)
+			: this(
+				packageViewModelFactory.Solution,
+				packageViewModelFactory.PackageManagementEvents,
+				packageViewModelFactory.PackageActionRunner)
 		{
-			this.PackageManagementService = packageManagementService;
-			this.LicenseAcceptanceService = licenseAcceptanceService;
-			this.MessageReporter = messageReporter;
 		}
 		
-		public virtual PackageViewModel CreatePackageViewModel(IPackage package)
+		public PackageViewModelFactory(
+			IPackageManagementSolution solution,
+			IPackageManagementEvents packageManagementEvents,
+			IPackageActionRunner actionRunner)
+		{
+			this.Solution = solution;
+			this.PackageManagementEvents = packageManagementEvents;
+			this.PackageActionRunner = actionRunner;
+			this.Logger = new PackageManagementLogger(packageManagementEvents);
+		}
+		
+		public virtual PackageViewModel CreatePackageViewModel(IPackageFromRepository package)
 		{
 			return new PackageViewModel(
-				package, 
-				PackageManagementService, 
-				LicenseAcceptanceService,
-				MessageReporter);
+				package,
+				Solution,
+				PackageManagementEvents,
+				PackageActionRunner,
+				Logger);
 		}
 		
-		protected IPackageManagementService PackageManagementService { get; private set; }
-		protected ILicenseAcceptanceService LicenseAcceptanceService { get; private set; }
-		protected IMessageReporter MessageReporter { get; private set; }
+		public IPackageManagementSolution Solution { get; private set; }
+		public IPackageManagementEvents PackageManagementEvents { get; private set; }
+		public ILogger Logger { get; private set; }
+		public IPackageActionRunner PackageActionRunner { get; private set; }
 	}
 }

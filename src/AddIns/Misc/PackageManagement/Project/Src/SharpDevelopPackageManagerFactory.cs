@@ -14,15 +14,17 @@ namespace ICSharpCode.PackageManagement
 		ISharpDevelopProjectSystemFactory projectSystemFactory;
 		
 		public SharpDevelopPackageManagerFactory()
-			: this(new SharpDevelopPackageRepositoryFactory(),
-			       new SharpDevelopProjectSystemFactory(),
-			       new PackageManagementOptions())
+			: this(
+				new SharpDevelopPackageRepositoryFactory(),
+				new SharpDevelopProjectSystemFactory(),
+				new PackageManagementOptions())
 		{
 		}
 		
-		public SharpDevelopPackageManagerFactory(ISharpDevelopPackageRepositoryFactory packageRepositoryFactory,
-		                                         ISharpDevelopProjectSystemFactory projectSystemFactory,
-		                                         PackageManagementOptions options)
+		public SharpDevelopPackageManagerFactory(
+			ISharpDevelopPackageRepositoryFactory packageRepositoryFactory,
+		    ISharpDevelopProjectSystemFactory projectSystemFactory,
+		    PackageManagementOptions options)
 		{
 			this.packageRepositoryFactory = packageRepositoryFactory;
 			this.projectSystemFactory = projectSystemFactory;
@@ -37,8 +39,8 @@ namespace ICSharpCode.PackageManagement
 		
 		IFileSystem CreateFileSystemThatWillContainPackages(MSBuildBasedProject project)
 		{
-			var repositoryPaths = new PackageRepositoryPaths(project, options);
-			return new PhysicalFileSystem(repositoryPaths.SolutionPackagesPath);
+			var repositoryPath = new SolutionPackageRepositoryPath(project, options);
+			return new PhysicalFileSystem(repositoryPath.PackageRepositoryPath);
 		}
 		
 		ISharpDevelopPackageManager CreatePackageManager(
@@ -49,7 +51,15 @@ namespace ICSharpCode.PackageManagement
 			DefaultPackagePathResolver pathResolver = new DefaultPackagePathResolver(fileSystem);
 			ISharedPackageRepository sharedRepository = CreateSharedRepository(pathResolver, fileSystem);
 			IProjectSystem projectSystem = CreateProjectSystem(project);
-			return new SharpDevelopPackageManager(packageRepository, projectSystem, fileSystem, sharedRepository, pathResolver);
+			PackageOperationsResolverFactory packageOperationResolverFactory = new PackageOperationsResolverFactory();
+			
+			return new SharpDevelopPackageManager(
+				packageRepository,
+				projectSystem,
+				fileSystem,
+				sharedRepository,
+				pathResolver,
+				packageOperationResolverFactory);
 		}
 		
 		IProjectSystem CreateProjectSystem(MSBuildBasedProject project)

@@ -10,58 +10,71 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class TestablePackageViewModel : PackageViewModel
 	{
-		public FakePackageOperationResolver FakePackageOperationResolver;
-		public FakePackageRepository FakeSourcePackageRepository;
-		public FakePackageManagementService	FakePackageManagementService;
-		public FakeLicenseAcceptanceService	FakeLicenseAcceptanceService;
-		public FakeMessageReporter FakeMessageReporter;
+		public FakePackageManagementSolution FakeSolution;
+		public FakePackageManagementEvents FakePackageManagementEvents;
 		public FakePackage FakePackage;
-		public ILogger LoggerUsedWhenCreatingPackageResolver;
-		public string PackageViewModelAddingPackageMessageFormat = String.Empty;
-		public string PackageViewModelRemovingPackageMessageFormat = String.Empty;
+		public FakeLogger FakeLogger;
+		public FakePackageActionRunner FakeActionRunner;
 		
-		public TestablePackageViewModel(FakePackageManagementService packageManagementService)
+		public TestablePackageViewModel(FakePackageManagementSolution solution)
 			: this(
 				new FakePackage(),
-				packageManagementService,
-				new FakeLicenseAcceptanceService(),
-				new FakeMessageReporter())
-		{		
+				solution,
+				new FakePackageManagementEvents(),
+				new FakePackageActionRunner(),
+				new FakeLogger())
+		{
 		}
 		
 		public TestablePackageViewModel(
 			FakePackage package,
-			FakePackageManagementService packageManagementService,
-			FakeLicenseAcceptanceService licenseAcceptanceService,
-			FakeMessageReporter messageReporter)
+			FakePackageManagementSolution solution,
+			FakePackageManagementEvents packageManagementEvents,
+			FakePackageActionRunner actionRunner,
+			FakeLogger logger)
 			: base(
 				package,
-				packageManagementService,
-				licenseAcceptanceService,
-				messageReporter)
+				solution,
+				packageManagementEvents,
+				actionRunner,
+				logger)
 		{
 			this.FakePackage = package;
-			this.FakePackageManagementService = packageManagementService;
-			this.FakeLicenseAcceptanceService = licenseAcceptanceService;
-			this.FakeMessageReporter = messageReporter;
-			this.FakeSourcePackageRepository = FakePackageManagementService.FakeActivePackageRepository;
+			this.FakeSolution = solution;
+			this.FakePackageManagementEvents = packageManagementEvents;
+			this.FakeActionRunner = actionRunner;
+			this.FakeLogger = logger;
 		}
 		
-		protected override IPackageOperationResolver CreatePackageOperationResolver(ILogger logger)
+		protected override PackageViewModelOperationLogger CreateLogger(ILogger logger)
 		{
-			LoggerUsedWhenCreatingPackageResolver = logger;
-			if (FakePackageOperationResolver != null) {
-				return FakePackageOperationResolver;
-			}
-			return base.CreatePackageOperationResolver(logger);
+			PackageViewModelOperationLogger operationLogger = base.CreateLogger(logger);
+			operationLogger.AddingPackageMessageFormat = "Installing...{0}";
+			operationLogger.RemovingPackageMessageFormat = "Uninstalling...{0}";
+			OperationLoggerCreated = operationLogger;
+			return operationLogger;
 		}
 		
-		protected override string AddingPackageMessageFormat {
-			get { return PackageViewModelAddingPackageMessageFormat; }
+		public PackageViewModelOperationLogger OperationLoggerCreated;
+		
+		public PackageOperation AddOneFakeInstallPackageOperationForViewModelPackage()
+		{
+			var operation = new PackageOperation(FakePackage, PackageAction.Install);
+			
+			FakeSolution
+				.FakeProject
+				.FakeInstallOperations
+				.Add(operation);
+			
+			return operation;
 		}
 		
-		protected override string RemovingPackageMessageFormat {
-			get { return PackageViewModelRemovingPackageMessageFormat; }
+		public PackageOperation AddOneFakeUninstallPackageOperation()
+		{
+			var package = new FakePackage("PackageToUninstall");			
+			var operation = new PackageOperation(package, PackageAction.Uninstall);
+			FakeSolution.FakeProject.FakeInstallOperations.Add(operation);
+			return operation;
 		}
 	}
 }

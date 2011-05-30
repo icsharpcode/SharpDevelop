@@ -193,5 +193,26 @@ namespace ICSharpCode.Scripting.Tests.Utils
 				LineBuilder.Remove(SelectionStart, SelectionLength);
 			}
 		}
+		
+		public bool IsScrollToEndCalled;
+		
+		public void ScrollToEnd()
+		{
+			IsScrollToEndCalled = true;
+		}
+		
+		public int MaximumVisibleColumns;
+	
+		public int GetMaximumVisibleColumns()
+		{
+			return MaximumVisibleColumns;
+		}
+		
+		public bool IsClearCalled;
+		
+		public void Clear()
+		{
+			IsClearCalled = true;
+		}
 	}
 }

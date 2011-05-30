@@ -8,21 +8,19 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UpdatedPackageViewModelFactory : PackageViewModelFactory
 	{
-		public UpdatedPackageViewModelFactory(
-			IPackageManagementService packageManagementService,
-			ILicenseAcceptanceService licenseAcceptanceService,
-			IMessageReporter messageReporter)
-			: base(packageManagementService, licenseAcceptanceService, messageReporter)
+		public UpdatedPackageViewModelFactory(IPackageViewModelFactory packageViewModelFactory)
+			: base(packageViewModelFactory)
 		{
 		}
 		
-		public override PackageViewModel CreatePackageViewModel(IPackage package)
+		public override PackageViewModel CreatePackageViewModel(IPackageFromRepository package)
 		{
 			return new UpdatedPackageViewModel(
 				package,
-				PackageManagementService,
-				LicenseAcceptanceService,
-				MessageReporter);
+				Solution,
+				PackageManagementEvents,
+				PackageActionRunner,
+				Logger);
 		}
 	}
 }

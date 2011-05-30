@@ -14,7 +14,8 @@ namespace PackageManagement.Tests.Helpers
 		public string PathPassedToPhysicalFileSystemAddFile;
 		public Stream StreamPassedToPhysicalFileSystemAddFile;
 		public FakeFileService FakeFileService;
-		public FakePackageManagementOutputMessagesView FakeOutputMessagesView;
+		public FakePackageManagementProjectService FakeProjectService;
+		public FakeLogger FakeLogger;
 		public string FileNamePassedToLogDeletedFile;
 		public FileNameAndDirectory FileNameAndDirectoryPassedToLogDeletedFileFromDirectory;
 		public string DirectoryPassedToLogDeletedDirectory;
@@ -23,15 +24,24 @@ namespace PackageManagement.Tests.Helpers
 		public FileNameAndProjectName FileNameAndProjectNamePassedToLogAddedFileToProject;
 		
 		public TestableSharpDevelopProjectSystem(MSBuildBasedProject project)
-			: this(project, new FakeFileService(project))
+			: this(
+				project,
+				new FakeFileService(project),
+				new FakePackageManagementProjectService(),
+				new FakeLogger())
 		{
 		}
 		
-		TestableSharpDevelopProjectSystem(MSBuildBasedProject project, IPackageManagementFileService fileService)
-			: base(project, fileService)
+		TestableSharpDevelopProjectSystem(
+			MSBuildBasedProject project,
+			IPackageManagementFileService fileService,
+			IPackageManagementProjectService projectService,
+			FakeLogger logger)
+			: base(project, fileService, projectService)
 		{
 			FakeFileService = (FakeFileService)fileService;
-			Logger = FakeOutputMessagesView;
+			FakeProjectService = (FakePackageManagementProjectService)projectService;
+			Logger = logger;
 		}
 		
 		protected override void PhysicalFileSystemAddFile(string path, Stream stream)

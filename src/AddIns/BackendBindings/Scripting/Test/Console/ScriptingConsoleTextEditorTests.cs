@@ -188,5 +188,17 @@ namespace ICSharpCode.Scripting.Tests.Console
 			
 			Assert.AreEqual(expectedText, text);
 		}
+		
+		[Test]
+		public void Clear_TextEditorHasText_RemovesAllTextFromTextEditor()
+		{
+			avalonEditTextEditor.Text = "abc";
+			consoleTextEditor.Clear();
+			
+			string text = avalonEditTextEditor.Text;
+			string expectedText = String.Empty;
+			
+			Assert.AreEqual(expectedText, text);
+		}
 	}
 }

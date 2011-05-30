@@ -65,6 +65,13 @@ namespace PackageManagement.Tests
 			}
 		}
 		
+		RecentPackageInfo AddRecentPackageToOptions(string id, string version)
+		{
+			var recentPackage = new RecentPackageInfo(id, new Version(version));
+			options.RecentPackages.Add(recentPackage);
+			return recentPackage;
+		}
+		
 		[Test]
 		public void PackageSources_OnePackageSourceInSettings_ContainsSinglePackageSourceFromSettings()
 		{
@@ -286,8 +293,7 @@ namespace PackageManagement.Tests
 		public void RecentPackages_SaveRecentPackages_DoesNotThrowInvalidOperationException()
 		{
 			CreateOptions();
-			var recentPackage = new RecentPackageInfo("id", new Version(1, 0));
-			options.RecentPackages.Add(recentPackage);
+			var recentPackage = AddRecentPackageToOptions("id", "1.0");
 			
 			Assert.DoesNotThrow(() => SaveOptions());
 		}

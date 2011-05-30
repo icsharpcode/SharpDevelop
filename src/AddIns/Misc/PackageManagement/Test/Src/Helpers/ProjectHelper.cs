@@ -11,12 +11,17 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public static TestableProject CreateTestProject()
 		{
+			return CreateTestProject("TestProject");
+		}
+		
+		public static TestableProject CreateTestProject(string name)
+		{
 			Solution solution = new Solution();
 			solution.FileName = @"d:\projects\Test\TestSolution.sln";
 			
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();
 			createInfo.Solution = solution;
-			createInfo.ProjectName = "TestProject";
+			createInfo.ProjectName = name;
 			createInfo.SolutionPath = @"d:\projects\Test";
 			createInfo.ProjectBasePath = @"d:\projects\Test\TestProject";
 			createInfo.OutputProjectFileName = @"d:\projects\Test\TestProject\TestProject.csproj";

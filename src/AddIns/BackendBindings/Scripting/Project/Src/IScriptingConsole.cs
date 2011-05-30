@@ -5,10 +5,13 @@ using System;
 
 namespace ICSharpCode.Scripting
 {
-	public interface IScriptingConsole
+	public interface IScriptingConsole : IDisposable
 	{
 		event EventHandler LineReceived;
+				
+		bool ScrollToEndWhenTextWritten { get; set; }
 		
+		void Clear();
 		void SendLine(string line);
 		void SendText(string text);
 		void WriteLine();
@@ -16,5 +19,6 @@ namespace ICSharpCode.Scripting
 		void Write(string text, ScriptingStyle style);
 		string ReadLine(int autoIndentSize);
 		string ReadFirstUnreadLine();
+		int GetMaximumVisibleColumns();
 	}
 }

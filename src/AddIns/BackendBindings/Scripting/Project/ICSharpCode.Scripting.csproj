@@ -106,6 +106,7 @@
     <Compile Include="Src\SendLineToScriptingConsoleCommand.cs" />
     <Compile Include="Src\SendSelectedTextToScriptingConsoleCommand.cs" />
     <Compile Include="Src\SendToScriptingConsoleCommand.cs" />
+    <Compile Include="Src\TextEditorFactory.cs" />
     <Compile Include="Src\TextSentToScriptingConsole.cs" />
     <Compile Include="Src\ThreadSafeScriptingConsole.cs" />
     <Compile Include="Src\ThreadSafeScriptingConsoleEvents.cs" />
@@ -124,6 +125,11 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">

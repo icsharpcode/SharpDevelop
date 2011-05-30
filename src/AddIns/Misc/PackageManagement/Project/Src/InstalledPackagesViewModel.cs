@@ -10,54 +10,53 @@ namespace ICSharpCode.PackageManagement
 {
 	public class InstalledPackagesViewModel : PackagesViewModel
 	{
-		IProjectManager projectManager;
-		IPackageRepository repository;
+		IPackageManagementSolution solution;
+		IPackageManagementEvents packageManagementEvents;
+		IPackageManagementProject project;
 		string errorMessage = String.Empty;
 
 		public InstalledPackagesViewModel(
-			IPackageManagementService packageManagementService,
-			IMessageReporter messageReporter,
+			IPackageManagementSolution solution,
+			IPackageManagementEvents packageManagementEvents,
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
-			: base(packageManagementService, messageReporter, taskFactory)
+			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
-			packageManagementService.PackageInstalled += PackageInstalled;
-			packageManagementService.PackageUninstalled += PackageUninstalled;
+			this.solution = solution;
+			this.packageManagementEvents = packageManagementEvents;
+			packageManagementEvents.ParentPackageInstalled += InstalledPackagesChanged;
+			packageManagementEvents.ParentPackageUninstalled += InstalledPackagesChanged;
 			
-			GetActiveProjectManager();
+			TryGetActiveProject();
 		}
 		
-		void GetActiveProjectManager()
+		void TryGetActiveProject()
 		{
 			try {
-				this.projectManager = PackageManagementService.ActiveProjectManager;
+				project = solution.GetActiveProject();
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}
 		}
 
-		void PackageInstalled(object sender, EventArgs e)
+		void InstalledPackagesChanged(object sender, EventArgs e)
 		{
 			ReadPackages();
 		}
 		
-		void PackageUninstalled(object sender, EventArgs e)
+		protected override void OnDispose()
 		{
-			ReadPackages();
-		}
-		
-		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
-		{
-			if (projectManager != null) {
-				repository = projectManager.LocalRepository;
-			}
+			packageManagementEvents.ParentPackageInstalled -= InstalledPackagesChanged;
+			packageManagementEvents.ParentPackageUninstalled -= InstalledPackagesChanged;
 		}
 		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			if (projectManager == null) {
+			if (project == null) {
 				ThrowOriginalExceptionWhenTryingToGetProjectManager();
 			}
-			return repository.GetPackages();
+			return project.GetPackages();
 		}
 		
 		void ThrowOriginalExceptionWhenTryingToGetProjectManager()

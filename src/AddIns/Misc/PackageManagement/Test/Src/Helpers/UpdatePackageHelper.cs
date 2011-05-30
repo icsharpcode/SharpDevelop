@@ -11,23 +11,25 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class UpdatePackageHelper
 	{
-		PackageManagementService packageManagementService;
+		UpdatePackageAction action;
 		
 		public FakePackage TestPackage = new FakePackage() {
 			Id = "Test"
 		};
 		
-		public FakePackageRepository PackageRepository = new FakePackageRepository();
 		public List<PackageOperation> PackageOperations = new List<PackageOperation>();
 		
-		public UpdatePackageHelper(PackageManagementService packageManagementService)
+		public UpdatePackageHelper(UpdatePackageAction action)
 		{
-			this.packageManagementService = packageManagementService;
+			this.action = action;
 		}
 		
 		public void UpdateTestPackage()
 		{
-			packageManagementService.UpdatePackage(PackageRepository, TestPackage, PackageOperations);
+			action.UpdateDependencies = UpdateDependencies;
+			action.Package = TestPackage;
+			action.Operations = PackageOperations;
+			action.Execute();
 		}
 		
 		public FakePackage AddPackageInstallOperation()
@@ -36,6 +38,18 @@ namespace PackageManagement.Tests.Helpers
 			var operation = new PackageOperation(package, PackageAction.Install);
 			PackageOperations.Add(operation);
 			return package;
+		}
+		
+		public PackageSource PackageSource = new PackageSource("http://sharpdevelop/packages");
+		public bool UpdateDependencies;
+		public Version Version;
+		
+		public void UpdatePackageById(string packageId)
+		{
+			action.PackageId = packageId;
+			action.PackageVersion = Version;
+			action.UpdateDependencies = UpdateDependencies;
+			action.Execute();
 		}
 	}
 }

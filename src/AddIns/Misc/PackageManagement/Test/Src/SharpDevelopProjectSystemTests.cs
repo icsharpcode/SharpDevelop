@@ -190,6 +190,45 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void ReferenceExists_ReferenceNamePassedIsInProjectAndIsReferenceNameWithNoFileExtension_ReturnsTrue()
+		{
+			CreateTestProject();
+			ProjectHelper.AddReference(project, "System.ComponentModel.Composition");
+			CreateProjectSystem(project);
+			string referenceName = "System.ComponentModel.Composition";
+			
+			bool result = projectSystem.ReferenceExists(referenceName);
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void ReferenceExists_ReferenceIsInProjectAndProjectReferenceSearchedForHasExeFileExtension_ReturnsTrue()
+		{
+			CreateTestProject();
+			ProjectHelper.AddReference(project, "myassembly");
+			CreateProjectSystem(project);
+			string fileName = @"D:\Projects\Test\myassembly.exe";
+			
+			bool result = projectSystem.ReferenceExists(fileName);
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void ReferenceExists_ReferenceIsInProjectAndProjectReferenceSearchedForHasExeFileExtensionInUpperCase_ReturnsTrue()
+		{
+			CreateTestProject();
+			ProjectHelper.AddReference(project, "myassembly");
+			CreateProjectSystem(project);
+			string fileName = @"D:\Projects\Test\MYASSEMBLY.EXE";
+			
+			bool result = projectSystem.ReferenceExists(fileName);
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
 		public void AddReference_AddReferenceToNUnitFramework_ProjectIsSavedAfterAddingReference()
 		{
 			CreateTestProject();
