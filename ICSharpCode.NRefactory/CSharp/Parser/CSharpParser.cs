@@ -1766,7 +1766,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				if (constant.GetValue () == null) 
 					return new NullReferenceExpression (Convert (constant.Location));
-				var result = new PrimitiveExpression (constant.GetValue (), Convert (constant.Location), constant.GetValueAsLiteral ().Length);
+				string literalValue;
+				if (constant is ILiteralConstant) {
+					literalValue = new string (((ILiteralConstant)constant).ParsedValue);
+				} else {
+					literalValue = constant.GetValueAsLiteral ();
+				}
+				var result = new PrimitiveExpression (constant.GetValue (), Convert (constant.Location), literalValue);
 				return result;
 			}
 

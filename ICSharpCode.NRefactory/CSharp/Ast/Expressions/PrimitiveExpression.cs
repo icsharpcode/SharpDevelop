@@ -40,10 +40,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		int length;
+		string literalValue;
 		public override AstLocation EndLocation {
 			get {
-				return new AstLocation (StartLocation.Line, StartLocation.Column + length);
+				return new AstLocation (StartLocation.Line, StartLocation.Column + literalValue.Length);
 			}
 		}
 		
@@ -52,16 +52,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
+		public string LiteralValue {
+			get {
+				return literalValue;
+			}
+		}
+		
 		public PrimitiveExpression (object value)
 		{
 			this.Value = value;
 		}
 		
-		public PrimitiveExpression (object value, AstLocation startLocation, int length)
+		public PrimitiveExpression (object value, AstLocation startLocation, string literalValue)
 		{
 			this.Value = value;
 			this.startLocation = startLocation;
-			this.length = length;
+			this.literalValue = literalValue ?? "";
 		}
 		
 		#region IRelocationable implementation
