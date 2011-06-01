@@ -66,8 +66,12 @@ namespace ICSharpCode.Reports.Core.WPF
 				element = CreateContainer(container);
 			}
 			
-			var text = column as ExportText;
+			var exportGraphic = column as ExportGraphic;
+			if (exportGraphic != null) {
+				element = CreateGraphicsElement(exportGraphic);
+			}
 			
+			var text = column as ExportText;
 			if (text != null) {
 				
 				if (column.StyleDecorator.DrawBorder) {
@@ -97,14 +101,42 @@ namespace ICSharpCode.Reports.Core.WPF
 			return element;
 		}
 		
+		UIElement CreateGraphicsElement(ExportGraphic column)
+		{
+			var  line = new System.Windows.Shapes.Line();
+			line.Stroke = brushConverter.ConvertFromString(column.StyleDecorator.ForeColor.Name) as SolidColorBrush;
+			line.StrokeThickness = column.StyleDecorator.Thickness;
+			
+			var ld = column.StyleDecorator as LineDecorator;
+			
+			if (ld != null) {
+				line.X1 = ld.From.X;
+					line.Y1 = ld.From.Y;
+					line.X2 = ld.To.X;
+					line.Y2 = ld.To.Y;
+			} else {
+				line.X1 = column.StyleDecorator.Location.X;
+					line.Y1 = column.StyleDecorator.Location.Y;
+					line.X2 = column.StyleDecorator.DisplayRectangle.Width;
+					line.Y2 = column.StyleDecorator.Location.Y;
+			}
+			return line;
+		}
+		
 		
 		private UIElement CreateContainer(ExportContainer container)
 		{
-			//ExportContainer container = column as ExportContainer;
+			
 			var canvas = new Canvas();
 			canvas.Width = container.StyleDecorator.DisplayRectangle.Width;
 			canvas.Height = container.StyleDecorator.DisplayRectangle.Height;
 			
+			var rect = container as ExportGraphicContainer;
+			if (rect != null) {
+				Console.WriteLine("GraphicContainer");
+				var bs = rect.StyleDecorator as IGraphicStyleDecorator;
+				DrawShape (canvas,bs);
+			}
 			
 			
 			SolidColorBrush backgroundBrush = brushConverter.ConvertFromString(container.StyleDecorator.BackColor.Name) as SolidColorBrush;
@@ -121,6 +153,12 @@ namespace ICSharpCode.Reports.Core.WPF
 			canvas.Arrange(new Rect(new System.Windows.Point(), PageSize));
 			canvas.UpdateLayout();
 			return canvas;
+		}
+		
+		void DrawShape(Canvas canvas, IGraphicStyleDecorator bs)
+		{
+			var shape = bs.Shape;
+			
 		}
 
 		
@@ -162,12 +200,17 @@ namespace ICSharpCode.Reports.Core.WPF
 			SetFont(tb, et.StyleDecorator);
 			tb.Width = et.StyleDecorator.DisplayRectangle.Width;
 			tb.Height = et.StyleDecorator.DisplayRectangle.Height;
+//			SetDimension(tb,et.StyleDecorator);
 			tb.MaxHeight = et.StyleDecorator.DisplayRectangle.Height;
 			tb.MaxWidth = et.StyleDecorator.DisplayRectangle.Width;
 			return tb;
 		}
 		
-		
+//		void SetDimension (System.Windows.Controls.Control element,BaseStyleDecorator decorator)
+//		{
+//			element.Width = decorator.DisplayRectangle.Width;
+//		}
+			
 		void SetFont(TextBlock tb, TextStyleDecorator styleDecorator)
 		{
 			tb.FontFamily = new FontFamily(styleDecorator.Font.FontFamily.Name);
