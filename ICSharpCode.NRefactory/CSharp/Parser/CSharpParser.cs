@@ -2257,6 +2257,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (NewAnonymousType newAnonymousType)
 			{
 				var result = new AnonymousTypeCreateExpression ();
+				if (newAnonymousType.Parameters == null)
+					return result;
 				foreach (var par in newAnonymousType.Parameters) {
 					var location = LocationsBag.GetLocations (par);
 
