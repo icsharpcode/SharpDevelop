@@ -41,7 +41,10 @@ namespace ICSharpCode.NRefactory.FormattingTests
 				return string.Format ("[Delimiter: Offset={0}, Length={1}]", Offset, Length);
 			}
 		}
-
+		public void Replace (int offset, int count, string value)
+		{
+			this.text = this.text.Substring (0, offset) + value + this.text.Substring (offset + count);
+		}
 		static IEnumerable<Delimiter> FindDelimiter (string text)
 		{
 			for (int i = 0; i < text.Length; i++) {
