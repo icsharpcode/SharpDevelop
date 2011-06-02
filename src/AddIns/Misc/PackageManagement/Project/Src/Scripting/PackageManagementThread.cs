@@ -20,9 +20,9 @@ namespace ICSharpCode.PackageManagement.Scripting
 			thread.Start();
 		}
 		
-		public void Join()
+		public bool Join(int milliescondsTimeout)
 		{
-			thread.Join();
+			return thread.Join(milliescondsTimeout);
 		}
 	}
 }

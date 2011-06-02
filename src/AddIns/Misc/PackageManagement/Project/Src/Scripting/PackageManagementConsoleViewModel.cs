@@ -228,14 +228,11 @@ namespace ICSharpCode.PackageManagement.Scripting
 			get { return packageManagementConsole.TextEditor; }
 		}
 		
-		public void Dispose()
-		{
-			consoleHost.Dispose();
-		}
-		
-		public void ShutdownConsole()
+		public bool ShutdownConsole()
 		{
 			consoleHost.ShutdownConsole();
+			consoleHost.Dispose();
+			return !consoleHost.IsRunning;
 		}
 	}
 }

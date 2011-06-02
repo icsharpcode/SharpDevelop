@@ -67,13 +67,16 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Dispose_ConsoleHostRunCalled_ThreadJoinIsCalled()
+		public void Dispose_ConsoleHostRunCalled_ThreadJoinIsCalledWithTimeout()
 		{
 			CreateHost();
 			host.Run();
 			host.Dispose();
 			
-			Assert.IsTrue(host.FakeThread.IsJoinCalled);
+			int timeout = host.FakeThread.TimeoutPassedToJoin;
+			int expectedTimeout = 100; //ms
+			
+			Assert.AreEqual(expectedTimeout, timeout);
 		}
 		
 		[Test]
@@ -87,6 +90,42 @@ namespace PackageManagement.Tests.Scripting
 			host.Dispose();
 			
 			Assert.IsFalse(host.FakeThread.IsJoinCalled);
+		}
+		
+		[Test]
+		public void Dispose_DisposeCalledTwiceAfterConsoleHostIsRunAndThreadDoesNotFinishOnFirstCall_ThreadJoinIsCalledTwice()
+		{
+			CreateHost();
+			host.Run();
+			host.FakeThread.JoinReturnValue = false;
+			host.Dispose();
+			host.FakeThread.IsJoinCalled = false;
+			
+			host.Dispose();
+			
+			Assert.IsTrue(host.FakeThread.IsJoinCalled);
+		}
+		
+		[Test]
+		public void IsRunning_DisposedAndThreadFinishes_ReturnsFalse()
+		{
+			CreateHost();
+			host.Run();
+			host.FakeThread.JoinReturnValue = true;
+			host.Dispose();
+			
+			Assert.IsFalse(host.IsRunning);
+		}
+		
+		[Test]
+		public void IsRunning_DisposedButThreadDidNotFinish_ReturnsTrue()
+		{
+			CreateHost();
+			host.Run();
+			host.FakeThread.JoinReturnValue = false;
+			host.Dispose();
+			
+			Assert.IsTrue(host.IsRunning);
 		}
 		
 		[Test]

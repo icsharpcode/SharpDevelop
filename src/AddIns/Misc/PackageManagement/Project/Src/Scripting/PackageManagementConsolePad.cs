@@ -25,9 +25,9 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public override void Dispose()
 		{
 			if (viewModel != null) {
-				viewModel.ShutdownConsole();
-				DoEvents();
-				viewModel.Dispose();
+				while (!viewModel.ShutdownConsole()) {
+					DoEvents();
+				}
 				viewModel = null;
 			}
 		}

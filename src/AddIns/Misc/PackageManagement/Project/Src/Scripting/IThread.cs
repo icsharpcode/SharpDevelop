@@ -8,6 +8,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 	public interface IThread
 	{
 		void Start();
-		void Join();
+		bool Join(int milliescondsTimeout);
 	}
 }

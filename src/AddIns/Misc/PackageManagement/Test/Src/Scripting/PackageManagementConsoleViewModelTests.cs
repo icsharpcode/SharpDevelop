@@ -459,10 +459,10 @@ namespace PackageManagement.Tests.Scripting
 		}
 		
 		[Test]
-		public void Dispose_ViewModelDisposed_ConsoleIsDisposed()
+		public void ShutdownConsole_ViewModelShuttingDown_ConsoleIsDisposed()
 		{
 			CreateViewModel();
-			viewModel.Dispose();
+			viewModel.ShutdownConsole();
 			
 			Assert.IsTrue(consoleHost.IsDisposeCalled);
 		}
@@ -508,6 +508,26 @@ namespace PackageManagement.Tests.Scripting
 			viewModel.ShutdownConsole();
 			
 			bool shutdownConsole = consoleHost.IsShutdownConsoleCalled;
+			Assert.IsTrue(shutdownConsole);
+		}
+		
+		[Test]
+		public void ShutdownConsole_ConsoleHostIsRunningIsTrue_ReturnsFalse()
+		{
+			CreateViewModel();
+			consoleHost.IsRunning = true;
+			bool shutdownConsole = viewModel.ShutdownConsole();
+			
+			Assert.IsFalse(shutdownConsole);
+		}
+		
+		[Test]
+		public void ShutdownConsole_ConsoleHostIsRunningIsFalse_ReturnsTrue()
+		{
+			CreateViewModel();
+			consoleHost.IsRunning = false;
+			bool shutdownConsole = viewModel.ShutdownConsole();
+			
 			Assert.IsTrue(shutdownConsole);
 		}
 		
