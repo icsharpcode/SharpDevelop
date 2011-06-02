@@ -25,13 +25,25 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			
 			if (IsTargetFrameworkMoniker(Name)) {
 				return GetTargetFrameworkMoniker();
+			} else if (IsFullPath(Name)) {
+				return GetFullPath();
 			}
 			return EmptyStringIfNull(value);
 		}
 		
 		bool IsTargetFrameworkMoniker(string name)
 		{
-			return String.Equals(name, "TargetFrameworkMoniker", StringComparison.InvariantCultureIgnoreCase);
+			return IsCaseInsensitiveMatch(name, "TargetFrameworkMoniker");
+		}
+		
+		bool IsFullPath(string name)
+		{
+			return IsCaseInsensitiveMatch(name, "FullPath");
+		}
+		
+		bool IsCaseInsensitiveMatch(string a, string b)
+		{
+			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
 		}
 		
 		string GetTargetFrameworkMoniker()
@@ -42,6 +54,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		MSBuildBasedProject MSBuildProject {
 			get { return project.MSBuildProject; }
+		}
+		
+		string GetFullPath()
+		{
+			return MSBuildProject.Directory;
 		}
 		
 		string EmptyStringIfNull(string value)
