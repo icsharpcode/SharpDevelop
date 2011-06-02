@@ -2110,8 +2110,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						continue;
 					TypeParameterDeclaration tp = new TypeParameterDeclaration();
 					// TODO: attributes
-					if (arg.Variance != Variance.None)
-						throw new NotImplementedException(); // TODO: variance
+//					if (arg.Variance != Variance.None)
+//						throw new NotImplementedException(); // TODO: variance
 					tp.AddChild (new Identifier (arg.Name, Convert (arg.Location)), InvocationExpression.Roles.Identifier);
 					parent.AddChild (tp, InvocationExpression.Roles.TypeParameter);
 				}
