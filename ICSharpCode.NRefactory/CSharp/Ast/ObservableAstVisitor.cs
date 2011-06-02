@@ -1,13 +1,40 @@
+// 
+// ObservableAstVisitor.cs
+//  
+// Author:
+//       Mike Krüger <mkrueger@novell.com>
+// 
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
 	public delegate void ObserveNodeHandler<T> (T node);
-
-	public class ObservableAstVisitor : IAstVisitor<object, object>
+	
+	public class ObservableAstVisitor<T, S> : IAstVisitor<T, S>
 	{
+		
 		public event ObserveNodeHandler<CompilationUnit> Visited;
-		object VisitChildren (AstNode node, object data)
+
+		S VisitChildren (AstNode node, T data)
 		{
 			AstNode next;
 			for (var child = node.FirstChild; child != null; child = next) {
@@ -16,11 +43,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				next = child.NextSibling;
 				child.AcceptVisitor (this, data);
 			}
-			return null;
+			return default (S);
 		}
 		
 		public event ObserveNodeHandler<CompilationUnit> CompilationUnitVisited;
-		object IAstVisitor<object, object>.VisitCompilationUnit (CompilationUnit unit, object data)
+
+		S IAstVisitor<T, S>.VisitCompilationUnit (CompilationUnit unit, T data)
 		{
 			var handler = CompilationUnitVisited;
 			if (handler != null)
@@ -29,7 +57,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<Comment> CommentVisited;
-		object IAstVisitor<object, object>.VisitComment (Comment comment, object data)
+
+		S IAstVisitor<T, S>.VisitComment (Comment comment, T data)
 		{
 			var handler = CommentVisited;
 			if (handler != null)
@@ -38,7 +67,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<Identifier> IdentifierVisited;
-		object IAstVisitor<object, object>.VisitIdentifier (Identifier identifier, object data)
+
+		S IAstVisitor<T, S>.VisitIdentifier (Identifier identifier, T data)
 		{
 			var handler = IdentifierVisited;
 			if (handler != null)
@@ -47,7 +77,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<CSharpTokenNode> CSharpTokenNodeVisited;
-		object IAstVisitor<object, object>.VisitCSharpTokenNode (CSharpTokenNode token, object data)
+
+		S IAstVisitor<T, S>.VisitCSharpTokenNode (CSharpTokenNode token, T data)
 		{
 			var handler = CSharpTokenNodeVisited;
 			if (handler != null)
@@ -56,7 +87,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<PrimitiveType> PrimitiveTypeVisited;
-		object IAstVisitor<object, object>.VisitPrimitiveType (PrimitiveType primitiveType, object data)
+
+		S IAstVisitor<T, S>.VisitPrimitiveType (PrimitiveType primitiveType, T data)
 		{
 			var handler = PrimitiveTypeVisited;
 			if (handler != null)
@@ -65,7 +97,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ComposedType> ComposedTypeVisited;
-		object IAstVisitor<object, object>.VisitComposedType (ComposedType composedType, object data)
+
+		S IAstVisitor<T, S>.VisitComposedType (ComposedType composedType, T data)
 		{
 			var handler = ComposedTypeVisited;
 			if (handler != null)
@@ -74,7 +107,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<SimpleType> SimpleTypeVisited;
-		object IAstVisitor<object, object>.VisitSimpleType (SimpleType simpleType, object data)
+
+		S IAstVisitor<T, S>.VisitSimpleType (SimpleType simpleType, T data)
 		{
 			var handler = SimpleTypeVisited;
 			if (handler != null)
@@ -83,7 +117,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<MemberType> MemberTypeVisited;
-		object IAstVisitor<object, object>.VisitMemberType (MemberType memberType, object data)
+
+		S IAstVisitor<T, S>.VisitMemberType (MemberType memberType, T data)
 		{
 			var handler = MemberTypeVisited;
 			if (handler != null)
@@ -92,7 +127,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<Attribute> AttributeVisited;
-		object IAstVisitor<object, object>.VisitAttribute (Attribute attribute, object data)
+
+		S IAstVisitor<T, S>.VisitAttribute (Attribute attribute, T data)
 		{
 			var handler = AttributeVisited;
 			if (handler != null)
@@ -101,7 +137,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<AttributeSection> AttributeSectionVisited;
-		object IAstVisitor<object, object>.VisitAttributeSection (AttributeSection attributeSection, object data)
+
+		S IAstVisitor<T, S>.VisitAttributeSection (AttributeSection attributeSection, T data)
 		{
 			var handler = AttributeSectionVisited;
 			if (handler != null)
@@ -110,7 +147,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<DelegateDeclaration> DelegateDeclarationVisited;
-		object IAstVisitor<object, object>.VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, T data)
 		{
 			var handler = DelegateDeclarationVisited;
 			if (handler != null)
@@ -119,7 +157,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<NamespaceDeclaration> NamespaceDeclarationVisited;
-		object IAstVisitor<object, object>.VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, T data)
 		{
 			var handler = NamespaceDeclarationVisited;
 			if (handler != null)
@@ -128,7 +167,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<TypeDeclaration> TypeDeclarationVisited;
-		object IAstVisitor<object, object>.VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitTypeDeclaration (TypeDeclaration typeDeclaration, T data)
 		{
 			var handler = TypeDeclarationVisited;
 			if (handler != null)
@@ -137,7 +177,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<TypeParameterDeclaration> TypeParameterDeclarationVisited;
-		object IAstVisitor<object, object>.VisitTypeParameterDeclaration (TypeParameterDeclaration typeParameterDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitTypeParameterDeclaration (TypeParameterDeclaration typeParameterDeclaration, T data)
 		{
 			var handler = TypeParameterDeclarationVisited;
 			if (handler != null)
@@ -146,7 +187,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<EnumMemberDeclaration> EnumMemberDeclarationVisited;
-		object IAstVisitor<object, object>.VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, T data)
 		{
 			var handler = EnumMemberDeclarationVisited;
 			if (handler != null)
@@ -155,7 +197,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<UsingDeclaration> UsingDeclarationVisited;
-		object IAstVisitor<object, object>.VisitUsingDeclaration (UsingDeclaration usingDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitUsingDeclaration (UsingDeclaration usingDeclaration, T data)
 		{
 			var handler = UsingDeclarationVisited;
 			if (handler != null)
@@ -164,7 +207,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<UsingAliasDeclaration> UsingAliasDeclarationVisited;
-		object IAstVisitor<object, object>.VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration, T data)
 		{
 			var handler = UsingAliasDeclarationVisited;
 			if (handler != null)
@@ -173,7 +217,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ExternAliasDeclaration> ExternAliasDeclarationVisited;
-		object IAstVisitor<object, object>.VisitExternAliasDeclaration (ExternAliasDeclaration externAliasDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitExternAliasDeclaration (ExternAliasDeclaration externAliasDeclaration, T data)
 		{
 			var handler = ExternAliasDeclarationVisited;
 			if (handler != null)
@@ -182,7 +227,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ConstructorDeclaration> ConstructorDeclarationVisited;
-		object IAstVisitor<object, object>.VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, T data)
 		{
 			var handler = ConstructorDeclarationVisited;
 			if (handler != null)
@@ -191,7 +237,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ConstructorInitializer> ConstructorInitializerVisited;
-		object IAstVisitor<object, object>.VisitConstructorInitializer (ConstructorInitializer constructorInitializer, object data)
+
+		S IAstVisitor<T, S>.VisitConstructorInitializer (ConstructorInitializer constructorInitializer, T data)
 		{
 			var handler = ConstructorInitializerVisited;
 			if (handler != null)
@@ -200,7 +247,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<DestructorDeclaration> DestructorDeclarationVisited;
-		object IAstVisitor<object, object>.VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, T data)
 		{
 			var handler = DestructorDeclarationVisited;
 			if (handler != null)
@@ -209,7 +257,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<EventDeclaration> EventDeclarationVisited;
-		object IAstVisitor<object, object>.VisitEventDeclaration (EventDeclaration eventDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitEventDeclaration (EventDeclaration eventDeclaration, T data)
 		{
 			var handler = EventDeclarationVisited;
 			if (handler != null)
@@ -218,7 +267,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<CustomEventDeclaration> CustomEventDeclarationVisited;
-		object IAstVisitor<object, object>.VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration, T data)
 		{
 			var handler = CustomEventDeclarationVisited;
 			if (handler != null)
@@ -227,7 +277,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<FieldDeclaration> FieldDeclarationVisited;
-		object IAstVisitor<object, object>.VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitFieldDeclaration (FieldDeclaration fieldDeclaration, T data)
 		{
 			var handler = FieldDeclarationVisited;
 			if (handler != null)
@@ -236,7 +287,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<FixedFieldDeclaration> FixedFieldDeclarationVisited;
-		object IAstVisitor<object, object>.VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration, T data)
 		{
 			var handler = FixedFieldDeclarationVisited;
 			if (handler != null)
@@ -245,7 +297,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<FixedVariableInitializer> FixedVariableInitializerVisited;
-		object IAstVisitor<object, object>.VisitFixedVariableInitializer (FixedVariableInitializer fixedVariableInitializer, object data)
+
+		S IAstVisitor<T, S>.VisitFixedVariableInitializer (FixedVariableInitializer fixedVariableInitializer, T data)
 		{
 			var handler = FixedVariableInitializerVisited;
 			if (handler != null)
@@ -254,7 +307,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<IndexerDeclaration> IndexerDeclarationVisited;
-		object IAstVisitor<object, object>.VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration, T data)
 		{
 			var handler = IndexerDeclarationVisited;
 			if (handler != null)
@@ -263,7 +317,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<MethodDeclaration> MethodDeclarationVisited;
-		object IAstVisitor<object, object>.VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitMethodDeclaration (MethodDeclaration methodDeclaration, T data)
 		{
 			var handler = MethodDeclarationVisited;
 			if (handler != null)
@@ -272,7 +327,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<OperatorDeclaration> OperatorDeclarationVisited;
-		object IAstVisitor<object, object>.VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration, T data)
 		{
 			var handler = OperatorDeclarationVisited;
 			if (handler != null)
@@ -281,7 +337,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<PropertyDeclaration> PropertyDeclarationVisited;
-		object IAstVisitor<object, object>.VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, T data)
 		{
 			var handler = PropertyDeclarationVisited;
 			if (handler != null)
@@ -290,7 +347,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<Accessor> AccessorVisited;
-		object IAstVisitor<object, object>.VisitAccessor (Accessor accessor, object data)
+
+		S IAstVisitor<T, S>.VisitAccessor (Accessor accessor, T data)
 		{
 			var handler = AccessorVisited;
 			if (handler != null)
@@ -299,7 +357,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<VariableInitializer> VariableInitializerVisited;
-		object IAstVisitor<object, object>.VisitVariableInitializer (VariableInitializer variableInitializer, object data)
+
+		S IAstVisitor<T, S>.VisitVariableInitializer (VariableInitializer variableInitializer, T data)
 		{
 			var handler = VariableInitializerVisited;
 			if (handler != null)
@@ -308,7 +367,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ParameterDeclaration> ParameterDeclarationVisited;
-		object IAstVisitor<object, object>.VisitParameterDeclaration (ParameterDeclaration parameterDeclaration, object data)
+
+		S IAstVisitor<T, S>.VisitParameterDeclaration (ParameterDeclaration parameterDeclaration, T data)
 		{
 			var handler = ParameterDeclarationVisited;
 			if (handler != null)
@@ -317,7 +377,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<Constraint> ConstraintVisited;
-		object IAstVisitor<object, object>.VisitConstraint (Constraint constraint, object data)
+
+		S IAstVisitor<T, S>.VisitConstraint (Constraint constraint, T data)
 		{
 			var handler = ConstraintVisited;
 			if (handler != null)
@@ -326,7 +387,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<BlockStatement> BlockStatementVisited;
-		object IAstVisitor<object, object>.VisitBlockStatement (BlockStatement blockStatement, object data)
+
+		S IAstVisitor<T, S>.VisitBlockStatement (BlockStatement blockStatement, T data)
 		{
 			var handler = BlockStatementVisited;
 			if (handler != null)
@@ -335,7 +397,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ExpressionStatement> ExpressionStatementVisited;
-		object IAstVisitor<object, object>.VisitExpressionStatement (ExpressionStatement expressionStatement, object data)
+
+		S IAstVisitor<T, S>.VisitExpressionStatement (ExpressionStatement expressionStatement, T data)
 		{
 			var handler = ExpressionStatementVisited;
 			if (handler != null)
@@ -344,7 +407,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<BreakStatement> BreakStatementVisited;
-		object IAstVisitor<object, object>.VisitBreakStatement (BreakStatement breakStatement, object data)
+
+		S IAstVisitor<T, S>.VisitBreakStatement (BreakStatement breakStatement, T data)
 		{
 			var handler = BreakStatementVisited;
 			if (handler != null)
@@ -353,7 +417,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<CheckedStatement> CheckedStatementVisited;
-		object IAstVisitor<object, object>.VisitCheckedStatement (CheckedStatement checkedStatement, object data)
+
+		S IAstVisitor<T, S>.VisitCheckedStatement (CheckedStatement checkedStatement, T data)
 		{
 			var handler = CheckedStatementVisited;
 			if (handler != null)
@@ -362,7 +427,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ContinueStatement> ContinueStatementVisited;
-		object IAstVisitor<object, object>.VisitContinueStatement (ContinueStatement continueStatement, object data)
+
+		S IAstVisitor<T, S>.VisitContinueStatement (ContinueStatement continueStatement, T data)
 		{
 			var handler = ContinueStatementVisited;
 			if (handler != null)
@@ -371,7 +437,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<DoWhileStatement> DoWhileStatementVisited;
-		object IAstVisitor<object, object>.VisitDoWhileStatement (DoWhileStatement doWhileStatement, object data)
+
+		S IAstVisitor<T, S>.VisitDoWhileStatement (DoWhileStatement doWhileStatement, T data)
 		{
 			var handler = DoWhileStatementVisited;
 			if (handler != null)
@@ -380,7 +447,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<EmptyStatement> EmptyStatementVisited;
-		object IAstVisitor<object, object>.VisitEmptyStatement (EmptyStatement emptyStatement, object data)
+
+		S IAstVisitor<T, S>.VisitEmptyStatement (EmptyStatement emptyStatement, T data)
 		{
 			var handler = EmptyStatementVisited;
 			if (handler != null)
@@ -389,7 +457,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<FixedStatement> FixedStatementVisited;
-		object IAstVisitor<object, object>.VisitFixedStatement (FixedStatement fixedStatement, object data)
+
+		S IAstVisitor<T, S>.VisitFixedStatement (FixedStatement fixedStatement, T data)
 		{
 			var handler = FixedStatementVisited;
 			if (handler != null)
@@ -398,7 +467,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ForeachStatement> ForeachStatementVisited;
-		object IAstVisitor<object, object>.VisitForeachStatement (ForeachStatement foreachStatement, object data)
+
+		S IAstVisitor<T, S>.VisitForeachStatement (ForeachStatement foreachStatement, T data)
 		{
 			var handler = ForeachStatementVisited;
 			if (handler != null)
@@ -407,7 +477,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ForStatement> ForStatementVisited;
-		object IAstVisitor<object, object>.VisitForStatement (ForStatement forStatement, object data)
+
+		S IAstVisitor<T, S>.VisitForStatement (ForStatement forStatement, T data)
 		{
 			var handler = ForStatementVisited;
 			if (handler != null)
@@ -416,7 +487,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<GotoCaseStatement> GotoCaseStatementVisited;
-		object IAstVisitor<object, object>.VisitGotoCaseStatement (GotoCaseStatement gotoCaseStatement, object data)
+
+		S IAstVisitor<T, S>.VisitGotoCaseStatement (GotoCaseStatement gotoCaseStatement, T data)
 		{
 			var handler = GotoCaseStatementVisited;
 			if (handler != null)
@@ -425,7 +497,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<GotoDefaultStatement> GotoDefaultStatementVisited;
-		object IAstVisitor<object, object>.VisitGotoDefaultStatement (GotoDefaultStatement gotoDefaultStatement, object data)
+
+		S IAstVisitor<T, S>.VisitGotoDefaultStatement (GotoDefaultStatement gotoDefaultStatement, T data)
 		{
 			var handler = GotoDefaultStatementVisited;
 			if (handler != null)
@@ -434,7 +507,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<GotoStatement> GotoStatementVisited;
-		object IAstVisitor<object, object>.VisitGotoStatement (GotoStatement gotoStatement, object data)
+
+		S IAstVisitor<T, S>.VisitGotoStatement (GotoStatement gotoStatement, T data)
 		{
 			var handler = GotoStatementVisited;
 			if (handler != null)
@@ -443,7 +517,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<IfElseStatement> IfElseStatementVisited;
-		object IAstVisitor<object, object>.VisitIfElseStatement (IfElseStatement ifElseStatement, object data)
+
+		S IAstVisitor<T, S>.VisitIfElseStatement (IfElseStatement ifElseStatement, T data)
 		{
 			var handler = IfElseStatementVisited;
 			if (handler != null)
@@ -452,7 +527,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<LabelStatement> LabelStatementVisited;
-		object IAstVisitor<object, object>.VisitLabelStatement (LabelStatement labelStatement, object data)
+
+		S IAstVisitor<T, S>.VisitLabelStatement (LabelStatement labelStatement, T data)
 		{
 			var handler = LabelStatementVisited;
 			if (handler != null)
@@ -461,7 +537,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<LockStatement> LockStatementVisited;
-		object IAstVisitor<object, object>.VisitLockStatement (LockStatement lockStatement, object data)
+
+		S IAstVisitor<T, S>.VisitLockStatement (LockStatement lockStatement, T data)
 		{
 			var handler = LockStatementVisited;
 			if (handler != null)
@@ -470,7 +547,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ReturnStatement> ReturnStatementVisited;
-		object IAstVisitor<object, object>.VisitReturnStatement (ReturnStatement returnStatement, object data)
+
+		S IAstVisitor<T, S>.VisitReturnStatement (ReturnStatement returnStatement, T data)
 		{
 			var handler = ReturnStatementVisited;
 			if (handler != null)
@@ -479,7 +557,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<SwitchStatement> SwitchStatementVisited;
-		object IAstVisitor<object, object>.VisitSwitchStatement (SwitchStatement switchStatement, object data)
+
+		S IAstVisitor<T, S>.VisitSwitchStatement (SwitchStatement switchStatement, T data)
 		{
 			var handler = SwitchStatementVisited;
 			if (handler != null)
@@ -488,7 +567,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<SwitchSection> SwitchSectionVisited;
-		object IAstVisitor<object, object>.VisitSwitchSection (SwitchSection switchSection, object data)
+
+		S IAstVisitor<T, S>.VisitSwitchSection (SwitchSection switchSection, T data)
 		{
 			var handler = SwitchSectionVisited;
 			if (handler != null)
@@ -497,7 +577,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<CaseLabel> CaseLabelVisited;
-		object IAstVisitor<object, object>.VisitCaseLabel (CaseLabel caseLabel, object data)
+
+		S IAstVisitor<T, S>.VisitCaseLabel (CaseLabel caseLabel, T data)
 		{
 			var handler = CaseLabelVisited;
 			if (handler != null)
@@ -506,7 +587,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ThrowStatement> ThrowStatementVisited;
-		object IAstVisitor<object, object>.VisitThrowStatement (ThrowStatement throwStatement, object data)
+
+		S IAstVisitor<T, S>.VisitThrowStatement (ThrowStatement throwStatement, T data)
 		{
 			var handler = ThrowStatementVisited;
 			if (handler != null)
@@ -515,7 +597,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<TryCatchStatement> TryCatchStatementVisited;
-		object IAstVisitor<object, object>.VisitTryCatchStatement (TryCatchStatement tryCatchStatement, object data)
+
+		S IAstVisitor<T, S>.VisitTryCatchStatement (TryCatchStatement tryCatchStatement, T data)
 		{
 			var handler = TryCatchStatementVisited;
 			if (handler != null)
@@ -524,7 +607,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<CatchClause> CatchClauseVisited;
-		object IAstVisitor<object, object>.VisitCatchClause (CatchClause catchClause, object data)
+
+		S IAstVisitor<T, S>.VisitCatchClause (CatchClause catchClause, T data)
 		{
 			var handler = CatchClauseVisited;
 			if (handler != null)
@@ -533,7 +617,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<UncheckedStatement> UncheckedStatementVisited;
-		object IAstVisitor<object, object>.VisitUncheckedStatement (UncheckedStatement uncheckedStatement, object data)
+
+		S IAstVisitor<T, S>.VisitUncheckedStatement (UncheckedStatement uncheckedStatement, T data)
 		{
 			var handler = UncheckedStatementVisited;
 			if (handler != null)
@@ -542,7 +627,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<UnsafeStatement> UnsafeStatementVisited;
-		object IAstVisitor<object, object>.VisitUnsafeStatement (UnsafeStatement unsafeStatement, object data)
+
+		S IAstVisitor<T, S>.VisitUnsafeStatement (UnsafeStatement unsafeStatement, T data)
 		{
 			var handler = UnsafeStatementVisited;
 			if (handler != null)
@@ -551,7 +637,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<UsingStatement> UsingStatementVisited;
-		object IAstVisitor<object, object>.VisitUsingStatement (UsingStatement usingStatement, object data)
+
+		S IAstVisitor<T, S>.VisitUsingStatement (UsingStatement usingStatement, T data)
 		{
 			var handler = UsingStatementVisited;
 			if (handler != null)
@@ -560,7 +647,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<VariableDeclarationStatement> VariableDeclarationStatementVisited;
-		object IAstVisitor<object, object>.VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, object data)
+
+		S IAstVisitor<T, S>.VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, T data)
 		{
 			var handler = VariableDeclarationStatementVisited;
 			if (handler != null)
@@ -569,7 +657,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<WhileStatement> WhileStatementVisited;
-		object IAstVisitor<object, object>.VisitWhileStatement (WhileStatement whileStatement, object data)
+
+		S IAstVisitor<T, S>.VisitWhileStatement (WhileStatement whileStatement, T data)
 		{
 			var handler = WhileStatementVisited;
 			if (handler != null)
@@ -578,7 +667,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<YieldBreakStatement> YieldBreakStatementVisited;
-		object IAstVisitor<object, object>.VisitYieldBreakStatement (YieldBreakStatement yieldBreakStatement, object data)
+
+		S IAstVisitor<T, S>.VisitYieldBreakStatement (YieldBreakStatement yieldBreakStatement, T data)
 		{
 			var handler = YieldBreakStatementVisited;
 			if (handler != null)
@@ -587,7 +677,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<YieldStatement> YieldStatementVisited;
-		object IAstVisitor<object, object>.VisitYieldStatement (YieldStatement yieldStatement, object data)
+
+		S IAstVisitor<T, S>.VisitYieldStatement (YieldStatement yieldStatement, T data)
 		{
 			var handler = YieldStatementVisited;
 			if (handler != null)
@@ -596,7 +687,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<AnonymousMethodExpression> AnonymousMethodExpressionVisited;
-		object IAstVisitor<object, object>.VisitAnonymousMethodExpression (AnonymousMethodExpression anonymousMethodExpression, object data)
+
+		S IAstVisitor<T, S>.VisitAnonymousMethodExpression (AnonymousMethodExpression anonymousMethodExpression, T data)
 		{
 			var handler = AnonymousMethodExpressionVisited;
 			if (handler != null)
@@ -605,7 +697,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<LambdaExpression> LambdaExpressionVisited;
-		object IAstVisitor<object, object>.VisitLambdaExpression (LambdaExpression lambdaExpression, object data)
+
+		S IAstVisitor<T, S>.VisitLambdaExpression (LambdaExpression lambdaExpression, T data)
 		{
 			var handler = LambdaExpressionVisited;
 			if (handler != null)
@@ -614,7 +707,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<AssignmentExpression> AssignmentExpressionVisited;
-		object IAstVisitor<object, object>.VisitAssignmentExpression (AssignmentExpression assignmentExpression, object data)
+
+		S IAstVisitor<T, S>.VisitAssignmentExpression (AssignmentExpression assignmentExpression, T data)
 		{
 			var handler = AssignmentExpressionVisited;
 			if (handler != null)
@@ -623,7 +717,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<BaseReferenceExpression> BaseReferenceExpressionVisited;
-		object IAstVisitor<object, object>.VisitBaseReferenceExpression (BaseReferenceExpression baseReferenceExpression, object data)
+
+		S IAstVisitor<T, S>.VisitBaseReferenceExpression (BaseReferenceExpression baseReferenceExpression, T data)
 		{
 			var handler = BaseReferenceExpressionVisited;
 			if (handler != null)
@@ -632,7 +727,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<BinaryOperatorExpression> BinaryOperatorExpressionVisited;
-		object IAstVisitor<object, object>.VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, object data)
+
+		S IAstVisitor<T, S>.VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, T data)
 		{
 			var handler = BinaryOperatorExpressionVisited;
 			if (handler != null)
@@ -641,7 +737,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<CastExpression> CastExpressionVisited;
-		object IAstVisitor<object, object>.VisitCastExpression (CastExpression castExpression, object data)
+
+		S IAstVisitor<T, S>.VisitCastExpression (CastExpression castExpression, T data)
 		{
 			var handler = CastExpressionVisited;
 			if (handler != null)
@@ -650,7 +747,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<CheckedExpression> CheckedExpressionVisited;
-		object IAstVisitor<object, object>.VisitCheckedExpression (CheckedExpression checkedExpression, object data)
+
+		S IAstVisitor<T, S>.VisitCheckedExpression (CheckedExpression checkedExpression, T data)
 		{
 			var handler = CheckedExpressionVisited;
 			if (handler != null)
@@ -659,7 +757,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ConditionalExpression> ConditionalExpressionVisited;
-		object IAstVisitor<object, object>.VisitConditionalExpression (ConditionalExpression conditionalExpression, object data)
+
+		S IAstVisitor<T, S>.VisitConditionalExpression (ConditionalExpression conditionalExpression, T data)
 		{
 			var handler = ConditionalExpressionVisited;
 			if (handler != null)
@@ -668,7 +767,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<IdentifierExpression> IdentifierExpressionVisited;
-		object IAstVisitor<object, object>.VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
+
+		S IAstVisitor<T, S>.VisitIdentifierExpression (IdentifierExpression identifierExpression, T data)
 		{
 			var handler = IdentifierExpressionVisited;
 			if (handler != null)
@@ -677,7 +777,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<IndexerExpression> IndexerExpressionVisited;
-		object IAstVisitor<object, object>.VisitIndexerExpression (IndexerExpression indexerExpression, object data)
+
+		S IAstVisitor<T, S>.VisitIndexerExpression (IndexerExpression indexerExpression, T data)
 		{
 			var handler = IndexerExpressionVisited;
 			if (handler != null)
@@ -686,7 +787,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<InvocationExpression> InvocationExpressionVisited;
-		object IAstVisitor<object, object>.VisitInvocationExpression (InvocationExpression invocationExpression, object data)
+
+		S IAstVisitor<T, S>.VisitInvocationExpression (InvocationExpression invocationExpression, T data)
 		{
 			var handler = InvocationExpressionVisited;
 			if (handler != null)
@@ -695,7 +797,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<DirectionExpression> DirectionExpressionVisited;
-		object IAstVisitor<object, object>.VisitDirectionExpression (DirectionExpression directionExpression, object data)
+
+		S IAstVisitor<T, S>.VisitDirectionExpression (DirectionExpression directionExpression, T data)
 		{
 			var handler = DirectionExpressionVisited;
 			if (handler != null)
@@ -704,7 +807,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<MemberReferenceExpression> MemberReferenceExpressionVisited;
-		object IAstVisitor<object, object>.VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
+
+		S IAstVisitor<T, S>.VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, T data)
 		{
 			var handler = MemberReferenceExpressionVisited;
 			if (handler != null)
@@ -713,7 +817,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<NullReferenceExpression> NullReferenceExpressionVisited;
-		object IAstVisitor<object, object>.VisitNullReferenceExpression (NullReferenceExpression nullReferenceExpression, object data)
+
+		S IAstVisitor<T, S>.VisitNullReferenceExpression (NullReferenceExpression nullReferenceExpression, T data)
 		{
 			var handler = NullReferenceExpressionVisited;
 			if (handler != null)
@@ -722,7 +827,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ObjectCreateExpression> ObjectCreateExpressionVisited;
-		object IAstVisitor<object, object>.VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression, object data)
+
+		S IAstVisitor<T, S>.VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression, T data)
 		{
 			var handler = ObjectCreateExpressionVisited;
 			if (handler != null)
@@ -731,7 +837,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<AnonymousTypeCreateExpression> AnonymousTypeCreateExpressionVisited;
-		object IAstVisitor<object, object>.VisitAnonymousTypeCreateExpression (AnonymousTypeCreateExpression anonymousTypeCreateExpression, object data)
+
+		S IAstVisitor<T, S>.VisitAnonymousTypeCreateExpression (AnonymousTypeCreateExpression anonymousTypeCreateExpression, T data)
 		{
 			var handler = AnonymousTypeCreateExpressionVisited;
 			if (handler != null)
@@ -740,16 +847,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ArrayCreateExpression> ArrayCreateExpressionVisited;
-		object IAstVisitor<object, object>.VisitArrayCreateExpression (ArrayCreateExpression arrayObjectCreateExpression, object data)
+
+		S IAstVisitor<T, S>.VisitArrayCreateExpression (ArrayCreateExpression arraySCreateExpression, T data)
 		{
 			var handler = ArrayCreateExpressionVisited;
 			if (handler != null)
-				handler (arrayObjectCreateExpression);
-			return VisitChildren (arrayObjectCreateExpression, data);
+				handler (arraySCreateExpression);
+			return VisitChildren (arraySCreateExpression, data);
 		}
 		
 		public event ObserveNodeHandler<ParenthesizedExpression> ParenthesizedExpressionVisited;
-		object IAstVisitor<object, object>.VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression, object data)
+
+		S IAstVisitor<T, S>.VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression, T data)
 		{
 			var handler = ParenthesizedExpressionVisited;
 			if (handler != null)
@@ -758,7 +867,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<PointerReferenceExpression> PointerReferenceExpressionVisited;
-		object IAstVisitor<object, object>.VisitPointerReferenceExpression (PointerReferenceExpression pointerReferenceExpression, object data)
+
+		S IAstVisitor<T, S>.VisitPointerReferenceExpression (PointerReferenceExpression pointerReferenceExpression, T data)
 		{
 			var handler = PointerReferenceExpressionVisited;
 			if (handler != null)
@@ -767,7 +877,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<PrimitiveExpression> PrimitiveExpressionVisited;
-		object IAstVisitor<object, object>.VisitPrimitiveExpression (PrimitiveExpression primitiveExpression, object data)
+
+		S IAstVisitor<T, S>.VisitPrimitiveExpression (PrimitiveExpression primitiveExpression, T data)
 		{
 			var handler = PrimitiveExpressionVisited;
 			if (handler != null)
@@ -776,7 +887,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<SizeOfExpression> SizeOfExpressionVisited;
-		object IAstVisitor<object, object>.VisitSizeOfExpression (SizeOfExpression sizeOfExpression, object data)
+
+		S IAstVisitor<T, S>.VisitSizeOfExpression (SizeOfExpression sizeOfExpression, T data)
 		{
 			var handler = SizeOfExpressionVisited;
 			if (handler != null)
@@ -785,7 +897,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<StackAllocExpression> StackAllocExpressionVisited;
-		object IAstVisitor<object, object>.VisitStackAllocExpression (StackAllocExpression stackAllocExpression, object data)
+
+		S IAstVisitor<T, S>.VisitStackAllocExpression (StackAllocExpression stackAllocExpression, T data)
 		{
 			var handler = StackAllocExpressionVisited;
 			if (handler != null)
@@ -794,7 +907,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ThisReferenceExpression> ThisReferenceExpressionVisited;
-		object IAstVisitor<object, object>.VisitThisReferenceExpression (ThisReferenceExpression thisReferenceExpression, object data)
+
+		S IAstVisitor<T, S>.VisitThisReferenceExpression (ThisReferenceExpression thisReferenceExpression, T data)
 		{
 			var handler = ThisReferenceExpressionVisited;
 			if (handler != null)
@@ -803,7 +917,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<TypeOfExpression> TypeOfExpressionVisited;
-		object IAstVisitor<object, object>.VisitTypeOfExpression (TypeOfExpression typeOfExpression, object data)
+
+		S IAstVisitor<T, S>.VisitTypeOfExpression (TypeOfExpression typeOfExpression, T data)
 		{
 			var handler = TypeOfExpressionVisited;
 			if (handler != null)
@@ -812,7 +927,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<TypeReferenceExpression> TypeReferenceExpressionVisited;
-		object IAstVisitor<object, object>.VisitTypeReferenceExpression (TypeReferenceExpression typeReferenceExpression, object data)
+
+		S IAstVisitor<T, S>.VisitTypeReferenceExpression (TypeReferenceExpression typeReferenceExpression, T data)
 		{
 			var handler = TypeReferenceExpressionVisited;
 			if (handler != null)
@@ -821,7 +937,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<UnaryOperatorExpression> UnaryOperatorExpressionVisited;
-		object IAstVisitor<object, object>.VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, object data)
+
+		S IAstVisitor<T, S>.VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, T data)
 		{
 			var handler = UnaryOperatorExpressionVisited;
 			if (handler != null)
@@ -830,7 +947,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<UncheckedExpression> UncheckedExpressionVisited;
-		object IAstVisitor<object, object>.VisitUncheckedExpression (UncheckedExpression uncheckedExpression, object data)
+
+		S IAstVisitor<T, S>.VisitUncheckedExpression (UncheckedExpression uncheckedExpression, T data)
 		{
 			var handler = UncheckedExpressionVisited;
 			if (handler != null)
@@ -839,7 +957,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<QueryExpression> QueryExpressionVisited;
-		object IAstVisitor<object, object>.VisitQueryExpression (QueryExpression queryExpression, object data)
+
+		S IAstVisitor<T, S>.VisitQueryExpression (QueryExpression queryExpression, T data)
 		{
 			var handler = QueryExpressionVisited;
 			if (handler != null)
@@ -848,7 +967,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<QueryContinuationClause> QueryContinuationClauseVisited;
-		object IAstVisitor<object, object>.VisitQueryContinuationClause (QueryContinuationClause queryContinuationClause, object data)
+
+		S IAstVisitor<T, S>.VisitQueryContinuationClause (QueryContinuationClause queryContinuationClause, T data)
 		{
 			var handler = QueryContinuationClauseVisited;
 			if (handler != null)
@@ -857,7 +977,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<QueryFromClause> QueryFromClauseVisited;
-		object IAstVisitor<object, object>.VisitQueryFromClause (QueryFromClause queryFromClause, object data)
+
+		S IAstVisitor<T, S>.VisitQueryFromClause (QueryFromClause queryFromClause, T data)
 		{
 			var handler = QueryFromClauseVisited;
 			if (handler != null)
@@ -866,7 +987,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<QueryLetClause> QueryLetClauseVisited;
-		object IAstVisitor<object, object>.VisitQueryLetClause (QueryLetClause queryLetClause, object data)
+
+		S IAstVisitor<T, S>.VisitQueryLetClause (QueryLetClause queryLetClause, T data)
 		{
 			var handler = QueryLetClauseVisited;
 			if (handler != null)
@@ -875,7 +997,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<QueryWhereClause> QueryWhereClauseVisited;
-		object IAstVisitor<object, object>.VisitQueryWhereClause (QueryWhereClause queryWhereClause, object data)
+
+		S IAstVisitor<T, S>.VisitQueryWhereClause (QueryWhereClause queryWhereClause, T data)
 		{
 			var handler = QueryWhereClauseVisited;
 			if (handler != null)
@@ -884,7 +1007,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<QueryJoinClause> QueryJoinClauseVisited;
-		object IAstVisitor<object, object>.VisitQueryJoinClause (QueryJoinClause queryJoinClause, object data)
+
+		S IAstVisitor<T, S>.VisitQueryJoinClause (QueryJoinClause queryJoinClause, T data)
 		{
 			var handler = QueryJoinClauseVisited;
 			if (handler != null)
@@ -893,7 +1017,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<QueryOrderClause> QueryOrderClauseVisited;
-		object IAstVisitor<object, object>.VisitQueryOrderClause (QueryOrderClause queryOrderClause, object data)
+
+		S IAstVisitor<T, S>.VisitQueryOrderClause (QueryOrderClause queryOrderClause, T data)
 		{
 			var handler = QueryOrderClauseVisited;
 			if (handler != null)
@@ -902,7 +1027,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<QueryOrdering> QueryOrderingVisited;
-		object IAstVisitor<object, object>.VisitQueryOrdering (QueryOrdering queryOrdering, object data)
+
+		S IAstVisitor<T, S>.VisitQueryOrdering (QueryOrdering queryOrdering, T data)
 		{
 			var handler = QueryOrderingVisited;
 			if (handler != null)
@@ -911,7 +1037,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<QuerySelectClause> QuerySelectClauseVisited;
-		object IAstVisitor<object, object>.VisitQuerySelectClause (QuerySelectClause querySelectClause, object data)
+
+		S IAstVisitor<T, S>.VisitQuerySelectClause (QuerySelectClause querySelectClause, T data)
 		{
 			var handler = QuerySelectClauseVisited;
 			if (handler != null)
@@ -920,7 +1047,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<QueryGroupClause> QueryGroupClauseVisited;
-		object IAstVisitor<object, object>.VisitQueryGroupClause (QueryGroupClause queryGroupClause, object data)
+
+		S IAstVisitor<T, S>.VisitQueryGroupClause (QueryGroupClause queryGroupClause, T data)
 		{
 			var handler = QueryGroupClauseVisited;
 			if (handler != null)
@@ -929,7 +1057,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<AsExpression> AsExpressionVisited;
-		object IAstVisitor<object, object>.VisitAsExpression (AsExpression asExpression, object data)
+
+		S IAstVisitor<T, S>.VisitAsExpression (AsExpression asExpression, T data)
 		{
 			var handler = AsExpressionVisited;
 			if (handler != null)
@@ -938,7 +1067,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<IsExpression> IsExpressionVisited;
-		object IAstVisitor<object, object>.VisitIsExpression (IsExpression isExpression, object data)
+
+		S IAstVisitor<T, S>.VisitIsExpression (IsExpression isExpression, T data)
 		{
 			var handler = IsExpressionVisited;
 			if (handler != null)
@@ -947,7 +1077,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<DefaultValueExpression> DefaultValueExpressionVisited;
-		object IAstVisitor<object, object>.VisitDefaultValueExpression (DefaultValueExpression defaultValueExpression, object data)
+
+		S IAstVisitor<T, S>.VisitDefaultValueExpression (DefaultValueExpression defaultValueExpression, T data)
 		{
 			var handler = DefaultValueExpressionVisited;
 			if (handler != null)
@@ -956,7 +1087,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<UndocumentedExpression> UndocumentedExpressionVisited;
-		object IAstVisitor<object, object>.VisitUndocumentedExpression (UndocumentedExpression undocumentedExpression, object data)
+
+		S IAstVisitor<T, S>.VisitUndocumentedExpression (UndocumentedExpression undocumentedExpression, T data)
 		{
 			var handler = UndocumentedExpressionVisited;
 			if (handler != null)
@@ -965,7 +1097,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ArrayInitializerExpression> ArrayInitializerExpressionVisited;
-		object IAstVisitor<object, object>.VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression, object data)
+
+		S IAstVisitor<T, S>.VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression, T data)
 		{
 			var handler = ArrayInitializerExpressionVisited;
 			if (handler != null)
@@ -974,7 +1107,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<ArraySpecifier> ArraySpecifierVisited;
-		object IAstVisitor<object, object>.VisitArraySpecifier (ArraySpecifier arraySpecifier, object data)
+
+		S IAstVisitor<T, S>.VisitArraySpecifier (ArraySpecifier arraySpecifier, T data)
 		{
 			var handler = ArraySpecifierVisited;
 			if (handler != null)
@@ -983,7 +1117,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<NamedArgumentExpression> NamedArgumentExpressionVisited;
-		object IAstVisitor<object, object>.VisitNamedArgumentExpression (NamedArgumentExpression namedArgumentExpression, object data)
+
+		S IAstVisitor<T, S>.VisitNamedArgumentExpression (NamedArgumentExpression namedArgumentExpression, T data)
 		{
 			var handler = NamedArgumentExpressionVisited;
 			if (handler != null)
@@ -992,7 +1127,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public event ObserveNodeHandler<EmptyExpression> EmptyExpressionVisited;
-		object IAstVisitor<object, object>.VisitEmptyExpression (EmptyExpression emptyExpression, object data)
+
+		S IAstVisitor<T, S>.VisitEmptyExpression (EmptyExpression emptyExpression, T data)
 		{
 			var handler = EmptyExpressionVisited;
 			if (handler != null)
@@ -1000,9 +1136,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (emptyExpression, data);
 		}
 		
-		object IAstVisitor<object, object>.VisitPatternPlaceholder (AstNode placeholder, PatternMatching.Pattern pattern, object data)
+		S IAstVisitor<T, S>.VisitPatternPlaceholder (AstNode placeholder, PatternMatching.Pattern pattern, T data)
 		{
 			return VisitChildren (placeholder, data);
 		}
 	}
 }
+
+
