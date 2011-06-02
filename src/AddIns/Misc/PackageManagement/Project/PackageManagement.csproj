@@ -61,6 +61,7 @@
     <Folder Include="Src" />
     <Folder Include="Src\Design" />
     <Folder Include="Src\EnvDTE" />
+    <Folder Include="Src\VisualStudio" />
     <Folder Include="Src\Scripting" />
   </ItemGroup>
   <ItemGroup>
@@ -304,6 +305,9 @@
     <Compile Include="Src\UpdatePackageAction.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
     <Compile Include="Src\PackageManagementViewModels.cs" />
+    <Compile Include="Src\VisualStudio\NotInstalledException.cs" />
+    <Compile Include="Src\VisualStudio\Package.cs" />
+    <Compile Include="Src\VisualStudio\SVsExtensionManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\AddPackageReferenceView.xaml" />
