@@ -1030,8 +1030,10 @@ namespace ICSharpCode.RubyBinding
 			// Check the current class's fields.
 			if (constructorInfo != null) {
 				foreach (FieldDeclaration field in constructorInfo.Fields) {
-					if (field.Fields[0].Name == name) {
-						return true;
+					foreach (VariableDeclaration variable in field.Fields) {
+						if (variable.Name == name) {
+							return true;
+						}
 					}
 				}
 			}
@@ -1226,13 +1228,9 @@ namespace ICSharpCode.RubyBinding
 			
 			// Add fields at start of constructor.
 			IncreaseIndent();
-//			AppendDocstring(xmlDocComments);
 			if (constructorInfo.Fields.Count > 0) {
 				foreach (FieldDeclaration field in constructorInfo.Fields) {
-					// Ignore field if it has no initializer.
-					if (FieldHasInitialValue(field)) {
-						CreateFieldInitialization(field);
-					}
+					CreateFieldInitialization(field);
 				}
 			}
 			
@@ -1260,20 +1258,23 @@ namespace ICSharpCode.RubyBinding
 		/// Checks that the field declaration has an initializer that
 		/// sets an initial value.
 		/// </summary>
-		static bool FieldHasInitialValue(FieldDeclaration fieldDeclaration)
+		static bool FieldHasInitialValue(VariableDeclaration variableDeclaration)
 		{
-			VariableDeclaration variableDeclaration = fieldDeclaration.Fields[0];
 			Expression initializer = variableDeclaration.Initializer;
 			return !initializer.IsNull;
 		}
 		
 		void CreateFieldInitialization(FieldDeclaration field)
 		{
-			VariableDeclaration variable = field.Fields[0];
-			string oldVariableName = variable.Name;
-			variable.Name = "@" + variable.Name;
-			VisitVariableDeclaration(variable, null);
-			variable.Name = oldVariableName;
+			foreach (VariableDeclaration variable in field.Fields) {
+				// Ignore field if it has no initializer.
+				if (FieldHasInitialValue(variable)) {
+					string oldVariableName = variable.Name;
+					variable.Name = "@" + variable.Name;
+					VisitVariableDeclaration(variable, null);
+					variable.Name = oldVariableName;
+				}
+			}
 		}
 		
 		/// <summary>
