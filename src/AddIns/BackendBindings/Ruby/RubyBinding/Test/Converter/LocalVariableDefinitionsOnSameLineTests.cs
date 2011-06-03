@@ -8,20 +8,15 @@ using NUnit.Framework;
 
 namespace RubyBinding.Tests.Converter
 {
-	/// <summary>
-	/// Tests the CSharpToRubyConverter correctly converts a local
-	/// variable in the constructor.
-	/// </summary>
 	[TestFixture]
-	public class LocalVariableAssignedInConstructorTestFixture
-	{		
+	public class LocalVariableDefinitionsOnSameLineTests
+	{
 		string csharp =
 			"class Foo\r\n" +
 			"{\r\n" +
 			"    public Foo()\r\n" +
 			"    {\r\n" +
-			"        int i = 0;\r\n" +
-			"        int i = 2;\r\n" +
+			"        int i = 0, i = 2\r\n" +
 			"    }\r\n" +
 			"}";
 		

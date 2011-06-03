@@ -115,6 +115,7 @@
     <Compile Include="Converter\IntegerMethodParameterTestFixture.cs" />
     <Compile Include="Converter\LocalVariableAssignedInConstructorTestFixture.cs" />
     <Compile Include="Converter\LocalVariableDeclarationInIfStatementTestFixture.cs" />
+    <Compile Include="Converter\LocalVariableDefinitionsOnSameLineTests.cs" />
     <Compile Include="Converter\LocalVariableNotInitializedTestFixture.cs" />
     <Compile Include="Converter\MethodCallInConstructorTestFixture.cs" />
     <Compile Include="Converter\MethodParameterConversionTestFixture.cs" />
