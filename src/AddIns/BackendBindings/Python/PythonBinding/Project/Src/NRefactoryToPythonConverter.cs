@@ -595,9 +595,51 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
+		/// <summary>
+		/// Converts from an NRefactory VB.NET for next loop:
+		/// 
+		/// for i As Integer = 0 To 4
+		/// Next
+		/// 
+		/// to Python's:
+		/// 
+		/// i = 0
+		/// while i &lt; 5:
+		/// </summary>
 		public override object TrackedVisitForNextStatement(ForNextStatement forNextStatement, object data)
 		{
-			Console.WriteLine("VisitForNextStatement");
+			// Convert the for loop's initializers.
+			string variableName = forNextStatement.VariableName;
+			AppendIndented(variableName);
+			Append(" = ");
+			forNextStatement.Start.AcceptVisitor(this, data);
+			AppendLine();
+			
+			// Convert the for loop's test expression.
+			AppendIndented("while ");
+			Append(variableName);
+			Append(" <= ");
+			forNextStatement.End.AcceptVisitor(this, data);
+			Append(":");
+			AppendLine();
+			
+			// Visit the for loop's body.
+			IncreaseIndent();
+			forNextStatement.EmbeddedStatement.AcceptVisitor(this, data);
+			
+			// Convert the for loop's increment statement.
+			AppendIndented(variableName);
+			Append(" = ");
+			Append(variableName);
+			Append(" + ");
+			if (forNextStatement.Step.IsNull) {
+				Append("1");
+			} else {
+				forNextStatement.Step.AcceptVisitor(this, data);
+			}
+			AppendLine();
+			DecreaseIndent();
+			
 			return null;
 		}
 		
