@@ -401,7 +401,13 @@ namespace ICSharpCode.RubyBinding
 			expressionStatement.Expression.AcceptVisitor(this, data);
 			AppendLine();
 			return null;
-		}		
+		}
+		
+		public override object TrackedVisitExitStatement(ExitStatement exitStatement, object data)
+		{
+			AppendIndentedLine("break");
+			return null;
+		}
 		
 		public override object TrackedVisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
