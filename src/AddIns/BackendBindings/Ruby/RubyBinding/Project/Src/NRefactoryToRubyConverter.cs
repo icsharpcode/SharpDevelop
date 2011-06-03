@@ -457,7 +457,43 @@ namespace ICSharpCode.RubyBinding
 			
 			return null;
 		}
-
+		
+		public override object TrackedVisitForNextStatement(ForNextStatement forNextStatement, object data)
+		{
+			// Convert the for loop's initializers.
+			string variableName = forNextStatement.VariableName;
+			AppendIndented(variableName);
+			Append(" = ");
+			forNextStatement.Start.AcceptVisitor(this, data);
+			AppendLine();
+			
+			// Convert the for loop's test expression.
+			AppendIndented("while ");
+			Append(variableName);
+			Append(" <= ");
+			forNextStatement.End.AcceptVisitor(this, data);
+			AppendLine();
+			
+			// Visit the for loop's body.
+			IncreaseIndent();
+			forNextStatement.EmbeddedStatement.AcceptVisitor(this, data);
+			
+			// Convert the for loop's increment statement.
+			AppendIndented(variableName);
+			Append(" = ");
+			Append(variableName);
+			Append(" + ");
+			if (forNextStatement.Step.IsNull) {
+				Append("1");
+			} else {
+				forNextStatement.Step.AcceptVisitor(this, data);
+			}
+			AppendLine();
+			DecreaseIndent();
+			AppendIndentedLine("end");
+			
+			return null;
+		}
 		
 		public override object TrackedVisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{

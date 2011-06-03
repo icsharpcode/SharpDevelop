@@ -103,6 +103,7 @@
     <Compile Include="Converter\ForeachConversionTestFixture.cs" />
     <Compile Include="Converter\ForeachConversionWithMethodCallTestFixture.cs" />
     <Compile Include="Converter\ForLoopConversionTestFixture.cs" />
+    <Compile Include="Converter\ForNextConversionTests.cs" />
     <Compile Include="Converter\GenerateMainMethodCallTestFixture.cs" />
     <Compile Include="Converter\GenericListConversionTestFixture.cs" />
     <Compile Include="Converter\IfBlockStatementConversionTestFixture.cs" />
