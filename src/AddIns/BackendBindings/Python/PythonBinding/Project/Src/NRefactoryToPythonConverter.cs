@@ -549,7 +549,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public override object TrackedVisitExitStatement(ExitStatement exitStatement, object data)
 		{
-			Console.WriteLine("VisitExitStatement");
+			AppendIndentedLine("break");
 			return null;
 		}
 		

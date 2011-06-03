@@ -178,6 +178,7 @@
     <Compile Include="Converter\UnaryOperatorConversionTests.cs" />
     <Compile Include="Converter\UsingStatementConversionTestFixture.cs" />
     <Compile Include="Converter\VBClassConversionTestFixture.cs" />
+    <Compile Include="Converter\VBExitConversionTests.cs" />
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
     <Compile Include="Converter\XmlDocCommentConversionTestFixture.cs" />
