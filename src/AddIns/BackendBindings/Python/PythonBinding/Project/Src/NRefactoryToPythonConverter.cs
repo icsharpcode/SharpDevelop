@@ -807,15 +807,16 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public override object TrackedVisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
-			VariableDeclaration variableDeclaration = localVariableDeclaration.Variables[0];
-			if (!variableDeclaration.Initializer.IsNull) {
-
-				// Create variable declaration.
-				AppendIndented(variableDeclaration.Name + " = ");
-				
-				// Generate the variable initializer.
-				variableDeclaration.Initializer.AcceptVisitor(this, data);
-				AppendLine();
+			foreach (VariableDeclaration variableDeclaration in localVariableDeclaration.Variables) {
+				if (!variableDeclaration.Initializer.IsNull) {
+	
+					// Create variable declaration.
+					AppendIndented(variableDeclaration.Name + " = ");
+					
+					// Generate the variable initializer.
+					variableDeclaration.Initializer.AcceptVisitor(this, data);
+					AppendLine();
+				}
 			}
 			return null;
 		}

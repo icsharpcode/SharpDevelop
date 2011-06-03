@@ -3,10 +3,10 @@
 
 using System;
 using ICSharpCode.NRefactory;
-using ICSharpCode.RubyBinding;
+using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
-namespace RubyBinding.Tests.Converter
+namespace PythonBinding.Tests.Converter
 {
 	[TestFixture]
 	public class LocalVariableDefinitionsOnSameLineTests
@@ -21,20 +21,18 @@ namespace RubyBinding.Tests.Converter
 			"}";
 		
 		[Test]
-		public void ConvertedRubyCode()
+		public void ConvertedPythonCode()
 		{
-			NRefactoryToRubyConverter converter = new NRefactoryToRubyConverter(SupportedLanguage.CSharp);
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			converter.IndentString = "    ";
-			string Ruby = converter.Convert(csharp);
-			string expectedRuby =
-				"class Foo\r\n" +
-				"    def initialize()\r\n" +
+			string python = converter.Convert(csharp);
+			string expectedPython =
+				"class Foo(object):\r\n" +
+				"    def __init__(self):\r\n" +
 				"        i = 0\r\n" +
-				"        i = 2\r\n" +
-				"    end\r\n" +
-				"end";
+				"        i = 2";
 			
-			Assert.AreEqual(expectedRuby, Ruby);
+			Assert.AreEqual(expectedPython, python);
 		}
 	}
 }
