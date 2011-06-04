@@ -788,7 +788,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			StartNode (namedArgumentExpression);
 			WriteIdentifier (namedArgumentExpression.Identifier);
-			WriteToken (":", NamedArgumentExpression.Roles.Colon);
+			if (namedArgumentExpression.Parent is ArrayInitializerExpression) {
+				Space();
+				WriteToken("=", NamedArgumentExpression.Roles.Assign);
+			} else {
+				WriteToken(":", NamedArgumentExpression.Roles.Colon);
+			}
 			Space ();
 			namedArgumentExpression.Expression.AcceptVisitor (this, data);
 			return EndNode (namedArgumentExpression);
@@ -806,8 +811,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode (objectCreateExpression);
 			WriteKeyword ("new");
 			objectCreateExpression.Type.AcceptVisitor (this, data);
-			Space (policy.SpaceBeforeMethodCallParentheses);
-			WriteCommaSeparatedListInParenthesis (objectCreateExpression.Arguments, policy.SpaceWithinMethodCallParentheses);
+			bool useParenthesis = objectCreateExpression.Arguments.Any() || objectCreateExpression.Initializer.IsNull;
+			// also use parenthesis if there is an '(' token and this isn't an anonymous type
+			if (!objectCreateExpression.LParToken.IsNull && !objectCreateExpression.Type.IsNull)
+				useParenthesis = true;
+			if (useParenthesis) {
+				Space (policy.SpaceBeforeMethodCallParentheses);
+				WriteCommaSeparatedListInParenthesis (objectCreateExpression.Arguments, policy.SpaceWithinMethodCallParentheses);
+			}
 			objectCreateExpression.Initializer.AcceptVisitor (this, data);
 			return EndNode (objectCreateExpression);
 		}
@@ -959,7 +970,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return ConvertChar (ch);
 		}
 		
-		static string ConvertChar (char ch)
+		/// <summary>
+		/// Gets the escape sequence for the specified character.
+		/// </summary>
+		/// <remarks>This method does not convert ' or ".</remarks>
+		public static string ConvertChar(char ch)
 		{
 			switch (ch) {
 			case '\\':
@@ -981,7 +996,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			case '\v':
 				return "\\v";
 			default:
-				if (char.IsControl (ch) || char.IsSurrogate (ch)) {
+					if (char.IsControl(ch) || char.IsSurrogate(ch) ||
+					    // print all uncommon white spaces as numbers
+					    (char.IsWhiteSpace(ch) && ch != ' ')) {
 					return "\\u" + ((int)ch).ToString ("x4");
 				} else {
 					return ch.ToString ();
@@ -989,7 +1006,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		static string ConvertString (string str)
+		/// <summary>
+		/// Converts special characters to escape sequences within the given string.
+		/// </summary>
+		public static string ConvertString(string str)
 		{
 			StringBuilder sb = new StringBuilder ();
 			foreach (char ch in str) {
@@ -1085,6 +1105,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public object VisitQueryExpression (QueryExpression queryExpression, object data)
 		{
 			StartNode (queryExpression);
+			bool indent = !(queryExpression.Parent is QueryContinuationClause);
+			if (indent) {
+				formatter.Indent();
+				NewLine();
+			}
 			bool first = true;
 			foreach (var clause in queryExpression.Clauses) {
 				if (first) {
@@ -1095,6 +1120,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				clause.AcceptVisitor (this, data);
 			}
+			if (indent)
+				formatter.Unindent();
 			return EndNode (queryExpression);
 		}
 		
@@ -1581,6 +1608,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode (labelStatement);
 			WriteIdentifier (labelStatement.Label);
 			WriteToken (":", LabelStatement.Roles.Colon);
+			bool foundLabelledStatement = false;
+			for (AstNode tmp = labelStatement.NextSibling; tmp != null; tmp = tmp.NextSibling) {
+				if (tmp.Role == labelStatement.Role) {
+					foundLabelledStatement = true;
+				}
+			}
+			if (!foundLabelledStatement) {
+				// introduce an EmptyStatement so that the output becomes syntactically valid
+				WriteToken(";", LabelStatement.Roles.Semicolon);
+			}
 			NewLine ();
 			return EndNode (labelStatement);
 		}
@@ -1708,8 +1745,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				LPar ();
 				Space (policy.SpacesWithinCatchParentheses);
 				catchClause.Type.AcceptVisitor (this, data);
-				Space ();
-				WriteIdentifier (catchClause.VariableName);
+				if (!string.IsNullOrEmpty(catchClause.VariableName)) {
+					Space ();
+					WriteIdentifier (catchClause.VariableName);
+				}
 				Space (policy.SpacesWithinCatchParentheses);
 				RPar ();
 			}
@@ -2163,7 +2202,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				// "1.0 / /*comment*/a", then we need to insert a space in front of the comment.
 				formatter.Space ();
 			}
+			formatter.StartNode(comment);
 			formatter.WriteComment (comment.CommentType, comment.Content);
+			formatter.EndNode(comment);
 			lastWritten = LastWritten.Whitespace;
 			return null;
 		}
