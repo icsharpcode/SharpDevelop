@@ -51,7 +51,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void SimplePublicClassMethodTest()
 		{
 			ITypeDefinition c = testCasePC.GetClass(typeof(SimplePublicClass));
-			Assert.AreEqual(2, c.Methods.Count);
 			
 			IMethod method = c.Methods.Single(m => m.Name == "Method");
 			Assert.AreEqual(typeof(SimplePublicClass).FullName + ".Method", method.FullName);
