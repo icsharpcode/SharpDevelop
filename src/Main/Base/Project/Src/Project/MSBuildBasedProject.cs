@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
-
+using System.Xml.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
@@ -1569,6 +1569,31 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		 */
+		#endregion
+		
+		#region ProjectExtensions
+		public override void SaveProjectExtensions(string name, XElement element)
+		{
+			lock (SyncRoot) {
+				var existing = projectFile.Children.OfType<ProjectExtensionsElement>().FirstOrDefault();
+				if (existing == null) {
+					existing = projectFile.CreateProjectExtensionsElement();
+					projectFile.AppendChild(existing);
+				}
+				existing[name] = element.ToString();
+			}
+		}
+		
+		public override XElement LoadProjectExtensions(string name)
+		{
+			lock (SyncRoot) {
+				var existing = projectFile.Children.OfType<ProjectExtensionsElement>().FirstOrDefault();
+				if (existing == null) {
+					existing = projectFile.CreateProjectExtensionsElement();
+				}
+				return XElement.Parse(existing[name]) ?? new XElement(name);
+			}
+		}
 		#endregion
 	}
 }

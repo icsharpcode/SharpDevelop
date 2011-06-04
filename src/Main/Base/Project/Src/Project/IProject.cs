@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -257,6 +258,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Notifies the project that it was succesfully created from a project template.
 		/// </summary>
 		void ProjectCreationComplete();
+		
+		/// <summary>
+		/// Loads the project extension content with the specified name.
+		/// </summary>
+		XElement LoadProjectExtensions(string name);
+		
+		/// <summary>
+		/// Saves the project extension content with the specified name.
+		/// </summary>
+		void SaveProjectExtensions(string name, XElement element);
 	}
 	
 	/// <summary>

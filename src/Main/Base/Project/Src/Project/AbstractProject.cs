@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Xml.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -561,6 +562,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		public virtual void ProjectCreationComplete()
+		{
+		}
+		
+		public virtual XElement LoadProjectExtensions(string name)
+		{
+			return new XElement(name);
+		}
+		
+		public virtual void SaveProjectExtensions(string name, XElement element)
 		{
 		}
 	}
