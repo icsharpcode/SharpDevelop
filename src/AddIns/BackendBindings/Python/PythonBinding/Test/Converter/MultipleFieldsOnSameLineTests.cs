@@ -82,5 +82,25 @@ namespace PythonBinding.Tests.Converter
 			
 			Assert.AreEqual(expectedPython, python);
 		}
+		
+		string vnetClassWithTwoArrayFieldsOnSameLine =
+			"class Foo\r\n" +
+			"    Private i(10), j(20) as integer\r\n" +
+			"end class";
+		
+		[Test]
+		public void ConvertVBNetClassWithTwoArrayFieldsOnSameLine()
+		{
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.VBNet);
+			converter.IndentString = "    ";
+			string python = converter.Convert(vnetClassWithTwoArrayFieldsOnSameLine);
+			string expectedPython =
+				"class Foo(object):\r\n" +
+				"    def __init__(self):\r\n" +
+				"        self._i = Array.CreateInstance(int, 10)\r\n" +
+				"        self._j = Array.CreateInstance(int, 20)";
+			
+			Assert.AreEqual(expectedPython, python);
+		}
 	}
 }

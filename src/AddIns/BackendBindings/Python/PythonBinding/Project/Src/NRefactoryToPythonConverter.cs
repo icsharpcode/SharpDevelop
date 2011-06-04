@@ -1729,15 +1729,35 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		void CreateFieldInitialization(FieldDeclaration field)
 		{
-			foreach (VariableDeclaration variable in field.Fields) {
+			for (int i = 0; i < field.Fields.Count; ++i) {
+				VariableDeclaration variable = field.Fields[i];
+				
 				// Ignore field if it has no initializer.
 				if (FieldHasInitialValue(variable)) {
+					AddTypeToArrayInitializerIfMissing(variable);
+					
 					string oldVariableName = variable.Name;
 					variable.Name = "self._" + variable.Name;
 					VisitVariableDeclaration(variable, null);
 					variable.Name = oldVariableName;
 				}
 			}
+		}
+		
+		void AddTypeToArrayInitializerIfMissing(VariableDeclaration variable)
+		{
+			ArrayCreateExpression arrayCreate = variable.Initializer as ArrayCreateExpression;
+			if (IsArrayMissingTypeToCreate(arrayCreate)) {
+				arrayCreate.CreateType = variable.TypeReference;
+			}
+		}
+		
+		bool IsArrayMissingTypeToCreate(ArrayCreateExpression arrayCreate)
+		{
+			if (arrayCreate != null) {
+				return String.IsNullOrEmpty(arrayCreate.CreateType.Type);
+			}
+			return false;
 		}
 		
 		/// <summary>
