@@ -89,5 +89,27 @@ namespace RubyBinding.Tests.Converter
 			
 			Assert.AreEqual(expectedRuby, ruby);
 		}
+		
+		string vnetClassWithTwoArrayFieldsOnSameLine =
+			"class Foo\r\n" +
+			"    Private i(10), j(20) as integer\r\n" +
+			"end class";
+		
+		[Test]
+		public void ConvertVBNetClassWithTwoArrayFieldsOnSameLine()
+		{
+			NRefactoryToRubyConverter converter = new NRefactoryToRubyConverter(SupportedLanguage.VBNet);
+			converter.IndentString = "    ";
+			string python = converter.Convert(vnetClassWithTwoArrayFieldsOnSameLine);
+			string expectedPython =
+				"class Foo\r\n" +
+				"    def initialize()\r\n" +
+				"        @i = Array.CreateInstance(System::Int32, 10)\r\n" +
+				"        @j = Array.CreateInstance(System::Int32, 20)\r\n" +
+				"    end\r\n" +
+				"end";
+			
+			Assert.AreEqual(expectedPython, python);
+		}
 	}
 }

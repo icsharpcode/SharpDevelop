@@ -646,7 +646,6 @@ namespace ICSharpCode.RubyBinding
 			AppendLine();
 			
 			IncreaseIndent();
-//			AppendDocstring(xmlDocComments);
 			if (methodDeclaration.Body.Children.Count > 0) {
 				methodDeclaration.Body.AcceptVisitor(this, data);
 			}			
@@ -871,7 +870,6 @@ namespace ICSharpCode.RubyBinding
 			AppendBaseTypes(typeDeclaration.BaseTypes);
 			AppendLine();
 			IncreaseIndent();
-//			AppendDocstring(xmlDocComments);
 			if (typeDeclaration.Children.Count > 0) {
 				// Look for fields or a constructor for the type.
 				constructorInfo = RubyConstructorInfo.GetConstructorInfo(typeDeclaration);
@@ -1269,12 +1267,30 @@ namespace ICSharpCode.RubyBinding
 			foreach (VariableDeclaration variable in field.Fields) {
 				// Ignore field if it has no initializer.
 				if (FieldHasInitialValue(variable)) {
+					AddTypeToArrayInitializerIfMissing(variable);
+					
 					string oldVariableName = variable.Name;
 					variable.Name = "@" + variable.Name;
 					VisitVariableDeclaration(variable, null);
 					variable.Name = oldVariableName;
 				}
 			}
+		}
+		
+		void AddTypeToArrayInitializerIfMissing(VariableDeclaration variable)
+		{
+			ArrayCreateExpression arrayCreate = variable.Initializer as ArrayCreateExpression;
+			if (IsArrayMissingTypeToCreate(arrayCreate)) {
+				arrayCreate.CreateType = variable.TypeReference;
+			}
+		}
+		
+		bool IsArrayMissingTypeToCreate(ArrayCreateExpression arrayCreate)
+		{
+			if (arrayCreate != null) {
+				return String.IsNullOrEmpty(arrayCreate.CreateType.Type);
+			}
+			return false;
 		}
 		
 		/// <summary>
