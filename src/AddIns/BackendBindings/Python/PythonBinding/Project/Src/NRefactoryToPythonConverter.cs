@@ -809,6 +809,8 @@ namespace ICSharpCode.PythonBinding
 		{
 			foreach (VariableDeclaration variableDeclaration in localVariableDeclaration.Variables) {
 				if (!variableDeclaration.Initializer.IsNull) {
+					
+					AddTypeToArrayInitializerIfMissing(variableDeclaration);
 	
 					// Create variable declaration.
 					AppendIndented(variableDeclaration.Name + " = ");
@@ -1729,9 +1731,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		void CreateFieldInitialization(FieldDeclaration field)
 		{
-			for (int i = 0; i < field.Fields.Count; ++i) {
-				VariableDeclaration variable = field.Fields[i];
-				
+			foreach (VariableDeclaration variable in field.Fields) {				
 				// Ignore field if it has no initializer.
 				if (FieldHasInitialValue(variable)) {
 					AddTypeToArrayInitializerIfMissing(variable);

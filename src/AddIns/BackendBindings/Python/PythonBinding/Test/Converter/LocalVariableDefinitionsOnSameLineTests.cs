@@ -34,5 +34,27 @@ namespace PythonBinding.Tests.Converter
 			
 			Assert.AreEqual(expectedPython, python);
 		}
+		
+		string vnetClassWithTwoArrayVariablesOnSameLine =
+			"class Foo\r\n" +
+			"    Public Sub New()\r\n" +
+			"    	Dim i(10), j(20) as integer\r\n" +
+			"    End Sub\r\n" +
+			"end class";
+		
+		[Test]
+		public void ConvertVBNetClassWithTwoArrayVariablesOnSameLine()
+		{
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.VBNet);
+			converter.IndentString = "    ";
+			string python = converter.Convert(vnetClassWithTwoArrayVariablesOnSameLine);
+			string expectedPython =
+				"class Foo(object):\r\n" +
+				"    def __init__(self):\r\n" +
+				"        i = Array.CreateInstance(int, 10)\r\n" +
+				"        j = Array.CreateInstance(int, 20)";
+			
+			Assert.AreEqual(expectedPython, python);
+		}
 	}
 }
