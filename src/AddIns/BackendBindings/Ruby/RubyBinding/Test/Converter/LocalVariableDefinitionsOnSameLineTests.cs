@@ -36,5 +36,29 @@ namespace RubyBinding.Tests.Converter
 			
 			Assert.AreEqual(expectedRuby, Ruby);
 		}
+		
+		string vnetClassWithTwoArrayLocalVariablesOnSameLine =
+			"class Foo\r\n" +
+			"    Public Sub New()\r\n" +
+			"    	Dim i(10), j(20) as integer\r\n" +
+			"    End Sub\r\n" +
+			"end class";
+		
+		[Test]
+		public void ConvertVBNetClassWithTwoArrayVariablesOnSameLine()
+		{
+			NRefactoryToRubyConverter converter = new NRefactoryToRubyConverter(SupportedLanguage.VBNet);
+			converter.IndentString = "    ";
+			string ruby = converter.Convert(vnetClassWithTwoArrayLocalVariablesOnSameLine);
+			string expectedRuby =
+				"class Foo\r\n" +
+				"    def initialize()\r\n" +
+				"        i = Array.CreateInstance(System::Int32, 10)\r\n" +
+				"        j = Array.CreateInstance(System::Int32, 20)\r\n" +
+				"    end\r\n" +
+				"end";
+			
+			Assert.AreEqual(expectedRuby, ruby);
+		}
 	}
 }

@@ -100,8 +100,8 @@ namespace RubyBinding.Tests.Converter
 		{
 			NRefactoryToRubyConverter converter = new NRefactoryToRubyConverter(SupportedLanguage.VBNet);
 			converter.IndentString = "    ";
-			string python = converter.Convert(vnetClassWithTwoArrayFieldsOnSameLine);
-			string expectedPython =
+			string ruby = converter.Convert(vnetClassWithTwoArrayFieldsOnSameLine);
+			string expectedRuby =
 				"class Foo\r\n" +
 				"    def initialize()\r\n" +
 				"        @i = Array.CreateInstance(System::Int32, 10)\r\n" +
@@ -109,7 +109,7 @@ namespace RubyBinding.Tests.Converter
 				"    end\r\n" +
 				"end";
 			
-			Assert.AreEqual(expectedPython, python);
+			Assert.AreEqual(expectedRuby, ruby);
 		}
 	}
 }

@@ -607,6 +607,7 @@ namespace ICSharpCode.RubyBinding
 					AppendIndented(variableDeclaration.Name + " = ");
 					
 					// Generate the variable initializer.
+					AddTypeToArrayInitializerIfMissing(variableDeclaration);
 					variableDeclaration.Initializer.AcceptVisitor(this, data);
 					AppendLine();
 				}
