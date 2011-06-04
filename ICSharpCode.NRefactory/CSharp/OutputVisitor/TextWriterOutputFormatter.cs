@@ -15,11 +15,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		int indentation;
 		bool needsIndent = true;
 		
+		public string IndentationString { get; set; }
+		
 		public TextWriterOutputFormatter(TextWriter textWriter)
 		{
 			if (textWriter == null)
 				throw new ArgumentNullException("textWriter");
 			this.textWriter = textWriter;
+			this.IndentationString = "\t";
 		}
 		
 		public void WriteIdentifier(string ident)
@@ -67,7 +70,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (needsIndent) {
 				needsIndent = false;
 				for (int i = 0; i < indentation; i++) {
-					textWriter.Write('\t');
+					textWriter.Write(this.IndentationString);
 				}
 			}
 		}
