@@ -42,6 +42,7 @@
 	<Files>
 <!--*************************************************************************-->
 		<File name=".\Default.aspx.vb" DependentUpon="Default.aspx"><![CDATA[${StandardHeader.VBNET}Imports System.Collections
+IMports System
 Imports System.ComponentModel
 Imports System.Data
 Imports System.Drawing
@@ -132,6 +133,7 @@ End Class
 ]]></File>
 		<File name=".\Global.asax.vb" DependentUpon="Global.asax">
 			<![CDATA[Imports System.Collections
+Imports System
 Imports System.ComponentModel
 Imports System.Web
 Imports System.Web.SessionState
@@ -155,35 +157,35 @@ Public Class [Global]
 	#End Region
 	'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	Protected Sub Application_Start(sender As [Object], e As EventArgs)
+	Protected Sub Application_Start(sender As Object, e As EventArgs)
 
 	End Sub
 
-	Protected Sub Session_Start(sender As [Object], e As EventArgs)
+	Protected Sub Session_Start(sender As Object, e As EventArgs)
 
 	End Sub
 
-	Protected Sub Application_BeginRequest(sender As [Object], e As EventArgs)
+	Protected Sub Application_BeginRequest(sender As Object, e As EventArgs)
 
 	End Sub
 
-	Protected Sub Application_EndRequest(sender As [Object], e As EventArgs)
+	Protected Sub Application_EndRequest(sender As Object, e As EventArgs)
 
 	End Sub
 
-	Protected Sub Application_AuthenticateRequest(sender As [Object], e As EventArgs)
+	Protected Sub Application_AuthenticateRequest(sender As Object, e As EventArgs)
 
 	End Sub
 
-	Protected Sub Application_Error(sender As [Object], e As EventArgs)
+	Protected Sub Application_Error(sender As Object, e As EventArgs)
 
 	End Sub
 
-	Protected Sub Session_End(sender As [Object], e As EventArgs)
+	Protected Sub Session_End(sender As Object, e As EventArgs)
 
 	End Sub
 
-	Protected Sub Application_End(sender As [Object], e As EventArgs)
+	Protected Sub Application_End(sender As Object, e As EventArgs)
 
 	End Sub
 
