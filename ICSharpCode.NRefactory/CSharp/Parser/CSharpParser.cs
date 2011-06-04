@@ -103,6 +103,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 			AstType ConvertToType (Mono.CSharp.Expression typeName)
 			{
+				if (typeName == null) // may happen in typeof(Generic<,,,,>)
+					return new SimpleType ();
+				
 				if (typeName is TypeExpression) {
 					var typeExpr = (Mono.CSharp.TypeExpression)typeName;
 					return new PrimitiveType (typeExpr.GetSignatureForError (), Convert (typeExpr.Location));
@@ -171,7 +174,6 @@ namespace ICSharpCode.NRefactory.CSharp
 						return new PrimitiveType ("new", Convert (sce.Location));
 					}
 				}
-				
 				System.Console.WriteLine ("Error while converting :" + typeName + " - unknown type name");
 				System.Console.WriteLine (Environment.StackTrace);
 				return new SimpleType ("unknown");
