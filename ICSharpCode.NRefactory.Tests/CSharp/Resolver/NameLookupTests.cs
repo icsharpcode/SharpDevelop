@@ -191,7 +191,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreSame(SharedTypes.UnknownType, result.Type);
 		}
 		
-		[Test, Ignore("not yet implemented (depends on distuishing types and expressions in the DOM)")]
+		[Test, Ignore("not yet implemented")]
 		public void PropertyNameAmbiguousWithTypeName()
 		{
 			string program = @"class A {
@@ -230,7 +230,7 @@ class Color { public static readonly Color Empty = null; }
 			Assert.AreEqual("value", result.Variable.Name);
 		}
 		
-		[Test, Ignore("type references not supported")]
+		[Test]
 		public void ValueInsideEventTest()
 		{
 			string program = @"using System; class A {
@@ -263,7 +263,7 @@ class Color { public static readonly Color Empty = null; }
 			Assert.AreEqual("value", result.Variable.Name);
 		}
 		
-		[Test, Ignore("Anonymous method parameters not supported by parser")]
+		[Test, Ignore("Anonymous methods not supported in resolver")]
 		public void AnonymousMethodParameters()
 		{
 			string program = @"using System;
@@ -366,7 +366,7 @@ class TestClass {
 			Assert.AreEqual("System.Collections.ArrayList", member.Type.FullName, "the full type should be resolved");
 		}
 		
-		[Test, Ignore("Parser position bug")]
+		[Test]
 		public void ImportAliasNamespaceResolveTest()
 		{
 			NamespaceResolveResult ns;
@@ -423,7 +423,7 @@ class TestClass {
 			Assert.AreEqual("PC.MyCompany.Project.MyClass", mrr.Type.FullName);
 		}
 		
-		[Test, Ignore("Parser position bug")]
+		[Test]
 		public void ResolveNamespaceSD_863()
 		{
 			string program = @"using System;
@@ -443,7 +443,7 @@ namespace A.B {
 			Assert.AreEqual("A.B.C.D", trr.Type.FullName);
 		}
 		
-		[Test, Ignore("Broken due to parser returning incorrect positions")]
+		[Test]
 		public void ResolveTypeSD_863()
 		{
 			string program = @"using System;
@@ -475,7 +475,7 @@ class TestClass {
 			Assert.AreEqual(short.MaxValue, rr.ConstantValue);
 		}
 		
-		[Test, Ignore("Parser produces incorrect positions for :: operator")]
+		[Test]
 		public void ClassWithSameNameAsNamespace()
 		{
 			string program = @"using System; namespace XX {
@@ -500,7 +500,7 @@ class TestClass {
 			Assert.AreEqual("XX.XX.Test", mrr.Member.FullName);
 		}
 		
-		[Test, Ignore("Parser position bug")]
+		[Test]
 		public void ClassNameLookup1()
 		{
 			string program = @"namespace MainNamespace {
@@ -519,7 +519,7 @@ namespace Test.Subnamespace {
 			Assert.AreEqual("Test.Subnamespace.Test.TheClass", trr.Type.FullName);
 		}
 		
-		[Test, Ignore("Parser position bug")]
+		[Test]
 		public void ClassNameLookup2()
 		{
 			string program = @"using Test.Subnamespace;
@@ -595,7 +595,7 @@ namespace A {
 			Assert.AreEqual("MainNamespace.Test", nrr.NamespaceName);
 		}
 		
-		[Test, Ignore("Fails because parser does not support base type references")]
+		[Test]
 		public void InvocableRule()
 		{
 			string program = @"using System;
@@ -622,7 +622,7 @@ namespace A {
 			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
 		}
 		
-		[Test, Ignore("Fails because parser does not support base type references")]
+		[Test]
 		public void InvocableRule2()
 		{
 			string program = @"using System;
@@ -650,7 +650,7 @@ namespace A {
 			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
 		}
 		
-		[Test, Ignore("Fails because parser does not support base type references")]
+		[Test]
 		public void AccessibleRule()
 		{
 			string program = @"using System;
@@ -705,7 +705,7 @@ namespace A {
 			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
 		}
 		
-		[Test, Ignore("Parser doesn't support inheritance")]
+		[Test, Ignore("Resolver Bug")]
 		public void SD_1487()
 		{
 			string program = @"using System;
@@ -742,7 +742,7 @@ class Test {
 			Assert.AreEqual("System.Int32", rr.Member.ReturnType.Resolve(context).FullName);
 		}
 		
-		[Test, Ignore("Parser doesn't support inheritance")]
+		[Test, Ignore("Resolver bug")]
 		public void MethodHidesEvent()
 		{
 			// see SD-1542

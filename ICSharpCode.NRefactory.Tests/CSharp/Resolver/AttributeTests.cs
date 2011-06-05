@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
-	[TestFixture, Ignore("DOM for attributes is incomplete")]
+	[TestFixture, Ignore("Attributes not implemented in resolver")]
 	public class AttributeTests : ResolverTestBase
 	{
 		[Test]
