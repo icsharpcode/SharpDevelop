@@ -694,6 +694,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
+			public void AddAttributeSection (ParameterDeclaration parent, Attributable a)
+			{
+				if (a.OptAttributes == null)
+					return;
+				foreach (var attr in a.OptAttributes.Sections) {
+					parent.AddChild (ConvertAttributeSection (attr), AttributedNode.AttributeRole);
+				}
+			}
+			
 			public override void Visit (Indexer indexer)
 			{
 				IndexerDeclaration newIndexer = new IndexerDeclaration ();
@@ -2044,6 +2053,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					var location = LocationsBag.GetLocations (p);
 					
 					ParameterDeclaration parameterDeclarationExpression = new ParameterDeclaration ();
+					AddAttributeSection (parameterDeclarationExpression, p);
 					switch (p.ModFlags) {
 					case Parameter.Modifier.OUT:
 						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Out;
