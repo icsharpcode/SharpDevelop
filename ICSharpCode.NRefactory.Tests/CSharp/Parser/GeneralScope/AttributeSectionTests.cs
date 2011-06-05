@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 	[TestFixture]
 	public class AttributeSectionTests
 	{
-		[Test, Ignore("Parser crash")]
+		[Test]
 		public void GlobalAttributeCSharp()
 		{
 			string program = @"[global::Microsoft.VisualBasic.CompilerServices.DesignerGenerated()]

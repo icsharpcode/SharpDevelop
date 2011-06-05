@@ -114,11 +114,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (typeName is Mono.CSharp.QualifiedAliasMember) {
 					var qam = (Mono.CSharp.QualifiedAliasMember)typeName;
 					var memberType = new MemberType (); 
-					if (qam.LeftExpression == null) {
-						memberType.Target = new SimpleType ("global", Convert (qam.Location));
-					} else { 
-						memberType.Target = ConvertToType (qam.LeftExpression);
-					}
+					memberType.Target = new SimpleType (qam.alias, Convert (qam.Location));
 					memberType.IsDoubleColon = true;
 					memberType.MemberName = qam.Name;
 					return memberType;
@@ -182,12 +178,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new SimpleType ("unknown");
 			}
 			
-			IEnumerable<Attribute> GetAttributes (Attributes optAttributes)
+			IEnumerable<Attribute> GetAttributes (List<Mono.CSharp.Attribute> optAttributes)
 			{
-				if (optAttributes == null || optAttributes.Attrs == null)
+				if (optAttributes == null)
 					yield break;
-				
-				foreach (var attr in optAttributes.Attrs) {
+				foreach (var attr in optAttributes) {
 					Attribute result = new Attribute ();
 					result.Type = ConvertToType (attr.TypeNameExpression);
 					
@@ -198,13 +193,14 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					if (attr.NamedArguments != null) { 
 						foreach (NamedArgument na in attr.NamedArguments) {
-							NamedArgumentExpression newArg = new NamedArgumentExpression();
-							newArg.AddChild (new Identifier (na.Name, Convert (na.Location)), NamedArgumentExpression.Roles.Identifier);
+							var newArg = new AssignmentExpression ();
+							newArg.Operator = AssignmentOperatorType.Assign;
+							newArg.AddChild (new IdentifierExpression (na.Name, Convert (na.Location)), AssignmentExpression.LeftRole);
 							
 							var loc = LocationsBag.GetLocations (na);
 							if (loc != null)
-								newArg.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), NamedArgumentExpression.Roles.Assign);
-							newArg.AddChild ((Expression)na.Expr.Accept (this), NamedArgumentExpression.Roles.Expression);
+								newArg.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), AssignmentExpression.Roles.Assign);
+							newArg.AddChild ((Expression)na.Expr.Accept (this), AssignmentExpression.RightRole);
 							result.AddChild (newArg, Attribute.Roles.Argument);
 						}
 					}
@@ -212,17 +208,17 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			AttributeSection ConvertAttributeSection (Attributes optAttributes)
+			AttributeSection ConvertAttributeSection (List<Mono.CSharp.Attribute> optAttributes)
 			{
-				if (optAttributes == null || optAttributes.Attrs == null)
+				if (optAttributes == null)
 					return null;
+				
 				AttributeSection result = new AttributeSection ();
 				var loc = LocationsBag.GetLocations (optAttributes);
 				if (loc != null)
 					result.AddChild (new CSharpTokenNode (Convert (loc [0]), 1), AttributeSection.Roles.LBracket);
 				
-				result.AttributeTarget = optAttributes.Attrs.First ().ExplicitTarget;
-				
+				result.AttributeTarget = optAttributes.First ().ExplicitTarget;
 				foreach (var attr in GetAttributes (optAttributes)) {
 					result.AddChild (attr, AttributeSection.AttributeRole);
 				}
@@ -691,8 +687,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public void AddAttributeSection (AttributedNode parent, Attributable a)
 			{
-				if (a.OptAttributes != null && a.OptAttributes.Attrs != null) 
-					parent.AddChild (ConvertAttributeSection (a.OptAttributes), AttributedNode.AttributeRole);
+				if (a.OptAttributes == null)
+					return;
+				foreach (var attr in a.OptAttributes.Sections) {
+					parent.AddChild (ConvertAttributeSection (attr), AttributedNode.AttributeRole);
+				}
 			}
 			
 			public override void Visit (Indexer indexer)
