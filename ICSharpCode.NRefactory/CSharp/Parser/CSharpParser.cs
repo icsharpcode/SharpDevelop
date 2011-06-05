@@ -146,19 +146,22 @@ namespace ICSharpCode.NRefactory.CSharp
 					var cc = (ComposedCast)typeName;
 					var baseType = ConvertToType (cc.Left);
 					var result = new ComposedType () { BaseType = baseType };
-					
-					if (cc.Spec.IsNullable) {
-						result.HasNullableSpecifier = true;
-					} else if (cc.Spec.IsPointer) {
-						result.PointerRank++;
-					} else {
-						var location = LocationsBag.GetLocations (cc.Spec);
-						var spec = new ArraySpecifier () { Dimensions = cc.Spec.Dimension };
-						spec.AddChild (new CSharpTokenNode (Convert (cc.Spec.Location), 1), FieldDeclaration.Roles.LBracket);
-						if (location != null)
-							spec.AddChild (new CSharpTokenNode (Convert (location [0]), 1), FieldDeclaration.Roles.RBracket);
-						
-						result.ArraySpecifiers.Add (spec);
+					var ccSpec = cc.Spec;
+					while (ccSpec != null) {
+						if (ccSpec.IsNullable) {
+							result.HasNullableSpecifier = true;
+						} else if (ccSpec.IsPointer) {
+							result.PointerRank++;
+						} else {
+							var location = LocationsBag.GetLocations (ccSpec);
+							var spec = new ArraySpecifier () { Dimensions = ccSpec.Dimension };
+							spec.AddChild (new CSharpTokenNode (Convert (ccSpec.Location), 1), FieldDeclaration.Roles.LBracket);
+							if (location != null)
+								spec.AddChild (new CSharpTokenNode (Convert (location [0]), 1), FieldDeclaration.Roles.RBracket);
+							
+							result.ArraySpecifiers.Add (spec);
+						}
+						ccSpec = ccSpec.Next;
 					}
 					return result;
 				}
