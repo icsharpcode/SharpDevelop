@@ -685,16 +685,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				typeStack.Peek ().AddChild (newOperator, TypeDeclaration.MemberRole);
 			}
 			
-			public void AddAttributeSection (AttributedNode parent, Attributable a)
-			{
-				if (a.OptAttributes == null)
-					return;
-				foreach (var attr in a.OptAttributes.Sections) {
-					parent.AddChild (ConvertAttributeSection (attr), AttributedNode.AttributeRole);
-				}
-			}
-			
-			public void AddAttributeSection (ParameterDeclaration parent, Attributable a)
+			public void AddAttributeSection (AstNode parent, Attributable a)
 			{
 				if (a.OptAttributes == null)
 					return;
@@ -2910,6 +2901,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (top == null)
 				return null;
 			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			top.UsingsBag.Global.Accept (conversionVisitor);
 			InsertComments (top, conversionVisitor);
 			return conversionVisitor.Unit;
@@ -2977,6 +2969,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (top == null)
 				return null;
 			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			top.UsingsBag.Global.Accept (conversionVisitor);
 			InsertComments (top, conversionVisitor);
 			if (line != 0)
