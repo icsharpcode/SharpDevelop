@@ -54,7 +54,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			Point dataAreaStart = new Point(table.Items[0].Location.X,table.Items[0].Location.Y + base.CurrentPosition.Y);
 			
 			base.CurrentPosition = new Point(PrintHelper.DrawingAreaRelativeToParent(this.table.Parent,this.table).Location.X,
-			                                 base.SectionBounds.DetailStart.Y);
+			                                 base.SectionBounds.DetailArea.Top);
 
 			base.DefaultLeftPosition = base.CurrentPosition.X;
 			
@@ -177,22 +177,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override Point ForcePageBreak(ExporterCollection exporterCollection, BaseSection section)
 		{
 			base.ForcePageBreak(exporterCollection, section);
-			Console.WriteLine();
-			Console.WriteLine(" CalculateStartPosition in TableConverter");
-			Console.WriteLine("{0}",base.SectionBounds.DetailStart);
-			Console.WriteLine("{0} ",SectionBounds.DetailArea);
-			Console.WriteLine("{0} ",base.SectionBounds.ReportHeaderRectangle);
-			Console.WriteLine("{0} ",base.SectionBounds.PageHeaderRectangle);
-//			return new Point (base.SectionBounds.PageHeaderRectangle.X,SectionBounds.DetailStart.Y);
-//			return new Point (base.SectionBounds.PageHeaderRectangle.X,SectionBounds.DetailStart.Y);
-//			return new Point (base.SectionBounds.PageHeaderRectangle.X,SectionBounds.DetailArea.Top);
-			
-//			return new Point (base.SectionBounds.PageHeaderRectangle.X,base.SectionBounds.PageHeaderRectangle.Bottom);
-			var pp = new Point (base.SectionBounds.PageHeaderRectangle.X,base.SectionBounds.PageHeaderRectangle.Bottom);
-			Console.WriteLine ("Bottom {0}",pp);
-			Console.WriteLine("secoffset {0}",section.SectionOffset);
 			return base.SectionBounds.ReportHeaderRectangle.Location;
 		}
+		
 		
 		#endregion
 		

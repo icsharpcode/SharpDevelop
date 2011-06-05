@@ -45,7 +45,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 
 			//this.sectionBounds.MeasureDetailArea();
 			
-			this.sectionBounds.DetailSectionRectangle = new System.Drawing.Rectangle(reportModel.DetailSection.Location.X,sectionBounds.DetailStart.Y,
+			this.sectionBounds.DetailSectionRectangle = new System.Drawing.Rectangle(reportModel.DetailSection.Location.X,sectionBounds.DetailArea.Top,
 			                                                                         reportModel.DetailSection.Size.Width,
 			                                                                         reportModel.DetailSection.Size.Height);
 

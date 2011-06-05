@@ -97,7 +97,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			if (!PrintHelper.IsRoomForFooter(base.SectionBounds,base.ReportModel.ReportFooter.Location)) {
 				PageBreak();
-				base.ReportModel.ReportFooter.SectionOffset = SectionBounds.DetailStart.Y;
+				base.ReportModel.ReportFooter.SectionOffset = SectionBounds.DetailArea.Top;
 				pageBreak = true;
 			}
 			
@@ -196,7 +196,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			this.dataNavigator.MoveNext();
 			BaseSection section = base.ReportModel.DetailSection;
 
-			section.SectionOffset = base.SinglePage.SectionBounds.DetailStart.Y;
+			section.SectionOffset = base.SinglePage.SectionBounds.DetailArea.Top;
 			var p = this.BuildDetail (section,dataNavigator);
 			
 			var r = new Rectangle (SectionBounds.ReportFooterRectangle.Left,p.Y,

@@ -45,7 +45,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				ExporterCollection myList = new ExporterCollection();
 
 				ConvertContainer (myList,simpleContainer,parent.Location.X,
-				             new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y));
+				             new Point(base.SectionBounds.DetailArea.X,base.SectionBounds.DetailArea.Y));
 				
 				return myList;
 			} else {
@@ -58,8 +58,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			
 			ExporterCollection exporterCollection = new ExporterCollection();
-			base.CurrentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
-			
+//			base.CurrentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
+			base.CurrentPosition = base.SectionBounds.DetailArea.Location;
 			BaseSection section = parent as BaseSection;
 			
 			DefaultLeftPosition = parent.Location.X;
@@ -164,7 +164,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private Point CalculateStartPosition(BaseSection section)
 		{
 			
-			Console.WriteLine ("CalculateStartPosition {0}", base.SectionBounds.DetailStart);
+//			Console.WriteLine ("CalculateStartPosition {0}", base.SectionBounds.DetailStart);
 			var r = base.ReportModel;
 			base.SectionBounds.MeasureReportHeader(r.ReportHeader);
 			base.SectionBounds.MeasurePageHeader(r.PageHeader);
@@ -172,7 +172,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 //			Console.WriteLine("\tpageheader {0}",base.SectionBounds.PageHeaderRectangle);
 //			Console.WriteLine("\tdetail {0}",base.SectionBounds.DetailArea);
 //			Console.WriteLine("\tret value  {0}",base.SectionBounds.PageHeaderRectangle.Bottom );
-			return new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.PageHeaderRectangle.Bottom + 1);
+			return new Point(base.SectionBounds.DetailArea.X,base.SectionBounds.PageHeaderRectangle.Bottom + 1);
 		}
 		
 		

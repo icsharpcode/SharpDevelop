@@ -19,7 +19,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		Rectangle PageFooterRectangle {get;}
 		Rectangle ReportFooterRectangle {get;set;}
 		Rectangle DetailSectionRectangle{get;set;}
-		Point DetailStart {get;}
 		Rectangle DetailArea {get;}
 		Size PageSize {get;set;}
 		bool Landscape{get;}
@@ -154,7 +153,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		}
 		
 		
-		//Test
 		public Rectangle ReportHeaderRectangle
 		{
 			get {
@@ -163,7 +161,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		}
 		
 		
-		//Test
 		public Rectangle PageHeaderRectangle
 		{
 			get {
@@ -172,7 +169,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		}
 		
 		
-		//Test
 		public Rectangle PageFooterRectangle
 		{
 			get {
@@ -181,7 +177,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		}
 		
 		
-		//Test
 		public Rectangle ReportFooterRectangle
 		{
 			get {
@@ -192,26 +187,16 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			}
 		}
 		
-		//Test
-		public Point DetailStart
-		{
-			get {
-				return new Point(this.pageHeaderRectangle.Left,
-				                 this.pageHeaderRectangle.Bottom + GlobalValues.GapBetweenContainer );
-			}
-		}
 		
 		/// <summary>
 		/// This rectangle starts directly after PageHeader and ends bevore PageFooter
 		/// </summary>
 		
-		//Test
-		
 		public Rectangle DetailArea
 		{
 			get {
 				return new Rectangle (new Point (pageHeaderRectangle.X,pageHeaderRectangle.Bottom + GlobalValues.GapBetweenContainer),
-				                      new Size(pageFooterRectangle.Location.X,pageFooterRectangle.Top));
+				                      new Size(pageFooterRectangle.Location.X,pageFooterRectangle.Top - GlobalValues.GapBetweenContainer));
 			}
 		}
 		

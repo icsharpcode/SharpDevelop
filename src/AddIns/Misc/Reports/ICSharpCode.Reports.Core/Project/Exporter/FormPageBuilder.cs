@@ -62,7 +62,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override void BuildDetailInternal(BaseSection section)
 		{
 			base.BuildDetailInternal(section);
-			section.SectionOffset = base.SinglePage.SectionBounds.DetailStart.Y;
+			section.SectionOffset = base.SinglePage.SectionBounds.DetailArea.Top;
 			ExporterCollection convertedList = convertedList = base.ConvertSection (base.ReportModel.DetailSection,0);
 			base.SinglePage.Items.AddRange(convertedList);	   
 		}

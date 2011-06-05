@@ -193,17 +193,24 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		#endregion
 		
 		[Test]
-		public void DetailStart_One_Below_PageHeader ()
+		public void DetailArea_Start_One_Below_PageHeader ()
 		{
-			
 			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
 			BaseSection pageHeader = new BaseSection();
-
 			sectionBounds.MeasurePageHeader(pageHeader);
 			Point p = new Point(sectionBounds.PageHeaderRectangle.Left,sectionBounds.PageHeaderRectangle.Bottom +1	);
-			Assert.That(sectionBounds.DetailStart,Is.EqualTo(p));
+			Assert.That(sectionBounds.DetailArea.Location,Is.EqualTo(p));
 		}
 			
+		[Test]
+		public void DetailArea_Ends_One_Above_PageFooter()
+		{
+			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
+			BaseSection pageFooter = new BaseSection();
+			sectionBounds.MeasurePageFooter(pageFooter);
+			Point p = new Point(sectionBounds.PageFooterRectangle.Left,sectionBounds.PageFooterRectangle.Y );
+			Assert.That(sectionBounds.DetailArea.Top + sectionBounds.DetailArea.Height,Is.EqualTo(p.Y));
+		}
 		
 		
 		public override void Setup()
