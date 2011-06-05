@@ -59,6 +59,7 @@ namespace ICSharpCode.Editor
 		/// <remarks>
 		/// Anchors positioned exactly at the insertion offset will move according to their movement type.
 		/// For AnchorMovementType.Default, they will move behind the inserted text.
+		/// The caret will also move behind the inserted text.
 		/// </remarks>
 		void Insert(int offset, string text);
 		
@@ -70,6 +71,7 @@ namespace ICSharpCode.Editor
 		/// <param name="defaultAnchorMovementType">
 		/// Anchors positioned exactly at the insertion offset will move according to the anchor's movement type.
 		/// For AnchorMovementType.Default, they will move according to the movement type specified by this parameter.
+		/// The caret will also move according to the <paramref name="defaultAnchorMovementType"/> parameter.
 		/// </param>
 		void Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType);
 		

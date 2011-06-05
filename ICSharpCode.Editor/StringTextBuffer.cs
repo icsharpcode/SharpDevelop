@@ -77,6 +77,14 @@ namespace ICSharpCode.Editor
 		}
 		
 		/// <inheritdoc/>
+		public string GetText(ISegment segment)
+		{
+			if (segment == null)
+				throw new ArgumentNullException("segment");
+			return text.Substring(segment.Offset, segment.Length);
+		}
+		
+		/// <inheritdoc/>
 		public int IndexOfAny(char[] anyOf, int startIndex, int count)
 		{
 			return text.IndexOfAny(anyOf, startIndex, count);

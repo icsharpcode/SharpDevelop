@@ -307,6 +307,12 @@ namespace ICSharpCode.Editor
 		}
 		
 		/// <inheritdoc/>
+		public string GetText(ISegment segment)
+		{
+			return textBuffer.GetText(segment);
+		}
+		
+		/// <inheritdoc/>
 		public int IndexOfAny(char[] anyOf, int startIndex, int count)
 		{
 			return textBuffer.IndexOfAny(anyOf, startIndex, count);

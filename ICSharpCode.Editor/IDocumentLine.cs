@@ -8,23 +8,8 @@ namespace ICSharpCode.Editor
 	/// <summary>
 	/// A line inside a <see cref="IDocument"/>.
 	/// </summary>
-	public interface IDocumentLine
+	public interface IDocumentLine : ISegment
 	{
-		/// <summary>
-		/// Gets the starting offset of the line in the document's text.
-		/// </summary>
-		int Offset { get; }
-		
-		/// <summary>
-		/// Gets the length of this line (=the number of characters on the line).
-		/// </summary>
-		int Length { get; }
-		
-		/// <summary>
-		/// Gets the ending offset of the line in the document's text (= Offset + Length).
-		/// </summary>
-		int EndOffset { get; }
-		
 		/// <summary>
 		/// Gets the length of this line, including the line delimiter.
 		/// </summary>
@@ -41,10 +26,5 @@ namespace ICSharpCode.Editor
 		/// The first line has the number 1.
 		/// </summary>
 		int LineNumber { get; }
-		
-		/// <summary>
-		/// Gets the text on this line.
-		/// </summary>
-		string Text { get; }
 	}
 }

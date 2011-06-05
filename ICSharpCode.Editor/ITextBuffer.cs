@@ -78,6 +78,12 @@ namespace ICSharpCode.Editor
 		string GetText(int offset, int length);
 		
 		/// <summary>
+		/// Retrieves the text for a portion of the document.
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">offset or length is outside the valid range.</exception>
+		string GetText(ISegment segment);
+		
+		/// <summary>
 		/// Gets the index of the first occurrence of any character in the specified array.
 		/// </summary>
 		/// <param name="anyOf">Characters to search for</param>
