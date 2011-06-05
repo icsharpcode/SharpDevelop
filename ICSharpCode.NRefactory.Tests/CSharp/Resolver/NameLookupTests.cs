@@ -350,7 +350,7 @@ namespace Root.Child {
 			Assert.AreEqual("Root.Alpha", result.Type.FullName);
 		}
 		
-		[Test, Ignore("type references not implemented")]
+		[Test]
 		public void ImportAliasTest()
 		{
 			string program = @"using COL = System.Collections;
@@ -377,7 +377,7 @@ class TestClass {
 			Assert.AreEqual("System.Collections.Generic", ns.NamespaceName, "COL.Generic");
 		}
 		
-		[Test, Ignore("Cannot resolve type references")]
+		[Test]
 		public void ImportAliasClassResolveTest()
 		{
 			string program = @"using COL = System.Collections.ArrayList;
@@ -392,6 +392,35 @@ class TestClass {
 			Assert.AreEqual("System.Collections.ArrayList", trr.Type.FullName, "COL");
 			ResolveResult rr = Resolve<ResolveResult>(program.Replace("new COL()", "$new COL()$"));
 			Assert.AreEqual("System.Collections.ArrayList", rr.Type.FullName, "a");
+		}
+		
+		[Test]
+		public void ImportSubnamespaceWithAliasTest()
+		{
+			string program = @"namespace PC
+{
+	// Define an alias for the nested namespace.
+	using Project = PC.MyCompany.Project;
+	class A
+	{
+		Project.MyClass M()
+		{
+			// Use the alias
+			$Project.MyClass$ mc = new Project.MyClass();
+			return mc;
+		}
+	}
+	namespace MyCompany
+	{
+		namespace Project
+		{
+			public class MyClass { }
+		}
+	}
+}
+";
+			var mrr = Resolve(program);
+			Assert.AreEqual("PC.MyCompany.Project.MyClass", mrr.Type.FullName);
 		}
 		
 		[Test, Ignore("Parser position bug")]

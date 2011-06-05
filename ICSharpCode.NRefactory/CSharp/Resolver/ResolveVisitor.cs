@@ -1078,11 +1078,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Using Declaration
 		public override ResolveResult VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
+			ScanChildren(usingDeclaration);
 			return null;
 		}
 		
 		public override ResolveResult VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
+			ScanChildren(usingDeclaration);
 			return null;
 		}
 		#endregion
