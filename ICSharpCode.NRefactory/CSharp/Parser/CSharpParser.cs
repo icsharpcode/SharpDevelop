@@ -485,14 +485,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				AddModifiers (newType, location);
 				if (location != null)
-					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "enum".Length), TypeDeclaration.Roles.Keyword);
+					newType.AddChild (new CSharpTokenNode (Convert (location [0]), "enum".Length), TypeDeclaration.Roles.Keyword);
 				newType.AddChild (new Identifier (e.MemberName.Name, Convert (e.MemberName.Location)), AstNode.Roles.Identifier);
 				
-				if (e.TypeBaseExpressions != null) {
-					foreach (var baseTypes in e.TypeBaseExpressions) {
-						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
-					}
-				}
+				if (e.BaseTypeExpression != null)
+					newType.AddChild (ConvertToType (e.BaseTypeExpression), TypeDeclaration.BaseTypeRole);
 
 				if (location != null && location.Count > 1)
 					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AstNode.Roles.LBrace);
