@@ -81,7 +81,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			PrintHelper.AdjustSectionLocation(section);
 			var convertedSection = new ExporterCollection();
 			Offset = new Point(section.Location.X,section.SectionOffset);
-		Point startOffset = Offset;
+			Point startOffset = Offset;
 			if (section.Items.Count > 0) {
 				section.Items.SortByLocation();
 
@@ -361,6 +361,13 @@ foreach (var element in section.Items)
 		}
 		#endregion
 		
+		
+		protected void DebugShowSections ()
+		{
+			Console.WriteLine("\treportheader {0}",SectionBounds.ReportHeaderRectangle);
+			Console.WriteLine("\tpageheader {0}",SectionBounds.PageHeaderRectangle);
+			Console.WriteLine("\tdetail {0}",SectionBounds.DetailArea);
+		}
 		
 		#region Property's
 		

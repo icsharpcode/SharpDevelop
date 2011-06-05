@@ -68,18 +68,24 @@ namespace ICSharpCode.Reports.Core.Exporter
 			{
 				base.ReportModel.ReportHeader.SectionOffset = base.SinglePage.SectionBounds.ReportHeaderRectangle.Top;
 				ConvertSectionInternal (base.ReportModel.ReportHeader);
-				base.SectionBounds.MeasurePageHeader(base.ReportModel.ReportHeader);
+			} else
+			{
+				base.ReportModel.ReportHeader.Size = Size.Empty;
 			}
+			base.SectionBounds.MeasurePageHeader(base.ReportModel.ReportHeader);
 		}
-		
-		
 		
 		
 		protected override void BuildPageHeader ()
 		{
+//			base.DebugShowSections();
+			base.SectionBounds.MeasurePageHeader(base.ReportModel.ReportHeader);
 			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
+//			Console.WriteLine("----------------");
 			ConvertSectionInternal (base.ReportModel.PageHeader);
+			base.ReportModel.PageHeader.Size = new Size(base.ReportModel.PageHeader.Size.Width,base.Offset.Y - base.ReportModel.PageHeader.SectionOffset);
 			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
+//			base.DebugShowSections();
 		}
 		
 		
@@ -129,10 +135,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected  Point BuildDetail (BaseSection section,IDataNavigator dataNavigator)		
 		{
+//			Console.WriteLine ("detail  at {0}",SectionBounds.DetailArea);
+//			Console.WriteLine ("detail start at {0}",SectionBounds.DetailStart);
 			ExporterCollection convertedList = new ExporterCollection();
 			foreach (BaseReportItem item in section.Items)
 			{
-				IBaseConverter baseConverter = ConverterFactory.CreateConverter(item,dataNavigator,
+				IBaseConverter baseConverter = ConverterFactory.CreateConverter(item,base.ReportModel,dataNavigator,
 				                                                                this.SinglePage);
 				                                                                
 				if (baseConverter != null) {

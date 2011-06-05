@@ -21,8 +21,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 		private ITableContainer table;
 		
-		public GroupedTableConverter(IDataNavigator dataNavigator,
-		                      ExporterPage singlePage):base(dataNavigator,singlePage)
+		public GroupedTableConverter(IReportModel reportModel,IDataNavigator dataNavigator,
+		                      ExporterPage singlePage):base(reportModel,dataNavigator,singlePage)
 			
 		{
 		}
@@ -102,12 +102,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 							do
 							{
 								StandardPrinter.AdjustBackColor(simpleContainer);
-//								StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
 								simpleContainer = table.Items[2] as ISimpleContainer;
 								containerSize = simpleContainer.Size;
 								
-								FillRow(simpleContainer,childNavigator);
-//								PrepareContainerForConverting(section,simpleContainer);								
+								FillRow(simpleContainer,childNavigator);						
 								FireRowRendering(simpleContainer,childNavigator);
 								PrepareContainerForConverting(section,simpleContainer);		
 								base.CurrentPosition = ConvertStandardRow(exporterCollection,simpleContainer);

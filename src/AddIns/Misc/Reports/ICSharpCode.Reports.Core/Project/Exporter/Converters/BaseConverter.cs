@@ -30,7 +30,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		public event EventHandler<RowRenderEventArgs> RowRendering;
 
 		
-		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage)		                
+		public BaseConverter(IReportModel reportModel,IDataNavigator dataNavigator,ExporterPage singlePage)
 		{
 			if (dataNavigator == null) {
 				throw new ArgumentNullException("dataNavigator");
@@ -38,11 +38,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (singlePage == null) {
 				throw new ArgumentNullException("singlePage");
 			}
-
+			this.ReportModel = reportModel;
 
 			this.SinglePage = singlePage;
 			this.DataNavigator = dataNavigator;
-			SectionBounds = this.SinglePage.SectionBounds;
 			this.Layouter =  (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
 			this.Evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.DataNavigator);
 		}
@@ -53,8 +52,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected void BuildNewPage(ExporterCollection myList,BaseSection section)
 		{
 			FirePageFull(myList);
-			section.SectionOffset = SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
-//			Console.WriteLine("BuildNewPage with {0} - {1}",SinglePage.SectionBounds.PageHeaderRectangle.Location,section.SectionOffset);		
+			section.SectionOffset = SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;		
 			myList.Clear();
 		}
 		
@@ -90,7 +88,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void FireGroupFooterRendering (GroupFooter groupFooter)
 		{
-//			Console.WriteLine("\tFireGroupFooterRendering");
 			GroupFooterEventArgs gfea = new GroupFooterEventArgs(groupFooter);
 			EventHelper.Raise<GroupFooterEventArgs>(GroupFooterRendering,this,gfea);
 		}
@@ -124,6 +121,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return null;
 		}
 		
+		protected void DebugShowSections ()
+		{
+			Console.WriteLine("\treportheader {0}",SectionBounds.ReportHeaderRectangle);
+			Console.WriteLine("\tpageheader {0}",SectionBounds.PageHeaderRectangle);
+			Console.WriteLine("\tdetail {0}",SectionBounds.DetailArea);
+		}
 	
 		#region Grouping
 		
@@ -188,8 +191,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 		public ISinglePage SinglePage {get;private set;}
 		
-		public SectionBounds SectionBounds {get; private set;}
-		
+		public SectionBounds SectionBounds
+		{
+			get 
+			{
+				return SinglePage.SectionBounds;
+			}
+		}
+			
 		public IDataNavigator DataNavigator {get;private set;}
 			
 		public ILayouter Layouter {get; private set;}
@@ -197,6 +206,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		public Graphics Graphics {get;set;}
 		
 		protected IExpressionEvaluatorFacade Evaluator{get;private set;}
+		
+		protected IReportModel ReportModel {get; private set;}
 		
 		protected int DefaultLeftPosition {get;set;}
 		

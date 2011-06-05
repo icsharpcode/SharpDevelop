@@ -20,8 +20,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 		private BaseReportItem parent;
 		
-		public GroupedRowConverter(IDataNavigator dataNavigator,
-		                           ExporterPage singlePage):base(dataNavigator,singlePage)
+		public GroupedRowConverter(IReportModel reportModel,IDataNavigator dataNavigator,
+		                           ExporterPage singlePage):base(reportModel,dataNavigator,singlePage)
 		{
 		}
 		
@@ -71,8 +71,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				groupSize = section.Items[0].Size;
 				childSize  = section.Items[1].Size;
 			}
-//			Console.WriteLine("start with section at {0}",section.SectionOffset);
-//			Console.WriteLine();
+
 			do {            	
 				base.SaveSectionSize(section.Size);
 				PrintHelper.AdjustSectionLocation (section);
@@ -164,23 +163,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private Point CalculateStartPosition(BaseSection section)
 		{
-			/*
-			Console.WriteLine();
-			Console.WriteLine(" CalculateStartPosition");
-			Console.WriteLine("{0}",base.SectionBounds.DetailStart);
-			Console.WriteLine("{0} ",SectionBounds.DetailArea);
-			Console.WriteLine("{0} ",base.SectionBounds.ReportHeaderRectangle);
-			Console.WriteLine("{0} ",base.SectionBounds.PageHeaderRectangle);
-//			return new Point (base.SectionBounds.PageHeaderRectangle.X,SectionBounds.DetailStart.Y);
-//			return new Point (base.SectionBounds.PageHeaderRectangle.X,SectionBounds.DetailStart.Y);
-//			return new Point (base.SectionBounds.PageHeaderRectangle.X,SectionBounds.DetailArea.Top);
 			
-//			return new Point (base.SectionBounds.PageHeaderRectangle.X,base.SectionBounds.PageHeaderRectangle.Bottom);
-			var pp = new Point (base.SectionBounds.PageHeaderRectangle.X,base.SectionBounds.PageHeaderRectangle.Bottom);
-			Console.WriteLine ("Bottom {0}",pp);
-			Console.WriteLine("secoffset {0}",section.SectionOffset);
-			*/
-			return new Point (base.SectionBounds.PageHeaderRectangle.X,section.SectionOffset);
+			Console.WriteLine ("CalculateStartPosition {0}", base.SectionBounds.DetailStart);
+			var r = base.ReportModel;
+			base.SectionBounds.MeasureReportHeader(r.ReportHeader);
+			base.SectionBounds.MeasurePageHeader(r.PageHeader);
+//			Console.WriteLine("\treportheader {0}",base.SectionBounds.ReportHeaderRectangle);
+//			Console.WriteLine("\tpageheader {0}",base.SectionBounds.PageHeaderRectangle);
+//			Console.WriteLine("\tdetail {0}",base.SectionBounds.DetailArea);
+//			Console.WriteLine("\tret value  {0}",base.SectionBounds.PageHeaderRectangle.Bottom );
+			return new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.PageHeaderRectangle.Bottom + 1);
 		}
 		
 		

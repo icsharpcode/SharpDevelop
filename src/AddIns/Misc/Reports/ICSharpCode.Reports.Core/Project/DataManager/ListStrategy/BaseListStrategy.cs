@@ -97,7 +97,7 @@ namespace ICSharpCode.Reports.Core {
 				CreateGroupedChildren(childList,element);
 				compVal = groupValue;
 			}
-			ShowIndexList(IndexList);
+//			ShowIndexList(IndexList);
 		}
 		
 		
@@ -135,11 +135,9 @@ namespace ICSharpCode.Reports.Core {
 			foreach (BaseComparer element in list) {
 				string s = String.Format("{0} ",element.ObjectArray[0]);
 				GroupComparer gc = element as GroupComparer;
-				
 				if ( gc != null) {
 					s = s + "GroupHeader";
 					if (gc.IndexList != null) {
-						
 						s = s + String.Format(" <{0}> Childs",gc.IndexList.Count);
 					}
 					System.Console.WriteLine(s);
@@ -149,6 +147,7 @@ namespace ICSharpCode.Reports.Core {
 				}
 			}
 		}
+		
 		
 		#endregion
 		

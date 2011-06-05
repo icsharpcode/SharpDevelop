@@ -204,17 +204,7 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 			Assert.That(sectionBounds.DetailStart,Is.EqualTo(p));
 		}
 			
-		[Test]
-		public void DetailEnds_One_Above_PageFootter ()
-		{
-			
-			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
-			BaseSection pageFootter = CreateSection();
 		
-			sectionBounds.MeasurePageFooter(pageFootter);
-			Point p = new Point(sectionBounds.PageFooterRectangle.Left,sectionBounds.PageFooterRectangle.Top -1);
-			Assert.That(sectionBounds.DetailEnds,Is.EqualTo(p));
-		}
 		
 		public override void Setup()
 		{
