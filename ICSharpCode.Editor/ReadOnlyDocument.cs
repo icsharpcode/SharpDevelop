@@ -11,7 +11,7 @@ namespace ICSharpCode.Editor
 	/// </summary>
 	public sealed class ReadOnlyDocument : IDocument
 	{
-		readonly ITextBuffer textBuffer;
+		readonly ITextSource textBuffer;
 		int[] lines;
 		
 		static readonly char[] newline = { '\r', '\n' };
@@ -19,7 +19,7 @@ namespace ICSharpCode.Editor
 		/// <summary>
 		/// Creates a new ReadOnlyDocument from the given text buffer.
 		/// </summary>
-		public ReadOnlyDocument(ITextBuffer textBuffer)
+		public ReadOnlyDocument(ITextSource textBuffer)
 		{
 			if (textBuffer == null)
 				throw new ArgumentNullException("textBuffer");
@@ -43,7 +43,7 @@ namespace ICSharpCode.Editor
 		/// Creates a new ReadOnlyDocument from the given string.
 		/// </summary>
 		public ReadOnlyDocument(string text)
-			: this(new StringTextBuffer(text))
+			: this(new StringTextSource(text))
 		{
 		}
 		
@@ -178,7 +178,7 @@ namespace ICSharpCode.Editor
 			get { return lines.Length; }
 		}
 		
-		ITextBufferVersion ITextBuffer.Version {
+		ITextSourceVersion ITextSource.Version {
 			get { return null; }
 		}
 		
@@ -191,7 +191,7 @@ namespace ICSharpCode.Editor
 		
 		event EventHandler<TextChangeEventArgs> IDocument.Changed { add {} remove {} }
 		
-		event EventHandler ITextBuffer.TextChanged { add {} remove {} }
+		event EventHandler IDocument.TextChanged { add {} remove {} }
 		
 		void IDocument.Insert(int offset, string text)
 		{
@@ -271,13 +271,13 @@ namespace ICSharpCode.Editor
 		}
 		
 		/// <inheritdoc/>
-		public ITextBuffer CreateSnapshot()
+		public ITextSource CreateSnapshot()
 		{
 			return textBuffer; // textBuffer is immutable
 		}
 		
 		/// <inheritdoc/>
-		public ITextBuffer CreateSnapshot(int offset, int length)
+		public ITextSource CreateSnapshot(int offset, int length)
 		{
 			return textBuffer.CreateSnapshot(offset, length);
 		}

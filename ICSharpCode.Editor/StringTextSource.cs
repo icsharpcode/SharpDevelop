@@ -7,26 +7,24 @@ using System.IO;
 namespace ICSharpCode.Editor
 {
 	/// <summary>
-	/// Implements the ITextBuffer interface using a string.
+	/// Implements the ITextSource interface using a string.
 	/// </summary>
 	[Serializable]
-	public class StringTextBuffer : ITextBuffer
+	public class StringTextSource : ITextSource
 	{
 		readonly string text;
 		
 		/// <summary>
-		/// Creates a new StringTextBuffer with the given text.
+		/// Creates a new StringTextSource with the given text.
 		/// </summary>
-		public StringTextBuffer(string text)
+		public StringTextSource(string text)
 		{
 			if (text == null)
 				throw new ArgumentNullException("text");
 			this.text = text;
 		}
 		
-		event EventHandler ITextBuffer.TextChanged { add {} remove {} }
-		
-		ITextBufferVersion ITextBuffer.Version {
+		ITextSourceVersion ITextSource.Version {
 			get { return null; }
 		}
 		
@@ -41,15 +39,15 @@ namespace ICSharpCode.Editor
 		}
 		
 		/// <inheritdoc/>
-		public ITextBuffer CreateSnapshot()
+		public ITextSource CreateSnapshot()
 		{
 			return this; // StringTextBuffer is immutable
 		}
 		
 		/// <inheritdoc/>
-		public ITextBuffer CreateSnapshot(int offset, int length)
+		public ITextSource CreateSnapshot(int offset, int length)
 		{
-			return new StringTextBuffer(text.Substring(offset, length));
+			return new StringTextSource(text.Substring(offset, length));
 		}
 		
 		/// <inheritdoc/>
