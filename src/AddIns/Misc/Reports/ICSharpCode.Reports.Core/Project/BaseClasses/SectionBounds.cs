@@ -4,6 +4,7 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.Globals;
+using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Core.BaseClasses
 {
@@ -64,6 +65,15 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		#endregion
 		
 		#region Measurement
+		
+		public void CalculatePageBounds (IReportModel reportModel)
+		{
+			MeasureReportHeader(reportModel.ReportHeader);
+			MeasurePageHeader(reportModel.PageHeader);
+			MeasurePageFooter(reportModel.PageFooter);
+			MeasureReportFooter(reportModel.ReportFooter);
+		}
+			
 		
 		public void MeasureReportHeader (BaseSection section)
 		{

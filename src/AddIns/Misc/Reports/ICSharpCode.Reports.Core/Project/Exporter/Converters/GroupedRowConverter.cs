@@ -157,21 +157,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			base.ForcePageBreak(exporterCollection,section);
 			return CalculateStartPosition(section);
-			
 		}
 		
 		
 		private Point CalculateStartPosition(BaseSection section)
 		{
-			
-//			Console.WriteLine ("CalculateStartPosition {0}", base.SectionBounds.DetailStart);
 			var r = base.ReportModel;
-			base.SectionBounds.MeasureReportHeader(r.ReportHeader);
-			base.SectionBounds.MeasurePageHeader(r.PageHeader);
-//			Console.WriteLine("\treportheader {0}",base.SectionBounds.ReportHeaderRectangle);
-//			Console.WriteLine("\tpageheader {0}",base.SectionBounds.PageHeaderRectangle);
-//			Console.WriteLine("\tdetail {0}",base.SectionBounds.DetailArea);
-//			Console.WriteLine("\tret value  {0}",base.SectionBounds.PageHeaderRectangle.Bottom );
+			base.SectionBounds.CalculatePageBounds(r);
 			return new Point(base.SectionBounds.DetailArea.X,base.SectionBounds.PageHeaderRectangle.Bottom + 1);
 		}
 		

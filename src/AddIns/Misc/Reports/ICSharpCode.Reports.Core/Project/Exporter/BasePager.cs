@@ -39,6 +39,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (!ServiceContainer.Contains(typeof(ILayouter))) {
 				ServiceContainer.AddService<ILayouter>(new Layouter());
 			}
+			
 			this.Graphics = CreateGraphicObject.FromSize(this.ReportModel.ReportSettings.PageSize);
 		}
 		
@@ -56,6 +57,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			} else {
 				firstPage = false;
 			}
+			
 			SectionBounds sectionBounds  = new SectionBounds (this.ReportModel.ReportSettings,firstPage);
 			ExporterPage sp = ExporterPage.CreateInstance(sectionBounds,this.pages.Count + 1);
 			return sp;
