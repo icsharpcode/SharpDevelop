@@ -27,4 +27,29 @@ namespace ICSharpCode.Editor
 		/// <remarks>EndOffset = Offset + Length;</remarks>
 		int EndOffset { get; }
 	}
+	
+	public static class ISegmentExtensions
+	{
+		/// <summary>
+		/// True, if the segment contains the specified offset, false otherwise.
+		/// </summary>
+		/// <param name='offset'>
+		/// The offset.
+		/// </param>
+		public static bool Contains (this ISegment segment, int offset)
+		{
+			return segment.Offset <= offset && offset < segment.EndOffset;
+		}
+		
+		/// <summary>
+		/// True, if the segment contains the specified segment, false otherwise.
+		/// </summary>
+		/// <param name='segment'>
+		/// The segment.
+		/// </param>
+		public static bool Contains (this ISegment thisSegment, ISegment segment)
+		{
+			return  segment != null && thisSegment.Offset <= segment.Offset && segment.EndOffset <= thisSegment.EndOffset;
+		}
+	}
 }

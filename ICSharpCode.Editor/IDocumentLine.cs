@@ -16,6 +16,11 @@ namespace ICSharpCode.Editor
 		int TotalLength { get; }
 		
 		/// <summary>
+		/// Gets the length of this line, excluding the line delimiter.
+		/// </summary>
+		int EditableLength { get; }
+		
+		/// <summary>
 		/// Gets the length of the line terminator.
 		/// Returns 1 or 2; or 0 at the end of the document.
 		/// </summary>

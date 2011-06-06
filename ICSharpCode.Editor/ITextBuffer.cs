@@ -91,6 +91,22 @@ namespace ICSharpCode.Editor
 		/// <param name="count">Length of the area to search.</param>
 		/// <returns>The first index where any character was found; or -1 if no occurrence was found.</returns>
 		int IndexOfAny(char[] anyOf, int startIndex, int count);
+		
+		/* What about:
+		void Insert (int offset, string value);
+		void Remove (int offset, int count);
+		void Remove (ISegment segment);
+		
+		void Replace (int offset, int count, string value);
+		
+		Or more search operations:
+		
+		IEnumerable<int> SearchForward (string pattern, int startIndex);
+		IEnumerable<int> SearchForwardIgnoreCase (string pattern, int startIndex);
+		
+		IEnumerable<int> SearchBackward (string pattern, int startIndex);
+		IEnumerable<int> SearchBackwardIgnoreCase (string pattern, int startIndex);
+		*/
 	}
 	
 	/// <summary>

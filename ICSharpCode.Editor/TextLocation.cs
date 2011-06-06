@@ -23,6 +23,16 @@ namespace ICSharpCode.Editor
 		public static readonly TextLocation Empty = new TextLocation(0, 0);
 		
 		/// <summary>
+		/// Constant of the minimum line.
+		/// </summary>
+		public const int MinLine   = 1;
+		
+		/// <summary>
+		/// Constant of the minimum column.
+		/// </summary>
+		public const int MinColumn = 1;
+		
+		/// <summary>
 		/// Creates a TextLocation instance.
 		/// </summary>
 		public TextLocation(int line, int column)
@@ -52,7 +62,7 @@ namespace ICSharpCode.Editor
 		/// </summary>
 		public bool IsEmpty {
 			get {
-				return column <= 0 && line <= 0;
+				return column < MinLine && line < MinColumn;
 			}
 		}
 		
