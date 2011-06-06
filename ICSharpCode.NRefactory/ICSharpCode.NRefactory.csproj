@@ -384,6 +384,7 @@
     <Compile Include="CSharp\Refactoring\ContextAction\SplitDeclarationAndAssignment.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\SplitString.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\UseExplicitType.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\UseVarKeyword.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
