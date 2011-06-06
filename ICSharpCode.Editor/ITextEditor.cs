@@ -62,7 +62,7 @@ namespace ICSharpCode.Editor
 		/// to reflect the changes done by the user.
 		/// If the text editor does not support link mode, it will immediately return false.
 		/// </remarks>
-		Task<bool> ShowLinkedElements(IEnumerable<LinkedElement> linkedElements);
+//		Task<bool> ShowLinkedElements(IEnumerable<LinkedElement> linkedElements);
 	}
 	
 	/// <summary>
