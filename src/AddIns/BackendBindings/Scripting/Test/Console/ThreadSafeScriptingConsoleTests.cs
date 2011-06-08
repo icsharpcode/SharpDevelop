@@ -353,5 +353,86 @@ namespace ICSharpCode.Scripting.Tests.Console
 			string expectedLine = "abc";
 			Assert.AreEqual(expectedLine, line);
 		}
+		
+		[Test]
+		public void ScrollToEndWhenTextWritten_NonThreadSafeConsoleScrollToEndWhenTextWrittenIsTrue_ReturnsTrue()
+		{
+			CreateThreadSafeScriptingConsole();
+			nonThreadSafeScriptingConsole.ScrollToEndWhenTextWritten = true;
+			
+			Assert.IsTrue(threadSafeConsole.ScrollToEndWhenTextWritten);
+		}
+		
+		[Test]
+		public void ScrollToEndWhenTextWritten_NonThreadSafeConsoleScrollToEndWhenTextWrittenIsFalse_ReturnsFalse()
+		{
+			CreateThreadSafeScriptingConsole();
+			nonThreadSafeScriptingConsole.ScrollToEndWhenTextWritten = false;
+			
+			Assert.IsFalse(threadSafeConsole.ScrollToEndWhenTextWritten);
+		}
+		
+		[Test]
+		public void GetMaximumVisibleColumns_NonThreadSafeConsoleMaximumVisibleColumnsIsTen_ReturnsTen()
+		{
+			CreateThreadSafeScriptingConsole();
+			nonThreadSafeScriptingConsole.MaximumVisibleColumns = 10;
+			
+			int columns = threadSafeConsole.GetMaximumVisibleColumns();
+			
+			Assert.AreEqual(10, columns);
+		}
+		
+		[Test]
+		public void GetMaximumVisibleColumns_DispatcherCheckAccessReturnsFalse_MethodIsInvoked()
+		{
+			CreateThreadSafeScriptingConsole();
+			
+			dispatcher.CheckAccessReturnValue = false;
+			dispatcher.MethodInvoked = null;
+			dispatcher.InvokeReturnValue = 10;
+			
+			int columns = threadSafeConsole.GetMaximumVisibleColumns();
+			
+			Assert.IsNotNull(dispatcher.MethodInvoked);
+		}
+		
+		[Test]
+		public void GetMaximumVisibleColumns_DispatcherCheckAccessReturnsFalse_DispatcherReturnValueIsReturned()
+		{
+			CreateThreadSafeScriptingConsole();
+			
+			dispatcher.CheckAccessReturnValue = false;
+			dispatcher.MethodInvoked = null;
+			dispatcher.InvokeReturnValue = 10;
+			
+			int columns = threadSafeConsole.GetMaximumVisibleColumns();
+			
+			Assert.AreEqual(10, columns);
+		}
+		
+		[Test]
+		public void Clear_DispatcherCheckAccessReturnsTrue_NonThreadSafeScriptingConsoleClearMethodIsCalled()
+		{
+			CreateThreadSafeScriptingConsole();
+			
+			dispatcher.CheckAccessReturnValue = true;
+			threadSafeConsole.Clear();
+			
+			Assert.IsTrue(nonThreadSafeScriptingConsole.IsClearCalled);
+		}
+		
+		[Test]
+		public void Clear_DispatcherCheckAccessReturnsFalse_MethodIsInvoked()
+		{
+			CreateThreadSafeScriptingConsole();
+			
+			dispatcher.CheckAccessReturnValue = false;
+			dispatcher.MethodInvoked = null;
+			
+			threadSafeConsole.Clear();
+			
+			Assert.IsNotNull(dispatcher.MethodInvoked);
+		}
 	}
 }

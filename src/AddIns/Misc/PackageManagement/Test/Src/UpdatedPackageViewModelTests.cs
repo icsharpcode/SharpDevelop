@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using ICSharpCode.PackageManagement.Scripting;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -12,23 +14,27 @@ namespace PackageManagement.Tests
 	public class UpdatedPackageViewModelTests
 	{
 		TestableUpdatedPackageViewModel viewModel;
-		FakePackageManagementService fakePackageManagementService;
-		FakePackageRepository sourcePackageRepository;
+		FakePackageManagementSolution fakeSolution;
+		FakePackageManagementProject fakeProject;
+		FakeUpdatePackageAction updatePackageAction;
+		FakePackageActionRunner fakeActionRunner;
 		
 		void CreateViewModel()
 		{
 			viewModel = new TestableUpdatedPackageViewModel();
-			fakePackageManagementService = viewModel.FakePackageManagementService;
-			sourcePackageRepository = viewModel.FakeSourcePackageRepository;
+			fakeSolution = viewModel.FakeSolution;
+			fakeProject = fakeSolution.FakeProject;
+			updatePackageAction = fakeProject.FakeUpdatePackageAction;
+			fakeActionRunner = viewModel.FakeActionRunner;
 		}
 		
 		[Test]
-		public void AddPackage_PackageAddedSuccessfully_PackageUpdatedUsingSourcePackageRepository()
+		public void AddPackage_PackageAddedSuccessfully_ProjectCreatedUsingSourcePackageRepository()
 		{
 			CreateViewModel();
 			viewModel.AddPackage();
 						
-			Assert.AreEqual(sourcePackageRepository, fakePackageManagementService.RepositoryPassedToUpdatePackage);
+			Assert.AreEqual(viewModel.FakePackage.Repository, fakeSolution.RepositoryPassedToGetActiveProject);
 		}
 	
 		[Test]
@@ -38,7 +44,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			var expectedPackage = viewModel.FakePackage;
-			var actualPackage = fakePackageManagementService.PackagePassedToUpdatePackage;
+			var actualPackage = updatePackageAction.Package;
 						
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}
@@ -50,9 +56,20 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			var expectedOperations = viewModel.FakePackageOperationResolver.PackageOperations;
-			var actualOperations = fakePackageManagementService.PackageOperationsPassedToUpdatePackage;
+			var actualOperations = updatePackageAction.Operations;
 						
 			Assert.AreEqual(expectedOperations, actualOperations);
+		}
+		
+		[Test]
+		public void AddPackage_PackageAddedSuccessfully_PackageIsUpdated()
+		{
+			CreateViewModel();
+			viewModel.AddPackage();
+			
+			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
+
+			Assert.AreEqual(updatePackageAction, actionExecuted);
 		}
 	}
 }

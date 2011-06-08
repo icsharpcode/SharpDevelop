@@ -35,9 +35,55 @@ namespace PackageManagement.Tests.Helpers
 			return FakePackageRepository;
 		}
 		
+		public IPackagePathResolver PathResolverPassedToCreateSharedRepository;
+		public IFileSystem FileSystemPassedToCreateSharedRepository;
+		public FakeSharedPackageRepository FakeSharedRepository = new FakeSharedPackageRepository();
+		
 		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem)
 		{
-			return new FakeSharedPackageRepository(pathResolver, fileSystem);
+			PathResolverPassedToCreateSharedRepository = pathResolver;
+			FileSystemPassedToCreateSharedRepository = fileSystem;
+			return FakeSharedRepository;
+		}
+		
+		public FakePackageRepository FakeAggregateRepository = new FakePackageRepository();
+		
+		public IPackageRepository CreateAggregateRepository()
+		{
+			return FakeAggregateRepository;
+		}
+		
+		public FakeRecentPackageRepository FakeRecentPackageRepository = new FakeRecentPackageRepository();
+		public IList<RecentPackageInfo> RecentPackagesPassedToCreateRecentPackageRepository;
+		public IPackageRepository AggregateRepositoryPassedToCreateRecentPackageRepository;
+		
+		public IRecentPackageRepository CreateRecentPackageRepository(
+			IList<RecentPackageInfo> recentPackages,
+			IPackageRepository aggregateRepository)
+		{
+			RecentPackagesPassedToCreateRecentPackageRepository = recentPackages;
+			AggregateRepositoryPassedToCreateRecentPackageRepository = aggregateRepository;
+			return FakeRecentPackageRepository;
+		}
+		
+		public IEnumerable<IPackageRepository> RepositoriesPassedToCreateAggregateRepository;
+		
+		public IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories)
+		{
+			RepositoriesPassedToCreateAggregateRepository = repositories;
+			return FakeAggregateRepository;
+		}
+		
+		public FakePackageRepository AddFakePackageRepositoryForPackageSource(string source)
+		{
+			var packageSource = new PackageSource(source);
+			var repository = new FakePackageRepository();			
+			FakePackageRepositories.Add(packageSource, repository);
+			return repository;
+		}
+		
+		public IRecentPackageRepository RecentPackageRepository {
+			get { return FakeRecentPackageRepository; }
 		}
 	}
 }

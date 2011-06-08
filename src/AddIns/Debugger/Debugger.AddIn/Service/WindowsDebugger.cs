@@ -144,7 +144,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				if (!CheckWebProjectStartInfo())
 					return;
 				
-				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
+				var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
 				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
 				System.Diagnostics.Process defaultAppProcess = null;
 				
@@ -369,7 +369,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		bool CheckWebProjectStartInfo()
 		{
 			// check if we have startup project
-			var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
+			var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
 			if (project == null) {
 				MessageService.ShowError("${res:ICSharpCode.NoStartupProject}");
 				return false;

@@ -35,9 +35,17 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
+		
+		protected virtual void OnPackageReferenceRemoved(IPackage package)
+		{
+			if (PackageReferenceRemoved != null) {
+				PackageReferenceRemoved(this, new PackageOperationEventArgs(package, String.Empty));
+			}
+		}
+		
 		#pragma warning disable 67
 		public event EventHandler<PackageOperationEventArgs> PackageReferenceAdding;
-		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
 		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving;
 		#pragma warning restore 67
 		
@@ -68,14 +76,22 @@ namespace ICSharpCode.PackageManagement.Design
 			throw new NotImplementedException();
 		}
 		
+		public IPackage PackagePassedToIsInstalled;
+		
 		public bool IsInstalled(IPackage package)
 		{
+			PackagePassedToIsInstalled = package;
 			return IsInstalledReturnValue;
 		}
 		
 		public void FirePackageReferenceAdded(IPackage package)
 		{
 			OnPackageReferenceAdded(package);
+		}
+		
+		public void FirePackageReferenceRemoved(IPackage package)
+		{
+			OnPackageReferenceRemoved(package);
 		}
 		
 		public void AddPackageReference(IPackage package, bool ignoreDependencies)

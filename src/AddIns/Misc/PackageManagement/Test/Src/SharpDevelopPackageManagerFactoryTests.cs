@@ -62,10 +62,9 @@ namespace PackageManagement.Tests
 			options.PackagesDirectory = "MyPackages";
 			CreatePackageManager();
 			
-			FakeSharedPackageRepository sharedRepository = packageManager.LocalRepository as FakeSharedPackageRepository;
-			
 			string expectedRoot = @"c:\projects\MyProject\MyPackages";
-			Assert.AreEqual(expectedRoot, sharedRepository.FileSystemPassedToConstructor.Root);
+			string actualRoot = fakePackageRepositoryFactory.FileSystemPassedToCreateSharedRepository.Root;
+			Assert.AreEqual(expectedRoot, actualRoot);
 		}
 		
 		[Test]
@@ -77,12 +76,13 @@ namespace PackageManagement.Tests
 			options.PackagesDirectory = "MyPackages";
 			CreatePackageManager();
 			
-			FakeSharedPackageRepository sharedRepository = packageManager.LocalRepository as FakeSharedPackageRepository;
-			
 			FakePackage package = new FakePackage("Test.Package");
 			package.Version = new Version(1, 0, 0, 0);
 			string expectedDirectory = @"c:\projects\MyProject\MyPackages\Test.Package.1.0.0.0";
-			string actualDirectory = sharedRepository.PackagePathResolverPassedToConstructor.GetInstallPath(package);
+			string actualDirectory = 
+				fakePackageRepositoryFactory
+					.PathResolverPassedToCreateSharedRepository
+					.GetInstallPath(package);
 			
 			Assert.AreEqual(expectedDirectory, actualDirectory);
 		}
@@ -94,9 +94,7 @@ namespace PackageManagement.Tests
 			CreateTestProject();
 			CreatePackageManager();
 			
-			FakeSharedPackageRepository sharedRepository = packageManager.LocalRepository as FakeSharedPackageRepository;
-			
-			Assert.AreEqual(packageManager.FileSystem, sharedRepository.FileSystemPassedToConstructor);
+			Assert.AreEqual(packageManager.FileSystem, fakePackageRepositoryFactory.FileSystemPassedToCreateSharedRepository);
 		}
 		
 		[Test]

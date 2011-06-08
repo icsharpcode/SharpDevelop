@@ -8,7 +8,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
 {
-	public class FakePackage : IPackage
+	public class FakePackage : IPackageFromRepository
 	{		
 		public Stream Stream = null;
 		public List<string> AuthorsList = new List<string>();
@@ -31,6 +31,21 @@ namespace ICSharpCode.PackageManagement.Design
 			this.Id = id;
 			this.Description = String.Empty;
 			this.Version = new Version(1, 0, 0, 0);
+		}
+		
+		public static FakePackage CreatePackageWithVersion(string version)
+		{
+			return CreatePackageWithVersion("Test", version);
+		}
+		
+		public static FakePackage CreatePackageWithVersion(string id, string version)
+		{
+			var package = new FakePackage() {
+				Id = id,
+				Description = String.Empty,
+				Version = new Version(version)
+			};
+			return package;
 		}
 		
 		public string Id { get; set; }
@@ -113,11 +128,26 @@ namespace ICSharpCode.PackageManagement.Design
 			DependenciesList.Add(new PackageDependency(id));
 		}
 		
-		List<FrameworkAssemblyReference> frameworkAssemblies = 
+		public List<FrameworkAssemblyReference> FrameworkAssembliesList = 
 			new List<FrameworkAssemblyReference>();
 		
 		public IEnumerable<FrameworkAssemblyReference> FrameworkAssemblies {
-			get { return frameworkAssemblies; }
+			get { return FrameworkAssembliesList; }
+		}
+		
+		public FakePackageRepository FakePackageRepository = new FakePackageRepository();
+		
+		public IPackageRepository Repository {
+			get { return FakePackageRepository; }
+		}
+		
+		public bool HasDependencies { get; set; }
+		
+		public void AddFile(string fileName)
+		{
+			var file = new PhysicalPackageFile();
+			file.TargetPath = fileName;
+			FilesList.Add(file);
 		}
 	}
 }

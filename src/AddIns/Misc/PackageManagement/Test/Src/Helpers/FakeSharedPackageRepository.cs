@@ -11,18 +11,6 @@ namespace PackageManagement.Tests.Helpers
 	public class FakeSharedPackageRepository : FakePackageRepository, ISharedPackageRepository
 	{
 		public string PathPassedToRegisterRepository;
-		public IPackagePathResolver PackagePathResolverPassedToConstructor;
-		public IFileSystem FileSystemPassedToConstructor;
-		
-		public FakeSharedPackageRepository()
-		{
-		}
-		
-		public FakeSharedPackageRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem)
-		{
-			this.PackagePathResolverPassedToConstructor = pathResolver;
-			this.FileSystemPassedToConstructor = fileSystem;
-		}
 		
 		public bool IsReferenced(string packageId, Version version)
 		{

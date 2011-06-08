@@ -16,8 +16,8 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		static IEnumerable<IPackage> CreatePackages()
 		{
-			var packageManagementService = new DesignTimePackageManagementService();
-			return packageManagementService.FakeActivePackageRepository.FakePackages;
+			var repositories = new DesignTimeRegisteredPackageRepositories();
+			return repositories.FakeActiveRepository.FakePackages;
 		}
 	}
 }

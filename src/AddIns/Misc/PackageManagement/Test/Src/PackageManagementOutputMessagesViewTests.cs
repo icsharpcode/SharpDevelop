@@ -15,6 +15,7 @@ namespace PackageManagement.Tests
 		PackageManagementOutputMessagesView view;
 		FakeCompilerMessageView fakeCompilerMessageView;
 		FakeMessageCategoryView fakeMessageCategoryView;
+		PackageManagementEvents packageManagementEvents;
 		
 		void CreateView()
 		{
@@ -30,12 +31,13 @@ namespace PackageManagement.Tests
 		
 		void CreateView(FakeCompilerMessageView fakeCompilerMessageView)
 		{
-			view = new PackageManagementOutputMessagesView(fakeCompilerMessageView);
+			packageManagementEvents = new PackageManagementEvents();
+			view = new PackageManagementOutputMessagesView(fakeCompilerMessageView, packageManagementEvents);
 		}
 		
 		void LogInfoMessage(string message)
 		{
-			view.Log(MessageLevel.Info, message);
+			packageManagementEvents.OnPackageOperationMessageLogged(MessageLevel.Info, message);
 		}
 		
 		[Test]
@@ -92,11 +94,11 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Log_InfoMessageUsingFormatStringPassed_FullyFormattedStringAddedToMessageViewCategory()
+		public void OnPackageOperationMessageLogged_InfoMessageUsingFormatStringPassed_FullyFormattedStringAddedToMessageViewCategory()
 		{
 			CreateView();
 			
-			view.Log(MessageLevel.Info, "Test {0}", 1);
+			packageManagementEvents.OnPackageOperationMessageLogged(MessageLevel.Info, "Test {0}", 1);
 			
 			Assert.AreEqual("Test 1", fakeMessageCategoryView.FirstLineAppended);
 		}

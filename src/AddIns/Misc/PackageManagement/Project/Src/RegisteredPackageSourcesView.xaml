@@ -8,7 +8,7 @@
 	
 	<Grid x:Name="MainGrid">
 		<Grid.Resources>
-			<pm:ViewModelLocator x:Key="ViewModelLocator"/>
+			<pm:PackageManagementViewModels x:Key="ViewModels"/>
 			
 			<Style
 				x:Key="ListBoxItemStyle"
@@ -50,7 +50,7 @@
 		</Grid.Resources>
 		
 		<Grid.DataContext>
-			<Binding Source="{StaticResource ViewModelLocator}" Path="RegisteredPackageSourcesViewModel"/>
+			<Binding Source="{StaticResource ViewModels}" Path="RegisteredPackageSourcesViewModel"/>
 		</Grid.DataContext>
 		
 		<Grid.ColumnDefinitions>

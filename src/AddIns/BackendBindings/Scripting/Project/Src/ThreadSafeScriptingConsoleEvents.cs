@@ -9,14 +9,14 @@ namespace ICSharpCode.Scripting
 	public class ThreadSafeScriptingConsoleEvents
 	{
 		// The index into the waitHandles array where the lineReceivedEvent is stored.
-		int lineReceivedEventIndex = 0; 
+		int lineReceivedEventIndex = 1; 
 		ManualResetEvent lineReceivedEvent = new ManualResetEvent(false);
 		ManualResetEvent disposedEvent = new ManualResetEvent(false);
 		WaitHandle[] waitHandles;
 
 		public ThreadSafeScriptingConsoleEvents()
 		{
-			waitHandles = new WaitHandle[] {lineReceivedEvent, disposedEvent};
+			waitHandles = new WaitHandle[] {disposedEvent, lineReceivedEvent};
 		}
 		
 		public virtual bool WaitForLine()

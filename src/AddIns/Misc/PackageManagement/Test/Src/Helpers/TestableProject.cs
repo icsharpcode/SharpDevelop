@@ -25,9 +25,33 @@ namespace PackageManagement.Tests.Helpers
 			ItemsWhenSaved = Items;
 		}
 		
+		public string FileNamePassedToGetDefaultItemType;
+		
 		public override ItemType GetDefaultItemType(string fileName)
 		{
+			FileNamePassedToGetDefaultItemType = fileName;
 			return ItemTypeToReturnFromGetDefaultItemType;
+		}
+		
+		public ReferenceProjectItem AddReference(string include)
+		{
+			var referenceProjectItem = new ReferenceProjectItem(this, include);
+			ProjectService.AddProjectItem(this, referenceProjectItem);
+			return referenceProjectItem;
+		}
+		
+		public FileProjectItem AddFile(string include)
+		{
+			var fileProjectItem = new FileProjectItem(this, ItemType.Compile, include);
+			ProjectService.AddProjectItem(this, fileProjectItem);
+			return fileProjectItem;
+		}
+		
+		public FileProjectItem AddDirectory(string include)
+		{
+			var fileProjectItem = new FileProjectItem(this, ItemType.Folder, include);
+			ProjectService.AddProjectItem(this, fileProjectItem);
+			return fileProjectItem;			
 		}
 	}
 }

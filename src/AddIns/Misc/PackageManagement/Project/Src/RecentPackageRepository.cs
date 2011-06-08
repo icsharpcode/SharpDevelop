@@ -14,11 +14,25 @@ namespace ICSharpCode.PackageManagement
 		
 		List<IPackage> packages = new List<IPackage>();
 		int maximumPackagesCount = DefaultMaximumPackagesCount;
-		IPackageManagementService packageManagementService;
+		IList<RecentPackageInfo> savedRecentPackages;
+		IPackageRepository aggregateRepository;
+		IPackageManagementEvents packageManagementEvents;
 		
-		public RecentPackageRepository(IPackageManagementService packageManagementService)
+		public RecentPackageRepository(
+			IList<RecentPackageInfo> recentPackages,
+			IPackageRepository aggregateRepository,
+			IPackageManagementEvents packageManagementEvents)
 		{
-			this.packageManagementService = packageManagementService;
+			this.savedRecentPackages = recentPackages;
+			this.aggregateRepository = aggregateRepository;
+			this.packageManagementEvents = packageManagementEvents;
+			
+			this.packageManagementEvents.ParentPackageInstalled += ParentPackageInstalled;
+		}
+		
+		void ParentPackageInstalled(object sender, ParentPackageOperationEventArgs e)
+		{
+			AddPackage(e.Package);
 		}
 		
 		public string Source {
@@ -65,9 +79,8 @@ namespace ICSharpCode.PackageManagement
 		
 		void UpdateRecentPackagesInOptions()
 		{
-			IList<RecentPackageInfo> recentPackages = packageManagementService.Options.RecentPackages;
-			recentPackages.Clear();
-			recentPackages.AddRange(GetRecentPackagesInfo());
+			savedRecentPackages.Clear();
+			savedRecentPackages.AddRange(GetRecentPackagesInfo());
 		}
 		
 		List<RecentPackageInfo> GetRecentPackagesInfo()
@@ -105,7 +118,7 @@ namespace ICSharpCode.PackageManagement
 		
 		bool HasRecentPackages()
 		{
-			return packageManagementService.Options.RecentPackages.Count > 0;
+			return savedRecentPackages.Count > 0;
 		}
 		
 		IEnumerable<IPackage> GetRecentPackages()
@@ -116,14 +129,13 @@ namespace ICSharpCode.PackageManagement
 		
 		IEnumerable<IPackage> GetRecentPackagesFilteredById()
 		{
-			IPackageRepository aggregrateRepository = packageManagementService.CreateAggregatePackageRepository();
 			IEnumerable<string> recentPackageIds = GetRecentPackageIds();
-			return aggregrateRepository.FindPackages(recentPackageIds);
+			return aggregateRepository.FindPackages(recentPackageIds);
 		}
 				
 		IEnumerable<string> GetRecentPackageIds()
 		{
-			foreach (RecentPackageInfo recentPackageInfo in packageManagementService.Options.RecentPackages) {
+			foreach (RecentPackageInfo recentPackageInfo in savedRecentPackages) {
 				yield return recentPackageInfo.Id;
 			}
 		}
@@ -132,7 +144,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			List<IPackage> filteredRecentPackages = new List<IPackage>();
 			foreach (IPackage recentPackage in recentPackages) {
-				foreach (RecentPackageInfo savedRecentPackageInfo in packageManagementService.Options.RecentPackages) {
+				foreach (RecentPackageInfo savedRecentPackageInfo in savedRecentPackages) {
 					if (savedRecentPackageInfo.IsMatch(recentPackage)) {
 						filteredRecentPackages.Add(recentPackage);
 					}

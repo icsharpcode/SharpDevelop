@@ -3,45 +3,30 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
-	public class ExceptionThrowingPackageManagementService : FakePackageManagementService
+	public class ExceptionThrowingPackageManagementSolution : FakePackageManagementSolution
 	{
-		public Exception ExeptionToThrowWhenActiveProjectManagerAccessed { get; set; }
-		public Exception ExeptionToThrowWhenInstallPackageCalled { get; set; }
-		public Exception ExeptionToThrowWhenUninstallPackageCalled { get; set; }
-		public Exception ExeptionToThrowWhenActiveRepositoryAccessed { get; set; }
-
-		public override IProjectManager ActiveProjectManager {
-			get {
-				if (ExeptionToThrowWhenActiveProjectManagerAccessed != null) {
-					throw ExeptionToThrowWhenActiveProjectManagerAccessed;
-				}
-				return base.ActiveProjectManager;
-			}
-		}
+		public Exception ExceptionToThrowWhenGetActiveProjectCalled { get; set; }
 		
-		public override IPackageRepository ActivePackageRepository {
-			get {
-				if (ExeptionToThrowWhenActiveRepositoryAccessed != null) {
-					throw ExeptionToThrowWhenActiveRepositoryAccessed;
-				}
-				return base.ActivePackageRepository;
-			}
-			set { base.ActivePackageRepository = value; }
-		}
-		
-		public override void InstallPackage(IPackageRepository repository, IPackage package, IEnumerable<PackageOperation> operations)
+		public override IPackageManagementProject GetActiveProject()
 		{
-			throw ExeptionToThrowWhenInstallPackageCalled;
+			if (ExceptionToThrowWhenGetActiveProjectCalled != null) {
+				throw ExceptionToThrowWhenGetActiveProjectCalled;
+			}
+			return base.GetActiveProject();
 		}
 		
-		public override void UninstallPackage(IPackageRepository repository, IPackage package)
+		public override IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository)
 		{
-			throw ExeptionToThrowWhenUninstallPackageCalled;
+			if (ExceptionToThrowWhenGetActiveProjectCalled != null) {
+				throw ExceptionToThrowWhenGetActiveProjectCalled;
+			}
+			return base.GetActiveProject(sourceRepository);
 		}
 	}
 }

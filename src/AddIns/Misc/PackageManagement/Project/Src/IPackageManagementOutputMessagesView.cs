@@ -6,7 +6,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IPackageManagementOutputMessagesView : ILogger
+	public interface IPackageManagementOutputMessagesView
 	{
 		void Clear();
 	}

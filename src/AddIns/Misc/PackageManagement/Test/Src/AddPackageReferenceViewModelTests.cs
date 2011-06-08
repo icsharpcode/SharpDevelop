@@ -16,32 +16,54 @@ namespace PackageManagement.Tests
 	public class AddPackageReferenceViewModelTests
 	{
 		AddPackageReferenceViewModel viewModel;
-		FakePackageManagementService fakePackageManagementService;
+		PackageManagementEvents packageManagementEvents;
+		FakeLicenseAcceptanceService fakeLicenseAcceptanceSevice;
+		FakePackageManagementSolution fakeSolution;
+		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
 		FakeTaskFactory taskFactory;
+		List<FakePackage> packagesPassedToOnAcceptLicenses;
+		FakePackageActionRunner fakeActionRunner;
+		FakePackageManagementEvents fakeThreadSafeEvents;
 		
-		void CreatePackageManagementService()
+		void CreateSolution()
 		{
-			fakePackageManagementService = new FakePackageManagementService();
+			fakeSolution = new FakePackageManagementSolution();
+			fakeRegisteredPackageRepositories = new FakeRegisteredPackageRepositories();
 		}
 		
 		void CreateViewModel()
 		{
-			CreatePackageManagementService();
-			CreateViewModel(fakePackageManagementService);
+			CreateSolution();
+			CreateViewModel(fakeSolution);
 		}
 		
-		void CreateViewModel(FakePackageManagementService packageManagementService)
+		void CreateViewModel(FakePackageManagementSolution solution)
+		{
+			packageManagementEvents = new PackageManagementEvents();
+			var threadSafeEvents = new ThreadSafePackageManagementEvents(packageManagementEvents, new FakePackageManagementWorkbench());
+			CreateViewModel(fakeSolution, threadSafeEvents);
+		}
+		
+		void CreateViewModel(FakePackageManagementSolution solution, IThreadSafePackageManagementEvents packageManagementEvents)
 		{
 			taskFactory = new FakeTaskFactory();
-			viewModel = new AddPackageReferenceViewModel(packageManagementService, taskFactory);
+			fakeLicenseAcceptanceSevice = new FakeLicenseAcceptanceService();
+			fakeActionRunner = new FakePackageActionRunner();
+			viewModel = new AddPackageReferenceViewModel(
+				solution,
+				fakeRegisteredPackageRepositories,
+				packageManagementEvents,
+				fakeActionRunner,
+				fakeLicenseAcceptanceSevice,
+				taskFactory);
 			taskFactory.ExecuteAllFakeTasks();
 		}
 		
-		List<string> CallShowErrorMessageAndRecordPropertiesChanged(string message)
+		void CreateViewModelWithFakeThreadSafePackageManagementEvents()
 		{
-			var propertyNamesChanged = RecordViewModelPropertiesChanged();
-			viewModel.ShowErrorMessage(message);
-			return propertyNamesChanged;
+			CreateSolution();
+			fakeThreadSafeEvents = new FakePackageManagementEvents();
+			CreateViewModel(fakeSolution, fakeThreadSafeEvents);
 		}
 		
 		List<string> RecordViewModelPropertiesChanged()
@@ -50,25 +72,48 @@ namespace PackageManagement.Tests
 			viewModel.PropertyChanged += (sender, e) => propertyNamesChanged.Add(e.PropertyName);
 			return propertyNamesChanged;
 		}
-
-		List<string> CallClearMessageAndRecordPropertiesChanged()
+		
+		Exception RaisePackageOperationErrorEvent()
+		{
+			var ex = new Exception("Test");
+			packageManagementEvents.OnPackageOperationError(ex);
+			return ex;
+		}
+		
+		List<string> RaisePackageOperationErrorEventAndRecordPropertiesChanged()
 		{
 			var propertyNamesChanged = RecordViewModelPropertiesChanged();
-			viewModel.ClearMessage();
+			RaisePackageOperationErrorEvent();
 			return propertyNamesChanged;
-		}		
+		}
+		
+		void RaisePackageOperationsStartingEvent()
+		{
+			packageManagementEvents.OnPackageOperationsStarting();
+		}
+		
+		List<string> RaisePackageOperationsStartingEventAndRecordPropertiesChanged()
+		{
+			var propertyNamesChanged = RecordViewModelPropertiesChanged();
+			RaisePackageOperationsStartingEvent();
+			return propertyNamesChanged;
+		}
+		
+		bool RaiseAcceptLicensesEvent()
+		{
+			packagesPassedToOnAcceptLicenses = new List<FakePackage>();
+			return packageManagementEvents.OnAcceptLicenses(packagesPassedToOnAcceptLicenses);
+		}
 		
 		[Test]
 		public void InstalledPackagesViewModel_ProjectHasOneInstalledPackage_HasOnePackageViewModel()
 		{
-			CreatePackageManagementService();
-			var projectManager = new FakeProjectManager();
-			fakePackageManagementService.FakeActiveProjectManager = projectManager;
+			CreateSolution();
 			FakePackage package = new FakePackage();
-			projectManager.FakeLocalRepository.FakePackages.Add(package);
-			CreateViewModel(fakePackageManagementService);
+			fakeSolution.FakeProject.FakePackages.Add(package);
+			CreateViewModel(fakeSolution);
 			
-			IEnumerable<IPackage> expectedPackages = projectManager.FakeLocalRepository.FakePackages;
+			IEnumerable<IPackage> expectedPackages = fakeSolution.FakeProject.FakePackages;
 			IEnumerable<PackageViewModel> actualPackageViewModels = viewModel.InstalledPackagesViewModel.PackageViewModels;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, actualPackageViewModels);
@@ -77,13 +122,13 @@ namespace PackageManagement.Tests
 		[Test]
 		public void AvailablePackagesViewModel_ActiveRepositoryHasOnePackage_HasOnePackageViewModel()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			var package = new FakePackage();
 			package.Id = "Test";
-			fakePackageManagementService.FakeActivePackageRepository.FakePackages.Add(package);
-			CreateViewModel(fakePackageManagementService);
+			fakeRegisteredPackageRepositories.FakeActiveRepository.FakePackages.Add(package);
+			CreateViewModel(fakeSolution);
 
-			List<FakePackage> expectedPackages = fakePackageManagementService.FakeActivePackageRepository.FakePackages;
+			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeActiveRepository.FakePackages;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.AvailablePackagesViewModel.PackageViewModels);
 		}
@@ -91,63 +136,55 @@ namespace PackageManagement.Tests
 		[Test]
 		public void PackageUpdatesViewModel_OneUpdatedPackageVersion_HasOnePackageViewModel()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			
 			var oldPackage = new FakePackage() {
 				Id = "Test",
 				Version = new Version("1.0.0.0")
 			};
-			fakePackageManagementService.AddPackageToProjectLocalRepository(oldPackage);
+			fakeSolution.AddPackageToActiveProjectLocalRepository(oldPackage);
 			
 			var newPackage = new FakePackage() {
 				Id = "Test",
 				Version = new Version("2.0.0.0")
 			};
-			fakePackageManagementService.FakeAggregateRepository.FakePackages.Add(newPackage);
+			fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages.Add(newPackage);
 			
-			CreateViewModel(fakePackageManagementService);
+			CreateViewModel(fakeSolution);
 			
-			List<FakePackage> expectedPackages = fakePackageManagementService.FakeAggregateRepository.FakePackages;
+			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages;
 			
-			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageUpdatesViewModel.PackageViewModels);
-		}
-		
-		[Test]
-		public void Constructor_InstanceCreated_OutputMessagesCleared()
-		{
-			CreateViewModel();
-			
-			Assert.IsTrue(fakePackageManagementService.FakeOutputMessagesView.IsClearCalled);
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.UpdatedPackagesViewModel.PackageViewModels);
 		}
 		
 		[Test]
 		public void RecentPackagesViewModel_RecentRepositoryHasOnePackage_HasOnePackageViewModel()
 		{
-			CreatePackageManagementService();
+			CreateSolution();
 			var package = new FakePackage();
 			package.Id = "Test";
-			fakePackageManagementService.FakeRecentPackageRepository.FakePackages.Add(package);
-			CreateViewModel(fakePackageManagementService);
+			fakeRegisteredPackageRepositories.FakeRecentPackageRepository.FakePackages.Add(package);
+			CreateViewModel(fakeSolution);
 
-			List<FakePackage> expectedPackages = fakePackageManagementService.FakeRecentPackageRepository.FakePackages;
+			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeRecentPackageRepository.FakePackages;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.RecentPackagesViewModel.PackageViewModels);
 		}
 		
 		[Test]
-		public void ShowErrorMessage_ErrorMessageToBeDisplayedToUser_MessageIsSet()
+		public void Message_PackageManagementErrorEventFires_ExceptionMessageUpdatesViewModelMessage()
 		{
 			CreateViewModel();
-			viewModel.ShowErrorMessage("Test");
+			var ex = RaisePackageOperationErrorEvent();
 			
 			Assert.AreEqual("Test", viewModel.Message);
 		}
 		
 		[Test]
-		public void ShowErrorMessage_ErrorMessageToBeDisplayedToUser_MessagePropertyIsChanged()
+		public void Message_PackageManagementErrorEventFires_MessagePropertyIsChanged()
 		{
 			CreateViewModel();
-			List<string> propertyNamesChanged = CallShowErrorMessageAndRecordPropertiesChanged("Test");
+			List<string> propertyNamesChanged = RaisePackageOperationErrorEventAndRecordPropertiesChanged();
 			
 			bool result = propertyNamesChanged.Contains("Message");
 			
@@ -155,19 +192,19 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ShowErrorMessage_ErrorMessageToBeDisplayedToUser_HasErrorIsTrue()
+		public void Message_PackageManagementErrorEventFires_HasErrorIsTrue()
 		{
 			CreateViewModel();
-			viewModel.ShowErrorMessage("Test");
+			RaisePackageOperationErrorEvent();
 			
 			Assert.IsTrue(viewModel.HasError);
 		}
 		
 		[Test]
-		public void ShowErrorMessage_ErrorMessageToBeDisplayedToUser_HasErrorPropertyIsChanged()
+		public void Message_PackageManagementErrorEventFires_HasErrorPropertyIsChanged()
 		{
 			CreateViewModel();
-			List<string> propertyNamesChanged = CallShowErrorMessageAndRecordPropertiesChanged("Test");
+			List<string> propertyNamesChanged = RaisePackageOperationErrorEventAndRecordPropertiesChanged();
 			
 			bool result = propertyNamesChanged.Contains("HasError");
 			
@@ -175,20 +212,20 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ClearMessage_ErrorMessageCurrentlyDisplayed_MessageIsCleared()
+		public void Message_ErrorMessageCurrentlyDisplayedWhenPackageOperationsStartingEventFired_MessageIsCleared()
 		{
 			CreateViewModel();
 			viewModel.Message = "test";
-			viewModel.ClearMessage();
+			packageManagementEvents.OnPackageOperationsStarting();
 			
 			Assert.IsNull(viewModel.Message);
 		}
 		
 		[Test]
-		public void ClearMessage_ErrorMessageCurrentlyDisplayed_MessagePropertyIsChanged()
+		public void Message_ErrorMessageCurrentlyDisplayedWhenOnPackageOperationsStartingEventFired_MessagePropertyIsChanged()
 		{
 			CreateViewModel();
-			List<string> propertyNamesChanged = CallClearMessageAndRecordPropertiesChanged();
+			List<string> propertyNamesChanged = RaisePackageOperationsStartingEventAndRecordPropertiesChanged();
 			
 			bool result = propertyNamesChanged.Contains("Message");
 			
@@ -196,10 +233,10 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ClearMessages_ErrorMessageCurrentlyDisplayed_HasErrorPropertyIsChanged()
+		public void HasError_ErrorMessageCurrentlyDisplayedWhenOnPackageOperationsStartingEventFired_HasErrorPropertyIsChanged()
 		{
 			CreateViewModel();
-			List<string> propertyNamesChanged = CallClearMessageAndRecordPropertiesChanged();
+			List<string> propertyNamesChanged = RaisePackageOperationsStartingEventAndRecordPropertiesChanged();
 			
 			bool result = propertyNamesChanged.Contains("HasError");
 			
@@ -207,13 +244,131 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ClearMessage_ErrorMessageCurrentlyDisplayed_HasErrorIsFalse()
+		public void HasError_ErrorMessageCurrentlyDisplayedWhenOnPackageOperationsStartingEventFired_ReturnsFalse()
 		{
 			CreateViewModel();
 			viewModel.HasError = true;
-			viewModel.ClearMessage();
+			RaisePackageOperationsStartingEvent();
 			
 			Assert.IsFalse(viewModel.HasError);
+		}
+		
+		[Test]
+		public void Dispose_ContainedViewModelsAreDisposed_AvailablePackagesViewModelIsDisposed()
+		{
+			CreateViewModel();
+			viewModel.Dispose();
+			
+			bool disposed = viewModel.AvailablePackagesViewModel.IsDisposed;
+			
+			Assert.IsTrue(disposed);
+		}
+		
+		[Test]
+		public void Dispose_ContainedViewModelsAreDisposed_InstaledPackagesViewModelIsDisposed()
+		{
+			CreateViewModel();
+			viewModel.Dispose();
+			
+			bool disposed = viewModel.InstalledPackagesViewModel.IsDisposed;
+			
+			Assert.IsTrue(disposed);
+		}
+		
+		[Test]
+		public void Dispose_ContainedViewModelsAreDisposed_UpdatedPackagesViewModelIsDisposed()
+		{
+			CreateViewModel();
+			viewModel.Dispose();
+			
+			bool disposed = viewModel.UpdatedPackagesViewModel.IsDisposed;
+			
+			Assert.IsTrue(disposed);
+		}
+		
+		[Test]
+		public void Dispose_ContainedViewModelsAreDisposed_RecentPackagesViewModelIsDisposed()
+		{
+			CreateViewModel();
+			viewModel.Dispose();
+			
+			bool disposed = viewModel.RecentPackagesViewModel.IsDisposed;
+			
+			Assert.IsTrue(disposed);
+		}
+		
+		[Test]
+		public void AcceptLicenses_EventFired_PackagesPassedToUserToAcceptLicenses()
+		{
+			CreateViewModel();
+			RaiseAcceptLicensesEvent();
+			
+			var actualPackages = fakeLicenseAcceptanceSevice.PackagesPassedToAcceptLicenses;
+			var expectedPackages = packagesPassedToOnAcceptLicenses;
+			
+			Assert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void AcceptLicenses_EventFiredAndUserAcceptsLicenses_AcceptLicensesReturnsTrue()
+		{
+			CreateViewModel();
+			fakeLicenseAcceptanceSevice.AcceptLicensesReturnValue = true;
+			bool result = RaiseAcceptLicensesEvent();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void AcceptLicenses_EventFiredAndUserDoesNotAcceptLicenses_AcceptLicensesReturnsFalse()
+		{
+			CreateViewModel();
+			fakeLicenseAcceptanceSevice.AcceptLicensesReturnValue = false;
+			bool result = RaiseAcceptLicensesEvent();
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Dispose_AcceptLicensesEventFired_UserIsNotPromptedToAcceptLicenses()
+		{
+			CreateViewModel();
+			viewModel.Dispose();
+			RaiseAcceptLicensesEvent();
+			
+			Assert.IsFalse(fakeLicenseAcceptanceSevice.IsAcceptLicensesCalled);
+		}
+		
+		[Test]
+		public void Dispose_PackageOperationErrorEventFires_ViewModelMessageIsNotUpdated()
+		{
+			CreateViewModel();
+			viewModel.Dispose();
+			RaisePackageOperationErrorEvent();
+			
+			Assert.IsNull(viewModel.Message);
+		}
+		
+		[Test]
+		public void Dispose_PackageOperationsStartingEventFires_ViewModelMessageIsNotUpdated()
+		{
+			CreateViewModel();
+			viewModel.Message = "Test";
+			viewModel.Dispose();
+			RaisePackageOperationsStartingEvent();
+			
+			Assert.AreEqual("Test", viewModel.Message);
+		}
+		
+		[Test]
+		public void Dispose_MethodCalled_DisposesThreadSafePackageManagementEvents()
+		{
+			CreateViewModelWithFakeThreadSafePackageManagementEvents();
+			viewModel.Dispose();
+			
+			bool disposed = fakeThreadSafeEvents.IsDisposed;
+			
+			Assert.IsTrue(disposed);
 		}
 	}
 }

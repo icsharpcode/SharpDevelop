@@ -3,30 +3,27 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class UpdatedPackageViewModel : PackageViewModel
 	{
-		IPackageManagementService packageManagementService;
-		
 		public UpdatedPackageViewModel(
-			IPackage package,
-			IPackageManagementService packageManagementService,
-			ILicenseAcceptanceService licenseAcceptanceService,
-			IMessageReporter messageReporter)
-			: base(package, packageManagementService, licenseAcceptanceService, messageReporter)
+			IPackageFromRepository package,
+			IPackageManagementSolution solution,
+			IPackageManagementEvents packageManagementEvents,
+			IPackageActionRunner actionRunner,
+			ILogger logger)
+			: base(package, solution, packageManagementEvents, actionRunner, logger)
 		{
-			this.packageManagementService = packageManagementService;
 		}
 		
-		protected override void InstallPackage(
-			IPackageRepository sourcePackageRepository,
-			IPackage package,
-			IEnumerable<PackageOperation> packageOperations)
+		protected override ProcessPackageOperationsAction CreateInstallPackageAction(
+			IPackageManagementProject project)
 		{
-			packageManagementService.UpdatePackage(sourcePackageRepository, package, packageOperations);
+			return project.CreateUpdatePackageAction();
 		}
 	}
 }

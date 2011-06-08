@@ -10,11 +10,32 @@ namespace ICSharpCode.PackageManagement
 {
 	public class AddPackageReferenceCommand : AbstractMenuCommand
 	{
+		IPackageManagementOutputMessagesView outputMessagesView;
+		
+		public AddPackageReferenceCommand()
+			: this(PackageManagementServices.OutputMessagesView)
+		{
+		}
+		
+		public AddPackageReferenceCommand(IPackageManagementOutputMessagesView outputMessagesView)
+		{
+			this.outputMessagesView = outputMessagesView;
+		}
+		
 		public override void Run()
 		{
-			AddPackageReferenceView view = new AddPackageReferenceView();
-			view.Owner = WorkbenchSingleton.MainWindow;
-			view.ShowDialog();
+			outputMessagesView.Clear();
+			
+			using (IAddPackageReferenceView view = CreateAddPackageReferenceView()) {
+				view.ShowDialog();
+			}
+		}
+		
+		protected virtual IAddPackageReferenceView CreateAddPackageReferenceView()
+		{
+			return new AddPackageReferenceView() {
+				Owner = WorkbenchSingleton.MainWindow
+			};
 		}
 	}
 }

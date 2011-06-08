@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -14,28 +15,33 @@ namespace ICSharpCode.PackageManagement
 		DelegateCommand addPackageCommand;
 		DelegateCommand removePackageCommand;
 		
-		IPackageManagementService packageManagementService;
-		ILicenseAcceptanceService licenseAcceptanceService;
-		IMessageReporter messageReporter;
-		IPackage package;
+		IPackageManagementSolution solution;
+		IPackageManagementProject activeProject;
+		IPackageManagementEvents packageManagementEvents;
+		IPackageFromRepository package;
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
-		IPackageRepository sourcePackageRepository;
-		IPackageRepository localPackageRepository;
-		bool? hasDependencies;
+		PackageViewModelOperationLogger logger;
+		IPackageActionRunner actionRunner;
 		
 		public PackageViewModel(
-			IPackage package,
-			IPackageManagementService packageManagementService,
-			ILicenseAcceptanceService licenseAcceptanceService,
-			IMessageReporter messageReporter)
+			IPackageFromRepository package,
+			IPackageManagementSolution solution,
+			IPackageManagementEvents packageManagementEvents,
+			IPackageActionRunner actionRunner,
+			ILogger logger)
 		{
 			this.package = package;
-			this.sourcePackageRepository = packageManagementService.ActivePackageRepository;
-			this.packageManagementService = packageManagementService;
-			this.licenseAcceptanceService = licenseAcceptanceService;
-			this.messageReporter = messageReporter;
+			this.solution = solution;
+			this.packageManagementEvents = packageManagementEvents;
+			this.actionRunner = actionRunner;
+			this.logger = CreateLogger(logger);
 			
 			CreateCommands();
+		}
+		
+		protected virtual PackageViewModelOperationLogger CreateLogger(ILogger logger)
+		{
+			return new PackageViewModelOperationLogger(logger, package);
 		}
 		
 		void CreateCommands()
@@ -43,25 +49,7 @@ namespace ICSharpCode.PackageManagement
 			addPackageCommand = new DelegateCommand(param => AddPackage());
 			removePackageCommand = new DelegateCommand(param => RemovePackage());
 		}
-		
-		public IPackageRepository SourcePackageRepository {
-			get { return sourcePackageRepository; }
-		}
-		
-		public IPackageRepository LocalPackageRepository {
-			get {
-				if (localPackageRepository == null) {
-					GetLocalPackageRepository();
-				}
-				return localPackageRepository;
-			}
-		}
-		
-		void GetLocalPackageRepository()
-		{
-			localPackageRepository = packageManagementService.ActiveProjectManager.LocalRepository;
-		}
-		
+	
 		public ICommand AddPackageCommand {
 			get { return addPackageCommand; }
 		}
@@ -110,7 +98,16 @@ namespace ICSharpCode.PackageManagement
 		
 		bool IsPackageInstalled(IPackage package)
 		{
-			return packageManagementService.ActiveProjectManager.IsInstalled(package);
+			return ActiveProject.IsInstalled(package);
+		}
+		
+		IPackageManagementProject ActiveProject {
+			get {
+				if (activeProject == null) {
+					activeProject = solution.GetActiveProject();
+				}
+				return activeProject;
+			}
 		}
 		
 		public IEnumerable<PackageDependency> Dependencies {
@@ -118,13 +115,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool HasDependencies {
-			get {
-				if (!hasDependencies.HasValue) {
-					IEnumerator<PackageDependency> enumerator = Dependencies.GetEnumerator();
-					hasDependencies = enumerator.MoveNext();
-				}
-				return hasDependencies.Value;
-			}
+			get { return package.HasDependencies; }
 		}
 		
 		public bool HasNoDependencies {
@@ -170,87 +161,28 @@ namespace ICSharpCode.PackageManagement
 		public void AddPackage()
 		{
 			ClearReportedMessages();
-			LogAddingPackage();
+			logger.LogAddingPackage();
 			TryInstallingPackage();
-			LogAfterPackageOperationCompletes();
+			logger.LogAfterPackageOperationCompletes();
 		}
 		
 		void ClearReportedMessages()
 		{
-			messageReporter.ClearMessage();
-		}
-		
-		void LogAddingPackage()
-		{
-			string message = GetFormattedStartPackageOperationMessage(AddingPackageMessageFormat);
-			Log(message);
-		}
-				
-		void Log(string message)
-		{
-			Logger.Log(MessageLevel.Info, message);
-		}
-		
-		string GetFormattedStartPackageOperationMessage(string format)
-		{
-			string message = String.Format(format, package.ToString());
-			return GetStartPackageOperationMessage(message);
-		}
-		
-		string GetStartPackageOperationMessage(string message)
-		{
-			return String.Format("------- {0} -------", message);
-		}
-		
-		ILogger Logger {
-			get { return packageManagementService.OutputMessagesView; }
-		}
-		
-		protected virtual string AddingPackageMessageFormat {
-			get { return "Installing...{0}"; }
-		}
-		
-		void LogAfterPackageOperationCompletes()
-		{
-			LogEndMarkerLine();
-			LogEmptyLine();
-		}
-		
-		void LogEndMarkerLine()
-		{
-			string message = new String('=', 30);
-			Log(message);
-		}
-
-		void LogEmptyLine()
-		{
-			Log(String.Empty);
+			packageManagementEvents.OnPackageOperationsStarting();
 		}
 		
 		void GetPackageOperations()
 		{
-			IPackageOperationResolver resolver = CreatePackageOperationResolver();
-			packageOperations = resolver.ResolveOperations(package);
-		}
-		
-		IPackageOperationResolver CreatePackageOperationResolver()
-		{
-			return CreatePackageOperationResolver(Logger);
-		}
-		
-		protected virtual IPackageOperationResolver CreatePackageOperationResolver(ILogger logger)
-		{
-			return new InstallWalker(LocalPackageRepository,
-			                         sourcePackageRepository,
-			                         logger,
-			                         ignoreDependencies: false);
+			IPackageManagementProject project = solution.GetActiveProject();
+			project.Logger = logger;
+			packageOperations = project.GetInstallPackageOperations(package, false);
 		}
 		
 		bool CanInstallPackage()
 		{
 			IEnumerable<IPackage> packages = GetPackagesRequiringLicenseAcceptance();
 			if (packages.Any()) {
-				return licenseAcceptanceService.AcceptLicenses(packages);
+				return packageManagementEvents.OnAcceptLicenses(packages);
 			}
 			return true;
 		}
@@ -291,56 +223,63 @@ namespace ICSharpCode.PackageManagement
 				}
 			} catch (Exception ex) {
 				ReportError(ex);
-				Log(ex.ToString());
+				logger.LogError(ex);
 			}
 		}
 		
 		void InstallPackage()
 		{
-			InstallPackage(sourcePackageRepository, package, packageOperations);
+			InstallPackage(package, packageOperations);
 			OnPropertyChanged(model => model.IsAdded);
 		}
 		
-		protected virtual void InstallPackage(
-			IPackageRepository sourcePackageRepository,
-			IPackage package,
+		void InstallPackage(
+			IPackageFromRepository package,
 			IEnumerable<PackageOperation> packageOperations)
 		{
-			packageManagementService.InstallPackage(sourcePackageRepository, package, packageOperations);
+			IPackageManagementProject project = solution.GetActiveProject(package.Repository);
+			ProcessPackageOperationsAction action = CreateInstallPackageAction(project);
+			action.Package = package;
+			action.Operations = packageOperations;
+			actionRunner.Run(action);
+		}
+		
+		protected virtual ProcessPackageOperationsAction CreateInstallPackageAction(
+			IPackageManagementProject project)
+		{
+			return project.CreateInstallPackageAction();
 		}
 		
 		void ReportError(Exception ex)
 		{
-			messageReporter.ShowErrorMessage(ex.Message);
+			packageManagementEvents.OnPackageOperationError(ex);
 		}
 		
 		public void RemovePackage()
 		{
 			ClearReportedMessages();
-			LogRemovingPackage();
+			logger.LogRemovingPackage();
 			TryUninstallingPackage();
-			LogAfterPackageOperationCompletes();
+			logger.LogAfterPackageOperationCompletes();
 			
 			OnPropertyChanged(model => model.IsAdded);
 		}
 		
 		void LogRemovingPackage()
 		{
-			string message =  GetFormattedStartPackageOperationMessage(RemovingPackageMessageFormat);
-			Log(message);
-		}
-				
-		protected virtual string RemovingPackageMessageFormat {
-			get { return "Uninstalling...{0}"; }
+			logger.LogRemovingPackage();
 		}
 		
 		void TryUninstallingPackage()
 		{
 			try {
-				packageManagementService.UninstallPackage(sourcePackageRepository, package);
+				IPackageManagementProject project = solution.GetActiveProject(package.Repository);
+				UninstallPackageAction action = project.CreateUninstallPackageAction();
+				action.Package = package;
+				actionRunner.Run(action);
 			} catch (Exception ex) {
 				ReportError(ex);
-				Log(ex.ToString());
+				logger.LogError(ex);
 			}
 		}
 	}
