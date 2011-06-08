@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +27,7 @@ namespace ICSharpCode.Reports.Core.WpfReportViewer
 	public interface IWpfReportViewer
 	{
 		IDocumentPaginatorSource Document {set;}
+		void SetBinding (PreviewViewModel model);
 	}
 	/// <summary>
 	/// Interaction logic for WpfReportViewer.xaml
@@ -38,12 +40,16 @@ namespace ICSharpCode.Reports.Core.WpfReportViewer
 			InitializeComponent();
 		}
 		
+		public void SetBinding (PreviewViewModel model)
+		{
+			this.DataContext = model;
+		}
+		
 		
 		public IDocumentPaginatorSource Document {
 			set {
 				this.DocumentViewer.Document = value;
 			}
 		}
-	
 	}
 }

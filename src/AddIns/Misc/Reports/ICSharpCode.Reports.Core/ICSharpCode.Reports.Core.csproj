@@ -367,11 +367,12 @@
     <Compile Include="Project\ReportViewer\ReportViewer.designer.cs">
       <DependentUpon>ReportViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Project\WpfReportViewer\PreviewViewModel.cs" />
     <Compile Include="Project\WpfReportViewer\WpfReportViewer.xaml.cs">
       <DependentUpon>WpfReportViewer.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Project\WpfReportViewer\PreviewModel.cs" />
+    <Compile Include="Project\WpfReportViewer\ExportRunner.cs" />
     <Compile Include="Project\WPF\ExtensionMethodes.cs" />
     <Compile Include="Project\WPF\FixedDocumentCreator.cs" />
     <Compile Include="Project\Xml\BaseItemLoader.cs" />

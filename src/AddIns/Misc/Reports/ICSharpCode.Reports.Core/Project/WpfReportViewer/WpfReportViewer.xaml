@@ -1,12 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
-	x:Class="ICSharpCode.Reports.Core.WpfReportViewer.WpfReportViewer" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	x:Class="ICSharpCode.Reports.Core.WpfReportViewer.WpfReportViewer"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<!-- {Binding Path=PathToProperty, RelativeSource={RelativeSource AncestorType={x:Type typeOfAncestor}}} -->
 	<Grid>
-		
 		<DocumentViewer
 			x:Name="DocumentViewer"
+			Document="{Binding Path=DataContext.Document,
+			PresentationTraceSources.TraceLevel=High,
+			RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
 			HorizontalAlignment="Stretch"
-			VerticalAlignment="Stretch"
-			Width="984"></DocumentViewer>
+			VerticalAlignment="Stretch"></DocumentViewer>
+			
 	</Grid>
 </UserControl>

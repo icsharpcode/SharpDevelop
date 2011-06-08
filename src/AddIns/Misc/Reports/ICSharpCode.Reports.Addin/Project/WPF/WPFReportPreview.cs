@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Addin.Project.WPF
 		ReportDesignerLoader designerLoader;
 		
 		IWpfReportViewer viewer = new WpfReportViewer();
-		IPreviewModel viewmodel = new PreviewModel();
+		IPreviewModel exportRunner = new ExportRunner();
 		
 		public WPFReportPreview(ReportDesignerLoader loader,IViewContent content):base(content)
 		{
@@ -47,11 +47,11 @@ namespace ICSharpCode.Reports.Addin.Project.WPF
 			switch (model.DataModel)
 			{
 					case GlobalEnums.PushPullModel.FormSheet : {
-						viewmodel.RunReport(model,(ReportParameters)null);
+						exportRunner.RunReport(model,(ReportParameters)null);
 						break;
 					}
 					case GlobalEnums.PushPullModel.PullData:{
-						viewmodel.RunReport(model,(ReportParameters)null);
+						exportRunner.RunReport(model,(ReportParameters)null);
 						break;
 					}
 				case GlobalEnums.PushPullModel.PushData:
@@ -59,19 +59,16 @@ namespace ICSharpCode.Reports.Addin.Project.WPF
 						var cmd = new DataSetFromXsdCommand();
 						cmd.Run();
 						System.Data.DataSet ds = cmd.DataSet;
-						viewmodel.RunReport(model,ds.Tables[0],(ReportParameters)null);
+						exportRunner.RunReport(model,ds.Tables[0],(ReportParameters)null);
 						break;
 					}
 				default:
 					throw new InvalidReportModelException();
 			}
 			
-			FixedDocumentRenderer renderer =  FixedDocumentRenderer.CreateInstance(model.ReportSettings,viewmodel.Pages);
-			
-			renderer.Start();
-			renderer.RenderOutput();
-			renderer.End();	
-			viewer.Document = renderer.Document;
+			PreviewViewModel pvm = new PreviewViewModel (model.ReportSettings,exportRunner.Pages);
+			//viewer.Document = pvm.Document;
+			viewer.SetBinding(pvm);
 		}
 		
 		

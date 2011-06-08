@@ -16,9 +16,9 @@ namespace ICSharpCode.Reports.Core.WpfReportViewer
 	/// <summary>
 	/// Description of WpfReportViewModel.
 	/// </summary>
-	public class PreviewModel:IPreviewModel
+	public class ExportRunner:IPreviewModel
 	{
-		public PreviewModel()
+		public ExportRunner()
 		{
 			Pages = new PagesCollection();
 		}
