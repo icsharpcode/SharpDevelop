@@ -4,21 +4,10 @@
 using System;
 using System.Collections;
 using System.Data;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
-using System.Globalization;
-using System.Windows.Forms;
 
-using ICSharpCode.Reports.Core.BaseClasses.Printing;
-using ICSharpCode.Reports.Core.Exporter;
-using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
-using ICSharpCode.Reports.Core.Globals;
-using ICSharpCode.Reports.Core.Interfaces;
-
-namespace ICSharpCode.Reports.Core.ReportViewer
+namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 {
-	public interface IPreviewModel
+	public interface IExportRunner
 	{
 		void RunReport(string fileName, ReportParameters parameters);
 		void RunReport(ReportModel reportModel, ReportParameters parameters);
@@ -26,6 +15,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		void RunReport(ReportModel reportModel, IList dataSource, ReportParameters parameters);
 		void RunReport(ReportModel reportModel, IDataManager dataManager);
 		PagesCollection Pages { get; }
-		IReportViewerMessages Messages { get; set; }
+//		IReportViewerMessages Messages { get; set; }
 	}
 }

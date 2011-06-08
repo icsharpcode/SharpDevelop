@@ -11,12 +11,12 @@ using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.ReportViewer;
 
-namespace ICSharpCode.Reports.Core.WpfReportViewer
+namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 {
 	/// <summary>
 	/// Description of WpfReportViewModel.
 	/// </summary>
-	public class ExportRunner:IPreviewModel
+	public class ExportRunner:IExportRunner
 	{
 		public ExportRunner()
 		{

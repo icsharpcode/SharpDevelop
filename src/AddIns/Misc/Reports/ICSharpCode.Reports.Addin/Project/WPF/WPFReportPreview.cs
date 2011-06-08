@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Addin.Project.WPF
 		ReportDesignerLoader designerLoader;
 		
 		IWpfReportViewer viewer = new WpfReportViewer();
-		IPreviewModel exportRunner = new ExportRunner();
+		IExportRunner exportRunner = new ExportRunner();
 		
 		public WPFReportPreview(ReportDesignerLoader loader,IViewContent content):base(content)
 		{
