@@ -61,8 +61,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 			ShutdownConsole();
 			
 			if (thread != null) {
-				thread.Join();
-				thread = null;
+				if (thread.Join(100)) {
+					thread = null;
+					IsRunning = false;
+				}
 			}
 		}
 		

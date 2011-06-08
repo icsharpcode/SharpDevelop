@@ -806,6 +806,9 @@
 										<Component Guid="084FDE9A-C356-4D88-8718-00D53478225A" Id="WPFAssemblyInfoTemplate" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\WPFAssemblyInfo.cs" Id="WPFAssemblyInfoTemplate" Name="WPFAssemblyInfo.cs" />
 										</Component>
+										<Component Id="CSharpMvcWebProjectTemplate" Guid="82060284-5670-4B2F-8AB0-BE075D09D4BE" DiskId="1">
+											<File Id="CSharp.MvcWebProject.xpt" Name="MvcWebProject.xpt" Source="..\..\data\templates\project\CSharp\MvcWebProject.xpt" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
 										<Component Guid="F9A7F832-6EC8-4B15-A037-146BD028C9D5" Id="MiscProjectTemplates" DiskId="1">
@@ -837,6 +840,9 @@
 											<File Id="WPFApplication.xpt" Name="WPFApplication.xpt" Source="..\..\data\templates\project\VB\WPFApplication.xpt" />
 											<File Id="WPFAssemblyInfo.vb" Name="WPFAssemblyInfo.vb" Source="..\..\data\templates\project\VB\WPFAssemblyInfo.vb" />
 											<File Id="WPFNavigationApplication.xpt" Name="WPFNavigationApplication.xpt" Source="..\..\data\templates\project\VB\WPFNavigationApplication.xpt" />
+										</Component>
+										<Component Id="VBMvcWebProjectTemplate" Guid="FBDC313E-FC77-4500-84EC-35F0E19925C1" DiskId="1">
+											<File Id="VB.MvcWebProject.xpt" Name="MvcWebProject.xpt" Source="..\..\data\templates\project\VB\MvcWebProject.xpt" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">

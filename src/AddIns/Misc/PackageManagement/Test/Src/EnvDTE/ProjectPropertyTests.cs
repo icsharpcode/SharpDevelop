@@ -126,5 +126,31 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("4.0", targetFrameworkVersion);
 		}
+		
+		[Test]
+		public void Value_GetFullPathProperty_ReturnsProjectDirectory()
+		{
+			CreateProperties();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			
+			Property fullPathProperty = project.Properties.Item("FullPath");
+			string fullPath = fullPathProperty.Value as string;
+			
+			string expectedFullPath = @"d:\projects\MyProject";
+			Assert.AreEqual(expectedFullPath, fullPath);
+		}
+		
+		[Test]
+		public void Value_GetFullPathPropertyWithUpperCaseCharacters_ReturnsProjectDirectory()
+		{
+			CreateProperties();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			
+			Property fullPathProperty = project.Properties.Item("FULLPATH");
+			string fullPath = fullPathProperty.Value as string;
+			
+			string expectedFullPath = @"d:\projects\MyProject";
+			Assert.AreEqual(expectedFullPath, fullPath);
+		}
 	}
 }

@@ -256,11 +256,11 @@
 				<ComponentRef Id="Difxapp_ia64Wixlib"/>
 				<ComponentRef Id="Difxapp_x64Wixlib"/>
 				<ComponentRef Id="Difxapp_x86Wixlib"/>
-				<ComponentRef Id="EmptyWixFileTemplate"/>				
-				<ComponentRef Id="WixDefaultLicenseRtf"/>				
-				<ComponentRef Id="EmptyWixProjectTemplate"/>				
-				<ComponentRef Id="EmptyWixDialogTemplate"/>				
-				<ComponentRef Id="WixDialogTemplate"/>				
+				<ComponentRef Id="EmptyWixFileTemplate"/>
+				<ComponentRef Id="WixDefaultLicenseRtf"/>
+				<ComponentRef Id="EmptyWixProjectTemplate"/>
+				<ComponentRef Id="EmptyWixDialogTemplate"/>
+				<ComponentRef Id="WixDialogTemplate"/>
 
 				<ComponentRef Id="CandleExe"/>
 				<ComponentRef Id="DarkExe"/>
@@ -297,8 +297,10 @@
 				<ComponentRef Id="CSharpFileTemplates"/>
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
-				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>				
+				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>
+				<ComponentRef Id="CSharpMvcWebProjectTemplate"/>
 				<ComponentRef Id="VBFileTemplates"/>
+				<ComponentRef Id="VBMvcWebProjectTemplate"/>
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>

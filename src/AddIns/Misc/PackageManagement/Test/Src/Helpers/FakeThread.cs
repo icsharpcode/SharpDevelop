@@ -17,9 +17,14 @@ namespace PackageManagement.Tests.Helpers
 			IsStartCalled = true;
 		}
 		
-		public void Join()
+		public int TimeoutPassedToJoin;
+		public bool JoinReturnValue = true;
+		
+		public bool Join(int milliescondsTimeout)
 		{
 			IsJoinCalled = true;
+			TimeoutPassedToJoin = milliescondsTimeout;
+			return JoinReturnValue;
 		}
 	}
 }

@@ -230,6 +230,8 @@
     <Compile Include="Src\UpdatedPackageViewModelTests.cs" />
     <Compile Include="Src\UpdatePackageActionTests.cs" />
     <Compile Include="Src\ViewModelBaseTests.cs" />
+    <Compile Include="Src\VisualStudio\PackageTests.cs" />
+    <Compile Include="Src\VisualStudio\SVsExtensionManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
@@ -270,6 +272,7 @@
     <Folder Include="Src\Helpers\Tests" />
     <Folder Include="Src" />
     <Folder Include="Src\EnvDTE" />
+    <Folder Include="Src\VisualStudio" />
     <Folder Include="Src\Scripting" />
   </ItemGroup>
   <ItemGroup>
