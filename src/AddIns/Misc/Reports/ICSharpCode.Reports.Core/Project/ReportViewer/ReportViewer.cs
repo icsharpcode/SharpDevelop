@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 	{
 		public event EventHandler<EventArgs> PreviewLayoutChanged;
 
-
+		private IExportRunner runner;
 		private float zoom;
 
 		private int pageNumber;
@@ -52,6 +52,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			InitZoomCombo();
 
 			previewRenderer = PreviewRenderer.CreateInstance();
+			runner = new ExportRunner();
 			this.CheckEnable();
 			SetTransparentBackground();
 

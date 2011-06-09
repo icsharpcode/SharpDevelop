@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Diagnostics;
 using ICSharpCode.Reports.Addin.Commands;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
@@ -40,6 +41,11 @@ namespace ICSharpCode.Reports.Addin.Project.WPF
 		
 		protected override void LoadFromPrimary()
 		{
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+			Console.WriteLine("-----------------");
+			Console.WriteLine("Stop start");
+				
 			Pages.Clear();
 			ReportModel model = designerLoader.CreateRenderableModel();
 			var collectCmd = new CollectParametersCommand(model);
@@ -65,10 +71,14 @@ namespace ICSharpCode.Reports.Addin.Project.WPF
 				default:
 					throw new InvalidReportModelException();
 			}
+			Console.WriteLine (" after create {0}",sw.Elapsed);
 			
-			PreviewViewModel pvm = new PreviewViewModel (model.ReportSettings,exportRunner.Pages);
-			//viewer.Document = pvm.Document;
-			viewer.SetBinding(pvm);
+			PreviewViewModel previewViewModel = new PreviewViewModel (model.ReportSettings,exportRunner.Pages);
+				Console.WriteLine (" after init model {0}",sw.Elapsed);
+			viewer.SetBinding(previewViewModel);
+				Console.WriteLine ("after setbinding {0}",sw.Elapsed);
+			sw.Stop();
+			Console.WriteLine("---------------");
 		}
 		
 		

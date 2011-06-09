@@ -142,7 +142,6 @@ namespace ICSharpCode.Reports.Core.WPF
 		#region Container 
 		UIElement CreateGraphicsContainer(ExportGraphicContainer graphicContainer)
 		{
-			Console.WriteLine("GraphicContainer");
 			IGraphicStyleDecorator decorator = graphicContainer.StyleDecorator as IGraphicStyleDecorator;
 			UIElement shape = null;	
 			var ss = decorator.Shape as EllipseShape;
@@ -155,13 +154,9 @@ namespace ICSharpCode.Reports.Core.WPF
 				circle.StrokeThickness = decorator.Thickness;
 				circle.Stroke = brushConverter.ConvertFromString(decorator.ForeColor.Name) as SolidColorBrush;
 				shape = circle;
-				
-				
 			}
-			else
-				
+			else				
 			{
-				
 				var border = CreateBorder(decorator as BaseStyleDecorator);
 				SetDimension(border,decorator);
 				
@@ -172,8 +167,6 @@ namespace ICSharpCode.Reports.Core.WPF
 				border.BorderBrush = brushConverter.ConvertFromString(decorator.ForeColor.Name) as SolidColorBrush;
 				shape = border;
 			}
-		
-			
 			return shape;
 		}
 		
@@ -181,7 +174,6 @@ namespace ICSharpCode.Reports.Core.WPF
 		
 		private UIElement CreateContainer(ExportContainer container)
 		{
-			Console.WriteLine("CreateContainer");
 			var canvas = new Canvas();
 			SetDimension(canvas,container.StyleDecorator);
 
@@ -203,24 +195,6 @@ namespace ICSharpCode.Reports.Core.WPF
 		
 		#endregion
 		
-		/*
-		void CreateShape(Canvas canvas, IGraphicStyleDecorator bs)
-		{
-			var shape = bs.Shape;
-			UIElement element = null;
-			if (shape is RectangleShape) {
-				element = new System.Windows.Controls.Border();
-				
-			}
-			
-			if (element != null) {
-				canvas.Children.Add(element);
-				Canvas.SetLeft(element,bs.Location.X);
-				Canvas.SetTop(element,bs.Location.Y);
-			}
-		}
-*/
-
 		
 		UIElement CreateTextColumn(ExportText et)
 		{

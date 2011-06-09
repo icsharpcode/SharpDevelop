@@ -18,30 +18,13 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 	/// </summary>
 	public class ExportRunner:IExportRunner
 	{
+		
+		
 		public ExportRunner()
 		{
 			Pages = new PagesCollection();
 		}
 		
-		
-		public System.Windows.Documents.IDocumentPaginatorSource Document {
-			set {
-				throw new NotImplementedException();
-			}
-		}
-		
-		
-		public PagesCollection Pages {get;private set;}
-	
-		
-		public ICSharpCode.Reports.Core.ReportViewer.IReportViewerMessages Messages {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
 		
 		public void RunReport(string fileName, ReportParameters parameters)
 		{
@@ -116,6 +99,8 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			reportCreator.BuildExportList();
 		}
 		
+		public PagesCollection Pages {get;private set;}
+		
 		
 		private void RunFormSheet(ReportModel reportModel)
 		{
@@ -124,8 +109,6 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			reportCreator.PageCreated += OnPageCreated;
 			reportCreator.BuildExportList();
 		}
-		
-		
 		
 		private void OnPageCreated (object sender,PageCreatedEventArgs e)
 		{

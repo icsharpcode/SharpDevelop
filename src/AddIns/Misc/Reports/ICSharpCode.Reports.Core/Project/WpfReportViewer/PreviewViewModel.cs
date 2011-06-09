@@ -30,14 +30,11 @@ namespace ICSharpCode.Reports.Core.WpfReportViewer
 			renderer.Start();
 			renderer.RenderOutput();
 			renderer.End();
-			OnNotifyPropertyChanged("Pages");
 			this.Document = renderer.Document;
 			
 		}
 		
-		
 		public PagesCollection Pages {get;private set;}
-		
 		
 		public IDocumentPaginatorSource Document
 		{
