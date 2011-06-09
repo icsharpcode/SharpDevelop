@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -51,6 +53,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public abstract AstType CreateShortType (AstType fullType);
 		
 		public abstract AstType CreateShortType (string fullTypeName);
+
+		public abstract ITypeDefinition GetDefinition (AstType resolvedType);
+
+		public abstract void ReplaceReferences (IMember member, MemberDeclaration member);
 		
 		public AstNode GetNode ()
 		{
@@ -82,6 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		#region Resolving
 		public abstract AstType ResolveType (AstNode node);
+		public abstract IEnumerable<IMember> ResolveMember (Expression expression);
 		#endregion
 		
 		public string GetNameProposal (string name, bool camelCase = true)

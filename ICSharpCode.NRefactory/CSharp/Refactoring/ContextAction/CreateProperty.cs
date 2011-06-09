@@ -1,10 +1,10 @@
 // 
-// UseExplicitType.cs
+// CreateProperty.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2011 Mike Krüger <mkrueger@novell.com>
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,36 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public class UseExplicitType: IContextAction
+	public class CreateProperty : IContextAction
 	{
 		public bool IsValid (RefactoringContext context)
 		{
-			return GetVariableDeclarationStatement (context) != null;
+			var identifier = CreateField.GetIdentifier (context);
+			if (identifier == null)
+				return false;
+			return context.ResolveType (identifier) == null && CreateField.GuessType (context, identifier) != null;
 		}
 		
 		public void Run (RefactoringContext context)
 		{
-			var varDecl = GetVariableDeclarationStatement (context);
-			
+			var identifier = GetIdentifier (context);
 			using (var script = context.StartScript ()) {
-				script.Replace (varDecl.Type, context.ResolveType (varDecl.Variables.First ().Initializer));
+				script.InsertWithCursor ("Create property", GeneratePropertyDeclaration (context, identifier), Script.InsertPosition.Before);
 			}
 		}
 		
-		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context)
+		AstNode GeneratePropertyDeclaration (RefactoringContext context, IdentifierExpression identifier)
 		{
-			var result = context.GetNode<VariableDeclarationStatement> ();
-			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location.Line, context.Location.Column) && result.Type.IsMatch (new SimpleType ("var"))) {
-				if (context.ResolveType (result.Variables.First ().Initializer) == null)
-					return null;
-				return result;
-			}
-			return null;
+			return new PropertyDeclaration () {
+				ReturnType = CreateField.GuessType (context, identifier),
+				Name = identifier.Identifier,
+				Getter = new Accessor (),
+				Setter = new Accessor ()
+			};
+		}
+		
+		IdentifierExpression GetIdentifier (RefactoringContext context)
+		{
+			return context.GetNode<IdentifierExpression> ();
 		}
 	}
 }

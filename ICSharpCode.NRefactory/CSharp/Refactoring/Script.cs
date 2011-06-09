@@ -62,15 +62,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public void InsertBefore (AstNode node, AstNode insertNode)
 		{
-			var startOffset = Context.GetOffset (node.StartLocation);
+			var startOffset = Context.GetOffset (node.StartLocation.Line, 1);
 			var output = OutputNode (GetIndentLevelAt (startOffset), insertNode);
+			
+			if (!(insertNode is Expression || insertNode is AstType))
+				output.Text += Context.EolMarker;
+			
 			Queue (Context.CreateNodeOutputAction (startOffset, 0, output));
 		}
 
 		public void AddTo (BlockStatement bodyStatement, AstNode insertNode)
 		{
 			var startOffset = Context.GetOffset (bodyStatement.LBraceToken.StartLocation) + 1;
-			var output = OutputNode (GetIndentLevelAt (startOffset), insertNode);
+			var output = OutputNode (GetIndentLevelAt (startOffset), insertNode, true);
 			Queue (Context.CreateNodeOutputAction (startOffset, 0, output));
 		}
 		
@@ -106,9 +110,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var startOffset = Context.GetOffset (node.StartLocation);
 			var endOffset = Context.GetOffset (node.EndLocation);
 			int level = 0;
-			if (!(replaceWith is Expression))
+			if (!(replaceWith is Expression) && !(replaceWith is AstType))
 				level = GetIndentLevelAt (startOffset);
-			Queue (Context.CreateNodeOutputAction (startOffset, endOffset - startOffset, OutputNode (level, replaceWith)));
+			NodeOutput output = OutputNode (level, replaceWith);
+			output.Trim ();
+			Queue (Context.CreateNodeOutputAction (startOffset, endOffset - startOffset, output));
 		}
 
 		public void FormatText (Func<RefactoringContext, AstNode> callback)
@@ -120,8 +126,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			Queue (Context.CreateNodeSelectionAction (node));
 		}
+		
+		public enum InsertPosition {
+			Start,
+			Before,
+			After,
+			End
+		}
+		
+		public abstract void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition);
 
-		int GetIndentLevelAt (int offset)
+		protected int GetIndentLevelAt (int offset)
 		{
 			var node = Context.Unit.GetNodeAt (Context.GetLocation (offset));
 			int level = 0;
@@ -133,20 +148,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return level;
 		}
 		
-		NodeOutput OutputNode (int indentLevel, AstNode node)
+		protected NodeOutput OutputNode (int indentLevel, AstNode node, bool startWithNewLine = false)
 		{
-			NodeOutput result = new NodeOutput ();
-			var formatter = new StringBuilderOutputFormatter ();
+			var result = new NodeOutput ();
+			var stringWriter = new System.IO.StringWriter ();
+			var formatter = new TextWriterOutputFormatter (stringWriter);
 			formatter.Indentation = indentLevel;
-			formatter.EolMarker = Context.EolMarker;
-			if (node is Statement)
+			stringWriter.NewLine = Context.EolMarker;
+			if (startWithNewLine)
 				formatter.NewLine ();
 			var visitor = new OutputVisitor (formatter, Context.FormattingOptions);
 			visitor.OutputStarted += (sender, e) => {
-				result.NodeSegments [e.AstNode] = new NodeOutput.Segment (formatter.Length);
+				result.NodeSegments [e.AstNode] = new NodeOutput.Segment (stringWriter.GetStringBuilder ().Length);
 			};
 			visitor.OutputFinished += (sender, e) => {
-				result.NodeSegments [e.AstNode].EndOffset = formatter.Length;
+				result.NodeSegments [e.AstNode].EndOffset = stringWriter.GetStringBuilder ().Length;
 			};
 			node.AcceptVisitor (visitor, null);
 			result.Text = formatter.ToString ().TrimEnd ();

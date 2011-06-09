@@ -55,26 +55,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			pdecl.AddChild (accessor, pdecl.Setter.IsNull ? PropertyDeclaration.SetterRole : PropertyDeclaration.GetterRole);
 			
 			using (var script = context.StartScript ()) {
-				script.Select (accessorStatement);
 				script.InsertBefore (pdecl.RBraceToken, accessor);
+				script.Select (accessorStatement);
 				script.FormatText (ctx => GetPropertyDeclaration (context));
 			}
 		}
 
 		static Statement BuildAccessorStatement (RefactoringContext context, PropertyDeclaration pdecl)
 		{
-// TODO:
-//			if (pdecl.Setter.IsNull && !pdecl.Getter.IsNull) {
-//				var field = RemoveBackingStore.ScanGetter (context, pdecl);
-//				if (field != null) 
-//					return new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (field.Name), AssignmentOperatorType.Assign, new IdentifierExpression ("value")));
-//			}
-//			
-//			if (!pdecl.Setter.IsNull && pdecl.Getter.IsNull) {
-//				var field = RemoveBackingStore.ScanSetter (context, pdecl);
-//				if (field != null) 
-//					return new ReturnStatement (new IdentifierExpression (field.Name));
-//			}
+			if (pdecl.Setter.IsNull && !pdecl.Getter.IsNull) {
+				var field = RemoveBackingStore.ScanGetter (context, pdecl);
+				if (field != null) 
+					return new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (field.Name), AssignmentOperatorType.Assign, new IdentifierExpression ("value")));
+			}
+			
+			if (!pdecl.Setter.IsNull && pdecl.Getter.IsNull) {
+				var field = RemoveBackingStore.ScanSetter (context, pdecl);
+				if (field != null) 
+					return new ReturnStatement (new IdentifierExpression (field.Name));
+			}
 			
 			return new ThrowStatement (new ObjectCreateExpression (context.CreateShortType ("System.NotImplementedException")));
 		}
