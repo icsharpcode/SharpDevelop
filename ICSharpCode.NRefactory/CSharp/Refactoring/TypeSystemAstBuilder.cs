@@ -116,8 +116,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (typeDef.DeclaringTypeDefinition != null) {
 				// Handle nested types
 				result.Target = ConvertTypeDefinition(typeDef.DeclaringTypeDefinition, typeArguments);
-				result.MemberName = typeDef.Name;
-				AddTypeArguments(result, typeArguments, OuterTypeParameterCount(typeDef), typeDef.TypeParameterCount);
 			} else {
 				// Handle top-level types
 				if (string.IsNullOrEmpty(typeDef.Namespace)) {
@@ -126,9 +124,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				} else {
 					result.Target = ConvertNamespace(typeDef.Namespace);
 				}
-				result.MemberName = typeDef.Name;
-				AddTypeArguments(result, typeArguments, 0, typeDef.TypeParameterCount);
 			}
+			result.MemberName = typeDef.Name;
+			AddTypeArguments(result, typeArguments, OuterTypeParameterCount(typeDef), typeDef.TypeParameterCount);
 			return result;
 		}
 		
@@ -173,24 +171,37 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		AstType ConvertNamespace(string ns)
 		{
-			string[] parts = ns.Split('.');
-			AstType result;
-			if (IsValidNamespace(parts[0])) {
-				result = new SimpleType(parts[0]);
+			if (resolver != null) {
+				// Look if there's an alias to the target namespace
+				for (UsingScope usingScope = resolver.UsingScope; usingScope != null; usingScope = usingScope.Parent) {
+					foreach (var pair in usingScope.UsingAliases) {
+						// maybe add some caching? we're resolving all aliases N times when converting a namespace name with N parts
+						NamespaceResolveResult nrr = pair.Value.ResolveNamespace(resolver.Context);
+						if (nrr != null && nrr.NamespaceName == ns)
+							return new SimpleType(pair.Key);
+					}
+				}
+			}
+			
+			int pos = ns.LastIndexOf('.');
+			if (pos < 0) {
+				if (IsValidNamespace(ns)) {
+					return new SimpleType(ns);
+				} else {
+					return new MemberType {
+						Target = new SimpleType("global"),
+						IsDoubleColon = true,
+						MemberName = ns
+					};
+				}
 			} else {
-				result = new MemberType {
-					Target = new SimpleType("global"),
-					IsDoubleColon = true,
-					MemberName = parts[0]
+				string parentNamespace = ns.Substring(0, pos);
+				string localNamespace = ns.Substring(pos + 1);
+				return new MemberType {
+					Target = ConvertNamespace(parentNamespace),
+					MemberName = localNamespace
 				};
 			}
-			for (int i = 1; i < parts.Length; i++) {
-				result = new MemberType {
-					Target = result,
-					MemberName = parts[i]
-				};
-			}
-			return result;
 		}
 		
 		bool IsValidNamespace(string firstNamespacePart)
