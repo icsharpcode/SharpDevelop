@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Data;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.ReportViewer;
@@ -19,6 +20,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 	public class ExportRunner:IExportRunner
 	{
 		
+		public event EventHandler<PageCreatedEventArgs> PageCreated;
 		
 		public ExportRunner()
 		{
@@ -34,6 +36,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
 			this.RunReport(model, parameters);
 		}
+		
 		
 		public void RunReport(ReportModel reportModel, ReportParameters parameters)
 		{
@@ -51,7 +54,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			}
 		}
 		
-		public void RunReport(ReportModel reportModel, System.Data.DataTable dataTable, ReportParameters parameters)
+		public void RunReport(ReportModel reportModel, DataTable dataTable, ReportParameters parameters)
 		{
 				if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
@@ -81,7 +84,6 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			}
 			ReportEngine.CheckForParameters(reportModel, parameters);
 			IDataManager dataManager = DataManagerFactory.CreateDataManager(reportModel, dataSource);
-
 			RunReport(reportModel, dataManager);
 		}
 		
@@ -113,6 +115,10 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 		private void OnPageCreated (object sender,PageCreatedEventArgs e)
 		{
 			Pages.Add(e.SinglePage);
+			if (PageCreated != null) {
+				
+				PageCreated (this,e);
+			}
 		}
 	}
 }

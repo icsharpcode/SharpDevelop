@@ -330,16 +330,16 @@ namespace ICSharpCode.Reports.Core {
 		/// <param name="dataTable">a Datatable, containing the data</param>
 		
 		[Obsolete("use public void PreviewPushDataReport (string fileName,DataTable dataTable,null)")]
-		public void PreviewPushDataReport (string fileName,DataTable dataTable)
-		{
-			if (String.IsNullOrEmpty(fileName)) {
-				throw new ArgumentNullException("fileName");
-			}
-			if (dataTable == null) {
-				throw new ArgumentNullException("dataTable");
-			}
-			this.PreviewPushDataReport(fileName,dataTable,null);
-		}
+//		public void PreviewPushDataReport (string fileName,DataTable dataTable)
+//		{
+//			if (String.IsNullOrEmpty(fileName)) {
+//				throw new ArgumentNullException("fileName");
+//			}
+//			if (dataTable == null) {
+//				throw new ArgumentNullException("dataTable");
+//			}
+//			this.PreviewPushDataReport(fileName,dataTable,null);
+//		}
 		
 
 		public void PreviewPushDataReport (string fileName,DataTable dataTable,ReportParameters reportParameters)
@@ -365,16 +365,16 @@ namespace ICSharpCode.Reports.Core {
 		
 		
 		[Obsolete ("use public void PreviewPushDataReport (string fileName,IList list,null)")]
-		public void PreviewPushDataReport (string fileName,IList list)
-		{
-			if (String.IsNullOrEmpty(fileName)) {
-				throw new ArgumentNullException("fileName");
-			}
-			if (list == null) {
-				throw new ArgumentNullException("list");
-			}
-			this.PreviewPushDataReport(fileName,list,null);
-		}
+//		public void PreviewPushDataReport (string fileName,IList list)
+//		{
+//			if (String.IsNullOrEmpty(fileName)) {
+//				throw new ArgumentNullException("fileName");
+//			}
+//			if (list == null) {
+//				throw new ArgumentNullException("list");
+//			}
+//			this.PreviewPushDataReport(fileName,list,null);
+//		}
 		
 	
 		public void PreviewPushDataReport (string fileName,IList list,ReportParameters reportParameters)
@@ -436,7 +436,7 @@ namespace ICSharpCode.Reports.Core {
 		/// <param name="reportModel"></param>
 		/// <returns></returns>
 		
-		public static IReportCreator CreatePageBuilder (IReportModel reportModel) 
+		internal static IReportCreator CreatePageBuilder (IReportModel reportModel) 
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");

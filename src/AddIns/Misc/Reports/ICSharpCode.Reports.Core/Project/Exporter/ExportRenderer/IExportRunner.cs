@@ -15,6 +15,6 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 		void RunReport(ReportModel reportModel, IList dataSource, ReportParameters parameters);
 		void RunReport(ReportModel reportModel, IDataManager dataManager);
 		PagesCollection Pages { get; }
-//		IReportViewerMessages Messages { get; set; }
+		event EventHandler<PageCreatedEventArgs> PageCreated;
 	}
 }

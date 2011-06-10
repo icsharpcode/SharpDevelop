@@ -10,18 +10,16 @@ using System.Drawing.Text;
 using System.Globalization;
 using System.Windows.Forms;
 
-using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
 using ICSharpCode.Reports.Core.Globals;
-using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Core.ReportViewer
 {
 	/// <summary>
 	/// Description of UserControl1.
 	/// </summary>
-	public partial class PreviewControl : IExportRunner
+	public partial class PreviewControl 
 	{
 		public event EventHandler<EventArgs> PreviewLayoutChanged;
 
@@ -36,7 +34,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 		private delegate void invokeDelegate();
 		private ReportSettings reportSettings;
-		private IDataManager dataManager;
 
 
 		#region Constructor
@@ -90,14 +87,13 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				throw new ArgumentNullException("reportModel");
 			}
 			this.SetupViewer(reportModel);
-
 			if (reportModel.DataModel == GlobalEnums.PushPullModel.FormSheet) {
 				RunFormSheet(reportModel);
 			} else {
-				ReportEngine.CheckForParameters(reportModel, parameters);
-				this.dataManager = DataManagerFactory.CreateDataManager(reportModel, parameters);
-				RunDataReport(reportModel, dataManager);
+				var dataManager = DataManagerFactory.CreateDataManager(reportModel, parameters);
+				RunReport(reportModel,dataManager);
 			}
+			
 		}
 
 
@@ -109,7 +105,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			if (dataTable == null) {
 				throw new ArgumentNullException("dataTable");
 			}
-			ReportEngine.CheckForParameters(reportModel, parameters);
+//			ReportEngine.CheckForParameters(reportModel, parameters);
 			IDataManager dataManager = DataManagerFactory.CreateDataManager(reportModel, dataTable);
 
 			RunReport(reportModel, dataManager);
@@ -124,9 +120,8 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			if (dataSource == null) {
 				throw new ArgumentNullException("dataSource");
 			}
-			ReportEngine.CheckForParameters(reportModel, parameters);
-			IDataManager dataManager = DataManagerFactory.CreateDataManager(reportModel, dataSource);
-
+//			ReportEngine.CheckForParameters(reportModel, parameters);
+			var dataManager = DataManagerFactory.CreateDataManager(reportModel, dataSource);
 			RunReport(reportModel, dataManager);
 		}
 
@@ -139,9 +134,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			if (dataManager == null) {
 				throw new ArgumentNullException("dataManager");
 			}
-
 			this.SetupViewer(reportModel);
-			this.dataManager = dataManager;
 			RunDataReport(reportModel, dataManager);
 		}
 
@@ -150,24 +143,17 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 		private void RunFormSheet(ReportModel reportModel)
 		{
-			IReportCreator reportCreator = FormPageBuilder.CreateInstance(reportModel);
-			reportCreator.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
-			reportCreator.PageCreated += OnPageCreated;
-			reportCreator.BuildExportList();
+			runner.PageCreated += OnPageCreated;
+			runner.RunReport(reportModel,(ReportParameters)null);
 			ShowCompleted();
 		}
 
 
 		private void RunDataReport(ReportModel reportModel, IDataManager data)
 		{
-			IReportCreator reportCreator = DataPageBuilder.CreateInstance(reportModel, data);
-			reportCreator.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
-			reportCreator.GroupHeaderRendering += new EventHandler<GroupHeaderEventArgs>(GroupHeaderRendering);
-			reportCreator.GroupFooterRendering += GroupFooterRendering;
-
-			reportCreator.RowRendering += new EventHandler<RowRenderEventArgs>(RowRendering);
-			reportCreator.PageCreated += OnPageCreated;
-			reportCreator.BuildExportList();
+			runner.PageCreated += OnPageCreated;
+			runner.RunReport(reportModel,data);
+			runner.PageCreated -= OnPageCreated;
 			ShowCompleted();
 		}
 
@@ -175,7 +161,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 
 		#region Events from worker
-
 
 		private void OnPageCreated(object sender, PageCreatedEventArgs e)
 		{
@@ -272,9 +257,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				updateControl = ShowCompleted;
 				Invoke(updateControl);
 			}
-			if (this.dataManager != null) {
-				this.dataManager.GetNavigator.Reset();
-			}
 			this.SetPages();
 			this.CheckEnable();
 			this.printButton.Enabled = true;
@@ -335,7 +317,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				this.comboZoom.ToolTipText = this.reportViewerMessages.ZoomMessage;
 				this.createPdfMenu.Text = this.reportViewerMessages.PdfFileMessage;
 				this.pdfButton.ToolTipText = this.reportViewerMessages.PdfFileMessage;
-//				this.pagesCreatedMessage = this.reportViewerMessages.PagesCreatedMessage;
 			}
 		}
 
@@ -576,6 +557,5 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				Localize();
 			}
 		}
-
 	}
 }
