@@ -36,6 +36,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get;
 			protected set;
 		}
+
+		public virtual ITypeResolveContext TypeResolveContext {
+			get {
+				return null;
+			}
+		}
 		
 		public AstLocation Location {
 			get;
@@ -53,10 +59,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public abstract AstType CreateShortType (AstType fullType);
 		
 		public abstract AstType CreateShortType (string fullTypeName);
-
+		
+		
+		public AstType CreateShortType (IType type)
+		{
+			return CreateShortType (new TypeSystemAstBuilder ().ConvertType (type));
+		}
+		
+		
 		public abstract ITypeDefinition GetDefinition (AstType resolvedType);
 
-		public abstract void ReplaceReferences (IMember member, MemberDeclaration member);
+		public abstract void ReplaceReferences (IMember member, MemberDeclaration replaceWidth);
 		
 		public AstNode GetNode ()
 		{

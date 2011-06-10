@@ -120,7 +120,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				if (result.Parameters.Count < i)
 					return null;
-				return null; // context.CreateShortType (result.Parameters[i].Type);
+				return context.CreateShortType (result.Parameters[i].Type.Resolve (context.TypeResolveContext));
 			}
 			return null;
 		}
