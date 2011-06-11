@@ -26,11 +26,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		internal readonly CancellationToken cancellationToken;
 		
 		#region Constructor
-		public CSharpResolver(ITypeResolveContext context)
+		public CSharpResolver(ITypeResolveContext context) : this (context, CancellationToken.None)
 		{
-			if (context == null)
-				throw new ArgumentNullException("context");
-			this.context = context;
 		}
 		
 		public CSharpResolver(ITypeResolveContext context, CancellationToken cancellationToken)
