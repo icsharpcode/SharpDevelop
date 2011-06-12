@@ -110,7 +110,7 @@ namespace ICSharpCode.Reports.Core.WPF
 			border.Padding = new Thickness(1);
 			border.BorderThickness = new Thickness(2);
 			border.CornerRadius = new CornerRadius(2);
-			border.BorderBrush = brushConverter.ConvertFromString(column.ForeColor.Name) as SolidColorBrush;
+			border.BorderBrush = ConvertBrush(column.ForeColor);
 			return border;
 		}
 		
@@ -118,7 +118,7 @@ namespace ICSharpCode.Reports.Core.WPF
 		UIElement CreateGraphicsElement(ExportGraphic column)
 		{
 			var  line = new System.Windows.Shapes.Line();
-			line.Stroke = brushConverter.ConvertFromString(column.StyleDecorator.ForeColor.Name) as SolidColorBrush;
+			line.Stroke = ConvertBrush(column.StyleDecorator.ForeColor);
 			line.StrokeThickness = column.StyleDecorator.Thickness;
 			
 			var ld = column.StyleDecorator as LineDecorator;
@@ -150,21 +150,19 @@ namespace ICSharpCode.Reports.Core.WPF
 				
 				var circle  = new System.Windows.Shapes.Ellipse();
 				SetDimension(circle,decorator);
-				circle.Fill = brushConverter.ConvertFromString(decorator.BackColor.Name) as SolidColorBrush;
+				circle.Fill = ConvertBrush(decorator.BackColor);
 				circle.StrokeThickness = decorator.Thickness;
-				circle.Stroke = brushConverter.ConvertFromString(decorator.ForeColor.Name) as SolidColorBrush;
+				circle.Stroke = ConvertBrush(decorator.ForeColor);
 				shape = circle;
 			}
 			else				
 			{
 				var border = CreateBorder(decorator as BaseStyleDecorator);
 				SetDimension(border,decorator);
-				
 				RectangleShape rs = decorator.Shape as RectangleShape;
-				
 				border.CornerRadius = new CornerRadius(rs.CornerRadius);
 				border.BorderThickness = new Thickness(decorator.Thickness);
-				border.BorderBrush = brushConverter.ConvertFromString(decorator.ForeColor.Name) as SolidColorBrush;
+				border.BorderBrush = ConvertBrush(decorator.ForeColor);
 				shape = border;
 			}
 			return shape;
@@ -176,9 +174,7 @@ namespace ICSharpCode.Reports.Core.WPF
 		{
 			var canvas = new Canvas();
 			SetDimension(canvas,container.StyleDecorator);
-
-			SolidColorBrush backgroundBrush = brushConverter.ConvertFromString(container.StyleDecorator.BackColor.Name) as SolidColorBrush;
-			canvas.Background = backgroundBrush;
+			canvas.Background = ConvertBrush(container.StyleDecorator.BackColor);
 			
 			foreach (var exportElement in container.Items) {
 				var uiElement = ItemFactory (exportElement);
@@ -248,7 +244,6 @@ namespace ICSharpCode.Reports.Core.WPF
 			textBlock.FontFamily = new FontFamily(styleDecorator.Font.FontFamily.Name);
 			var b = styleDecorator.Font.Size;
 			textBlock.FontSize = b * 96/72;
-			textBlock.Foreground = brushConverter.ConvertFromString(styleDecorator.ForeColor.Name) as SolidColorBrush;
 			if (styleDecorator.Font.Bold) {
 				textBlock.FontWeight = FontWeights.Bold;
 			}
@@ -261,6 +256,18 @@ namespace ICSharpCode.Reports.Core.WPF
 			}
 			if (styleDecorator.Font.Strikeout) {
 				CreateStrikeout(textBlock,styleDecorator);
+			}
+		}
+		
+		Brush ConvertBrush(System.Drawing.Color color)
+		{
+			if (brushConverter.IsValid(color.Name)) {
+				return brushConverter.ConvertFromString(color.Name) as SolidColorBrush;
+			} else 
+			{
+				Console.WriteLine("FixedDocumentCreator");
+				Console.WriteLine("\tcan't convert {0} to valid Color",color.Name);
+				return brushConverter.ConvertFromString("Black") as SolidColorBrush;
 			}
 		}
 		
@@ -291,8 +298,7 @@ namespace ICSharpCode.Reports.Core.WPF
 		Pen CreateWpfPen(TextStyleDecorator styleDecorator)
 		{
 			Pen myPen = new Pen();
-			SolidColorBrush underlineBrush = brushConverter.ConvertFromString(styleDecorator.ForeColor.Name) as SolidColorBrush;
-			myPen.Brush = underlineBrush;
+			myPen.Brush = ConvertBrush(styleDecorator.ForeColor);
 			myPen.Thickness = 1.5;
 			return myPen;
 		}
