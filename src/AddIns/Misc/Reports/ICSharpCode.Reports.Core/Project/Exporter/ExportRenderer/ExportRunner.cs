@@ -56,7 +56,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 		
 		public void RunReport(ReportModel reportModel, DataTable dataTable, ReportParameters parameters)
 		{
-				if (reportModel == null) {
+			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
 			if (dataTable == null) {
@@ -70,7 +70,6 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 //			reportCreator.GroupFooterRendering += GroupFooterRendering;
 //
 //			reportCreator.RowRendering += new EventHandler<RowRenderEventArgs>(RowRendering);
-			reportCreator.PageCreated += OnPageCreated;
 			reportCreator.BuildExportList();
 		}
 		
@@ -97,26 +96,33 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			}
 //			ReportEngine.CheckForParameters(reportModel, parameters);
 			IReportCreator reportCreator = DataPageBuilder.CreateInstance(reportModel, dataManager);
-			reportCreator.PageCreated += OnPageCreated;
-			reportCreator.BuildExportList();
+			BuildExportList(reportCreator);
 		}
-		
-		public PagesCollection Pages {get;private set;}
 		
 		
 		private void RunFormSheet(ReportModel reportModel)
 		{
 			IReportCreator reportCreator = FormPageBuilder.CreateInstance(reportModel);
 //			reportCreator.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
-			reportCreator.PageCreated += OnPageCreated;
-			reportCreator.BuildExportList();
+			BuildExportList(reportCreator);
 		}
 		
+		
+		void BuildExportList(IReportCreator reportCreator)
+		{
+			reportCreator.PageCreated += OnPageCreated;
+			reportCreator.BuildExportList();
+			reportCreator.PageCreated -= OnPageCreated;
+		}
+		
+	
+		public PagesCollection Pages {get;private set;}
+			
+			
 		private void OnPageCreated (object sender,PageCreatedEventArgs e)
 		{
 			Pages.Add(e.SinglePage);
 			if (PageCreated != null) {
-				
 				PageCreated (this,e);
 			}
 		}
