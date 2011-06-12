@@ -28,7 +28,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 		private int pageNumber;
 		private Bitmap bitmap;
-		private PagesCollection pages;
 		private IReportViewerMessages reportViewerMessages;
 		private PreviewRenderer previewRenderer;
 
@@ -46,14 +45,11 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			InitializeComponent();
 			this.SetStyle(ControlStyles.DoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.ResizeRedraw, true);
 			this.UpdateStyles();
-			InitZoomCombo();
-
-			previewRenderer = PreviewRenderer.CreateInstance();
 			runner = new ExportRunner();
+			InitZoomCombo();
+			previewRenderer = PreviewRenderer.CreateInstance();
 			this.CheckEnable();
 			SetTransparentBackground();
-
-
 			this.numericToolStripTextBox2.Navigate += new EventHandler<PageNavigationEventArgs>(OnNavigate);
 		}
 
@@ -93,7 +89,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				var dataManager = DataManagerFactory.CreateDataManager(reportModel, parameters);
 				RunReport(reportModel,dataManager);
 			}
-			
 		}
 
 
@@ -107,7 +102,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			}
 //			ReportEngine.CheckForParameters(reportModel, parameters);
 			IDataManager dataManager = DataManagerFactory.CreateDataManager(reportModel, dataTable);
-
 			RunReport(reportModel, dataManager);
 		}
 
@@ -143,17 +137,18 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 		private void RunFormSheet(ReportModel reportModel)
 		{
-			runner.PageCreated += OnPageCreated;
+//			runner.PageCreated += OnPageCreated;
 			runner.RunReport(reportModel,(ReportParameters)null);
+//			runner.PageCreated -= OnPageCreated;
 			ShowCompleted();
 		}
 
 
 		private void RunDataReport(ReportModel reportModel, IDataManager data)
 		{
-			runner.PageCreated += OnPageCreated;
+//			runner.PageCreated += OnPageCreated;
 			runner.RunReport(reportModel,data);
-			runner.PageCreated -= OnPageCreated;
+//			runner.PageCreated -= OnPageCreated;
 			ShowCompleted();
 		}
 
@@ -161,17 +156,16 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 
 		#region Events from worker
-
+/*
 		private void OnPageCreated(object sender, PageCreatedEventArgs e)
 		{
-			this.Pages.Add(e.SinglePage);
 			if (this.Pages.Count == 1) {
 				ShowSelectedPage();
 				this.pageNumber = 0;
 			}
 
 		}
-
+*/
 
 
 		private void PushPrinting(object sender, SectionRenderEventArgs e)
@@ -205,7 +199,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			*/
 
 
-				private void GroupHeaderRendering(object sender, GroupHeaderEventArgs ghea)
+		private void GroupHeaderRendering(object sender, GroupHeaderEventArgs ghea)
 		{
 //			Console.WriteLine("ReportViewer - GroupHeaderRendering  :");
 //			BaseGroupedRow v = ghea.GroupHeader;
@@ -244,7 +238,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 		private void SetupViewer(ReportModel reportModel)
 		{
-			this.pages = new PagesCollection();
 			this.reportSettings = reportModel.ReportSettings;
 			this.AdjustDrawArea();
 		}
@@ -298,7 +291,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.Invalidate(true);
 			this.Update();
 			this.AdjustDrawArea();
-			if ((this.pages != null) && (pageNumber < pages.Count)) {
+			if ((this.Pages != null) && (pageNumber < Pages.Count)) {
 				this.ShowSelectedPage();
 			}
 			EventHelper.Raise<EventArgs>(this.PreviewLayoutChanged, this, e);
@@ -330,9 +323,9 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			}
 			if (this.toolStrip1 != null) {
 				string str = String.Empty;
-				if (this.pages != null) {
+				if (this.Pages != null) {
 
-					str = String.Format(CultureInfo.CurrentCulture, "of {0}", this.pages.Count);
+					str = String.Format(CultureInfo.CurrentCulture, "of {0}", this.Pages.Count);
 				}
 				this.numericToolStripTextBox2.Text = (this.pageNumber + 1).ToString(CultureInfo.CurrentCulture);
 				this.pageInfoLabel.Text = str;
@@ -349,7 +342,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 					return;
 				}
 				this.pageNumber = i;
-				if (this.pageNumber < this.pages.Count) {
+				if (this.pageNumber < this.Pages.Count) {
 					this.CheckEnable();
 					this.ShowSelectedPage();
 				}
@@ -368,8 +361,8 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				updateControl = ShowSelectedPage;
 				Invoke(updateControl);
 			}
-			if (this.pageNumber < this.pages.Count) {
-				ExporterPage sp = pages[this.pageNumber];
+			if (this.pageNumber < this.Pages.Count) {
+				ExporterPage sp = Pages[this.pageNumber];
 
 				if (this.bitmap != null) {
 					this.bitmap.Dispose();
@@ -433,7 +426,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 		private void CheckEnable()
 		{
-			if ((this.pages == null) || (this.pages.Count == 0)) {
+			if ((this.Pages == null) || (this.Pages.Count == 0)) {
 				this.firstPageButton.Enabled = false;
 				this.forwardButton.Enabled = false;
 				this.backButton.Enabled = false;
@@ -451,7 +444,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 		private void FirstPageButtonClick(object sender, System.EventArgs e)
 		{
-			if ((this.pages != null) && (this.pageNumber > 0)) {
+			if ((this.Pages != null) && (this.pageNumber > 0)) {
 				this.pageNumber = 0;
 			}
 			this.CheckEnable();
@@ -467,7 +460,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				this.pageNumber--;
 
 			} else {
-				this.pageNumber = this.pages.Count - 1;
+				this.pageNumber = this.Pages.Count - 1;
 			}
 			this.CheckEnable();
 			this.ShowSelectedPage();
@@ -476,7 +469,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 		private void ForwardButtonClick(object sender, System.EventArgs e)
 		{
-			if (this.pageNumber < this.pages.Count - 1) {
+			if (this.pageNumber < this.Pages.Count - 1) {
 				this.pageNumber++;
 			} else {
 				this.pageNumber = 0;
@@ -488,7 +481,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 		private void LastPageButtonClick(object sender, System.EventArgs e)
 		{
-			this.pageNumber = this.pages.Count - 1;
+			this.pageNumber = this.Pages.Count - 1;
 			CheckEnable();
 			this.ShowSelectedPage();
 		}
@@ -500,7 +493,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			using (PrintDialog dlg = new PrintDialog()) {
 				DialogResult result = dlg.ShowDialog();
 				if (result == DialogResult.OK) {
-					PrintRenderer printer = PrintRenderer.CreateInstance(this.pages, dlg.PrinterSettings);
+					PrintRenderer printer = PrintRenderer.CreateInstance(this.Pages, dlg.PrinterSettings);
 					printer.Start();
 					printer.RenderOutput();
 					printer.End();
@@ -522,7 +515,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				saveDialog.DefaultExt = "PDF";
 				saveDialog.ValidateNames = true;
 				if (saveDialog.ShowDialog() == DialogResult.OK) {
-					using (PdfRenderer pdfRenderer = PdfRenderer.CreateInstance(this.reportSettings, this.pages, saveDialog.FileName, true)) {
+					using (PdfRenderer pdfRenderer = PdfRenderer.CreateInstance(this.reportSettings, this.Pages, saveDialog.FileName, true)) {
 						pdfRenderer.Start();
 						pdfRenderer.RenderOutput();
 						pdfRenderer.End();
@@ -540,15 +533,11 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		}
 
 
-		public PagesCollection Pages {
-			get {
-				if (this.pages == null) {
-					this.pages = new PagesCollection();
-				}
-				return this.pages;
-			}
+		public PagesCollection Pages
+		{
+			get {return runner.Pages;}
 		}
-
+	
 
 		public IReportViewerMessages Messages {
 			get { return this.reportViewerMessages; }
