@@ -7,7 +7,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 {
 	public enum ClassType : byte
 	{
-		TypeParameter,
 		Class,
 		Enum,
 		Interface,

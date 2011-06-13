@@ -84,12 +84,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		ClassType IType.ClassType {
-			get {
-				return ClassType.TypeParameter;
-			}
-		}
-		
 		int IType.TypeParameterCount {
 			get { return 0; }
 		}

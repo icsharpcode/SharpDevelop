@@ -44,13 +44,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return null; }
 		}
 		
-		public virtual ClassType ClassType {
-			get {
-				var definition = GetDefinition ();
-				return definition != null ? definition.ClassType : ClassType.Class;
-			}
-		}
-		
 		public virtual ITypeDefinition GetDefinition()
 		{
 			return null;

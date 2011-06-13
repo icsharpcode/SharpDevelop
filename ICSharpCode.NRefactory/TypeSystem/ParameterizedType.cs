@@ -94,10 +94,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		public ClassType ClassType {
-			get { return genericType.ClassType; }
-		}
-
 		public int TypeParameterCount {
 			get { return genericType.TypeParameterCount; }
 		}
