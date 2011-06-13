@@ -21,6 +21,9 @@ namespace ICSharpCode.StartPage
 					}
 				}
 			};
+		    ProjectService.SolutionClosed += delegate { 
+		        WorkbenchSingleton.Workbench.ShowView(new StartPageViewContent());
+		    };
 		}
 		
 		public override void Run()
