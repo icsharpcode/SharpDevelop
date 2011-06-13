@@ -19,6 +19,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		IList<ITypeDefinition> topLevelTypeDefinitions = new List<ITypeDefinition>();
 		IList<IAttribute> assemblyAttributes = new List<IAttribute>();
 		IList<UsingScope> usingScopes = new List<UsingScope>();
+		IList<Error> errors = new List<Error> ();
 		
 		protected override void FreezeInternal()
 		{
@@ -45,6 +46,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public UsingScope RootUsingScope {
 			get { return rootUsingScope; }
+		}
+		
+		public IList<Error> Errors {
+			get { return errors; }
 		}
 		
 		public IList<UsingScope> UsingScopes {

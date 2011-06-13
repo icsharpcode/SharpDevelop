@@ -694,6 +694,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
+			
 			public override void Visit (Indexer indexer)
 			{
 				IndexerDeclaration newIndexer = new IndexerDeclaration ();
@@ -2909,17 +2910,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public class ErrorReportPrinter : ReportPrinter
 		{
-//			public readonly List<Error> Errors = new List<Error> ();
+			readonly string fileName;
+			public readonly List<Error> Errors = new List<Error> ();
+			
+			public ErrorReportPrinter (string fileName)
+			{
+				this.fileName = fileName;
+			}
 			
 			public override void Print (AbstractMessage msg)
 			{
-				Console.WriteLine (msg.MessageType + " (" + msg.Location + ")" + ": "+ msg.Text);
 				base.Print (msg);
-//				Error newError = new Error (msg.IsWarning ? ErrorType.Warning : ErrorType.Error, msg.Location.Row, msg.Location.Column, msg.Text);
-//				Errors.Add (newError);
+				var newError = new Error (msg.IsWarning ? ErrorType.Warning : ErrorType.Error, msg.Text, new DomRegion (fileName, msg.Location.Row, msg.Location.Column));
+				Errors.Add (newError);
 			}
 		}
-		ErrorReportPrinter errorReportPrinter = new ErrorReportPrinter ();
+		ErrorReportPrinter errorReportPrinter = new ErrorReportPrinter (null);
 		
 		public ErrorReportPrinter ErrorPrinter {
 			get {
@@ -2980,8 +2986,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public CompilationUnit Parse (Stream stream, int line = 0)
 		{
 			lock (CompilerCallableEntryPoint.parseLock) {
+				errorReportPrinter = new ErrorReportPrinter ("");
 				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, "parsed.cs", errorReportPrinter);
-				return Parse (top, line);
+				var unit = Parse (top, line);
+				unit.Errors.AddRange (errorReportPrinter.Errors);
+				return unit;
 			}
 		}
 

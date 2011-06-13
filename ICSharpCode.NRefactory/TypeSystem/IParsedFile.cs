@@ -49,5 +49,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Returns null if no member is defined at that location.
 		/// </summary>
 		IMember GetMember(AstLocation location);
+		
+		/// <summary>
+		/// Gets the parser errors.
+		/// </summary>
+		IList<Error> Errors { get; }
 	}
 }

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -36,6 +37,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			get {
 				return NodeType.Unknown;
 			}
+		}
+		
+		List<Error> errors = new List<Error> ();
+		
+		public List<Error> Errors {
+			get { return errors; }
 		}
 		
 		public CompilationUnit ()
