@@ -260,7 +260,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			internal HashSet<PossibleTypeReference> list = new HashSet<PossibleTypeReference>();
 			NRefactoryResolver.NRefactoryResolver resolver;
 			ParseInformation parseInformation;
-			
+
+			public bool HasQueryExpressions { get; private set; }
+
 			public FindPossibleTypeReferencesVisitor(ParseInformation parseInformation)
 			{
 				if (parseInformation != null) {
@@ -336,17 +338,24 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				}
 				return base.VisitFieldDeclaration(fieldDeclaration, data);
 			}
+
+			public override object VisitQueryExpression(QueryExpression queryExpression, object data) {
+				HasQueryExpressions = true;
+				return base.VisitQueryExpression(queryExpression, data);
+			}
 		}
-		
-		protected virtual HashSet<PossibleTypeReference> FindPossibleTypeReferences(IDomProgressMonitor progressMonitor, string fileContent, ParseInformation parseInfo)
+
+		protected virtual HashSet<PossibleTypeReference> FindPossibleTypeReferences(IDomProgressMonitor progressMonitor, string fileContent, ParseInformation parseInfo, out bool hasQueryExpressions)
 		{
 			NR.IParser parser = ParseFile(progressMonitor, fileContent);
 			if (parser == null) {
+				hasQueryExpressions = false;
 				return null;
 			} else {
 				FindPossibleTypeReferencesVisitor visitor = new FindPossibleTypeReferencesVisitor(parseInfo);
 				parser.CompilationUnit.AcceptVisitor(visitor, null);
 				parser.Dispose();
+				hasQueryExpressions = visitor.HasQueryExpressions;
 				return visitor.list;
 			}
 		}
@@ -360,8 +369,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		public override IList<IUsing> FindUnusedUsingDeclarations(IDomProgressMonitor progressMonitor, string fileName, string fileContent, ICompilationUnit cu)
 		{
 			IClass @class = cu.Classes.Count == 0 ? null : cu.Classes[0];
-			
-			HashSet<PossibleTypeReference> references = FindPossibleTypeReferences(progressMonitor, fileContent, new ParseInformation(cu));
+
+			bool hasQueryExpressions;
+			HashSet<PossibleTypeReference> references = FindPossibleTypeReferences(progressMonitor, fileContent, new ParseInformation(cu), out hasQueryExpressions);
 			if (references == null) return new IUsing[0];
 			
 			HashSet<IUsing> usedUsings = new HashSet<IUsing>();
@@ -396,7 +406,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 								goto checkNextImport;
 						}
 					}
-					unusedUsings.Add(import); // this using is unused
+					if (!hasQueryExpressions || !import.Usings.Contains("System.Linq")) {
+						unusedUsings.Add(import); // this using is unused
+					}
 				}
 				checkNextImport:;
 			}
