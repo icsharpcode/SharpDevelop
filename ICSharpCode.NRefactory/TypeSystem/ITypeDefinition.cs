@@ -15,8 +15,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	#endif
 	public interface ITypeDefinition : IType, IEntity
 	{
-		ClassType ClassType { get; }
-		
 		IList<ITypeReference> BaseTypes { get; }
 		IList<ITypeParameter> TypeParameters { get; }
 		

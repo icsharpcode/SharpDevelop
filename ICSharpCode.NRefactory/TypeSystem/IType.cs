@@ -23,12 +23,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool? IsReferenceType { get; }
 		
 		/// <summary>
+		/// Gets the type of the class.
+		/// </summary>
+		ClassType ClassType { get; }
+		
+		/// <summary>
 		/// Gets the underlying type definition.
 		/// Can return null for types which do not have a type definition (for example arrays, pointers, type parameters)
 		/// </summary>
 		ITypeDefinition GetDefinition();
 		
-		/// <summary>
 		/// Gets the parent type, if this is a nested type.
 		/// Returns null for top-level types.
 		/// </summary>
