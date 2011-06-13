@@ -60,6 +60,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
+		public AstLocation Begin {
+			get {
+				return new AstLocation (beginLine, beginColumn);
+			}
+		}
+		
+		public AstLocation End {
+			get {
+				return new AstLocation (endLine, endColumn);
+			}
+		}
+		
 		public DomRegion(string fileName, int beginLine, int beginColumn, int endLine, int endColumn)
 		{
 			this.fileName = fileName;
@@ -69,11 +81,29 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.endColumn   = endColumn;
 		}
 		
-		public DomRegion(string fileName, int beginLine, int beginColumn)
+		public DomRegion (string fileName, int beginLine, int beginColumn)
 		{
 			this.fileName = fileName;
-			this.beginLine   = beginLine;
+			this.beginLine = beginLine;
 			this.beginColumn = beginColumn;
+			this.endLine = -1;
+			this.endColumn = -1;
+		}
+		
+		public DomRegion (string fileName, AstLocation begin, AstLocation end)
+		{
+			this.fileName = fileName;
+			this.beginLine = begin.Line;
+			this.beginColumn = begin.Column;
+			this.endLine = end.Line;
+			this.endColumn = end.Column;
+		}
+		
+		public DomRegion (string fileName, AstLocation begin)
+		{
+			this.fileName = fileName;
+			this.beginLine = begin.Line;
+			this.beginColumn = begin.Column;
 			this.endLine = -1;
 			this.endColumn = -1;
 		}
