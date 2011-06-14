@@ -18,5 +18,13 @@ namespace ICSharpCode.NRefactory.Tests
 			INode node = parser.Parse("i == 5");
 			Assert.IsTrue(parser.Errors.Count > 0);
 		}
+		
+		[Test]
+		public void SimpleXmlDocument()
+		{
+			SnippetParser parser = new SnippetParser(SupportedLanguage.VBNet);
+			INode node = parser.Parse("Dim doc = <test><%= test %></test>");
+			Assert.IsTrue(parser.Errors.Count == 0);
+		}
 	}
 }
