@@ -407,6 +407,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			try {
 				System.Threading.Monitor.Enter(this.SyncRoot, ref lockTaken);
 				
+				if (projectFile == null)
+					throw new ObjectDisposedException("MSBuildBasedProject");
+				
 				if (configuration == null)
 					configuration = this.ActiveConfiguration;
 				if (platform == null)
