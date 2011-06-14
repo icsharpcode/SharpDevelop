@@ -137,18 +137,14 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 		private void RunFormSheet(ReportModel reportModel)
 		{
-//			runner.PageCreated += OnPageCreated;
 			runner.RunReport(reportModel,(ReportParameters)null);
-//			runner.PageCreated -= OnPageCreated;
 			ShowCompleted();
 		}
 
 
 		private void RunDataReport(ReportModel reportModel, IDataManager data)
 		{
-//			runner.PageCreated += OnPageCreated;
 			runner.RunReport(reportModel,data);
-//			runner.PageCreated -= OnPageCreated;
 			ShowCompleted();
 		}
 
@@ -504,12 +500,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 
 		private void PdfButtonClick(object sender, EventArgs e)
 		{
-			this.CreatePdf();
-		}
-
-
-		private void CreatePdf()
-		{
 			using (SaveFileDialog saveDialog = new SaveFileDialog()) {
 				saveDialog.FileName = this.reportSettings.ReportName;
 				saveDialog.DefaultExt = "PDF";
@@ -523,6 +513,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				}
 			}
 		}
+
 
 		#endregion
 
