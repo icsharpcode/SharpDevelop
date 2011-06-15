@@ -239,5 +239,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return file.GetMember (new AstLocation (line, column));
 		}
 		#endregion
+		
+		#region GetMembers
+		/// <summary>
+		/// Gets all members that can be called on this return type.
+		/// This is the union of Fields,Properties,Methods and Events.
+		/// </summary>
+		public static IEnumerable<IMember> GetMembers (this IType type, ITypeResolveContext context, Predicate<IMember> filter = null)
+		{
+			return type.GetFields (context, filter).SafeCast<IField, IMember> ()
+					.Concat (type.GetProperties (context, filter).SafeCast<IProperty, IMember> ())
+					.Concat (type.GetMethods (context, filter).SafeCast<IMethod, IMember> ())
+					.Concat (type.GetEvents (context, filter).SafeCast<IEvent, IMember> ());
+		}
+		#endregion	
 	}
 }
