@@ -746,11 +746,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						if (name.Length == 0 || name[0] == '<')
 							continue;
 						name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name);
-						InnerClasses.Add(new CecilTypeDefinition(this, name, nestedType));
+						NestedTypes.Add(new CecilTypeDefinition(this, name, nestedType));
 					}
 				}
-				foreach (CecilTypeDefinition innerClass in this.InnerClasses) {
-					innerClass.Init(loader);
+				foreach (CecilTypeDefinition nestedType in this.NestedTypes) {
+					nestedType.Init(loader);
 				}
 			}
 			

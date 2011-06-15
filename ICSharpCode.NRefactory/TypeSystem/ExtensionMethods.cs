@@ -216,7 +216,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public static IEnumerable<ITypeDefinition> GetAllClasses(this ITypeResolveContext context)
 		{
-			return TreeTraversal.PreOrder(context.GetClasses(), t => t.InnerClasses);
+			return TreeTraversal.PreOrder(context.GetClasses(), t => t.NestedTypes);
 		}
 		#endregion
 		

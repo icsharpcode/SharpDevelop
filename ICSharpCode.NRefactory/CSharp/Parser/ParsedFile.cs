@@ -88,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ITypeDefinition type = GetTopLevelTypeDefinition(location);
 			while (type != null) {
 				parent = type;
-				type = FindEntity(parent.InnerClasses, location);
+				type = FindEntity(parent.NestedTypes, location);
 			}
 			return parent;
 		}

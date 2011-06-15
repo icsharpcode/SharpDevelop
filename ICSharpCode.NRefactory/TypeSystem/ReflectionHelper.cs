@@ -44,9 +44,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					int typeParameterCount;
 					string name = SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
 					typeParameterCount += declaringType.TypeParameterCount;
-					foreach (ITypeDefinition innerClass in declaringType.InnerClasses) {
-						if (innerClass.Name == name && innerClass.TypeParameterCount == typeParameterCount) {
-							return innerClass;
+					foreach (ITypeDefinition nestedType in declaringType.NestedTypes) {
+						if (nestedType.Name == name && nestedType.TypeParameterCount == typeParameterCount) {
+							return nestedType;
 						}
 					}
 				}

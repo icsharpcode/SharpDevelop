@@ -205,9 +205,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			try {
 				ITypeDefinition newTypeDefinition = null;
 				if (resolver.CurrentTypeDefinition != null) {
-					foreach (ITypeDefinition innerClass in resolver.CurrentTypeDefinition.InnerClasses) {
-						if (innerClass.Region.IsInside(typeDeclaration.StartLocation)) {
-							newTypeDefinition = innerClass;
+					foreach (ITypeDefinition nestedType in resolver.CurrentTypeDefinition.NestedTypes) {
+						if (nestedType.Region.IsInside(typeDeclaration.StartLocation)) {
+							newTypeDefinition = nestedType;
 							break;
 						}
 					}

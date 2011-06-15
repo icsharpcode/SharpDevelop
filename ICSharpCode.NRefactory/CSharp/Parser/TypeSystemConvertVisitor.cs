@@ -127,7 +127,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (currentTypeDefinition != null) {
 				newType = new DefaultTypeDefinition(currentTypeDefinition, name);
 				newType.TypeParameters.AddRange(currentTypeDefinition.TypeParameters);
-				currentTypeDefinition.InnerClasses.Add(newType);
+				currentTypeDefinition.NestedTypes.Add(newType);
 			} else {
 				newType = new DefaultTypeDefinition(usingScope.ProjectContent, usingScope.NamespaceName, name);
 				parsedFile.TopLevelTypeDefinitions.Add(newType);
