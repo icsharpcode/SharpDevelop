@@ -71,7 +71,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		void InitVisualControl()
 		{
-			this.NodeVisualControl = NodeControlCache.Instance.GetNodeControl();
+			this.NodeVisualControl = new PositionedGraphNodeControl();
 			// propagate events from nodeVisualControl
 			this.NodeVisualControl.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyExpanded);
 			this.NodeVisualControl.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyCollapsed);
@@ -87,9 +87,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public virtual IEnumerable<PositionedEdge> Edges
 		{
 			get	{
-				foreach	(PositionedNodeProperty property in this.Properties) {
-					if (property.Edge != null)
-						yield return property.Edge;
+				foreach	(PositionedNodeProperty property in this.Properties.Where(prop => prop.Edge != null)) {
+					yield return property.Edge;
 				}
 			}
 		}

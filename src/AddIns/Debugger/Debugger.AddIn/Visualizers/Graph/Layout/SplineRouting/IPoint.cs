@@ -8,7 +8,7 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
-	/// Enables passing any type of graph (implementing IRect, IEdge) into EdgeRouter.
+	/// Enables passing generic graphs into EdgeRouter.
 	/// </summary>
 	public interface IPoint
 	{

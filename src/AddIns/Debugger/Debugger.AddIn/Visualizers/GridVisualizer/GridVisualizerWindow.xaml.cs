@@ -130,11 +130,6 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 						// Value is IEnumerable
 						DebugType iEnumerableType, itemType;
 						if (shownValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
-							// original
-							/*var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, initialIEnumerableItemsCount);
-							var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
-							lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
-							gridValuesProvider = enumerableValuesProvider;*/
 							DebugType debugListType;
 							var debugListExpression = DebuggerHelpers.CreateDebugListExpression(shownExpr, itemType, out debugListType);
 							gridValuesProvider = CreateListValuesProvider(debugListExpression, itemType);

@@ -122,14 +122,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 		}
 		
-		/// <summary>
-		/// ObjectGraph visualizer caches UI controls, this clears the cache.
-		/// </summary>
-		public void ClearUIControlCache()
-		{
-			NodeControlCache.Instance.Clear();
-		}
-		
 		private void Inspect_Button_Click(object sender, RoutedEventArgs e)
 		{
 			this.Refresh();
@@ -144,12 +136,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		void LayoutGraph(ObjectGraph graph)
 		{
-			if (this.oldPosGraph != null) {
-				foreach (var oldNode in this.oldPosGraph.Nodes) {
-					// controls from old graph would be garbage collected, reuse them
-					NodeControlCache.Instance.ReturnForReuse(oldNode.NodeVisualControl);
-				}
-			}
 			this.oldPosGraph = this.currentPosGraph;
 			Log.Debug("Debugger visualizer: Calculating graph layout");
 			var layoutDirection = layoutViewModel.SelectedEnumValue;

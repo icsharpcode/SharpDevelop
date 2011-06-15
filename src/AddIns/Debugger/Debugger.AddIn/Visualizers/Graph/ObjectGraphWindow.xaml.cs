@@ -39,7 +39,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			base.OnClosed(e);
 			UnregisterDebuggerEvents();
-			this.objectGraphControl.ClearUIControlCache();
 			ObjectGraphWindow.Instance = null;			// allow release
 		}
 		
