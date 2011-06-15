@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			TypeSystemConvertVisitor visitor = new TypeSystemConvertVisitor(testCasePC, fileName);
 			cu.AcceptVisitor(visitor, null);
 			ParsedFile parsedFile = visitor.ParsedFile;
-			((SimpleProjectContent)testCasePC).UpdateProjectContent(null, parsedFile.TopLevelTypeDefinitions, null, parsedFile.AssemblyAttributes);
+			((SimpleProjectContent)testCasePC).UpdateProjectContent(null, parsedFile);
 		}
 	}
 }

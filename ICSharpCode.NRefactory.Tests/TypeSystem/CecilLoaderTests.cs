@@ -98,11 +98,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition c = Mscorlib.GetClass(typeof(Environment));
 			Assert.IsNotNull(c, "System.Environment not found");
 			ITypeReference rt = c.Methods.First(m => m.Name == "GetFolderPath").Parameters[0].Type;
-			Assert.AreSame(c.InnerClasses.Single(ic => ic.Name == "SpecialFolder"), rt.Resolve(ctx));
+			Assert.AreSame(c.NestedTypes.Single(ic => ic.Name == "SpecialFolder"), rt.Resolve(ctx));
 		}
 		
 		[Test]
-		public void InnerClassesTest()
+		public void NestedTypesTest()
 		{
 			ITypeDefinition c = Mscorlib.GetClass(typeof(Environment.SpecialFolder));
 			Assert.IsNotNull(c, "c is null");
