@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
@@ -221,19 +221,19 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
-		public IEnumerable<ITypeDefinition> GetClasses()
+		public IEnumerable<ITypeDefinition> GetTypes()
 		{
 			return _typeDicts[0].Values;
 		}
 		
 		/// <inheritdoc/>
-		public IEnumerable<ITypeDefinition> GetClasses(string nameSpace, StringComparer nameComparer)
+		public IEnumerable<ITypeDefinition> GetTypes(string nameSpace, StringComparer nameComparer)
 		{
 			if (nameSpace == null)
 				throw new ArgumentNullException("nameSpace");
 			if (nameComparer == null)
 				throw new ArgumentNullException("nameComparer");
-			return GetClasses().Where(c => nameComparer.Equals(nameSpace, c.Namespace));
+			return GetTypes().Where(c => nameComparer.Equals(nameSpace, c.Namespace));
 		}
 		
 		/// <inheritdoc/>

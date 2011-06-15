@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
@@ -128,23 +128,23 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public IEnumerable<ITypeDefinition> GetClasses()
+		public IEnumerable<ITypeDefinition> GetTypes()
 		{
 			readerWriterLock.EnterReadLock();
 			try {
 				// make a copy with ToArray() for thread-safe access
-				return types.GetClasses().ToArray();
+				return types.GetTypes().ToArray();
 			} finally {
 				readerWriterLock.ExitReadLock();
 			}
 		}
 		
-		public IEnumerable<ITypeDefinition> GetClasses(string nameSpace, StringComparer nameComparer)
+		public IEnumerable<ITypeDefinition> GetTypes(string nameSpace, StringComparer nameComparer)
 		{
 			readerWriterLock.EnterReadLock();
 			try {
 				// make a copy with ToArray() for thread-safe access
-				return types.GetClasses(nameSpace, nameComparer).ToArray();
+				return types.GetTypes(nameSpace, nameComparer).ToArray();
 			} finally {
 				readerWriterLock.ExitReadLock();
 			}

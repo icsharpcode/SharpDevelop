@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
@@ -1765,7 +1765,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		IEnumerable<IMethod> GetExtensionMethods(string namespaceName)
 		{
 			return
-				from c in context.GetClasses(namespaceName, StringComparer.Ordinal)
+				from c in context.GetTypes(namespaceName, StringComparer.Ordinal)
 				where c.IsStatic && c.HasExtensionMethods
 				from m in c.Methods
 				where m.IsExtensionMethod

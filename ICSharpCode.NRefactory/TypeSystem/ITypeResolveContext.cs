@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// If this method is called within <c>using (pc.Synchronize())</c>, then the returned enumerable is valid
 		/// only until the end of the synchronize block.
 		/// </remarks>
-		IEnumerable<ITypeDefinition> GetClasses();
+		IEnumerable<ITypeDefinition> GetTypes();
 		
 		/// <summary>
 		/// Retrieves all classes in the specified namespace.
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// If this method is called within <c>using (var spc = pc.Synchronize())</c>, then the returned enumerable is valid
 		/// only until the end of the synchronize block.
 		/// </remarks>
-		IEnumerable<ITypeDefinition> GetClasses(string nameSpace, StringComparer nameComparer);
+		IEnumerable<ITypeDefinition> GetTypes(string nameSpace, StringComparer nameComparer);
 		
 		/// <summary>
 		/// Retrieves all namespaces.
@@ -112,13 +112,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return null;
 		}
 		
-		IEnumerable<ITypeDefinition> ITypeResolveContext.GetClasses()
+		IEnumerable<ITypeDefinition> ITypeResolveContext.GetTypes()
 		{
 			Contract.Ensures(Contract.Result<IEnumerable<ITypeDefinition>>() != null);
 			return null;
 		}
 		
-		IEnumerable<ITypeDefinition> ITypeResolveContext.GetClasses(string nameSpace, StringComparer nameComparer)
+		IEnumerable<ITypeDefinition> ITypeResolveContext.GetTypes(string nameSpace, StringComparer nameComparer)
 		{
 			Contract.Requires(nameSpace != null);
 			Contract.Requires(nameComparer != null);
