@@ -395,6 +395,7 @@
     <Compile Include="CSharp\Refactoring\ContextAction\RemoveBackingStore.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\GenerateGetter.cs" />
     <Compile Include="TypeSystem\Error.cs" />
+    <Compile Include="TypeSystem\IAnnotatable.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
