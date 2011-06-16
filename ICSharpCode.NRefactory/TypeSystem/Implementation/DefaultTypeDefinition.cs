@@ -393,11 +393,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return new ITypeDefinition[] { this };
 		}
 		
-		public IType GetElementType()
-		{
-			throw new InvalidOperationException();
-		}
-		
 		public ITypeDefinition GetDefinition()
 		{
 			return this;
