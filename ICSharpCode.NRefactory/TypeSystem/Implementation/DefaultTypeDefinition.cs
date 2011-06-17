@@ -377,7 +377,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						primitiveBaseType = typeof(object);
 						break;
 				}
-				IType t = context.GetClass(primitiveBaseType);
+				IType t = context.GetTypeDefinition(primitiveBaseType);
 				if (t != null)
 					yield return t;
 			}

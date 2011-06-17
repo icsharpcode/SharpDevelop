@@ -210,11 +210,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		#endregion
 		
-		#region GetAllClasses
+		#region GetAllTypes
 		/// <summary>
-		/// Gets all classes, including nested classes.
+		/// Gets all type definitions, including nested types.
 		/// </summary>
-		public static IEnumerable<ITypeDefinition> GetAllClasses(this ITypeResolveContext context)
+		public static IEnumerable<ITypeDefinition> GetAllTypes(this ITypeResolveContext context)
 		{
 			return TreeTraversal.PreOrder(context.GetTypes(), t => t.NestedTypes);
 		}
@@ -248,9 +248,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public static IEnumerable<IMember> GetMembers (this IType type, ITypeResolveContext context, Predicate<IMember> filter = null)
 		{
 			return type.GetFields (context, filter).SafeCast<IField, IMember> ()
-					.Concat (type.GetProperties (context, filter).SafeCast<IProperty, IMember> ())
-					.Concat (type.GetMethods (context, filter).SafeCast<IMethod, IMember> ())
-					.Concat (type.GetEvents (context, filter).SafeCast<IEvent, IMember> ());
+				.Concat (type.GetProperties (context, filter).SafeCast<IProperty, IMember> ())
+				.Concat (type.GetMethods (context, filter).SafeCast<IMethod, IMember> ())
+				.Concat (type.GetEvents (context, filter).SafeCast<IEvent, IMember> ());
 		}
 		#endregion
 		
@@ -260,7 +260,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public static IEnumerable<ITypeDefinition> GetSubTypeDefinitions (this ITypeDefinition baseType, ITypeResolveContext context)
 		{
-			foreach (var contextType in context.GetAllClasses ()) {
+			foreach (var contextType in context.GetAllTypes ()) {
 				if (contextType.IsDerivedFrom (baseType, context))
 					yield return contextType;
 			}

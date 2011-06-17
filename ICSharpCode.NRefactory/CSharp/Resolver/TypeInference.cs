@@ -833,7 +833,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				candidateTypeDefinitions = hashSet.ToList();
 			} else {
 				// Find candidates by looking at all classes in the project:
-				candidateTypeDefinitions = context.GetAllClasses().ToList();
+				candidateTypeDefinitions = context.GetAllTypes().ToList();
 			}
 			
 			// Now filter out candidates that violate the upper bounds:

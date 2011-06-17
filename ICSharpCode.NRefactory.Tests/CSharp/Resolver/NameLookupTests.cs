@@ -134,7 +134,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void FindTypeParameters()
 		{
 			resolver.UsingScope = MakeUsingScope("System.Collections.Generic");
-			resolver.CurrentTypeDefinition = context.GetClass(typeof(List<>));
+			resolver.CurrentTypeDefinition = context.GetTypeDefinition(typeof(List<>));
 			resolver.CurrentMember = resolver.CurrentTypeDefinition.Methods.Single(m => m.Name == "ConvertAll");
 			
 			TypeResolveResult trr;

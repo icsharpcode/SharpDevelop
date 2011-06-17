@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ITypeParameter tp = new DefaultTypeParameter(EntityType.Method, 0, "T");
 			IType stringType = KnownTypeReference.String.Resolve(ctx);
-			ITypeDefinition enumerableType = ctx.GetClass(typeof(IEnumerable<>));
+			ITypeDefinition enumerableType = ctx.GetTypeDefinition(typeof(IEnumerable<>));
 			
 			bool success;
 			Assert.AreEqual(
@@ -58,8 +58,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ITypeParameter tp = new DefaultTypeParameter(EntityType.Method, 0, "T");
 			IType stringType = KnownTypeReference.String.Resolve(ctx);
-			ITypeDefinition enumerableType = ctx.GetClass(typeof(IEnumerable<>));
-			ITypeDefinition comparerType = ctx.GetClass(typeof(IComparer<>));
+			ITypeDefinition enumerableType = ctx.GetTypeDefinition(typeof(IEnumerable<>));
+			ITypeDefinition comparerType = ctx.GetTypeDefinition(typeof(IComparer<>));
 			
 			var comparerOfIEnumerableOfString = new ParameterizedType(comparerType, new [] { new ParameterizedType(enumerableType, new [] { stringType} ) });
 			var comparerOfTpArray = new ParameterizedType(comparerType, new [] { new ArrayType(tp) });
