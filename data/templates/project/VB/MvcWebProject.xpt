@@ -1,7 +1,7 @@
 ﻿<Template
 	originator="Matt Ward"
 	created="04/06/2011"
-	lastModified="04/06/2011">
+	lastModified="17/06/2011">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -17,6 +17,7 @@
 	<Actions>
 		<Open filename="Views\Home\Index.aspx"/>
 		<Open filename="Controllers\HomeController.vb"/>
+		<RunCommand path="/AddIns/PackageManagement/TemplateCommands/InstallPackages"/>
 	</Actions>
 
 	<Project language="VBNet">
@@ -46,6 +47,7 @@
 		</Imports>
 
 		<Files>
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb" />
 			<File name="Content\Site.css">
 <![CDATA[
 body
@@ -225,7 +227,6 @@ Public Class MvcApplication
 End Class
 ]]>
 			</File>
-			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb" />
 			<File name="Views\Home\Contact.aspx">
 <![CDATA[<%@ Page Language="VB" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage" %>
 
@@ -292,6 +293,14 @@ End Class
 		</div>
 	</body>
 </html>
+]]>
+			</File>
+			<File name="packages.config">
+<![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<packages>
+  <package id="jQuery" version="1.6.1" />
+  <package id="Modernizr" version="1.7" />
+</packages>
 ]]>
 			</File>
 			<File name="web.config">

@@ -111,5 +111,12 @@ namespace ICSharpCode.PackageManagement.Design
 			Sections.Remove(RegisteredPackageSourceSettings.PackageSourcesSectionName);
 			Sections.Add(RegisteredPackageSourceSettings.PackageSourcesSectionName, null);			
 		}
+		
+		public void AddFakePackageSources(IEnumerable<PackageSource> packageSources)
+		{
+			foreach (PackageSource packageSource in packageSources) {
+				AddFakePackageSource(packageSource);
+			}
+		}
 	}
 }

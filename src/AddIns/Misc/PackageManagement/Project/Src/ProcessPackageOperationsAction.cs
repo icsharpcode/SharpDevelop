@@ -20,6 +20,7 @@ namespace ICSharpCode.PackageManagement
 
 		public override bool HasPackageScriptsToRun()
 		{
+			BeforeExecute();
 			var files = new PackageFilesForOperations(Operations);
 			return files.HasAnyPackageScripts();
 		}

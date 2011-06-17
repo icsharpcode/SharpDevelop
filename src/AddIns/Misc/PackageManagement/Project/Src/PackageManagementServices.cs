@@ -20,15 +20,22 @@ namespace ICSharpCode.PackageManagement
 		static readonly ResetPowerShellWorkingDirectoryOnSolutionClosed resetPowerShellWorkingDirectory;
 		static readonly PackageActionsToRun packageActionsToRun = new PackageActionsToRun();
 		static readonly PackageActionRunner packageActionRunner;
+		static readonly IPackageRepositoryCache projectTemplatePackageRepositoryCache;
+		static readonly RegisteredProjectTemplatePackageSources projectTemplatePackageSources;
 		
 		static PackageManagementServices()
 		{
 			options = new PackageManagementOptions();
-			registeredPackageRepositories = new RegisteredPackageRepositories(options);
+			var cache = new PackageRepositoryCache(options.PackageSources, options.RecentPackages);
+			registeredPackageRepositories = new RegisteredPackageRepositories(cache, options);
+			projectTemplatePackageSources = new RegisteredProjectTemplatePackageSources();
+			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(cache, projectTemplatePackageSources);
+			
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
-			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
-			consoleHostProvider = new PackageManagementConsoleHostProvider(solution, registeredPackageRepositories);
 			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
+			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
+			
+			consoleHostProvider = new PackageManagementConsoleHostProvider(solution, registeredPackageRepositories);
 			runPackageInitializationScripts = new RunPackageInitializationScriptsOnSolutionOpen(projectService);
 			resetPowerShellWorkingDirectory = new ResetPowerShellWorkingDirectoryOnSolutionClosed(projectService, ConsoleHost);
 			var consolePackageActionRunner = new ConsolePackageActionRunner(ConsoleHost, packageActionsToRun);
@@ -69,6 +76,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public static IPackageActionRunner PackageActionRunner {
 			get { return packageActionRunner; }
+		}
+		
+		public static IPackageRepositoryCache ProjectTemplatePackageRepositoryCache {
+			get { return projectTemplatePackageRepositoryCache; }
 		}
 	}
 }

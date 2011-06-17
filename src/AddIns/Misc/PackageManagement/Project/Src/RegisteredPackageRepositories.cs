@@ -15,11 +15,6 @@ namespace ICSharpCode.PackageManagement
 		PackageSource activePackageSource;
 		IPackageRepository activePackageRepository;
 		
-		public RegisteredPackageRepositories(PackageManagementOptions options)
-			: this(new PackageRepositoryCache(options.PackageSources, options.RecentPackages), options)
-		{
-		}
-		
 		public RegisteredPackageRepositories(
 			IPackageRepositoryCache repositoryCache,
 			PackageManagementOptions options)

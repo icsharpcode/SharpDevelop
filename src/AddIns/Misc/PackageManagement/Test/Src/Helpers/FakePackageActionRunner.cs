@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 
 namespace PackageManagement.Tests.Helpers
@@ -13,6 +14,10 @@ namespace PackageManagement.Tests.Helpers
 		public void Run(ProcessPackageAction action)
 		{
 			ActionPassedToRun = action;
+			ActionsPassedToRun.Add(action);
 		}
+		
+		public List<ProcessPackageAction> ActionsPassedToRun = 
+			new List<ProcessPackageAction>();
 	}
 }

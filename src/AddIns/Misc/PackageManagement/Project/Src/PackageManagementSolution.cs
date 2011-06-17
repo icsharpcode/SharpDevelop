@@ -78,17 +78,8 @@ namespace ICSharpCode.PackageManagement
 		
 		MSBuildBasedProject GetMSBuildProject(string name)
 		{
-			foreach (IProject project in projectService.GetOpenProjects()) {
-				if (IsProjectNameMatch(project.Name, name)) {
-					return project as MSBuildBasedProject;
-				}
-			}
-			return null;
-		}
-		
-		bool IsProjectNameMatch(string a, string b)
-		{
-			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
+			var openProjects = new OpenMSBuildProjects(projectService);
+			return openProjects.FindProject(name);
 		}
 		
 		IPackageManagementProject CreateProject(PackageSource source, MSBuildBasedProject project)
