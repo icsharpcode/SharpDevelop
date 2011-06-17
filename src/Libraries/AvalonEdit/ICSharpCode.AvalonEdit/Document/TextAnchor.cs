@@ -114,7 +114,8 @@ namespace ICSharpCode.AvalonEdit.Document
 				
 				TextAnchorNode n = this.node;
 				if (n == null)
-					throw new InvalidOperationException();
+					// throw new InvalidOperationException();
+					return 0;
 				
 				int offset = n.length;
 				if (n.left != null)
