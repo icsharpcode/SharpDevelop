@@ -7,7 +7,8 @@ using System.Collections.Generic;
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
-	/// Base class for implementing custom context actions.
+	/// Base class for implementing one context action.
+	/// Useful for implementing <see cref="IContextActionsProvider" /> that provides just one action - common scenario.
 	/// </summary>
 	public abstract class ContextAction : IContextActionsProvider, IContextAction
 	{
@@ -23,7 +24,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public IEnumerable<IContextAction> GetAvailableActions(EditorContext context)
 		{
-			// re-initialize the context
 			this.Context = context;
 			if (this.IsAvailable(context))
 				yield return this;
@@ -31,7 +31,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public void Execute()
 		{
-			// context was re-initialized in GetAvailableActions
 			Execute(this.Context);
 		}
 	}

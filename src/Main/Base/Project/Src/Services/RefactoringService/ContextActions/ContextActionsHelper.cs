@@ -13,10 +13,7 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	/// <summary>
-	/// Description of ContextCommandsHelper.
-	/// </summary>
-	public class ContextActionsHelper
+	public class ContextActionsPopupHelper
 	{
 		public static ContextActionsPopup MakePopupWithDerivedClasses(IClass baseClass)
 		{
