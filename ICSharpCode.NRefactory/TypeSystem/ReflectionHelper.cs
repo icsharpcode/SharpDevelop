@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			} else {
 				int typeParameterCount;
 				string name = SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
-				return context.GetClass(type.Namespace, name, typeParameterCount, StringComparer.Ordinal);
+				return context.GetTypeDefinition(type.Namespace, name, typeParameterCount, StringComparer.Ordinal);
 			}
 		}
 		#endregion

@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				return type;
 			} else {
-				return context.GetClass(type.Namespace, type.Name, type.TypeParameterCount, StringComparer.Ordinal) ?? type;
+				return context.GetTypeDefinition(type.Namespace, type.Name, type.TypeParameterCount, StringComparer.Ordinal) ?? type;
 			}
 		}
 		

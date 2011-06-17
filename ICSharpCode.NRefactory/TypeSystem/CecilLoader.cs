@@ -297,7 +297,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name, out typeParameterCount);
 					var earlyBindContext = this.EarlyBindContext;
 					if (earlyBindContext != null) {
-						IType c = earlyBindContext.GetClass(ns, name, typeParameterCount, StringComparer.Ordinal);
+						IType c = earlyBindContext.GetTypeDefinition(ns, name, typeParameterCount, StringComparer.Ordinal);
 						if (c != null)
 							return c;
 					}

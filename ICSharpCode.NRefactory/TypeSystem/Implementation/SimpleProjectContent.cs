@@ -118,11 +118,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		#endregion
 		
 		#region IProjectContent implementation
-		public ITypeDefinition GetClass(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
+		public ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
 			readerWriterLock.EnterReadLock();
 			try {
-				return types.GetClass(nameSpace, name, typeParameterCount, nameComparer);
+				return types.GetTypeDefinition(nameSpace, name, typeParameterCount, nameComparer);
 			} finally {
 				readerWriterLock.ExitReadLock();
 			}

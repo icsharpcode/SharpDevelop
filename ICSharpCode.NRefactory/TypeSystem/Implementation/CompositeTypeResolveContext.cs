@@ -52,10 +52,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
-		public ITypeDefinition GetClass(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
+		public ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
 			foreach (ITypeResolveContext context in children) {
-				ITypeDefinition d = context.GetClass(nameSpace, name, typeParameterCount, nameComparer);
+				ITypeDefinition d = context.GetTypeDefinition(nameSpace, name, typeParameterCount, nameComparer);
 				if (d != null)
 					return d;
 			}

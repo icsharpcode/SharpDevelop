@@ -25,9 +25,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
-		public virtual ITypeDefinition GetClass(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
+		public virtual ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
-			return target.GetClass(nameSpace, name, typeParameterCount, nameComparer);
+			return target.GetTypeDefinition(nameSpace, name, typeParameterCount, nameComparer);
 		}
 		
 		/// <inheritdoc/>

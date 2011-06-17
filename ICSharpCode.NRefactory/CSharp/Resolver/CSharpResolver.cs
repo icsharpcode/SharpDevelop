@@ -1586,7 +1586,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				// then look for a type
-				ITypeDefinition def = context.GetClass(n.NamespaceName, identifier, k, StringComparer.Ordinal);
+				ITypeDefinition def = context.GetTypeDefinition(n.NamespaceName, identifier, k, StringComparer.Ordinal);
 				if (def != null) {
 					IType result = def;
 					if (k != 0) {
@@ -1620,7 +1620,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					foreach (var u in n.Usings) {
 						NamespaceResolveResult ns = u.ResolveNamespace(context);
 						if (ns != null) {
-							def = context.GetClass(ns.NamespaceName, identifier, k, StringComparer.Ordinal);
+							def = context.GetTypeDefinition(ns.NamespaceName, identifier, k, StringComparer.Ordinal);
 							if (def != null) {
 								if (firstResult == null) {
 									if (k == 0)
@@ -1690,7 +1690,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (context.GetNamespace(fullName, StringComparer.Ordinal) != null)
 						return new NamespaceResolveResult(fullName);
 				}
-				ITypeDefinition def = context.GetClass(nrr.NamespaceName, identifier, typeArguments.Count, StringComparer.Ordinal);
+				ITypeDefinition def = context.GetTypeDefinition(nrr.NamespaceName, identifier, typeArguments.Count, StringComparer.Ordinal);
 				if (def != null)
 					return new TypeResolveResult(def);
 				return ErrorResult;

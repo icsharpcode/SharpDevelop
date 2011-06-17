@@ -203,7 +203,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		#region ITypeResolveContext implementation
 		/// <inheritdoc/>
-		public ITypeDefinition GetClass(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
+		public ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
 			if (nameSpace == null)
 				throw new ArgumentNullException("nameSpace");
