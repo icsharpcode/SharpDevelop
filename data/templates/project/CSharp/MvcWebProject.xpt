@@ -42,10 +42,6 @@
 			<OutputPath>bin\</OutputPath>
 		</PropertyGroup>
 		
-		<Imports clear="False">
-				<Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
-		</Imports>
-
 		<Files>
 			<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
 			<File name="Content\Site.css">
