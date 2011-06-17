@@ -357,6 +357,7 @@ namespace Mono.CSharp
 		public LocationsBag LocationsBag { get; set; }
 		public UsingsBag UsingsBag { get; set; }
 		public SpecialsBag SpecialsBag { get; set; }
+		public object LastYYValue { get; set; }
 	}
 	
 	//
@@ -418,7 +419,7 @@ namespace Mono.CSharp
 			return ParseFile (args, input, inputFile, new StreamReportPrinter (reportStream));
 		}
 		
-		public static object parseLock = new object ();
+		internal static object parseLock = new object ();
 
 		public static CompilerCompilationUnit ParseFile (string[] args, Stream input, string inputFile, ReportPrinter reportPrinter)
 		{
@@ -454,8 +455,14 @@ namespace Mono.CSharp
 					parser.LocationsBag = new LocationsBag ();
 					parser.UsingsBag = new UsingsBag ();
 					parser.parse ();
-				
-					return new CompilerCompilationUnit () { ModuleCompiled = RootContext.ToplevelTypes, LocationsBag = parser.LocationsBag, UsingsBag = parser.UsingsBag, SpecialsBag = parser.Lexer.sbag };
+					
+					return new CompilerCompilationUnit () { 
+						ModuleCompiled = RootContext.ToplevelTypes,
+						LocationsBag = parser.LocationsBag, 
+						UsingsBag = parser.UsingsBag, 
+						SpecialsBag = parser.Lexer.sbag,
+						LastYYValue = parser.LastYYVal
+					};
 				} finally {
 					Reset ();
 				}
