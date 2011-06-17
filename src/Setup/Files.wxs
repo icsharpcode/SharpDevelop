@@ -852,6 +852,14 @@
 										<File Source="..\..\data\templates\project\AddInWritingHelp.txt" Id="AddInWritingHelp.txt" Name="AddInWritingHelp.txt" />
 									</Component>
 								</Directory>
+								<Directory Id="ProjectTemplatePackages" Name="packages">
+									<Component Id="JQuery161NuGetPackage" Guid="E3651407-A9CF-4CE9-8603-1C9ABA7ED173" DiskId="1">
+										<File Id="jQuery.1.6.1.nupkg" Name="jQuery.1.6.1.nupkg" Source="..\..\data\templates\packages\jQuery.1.6.1.nupkg" KeyPath="yes" />
+									</Component>
+									<Component Id="Modernizr17NuGetPackage" Guid="0913F3F6-C4A6-4E3C-B80D-CA61A91E0213" DiskId="1">
+										<File Id="Modernizr.1.7.nupkg" Name="Modernizr.1.7.nupkg" Source="..\..\data\templates\packages\Modernizr.1.7.nupkg" KeyPath="yes" />
+									</Component>
+								</Directory>
 							</Directory>
 						</Directory>
 						<Directory Id="AddInsFolder" Name="AddIns">

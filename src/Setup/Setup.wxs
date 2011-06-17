@@ -522,6 +522,8 @@
 				<ComponentRef Id="PackageManagementCmdletsDllHelpXml"/>
 				<ComponentRef Id="PackageManagementDll"/>
 				<ComponentRef Id="PackageManagementPowerShellDll"/>
+				<ComponentRef Id="JQuery161NuGetPackage"/>
+				<ComponentRef Id="Modernizr17NuGetPackage"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
