@@ -9,7 +9,7 @@ using System.Threading;
 namespace ICSharpCode.NRefactory
 {
 	/// <summary>
-	/// Provides an interface to handle annotations in an objectj
+	/// Provides an interface to handle annotations in an object.
 	/// </summary>
 	public interface IAnnotatable
 	{
