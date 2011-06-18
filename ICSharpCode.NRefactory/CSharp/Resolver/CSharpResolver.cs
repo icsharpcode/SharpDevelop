@@ -303,6 +303,30 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return true; }
 			}
 			
+				bool IEntity.IsPrivate {
+				get { return false; }
+			}
+			
+			bool IEntity.IsPublic {
+				get { return true; }
+			}
+			
+			bool IEntity.IsProtected {
+				get { return false; }
+			}
+			
+			bool IEntity.IsInternal {
+				get { return false; }
+			}
+			
+			bool IEntity.IsProtectedOrInternal {
+				get { return false; }
+			}
+			
+			bool IEntity.IsProtectedAndInternal {
+				get { return false; }
+			}
+			
 			IProjectContent IEntity.ProjectContent {
 				get { throw new NotSupportedException(); }
 			}
