@@ -116,7 +116,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void RemovePackageReferences_TwoPackageReferencesInPackageConfigFile_RemovesPackageReferenceFromFile()
+		public void RemovePackageReferences_TwoPackageReferencesInPackageConfigFile_PackageReferenceFileIsDeleted()
 		{			
 			TestableProject project = CreateProject();
 			CreatePackageReferencesForProject(project);
@@ -125,13 +125,9 @@ namespace PackageManagement.Tests
 			
 			packageReferencesForProject.RemovePackageReferences();
 			
-			List<PackageReference> packageReferencesRemoved = fakePackageReferenceFile.EntriesDeleted;
+			bool deleted = fakePackageReferenceFile.IsDeleteCalled;
 			
-			var expectedPackageReferences = new List<PackageReference>();
-			expectedPackageReferences.Add(new PackageReference("One", new Version("1.0.3.2")));
-			expectedPackageReferences.Add(new PackageReference("Two", new Version("2.0.44")));
-			
-			PackageReferenceCollectionAssertAreEqual(expectedPackageReferences, packageReferencesRemoved);
+			Assert.IsTrue(deleted);
 		}
 	}
 }

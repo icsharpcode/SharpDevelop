@@ -30,5 +30,12 @@ namespace PackageManagement.Tests.Helpers
 			var packageReference = new PackageReference(id, version);
 			EntriesDeleted.Add(packageReference);
 		}
+		
+		public bool IsDeleteCalled;
+		
+		public void Delete()
+		{
+			IsDeleteCalled = true;
+		}
 	}
 }

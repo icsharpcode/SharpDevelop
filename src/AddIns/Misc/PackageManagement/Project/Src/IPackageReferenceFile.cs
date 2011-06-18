@@ -11,5 +11,6 @@ namespace ICSharpCode.PackageManagement
 	{
 		IEnumerable<PackageReference> GetPackageReferences();
 		void DeleteEntry(string id, Version version);
+		void Delete();
 	}
 }
