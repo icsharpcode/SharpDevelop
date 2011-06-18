@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 				return builder.ToString ();
 			}
 			set {
-				GetChildrenByRole(Roles.Identifier).ReplaceWith(value.Split('.').Select(ident => Identifier.Create (ident, AstLocation.Empty)));
+				GetChildrenByRole(Roles.Identifier).ReplaceWith(value.Split('.').Select(ident => new Identifier (ident, AstLocation.Empty)));
 			}
 		}
 		
