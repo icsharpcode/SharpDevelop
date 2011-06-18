@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Ast
 			string program = "Imports My.Name.Space\n";
 			
 			var clause2 = new MemberImportsClause {
-				Member = new QualifiedType(new QualifiedType(new SimpleType("My"), new Identifier("Name", AstLocation.Empty)), new Identifier("Space", AstLocation.Empty))
+				Member = new QualifiedType(new QualifiedType(new SimpleType("My"), Identifier.Create ("Name", AstLocation.Empty)), Identifier.Create ("Space", AstLocation.Empty))
 			};
 			
 			var node = new ImportsStatement();
