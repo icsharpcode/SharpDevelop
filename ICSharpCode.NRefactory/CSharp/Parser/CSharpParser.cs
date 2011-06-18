@@ -2869,40 +2869,56 @@ namespace ICSharpCode.NRefactory.CSharp
 			CompilerArguments = args;
 		}
 		
-		public static void InsertComment (AstNode node, Comment comment)
+		static AstNode GetOuterLeft (AstNode node)
 		{
-			if (node.EndLocation < comment.StartLocation) {
-				node.AddChild (comment, AstNode.Roles.Comment);
-				return;
-			}
-			
-			foreach (var child in node.Children) {
-				if (child.StartLocation < comment.StartLocation && comment.StartLocation < child.EndLocation) {
-					InsertComment (child, comment);
-					return;
-				}
-				if (comment.StartLocation < child.StartLocation) {
-					node.InsertChildBefore (child, comment, AstNode.Roles.Comment);
-					return;
-				}
-			}
-			
-			node.AddChild (comment, AstNode.Roles.Comment);
+			var outerLeft = node;
+			while (outerLeft.FirstChild != null)
+				outerLeft = outerLeft.FirstChild;
+			return outerLeft;
+		}
+		
+		static AstNode NextLeaf (AstNode node)
+		{
+			if (node == null)
+				return null;
+			var next = node.NextSibling;
+			if (next == null)
+				return node.Parent;
+			return GetOuterLeft(next);
 		}
 		
 		static void InsertComments (CompilerCompilationUnit top, ConversionVisitor conversionVisitor)
 		{
+			var leaf = GetOuterLeft(conversionVisitor.Unit);
+			
 			foreach (var special in top.SpecialsBag.Specials) {
 				var comment = special as SpecialsBag.Comment;
+				if (comment == null)
+					continue;
 				
-				if (comment != null) {
-					var type = (CommentType)comment.CommentType;
-					var start = new AstLocation (comment.Line, comment.Col);
-					var end = new AstLocation (comment.EndLine, comment.EndCol);
-					var domComment = new Comment (type, start, end);
-					domComment.StartsLine = comment.StartsLine;
-					domComment.Content = comment.Content;
-					InsertComment (conversionVisitor.Unit, domComment);
+				var type = (CommentType)comment.CommentType;
+				var start = new AstLocation (comment.Line, comment.Col);
+				var end = new AstLocation (comment.EndLine, comment.EndCol);
+				var domComment = new Comment (type, start, end);
+				domComment.StartsLine = comment.StartsLine;
+				domComment.Content = comment.Content;
+				
+				while (true) {
+					var nextLeaf = NextLeaf(leaf);
+					// instert comment at the end
+					if (nextLeaf == null) {
+						leaf.Parent.AddChild(domComment, AstNode.Roles.Comment);
+						leaf = domComment;
+						break;
+					}
+					
+					// comment is between 2 nodes
+					if (leaf.EndLocation <= domComment.StartLocation && domComment.StartLocation <= nextLeaf.StartLocation) {
+						leaf.Parent.InsertChildAfter(leaf, domComment, AstNode.Roles.Comment);
+						leaf = domComment;
+						break;
+					}
+					leaf = nextLeaf;
 				}
 			}
 		}
