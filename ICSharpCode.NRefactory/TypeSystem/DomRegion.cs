@@ -72,6 +72,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
+		public DomRegion (int beginLine, int beginColumn, int endLine, int endColumn) : this (null, beginLine, beginColumn, endLine, endColumn)
+		{
+		}
+
 		public DomRegion(string fileName, int beginLine, int beginColumn, int endLine, int endColumn)
 		{
 			this.fileName = fileName;
@@ -79,6 +83,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.beginColumn = beginColumn;
 			this.endLine     = endLine;
 			this.endColumn   = endColumn;
+		}
+		
+		public DomRegion (int beginLine, int beginColumn) : this (null, beginLine, beginColumn)
+		{
 		}
 		
 		public DomRegion (string fileName, int beginLine, int beginColumn)
@@ -90,6 +98,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.endColumn = -1;
 		}
 		
+		public DomRegion (AstLocation begin, AstLocation end) : this (null, begin, end)
+		{
+		}
+		
 		public DomRegion (string fileName, AstLocation begin, AstLocation end)
 		{
 			this.fileName = fileName;
@@ -97,6 +109,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.beginColumn = begin.Column;
 			this.endLine = end.Line;
 			this.endColumn = end.Column;
+		}
+		
+		public DomRegion (AstLocation begin) : this (null, begin)
+		{
 		}
 		
 		public DomRegion (string fileName, AstLocation begin)
