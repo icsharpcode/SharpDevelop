@@ -39,7 +39,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		static readonly ResolveResult errorResult = new ErrorResolveResult(SharedTypes.UnknownType);
 		CSharpResolver resolver;
 		readonly ParsedFile parsedFile;
-		readonly Dictionary<AstNode, ResolveResult> cache = new Dictionary<AstNode, ResolveResult>();
+		readonly Dictionary<AstNode, ResolveResult> resolveResultCache = new Dictionary<AstNode, ResolveResult>();
+		readonly Dictionary<AstNode, CSharpResolver> resolverBeforeDict = new Dictionary<AstNode, CSharpResolver>();
 		
 		readonly IResolveVisitorNavigator navigator;
 		ResolveVisitorNavigationMode mode = ResolveVisitorNavigationMode.Scan;
@@ -95,7 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public void Scan(AstNode node)
 		{
-			if (node == null)
+			if (node == null || node.IsNull)
 				return;
 			if (mode == ResolveVisitorNavigationMode.ResolveAll) {
 				Resolve(node);
@@ -110,6 +111,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 						break;
 					case ResolveVisitorNavigationMode.Scan:
+						resolverBeforeDict[node] = resolver.Clone();
 						node.AcceptVisitor(this, null);
 						break;
 					case ResolveVisitorNavigationMode.Resolve:
@@ -117,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						Resolve(node);
 						break;
 					default:
-						throw new Exception("Invalid value for ResolveVisitorNavigationMode");
+						throw new InvalidOperationException("Invalid value for ResolveVisitorNavigationMode");
 				}
 				mode = oldMode;
 			}
@@ -125,15 +127,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public ResolveResult Resolve(AstNode node)
 		{
-			if (node == null)
+			if (node == null || node.IsNull)
 				return errorResult;
 			bool wasScan = mode == ResolveVisitorNavigationMode.Scan;
 			if (wasScan)
 				mode = ResolveVisitorNavigationMode.Resolve;
 			ResolveResult result;
-			if (!cache.TryGetValue(node, out result)) {
+			if (!resolveResultCache.TryGetValue(node, out result)) {
 				resolver.cancellationToken.ThrowIfCancellationRequested();
-				result = cache[node] = node.AcceptVisitor(this, null) ?? errorResult;
+				resolverBeforeDict[node] = resolver.Clone();
+				result = resolveResultCache[node] = node.AcceptVisitor(this, null) ?? errorResult;
 			}
 			if (wasScan)
 				mode = ResolveVisitorNavigationMode.Scan;
@@ -162,8 +165,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult GetResolveResult(AstNode node)
 		{
 			ResolveResult result;
-			if (cache.TryGetValue(node, out result))
+			if (resolveResultCache.TryGetValue(node, out result))
 				return result;
+			else
+				return null;
+		}
+		
+		/// <summary>
+		/// Gets the resolver state in front of the specified node.
+		/// Returns <c>null</c> if no cached resolver was found (e.g. if the node was skipped by the navigator)
+		/// </summary>
+		public CSharpResolver GetResolverStateBefore(AstNode node)
+		{
+			CSharpResolver r;
+			if (resolverBeforeDict.TryGetValue(node, out r))
+				return r;
 			else
 				return null;
 		}
