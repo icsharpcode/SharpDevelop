@@ -226,6 +226,10 @@
     <Compile Include="Src\PackageManagementOptions.cs" />
     <Compile Include="Src\Process.cs" />
     <Compile Include="Src\RegisteredPackageSourceSettings.cs" />
+    <Compile Include="Src\RegisteredPackageSourcesUserControl.xaml.cs">
+      <DependentUpon>RegisteredPackageSourcesUserControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\RegisteredPackageSourcesView.xaml.cs">
       <DependentUpon>RegisteredPackageSourcesView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -337,6 +341,7 @@
     <Page Include="Src\AddPackageReferenceView.xaml" />
     <Page Include="Src\LicenseAcceptanceView.xaml" />
     <Page Include="Src\PackageManagementOptionsView.xaml" />
+    <Page Include="Src\RegisteredPackageSourcesUserControl.xaml" />
     <Page Include="Src\RegisteredPackageSourcesView.xaml" />
     <Page Include="Src\PackagesView.xaml" />
     <Page Include="Src\PagedResultsView.xaml" />

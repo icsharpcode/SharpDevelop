@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -69,13 +70,26 @@ namespace ICSharpCode.PackageManagement
 		public RegisteredPackageSourcesViewModel RegisteredPackageSourcesViewModel {
 			get {
 				if (registeredPackageSourcesViewModel == null) {
-					RegisteredPackageSources packageSources = 
-						PackageManagementServices.Options.PackageSources;
+					RegisteredPackageSources packageSources = GetRegisteredPackageSources();
 					registeredPackageSourcesViewModel = 
 						CreateRegisteredPackageSourcesViewModel(packageSources);
 				}
 				return registeredPackageSourcesViewModel;
 			}
+		}
+		
+		RegisteredPackageSources GetRegisteredPackageSources()
+		{
+			if (IsInDesignMode()) {
+				return CreateDesignTimeRegisteredPackageSources();
+			} else {
+				return PackageManagementServices.Options.PackageSources;
+			}
+		}
+		
+		RegisteredPackageSources CreateDesignTimeRegisteredPackageSources()
+		{
+			return new RegisteredPackageSources(new PackageSource[0]);
 		}
 		
 		RegisteredPackageSourcesViewModel CreateRegisteredPackageSourcesViewModel(RegisteredPackageSources packageSources)
@@ -91,12 +105,20 @@ namespace ICSharpCode.PackageManagement
 		public RegisteredPackageSourcesViewModel RegisteredProjectTemplatePackageSourcesViewModel {
 			get {
 				if (registeredProjectTemplatePackageSourcesViewModel == null) {
-					RegisteredPackageSources packageSources = 
-						PackageManagementServices.ProjectTemplatePackageSources;
+					RegisteredPackageSources packageSources = GetProjectTemplatePackageSources();
 					registeredProjectTemplatePackageSourcesViewModel =
 						CreateRegisteredPackageSourcesViewModel(packageSources);
 				}
 				return registeredProjectTemplatePackageSourcesViewModel;				
+			}
+		}
+		
+		RegisteredPackageSources GetProjectTemplatePackageSources()
+		{
+			if (IsInDesignMode()) {
+				return CreateDesignTimeRegisteredPackageSources();
+			} else {
+				return PackageManagementServices.ProjectTemplatePackageSources;
 			}
 		}
 		
