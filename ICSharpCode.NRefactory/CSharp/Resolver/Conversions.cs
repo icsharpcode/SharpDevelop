@@ -65,6 +65,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return true;
 			if (ImplicitDynamicConversion(fromType, toType))
 				return true;
+			if (ImplicitTypeParameterConversion(fromType, toType))
+				return true;
 			if (ImplicitPointerConversion(fromType, toType))
 				return true;
 			if (ImplicitUserDefinedConversion(fromType, toType))
@@ -86,6 +88,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (ImplicitNullableConversion(fromType, toType))
 				return true;
 			if (ImplicitReferenceConversion(fromType, toType))
+				return true;
+			if (ImplicitTypeParameterConversion(fromType, toType))
 				return true;
 			if (BoxingConversion(fromType, toType))
 				return true;
@@ -199,7 +203,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §6.1.6
 			
 			// reference conversions are possible only if both types are known to be reference types
-			if (fromType.IsReferenceType != true || toType.IsReferenceType != true)
+			if (!(fromType.IsReferenceType(context) == true && toType.IsReferenceType(context) == true))
 				return false;
 			
 			// conversion from null literal is always possible
@@ -234,7 +238,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		// Determines whether s is a subtype of t.
-		// Helper method used for ImplicitReferenceConversion and BoxingConversion
+		// Helper method used for ImplicitReferenceConversion, BoxingConversion and ImplicitTypeParameterConversion
 		bool IsSubtypeOf(IType s, IType t)
 		{
 			// conversion to dynamic + object are always possible
@@ -293,7 +297,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §6.1.7
 			fromType = NullableType.GetUnderlyingType(fromType);
-			return fromType.IsReferenceType == false && toType.IsReferenceType == true && IsSubtypeOf(fromType, toType);
+			return fromType.IsReferenceType(context) == false && toType.IsReferenceType(context) == true && IsSubtypeOf(fromType, toType);
 		}
 		#endregion
 		
@@ -335,6 +339,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region ImplicitTypeParameterConversion
+		/// <summary>
+		/// Implicit conversions involving type parameters.
+		/// </summary>
+		bool ImplicitTypeParameterConversion(IType fromType, IType toType)
+		{
+			ITypeParameter t = fromType as ITypeParameter;
+			if (t == null)
+				return false; // not a type parameter
+			if (t.IsReferenceType(context) == true)
+				return false; // already handled by ImplicitReferenceConversion
+			return IsSubtypeOf(t, toType);
+		}
+		#endregion
+		
 		#region ImplicitPointerConversion
 		bool ImplicitPointerConversion(IType fromType, IType toType)
 		{
@@ -367,7 +386,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return true;
 				}
 				// Try if the operator is applicable in lifted form:
-				if (sourceType.IsReferenceType == false && targetType.IsReferenceType == false) {
+				if (sourceType.IsReferenceType(context) == false && targetType.IsReferenceType(context) == false) {
 					IType liftedSourceType = NullableType.Create(sourceType, context);
 					IType liftedTargetType = NullableType.Create(targetType, context);
 					if (StandardImplicitConversion(fromType, liftedSourceType) && StandardImplicitConversion(liftedTargetType, toType)) {

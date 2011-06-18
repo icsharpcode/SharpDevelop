@@ -211,7 +211,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			var e = testCasePC.GetTypeDefinition(typeof(MyEnum));
 			Assert.AreEqual(ClassType.Enum, e.ClassType);
-			Assert.AreEqual(false, e.IsReferenceType);
+			Assert.AreEqual(false, e.IsReferenceType(ctx));
 			Assert.AreEqual("System.Int16", e.BaseTypes[0].Resolve(ctx).ReflectionName);
 			Assert.AreEqual(new[] { "System.Enum" }, e.GetBaseTypes(ctx).Select(t => t.ReflectionName).ToArray());
 		}
