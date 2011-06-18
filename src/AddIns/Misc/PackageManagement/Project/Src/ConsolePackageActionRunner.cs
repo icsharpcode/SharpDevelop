@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement.Scripting;
 
 namespace ICSharpCode.PackageManagement
@@ -31,8 +32,16 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Run(ProcessPackageAction action)
 		{
+			var actions = new List<ProcessPackageAction>();
+			actions.Add(action);
+			Run(actions);
+		}
+		
+		public void Run(IEnumerable<ProcessPackageAction> actions)
+		{
 			CreateConsolePadIfConsoleHostIsNotRunning();
-			RunAction(action);
+			AddNewActionsToRun(actions);
+			InvokeProcessPackageActionsCmdlet();
 		}
 		
 		void CreateConsolePadIfConsoleHostIsNotRunning()
@@ -42,10 +51,11 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		void RunAction(ProcessPackageAction action)
+		void AddNewActionsToRun(IEnumerable<ProcessPackageAction> actions)
 		{
-			AddNewActionToRun(action);
-			InvokeProcessPackageActionsCmdlet();
+			foreach (ProcessPackageAction action in actions) {
+				AddNewActionToRun(action);
+			}
 		}
 		
 		void AddNewActionToRun(ProcessPackageAction action)

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
@@ -39,22 +40,32 @@ namespace PackageManagement.Tests
 			return action;
 		}
 		
-		FakeInstallPackageAction RunInstallActionWithNoOperations()
+		FakeInstallPackageAction RunInstallActionWithOneOperation()
 		{
-			FakeInstallPackageAction action = CreateInstallAction();
+			FakeInstallPackageAction action = CreateInstallActionWithOneOperation();
 			runner.Run(action);
 			return action;
 		}
 		
-		FakeInstallPackageAction RunInstallActionWithOneOperation()
+		FakeInstallPackageAction CreateInstallActionWithOneOperation()
 		{
 			var operations = new PackageOperation[] {
 				new PackageOperation(new FakePackage(), PackageAction.Install)
 			};
-			FakeInstallPackageAction action = CreateInstallAction();			
+			FakeInstallPackageAction action = CreateInstallAction();
 			action.Operations = operations;
-			runner.Run(action);
 			return action;
+		}
+		
+		List<FakeInstallPackageAction> RunTwoInstallActionsWithOneOperation()
+		{
+			var actions = new List<FakeInstallPackageAction>();
+			actions.Add(CreateInstallActionWithOneOperation());
+			actions.Add(CreateInstallActionWithOneOperation());
+			
+			runner.Run(actions);
+			
+			return actions;
 		}
 		
 		void ConsoleHostIsRunning()
@@ -72,6 +83,16 @@ namespace PackageManagement.Tests
 			ProcessPackageAction action = null;
 			actionsToRun.GetNextAction(out action);
 			return action;
+		}
+		
+		List<ProcessPackageAction> GetNextActionsToRun()
+		{
+			var actions = new List<ProcessPackageAction>();
+			ProcessPackageAction action = null;
+			while (actionsToRun.GetNextAction(out action)) {
+				actions.Add(action);
+			}
+			return actions;
 		}
 		
 		[Test]
@@ -121,6 +142,55 @@ namespace PackageManagement.Tests
 			bool created = fakeWorkbench.IsCreateConsolePadCalled;
 			
 			Assert.IsFalse(created);
+		}
+		
+		[Test]
+		public void Run_TwoActionsToRunAndConsoleHostIsNotRunning_ConsolePadIsCreated()
+		{
+			CreateRunner();
+			ConsoleHostIsNotRunning();
+			RunTwoInstallActionsWithOneOperation();
+			
+			bool created = fakeWorkbench.IsCreateConsolePadCalled;
+			
+			Assert.IsTrue(created);
+		}
+		
+		[Test]
+		public void Run_TwoActionsToRunAndConsoleHostIsRunning_ConsolePadIsNotCreated()
+		{
+			CreateRunner();
+			ConsoleHostIsRunning();
+			RunTwoInstallActionsWithOneOperation();
+			
+			bool created = fakeWorkbench.IsCreateConsolePadCalled;
+			
+			Assert.IsFalse(created);
+		}
+		
+		[Test]
+		public void Run_TwoActionsToRunAndConsoleHostIsRunning_CommandPassedToConsoleHostToProcessPackageActions()
+		{
+			CreateRunner();
+			ConsoleHostIsRunning();
+			RunTwoInstallActionsWithOneOperation();
+			
+			string command = fakeConsoleHost.FirstCommandExecuted;
+			string expectedCommand = "Invoke-ProcessPackageActions";
+			
+			Assert.AreEqual(expectedCommand, command);
+		}
+		
+		[Test]
+		public void Run_TwoActionsToRunAndConsoleHostIsRunning_ActionsAddedToPackageActionsToBeRun()
+		{
+			CreateRunner();
+			ConsoleHostIsRunning();
+			List<FakeInstallPackageAction> expectedActions = RunTwoInstallActionsWithOneOperation();
+			
+			List<ProcessPackageAction> actionsAdded = GetNextActionsToRun();
+			
+			CollectionAssert.AreEqual(expectedActions, actionsAdded);
 		}
 	}
 }

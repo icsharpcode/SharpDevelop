@@ -49,7 +49,8 @@ namespace PackageManagement.Tests
 			AddPackageReference("PackageId", "1.3.4.5");
 			InstallPackages();
 			
-			var action = fakeActionRunner.ActionPassedToRun as InstallPackageAction;
+			var actions = new List<ProcessPackageAction>(fakeActionRunner.ActionsRunInOneCall);
+			var action = actions[0] as InstallPackageAction;
 			
 			var expectedVersion = new Version("1.3.4.5");
 			
@@ -80,7 +81,7 @@ namespace PackageManagement.Tests
 			IPackageRepository repository = fakeProjectFactory.RepositoryPassedToCreateProject;
 			IPackageRepository expectedRepository = fakeRepositoryCache.FakeAggregateRepository;
 			
-			Assert.AreEqual(expectedRepository, repository);			
+			Assert.AreEqual(expectedRepository, repository);		
 		}
 	}
 }

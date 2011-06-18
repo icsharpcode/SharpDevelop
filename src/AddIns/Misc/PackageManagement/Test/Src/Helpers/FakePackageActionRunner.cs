@@ -19,5 +19,12 @@ namespace PackageManagement.Tests.Helpers
 		
 		public List<ProcessPackageAction> ActionsPassedToRun = 
 			new List<ProcessPackageAction>();
+		
+		public void Run(IEnumerable<ProcessPackageAction> actions)
+		{
+			ActionsRunInOneCall = actions;
+		}
+		
+		public IEnumerable<ProcessPackageAction> ActionsRunInOneCall;
 	}
 }

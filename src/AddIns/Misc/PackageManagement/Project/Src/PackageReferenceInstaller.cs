@@ -36,11 +36,23 @@ namespace ICSharpCode.PackageManagement
 			IEnumerable<PackageReference> packageReferences,
 			MSBuildBasedProject project)
 		{
+			List<InstallPackageAction> actions = GetInstallPackageActions(packageReferences, project);
+			packageActionRunner.Run(actions);
+		}
+		
+		List<InstallPackageAction> GetInstallPackageActions(
+			IEnumerable<PackageReference> packageReferences,
+			MSBuildBasedProject project)
+		{
+			var actions = new List<InstallPackageAction>();
+			
 			IPackageManagementProject packageManagementProject = CreatePackageManagementProject(project);
 			foreach (PackageReference packageReference in packageReferences) {
 				InstallPackageAction action = CreateInstallPackageAction(packageManagementProject, packageReference);
-				packageActionRunner.Run(action);
+				actions.Add(action);
 			}
+			
+			return actions;
 		}
 		
 		IPackageManagementProject CreatePackageManagementProject(MSBuildBasedProject project)
