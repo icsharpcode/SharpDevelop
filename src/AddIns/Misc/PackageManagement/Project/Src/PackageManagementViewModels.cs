@@ -11,6 +11,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		AddPackageReferenceViewModel addPackageReferenceViewModel;
 		RegisteredPackageSourcesViewModel registeredPackageSourcesViewModel;
+		RegisteredPackageSourcesViewModel registeredProjectTemplatePackageSourcesViewModel;
 		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
 		PackageManagementConsoleViewModel packageManagementConsoleViewModel;
 		IPackageManagementSolution solution;
@@ -68,19 +69,34 @@ namespace ICSharpCode.PackageManagement
 		public RegisteredPackageSourcesViewModel RegisteredPackageSourcesViewModel {
 			get {
 				if (registeredPackageSourcesViewModel == null) {
-					CreateRegisteredPackageSourcesViewModel();
+					RegisteredPackageSources packageSources = 
+						PackageManagementServices.Options.PackageSources;
+					registeredPackageSourcesViewModel = 
+						CreateRegisteredPackageSourcesViewModel(packageSources);
 				}
 				return registeredPackageSourcesViewModel;
 			}
 		}
 		
-		void CreateRegisteredPackageSourcesViewModel()
+		RegisteredPackageSourcesViewModel CreateRegisteredPackageSourcesViewModel(RegisteredPackageSources packageSources)
 		{
 			CreateRegisteredPackageRepositories();
 			if (IsInDesignMode()) {
-				registeredPackageSourcesViewModel = new DesignTimeRegisteredPackageSourcesViewModel();
+				return new DesignTimeRegisteredPackageSourcesViewModel();
 			} else {
-				registeredPackageSourcesViewModel = new RegisteredPackageSourcesViewModel(PackageManagementServices.Options);
+				return new RegisteredPackageSourcesViewModel(packageSources);
+			}
+		}
+		
+		public RegisteredPackageSourcesViewModel RegisteredProjectTemplatePackageSourcesViewModel {
+			get {
+				if (registeredProjectTemplatePackageSourcesViewModel == null) {
+					RegisteredPackageSources packageSources = 
+						PackageManagementServices.ProjectTemplatePackageSources;
+					registeredProjectTemplatePackageSourcesViewModel =
+						CreateRegisteredPackageSourcesViewModel(packageSources);
+				}
+				return registeredProjectTemplatePackageSourcesViewModel;				
 			}
 		}
 		

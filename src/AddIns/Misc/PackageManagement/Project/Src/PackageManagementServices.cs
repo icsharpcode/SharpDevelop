@@ -81,5 +81,9 @@ namespace ICSharpCode.PackageManagement
 		public static IPackageRepositoryCache ProjectTemplatePackageRepositoryCache {
 			get { return projectTemplatePackageRepositoryCache; }
 		}
+		
+		public static RegisteredPackageSources ProjectTemplatePackageSources {
+			get { return projectTemplatePackageSources.PackageSources; }
+		}
 	}
 }

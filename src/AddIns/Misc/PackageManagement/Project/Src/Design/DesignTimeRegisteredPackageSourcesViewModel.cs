@@ -16,7 +16,7 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public DesignTimeRegisteredPackageSourcesViewModel(PackageManagementOptions options)
-			: base(options)
+			: base(options.PackageSources)
 		{
 			options.PackageSources.Add(new PackageSource("Source2", "http://sharpdevelop.codeplex.com"));
 			options.PackageSources.Add(new PackageSource("Source3", "http://sharpdevelop.codeplex.com"));

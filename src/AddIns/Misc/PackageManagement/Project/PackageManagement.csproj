@@ -237,6 +237,10 @@
     <Compile Include="Src\PackageManagementTask.cs" />
     <Compile Include="Src\PackageManagementTaskFactory.cs" />
     <Compile Include="Src\RegisteredProjectTemplatePackageSources.cs" />
+    <Compile Include="Src\RegisteredProjectTemplatePackageSourcesView.xaml.cs">
+      <DependentUpon>RegisteredProjectTemplatePackageSourcesView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Scripting\IPackageManagementConsoleHost.cs" />
     <Compile Include="Src\Scripting\IPackageScriptRunner.cs" />
     <Compile Include="Src\Scripting\IPowerShellDetection.cs" />
@@ -336,6 +340,7 @@
     <Page Include="Src\RegisteredPackageSourcesView.xaml" />
     <Page Include="Src\PackagesView.xaml" />
     <Page Include="Src\PagedResultsView.xaml" />
+    <Page Include="Src\RegisteredProjectTemplatePackageSourcesView.xaml" />
     <Page Include="Src\Scripting\PackageManagementConsoleView.xaml" />
   </ItemGroup>
   <ItemGroup>
