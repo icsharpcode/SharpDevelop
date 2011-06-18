@@ -3,8 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
@@ -30,9 +31,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolveResult == null)
 				throw new ArgumentNullException("resolveResult");
-			if (resolveResult.IsCompileTimeConstant && (ImplicitEnumerationConversion(resolveResult, toType) || ImplicitConstantExpressionConversion(resolveResult, toType)))
+			if (resolveResult.IsCompileTimeConstant) {
+				if (ImplicitEnumerationConversion(resolveResult, toType))
+					return true;
+				if (ImplicitConstantExpressionConversion(resolveResult, toType))
+					return true;
+			}
+			if (ImplicitConversion(resolveResult.Type, toType))
 				return true;
-			return ImplicitConversion(resolveResult.Type, toType);
+			// TODO: Anonymous function conversions
+			// TODO: Method group conversions
+			return false;
 		}
 		
 		public bool ImplicitConversion(IType fromType, IType toType)
@@ -46,17 +55,39 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return true;
 			if (ImplicitNumericConversion(fromType, toType))
 				return true;
-			if (ImplicitReferenceConversion(fromType, toType))
-				return true;
 			if (ImplicitNullableConversion(fromType, toType))
 				return true;
 			if (NullLiteralConversion(fromType, toType))
+				return true;
+			if (ImplicitReferenceConversion(fromType, toType))
 				return true;
 			if (BoxingConversion(fromType, toType))
 				return true;
 			if (ImplicitDynamicConversion(fromType, toType))
 				return true;
 			if (ImplicitPointerConversion(fromType, toType))
+				return true;
+			if (ImplicitUserDefinedConversion(fromType, toType))
+				return true;
+			return false;
+		}
+		
+		public bool StandardImplicitConversion(IType fromType, IType toType)
+		{
+			if (fromType == null)
+				throw new ArgumentNullException("fromType");
+			if (toType == null)
+				throw new ArgumentNullException("toType");
+			// C# 4.0 spec: §6.3.1
+			if (IdentityConversion(fromType, toType))
+				return true;
+			if (ImplicitNumericConversion(fromType, toType))
+				return true;
+			if (ImplicitNullableConversion(fromType, toType))
+				return true;
+			if (ImplicitReferenceConversion(fromType, toType))
+				return true;
+			if (BoxingConversion(fromType, toType))
 				return true;
 			return false;
 		}
@@ -316,7 +347,37 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		// TODO: add support for user-defined conversions
+		#region ImplicitUserDefinedConversion
+		bool ImplicitUserDefinedConversion(IType fromType, IType toType)
+		{
+			// C# 4.0 spec §6.4.4 User-defined implicit conversions
+			// Currently we only test whether an applicable implicit conversion exists,
+			// we do not resolve which conversion is the most specific and gets used.
+			
+			// Find the candidate operators:
+			Predicate<IMethod> opImplicitFilter = m => m.IsStatic && m.IsOperator && m.Name == "op_Implicit" && m.Parameters.Count == 1;
+			var operators = NullableType.GetUnderlyingType(fromType).GetMethods(context, opImplicitFilter)
+				.Concat(NullableType.GetUnderlyingType(toType).GetMethods(context, opImplicitFilter));
+			// Determine whether one of them is applicable:
+			foreach (IMethod op in operators) {
+				IType sourceType = op.Parameters[0].Type.Resolve(context);
+				IType targetType = op.ReturnType.Resolve(context);
+				// Try if the operator is applicable:
+				if (StandardImplicitConversion(fromType, sourceType) && StandardImplicitConversion(targetType, toType)) {
+					return true;
+				}
+				// Try if the operator is applicable in lifted form:
+				if (sourceType.IsReferenceType == false && targetType.IsReferenceType == false) {
+					IType liftedSourceType = NullableType.Create(sourceType, context);
+					IType liftedTargetType = NullableType.Create(targetType, context);
+					if (StandardImplicitConversion(fromType, liftedSourceType) && StandardImplicitConversion(liftedTargetType, toType)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		#endregion
 		
 		#region BetterConversion
 		/// <summary>

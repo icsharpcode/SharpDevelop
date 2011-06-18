@@ -124,5 +124,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(expected,
 			                s.GetAllBaseTypes(context).OrderBy(t => t.ReflectionName).ToArray());
 		}
+		
+		[Test]
+		public void BaseTypesOfListOfString()
+		{
+			Assert.AreEqual(
+				GetTypes(typeof(List<string>), typeof(object),
+				         typeof(IList), typeof(ICollection), typeof(IEnumerable),
+				         typeof(IEnumerable<string>), typeof(ICollection<string>), typeof(IList<string>)),
+				GetAllBaseTypes(typeof(List<string>)));
+		}
+		
+		[Test]
+		public void BaseTypeDefinitionsOfListOfString()
+		{
+			Assert.AreEqual(
+				GetTypes(typeof(List<>), typeof(object),
+				         typeof(IList), typeof(ICollection), typeof(IEnumerable),
+				         typeof(IEnumerable<>), typeof(ICollection<>), typeof(IList<>)),
+				typeof(List<string>).ToTypeReference().Resolve(context).GetAllBaseTypeDefinitions(context).OrderBy(t => t.ReflectionName).ToArray());
+		}
 	}
 }

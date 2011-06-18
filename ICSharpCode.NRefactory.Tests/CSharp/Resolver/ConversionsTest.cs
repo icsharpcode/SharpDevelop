@@ -201,6 +201,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			throw new NotImplementedException();
 		}
 		
+		[Test]
+		public void UserDefinedImplicitConversion()
+		{
+			Assert.IsTrue(ImplicitConversion(typeof(DateTime), typeof(DateTimeOffset)));
+			Assert.IsFalse(ImplicitConversion(typeof(DateTimeOffset), typeof(DateTime)));
+		}
+		
+		[Test]
+		public void UserDefinedImplicitNullableConversion()
+		{
+			// User-defined conversion followed by nullable conversion
+			Assert.IsTrue(ImplicitConversion(typeof(DateTime), typeof(DateTimeOffset?)));
+			// Lifted user-defined conversion
+			Assert.IsTrue(ImplicitConversion(typeof(DateTime?), typeof(DateTimeOffset?)));
+			// User-defined conversion doesn't drop the nullability
+			Assert.IsFalse(ImplicitConversion(typeof(DateTime?), typeof(DateTimeOffset)));
+		}
+		
 		bool IntegerLiteralConversion(object value, Type to)
 		{
 			IType fromType = value.GetType().ToTypeReference().Resolve(mscorlib);
