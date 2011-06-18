@@ -52,5 +52,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public void Clear()
 		{
 		}
+		
+		public bool HasRecentPackages { get; set; }
 	}
 }

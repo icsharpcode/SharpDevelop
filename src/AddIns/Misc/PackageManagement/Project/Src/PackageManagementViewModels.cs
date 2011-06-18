@@ -59,7 +59,7 @@ namespace ICSharpCode.PackageManagement
 				} else {
 					registeredPackageRepositories = PackageManagementServices.RegisteredPackageRepositories;
 				}
-			}			
+			}
 		}
 		
 		bool IsInDesignMode()
@@ -109,7 +109,7 @@ namespace ICSharpCode.PackageManagement
 					registeredProjectTemplatePackageSourcesViewModel =
 						CreateRegisteredPackageSourcesViewModel(packageSources);
 				}
-				return registeredProjectTemplatePackageSourcesViewModel;				
+				return registeredProjectTemplatePackageSourcesViewModel;
 			}
 		}
 		

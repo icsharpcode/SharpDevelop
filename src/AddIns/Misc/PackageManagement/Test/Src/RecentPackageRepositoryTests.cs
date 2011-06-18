@@ -249,5 +249,25 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(0, count);
 		}
+		
+		[Test]
+		public void HasRecentPackages_NoSavedRecentPackages_ReturnsFalse()
+		{
+			CreateRepository();
+			
+			bool hasRecentPackages = repository.HasRecentPackages;
+			
+			Assert.IsFalse(hasRecentPackages);
+		}
+		
+		[Test]
+		public void HasRecentPackages_OneSavedRecentPackages_ReturnsTrue()
+		{
+			CreateRepositoryWithOneRecentPackageSavedInOptions();
+			
+			bool hasRecentPackages = repository.HasRecentPackages;
+			
+			Assert.IsTrue(hasRecentPackages);
+		}
 	}
 }
