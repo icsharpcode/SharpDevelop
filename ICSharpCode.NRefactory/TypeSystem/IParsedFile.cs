@@ -23,6 +23,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		string FileName { get; }
 		
 		/// <summary>
+		/// Gets the time of object creation.
+		/// </summary>
+		DateTime ParseTime { get; }
+		
+		/// <summary>
 		/// Gets all top-level type definitions.
 		/// </summary>
 		IList<ITypeDefinition> TopLevelTypeDefinitions { get; }
