@@ -39,6 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		class ConversionVisitor : StructuralVisitor
 		{
 			CompilationUnit unit = new CompilationUnit ();
+			internal bool convertTypeSystemMode;
 			
 			public CompilationUnit Unit {
 				get {
@@ -54,8 +55,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				private set;
 			}
 			
-			public ConversionVisitor (LocationsBag locationsBag)
+			public ConversionVisitor (bool convertTypeSystemMode, LocationsBag locationsBag)
 			{
+				this.convertTypeSystemMode = convertTypeSystemMode;
 				this.LocationsBag = locationsBag;
 			}
 			
@@ -126,7 +128,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					var memberType = new MemberType ();
 					memberType.AddChild (ConvertToType (ma.LeftExpression), MemberType.TargetRole);
-					memberType.MemberNameToken = Identifier.Create (ma.Name, Convert (ma.Location));
+					memberType.MemberNameToken = Identifier.Create (ma.Name, Convert (ma.Location));
 					
 					AddTypeArguments (ma, memberType);
 					return memberType;
@@ -257,7 +259,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				AstNode insertPos = null;
 				while (memberName != null) {
-					Identifier newIdent = Identifier.Create (memberName.Name, Convert (memberName.Location));
+					Identifier newIdent = Identifier.Create (memberName.Name, Convert (memberName.Location));
 					namespaceDecl.InsertChildBefore (insertPos, newIdent, NamespaceDeclaration.Roles.Identifier);
 					insertPos = newIdent;
 					memberName = memberName.Left;
@@ -277,7 +279,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				UsingAliasDeclaration ud = new UsingAliasDeclaration ();
 				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingAliasDeclaration.Roles.Keyword);
-				ud.AddChild (Identifier.Create (u.Identifier.Value, Convert (u.Identifier.Location)), UsingAliasDeclaration.AliasRole);
+				ud.AddChild (Identifier.Create (u.Identifier.Value, Convert (u.Identifier.Location)), UsingAliasDeclaration.AliasRole);
 				ud.AddChild (new CSharpTokenNode (Convert (u.AssignLocation), 1), UsingAliasDeclaration.Roles.Assign);
 				ud.AddChild (ConvertImport (u.Nspace), UsingAliasDeclaration.ImportRole);
 				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
@@ -289,7 +291,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var ud = new ExternAliasDeclaration ();
 				ud.AddChild (new CSharpTokenNode (Convert (u.ExternLocation), "extern".Length), ExternAliasDeclaration.Roles.Keyword);
 				ud.AddChild (new CSharpTokenNode (Convert (u.AliasLocation), "alias".Length), ExternAliasDeclaration.AliasRole);
-				ud.AddChild (Identifier.Create (u.Identifier.Value, Convert (u.Identifier.Location)), ExternAliasDeclaration.Roles.Identifier);
+				ud.AddChild (Identifier.Create (u.Identifier.Value, Convert (u.Identifier.Location)), ExternAliasDeclaration.Roles.Identifier);
 				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
 				AddToNamespace (ud);
 			}
@@ -301,12 +303,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					var t = new MemberType();
 					t.IsDoubleColon = memberName.IsDoubleColon;
 					t.AddChild (ConvertImport (memberName.Left), MemberType.TargetRole);
-					t.AddChild (Identifier.Create (memberName.Name, Convert(memberName.Location)), MemberType.Roles.Identifier);
+					t.AddChild (Identifier.Create (memberName.Name, Convert(memberName.Location)), MemberType.Roles.Identifier);
 					AddTypeArguments (t, (List<Location>)null, memberName.TypeArguments);
 					return t;
 				} else {
 					SimpleType t = new SimpleType();
-					t.AddChild (Identifier.Create (memberName.Name, Convert(memberName.Location)), SimpleType.Roles.Identifier);
+					t.AddChild (Identifier.Create (memberName.Name, Convert(memberName.Location)), SimpleType.Roles.Identifier);
 					AddTypeArguments (t, (List<Location>)null, memberName.TypeArguments);
 					return t;
 				}
@@ -330,7 +332,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newType, location);
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "class".Length), TypeDeclaration.Roles.Keyword);
-				newType.AddChild (Identifier.Create (c.MemberName.Name, Convert (c.MemberName.Location)), AstNode.Roles.Identifier);
+				newType.AddChild (Identifier.Create (c.MemberName.Name, Convert (c.MemberName.Location)), AstNode.Roles.Identifier);
 				if (c.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (c.MemberName);
 					if (typeArgLocation != null)
@@ -364,7 +366,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newType, location);
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "struct".Length), TypeDeclaration.Roles.Keyword);
-				newType.AddChild (Identifier.Create (s.MemberName.Name, Convert (s.MemberName.Location)), AstNode.Roles.Identifier);
+				newType.AddChild (Identifier.Create (s.MemberName.Name, Convert (s.MemberName.Location)), AstNode.Roles.Identifier);
 				if (s.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (s.MemberName);
 					if (typeArgLocation != null)
@@ -400,7 +402,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newType, location);
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "interface".Length), TypeDeclaration.Roles.Keyword);
-				newType.AddChild (Identifier.Create (i.MemberName.Name, Convert (i.MemberName.Location)), AstNode.Roles.Identifier);
+				newType.AddChild (Identifier.Create (i.MemberName.Name, Convert (i.MemberName.Location)), AstNode.Roles.Identifier);
 				if (i.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (i.MemberName);
 					if (typeArgLocation != null)
@@ -434,7 +436,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					newDelegate.AddChild (new CSharpTokenNode (Convert (location[0]), "delegate".Length), TypeDeclaration.Roles.Keyword);
 				newDelegate.AddChild (ConvertToType (d.ReturnType), AstNode.Roles.Type);
-				newDelegate.AddChild (Identifier.Create (d.MemberName.Name, Convert (d.MemberName.Location)), AstNode.Roles.Identifier);
+				newDelegate.AddChild (Identifier.Create (d.MemberName.Name, Convert (d.MemberName.Location)), AstNode.Roles.Identifier);
 				if (d.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (d.MemberName);
 					if (typeArgLocation != null)
@@ -483,7 +485,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newType, location);
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location [0]), "enum".Length), TypeDeclaration.Roles.Keyword);
-				newType.AddChild (Identifier.Create (e.MemberName.Name, Convert (e.MemberName.Location)), AstNode.Roles.Identifier);
+				newType.AddChild (Identifier.Create (e.MemberName.Name, Convert (e.MemberName.Location)), AstNode.Roles.Identifier);
 				
 				if (e.BaseTypeExpression != null)
 					newType.AddChild (ConvertToType (e.BaseTypeExpression), TypeDeclaration.BaseTypeRole);
@@ -502,7 +504,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				EnumMemberDeclaration newField = new EnumMemberDeclaration ();
 				AddAttributeSection (newField, em);
-				newField.AddChild (Identifier.Create (em.Name, Convert (em.Location)), AstNode.Roles.Identifier);
+				newField.AddChild (Identifier.Create (em.Name, Convert (em.Location)), AstNode.Roles.Identifier);
 				
 				if (em.Initializer != null) {
 					newField.AddChild ((Expression)em.Initializer.Accept (this), EnumMemberDeclaration.InitializerRole);
@@ -527,7 +529,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				newField.AddChild (ConvertToType (f.TypeName), FixedFieldDeclaration.Roles.Type);
 				
 				var variable = new FixedVariableInitializer ();
-				variable.AddChild (Identifier.Create (f.MemberName.Name, Convert (f.MemberName.Location)), FixedFieldDeclaration.Roles.Identifier);
+				variable.AddChild (Identifier.Create (f.MemberName.Name, Convert (f.MemberName.Location)), FixedFieldDeclaration.Roles.Identifier);
 				if (!f.Initializer.IsNull) {
 					var bracketLocations = LocationsBag.GetLocations (f.Initializer);
 					if (bracketLocations != null && bracketLocations.Count > 1)
@@ -546,7 +548,7 @@ namespace ICSharpCode.NRefactory.CSharp
 							newField.AddChild (new CSharpTokenNode (Convert (declLoc [0]), 1), FieldDeclaration.Roles.Comma);
 						
 						variable = new FixedVariableInitializer ();
-						variable.AddChild (Identifier.Create (decl.Name.Value, Convert (decl.Name.Location)), FieldDeclaration.Roles.Identifier);
+						variable.AddChild (Identifier.Create (decl.Name.Value, Convert (decl.Name.Location)), FieldDeclaration.Roles.Identifier);
 						if (!decl.Initializer.IsNull) {
 							var bracketLocations = LocationsBag.GetLocations (f.Initializer);
 							if (bracketLocations != null && bracketLocations.Count > 1)
@@ -574,7 +576,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				newField.AddChild (ConvertToType (f.TypeName), FieldDeclaration.Roles.Type);
 				
 				VariableInitializer variable = new VariableInitializer ();
-				variable.AddChild (Identifier.Create (f.MemberName.Name, Convert (f.MemberName.Location)), FieldDeclaration.Roles.Identifier);
+				variable.AddChild (Identifier.Create (f.MemberName.Name, Convert (f.MemberName.Location)), FieldDeclaration.Roles.Identifier);
 				
 				if (f.Initializer != null) {
 					if (location != null)
@@ -589,7 +591,7 @@ namespace ICSharpCode.NRefactory.CSharp
 							newField.AddChild (new CSharpTokenNode (Convert (declLoc[0]), 1), FieldDeclaration.Roles.Comma);
 						
 						variable = new VariableInitializer ();
-						variable.AddChild (Identifier.Create (decl.Name.Value, Convert (decl.Name.Location)), VariableInitializer.Roles.Identifier);
+						variable.AddChild (Identifier.Create (decl.Name.Value, Convert (decl.Name.Location)), VariableInitializer.Roles.Identifier);
 						if (decl.Initializer != null) {
 							variable.AddChild (new CSharpTokenNode (Convert (decl.Initializer.Location), 1), FieldDeclaration.Roles.Assign);
 							variable.AddChild ((Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
@@ -615,7 +617,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				newField.AddChild (ConvertToType (f.TypeName), FieldDeclaration.Roles.Type);
 				
 				VariableInitializer variable = new VariableInitializer ();
-				variable.AddChild (Identifier.Create (f.MemberName.Name, Convert (f.MemberName.Location)), VariableInitializer.Roles.Identifier);
+				variable.AddChild (Identifier.Create (f.MemberName.Name, Convert (f.MemberName.Location)), VariableInitializer.Roles.Identifier);
 				
 				if (f.Initializer != null) {
 					variable.AddChild (new CSharpTokenNode (Convert (f.Initializer.Location), 1), VariableInitializer.Roles.Assign);
@@ -629,7 +631,7 @@ namespace ICSharpCode.NRefactory.CSharp
 							newField.AddChild (new CSharpTokenNode (Convert (declLoc[0]), 1), FieldDeclaration.Roles.Comma);
 						
 						variable = new VariableInitializer ();
-						variable.AddChild (Identifier.Create (decl.Name.Value, Convert (decl.Name.Location)), FieldDeclaration.Roles.Identifier);
+						variable.AddChild (Identifier.Create (decl.Name.Value, Convert (decl.Name.Location)), FieldDeclaration.Roles.Identifier);
 						if (decl.Initializer != null) {
 							variable.AddChild (new CSharpTokenNode (Convert (decl.Initializer.Location), 1), FieldDeclaration.Roles.Assign);
 							variable.AddChild ((Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
@@ -764,7 +766,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (m.MethodName.Left != null)
 					newMethod.AddChild (ConvertToType (m.MethodName.Left), MethodDeclaration.PrivateImplementationTypeRole);
 				
-				newMethod.AddChild (Identifier.Create (m.MethodName.Name, Convert (m.Location)), AstNode.Roles.Identifier);
+				newMethod.AddChild (Identifier.Create (m.MethodName.Name, Convert (m.Location)), AstNode.Roles.Identifier);
 				
 				if (m.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (m.MemberName);
@@ -854,7 +856,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (p.MemberName.Left != null)
 					newProperty.AddChild (ConvertToType (p.MemberName.Left), PropertyDeclaration.PrivateImplementationTypeRole);
 				
-				newProperty.AddChild (Identifier.Create (p.MemberName.Name, Convert (p.Location)), PropertyDeclaration.Roles.Identifier);
+				newProperty.AddChild (Identifier.Create (p.MemberName.Name, Convert (p.Location)), PropertyDeclaration.Roles.Identifier);
 				
 				if (location != null)
 					newProperty.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MethodDeclaration.Roles.LBrace);
@@ -902,7 +904,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddAttributeSection (newConstructor, c);
 				var location = LocationsBag.GetMemberLocation (c);
 				AddModifiers (newConstructor, location);
-				newConstructor.AddChild (Identifier.Create (c.MemberName.Name, Convert (c.MemberName.Location)), AstNode.Roles.Identifier);
+				newConstructor.AddChild (Identifier.Create (c.MemberName.Name, Convert (c.MemberName.Location)), AstNode.Roles.Identifier);
 				if (location != null)
 					newConstructor.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MethodDeclaration.Roles.LPar);
 				
@@ -939,7 +941,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newDestructor, location);
 				if (location != null)
 					newDestructor.AddChild (new CSharpTokenNode (Convert (location[0]), 1), DestructorDeclaration.TildeRole);
-				newDestructor.AddChild (Identifier.Create (d.MemberName.Name, Convert (d.MemberName.Location)), AstNode.Roles.Identifier);
+				newDestructor.AddChild (Identifier.Create (d.MemberName.Name, Convert (d.MemberName.Location)), AstNode.Roles.Identifier);
 				
 				if (location != null) {
 					newDestructor.AddChild (new CSharpTokenNode (Convert (location[1]), 1), DestructorDeclaration.Roles.LPar);
@@ -964,7 +966,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				newEvent.AddChild (ConvertToType (e.TypeName), AstNode.Roles.Type);
 				
 				VariableInitializer variable = new VariableInitializer ();
-				variable.AddChild (Identifier.Create (e.MemberName.Name, Convert (e.MemberName.Location)), FieldDeclaration.Roles.Identifier);
+				variable.AddChild (Identifier.Create (e.MemberName.Name, Convert (e.MemberName.Location)), FieldDeclaration.Roles.Identifier);
 				
 				if (e.Initializer != null) {
 					if (location != null)
@@ -979,7 +981,7 @@ namespace ICSharpCode.NRefactory.CSharp
 							newEvent.AddChild (new CSharpTokenNode (Convert (declLoc[0]), 1), FieldDeclaration.Roles.Comma);
 						
 						variable = new VariableInitializer ();
-						variable.AddChild (Identifier.Create (decl.Name.Value, Convert (decl.Name.Location)), VariableInitializer.Roles.Identifier);
+						variable.AddChild (Identifier.Create (decl.Name.Value, Convert (decl.Name.Location)), VariableInitializer.Roles.Identifier);
 
 						if (decl.Initializer != null) {
 							variable.AddChild (new CSharpTokenNode (Convert (decl.Initializer.Location), 1), FieldDeclaration.Roles.Assign);
@@ -1008,7 +1010,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (ep.MemberName.Left != null)
 					newEvent.AddChild (ConvertToType (ep.MemberName.Left), CustomEventDeclaration.PrivateImplementationTypeRole);
 				
-				newEvent.AddChild (Identifier.Create (ep.MemberName.Name, Convert (ep.Location)), CustomEventDeclaration.Roles.Identifier);
+				newEvent.AddChild (Identifier.Create (ep.MemberName.Name, Convert (ep.Location)), CustomEventDeclaration.Roles.Identifier);
 
 				if (location != null && location.Count >= 2)
 					newEvent.AddChild (new CSharpTokenNode (Convert (location[1]), 1), CustomEventDeclaration.Roles.LBrace);
@@ -1057,7 +1059,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				var varInit = new VariableInitializer ();
 				var location = LocationsBag.GetLocations (blockVariableDeclaration);
-				varInit.AddChild (Identifier.Create (blockVariableDeclaration.Variable.Name, Convert (blockVariableDeclaration.Variable.Location)), VariableInitializer.Roles.Identifier);
+				varInit.AddChild (Identifier.Create (blockVariableDeclaration.Variable.Name, Convert (blockVariableDeclaration.Variable.Location)), VariableInitializer.Roles.Identifier);
 				if (blockVariableDeclaration.Initializer != null) {
 					if (location != null)
 						varInit.AddChild (new CSharpTokenNode (Convert (location[0]), 1), VariableInitializer.Roles.Assign);
@@ -1072,7 +1074,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						var init = new VariableInitializer ();
 						if (loc != null && loc.Count > 0)
 							result.AddChild (new CSharpTokenNode (Convert (loc [0]), 1), VariableInitializer.Roles.Comma);
-						init.AddChild (Identifier.Create (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
+						init.AddChild (Identifier.Create (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
 						if (decl.Initializer != null) {
 							if (loc != null && loc.Count > 1)
 								result.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), VariableInitializer.Roles.Assign);
@@ -1098,7 +1100,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.AddChild (ConvertToType (blockVariableDeclaration.TypeExpression), VariableDeclarationStatement.Roles.Type);
 				
 				var varInit = new VariableInitializer ();
-				varInit.AddChild (Identifier.Create (blockVariableDeclaration.Variable.Name, Convert (blockVariableDeclaration.Variable.Location)), VariableInitializer.Roles.Identifier);
+				varInit.AddChild (Identifier.Create (blockVariableDeclaration.Variable.Name, Convert (blockVariableDeclaration.Variable.Location)), VariableInitializer.Roles.Identifier);
 				if (blockVariableDeclaration.Initializer != null) {
 					if (location != null)
 						varInit.AddChild (new CSharpTokenNode (Convert (location[1]), 1), VariableInitializer.Roles.Assign);
@@ -1111,7 +1113,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					foreach (var decl in blockVariableDeclaration.Declarators) {
 						var loc = LocationsBag.GetLocations (decl);
 						var init = new VariableInitializer ();
-						init.AddChild (Identifier.Create (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
+						init.AddChild (Identifier.Create (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
 						if (decl.Initializer != null) {
 							if (loc != null)
 								init.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), VariableInitializer.Roles.Assign);
@@ -1280,7 +1282,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var result = new GotoStatement ();
 				var location = LocationsBag.GetLocations (gotoStatement);
 				result.AddChild (new CSharpTokenNode (Convert (gotoStatement.loc), "goto".Length), GotoStatement.Roles.Keyword);
-				result.AddChild (Identifier.Create (gotoStatement.Target, Convert (gotoStatement.loc)), GotoStatement.Roles.Identifier);
+				result.AddChild (Identifier.Create (gotoStatement.Target, Convert (gotoStatement.loc)), GotoStatement.Roles.Identifier);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), GotoStatement.Roles.Semicolon);
 				
@@ -1290,7 +1292,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (LabeledStatement labeledStatement)
 			{
 				var result = new LabelStatement ();
-				result.AddChild (Identifier.Create (labeledStatement.Name, Convert (labeledStatement.loc)), LabelStatement.Roles.Identifier);
+				result.AddChild (Identifier.Create (labeledStatement.Name, Convert (labeledStatement.loc)), LabelStatement.Roles.Identifier);
 				return result;
 			}
 			
@@ -1370,7 +1372,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					usingResult.AddChild (new CSharpTokenNode (Convert (blockStatement.StartLocation), 1), UsingStatement.Roles.LPar);
 					if (u.Variables != null) {
 						usingResult.AddChild (ConvertToType (u.Variables.TypeExpression), UsingStatement.Roles.Type);
-						usingResult.AddChild (Identifier.Create (u.Variables.Variable.Name, Convert (u.Variables.Variable.Location)), UsingStatement.Roles.Identifier);
+						usingResult.AddChild (Identifier.Create (u.Variables.Variable.Name, Convert (u.Variables.Variable.Location)), UsingStatement.Roles.Identifier);
 						var loc = LocationsBag.GetLocations (u.Variables);
 						if (loc != null)
 							usingResult.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), ContinueStatement.Roles.Assign);
@@ -1387,6 +1389,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			void AddBlockChildren (BlockStatement result, Block blockStatement, ref int curLocal)
 			{
+				if (convertTypeSystemMode) {
+					return;
+				}
 				foreach (Mono.CSharp.Statement stmt in blockStatement.Statements) {
 					if (stmt == null)
 						continue;
@@ -1516,7 +1521,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.AddChild (ConvertToType (blockVariableDeclaration.TypeExpression), FixedStatement.Roles.Type);
 					var varInit = new VariableInitializer ();
 					var initLocation = LocationsBag.GetLocations (blockVariableDeclaration);
-					varInit.AddChild (Identifier.Create (blockVariableDeclaration.Variable.Name, Convert (blockVariableDeclaration.Variable.Location)), VariableInitializer.Roles.Identifier);
+					varInit.AddChild (Identifier.Create (blockVariableDeclaration.Variable.Name, Convert (blockVariableDeclaration.Variable.Location)), VariableInitializer.Roles.Identifier);
 					if (blockVariableDeclaration.Initializer != null) {
 						if (initLocation != null)
 							varInit.AddChild (new CSharpTokenNode (Convert (location[0]), 1), VariableInitializer.Roles.Assign);
@@ -1531,7 +1536,7 @@ namespace ICSharpCode.NRefactory.CSharp
 							var init = new VariableInitializer ();
 							if (loc != null && loc.Count > 0)
 								result.AddChild (new CSharpTokenNode (Convert (loc [0]), 1), VariableInitializer.Roles.Comma);
-							init.AddChild (Identifier.Create (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
+							init.AddChild (Identifier.Create (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
 							if (decl.Initializer != null) {
 								if (loc != null && loc.Count > 1)
 									result.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), VariableInitializer.Roles.Assign);
@@ -1580,7 +1585,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					result.AddChild (ConvertToType (ctch.TypeExpression), CatchClause.Roles.Type);
 					if (ctch.Variable != null && !string.IsNullOrEmpty (ctch.Variable.Name))
-						result.AddChild (Identifier.Create (ctch.Variable.Name, Convert (ctch.Variable.Location)), CatchClause.Roles.Identifier);
+						result.AddChild (Identifier.Create (ctch.Variable.Name, Convert (ctch.Variable.Location)), CatchClause.Roles.Identifier);
 					
 					if (location != null)
 						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), CatchClause.Roles.RPar);
@@ -1639,7 +1644,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (foreachStatement.TypeExpr != null)
 					result.AddChild (ConvertToType (foreachStatement.TypeExpr), ForeachStatement.Roles.Type);
 				if (foreachStatement.Variable != null)
-					result.AddChild (Identifier.Create (foreachStatement.Variable.Name, Convert (foreachStatement.Variable.Location)), ForeachStatement.Roles.Identifier);
+					result.AddChild (Identifier.Create (foreachStatement.Variable.Name, Convert (foreachStatement.Variable.Location)), ForeachStatement.Roles.Identifier);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [1]), "in".Length), ForeachStatement.Roles.InKeyword);
@@ -1704,7 +1709,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			public override object Visit (LocalVariableReference localVariableReference)
 			{
-				return Identifier.Create (localVariableReference.Name, Convert (localVariableReference.Location));;
+				return Identifier.Create (localVariableReference.Name, Convert (localVariableReference.Location));;
 			}
 
 			public override object Visit (MemberAccess memberAccess)
@@ -1723,7 +1728,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 				}
 				
-				result.AddChild (Identifier.Create (memberAccess.Name, Convert (memberAccess.Location)), MemberReferenceExpression.Roles.Identifier);
+				result.AddChild (Identifier.Create (memberAccess.Name, Convert (memberAccess.Location)), MemberReferenceExpression.Roles.Identifier);
 				
 				if (memberAccess.TypeArguments != null)  {
 					var location = LocationsBag.GetLocations (memberAccess);
@@ -1742,7 +1747,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.Target = new SimpleType (qualifiedAliasMember.alias, Convert (qualifiedAliasMember.Location));
 				result.IsDoubleColon = true;
 				var location = LocationsBag.GetLocations (qualifiedAliasMember);
-				result.AddChild (Identifier.Create (qualifiedAliasMember.Name, location != null ? Convert (location[0]) : AstLocation.Empty), MemberReferenceExpression.Roles.Identifier);
+				result.AddChild (Identifier.Create (qualifiedAliasMember.Name, location != null ? Convert (location[0]) : AstLocation.Empty), MemberReferenceExpression.Roles.Identifier);
 				return  new TypeReferenceExpression () { Type = result };
 			}
 			
@@ -1763,7 +1768,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (SimpleName simpleName)
 			{
 				var result = new IdentifierExpression ();
-				result.AddChild (Identifier.Create (simpleName.Name, Convert (simpleName.Location)), IdentifierExpression.Roles.Identifier);
+				result.AddChild (Identifier.Create (simpleName.Name, Convert (simpleName.Location)), IdentifierExpression.Roles.Identifier);
 				if (simpleName.TypeArguments != null)  {
 					var location = LocationsBag.GetLocations (simpleName);
 					if (location != null)
@@ -2073,7 +2078,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (p.TypeExpression != null) // lambdas may have no types (a, b) => ...
 						parameterDeclarationExpression.AddChild (ConvertToType (p.TypeExpression), ParameterDeclaration.Roles.Type);
 					if (p.Name != null)
-						parameterDeclarationExpression.AddChild (Identifier.Create (p.Name, Convert (p.Location)), ParameterDeclaration.Roles.Identifier);
+						parameterDeclarationExpression.AddChild (Identifier.Create (p.Name, Convert (p.Location)), ParameterDeclaration.Roles.Identifier);
 					if (p.HasDefaultValue) {
 						if (location != null)
 							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location [1]), 1), ParameterDeclaration.Roles.Assign);
@@ -2097,7 +2102,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					// TODO: attributes
 //					if (arg.Variance != Variance.None)
 //						throw new NotImplementedException(); // TODO: variance
-					tp.AddChild (Identifier.Create (arg.Name, Convert (arg.Location)), InvocationExpression.Roles.Identifier);
+					tp.AddChild (Identifier.Create (arg.Name, Convert (arg.Location)), InvocationExpression.Roles.Identifier);
 					parent.AddChild (tp, InvocationExpression.Roles.TypeParameter);
 				}
 			}
@@ -2140,7 +2145,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					var constraint = new Constraint ();
 					if (location != null)
 						constraint.AddChild (new CSharpTokenNode (Convert (location [0]), "where".Length), InvocationExpression.Roles.Keyword);
-					constraint.AddChild (Identifier.Create (c.TypeParameter.Value, Convert (c.TypeParameter.Location)), InvocationExpression.Roles.Identifier);
+					constraint.AddChild (Identifier.Create (c.TypeParameter.Value, Convert (c.TypeParameter.Location)), InvocationExpression.Roles.Identifier);
 					if (location != null && location.Count > 1)
 						constraint.AddChild (new CSharpTokenNode (Convert (location [1]), 1), Constraint.ColonRole);
 					foreach (var expr in c.ConstraintExpressions)
@@ -2154,7 +2159,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (arg is NamedArgument) {
 					var na = (NamedArgument)arg;
 					NamedArgumentExpression newArg = new NamedArgumentExpression();
-					newArg.AddChild (Identifier.Create (na.Name, Convert (na.Location)), NamedArgumentExpression.Roles.Identifier);
+					newArg.AddChild (Identifier.Create (na.Name, Convert (na.Location)), NamedArgumentExpression.Roles.Identifier);
 					
 					var loc = LocationsBag.GetLocations (na);
 					if (loc != null)
@@ -2251,7 +2256,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						result.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
 					} else {
 						var namedArgument = new NamedArgumentExpression ();
-						namedArgument.AddChild (Identifier.Create (par.Name, Convert (par.Location)), AnonymousTypeCreateExpression.Roles.Identifier);
+						namedArgument.AddChild (Identifier.Create (par.Name, Convert (par.Location)), AnonymousTypeCreateExpression.Roles.Identifier);
 						namedArgument.AddChild (new CSharpTokenNode (Convert (location[0]), 1), AnonymousTypeCreateExpression.Roles.Assign);
 						namedArgument.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
 						result.AddChild (namedArgument, AnonymousTypeCreateExpression.Roles.Expression);
@@ -2659,7 +2664,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (queryStart.Expr == null) {
 					var intoClause = new QueryContinuationClause ();
 					intoClause.AddChild (new CSharpTokenNode (Convert (queryStart.Location), "into".Length), QueryContinuationClause.IntoKeywordRole);
-					intoClause.AddChild (Identifier.Create (queryStart.IntoVariable.Name, Convert(queryStart.IntoVariable.Location)), QueryContinuationClause.Roles.Identifier);
+					intoClause.AddChild (Identifier.Create (queryStart.IntoVariable.Name, Convert(queryStart.IntoVariable.Location)), QueryContinuationClause.Roles.Identifier);
 					return intoClause;
 				}
 				
@@ -2671,7 +2676,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (queryStart.IdentifierType != null)
 					fromClause.AddChild (ConvertToType (queryStart.IdentifierType), QueryFromClause.Roles.Type);
 				
-				fromClause.AddChild (Identifier.Create (queryStart.IntoVariable.Name, Convert(queryStart.IntoVariable.Location)), QueryFromClause.Roles.Identifier);
+				fromClause.AddChild (Identifier.Create (queryStart.IntoVariable.Name, Convert(queryStart.IntoVariable.Location)), QueryFromClause.Roles.Identifier);
 				
 				if (location != null)
 					fromClause.AddChild (new CSharpTokenNode (Convert (location[0]), "in".Length), QueryFromClause.InKeywordRole);
@@ -2689,7 +2694,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (queryStart.IdentifierType != null)
 					fromClause.AddChild (ConvertToType (queryStart.IdentifierType), QueryFromClause.Roles.Type);
 				
-				fromClause.AddChild (Identifier.Create (queryStart.IntoVariable.Name, Convert(queryStart.IntoVariable.Location)), QueryFromClause.Roles.Identifier);
+				fromClause.AddChild (Identifier.Create (queryStart.IntoVariable.Name, Convert(queryStart.IntoVariable.Location)), QueryFromClause.Roles.Identifier);
 				
 				if (location != null)
 					fromClause.AddChild (new CSharpTokenNode (Convert (location[0]), "in".Length), QueryFromClause.InKeywordRole);
@@ -2723,7 +2728,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetLocations (l);
 				
 				result.AddChild (new CSharpTokenNode (Convert (l.Location), "let".Length), QueryLetClause.Roles.Keyword);
-				result.AddChild (Identifier.Create (l.IntoVariable.Name, Convert (l.IntoVariable.Location)), Identifier.Roles.Identifier);
+				result.AddChild (Identifier.Create (l.IntoVariable.Name, Convert (l.IntoVariable.Location)), Identifier.Roles.Identifier);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), QueryLetClause.Roles.Assign);
 				result.AddChild ((Expression)l.Expr.Accept (this), QueryLetClause.Roles.Expression);
@@ -2746,7 +2751,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetLocations (join);
 				result.AddChild (new CSharpTokenNode (Convert (join.Location), "join".Length), QueryJoinClause.JoinKeywordRole);
 				
-				result.AddChild (Identifier.Create (join.JoinVariable.Name, Convert (join.JoinVariable.Location)), Identifier.Roles.Identifier);
+				result.AddChild (Identifier.Create (join.JoinVariable.Name, Convert (join.JoinVariable.Location)), Identifier.Roles.Identifier);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "in".Length), QueryJoinClause.InKeywordRole);
@@ -2770,7 +2775,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetLocations (join);
 				result.AddChild (new CSharpTokenNode (Convert (join.Location), "join".Length), QueryJoinClause.JoinKeywordRole);
 				
-				result.AddChild (Identifier.Create (join.JoinVariable.Name, Convert (join.JoinVariable.Location)), Identifier.Roles.Identifier);
+				result.AddChild (Identifier.Create (join.JoinVariable.Name, Convert (join.JoinVariable.Location)), Identifier.Roles.Identifier);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "in".Length), QueryJoinClause.InKeywordRole);
@@ -2789,7 +2794,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[3]), "into".Length), QueryJoinClause.IntoKeywordRole);
 				
-				result.AddChild (Identifier.Create (join.JoinVariable.Name, Convert (join.JoinVariable.Location)), Identifier.Roles.Identifier);
+				result.AddChild (Identifier.Create (join.JoinVariable.Name, Convert (join.JoinVariable.Location)), Identifier.Roles.Identifier);
 				return result;
 			}
 			
@@ -2895,7 +2900,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				var comment = special as SpecialsBag.Comment;
 				if (comment == null)
 					continue;
-				
+				if (conversionVisitor.convertTypeSystemMode && (comment.CommentType != SpecialsBag.CommentType.Documentation))
+					continue;
 				var type = (CommentType)comment.CommentType;
 				var start = new AstLocation (comment.Line, comment.Col);
 				var end = new AstLocation (comment.EndLine, comment.EndCol);
@@ -2925,11 +2931,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		internal static CompilationUnit Parse (CompilerCompilationUnit top)
+		internal static CompilationUnit Parse (bool convertTypeSystemMode, CompilerCompilationUnit top)
 		{
 			if (top == null)
 				return null;
-			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (convertTypeSystemMode, top.LocationsBag);
 			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			top.UsingsBag.Global.Accept (conversionVisitor);
 			InsertComments (top, conversionVisitor);
@@ -3002,7 +3008,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (top == null)
 				return null;
-			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (GenerateTypeSystemMode, top.LocationsBag);
 			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			top.UsingsBag.Global.Accept (conversionVisitor);
 			InsertComments (top, conversionVisitor);
@@ -3021,6 +3027,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public Action<CompilerCompilationUnit> CompilationUnitCallback {
+			get;
+			set;
+		}
+		
+		public bool GenerateTypeSystemMode {
 			get;
 			set;
 		}
