@@ -60,6 +60,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			ExporterCollection exporterCollection = new ExporterCollection();
 //			base.CurrentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
 			base.CurrentPosition = base.SectionBounds.DetailArea.Location;
+//			base.CurrentPosition = new Point (base.CurrentPosition.X,base.CurrentPosition.Y + 20);
 			BaseSection section = parent as BaseSection;
 			
 			DefaultLeftPosition = parent.Location.X;

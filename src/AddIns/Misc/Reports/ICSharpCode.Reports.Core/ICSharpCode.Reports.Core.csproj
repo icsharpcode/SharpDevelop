@@ -175,6 +175,7 @@
     <Compile Include="Project\Exporter\ExportRenderer\ExportRunner.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\FixedDocumentRenderer.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\IExportRunner.cs" />
+    <Compile Include="Project\Exporter\GapList.cs" />
     <Compile Include="Project\Expressions\EvaluationHelper.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\FieldReference.cs" />
     <Compile Include="Project\Exporter\BasePager.cs" />

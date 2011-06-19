@@ -92,15 +92,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 				Rectangle desiredRectangle = LayoutHelper.CalculateSectionLayout(this.Graphics,section);
 				LayoutHelper.FixSectionLayout(desiredRectangle,section);
 				
-				BaseReportItem oldItem = section.Items[0];
+				GapList gapCalculator = new GapList();
+				gapCalculator.CalculateGapList(section);
+				int i = 0;
 				
-				int gap = oldItem.Location.Y;
 				foreach (BaseReportItem item in section.Items)
 				{
-					
 					ISimpleContainer simpleContainer = item as ISimpleContainer;
-					gap = CalculateGap (oldItem,item);
-
+					
+					Offset = new Point(Offset.X,Offset.Y + gapCalculator.GapBetweenItems[i] );
+					
 					if (simpleContainer != null)
 					{
 						EvaluationHelper.EvaluateReportItems(evaluator,simpleContainer.Items);
@@ -109,127 +110,26 @@ namespace ICSharpCode.Reports.Core.Exporter
 						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
 						
 						Offset = BaseConverter.ConvertContainer(convertedSection,simpleContainer,Offset.X,Offset);
-						Offset = new Point(Offset.X,Offset.Y + gap);
-					
+
 						Rectangle rsec = new Rectangle(section.Location,section.Size);
 						Rectangle ro = new Rectangle(section.Location,simpleContainer.Size);
 						if (!rsec.Contains(ro)) {
-							Console.WriteLine("recalculate sectionsize old {0} ",section.Size);
-							section.Size = new Size(section.Size.Width,Offset.Y - startOffset.Y + gap);
-							Console.WriteLine("\t  new size  {0} ",section.Size);
+							section.Size = new Size(section.Size.Width,Offset.Y - startOffset.Y );
 						}
-						
 					}
 					else
 					{
-						Offset = new Point(Offset.X,Offset.Y  + gap);
 						var converteditem = ExportHelper.ConvertLineItem(item,Offset);
 						convertedSection.Add(converteditem);
 					}
-					oldItem = item;
+					i ++;
 				}
+				Offset = new Point (Offset.X,Offset.Y + gapCalculator.LastGap);
 			}
+			
 			return convertedSection;
 		}
 		
-/*		
-		
-//			protected ExporterCollection ConvertSection (BaseSection section,int dataRow)
-		private ExporterCollection bbConvertSection (BaseSection section,int dataRow)
-		{
-			FireSectionRenderEvent (section ,dataRow);
-			PrintHelper.AdjustParent(section,section.Items);
-			
-			var convertedSection = new ExporterCollection();
-			Offset = new Point(section.Location.X,section.SectionOffset);
-			
-			if (section.Items.Count > 0) {
-				section.Items.SortByLocation();
-
-				IExpressionEvaluatorFacade evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.SinglePage.IDataNavigator);
-				var layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
-				Console.WriteLine("start sec size {0}",section.Size);
-				Rectangle desiredRectangle = LayoutHelper.CalculateSectionLayout(this.Graphics,section);
-				LayoutHelper.FixSectionLayout(desiredRectangle,section);
-				Console.WriteLine("after sectionlayout  sec size {0}",section.Size);
-	
-	Console.WriteLine(section.Name);
-	BaseReportItem oi = section.Items[0];
-	var rr = oi.Location.Y;
-	
-foreach (var element in section.Items)
-{
-	if (oi != element) {
-		rr = CalculateGap(oi,element);
-	}
-	Console.WriteLine(rr);
-	oi = element;
-}			
-	
-	
-	
-				BaseReportItem oldItem = section.Items[0];
-				int gap = oldItem.Location.Y;
-				foreach (BaseReportItem item in section.Items)
-				{
-					ISimpleContainer simpleContainer = item as ISimpleContainer;
-					gap = CalculateGap (oldItem,item);
-
-					if (simpleContainer != null)
-					{
-						EvaluationHelper.EvaluateReportItems(evaluator,simpleContainer.Items);
-					
-						Offset  = new Point(Offset.X,Offset.Y + item.Size.Height + gap);
-//						var layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
-						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
-					
-//						Console.WriteLine("offset start {0}",Offset);
-						
-						http://stackoverflow.com/questions/4270541/how-can-i-determine-if-one-rectangle-is-completely-contained-within-another
-						
-						Rectangle r2 = new Rectangle(0,0,section.Size.Width,section.Size.Height);
-//						Rectangle r2 = new Rectangle(section.Location,section.Size);
-						Rectangle ro = new Rectangle(simpleContainer.Location,simpleContainer.Size);
-						Console.WriteLine (r2.Contains(ro));
-						Rectangle r3 = Rectangle.Union(r2,ro);
-						Rectangle r4 = Rectangle.Union(ro,r2);
-						ro.Intersect(r2);
-						if (!r2.Contains(ro)) {
-							/*section.Size = new Size (section.Size.Width,r3.Size.Height);	
-						}
-						
-						
-						ExportContainer exportContainer = ExportHelper.ConvertToContainer(simpleContainer,Offset);
-//						Offset  = new Point(Offset.X,Offset.Y + item.Size.Height + gap);
-						ExporterCollection exporterCollection = ExportHelper.ConvertPlainCollection(simpleContainer.Items,exportContainer.StyleDecorator.Location);
-						exportContainer.Items.AddRange(exporterCollection);
-						convertedSection.Add(exportContainer);
-						
-					}
-					else
-					{
-						Offset = new Point(Offset.X,Offset.Y  + gap);
-						var converteditem = ExportHelper.ConvertLineItem(item,Offset);
-						convertedSection.Add(converteditem);
-					}
-					oldItem = item;
-				}
-			}
-			Console.WriteLine("bbbb sec size {0} new size {1}",section.Size, new Size(section.Size.Width,Offset.Y));
-			return convertedSection;
-		}
-		*/
-	
-		
-		static int CalculateGap(BaseReportItem oldItem, BaseReportItem item)
-		{
-				var gap = item.Location.Y - (oldItem.Location.Y + oldItem.Size.Height) ;
-						if (gap < 0) {
-							gap = 0;
-						}
-				return gap;
-		}
-
 		
 		public static BaseRectangleItem CreateDebugItem (BaseReportItem item)
 		{
@@ -366,6 +266,7 @@ foreach (var element in section.Items)
 		
 		protected void DebugShowSections ()
 		{
+			Console.WriteLine("\toffset {0}",Offset);
 			Console.WriteLine("\treportheader {0}",SectionBounds.ReportHeaderRectangle);
 			Console.WriteLine("\tpageheader {0}",SectionBounds.PageHeaderRectangle);
 			Console.WriteLine("\tdetail {0}",SectionBounds.DetailArea);
