@@ -1898,7 +1898,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						do {
 							newName = newArgumentName + num.ToString();
 							num++;
-						} while(argumentNames.Contains(newArgumentName));
+						} while(argumentNames.Contains(newName));
 						newArgumentName = newName;
 					}
 					argumentNames[i] = newArgumentName;
