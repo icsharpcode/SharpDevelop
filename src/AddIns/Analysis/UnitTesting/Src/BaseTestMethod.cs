@@ -18,7 +18,7 @@ namespace ICSharpCode.UnitTesting
 	/// </remarks>
 	public class BaseTestMethod : DefaultMethod
 	{
-		IMethod method;
+		IMember method;
 		
 		/// <summary>
 		/// Creates a new instance of the BaseTestMethod.
@@ -26,7 +26,7 @@ namespace ICSharpCode.UnitTesting
 		/// <param name="derivedClass">The derived class and not
 		/// the class where the method is actually defined.</param>
 		/// <param name="method">The base class's test method.</param>
-		public BaseTestMethod(IClass derivedClass, IMethod method)
+		public BaseTestMethod(IClass derivedClass, IMember method)
 			: base(method.Name, method.ReturnType, method.Modifiers, method.Region, method.BodyRegion, derivedClass)
 		{
 			this.method = method;
@@ -35,7 +35,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Gets the actual method used to create this object.
 		/// </summary>
-		public IMethod Method {
+		public IMember Method {
 			get { return method; }
 		}
 	}

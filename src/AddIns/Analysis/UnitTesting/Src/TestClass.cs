@@ -274,7 +274,7 @@ namespace ICSharpCode.UnitTesting
 		TestMethodCollection GetTestMethods(IClass c)
 		{
 			TestMethodCollection testMethods = new TestMethodCollection();
-			foreach (IMethod method in c.Methods) {
+			foreach (var method in c.AllMembers) {
 				if (IsTestMethod(method)) {
 					if (!testMethods.Contains(method.Name)) {
 						testMethods.Add(new TestMethod(method));
@@ -285,7 +285,7 @@ namespace ICSharpCode.UnitTesting
 			// Add base class test methods.
 			IClass declaringType = c;
 			while (c.BaseClass != null) {
-				foreach (IMethod method in c.BaseClass.Methods) {
+				foreach (var method in c.BaseClass.AllMembers) {
 					if (IsTestMethod(method)) {
 						BaseTestMethod baseTestMethod = new BaseTestMethod(declaringType, method);
 						TestMethod testMethod = new TestMethod(c.BaseClass.Name, baseTestMethod);

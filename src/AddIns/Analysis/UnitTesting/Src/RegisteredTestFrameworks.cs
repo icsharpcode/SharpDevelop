@@ -22,7 +22,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (project != null) {
 				foreach (TestFrameworkDescriptor descriptor in testFrameworkDescriptors) {
-					if (descriptor.IsSupportedProject(project)) {
+					if (descriptor.IsSupportedProject(project) && descriptor.TestFramework.IsTestProject(project)) {
 						return descriptor.TestFramework;
 					}
 				}
