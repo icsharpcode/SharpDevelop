@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="Src\AddPackageReferenceCommandTests.cs" />
     <Compile Include="Src\ConsolePackageActionRunnerTests.cs" />
+    <Compile Include="Src\DefaultProjectTemplatePackageSourceTests.cs" />
     <Compile Include="Src\EnvDTE\ColorableItemsTests.cs" />
     <Compile Include="Src\EnvDTE\DTETests.cs" />
     <Compile Include="Src\EnvDTE\FakeCustomizedHighlightingRules.cs" />
@@ -88,9 +89,12 @@
     <Compile Include="Src\EnvDTE\TextEditorFontSizePropertyTests.cs" />
     <Compile Include="Src\Helpers\ColorHelper.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementProject.cs" />
+    <Compile Include="Src\Helpers\ExceptionThrowingPackageReferencesForProject.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingRegisteredPackageRepositories.cs" />
     <Compile Include="Src\Helpers\FakeAddPackageReferenceView.cs" />
     <Compile Include="Src\Helpers\FakeLogger.cs" />
+    <Compile Include="Src\Helpers\FakeLoggingService.cs" />
+    <Compile Include="Src\Helpers\FakeMessageService.cs" />
     <Compile Include="Src\Helpers\FakePackageActionRunner.cs" />
     <Compile Include="Src\Helpers\FakePackageInitializationScriptsInSolution.cs" />
     <Compile Include="Src\Helpers\FakePackageInitializationScriptsInSolutionFactory.cs" />
@@ -98,6 +102,10 @@
     <Compile Include="Src\Helpers\FakePackageManagementOutputMessagesView.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementProjectFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageManagementWorkbench.cs" />
+    <Compile Include="Src\Helpers\FakePackageReferenceFile.cs" />
+    <Compile Include="Src\Helpers\FakePackageReferenceFileFactory.cs" />
+    <Compile Include="Src\Helpers\FakePackageReferenceInstaller.cs" />
+    <Compile Include="Src\Helpers\FakePackageReferencesForProject.cs" />
     <Compile Include="Src\Helpers\FakePackageScript.cs" />
     <Compile Include="Src\Helpers\FakePackageScriptFactory.cs" />
     <Compile Include="Src\Helpers\FakePackageScriptFactoryWithPredefinedPackageScripts.cs" />
@@ -106,12 +114,17 @@
     <Compile Include="Src\Helpers\FakePackageViewModelFactory.cs" />
     <Compile Include="Src\Helpers\FakePowerShellDetection.cs" />
     <Compile Include="Src\Helpers\FakePowerShellSession.cs" />
+    <Compile Include="Src\Helpers\FakePropertyService.cs" />
+    <Compile Include="Src\Helpers\FakeSettingsFactory.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepository.cs" />
     <Compile Include="Src\Helpers\FakeTextEditorOptions.cs" />
     <Compile Include="Src\Helpers\ProjectItemCollectionAssert.cs" />
     <Compile Include="Src\Helpers\TestableAddPackageReferenceCommand.cs" />
     <Compile Include="Src\Helpers\TestableDTEProject.cs" />
+    <Compile Include="Src\Helpers\TestableInstallProjectTemplatePackagesCommand.cs" />
     <Compile Include="Src\Helpers\TestablePowerShellMissingConsoleHost.cs" />
+    <Compile Include="Src\InstallProjectTemplatePackagesCommandTests.cs" />
+    <Compile Include="Src\NewProjectsCreatedTests.cs" />
     <Compile Include="Src\PackageActionRunnerTests.cs" />
     <Compile Include="Src\PackageActionsToRunTests.cs" />
     <Compile Include="Src\PackageFilesTests.cs" />
@@ -120,7 +133,10 @@
     <Compile Include="Src\PackageManagementLoggerTests.cs" />
     <Compile Include="Src\PackageManagementProjectTests.cs" />
     <Compile Include="Src\PackageOperationMessageTests.cs" />
+    <Compile Include="Src\PackageReferenceInstallerTests.cs" />
+    <Compile Include="Src\PackageReferencesForProjectTests.cs" />
     <Compile Include="Src\ProjectBrowserRefresherTests.cs" />
+    <Compile Include="Src\ProjectTemplatePackageRepositoryCacheTests.cs" />
     <Compile Include="Src\RegisteredPackageRepositoriesTests.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementService.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageOperationResolver.cs" />
@@ -192,6 +208,7 @@
     <Compile Include="Src\PackageManagementOutputMessagesViewTests.cs" />
     <Compile Include="Src\PackageManagementSolutionTests.cs" />
     <Compile Include="Src\PackageRepositoryCacheTests.cs" />
+    <Compile Include="Src\RegisteredProjectTemplatePackageSourcesTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsConsoleTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsTests.cs" />
     <Compile Include="Src\Scripting\PackageManagementConsoleHostProviderTests.cs" />

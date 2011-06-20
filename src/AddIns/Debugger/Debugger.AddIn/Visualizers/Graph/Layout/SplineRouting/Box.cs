@@ -11,7 +11,7 @@ using System.Windows.Shapes;
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
-	/// Description of Box.
+	/// Simple implementation of IRect.
 	/// </summary>
 	public class Box : IRect, ICloneable
 	{

@@ -18,13 +18,13 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		{
 			var classUnderCaret = GetClass(symbol);
 			if (classUnderCaret != null) {
-				ContextActionsHelper.MakePopupWithDerivedClasses(classUnderCaret).OpenAtCaretAndFocus();
+				ContextActionsPopupHelper.MakePopupWithDerivedClasses(classUnderCaret).OpenAtCaretAndFocus();
 				return;
 			}
 			var memberUnderCaret = GetMember(symbol);
 			if (memberUnderCaret != null && memberUnderCaret.IsOverridable)
 			{
-				ContextActionsHelper.MakePopupWithOverrides(memberUnderCaret).OpenAtCaretAndFocus();
+				ContextActionsPopupHelper.MakePopupWithOverrides(memberUnderCaret).OpenAtCaretAndFocus();
 				return;
 			}
 			MessageService.ShowError("${res:ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError}");

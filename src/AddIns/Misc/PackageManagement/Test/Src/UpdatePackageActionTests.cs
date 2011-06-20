@@ -198,6 +198,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasInitPowerShellScript_ReturnsTrue()
 		{
 			CreateSolution();
+			action.PackageId = "Test";
 			AddInstallOperationWithFile(@"tools\init.ps1");
 			
 			bool hasPackageScripts = action.HasPackageScriptsToRun();
@@ -209,6 +210,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasNoFiles_ReturnsFalse()
 		{
 			CreateSolution();
+			action.PackageId = "Test";
 			action.Operations = new List<PackageOperation>();
 			
 			bool hasPackageScripts = action.HasPackageScriptsToRun();

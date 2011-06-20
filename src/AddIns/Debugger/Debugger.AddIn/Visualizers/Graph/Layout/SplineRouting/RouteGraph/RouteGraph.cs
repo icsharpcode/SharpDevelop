@@ -9,7 +9,9 @@ using System.Windows;
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
-	/// Description of RouteGraph.
+	/// The visibility graph in which <see cref="EdgeRouter" /> searches shortest paths.
+	/// Vertices of the graph are corners of boxes in the original graph.
+	/// Edges connect vertices which can be connected by a line without intersecting boxes.
 	/// </summary>
 	public class RouteGraph
 	{
@@ -35,7 +37,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		}
 		
 		/// <summary>
-		/// Initializes the RouteGraph by vertices close to node corners.
+		/// Initializes the RouteGraph by vertices close to corners of all nodes.
 		/// </summary>
 		/// <param name="boundX">X coordinates of vertices cannot be lower than this value (so that edges stay in boundaries).</param>
 		/// <param name="boundY">Y coordinates of vertices cannot be lower than this value (so that edges stay in boundaries).</param>
@@ -72,6 +74,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 						// Here user could provide custom edgeStart and edgeEnd
 						// inflate boxes a little so that edgeStart and edgeEnd are a little outside of the box (to prevent floating point errors)
 						if (edge.From == edge.To) {
+							// special case - self edge
 							var edgeStart = new Point2D(fromRect.Left + fromRect.Width + 0.01, originSourceCurrentY);
 							var edgeEnd = new Point2D(fromRect.Left + fromRect.Width / 2, fromRect.Top);
 							graph.AddEdgeEndpointVertices(edge, edgeStart, edgeEnd);
@@ -213,18 +216,21 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 			return new EdgeStartEnd { From = edge.From, To = edge.To };
 		}
 		
-		static double GetMultiEdgeSpan(double space, int multiEdgeCount, double multiEdgeGap)
+		/// <summary>
+		/// Calculates space needed for given number of parallel edges coming from one node.
+		/// </summary>
+		static double GetMultiEdgeSpan(double maxSpace, int multiEdgeCount, double multiEdgeGap)
 		{
 			if (multiEdgeCount <= 1) {
 				// 1 edge, no spacing needed
 				return 0;
 			}
-			if ((multiEdgeCount + 1) * multiEdgeGap < space) {
+			if ((multiEdgeCount + 1) * multiEdgeGap < maxSpace) {
 				// the edges fit, maintain the gap
 				return (multiEdgeCount - 1) * multiEdgeGap;
 			} else {
 				// there are too many edges, we have to make smaller gaps to fit edges into given space
-				return space - multiEdgeGap;
+				return maxSpace - multiEdgeGap;
 			}
 		}
 	}

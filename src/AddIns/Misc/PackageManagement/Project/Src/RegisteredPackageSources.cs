@@ -18,9 +18,16 @@ namespace ICSharpCode.PackageManagement
 			new PackageSource(DefaultPackageSourceUrl, DefaultPackageSourceName);
 		
 		public RegisteredPackageSources(IEnumerable<PackageSource> packageSources)
+			: this(packageSources, DefaultPackageSource)
+		{
+		}
+		
+		public RegisteredPackageSources(
+			IEnumerable<PackageSource> packageSources,
+			PackageSource defaultPackageSource)
 		{
 			AddPackageSources(packageSources);
-			AddDefaultPackageSourceIfNoRegisteredPackageSources();
+			AddDefaultPackageSourceIfNoRegisteredPackageSources(defaultPackageSource);
 		}
 		
 		void AddPackageSources(IEnumerable<PackageSource> packageSources)
@@ -30,10 +37,10 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		void AddDefaultPackageSourceIfNoRegisteredPackageSources()
+		void AddDefaultPackageSourceIfNoRegisteredPackageSources(PackageSource defaultPackageSource)
 		{
 			if (HasNoRegisteredPackageSources) {
-				Add(DefaultPackageSource);
+				Add(defaultPackageSource);
 			}
 		}
 		

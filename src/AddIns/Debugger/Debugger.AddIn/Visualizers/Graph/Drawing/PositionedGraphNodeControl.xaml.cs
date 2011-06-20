@@ -72,28 +72,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			this.listView.ItemsSource = new VirtualizingObservableCollection<ContentNode>(this.items);
 		}
 		
-		public void CalculateWidthHeight()
-		{
-			if (!IsShowMemberIcon) {
-				columnMemberIcon.Width = 0;
-			}
-			
-			int nameColumnMaxLen = this.items.MaxOrDefault(contentNode => contentNode.Name.Length, 0);
-			GridView gv = listView.View as GridView;
-			columnName.Width = Math.Min(20 + nameColumnMaxLen * 6, 260);
-			columnText.Width = 80;
-			listView.Width = columnExpander.Width + columnMemberIcon.Width + columnName.Width + columnText.Width + 10;
-			
-			int maxItems = 10;
-			listView.Height = 4 + Math.Min(this.items.Count, maxItems) * 20;
-			if (this.items.Count > maxItems) {
-				listView.Width += 30;	// for scrollbar
-			}
-			
-			this.Width = listView.Width + 2;
-			this.Height = listView.Height + this.typeNameHeaderBorder.Height + 2;
-		}
-		
 		public PositionedGraphNodeControl()
 		{
 			InitializeComponent();
@@ -165,6 +143,28 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		int SubtreeSize(ContentNode node)
 		{
 			return 1 + node.Children.Sum(child => (child.IsExpanded ? SubtreeSize(child) : 1));
+		}
+		
+		public void CalculateWidthHeight()
+		{
+			if (!IsShowMemberIcon) {
+				columnMemberIcon.Width = 0;
+			}
+			
+			int nameColumnMaxLen = this.items.MaxOrDefault(contentNode => contentNode.Name.Length, 0);
+			GridView gv = listView.View as GridView;
+			columnName.Width = Math.Min(20 + nameColumnMaxLen * 6, 260);
+			columnText.Width = 80;
+			listView.Width = columnExpander.Width + columnMemberIcon.Width + columnName.Width + columnText.Width + 10;
+			
+			int maxItems = 10;
+			listView.Height = 4 + Math.Min(this.items.Count, maxItems) * 20;
+			if (this.items.Count > maxItems) {
+				listView.Width += 30;	// for scrollbar
+			}
+			
+			this.Width = listView.Width + 2;
+			this.Height = listView.Height + this.typeNameHeaderBorder.Height + 2;
 		}
 		
 		#region event helpers

@@ -19,12 +19,19 @@ namespace ICSharpCode.PackageManagement
 			new PackageSource("(Aggregate source)", "All") { IsAggregate = true };
 		
 		ISettings settings;
+		PackageSource defaultPackageSource;
 		RegisteredPackageSources packageSources;
 		PackageSource activePackageSource;
 		
 		public RegisteredPackageSourceSettings(ISettings settings)
+			: this(settings, RegisteredPackageSources.DefaultPackageSource)
+		{
+		}
+		
+		public RegisteredPackageSourceSettings(ISettings settings, PackageSource defaultPackageSource)
 		{
 			this.settings = settings;
+			this.defaultPackageSource = defaultPackageSource;
 			ReadActivePackageSource();
 		}
 		
@@ -57,8 +64,8 @@ namespace ICSharpCode.PackageManagement
 		
 		void ReadPackageSources()
 		{
-			var savedPackageSources = GetPackageSourcesFromSettings();
-			packageSources = new RegisteredPackageSources(savedPackageSources);
+			IEnumerable<PackageSource> savedPackageSources = GetPackageSourcesFromSettings();
+			packageSources = new RegisteredPackageSources(savedPackageSources, defaultPackageSource);
 			packageSources.CollectionChanged += PackageSourcesChanged;
 			
 			if (!savedPackageSources.Any()) {

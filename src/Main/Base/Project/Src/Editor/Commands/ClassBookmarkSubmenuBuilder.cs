@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			item.ShortcutKeys = System.Windows.Forms.Keys.F6;
 			//item.Image = ClassBrowserIconService.Class.Bitmap;
 			item.Click += delegate {
-				ContextActionsHelper.MakePopupWithDerivedClasses(baseClass).OpenAtCaretAndFocus();
+				ContextActionsPopupHelper.MakePopupWithDerivedClasses(baseClass).OpenAtCaretAndFocus();
 			};
 			return item;
 		}
@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			var item = new MenuCommand(StringParser.Parse("${res:SharpDevelop.Refactoring.FindBaseClassesCommand}"));
 			//item.Image = ClassBrowserIconService.Class.Bitmap;
 			item.Click += delegate {
-				ContextActionsHelper.MakePopupWithBaseClasses(@class).OpenAtCaretAndFocus();
+				ContextActionsPopupHelper.MakePopupWithBaseClasses(@class).OpenAtCaretAndFocus();
 			};
 			return item;
 		}

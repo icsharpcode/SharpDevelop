@@ -13,11 +13,11 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.PresentationBindings;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -117,8 +117,8 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				try	{
 					shownExpr = debuggerService.GetExpression(txtExpression.Text);
 					shownValue = shownExpr.Evaluate(debuggerService.DebuggedProcess);
-				} catch(GetValueException) {
-					// display ex.Message
+				} catch(GetValueException e) {
+					MessageService.ShowMessage(e.Message);
 				}
 				if (shownValue != null && !shownValue.IsNull) {
 					GridValuesProvider gridValuesProvider;
@@ -130,16 +130,11 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 						// Value is IEnumerable
 						DebugType iEnumerableType, itemType;
 						if (shownValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
-							// original
-							/*var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, initialIEnumerableItemsCount);
-							var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
-							lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
-							gridValuesProvider = enumerableValuesProvider;*/
 							DebugType debugListType;
 							var debugListExpression = DebuggerHelpers.CreateDebugListExpression(shownExpr, itemType, out debugListType);
 							gridValuesProvider = CreateListValuesProvider(debugListExpression, itemType);
 						} else	{
-							// Value cannot be displayed in GridVisualizer
+							// Not IList or IEnumerable<T> - can't be displayed in GridVisualizer
 							return;
 						}
 					}
@@ -149,10 +144,10 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 					this.columnHider = new GridViewColumnHider((GridView)this.listView.View);
 					cmbColumns.ItemsSource = this.columnHider.HideableColumns;
 				}
-			} catch (GetValueException) {
-				// display ex msg
-			} catch (DebuggerVisualizerException) {
-				// display ex msg
+			} catch (GetValueException e) {
+				MessageService.ShowMessage(e.Message);
+			} catch (DebuggerVisualizerException e) {
+				MessageService.ShowMessage(e.Message);
 			}
 		}
 		

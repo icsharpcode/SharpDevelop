@@ -190,6 +190,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasInitPowerShellScript_ReturnsTrue()
 		{
 			CreateAction();
+			action.PackageId = "Test";
 			AddInstallOperationWithFile(@"tools\init.ps1");
 			
 			bool hasPackageScripts = action.HasPackageScriptsToRun();
@@ -201,6 +202,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasNoFiles_ReturnsFalse()
 		{
 			CreateAction();
+			action.PackageId = "Test";
 			action.Operations = new List<PackageOperation>();
 			
 			bool hasPackageScripts = action.HasPackageScriptsToRun();
@@ -212,6 +214,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasInitPowerShellScriptInUpperCase_ReturnsTrue()
 		{
 			CreateAction();
+			action.PackageId = "Test";
 			AddInstallOperationWithFile(@"tools\INIT.PS1");
 			
 			bool hasPackageScripts = action.HasPackageScriptsToRun();
@@ -223,6 +226,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasInstallPowerShellScriptInUpperCase_ReturnsTrue()
 		{
 			CreateAction();
+			action.PackageId = "Test";
 			AddInstallOperationWithFile(@"tools\INSTALL.PS1");
 			
 			bool hasPackageScripts = action.HasPackageScriptsToRun();
@@ -234,11 +238,43 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasUninstallPowerShellScriptInUpperCase_ReturnsTrue()
 		{
 			CreateAction();
+			action.PackageId = "Test";
 			AddInstallOperationWithFile(@"tools\UNINSTALL.PS1");
 			
 			bool hasPackageScripts = action.HasPackageScriptsToRun();
 			
 			Assert.IsTrue(hasPackageScripts);
+		}
+		
+		[Test]
+		public void HasPackageScriptsToRun_ProjectHasOnePackageOperation_DoesNotThrowNullReferenceException()
+		{
+			CreateAction();
+			FakePackage package = fakeProject.FakeSourceRepository.AddFakePackageWithVersion("Test", "1.0");
+			var operation = new PackageOperation(package, PackageAction.Install);
+			action.PackageId = package.Id;
+			action.PackageVersion = package.Version;
+			fakeProject.FakeInstallOperations.Add(operation);
+			
+			bool hasPackageScripts = false;
+			Assert.DoesNotThrow(() => hasPackageScripts = action.HasPackageScriptsToRun());
+		}
+		
+		[Test]
+		public void HasPackageScriptsToRun_ProjectHasOnePackageOperation_PackageLocated()
+		{
+			CreateAction();
+			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion("Test", "1.0");
+			var operation = new PackageOperation(expectedPackage, PackageAction.Install);
+			action.PackageId = expectedPackage.Id;
+			action.PackageVersion = expectedPackage.Version;
+			fakeProject.FakeInstallOperations.Add(operation);
+			
+			bool hasPackageScripts = action.HasPackageScriptsToRun();
+			
+			IPackage actualPackage = action.Package;
+			
+			Assert.AreEqual(expectedPackage, actualPackage);
 		}
 	}
 }

@@ -254,7 +254,6 @@
     <Compile Include="Visualizers\Graph\Layout\TreeModel\ContentNode.cs" />
     <Compile Include="Visualizers\Graph\Layout\TreeModel\ContentNodeEventArgs.cs" />
     <Compile Include="Visualizers\Graph\Layout\TreeModel\ContentPropertyNode.cs" />
-    <Compile Include="Visualizers\Graph\NodeControlCache.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraphControl.xaml.cs">
       <DependentUpon>ObjectGraphControl.xaml</DependentUpon>
       <SubType>Code</SubType>

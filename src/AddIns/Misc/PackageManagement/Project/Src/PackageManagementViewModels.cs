@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -11,6 +12,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		AddPackageReferenceViewModel addPackageReferenceViewModel;
 		RegisteredPackageSourcesViewModel registeredPackageSourcesViewModel;
+		RegisteredPackageSourcesViewModel registeredProjectTemplatePackageSourcesViewModel;
 		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
 		PackageManagementConsoleViewModel packageManagementConsoleViewModel;
 		IPackageManagementSolution solution;
@@ -57,7 +59,7 @@ namespace ICSharpCode.PackageManagement
 				} else {
 					registeredPackageRepositories = PackageManagementServices.RegisteredPackageRepositories;
 				}
-			}			
+			}
 		}
 		
 		bool IsInDesignMode()
@@ -68,19 +70,55 @@ namespace ICSharpCode.PackageManagement
 		public RegisteredPackageSourcesViewModel RegisteredPackageSourcesViewModel {
 			get {
 				if (registeredPackageSourcesViewModel == null) {
-					CreateRegisteredPackageSourcesViewModel();
+					RegisteredPackageSources packageSources = GetRegisteredPackageSources();
+					registeredPackageSourcesViewModel = 
+						CreateRegisteredPackageSourcesViewModel(packageSources);
 				}
 				return registeredPackageSourcesViewModel;
 			}
 		}
 		
-		void CreateRegisteredPackageSourcesViewModel()
+		RegisteredPackageSources GetRegisteredPackageSources()
+		{
+			if (IsInDesignMode()) {
+				return CreateDesignTimeRegisteredPackageSources();
+			} else {
+				return PackageManagementServices.Options.PackageSources;
+			}
+		}
+		
+		RegisteredPackageSources CreateDesignTimeRegisteredPackageSources()
+		{
+			return new RegisteredPackageSources(new PackageSource[0]);
+		}
+		
+		RegisteredPackageSourcesViewModel CreateRegisteredPackageSourcesViewModel(RegisteredPackageSources packageSources)
 		{
 			CreateRegisteredPackageRepositories();
 			if (IsInDesignMode()) {
-				registeredPackageSourcesViewModel = new DesignTimeRegisteredPackageSourcesViewModel();
+				return new DesignTimeRegisteredPackageSourcesViewModel();
 			} else {
-				registeredPackageSourcesViewModel = new RegisteredPackageSourcesViewModel(PackageManagementServices.Options);
+				return new RegisteredPackageSourcesViewModel(packageSources);
+			}
+		}
+		
+		public RegisteredPackageSourcesViewModel RegisteredProjectTemplatePackageSourcesViewModel {
+			get {
+				if (registeredProjectTemplatePackageSourcesViewModel == null) {
+					RegisteredPackageSources packageSources = GetProjectTemplatePackageSources();
+					registeredProjectTemplatePackageSourcesViewModel =
+						CreateRegisteredPackageSourcesViewModel(packageSources);
+				}
+				return registeredProjectTemplatePackageSourcesViewModel;
+			}
+		}
+		
+		RegisteredPackageSources GetProjectTemplatePackageSources()
+		{
+			if (IsInDesignMode()) {
+				return CreateDesignTimeRegisteredPackageSources();
+			} else {
+				return PackageManagementServices.ProjectTemplatePackageSources;
 			}
 		}
 		

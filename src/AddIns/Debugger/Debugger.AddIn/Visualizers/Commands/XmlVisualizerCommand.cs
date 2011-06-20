@@ -36,24 +36,19 @@ namespace Debugger.AddIn.Visualizers
 		{
 		}
 		
-		public override bool CanExecute { 
-			get { return true; }
-		}
-		
 		public override string ToString()
 		{
-			return "Xml visualizer";
+			return "XML visualizer";
 		}
 		
 		public override void Execute()
 		{
-			if (this.Expression != null)
-			{
-				var textVisualizerWindow = new TextVisualizerWindow(
-					this.Expression.PrettyPrint(), this.Expression.Evaluate(WindowsDebugger.CurrentProcess).InvokeToString());
-				textVisualizerWindow.Mode = TextVisualizerMode.Xml;
-				textVisualizerWindow.ShowDialog();
-			}
+			if (this.Expression == null)
+				return;
+			var textVisualizerWindow = new TextVisualizerWindow(
+				this.Expression.PrettyPrint(), this.Expression.Evaluate(WindowsDebugger.CurrentProcess).AsString());
+			textVisualizerWindow.Mode = TextVisualizerMode.Xml;
+			textVisualizerWindow.ShowDialog();
 		}
 	}
 }

@@ -66,9 +66,14 @@
 				id="PackageSources"
 				label="Package Sources"
 				class="ICSharpCode.PackageManagement.RegisteredPackageSourcesView"/>
+			<OptionPanel
+				id="ProjectTemplatePackageSources"
+				label="Template Package Sources"
+				class="ICSharpCode.PackageManagement.RegisteredProjectTemplatePackageSourcesView"/>
 		</OptionPanel>
 	</Path>
-
+	
+	<!-- Package Management Console Pad -->
 	<Path name="/SharpDevelop/Workbench/Pads">
 		<Pad
 			id="PackageManagementConsole"
@@ -77,5 +82,12 @@
 			icon="PadIcons.Output"
 			defaultPosition="Bottom, Hidden"
 			class="ICSharpCode.PackageManagement.Scripting.PackageManagementConsolePad"/>
+	</Path>
+
+	<!-- Project template command -->
+	<Path name="/AddIns/PackageManagement/TemplateCommands">
+		<Class
+			id="InstallPackages"
+			class="ICSharpCode.PackageManagement.InstallProjectTemplatePackagesCommand"/>
 	</Path>
 </AddIn>

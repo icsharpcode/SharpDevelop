@@ -8,7 +8,7 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
-	/// Description of AStarShortestPathFinder.
+	/// Finds shortest paths in the <see cref="RouteGraph" />.
 	/// </summary>
 	public class DijkstraShortestPathFinder
 	{

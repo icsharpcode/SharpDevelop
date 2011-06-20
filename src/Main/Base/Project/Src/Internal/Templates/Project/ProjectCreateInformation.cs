@@ -20,9 +20,16 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	{
 		internal List<IProject> createdProjects = new List<IProject>();
 		
-		public ProjectCreateInformation() {
-			Platform = "x86";
+		public ProjectCreateInformation()
+			: this(new IProject[0])
+		{
 		}
+		
+		public ProjectCreateInformation(IEnumerable<IProject> projects)
+		{
+			Platform = "x86";
+			createdProjects.AddRange(projects);
+		}		
 		
 		public ReadOnlyCollection<IProject> CreatedProjects {
 			get { return createdProjects.AsReadOnly(); }

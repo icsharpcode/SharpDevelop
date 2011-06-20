@@ -23,8 +23,6 @@ namespace Debugger.AddIn.Visualizers
 			this.Expression = expression;
 		}
 		
-		public abstract bool CanExecute { get; }
-		
 		public abstract void Execute();
 	}
 }

@@ -8,7 +8,7 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
-	/// Description of EdgeStartEnd.
+	/// Pair of Edge start and end point, useful for grouping edges by source & target.
 	/// </summary>
 	public class EdgeStartEnd
 	{

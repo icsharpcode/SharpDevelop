@@ -41,10 +41,6 @@ namespace Debugger.AddIn.Visualizers
 		{
 		}
 		
-		public override bool CanExecute { 
-			get { return true; }
-		}
-		
 		public override string ToString()
 		{
 			return "Collection visualizer";
@@ -52,10 +48,10 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
-			if (this.Expression != null) {
-				var gridVisualizerWindow = GridVisualizerWindow.EnsureShown();
-				gridVisualizerWindow.ShownExpression = this.Expression;
-			}
+			if (this.Expression == null)
+				return;
+			var gridVisualizerWindow = GridVisualizerWindow.EnsureShown();
+			gridVisualizerWindow.ShownExpression = this.Expression;
 		}
 	}
 }

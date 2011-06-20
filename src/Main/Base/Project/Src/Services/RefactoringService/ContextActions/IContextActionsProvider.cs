@@ -9,7 +9,7 @@ using ICSharpCode.SharpDevelop.Refactoring;
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
-	/// Provides <see cref="ContextAction" />s to appear in a popup on the left side of the editor.
+	/// Provides a set of refactoring <see cref="ContextAction" />s.
 	/// </summary>
 	public interface IContextActionsProvider
 	{

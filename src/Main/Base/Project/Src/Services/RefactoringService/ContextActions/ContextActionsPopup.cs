@@ -57,8 +57,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				OpenAtMousePosition();
 				return;
 			}
-			// Should look if symbol under caret is the same as this.Symbol, so that when opened from class browser, popup opens at mouse pos
-			//var rr = ParserService.Resolve(currentEditor.Caret.Offset, currentEditor.Document, currentEditor.FileName);
 			OpenAtPosition(currentEditor, currentEditor.Caret.Line, currentEditor.Caret.Column, true);
 			this.Focus();
 		}
