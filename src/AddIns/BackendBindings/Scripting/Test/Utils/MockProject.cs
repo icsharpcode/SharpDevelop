@@ -299,6 +299,17 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public System.Xml.Linq.XElement LoadProjectExtensions(string name)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void SaveProjectExtensions(string name, System.Xml.Linq.XElement element)
+		{
+			throw new NotImplementedException();
+		}
 		#endregion
+
 	}
 }

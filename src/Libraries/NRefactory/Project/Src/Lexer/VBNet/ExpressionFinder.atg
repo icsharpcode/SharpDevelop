@@ -525,7 +525,9 @@ Parameter =
 	(. PopContext(); .)
 .
 
-StatementTerminatorAndBlock =
+StatementTerminatorAndBlock
+	(.NamedState:startOfBlock.)
+=
 	(. PushContext(Context.Body, la, t); .)
 	StatementTerminator
 	{ EXPECTEDCONFLICT("End")
