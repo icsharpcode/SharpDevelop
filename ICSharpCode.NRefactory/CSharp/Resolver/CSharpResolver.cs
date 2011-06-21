@@ -443,7 +443,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					throw new InvalidOperationException();
 			}
 			OverloadResolution r = new OverloadResolution(context, new[] { expression });
-			foreach (var candidate in methodGroup.Concat(GetUserDefinedUnaryOperatorCandidates (type, GetOverloadableOperatorName(op)))) {
+			foreach (var candidate in methodGroup) {
 				r.AddCandidate(candidate);
 			}
 			UnaryOperatorMethod m = (UnaryOperatorMethod)r.BestCandidate;
@@ -570,21 +570,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return baseMethod.Parameters; }
 			}
 		}
-		
-		sealed class UserDefinedUnaryOperatorMethod : UnaryOperatorMethod
-		{
-			public UserDefinedUnaryOperatorMethod (IMethod baseOperator)
-			{
-				foreach (var p in baseOperator.Parameters)
-					Parameters.Add (p);
-				ReturnType = baseOperator.ReturnType;
-			}
-			
-			public override object Invoke(CSharpResolver resolver, object input)
-			{
-				return null;
-			}
-		}
 		#endregion
 		
 		#region Unary operator definitions
@@ -627,15 +612,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		);
 		#endregion
 		
-		
-		#region User defined unary operators
-		IEnumerable<OperatorMethod> GetUserDefinedUnaryOperatorCandidates (IType type, string operatorName)
+		object GetUserUnaryOperatorCandidates()
 		{
 			// C# 4.0 spec: §7.3.5 Candidate user-defined operators
-			Predicate<IMethod> filter =  m => m.IsOperator && m.Name == operatorName;
-			return type.GetMethods (context, filter).Select (op => new UserDefinedUnaryOperatorMethod (op));
+			// TODO: implement user-defined operators
+			throw new NotImplementedException();
 		}
-		#endregion
 		#endregion
 		
 		#region ResolveBinaryOperator
@@ -843,7 +825,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					throw new InvalidOperationException();
 			}
 			OverloadResolution r = new OverloadResolution(context, new[] { lhs, rhs });
-			foreach (var candidate in methodGroup.Concat (GetUserDefinedBinaryOperatorCandidates (lhsType, rhsType, GetOverloadableOperatorName (op)))) {
+			foreach (var candidate in methodGroup) {
 				r.AddCandidate(candidate);
 			}
 			BinaryOperatorMethod m = (BinaryOperatorMethod)r.BestCandidate;
@@ -1119,27 +1101,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public IList<IParameter> NonLiftedParameters {
 				get { return baseMethod.Parameters; }
-			}
-		}
-		
-		sealed class UserDefinedBinaryOperatorMethod : BinaryOperatorMethod
-		{
-			public override bool CanEvaluateAtCompileTime {
-				get {
-					return false;
-				}
-			}
-			
-			public UserDefinedBinaryOperatorMethod (IMethod baseOperator)
-			{
-				foreach (var p in baseOperator.Parameters)
-					Parameters.Add (p);
-				ReturnType = baseOperator.ReturnType;
-			}
-			
-			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
-			{
-				throw new NotSupportedException("Operator can't be evaluated.");
 			}
 		}
 		#endregion
@@ -1497,14 +1458,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		IEnumerable<OperatorMethod> GetUserDefinedBinaryOperatorCandidates (IType lhsType, IType rhsType, string operatorName)
+		object GetUserBinaryOperatorCandidates()
 		{
 			// C# 4.0 spec: §7.3.5 Candidate user-defined operators
-			Predicate<IMethod> filter =  m => m.IsOperator && m.Name == operatorName;
-			var operators = lhsType.GetMethods (context, filter);
-			if (!lhsType.Equals (rhsType))
-				operators = operators.Concat (rhsType.GetMethods (context, filter));
-			return operators.Select (op => new UserDefinedBinaryOperatorMethod (op));
+			// TODO: implement user-defined operators
+			throw new NotImplementedException();
 		}
 		#endregion
 		
