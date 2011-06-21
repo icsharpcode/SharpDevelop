@@ -39,16 +39,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			window.WindowStartupLocation = WindowStartupLocation.Manual;
 			var ownerLocation = GetOwnerLocation(window);
 			if (isResizable) {
-				Rect bounds = Validate(PropertyService.Get(propertyName, GetDefaultBounds(window)));
+				Rect bounds = PropertyService.Get(propertyName, GetDefaultBounds(window));
 				bounds.Offset(ownerLocation.X, ownerLocation.Y);
+				bounds = Validate(bounds);
 				window.Left = bounds.X;
 				window.Top = bounds.Y;
 				window.Width = bounds.Width;
 				window.Height = bounds.Height;
 			} else {
 				Size size = new Size(window.ActualWidth, window.ActualHeight);
-				Point location = Validate(PropertyService.Get(propertyName, GetDefaultLocation(window)), size);
+				Point location = PropertyService.Get(propertyName, GetDefaultLocation(window));
 				location.Offset(ownerLocation.X, ownerLocation.Y);
+				location = Validate(location, size);
 				window.Left = location.X;
 				window.Top = location.Y;
 			}
