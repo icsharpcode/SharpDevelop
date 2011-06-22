@@ -84,7 +84,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 			var convertedSection = new ExporterCollection();
 			Offset = new Point(section.Location.X,section.SectionOffset);
 			Point startOffset = Offset;
-			if (section.Items.Count > 0) {
+			Console.WriteLine ("start ConvertSection {0}- {1}",section.Name,section.Size);
+			
+			if (section.Items.Count > 0)
+			{
+				Size sectionSize = section.Size;
+				
 				section.Items.SortByLocation();
 
 				IExpressionEvaluatorFacade evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.SinglePage.IDataNavigator);
@@ -101,7 +106,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					ISimpleContainer simpleContainer = item as ISimpleContainer;
 					
 					Offset = new Point(Offset.X,Offset.Y + gapCalculator.GapBetweenItems[i] );
-					
+
 					if (simpleContainer != null)
 					{
 						EvaluationHelper.EvaluateReportItems(evaluator,simpleContainer.Items);
@@ -114,19 +119,23 @@ namespace ICSharpCode.Reports.Core.Exporter
 						Rectangle rsec = new Rectangle(section.Location,section.Size);
 						Rectangle ro = new Rectangle(section.Location,simpleContainer.Size);
 						if (!rsec.Contains(ro)) {
+							Console.WriteLine ("Update Size");
 							section.Size = new Size(section.Size.Width,Offset.Y - startOffset.Y );
 						}
 					}
 					else
 					{
 						var converteditem = ExportHelper.ConvertLineItem(item,Offset);
-						convertedSection.Add(converteditem);
+//						Offset = new Point (Offset.X,Offset.Y + item.Size.Height);
+						convertedSection.Add(converteditem );
 					}
 					i ++;
 				}
 				Offset = new Point (Offset.X,Offset.Y + gapCalculator.LastGap);
+//				section.Size = sectionSize;
 			}
-			
+			Console.WriteLine ("leave ConvertSection {0}",section.Size);
+			Console.WriteLine();
 			return convertedSection;
 		}
 		

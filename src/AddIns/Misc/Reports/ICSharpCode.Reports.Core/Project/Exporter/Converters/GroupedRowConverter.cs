@@ -56,11 +56,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private ExporterCollection ConvertDataRow (ISimpleContainer simpleContainer)
 		{
-			
 			ExporterCollection exporterCollection = new ExporterCollection();
-//			base.CurrentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
 			base.CurrentPosition = base.SectionBounds.DetailArea.Location;
 //			base.CurrentPosition = new Point (base.CurrentPosition.X,base.CurrentPosition.Y + 20);
+			Console.WriteLine("Convertdatarow start {0}",base.CurrentPosition);
 			BaseSection section = parent as BaseSection;
 			
 			DefaultLeftPosition = parent.Location.X;
@@ -165,10 +164,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			var r = base.ReportModel;
 			base.SectionBounds.CalculatePageBounds(r);
-			return new Point(base.SectionBounds.DetailArea.X,base.SectionBounds.PageHeaderRectangle.Bottom + 1);
+			var rr =  new Point(base.SectionBounds.DetailArea.X,base.SectionBounds.PageHeaderRectangle.Bottom + 1);
+			var p = base.SectionBounds.DetailArea.Location;
+			Console.WriteLine ("PageBreak {0} - detailareaa {1}",rr,p);
+			Console.WriteLine("-----------------");
+		return base.SectionBounds.DetailArea.Location;
 		}
 		
-		
+	
 		private Point ConvertGroupHeader(ExporterCollection exportList,BaseSection section,Point offset)
 		{
 			var retVal = Point.Empty;

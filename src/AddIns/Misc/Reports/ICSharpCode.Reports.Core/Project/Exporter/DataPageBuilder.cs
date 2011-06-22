@@ -79,12 +79,19 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected override void BuildPageHeader ()
 		{
-			base.DebugShowSections();
+//			base.DebugShowSections();
+			Console.WriteLine();
+			Console.WriteLine ("start BuildPageHeader DetailArea.Location {0}  - offset {1}",SectionBounds.DetailArea.Location,base.Offset);
 			base.SectionBounds.CalculatePageBounds(base.ReportModel);
 			ConvertSectionInternal (base.ReportModel.PageHeader);
-			base.ReportModel.PageHeader.Size = new Size(base.ReportModel.PageHeader.Size.Width,base.Offset.Y - base.ReportModel.PageHeader.SectionOffset);
+			Size s = base.ReportModel.PageHeader.Size;
+			
+//			base.ReportModel.PageHeader.Size = new Size(base.ReportModel.PageHeader.Size.Width,base.Offset.Y - base.ReportModel.PageHeader.SectionOffset);
+			s = base.ReportModel.PageHeader.Size;
 			base.SectionBounds.CalculatePageBounds(base.ReportModel);
-			base.DebugShowSections();
+			Console.WriteLine ("end BuildPageHeader DetailArea.Location {0}  - offset {1}",SectionBounds.DetailArea.Location,base.Offset);
+//			base.DebugShowSections();
+				Console.WriteLine();
 		}
 		
 		

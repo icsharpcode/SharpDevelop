@@ -29,7 +29,6 @@ namespace ICSharpCode.Reports.Core.Globals
 		private static string reportFileName = "Report1";
 		private const string unbound = "unbound";
 		private const string tableName = "Table";
-		private const int enlargeControl = 5;
 		private const int defaultZoomfactor = 1;
 		private const int gapBetweenRows = 1;
 		

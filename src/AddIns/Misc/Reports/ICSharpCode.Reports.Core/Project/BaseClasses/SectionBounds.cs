@@ -121,6 +121,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			                                           section.SectionOffset,
 			                                           this.marginBounds.Width,
 			                                           s.Height);
+			Console.WriteLine("\tSectionBounds pageheader {0} - loca {1}",pageHeaderRectangle,pageHeaderRectangle.Location);
 		}
 		
 		
@@ -205,6 +206,9 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		public Rectangle DetailArea
 		{
 			get {
+				Console.WriteLine("\tSectionBound Detailarea location {0}",new Rectangle (new Point (pageHeaderRectangle.X,pageHeaderRectangle.Bottom + GlobalValues.GapBetweenContainer),
+				                                                                 new Size(pageFooterRectangle.Location.X,pageFooterRectangle.Top - GlobalValues.GapBetweenContainer)).Location);
+				                      
 				return new Rectangle (new Point (pageHeaderRectangle.X,pageHeaderRectangle.Bottom + GlobalValues.GapBetweenContainer),
 				                      new Size(pageFooterRectangle.Location.X,pageFooterRectangle.Top - GlobalValues.GapBetweenContainer));
 			}
