@@ -1558,6 +1558,22 @@
 										<File Id="PackageManagement.PowerShell.dll" Name="PackageManagement.PowerShell.dll" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.PowerShell.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.PowerShell.dll" AssemblyManifest="PackageManagement.PowerShell.dll" />
 									</Component>
 								</Directory>
+								<Directory Id="TextTemplating" Name="TextTemplating">
+									<Component Id="MonoTextTemplatingDll" Guid="07BFBED7-FC7B-4CF3-BD00-DCA8E8E7C17B" DiskId="1">
+										<File Id="Mono.TextTemplating.dll" Name="Mono.TextTemplating.dll" Source="..\..\AddIns\Misc\TextTemplating\Mono.TextTemplating.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Mono.TextTemplating.dll" AssemblyManifest="Mono.TextTemplating.dll" />
+									</Component>
+									<Component Id="TextTemplatingAddin" Guid="4641009D-3B33-4D5D-8910-48543211BAD1" DiskId="1">
+										<File Id="TextTemplating.addin" Name="TextTemplating.addin" Source="..\..\AddIns\Misc\TextTemplating\TextTemplating.addin" KeyPath="yes" />
+									</Component>
+									<Component Id="TextTemplatingDll" Guid="EB7774C9-9C60-46F5-95C1-17D86E743F83" DiskId="1">
+										<File Id="TextTemplating.dll" Name="TextTemplating.dll" Source="..\..\AddIns\Misc\TextTemplating\TextTemplating.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="TextTemplating.dll" AssemblyManifest="TextTemplating.dll" />
+									</Component>
+									<Directory Id="TextTemplatingTemplates" Name="Templates">
+										<Component Id="TextTemplateFileTemplate" Guid="EE27739F-3F4D-4C9F-99F0-0E9831001BD7" DiskId="1">
+											<File Id="TextTemplate.xft" Name="TextTemplate.xft" Source="..\..\AddIns\Misc\TextTemplating\Templates\TextTemplate.xft" KeyPath="yes" />
+										</Component>
+									</Directory>
+								</Directory>
 							</Directory>
 							<Directory Id="VersionControlAddInsFolder" Name="VersionControl">
 								<Directory Id="SubversionAddInFolder" Name="SubversionAddIn">

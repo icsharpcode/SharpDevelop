@@ -524,6 +524,11 @@
 				<ComponentRef Id="PackageManagementPowerShellDll"/>
 				<ComponentRef Id="JQuery161NuGetPackage"/>
 				<ComponentRef Id="Modernizr17NuGetPackage"/>
+			
+				<ComponentRef Id="MonoTextTemplatingDll"/>
+				<ComponentRef Id="TextTemplatingAddin"/>
+				<ComponentRef Id="TextTemplatingDll"/>
+				<ComponentRef Id="TextTemplateFileTemplate"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
