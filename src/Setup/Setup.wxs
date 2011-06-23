@@ -298,8 +298,10 @@
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>
+				<ComponentRef Id="EmptyCSharpMvcWebProjectTemplate"/>
 				<ComponentRef Id="CSharpMvcWebProjectTemplate"/>
 				<ComponentRef Id="VBFileTemplates"/>
+				<ComponentRef Id="EmptyVBMvcWebProjectTemplate"/>
 				<ComponentRef Id="VBMvcWebProjectTemplate"/>
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>

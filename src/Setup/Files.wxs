@@ -809,6 +809,9 @@
 										<Component Id="CSharpMvcWebProjectTemplate" Guid="82060284-5670-4B2F-8AB0-BE075D09D4BE" DiskId="1">
 											<File Id="CSharp.MvcWebProject.xpt" Name="MvcWebProject.xpt" Source="..\..\data\templates\project\CSharp\MvcWebProject.xpt" KeyPath="yes" />
 										</Component>
+										<Component Id="EmptyCSharpMvcWebProjectTemplate" Guid="3EA7EF3D-F72A-446C-AA21-BA97EF9B321A" DiskId="1">
+											<File Id="Empty.CSharp.MvcWebProject.xpt" Name="EmptyMvcWebProject.xpt" Source="..\..\data\templates\project\CSharp\EmptyMvcWebProject.xpt" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
 										<Component Guid="F9A7F832-6EC8-4B15-A037-146BD028C9D5" Id="MiscProjectTemplates" DiskId="1">
@@ -843,6 +846,9 @@
 										</Component>
 										<Component Id="VBMvcWebProjectTemplate" Guid="FBDC313E-FC77-4500-84EC-35F0E19925C1" DiskId="1">
 											<File Id="VB.MvcWebProject.xpt" Name="MvcWebProject.xpt" Source="..\..\data\templates\project\VB\MvcWebProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyVBMvcWebProjectTemplate" Guid="DCCCBDDE-6F8A-4163-8294-F84E5E76917C" DiskId="1">
+											<File Id="Empty.VB.MvcWebProject.xpt" Name="EmptyMvcWebProject.xpt" Source="..\..\data\templates\project\VB\EmptyMvcWebProject.xpt" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">
