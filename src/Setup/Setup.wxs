@@ -528,7 +528,8 @@
 				<ComponentRef Id="MonoTextTemplatingDll"/>
 				<ComponentRef Id="TextTemplatingAddin"/>
 				<ComponentRef Id="TextTemplatingDll"/>
-				<ComponentRef Id="TextTemplateFileTemplate"/>
+				<ComponentRef Id="CSharpTextTemplateFileTemplate"/>
+				<ComponentRef Id="VBTextTemplateFileTemplate"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

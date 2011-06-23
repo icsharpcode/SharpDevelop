@@ -75,7 +75,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\TextTemplating.xshd" />
-    <None Include="Templates\TextTemplate.xft">
+    <None Include="Templates\CSharp.TextTemplate.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\VB.TextTemplate.xft">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TextTemplating.addin">

@@ -1569,8 +1569,11 @@
 										<File Id="TextTemplating.dll" Name="TextTemplating.dll" Source="..\..\AddIns\Misc\TextTemplating\TextTemplating.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="TextTemplating.dll" AssemblyManifest="TextTemplating.dll" />
 									</Component>
 									<Directory Id="TextTemplatingTemplates" Name="Templates">
-										<Component Id="TextTemplateFileTemplate" Guid="EE27739F-3F4D-4C9F-99F0-0E9831001BD7" DiskId="1">
-											<File Id="TextTemplate.xft" Name="TextTemplate.xft" Source="..\..\AddIns\Misc\TextTemplating\Templates\TextTemplate.xft" KeyPath="yes" />
+										<Component Id="CSharpTextTemplateFileTemplate" Guid="D271B972-2CBB-4615-9D35-23F75969CA9B" DiskId="1">
+											<File Id="CSharp.TextTemplate.xft" Name="CSharp.TextTemplate.xft" Source="..\..\AddIns\Misc\TextTemplating\Templates\CSharp.TextTemplate.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBTextTemplateFileTemplate" Guid="21E9FFAB-491C-48A4-BD3D-41E596C50D66" DiskId="1">
+											<File Id="VB.TextTemplate.xft" Name="VB.TextTemplate.xft" Source="..\..\AddIns\Misc\TextTemplating\Templates\VB.TextTemplate.xft" KeyPath="yes" />
 										</Component>
 									</Directory>
 								</Directory>
