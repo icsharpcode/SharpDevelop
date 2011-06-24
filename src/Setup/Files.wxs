@@ -715,6 +715,21 @@
 										<Component Guid="47C2A81B-8BC1-4762-BE7F-8989E8DE0703" Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass" DiskId="1">
 											<File Source="..\..\data\templates\file\CSharp\RecentFilesCollection.cs" Name="RecentFilesCollection.cs" Id="RecentFilesCollection.cs" KeyPath="yes" />
 										</Component>
+										<Component Id="CSharpMvcControllerFileTemplate" Guid="93AF3CAF-FA60-4765-9D24-415535A7F1F2" DiskId="1">
+											<File Id="CSharp.Mvc.Controller.xft" Name="CSharp.Mvc.Controller.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.Controller.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcViewContentPageFileTemplate" Guid="04C2BEF8-DB03-4D56-9176-E85529DB6789" DiskId="1">
+											<File Id="CSharp.Mvc.ViewContentPage.xft" Name="CSharp.Mvc.ViewContentPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.ViewContentPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcViewMasterPageFileTemplate" Guid="1482F786-8437-4402-8798-D0EF2664FCB4" DiskId="1">
+											<File Id="CSharp.Mvc.ViewMasterPage.xft" Name="CSharp.Mvc.ViewMasterPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.ViewMasterPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcViewPageFileTemplate" Guid="6C77F3F2-AF84-4927-BD9C-1995D8F30559" DiskId="1">
+											<File Id="CSharp.Mvc.ViewPage.xft" Name="CSharp.Mvc.ViewPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.ViewPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcViewUserControlFileTemplate" Guid="FF8B0A8A-6C11-471E-AAAC-351D8D762973" DiskId="1">
+											<File Id="CSharp.Mvc.ViewUserControl.xft" Name="CSharp.Mvc.ViewUserControl.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.ViewUserControl.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscFileTemplatesFolder" Name="Misc">
 										<Component Guid="F47EE9EB-321F-4D98-A373-BFE2C2D801D0" Id="EmptyHTMLFileTemplate" DiskId="1">
@@ -770,6 +785,21 @@
 											<File Id="VB.WPFResourceDictionary.xft" Name="VB.WPFResourceDictionary.xft" Source="..\..\data\templates\file\VB\VB.WPFResourceDictionary.xft" />
 											<File Id="VB.WPFUserControl.xft" Name="VB.WPFUserControl.xft" Source="..\..\data\templates\file\VB\VB.WPFUserControl.xft" />
 											<File Id="VB.WPFWindow.xft" Name="VB.WPFWindow.xft" Source="..\..\data\templates\file\VB\VB.WPFWindow.xft" />
+										</Component>
+										<Component Id="VBMvcControllerFileTemplate" Guid="E56644A3-2A6C-4E49-88E2-85EEDA3B0999" DiskId="1">
+											<File Id="VB.Mvc.Controller.xft" Name="VB.Mvc.Controller.xft" Source="..\..\data\templates\file\VB\VB.Mvc.Controller.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcViewContentPageFileTemplate" Guid="D1A45934-F42E-4B69-82CA-FF0769A39268" DiskId="1">
+											<File Id="VB.Mvc.ViewContentPage.xft" Name="VB.Mvc.ViewContentPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.ViewContentPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcViewMasterPageFileTemplate" Guid="014285CD-C24F-4C40-9C31-089C83E09660" DiskId="1">
+											<File Id="VB.Mvc.ViewMasterPage.xft" Name="VB.Mvc.ViewMasterPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.ViewMasterPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcViewPageFileTemplate" Guid="4C6C4367-AC3E-49F3-AA89-2EC2AF5D27C5" DiskId="1">
+											<File Id="VB.Mvc.ViewPage.xft" Name="VB.Mvc.ViewPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.ViewPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcViewUserControlFileTemplate" Guid="A6272501-2DB7-48B5-AF86-7D53016DF29A" DiskId="1">
+											<File Id="VB.Mvc.ViewUserControl.xft" Name="VB.Mvc.ViewUserControl.xft" Source="..\..\data\templates\file\VB\VB.Mvc.ViewUserControl.xft" KeyPath="yes" />
 										</Component>
 									</Directory>
 								</Directory>

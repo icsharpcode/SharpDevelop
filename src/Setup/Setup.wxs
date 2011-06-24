@@ -303,6 +303,16 @@
 				<ComponentRef Id="VBFileTemplates"/>
 				<ComponentRef Id="EmptyVBMvcWebProjectTemplate"/>
 				<ComponentRef Id="VBMvcWebProjectTemplate"/>
+				<ComponentRef Id="CSharpMvcControllerFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewContentPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewMasterPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewUserControlFileTemplate"/>
+				<ComponentRef Id="VBMvcControllerFileTemplate"/>
+				<ComponentRef Id="VBMvcViewPageFileTemplate"/>
+				<ComponentRef Id="VBMvcViewContentPageFileTemplate"/>
+				<ComponentRef Id="VBMvcViewMasterPageFileTemplate"/>
+				<ComponentRef Id="VBMvcViewUserControlFileTemplate"/>
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>

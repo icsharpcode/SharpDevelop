@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+	
+	<Config
+		name="MVC Controller"
+		icon="C#.File.NewClass"
+		category="C#"
+		subcategory="ASP.NET MVC"
+		defaultname="Controller${Number}.cs"
+		language="C#"/>
+	 
+	<Description>MVC Controller</Description>
+	
+	<Files>
+		<File name="${FullName}" language="C#">
+<![CDATA[${StandardHeader.C#}
+using System;
+using System.Web.Mvc;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${ClassName}.
+	/// </summary>
+	public class ${ClassName} : Controller
+	{
+		public ActionResult Index()
+		{
+			return View();
+		}
+	}
+}
+]]>
+		</File>
+	</Files>
+</Template>
+
