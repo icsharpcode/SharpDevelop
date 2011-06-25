@@ -81,10 +81,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 			FireSectionRenderEvent (section ,dataRow);
 			PrintHelper.AdjustParent(section,section.Items);
 			PrintHelper.AdjustSectionLocation(section);
+			
 			var convertedSection = new ExporterCollection();
-			Offset = new Point(section.Location.X,section.SectionOffset);
+			Offset = SectionBounds.Offset;
 			Point startOffset = Offset;
-			Console.WriteLine ("start ConvertSection {0}- {1}",section.Name,section.Size);
 			
 			if (section.Items.Count > 0)
 			{
@@ -101,41 +101,35 @@ namespace ICSharpCode.Reports.Core.Exporter
 				gapCalculator.CalculateGapList(section);
 				int i = 0;
 				
+				
 				foreach (BaseReportItem item in section.Items)
 				{
+					
 					ISimpleContainer simpleContainer = item as ISimpleContainer;
 					
 					Offset = new Point(Offset.X,Offset.Y + gapCalculator.GapBetweenItems[i] );
-
+					
 					if (simpleContainer != null)
 					{
+						var containerSize = simpleContainer.Size;
+						
 						EvaluationHelper.EvaluateReportItems(evaluator,simpleContainer.Items);
 
 						var layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
 						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
-						
 						Offset = BaseConverter.ConvertContainer(convertedSection,simpleContainer,Offset.X,Offset);
-
-						Rectangle rsec = new Rectangle(section.Location,section.Size);
-						Rectangle ro = new Rectangle(section.Location,simpleContainer.Size);
-						if (!rsec.Contains(ro)) {
-							Console.WriteLine ("Update Size");
-							section.Size = new Size(section.Size.Width,Offset.Y - startOffset.Y );
-						}
+						simpleContainer.Size = containerSize;
 					}
 					else
 					{
 						var converteditem = ExportHelper.ConvertLineItem(item,Offset);
-//						Offset = new Point (Offset.X,Offset.Y + item.Size.Height);
 						convertedSection.Add(converteditem );
 					}
 					i ++;
 				}
 				Offset = new Point (Offset.X,Offset.Y + gapCalculator.LastGap);
-//				section.Size = sectionSize;
 			}
-			Console.WriteLine ("leave ConvertSection {0}",section.Size);
-			Console.WriteLine();
+			SectionBounds.Offset = Offset;
 			return convertedSection;
 		}
 		

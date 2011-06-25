@@ -57,6 +57,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			this.SinglePage.Items.AddRange(e.ItemsList);
 			PageBreak();
+			e.SectionBounds = SinglePage.SectionBounds;
 		}
 		
 		
@@ -64,6 +65,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected override void BuildReportHeader ()
 		{
+			SectionBounds.Offset = new Point(base.SectionBounds.MarginBounds.Left,base.SectionBounds.MarginBounds.Top);
 			if ((base.Pages.Count == 0) && (base.ReportModel.ReportHeader.Items.Count > 0))
 			{
 				base.ReportModel.ReportHeader.SectionOffset = base.SinglePage.SectionBounds.ReportHeaderRectangle.Top;
@@ -73,25 +75,18 @@ namespace ICSharpCode.Reports.Core.Exporter
 				base.ReportModel.ReportHeader.Size = Size.Empty;
 			}
 			base.SectionBounds.CalculatePageBounds(base.ReportModel);
-			
+			var p = base.SectionBounds.Offset;
 		}
 		
 		
 		protected override void BuildPageHeader ()
 		{
-//			base.DebugShowSections();
-			Console.WriteLine();
-			Console.WriteLine ("start BuildPageHeader DetailArea.Location {0}  - offset {1}",SectionBounds.DetailArea.Location,base.Offset);
+			if (SectionBounds.Offset.Y < base.ReportModel.PageHeader.SectionOffset) {
+				SectionBounds.Offset = new Point(SectionBounds.Offset.X,base.ReportModel.PageHeader.SectionOffset);
+			}
+			
 			base.SectionBounds.CalculatePageBounds(base.ReportModel);
 			ConvertSectionInternal (base.ReportModel.PageHeader);
-			Size s = base.ReportModel.PageHeader.Size;
-			
-//			base.ReportModel.PageHeader.Size = new Size(base.ReportModel.PageHeader.Size.Width,base.Offset.Y - base.ReportModel.PageHeader.SectionOffset);
-			s = base.ReportModel.PageHeader.Size;
-			base.SectionBounds.CalculatePageBounds(base.ReportModel);
-			Console.WriteLine ("end BuildPageHeader DetailArea.Location {0}  - offset {1}",SectionBounds.DetailArea.Location,base.Offset);
-//			base.DebugShowSections();
-				Console.WriteLine();
 		}
 		
 		
@@ -100,7 +95,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			bool pageBreak = false;
 			
 			base.ReportModel.ReportFooter.SectionOffset = footerRectangle.Top + GlobalValues.GapBetweenContainer;
-			
+			SectionBounds.Offset = new Point(SectionBounds.Offset.X,footerRectangle.Top + GlobalValues.GapBetweenContainer );
 			if (!PrintHelper.IsRoomForFooter(base.SectionBounds,base.ReportModel.ReportFooter.Location)) {
 				PageBreak();
 				base.ReportModel.ReportFooter.SectionOffset = SectionBounds.DetailArea.Top;
@@ -128,6 +123,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override void BuildPageFooter ()
 		{
 			base.ReportModel.PageFooter.SectionOffset =  base.SinglePage.SectionBounds.PageFooterRectangle.Top;
+			SectionBounds.Offset = new Point(SectionBounds.Offset.X, base.SinglePage.SectionBounds.PageFooterRectangle.Top);
 			ConvertSectionInternal(base.ReportModel.PageFooter);
 		}
 		

@@ -50,7 +50,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		#region PageBreak
 		
 		protected void BuildNewPage(ExporterCollection myList,BaseSection section)
-		{
+		{			
 			FirePageFull(myList);
 			section.SectionOffset = SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;		
 			myList.Clear();
@@ -59,7 +59,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void FirePageFull (ExporterCollection items)
 		{
-			EventHelper.Raise<NewPageEventArgs>(PageFull,this,new NewPageEventArgs(items));
+			var newPage = new NewPageEventArgs (items,SinglePage.SectionBounds);
+//			EventHelper.Raise<NewPageEventArgs>(PageFull,this,new NewPageEventArgs(items,SinglePage.SectionBounds));
+			EventHelper.Raise<NewPageEventArgs>(PageFull,this,newPage);
+			SinglePage.SectionBounds = newPage.SectionBounds;
 		}
 		
 		
