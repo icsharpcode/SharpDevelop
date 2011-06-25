@@ -166,7 +166,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (!isInvocation) {
 				// Consider nested types only if it's not an invocation. The type parameter count must match in this case.
 				Predicate<ITypeDefinition> typeFilter = delegate (ITypeDefinition d) {
-					return d.TypeParameterCount == typeArgumentCount && d.Name == name && IsAccessible(d, true);
+					// inner types contain the type parameters of outer types. therefore this count has to been adjusted.
+					int correctedCount = d.TypeParameterCount - type.TypeParameterCount;
+					return correctedCount == typeArgumentCount && d.Name == name && IsAccessible(d, true);
 				};
 				types.AddRange(type.GetNestedTypes(context, typeFilter));
 			}

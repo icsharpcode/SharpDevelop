@@ -461,6 +461,31 @@ namespace A.B {
 			Assert.AreEqual("A.B.C", trr.Type.FullName);
 		}
 		
+		
+		[Test]
+		public void InnerTypeResolve ()
+		{
+			string program = @"public class C<T> { public class Inner { } }
+class TestClass {
+	void Test() {
+		$C<string>.Inner$ a;
+	}
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("C.Inner", trr.Type.FullName);
+			
+			program = @"public class C<T> { public class D<S,U> { public class Inner { } }}
+class TestClass {
+	void Test() {
+		$C<string>.D<int,TestClass>.Inner$ a;
+	}
+}
+";
+			trr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("C.D.Inner", trr.Type.FullName);
+		}
+		
 		[Test, Ignore("parser is broken and produces IdentifierExpression instead of PrimitiveType")]
 		public void ShortMaxValueTest()
 		{
