@@ -143,6 +143,7 @@
     <Compile Include="Src\PackageReferenceFileNameForProject.cs" />
     <Compile Include="Src\PackageReferenceInstaller.cs" />
     <Compile Include="Src\PackageReferencesForProject.cs" />
+    <Compile Include="Src\PackageSourceExtensions.cs" />
     <Compile Include="Src\PackageViewModelOperationLogger.cs" />
     <Compile Include="Src\ParentPackageOperationEventArgs.cs" />
     <Compile Include="Src\ProcessPackageOperationsAction.cs" />

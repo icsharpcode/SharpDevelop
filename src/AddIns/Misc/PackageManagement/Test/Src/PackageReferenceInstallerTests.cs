@@ -38,7 +38,7 @@ namespace PackageManagement.Tests
 		
 		void AddPackageReference(string packageId, string version)
 		{
-			var packageReference = new PackageReference(packageId, new Version(version));
+			var packageReference = new PackageReference(packageId, new Version(version), null);
 			packageReferences.Add(packageReference);
 		}
 		

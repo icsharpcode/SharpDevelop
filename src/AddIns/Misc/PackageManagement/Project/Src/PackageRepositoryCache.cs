@@ -14,8 +14,8 @@ namespace ICSharpCode.PackageManagement
 		RegisteredPackageSources registeredPackageSources;
 		IList<RecentPackageInfo> recentPackages;
 		IRecentPackageRepository recentPackageRepository;
-		ConcurrentDictionary<PackageSource, IPackageRepository> repositories =
-			new ConcurrentDictionary<PackageSource, IPackageRepository>();
+		ConcurrentDictionary<string, IPackageRepository> repositories =
+			new ConcurrentDictionary<string, IPackageRepository>();
 		
 		public PackageRepositoryCache(
 			ISharpDevelopPackageRepositoryFactory factory,
@@ -37,7 +37,7 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public IPackageRepository CreateRepository(PackageSource packageSource)
+		public IPackageRepository CreateRepository(string packageSource)
 		{
 			IPackageRepository repository = GetExistingRepository(packageSource);
 			if (repository != null) {
@@ -46,7 +46,7 @@ namespace ICSharpCode.PackageManagement
 			return CreateNewCachedRepository(packageSource);
 		}
 		
-		IPackageRepository GetExistingRepository(PackageSource packageSource)
+		IPackageRepository GetExistingRepository(string packageSource)
 		{
 			IPackageRepository repository = null;
 			if (repositories.TryGetValue(packageSource, out repository)) {
@@ -55,7 +55,7 @@ namespace ICSharpCode.PackageManagement
 			return null;
 		}
 		
-		IPackageRepository CreateNewCachedRepository(PackageSource packageSource)
+		IPackageRepository CreateNewCachedRepository(string packageSource)
 		{
 			IPackageRepository repository = factory.CreateRepository(packageSource);
 			repositories.TryAdd(packageSource, repository);
@@ -76,7 +76,7 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<IPackageRepository> CreateAllRepositories()
 		{
 			foreach (PackageSource source in registeredPackageSources) {
-				yield return CreateRepository(source);
+				yield return CreateRepository(source.Source);
 			}
 		}
 		

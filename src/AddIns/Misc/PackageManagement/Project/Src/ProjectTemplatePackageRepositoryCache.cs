@@ -42,7 +42,7 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<IPackageRepository> GetRegisteredPackageRepositories()
 		{
 			foreach (PackageSource packageSource in registeredPackageSources.PackageSources) {
-				yield return CreateRepository(packageSource);
+				yield return CreateRepository(packageSource.Source);
 			}
 		}
 		
@@ -61,7 +61,7 @@ namespace ICSharpCode.PackageManagement
 			return packageRepositoryCache.CreateAggregateRepository(repositories);
 		}
 		
-		public IPackageRepository CreateRepository(PackageSource packageSource)
+		public IPackageRepository CreateRepository(string packageSource)
 		{
 			return packageRepositoryCache.CreateRepository(packageSource);
 		}

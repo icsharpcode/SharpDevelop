@@ -38,8 +38,8 @@ namespace PackageManagement.Tests
 		public void RecentPackageRepository_PropertyAccessed_ReturnsRecentPackageRepositoryFromCache()
 		{
 			CreateRegisteredPackageRepositories();
-			var recentRepository = registeredRepositories.RecentPackageRepository;
-			var expectedRepository = fakeRepositoryCache.FakeRecentPackageRepository;
+			IRecentPackageRepository recentRepository = registeredRepositories.RecentPackageRepository;
+			FakeRecentPackageRepository expectedRepository = fakeRepositoryCache.FakeRecentPackageRepository;
 			
 			Assert.AreEqual(expectedRepository, recentRepository);
 		}
@@ -48,8 +48,8 @@ namespace PackageManagement.Tests
 		public void CreateRepository_PackageSourceSpecified_CreatesRepositoryFromCache()
 		{
 			CreateRegisteredPackageRepositories();
-			var repository = registeredRepositories.CreateRepository(new PackageSource("a"));
-			var expectedRepository = fakeRepositoryCache.FakePackageRepository;
+			IPackageRepository repository = registeredRepositories.CreateRepository(new PackageSource("a"));
+			FakePackageRepository expectedRepository = fakeRepositoryCache.FakePackageRepository;
 			
 			Assert.AreEqual(expectedRepository, repository);
 		}
@@ -59,18 +59,18 @@ namespace PackageManagement.Tests
 		{
 			CreateRegisteredPackageRepositories();
 			var source = new PackageSource("Test");
-			var repository = registeredRepositories.CreateRepository(source);
-			var actualSource = fakeRepositoryCache.FirstPackageSourcePassedToCreateRepository;
+			IPackageRepository repository = registeredRepositories.CreateRepository(source);
+			string actualSource = fakeRepositoryCache.FirstPackageSourcePassedToCreateRepository;
 			
-			Assert.AreEqual(source, actualSource);
+			Assert.AreEqual("Test", actualSource);
 		}
 		
 		[Test]
 		public void CreateAggregateRepository_MethodCalled_ReturnsAggregateRepositoryCreatedFromCache()
 		{
 			CreateRegisteredPackageRepositories();
-			var repository = registeredRepositories.CreateAggregateRepository();
-			var expectedRepository = fakeRepositoryCache.FakeAggregateRepository;
+			IPackageRepository repository = registeredRepositories.CreateAggregateRepository();
+			FakePackageRepository expectedRepository = fakeRepositoryCache.FakeAggregateRepository;
 			
 			Assert.AreEqual(expectedRepository, repository);
 		}
@@ -101,8 +101,8 @@ namespace PackageManagement.Tests
 			CreateRegisteredPackageRepositories();
 			packageSourcesHelper.AddTwoPackageSources();
 			
-			var expectedPackageSource = packageSourcesHelper.RegisteredPackageSources[0];
-			var packageSource = registeredRepositories.ActivePackageSource;
+			PackageSource expectedPackageSource = packageSourcesHelper.RegisteredPackageSources[0];
+			PackageSource packageSource = registeredRepositories.ActivePackageSource;
 			
 			Assert.AreEqual(expectedPackageSource, packageSource);
 		}
@@ -113,9 +113,9 @@ namespace PackageManagement.Tests
 			CreateRegisteredPackageRepositories();
 			packageSourcesHelper.AddTwoPackageSources();
 			
-			var expectedPackageSource = packageSourcesHelper.RegisteredPackageSources[1];
+			PackageSource expectedPackageSource = packageSourcesHelper.RegisteredPackageSources[1];
 			registeredRepositories.ActivePackageSource = expectedPackageSource;
-			var packageSource = registeredRepositories.ActivePackageSource;
+			PackageSource packageSource = registeredRepositories.ActivePackageSource;
 			
 			Assert.AreEqual(expectedPackageSource, packageSource);
 		}
@@ -130,7 +130,7 @@ namespace PackageManagement.Tests
 			
 			registeredRepositories.ActivePackageSource = packageSource;
 			
-			var actualPackageSource = packageSourcesHelper.Options.ActivePackageSource;
+			PackageSource actualPackageSource = packageSourcesHelper.Options.ActivePackageSource;
 			
 			Assert.AreEqual(packageSource, actualPackageSource);
 		}
@@ -144,7 +144,7 @@ namespace PackageManagement.Tests
 			packageSourcesHelper.Options.ActivePackageSource = packageSource;
 			CreateRegisteredPackageRepositoriesWithExistingPackageSourcesHelper();
 			
-			var actualPackageSource = registeredRepositories.ActivePackageSource;
+			PackageSource actualPackageSource = registeredRepositories.ActivePackageSource;
 			
 			Assert.AreEqual(packageSource, actualPackageSource);
 		}
@@ -155,10 +155,10 @@ namespace PackageManagement.Tests
 			CreateRegisteredPackageRepositories();
 			IPackageRepository activeRepository = registeredRepositories.ActiveRepository;
 			
-			var actualPackageSource = fakeRepositoryCache.FirstPackageSourcePassedToCreateRepository;
-			var expectedPackageSource = packageSourcesHelper.PackageSource;
+			string actualPackageSource = fakeRepositoryCache.FirstPackageSourcePassedToCreateRepository;
+			PackageSource expectedPackageSource = packageSourcesHelper.PackageSource;
 			
-			Assert.AreEqual(expectedPackageSource, actualPackageSource);
+			Assert.AreEqual(expectedPackageSource.Source, actualPackageSource);
 		}
 		
 		[Test]
@@ -190,13 +190,13 @@ namespace PackageManagement.Tests
 			CreateRegisteredPackageRepositories();
 			packageSourcesHelper.AddTwoPackageSources();
 			
-			var expectedPackageSource = packageSourcesHelper.Options.PackageSources[1];
+			PackageSource expectedPackageSource = packageSourcesHelper.Options.PackageSources[1];
 			registeredRepositories.ActivePackageSource = expectedPackageSource;
 			
 			IPackageRepository repository = registeredRepositories.ActiveRepository;
-			var packageSource = fakeRepositoryCache.FirstPackageSourcePassedToCreateRepository;
+			string packageSource = fakeRepositoryCache.FirstPackageSourcePassedToCreateRepository;
 			
-			Assert.AreEqual(expectedPackageSource, packageSource);
+			Assert.AreEqual(expectedPackageSource.Source, packageSource);
 		}
 		
 		[Test]
@@ -208,13 +208,13 @@ namespace PackageManagement.Tests
 			IPackageRepository initialRepository = registeredRepositories.ActiveRepository;
 			fakeRepositoryCache.PackageSourcesPassedToCreateRepository.Clear();
 			
-			var expectedPackageSource = packageSourcesHelper.Options.PackageSources[1];
+			PackageSource expectedPackageSource = packageSourcesHelper.Options.PackageSources[1];
 			registeredRepositories.ActivePackageSource = expectedPackageSource;
 			
 			IPackageRepository repository = registeredRepositories.ActiveRepository;
-			var packageSource = fakeRepositoryCache.FirstPackageSourcePassedToCreateRepository;
+			string packageSource = fakeRepositoryCache.FirstPackageSourcePassedToCreateRepository;
 			
-			Assert.AreEqual(expectedPackageSource, packageSource);
+			Assert.AreEqual(expectedPackageSource.Source, packageSource);
 		}
 		
 		[Test]
@@ -226,7 +226,7 @@ namespace PackageManagement.Tests
 			IPackageRepository initialRepository = registeredRepositories.ActiveRepository;
 			fakeRepositoryCache.PackageSourcesPassedToCreateRepository.Clear();
 			
-			var expectedPackageSource = packageSourcesHelper.Options.PackageSources[0];
+			PackageSource expectedPackageSource = packageSourcesHelper.Options.PackageSources[0];
 			registeredRepositories.ActivePackageSource = expectedPackageSource;
 			
 			IPackageRepository repository = registeredRepositories.ActiveRepository;
@@ -242,8 +242,8 @@ namespace PackageManagement.Tests
 			CreateRegisteredPackageRepositories();
 			packageSourcesHelper.AddOnePackageSource();
 			
-			var packageSources = registeredRepositories.PackageSources;
-			var expectedPackageSources = packageSourcesHelper.Options.PackageSources;
+			RegisteredPackageSources packageSources = registeredRepositories.PackageSources;
+			RegisteredPackageSources expectedPackageSources = packageSourcesHelper.Options.PackageSources;
 			
 			Assert.AreEqual(expectedPackageSources, packageSources);
 		}
@@ -256,8 +256,8 @@ namespace PackageManagement.Tests
 			
 			registeredRepositories.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
 						
-			var repository = registeredRepositories.ActiveRepository;
-			var expectedRepository = fakeRepositoryCache.FakeAggregateRepository;
+			IPackageRepository	repository = registeredRepositories.ActiveRepository;
+			FakePackageRepository expectedRepository = fakeRepositoryCache.FakeAggregateRepository;
 			
 			Assert.AreEqual(expectedRepository, repository);
 		}
@@ -269,7 +269,7 @@ namespace PackageManagement.Tests
 			packageSourcesHelper.Options.ActivePackageSource = null;
 			registeredRepositories.PackageSources.Clear();
 			
-			var activePackageSource = registeredRepositories.ActivePackageSource;
+			PackageSource activePackageSource = registeredRepositories.ActivePackageSource;
 			
 			Assert.IsNull(activePackageSource);
 		}
