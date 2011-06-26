@@ -191,7 +191,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreSame(SharedTypes.UnknownType, result.Type);
 		}
 		
-		[Test, Ignore("not yet implemented")]
+		[Test]
 		public void PropertyNameAmbiguousWithTypeName()
 		{
 			string program = @"class A {

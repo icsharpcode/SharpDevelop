@@ -215,7 +215,41 @@ namespace ICSharpCode.NRefactory.FormattingTests
 	
 	public abstract class TestBase
 	{
-		static IActionFactory factory = null;
+		static IActionFactory factory = new TestFactory ();
+		
+		class TestTextReplaceAction : TextReplaceAction
+		{
+			public TestTextReplaceAction (int offset, int removedChars, string insertedText) : base (offset, removedChars, insertedText)
+			{
+			}
+			
+			public override void Perform (Script script)
+			{
+			}
+		}
+		
+		class TestFactory : AbstractActionFactory
+		{
+			public override TextReplaceAction CreateTextReplaceAction (int offset, int removedChars, string insertedText)
+			{
+				return new TestTextReplaceAction (offset, removedChars, insertedText);
+			}
+		}
+		
+		static void ApplyChanges (TextEditorTestAdapter adapter, List<TextReplaceAction> changes)
+		{
+			changes.Sort ((x, y) => y.Offset.CompareTo (x.Offset));
+			foreach (var change in changes) {
+//				Console.WriteLine ("---- apply:" + change);
+//				Console.WriteLine (adapter.Text);
+				if (change.Offset > adapter.Length)
+					continue;
+				adapter.Replace (change.Offset, change.RemovedChars, change.InsertedText);
+			}
+//			Console.WriteLine ("---result:");
+//			Console.WriteLine (adapter.Text);
+		}
+		
 		protected static ITextEditorAdapter GetResult (CSharpFormattingOptions policy, string input)
 		{
 			var adapter = new TextEditorTestAdapter (input);
@@ -223,7 +257,8 @@ namespace ICSharpCode.NRefactory.FormattingTests
 			
 			var compilationUnit = new CSharpParser ().Parse (new StringReader (adapter.Text));
 			compilationUnit.AcceptVisitor (visitior, null);
-//			adapter.ApplyChanges (visitior.Changes);
+			
+			ApplyChanges (adapter, visitior.Changes);
 
 			return adapter;
 		}
@@ -235,7 +270,10 @@ namespace ICSharpCode.NRefactory.FormattingTests
 			
 			var compilationUnit = new CSharpParser ().Parse (new StringReader (adapter.Text));
 			compilationUnit.AcceptVisitor (visitior, null);
-//			adapter.ApplyChanges (visitior.Changes);
+			ApplyChanges (adapter, visitior.Changes);
+			if (expectedOutput != adapter.Text) {
+				Console.WriteLine (adapter.Text);
+			}
 			Assert.AreEqual (expectedOutput, adapter.Text);
 			return adapter;
 		}
@@ -246,7 +284,10 @@ namespace ICSharpCode.NRefactory.FormattingTests
 			
 			var compilationUnit = new CSharpParser ().Parse (new StringReader (adapter.Text));
 			compilationUnit.AcceptVisitor (visitior, null);
-//			((TextEditorTestAdapter)adapter).ApplyChanges (visitior.Changes);
+			ApplyChanges (((TextEditorTestAdapter)adapter), visitior.Changes);
+			if (expectedOutput != adapter.Text) {
+				Console.WriteLine (adapter.Text);
+			}
 			Assert.AreEqual (expectedOutput, adapter.Text);
 		}
 
