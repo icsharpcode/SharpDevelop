@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return readOnlyAssemblyAttributes;  }
 		}
 		
-		void AddRemoveAssemblyAttributes(ICollection<IAttribute> addedAttributes, ICollection<IAttribute> removedAttributes)
+		void AddRemoveAssemblyAttributes(ICollection<IAttribute> removedAttributes, ICollection<IAttribute> addedAttributes)
 		{
 			// API uses ICollection instead of IEnumerable to discourage users from evaluating
 			// the list inside the lock (this method is called inside the write lock)

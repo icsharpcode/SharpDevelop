@@ -25,9 +25,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec, §7.4 member lookup
 			if (member is IEvent || member is IMethod)
 				return true;
-			if (member.ReturnType == SharedTypes.Dynamic)
+			IType returnType = member.ReturnType.Resolve(context);
+			if (returnType == SharedTypes.Dynamic)
 				return true;
-			return member.ReturnType.Resolve(context).IsDelegate();
+			return returnType.IsDelegate();
 		}
 		#endregion
 		
