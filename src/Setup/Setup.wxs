@@ -298,9 +298,21 @@
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>
+				<ComponentRef Id="EmptyCSharpMvcWebProjectTemplate"/>
 				<ComponentRef Id="CSharpMvcWebProjectTemplate"/>
 				<ComponentRef Id="VBFileTemplates"/>
+				<ComponentRef Id="EmptyVBMvcWebProjectTemplate"/>
 				<ComponentRef Id="VBMvcWebProjectTemplate"/>
+				<ComponentRef Id="CSharpMvcControllerFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewContentPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewMasterPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewUserControlFileTemplate"/>
+				<ComponentRef Id="VBMvcControllerFileTemplate"/>
+				<ComponentRef Id="VBMvcViewPageFileTemplate"/>
+				<ComponentRef Id="VBMvcViewContentPageFileTemplate"/>
+				<ComponentRef Id="VBMvcViewMasterPageFileTemplate"/>
+				<ComponentRef Id="VBMvcViewUserControlFileTemplate"/>
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>
@@ -524,6 +536,12 @@
 				<ComponentRef Id="PackageManagementPowerShellDll"/>
 				<ComponentRef Id="JQuery161NuGetPackage"/>
 				<ComponentRef Id="Modernizr17NuGetPackage"/>
+			
+				<ComponentRef Id="MonoTextTemplatingDll"/>
+				<ComponentRef Id="TextTemplatingAddin"/>
+				<ComponentRef Id="TextTemplatingDll"/>
+				<ComponentRef Id="CSharpTextTemplateFileTemplate"/>
+				<ComponentRef Id="VBTextTemplateFileTemplate"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
