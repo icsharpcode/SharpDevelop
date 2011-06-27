@@ -148,12 +148,6 @@
     <Compile Include="IsActiveBreakpointCondition.cs" />
     <Compile Include="IsBreakpointCondition.cs" />
     <Compile Include="Options\DebuggingOptions.cs" />
-    <Compile Include="Options\DebuggingOptionsPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Options\DebuggingOptionsPanel.Designer.cs">
-      <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="Options\DebuggingSymbolsPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -294,9 +288,6 @@
     <Compile Include="Service\RemotingConfigurationHelpper.cs" />
     <Compile Include="Service\RunToCursorCommand.cs" />
     <Compile Include="Service\WindowsDebugger.cs" />
-    <EmbeddedResource Include="Options\DebuggingOptionsPanel.resx">
-      <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Options\DebuggingSymbolsPanel.resx">
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </EmbeddedResource>

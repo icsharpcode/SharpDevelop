@@ -2481,6 +2481,12 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
     <value>Debugging</value>
     <comment>The root node in the options dialog</comment>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Exceptions</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Pause on handled Exceptions</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Stepping</value>
   </data>
@@ -5807,8 +5813,11 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Language</value>
   </data>
-  <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
-    <value>Show external methods</value>
+  <data name="MainWindow.Windows.Debug.CallStack.LineString" xml:space="preserve">
+    <value>Line</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
+    <value>Module</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
     <value>Show argument names</value>
@@ -5816,17 +5825,14 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentValues" xml:space="preserve">
     <value>Show argument values</value>
   </data>
-  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
-    <value>Show module names</value>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
+    <value>Show external methods</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowLineNumber" xml:space="preserve">
     <value>Show line number</value>
   </data>
-  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
-    <value>Module</value>
-  </data>
-  <data name="MainWindow.Windows.Debug.CallStack.LineString" xml:space="preserve">
-    <value>Line</value>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>Show module names</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
     <value>Ask</value>
@@ -6371,7 +6377,7 @@ Removed the end part of the original message ", reason '${Message}'" since this 
     <value>Copy file path/name</value>
   </data>
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
-    <value>Open Containing Folder In Explorer</value>
+    <value>Open containing folder in Explorer</value>
     <comment>String for the editor tab context menu that will open the directory in which a documents file is contained in Windows Explorer.</comment>
   </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">

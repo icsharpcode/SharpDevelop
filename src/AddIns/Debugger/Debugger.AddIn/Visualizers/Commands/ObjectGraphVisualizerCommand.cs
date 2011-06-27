@@ -46,7 +46,6 @@ namespace Debugger.AddIn.Visualizers
 		{
 			if (this.Expression == null)
 				return;
-			System.Windows.MessageBox.Show("StepOverSingle " + DebuggingOptions.Instance.StepOverSingleLineProperties);
 			var objectGraphWindow = ObjectGraphWindow.EnsureShown();
 			objectGraphWindow.ShownExpression = this.Expression;
 		}

@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Options
 {
@@ -24,6 +25,23 @@ namespace Debugger.AddIn.Options
 		public DebuggingOptionsPanel()
 		{
 			InitializeComponent();
+		}
+		
+		void ChbStepOverAllProperties_CheckedChanged(object sender, RoutedEventArgs e)
+		{
+			bool stepOverAllProperties = chbStepOverAllProperties.IsChecked.GetValueOrDefault(false);
+			chbStepOverSingleLineProperties.IsEnabled = !stepOverAllProperties;
+			chbStepOverFieldAccessProperties.IsEnabled = !stepOverAllProperties;
+		}
+		
+		public override bool SaveOptions()
+		{
+			bool result = base.SaveOptions();
+			Process proc = WindowsDebugger.CurrentProcess;
+			if (proc != null) {
+				proc.Debugger.ResetJustMyCodeStatus();
+			}
+			return result;
 		}
 	}
 }

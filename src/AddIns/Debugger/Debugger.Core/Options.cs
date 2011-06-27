@@ -7,15 +7,29 @@ namespace Debugger
 	[Serializable]
 	public class Options
 	{
-		public bool EnableJustMyCode = true;
-		public bool StepOverNoSymbols = true;
-		public bool StepOverDebuggerAttributes = true;
-		public bool StepOverAllProperties = false;
-		public bool StepOverSingleLineProperties = false;
-		public bool StepOverFieldAccessProperties = true;
-		public bool Verbose = false;
-		public string[] SymbolsSearchPaths = new string[0];
-		public bool SuspendOtherThreads = true;
-		public bool PauseOnHandledException = false;
+		public Options()
+		{
+			EnableJustMyCode = true;
+			StepOverNoSymbols = true;
+			StepOverDebuggerAttributes = true;
+			StepOverAllProperties = false;
+			StepOverSingleLineProperties = false;
+			StepOverFieldAccessProperties = true;
+			Verbose = false;
+			SymbolsSearchPaths = new string[0];
+			SuspendOtherThreads = true;
+			PauseOnHandledExceptions = false;
+		}
+		
+		public bool EnableJustMyCode { get; set; }
+		public bool StepOverNoSymbols { get; set; }
+		public bool StepOverDebuggerAttributes { get; set; }
+		public bool StepOverAllProperties { get; set; }
+		public bool StepOverSingleLineProperties { get; set; }
+		public bool StepOverFieldAccessProperties { get; set; }
+		public bool Verbose { get; set; }
+		public string[] SymbolsSearchPaths { get; set; }
+		public bool SuspendOtherThreads { get; set; }
+		public bool PauseOnHandledExceptions { get; set; }
 	}
 }

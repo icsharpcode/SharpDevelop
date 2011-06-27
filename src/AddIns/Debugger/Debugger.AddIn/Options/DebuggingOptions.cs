@@ -21,18 +21,25 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		public bool ICorDebugVisualizerEnabled;
-		public ShowIntegersAs ShowIntegersAs = ShowIntegersAs.Auto;
-		public bool ShowArgumentNames;
-		public bool ShowArgumentValues;
-		public bool ShowExternalMethods;
-		public bool ShowLineNumbers;
-		public bool ShowModuleNames;
+		protected DebuggingOptions()
+		{
+			ShowIntegersAs = ShowIntegersAs.Auto;
+			DebuggerEventWindowState = FormWindowState.Normal;
+			DebuggeeExceptionWindowState = FormWindowState.Normal;
+		}
+		
+		public bool ICorDebugVisualizerEnabled { get; set; }
+		public ShowIntegersAs ShowIntegersAs { get; set; }
+		public bool ShowArgumentNames { get; set; }
+		public bool ShowArgumentValues { get; set; }
+		public bool ShowExternalMethods { get; set; }
+		public bool ShowLineNumbers { get; set; }
+		public bool ShowModuleNames { get; set; }
 		
 		// Properties for the DebuggerExceptionForm
-		public FormWindowState DebuggerEventWindowState = FormWindowState.Normal;
+		public FormWindowState DebuggerEventWindowState { get; set; }
 		
 		// Properties for the DebuggeeExceptionForm
-		public FormWindowState DebuggeeExceptionWindowState = FormWindowState.Normal;
+		public FormWindowState DebuggeeExceptionWindowState { get; set; }
 	}
 }
