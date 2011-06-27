@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+﻿﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
@@ -550,36 +550,44 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			throw new NotImplementedException();
 		}
 		
-		static string GetAnonymousTypePropertyName (Expression expr)
+		static string GetAnonymousTypePropertyName(Expression expr, out Expression resolveExpr)
 		{
-			if (expr is NamedArgumentExpression) 
-				return ((NamedArgumentExpression)expr).Identifier;
-			
+			if (expr is NamedArgumentExpression) {
+				var namedArgExpr = (NamedArgumentExpression)expr;
+				resolveExpr = namedArgExpr.Expression;
+				return namedArgExpr.Identifier;
+			}
 			// no name given, so it's a projection initializer
-			if (expr is MemberReferenceExpression) 
+			if (expr is MemberReferenceExpression) {
+				resolveExpr = expr;
 				return ((MemberReferenceExpression)expr).MemberName;
-			if (expr is IdentifierExpression) 
+			}
+			if (expr is IdentifierExpression) { 
+				resolveExpr = expr;
 				return ((IdentifierExpression)expr).Identifier;
+			}
+			resolveExpr = null;
 			return null;
 		}
 		
 		public override ResolveResult VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, object data)
 		{
 			// 7.6.10.6 Anonymous object creation expressions
-			var anonymousType = new DefaultTypeDefinition (resolver.CurrentTypeDefinition, "$Anonymous$");
-			// This is & the name is the only flag of anonymous types - maybe making an own anonymous type definition?
+			var anonymousType = new DefaultTypeDefinition(resolver.CurrentTypeDefinition, "$Anonymous$");
 			anonymousType.IsSynthetic = true;
 			foreach (var expr in anonymousTypeCreateExpression.Initializer) {
-				var name = GetAnonymousTypePropertyName (expr);
-				if (string.IsNullOrEmpty (name))
+				Expression resolveExpr;
+				var name = GetAnonymousTypePropertyName(expr, out resolveExpr);
+				if (string.IsNullOrEmpty(name))
 					continue;
-				var property = new DefaultProperty (anonymousType, name) {
+				
+				var property = new DefaultProperty(anonymousType, name) {
 					Accessibility = Accessibility.Public,
-					ReturnType = Resolve (expr).Type
+					ReturnType = new VarTypeReference(this, resolver.Clone(), resolveExpr, false)
 				};
-				anonymousType.Properties.Add (property);
+				anonymousType.Properties.Add(property);
 			}
-			return new TypeResolveResult (anonymousType);
+			return new TypeResolveResult(anonymousType);
 		}
 		
 		public override ResolveResult VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
@@ -990,7 +998,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ITypeReference type = MakeTypeReference(variableDeclarationStatement.Type,
 			                                        firstInitializer != null ? firstInitializer.Initializer : null,
 			                                        false);
-			
+
 			int initializerCount = variableDeclarationStatement.Variables.Count;
 			ResolveResult result = null;
 			for (AstNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
