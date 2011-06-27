@@ -550,9 +550,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			throw new NotImplementedException();
 		}
 		
+		static string GetAnonymousTypePropertyName (Expression expr)
+		{
+			if (expr is NamedArgumentExpression) 
+				return ((NamedArgumentExpression)expr).Identifier;
+			
+			// no name given, so it's a projection initializer
+			if (expr is MemberReferenceExpression) 
+				return ((MemberReferenceExpression)expr).MemberName;
+			if (expr is IdentifierExpression) 
+				return ((IdentifierExpression)expr).Identifier;
+			return null;
+		}
+		
 		public override ResolveResult VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, object data)
 		{
-			throw new NotImplementedException();
+			// 7.6.10.6 Anonymous object creation expressions
+			var anonymousType = new DefaultTypeDefinition (resolver.CurrentTypeDefinition, "$Anonymous$");
+			// This is & the name is the only flag of anonymous types - maybe making an own anonymous type definition?
+			anonymousType.IsSynthetic = true;
+			foreach (var expr in anonymousTypeCreateExpression.Initializer) {
+				var name = GetAnonymousTypePropertyName (expr);
+				if (string.IsNullOrEmpty (name))
+					continue;
+				var property = new DefaultProperty (anonymousType, name) {
+					Accessibility = Accessibility.Public,
+					ReturnType = Resolve (expr).Type
+				};
+				anonymousType.Properties.Add (property);
+			}
+			return new TypeResolveResult (anonymousType);
 		}
 		
 		public override ResolveResult VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
