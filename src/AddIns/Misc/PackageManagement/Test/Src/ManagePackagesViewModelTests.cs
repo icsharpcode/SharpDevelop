@@ -13,9 +13,9 @@ using PackageManagement.Tests.Helpers;
 namespace PackageManagement.Tests
 {
 	[TestFixture]
-	public class AddPackageReferenceViewModelTests
+	public class ManagePackagesViewModelTests
 	{
-		AddPackageReferenceViewModel viewModel;
+		ManagePackagesViewModel viewModel;
 		PackageManagementEvents packageManagementEvents;
 		FakeLicenseAcceptanceService fakeLicenseAcceptanceSevice;
 		FakePackageManagementSolution fakeSolution;
@@ -49,7 +49,7 @@ namespace PackageManagement.Tests
 			taskFactory = new FakeTaskFactory();
 			fakeLicenseAcceptanceSevice = new FakeLicenseAcceptanceService();
 			fakeActionRunner = new FakePackageActionRunner();
-			viewModel = new AddPackageReferenceViewModel(
+			viewModel = new ManagePackagesViewModel(
 				solution,
 				fakeRegisteredPackageRepositories,
 				packageManagementEvents,
@@ -265,7 +265,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Dispose_ContainedViewModelsAreDisposed_InstaledPackagesViewModelIsDisposed()
+		public void Dispose_ContainedViewModelsAreDisposed_InstalledPackagesViewModelIsDisposed()
 		{
 			CreateViewModel();
 			viewModel.Dispose();

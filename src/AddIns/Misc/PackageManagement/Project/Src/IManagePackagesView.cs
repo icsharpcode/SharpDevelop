@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IAddPackageReferenceView : IDisposable
+	public interface IManagePackagesView : IDisposable
 	{
 		bool? ShowDialog();
 	}

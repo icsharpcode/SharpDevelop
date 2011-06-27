@@ -10,7 +10,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementViewModels
 	{
-		AddPackageReferenceViewModel addPackageReferenceViewModel;
+		ManagePackagesViewModel managePackagesViewModel;
 		RegisteredPackageSourcesViewModel registeredPackageSourcesViewModel;
 		RegisteredPackageSourcesViewModel registeredProjectTemplatePackageSourcesViewModel;
 		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
@@ -18,20 +18,20 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		
-		public AddPackageReferenceViewModel AddPackageReferenceViewModel {
+		public ManagePackagesViewModel ManagePackagesViewModel {
 			get {
-				CreateAddPackageReferenceViewModel();
-				return addPackageReferenceViewModel;
+				CreateManagePackagesViewModel();
+				return managePackagesViewModel;
 			}
 		}
 		
-		void CreateAddPackageReferenceViewModel()
+		void CreateManagePackagesViewModel()
 		{
 			CreateRegisteredPackageRepositories();
 			CreateSolution();
 			var packageManagementEvents = new ThreadSafePackageManagementEvents(PackageManagementServices.PackageManagementEvents);
-			addPackageReferenceViewModel = 
-				new AddPackageReferenceViewModel(
+			managePackagesViewModel = 
+				new ManagePackagesViewModel(
 					solution,
 					registeredPackageRepositories,
 					packageManagementEvents,

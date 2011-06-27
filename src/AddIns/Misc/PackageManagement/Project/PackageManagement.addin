@@ -19,11 +19,11 @@
 	<Path path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem
-				id="AddPackageReference"
-				label="Add Package Reference"
-				insertafter="AddReference"
-				insertbefore="AddWebReference"
-				class = "ICSharpCode.PackageManagement.AddPackageReferenceCommand"/>		
+				id="ManagePackages"
+				label="Manage Packages"
+				insertafter="AddWebReference"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>		
 		</Condition>
 	</Path>
 	
@@ -31,11 +31,11 @@
 	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceFolderNode">
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem
-				id="AddPackageReference"
-				label="Add Package Reference"
-				insertafter="AddReference"
-				insertbefore="AddWebReference"
-				class="ICSharpCode.PackageManagement.AddPackageReferenceCommand"/>
+				id="ManagePackages"
+				label="Manage Packages"
+				insertafter="AddWebReference"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
 		</Condition>
 	</Path>
 	
@@ -43,11 +43,11 @@
 	<Path name="/SharpDevelop/Workbench/MainMenu/Project">
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem
-				id="AddPackageReference"
-				label="Add Package Reference"
-				insertafter="AddReference"
-				insertbefore="AddWebReference"
-				class="ICSharpCode.PackageManagement.AddPackageReferenceCommand"/>				
+				id="ManagePackages"
+				label="Manage Packages"
+				insertafter="AddWebReference"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>				
 		</Condition>
 	</Path>
 

@@ -70,7 +70,7 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AcceptLicensesEventArgs.cs" />
-    <Compile Include="Src\AddPackageReferenceCommand.cs" />
+    <Compile Include="Src\ManagePackagesCommand.cs" />
     <Compile Include="Src\AggregateExceptionErrorMessage.cs" />
     <Compile Include="Src\ConsolePackageActionRunner.cs" />
     <Compile Include="Src\DefaultProjectTemplatePackageSource.cs" />
@@ -107,7 +107,7 @@
     <Compile Include="Src\EnvDTE\TextEditorFontSizeProperty.cs" />
     <Compile Include="Src\EnvDTE\TextEditorOptions.cs" />
     <Compile Include="Src\FileExistsException.cs" />
-    <Compile Include="Src\IAddPackageReferenceView.cs" />
+    <Compile Include="Src\IManagePackagesView.cs" />
     <Compile Include="Src\InstallProjectTemplatePackagesCommand.cs" />
     <Compile Include="Src\IPackageActionRunner.cs" />
     <Compile Include="Src\IPackageFromRepository.cs" />
@@ -151,11 +151,11 @@
     <Compile Include="Src\ProjectTemplatePackageRepositoryCache.cs" />
     <Compile Include="Src\ProjectTemplatePackagesSettingsFileName.cs" />
     <Compile Include="Src\RegisteredPackageRepositories.cs" />
-    <Compile Include="Src\AddPackageReferenceView.xaml.cs">
-      <DependentUpon>AddPackageReferenceView.xaml</DependentUpon>
+    <Compile Include="Src\ManagePackagesView.cs">
+      <DependentUpon>ManagePackagesView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\AddPackageReferenceViewModel.cs" />
+    <Compile Include="Src\ManagePackagesViewModel.cs" />
     <Compile Include="Src\AvailablePackagesViewModel.cs" />
     <Compile Include="Src\BooleanToFontWeightConverter.cs" />
     <Compile Include="Src\DelegateCommand.cs" />
@@ -339,7 +339,7 @@
     <Compile Include="Src\VisualStudio\SVsExtensionManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\AddPackageReferenceView.xaml" />
+    <Page Include="Src\ManagePackagesView.xaml" />
     <Page Include="Src\LicenseAcceptanceView.xaml" />
     <Page Include="Src\PackageManagementOptionsView.xaml" />
     <Page Include="Src\RegisteredPackageSourcesUserControl.xaml" />

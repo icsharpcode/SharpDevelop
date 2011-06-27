@@ -10,7 +10,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class AddPackageReferenceViewModel : ViewModelBase<AddPackageReferenceViewModel>, IDisposable
+	public class ManagePackagesViewModel : ViewModelBase<ManagePackagesViewModel>, IDisposable
 	{
 		IPackageManagementSolution solution;
 		IThreadSafePackageManagementEvents packageManagementEvents;
@@ -18,7 +18,7 @@ namespace ICSharpCode.PackageManagement
 		string message;
 		bool hasError;
 		
-		public AddPackageReferenceViewModel(
+		public ManagePackagesViewModel(
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IThreadSafePackageManagementEvents packageManagementEvents,
