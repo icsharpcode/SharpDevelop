@@ -19,6 +19,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public Identifier IdentifierToken {
+			get {
+				return GetChildByRole (Roles.Identifier);
+			}
+			set {
+				SetChildByRole(Roles.Identifier, value);
+			}
+		}
+		
 		public CSharpTokenNode AssignToken {
 			get { return GetChildByRole (Roles.Assign); }
 		}
