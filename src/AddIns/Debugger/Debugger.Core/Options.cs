@@ -1,8 +1,10 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+﻿using System;
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 namespace Debugger
 {
+	[Serializable]
 	public class Options
 	{
 		public bool EnableJustMyCode = true;
@@ -14,5 +16,6 @@ namespace Debugger
 		public bool Verbose = false;
 		public string[] SymbolsSearchPaths = new string[0];
 		public bool SuspendOtherThreads = true;
+		public bool PauseOnHandledException = false;
 	}
 }

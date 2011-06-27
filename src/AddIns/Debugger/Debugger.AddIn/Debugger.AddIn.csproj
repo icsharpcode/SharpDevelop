@@ -98,6 +98,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Options\DebuggingOptionsPanel.xaml.cs">
+      <DependentUpon>DebuggingOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Pads\CallStackPad.xaml.cs">
       <DependentUpon>CallStackPad.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -392,6 +396,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Options\DebuggingOptionsPanel.xaml" />
     <Page Include="Pads\CallStackPad.xaml" />
     <Page Include="Pads\Controls\ConditionCell.xaml" />
     <Page Include="Pads\Controls\SimpleListViewControl.xaml" />

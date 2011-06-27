@@ -10,6 +10,7 @@ using Debugger.AddIn.Visualizers.Graph;
 using Debugger.MetaData;
 using ICSharpCode.SharpDevelop.Debugging;
 using Debugger.AddIn.Visualizers.Utils;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers
 {
@@ -45,6 +46,7 @@ namespace Debugger.AddIn.Visualizers
 		{
 			if (this.Expression == null)
 				return;
+			System.Windows.MessageBox.Show("StepOverSingle " + DebuggingOptions.Instance.StepOverSingleLineProperties);
 			var objectGraphWindow = ObjectGraphWindow.EnsureShown();
 			objectGraphWindow.ShownExpression = this.Expression;
 		}

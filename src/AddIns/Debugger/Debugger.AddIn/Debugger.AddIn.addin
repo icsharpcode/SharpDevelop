@@ -167,7 +167,7 @@
 		             insertbefore = "TextEditorOptions">
 			<OptionPanel id    = "General"
 			             label = "${res:Dialog.Options.IDEOptions.General}"
-			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebuggingOptionsPanel"/>
+			             class = "Debugger.AddIn.Options.DebuggingOptionsPanel"/>
 			<OptionPanel id    = "Symbols"
 			             label = "${res:Dialog.Options.IDEOptions.Debugging.Symbols}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebuggingSymbolsPanel"/>
