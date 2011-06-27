@@ -149,5 +149,7 @@ namespace ICSharpCode.PackageManagement.Design
 			file.TargetPath = fileName;
 			FilesList.Add(file);
 		}
+		
+		public DateTime? LastUpdated { get; set; }
 	}
 }

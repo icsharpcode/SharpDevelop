@@ -158,6 +158,14 @@ namespace ICSharpCode.PackageManagement
 			get { return package.Description; }
 		}
 		
+		public DateTime? LastUpdated {
+			get { return package.LastUpdated; }
+		}
+		
+		public bool HasLastUpdated {
+			get { return package.LastUpdated.HasValue; }
+		}
+		
 		public void AddPackage()
 		{
 			ClearReportedMessages();
