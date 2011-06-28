@@ -3,8 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using ICSharpCode.PackageManagement.EnvDTE;
+using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -70,7 +74,7 @@ namespace PackageManagement.Tests
 			var expectedPackage = new FakePackage("Test");
 			
 			project.IsInstalled(expectedPackage);
-			var actualPackage = fakeProjectManager.PackagePassedToIsInstalled;
+			IPackage actualPackage = fakeProjectManager.PackagePassedToIsInstalled;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}
@@ -79,7 +83,7 @@ namespace PackageManagement.Tests
 		public void Constructor_RepositoryAndProjectPassed_RepositoryUsedToCreatePackageManager()
 		{
 			CreateProject();
-			var actualrepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
+			IPackageRepository actualrepository = fakePackageManagerFactory.PackageRepositoryPassedToCreatePackageManager;
 			
 			Assert.AreEqual(fakeSourceRepository, actualrepository);
 		}
@@ -88,7 +92,7 @@ namespace PackageManagement.Tests
 		public void Constructor_RepositoryAndProjectPassed_ProjecUsedToCreatePackageManager()
 		{
 			CreateProject();
-			var actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
+			MSBuildBasedProject actualProject = fakePackageManagerFactory.ProjectPassedToCreateRepository;
 			
 			Assert.AreEqual(fakeMSBuildProject, actualProject);
 		}
@@ -97,11 +101,11 @@ namespace PackageManagement.Tests
 		public void GetPackages_ProjectManagerLocalRepositoryHasTwoPackages_ReturnsTwoPackages()
 		{
 			CreateProject();
-			var repository = fakeProjectManager.FakeLocalRepository;
-			var packageA = repository.AddFakePackage("A");
-			var packageB = repository.AddFakePackage("B");
+			FakePackageRepository repository = fakeProjectManager.FakeLocalRepository;
+			FakePackage packageA = repository.AddFakePackage("A");
+			FakePackage packageB = repository.AddFakePackage("B");
 			
-			var actualPackages = project.GetPackages();
+			IQueryable<IPackage> actualPackages = project.GetPackages();
 			
 			var expectedPackages = new FakePackage[] {
 				packageA,
@@ -141,7 +145,7 @@ namespace PackageManagement.Tests
 			
 			project.GetInstallPackageOperations(expectedPackage, true);
 			
-			var actualPackage = fakePackageManager.PackagePassedToGetInstallPackageOperations;
+			IPackage actualPackage = fakePackageManager.PackagePassedToGetInstallPackageOperations;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}
@@ -152,9 +156,9 @@ namespace PackageManagement.Tests
 			CreateProject();
 			var package = new FakePackage();
 			
-			var operations = project.GetInstallPackageOperations(package, true);
+			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, true);
 			
-			var expectedOperations = fakePackageManager.PackageOperationsToReturnFromGetInstallPackageOperations;
+			IEnumerable<PackageOperation> expectedOperations = fakePackageManager.PackageOperationsToReturnFromGetInstallPackageOperations;
 			
 			Assert.AreEqual(expectedOperations, operations);
 		}
@@ -175,8 +179,8 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			
-			var logger = project.Logger;
-			var expectedLogger = fakePackageManager.Logger;
+			ILogger logger = project.Logger;
+			ILogger expectedLogger = fakePackageManager.Logger;
 			
 			Assert.AreEqual(expectedLogger, logger);
 		}
@@ -189,7 +193,7 @@ namespace PackageManagement.Tests
 			
 			project.InstallPackage(package, null, true);
 			
-			var expectedPackage = fakePackageManager.PackagePassedToInstallPackage;
+			IPackage expectedPackage = fakePackageManager.PackagePassedToInstallPackage;
 			
 			Assert.AreEqual(expectedPackage, package);
 		}
@@ -219,7 +223,7 @@ namespace PackageManagement.Tests
 			var expectedOperations = new List<PackageOperation>();
 			project.InstallPackage(null, expectedOperations, false);
 			
-			var actualOperations = fakePackageManager.PackageOperationsPassedToInstallPackage;
+			IEnumerable<PackageOperation> actualOperations = fakePackageManager.PackageOperationsPassedToInstallPackage;
 			
 			Assert.AreEqual(expectedOperations, actualOperations);
 		}
@@ -228,7 +232,7 @@ namespace PackageManagement.Tests
 		public void SourceRepository_NewInstance_ReturnsRepositoryUsedToCreateInstance()
 		{
 			CreateProject();
-			var repository = project.SourceRepository;
+			IPackageRepository repository = project.SourceRepository;
 			
 			Assert.AreEqual(fakeSourceRepository, repository);
 		}
@@ -241,7 +245,7 @@ namespace PackageManagement.Tests
 			
 			project.UninstallPackage(package, true, true);
 			
-			var expectedPackage = fakePackageManager.PackagePassedToUninstallPackage;
+			IPackage expectedPackage = fakePackageManager.PackagePassedToUninstallPackage;
 			
 			Assert.AreEqual(expectedPackage, package);
 		}
@@ -290,7 +294,7 @@ namespace PackageManagement.Tests
 			
 			project.UpdatePackage(package, null, true);
 			
-			var expectedPackage = fakePackageManager.PackagePassedToUpdatePackage;
+			IPackage expectedPackage = fakePackageManager.PackagePassedToUpdatePackage;
 			
 			Assert.AreEqual(expectedPackage, package);
 		}
@@ -320,7 +324,7 @@ namespace PackageManagement.Tests
 			var expectedOperations = new List<PackageOperation>();
 			project.UpdatePackage(null, expectedOperations, false);
 			
-			var actualOperations = fakePackageManager.PackageOperationsPassedToUpdatePackage;
+			IEnumerable<PackageOperation> actualOperations = fakePackageManager.PackageOperationsPassedToUpdatePackage;
 			
 			Assert.AreEqual(expectedOperations, actualOperations);
 		}
@@ -426,9 +430,22 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			fakeMSBuildProject.Name = "Test";
-			var dteProject = project.ConvertToDTEProject();
+			Project dteProject = project.ConvertToDTEProject();
 			
-			Assert.AreEqual("Test", dteProject.Name);
+			string name = dteProject.Name;
+			
+			Assert.AreEqual("Test", name);
+		}
+		
+		[Test]
+		public void Name_MSBuildProjectNameIsSet_ReturnsMSBuildProjectName()
+		{
+			CreateProject();
+			fakeMSBuildProject.Name = "MyProject";
+			
+			string name = project.Name;
+			
+			Assert.AreEqual("MyProject", name);
 		}
 	}
 }

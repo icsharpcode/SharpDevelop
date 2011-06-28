@@ -65,7 +65,7 @@ namespace PackageManagement.Tests
 		FakePackage AddPackageToProjectLocalRepository()
 		{
 			var package = new FakePackage("Test");
-			solution.FakeProject.FakePackages.Add(package);
+			solution.FakeActiveProject.FakePackages.Add(package);
 			return package;
 		}
 		
@@ -93,7 +93,7 @@ namespace PackageManagement.Tests
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			
-			solution.FakeProject.FakePackages.Clear();
+			solution.FakeActiveProject.FakePackages.Clear();
 
 			ClearReadPackagesTasks();
 			packageManagementEvents.OnParentPackageUninstalled(new FakePackage());
@@ -122,7 +122,7 @@ namespace PackageManagement.Tests
 			CreateViewModel(solution);
 			viewModel.ReadPackages();
 			
-			solution.FakeProject = null;
+			solution.FakeActiveProject = null;
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
@@ -152,7 +152,7 @@ namespace PackageManagement.Tests
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			
-			solution.FakeProject.FakePackages.Clear();
+			solution.FakeActiveProject.FakePackages.Clear();
 			
 			ClearReadPackagesTasks();
 			viewModel.Dispose();

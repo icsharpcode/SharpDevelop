@@ -26,7 +26,7 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeSolution = new FakePackageManagementSolution();
 			fakeRegisteredPackageRepositories = cmdlet.FakeRegisteredPackageRepositories;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
-			fakeConsoleHost.FakeProject = fakeSolution.FakeProject;
+			fakeConsoleHost.FakeProject = fakeSolution.FakeActiveProject;
 			fakeCommandRuntime = cmdlet.FakeCommandRuntime;
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			

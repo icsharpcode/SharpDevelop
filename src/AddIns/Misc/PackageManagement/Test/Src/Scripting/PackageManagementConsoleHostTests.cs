@@ -380,7 +380,7 @@ namespace PackageManagement.Tests.Scripting
 			
 			IPackageManagementProject project = host.GetProject(source, "Test");
 			
-			FakePackageManagementProject expectedProject = fakeSolution.FakeProject;
+			FakePackageManagementProject expectedProject = fakeSolution.FakeActiveProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -450,7 +450,7 @@ namespace PackageManagement.Tests.Scripting
 			
 			IPackageManagementProject project = host.GetProject(repository, "Test");
 			
-			var expectedProject = fakeSolution.FakeProject;
+			var expectedProject = fakeSolution.FakeActiveProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}

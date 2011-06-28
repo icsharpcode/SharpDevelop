@@ -23,7 +23,7 @@ namespace PackageManagement.Tests
 		{
 			viewModel = new TestableUpdatedPackageViewModel();
 			fakeSolution = viewModel.FakeSolution;
-			fakeProject = fakeSolution.FakeProject;
+			fakeProject = fakeSolution.FakeActiveProject;
 			updatePackageAction = fakeProject.FakeUpdatePackageAction;
 			fakeActionRunner = viewModel.FakeActionRunner;
 		}

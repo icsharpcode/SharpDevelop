@@ -15,7 +15,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Dispose()
 		{
-			var viewModel = MainPanel.DataContext as ManagePackagesViewModel;
+			var viewModel = DataContext as ManagePackagesViewModel;
 			viewModel.Dispose();
 		}
 	}

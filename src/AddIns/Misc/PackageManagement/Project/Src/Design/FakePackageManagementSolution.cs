@@ -15,7 +15,7 @@ namespace ICSharpCode.PackageManagement.Design
 	{
 		public void AddPackageToActiveProjectLocalRepository(FakePackage package)
 		{
-			FakeProject.FakePackages.Add(package);
+			FakeActiveProject.FakePackages.Add(package);
 		}
 		
 		public FakePackage AddPackageToActiveProjectLocalRepository(string packageId)
@@ -26,13 +26,13 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public int GetActiveProjectCallCount;
-		public FakePackageManagementProject FakeProject = new FakePackageManagementProject();
+		public FakePackageManagementProject FakeActiveProject = new FakePackageManagementProject();
 		
 		public virtual IPackageManagementProject GetActiveProject()
 		{
 			GetActiveProjectCallCount++;
 			
-			return FakeProject;
+			return FakeActiveProject;
 		}
 		
 		public IPackageRepository RepositoryPassedToGetActiveProject;
@@ -40,7 +40,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public virtual IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository)
 		{
 			RepositoryPassedToGetActiveProject = sourceRepository;
-			return FakeProject;
+			return FakeActiveProject;
 		}
 		
 		public PackageSource PackageSourcePassedToGetProject;
@@ -50,7 +50,7 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			PackageSourcePassedToGetProject = source;
 			ProjectNamePassedToGetProject = projectName;
-			return FakeProject;
+			return FakeActiveProject;
 		}
 		
 		public IPackageRepository RepositoryPassedToGetProject;
@@ -59,7 +59,7 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			RepositoryPassedToGetProject = sourceRepository;
 			ProjectNamePassedToGetProject = projectName;
-			return FakeProject;
+			return FakeActiveProject;
 		}
 		
 		public List<IProject> FakeMSBuildProjects = new List<IProject>();

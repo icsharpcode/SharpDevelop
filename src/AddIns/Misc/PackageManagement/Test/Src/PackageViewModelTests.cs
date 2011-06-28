@@ -41,7 +41,7 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			exceptionThrowingProject = new ExceptionThrowingPackageManagementProject();
-			viewModel.FakeSolution.FakeProject = exceptionThrowingProject;
+			viewModel.FakeSolution.FakeActiveProject = exceptionThrowingProject;
 		}
 		
 		void CreateViewModel(FakePackageManagementSolution solution)
@@ -51,8 +51,8 @@ namespace PackageManagement.Tests
 			this.fakeSolution = solution;
 			packageManagementEvents = viewModel.FakePackageManagementEvents;
 			fakeLogger = viewModel.FakeLogger;
-			fakeInstallPackageAction = solution.FakeProject.FakeInstallPackageAction;
-			fakeUninstallPackageAction = solution.FakeProject.FakeUninstallPackageAction;
+			fakeInstallPackageAction = solution.FakeActiveProject.FakeInstallPackageAction;
+			fakeUninstallPackageAction = solution.FakeActiveProject.FakeUninstallPackageAction;
 			fakeActionRunner = viewModel.FakeActionRunner;
 		}
 
@@ -189,7 +189,7 @@ namespace PackageManagement.Tests
 		public void IsAdded_ProjectHasPackageAdded_ReturnsTrue()
 		{
 			CreateViewModel();
-			fakeSolution.FakeProject.IsInstalledReturnValue = true;
+			fakeSolution.FakeActiveProject.IsInstalledReturnValue = true;
 			
 			Assert.IsTrue(viewModel.IsAdded);
 		}
@@ -198,7 +198,7 @@ namespace PackageManagement.Tests
 		public void IsAdded_ProjectDoesNotHavePackageInstalled_ReturnsFalse()
 		{
 			CreateViewModel();
-			fakeSolution.FakeProject.IsInstalledReturnValue = false;
+			fakeSolution.FakeActiveProject.IsInstalledReturnValue = false;
 			
 			Assert.IsFalse(viewModel.IsAdded);
 		}
@@ -407,7 +407,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			ILogger expectedLogger = viewModel.OperationLoggerCreated;
-			ILogger actualLogger = fakeSolution.FakeProject.Logger;
+			ILogger actualLogger = fakeSolution.FakeActiveProject.Logger;
 			Assert.AreEqual(expectedLogger, actualLogger);
 		}
 		
@@ -585,7 +585,7 @@ namespace PackageManagement.Tests
 			
 			var expectedPackage = package;
 			var actualPackage = fakeSolution
-				.FakeProject
+				.FakeActiveProject
 				.PackagePassedToGetInstallPackageOperations;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
@@ -599,7 +599,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			bool result = fakeSolution
-				.FakeProject
+				.FakeActiveProject
 				.IgnoreDependenciesPassedToGetInstallPackageOperations;
 			
 			Assert.IsFalse(result);

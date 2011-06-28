@@ -108,7 +108,7 @@ namespace PackageManagement.Tests
 			viewModel.ReadPackages();
 			
 			registeredPackageRepositories.FakeAggregateRepository = null;
-			solution.FakeProject = null;
+			solution.FakeActiveProject = null;
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
