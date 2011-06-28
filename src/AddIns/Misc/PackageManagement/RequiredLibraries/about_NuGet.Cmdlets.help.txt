@@ -27,8 +27,13 @@ LONG DESCRIPTION
 		Add-BindingRedirect		Examines all assemblies within the output path for a project and adds binding 
 								redirects to the application (or web) configuration file where necessary.
 							
-		Get-Project				Returns a reference to the DTE (Development Tools Environment) for the active 
-								or specified project.
+		Get-Project				Returns a reference to the DTE (Development Tools Environment) for the specified project. 
+								If none is specifed, returns the default project selected in the Package Manager Console.
+
+        Open-PackagePage        Open the browser pointing to ProjectUrl, LicenseUrl or ReportAbuseUrl of the
+                                specified package.
+
+		Register-TabExpansion	Registers a tab expansion for the parameters of a command.
 
 SEE ALSO
 	Online documentation: http://go.microsoft.com/fwlink/?LinkID=206619
@@ -37,3 +42,7 @@ SEE ALSO
 	Uninstall-Package
 	Update-Package
 	New-Package
+	Add-BindingRedirect
+	Get-Project
+	Open-PackagePage
+	Register-TabExpansion

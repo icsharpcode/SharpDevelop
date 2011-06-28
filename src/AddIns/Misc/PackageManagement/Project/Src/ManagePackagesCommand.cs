@@ -8,16 +8,16 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class AddPackageReferenceCommand : AbstractMenuCommand
+	public class ManagePackagesCommand : AbstractMenuCommand
 	{
 		IPackageManagementOutputMessagesView outputMessagesView;
 		
-		public AddPackageReferenceCommand()
+		public ManagePackagesCommand()
 			: this(PackageManagementServices.OutputMessagesView)
 		{
 		}
 		
-		public AddPackageReferenceCommand(IPackageManagementOutputMessagesView outputMessagesView)
+		public ManagePackagesCommand(IPackageManagementOutputMessagesView outputMessagesView)
 		{
 			this.outputMessagesView = outputMessagesView;
 		}
@@ -26,14 +26,14 @@ namespace ICSharpCode.PackageManagement
 		{
 			outputMessagesView.Clear();
 			
-			using (IAddPackageReferenceView view = CreateAddPackageReferenceView()) {
+			using (IManagePackagesView view = CreateManagePackagesView()) {
 				view.ShowDialog();
 			}
 		}
 		
-		protected virtual IAddPackageReferenceView CreateAddPackageReferenceView()
+		protected virtual IManagePackagesView CreateManagePackagesView()
 		{
-			return new AddPackageReferenceView() {
+			return new ManagePackagesView() {
 				Owner = WorkbenchSingleton.MainWindow
 			};
 		}

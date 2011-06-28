@@ -376,7 +376,7 @@ namespace PackageManagement.Tests
 			PackageOperationEventArgs eventArgs = null;
 			project.PackageInstalled += (sender, e) => eventArgs = e;
 			
-			var expectedEventArgs = new PackageOperationEventArgs(new FakePackage(), String.Empty);
+			var expectedEventArgs = new PackageOperationEventArgs(new FakePackage(), null, String.Empty);
 			fakePackageManager.FirePackageInstalled(expectedEventArgs);
 			
 			Assert.AreEqual(expectedEventArgs, eventArgs);
@@ -389,7 +389,7 @@ namespace PackageManagement.Tests
 			PackageOperationEventArgs eventArgs = null;
 			project.PackageUninstalled += (sender, e) => eventArgs = e;
 			
-			var expectedEventArgs = new PackageOperationEventArgs(new FakePackage(), String.Empty);
+			var expectedEventArgs = new PackageOperationEventArgs(new FakePackage(), null, String.Empty);
 			fakePackageManager.FirePackageUninstalled(expectedEventArgs);
 			
 			Assert.AreEqual(expectedEventArgs, eventArgs);

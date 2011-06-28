@@ -4215,7 +4215,7 @@ Nota: Questa operazione non influenza i propri layout.</value>
     <value>Il progetto è stato convertito con successo. Puoi trovare il progetto convertito in questa cartella:</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ConvertCSharpProjectToBoo" xml:space="preserve">
-    <value>Dal C# al Boo</value>
+    <value>Da C# a Boo</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ConvertVBNetProjectToBoo" xml:space="preserve">
     <value>Dal VB.NET al Boo</value>
@@ -5534,6 +5534,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Linguaggio</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.LineString" xml:space="preserve">
+    <value>Riga</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
+    <value>Modulo</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
     <value>Mostra i nomi degli argomenti</value>
   </data>
@@ -5542,6 +5548,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
     <value>Mostra i metodi esterni</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowLineNumber" xml:space="preserve">
+    <value>Mostra numero di riga</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>Mostra nome moduli</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
     <value>Chiedi</value>

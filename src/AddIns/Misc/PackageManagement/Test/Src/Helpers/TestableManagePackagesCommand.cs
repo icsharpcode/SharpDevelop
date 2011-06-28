@@ -8,25 +8,25 @@ using ICSharpCode.PackageManagement.Design;
 
 namespace PackageManagement.Tests.Helpers
 {
-	public class TestableAddPackageReferenceCommand : AddPackageReferenceCommand
+	public class TestableManagePackagesCommand : ManagePackagesCommand
 	{
 		public FakePackageManagementOutputMessagesView FakeOutputMessagesView;
-		public FakeAddPackageReferenceView FakeAddPackageReferenceView = new FakeAddPackageReferenceView();
+		public FakeManagePackagesView FakeManagePackagesView = new FakeManagePackagesView();
 		
-		public TestableAddPackageReferenceCommand()
+		public TestableManagePackagesCommand()
 			: this(new FakePackageManagementOutputMessagesView())
 		{
 		}
 		
-		public TestableAddPackageReferenceCommand(FakePackageManagementOutputMessagesView view)
+		public TestableManagePackagesCommand(FakePackageManagementOutputMessagesView view)
 			: base(view)
 		{
 			this.FakeOutputMessagesView = view;
 		}
 		
-		protected override IAddPackageReferenceView CreateAddPackageReferenceView()
+		protected override IManagePackagesView CreateManagePackagesView()
 		{
-			return FakeAddPackageReferenceView;
+			return FakeManagePackagesView;
 		}
 	}
 }

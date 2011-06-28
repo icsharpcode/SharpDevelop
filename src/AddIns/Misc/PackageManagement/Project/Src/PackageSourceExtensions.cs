@@ -2,11 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IAddPackageReferenceView : IDisposable
+	public static class PackageSourceExtensions
 	{
-		bool? ShowDialog();
+		public static bool IsAggregate(this PackageSource packageSource)
+		{
+			return packageSource.Source == RegisteredPackageSourceSettings.AggregatePackageSource.Source;
+		}
 	}
 }

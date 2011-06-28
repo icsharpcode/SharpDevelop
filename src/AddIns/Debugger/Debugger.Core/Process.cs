@@ -209,14 +209,7 @@ namespace Debugger
 		
 		#region Exceptions
 		
-		bool pauseOnHandledException = false;
-		
 		public event EventHandler<ExceptionEventArgs> ExceptionThrown;
-		
-		public bool PauseOnHandledException {
-			get { return pauseOnHandledException; }
-			set { pauseOnHandledException = value; }
-		}
 		
 		protected internal virtual void OnExceptionThrown(ExceptionEventArgs e)
 		{

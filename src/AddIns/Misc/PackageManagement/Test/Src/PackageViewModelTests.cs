@@ -310,6 +310,24 @@ namespace PackageManagement.Tests
 			
 			Assert.IsFalse(viewModel.HasDownloadCount);
 		}
+		
+		[Test]
+		public void HasLastUpdated_PackageHasLastUpdatedDate_ReturnsTrue()
+		{
+			CreateViewModel();
+			package.LastUpdated = new DateTime(2011, 1, 2);
+			
+			Assert.IsTrue(viewModel.HasLastUpdated);
+		}
+		
+		[Test]
+		public void HasLastUpdated_PackageHasNoLastUpdatedDate_ReturnsFalse()
+		{
+			CreateViewModel();
+			package.LastUpdated = null;
+			
+			Assert.IsFalse(viewModel.HasLastUpdated);
+		}
 				
 		[Test]
 		public void AddPackage_PackageRequiresLicenseAgreementAcceptance_UserAskedToAcceptLicenseAgreementForPackageBeforeInstalling()

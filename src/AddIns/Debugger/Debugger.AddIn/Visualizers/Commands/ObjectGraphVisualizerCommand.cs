@@ -10,6 +10,7 @@ using Debugger.AddIn.Visualizers.Graph;
 using Debugger.MetaData;
 using ICSharpCode.SharpDevelop.Debugging;
 using Debugger.AddIn.Visualizers.Utils;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers
 {

@@ -137,6 +137,16 @@
 					</StackPanel>
 					<StackPanel
 						Orientation="Horizontal"
+						Visibility="{Binding Path=HasLastUpdated, Converter={StaticResource BoolToVisibility}}"
+						Margin="0, 4">
+						<TextBlock
+							Margin="0, 0, 4, 0"
+							Text="Last Updated:"
+							FontWeight="Bold"/>
+						<TextBlock Text="{Binding Path=LastUpdated, StringFormat=d}"/>
+					</StackPanel>
+					<StackPanel
+						Orientation="Horizontal"
 						Visibility="{Binding Path=HasDownloadCount, Converter={StaticResource BoolToVisibility}}"
 						Margin="0, 4">
 						<TextBlock

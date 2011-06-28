@@ -8,19 +8,19 @@ using PackageManagement.Tests.Helpers;
 namespace PackageManagement.Tests
 {
 	[TestFixture]
-	public class AddPackageReferenceCommandTests
+	public class ManagePackagesCommandTests
 	{
-		TestableAddPackageReferenceCommand command;
-		FakeAddPackageReferenceView view;
+		TestableManagePackagesCommand command;
+		FakeManagePackagesView view;
 		
 		void CreateCommand()
 		{
-			command = new TestableAddPackageReferenceCommand();
-			view = command.FakeAddPackageReferenceView;
+			command = new TestableManagePackagesCommand();
+			view = command.FakeManagePackagesView;
 		}
 		
 		[Test]
-		public void Run_CommandExecuted_AddPackageReferenceViewIsDisplayed()
+		public void Run_CommandExecuted_ManagePackagesViewIsDisplayed()
 		{
 			CreateCommand();
 			command.Run();
@@ -29,7 +29,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Run_CommandExecuted_AddPackageReferenceViewIsDisposed()
+		public void Run_CommandExecuted_ManagePackagesViewIsDisposed()
 		{
 			CreateCommand();
 			command.Run();

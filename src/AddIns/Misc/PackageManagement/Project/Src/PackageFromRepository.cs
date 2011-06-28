@@ -102,6 +102,28 @@ namespace ICSharpCode.PackageManagement
 			get { return package.Rating; }
 		}
 		
+		public DateTime? LastUpdated {
+			get { return GetLastUpdated(); }
+		}
+		
+		DateTime? GetLastUpdated()
+		{
+			DateTimeOffset? lastUpdated = GetDataServicePackageLastUpdated();
+			if (lastUpdated.HasValue) {
+				return lastUpdated.Value.DateTime;
+			}
+			return null;
+		}
+		
+		protected virtual DateTimeOffset? GetDataServicePackageLastUpdated()
+		{
+			var dataServicePackage = package as DataServicePackage;
+			if (dataServicePackage != null) {
+				return dataServicePackage.LastUpdated;
+			}
+			return null;
+		}
+		
 		public IEnumerable<IPackageFile> GetFiles()
 		{
 			return package.GetFiles();

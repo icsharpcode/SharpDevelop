@@ -31,7 +31,7 @@ namespace ICSharpCode.PackageManagement.Design
 		protected virtual void OnPackageReferenceAdded(IPackage package)
 		{
 			if (PackageReferenceAdded != null) {
-				PackageReferenceAdded(this, new PackageOperationEventArgs(package, String.Empty));
+				PackageReferenceAdded(this, new PackageOperationEventArgs(package, null, String.Empty));
 			}
 		}
 
@@ -40,7 +40,7 @@ namespace ICSharpCode.PackageManagement.Design
 		protected virtual void OnPackageReferenceRemoved(IPackage package)
 		{
 			if (PackageReferenceRemoved != null) {
-				PackageReferenceRemoved(this, new PackageOperationEventArgs(package, String.Empty));
+				PackageReferenceRemoved(this, new PackageOperationEventArgs(package, null, String.Empty));
 			}
 		}
 		
@@ -100,6 +100,11 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public void RemovePackageReference(IPackage package, bool forceRemove, bool removeDependencies)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UpdatePackageReference(string packageId, IVersionSpec versionSpec, bool updateDependencies)
 		{
 			throw new NotImplementedException();
 		}

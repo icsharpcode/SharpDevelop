@@ -6,16 +6,16 @@ using System.Windows;
 
 namespace ICSharpCode.PackageManagement
 {
-	public partial class AddPackageReferenceView : Window, IAddPackageReferenceView
+	public partial class ManagePackagesView : Window, IManagePackagesView
 	{
-		public AddPackageReferenceView()
+		public ManagePackagesView()
 		{
 			InitializeComponent();
 		}
 		
 		public void Dispose()
 		{
-			var viewModel = MainPanel.DataContext as AddPackageReferenceViewModel;
+			var viewModel = MainPanel.DataContext as ManagePackagesViewModel;
 			viewModel.Dispose();
 		}
 	}

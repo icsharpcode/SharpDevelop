@@ -2,11 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
 using NUnit.Framework;
+using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
 {
@@ -14,21 +17,21 @@ namespace PackageManagement.Tests
 	public class PackageFromRepositoryTests
 	{
 		FakePackage fakePackage;
-		PackageFromRepository package;
+		TestablePackageFromRepository package;
 		FakePackageRepository fakeRepository;
 		
 		void CreatePackage()
 		{
-			fakePackage = new FakePackage("Test");
-			fakeRepository = new FakePackageRepository();
-			package = new PackageFromRepository(fakePackage, fakeRepository);
+			package = new TestablePackageFromRepository();
+			fakePackage = package.FakePackagePassedToConstructor;
+			fakeRepository = package.FakePackageRepositoryPassedToConstructor;
 		}
 		
 		[Test]
 		public void Repository_PackageCreatedWithSourceRepository_ReturnsSourceRepository()
 		{
 			CreatePackage();
-			var repository = package.Repository;
+			IPackageRepository repository = package.Repository;
 			
 			Assert.AreEqual(fakeRepository, repository);
 		}
@@ -39,8 +42,8 @@ namespace PackageManagement.Tests
 			CreatePackage();
 			fakePackage.AssemblyReferenceList.Add(new FakePackageAssemblyReference());
 			
-			var assemblyReferences = package.AssemblyReferences;
-			var expectedAssemblyReferences = fakePackage.AssemblyReferenceList;
+			IEnumerable<IPackageAssemblyReference> assemblyReferences = package.AssemblyReferences;
+			List<IPackageAssemblyReference> expectedAssemblyReferences = fakePackage.AssemblyReferenceList;
 			
 			CollectionAssert.AreEqual(expectedAssemblyReferences, assemblyReferences);
 		}
@@ -61,7 +64,7 @@ namespace PackageManagement.Tests
 			CreatePackage();
 			var expectedVersion = new Version("1.1");
 			fakePackage.Version = expectedVersion;
-			var version = package.Version;
+			Version version = package.Version;
 			
 			Assert.AreEqual(expectedVersion, version);
 		}
@@ -71,7 +74,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackage();
 			fakePackage.Title = "Test";
-			var title = package.Title;
+			string title = package.Title;
 			
 			Assert.AreEqual("Test", title);
 		}
@@ -82,8 +85,8 @@ namespace PackageManagement.Tests
 			CreatePackage();
 			fakePackage.AuthorsList.Add("Author1");
 			
-			var authors = package.Authors;
-			var expectedAuthors = fakePackage.AuthorsList;
+			IEnumerable<string> authors = package.Authors;
+			List<string> expectedAuthors = fakePackage.AuthorsList;
 			
 			CollectionAssert.AreEqual(expectedAuthors, authors);
 		}
@@ -94,8 +97,8 @@ namespace PackageManagement.Tests
 			CreatePackage();
 			fakePackage.OwnersList.Add("Owner1");
 			
-			var owners = package.Owners;
-			var expectedOwners = fakePackage.OwnersList;
+			IEnumerable<string> owners = package.Owners;
+			List<string> expectedOwners = fakePackage.OwnersList;
 			
 			CollectionAssert.AreEqual(expectedOwners, owners);
 		}
@@ -106,7 +109,7 @@ namespace PackageManagement.Tests
 			CreatePackage();
 			var expectedUrl = new Uri("http://sharpdevelop.net");
 			fakePackage.IconUrl = expectedUrl;
-			var url = package.IconUrl;
+			Uri url = package.IconUrl;
 			
 			Assert.AreEqual(expectedUrl, url);
 		}
@@ -117,7 +120,7 @@ namespace PackageManagement.Tests
 			CreatePackage();
 			var expectedUrl = new Uri("http://sharpdevelop.net");
 			fakePackage.LicenseUrl = expectedUrl;
-			var url = package.LicenseUrl;
+			Uri url = package.LicenseUrl;
 			
 			Assert.AreEqual(expectedUrl, url);
 		}
@@ -128,7 +131,7 @@ namespace PackageManagement.Tests
 			CreatePackage();
 			var expectedUrl = new Uri("http://sharpdevelop.net");
 			fakePackage.ProjectUrl = expectedUrl;
-			var url = package.ProjectUrl;
+			Uri url = package.ProjectUrl;
 			
 			Assert.AreEqual(expectedUrl, url);
 		}
@@ -139,7 +142,7 @@ namespace PackageManagement.Tests
 			CreatePackage();
 			var expectedUrl = new Uri("http://sharpdevelop.net");
 			fakePackage.ReportAbuseUrl = expectedUrl;
-			var url = package.ReportAbuseUrl;
+			Uri url = package.ReportAbuseUrl;
 			
 			Assert.AreEqual(expectedUrl, url);
 		}
@@ -158,7 +161,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackage();
 			fakePackage.Description = "Test";
-			var description = package.Description;
+			string description = package.Description;
 			
 			Assert.AreEqual("Test", description);
 		}
@@ -168,7 +171,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackage();
 			fakePackage.Summary = "Test";
-			var summary = package.Summary;
+			string summary = package.Summary;
 			
 			Assert.AreEqual("Test", summary);
 		}
@@ -178,7 +181,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackage();
 			fakePackage.Language = "Test";
-			var language = package.Language;
+			string language = package.Language;
 			
 			Assert.AreEqual("Test", language);
 		}
@@ -188,7 +191,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackage();
 			fakePackage.Tags = "Test";
-			var tags = package.Tags;
+			string tags = package.Tags;
 			
 			Assert.AreEqual("Test", tags);
 		}
@@ -199,8 +202,8 @@ namespace PackageManagement.Tests
 			CreatePackage();
 			fakePackage.FrameworkAssembliesList.Add(new FrameworkAssemblyReference("System.Xml"));
 			
-			var assemblies = package.FrameworkAssemblies;
-			var expectedAssemblies = fakePackage.FrameworkAssemblies;
+			IEnumerable<FrameworkAssemblyReference> assemblies = package.FrameworkAssemblies;
+			IEnumerable<FrameworkAssemblyReference> expectedAssemblies = fakePackage.FrameworkAssemblies;
 			
 			CollectionAssert.AreEqual(expectedAssemblies, assemblies);
 		}
@@ -211,8 +214,8 @@ namespace PackageManagement.Tests
 			CreatePackage();
 			fakePackage.DependenciesList.Add(new PackageDependency("Test"));
 			
-			var dependencies = package.Dependencies;
-			var expectedDependencies = fakePackage.Dependencies;
+			IEnumerable<PackageDependency> dependencies = package.Dependencies;
+			IEnumerable<PackageDependency> expectedDependencies = fakePackage.Dependencies;
 			
 			CollectionAssert.AreEqual(expectedDependencies, dependencies);
 		}
@@ -223,8 +226,8 @@ namespace PackageManagement.Tests
 			CreatePackage();
 			fakePackage.FilesList.Add(new PhysicalPackageFile());
 			
-			var files = package.GetFiles();
-			var expectedFiles = fakePackage.FilesList;
+			IEnumerable<IPackageFile> files = package.GetFiles();
+			IEnumerable<IPackageFile> expectedFiles = fakePackage.FilesList;
 			
 			CollectionAssert.AreEqual(expectedFiles, files);
 		}
@@ -234,7 +237,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackage();
 			fakePackage.DownloadCount = 10;
-			var count = package.DownloadCount;
+			int count = package.DownloadCount;
 			
 			Assert.AreEqual(10, count);
 		}
@@ -244,7 +247,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackage();
 			fakePackage.RatingsCount = 10;
-			var count = package.RatingsCount;
+			int count = package.RatingsCount;
 			
 			Assert.AreEqual(10, count);
 		}
@@ -254,7 +257,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackage();
 			fakePackage.Rating = 5.0;
-			var rating = package.Rating;
+			double rating = package.Rating;
 			
 			Assert.AreEqual(5.0, rating);
 		}
@@ -266,7 +269,7 @@ namespace PackageManagement.Tests
 			var expectedStream = new MemoryStream();
 			fakePackage.Stream = expectedStream;
 			
-			var stream = package.GetStream();
+			Stream stream = package.GetStream();
 			
 			Assert.AreEqual(expectedStream, stream);
 		}
@@ -289,6 +292,29 @@ namespace PackageManagement.Tests
 			bool result = package.HasDependencies;
 			
 			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void LastUpdated_PackageWrapsDataServicePackageThatHasLastUpdatedDateOffset_ReturnsDateFromDataServicePackage()
+		{
+			CreatePackage();
+			var expectedDateTime = new DateTime(2011, 1, 2);
+			package.DateTimeOffsetToReturnFromGetDataServicePackageLastUpdated = new DateTimeOffset(expectedDateTime);
+			
+			DateTime? lastUpdated = package.LastUpdated;
+			
+			Assert.AreEqual(expectedDateTime, lastUpdated.Value);
+		}
+		
+		[Test]
+		public void LastUpdated_PackageWrapsPackageThatDoesNotHaveLastUpdatedDateOffset_ReturnsNullDate()
+		{
+			CreatePackage();
+			package.DateTimeOffsetToReturnFromGetDataServicePackageLastUpdated = null;
+			
+			DateTime? lastUpdated = package.LastUpdated;
+			
+			Assert.IsFalse(lastUpdated.HasValue);
 		}
 	}
 }

@@ -849,12 +849,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void debuggedProcess_ExceptionThrown(object sender, ExceptionEventArgs e)
 		{
-			if (!e.IsUnhandled) {
-				// Ignore the exception
-				e.Process.AsyncContinue();
-				return;
-			}
-			
 			JumpToCurrentLine();
 			
 			StringBuilder stacktraceBuilder = new StringBuilder();

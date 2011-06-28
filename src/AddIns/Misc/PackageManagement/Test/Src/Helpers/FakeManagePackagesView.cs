@@ -6,7 +6,7 @@ using ICSharpCode.PackageManagement;
 
 namespace PackageManagement.Tests.Helpers
 {
-	public class FakeAddPackageReferenceView : IAddPackageReferenceView
+	public class FakeManagePackagesView : IManagePackagesView
 	{
 		public bool IsShowDialogCalled;
 		

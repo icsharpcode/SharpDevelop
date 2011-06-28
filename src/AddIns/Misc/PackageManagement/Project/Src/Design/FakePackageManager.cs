@@ -151,5 +151,21 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			PackageUninstalled(this, e);
 		}
+		
+		public IPackagePathResolver PathResolver {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public void UpdatePackage(IPackage newPackage, bool updateDependencies)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UpdatePackage(string packageId, IVersionSpec versionSpec, bool updateDependencies)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

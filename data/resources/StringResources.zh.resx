@@ -710,6 +710,9 @@
   <data name="AddIns.SharpRefactoring.OverrideToStringMethod" xml:space="preserve">
     <value>重写ToString()</value>
   </data>
+  <data name="AddIns.SharpRefactoring.OverrideToStringMethod.Description" xml:space="preserve">
+    <value>请选择一个您要实现ToString()方法的字段:</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ResolveAttribute" xml:space="preserve">
     <value>处理属性: {0}</value>
   </data>
@@ -717,7 +720,7 @@
     <value>用FxCop检验</value>
   </data>
   <data name="AddIns.SourceAnalysis.Title" xml:space="preserve">
-    <value>来源分析</value>
+    <value>源代码风格分析</value>
   </data>
   <data name="AddIns.Subversion.AddToIgnoreList" xml:space="preserve">
     <value>添加到忽略列表</value>
@@ -3900,6 +3903,9 @@
   <data name="ICSharpCode.NAntAddIn.StopNAntMenuLabel" xml:space="preserve">
     <value>停止NAnt(&amp;S)</value>
   </data>
+  <data name="ICSharpCode.NoStartupProject" xml:space="preserve">
+    <value>这不是一个可以启动的项目。</value>
+  </data>
   <data name="ICSharpCode.NUnitPad.NUnitPadContent.PadName" xml:space="preserve">
     <value>单元测试</value>
   </data>
@@ -5422,6 +5428,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionHistory.Time" xml:space="preserve">
     <value>时间</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.HideZoomControl" xml:space="preserve">
+    <value>显示/隐藏 缩放界面</value>
   </data>
   <data name="MainWindow.Windows.Debug.Local" xml:space="preserve">
     <value>局部</value>
