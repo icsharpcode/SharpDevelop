@@ -101,10 +101,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 				gapCalculator.CalculateGapList(section);
 				int i = 0;
 				
-				
 				foreach (BaseReportItem item in section.Items)
 				{
-					
 					ISimpleContainer simpleContainer = item as ISimpleContainer;
 					
 					Offset = new Point(Offset.X,Offset.Y + gapCalculator.GapBetweenItems[i] );

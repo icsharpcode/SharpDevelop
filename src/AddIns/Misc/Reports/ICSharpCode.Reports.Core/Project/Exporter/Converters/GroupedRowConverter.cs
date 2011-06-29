@@ -57,10 +57,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private ExporterCollection ConvertDataRow (ISimpleContainer simpleContainer)
 		{
 			ExporterCollection exporterCollection = new ExporterCollection();
-//			base.CurrentPosition = base.SectionBounds.DetailArea.Location;
-
 			base.CurrentPosition = base.SectionBounds.Offset;
-//			Console.WriteLine("Convertdatarow start {0}",base.CurrentPosition);
 			BaseSection section = parent as BaseSection;
 			
 			DefaultLeftPosition = parent.Location.X;
@@ -157,22 +154,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override Point ForcePageBreak(ExporterCollection exporterCollection, BaseSection section)
 		{
 			base.ForcePageBreak(exporterCollection,section);
-			return CalculateStartPosition(section);
-		}
-		
-		
-		private Point CalculateStartPosition(BaseSection section)
-		{
-//			var r = base.ReportModel;
-//			base.SectionBounds.CalculatePageBounds(r);
-//			var rr =  new Point(base.SectionBounds.DetailArea.X,base.SectionBounds.PageHeaderRectangle.Bottom + 1);
-//			var p = base.SectionBounds.DetailArea.Location;
-//			var pp = SectionBounds.Offset;
-//			Console.WriteLine ("PageBreak {0} - detailareaa {1}",rr,p);
-//			Console.WriteLine("-----------------");
-//			Console.WriteLine("");
-////		return base.SectionBounds.DetailArea.Location;
-//		return pp;
 			return SectionBounds.Offset;
 		}
 		

@@ -75,7 +75,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 				base.ReportModel.ReportHeader.Size = Size.Empty;
 			}
 			base.SectionBounds.CalculatePageBounds(base.ReportModel);
-			var p = base.SectionBounds.Offset;
 		}
 		
 		
@@ -84,7 +83,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (SectionBounds.Offset.Y < base.ReportModel.PageHeader.SectionOffset) {
 				SectionBounds.Offset = new Point(SectionBounds.Offset.X,base.ReportModel.PageHeader.SectionOffset);
 			}
-			
 			base.SectionBounds.CalculatePageBounds(base.ReportModel);
 			ConvertSectionInternal (base.ReportModel.PageHeader);
 		}

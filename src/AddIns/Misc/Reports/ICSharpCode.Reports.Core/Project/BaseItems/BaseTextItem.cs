@@ -66,6 +66,7 @@ namespace ICSharpCode.Reports.Core
 			style.ContentAlignment = this.contentAlignment;
 			style.FormatString = this.formatString;
 			style.DataType = this.dataType;
+			style.RightToLeft = this.RightToLeft;
 			
 			return style;
 		}
@@ -120,9 +121,6 @@ namespace ICSharpCode.Reports.Core
 			                      rectangle,
 			                      this.stringTrimming,this.contentAlignment);
 			
-			
-			
-			//TextDrawer.DrawString(rpea.PrintPageEventArgs.Graphics,toPrint,CreateItemStyle());
 			                      
 			rpea.LocationAfterDraw = new Point (this.Location.X + this.Size.Width,
 			                                    this.Location.Y + this.Size.Height);
@@ -151,11 +149,6 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
-		
-		///<summary>
-		/// Formatstring like in MSDN
-		/// </summary>
-
 		
 		
 		public virtual string FormatString {
@@ -193,6 +186,9 @@ namespace ICSharpCode.Reports.Core
 				return TextDrawer.BuildStringFormat (this.StringTrimming,this.ContentAlignment);                                       
 			}
 		}
+		
+		
+		public System.Windows.Forms.RightToLeft RightToLeft {get;set;}
 		
 		#region IExpression
 		

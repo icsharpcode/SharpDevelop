@@ -59,6 +59,15 @@ namespace ICSharpCode.Reports.Addin
 			if (this.stringTrimming != StringTrimming.None) {
 				designTrimmimg = stringTrimming;
 			}
+			
+//			var o = StringFormatFlags.LineLimit;
+//			new StringFormat(StringFormatFlags.MeasureTrailingSpaces)
+//			http://msdn.microsoft.com/de-de/library/system.drawing.stringformatflags.aspx
+	http://www.tutorials.de/net-windows-forms/240717-c-mit-drawstring-senkrecht-drucken.html
+			
+			if (this.RightToLeft == System.Windows.Forms.RightToLeft.Yes) {
+				Console.WriteLine("RightToLeft");
+			}
 			TextDrawer.DrawString(graphics,this.Text,this.Font,
 			                      new SolidBrush(this.ForeColor),
 			                      this.ClientRectangle,
@@ -70,8 +79,8 @@ namespace ICSharpCode.Reports.Addin
 		
 		
 		
-		[EditorAttribute(typeof(DefaultTextEditor), 
-		                  typeof(System.Drawing.Design.UITypeEditor) )]
+		[EditorAttribute(typeof(DefaultTextEditor),
+		                 typeof(System.Drawing.Design.UITypeEditor) )]
 		public override string Text {
 			get { return base.Text; }
 			set { base.Text = value;
@@ -116,9 +125,11 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
+		
+		
 		[Category("Appearance")]
-		[EditorAttribute(typeof(System.Drawing.Design.ContentAlignmentEditor), 
-		                  typeof(System.Drawing.Design.UITypeEditor) )]
+		[EditorAttribute(typeof(System.Drawing.Design.ContentAlignmentEditor),
+		                 typeof(System.Drawing.Design.UITypeEditor) )]
 		public ContentAlignment ContentAlignment {
 			get { return contentAlignment; }
 			set {
@@ -127,9 +138,17 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
+		
+		[Category("Appearance")]
+		public override System.Windows.Forms.RightToLeft RightToLeft {
+			get { return base.RightToLeft; }
+			set { base.RightToLeft = value; }
+		}
+		
+		
 		#endregion
 		
-				
+		
 		[Browsable(true),
 		 Category("Databinding"),
 		 Description("Datatype of the underlying Column")]
@@ -144,8 +163,8 @@ namespace ICSharpCode.Reports.Addin
 		[Browsable(true),
 		 Category("Expression"),
 		 Description("Enter a valid Expression")]
-			[EditorAttribute(typeof(DefaultTextEditor), 
-		                  typeof(System.Drawing.Design.UITypeEditor) )]
+		[EditorAttribute(typeof(DefaultTextEditor),
+		                 typeof(System.Drawing.Design.UITypeEditor) )]
 		public string Expression {get;set;}
 		
 		#endregion
@@ -153,9 +172,9 @@ namespace ICSharpCode.Reports.Addin
 		#region CanGrow/CanShrink
 		
 		public bool CanGrow {get;set;}
-			
+		
 		public bool CanShrink {get;set;}
-			
+		
 		#endregion
 	}
 	

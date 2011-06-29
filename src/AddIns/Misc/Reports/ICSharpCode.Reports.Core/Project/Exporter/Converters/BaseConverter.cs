@@ -60,11 +60,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected void FirePageFull (ExporterCollection items)
 		{
 			var newPage = new NewPageEventArgs (items,SinglePage.SectionBounds);
-//			EventHelper.Raise<NewPageEventArgs>(PageFull,this,new NewPageEventArgs(items,SinglePage.SectionBounds));
 			EventHelper.Raise<NewPageEventArgs>(PageFull,this,newPage);
 			SinglePage.SectionBounds = newPage.SectionBounds;
 		}
-		
 		
 		#endregion
 		

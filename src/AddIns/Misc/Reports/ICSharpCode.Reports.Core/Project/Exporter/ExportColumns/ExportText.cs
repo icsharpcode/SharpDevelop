@@ -45,6 +45,11 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			CalculatePdfFormat pdfFormat = new CalculatePdfFormat(this.StyleDecorator,font);
 			
 			ColumnText columnText = new ColumnText(contentByte);
+			
+			if (StyleDecorator.RightToLeft.ToString() == "Yes") {
+				columnText.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+			}
+			
 			iTextSharp.text.Rectangle r = base.ConvertToPdfRectangle();
 			columnText.SetSimpleColumn(r.Left, r.Top , r.Left + r.Width,r.Top - r.Height,pdfFormat.Leading,pdfFormat.Alignment);
 		
