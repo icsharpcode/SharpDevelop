@@ -73,8 +73,10 @@ namespace ICSharpCode.Reports.Addin.Commands
 				using (ParameterDialog e = new ParameterDialog(par)) {
 					e.ShowDialog();
 					if (e.DialogResult == System.Windows.Forms.DialogResult.OK) {
-						foreach (BasicParameter bp in e.Collection as ParameterCollection){
-							r.ReportModel.ReportSettings.ParameterCollection.Add (bp);
+						foreach (BasicParameter bp in new System.Collections.ArrayList(e.Collection)){
+							if (bp.ParameterName != null) {
+								r.ReportModel.ReportSettings.ParameterCollection.Add (bp);
+							}
 						}
 						r.RefreshParameters();
 					}
