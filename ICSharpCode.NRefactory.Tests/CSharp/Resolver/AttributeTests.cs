@@ -36,21 +36,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual("System.ObsoleteAttribute", result.Type.FullName);
 		}
 		
-		[Test, Ignore("Fails due bug in cecil loader ?")]
+		[Test]
 		public void AttributeConstructor1()
 		{
 			string program = "using System; [$LoaderOptimization(3)$] class Test { }";
 			var mrr = Resolve<MemberResolveResult>(program);
-			Assert.AreEqual("System.LoaderOptimization..ctor", mrr.Member.FullName);
+			Assert.AreEqual("System.LoaderOptimizationAttribute..ctor", mrr.Member.FullName);
 			Assert.AreEqual("System.Byte", (mrr.Member as IMethod).Parameters[0].Type.Resolve(context).FullName);
 		}
 		
-		[Test, Ignore("Fails due bug in cecil loader ?")]
+		[Test]
 		public void AttributeConstructor2()
 		{
 			string program = "using System; [$LoaderOptimization(LoaderOptimization.NotSpecified)$] class Test { }";
 			var mrr = Resolve<MemberResolveResult>(program);
-			Assert.AreEqual("System.LoaderOptimization..ctor", mrr.Member.FullName);
+			Assert.AreEqual("System.LoaderOptimizationAttribute..ctor", mrr.Member.FullName);
 			Assert.AreEqual("System.LoaderOptimization", (mrr.Member as IMethod).Parameters[0].Type.Resolve(context).FullName);
 		}
 		

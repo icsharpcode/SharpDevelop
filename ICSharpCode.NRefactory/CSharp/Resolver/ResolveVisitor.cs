@@ -1123,32 +1123,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Attributes
-		IType GetAttributeType (Attribute attribute)
+		ITypeReference GetAttributeType (Attribute attribute)
 		{
-			var attributeType = attribute.Type;
-			var type = ResolveType(attributeType);
-			if (!type.Equals (SharedTypes.UnknownType))
-				return type;
-			
-			AstType typeWithAttributeSuffix;
-			if (attributeType is SimpleType) {
-				var st = (SimpleType)attributeType;
-				typeWithAttributeSuffix = new SimpleType (st.Identifier + "Attribute");
-			} else if (attributeType is MemberType) {
-				var mt = (MemberType)attributeType;
-				typeWithAttributeSuffix = new MemberType (mt.Target.Clone (), mt.MemberName + "Attribute");
+			var withoutSuffix = MakeTypeReference(attribute.Type);
+			ITypeReference withSuffix;
+			if (attribute.Type is SimpleType) {
+				var st = (SimpleType)attribute.Type;
+				withSuffix = MakeTypeReference(new SimpleType (st.Identifier + "Attribute"));
+			} else if (attribute.Type is MemberType) {
+				var mt = (MemberType)attribute.Type;
+				withSuffix = MakeTypeReference(new MemberType (mt.Target.Clone (), mt.MemberName + "Attribute"));
 			} else {
 				// unsupported type.
 				return SharedTypes.UnknownType;
 			}
-			return ResolveType(typeWithAttributeSuffix);
+			return new AttributeTypeReference(withoutSuffix, withSuffix);
 		}
 		
 		public override ResolveResult VisitAttribute(Attribute attribute, object data)
 		{
 			ScanChildren(attribute);
 			if (resolverEnabled) {
-				var type = GetAttributeType (attribute);
+				var type = GetAttributeType (attribute).Resolve (resolver.Context);
 				if (!attribute.HasArgumentList)
 					return new TypeResolveResult (type);
 				// try if the attribute usage references a constructuor
