@@ -110,10 +110,10 @@ namespace PackageManagement.Tests
 		{
 			CreateSolution();
 			FakePackage package = new FakePackage();
-			fakeSolution.FakeProject.FakePackages.Add(package);
+			fakeSolution.FakeActiveProject.FakePackages.Add(package);
 			CreateViewModel(fakeSolution);
 			
-			IEnumerable<IPackage> expectedPackages = fakeSolution.FakeProject.FakePackages;
+			IEnumerable<IPackage> expectedPackages = fakeSolution.FakeActiveProject.FakePackages;
 			IEnumerable<PackageViewModel> actualPackageViewModels = viewModel.InstalledPackagesViewModel.PackageViewModels;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, actualPackageViewModels);
@@ -369,6 +369,19 @@ namespace PackageManagement.Tests
 			bool disposed = fakeThreadSafeEvents.IsDisposed;
 			
 			Assert.IsTrue(disposed);
+		}
+		
+		[Test]
+		public void Title_ProjectSelected_ReturnsProjectInTitle()
+		{
+			CreateViewModel();
+			fakeSolution.FakeActiveProject.Name = "Test";
+			
+			string title = viewModel.Title;
+			
+			string expectedTitle = "Test - Manage Packages";
+			
+			Assert.AreEqual(expectedTitle, title);
 		}
 	}
 }

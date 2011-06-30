@@ -18,11 +18,15 @@ namespace ICSharpCode.PackageManagement.Design
 			FakeInstallPackageAction = new FakeInstallPackageAction(this);
 			FakeUninstallPackageAction = new FakeUninstallPackageAction(this);
 			FakeUpdatePackageAction = new FakeUpdatePackageAction(this);
+			
+			Name = "Test";
 		}
 		
 		public FakeInstallPackageAction FakeInstallPackageAction;
 		public FakeUpdatePackageAction FakeUpdatePackageAction;
 		public FakeUninstallPackageAction FakeUninstallPackageAction;
+		
+		public string Name { get; set; }
 		
 		public bool IsInstalledReturnValue;
 		public IPackage PackagePassedToIsInstalled;

@@ -52,6 +52,16 @@ namespace ICSharpCode.PackageManagement
 		public RecentPackagesViewModel RecentPackagesViewModel { get; private set; }
 		public UpdatedPackagesViewModel UpdatedPackagesViewModel { get; private set; }
 		
+		public string Title {
+			get { return GetTitle(); }
+		}
+		
+		string GetTitle()
+		{
+			IPackageManagementProject project = solution.GetActiveProject();
+			return String.Format("{0} - Manage Packages", project.Name);
+		}
+		
 		public void Dispose()
 		{
 			AvailablePackagesViewModel.Dispose();

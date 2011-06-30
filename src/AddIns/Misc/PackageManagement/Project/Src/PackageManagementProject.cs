@@ -32,6 +32,10 @@ namespace ICSharpCode.PackageManagement
 			projectManager = packageManager.ProjectManager;
 		}
 		
+		public string Name {
+			get { return msbuildProject.Name; }
+		}
+		
 		public IPackageRepository SourceRepository { get; private set; }
 		
 		public ILogger Logger {

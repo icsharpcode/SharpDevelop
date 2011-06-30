@@ -9,7 +9,6 @@
 	MinHeight="380"
 	MinWidth="440"
 	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
-	Title="Manage Packages"
 	WindowStartupLocation="CenterOwner">
 	
 	<Window.Resources>
@@ -21,12 +20,15 @@
 			UriSource="pack://application:,,,/PackageManagement;component/Resources/exclamation.png"/>
     </Window.Resources>
 	
+	<Window.DataContext>
+		<Binding Source="{StaticResource ViewModels}" Path="ManagePackagesViewModel"/>	
+	</Window.DataContext>
+	
+	<Window.Title>
+		<Binding Path="Title"/>
+	</Window.Title>
+	
 	<DockPanel x:Name="MainPanel">
-		<!-- Use DockPanel.DataContext instead of Window.DataContext otherwise Visual Studio does not show
-			design time data -->
-		<DockPanel.DataContext>
-			<Binding Source="{StaticResource ViewModels}" Path="ManagePackagesViewModel"/>
-		</DockPanel.DataContext>
 		<Grid
 			DockPanel.Dock="Bottom"
 			Margin="4, 4">
