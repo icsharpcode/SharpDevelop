@@ -64,6 +64,29 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
 		
+		public MemberType ()
+		{
+		}
+		
+		public MemberType (AstType target, string memberName)
+		{
+			this.Target = target;
+			this.MemberName = memberName;
+		}
+		
+		public MemberType (AstType target, string memberName, IEnumerable<AstType> typeArguments)
+		{
+			this.Target = target;
+			this.MemberName = memberName;
+			foreach (var arg in typeArguments) {
+				AddChild (arg, Roles.TypeArgument);
+			}
+		}
+		
+		public MemberType (AstType target, string memberName, params AstType[] typeArguments) : this (target, memberName, (IEnumerable<AstType>)typeArguments)
+		{
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitMemberType (this, data);

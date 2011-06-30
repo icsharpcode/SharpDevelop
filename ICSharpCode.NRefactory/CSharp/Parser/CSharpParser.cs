@@ -188,7 +188,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				foreach (var attr in optAttributes) {
 					Attribute result = new Attribute ();
 					result.Type = ConvertToType (attr.TypeNameExpression);
-					
+					var loc = LocationsBag.GetLocations (attr);
+					result.HasArgumentList = loc != null;
+					if (loc != null)
+						result.AddChild (new CSharpTokenNode (Convert (loc [0]), 1), AttributeSection.Roles.LPar);
+						
 					if (attr.PosArguments != null) {
 						foreach (var arg in attr.PosArguments) {
 							result.AddChild ((Expression)arg.Expr.Accept (this), Attribute.Roles.Argument);
@@ -200,13 +204,16 @@ namespace ICSharpCode.NRefactory.CSharp
 							newArg.Operator = AssignmentOperatorType.Assign;
 							newArg.AddChild (new IdentifierExpression (na.Name, Convert (na.Location)), AssignmentExpression.LeftRole);
 							
-							var loc = LocationsBag.GetLocations (na);
-							if (loc != null)
-								newArg.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), AssignmentExpression.Roles.Assign);
+							var argLoc = LocationsBag.GetLocations (na);
+							if (argLoc != null)
+								newArg.AddChild (new CSharpTokenNode (Convert (argLoc[0]), 1), AssignmentExpression.Roles.Assign);
 							newArg.AddChild ((Expression)na.Expr.Accept (this), AssignmentExpression.RightRole);
 							result.AddChild (newArg, Attribute.Roles.Argument);
 						}
 					}
+					if (loc != null)
+						result.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), AttributeSection.Roles.RPar);
+					
 					yield return result;
 				}
 			}

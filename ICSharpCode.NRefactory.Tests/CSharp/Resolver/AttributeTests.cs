@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
-	[TestFixture, Ignore("Attributes not implemented in resolver")]
+	[TestFixture]
 	public class AttributeTests : ResolverTestBase
 	{
 		[Test]
@@ -36,21 +36,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual("System.ObsoleteAttribute", result.Type.FullName);
 		}
 		
-		[Test]
+		[Test, Ignore("Fails due bug in cecil loader ?")]
 		public void AttributeConstructor1()
 		{
 			string program = "using System; [$LoaderOptimization(3)$] class Test { }";
 			var mrr = Resolve<MemberResolveResult>(program);
-			Assert.AreEqual("System.LoaderOptimization.#ctor", mrr.Member.FullName);
+			Assert.AreEqual("System.LoaderOptimization..ctor", mrr.Member.FullName);
 			Assert.AreEqual("System.Byte", (mrr.Member as IMethod).Parameters[0].Type.Resolve(context).FullName);
 		}
 		
-		[Test]
+		[Test, Ignore("Fails due bug in cecil loader ?")]
 		public void AttributeConstructor2()
 		{
 			string program = "using System; [$LoaderOptimization(LoaderOptimization.NotSpecified)$] class Test { }";
 			var mrr = Resolve<MemberResolveResult>(program);
-			Assert.AreEqual("System.LoaderOptimization.#ctor", mrr.Member.FullName);
+			Assert.AreEqual("System.LoaderOptimization..ctor", mrr.Member.FullName);
 			Assert.AreEqual("System.LoaderOptimization", (mrr.Member as IMethod).Parameters[0].Type.Resolve(context).FullName);
 		}
 		
@@ -78,7 +78,7 @@ enum E { A, B }
 			Assert.AreEqual("MyNamespace.E.A", result.Member.FullName);
 		}
 		
-		[Test]
+		[Test, Ignore("Not implemented in type system.")]
 		public void SD_1384()
 		{
 			string program = @"using System;
