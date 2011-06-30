@@ -705,6 +705,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public static readonly Role<CSharpTokenNode> Assign = new Role<CSharpTokenNode> ("Assign", CSharpTokenNode.Null);
 			public static readonly Role<CSharpTokenNode> Colon = new Role<CSharpTokenNode> ("Colon", CSharpTokenNode.Null);
 			public static readonly Role<Comment> Comment = new Role<Comment> ("Comment");
+			public static readonly Role<ErrorNode> Error = new Role<ErrorNode> ("Error");
 			
 		}
 	}
