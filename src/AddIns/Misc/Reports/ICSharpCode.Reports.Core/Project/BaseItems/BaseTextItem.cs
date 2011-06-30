@@ -114,12 +114,11 @@ namespace ICSharpCode.Reports.Core
 				throw new ArgumentNullException("rpea");
 			}
 			
-			
 			TextDrawer.DrawString(rpea.PrintPageEventArgs.Graphics,
 			                      toPrint,this.Font,
 			                      new SolidBrush(this.ForeColor),
 			                      rectangle,
-			                      this.stringTrimming,this.contentAlignment);
+			                      this.StringFormat);
 			
 			                      
 			rpea.LocationAfterDraw = new Point (this.Location.X + this.Size.Width,
@@ -183,12 +182,17 @@ namespace ICSharpCode.Reports.Core
 
 		public virtual StringFormat StringFormat {
 			get {
-				return TextDrawer.BuildStringFormat (this.StringTrimming,this.ContentAlignment);                                       
+				var sf = TextDrawer.BuildStringFormat (this.StringTrimming,this.ContentAlignment);
+				if (this.RightToLeft == System.Windows.Forms.RightToLeft.Yes) {
+					sf.FormatFlags = sf.FormatFlags | StringFormatFlags.DirectionRightToLeft;
+				}
+				return sf;
 			}
 		}
 		
 		
 		public System.Windows.Forms.RightToLeft RightToLeft {get;set;}
+		
 		
 		#region IExpression
 		

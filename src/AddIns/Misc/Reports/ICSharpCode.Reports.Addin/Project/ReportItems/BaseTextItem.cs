@@ -47,7 +47,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		public override void Draw(Graphics graphics)
 		{
-			StringTrimming designTrimmimg = StringTrimming.EllipsisCharacter;
+			
 			
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
@@ -56,23 +56,23 @@ namespace ICSharpCode.Reports.Addin
 				graphics.FillRectangle(b, base.DrawingRectangle);
 			}
 			
+			StringTrimming designTrimmimg = StringTrimming.EllipsisCharacter;
+			
 			if (this.stringTrimming != StringTrimming.None) {
 				designTrimmimg = stringTrimming;
 			}
 			
-//			var o = StringFormatFlags.LineLimit;
-//			new StringFormat(StringFormatFlags.MeasureTrailingSpaces)
-//			http://msdn.microsoft.com/de-de/library/system.drawing.stringformatflags.aspx
-	http://www.tutorials.de/net-windows-forms/240717-c-mit-drawstring-senkrecht-drucken.html
+			StringFormat stringFormat = TextDrawer.BuildStringFormat(designTrimmimg,contentAlignment);
 			
 			if (this.RightToLeft == System.Windows.Forms.RightToLeft.Yes) {
-				Console.WriteLine("RightToLeft");
+				stringFormat.FormatFlags = stringFormat.FormatFlags | StringFormatFlags.DirectionRightToLeft;
 			}
+			
+			
 			TextDrawer.DrawString(graphics,this.Text,this.Font,
 			                      new SolidBrush(this.ForeColor),
 			                      this.ClientRectangle,
-			                      designTrimmimg,
-			                      this.contentAlignment);
+			                      stringFormat);
 			
 			base.DrawControl(graphics,base.DrawingRectangle);
 		}

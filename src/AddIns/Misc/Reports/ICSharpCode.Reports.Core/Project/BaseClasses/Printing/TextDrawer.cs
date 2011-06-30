@@ -22,21 +22,21 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		{
 		}
 		
+		
 		public static void DrawString(Graphics graphics,string text,
-		                       Font font,Brush brush,
-		                       RectangleF rectangle,
-		                       StringTrimming stringTrimming,
-		                       ContentAlignment alignment) 
+		                              Font font,Brush brush,
+		                              RectangleF rectangle,
+		                              StringFormat format)
 		{
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
 			}
-			StringFormat stringFormat = BuildStringFormat(stringTrimming,alignment);
+			
 			graphics.DrawString(text,
 			                    font,
 			                    brush,
 			                    rectangle,
-			                    stringFormat);
+			                    format);
 		}
 		
 		

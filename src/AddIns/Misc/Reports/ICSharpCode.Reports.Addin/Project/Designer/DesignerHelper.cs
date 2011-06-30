@@ -104,6 +104,9 @@ namespace ICSharpCode.Reports.Addin.Designer
 			
 			prop = props.Find("DataType",true);
 			allProperties.Add(prop);
+			
+			prop = props.Find("RightToLeft",true);
+			allProperties.Add(prop);
 		}
 		
 		public static void AddGraphicProperties (List<PropertyDescriptor> allProperties,

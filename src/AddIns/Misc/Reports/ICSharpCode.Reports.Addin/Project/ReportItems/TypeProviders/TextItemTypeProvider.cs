@@ -73,9 +73,6 @@ namespace ICSharpCode.Reports.Addin.TypeProviders
 			prop = props.Find("Expression",true);
 			allProperties.Add(prop);
 			
-			prop = props.Find("RightToLeft",true);
-			allProperties.Add(prop);
-			
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}
 	}

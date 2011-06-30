@@ -3,6 +3,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 
 namespace ICSharpCode.Reports.Addin.Designer
 {
@@ -36,10 +37,12 @@ namespace ICSharpCode.Reports.Addin.Designer
 			
 			string s = String.Format(System.Globalization.CultureInfo.CurrentCulture,
 			                         "Error : <{0}> is missing or obsolete",base.Text);
-			ICSharpCode.Reports.Core.BaseClasses.Printing.TextDrawer.DrawString(graphics,s,this.Font,
-			                                               new SolidBrush(Color.Red),
-			                                               this.ClientRectangle,
-			                                               base.StringTrimming,base.ContentAlignment);
+			
+			StringFormat stringFormat = TextDrawer.BuildStringFormat(base.StringTrimming,base.ContentAlignment);
+			TextDrawer.DrawString(graphics,s,this.Font,
+			                      new SolidBrush(Color.Red),
+			                      this.ClientRectangle,
+			                      stringFormat);
 			base.DrawControl(graphics,base.DrawingRectangle);
 		}
 	}
