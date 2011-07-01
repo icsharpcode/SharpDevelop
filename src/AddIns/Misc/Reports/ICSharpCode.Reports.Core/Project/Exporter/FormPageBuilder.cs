@@ -70,7 +70,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.BuildDetailInternal(section);
 //			section.SectionOffset = base.SinglePage.SectionBounds.DetailArea.Top;
 			SectionBounds.Offset = new Point(SectionBounds.Offset.X,base.ReportModel.DetailSection.Location.Y);
-			ExporterCollection convertedList = convertedList = base.ConvertSection (base.ReportModel.DetailSection,0);
+			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.DetailSection,0);
 			base.SinglePage.Items.AddRange(convertedList);	   
 		}
 

@@ -133,6 +133,11 @@ namespace ICSharpCode.Reports.Core
 	
 		#endregion
 		
+		public Size MeasureOverride (Size size)
+		{
+			return Size.Empty;
+		}
+		
 		#region System.IDisposable interface implementation
 		
 		protected override void Dispose(bool disposing)

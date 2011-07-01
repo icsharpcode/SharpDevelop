@@ -33,21 +33,21 @@ namespace ICSharpCode.Reports.Core{
 	/// (Line by Line)
 	/// </summary>
 	internal class LocationSorter : IComparer<BaseReportItem>  {
-		public int Compare(BaseReportItem x, BaseReportItem y){
-			if (x == null){
-				if (y == null){
+		public int Compare(BaseReportItem lhs, BaseReportItem rhs){
+			if (lhs == null){
+				if (rhs == null){
 					return 0;
 				}
 				return -1;
 			}
-			if (y == null){
+			if (rhs == null){
 				return 1;
 			}
 			
-			if (x.Location.Y == y.Location.Y){
-				return x.Location.X - y.Location.X;
+			if (lhs.Location.Y == rhs.Location.Y){
+				return lhs.Location.X - rhs.Location.X;
 			}
-			return x.Location.Y - y.Location.Y;
+			return lhs.Location.Y - rhs.Location.Y;
 		}
 	}
 	

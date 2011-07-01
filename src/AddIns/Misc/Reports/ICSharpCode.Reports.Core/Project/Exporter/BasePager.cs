@@ -89,9 +89,22 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (section.Items.Count > 0)
 			{
 				Size sectionSize = section.Size;
-				
+				foreach (var element in section.Items) {
+					Console.WriteLine(element.Location);
+				}
 				section.Items.SortByLocation();
-
+				Console.WriteLine("--");
+				foreach (var element in section.Items) {
+					Console.WriteLine(element.Location);
+				}
+				
+				section.Items.ForEach(delegate(BaseReportItem item)
+				                      {
+				                      	Console.WriteLine(item.Location);
+				                      });
+				var h = section.Items.FindHighestElement();
+				
+				
 				IExpressionEvaluatorFacade evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.SinglePage.IDataNavigator);
 
 				Rectangle desiredRectangle = LayoutHelper.CalculateSectionLayout(this.Graphics,section);
@@ -105,10 +118,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 				{
 					ISimpleContainer simpleContainer = item as ISimpleContainer;
 					
-					Offset = new Point(Offset.X,Offset.Y + gapCalculator.GapBetweenItems[i] );
+//					Offset = new Point(Offset.X,Offset.Y + gapCalculator.GapBetweenItems[i] );
 					
 					if (simpleContainer != null)
 					{
+						Offset = new Point(Offset.X,Offset.Y + gapCalculator.GapBetweenItems[i] );
 						var containerSize = simpleContainer.Size;
 						
 						EvaluationHelper.EvaluateReportItems(evaluator,simpleContainer.Items);
