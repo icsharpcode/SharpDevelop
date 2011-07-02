@@ -231,4 +231,64 @@ namespace UnitTesting.Tests.Frameworks
 			Assert.IsFalse(testFrameworks.IsBuildNeededBeforeTestRunForProject(project));
 		}
 	}
+	
+	[TestFixture]
+    public class RegisteredTestFrameworksWithTwoFrameworksForTheSameProjectType
+    {
+        MockCSharpProject nunitTestProject;
+        MockTestFramework nunitTestFramework;
+        MockCSharpProject mspecTestProject;
+        MockTestFramework mspecTestFramework;
+        RegisteredTestFrameworks testFrameworks;
+
+        [SetUp]
+        public void Setup()
+        {
+			var factory = new MockTestFrameworkFactory();
+
+            Properties nunitProperties = new Properties();
+            nunitProperties["id"] = "nunit";
+            nunitProperties["class"] = "NUnitTestFramework";
+            nunitProperties["supportedProjects"] = ".csproj";
+            nunitTestFramework = new MockTestFramework();
+            factory.Add("NUnitTestFramework", nunitTestFramework);
+            
+            var mspecProperties = new Properties();
+			mspecProperties["id"] = "mspec";
+			mspecProperties["class"] = "MSpecTestFramework";
+			mspecProperties["supportedProjects"] = ".csproj";
+            mspecTestFramework = new MockTestFramework();
+            factory.Add("MSpecTestFramework", mspecTestFramework);
+			
+			TestFrameworkDescriptor mspecDescriptor = new TestFrameworkDescriptor(mspecProperties, factory);
+			TestFrameworkDescriptor nunitDescriptor = new TestFrameworkDescriptor(nunitProperties, factory);
+
+            var descriptors = new List<TestFrameworkDescriptor> { mspecDescriptor, nunitDescriptor };
+			
+			MockAddInTree addinTree = new MockAddInTree();
+            addinTree.AddItems("/SharpDevelop/UnitTesting/TestFrameworks", descriptors);
+			
+			testFrameworks = new RegisteredTestFrameworks(addinTree);
+
+            nunitTestProject = new MockCSharpProject();
+            nunitTestProject.FileName = @"d:\projects\nunitTestProject.csproj";
+            nunitTestFramework.AddTestProject(nunitTestProject);
+
+            mspecTestProject = new MockCSharpProject();
+            mspecTestProject.FileName = @"d:\projects\mspecTestProject.csproj";
+            mspecTestFramework.AddTestProject(mspecTestProject);
+        }
+
+        [Test]
+        public void ItShouldReturnMSpecTestFrameworkForMSpecTestProject()
+        {
+            Assert.AreSame(mspecTestFramework, testFrameworks.GetTestFrameworkForProject(mspecTestProject), "Expected mspec test framework.");
+        }
+
+        [Test]
+        public void ItShouldReturnNUnitTestFrameworkForNUnitTestProject()
+        {
+            Assert.AreSame(nunitTestFramework, testFrameworks.GetTestFrameworkForProject(nunitTestProject), "Expected nunit test framework.");
+        }
+    }
 }

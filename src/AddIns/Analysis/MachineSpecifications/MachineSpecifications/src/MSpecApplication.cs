@@ -7,7 +7,10 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 using System.IO;
 using ICSharpCode.Core;
@@ -53,9 +56,45 @@ namespace ICSharpCode.MachineSpecifications
             builder.Append(FileUtility.GetAbsolutePath(Environment.CurrentDirectory, Results));
             builder.Append("\" ");
 
+            var filterFileName = CreateFilterFile();
+            if (filterFileName != null)
+            {
+                builder.Append("-f \"");
+                builder.Append(FileUtility.GetAbsolutePath(Environment.CurrentDirectory, filterFileName));
+                builder.Append("\" ");
+            }
+
+            builder.Append("\"");
             builder.Append(project.OutputAssemblyFullPath);
+            builder.Append("\"");            
 
             return builder.ToString();
+        }
+
+        string CreateFilterFile()
+        {
+        	var filter = new List<IClass>();
+        	if (tests.Class != null)
+        		filter.Add(tests.Class);
+            if (tests.NamespaceFilter != null)
+            {
+                var projectContent = ParserService.GetProjectContent(project);
+                foreach (var projectClass in projectContent.Classes)
+                    if (projectClass.FullyQualifiedName.StartsWith(tests.NamespaceFilter + "."))
+                        filter.Add(projectClass);
+            }
+                
+        	
+        	string path = null;
+        	if (filter.Count > 0) {
+        		path = Path.GetTempFileName();
+        		using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
+    			using (var writer = new StreamWriter(stream))
+	        		foreach (var testClass in filter) {
+        			       	writer.WriteLine(testClass.FullyQualifiedName);
+	        		}
+        	}
+            return path;
         }
 
         string ExecutableFileName {

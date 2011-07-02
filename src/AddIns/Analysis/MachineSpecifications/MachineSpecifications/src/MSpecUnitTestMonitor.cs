@@ -65,7 +65,15 @@ namespace ICSharpCode.MachineSpecifications
         public void Read()
         {
             var document = new XmlDocument();
-            document.Load(FileName);
+            try
+            {
+                document.Load(FileName);
+            }
+            catch (XmlException e)
+            {
+                LoggingService.Warn("Error reading Machine.Specifications test results.", e);
+                return;
+            }
 
             var contextNodes = document.SelectNodes("MSpec/assembly/concern/context/specification");
             var results = contextNodes.Cast<XmlNode>().Select(BuildTestResultFrom).ToArray();
