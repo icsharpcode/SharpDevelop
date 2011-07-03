@@ -153,6 +153,9 @@ namespace SharpReportSamples
 		private void RunContributors (string fileName)
 		{
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
+			Console.WriteLine(model.ReportSettings.PageSize);
+			model.ReportSettings.PageSize = new Size(model.ReportSettings.PageSize.Width,400);
+			Console.WriteLine(model.ReportSettings.PageSize);
 			
 			// sorting is done here, but, be carefull, misspelled fieldnames will cause an exception
 			
@@ -302,7 +305,7 @@ namespace SharpReportSamples
 		private void PushPrinting (object sender, SectionRenderEventArgs e )
 		{
 			string sectionName = e.Section.Name;
-			
+			/*
 			if (sectionName == ReportSectionNames.ReportHeader) {
 				Console.WriteLine("PushPrinting  :" + ReportSectionNames.ReportHeader);
 			} 
@@ -372,6 +375,7 @@ namespace SharpReportSamples
 			else{
 				throw new WrongSectionException(sectionName);
 			}
+			*/
 		}
 		
 		

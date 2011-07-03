@@ -132,10 +132,31 @@ namespace ICSharpCode.Reports.Core
 		public virtual bool PageBreakAfter {get;set;}
 	
 		#endregion
-		
-		public Size MeasureOverride (Size size)
+		//http://www.switchonthecode.com/tutorials/wpf-tutorial-creating-a-custom-panel-control
+//		http://social.msdn.microsoft.com/Forums/en-US/wpf/thread/607eba8c-6fa4-414c-82ae-23a527cdc5bf
+		public Size MeasureOverride (Size availableSize)
 		{
-			return Size.Empty;
+			Size resultSize = new Size(0,0);
+			Console.WriteLine("MeasureOverride");
+			foreach (var item in Items) {
+				Console.WriteLine("{0} - {1}",item.Location,item.Size);
+				resultSize.Width = Math.Max(resultSize.Width, item.Size.Width);
+				resultSize.Height = Math.Max(resultSize.Height, item.Size.Height);
+			}
+
+//			resultSize.Width = double.IsPositiveInfinity(availableSize.Width) ?
+//				resultSize.Width : availableSize.Width;
+//			
+//			resultSize.Height = double.IsPositiveInfinity(availableSize.Height) ?
+//				resultSize.Height : availableSize.Height;
+			
+				resultSize.Width = double.IsPositiveInfinity(availableSize.Width) ?
+				resultSize.Width : availableSize.Width;
+			var b = double.IsPositiveInfinity(availableSize.Height);
+			resultSize.Height = double.IsPositiveInfinity(availableSize.Height) ?
+				resultSize.Height : availableSize.Height;
+			
+			return resultSize;
 		}
 		
 		#region System.IDisposable interface implementation

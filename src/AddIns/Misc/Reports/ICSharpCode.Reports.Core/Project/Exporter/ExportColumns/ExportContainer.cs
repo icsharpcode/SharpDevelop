@@ -37,6 +37,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 			base.DrawItem(graphics);
 			base.Decorate(graphics);
+			
 			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) 
 			{
 				baseExportColumn.DrawItem(graphics);

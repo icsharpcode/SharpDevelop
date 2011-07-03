@@ -89,21 +89,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (section.Items.Count > 0)
 			{
 				Size sectionSize = section.Size;
-				foreach (var element in section.Items) {
-					Console.WriteLine(element.Location);
-				}
-				section.Items.SortByLocation();
-				Console.WriteLine("--");
-				foreach (var element in section.Items) {
-					Console.WriteLine(element.Location);
-				}
-				
-				section.Items.ForEach(delegate(BaseReportItem item)
-				                      {
-				                      	Console.WriteLine(item.Location);
-				                      });
-				var h = section.Items.FindHighestElement();
-				
 				
 				IExpressionEvaluatorFacade evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.SinglePage.IDataNavigator);
 
@@ -129,6 +114,18 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 						var layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
 						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
+						/*
+						 * */
+							Console.WriteLine("--");
+				section.Items.ForEach(delegate(BaseReportItem aitem)
+				                      {
+				                      	Console.WriteLine(item.Location);
+				                      });
+				var h = section.Items.FindHighestElement();
+				section.MeasureOverride(section.Size);
+				/*
+						 * */
+						
 						Offset = BaseConverter.ConvertContainer(convertedSection,simpleContainer,Offset.X,Offset);
 						simpleContainer.Size = containerSize;
 					}

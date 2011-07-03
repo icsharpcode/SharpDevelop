@@ -10,12 +10,13 @@ using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.Globals;
 using iTextSharp.text.pdf;
+using System.Linq;
 
 namespace ICSharpCode.Reports.Core.Exporter
 {
 	public class ExportGraphicContainer :ExportContainer
 	{
-		
+//		public ExportGraphicContainer (IExportContainer itemStyle,bool isContainer):base(itemStyle as BaseStyleDecorator)
 		public ExportGraphicContainer (IBaseStyleDecorator itemStyle,bool isContainer):base(itemStyle as BaseStyleDecorator)
 		{
 			
@@ -25,8 +26,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			base.DrawItem(graphics);
 			ILineDecorator lineDecorator = base.StyleDecorator as LineDecorator;
-			if (lineDecorator != null) {
-				GraphicsLineDrawer (graphics);
+			if (lineDecorator != null)
+			{
+				throw new ArgumentException("Line is not a valid Container");
 			}
 			else
 			{
@@ -43,6 +45,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 					                      baseLine,
 					                      style.DisplayRectangle);
 				}
+				foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in Items)
+				{
+					baseExportColumn.DrawItem(graphics);
+				}
 			}
 		}
 		
@@ -58,6 +64,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			                      new BaseLine (style.ForeColor,style.DashStyle,style.Thickness),
 			                      style,
 			                      ConvertToPdfRectangle());
+			
 			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in this.Items)
 			{
 				baseExportColumn.DrawItem(pdfWriter,converter);
@@ -65,21 +72,5 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		private void GraphicsLineDrawer (Graphics graphics)
-		{
-			LineDecorator lineStyle = base.StyleDecorator as LineDecorator;
-			
-			BaseLine baseLine = null;
-			baseLine = new BaseLine (lineStyle.ForeColor,lineStyle.DashStyle,lineStyle.Thickness);
-			
-			Point from = new Point(lineStyle.DisplayRectangle.Left +  lineStyle.From.X,
-			                       lineStyle.DisplayRectangle.Top + lineStyle.From.Y);
-			Point to = new Point(lineStyle.DisplayRectangle.Left +  lineStyle.To.X,
-			                     lineStyle.DisplayRectangle.Top + lineStyle.To.Y);
-			lineStyle.Shape.DrawShape(graphics,
-			                          baseLine,
-			                          from,
-			                          to);
-		}
 	}
 }
