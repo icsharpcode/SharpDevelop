@@ -37,9 +37,9 @@ namespace ICSharpCode.Reports.Core
 		
 		#region IExportColumnBuilder  implementation
 		
-		public virtual BaseExportColumn CreateExportColumn(){
+		public virtual IBaseExportColumn CreateExportColumn(){
 			TextStyleDecorator st = this.CreateItemStyle();
-			ExportText item = new ExportText(st,false);
+			ExportText item = new ExportText(st);
 			item.Text = this.text;
 			item.Expression = this.Expression;
 			return item;

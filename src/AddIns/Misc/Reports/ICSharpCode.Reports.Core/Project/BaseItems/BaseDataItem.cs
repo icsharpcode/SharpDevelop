@@ -35,16 +35,13 @@ namespace ICSharpCode.Reports.Core
 		#endregion
 
 		
-
 		#region IExportColumnBuilder  implementation
 
-		public new BaseExportColumn CreateExportColumn()
+		public new IBaseExportColumn CreateExportColumn()
 		{
-//			string toPrint = CheckForNullValue();
 			TextStyleDecorator st = base.CreateItemStyle();
-			ExportText item = new ExportText(st, false);
+			ExportText item = new ExportText(st);
 			item.Text = StandardFormatter.FormatOutput(DBValue, this.FormatString, base.DataType, this.NullValue);
-
 			return item;
 		}
 

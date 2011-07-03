@@ -17,7 +17,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 		
 		#region Constructors
 		
-		public ExportText (BaseStyleDecorator itemStyle,bool isContainer):base(itemStyle,isContainer)
+		public ExportText (BaseStyleDecorator itemStyle):base(itemStyle)
 		{
 		}
 		

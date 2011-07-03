@@ -6,10 +6,8 @@ using iTextSharp.text.pdf;
 
 namespace ICSharpCode.Reports.Core.Exporter
 {
-	public interface IExportContainer
+	public interface IExportContainer:IBaseExportColumn
 	{
-		void DrawItem(System.Drawing.Graphics graphics);
-		void DrawItem(PdfWriter pdfWriter, ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter);
 		ExporterCollection Items { get; }
 	}
 }

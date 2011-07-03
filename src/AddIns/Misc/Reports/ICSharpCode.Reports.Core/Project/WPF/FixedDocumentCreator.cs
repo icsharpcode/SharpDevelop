@@ -212,7 +212,7 @@ namespace ICSharpCode.Reports.Core.WPF
 		}
 
 		
-		System.Windows.Media.Imaging.BitmapImage BitmapFromImage(ExportImage image)
+		static System.Windows.Media.Imaging.BitmapImage BitmapFromImage(ExportImage image)
 		{
 			var bitmap = new System.Windows.Media.Imaging.BitmapImage();
 			bitmap.BeginInit();
@@ -304,7 +304,7 @@ namespace ICSharpCode.Reports.Core.WPF
 		}
 		
 		
-		void SetDimension (FrameworkElement element,IBaseStyleDecorator decorator)
+		static void SetDimension (FrameworkElement element,IBaseStyleDecorator decorator)
 		{
 			element.Width = decorator.DisplayRectangle.Width;
 			element.Height = decorator.DisplayRectangle.Height;
@@ -313,12 +313,12 @@ namespace ICSharpCode.Reports.Core.WPF
 		}
 		
 		
-		public void ArrangePage(Size pageSize, FixedPage page)
+		public static void ArrangePage(Size pageSize, FixedPage page)
 		{
 			page.Measure(pageSize);
 			page.Arrange(new Rect(new System.Windows.Point(), pageSize));
 			page.UpdateLayout();
-		}
+		} 
 		
 		
 		public System.Windows.Size PageSize {get;set;}

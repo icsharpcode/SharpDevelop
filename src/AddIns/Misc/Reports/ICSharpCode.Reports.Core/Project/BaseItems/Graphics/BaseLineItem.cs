@@ -20,11 +20,6 @@ namespace ICSharpCode.Reports.Core {
 	public class BaseLineItem : BaseGraphicItem,IExportColumnBuilder {
 		
 		private LineShape shape  = new LineShape();
-//		private Point fromPoint;
-//		private Point toPoint;
-//		private LineCap startLineCap;
-//		private LineCap endLineCap;
-//		private DashCap dashLineCap;
 		
 		#region Constructor
 		
@@ -36,10 +31,10 @@ namespace ICSharpCode.Reports.Core {
 		
 		#region IExportColumnBuilder  implementation
 		
-		public BaseExportColumn CreateExportColumn()
+		public IBaseExportColumn CreateExportColumn()
 		{
 			LineDecorator style = this.CreateLineShape();
-			ExportGraphic item = new ExportGraphic(style,false);
+			ExportGraphic item = new ExportGraphic(style);
 			return item as ExportGraphic;
 		}
 	
@@ -47,7 +42,6 @@ namespace ICSharpCode.Reports.Core {
 		private LineDecorator CreateLineShape ()
 		{
 			LineDecorator decorator = new LineDecorator(this.shape);
-//			decorator.Size = CalculateLineSize ();
 			decorator.Size = this.Size;
 			decorator.Location = this.Location;
 			decorator.BackColor = this.BackColor;

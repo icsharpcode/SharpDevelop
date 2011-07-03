@@ -16,13 +16,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		ExporterCollection items;
 
 		#region Constructor
-
-		public ExportContainer() : base()
-		{
-			base.IsContainer = true;
-		}
-
-		public ExportContainer(BaseStyleDecorator itemStyle) : base(itemStyle, true)
+	
+		public ExportContainer(BaseStyleDecorator itemStyle) : base(itemStyle)
 		{
 		}
 

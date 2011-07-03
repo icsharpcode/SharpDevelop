@@ -191,9 +191,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			if (section.DrawBorder == true) {
 				BaseRectangleItem br = BasePager.CreateDebugItem (section);
-				BaseExportColumn bec = br.CreateExportColumn();
+				IBaseExportColumn bec = br.CreateExportColumn();
 				bec.StyleDecorator.Location = section.Location;
-				list.Insert(0,bec);
+				list.Insert(0,(BaseExportColumn)bec);
 			}
 		}
 	}

@@ -89,14 +89,14 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			foreach (var page in pages)
 			{
 				FixedPage fixedPage = docCreator.CreatePage (page);
-				docCreator.ArrangePage(document.DocumentPaginator.PageSize,fixedPage);
+				FixedDocumentCreator.ArrangePage(document.DocumentPaginator.PageSize,fixedPage);
 				AddPageToDocument(document,fixedPage);
 			}
 			Document = document;
 		}
 		
 	
-		void AddPageToDocument(FixedDocument fixedDocument,FixedPage page)
+		static void AddPageToDocument(FixedDocument fixedDocument,FixedPage page)
 		{
 			PageContent pageContent = new PageContent();
 			((IAddChild)pageContent).AddChild(page);

@@ -17,7 +17,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public class ExportGraphicContainer :ExportContainer
 	{
 //		public ExportGraphicContainer (IExportContainer itemStyle,bool isContainer):base(itemStyle as BaseStyleDecorator)
-		public ExportGraphicContainer (IBaseStyleDecorator itemStyle,bool isContainer):base(itemStyle as BaseStyleDecorator)
+		public ExportGraphicContainer (IBaseStyleDecorator itemStyle):base(itemStyle as BaseStyleDecorator)
 		{
 			
 		}

@@ -29,11 +29,10 @@ namespace ICSharpCode.Reports.Core{
 		
 		#region IExportColumnBuilder  implementation
 		
-		public BaseExportColumn CreateExportColumn()
+		public IBaseExportColumn CreateExportColumn()
 		{
 			BaseStyleDecorator st = this.CreateItemStyle();
-			ExportContainer item = new ExportContainer(st);
-			return item;
+			return  new ExportContainer(st);
 		}
 
 		protected BaseStyleDecorator CreateItemStyle () 

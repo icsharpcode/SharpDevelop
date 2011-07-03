@@ -19,14 +19,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 	internal static class ExportHelper
 	{
 		
-		public static BaseExportColumn ConvertLineItem (BaseReportItem item,Point offset)
+		public static IBaseExportColumn ConvertLineItem (BaseReportItem item,Point offset)
 		{
 			if (item == null) {
 				throw new ArgumentNullException("item");
 			}
 
 			IExportColumnBuilder columnBuilder = item as IExportColumnBuilder;
-			BaseExportColumn lineItem = null;
+			IBaseExportColumn lineItem = null;
 			
 			
 			if (columnBuilder != null) {
@@ -52,7 +52,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				foreach(BaseReportItem item in items)
 				{
-					col.Add(ExportHelper.ConvertLineItem(item,offset));
+					col.Add((BaseExportColumn)ExportHelper.ConvertLineItem(item,offset));
 				}
 			}
 			return col;

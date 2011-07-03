@@ -34,7 +34,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		#region IExportColumnBuilder  implementation
 		
-		public BaseExportColumn CreateExportColumn()
+		public IBaseExportColumn CreateExportColumn()
 		{
 			BaseStyleDecorator st = this.CreateItemStyle();
 			ExportImage item = new ExportImage(st);

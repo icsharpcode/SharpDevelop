@@ -132,7 +132,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					else
 					{
 						var converteditem = ExportHelper.ConvertLineItem(item,Offset);
-						convertedSection.Add(converteditem );
+						convertedSection.Add((BaseExportColumn)converteditem );
 					}
 					i ++;
 				}

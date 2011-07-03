@@ -35,10 +35,10 @@ namespace ICSharpCode.Reports.Core
 		
 		#region IExportColumnBuilder
 		
-		public BaseExportColumn CreateExportColumn(){
+		public IBaseExportColumn CreateExportColumn(){
 			shape.CornerRadius = CornerRadius;
 			IGraphicStyleDecorator style = base.CreateItemStyle(this.shape);
-			return  new ExportGraphicContainer(style,true);
+			return  new ExportGraphicContainer(style);
 		}
 		
 		
