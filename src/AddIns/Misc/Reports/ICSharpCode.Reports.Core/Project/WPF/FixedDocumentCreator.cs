@@ -83,7 +83,7 @@ namespace ICSharpCode.Reports.Core.WPF
 					border = CreateBorder(column.StyleDecorator as BaseStyleDecorator);
 					border.Child = t;
 					element = border;
-				} 
+				}
 				else
 				{
 					element = t;
@@ -101,7 +101,7 @@ namespace ICSharpCode.Reports.Core.WPF
 			return element;
 		}
 		
-	
+		
 		#region GraphicsElement (Line etc)
 		
 		System.Windows.Controls.Border CreateBorder( BaseStyleDecorator column)
@@ -139,13 +139,15 @@ namespace ICSharpCode.Reports.Core.WPF
 		
 		#endregion
 		
-		#region Container 
-		UIElement CreateGraphicsContainer(ExportGraphicContainer graphicContainer)
+		#region Container
+		UIElement CreateGraphicsContainer(ExportGraphicContainer container)
 		{
-			IGraphicStyleDecorator decorator = graphicContainer.StyleDecorator as IGraphicStyleDecorator;
-			UIElement shape = null;	
-			var ss = decorator.Shape as EllipseShape;
 			
+			
+			IGraphicStyleDecorator decorator = container.StyleDecorator as IGraphicStyleDecorator;
+			
+			UIElement shape = null;
+			var ss = decorator.Shape as EllipseShape;
 			if (ss != null) {
 				
 				var circle  = new System.Windows.Shapes.Ellipse();
@@ -155,16 +157,29 @@ namespace ICSharpCode.Reports.Core.WPF
 				circle.Stroke = ConvertBrush(decorator.ForeColor);
 				shape = circle;
 			}
-			else				
+			else
 			{
 				var border = CreateBorder(decorator as BaseStyleDecorator);
-				SetDimension(border,decorator);
+//				SetDimension(border,decorator);
+				border.Width = decorator.DisplayRectangle.Width + 2;
+			border.Height = decorator.DisplayRectangle.Height + 2;
 				RectangleShape rs = decorator.Shape as RectangleShape;
 				border.CornerRadius = new CornerRadius(rs.CornerRadius);
 				border.BorderThickness = new Thickness(decorator.Thickness);
 				border.BorderBrush = ConvertBrush(decorator.ForeColor);
 				shape = border;
+				
+				var canvas = CreateCanvas(container);
+				canvas.Width = decorator.DisplayRectangle.Width -1;
+			canvas.Height = decorator.DisplayRectangle.Height -1;
+				
+				AddItemsToCanvas(ref canvas, container);
+				border.Child = canvas;
+//				border.Measure(container.StyleDecorator.Size);
+//				border.Arrange(new Rect(new System.Windows.Point(), container.StyleDecorator.Size));
+				border.UpdateLayout();
 			}
+			
 			return shape;
 		}
 		
@@ -172,20 +187,32 @@ namespace ICSharpCode.Reports.Core.WPF
 		
 		private UIElement CreateContainer(ExportContainer container)
 		{
-			var canvas = new Canvas();
-			SetDimension(canvas,container.StyleDecorator);
-			canvas.Background = ConvertBrush(container.StyleDecorator.BackColor);
+			Canvas canvas = CreateCanvas(container);
 			
-			foreach (var exportElement in container.Items) {
-				var uiElement = ItemFactory (exportElement);
-				Canvas.SetLeft(uiElement,exportElement.StyleDecorator.Location.X - container.StyleDecorator.Location.X);
-				Canvas.SetTop(uiElement,exportElement.StyleDecorator.Location.Y - container.StyleDecorator.Location.Y);
-				canvas.Children.Add(uiElement);
-			}
+			AddItemsToCanvas(ref canvas, container);
 			
 			canvas.Measure(PageSize);
 			canvas.Arrange(new Rect(new System.Windows.Point(), PageSize));
 			canvas.UpdateLayout();
+			return canvas;
+		}
+
+		
+		void AddItemsToCanvas(ref Canvas canvas, ExportContainer container)
+		{
+			foreach (var exportElement in container.Items) {
+				var uiElement = ItemFactory(exportElement);
+				Canvas.SetLeft(uiElement, exportElement.StyleDecorator.Location.X - container.StyleDecorator.Location.X);
+				Canvas.SetTop(uiElement, exportElement.StyleDecorator.Location.Y - container.StyleDecorator.Location.Y);
+				canvas.Children.Add(uiElement);
+			}
+		}
+
+		Canvas CreateCanvas(ExportContainer container)
+		{
+			var canvas = new Canvas();
+			SetDimension(canvas, container.StyleDecorator);
+			canvas.Background = ConvertBrush(container.StyleDecorator.BackColor);
 			return canvas;
 		}
 		
@@ -263,7 +290,7 @@ namespace ICSharpCode.Reports.Core.WPF
 		{
 			if (brushConverter.IsValid(color.Name)) {
 				return brushConverter.ConvertFromString(color.Name) as SolidColorBrush;
-			} else 
+			} else
 			{
 				Console.WriteLine("FixedDocumentCreator");
 				Console.WriteLine("\tcan't convert {0} to valid Color",color.Name);
@@ -308,8 +335,6 @@ namespace ICSharpCode.Reports.Core.WPF
 		{
 			element.Width = decorator.DisplayRectangle.Width;
 			element.Height = decorator.DisplayRectangle.Height;
-//			element.MaxHeight = decorator.DisplayRectangle.Height;
-//			element.MaxWidth = decorator.DisplayRectangle.Width;
 		}
 		
 		
@@ -318,7 +343,7 @@ namespace ICSharpCode.Reports.Core.WPF
 			page.Measure(pageSize);
 			page.Arrange(new Rect(new System.Windows.Point(), pageSize));
 			page.UpdateLayout();
-		} 
+		}
 		
 		
 		public System.Windows.Size PageSize {get;set;}

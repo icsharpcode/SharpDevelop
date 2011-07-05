@@ -94,7 +94,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 				Rectangle desiredRectangle = LayoutHelper.CalculateSectionLayout(this.Graphics,section);
 				LayoutHelper.FixSectionLayout(desiredRectangle,section);
-				
+				section.Items.SortByLocation();
 				GapList gapCalculator = new GapList();
 				gapCalculator.CalculateGapList(section);
 				int i = 0;
@@ -116,10 +116,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
 						/*
 						 * */
-							Console.WriteLine("--");
+//							Console.WriteLine("--");
 				section.Items.ForEach(delegate(BaseReportItem aitem)
 				                      {
-				                      	Console.WriteLine(item.Location);
+//				                      	Console.WriteLine(item.Location);
 				                      });
 				var h = section.Items.FindHighestElement();
 				section.MeasureOverride(section.Size);

@@ -41,10 +41,10 @@ namespace ICSharpCode.Reports.Addin.Project.WPF
 		
 		protected override void LoadFromPrimary()
 		{
-			Stopwatch sw = new Stopwatch();
-			sw.Start();
-			Console.WriteLine("-----------------");
-			Console.WriteLine("Stop start");
+//			Stopwatch sw = new Stopwatch();
+//			sw.Start();
+//			Console.WriteLine("--------Stopwatch start---------");
+//			Console.WriteLine("");
 				
 			Pages.Clear();
 			ReportModel model = designerLoader.CreateRenderableModel();
@@ -52,15 +52,19 @@ namespace ICSharpCode.Reports.Addin.Project.WPF
 			collectCmd.Run();
 			switch (model.DataModel)
 			{
-					case GlobalEnums.PushPullModel.FormSheet : {
+					case GlobalEnums.PushPullModel.FormSheet :
+					{
 						exportRunner.RunReport(model,(ReportParameters)null);
 						break;
 					}
-					case GlobalEnums.PushPullModel.PullData:{
+					case GlobalEnums.PushPullModel.PullData:
+					{
+//						Console.WriteLine("call runreport {0}",sw.Elapsed);
 						exportRunner.RunReport(model,(ReportParameters)null);
+//							Console.WriteLine("back from  runreport {0}",sw.Elapsed);
 						break;
 					}
-				case GlobalEnums.PushPullModel.PushData:
+					case GlobalEnums.PushPullModel.PushData:
 					{
 						var cmd = new DataSetFromXsdCommand();
 						cmd.Run();
@@ -71,14 +75,18 @@ namespace ICSharpCode.Reports.Addin.Project.WPF
 				default:
 					throw new InvalidReportModelException();
 			}
-			Console.WriteLine (" after create {0}",sw.Elapsed);
-			
+//			Console.WriteLine ("finsh  create {0}",sw.Elapsed);
+//			Console.WriteLine ("strat viewmodel");
 			PreviewViewModel previewViewModel = new PreviewViewModel (model.ReportSettings,exportRunner.Pages);
-				Console.WriteLine (" after init model {0}",sw.Elapsed);
+//			Console.WriteLine ("back from viewmodel");
+//				Console.WriteLine ("after init model {0}",sw.Elapsed);
+				
 			viewer.SetBinding(previewViewModel);
-				Console.WriteLine ("after setbinding {0}",sw.Elapsed);
-			sw.Stop();
-			Console.WriteLine("---------------");
+			
+//				Console.WriteLine ("after setbinding {0}",sw.Elapsed);
+				
+//			sw.Stop();
+//			Console.WriteLine("-----end ----------");
 		}
 		
 		

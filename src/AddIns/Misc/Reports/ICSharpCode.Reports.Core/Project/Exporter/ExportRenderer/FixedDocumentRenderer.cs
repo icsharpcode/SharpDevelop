@@ -57,26 +57,21 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			
 			// 827/1169
 
-//			A4 paper is 210mm x 297mm 
-//8.2 inch x 11.6 inch 
-//1240 px x 1754 px
-/*
-		iTextSharp uses a default of 72 pixels per inch. 
+//			A4 paper is 210mm x 297mm
+			//8.2 inch x 11.6 inch
+			//1240 px x 1754 px
+			/*
+		iTextSharp uses a default of 72 pixels per inch.
 			792 would be 11", or the height of a standard Letter size paper." +
 			595 would be 8.264",
 		which is the standard width of A4 size paper.
-			Using 595 x 792 as the page size would be a cheap and dirty way 
-			to ensure that you could print on either A4 or Letter 
+			Using 595 x 792 as the page size would be a cheap and dirty way
+			to ensure that you could print on either A4 or Letter
 			without anything getting cut off. –
-*/			
-			PrintDialog printDialog = new PrintDialog();
-			var w = printDialog.PrintableAreaHeight;
-			var h = printDialog.PrintableAreaWidth;
-			Console.WriteLine(new System.Windows.Size(w,h));
-
+			 */
+			
 			docCreator.PageSize = new System.Windows.Size(reportSettings.PageSize.Width,reportSettings.PageSize.Height);
 			document.DocumentPaginator.PageSize = docCreator.PageSize;
-			
 		}
 		
 	
@@ -84,7 +79,6 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 		public override void RenderOutput()
 		{
 			base.RenderOutput();
-			Console.WriteLine("FixedDocumentRenderer - RenderOutput");
 			
 			foreach (var page in pages)
 			{

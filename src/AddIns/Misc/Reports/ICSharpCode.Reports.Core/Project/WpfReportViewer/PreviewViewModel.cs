@@ -8,6 +8,7 @@
  */
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows.Documents;
 
 using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
@@ -25,13 +26,24 @@ namespace ICSharpCode.Reports.Core.WpfReportViewer
 		public PreviewViewModel(ReportSettings reportSettings, PagesCollection pages)
 		{
 			this.Pages = pages;
+//			Stopwatch s = new Stopwatch();
+//			s.Start();
+//			Console.WriteLine("-------------");
 			FixedDocumentRenderer renderer =  FixedDocumentRenderer.CreateInstance(reportSettings,Pages);
 			
+//			Console.WriteLine("\tfinish render {0}",s.Elapsed);
+//			Console.WriteLine("-------------");
+//			
 			renderer.Start();
+//				Console.WriteLine("\tfinsih start {0}",s.Elapsed);
+				
 			renderer.RenderOutput();
+//				Console.WriteLine("\tfinish renderoutput {0}",s.Elapsed);
 			renderer.End();
+//				Console.WriteLine("\tfinish end {0}",s.Elapsed);
 			this.Document = renderer.Document;
-			
+//				Console.WriteLine("\tfinish document {0}",s.Elapsed);
+//				s.Stop();
 		}
 		
 		public PagesCollection Pages {get;private set;}
@@ -42,9 +54,7 @@ namespace ICSharpCode.Reports.Core.WpfReportViewer
 			set {
 				this.document = value;
 				OnNotifyPropertyChanged ("Document");
-				}
-			
-					
+				}	
 		}
 		
 		

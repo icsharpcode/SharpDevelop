@@ -65,7 +65,7 @@ namespace ICSharpCode.Reports.Core{
 			get { return (List<BaseReportItem>)base.Items; }
 		}
 		
-		public void Sort(IComparer<BaseReportItem> comparer)
+		private void Sort(IComparer<BaseReportItem> comparer)
 		{
 			InnerList.Sort(comparer);
 		}

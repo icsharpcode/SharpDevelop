@@ -137,9 +137,9 @@ namespace ICSharpCode.Reports.Core
 		public Size MeasureOverride (Size availableSize)
 		{
 			Size resultSize = new Size(0,0);
-			Console.WriteLine("MeasureOverride");
+//			Console.WriteLine("MeasureOverride");
 			foreach (var item in Items) {
-				Console.WriteLine("{0} - {1}",item.Location,item.Size);
+//				Console.WriteLine("{0} - {1}",item.Location,item.Size);
 				resultSize.Width = Math.Max(resultSize.Width, item.Size.Width);
 				resultSize.Height = Math.Max(resultSize.Height, item.Size.Height);
 			}
