@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp;
@@ -187,8 +188,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition def = type.GetDefinition();
 			if (def != null && def.ClassType == ClassType.Delegate) {
 				foreach (IMethod method in def.Methods) {
-					if (method.Name == "Invoke")
+					if (method.Name == "Invoke") {
+						ParameterizedType pt = type as ParameterizedType;
+						if (pt != null) {
+							SpecializedMethod m = new SpecializedMethod(method);
+							m.SetDeclaringType(pt);
+							var substitution = pt.GetSubstitution();
+							m.SubstituteTypes(t => new SubstitutionTypeReference(t, substitution));
+							return m;
+						}
 						return method;
+					}
 				}
 			}
 			return null;

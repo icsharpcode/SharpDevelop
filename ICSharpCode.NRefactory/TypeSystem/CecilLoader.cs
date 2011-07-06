@@ -1113,7 +1113,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					break;
 			}
 			
-			tp.HasDefaultConstructorConstraint = g.HasReferenceTypeConstraint;
+			tp.HasReferenceTypeConstraint = g.HasReferenceTypeConstraint;
 			tp.HasValueTypeConstraint = g.HasNotNullableValueTypeConstraint;
 			tp.HasDefaultConstructorConstraint = g.HasDefaultConstructorConstraint;
 			

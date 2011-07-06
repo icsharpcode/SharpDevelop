@@ -157,6 +157,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return type.AcceptVisitor(new Substitution(typeArguments));
 		}
 		
+		/// <summary>
+		/// Gets a type visitor that performs the substitution of class type parameters with the type arguments
+		/// of this parameterized type.
+		/// </summary>
+		public TypeVisitor GetSubstitution()
+		{
+			return new Substitution(typeArguments);
+		}
+		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
 			Substitution substitution = new Substitution(typeArguments);
@@ -200,11 +209,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
 			Substitution substitution = new Substitution(typeArguments);
+			Func<ITypeReference, ITypeReference> substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
 			List<IMethod> methods = genericType.GetMethods(context, filter).ToList();
 			for (int i = 0; i < methods.Count; i++) {
 				SpecializedMethod m = new SpecializedMethod(methods[i]);
 				m.SetDeclaringType(this);
-				m.SubstituteTypes(context, substitution);
+				m.SubstituteTypes(substitutionFunc);
 				methods[i] = m;
 			}
 			return methods;
@@ -213,11 +223,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
 			Substitution substitution = new Substitution(typeArguments);
+			Func<ITypeReference, ITypeReference> substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
 			List<IMethod> methods = genericType.GetConstructors(context, filter).ToList();
 			for (int i = 0; i < methods.Count; i++) {
 				SpecializedMethod m = new SpecializedMethod(methods[i]);
 				m.SetDeclaringType(this);
-				m.SubstituteTypes(context, substitution);
+				m.SubstituteTypes(substitutionFunc);
 				methods[i] = m;
 			}
 			return methods;
@@ -226,11 +237,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
 		{
 			Substitution substitution = new Substitution(typeArguments);
+			Func<ITypeReference, ITypeReference> substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
 			List<IProperty> properties = genericType.GetProperties(context, filter).ToList();
 			for (int i = 0; i < properties.Count; i++) {
 				SpecializedProperty p = new SpecializedProperty(properties[i]);
 				p.SetDeclaringType(this);
-				p.SubstituteTypes(context, substitution);
+				p.SubstituteTypes(substitutionFunc);
 				properties[i] = p;
 			}
 			return properties;
@@ -265,41 +277,42 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null)
 		{
 			Substitution substitution = new Substitution(typeArguments);
+			Func<ITypeReference, ITypeReference> substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
 			List<IMember> members = genericType.GetMembers(context, filter).ToList();
 			for (int i = 0; i < members.Count; i++) {
-				members[i] = Specialize(members[i], context, substitution);
+				members[i] = Specialize(members[i], substitutionFunc);
 			}
 			return members;
 		}
 		
-		IMember Specialize(IMember member, ITypeResolveContext context, Substitution substitution)
+		IMember Specialize(IMember member, Func<ITypeReference, ITypeReference> substitution)
 		{
 			IMethod method = member as IMethod;
 			if (method != null) {
 				SpecializedMethod m = new SpecializedMethod(method);
 				m.SetDeclaringType(this);
-				m.SubstituteTypes(context, substitution);
+				m.SubstituteTypes(substitution);
 				return m;
 			}
 			IProperty property = member as IProperty;
 			if (property != null) {
 				SpecializedProperty p = new SpecializedProperty(property);
 				p.SetDeclaringType(this);
-				p.SubstituteTypes(context, substitution);
+				p.SubstituteTypes(substitution);
 				return p;
 			}
 			IField field = member as IField;
 			if (field != null) {
 				SpecializedField f = new SpecializedField(field);
 				f.SetDeclaringType(this);
-				f.ReturnType = f.ReturnType.Resolve(context).AcceptVisitor(substitution);
+				f.ReturnType = substitution(f.ReturnType);
 				return f;
 			}
 			IEvent ev = member as IEvent;
 			if (ev != null) {
 				SpecializedEvent e = new SpecializedEvent(ev);
 				e.SetDeclaringType(this);
-				e.ReturnType = e.ReturnType.Resolve(context).AcceptVisitor(substitution);
+				e.ReturnType = substitution(e.ReturnType);
 				return e;
 			}
 			throw new ArgumentException("Unknown member");

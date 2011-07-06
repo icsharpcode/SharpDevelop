@@ -363,5 +363,36 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(0, p.Attributes.Count);
 			Assert.IsTrue(p.Type is ArrayTypeReference);
 		}
+		
+		[Test, Ignore("C# Parser does not set the variance")]
+		public void GenericDelegate_Variance()
+		{
+			ITypeDefinition type = ctx.GetTypeDefinition(typeof(GenericDelegate<,>));
+			Assert.AreEqual(VarianceModifier.Contravariant, type.TypeParameters[0].Variance);
+			Assert.AreEqual(VarianceModifier.Covariant, type.TypeParameters[1].Variance);
+			
+			Assert.AreSame(type.TypeParameters[1], type.TypeParameters[0].Constraints[0]);
+		}
+		
+		[Test]
+		public void GenericDelegate_ReferenceTypeConstraints()
+		{
+			ITypeDefinition type = ctx.GetTypeDefinition(typeof(GenericDelegate<,>));
+			Assert.IsFalse(type.TypeParameters[0].HasReferenceTypeConstraint);
+			Assert.IsTrue(type.TypeParameters[1].HasReferenceTypeConstraint);
+			
+			Assert.IsTrue(type.TypeParameters[0].IsReferenceType(ctx) == true);
+			Assert.IsTrue(type.TypeParameters[1].IsReferenceType(ctx) == true);
+		}
+		
+		[Test]
+		public void GenericDelegate_GetInvokeMethod()
+		{
+			IType type = typeof(GenericDelegate<string, object>).ToTypeReference().Resolve(ctx);
+			IMethod m = type.GetDelegateInvokeMethod();
+			Assert.AreEqual("Invoke", m.Name);
+			Assert.AreEqual("System.Object", m.ReturnType.Resolve(ctx).FullName);
+			Assert.AreEqual("System.String", m.Parameters[0].Type.Resolve(ctx).FullName);
+		}
 	}
 }
