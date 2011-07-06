@@ -11,27 +11,27 @@ namespace ICSharpCode.Editor
 	/// </summary>
 	public sealed class ReadOnlyDocument : IDocument
 	{
-		readonly ITextSource textBuffer;
+		readonly ITextSource textSource;
 		int[] lines;
 		
 		static readonly char[] newline = { '\r', '\n' };
 		
 		/// <summary>
-		/// Creates a new ReadOnlyDocument from the given text buffer.
+		/// Creates a new ReadOnlyDocument from the given text source.
 		/// </summary>
-		public ReadOnlyDocument(ITextSource textBuffer)
+		public ReadOnlyDocument(ITextSource textSource)
 		{
-			if (textBuffer == null)
-				throw new ArgumentNullException("textBuffer");
+			if (textSource == null)
+				throw new ArgumentNullException("textSource");
 			// ensure that underlying buffer is immutable
-			this.textBuffer = textBuffer.CreateSnapshot();
+			this.textSource = textSource.CreateSnapshot();
 			List<int> lines = new List<int>();
 			lines.Add(0);
 			int offset = 0;
-			int textLength = textBuffer.TextLength;
-			while ((offset = textBuffer.IndexOfAny(newline, offset, textLength - offset)) >= 0) {
+			int textLength = textSource.TextLength;
+			while ((offset = textSource.IndexOfAny(newline, offset, textLength - offset)) >= 0) {
 				offset++;
-				if (textBuffer.GetCharAt(offset - 1) == '\r' && offset < textLength && textBuffer.GetCharAt(offset) == '\n') {
+				if (textSource.GetCharAt(offset - 1) == '\r' && offset < textLength && textSource.GetCharAt(offset) == '\n') {
 					offset++;
 				}
 				lines.Add(offset);
@@ -96,12 +96,6 @@ namespace ICSharpCode.Editor
 			public int LineNumber {
 				get { return lineNumber; }
 			}
-			
-			public string Text {
-				get {
-					return doc.GetText(this.Offset, this.Length);
-				}
-			}
 		}
 		
 		int GetStartOffset(int lineNumber)
@@ -111,15 +105,15 @@ namespace ICSharpCode.Editor
 		
 		int GetTotalEndOffset(int lineNumber)
 		{
-			return lineNumber < lines.Length ? lines[lineNumber] : textBuffer.TextLength;
+			return lineNumber < lines.Length ? lines[lineNumber] : textSource.TextLength;
 		}
 		
 		int GetEndOffset(int lineNumber)
 		{
 			if (lineNumber == lines.Length)
-				return textBuffer.TextLength;
+				return textSource.TextLength;
 			int off = lines[lineNumber] - 1;
-			if (off > 0 && textBuffer.GetCharAt(off - 1) == '\r' && textBuffer.GetCharAt(off) == '\n')
+			if (off > 0 && textSource.GetCharAt(off - 1) == '\r' && textSource.GetCharAt(off) == '\n')
 				off--;
 			return off;
 		}
@@ -159,15 +153,15 @@ namespace ICSharpCode.Editor
 		/// <inheritdoc/>
 		public TextLocation GetLocation(int offset)
 		{
-			if (offset < 0 || offset > textBuffer.TextLength)
-				throw new ArgumentOutOfRangeException("offset", offset, "Value must be between 0 and " + textBuffer.TextLength);
+			if (offset < 0 || offset > textSource.TextLength)
+				throw new ArgumentOutOfRangeException("offset", offset, "Value must be between 0 and " + textSource.TextLength);
 			int line = GetLineNumberForOffset(offset);
 			return new TextLocation(offset-GetStartOffset(line)+1, line);
 		}
 		
 		/// <inheritdoc/>
 		public string Text {
-			get { return textBuffer.Text; }
+			get { return textSource.Text; }
 			set {
 				throw new NotSupportedException();
 			}
@@ -184,7 +178,7 @@ namespace ICSharpCode.Editor
 		
 		/// <inheritdoc/>
 		public int TextLength {
-			get { return textBuffer.TextLength; }
+			get { return textSource.TextLength; }
 		}
 		
 		event EventHandler<TextChangeEventArgs> IDocument.Changing { add {} remove {} }
@@ -273,49 +267,49 @@ namespace ICSharpCode.Editor
 		/// <inheritdoc/>
 		public ITextSource CreateSnapshot()
 		{
-			return textBuffer; // textBuffer is immutable
+			return textSource; // textBuffer is immutable
 		}
 		
 		/// <inheritdoc/>
 		public ITextSource CreateSnapshot(int offset, int length)
 		{
-			return textBuffer.CreateSnapshot(offset, length);
+			return textSource.CreateSnapshot(offset, length);
 		}
 		
 		/// <inheritdoc/>
 		public System.IO.TextReader CreateReader()
 		{
-			return textBuffer.CreateReader();
+			return textSource.CreateReader();
 		}
 		
 		/// <inheritdoc/>
 		public System.IO.TextReader CreateReader(int offset, int length)
 		{
-			return textBuffer.CreateReader(offset, length);
+			return textSource.CreateReader(offset, length);
 		}
 		
 		/// <inheritdoc/>
 		public char GetCharAt(int offset)
 		{
-			return textBuffer.GetCharAt(offset);
+			return textSource.GetCharAt(offset);
 		}
 		
 		/// <inheritdoc/>
 		public string GetText(int offset, int length)
 		{
-			return textBuffer.GetText(offset, length);
+			return textSource.GetText(offset, length);
 		}
 		
 		/// <inheritdoc/>
 		public string GetText(ISegment segment)
 		{
-			return textBuffer.GetText(segment);
+			return textSource.GetText(segment);
 		}
 		
 		/// <inheritdoc/>
 		public int IndexOfAny(char[] anyOf, int startIndex, int count)
 		{
-			return textBuffer.IndexOfAny(anyOf, startIndex, count);
+			return textSource.IndexOfAny(anyOf, startIndex, count);
 		}
 		
 		/// <inheritdoc/>
