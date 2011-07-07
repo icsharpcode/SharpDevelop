@@ -1096,6 +1096,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			IType GetElementType(IType result)
 			{
+				bool foundSimpleIEnumerable = false;
 				foreach (IType baseType in result.GetAllBaseTypes(storedContext.Context)) {
 					ITypeDefinition baseTypeDef = baseType.GetDefinition();
 					if (baseTypeDef != null && baseTypeDef.Name == "IEnumerable") {
@@ -1105,10 +1106,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 								return pt.TypeArguments[0];
 							}
 						} else if (baseTypeDef.Namespace == "System.Collections" && baseTypeDef.TypeParameterCount == 0) {
-							return KnownTypeReference.Object.Resolve(storedContext.Context);
+							foundSimpleIEnumerable = true;
 						}
 					}
 				}
+				// System.Collections.IEnumerable found in type hierarchy -> Object is element type.
+				if (foundSimpleIEnumerable)
+					return KnownTypeReference.Object.Resolve(storedContext.Context);
 				return SharedTypes.UnknownType;
 			}
 			
