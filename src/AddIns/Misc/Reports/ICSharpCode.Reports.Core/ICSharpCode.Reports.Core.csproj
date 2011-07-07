@@ -104,6 +104,7 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Project\Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Project\BaseClasses\ExtensionMethodes.cs" />
     <Compile Include="Project\BaseClasses\Printing\LayoutHelper.cs" />
     <Compile Include="Project\BaseClasses\TypeHelpers.cs" />
     <Compile Include="Project\BaseClasses\CurrentItem.cs" />
@@ -375,7 +376,6 @@
       <DependentUpon>WpfReportViewer.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Project\WPF\ExtensionMethodes.cs" />
     <Compile Include="Project\WPF\FixedDocumentCreator.cs" />
     <Compile Include="Project\Xml\BaseItemLoader.cs" />
     <Compile Include="Project\Xml\MycroParser.cs" />

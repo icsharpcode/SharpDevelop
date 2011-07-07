@@ -21,15 +21,25 @@ using System.Windows.Forms;
 
 using WinForms = System.Windows.Forms;
 
-namespace ICSharpCode.Reports.Core.WPF
+namespace ICSharpCode.Reports.Core
 {
 	/// <summary>
 	/// Description of ExtensionMethodes.
 	/// Copy from D:\git_Sharpdevelop_Reporting\src\AddIns\Misc\Reports\ICSharpCode.Reports.Core\Project\WPF\ExtensionMethodes.cs
 	/// </summary>
 	/// <see cref="D:\git_Sharpdevelop_Reporting\src\AddIns\Misc\Reports\ICSharpCode.Reports.Core\Project\WPF\ExtensionMethodes.cs"
-	public static class ExtensionMethodes
+	internal static class ExtensionMethodes
 	{
+		
+		
+		public static void ForEach<T>(this IEnumerable<T> input, Action<T> action)
+		{
+			if (input == null)
+				throw new ArgumentNullException("input");
+			foreach (T element in input) {
+				action(element);
+			}
+		}
 		
 		
 		public static Point ToWpf(this System.Drawing.Point p)
@@ -91,5 +101,7 @@ namespace ICSharpCode.Reports.Core.WPF
 			return new Point(point.X * matrix.M11, point.Y * matrix.M22);
 		}
 		#endregion
+		
+		
 	}
 }

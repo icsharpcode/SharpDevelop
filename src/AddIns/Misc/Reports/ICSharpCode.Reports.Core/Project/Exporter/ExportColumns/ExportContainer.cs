@@ -33,10 +33,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.DrawItem(graphics);
 			base.Decorate(graphics);
 			
-			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) 
-			{
-				baseExportColumn.DrawItem(graphics);
-			}
+			items.ForEach(item =>item.DrawItem(graphics));
+//			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) 
+//			{
+//				baseExportColumn.DrawItem(graphics);
+//			}
 		}
 
 		
@@ -45,10 +46,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			base.DrawItem(pdfWriter, converter);
 			base.Decorate();
-			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in this.Items)
-			{
-				baseExportColumn.DrawItem(pdfWriter,converter);
-			}
+			items.ForEach(item =>item.DrawItem(pdfWriter,converter));
+			
+//			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in this.Items)
+//			{
+//				baseExportColumn.DrawItem(pdfWriter,converter);
+//			}
 		}
 
 		#endregion

@@ -45,10 +45,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 					                      baseLine,
 					                      style.DisplayRectangle);
 				}
-				foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in Items)
-				{
-					baseExportColumn.DrawItem(graphics);
-				}
+				Items.ForEach(item =>item.DrawItem(graphics));
+//				foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in Items)
+//				{
+//					baseExportColumn.DrawItem(graphics);
+//				}
 			}
 		}
 		
@@ -64,11 +65,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 			                      new BaseLine (style.ForeColor,style.DashStyle,style.Thickness),
 			                      style,
 			                      ConvertToPdfRectangle());
-			
-			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in this.Items)
-			{
-				baseExportColumn.DrawItem(pdfWriter,converter);
-			}
+			Items.ForEach(item =>item.DrawItem(pdfWriter,converter));
+//			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in this.Items)
+//			{
+//				baseExportColumn.DrawItem(pdfWriter,converter);
+//			}
 		}
 		
 		
