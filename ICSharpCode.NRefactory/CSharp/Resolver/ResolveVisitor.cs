@@ -592,7 +592,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			throw new NotImplementedException();
+			Scan(arrayCreateExpression.Initializer);
+			
+			if (resolverEnabled) {
+				var baseType = MakeTypeReference(arrayCreateExpression.Type);
+				var arrType = new ArrayTypeReference (baseType, 1 + arrayCreateExpression.Arguments.Count);
+				foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers) {
+					arrType = new ArrayTypeReference (arrType, spec.Dimensions);
+				}
+				return new ResolveResult (arrType.Resolve (resolver.Context));
+			}
+			return null;
 		}
 		
 		public override ResolveResult VisitAsExpression(AsExpression asExpression, object data)
