@@ -593,13 +593,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			Scan(arrayCreateExpression.Initializer);
-			
 			if (resolverEnabled) {
-				var baseType = MakeTypeReference(arrayCreateExpression.Type);
-				var arrType = new ArrayTypeReference (baseType, 1 + arrayCreateExpression.Arguments.Count);
-				foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers) {
-					arrType = new ArrayTypeReference (arrType, spec.Dimensions);
+				ArrayTypeReference arrType;
+				if (arrayCreateExpression.Type.IsNull) {
+					var types = new List<ITypeDefinition>();
+					foreach (var init in arrayCreateExpression.Initializer.Elements) {
+						var def = Resolve(init).Type.GetDefinition ();
+						if (def == null)
+							continue;
+						types.Add(def);
+					}
+					var elementType = types.First(t => !types.Any(s => !s.IsDerivedFrom(t, resolver.Context))) ?? SharedTypes.UnknownType;
+					arrType = new ArrayTypeReference (elementType, 1);
+				} else {
+					var baseType = MakeTypeReference(arrayCreateExpression.Type);
+					arrType = new ArrayTypeReference (baseType, 1 + arrayCreateExpression.Arguments.Count);
+					foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers) {
+						arrType = new ArrayTypeReference (arrType, spec.Dimensions);
+					}
 				}
+	
 				return new ResolveResult (arrType.Resolve (resolver.Context));
 			}
 			return null;
