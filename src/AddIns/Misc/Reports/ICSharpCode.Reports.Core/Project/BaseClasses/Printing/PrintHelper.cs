@@ -193,7 +193,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			f.Dispose();
 		}
 		
-		
+		/*
 		public static void Displaychain (ReportItemCollection items)
 		{
 			foreach(BaseReportItem i in items)
@@ -207,7 +207,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				}
 			}
 		}
-		
+		*/
 		
 		public static void ShowLocations (ExporterCollection items)
 		{

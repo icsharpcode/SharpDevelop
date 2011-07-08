@@ -132,8 +132,8 @@ namespace ICSharpCode.Reports.Core
 		public virtual bool PageBreakAfter {get;set;}
 	
 		#endregion
-		//http://www.switchonthecode.com/tutorials/wpf-tutorial-creating-a-custom-panel-control
-//		http://social.msdn.microsoft.com/Forums/en-US/wpf/thread/607eba8c-6fa4-414c-82ae-23a527cdc5bf
+
+		
 		public Size MeasureOverride (Size availableSize)
 		{
 			Size resultSize = new Size(0,0);

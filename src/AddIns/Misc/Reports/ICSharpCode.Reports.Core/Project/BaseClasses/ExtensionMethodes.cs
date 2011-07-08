@@ -7,19 +7,9 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Documents;
-using System.Windows.Forms;
-
-using WinForms = System.Windows.Forms;
 
 namespace ICSharpCode.Reports.Core
 {
@@ -30,7 +20,7 @@ namespace ICSharpCode.Reports.Core
 	/// <see cref="D:\git_Sharpdevelop_Reporting\src\AddIns\Misc\Reports\ICSharpCode.Reports.Core\Project\WPF\ExtensionMethodes.cs"
 	internal static class ExtensionMethodes
 	{
-		
+		#region Collections 
 		
 		public static void ForEach<T>(this IEnumerable<T> input, Action<T> action)
 		{
@@ -41,6 +31,9 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
+		#endregion
+		
+		#region system.drawing -> Wpf
 		
 		public static Point ToWpf(this System.Drawing.Point p)
 		{
@@ -62,7 +55,7 @@ namespace ICSharpCode.Reports.Core
 			return System.Windows.Media.Color.FromArgb(c.A, c.R, c.G, c.B);
 		}
 		
-		
+		#endregion
 		
 		#region DPI independence
 		public static Rect TransformToDevice(this Rect rect, Visual visual)

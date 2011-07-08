@@ -254,8 +254,20 @@ namespace ICSharpCode.Reports.Core.WPF
 		TextBlock CreateTextBlock(ExportText exportText)
 		{
 			TextBlock textBlock = new TextBlock();
-			textBlock.Text = exportText.Text;
 			SetFont(textBlock, exportText.StyleDecorator);
+			textBlock.TextWrapping = TextWrapping.Wrap;
+			
+			string [] inlines = exportText.Text.Split(System.Environment.NewLine.ToCharArray());
+			for (int i = 0; i < inlines.Length; i++) {
+				if (inlines[i].Length > 0) {
+					textBlock.Inlines.Add(new Run(inlines[i]));
+					textBlock.Inlines.Add(new LineBreak());
+				}
+			}
+			var li = textBlock.Inlines.LastInline;
+			
+			textBlock.Inlines.Remove(li);
+			
 			SetDimension(textBlock,exportText.StyleDecorator);
 			return textBlock;
 		}
