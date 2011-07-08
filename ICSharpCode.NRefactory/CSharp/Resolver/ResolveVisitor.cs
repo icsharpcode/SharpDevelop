@@ -603,7 +603,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							continue;
 						types.Add(def);
 					}
-					var elementType = types.First(t => !types.Any(s => !s.IsDerivedFrom(t, resolver.Context))) ?? SharedTypes.UnknownType;
+					var elementType = types.FirstOrDefault(t => !types.Any(s => !s.IsDerivedFrom(t, resolver.Context))) ?? SharedTypes.UnknownType;
 					arrType = new ArrayTypeReference (elementType, 1);
 				} else {
 					var baseType = MakeTypeReference(arrayCreateExpression.Type);
