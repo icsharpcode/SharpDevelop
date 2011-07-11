@@ -7,30 +7,33 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Documents;
-using System.Windows.Forms;
 
-using WinForms = System.Windows.Forms;
-
-namespace ICSharpCode.Reports.Core.WPF
+namespace ICSharpCode.Reports.Core
 {
 	/// <summary>
 	/// Description of ExtensionMethodes.
 	/// Copy from D:\git_Sharpdevelop_Reporting\src\AddIns\Misc\Reports\ICSharpCode.Reports.Core\Project\WPF\ExtensionMethodes.cs
 	/// </summary>
 	/// <see cref="D:\git_Sharpdevelop_Reporting\src\AddIns\Misc\Reports\ICSharpCode.Reports.Core\Project\WPF\ExtensionMethodes.cs"
-	public static class ExtensionMethodes
+	internal static class ExtensionMethodes
 	{
+		#region Collections 
 		
+		public static void ForEach<T>(this IEnumerable<T> input, Action<T> action)
+		{
+			if (input == null)
+				throw new ArgumentNullException("input");
+			foreach (T element in input) {
+				action(element);
+			}
+		}
+		
+		#endregion
+		
+		#region system.drawing -> Wpf
 		
 		public static Point ToWpf(this System.Drawing.Point p)
 		{
@@ -52,7 +55,7 @@ namespace ICSharpCode.Reports.Core.WPF
 			return System.Windows.Media.Color.FromArgb(c.A, c.R, c.G, c.B);
 		}
 		
-		
+		#endregion
 		
 		#region DPI independence
 		public static Rect TransformToDevice(this Rect rect, Visual visual)
@@ -91,5 +94,7 @@ namespace ICSharpCode.Reports.Core.WPF
 			return new Point(point.X * matrix.M11, point.Y * matrix.M22);
 		}
 		#endregion
+		
+		
 	}
 }

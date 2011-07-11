@@ -118,7 +118,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         		if (currentItem != null) {
         			
         			object s1 = Convert.ToString(currentItem.Value.ToString(),CultureInfo.CurrentCulture);
-                    Console.WriteLine("\tSetup DataSource value = {0}", s1.ToString());
+//                    Console.WriteLine("\tSetup DataSource value = {0}", s1.ToString());
         			if (IsNumeric(s1)) {
         				list.Add(Convert.ToDouble(s1,System.Globalization.CultureInfo.CurrentCulture));
         			} else {
