@@ -2,15 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Addin.Commands;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Globals;
-using ICSharpCode.Reports.Core.ReportViewer;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.Reports.Addin
+namespace ICSharpCode.Reports.Addin.SecondaryViews
 {
 	/// <summary>
 	/// Description of ReportViewerSecondaryView.

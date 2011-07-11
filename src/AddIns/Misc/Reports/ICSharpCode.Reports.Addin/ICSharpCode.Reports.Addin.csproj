@@ -251,6 +251,7 @@
     <Compile Include="Project\SecondaryViews\ReportPreview.cs" />
     <Compile Include="Project\SecondaryViews\ReportViewerMessages.cs" />
     <Compile Include="Project\SecondaryViews\ReportViewerSecondaryView.cs" />
+    <Compile Include="Project\SecondaryViews\WPFReportPreview.cs" />
     <Compile Include="Project\SecondaryViews\XmlView.cs" />
     <Compile Include="Project\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="Project\Services\DefaultServiceContainer.cs" />
@@ -265,7 +266,6 @@
     <Compile Include="Project\Toolbox\SideTabItemDesigner.cs" />
     <Compile Include="Project\Toolbox\ToolboxProvider.cs" />
     <Compile Include="Project\UndoRedo\UndoEngine.cs" />
-    <Compile Include="Project\WPF\WPFReportPreview.cs" />
     <Compile Include="Project\Xml\MycroWriter.cs" />
     <Compile Include="Project\Xml\ReportDefinitionParser.cs" />
     <Compile Include="Project\Xml\ReportDesignerWriter.cs" />
@@ -359,7 +359,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Project\WPF" />
     <Folder Include="Project\ReportItems\TypeProviders" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
