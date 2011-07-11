@@ -1,3 +1,21 @@
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,6 +43,7 @@ namespace ICSharpCode.Decompiler.ILAst
 		
 		void AccumulateSelfAndChildrenRecursive<T>(List<T> list, Func<T, bool> predicate) where T:ILNode
 		{
+			// Note: RemoveEndFinally depends on self coming before children
 			T thisAsT = this as T;
 			if (thisAsT != null && (predicate == null || predicate(thisAsT)))
 				list.Add(thisAsT);
@@ -123,6 +142,10 @@ namespace ICSharpCode.Decompiler.ILAst
 			{
 				output.Write("catch ");
 				output.WriteReference(ExceptionType.FullName, ExceptionType);
+				if (ExceptionVariable != null) {
+					output.Write(' ');
+					output.Write(ExceptionVariable.Name);
+				}
 				output.WriteLine(" {");
 				output.Indent();
 				base.WriteTo(output);
@@ -210,7 +233,10 @@ namespace ICSharpCode.Decompiler.ILAst
 		
 		public static List<ILRange> OrderAndJoint(IEnumerable<ILRange> input)
 		{
-			List<ILRange> ranges = input.OrderBy(r => r.From).ToList();
+			if (input == null)
+				throw new ArgumentNullException("Input is null!");
+			
+			List<ILRange> ranges = input.Where(r => r != null).OrderBy(r => r.From).ToList();
 			for (int i = 0; i < ranges.Count - 1;) {
 				ILRange curr = ranges[i];
 				ILRange next = ranges[i + 1];
@@ -227,6 +253,12 @@ namespace ICSharpCode.Decompiler.ILAst
 		
 		public static IEnumerable<ILRange> Invert(IEnumerable<ILRange> input, int codeSize)
 		{
+			if (input == null)
+				throw new ArgumentNullException("Input is null!");
+			
+			if (codeSize <= 0)
+				throw new ArgumentException("Code size must be grater than 0");
+			
 			var ordered = OrderAndJoint(input);
 			if (ordered.Count == 0) {
 				yield return new ILRange() { From = 0, To = codeSize };
@@ -351,10 +383,10 @@ namespace ICSharpCode.Decompiler.ILAst
 					output.Write(((ILVariable)Operand).Name);
 					if (this.InferredType != null) {
 						output.Write(':');
-						this.InferredType.WriteTo(output, true, true);
+						this.InferredType.WriteTo(output, ILNameSyntax.ShortTypeName);
 						if (this.ExpectedType != null && this.ExpectedType.FullName != this.InferredType.FullName) {
 							output.Write("[exp:");
-							this.ExpectedType.WriteTo(output, true, true);
+							this.ExpectedType.WriteTo(output, ILNameSyntax.ShortTypeName);
 							output.Write(']');
 						}
 					}
@@ -372,15 +404,15 @@ namespace ICSharpCode.Decompiler.ILAst
 			output.Write(Code.GetName());
 			if (this.InferredType != null) {
 				output.Write(':');
-				this.InferredType.WriteTo(output, true, true);
+				this.InferredType.WriteTo(output, ILNameSyntax.ShortTypeName);
 				if (this.ExpectedType != null && this.ExpectedType.FullName != this.InferredType.FullName) {
 					output.Write("[exp:");
-					this.ExpectedType.WriteTo(output, true, true);
+					this.ExpectedType.WriteTo(output, ILNameSyntax.ShortTypeName);
 					output.Write(']');
 				}
 			} else if (this.ExpectedType != null) {
 				output.Write("[exp:");
-				this.ExpectedType.WriteTo(output, true, true);
+				this.ExpectedType.WriteTo(output, ILNameSyntax.ShortTypeName);
 				output.Write(']');
 			}
 			output.Write('(');
@@ -397,12 +429,14 @@ namespace ICSharpCode.Decompiler.ILAst
 					}
 				} else if (Operand is MethodReference) {
 					MethodReference method = (MethodReference)Operand;
-					method.DeclaringType.WriteTo(output, true, true);
-					output.Write("::");
+					if (method.DeclaringType != null) {
+						method.DeclaringType.WriteTo(output, ILNameSyntax.ShortTypeName);
+						output.Write("::");
+					}
 					output.WriteReference(method.Name, method);
 				} else if (Operand is FieldReference) {
 					FieldReference field = (FieldReference)Operand;
-					field.DeclaringType.WriteTo(output, true, true);
+					field.DeclaringType.WriteTo(output, ILNameSyntax.ShortTypeName);
 					output.Write("::");
 					output.WriteReference(field.Name, field);
 				} else {

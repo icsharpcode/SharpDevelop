@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -46,7 +61,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		
 		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			if (objectCreateExpression.Arguments.Count() == 2) {
+			if (objectCreateExpression.Arguments.Count == 2) {
 				Expression obj = objectCreateExpression.Arguments.First();
 				Expression func = objectCreateExpression.Arguments.Last();
 				Annotation annotation = func.Annotation<Annotation>();
@@ -100,7 +115,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		
 		internal static bool IsAnonymousMethod(DecompilerContext context, MethodDefinition method)
 		{
-			if (method == null || !method.Name.StartsWith("<", StringComparison.Ordinal))
+			if (method == null || !(method.Name.StartsWith("<", StringComparison.Ordinal) || method.Name.Contains("$")))
 				return false;
 			if (!(method.IsCompilerGenerated() || IsPotentialClosure(context, method.DeclaringType)))
 				return false;
@@ -111,6 +126,8 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		{
 			if (!context.Settings.AnonymousMethods)
 				return false; // anonymous method decompilation is disabled
+			if (target != null && !(target is IdentifierExpression || target is ThisReferenceExpression || target is NullReferenceExpression))
+				return false; // don't copy arbitrary expressions, deal with identifiers only
 			
 			// Anonymous methods are defined in the same assembly
 			MethodDefinition method = methodRef.ResolveWithinSameModule();
@@ -119,6 +136,9 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			
 			// Create AnonymousMethodExpression and prepare parameters
 			AnonymousMethodExpression ame = new AnonymousMethodExpression();
+			ame.CopyAnnotationsFrom(objectCreateExpression); // copy ILRanges etc.
+			ame.RemoveAnnotations<MethodReference>(); // remove reference to delegate ctor
+			ame.AddAnnotation(method); // add reference to anonymous method
 			ame.Parameters.AddRange(AstBuilder.MakeParameters(method, isLambda: true));
 			ame.HasParameterList = true;
 			
@@ -163,6 +183,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			}
 			if (isLambda) {
 				LambdaExpression lambda = new LambdaExpression();
+				lambda.CopyAnnotationsFrom(ame);
 				ame.Parameters.MoveTo(lambda.Parameters);
 				Expression returnExpr = ((ReturnStatement)body.Statements.Single()).Expression;
 				returnExpr.Remove();
@@ -175,7 +196,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			return true;
 		}
 		
-		static bool IsPotentialClosure(DecompilerContext context, TypeDefinition potentialDisplayClass)
+		internal static bool IsPotentialClosure(DecompilerContext context, TypeDefinition potentialDisplayClass)
 		{
 			if (potentialDisplayClass == null || !potentialDisplayClass.IsCompilerGeneratedOrIsInCompilerGeneratedClass())
 				return false;
@@ -328,12 +349,30 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 						if (right is ThisReferenceExpression) {
 							isParameter = true;
 						} else if (right is IdentifierExpression) {
-							// handle parameters only if the whole method contains no other occurrance except for 'right'
+							// handle parameters only if the whole method contains no other occurrence except for 'right'
 							ILVariable v = right.Annotation<ILVariable>();
 							isParameter = v.IsParameter && parameterOccurrances.Count(c => c == v) == 1;
-							if (!isParameter && TypeAnalysis.IsSameType(v.Type, fieldDef.FieldType) && IsPotentialClosure(context, v.Type.ResolveWithinSameModule())) {
+							if (!isParameter && IsPotentialClosure(context, v.Type.ResolveWithinSameModule())) {
+								// parent display class within the same method
+								// (closure2.localsX = closure1;)
 								isDisplayClassParentPointerAssignment = true;
 							}
+						} else if (right is MemberReferenceExpression) {
+							// copy of parent display class reference from an outer lambda
+							// closure2.localsX = this.localsY
+							MemberReferenceExpression mre = m.Get<MemberReferenceExpression>("right").Single();
+							do {
+								// descend into the targets of the mre as long as the field types are closures
+								FieldDefinition fieldDef2 = mre.Annotation<FieldReference>().ResolveWithinSameModule();
+								if (fieldDef2 == null || !IsPotentialClosure(context, fieldDef2.FieldType.ResolveWithinSameModule())) {
+									break;
+								}
+								// if we finally get to a this reference, it's copying a display class parent pointer
+								if (mre.Target is ThisReferenceExpression) {
+									isDisplayClassParentPointerAssignment = true;
+								}
+								mre = mre.Target as MemberReferenceExpression;
+							} while (mre != null);
 						}
 						if (isParameter || isDisplayClassParentPointerAssignment) {
 							dict[fieldDef] = right;
@@ -349,12 +388,17 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				// Now create variables for all fields of the display class (except for those that we already handled as parameters)
 				List<Tuple<AstType, string>> variablesToDeclare = new List<Tuple<AstType, string>>();
 				foreach (FieldDefinition field in type.Fields) {
+					if (field.IsStatic)
+						continue; // skip static fields
 					if (dict.ContainsKey(field)) // skip field if it already was handled as parameter
 						continue;
-					EnsureVariableNameIsAvailable(blockStatement, field.Name);
-					currentlyUsedVariableNames.Add(field.Name);
-					variablesToDeclare.Add(Tuple.Create(AstBuilder.ConvertType(field.FieldType, field), field.Name));
-					dict[field] = new IdentifierExpression(field.Name);
+					string capturedVariableName = field.Name;
+					if (capturedVariableName.StartsWith("$VB$Local_", StringComparison.Ordinal) && capturedVariableName.Length > 10)
+						capturedVariableName = capturedVariableName.Substring(10);
+					EnsureVariableNameIsAvailable(blockStatement, capturedVariableName);
+					currentlyUsedVariableNames.Add(capturedVariableName);
+					variablesToDeclare.Add(Tuple.Create(AstBuilder.ConvertType(field.FieldType, field), capturedVariableName));
+					dict[field] = new IdentifierExpression(capturedVariableName);
 				}
 				
 				// Now figure out where the closure was accessed and use the simpler replacement expression there:

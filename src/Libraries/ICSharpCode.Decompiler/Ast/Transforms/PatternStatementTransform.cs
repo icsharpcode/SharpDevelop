@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -45,6 +60,9 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			AstNode result;
 			if (context.Settings.UsingStatement) {
 				result = TransformUsings(expressionStatement);
+				if (result != null)
+					return result;
+				result = TransformNonGenericForEach(expressionStatement);
 				if (result != null)
 					return result;
 			}
@@ -118,7 +136,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		#endregion
 		
 		/// <summary>
-		/// $type $variable = $initializer;
+		/// $variable = $initializer;
 		/// </summary>
 		static readonly AstNode variableAssignPattern = new ExpressionStatement(
 			new AssignmentExpression(
@@ -136,7 +154,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		}
 		
 		static readonly AstNode usingTryCatchPattern = new TryCatchStatement {
-			TryBlock = new AnyNode("body"),
+			TryBlock = new AnyNode(),
 			FinallyBlock = new BlockStatement {
 				new Choice {
 					{ "valueType",
@@ -162,44 +180,60 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		{
 			Match m1 = variableAssignPattern.Match(node);
 			if (!m1.Success) return null;
-			AstNode tryCatch = node.NextSibling;
+			TryCatchStatement tryCatch = node.NextSibling as TryCatchStatement;
 			Match m2 = usingTryCatchPattern.Match(tryCatch);
 			if (!m2.Success) return null;
 			string variableName = m1.Get<IdentifierExpression>("variable").Single().Identifier;
-			if (variableName == m2.Get<IdentifierExpression>("ident").Single().Identifier) {
-				if (m2.Has("valueType")) {
-					// if there's no if(x!=null), then it must be a value type
-					ILVariable v = m1.Get<AstNode>("variable").Single().Annotation<ILVariable>();
-					if (v == null || v.Type == null || !v.Type.IsValueType)
-						return null;
-				}
-				node.Remove();
-				BlockStatement body = m2.Get<BlockStatement>("body").Single();
-				UsingStatement usingStatement = new UsingStatement();
-				usingStatement.ResourceAcquisition = node.Expression.Detach();
-				usingStatement.EmbeddedStatement = body.Detach();
-				tryCatch.ReplaceWith(usingStatement);
-				// Move the variable declaration into the resource acquisition, if possible
-				// This is necessary for the foreach-pattern to work on the result of the using-pattern
-				VariableDeclarationStatement varDecl = FindVariableDeclaration(usingStatement, variableName);
-				if (varDecl != null && varDecl.Parent is BlockStatement) {
-					Statement declarationPoint;
-					if (CanMoveVariableDeclarationIntoStatement(varDecl, usingStatement, out declarationPoint)) {
-						// Moving the variable into the UsingStatement is allowed:
-						usingStatement.ResourceAcquisition = new VariableDeclarationStatement {
-							Type = (AstType)varDecl.Type.Clone(),
-							Variables = {
-								new VariableInitializer {
-									Name = variableName,
-									Initializer = m1.Get<Expression>("initializer").Single().Detach()
-								}.CopyAnnotationsFrom(usingStatement.ResourceAcquisition)
-							}
-						}.CopyAnnotationsFrom(node);
-					}
-				}
-				return usingStatement;
+			if (variableName != m2.Get<IdentifierExpression>("ident").Single().Identifier)
+				return null;
+			if (m2.Has("valueType")) {
+				// if there's no if(x!=null), then it must be a value type
+				ILVariable v = m1.Get<AstNode>("variable").Single().Annotation<ILVariable>();
+				if (v == null || v.Type == null || !v.Type.IsValueType)
+					return null;
 			}
-			return null;
+			
+			// There are two variants of the using statement:
+			// "using (var a = init)" and "using (expr)".
+			// The former declares a read-only variable 'a', and the latter declares an unnamed read-only variable
+			// to store the original value of 'expr'.
+			// This means that in order to introduce a using statement, in both cases we need to detect a read-only
+			// variable that is used only within that block.
+			
+			if (HasAssignment(tryCatch, variableName))
+				return null;
+			
+			VariableDeclarationStatement varDecl = FindVariableDeclaration(node, variableName);
+			if (varDecl == null || !(varDecl.Parent is BlockStatement))
+				return null;
+			
+			// Validate that the variable is not used after the using statement:
+			if (!IsVariableValueUnused(varDecl, tryCatch))
+				return null;
+			
+			node.Remove();
+			
+			UsingStatement usingStatement = new UsingStatement();
+			usingStatement.EmbeddedStatement = tryCatch.TryBlock.Detach();
+			tryCatch.ReplaceWith(usingStatement);
+			
+			// If possible, we'll eliminate the variable completely:
+			if (usingStatement.EmbeddedStatement.Descendants.OfType<IdentifierExpression>().Any(ident => ident.Identifier == variableName)) {
+				// variable is used, so we'll create a variable declaration
+				usingStatement.ResourceAcquisition = new VariableDeclarationStatement {
+					Type = (AstType)varDecl.Type.Clone(),
+					Variables = {
+						new VariableInitializer {
+							Name = variableName,
+							Initializer = m1.Get<Expression>("initializer").Single().Detach()
+						}.CopyAnnotationsFrom(node.Expression)
+					}
+				}.CopyAnnotationsFrom(node);
+			} else {
+				// the variable is never used; eliminate it:
+				usingStatement.ResourceAcquisition = m1.Get<Expression>("initializer").Single().Detach();
+			}
+			return usingStatement;
 		}
 		
 		internal static VariableDeclarationStatement FindVariableDeclaration(AstNode node, string identifier)
@@ -217,6 +251,29 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			return null;
 		}
 		
+		/// <summary>
+		/// Gets whether the old variable value (assigned inside 'targetStatement' or earlier)
+		/// is read anywhere in the remaining scope of the variable declaration.
+		/// </summary>
+		bool IsVariableValueUnused(VariableDeclarationStatement varDecl, Statement targetStatement)
+		{
+			Debug.Assert(targetStatement.Ancestors.Contains(varDecl.Parent));
+			BlockStatement block = (BlockStatement)varDecl.Parent;
+			DefiniteAssignmentAnalysis daa = new DefiniteAssignmentAnalysis(block, context.CancellationToken);
+			daa.SetAnalyzedRange(targetStatement, block, startInclusive: false);
+			daa.Analyze(varDecl.Variables.Single().Name);
+			return daa.UnassignedVariableUses.Count == 0;
+		}
+		
+		// I used this in the first implementation of the using-statement transform, but now no longer
+		// because there were problems when multiple using statements were using the same variable
+		// - no single using statement could be transformed without making the C# code invalid,
+		// but transforming both would work.
+		// We now use 'IsVariableValueUnused' which will perform the transform
+		// even if it results in two variables with the same name and overlapping scopes.
+		// (this issue could be fixed later by renaming one of the variables)
+		
+		// I'm not sure whether the other consumers of 'CanMoveVariableDeclarationIntoStatement' should be changed the same way.
 		bool CanMoveVariableDeclarationIntoStatement(VariableDeclarationStatement varDecl, Statement targetStatement, out Statement declarationPoint)
 		{
 			Debug.Assert(targetStatement.Ancestors.Contains(varDecl.Parent));
@@ -233,10 +290,28 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			}
 			return true;
 		}
+		
+		/// <summary>
+		/// Gets whether there is an assignment to 'variableName' anywhere within the given node.
+		/// </summary>
+		bool HasAssignment(AstNode root, string variableName)
+		{
+			foreach (AstNode node in root.DescendantsAndSelf) {
+				IdentifierExpression ident = node as IdentifierExpression;
+				if (ident != null && ident.Identifier == variableName) {
+					if (ident.Parent is AssignmentExpression && ident.Role == AssignmentExpression.LeftRole
+					    || ident.Parent is DirectionExpression)
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 		#endregion
 		
-		#region foreach
-		static readonly UsingStatement foreachPattern = new UsingStatement {
+		#region foreach (generic)
+		static readonly UsingStatement genericForeachPattern = new UsingStatement {
 			ResourceAcquisition = new VariableDeclarationStatement {
 				Type = new AnyNode("enumeratorType"),
 				Variables = {
@@ -270,7 +345,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		
 		public ForeachStatement TransformForeach(UsingStatement node)
 		{
-			Match m = foreachPattern.Match(node);
+			Match m = genericForeachPattern.Match(node);
 			if (!m.Success)
 				return null;
 			if (!(node.Parent is BlockStatement) && m.Has("variablesOutsideLoop")) {
@@ -308,12 +383,124 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				InExpression = m.Get<Expression>("collection").Single().Detach(),
 				EmbeddedStatement = newBody
 			};
-			if (foreachStatement.InExpression is BaseReferenceExpression)
-				foreachStatement.InExpression = new ThisReferenceExpression();
+			if (foreachStatement.InExpression is BaseReferenceExpression) {
+				foreachStatement.InExpression = new ThisReferenceExpression().CopyAnnotationsFrom(foreachStatement.InExpression);
+			}
 			node.ReplaceWith(foreachStatement);
 			foreach (Statement stmt in m.Get<Statement>("variablesOutsideLoop")) {
 				((BlockStatement)foreachStatement.Parent).Statements.InsertAfter(null, stmt.Detach());
 			}
+			return foreachStatement;
+		}
+		#endregion
+		
+		#region foreach (non-generic)
+		ExpressionStatement getEnumeratorPattern = new ExpressionStatement(
+			new AssignmentExpression(
+				new NamedNode("left", new IdentifierExpression()),
+				new AnyNode("collection").ToExpression().Invoke("GetEnumerator")
+			));
+		
+		TryCatchStatement nonGenericForeachPattern = new TryCatchStatement {
+			TryBlock = new BlockStatement {
+				new WhileStatement {
+					Condition = new IdentifierExpression().WithName("enumerator").Invoke("MoveNext"),
+					EmbeddedStatement = new BlockStatement {
+						new AssignmentExpression(
+							new IdentifierExpression().WithName("itemVar"),
+							new Choice {
+								new Backreference("enumerator").ToExpression().Member("Current"),
+								new CastExpression {
+									Type = new AnyNode("castType"),
+									Expression = new Backreference("enumerator").ToExpression().Member("Current")
+								}
+							}
+						),
+						new Repeat(new AnyNode("stmt")).ToStatement()
+					}
+				}.WithName("loop")
+			},
+			FinallyBlock = new BlockStatement {
+				new AssignmentExpression(
+					new IdentifierExpression().WithName("disposable"),
+					new Backreference("enumerator").ToExpression().CastAs(new TypePattern(typeof(IDisposable)))
+				),
+				new IfElseStatement {
+					Condition = new BinaryOperatorExpression {
+						Left = new Backreference("disposable"),
+						Operator = BinaryOperatorType.InEquality,
+						Right = new NullReferenceExpression()
+					},
+					TrueStatement = new BlockStatement {
+						new Backreference("disposable").ToExpression().Invoke("Dispose")
+					}
+				}
+			}};
+		
+		public ForeachStatement TransformNonGenericForEach(ExpressionStatement node)
+		{
+			Match m1 = getEnumeratorPattern.Match(node);
+			if (!m1.Success) return null;
+			AstNode tryCatch = node.NextSibling;
+			Match m2 = nonGenericForeachPattern.Match(tryCatch);
+			if (!m2.Success) return null;
+			
+			IdentifierExpression enumeratorVar = m2.Get<IdentifierExpression>("enumerator").Single();
+			IdentifierExpression itemVar = m2.Get<IdentifierExpression>("itemVar").Single();
+			WhileStatement loop = m2.Get<WhileStatement>("loop").Single();
+			
+			// verify that the getEnumeratorPattern assigns to the same variable as the nonGenericForeachPattern is reading from
+			if (!enumeratorVar.IsMatch(m1.Get("left").Single()))
+				return null;
+			
+			VariableDeclarationStatement enumeratorVarDecl = FindVariableDeclaration(loop, enumeratorVar.Identifier);
+			if (enumeratorVarDecl == null || !(enumeratorVarDecl.Parent is BlockStatement))
+				return null;
+			
+			// Find the declaration of the item variable:
+			// Because we look only outside the loop, we won't make the mistake of moving a captured variable across the loop boundary
+			VariableDeclarationStatement itemVarDecl = FindVariableDeclaration(loop, itemVar.Identifier);
+			if (itemVarDecl == null || !(itemVarDecl.Parent is BlockStatement))
+				return null;
+			
+			// Now verify that we can move the variable declaration in front of the loop:
+			Statement declarationPoint;
+			CanMoveVariableDeclarationIntoStatement(itemVarDecl, loop, out declarationPoint);
+			// We ignore the return value because we don't care whether we can move the variable into the loop
+			// (that is possible only with non-captured variables).
+			// We just care that we can move it in front of the loop:
+			if (declarationPoint != loop)
+				return null;
+			
+			ForeachStatement foreachStatement = new ForeachStatement();
+			foreachStatement.VariableType = itemVarDecl.Type.Clone();
+			foreachStatement.VariableName = itemVar.Identifier;
+			BlockStatement body = new BlockStatement();
+			foreachStatement.EmbeddedStatement = body;
+			((BlockStatement)node.Parent).Statements.InsertBefore(node, foreachStatement);
+			
+			body.Add(node.Detach());
+			body.Add((Statement)tryCatch.Detach());
+			
+			// Now that we moved the whole try-catch into the foreach loop; verify that we can
+			// move the enumerator into the foreach loop:
+			CanMoveVariableDeclarationIntoStatement(enumeratorVarDecl, foreachStatement, out declarationPoint);
+			if (declarationPoint != foreachStatement) {
+				// oops, the enumerator variable can't be moved into the foreach loop
+				// Undo our AST changes:
+				((BlockStatement)foreachStatement.Parent).Statements.InsertBefore(foreachStatement, node.Detach());
+				foreachStatement.ReplaceWith(tryCatch);
+				return null;
+			}
+			
+			// Now create the correct body for the foreach statement:
+			foreachStatement.InExpression = m1.Get<Expression>("collection").Single().Detach();
+			if (foreachStatement.InExpression is BaseReferenceExpression) {
+				foreachStatement.InExpression = new ThisReferenceExpression().CopyAnnotationsFrom(foreachStatement.InExpression);
+			}
+			body.Statements.Clear();
+			body.Statements.AddRange(m2.Get<Statement>("stmt").Select(stmt => stmt.Detach()));
+			
 			return foreachStatement;
 		}
 		#endregion
@@ -515,12 +702,10 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			Match m = switchOnStringPattern.Match(node);
 			if (!m.Success)
 				return null;
-			if (m.Has("nonNullDefaultStmt") && !m.Has("nullStmt"))
-				return null;
 			// switchVar must be the same as switchExpr; or switchExpr must be an assignment and switchVar the left side of that assignment
 			if (!m.Get("switchVar").Single().IsMatch(m.Get("switchExpr").Single())) {
 				AssignmentExpression assign = m.Get("switchExpr").Single() as AssignmentExpression;
-				if (!m.Get("switchVar").Single().IsMatch(assign.Left))
+				if (!(assign != null && m.Get("switchVar").Single().IsMatch(assign.Left)))
 					return null;
 			}
 			FieldReference cachedDictField = m.Get<AstNode>("cachedDict").Single().Annotation<FieldReference>();
@@ -551,15 +736,21 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				block.Statements.Add(new BreakStatement());
 				section.Statements.Add(block.Detach());
 				sw.SwitchSections.Add(section);
-				if (m.Has("nonNullDefaultStmt")) {
-					section = new SwitchSection();
-					section.CaseLabels.Add(new CaseLabel());
-					block = new BlockStatement();
-					block.Statements.AddRange(m.Get<Statement>("nonNullDefaultStmt").Select(s => s.Detach()));
-					block.Add(new BreakStatement());
-					section.Statements.Add(block);
-					sw.SwitchSections.Add(section);
-				}
+			} else if (m.Has("nonNullDefaultStmt")) {
+				sw.SwitchSections.Add(
+					new SwitchSection {
+						CaseLabels = { new CaseLabel { Expression = new NullReferenceExpression() } },
+						Statements = { new BlockStatement { new BreakStatement() } }
+					});
+			}
+			if (m.Has("nonNullDefaultStmt")) {
+				SwitchSection section = new SwitchSection();
+				section.CaseLabels.Add(new CaseLabel());
+				BlockStatement block = new BlockStatement();
+				block.Statements.AddRange(m.Get<Statement>("nonNullDefaultStmt").Select(s => s.Detach()));
+				block.Add(new BreakStatement());
+				section.Statements.Add(block);
+				sw.SwitchSections.Add(section);
 			}
 			node.ReplaceWith(sw);
 			return sw;

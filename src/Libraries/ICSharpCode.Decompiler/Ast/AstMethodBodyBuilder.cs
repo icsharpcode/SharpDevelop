@@ -1,3 +1,21 @@
+// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -32,9 +50,16 @@ namespace ICSharpCode.Decompiler.Ast
 		/// <param name="context">Decompilation context.</param>
 		/// <param name="parameters">Parameter declarations of the method being decompiled.
 		/// These are used to update the parameter names when the decompiler generates names for the parameters.</param>
+		/// <param name="localVariables">Local variables storage that will be filled/updated with the local variables.</param>
 		/// <returns>Block for the method body</returns>
-		public static BlockStatement CreateMethodBody(MethodDefinition methodDef, DecompilerContext context, IEnumerable<ParameterDeclaration> parameters = null)
+		public static BlockStatement CreateMethodBody(MethodDefinition methodDef,
+		                                              DecompilerContext context,
+		                                              IEnumerable<ParameterDeclaration> parameters = null,
+		                                              ConcurrentDictionary<int, IEnumerable<ILVariable>> localVariables = null)
 		{
+			if (localVariables == null)
+				localVariables = new ConcurrentDictionary<int, IEnumerable<ILVariable>>();
+			
 			MethodDefinition oldCurrentMethod = context.CurrentMethod;
 			Debug.Assert(oldCurrentMethod == null || oldCurrentMethod == methodDef);
 			context.CurrentMethod = methodDef;
@@ -44,10 +69,10 @@ namespace ICSharpCode.Decompiler.Ast
 				builder.context = context;
 				builder.typeSystem = methodDef.Module.TypeSystem;
 				if (Debugger.IsAttached) {
-					return builder.CreateMethodBody(parameters);
+					return builder.CreateMethodBody(parameters, localVariables);
 				} else {
 					try {
-						return builder.CreateMethodBody(parameters);
+						return builder.CreateMethodBody(parameters, localVariables);
 					} catch (OperationCanceledException) {
 						throw;
 					} catch (Exception ex) {
@@ -59,9 +84,13 @@ namespace ICSharpCode.Decompiler.Ast
 			}
 		}
 		
-		public BlockStatement CreateMethodBody(IEnumerable<ParameterDeclaration> parameters)
+		public BlockStatement CreateMethodBody(IEnumerable<ParameterDeclaration> parameters,
+		                                       ConcurrentDictionary<int, IEnumerable<ILVariable>> localVariables)
 		{
 			if (methodDef.Body == null) return null;
+			
+			if (localVariables == null)
+				throw new ArgumentException("localVariables must be instantiated");
 			
 			context.CancellationToken.ThrowIfCancellationRequested();
 			ILBlock ilMethod = new ILBlock();
@@ -101,6 +130,10 @@ namespace ICSharpCode.Decompiler.Ast
 				var newVarDecl = new VariableDeclarationStatement(type, v.Name);
 				astBlock.Statements.InsertBefore(insertionPoint, newVarDecl);
 			}
+			
+			// store the variables - used for debugger
+			int token = methodDef.MetadataToken.ToInt32();
+			localVariables.AddOrUpdate(token, allVariables, (key, oldValue) => allVariables);
 			
 			return astBlock;
 		}
@@ -215,10 +248,20 @@ namespace ICSharpCode.Decompiler.Ast
 		{
 			AstNode node = TransformByteCode(expr);
 			Expression astExpr = node as Expression;
+			
+			// get IL ranges - used in debugger
+			List<ILRange> ilRanges = ILRange.OrderAndJoint(expr.GetSelfAndChildrenRecursive<ILExpression>().SelectMany(e => e.ILRanges));
+			AstNode result;
+			
 			if (astExpr != null)
-				return Convert(astExpr, expr.InferredType, expr.ExpectedType);
+				result = Convert(astExpr, expr.InferredType, expr.ExpectedType);
 			else
-				return node;
+				result = node;
+			
+			if (result != null)
+				return result.WithAnnotation(ilRanges);
+			
+			return result;
 		}
 		
 		AstNode TransformByteCode(ILExpression byteCode)
@@ -306,8 +349,7 @@ namespace ICSharpCode.Decompiler.Ast
 					}
 					#endregion
 					#region Arrays
-				case ILCode.Newarr:
-					case ILCode.InitArray: {
+					case ILCode.Newarr: {
 						var ace = new Ast.ArrayCreateExpression();
 						ace.Type = operandAsTypeRef;
 						ComposedType ct = operandAsTypeRef as ComposedType;
@@ -323,7 +365,39 @@ namespace ICSharpCode.Decompiler.Ast
 						}
 						return ace;
 					}
-					case ILCode.Ldlen: return arg1.Member("Length");
+					case ILCode.InitArray: {
+						var ace = new Ast.ArrayCreateExpression();
+						ace.Type = operandAsTypeRef;
+						ComposedType ct = operandAsTypeRef as ComposedType;
+						var arrayType = (ArrayType) operand;
+						if (ct != null)
+						{
+							// change "new (int[,])[10] to new int[10][,]"
+							ct.ArraySpecifiers.MoveTo(ace.AdditionalArraySpecifiers);
+							ace.Initializer = new ArrayInitializerExpression();
+							var first = ace.AdditionalArraySpecifiers.First();
+							first.Remove();
+							ace.Arguments.AddRange(Enumerable.Repeat(0, first.Dimensions).Select(i => new EmptyExpression()));
+						}
+						var newArgs = new List<Expression>();
+						foreach (var arrayDimension in arrayType.Dimensions.Skip(1).Reverse())
+						{
+							int length = (int)arrayDimension.UpperBound - (int)arrayDimension.LowerBound;
+							for (int j = 0; j < args.Count; j += length)
+							{
+								var child = new ArrayInitializerExpression();
+								child.Elements.AddRange(args.GetRange(j, length));
+								newArgs.Add(child);
+							}
+							var temp = args;
+							args = newArgs;
+							newArgs = temp;
+							newArgs.Clear();
+						}
+						ace.Initializer.Elements.AddRange(args);
+						return ace;
+					}
+				case ILCode.Ldlen: return arg1.Member("Length");
 				case ILCode.Ldelem_I:
 				case ILCode.Ldelem_I1:
 				case ILCode.Ldelem_I2:
@@ -460,9 +534,12 @@ namespace ICSharpCode.Decompiler.Ast
 						return arg1;
 					else
 						return arg1.CastTo(operandAsTypeRef);
-					case ILCode.Isinst:         return arg1.CastAs(operandAsTypeRef);
-					case ILCode.Box:            return arg1;
-					case ILCode.Unbox:          return InlineAssembly(byteCode, args);
+				case ILCode.Isinst:
+					return arg1.CastAs(operandAsTypeRef);
+				case ILCode.Box:
+					return arg1;
+				case ILCode.Unbox:
+					return MakeRef(arg1.CastTo(operandAsTypeRef));
 					#endregion
 					#region Indirect
 				case ILCode.Ldind_Ref:
@@ -514,11 +591,7 @@ namespace ICSharpCode.Decompiler.Ast
 					case ILCode.Endfilter:   return InlineAssembly(byteCode, args);
 					case ILCode.Endfinally:  return null;
 					case ILCode.Initblk:     return InlineAssembly(byteCode, args);
-				case ILCode.Initobj:
-					if (args[0] is DirectionExpression)
-						return new AssignmentExpression(((DirectionExpression)args[0]).Expression.Detach(), MakeDefaultValue((TypeReference)operand));
-					else
-						return InlineAssembly(byteCode, args);
+					case ILCode.Initobj:      return InlineAssembly(byteCode, args);
 				case ILCode.DefaultValue:
 					return MakeDefaultValue((TypeReference)operand);
 					case ILCode.Jmp: return InlineAssembly(byteCode, args);
@@ -577,7 +650,7 @@ namespace ICSharpCode.Decompiler.Ast
 					case ILCode.Ldstr:  return new Ast.PrimitiveExpression(operand);
 				case ILCode.Ldtoken:
 					if (operand is Cecil.TypeReference) {
-						return new Ast.TypeOfExpression { Type = operandAsTypeRef }.Member("TypeHandle");
+						return AstBuilder.CreateTypeOfExpression((TypeReference)operand).Member("TypeHandle");
 					} else {
 						return InlineAssembly(byteCode, args);
 					}
@@ -678,24 +751,81 @@ namespace ICSharpCode.Decompiler.Ast
 					return new Ast.YieldBreakStatement();
 				case ILCode.YieldReturn:
 					return new Ast.YieldStatement { Expression = arg1 };
-					case ILCode.InitCollection: {
-						ObjectCreateExpression oce = (ObjectCreateExpression)arg1;
-						oce.Initializer = new ArrayInitializerExpression();
+				case ILCode.InitObject:
+				case ILCode.InitCollection:
+					{
+						ArrayInitializerExpression initializer = new ArrayInitializerExpression();
 						for (int i = 1; i < args.Count; i++) {
-							ArrayInitializerExpression aie = args[i] as ArrayInitializerExpression;
-							if (aie != null && aie.Elements.Count == 1)
-								oce.Initializer.Elements.Add(aie.Elements.Single().Detach());
-							else
-								oce.Initializer.Elements.Add(args[i]);
+							Match m = objectInitializerPattern.Match(args[i]);
+							if (m.Success) {
+								MemberReferenceExpression mre = m.Get<MemberReferenceExpression>("left").Single();
+								initializer.Elements.Add(
+									new NamedArgumentExpression {
+										Identifier = mre.MemberName,
+										Expression = m.Get<Expression>("right").Single().Detach()
+									}.CopyAnnotationsFrom(mre));
+							} else {
+								m = collectionInitializerPattern.Match(args[i]);
+								if (m.Success) {
+									if (m.Get("arg").Count() == 1) {
+										initializer.Elements.Add(m.Get<Expression>("arg").Single().Detach());
+									} else {
+										ArrayInitializerExpression argList = new ArrayInitializerExpression();
+										foreach (var expr in m.Get<Expression>("arg")) {
+											argList.Elements.Add(expr.Detach());
+										}
+										initializer.Elements.Add(argList);
+									}
+								} else {
+									initializer.Elements.Add(args[i]);
+								}
+							}
 						}
-						return oce;
+						ObjectCreateExpression oce = arg1 as ObjectCreateExpression;
+						DefaultValueExpression dve = arg1 as DefaultValueExpression;
+						if (oce != null) {
+							oce.Initializer = initializer;
+							return oce;
+						} else if (dve != null) {
+							oce = new ObjectCreateExpression(dve.Type.Detach());
+							oce.CopyAnnotationsFrom(dve);
+							oce.Initializer = initializer;
+							return oce;
+						} else {
+							return new AssignmentExpression(arg1, initializer);
+						}
 					}
-					case ILCode.InitCollectionAddMethod: {
-						var collectionInit = new ArrayInitializerExpression();
-						collectionInit.Elements.AddRange(args);
-						return collectionInit;
-					}
-					default: throw new Exception("Unknown OpCode: " + byteCode.Code);
+				case ILCode.InitializedObject:
+					return new InitializedObjectExpression();
+				case ILCode.AddressOf:
+					return MakeRef(arg1);
+				default:
+					throw new Exception("Unknown OpCode: " + byteCode.Code);
+			}
+		}
+		
+		static readonly AstNode objectInitializerPattern = new AssignmentExpression(
+			new MemberReferenceExpression {
+				Target = new InitializedObjectExpression()
+			}.WithName("left"),
+			new AnyNode("right")
+		);
+		
+		static readonly AstNode collectionInitializerPattern = new InvocationExpression {
+			Target = new MemberReferenceExpression {
+				Target = new InitializedObjectExpression(),
+				MemberName = "Add"
+			},
+			Arguments = { new Repeat(new AnyNode("arg")) }
+		};
+		
+		sealed class InitializedObjectExpression : IdentifierExpression
+		{
+			public InitializedObjectExpression() : base("__initialized_object__") {}
+			
+			protected override bool DoMatch(AstNode other, Match match)
+			{
+				return other is InitializedObjectExpression;
 			}
 		}
 		
@@ -810,8 +940,6 @@ namespace ICSharpCode.Decompiler.Ast
 			
 			if (cecilMethod.Name == "Get" && cecilMethod.DeclaringType is ArrayType && methodArgs.Count > 1) {
 				return target.Indexer(methodArgs);
-			} else if (cecilMethod.Name == "Address" && cecilMethod.DeclaringType is ArrayType && methodArgs.Count > 1) {
-				return MakeRef(target.Indexer(methodArgs));
 			} else if (cecilMethod.Name == "Set" && cecilMethod.DeclaringType is ArrayType && methodArgs.Count > 2) {
 				return new AssignmentExpression(target.Indexer(methodArgs.GetRange(0, methodArgs.Count - 1)), methodArgs.Last());
 			}

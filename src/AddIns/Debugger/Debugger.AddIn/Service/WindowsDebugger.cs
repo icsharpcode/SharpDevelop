@@ -2,6 +2,7 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -15,8 +16,12 @@ using Debugger;
 using Debugger.AddIn.Tooltips;
 using Debugger.AddIn.TreeModel;
 using Debugger.Interop.CorPublish;
+using Debugger.MetaData;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Services;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.Decompiler;
+using ICSharpCode.Decompiler.ILAst;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
@@ -25,6 +30,7 @@ using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
+using Mono.Cecil;
 using Process = Debugger.Process;
 
 namespace ICSharpCode.SharpDevelop.Services
@@ -79,6 +85,18 @@ namespace ICSharpCode.SharpDevelop.Services
 		public bool BreakAtBeginning {
 			get;
 			set;
+		}
+		
+		public bool IsInExternalCode {
+			get {
+				if (debuggedProcess == null)
+					return true;
+				
+				if(debuggedProcess.SelectedThread == null)
+					return true;
+				
+				return debuggedProcess.SelectedStackFrame.ToString() != debuggedProcess.SelectedThread.MostRecentStackFrame.ToString();
+			}
 		}
 		
 		protected virtual void OnProcessSelected(ProcessEventArgs e)
@@ -210,6 +228,8 @@ namespace ICSharpCode.SharpDevelop.Services
 						DebugStarting(this, EventArgs.Empty);
 					
 					try {
+						// set the JIT flag for evaluating optimized code
+						Process.DebugMode = DebugModeFlag.Debug;
 						Process process = debugger.Start(processStartInfo.FileName,
 						                                 processStartInfo.WorkingDirectory,
 						                                 processStartInfo.Arguments);
@@ -271,6 +291,8 @@ namespace ICSharpCode.SharpDevelop.Services
 					DebugStarting(this, EventArgs.Empty);
 				
 				try {
+					// set the JIT flag for evaluating optimized code
+					Process.DebugMode = DebugModeFlag.Debug;
 					Process process = debugger.Attach(existingProcess);
 					attached = true;
 					SelectProcess(process);
@@ -444,16 +466,56 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		// Stepping:
 		
+		SourceCodeMapping GetCurrentCodeMapping(out bool isMatch)
+		{
+			DecompileInformation debugInformation = (DecompileInformation)DebuggerService.ExternalDebugInformation;
+			isMatch = false;
+			
+			if (debugInformation == null)
+				return null;
+			var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
+			int token = frame.MethodInfo.MetadataToken;
+			
+			// get the mapped instruction from the current line marker or the next one
+			if (!debugInformation.CodeMappings.ContainsKey(token))
+				return null;
+			var mappings = (List<MemberMapping>)debugInformation.CodeMappings[token];
+			return mappings.GetInstructionByTokenAndOffset(token, frame.IP, out isMatch);
+		}
+		
+		Debugger.StackFrame GetStackFrame()
+		{
+			bool isMatch;
+			Debugger.StackFrame frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
+			var map = GetCurrentCodeMapping(out isMatch);
+			if (map == null) {
+				frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
+				frame.ILRanges = new [] { 0, 1 };
+			} else {
+				frame.SourceCodeLine = map.SourceCodeLine;
+				frame.ILRanges = map.ToArray(isMatch);
+			}
+			
+			return frame;
+		}
+		
 		public void StepInto()
 		{
 			if (!IsDebugging) {
 				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.StepInto}");
 				return;
 			}
-			if (debuggedProcess.SelectedStackFrame == null || debuggedProcess.IsRunning) {
+			
+			var frame = debuggedProcess.SelectedStackFrame ?? debuggedProcess.SelectedThread.MostRecentStackFrame;
+			if (frame == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
-				debuggedProcess.SelectedStackFrame.AsyncStepInto();
+				if (IsInExternalCode) {
+					// get frame info from external code mappings
+					frame = GetStackFrame();
+				}
+				
+				frame.AsyncStepInto();
 			}
 		}
 		
@@ -463,10 +525,17 @@ namespace ICSharpCode.SharpDevelop.Services
 				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.StepOver}");
 				return;
 			}
-			if (debuggedProcess.SelectedStackFrame == null || debuggedProcess.IsRunning) {
+			
+			var frame = debuggedProcess.SelectedStackFrame ?? debuggedProcess.SelectedThread.MostRecentStackFrame;
+			if (frame == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepOver}");
 			} else {
-				debuggedProcess.SelectedStackFrame.AsyncStepOver();
+				if (IsInExternalCode) {
+					// get frame info from external code mappings
+					frame = GetStackFrame();
+				}
+				
+				frame.AsyncStepOver();
 			}
 		}
 		
@@ -476,10 +545,17 @@ namespace ICSharpCode.SharpDevelop.Services
 				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.StepOut}");
 				return;
 			}
-			if (debuggedProcess.SelectedStackFrame == null || debuggedProcess.IsRunning) {
-				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepOut}");
+			
+			var frame = debuggedProcess.SelectedStackFrame ?? debuggedProcess.SelectedThread.MostRecentStackFrame;
+			if (frame == null || debuggedProcess.IsRunning) {
+				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
-				debuggedProcess.SelectedStackFrame.AsyncStepOut();
+				if (IsInExternalCode) {
+					// get frame info from external code mappings
+					frame = GetStackFrame();
+				}
+				
+				frame.AsyncStepOut();
 			}
 		}
 		
@@ -505,9 +581,19 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (!CanEvaluate) {
 				return null;
 			}
-			return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
+			
+			Debugger.StackFrame stackFrame = debuggedProcess.SelectedThread.MostRecentStackFrame;
+
+			try {
+				object data = GetLocalVariableIndex(stackFrame, variableName);
+				
+				// evaluate expression
+				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, stackFrame, data);
+			} catch {
+				throw;
+			}
 		}
-		
+
 		/// <summary>
 		/// Gets Expression for given variable. Can throw GetValueException.
 		/// <exception cref="GetValueException">Thrown when getting expression fails. Exception message explains reason.</exception>
@@ -550,7 +636,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		bool CanEvaluate
 		{
 			get {
-				return debuggedProcess != null && !debuggedProcess.IsRunning && debuggedProcess.SelectedStackFrame != null;
+				return debuggedProcess != null && !debuggedProcess.IsRunning &&
+					(debuggedProcess.SelectedStackFrame != null || debuggedProcess.SelectedThread.MostRecentStackFrame != null);
 			}
 		}
 		
@@ -566,7 +653,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				var image = ExpressionNode.GetImageForLocalVariable(out imageName);
 				ExpressionNode expressionNode = new ExpressionNode(image, variableName, tooltipExpression);
 				expressionNode.ImageName = imageName;
-				return new DebuggerTooltipControl(logicalPosition, expressionNode);
+				return new DebuggerTooltipControl(logicalPosition, expressionNode) { ShowPins = !IsInExternalCode };
 			} catch (GetValueException) {
 				return null;
 			}
@@ -885,14 +972,63 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void JumpToCurrentLine()
 		{
+			if (debuggedProcess == null || debuggedProcess.SelectedThread == null)
+				return;
+			
 			WorkbenchSingleton.MainWindow.Activate();
 			DebuggerService.RemoveCurrentLineMarker();
-			if (debuggedProcess != null) {
+			
+			if (!IsInExternalCode) {
 				SourcecodeSegment nextStatement = debuggedProcess.NextStatement;
 				if (nextStatement != null) {
 					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 				}
+			} else {
+				DecompileInformation externalData = (DecompileInformation)DebuggerService.ExternalDebugInformation;
+				
+				// use most recent stack frame because we don't have the symbols
+				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
+				
+				if (frame == null)
+					return;
+				
+				int token = frame.MethodInfo.MetadataToken;
+				int ilOffset = frame.IP;
+				int line;
+				MemberReference memberReference;
+				
+				if (externalData != null && externalData.CodeMappings.ContainsKey(token)) {
+					var mappings = externalData.CodeMappings[token];
+					if (mappings.GetInstructionByTokenAndOffset(token, ilOffset, out memberReference, out line)) {
+						DebuggerService.DebugStepInformation = null; // we do not need to step into/out
+
+						// update marker
+						var debugType = (DebugType)frame.MethodInfo.DeclaringType;
+						string title = "[" + debugType.Name + "]";
+						foreach (var vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<AbstractViewContentWithoutFile>()) {
+							if (string.Equals(vc.TitleName, title, StringComparison.OrdinalIgnoreCase)) {
+								CurrentLineBookmark.SetPosition(vc, line, 0, line, 0);
+								vc.WorkbenchWindow.SelectWindow();
+								return;
+							}
+						}
+						// the decompiled content was closed so we have to recreate it
+						StepIntoUnknownFrame(frame, token, ilOffset);
+					} else {
+						StepIntoUnknownFrame(frame, token, ilOffset);
+					}
+				} else {
+					StepIntoUnknownFrame(frame, token, ilOffset);
+				}
 			}
+		}
+
+		void StepIntoUnknownFrame(Debugger.StackFrame frame, int token, int ilOffset)
+		{
+			var debugType = (DebugType)frame.MethodInfo.DeclaringType;
+			string fullName = debugType.FullNameWithoutGenericArguments;
+			DebuggerService.DebugStepInformation = Tuple.Create(token, ilOffset);
+			NavigationService.NavigateTo(debugType.DebugModule.FullPath, debugType.FullNameWithoutGenericArguments, string.Empty);
 		}
 		
 		StopAttachedProcessDialogResult ShowStopAttachedProcessDialog()
@@ -911,6 +1047,32 @@ namespace ICSharpCode.SharpDevelop.Services
 			ProjectService.OpenSolution.Projects
 				.Where(p => e.Item.Name.IndexOf(p.Name) >= 0)
 				.ForEach(p => e.Item.LoadSymbolsFromDisk(new []{ Path.GetDirectoryName(p.OutputAssemblyFullPath) }));
+		}
+		
+		public static object GetLocalVariableIndex(Debugger.StackFrame stackFrame, string variableName)
+		{
+			// get the target name
+			int token = stackFrame.MethodInfo.MetadataToken;
+			int index = variableName.IndexOf('.');
+			string targetName = variableName;
+			if (index != -1) {
+				targetName = variableName.Substring(0, index);
+			}
+			
+			// get local variable index and store it in UserData property - used in evaluator
+			object data = null;
+			IEnumerable<ILVariable> list;
+			DecompileInformation externalData = (DecompileInformation)DebuggerService.ExternalDebugInformation;
+			if (externalData == null)
+				return null;
+			
+			if (externalData.LocalVariables.TryGetValue(token, out list)) {
+				var variable = list.FirstOrDefault(v => v.Name == targetName);
+				if (variable != null && variable.OriginalVariable != null) {
+					data = new[] { variable.OriginalVariable.Index };
+				}
+			}
+			return data;
 		}
 	}
 }

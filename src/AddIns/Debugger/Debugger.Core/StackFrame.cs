@@ -16,7 +16,7 @@ namespace Debugger
 	/// Use to obtain arguments or local variables.
 	/// </summary>
 	public class StackFrame: DebuggerObject
-	{	
+	{
 		Thread thread;
 		AppDomain appDomain;
 		Process process;
@@ -59,7 +59,7 @@ namespace Debugger
 		}
 		
 		
-		/// <summary> True if the stack frame has symbols defined. 
+		/// <summary> True if the stack frame has symbols defined.
 		/// (That is has accesss to the .pdb file) </summary>
 		public bool HasSymbols {
 			get {
@@ -139,8 +139,14 @@ namespace Debugger
 			}
 		}
 		
+		public int[] ILRanges { get; set; }
+		
+		public int SourceCodeLine { get; set; }
+		
 		SourcecodeSegment GetSegmentForOffet(int offset)
 		{
+			if (SourceCodeLine != 0)
+				return SourcecodeSegment.ResolveForIL(this.MethodInfo.DebugModule, corFunction, SourceCodeLine, offset, ILRanges);
 			return SourcecodeSegment.Resolve(this.MethodInfo.DebugModule, corFunction, offset);
 		}
 		
@@ -187,17 +193,23 @@ namespace Debugger
 		
 		void AsyncStep(bool stepIn)
 		{
-			if (this.MethodInfo.DebugModule.HasSymbols == false) {
+			if (this.MethodInfo.DebugModule.HasSymbols == false && process.Options.StepOverNoSymbols) {
 				throw new DebuggerException("Unable to step. No symbols loaded.");
 			}
 			
-			SourcecodeSegment nextSt = NextStatement;
-			if (nextSt == null) {
-				throw new DebuggerException("Unable to step. Next statement not aviable");
+			int[] stepRanges;
+			if (ILRanges == null) {
+				SourcecodeSegment nextSt = NextStatement;
+				if (nextSt == null) {
+					throw new DebuggerException("Unable to step. Next statement not aviable");
+				}
+				stepRanges = nextSt.StepRanges;
+			} else {
+				stepRanges = ILRanges;
 			}
 			
 			if (stepIn) {
-				Stepper stepInStepper = Stepper.StepIn(this, nextSt.StepRanges, "normal");
+				Stepper stepInStepper = Stepper.StepIn(this, stepRanges, "normal");
 				this.Thread.CurrentStepIn = stepInStepper;
 				Stepper clearCurrentStepIn = Stepper.StepOut(this, "clear current step in");
 				clearCurrentStepIn.StepComplete += delegate {
@@ -207,7 +219,7 @@ namespace Debugger
 				};
 				clearCurrentStepIn.Ignore = true;
 			} else {
-				Stepper.StepOver(this, nextSt.StepRanges, "normal");
+				Stepper.StepOver(this, stepRanges, "normal");
 			}
 			
 			AsyncContinue();
@@ -276,7 +288,7 @@ namespace Debugger
 			return null;
 		}
 		
-		/// <summary> 
+		/// <summary>
 		/// Gets the instance of the class asociated with the current frame.
 		/// That is, 'this' in C#.
 		/// Note that for delegates and enumerators this returns the instance of the display class.
@@ -397,8 +409,8 @@ namespace Debugger
 		{
 			int hashCode = 0;
 			unchecked {
-				if (thread != null) hashCode += 1000000009 * thread.GetHashCode(); 
-				if (methodInfo != null) hashCode += 1000000093 * methodInfo.GetHashCode(); 
+				if (thread != null) hashCode += 1000000009 * thread.GetHashCode();
+				if (methodInfo != null) hashCode += 1000000093 * methodInfo.GetHashCode();
 				hashCode += 1000000097 * chainIndex.GetHashCode();
 				hashCode += 1000000103 * frameIndex.GetHashCode();
 			}

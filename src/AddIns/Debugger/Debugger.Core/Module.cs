@@ -93,22 +93,22 @@ namespace Debugger
 		}
 		
 		[Debugger.Tests.Ignore]
-		public ulong BaseAdress { 
+		public ulong BaseAdress {
 			get {
 				return this.CorModule.GetBaseAddress();
-			} 
+			}
 		}
 		
-		public bool IsDynamic { 
+		public bool IsDynamic {
 			get {
 				return this.CorModule.IsDynamic() == 1;
-			} 
+			}
 		}
 		
-		public bool IsInMemory { 
+		public bool IsInMemory {
 			get {
 				return this.CorModule.IsInMemory() == 1;
-			} 
+			}
 		}
 		
 		internal uint AppDomainID {
@@ -124,24 +124,40 @@ namespace Debugger
 		}
 		
 		[Debugger.Tests.Ignore]
-		public string FullPath { 
+		public string FullPath {
 			get {
 				return fullPath;
-			} 
+			}
 		}
 		
-		public bool HasSymbols { 
+		public bool HasSymbols {
 			get {
 				return symReader != null;
-			} 
+			}
 		}
 		
-		public int OrderOfLoading { 
+		public int OrderOfLoading {
 			get {
 				return orderOfLoading;
 			}
 			set {
 				orderOfLoading = value;
+			}
+		}
+		
+		[Debugger.Tests.Ignore]
+		public CorDebugJITCompilerFlags JITCompilerFlags
+		{
+			get
+			{
+				uint retval = ((ICorDebugModule2)corModule).GetJITCompilerFlags();
+				return (CorDebugJITCompilerFlags)retval;
+			}
+			set
+			{
+				// ICorDebugModule2.SetJITCompilerFlags can return successful HRESULTS other than S_OK.
+				// Since we have asked the COMInterop layer to preservesig, we need to marshal any failing HRESULTS.
+				((ICorDebugModule2)corModule).SetJITCompilerFlags((uint)value);
 			}
 		}
 		
@@ -182,6 +198,8 @@ namespace Debugger
 				fullPath = corModule.GetName();
 				name     = System.IO.Path.GetFileName(FullPath);
 			}
+			
+			SetJITCompilerFlags();
 			
 			LoadSymbolsFromDisk(process.Options.SymbolsSearchPaths);
 			ResetJustMyCodeStatus();
@@ -268,7 +286,7 @@ namespace Debugger
 			}
 		}
 		
-		void SetBreakpoints() 
+		void SetBreakpoints()
 		{
 			if (this.HasSymbols) {
 				// This is in case that the client modifies the collection as a response to set breakpoint
@@ -278,6 +296,34 @@ namespace Debugger
 				
 				foreach (Breakpoint b in collection) {
 					b.SetBreakpoint(this);
+				}
+			}
+		}
+		
+		void SetJITCompilerFlags()
+		{
+			if (Process.DebugMode != DebugModeFlag.Default) {
+				// translate DebugModeFlags to JITCompilerFlags
+				CorDebugJITCompilerFlags jcf = MapDebugModeToJITCompilerFlags(Process.DebugMode);
+
+				try
+				{
+					this.JITCompilerFlags = jcf;
+
+					// Flags may succeed but not set all bits, so requery.
+					CorDebugJITCompilerFlags jcfActual = this.JITCompilerFlags;
+					
+					#if DEBUG
+					if (jcf != jcfActual)
+						Console.WriteLine("Couldn't set all flags. Actual flags:" + jcfActual.ToString());
+					else
+						Console.WriteLine("Actual flags:" + jcfActual.ToString());
+					#endif
+				}
+				catch (COMException ex)
+				{
+					// we'll ignore the error if we cannot set the jit flags
+					Console.WriteLine(string.Format("Failed to set flags with hr=0x{0:x}", ex.ErrorCode));
 				}
 			}
 		}
@@ -318,6 +364,29 @@ namespace Debugger
 		public override string ToString()
 		{
 			return string.Format("{0}", this.Name);
+		}
+		
+		public static CorDebugJITCompilerFlags MapDebugModeToJITCompilerFlags(DebugModeFlag debugMode)
+		{
+			CorDebugJITCompilerFlags jcf;
+			switch (debugMode)
+			{
+				case DebugModeFlag.Optimized:
+					jcf = CorDebugJITCompilerFlags.CORDEBUG_JIT_DEFAULT; // DEFAULT really means force optimized.
+					break;
+				case DebugModeFlag.Debug:
+					jcf = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+					break;
+				case DebugModeFlag.Enc:
+					jcf = CorDebugJITCompilerFlags.CORDEBUG_JIT_ENABLE_ENC;
+					break;
+				default:
+					// we don't have mapping from default to "default",
+					// therefore we'll use DISABLE_OPTIMIZATION.
+					jcf = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+					break;
+			}
+			return jcf;
 		}
 	}
 	

@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows.Media;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
@@ -23,14 +24,21 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public static void SetPosition(IViewContent viewContent,  int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
 		{
 			ITextEditorProvider tecp = viewContent as ITextEditorProvider;
-			if (tecp != null)
+			if (tecp != null) {
 				SetPosition(tecp.TextEditor.FileName, tecp.TextEditor.Document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
-			else
-				Remove();
+			} else {
+				dynamic codeView = viewContent.Control;
+				SetPosition(null, codeView.TextEditor.Document as IDocument, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
+				codeView.IconBarManager.Bookmarks.Add(CurrentLineBookmark.instance);
+				codeView.UnfoldAndScroll(makerStartLine);
+				CurrentLineBookmark.instance.Document = codeView.TextEditor.Document as IDocument;
+			}
 		}
 		
 		public static void SetPosition(FileName fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
 		{
+			if (document == null)
+				return;
 			Remove();
 			
 			startLine   = makerStartLine;

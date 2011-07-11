@@ -21,6 +21,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		/// Redraws the bookmark margin. Bookmarks need to call this method when the Image changes.
 		/// </summary>
 		void Redraw();
+		
+		event EventHandler RedrawRequested;
 	}
 	
 	/// <summary>

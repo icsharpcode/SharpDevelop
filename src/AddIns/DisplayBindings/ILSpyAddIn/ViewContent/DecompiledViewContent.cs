@@ -2,14 +2,25 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.Decompiler.ILAst;
 using ICSharpCode.ILSpyAddIn.ViewContent;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using Mono.Cecil;
 
@@ -46,7 +57,9 @@ namespace ICSharpCode.ILSpyAddIn
 			Thread thread = new Thread(DecompilationThread);
 			thread.Name = "Decompiler (" + shortTypeName + ")";
 			thread.Start();
+			BookmarkManager.Removed += BookmarkManager_Removed;
 		}
+
 		#endregion
 		
 		#region Properties
@@ -61,6 +74,10 @@ namespace ICSharpCode.ILSpyAddIn
 		public override object Control {
 			get { return codeView; }
 		}
+		
+		public override bool IsReadOnly {
+			get { return true; }
+		}
 		#endregion
 		
 		#region Dispose
@@ -68,6 +85,7 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			cancellation.Cancel();
 			codeView.Dispose();
+			BookmarkManager.Removed -= BookmarkManager_Removed;
 			base.Dispose();
 		}
 		#endregion
@@ -139,6 +157,17 @@ namespace ICSharpCode.ILSpyAddIn
 			AstBuilder astBuilder = new AstBuilder(context);
 			astBuilder.AddType(typeDefinition);
 			astBuilder.GenerateCode(textOutput);
+			
+			// save decompilation data
+			var nodes = TreeTraversal
+				.PreOrder((AstNode)astBuilder.CompilationUnit, n => n.Children)
+				.Where(n => n is AttributedNode && n.Annotation<Tuple<int, int>>() != null);
+			DebuggerService.ExternalDebugInformation = new DecompileInformation {
+				CodeMappings = astBuilder.CodeMappings,
+				LocalVariables = astBuilder.LocalVariables,
+				DecompiledMemberReferences = astBuilder.DecompiledMemberReferences,
+				AstNodes = nodes
+			};
 		}
 		
 		void OnDecompilationFinished(StringWriter output)
@@ -150,6 +179,53 @@ namespace ICSharpCode.ILSpyAddIn
 			
 			this.decompilationFinished = true;
 			JumpToEntity(this.jumpToEntityTagWhenDecompilationFinished);
+			
+			// update UI
+			UpdateIconMargin(output.ToString());
+			UpdateDebuggingUI();
+		}
+		#endregion
+		
+		#region Update UI
+		void UpdateIconMargin(string text)
+		{
+			string tempFileName = string.Format("decompiled/{0}.cs", fullTypeName);
+			
+			codeView.IconBarManager.UpdateClassMemberBookmarks(ParserService.ParseFile(tempFileName, new StringTextBuffer(text)));
+		}
+		
+		void UpdateDebuggingUI()
+		{
+			if (!DebuggerService.IsDebuggerStarted)
+				return;
+			
+			if (DebuggerService.DebugStepInformation != null) {
+				// get debugging information
+				DecompileInformation debugInformation = (DecompileInformation)DebuggerService.ExternalDebugInformation;
+				int token = DebuggerService.DebugStepInformation.Item1;
+				int ilOffset = DebuggerService.DebugStepInformation.Item2;
+				int line;
+				MemberReference member;
+				if (!debugInformation.CodeMappings.ContainsKey(token))
+					return;
+				
+				debugInformation.CodeMappings[token].GetInstructionByTokenAndOffset(token, ilOffset, out member, out line);
+				
+				// update bookmark & marker
+				codeView.UnfoldAndScroll(line);
+				CurrentLineBookmark.SetPosition(this, line, 0, line, 0);
+			}
+		}
+		#endregion
+		
+		#region Bookmarks
+		void BookmarkManager_Removed(object sender, BookmarkEventArgs e)
+		{
+			var mark = e.Bookmark;
+			if (mark != null && codeView.IconBarManager.Bookmarks.Contains(mark)) {
+				codeView.IconBarManager.Bookmarks.Remove(mark);
+				mark.Document = null;
+			}
 		}
 		#endregion
 	}

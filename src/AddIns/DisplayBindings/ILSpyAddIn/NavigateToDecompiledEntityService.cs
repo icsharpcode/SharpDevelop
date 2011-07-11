@@ -4,15 +4,18 @@
 using System;
 using System.IO;
 using System.Linq;
+
+using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.ILSpyAddIn
 {
-	public class NavigateToDecompiledEntityService : INavigateToEntityService
+	public class NavigateToDecompiledEntityService : INavigateToEntityService, INavigateToMemberService
 	{
-		public bool NavigateTo(IEntity entity)
+		public bool NavigateToEntity(IEntity entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
@@ -41,6 +44,12 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public static void NavigateTo(string assemblyFile, string typeName, string entityTag)
 		{
+			if (string.IsNullOrEmpty(assemblyFile))
+				throw new ArgumentException("assemblyFile is null or empty");
+			
+			if (string.IsNullOrEmpty(typeName))
+				throw new ArgumentException("typeName is null or empty");
+			
 			foreach (var vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
 				if (string.Equals(vc.AssemblyFile, assemblyFile, StringComparison.OrdinalIgnoreCase) && typeName == vc.FullTypeName) {
 					vc.WorkbenchWindow.SelectWindow();
@@ -49,6 +58,19 @@ namespace ICSharpCode.ILSpyAddIn
 				}
 			}
 			WorkbenchSingleton.Workbench.ShowView(new DecompiledViewContent(assemblyFile, typeName, entityTag));
+		}
+		
+		public bool NavigateToMember(string assemblyFile, string typeName, string entityTag)
+		{
+			//close the window if exists - this is a workaround
+			foreach (var vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
+				if (string.Equals(vc.AssemblyFile, assemblyFile, StringComparison.OrdinalIgnoreCase) && typeName == vc.FullTypeName) {
+					vc.WorkbenchWindow.CloseWindow(true);
+					break;
+				}
+			}
+			WorkbenchSingleton.Workbench.ShowView(new DecompiledViewContent(assemblyFile, typeName, entityTag));
+			return true;
 		}
 	}
 }

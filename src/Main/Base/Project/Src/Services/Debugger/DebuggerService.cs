@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
@@ -13,6 +15,7 @@ using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
@@ -97,6 +100,21 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public static bool IsDebuggerStarted {
 			get { return debuggerStarted; }
 		}
+		
+		#region Debug third party code
+		
+		/// <summary>
+		/// Gets or sets the external debug information.
+		/// <summary>This constains the code mappings and local variables.</summary>
+		/// </summary>
+		public static object ExternalDebugInformation { get; set; }
+		
+		/// <summary>
+		/// Gets or sets the current token and IL offset. Used for step in/out.
+		/// </summary>
+		public static Tuple<int, int> DebugStepInformation { get; set; }
+		
+		#endregion
 		
 		public static event EventHandler DebugStarting;
 		public static event EventHandler DebugStarted;
@@ -264,9 +282,18 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return;
 			Location logicPos = e.LogicalPosition;
 			var doc = e.Editor.Document;
-			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(e.Editor.FileName);
+			string fileName;
+			if (string.IsNullOrEmpty(e.Editor.FileName)) {
+				dynamic viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+				fileName = string.Format("decompiled/{0}.cs", viewContent.FullTypeName);
+			} else {
+				fileName = e.Editor.FileName;
+			}
+			
+			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
 			if (expressionFinder == null)
 				return;
+			
 			var currentLine = doc.GetLine(logicPos.Y);
 			if (logicPos.X > currentLine.Length)
 				return;
@@ -275,7 +302,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			string expression = (expressionResult.Expression ?? "").Trim();
 			if (expression.Length > 0) {
 				// Look if it is variable
-				ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y, logicPos.X, e.Editor.FileName, textContent);
+				ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y, logicPos.X, fileName, textContent);
 				bool debuggerCanShowValue;
 				string toolTipText = GetText(result, expression, out debuggerCanShowValue);
 				if (Control.ModifierKeys == Keys.Control) {

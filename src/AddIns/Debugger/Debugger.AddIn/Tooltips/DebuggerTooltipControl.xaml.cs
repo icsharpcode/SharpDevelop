@@ -58,11 +58,10 @@ namespace Debugger.AddIn.Tooltips
 			this.itemsSource = nodes;
 		}
 
-		public DebuggerTooltipControl(DebuggerTooltipControl parentControl, Location logicalPosition, bool showPins = true)
+		public DebuggerTooltipControl(DebuggerTooltipControl parentControl, Location logicalPosition)
 			: this(logicalPosition)
 		{
 			this.parentControl = parentControl;
-			this.showPins = showPins;
 		}
 		
 		private void OnLoaded(object sender, RoutedEventArgs e)
@@ -82,6 +81,11 @@ namespace Debugger.AddIn.Tooltips
 			}
 		}
 		
+		public bool ShowPins {
+			get { return showPins; }
+			set { showPins = value; }
+		}
+		
 		public IEnumerable<ITreeNode> ItemsSource {
 			get { return this.itemsSource; }
 		}
@@ -95,8 +99,16 @@ namespace Debugger.AddIn.Tooltips
 			this.itemsSource.ForEach(item => observable.Add(item));
 			
 			// verify if at the line of the root there's a pin bookmark
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			var editor = provider.TextEditor;
+			ITextEditor editor;
+			var viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+			ITextEditorProvider provider = viewContent as ITextEditorProvider;
+			if (provider != null) {
+				editor = provider.TextEditor;
+			} else {
+				dynamic codeView = viewContent.Control;
+				editor = codeView.TextEditor as ITextEditor;
+			}
+			
 			if (editor != null) {
 				var pin = BookmarkManager.Bookmarks.Find(
 					b => b is PinBookmark &&
@@ -208,7 +220,7 @@ namespace Debugger.AddIn.Tooltips
 
 				// open child Popup
 				if (this.childPopup == null) {
-					this.childPopup = new DebuggerPopup(this, logicalPosition);
+					this.childPopup = new DebuggerPopup(this, logicalPosition, showPins);
 					this.childPopup.Placement = PlacementMode.Absolute;
 				}
 				if (this.containingPopup != null) {

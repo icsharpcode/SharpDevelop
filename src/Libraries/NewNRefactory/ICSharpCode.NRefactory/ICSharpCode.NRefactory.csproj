@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.NRefactory</RootNamespace>
-    <AssemblyName>newNRefactory</AssemblyName>
+    <AssemblyName>ICSharpCode.NewNRefactory</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <ProductVersion>10.0.0</ProductVersion>
@@ -31,6 +31,7 @@
     <Optimize>False</Optimize>
     <DefineConstants>DEBUG;TRACE;FULL_AST</DefineConstants>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -41,7 +42,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <WarningLevel>4</WarningLevel>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <WarningLevel>4</WarningLevel>
@@ -55,9 +55,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="CSharp\Analysis\ControlFlow.cs" />
     <Compile Include="CSharp\Analysis\DefiniteAssignmentAnalysis.cs" />
     <Compile Include="CSharp\Analysis\MinimalResolveContext.cs" />
@@ -100,10 +97,10 @@
     <Compile Include="CSharp\Ast\Expressions\UncheckedExpression.cs" />
     <Compile Include="CSharp\Ast\GeneralScope\TypeParameterDeclaration.cs" />
     <Compile Include="CSharp\Ast\MemberType.cs" />
-    <Compile Include="CSharp\Formatter\CSharpFormattingOptions.cs" />
-    <Compile Include="CSharp\Parser\mcs\method.cs" />
-    <Compile Include="CSharp\Parser\ParsedFile.cs" />
-    <Compile Include="CSharp\Parser\TypeSystemConvertVisitor.cs" />
+    <Compile Include="CSharp\Refactoring\TypeSystemAstBuilder.cs" />
+    <Compile Include="CSharp\Resolver\CSharpAttribute.cs" />
+    <Compile Include="CSharp\Resolver\ConstantValues.cs" />
+    <Compile Include="CSharp\Resolver\MapTypeIntoNewContext.cs" />
     <Compile Include="PatternMatching\BacktrackingInfo.cs" />
     <Compile Include="PatternMatching\Choice.cs" />
     <Compile Include="PatternMatching\AnyNode.cs" />
@@ -115,6 +112,7 @@
     <Compile Include="PatternMatching\OptionalNode.cs" />
     <Compile Include="PatternMatching\Repeat.cs" />
     <Compile Include="PatternMatching\Pattern.cs" />
+    <Compile Include="CSharp\Ast\NotImplementedAstVisitor.cs" />
     <Compile Include="CSharp\Ast\PrimitiveType.cs" />
     <Compile Include="CSharp\Ast\GeneralScope\Attribute.cs" />
     <Compile Include="CSharp\Ast\GeneralScope\AttributeSection.cs" />
@@ -164,10 +162,20 @@
     <Compile Include="CSharp\Ast\TypeMembers\ParameterDeclaration.cs" />
     <Compile Include="CSharp\Ast\TypeMembers\PropertyDeclaration.cs" />
     <Compile Include="CSharp\Ast\TypeMembers\VariableInitializer.cs" />
+    <Compile Include="CSharp\Formatter\Indent.cs" />
     <Compile Include="CSharp\OutputVisitor\InsertParenthesesVisitor.cs" />
     <Compile Include="CSharp\OutputVisitor\IOutputFormatter.cs" />
     <Compile Include="CSharp\OutputVisitor\OutputVisitor.cs" />
     <Compile Include="CSharp\OutputVisitor\TextWriterOutputFormatter.cs" />
+    <Compile Include="CSharp\Parser\CSharpParser.cs" />
+    <Compile Include="CSharp\Parser\mcs\CryptoConvert.cs" />
+    <Compile Include="CSharp\Parser\mcs\MonoSymbolFile.cs" />
+    <Compile Include="CSharp\Parser\mcs\MonoSymbolTable.cs" />
+    <Compile Include="CSharp\Parser\mcs\MonoSymbolWriter.cs" />
+    <Compile Include="CSharp\Parser\mcs\outline.cs" />
+    <Compile Include="CSharp\Parser\mcs\roottypes.cs" />
+    <Compile Include="CSharp\Parser\ParsedFile.cs" />
+    <Compile Include="CSharp\Parser\TypeSystemConvertVisitor.cs" />
     <Compile Include="CSharp\Resolver\AliasNamespaceReference.cs" />
     <Compile Include="CSharp\Resolver\AmbiguousResolveResult.cs" />
     <Compile Include="CSharp\Resolver\ByReferenceResolveResult.cs" />
@@ -195,6 +203,7 @@
     <Compile Include="CSharp\Resolver\LocalResolveResult.cs" />
     <Compile Include="Documentation\XmlDocumentationProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SupportedLanguage.cs" />
     <Compile Include="TypeSystem\Accessibility.cs" />
     <Compile Include="TypeSystem\ArrayType.cs" />
     <Compile Include="TypeSystem\ByReferenceType.cs" />
@@ -241,6 +250,7 @@
     <Compile Include="TypeSystem\Implementation\SpecializedField.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedMethod.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedProperty.cs" />
+    <Compile Include="TypeSystem\Implementation\SubstitutionTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\TypeStorage.cs" />
     <Compile Include="TypeSystem\Implementation\TypeWithElementType.cs" />
     <Compile Include="TypeSystem\Implementation\VoidTypeDefinition.cs" />
@@ -248,6 +258,7 @@
     <Compile Include="TypeSystem\IntersectionType.cs" />
     <Compile Include="TypeSystem\IParameter.cs" />
     <Compile Include="TypeSystem\IParameterizedMember.cs" />
+    <Compile Include="TypeSystem\IParsedFile.cs" />
     <Compile Include="TypeSystem\IProjectContent.cs" />
     <Compile Include="TypeSystem\IProperty.cs" />
     <Compile Include="TypeSystem\ISupportsInterning.cs" />
@@ -267,6 +278,54 @@
     <Compile Include="TypeSystem\PointerType.cs" />
     <Compile Include="TypeSystem\ReflectionHelper.cs" />
     <Compile Include="TypeSystem\SharedTypes.cs" />
+    <Compile Include="CSharp\Parser\mcs\cs-parser.cs" />
+    <Compile Include="CSharp\Parser\mcs\expression.cs" />
+    <Compile Include="CSharp\Parser\mcs\ecore.cs" />
+    <Compile Include="CSharp\Parser\mcs\statement.cs" />
+    <Compile Include="CSharp\Parser\mcs\class.cs" />
+    <Compile Include="CSharp\Parser\mcs\generic.cs" />
+    <Compile Include="CSharp\Parser\mcs\cs-tokenizer.cs" />
+    <Compile Include="CSharp\Parser\mcs\method.cs" />
+    <Compile Include="CSharp\Parser\mcs\convert.cs" />
+    <Compile Include="CSharp\Parser\mcs\anonymous.cs" />
+    <Compile Include="CSharp\Parser\mcs\constant.cs" />
+    <Compile Include="CSharp\Parser\mcs\attribute.cs" />
+    <Compile Include="CSharp\Parser\mcs\driver.cs" />
+    <Compile Include="CSharp\Parser\mcs\flowanalysis.cs" />
+    <Compile Include="CSharp\Parser\mcs\decl.cs" />
+    <Compile Include="CSharp\Parser\mcs\codegen.cs" />
+    <Compile Include="CSharp\Parser\mcs\property.cs" />
+    <Compile Include="CSharp\Parser\mcs\membercache.cs" />
+    <Compile Include="CSharp\Parser\mcs\namespace.cs" />
+    <Compile Include="CSharp\Parser\mcs\eval.cs" />
+    <Compile Include="CSharp\Parser\mcs\parameter.cs" />
+    <Compile Include="CSharp\Parser\mcs\import.cs" />
+    <Compile Include="CSharp\Parser\mcs\cfold.cs" />
+    <Compile Include="CSharp\Parser\mcs\doc.cs" />
+    <Compile Include="CSharp\Parser\mcs\typespec.cs" />
+    <Compile Include="CSharp\Parser\mcs\nullable.cs" />
+    <Compile Include="CSharp\Parser\mcs\typemanager.cs" />
+    <Compile Include="CSharp\Parser\mcs\iterators.cs" />
+    <Compile Include="CSharp\Parser\mcs\report.cs" />
+    <Compile Include="CSharp\Parser\mcs\delegate.cs" />
+    <Compile Include="CSharp\Parser\mcs\dynamic.cs" />
+    <Compile Include="CSharp\Parser\mcs\linq.cs" />
+    <Compile Include="CSharp\Parser\mcs\field.cs" />
+    <Compile Include="CSharp\Parser\mcs\assign.cs" />
+    <Compile Include="CSharp\Parser\mcs\context.cs" />
+    <Compile Include="CSharp\Parser\mcs\location.cs" />
+    <Compile Include="CSharp\Parser\mcs\pending.cs" />
+    <Compile Include="CSharp\Parser\mcs\argument.cs" />
+    <Compile Include="CSharp\Parser\mcs\rootcontext.cs" />
+    <Compile Include="CSharp\Parser\mcs\visit.cs" />
+    <Compile Include="CSharp\Parser\mcs\enum.cs" />
+    <Compile Include="CSharp\Parser\mcs\const.cs" />
+    <Compile Include="CSharp\Parser\mcs\modifiers.cs" />
+    <Compile Include="CSharp\Parser\mcs\symbolwriter.cs" />
+    <Compile Include="CSharp\Parser\mcs\lambda.cs" />
+    <Compile Include="CSharp\Parser\mcs\support.cs" />
+    <Compile Include="CSharp\Parser\mcs\complete.cs" />
+    <Compile Include="CSharp\Parser\mcs\literal.cs" />
     <Compile Include="Utils\BitVector16.cs" />
     <Compile Include="Utils\BusyManager.cs" />
     <Compile Include="Utils\CacheManager.cs" />
@@ -275,6 +334,7 @@
     <Compile Include="Utils\EmptyList.cs" />
     <Compile Include="Utils\ExtensionMethods.cs" />
     <Compile Include="Utils\GraphVizGraph.cs" />
+    <Compile Include="Utils\Platform.cs" />
     <Compile Include="Utils\TreeTraversal.cs" />
     <Compile Include="CSharp\Ast\ComposedType.cs" />
     <Compile Include="CSharp\Ast\Expressions\DirectionExpression.cs" />
@@ -284,28 +344,70 @@
     <Compile Include="CSharp\Ast\DepthFirstAstVisitor.cs" />
     <Compile Include="CSharp\Ast\NodeType.cs" />
     <Compile Include="CSharp\Ast\TypeMembers\Accessor.cs" />
+    <Compile Include="CSharp\Parser\mcs\assembly.cs" />
     <Compile Include="CSharp\Ast\TypeMembers\EnumMemberDeclaration.cs" />
     <Compile Include="CSharp\Ast\GeneralScope\Comment.cs" />
+    <Compile Include="CSharp\Parser\mcs\reflection.cs" />
     <Compile Include="CSharp\Ast\Statements\DoWhileStatement.cs" />
     <Compile Include="CSharp\Ast\Statements\YieldBreakStatement.cs" />
     <Compile Include="CSharp\Ast\Expressions\EmptyExpression.cs" />
+    <Compile Include="CSharp\Formatter\AstFormattingVisitor.cs" />
+    <Compile Include="CSharp\Formatter\ITextEditorAdapter.cs" />
     <Compile Include="CSharp\Ast\TypeMembers\FixedFieldDeclaration.cs" />
     <Compile Include="CSharp\Ast\TypeMembers\FixedVariableInitializer.cs" />
     <Compile Include="CSharp\Ast\GeneralScope\ExternAliasDeclaration.cs" />
+    <Compile Include="CSharp\Formatter\CSharpFormattingOptions.cs" />
     <Compile Include="CSharp\Ast\Expressions\AnonymousTypeCreateExpression.cs" />
     <Compile Include="CSharp\Ast\Expressions\UndocumentedExpression.cs" />
+    <Compile Include="CSharp\Ast\IRelocatable.cs" />
+    <Compile Include="CSharp\Ast\ObservableAstVisitor.cs" />
+    <Compile Include="CSharp\Ast\CSharpUtil.cs" />
+    <Compile Include="CSharp\Parser\mcs\async.cs" />
+    <Compile Include="CSharp\Refactoring\Action.cs" />
+    <Compile Include="CSharp\Refactoring\CreateLinkAction.cs" />
+    <Compile Include="CSharp\Refactoring\FormatTextAction.cs" />
+    <Compile Include="CSharp\Refactoring\IActionFactory.cs" />
+    <Compile Include="CSharp\Refactoring\IContextAction.cs" />
+    <Compile Include="CSharp\Refactoring\NodeOutputAction.cs" />
+    <Compile Include="CSharp\Refactoring\NodeSelectionAction.cs" />
+    <Compile Include="CSharp\Refactoring\RefactoringContext.cs" />
+    <Compile Include="CSharp\Refactoring\Script.cs" />
+    <Compile Include="CSharp\Refactoring\StringBuilderOutputFormatter.cs" />
+    <Compile Include="CSharp\Refactoring\TextReplaceAction.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\AddAnotherAccessor.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\CheckIfParameterIsNull.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\ConvertDecToHex.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\ConvertForeachToFor.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\ConvertHexToDec.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\CreateBackingStore.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\FlipOperatorArguments.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\GenerateSwitchLabels.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\InsertAnonymousMethodSignature.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\IntroduceFormatItem.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\InvertIf.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\RemoveBraces.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\ReplaceEmptyString.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\SplitDeclarationAndAssignment.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\SplitString.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\UseExplicitType.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\UseVarKeyword.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\CreateEventInvocator.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\CreateField.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\CreateLocalVariable.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\CreateProperty.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\RemoveBackingStore.cs" />
+    <Compile Include="CSharp\Refactoring\ContextAction\GenerateGetter.cs" />
+    <Compile Include="TypeSystem\Error.cs" />
+    <Compile Include="TypeSystem\IAnnotatable.cs" />
+    <Compile Include="CSharp\Ast\ErrorNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
-    <Folder Include="CSharp\Formatter" />
-    <Folder Include="CSharp\Parser" />
-    <Folder Include="CSharp\Parser\mcs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

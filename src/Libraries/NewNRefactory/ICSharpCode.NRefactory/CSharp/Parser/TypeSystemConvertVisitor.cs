@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Analysis;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
@@ -78,8 +80,20 @@ namespace ICSharpCode.NRefactory.CSharp
 				                  node.GetChildByRole(AstNode.Roles.RBrace).EndLocation);
 		}
 		
+		#region Compilation Unit
+		public override IEntity VisitCompilationUnit (CompilationUnit unit, object data)
+		{
+			parsedFile.Errors = unit.Errors;
+			return base.VisitCompilationUnit (unit, data);
+		}
+		#endregion
+		
 		#region Using Declarations
-		// TODO: extern aliases
+		public override IEntity VisitExternAliasDeclaration(ExternAliasDeclaration externAliasDeclaration, object data)
+		{
+			usingScope.ExternAliases.Add(externAliasDeclaration.Name);
+			return null;
+		}
 		
 		public override IEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
@@ -114,15 +128,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 		
-		// TODO: assembly attributes
-		
 		#region Type Definitions
 		DefaultTypeDefinition CreateTypeDefinition(string name)
 		{
 			DefaultTypeDefinition newType;
 			if (currentTypeDefinition != null) {
 				newType = new DefaultTypeDefinition(currentTypeDefinition, name);
-				currentTypeDefinition.InnerClasses.Add(newType);
+				newType.TypeParameters.AddRange(currentTypeDefinition.TypeParameters);
+				currentTypeDefinition.NestedTypes.Add(newType);
 			} else {
 				newType = new DefaultTypeDefinition(usingScope.ProjectContent, usingScope.NamespaceName, name);
 				parsedFile.TopLevelTypeDefinitions.Add(newType);
@@ -145,7 +158,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			else if (td.ClassType == ClassType.Enum || td.ClassType == ClassType.Struct)
 				td.IsSealed = true; // enums/structs are implicitly sealed
 			
-			ConvertTypeParameters(td.TypeParameters, typeDeclaration.TypeParameters, typeDeclaration.Constraints);
+			ConvertTypeParameters(td.TypeParameters, typeDeclaration.TypeParameters, typeDeclaration.Constraints, EntityType.TypeDefinition);
 			
 			foreach (AstType baseType in typeDeclaration.BaseTypes) {
 				td.BaseTypes.Add(ConvertType(baseType));
@@ -154,6 +167,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			foreach (AttributedNode member in typeDeclaration.Members) {
 				member.AcceptVisitor(this, data);
 			}
+			
+			td.HasExtensionMethods = td.Methods.Any(m => m.IsExtensionMethod);
 			
 			currentTypeDefinition = (DefaultTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
 			return td;
@@ -166,16 +181,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			td.Region = MakeRegion(delegateDeclaration);
 			td.BaseTypes.Add(multicastDelegateReference);
 			
-			ConvertAttributes(td.Attributes, delegateDeclaration.Attributes);
 			ApplyModifiers(td, delegateDeclaration.Modifiers);
 			td.IsSealed = true; // delegates are implicitly sealed
 			
-			ConvertTypeParameters(td.TypeParameters, delegateDeclaration.TypeParameters, delegateDeclaration.Constraints);
+			ConvertTypeParameters(td.TypeParameters, delegateDeclaration.TypeParameters, delegateDeclaration.Constraints, EntityType.TypeDefinition);
 			
 			ITypeReference returnType = ConvertType(delegateDeclaration.ReturnType);
 			List<IParameter> parameters = new List<IParameter>();
 			ConvertParameters(parameters, delegateDeclaration.Parameters);
 			AddDefaultMethodsToDelegate(td, returnType, parameters);
+			
+			foreach (AttributeSection section in delegateDeclaration.Attributes) {
+				if (section.AttributeTarget == "return") {
+					ConvertAttributes(td.Methods.Single(m => m.Name == "Invoke").ReturnTypeAttributes, section);
+					ConvertAttributes(td.Methods.Single(m => m.Name == "EndInvoke").ReturnTypeAttributes, section);
+				} else {
+					ConvertAttributes(td.Attributes, section);
+				}
+			}
 			
 			currentTypeDefinition = (DefaultTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
 			return td;
@@ -249,7 +272,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region Fields
 		public override IEntity VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
-			bool isSingleField = fieldDeclaration.Variables.Count() == 1;
+			bool isSingleField = fieldDeclaration.Variables.Count == 1;
 			Modifiers modifiers = fieldDeclaration.Modifiers;
 			DefaultField field = null;
 			foreach (VariableInitializer vi in fieldDeclaration.Variables) {
@@ -289,7 +312,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (!enumMemberDeclaration.Initializer.IsNull) {
 				field.ConstantValue = ConvertConstantValue(currentTypeDefinition, enumMemberDeclaration.Initializer);
 			} else {
-				throw new NotImplementedException();
+				IField prevField = currentTypeDefinition.Fields.LastOrDefault();
+				if (prevField == null || prevField.ConstantValue == null) {
+					field.ConstantValue = ConvertConstantValue(currentTypeDefinition, new PrimitiveExpression(0));
+				} else {
+					field.ConstantValue = new IncrementConstantValue(prevField.ConstantValue);
+				}
 			}
 			
 			currentTypeDefinition.Fields.Add(field);
@@ -306,7 +334,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			m.BodyRegion = MakeRegion(methodDeclaration.Body);
 			
 			
-			ConvertTypeParameters(m.TypeParameters, methodDeclaration.TypeParameters, methodDeclaration.Constraints);
+			ConvertTypeParameters(m.TypeParameters, methodDeclaration.TypeParameters, methodDeclaration.Constraints, EntityType.Method);
 			m.ReturnType = ConvertType(methodDeclaration.ReturnType);
 			ConvertAttributes(m.Attributes, methodDeclaration.Attributes.Where(s => s.AttributeTarget != "return"));
 			ConvertAttributes(m.ReturnTypeAttributes, methodDeclaration.Attributes.Where(s => s.AttributeTarget == "return"));
@@ -325,10 +353,41 @@ namespace ICSharpCode.NRefactory.CSharp
 			return m;
 		}
 		
-		void ConvertTypeParameters(IList<ITypeParameter> output, IEnumerable<TypeParameterDeclaration> typeParameters, IEnumerable<Constraint> constraints)
+		void ConvertTypeParameters(IList<ITypeParameter> output, AstNodeCollection<TypeParameterDeclaration> typeParameters, AstNodeCollection<Constraint> constraints, EntityType ownerType)
 		{
-			if (typeParameters.Any())
-				throw new NotImplementedException();
+			// output might be non-empty when type parameters were copied from an outer class
+			int index = output.Count;
+			List<DefaultTypeParameter> list = new List<DefaultTypeParameter>();
+			foreach (TypeParameterDeclaration tpDecl in typeParameters) {
+				DefaultTypeParameter tp = new DefaultTypeParameter(ownerType, index++, tpDecl.Name);
+				ConvertAttributes(tp.Attributes, tpDecl.Attributes);
+				tp.Variance = tpDecl.Variance;
+				list.Add(tp);
+				output.Add(tp); // tp must be added to list here so that it can be referenced by constraints
+			}
+			foreach (Constraint c in constraints) {
+				foreach (var tp in list) {
+					if (tp.Name == c.TypeParameter) {
+						foreach (AstType type in c.BaseTypes) {
+							PrimitiveType primType = type as PrimitiveType;
+							if (primType != null) {
+								if (primType.Keyword == "new") {
+									tp.HasDefaultConstructorConstraint = true;
+									continue;
+								} else if (primType.Keyword == "class") {
+									tp.HasReferenceTypeConstraint = true;
+									continue;
+								} else if (primType.Keyword == "struct") {
+									tp.HasValueTypeConstraint = true;
+									continue;
+								}
+							}
+							tp.Constraints.Add(ConvertType(type));
+						}
+						break;
+					}
+				}
+			}
 		}
 		
 		DefaultExplicitInterfaceImplementation ConvertInterfaceImplementation(AstType interfaceType, string memberName)
@@ -445,10 +504,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		IAccessor ConvertAccessor(Accessor accessor, Accessibility defaultAccessibility)
 		{
+			if (accessor.IsNull)
+				return null;
 			DefaultAccessor a = new DefaultAccessor();
 			a.Accessibility = GetAccessibility(accessor.Modifiers) ?? defaultAccessibility;
 			a.Region = MakeRegion(accessor);
-			ConvertAttributes(a.Attributes, accessor.Attributes);
+			foreach (AttributeSection section in accessor.Attributes) {
+				if (section.AttributeTarget == "return") {
+					ConvertAttributes(a.ReturnTypeAttributes, section);
+				} else if (section.AttributeTarget != "param") {
+					ConvertAttributes(a.Attributes, section);
+				}
+			}
 			return a;
 		}
 		#endregion
@@ -456,7 +523,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region Events
 		public override IEntity VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
 		{
-			bool isSingleEvent = eventDeclaration.Variables.Count() == 1;
+			bool isSingleEvent = eventDeclaration.Variables.Count == 1;
 			Modifiers modifiers = eventDeclaration.Modifiers;
 			DefaultEvent ev = null;
 			foreach (VariableInitializer vi in eventDeclaration.Variables) {
@@ -464,11 +531,25 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				ev.Region = isSingleEvent ? MakeRegion(eventDeclaration) : MakeRegion(vi);
 				ev.BodyRegion = MakeRegion(vi);
-				ConvertAttributes(ev.Attributes, eventDeclaration.Attributes);
 				
 				ApplyModifiers(ev, modifiers);
 				
 				ev.ReturnType = ConvertType(eventDeclaration.ReturnType);
+				
+				if (eventDeclaration.Attributes.Any(a => a.AttributeTarget == "method")) {
+					ev.AddAccessor = ev.RemoveAccessor = new DefaultAccessor { Accessibility = ev.Accessibility };
+				} else {
+					// if there's no attributes on the accessors, we can re-use the shared accessor instance
+					ev.AddAccessor = ev.RemoveAccessor = DefaultAccessor.GetFromAccessibility(ev.Accessibility);
+				}
+				foreach (AttributeSection section in eventDeclaration.Attributes) {
+					if (section.AttributeTarget == "method") {
+						// as we use the same instance for AddAccessor and RemoveAccessor, we only need to add the attribute once
+						ConvertAttributes(ev.AddAccessor.Attributes, section);
+					} else if (section.AttributeTarget != "field") {
+						ConvertAttributes(ev.Attributes, section);
+					}
+				}
 				
 				currentTypeDefinition.Events.Add(ev);
 			}
@@ -508,6 +589,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		static void ApplyModifiers(TypeSystem.Implementation.AbstractMember m, Modifiers modifiers)
 		{
+			// members from interfaces are always Public.
+			if (m.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
+				m.Accessibility = Accessibility.Public;
+				return;
+			}
 			m.Accessibility = GetAccessibility(modifiers) ?? Accessibility.Private;
 			m.IsAbstract = (modifiers & Modifiers.Abstract) != 0;
 			m.IsOverride = (modifiers & Modifiers.Override) != 0;
@@ -537,11 +623,67 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region Attributes
+		public override IEntity VisitAttributeSection(AttributeSection attributeSection, object data)
+		{
+			// non-assembly attributes are handled by their parent entity
+			if (attributeSection.AttributeTarget == "assembly") {
+				ConvertAttributes(parsedFile.AssemblyAttributes, attributeSection);
+			}
+			return null;
+		}
+		
 		void ConvertAttributes(IList<IAttribute> outputList, IEnumerable<AttributeSection> attributes)
 		{
 			foreach (AttributeSection section in attributes) {
-				throw new NotImplementedException();
+				ConvertAttributes(outputList, section);
 			}
+		}
+		
+		void ConvertAttributes(IList<IAttribute> outputList, AttributeSection attributeSection)
+		{
+			foreach (CSharp.Attribute attr in attributeSection.Attributes) {
+				outputList.Add(ConvertAttribute(attr));
+			}
+		}
+		
+		IAttribute ConvertAttribute(CSharp.Attribute attr)
+		{
+			DomRegion region = MakeRegion(attr);
+			ITypeReference type = ConvertType(attr.Type);
+			if (!attr.Type.GetChildByRole(AstNode.Roles.Identifier).IsVerbatim) {
+				// Try to add "Attribute" suffix, but only if the identifier
+				// (=last identifier in fully qualified name) isn't a verbatim identifier.
+				SimpleTypeOrNamespaceReference st = type as SimpleTypeOrNamespaceReference;
+				MemberTypeOrNamespaceReference mt = type as MemberTypeOrNamespaceReference;
+				if (st != null)
+					type = new AttributeTypeReference(st, st.AddSuffix("Attribute"));
+				else if (mt != null)
+					type = new AttributeTypeReference(mt, mt.AddSuffix("Attribute"));
+			}
+			List<IConstantValue> positionalArguments = null;
+			List<KeyValuePair<string, IConstantValue>> namedCtorArguments = null;
+			List<KeyValuePair<string, IConstantValue>> namedArguments = null;
+			foreach (Expression expr in attr.Arguments) {
+				NamedArgumentExpression nae = expr as NamedArgumentExpression;
+				if (nae != null) {
+					if (namedCtorArguments == null)
+						namedCtorArguments = new List<KeyValuePair<string, IConstantValue>>();
+					namedCtorArguments.Add(new KeyValuePair<string, IConstantValue>(nae.Identifier, ConvertAttributeArgument(nae.Expression)));
+				} else {
+					AssignmentExpression ae = expr as AssignmentExpression;
+					if (ae != null && ae.Left is IdentifierExpression && ae.Operator == AssignmentOperatorType.Assign) {
+						string name = ((IdentifierExpression)ae.Left).Identifier;
+						if (namedArguments == null)
+							namedArguments = new List<KeyValuePair<string, IConstantValue>>();
+						namedArguments.Add(new KeyValuePair<string, IConstantValue>(name, ConvertAttributeArgument(ae.Right)));
+					} else {
+						if (positionalArguments == null)
+							positionalArguments = new List<IConstantValue>();
+						positionalArguments.Add(ConvertAttributeArgument(expr));
+					}
+				}
+			}
+			return new CSharpAttribute(type, region, positionalArguments, namedCtorArguments, namedArguments);
 		}
 		#endregion
 		
@@ -652,8 +794,188 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region Constant Values
 		IConstantValue ConvertConstantValue(ITypeReference targetType, AstNode expression)
 		{
-			// TODO: implement ConvertConstantValue
-			return new SimpleConstantValue(targetType, null);
+			ConstantValueBuilder b = new ConstantValueBuilder();
+			b.convertVisitor = this;
+			ConstantExpression c = expression.AcceptVisitor(b, null);
+			if (c == null)
+				return null;
+			PrimitiveConstantExpression pc = c as PrimitiveConstantExpression;
+			if (pc != null && pc.Type == targetType) {
+				// Save memory by directly using a SimpleConstantValue.
+				return new SimpleConstantValue(targetType, pc.Value);
+			}
+			// cast to the desired type
+			return new CSharpConstantValue(new ConstantCast(targetType, c), usingScope, currentTypeDefinition);
+		}
+		
+		IConstantValue ConvertAttributeArgument(Expression expression)
+		{
+			ConstantValueBuilder b = new ConstantValueBuilder();
+			b.convertVisitor = this;
+			b.isAttributeArgument = true;
+			ConstantExpression c = expression.AcceptVisitor(b, null);
+			if (c == null)
+				return null;
+			PrimitiveConstantExpression pc = c as PrimitiveConstantExpression;
+			if (pc != null) {
+				// Save memory by directly using a SimpleConstantValue.
+				return new SimpleConstantValue(pc.Type, pc.Value);
+			} else {
+				return new CSharpConstantValue(c, usingScope, currentTypeDefinition);
+			}
+		}
+		
+		sealed class ConstantValueBuilder : DepthFirstAstVisitor<object, ConstantExpression>
+		{
+			internal TypeSystemConvertVisitor convertVisitor;
+			internal bool isAttributeArgument;
+			
+			protected override ConstantExpression VisitChildren(AstNode node, object data)
+			{
+				return null;
+			}
+			
+			public override ConstantExpression VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression, object data)
+			{
+				return new PrimitiveConstantExpression(KnownTypeReference.Object, null);
+			}
+			
+			public override ConstantExpression VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
+			{
+				TypeCode typeCode = Type.GetTypeCode(primitiveExpression.Value.GetType());
+				return new PrimitiveConstantExpression(typeCode.ToTypeReference(), primitiveExpression.Value);
+			}
+			
+			IList<ITypeReference> ConvertTypeArguments(AstNodeCollection<AstType> types)
+			{
+				int count = types.Count;
+				if (count == 0)
+					return null;
+				ITypeReference[] result = new ITypeReference[count];
+				int pos = 0;
+				foreach (AstType type in types) {
+					result[pos++] = convertVisitor.ConvertType(type);
+				}
+				return result;
+			}
+			
+			public override ConstantExpression VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
+			{
+				return new ConstantIdentifierReference(identifierExpression.Identifier, ConvertTypeArguments(identifierExpression.TypeArguments));
+			}
+			
+			public override ConstantExpression VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+			{
+				TypeReferenceExpression tre = memberReferenceExpression.Target as TypeReferenceExpression;
+				if (tre != null) {
+					// handle "int.MaxValue"
+					return new ConstantMemberReference(
+						convertVisitor.ConvertType(tre.Type),
+						memberReferenceExpression.MemberName,
+						ConvertTypeArguments(memberReferenceExpression.TypeArguments));
+				}
+				ConstantExpression v = memberReferenceExpression.Target.AcceptVisitor(this, data);
+				if (v == null)
+					return null;
+				return new ConstantMemberReference(
+					v, memberReferenceExpression.MemberName,
+					ConvertTypeArguments(memberReferenceExpression.TypeArguments));
+			}
+			
+			public override ConstantExpression VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
+			{
+				return parenthesizedExpression.Expression.AcceptVisitor(this, data);
+			}
+			
+			public override ConstantExpression VisitCastExpression(CastExpression castExpression, object data)
+			{
+				ConstantExpression v = castExpression.Expression.AcceptVisitor(this, data);
+				if (v == null)
+					return null;
+				return new ConstantCast(convertVisitor.ConvertType(castExpression.Type), v);
+			}
+			
+			public override ConstantExpression VisitCheckedExpression(CheckedExpression checkedExpression, object data)
+			{
+				ConstantExpression v = checkedExpression.Expression.AcceptVisitor(this, data);
+				if (v != null)
+					return new ConstantCheckedExpression(true, v);
+				else
+					return null;
+			}
+			
+			public override ConstantExpression VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
+			{
+				ConstantExpression v = uncheckedExpression.Expression.AcceptVisitor(this, data);
+				if (v != null)
+					return new ConstantCheckedExpression(false, v);
+				else
+					return null;
+			}
+			
+			public override ConstantExpression VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
+			{
+				return new ConstantDefaultValue(convertVisitor.ConvertType(defaultValueExpression.Type));
+			}
+			
+			public override ConstantExpression VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
+			{
+				ConstantExpression v = unaryOperatorExpression.Expression.AcceptVisitor(this, data);
+				if (v == null)
+					return null;
+				switch (unaryOperatorExpression.Operator) {
+					case UnaryOperatorType.Not:
+					case UnaryOperatorType.BitNot:
+					case UnaryOperatorType.Minus:
+					case UnaryOperatorType.Plus:
+						return new ConstantUnaryOperator(unaryOperatorExpression.Operator, v);
+					default:
+						return null;
+				}
+			}
+			
+			public override ConstantExpression VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
+			{
+				ConstantExpression left = binaryOperatorExpression.Left.AcceptVisitor(this, data);
+				ConstantExpression right = binaryOperatorExpression.Right.AcceptVisitor(this, data);
+				if (left == null || right == null)
+					return null;
+				return new ConstantBinaryOperator(left, binaryOperatorExpression.Operator, right);
+			}
+			
+			static readonly GetClassTypeReference systemType = new GetClassTypeReference("System", "Type", 0);
+			
+			public override ConstantExpression VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
+			{
+				if (isAttributeArgument) {
+					return new PrimitiveConstantExpression(systemType, convertVisitor.ConvertType(typeOfExpression.Type));
+				} else {
+					return null;
+				}
+			}
+			
+			public override ConstantExpression VisitArrayCreateExpression(ArrayCreateExpression arrayObjectCreateExpression, object data)
+			{
+				var initializer = arrayObjectCreateExpression.Initializer;
+				if (isAttributeArgument && !initializer.IsNull) {
+					ITypeReference type;
+					if (arrayObjectCreateExpression.Type.IsNull)
+						type = null;
+					else
+						type = convertVisitor.ConvertType(arrayObjectCreateExpression.Type);
+					ConstantExpression[] elements = new ConstantExpression[initializer.Elements.Count];
+					int pos = 0;
+					foreach (Expression expr in initializer.Elements) {
+						ConstantExpression c = expr.AcceptVisitor(this, data);
+						if (c == null)
+							return null;
+						elements[pos++] = c;
+					}
+					return new ConstantArrayCreation(type, elements);
+				} else {
+					return null;
+				}
+			}
 		}
 		#endregion
 		

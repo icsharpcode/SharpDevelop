@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -252,6 +267,10 @@ namespace ICSharpCode.Decompiler.ILAst
 					return typeSystem.Boolean;
 				case ILCode.LogicAnd:
 				case ILCode.LogicOr:
+					// if Operand is set the logic and/or expression is a custom operator
+					// we can deal with it the same as a normal invocation.
+					if (expr.Operand != null)
+						goto case ILCode.Call;
 					if (forceInferChildren) {
 						InferTypeForExpression(expr.Arguments[0], typeSystem.Boolean);
 						InferTypeForExpression(expr.Arguments[1], typeSystem.Boolean);
@@ -304,13 +323,7 @@ namespace ICSharpCode.Decompiler.ILAst
 						if (forceInferChildren) {
 							for (int i = 0; i < expr.Arguments.Count; i++) {
 								if (i == 0 && method.HasThis) {
-									ILExpressionPrefix constraint = expr.GetPrefix(ILCode.Constrained);
-									if (constraint != null)
-										InferTypeForExpression(expr.Arguments[i], new ByReferenceType((TypeReference)constraint.Operand));
-									else if (method.DeclaringType.IsValueType)
-										InferTypeForExpression(expr.Arguments[i], new ByReferenceType(method.DeclaringType));
-									else
-										InferTypeForExpression(expr.Arguments[i], method.DeclaringType);
+									InferTypeForExpression(expr.Arguments[0], MakeRefIfValueType(method.DeclaringType, expr.GetPrefix(ILCode.Constrained)));
 								} else {
 									InferTypeForExpression(expr.Arguments[i], SubstituteTypeArgs(method.Parameters[method.HasThis ? i - 1 : i].ParameterType, method));
 								}
@@ -319,10 +332,7 @@ namespace ICSharpCode.Decompiler.ILAst
 						if (expr.Code == ILCode.CallSetter || expr.Code == ILCode.CallvirtSetter) {
 							return SubstituteTypeArgs(method.Parameters.Last().ParameterType, method);
 						} else {
-							TypeReference type = SubstituteTypeArgs(method.ReturnType, method);
-							if (expr.GetPrefix(ILCode.PropertyAddress) != null && !(type is ByReferenceType))
-								type = new ByReferenceType(type);
-							return type;
+							return SubstituteTypeArgs(method.ReturnType, method);
 						}
 					}
 				case ILCode.Newobj:
@@ -335,32 +345,32 @@ namespace ICSharpCode.Decompiler.ILAst
 						}
 						return ctor.DeclaringType;
 					}
+				case ILCode.InitObject:
 				case ILCode.InitCollection:
 					return InferTypeForExpression(expr.Arguments[0], expectedType);
-				case ILCode.InitCollectionAddMethod:
-					{
-						MethodReference addMethod = (MethodReference)expr.Operand;
-						if (forceInferChildren) {
-							for (int i = 0; i < addMethod.Parameters.Count; i++) {
-								InferTypeForExpression(expr.Arguments[i], SubstituteTypeArgs(addMethod.Parameters[i].ParameterType, addMethod));
-							}
-						}
-						return addMethod.DeclaringType;
-					}
+				case ILCode.InitializedObject:
+					// expectedType should always be known due to the parent method call / property setter
+					Debug.Assert(expectedType != null);
+					return expectedType;
 					#endregion
 					#region Load/Store Fields
 				case ILCode.Ldfld:
-					if (forceInferChildren)
-						InferTypeForExpression(expr.Arguments[0], ((FieldReference)expr.Operand).DeclaringType);
+					if (forceInferChildren) {
+						InferTypeForExpression(expr.Arguments[0], MakeRefIfValueType(((FieldReference)expr.Operand).DeclaringType, expr.GetPrefix(ILCode.Constrained)));
+					}
 					return GetFieldType((FieldReference)expr.Operand);
 				case ILCode.Ldsfld:
 					return GetFieldType((FieldReference)expr.Operand);
 				case ILCode.Ldflda:
+					if (forceInferChildren) {
+						InferTypeForExpression(expr.Arguments[0], MakeRefIfValueType(((FieldReference)expr.Operand).DeclaringType, expr.GetPrefix(ILCode.Constrained)));
+					}
+					return new ByReferenceType(GetFieldType((FieldReference)expr.Operand));
 				case ILCode.Ldsflda:
 					return new ByReferenceType(GetFieldType((FieldReference)expr.Operand));
 				case ILCode.Stfld:
 					if (forceInferChildren) {
-						InferTypeForExpression(expr.Arguments[0], ((FieldReference)expr.Operand).DeclaringType);
+						InferTypeForExpression(expr.Arguments[0], MakeRefIfValueType(((FieldReference)expr.Operand).DeclaringType, expr.GetPrefix(ILCode.Constrained)));
 						InferTypeForExpression(expr.Arguments[1], GetFieldType((FieldReference)expr.Operand));
 					}
 					return GetFieldType((FieldReference)expr.Operand);
@@ -458,6 +468,21 @@ namespace ICSharpCode.Decompiler.ILAst
 						InferTypeForExpression(expr.Arguments[0], (TypeReference)expr.Operand);
 					}
 					return typeSystem.TypedReference;
+				case ILCode.Refanytype:
+					if (forceInferChildren) {
+						InferTypeForExpression(expr.Arguments[0], typeSystem.TypedReference);
+					}
+					return new TypeReference("System", "RuntimeTypeHandle", module, module, true);
+				case ILCode.Refanyval:
+					if (forceInferChildren) {
+						InferTypeForExpression(expr.Arguments[0], typeSystem.TypedReference);
+					}
+					return new ByReferenceType((TypeReference)expr.Operand);
+				case ILCode.AddressOf:
+					{
+						TypeReference t = InferTypeForExpression(expr.Arguments[0], UnpackPointer(expectedType));
+						return t != null ? new ByReferenceType(t) : null;
+					}
 					#endregion
 					#region Arithmetic instructions
 				case ILCode.Not: // bitwise complement
@@ -489,14 +514,47 @@ namespace ICSharpCode.Decompiler.ILAst
 				case ILCode.Rem_Un:
 					return InferArgumentsInBinaryOperator(expr, false, expectedType);
 				case ILCode.Shl:
+					if (forceInferChildren)
+						InferTypeForExpression(expr.Arguments[1], typeSystem.Int32);
+					if (expectedType != null && (
+						expectedType.MetadataType == MetadataType.Int32 || expectedType.MetadataType == MetadataType.UInt32 ||
+						expectedType.MetadataType == MetadataType.Int64 || expectedType.MetadataType == MetadataType.UInt64)
+					   )
+						return NumericPromotion(InferTypeForExpression(expr.Arguments[0], expectedType));
+					else
+						return NumericPromotion(InferTypeForExpression(expr.Arguments[0], null));
 				case ILCode.Shr:
-					if (forceInferChildren)
-						InferTypeForExpression(expr.Arguments[1], typeSystem.Int32);
-					return InferTypeForExpression(expr.Arguments[0], typeSystem.Int32);
 				case ILCode.Shr_Un:
-					if (forceInferChildren)
-						InferTypeForExpression(expr.Arguments[1], typeSystem.Int32);
-					return InferTypeForExpression(expr.Arguments[0], typeSystem.UInt32);
+					{
+						if (forceInferChildren)
+							InferTypeForExpression(expr.Arguments[1], typeSystem.Int32);
+						TypeReference type = NumericPromotion(InferTypeForExpression(expr.Arguments[0], null));
+						TypeReference expectedInputType = null;
+						switch (type.MetadataType) {
+							case MetadataType.Int32:
+								if (expr.Code == ILCode.Shr_Un)
+									expectedInputType = typeSystem.UInt32;
+								break;
+							case MetadataType.UInt32:
+								if (expr.Code == ILCode.Shr)
+									expectedInputType = typeSystem.Int32;
+								break;
+							case MetadataType.Int64:
+								if (expr.Code == ILCode.Shr_Un)
+									expectedInputType = typeSystem.UInt64;
+								break;
+							case MetadataType.UInt64:
+								if (expr.Code == ILCode.Shr)
+									expectedInputType = typeSystem.UInt64;
+								break;
+						}
+						if (expectedInputType != null) {
+							InferTypeForExpression(expr.Arguments[0], expectedInputType);
+							return expectedInputType;
+						} else {
+							return type;
+						}
+					}
 				case ILCode.CompoundAssignment:
 					{
 						TypeReference varType = InferTypeForExpression(expr.Arguments[0].Arguments[0], null);
@@ -517,9 +575,19 @@ namespace ICSharpCode.Decompiler.ILAst
 				case ILCode.Ldc_I4:
 					if (IsBoolean(expectedType) && ((int)expr.Operand == 0 || (int)expr.Operand == 1))
 						return typeSystem.Boolean;
-					return (IsIntegerOrEnum(expectedType) || expectedType is PointerType) ? expectedType : typeSystem.Int32;
+					if (expectedType is PointerType && (int)expr.Operand == 0)
+						return expectedType;
+					if (IsIntegerOrEnum(expectedType) && OperandFitsInType(expectedType, (int)expr.Operand))
+						return expectedType;
+					else
+						return typeSystem.Int32;
 				case ILCode.Ldc_I8:
-					return (IsIntegerOrEnum(expectedType) || expectedType is PointerType) ? expectedType : typeSystem.Int64;
+					if (expectedType is PointerType && (long)expr.Operand == 0)
+						return expectedType;
+					if (IsIntegerOrEnum(expectedType) && GetInformationAmount(expectedType) >= NativeInt)
+						return expectedType;
+					else
+						return typeSystem.Int64;
 				case ILCode.Ldc_R4:
 					return typeSystem.Single;
 				case ILCode.Ldc_R8:
@@ -542,11 +610,13 @@ namespace ICSharpCode.Decompiler.ILAst
 						InferTypeForExpression(expr.Arguments.Single(), typeSystem.Int32);
 					return new ArrayType((TypeReference)expr.Operand);
 				case ILCode.InitArray:
-					if (forceInferChildren) {
+					var operandAsArrayType = (ArrayType)expr.Operand;
+					if (forceInferChildren)
+					{
 						foreach (ILExpression arg in expr.Arguments)
-							InferTypeForExpression(arg, (TypeReference)expr.Operand);
+							InferTypeForExpression(arg, operandAsArrayType.ElementType);
 					}
-					return new ArrayType((TypeReference)expr.Operand);
+					return operandAsArrayType;
 				case ILCode.Ldlen:
 					return typeSystem.Int32;
 				case ILCode.Ldelem_U1:
@@ -655,6 +725,8 @@ namespace ICSharpCode.Decompiler.ILAst
 				case ILCode.Castclass:
 				case ILCode.Unbox_Any:
 					return (TypeReference)expr.Operand;
+				case ILCode.Unbox:
+					return new ByReferenceType((TypeReference)expr.Operand);
 				case ILCode.Isinst:
 					{
 						// isinst performs the equivalent of a cast only for reference types;
@@ -723,6 +795,41 @@ namespace ICSharpCode.Decompiler.ILAst
 			}
 		}
 		
+		/// <summary>
+		/// Wraps 'type' in a ByReferenceType if it is a value type. If a constrained prefix is specified,
+		/// returns the constrained type wrapped in a ByReferenceType.
+		/// </summary>
+		TypeReference MakeRefIfValueType(TypeReference type, ILExpressionPrefix constrainedPrefix)
+		{
+			if (constrainedPrefix != null)
+				return new ByReferenceType((TypeReference)constrainedPrefix.Operand);
+			if (type.IsValueType)
+				return new ByReferenceType(type);
+			else
+				return type;
+		}
+		
+		/// <summary>
+		/// Promotes primitive types smaller than int32 to int32.
+		/// </summary>
+		/// <remarks>
+		/// Always promotes to signed int32.
+		/// </remarks>
+		TypeReference NumericPromotion(TypeReference type)
+		{
+			if (type == null)
+				return null;
+			switch (type.MetadataType) {
+				case MetadataType.SByte:
+				case MetadataType.Int16:
+				case MetadataType.Byte:
+				case MetadataType.UInt16:
+					return typeSystem.Int32;
+				default:
+					return type;
+			}
+		}
+		
 		TypeReference HandleConversion(int targetBitSize, bool targetSigned, ILExpression arg, TypeReference expectedType, TypeReference targetType)
 		{
 			if (targetBitSize >= NativeInt && expectedType is PointerType) {
@@ -743,12 +850,12 @@ namespace ICSharpCode.Decompiler.ILAst
 			return resultType;
 		}
 		
-		static TypeReference GetFieldType(FieldReference fieldReference)
+		public static TypeReference GetFieldType(FieldReference fieldReference)
 		{
 			return SubstituteTypeArgs(UnpackModifiers(fieldReference.FieldType), fieldReference);
 		}
 		
-		static TypeReference SubstituteTypeArgs(TypeReference type, MemberReference member)
+		public static TypeReference SubstituteTypeArgs(TypeReference type, MemberReference member)
 		{
 			if (type is TypeSpecification) {
 				ArrayType arrayType = type as ArrayType;
@@ -821,7 +928,7 @@ namespace ICSharpCode.Decompiler.ILAst
 			return null;
 		}
 		
-		static TypeReference UnpackModifiers(TypeReference type)
+		internal static TypeReference UnpackModifiers(TypeReference type)
 		{
 			while (type is OptionalModifierType || type is RequiredModifierType)
 				type = ((TypeSpecification)type).ElementType;
@@ -927,7 +1034,7 @@ namespace ICSharpCode.Decompiler.ILAst
 		{
 			if (type == null)
 				return 0;
-			if (type.IsValueType) {
+			if (type.IsValueType && !IsArrayPointerOrReference(type)) {
 				// value type might be an enum
 				TypeDefinition typeDef = type.Resolve() as TypeDefinition;
 				if (typeDef != null && typeDef.IsEnum) {
@@ -975,7 +1082,9 @@ namespace ICSharpCode.Decompiler.ILAst
 
 		public static bool IsEnum(TypeReference type)
 		{
-			if (type == null)
+			// Arrays/Pointers/ByReference resolve to their element type, but we don't want to consider those to be enums
+			// However, GenericInstanceTypes, ModOpts etc. should be considered enums.
+			if (type == null || IsArrayPointerOrReference(type))
 				return false;
 			// unfortunately we cannot rely on type.IsValueType here - it's not set when the instruction operand is a typeref (as opposed to a typespec)
 			TypeDefinition typeDef = type.Resolve() as TypeDefinition;
@@ -984,7 +1093,7 @@ namespace ICSharpCode.Decompiler.ILAst
 		
 		static bool? IsSigned(TypeReference type)
 		{
-			if (type == null)
+			if (type == null || IsArrayPointerOrReference(type))
 				return null;
 			// unfortunately we cannot rely on type.IsValueType here - it's not set when the instruction operand is a typeref (as opposed to a typespec)
 			TypeDefinition typeDef = type.Resolve() as TypeDefinition;
@@ -1009,6 +1118,39 @@ namespace ICSharpCode.Decompiler.ILAst
 				default:
 					return null;
 			}
+		}
+		
+		static bool OperandFitsInType(TypeReference type, int num)
+		{
+			TypeDefinition typeDef = type.Resolve() as TypeDefinition;
+			if (typeDef != null && typeDef.IsEnum) {
+				type = typeDef.Fields.Single(f => f.IsRuntimeSpecialName && !f.IsStatic).FieldType;
+			}
+			switch (type.MetadataType) {
+				case MetadataType.SByte:
+					return sbyte.MinValue <= num && num <= sbyte.MaxValue;
+				case MetadataType.Int16:
+					return short.MinValue <= num && num <= short.MaxValue;
+				case MetadataType.Byte:
+					return byte.MinValue <= num && num <= byte.MaxValue;
+				case MetadataType.Char:
+					return char.MinValue <= num && num <= char.MaxValue;
+				case MetadataType.UInt16:
+					return ushort.MinValue <= num && num <= ushort.MaxValue;
+				default:
+					return true;
+			}
+		}
+		
+		static bool IsArrayPointerOrReference(TypeReference type)
+		{
+			TypeSpecification typeSpec = type as TypeSpecification;
+			while (typeSpec != null) {
+				if (typeSpec is ArrayType || typeSpec is PointerType || typeSpec is ByReferenceType)
+					return true;
+				typeSpec = typeSpec.ElementType as TypeSpecification;
+			}
+			return false;
 		}
 		
 		public static TypeCode GetTypeCode(TypeReference type)

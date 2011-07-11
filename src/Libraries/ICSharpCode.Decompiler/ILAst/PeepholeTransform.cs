@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -74,6 +89,10 @@ namespace ICSharpCode.Decompiler.ILAst
 			if (expr.Code == ILCode.Initobj) {
 				expr.Code = ILCode.Stobj;
 				expr.Arguments.Add(new ILExpression(ILCode.DefaultValue, expr.Operand));
+				modified = true;
+			} else if (expr.Code == ILCode.Cpobj) {
+				expr.Code = ILCode.Stobj;
+				expr.Arguments[1] = new ILExpression(ILCode.Ldobj, expr.Operand, expr.Arguments[1]);
 				modified = true;
 			}
 			ILExpression arg, arg2;
@@ -425,6 +444,7 @@ namespace ICSharpCode.Decompiler.ILAst
 		#endregion
 		
 		#region IntroducePostIncrement
+
 		bool IntroducePostIncrement(List<ILNode> body, ILExpression expr, int pos)
 		{
 			bool modified = IntroducePostIncrementForVariables(body, expr, pos);
@@ -437,7 +457,7 @@ namespace ICSharpCode.Decompiler.ILAst
 			}
 			return modified;
 		}
-		
+
 		bool IntroducePostIncrementForVariables(List<ILNode> body, ILExpression expr, int pos)
 		{
 			// Works for variables and static fields/properties
@@ -450,19 +470,50 @@ namespace ICSharpCode.Decompiler.ILAst
 			ILExpression exprInit;
 			if (!(expr.Match(ILCode.Stloc, out exprVar, out exprInit) && exprVar.IsGenerated))
 				return false;
-			if (!(exprInit.Code == ILCode.Ldloc || exprInit.Code == ILCode.Ldsfld || (exprInit.Code == ILCode.CallGetter && exprInit.Arguments.Count == 0)))
-				return false;
 			
+			//The next expression
 			ILExpression nextExpr = body.ElementAtOrDefault(pos + 1) as ILExpression;
 			if (nextExpr == null)
 				return false;
-			if (exprInit.Code == ILCode.CallGetter) {
-				if (!(nextExpr.Code == ILCode.CallSetter && IsGetterSetterPair(exprInit.Operand, nextExpr.Operand)))
-					return false;
-			} else {
-				if (!(nextExpr.Code == (exprInit.Code == ILCode.Ldloc ? ILCode.Stloc : ILCode.Stsfld) && nextExpr.Operand == exprInit.Operand))
+			
+			ILCode loadInstruction = exprInit.Code;
+			ILCode storeInstruction = nextExpr.Code;
+			bool recombineVariable = false;
+			
+			// We only recognise local variables, static fields, and static getters with no arguments
+			switch (loadInstruction) {
+				case ILCode.Ldloc:
+					//Must be a matching store type
+					if (storeInstruction != ILCode.Stloc)
+						return false;
+					ILVariable loadVar = (ILVariable)exprInit.Operand;
+					ILVariable storeVar = (ILVariable)nextExpr.Operand;
+					if (loadVar != storeVar) {
+						if (loadVar.OriginalVariable != null && loadVar.OriginalVariable == storeVar.OriginalVariable)
+							recombineVariable = true;
+						else
+							return false;
+					}
+					break;
+				case ILCode.Ldsfld:
+					if (storeInstruction != ILCode.Stsfld)
+						return false;
+					if (exprInit.Operand != nextExpr.Operand)
+						return false;
+					break;
+				case ILCode.CallGetter:
+					// non-static getters would have the 'this' argument
+					if (exprInit.Arguments.Count != 0)
+						return false;
+					if (storeInstruction != ILCode.CallSetter)
+						return false;
+					if (!IsGetterSetterPair(exprInit.Operand, nextExpr.Operand))
+						return false;
+					break;
+				default:
 					return false;
 			}
+			
 			ILExpression addExpr = nextExpr.Arguments[0];
 			
 			int incrementAmount;
@@ -470,12 +521,23 @@ namespace ICSharpCode.Decompiler.ILAst
 			if (!(incrementAmount != 0 && addExpr.Arguments[0].MatchLdloc(exprVar)))
 				return false;
 			
-			if (exprInit.Code == ILCode.Ldloc)
-				exprInit.Code = ILCode.Ldloca;
-			else if (exprInit.Code == ILCode.CallGetter)
-				exprInit.AddPrefix(new ILExpressionPrefix(ILCode.PropertyAddress));
-			else
-				exprInit.Code = ILCode.Ldsflda;
+			if (recombineVariable) {
+				// Split local variable, unsplit these two instances
+				// replace nextExpr.Operand with exprInit.Operand
+				ReplaceVariables(method, oldVar => oldVar == nextExpr.Operand ? (ILVariable)exprInit.Operand : oldVar);
+			}
+			
+			switch (loadInstruction) {
+				case ILCode.Ldloc:
+					exprInit.Code = ILCode.Ldloca;
+					break;
+				case ILCode.Ldsfld:
+					exprInit.Code = ILCode.Ldsflda;
+					break;
+				case ILCode.CallGetter:
+					exprInit = new ILExpression(ILCode.AddressOf, null, exprInit);
+					break;
+			}
 			expr.Arguments[0] = new ILExpression(incrementCode, incrementAmount, exprInit);
 			body.RemoveAt(pos + 1); // TODO ILRanges
 			return true;
@@ -567,8 +629,8 @@ namespace ICSharpCode.Decompiler.ILAst
 			if (expr.Code == ILCode.Stobj) {
 				stloc.Arguments[0] = new ILExpression(ILCode.PostIncrement, incrementAmount, initialValue.Arguments[0]);
 			} else if (expr.Code == ILCode.CallSetter || expr.Code == ILCode.CallvirtSetter) {
+				initialValue = new ILExpression(ILCode.AddressOf, null, initialValue);
 				stloc.Arguments[0] = new ILExpression(ILCode.PostIncrement, incrementAmount, initialValue);
-				initialValue.AddPrefix(new ILExpressionPrefix(ILCode.PropertyAddress));
 			} else {
 				stloc.Arguments[0] = new ILExpression(ILCode.PostIncrement, incrementAmount, initialValue);
 				initialValue.Code = (expr.Code == ILCode.Stfld ? ILCode.Ldflda : ILCode.Ldelema);
@@ -804,6 +866,41 @@ namespace ICSharpCode.Decompiler.ILAst
 				return true;
 			}
 			return false;
+		}
+		#endregion
+		
+		#region SimplifyShiftOperators
+		static bool SimplifyShiftOperators(List<ILNode> body, ILExpression expr, int pos)
+		{
+			// C# compiles "a << b" to "a << (b & 31)", so we will remove the "& 31" if possible.
+			bool modified = false;
+			SimplifyShiftOperators(expr, ref modified);
+			return modified;
+		}
+
+		static void SimplifyShiftOperators(ILExpression expr, ref bool modified)
+		{
+			for (int i = 0; i < expr.Arguments.Count; i++) 
+				SimplifyShiftOperators(expr.Arguments[i], ref modified);
+			if (expr.Code != ILCode.Shl && expr.Code != ILCode.Shr && expr.Code != ILCode.Shr_Un) 
+				return;
+			var a = expr.Arguments[1];
+			if (a.Code != ILCode.And || a.Arguments[1].Code != ILCode.Ldc_I4 || expr.InferredType == null) 
+				return;
+			int mask;
+			switch (expr.InferredType.MetadataType) {
+				case MetadataType.Int32:
+				case MetadataType.UInt32: mask = 31; break;
+				case MetadataType.Int64:
+				case MetadataType.UInt64: mask = 63; break;
+				default: return;
+			}
+			if ((int)a.Arguments[1].Operand != mask) return;
+			var res = a.Arguments[0];
+			res.ILRanges.AddRange(a.ILRanges);
+			res.ILRanges.AddRange(a.Arguments[1].ILRanges);
+			expr.Arguments[1] = res;
+			modified = true;
 		}
 		#endregion
 	}

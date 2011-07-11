@@ -31,8 +31,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		public override Nullable<bool> IsReferenceType {
-			get { return true; }
+		public override bool? IsReferenceType(ITypeResolveContext context)
+		{
+			return true;
 		}
 		
 		public override int GetHashCode()
@@ -113,7 +114,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 	}
 	
-	public class ArrayTypeReference : ITypeReference, ISupportsInterning
+	public sealed class ArrayTypeReference : ITypeReference, ISupportsInterning
 	{
 		ITypeReference elementType;
 		int dimensions;

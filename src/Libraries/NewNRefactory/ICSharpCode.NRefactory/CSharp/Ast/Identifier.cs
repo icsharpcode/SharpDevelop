@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Identifier.cs
 //  
 // Author:
@@ -28,9 +28,9 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class Identifier : AstNode
+	public class Identifier : AstNode, IRelocatable
 	{
-		public static readonly new Identifier Null = new NullIdentifier ();
+		public static readonly Identifier Null = new NullIdentifier ();
 		class NullIdentifier : Identifier
 		{
 			public override bool IsNull {
@@ -66,36 +66,68 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public bool IsQuoted {
-			get;
-			set;
-		}
-		
 		AstLocation startLocation;
 		public override AstLocation StartLocation {
 			get {
 				return startLocation;
 			}
+			
 		}
 		
-		public override AstLocation EndLocation {
+		public virtual bool IsVerbatim {
 			get {
-				return new AstLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length + (IsQuoted ? 1 : 0));
+				return false;
 			}
 		}
 		
-		private Identifier ()
+		#region IRelocationable implementation
+		void IRelocatable.SetStartLocation (AstLocation startLocation)
+		{
+			this.startLocation = startLocation;
+		}
+		#endregion
+		
+		public override AstLocation EndLocation {
+			get {
+				return new AstLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length);
+			}
+		}
+		
+		Identifier ()
 		{
 			this.name = string.Empty;
 		}
 		
-		public Identifier (string name, AstLocation location)
+		protected Identifier (string name, AstLocation location)
 		{
 			if (name == null)
 				throw new ArgumentNullException("name");
-			IsQuoted = name.StartsWith ("@");
-			this.Name = IsQuoted ? name.Substring (1) : name;
+			this.Name = name;
 			this.startLocation = location;
+		}
+
+		public static Identifier Create (string name)
+		{
+			return Create (name, AstLocation.Empty);
+		}
+
+		public static Identifier Create (string name, AstLocation location)
+		{
+			if (name == null)
+				throw new ArgumentNullException("name");
+			if (name.Length > 0 && name[0] == '@')
+				return new VerbatimIdentifier(name.Substring (1), location);
+			return new Identifier (name, location);
+		}
+		
+		public static Identifier Create (string name, AstLocation location, bool isVerbatim)
+		{
+			if (name == null)
+				throw new ArgumentNullException("name");
+			
+			if (isVerbatim)
+				return new VerbatimIdentifier(name, location);
+			return new Identifier (name, location);
 		}
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
@@ -107,6 +139,25 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			Identifier o = other as Identifier;
 			return o != null && !o.IsNull && MatchString(this.Name, o.Name);
+		}
+
+		class VerbatimIdentifier : Identifier
+		{
+			public override AstLocation EndLocation {
+				get {
+					return new AstLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length + 1); // @"..."
+				}
+			}
+			
+			public override bool IsVerbatim {
+				get {
+					return true;
+				}
+			}
+			
+			public VerbatimIdentifier(string name, AstLocation location) : base (name, location)
+			{
+			}
 		}
 	}
 }

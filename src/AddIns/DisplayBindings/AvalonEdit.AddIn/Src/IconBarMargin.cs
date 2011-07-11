@@ -20,9 +20,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public class IconBarMargin : AbstractMargin, IDisposable
 	{
-		readonly IconBarManager manager;
+		readonly IBookmarkMargin manager;
 		
-		public IconBarMargin(IconBarManager manager)
+		public IconBarMargin(IBookmarkMargin manager)
 		{
 			if (manager == null)
 				throw new ArgumentNullException("manager");

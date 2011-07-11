@@ -23,7 +23,7 @@ namespace Debugger.AddIn.Tooltips
 
 		public DebuggerPopup(DebuggerTooltipControl parentControl, Location logicalPosition, bool showPins = true)
 		{
-			this.contentControl = new DebuggerTooltipControl(parentControl, logicalPosition, showPins);
+			this.contentControl = new DebuggerTooltipControl(parentControl, logicalPosition) { ShowPins = showPins };
 			this.contentControl.containingPopup = this;
 			this.Child = this.contentControl;
 			this.IsLeaf = false;
