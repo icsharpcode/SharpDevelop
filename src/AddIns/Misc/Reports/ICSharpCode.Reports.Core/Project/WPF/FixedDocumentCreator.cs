@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
@@ -16,6 +17,11 @@ using System.Windows.Media;
 
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Globals;
+using Brush = System.Windows.Media.Brush;
+using FontFamily = System.Windows.Media.FontFamily;
+using Image = System.Windows.Controls.Image;
+using Pen = System.Windows.Media.Pen;
+using Size = System.Windows.Size;
 
 namespace ICSharpCode.Reports.Core.WPF
 {
@@ -254,10 +260,12 @@ namespace ICSharpCode.Reports.Core.WPF
 		TextBlock CreateTextBlock(ExportText exportText)
 		{
 			TextBlock textBlock = new TextBlock();
+
 			SetFont(textBlock, exportText.StyleDecorator);
 			textBlock.TextWrapping = TextWrapping.Wrap;
 			
 			string [] inlines = exportText.Text.Split(System.Environment.NewLine.ToCharArray());
+
 			for (int i = 0; i < inlines.Length; i++) {
 				if (inlines[i].Length > 0) {
 					textBlock.Inlines.Add(new Run(inlines[i]));
@@ -265,13 +273,65 @@ namespace ICSharpCode.Reports.Core.WPF
 				}
 			}
 			var li = textBlock.Inlines.LastInline;
-			
 			textBlock.Inlines.Remove(li);
-			
 			SetDimension(textBlock,exportText.StyleDecorator);
+		    textBlock.Background = ConvertBrush(exportText.StyleDecorator.BackColor);
+		    SetContendAlignment(textBlock,exportText.StyleDecorator);
 			return textBlock;
 		}
-		
+
+
+        private void SetContendAlignment(TextBlock textBlock,TextStyleDecorator decorator)
+        {
+
+            switch (decorator.ContentAlignment)
+            {
+                case ContentAlignment.TopLeft:
+                    textBlock.VerticalAlignment = VerticalAlignment.Top;
+                    textBlock.TextAlignment = TextAlignment.Left;
+                    
+                    break;
+                case ContentAlignment.TopCenter:
+                  textBlock.VerticalAlignment = VerticalAlignment.Top;
+                    textBlock.TextAlignment = TextAlignment.Center;
+                    
+                    break;
+                case ContentAlignment.TopRight:
+                    textBlock.VerticalAlignment = VerticalAlignment.Top;
+                    textBlock.TextAlignment = TextAlignment.Right;
+                    
+                    break;
+                // Middle
+                case ContentAlignment.MiddleLeft:
+                     textBlock.VerticalAlignment = VerticalAlignment.Center;
+                     textBlock.TextAlignment = TextAlignment.Left;
+                    
+                    break;
+                case ContentAlignment.MiddleCenter:
+                    textBlock.VerticalAlignment = VerticalAlignment.Center;
+                    textBlock.TextAlignment = TextAlignment.Center;
+                    
+                    break;
+                case ContentAlignment.MiddleRight:
+                   textBlock.VerticalAlignment = VerticalAlignment.Center;
+                   textBlock.TextAlignment = TextAlignment.Right;
+                    
+                    break;
+                //Bottom
+                case ContentAlignment.BottomLeft:
+                    textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+                    textBlock.TextAlignment = TextAlignment.Left;
+                    break;
+                case ContentAlignment.BottomCenter:
+                    textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+                    textBlock.TextAlignment = TextAlignment.Center;
+                    break;
+                case ContentAlignment.BottomRight:
+                  textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+                    textBlock.TextAlignment = TextAlignment.Right;
+                    break;
+            }
+        }
 		
 		
 		void SetFont(TextBlock textBlock, TextStyleDecorator styleDecorator)
