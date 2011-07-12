@@ -92,10 +92,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				if (debuggedProcess == null)
 					return true;
 				
-				if(debuggedProcess.SelectedThread == null)
-					return true;
-				
-				return debuggedProcess.SelectedStackFrame.ToString() != debuggedProcess.SelectedThread.MostRecentStackFrame.ToString();
+				return debuggedProcess.IsInExternalCode;
 			}
 		}
 		

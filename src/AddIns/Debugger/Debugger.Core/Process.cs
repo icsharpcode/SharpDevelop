@@ -134,6 +134,12 @@ namespace Debugger
 		
 		public static DebugModeFlag DebugMode { get; set; }
 		
+		public bool IsInExternalCode {
+			get {
+				return SelectedStackFrame.ToString() != SelectedThread.MostRecentStackFrame.ToString();
+			}
+		}
+		
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string workingDirectory)
 		{
 			this.debugger = debugger;
