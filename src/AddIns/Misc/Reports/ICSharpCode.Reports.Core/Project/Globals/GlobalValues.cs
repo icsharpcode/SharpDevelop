@@ -31,6 +31,9 @@ namespace ICSharpCode.Reports.Core.Globals
 		private const string tableName = "Table";
 		private const int defaultZoomfactor = 1;
 		private const int gapBetweenRows = 1;
+		//WPF
+		private const double defaultCornerRadius = 2;
+		private static  double defaulThickness = 2;
 		
 		private GlobalValues()
 		{
@@ -39,7 +42,6 @@ namespace ICSharpCode.Reports.Core.Globals
 		
 		#region some usefull functions and methodes
 		
-
 		private static bool IsSpoolerRunning()
 		{
 			ServiceController[] services;
@@ -74,22 +76,6 @@ namespace ICSharpCode.Reports.Core.Globals
 		
 		#endregion
 	
-		#region Formatting
-		/// <summary>
-		/// Build a StringFormat witch is used allover the code to
-		/// Format all String's the same way.
-		/// </summary>
-		/// <returns>a StringFormat object</returns>
-		/*
-		public static StringFormat StandardStringFormat()
-		{
-			StringFormat sFormat = StringFormat.GenericTypographic;
-			sFormat.FormatFlags |= StringFormatFlags.LineLimit;
-			return sFormat;
-		}
-		*/
-		#endregion
-		
 		
 		#region numeric Constant
 		/// <summary>
@@ -107,12 +93,8 @@ namespace ICSharpCode.Reports.Core.Globals
 		/// The default Size of a Section
 		/// used in <see cref="ReportGenerator"
 		/// </summary>
-		public static int DefaultSectionHeight 
-		{
-			get {
-				return 60;
-			}
-		}
+		public static int DefaultSectionHeight {get {return 60;}}
+		
 		
 		/// <summary>
 		/// Default zoom Factor for all typ's of preview
@@ -125,12 +107,7 @@ namespace ICSharpCode.Reports.Core.Globals
 		
 		
 		
-		public static Size PreferedSize 
-		{
-			get {
-				return new Size(100,20);
-			}
-		}
+		public static Size PreferedSize {get {return new Size(100,20);}}
 		                                  
 	
 		public static Size DefaultPageSize {get {return new Size(827,1169);}}
@@ -141,15 +118,6 @@ namespace ICSharpCode.Reports.Core.Globals
 		
 		
 		#region String Constant's
-		
-		/*
-		public static string ReportString
-		{
-  			get {
-  				return reportString;
-  			}
-  		}
-		*/
 		
 		public static string ReportExtension 
 		{
@@ -172,10 +140,7 @@ namespace ICSharpCode.Reports.Core.Globals
 			}
 		}
 		
-//		public static string UnboundName 
-//		{
-//			get {return unbound;}
-//		}
+
 		
 		public static string TableName
 		{
@@ -184,28 +149,8 @@ namespace ICSharpCode.Reports.Core.Globals
 			}
 		}
 		
-		/*
-		public static string FunctionStartTag
-		{
-			get {return "{=";}
-		}
-		
-		
-		public static string FunctionEndTag
-		{
-			get {return "}";}
-		}
-		*/
-		
-		/*
-		public static string StringParserStartTag
-		{
-		get {return "${";}
-			
-		}
-		*/
-		
 		#endregion
+		
 		
 		#region Printing
 		
@@ -290,6 +235,15 @@ namespace ICSharpCode.Reports.Core.Globals
 		}
 		
 		#endregion
+		
+		
+		#region Wpf
+		
+		public static double DefaultCornerRadius {get {return defaultCornerRadius;}}
+		public static double DefaultBorderThickness {get {return defaulThickness;}}
+					
+		#endregion
+		
 		
 		#region Icons
 		

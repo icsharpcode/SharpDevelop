@@ -79,8 +79,12 @@ namespace ICSharpCode.Reports.Core.WPF
 			var text = column as ExportText;
 			if (text != null) {
 				var t = CreateTextBlock(text);
+				
 				if (column.StyleDecorator.DrawBorder) {
-					border = CreateBorder(column.StyleDecorator as BaseStyleDecorator);
+					border = CreateBorder(column.StyleDecorator as BaseStyleDecorator,
+					                      GlobalValues.DefaultBorderThickness,
+					                      GlobalValues.DefaultCornerRadius	);			                      					                      
+					                     
 					border.Child = t;
 					element = border;
 				}
@@ -104,12 +108,12 @@ namespace ICSharpCode.Reports.Core.WPF
 		
 		#region GraphicsElement (Line etc)
 		
-		System.Windows.Controls.Border CreateBorder( BaseStyleDecorator column)
+		System.Windows.Controls.Border CreateBorder( BaseStyleDecorator column,double thickness,double cornerRadius)
 		{
 			var border = new System.Windows.Controls.Border();
 			border.Padding = new Thickness(1);
-			border.BorderThickness = new Thickness(2);
-			border.CornerRadius = new CornerRadius(2);
+			border.BorderThickness = new Thickness(thickness);
+			border.CornerRadius = new CornerRadius(cornerRadius);
 			border.BorderBrush = ConvertBrush(column.ForeColor);
 			return border;
 		}
@@ -157,13 +161,9 @@ namespace ICSharpCode.Reports.Core.WPF
 			}
 			else
 			{
-				
-				var border = CreateBorder(decorator as BaseStyleDecorator);
-
 				RectangleShape rs = decorator.Shape as RectangleShape;
-				border.CornerRadius = new CornerRadius(rs.CornerRadius);
-				
-				border.BorderThickness = new Thickness(decorator.Thickness);
+				var border = CreateBorder(decorator as BaseStyleDecorator,decorator.Thickness,rs.CornerRadius);
+					
 				border.BorderBrush = ConvertBrush(decorator.ForeColor);
 				border.Background  = ConvertBrush(decorator.BackColor);
 					

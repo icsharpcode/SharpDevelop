@@ -18,6 +18,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 	{
 		private PagesCollection pages;
 		private readonly object pageLock = new object();
+		
+//		private Point currentBottom;
 
 		public event EventHandler<PageCreatedEventArgs> PageCreated;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
@@ -75,9 +77,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		#region Converters
+		
 
 		protected ExporterCollection ConvertSection (BaseSection section,int dataRow)
 		{
+			Point currentBottom = Point.Empty;
 			FireSectionRenderEvent (section ,dataRow);
 			PrintHelper.AdjustParent(section,section.Items);
 			PrintHelper.AdjustSectionLocation(section);
@@ -103,11 +107,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 				{
 					ISimpleContainer simpleContainer = item as ISimpleContainer;
 					
-//					Offset = new Point(Offset.X,Offset.Y + gapCalculator.GapBetweenItems[i] );
-					
 					if (simpleContainer != null)
 					{
 						Offset = new Point(Offset.X,Offset.Y + gapCalculator.GapBetweenItems[i] );
+//						Offset = new Point(Offset.X,Offset.Y + 5);
 						var containerSize = simpleContainer.Size;
 						
 						EvaluationHelper.EvaluateReportItems(evaluator,simpleContainer.Items);
@@ -116,27 +119,40 @@ namespace ICSharpCode.Reports.Core.Exporter
 						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
 						/*
 						 * */
-//							Console.WriteLine("--");
+
+						
+						/*
 				section.Items.ForEach(delegate(BaseReportItem aitem)
 				                      {
 //				                      	Console.WriteLine(item.Location);
 				                      });
 				var h = section.Items.FindHighestElement();
-				section.MeasureOverride(section.Size);
-				/*
-						 * */
-						
+						 */
+						section.MeasureOverride(section.Size);
+						/** */
 						Offset = BaseConverter.ConvertContainer(convertedSection,simpleContainer,Offset.X,Offset);
 						simpleContainer.Size = containerSize;
 					}
 					else
 					{
 						var converteditem = ExportHelper.ConvertLineItem(item,Offset);
+						
+						if (converteditem.StyleDecorator.DisplayRectangle.Bottom > currentBottom.Y) {
+							currentBottom = new Point(converteditem.StyleDecorator.Location.X,converteditem.StyleDecorator.DisplayRectangle.Bottom);
+						}
+						
 						convertedSection.Add((BaseExportColumn)converteditem );
+						
 					}
 					i ++;
 				}
 				Offset = new Point (Offset.X,Offset.Y + gapCalculator.LastGap);
+//				Offset = new Point (Offset.X,Offset.Y + 5);
+				
+				if (currentBottom.Y > Offset.Y) {
+					Offset = new Point (Offset.X,currentBottom.Y);
+				}
+//				Offset = new Point (Offset.X,Offset.Y + gapCalculator.LastGap);
 			}
 			SectionBounds.Offset = Offset;
 			return convertedSection;

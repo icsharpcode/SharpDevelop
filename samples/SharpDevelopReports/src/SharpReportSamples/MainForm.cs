@@ -153,9 +153,9 @@ namespace SharpReportSamples
 		private void RunContributors (string fileName)
 		{
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
-			Console.WriteLine(model.ReportSettings.PageSize);
-			model.ReportSettings.PageSize = new Size(model.ReportSettings.PageSize.Width,400);
-			Console.WriteLine(model.ReportSettings.PageSize);
+//			Console.WriteLine(model.ReportSettings.PageSize);
+//			model.ReportSettings.PageSize = new Size(model.ReportSettings.PageSize.Width,400);
+//			Console.WriteLine(model.ReportSettings.PageSize);
 			
 			// sorting is done here, but, be carefull, misspelled fieldnames will cause an exception
 			

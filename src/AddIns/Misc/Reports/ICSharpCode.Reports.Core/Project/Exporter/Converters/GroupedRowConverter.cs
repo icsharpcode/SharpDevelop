@@ -58,6 +58,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			ExporterCollection exporterCollection = new ExporterCollection();
 			base.CurrentPosition = base.SectionBounds.Offset;
+			var p = base.CurrentPosition;
 			BaseSection section = parent as BaseSection;
 			
 			DefaultLeftPosition = parent.Location.X;

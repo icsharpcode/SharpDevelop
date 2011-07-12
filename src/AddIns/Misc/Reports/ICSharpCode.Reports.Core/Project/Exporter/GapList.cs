@@ -27,6 +27,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 			for (int i = 0; i < section.Items.Count; i++) {
 				GapBetweenItems[i] = CalculateGap(oldItem,section.Items[i]);
 			}
+			for (int i = 0; i < section.Items.Count; i++) {
+				Console.WriteLine(GapBetweenItems[i]);
+			}
 			GapBetweenItems[section.Items.Count] = CalculateLastGap(section);
 		}
 		
@@ -35,8 +38,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			if (oldItem == item) {
 				return 0;
-			}	else {
-				return item.Location.Y - (oldItem.Location.Y + oldItem.Size.Height) ;
+			}
+			else
+			{
+				if (oldItem.Location.Y + oldItem.Size.Height < item.Location.Y ) {
+					return item.Location.Y - (oldItem.Location.Y + oldItem.Size.Height) ;
+				} else
+				{
+					return 0;
+				}
 			}
 		}
 		
