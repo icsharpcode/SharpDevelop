@@ -138,9 +138,19 @@ namespace ICSharpCode.Reports.Core.Globals
 		}
         
         private static readonly string[] FormatList = new string[] { "",
-            "#,##0", "#,##0.00", "0", "0.00", "", "MM/dd/yyyy",
-            "dddd, MMMM dd, yyyy", "dddd, MMMM dd, yyyy HH:mm",
-            "dddd, MMMM dd, yyyy HH:mm:ss", "MM/dd/yyyy HH:mm",
+            "#,##0",
+            "#,##0.00",
+            "0",
+            "0.00",
+            "",
+            "dd/MM/yy",
+            "dd/MM/yyyy",
+            "MM/dd/yyyy",
+            "dddd, MMMM dd, yyyy",
+            "dddd, MMMM dd, yyyy HH:mm",
+            "dddd, MMMM dd, yyyy HH:mm:ss",
+            "MM/dd/yyyy HH:mm",
+           
             "MM/dd/yyyy HH:mm:ss", "MMMM dd",
             "Ddd, dd MMM yyyy HH\':\'mm\'\"ss \'GMT\'",
             "yyyy-MM-dd HH:mm:ss",
