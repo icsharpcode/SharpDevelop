@@ -281,57 +281,50 @@ namespace ICSharpCode.Reports.Core.WPF
 		}
 
 
-        private void SetContendAlignment(TextBlock textBlock,TextStyleDecorator decorator)
-        {
-
-            switch (decorator.ContentAlignment)
-            {
-                case ContentAlignment.TopLeft:
-                    textBlock.VerticalAlignment = VerticalAlignment.Top;
-                    textBlock.TextAlignment = TextAlignment.Left;
-                    
-                    break;
-                case ContentAlignment.TopCenter:
-                  textBlock.VerticalAlignment = VerticalAlignment.Top;
-                    textBlock.TextAlignment = TextAlignment.Center;
-                    
-                    break;
-                case ContentAlignment.TopRight:
-                    textBlock.VerticalAlignment = VerticalAlignment.Top;
-                    textBlock.TextAlignment = TextAlignment.Right;
-                    
-                    break;
-                // Middle
-                case ContentAlignment.MiddleLeft:
-                     textBlock.VerticalAlignment = VerticalAlignment.Center;
-                     textBlock.TextAlignment = TextAlignment.Left;
-                    
-                    break;
-                case ContentAlignment.MiddleCenter:
-                    textBlock.VerticalAlignment = VerticalAlignment.Center;
-                    textBlock.TextAlignment = TextAlignment.Center;
-                    
-                    break;
-                case ContentAlignment.MiddleRight:
-                   textBlock.VerticalAlignment = VerticalAlignment.Center;
-                   textBlock.TextAlignment = TextAlignment.Right;
-                    
-                    break;
-                //Bottom
-                case ContentAlignment.BottomLeft:
-                    textBlock.VerticalAlignment = VerticalAlignment.Bottom;
-                    textBlock.TextAlignment = TextAlignment.Left;
-                    break;
-                case ContentAlignment.BottomCenter:
-                    textBlock.VerticalAlignment = VerticalAlignment.Bottom;
-                    textBlock.TextAlignment = TextAlignment.Center;
-                    break;
-                case ContentAlignment.BottomRight:
-                  textBlock.VerticalAlignment = VerticalAlignment.Bottom;
-                    textBlock.TextAlignment = TextAlignment.Right;
-                    break;
-            }
-        }
+		private void SetContendAlignment(TextBlock textBlock,TextStyleDecorator decorator)
+		{
+			switch (decorator.ContentAlignment)
+			{
+				case ContentAlignment.TopLeft:
+					textBlock.VerticalAlignment = VerticalAlignment.Top;
+					textBlock.TextAlignment = TextAlignment.Left;
+					break;
+				case ContentAlignment.TopCenter:
+					textBlock.VerticalAlignment = VerticalAlignment.Top;
+					textBlock.TextAlignment = TextAlignment.Center;
+					break;
+				case ContentAlignment.TopRight:
+					textBlock.VerticalAlignment = VerticalAlignment.Top;
+					textBlock.TextAlignment = TextAlignment.Right;
+					break;
+					// Middle
+				case ContentAlignment.MiddleLeft:
+					textBlock.VerticalAlignment = VerticalAlignment.Center;
+					textBlock.TextAlignment = TextAlignment.Left;
+					break;
+				case ContentAlignment.MiddleCenter:
+					textBlock.VerticalAlignment = VerticalAlignment.Center;
+					textBlock.TextAlignment = TextAlignment.Center;
+					break;
+				case ContentAlignment.MiddleRight:
+					textBlock.VerticalAlignment = VerticalAlignment.Center;
+					textBlock.TextAlignment = TextAlignment.Right;
+					break;
+					//Bottom
+				case ContentAlignment.BottomLeft:
+					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+					textBlock.TextAlignment = TextAlignment.Left;
+					break;
+				case ContentAlignment.BottomCenter:
+					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+					textBlock.TextAlignment = TextAlignment.Center;
+					break;
+				case ContentAlignment.BottomRight:
+					textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+					textBlock.TextAlignment = TextAlignment.Right;
+					break;
+			}
+		}
 		
 		
 		void SetFont(TextBlock textBlock, TextStyleDecorator styleDecorator)
