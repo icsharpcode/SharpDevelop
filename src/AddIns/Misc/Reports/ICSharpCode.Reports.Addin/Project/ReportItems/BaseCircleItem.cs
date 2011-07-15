@@ -7,7 +7,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 
 using ICSharpCode.Reports.Addin.TypeProviders;
-using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin

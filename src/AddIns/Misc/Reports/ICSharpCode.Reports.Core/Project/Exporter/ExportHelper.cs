@@ -25,20 +25,24 @@ namespace ICSharpCode.Reports.Core.Exporter
 				throw new ArgumentNullException("item");
 			}
 
-			IExportColumnBuilder columnBuilder = item as IExportColumnBuilder;
-			IBaseExportColumn lineItem = null;
-			
-			
-			if (columnBuilder != null) {
-				lineItem = columnBuilder.CreateExportColumn();
-							                                              
-				lineItem.StyleDecorator.Location = new Point(offset.X + lineItem.StyleDecorator.Location.X,
-				                                             lineItem.StyleDecorator.Location.Y + offset.Y);
+			if (item.VisibleInReport == true) {
 				
-				lineItem.StyleDecorator.DisplayRectangle = new Rectangle(lineItem.StyleDecorator.Location,
-				                                                         lineItem.StyleDecorator.Size);
-			} 
-			return lineItem;
+				var columnBuilder = item as IExportColumnBuilder;
+				IBaseExportColumn lineItem = null;
+				
+				if (columnBuilder != null) {
+					lineItem = columnBuilder.CreateExportColumn();
+					lineItem.StyleDecorator.Location = new Point(offset.X + lineItem.StyleDecorator.Location.X,
+					                                             lineItem.StyleDecorator.Location.Y + offset.Y);
+					
+					lineItem.StyleDecorator.DisplayRectangle = new Rectangle(lineItem.StyleDecorator.Location,
+					                                                         lineItem.StyleDecorator.Size);
+				}
+				return lineItem;
+			} else
+			{
+				return null;
+			}
 		}
 		
 		
@@ -52,7 +56,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				foreach(BaseReportItem item in items)
 				{
-					col.Add((BaseExportColumn)ExportHelper.ConvertLineItem(item,offset));
+					var converteditem = ExportHelper.ConvertLineItem(item,offset);
+					if (converteditem != null) {
+						col.Add((BaseExportColumn)ExportHelper.ConvertLineItem(item,offset));
+					}
 				}
 			}
 			return col;

@@ -18,7 +18,7 @@ using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Core {
 	
-	public class BaseImageItem : BaseGraphicItem,IDataItem,IDataRenderer,IExportColumnBuilder{
+	public class BaseImageItem : BaseGraphicItem,IDataItem,IExportColumnBuilder{
 		
 		/// <summary>
 		/// Default constructor 

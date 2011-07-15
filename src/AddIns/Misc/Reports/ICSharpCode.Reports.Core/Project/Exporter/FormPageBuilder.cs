@@ -45,31 +45,27 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override void BuildReportHeader()
 		{
 			if (base.Pages.Count == 0)
-			{
-				
+			{	
 				SectionBounds.Offset = new Point(base.SectionBounds.MarginBounds.Left,base.SectionBounds.MarginBounds.Top);
-				Console.WriteLine("a  reportheader {0}",SectionBounds.Offset);
 				ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.ReportHeader,0);
 				base.SinglePage.Items.AddRange(convertedList);
-				Console.WriteLine("reportheader {0}",SectionBounds.Offset);
 			}
 		}
+		
 		
 		protected override void BuildPageHeader()
 		{
 			if (SectionBounds.Offset.Y < base.ReportModel.PageHeader.SectionOffset) {
 				SectionBounds.Offset = new Point(SectionBounds.Offset.X,base.ReportModel.PageHeader.SectionOffset);
 			}
-			Console.WriteLine("a  pageheader {0}",SectionBounds.Offset);
 			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,0);
 			base.SinglePage.Items.AddRange(convertedList);
 			base.SectionBounds.CalculatePageBounds(base.ReportModel);
-			Console.WriteLine("pageheader {0}",SectionBounds.Offset);
 		}
+		
 		
 		protected override void BuildDetailInternal(BaseSection section)
 		{
-			Console.WriteLine("a   detail {0}",SectionBounds.Offset);
 			base.BuildDetailInternal(section);
 			SectionBounds.Offset = new Point(SectionBounds.Offset.X,base.ReportModel.DetailSection.Location.Y);
 			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.DetailSection,0);

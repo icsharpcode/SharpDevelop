@@ -153,7 +153,8 @@ namespace ICSharpCode.Reports.Core
 			
 			Point currentPosition	= new Point(section.Location.X + container.Location.X,offset.Y);
 			
-			if (section.Visible){
+			if (section.VisibleInReport)
+			{
 				
 				//Always set section.size to it's original value
 				

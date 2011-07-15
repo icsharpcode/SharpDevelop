@@ -19,10 +19,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 	public class BaseConverter:IBaseConverter
 	{
-		
 		private Size saveSize;
 		
-	
 		public event EventHandler <NewPageEventArgs> PageFull;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
 		public event EventHandler<GroupHeaderEventArgs> GroupHeaderRendering;

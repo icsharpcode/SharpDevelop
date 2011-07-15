@@ -2,12 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 
 using ICSharpCode.Reports.Addin.TypeProviders;
-using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -25,6 +23,7 @@ namespace ICSharpCode.Reports.Addin
 		{
 			InitializeComponent();
 			TypeDescriptor.AddProvider(new AbstractItemTypeProvider(), typeof(AbstractItem));
+			VisibleInReport = true;
 		}
 		
 		
@@ -68,6 +67,10 @@ namespace ICSharpCode.Reports.Addin
 		
 		protected new Size DefaultSize {get;set;}
 			
+		
+		
+		
+		public  bool VisibleInReport {get;set;}
 		
 		#endregion
 		

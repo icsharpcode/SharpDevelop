@@ -110,11 +110,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 					if (simpleContainer != null)
 					{
 						Offset = new Point(Offset.X,Offset.Y + gapCalculator.GapBetweenItems[i] );
-//						Offset = new Point(Offset.X,Offset.Y + 5);
 						var containerSize = simpleContainer.Size;
 						
 						EvaluationHelper.EvaluateReportItems(evaluator,simpleContainer.Items);
-
+						
 						var layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
 						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
 						/*
@@ -136,12 +135,19 @@ namespace ICSharpCode.Reports.Core.Exporter
 					else
 					{
 						var converteditem = ExportHelper.ConvertLineItem(item,Offset);
-						
+						if (converteditem != null) {
 						if (converteditem.StyleDecorator.DisplayRectangle.Bottom > currentBottom.Y) {
 							currentBottom = new Point(converteditem.StyleDecorator.Location.X,converteditem.StyleDecorator.DisplayRectangle.Bottom);
 						}
 						
 						convertedSection.Add((BaseExportColumn)converteditem );
+							
+						}
+//						if (converteditem.StyleDecorator.DisplayRectangle.Bottom > currentBottom.Y) {
+//							currentBottom = new Point(converteditem.StyleDecorator.Location.X,converteditem.StyleDecorator.DisplayRectangle.Bottom);
+//						}
+//						
+//						convertedSection.Add((BaseExportColumn)converteditem );
 						
 					}
 					i ++;

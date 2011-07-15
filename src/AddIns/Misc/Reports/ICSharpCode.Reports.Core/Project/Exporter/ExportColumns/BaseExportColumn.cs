@@ -65,7 +65,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
 			}
-			RectangleShape shape = new RectangleShape();
+			var shape = new RectangleShape();
 			this.FillShape(graphics, shape);
 			StandardPrinter.DrawBorder(graphics, this.StyleDecorator as BaseStyleDecorator);
 		}
@@ -73,11 +73,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 		protected virtual void Decorate()
 		{
-			RectangleShape shape = new RectangleShape();
-
+			var shape = new RectangleShape();
 			shape.DrawShape(this.PdfWriter.DirectContent, null, this.StyleDecorator, ConvertToPdfRectangle());
 			this.DrawFrame();
-
 		}
 
 		#endregion

@@ -18,7 +18,7 @@ using ICSharpCode.Reports.Core.Exporter;
 /// </remarks>
 namespace ICSharpCode.Reports.Core
 {
-	public class BaseDataItem : BaseTextItem, IDataRenderer, IExportColumnBuilder, IDataItem
+	public class BaseDataItem : BaseTextItem, IExportColumnBuilder, IDataItem
 	{
 
 		#region Constructor

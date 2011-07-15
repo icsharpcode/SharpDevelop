@@ -125,7 +125,6 @@ namespace ICSharpCode.Reports.Core{
 		}
 		
 		
-		
 		#region BaseSettings
 		
 		[Category("Base Settings")]

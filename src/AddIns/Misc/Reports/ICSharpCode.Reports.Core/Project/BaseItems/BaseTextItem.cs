@@ -31,6 +31,7 @@ namespace ICSharpCode.Reports.Core
 			this.stringFormat = StringFormat.GenericTypographic;
 			this.contentAlignment = ContentAlignment.TopLeft;
 			this.stringTrimming = StringTrimming.None;
+			VisibleInReport = true;
 		}
 		
 		#endregion

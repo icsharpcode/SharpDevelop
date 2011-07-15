@@ -117,6 +117,8 @@ namespace ICSharpCode.Reports.Core
 		
 		public  int SectionMargin {get;set;}
 	
+		public virtual int SectionOffset {get;set;}
+		
 		
 		public ReportItemCollection Items
 		{

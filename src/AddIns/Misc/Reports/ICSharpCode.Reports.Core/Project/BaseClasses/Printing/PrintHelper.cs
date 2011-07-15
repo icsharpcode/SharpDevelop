@@ -6,10 +6,8 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 
-using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Interfaces;
-using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 {

@@ -76,12 +76,16 @@ namespace ICSharpCode.Reports.Addin.Designer
 			prop = props.Find("BackColor",true);
 			allProperties.Add(prop);
 			
+			prop = props.Find ("VisibleInReport",true);
+			allProperties.Add(prop);
+			
+			
 			// need this for Contextmenu's
 			prop = props.Find("ContextMenu",true);
 			allProperties.Add(prop);
 		}
 		
-		public static void AddTextbasedProperties (List<PropertyDescriptor> allProperties,
+		public static void AddTextBasedProperties (List<PropertyDescriptor> allProperties,
 		                                          PropertyDescriptorCollection props)
 		{
 			PropertyDescriptor prop = props.Find("Font",true);
