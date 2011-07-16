@@ -18,7 +18,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public TestablePackageViewModel(FakePackageManagementSolution solution)
 			: this(
-				new FakePackage(),
+				new FakePackage("Test"),
 				solution,
 				new FakePackageManagementEvents(),
 				new FakePackageActionRunner(),
@@ -51,6 +51,7 @@ namespace PackageManagement.Tests.Helpers
 			PackageViewModelOperationLogger operationLogger = base.CreateLogger(logger);
 			operationLogger.AddingPackageMessageFormat = "Installing...{0}";
 			operationLogger.RemovingPackageMessageFormat = "Uninstalling...{0}";
+			operationLogger.ManagingPackageMessageFormat = "Managing...{0}";
 			OperationLoggerCreated = operationLogger;
 			return operationLogger;
 		}
@@ -59,7 +60,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public PackageOperation AddOneFakeInstallPackageOperationForViewModelPackage()
 		{
-			var operation = new PackageOperation(FakePackage, PackageAction.Install);
+			var operation = new FakePackageOperation(FakePackage, PackageAction.Install);
 			
 			FakeSolution
 				.FakeActiveProject
@@ -72,7 +73,7 @@ namespace PackageManagement.Tests.Helpers
 		public PackageOperation AddOneFakeUninstallPackageOperation()
 		{
 			var package = new FakePackage("PackageToUninstall");			
-			var operation = new PackageOperation(package, PackageAction.Uninstall);
+			var operation = new FakePackageOperation(package, PackageAction.Uninstall);
 			FakeSolution.FakeActiveProject.FakeInstallOperations.Add(operation);
 			return operation;
 		}

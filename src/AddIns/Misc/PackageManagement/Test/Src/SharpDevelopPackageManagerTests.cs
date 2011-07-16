@@ -42,11 +42,14 @@ namespace PackageManagement.Tests
 			
 			fakePackageOperationResolverFactory = new FakePackageOperationResolverFactory();
 			
+			var fakeSolutionPackageRepository = new FakeSolutionPackageRepository();
+			fakeSolutionPackageRepository.FileSystem = fakeFileSystem;
+			fakeSolutionPackageRepository.PackagePathResolver = pathResolver;
+			fakeSolutionPackageRepository.FakeSharedRepository = fakeSolutionSharedRepository;
+			
 			packageManager = new SharpDevelopPackageManager(fakeFeedSourceRepository,
 				packageRefRepositoryHelper.FakeProjectSystem,
-				fakeFileSystem,
-				fakeSolutionSharedRepository,
-				pathResolver,
+				fakeSolutionPackageRepository,
 				fakePackageOperationResolverFactory);
 		}
 		

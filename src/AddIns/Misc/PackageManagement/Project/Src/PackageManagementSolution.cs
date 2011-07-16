@@ -14,35 +14,56 @@ namespace ICSharpCode.PackageManagement
 	{
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		IPackageManagementProjectService projectService;
-		IPackageManagementEvents packageManagementEvents;
 		IPackageManagementProjectFactory projectFactory;
+		ISolutionPackageRepositoryFactory solutionPackageRepositoryFactory;
 		
 		public PackageManagementSolution(
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagementEvents packageManagementEvents)
 			: this(
 				registeredPackageRepositories,
-				packageManagementEvents,
 				new PackageManagementProjectService(),
-				new PackageManagementProjectFactory(packageManagementEvents))
+				new PackageManagementProjectFactory(packageManagementEvents),
+				new SolutionPackageRepositoryFactory())
 		{
 		}
 		
 		public PackageManagementSolution(
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageManagementEvents packageManagementEvents,
 			IPackageManagementProjectService projectService,
-			IPackageManagementProjectFactory projectFactory)
+			IPackageManagementProjectFactory projectFactory,
+			ISolutionPackageRepositoryFactory solutionPackageRepositoryFactory)
 		{
 			this.registeredPackageRepositories = registeredPackageRepositories;
-			this.packageManagementEvents = packageManagementEvents;
 			this.projectFactory = projectFactory;
 			this.projectService = projectService;
+			this.solutionPackageRepositoryFactory = solutionPackageRepositoryFactory;
+		}
+		
+		public string FileName {
+			get { return OpenSolution.FileName; }
+		}
+		
+		Solution OpenSolution {
+			get { return projectService.OpenSolution; }
 		}
 		
 		public IPackageManagementProject GetActiveProject()
 		{
-			return GetActiveProject(ActivePackageRepository);
+			if (HasActiveProject()) {
+				return GetActiveProject(ActivePackageRepository);
+			}
+			return null;
+		}
+		
+		bool HasActiveProject()
+		{
+			return GetActiveMSBuildBasedProject() != null;
+		}
+		
+		public IProject GetActiveMSBuildProject()
+		{
+			return projectService.CurrentProject;
 		}
 		
 		IPackageRepository ActivePackageRepository {
@@ -51,13 +72,16 @@ namespace ICSharpCode.PackageManagement
 				
 		public IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository)
 		{
-			MSBuildBasedProject activeProject = GetActiveMSBuildProject();
-			return CreateProject(sourceRepository, activeProject);
+			MSBuildBasedProject activeProject = GetActiveMSBuildBasedProject();
+			if (activeProject != null) {
+				return CreateProject(sourceRepository, activeProject);
+			}
+			return null;
 		}
 		
-		MSBuildBasedProject GetActiveMSBuildProject()
+		MSBuildBasedProject GetActiveMSBuildBasedProject()
 		{
-			return projectService.CurrentProject as MSBuildBasedProject;
+			return GetActiveMSBuildProject() as MSBuildBasedProject;
 		}
 		
 		IPackageManagementProject CreateProject(IPackageRepository sourceRepository, MSBuildBasedProject project)
@@ -94,13 +118,41 @@ namespace ICSharpCode.PackageManagement
 			return CreateProject(sourceRepository, msbuildProject);
 		}
 		
+		public IPackageManagementProject GetProject(IPackageRepository sourceRepository, IProject project)
+		{
+			var msbuildProject = project as MSBuildBasedProject;
+			return CreateProject(sourceRepository, msbuildProject);
+		}
+		
 		public IEnumerable<IProject> GetMSBuildProjects()
 		{
 			return projectService.GetOpenProjects();
 		}
 		
 		public bool IsOpen {
-			get { return projectService.OpenSolution != null; }
+			get { return OpenSolution != null; }
+		}
+		
+		public bool HasMultipleProjects()
+		{
+			return projectService.GetOpenProjects().Count() > 1;
+		}
+		
+		public bool IsPackageInstalled(IPackage package)
+		{
+			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
+			return repository.IsInstalled(package);
+		}
+		
+		ISolutionPackageRepository CreateSolutionPackageRepository()
+		{
+			return solutionPackageRepositoryFactory.CreateSolutionPackageRepository(OpenSolution);
+		}
+		
+		public IQueryable<IPackage> GetPackages()
+		{
+			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
+			return repository.GetPackages();
 		}
 	}
 }

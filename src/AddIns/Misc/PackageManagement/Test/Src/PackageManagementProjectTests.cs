@@ -49,7 +49,7 @@ namespace PackageManagement.Tests
 			fakeProjectManager.IsInstalledReturnValue = true;
 			var package = new FakePackage("Test");
 			
-			bool installed = project.IsInstalled(package);
+			bool installed = project.IsPackageInstalled(package);
 			
 			Assert.IsTrue(installed);
 		}
@@ -61,7 +61,7 @@ namespace PackageManagement.Tests
 			fakeProjectManager.IsInstalledReturnValue = false;
 			var package = new FakePackage("Test");
 			
-			bool installed = project.IsInstalled(package);
+			bool installed = project.IsPackageInstalled(package);
 			
 			Assert.IsFalse(installed);
 		}
@@ -73,7 +73,7 @@ namespace PackageManagement.Tests
 			fakeProjectManager.IsInstalledReturnValue = false;
 			var expectedPackage = new FakePackage("Test");
 			
-			project.IsInstalled(expectedPackage);
+			project.IsPackageInstalled(expectedPackage);
 			IPackage actualPackage = fakeProjectManager.PackagePassedToIsInstalled;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);

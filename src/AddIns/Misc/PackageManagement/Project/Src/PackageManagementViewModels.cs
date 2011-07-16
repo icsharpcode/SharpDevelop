@@ -29,15 +29,26 @@ namespace ICSharpCode.PackageManagement
 		{
 			CreateRegisteredPackageRepositories();
 			CreateSolution();
-			var packageManagementEvents = new ThreadSafePackageManagementEvents(PackageManagementServices.PackageManagementEvents);
+			ThreadSafePackageManagementEvents packageManagementEvents = CreateThreadSafePackageManagementEvents();
+			PackagesViewModels packagesViewModels = CreatePackagesViewModels(packageManagementEvents);
+
 			managePackagesViewModel = 
 				new ManagePackagesViewModel(
-					solution,
-					registeredPackageRepositories,
+					packagesViewModels,
+					new ManagePackagesViewTitle(solution),
 					packageManagementEvents,
-					PackageManagementServices.PackageActionRunner,
-					new LicenseAcceptanceService(),
-					new PackageManagementTaskFactory());
+					new ManagePackagesUserPrompts(packageManagementEvents));
+		}
+		
+		void CreateRegisteredPackageRepositories()
+		{
+			if (registeredPackageRepositories == null) {
+				if (IsInDesignMode()) {
+					registeredPackageRepositories = new DesignTimeRegisteredPackageRepositories();
+				} else {
+					registeredPackageRepositories = PackageManagementServices.RegisteredPackageRepositories;
+				}
+			}
 		}
 		
 		void CreateSolution()
@@ -51,15 +62,20 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		void CreateRegisteredPackageRepositories()
+		ThreadSafePackageManagementEvents CreateThreadSafePackageManagementEvents()
 		{
-			if (registeredPackageRepositories == null) {
-				if (IsInDesignMode()) {
-					registeredPackageRepositories = new DesignTimeRegisteredPackageRepositories();
-				} else {
-					registeredPackageRepositories = PackageManagementServices.RegisteredPackageRepositories;
-				}
-			}
+			return new ThreadSafePackageManagementEvents(
+				PackageManagementServices.PackageManagementEvents);
+		}
+		
+		PackagesViewModels CreatePackagesViewModels(IThreadSafePackageManagementEvents packageManagementEvents)
+		{
+			return new PackagesViewModels(
+				solution,
+				registeredPackageRepositories,
+				packageManagementEvents,
+				PackageManagementServices.PackageActionRunner,
+				new PackageManagementTaskFactory());
 		}
 		
 		bool IsInDesignMode()

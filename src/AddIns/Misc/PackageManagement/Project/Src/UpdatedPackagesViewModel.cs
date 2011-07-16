@@ -45,11 +45,17 @@ namespace ICSharpCode.PackageManagement
 		{
 			try {
 				IPackageRepository aggregateRepository = RegisteredPackageRepositories.CreateAggregateRepository();
-				IPackageManagementProject project = solution.GetActiveProject(aggregateRepository);
-				updatedPackages = new UpdatedPackages(project, aggregateRepository);
+				IQueryable<IPackage> installedPackages = GetInstalledPackages(aggregateRepository);
+				updatedPackages = new UpdatedPackages(installedPackages, aggregateRepository);
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}
+		}
+		
+		IQueryable<IPackage> GetInstalledPackages(IPackageRepository aggregateRepository)
+		{
+			var selectedProjects = new PackageManagementSelectedProjects(solution);
+			return selectedProjects.GetInstalledPackages(aggregateRepository);
 		}
 		
 		protected override IQueryable<IPackage> GetAllPackages()

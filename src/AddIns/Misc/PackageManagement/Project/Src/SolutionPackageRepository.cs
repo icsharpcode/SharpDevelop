@@ -3,7 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement.Scripting;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -52,6 +53,18 @@ namespace ICSharpCode.PackageManagement
 			repository = repositoryFactory.CreateSharedRepository(packagePathResolver, fileSystem);			
 		}
 		
+		public ISharedPackageRepository Repository {
+			get { return repository; }
+		}
+		
+		public IFileSystem FileSystem {
+			get { return fileSystem; }
+		}
+		
+		public IPackagePathResolver PackagePathResolver {
+			get { return packagePathResolver; }
+		}
+		
 		public string GetInstallPath(IPackage package)
 		{
 			return repositoryPath.GetInstallPath(package);
@@ -61,6 +74,16 @@ namespace ICSharpCode.PackageManagement
 		{
 			var packageSorter = new PackageSorter();
 			return packageSorter.GetPackagesByDependencyOrder(repository);
+		}
+		
+		public bool IsInstalled(IPackage package)
+		{
+			return repository.Exists(package);
+		}
+		
+		public IQueryable<IPackage> GetPackages()
+		{
+			return repository.GetPackages();
 		}
 	}
 }

@@ -17,18 +17,24 @@ namespace PackageManagement.Tests
 	{
 		ManagePackagesViewModel viewModel;
 		PackageManagementEvents packageManagementEvents;
-		FakeLicenseAcceptanceService fakeLicenseAcceptanceSevice;
+		FakeLicenseAcceptanceService fakeLicenseAcceptanceService;
+		FakeSelectProjectsService fakeSelectProjectsService;
 		FakePackageManagementSolution fakeSolution;
 		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
-		FakeTaskFactory taskFactory;
+		FakeTaskFactory fakeTaskFactory;
 		List<FakePackage> packagesPassedToOnAcceptLicenses;
 		FakePackageActionRunner fakeActionRunner;
 		FakePackageManagementEvents fakeThreadSafeEvents;
+		List<IPackageManagementSelectedProject> projectsPassedToOnSelectProjects;
+		ManagePackagesUserPrompts userPrompts;
+		PackagesViewModels packagesViewModels;
+		ManagePackagesViewTitle viewTitle;
 		
 		void CreateSolution()
 		{
 			fakeSolution = new FakePackageManagementSolution();
 			fakeRegisteredPackageRepositories = new FakeRegisteredPackageRepositories();
+			fakeSolution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject();
 		}
 		
 		void CreateViewModel()
@@ -44,19 +50,34 @@ namespace PackageManagement.Tests
 			CreateViewModel(fakeSolution, threadSafeEvents);
 		}
 		
-		void CreateViewModel(FakePackageManagementSolution solution, IThreadSafePackageManagementEvents packageManagementEvents)
+		void CreateViewModel(
+			FakePackageManagementSolution solution, 
+			IThreadSafePackageManagementEvents packageManagementEvents)
 		{
-			taskFactory = new FakeTaskFactory();
-			fakeLicenseAcceptanceSevice = new FakeLicenseAcceptanceService();
+			fakeTaskFactory = new FakeTaskFactory();
+			fakeLicenseAcceptanceService = new FakeLicenseAcceptanceService();
+			fakeSelectProjectsService = new FakeSelectProjectsService();
+			userPrompts = new ManagePackagesUserPrompts(
+				packageManagementEvents,
+				fakeLicenseAcceptanceService,
+				fakeSelectProjectsService);
 			fakeActionRunner = new FakePackageActionRunner();
-			viewModel = new ManagePackagesViewModel(
+			
+			packagesViewModels = new PackagesViewModels(
 				solution,
 				fakeRegisteredPackageRepositories,
 				packageManagementEvents,
 				fakeActionRunner,
-				fakeLicenseAcceptanceSevice,
-				taskFactory);
-			taskFactory.ExecuteAllFakeTasks();
+				fakeTaskFactory);
+			
+			viewTitle = new ManagePackagesViewTitle(solution);
+			
+			viewModel = new ManagePackagesViewModel(
+				packagesViewModels,
+				viewTitle,
+				packageManagementEvents,
+				userPrompts);
+			fakeTaskFactory.ExecuteAllFakeTasks();
 		}
 		
 		void CreateViewModelWithFakeThreadSafePackageManagementEvents()
@@ -82,7 +103,7 @@ namespace PackageManagement.Tests
 		
 		List<string> RaisePackageOperationErrorEventAndRecordPropertiesChanged()
 		{
-			var propertyNamesChanged = RecordViewModelPropertiesChanged();
+			List<string> propertyNamesChanged = RecordViewModelPropertiesChanged();
 			RaisePackageOperationErrorEvent();
 			return propertyNamesChanged;
 		}
@@ -94,7 +115,7 @@ namespace PackageManagement.Tests
 		
 		List<string> RaisePackageOperationsStartingEventAndRecordPropertiesChanged()
 		{
-			var propertyNamesChanged = RecordViewModelPropertiesChanged();
+			List<string> propertyNamesChanged = RecordViewModelPropertiesChanged();
 			RaisePackageOperationsStartingEvent();
 			return propertyNamesChanged;
 		}
@@ -103,6 +124,12 @@ namespace PackageManagement.Tests
 		{
 			packagesPassedToOnAcceptLicenses = new List<FakePackage>();
 			return packageManagementEvents.OnAcceptLicenses(packagesPassedToOnAcceptLicenses);
+		}
+		
+		bool RaiseSelectProjectsEvent()
+		{
+			projectsPassedToOnSelectProjects = new List<IPackageManagementSelectedProject>();
+			return packageManagementEvents.OnSelectProjects(projectsPassedToOnSelectProjects);
 		}
 		
 		[Test]
@@ -175,7 +202,7 @@ namespace PackageManagement.Tests
 		public void Message_PackageManagementErrorEventFires_ExceptionMessageUpdatesViewModelMessage()
 		{
 			CreateViewModel();
-			var ex = RaisePackageOperationErrorEvent();
+			Exception ex = RaisePackageOperationErrorEvent();
 			
 			Assert.AreEqual("Test", viewModel.Message);
 		}
@@ -303,8 +330,8 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			RaiseAcceptLicensesEvent();
 			
-			var actualPackages = fakeLicenseAcceptanceSevice.PackagesPassedToAcceptLicenses;
-			var expectedPackages = packagesPassedToOnAcceptLicenses;
+			IEnumerable<IPackage> actualPackages = fakeLicenseAcceptanceService.PackagesPassedToAcceptLicenses;
+			IEnumerable<IPackage> expectedPackages = packagesPassedToOnAcceptLicenses;
 			
 			Assert.AreEqual(expectedPackages, actualPackages);
 		}
@@ -313,7 +340,7 @@ namespace PackageManagement.Tests
 		public void AcceptLicenses_EventFiredAndUserAcceptsLicenses_AcceptLicensesReturnsTrue()
 		{
 			CreateViewModel();
-			fakeLicenseAcceptanceSevice.AcceptLicensesReturnValue = true;
+			fakeLicenseAcceptanceService.AcceptLicensesReturnValue = true;
 			bool result = RaiseAcceptLicensesEvent();
 			
 			Assert.IsTrue(result);
@@ -323,7 +350,7 @@ namespace PackageManagement.Tests
 		public void AcceptLicenses_EventFiredAndUserDoesNotAcceptLicenses_AcceptLicensesReturnsFalse()
 		{
 			CreateViewModel();
-			fakeLicenseAcceptanceSevice.AcceptLicensesReturnValue = false;
+			fakeLicenseAcceptanceService.AcceptLicensesReturnValue = false;
 			bool result = RaiseAcceptLicensesEvent();
 			
 			Assert.IsFalse(result);
@@ -336,7 +363,7 @@ namespace PackageManagement.Tests
 			viewModel.Dispose();
 			RaiseAcceptLicensesEvent();
 			
-			Assert.IsFalse(fakeLicenseAcceptanceSevice.IsAcceptLicensesCalled);
+			Assert.IsFalse(fakeLicenseAcceptanceService.IsAcceptLicensesCalled);
 		}
 		
 		[Test]
@@ -374,14 +401,74 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Title_ProjectSelected_ReturnsProjectInTitle()
 		{
-			CreateViewModel();
+			CreateSolution();
+			TestableProject project = ProjectHelper.CreateTestProject("Test");
+			fakeSolution.FakeActiveMSBuildProject = project;
 			fakeSolution.FakeActiveProject.Name = "Test";
+			CreateViewModel(fakeSolution);
 			
 			string title = viewModel.Title;
 			
 			string expectedTitle = "Test - Manage Packages";
 			
 			Assert.AreEqual(expectedTitle, title);
+		}
+		
+		[Test]
+		public void Title_SolutionSelectedButNoProjectSelected_ReturnsSolutionFileNameInTitle()
+		{
+			CreateSolution();
+			fakeSolution.NoProjectsSelected();
+			fakeSolution.FileName = @"d:\projects\MySolution.sln";
+			CreateViewModel(fakeSolution);
+			
+			string title = viewModel.Title;
+			
+			string expectedTitle = "MySolution.sln - Manage Packages";
+			
+			Assert.AreEqual(expectedTitle, title);
+		}
+		
+		[Test]
+		public void SelectProjects_EventFired_ProjectsPassedToUserToSelect()
+		{
+			CreateViewModel();
+			RaiseSelectProjectsEvent();
+			
+			IEnumerable<IPackageManagementSelectedProject> projects = fakeSelectProjectsService.ProjectsPassedToSelectProjects;
+			List<IPackageManagementSelectedProject> expectedProjects = projectsPassedToOnSelectProjects;
+			
+			Assert.AreEqual(expectedProjects, projects);
+		}
+		
+		[Test]
+		public void SelectProjects_EventFiredAndUserAcceptsSelectedProjects_SelectProjectsReturnsTrue()
+		{
+			CreateViewModel();
+			fakeSelectProjectsService.SelectProjectsReturnValue = true;
+			bool result = RaiseSelectProjectsEvent();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void SelectProjects_EventFiredAndUserDoesNotAcceptLicenses_SelectProjectsReturnsFalse()
+		{
+			CreateViewModel();
+			fakeSelectProjectsService.SelectProjectsReturnValue = false;
+			bool result = RaiseSelectProjectsEvent();
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Dispose_SelectProjectsEventFired_UserIsNotPromptedToSelectProjects()
+		{
+			CreateViewModel();
+			viewModel.Dispose();
+			RaiseSelectProjectsEvent();
+			
+			Assert.IsFalse(fakeSelectProjectsService.IsSelectProjectsCalled);
 		}
 	}
 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -16,15 +17,13 @@ namespace ICSharpCode.PackageManagement
 		public SharpDevelopPackageManager(
 			IPackageRepository sourceRepository,
 			IProjectSystem projectSystem,
-			IFileSystem fileSystem,
-			ISharedPackageRepository localRepository,
-			IPackagePathResolver pathResolver,
+			ISolutionPackageRepository solutionPackageRepository,
 			IPackageOperationResolverFactory packageOperationResolverFactory)
 			: base(
 				sourceRepository,
-				pathResolver,
-				fileSystem,
-				localRepository)
+				solutionPackageRepository.PackagePathResolver,
+				solutionPackageRepository.FileSystem,
+				solutionPackageRepository.Repository)
 		{
 			this.projectSystem = projectSystem;
 			this.packageOperationResolverFactory = packageOperationResolverFactory;

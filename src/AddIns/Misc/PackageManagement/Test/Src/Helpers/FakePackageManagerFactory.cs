@@ -16,9 +16,9 @@ namespace PackageManagement.Tests.Helpers
 		public IPackageRepository PackageRepositoryPassedToCreatePackageManager;
 		public MSBuildBasedProject ProjectPassedToCreateRepository;
 		
-		public ISharpDevelopPackageManager CreatePackageManager(IPackageRepository packageRepository, MSBuildBasedProject project)
+		public ISharpDevelopPackageManager CreatePackageManager(IPackageRepository sourceRepository, MSBuildBasedProject project)
 		{
-			PackageRepositoryPassedToCreatePackageManager = packageRepository;
+			PackageRepositoryPassedToCreatePackageManager = sourceRepository;
 			ProjectPassedToCreateRepository = project;
 			return FakePackageManager;
 		}

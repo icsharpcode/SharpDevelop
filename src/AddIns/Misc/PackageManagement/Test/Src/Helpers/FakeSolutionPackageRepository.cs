@@ -3,14 +3,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
-using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
 	public class FakeSolutionPackageRepository : ISolutionPackageRepository
 	{
+		public FakeSharedPackageRepository FakeSharedRepository = new FakeSharedPackageRepository();
+		
+		public List<FakePackage> FakePackages;
+		
+		public FakeSolutionPackageRepository()
+		{
+			FakePackages = FakeSharedRepository.FakePackages;
+		}
+		
 		public string InstallPathToReturn;
 		public IPackage PackagePassedToGetInstallPath;
 		
@@ -20,11 +30,27 @@ namespace PackageManagement.Tests.Helpers
 			return InstallPathToReturn;
 		}
 		
-		public List<FakePackage> FakePackages = new List<FakePackage>();
-		
 		public IEnumerable<IPackage> GetPackagesByDependencyOrder()
 		{
 			return FakePackages;
 		}
+		
+		public bool IsInstalled(IPackage package)
+		{
+			return FakeSharedRepository.FakePackages.Exists(p => p == package);
+		}
+		
+		public IQueryable<IPackage> GetPackages()
+		{
+			return FakeSharedRepository.FakePackages.AsQueryable();
+		}
+		
+		public ISharedPackageRepository Repository {
+			get { return FakeSharedRepository; }
+		}
+		
+		public IFileSystem FileSystem { get; set; }
+		
+		public IPackagePathResolver PackagePathResolver { get; set; }
 	}
 }

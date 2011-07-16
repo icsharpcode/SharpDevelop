@@ -69,6 +69,18 @@ namespace PackageManagement.Tests
 			return package;
 		}
 		
+		FakePackage AddPackageToSolution()
+		{
+			var package = new FakePackage("Test");
+			solution.FakeInstalledPackages.Add(package);
+			return package;
+		}
+		
+		void NoProjectSelected()
+		{
+			solution.NoProjectsSelected();
+		}
+		
 		[Test]
 		public void PackageViewModels_PackageReferenceIsAdded_PackageViewModelsIsUpdated()
 		{
@@ -160,6 +172,23 @@ namespace PackageManagement.Tests
 			CompleteReadPackagesTask();
 		
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void PackageViewModels_OnlySolutionSelectedThatContainsOneInstalledPackage_ReturnsOnePackageViewModel()
+		{
+			CreateSolution();
+			NoProjectSelected();
+			CreateViewModel(solution);
+			FakePackage package = AddPackageToSolution();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				package
+			};
+		
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
 	}
 }

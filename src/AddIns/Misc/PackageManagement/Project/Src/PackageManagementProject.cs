@@ -69,7 +69,7 @@ namespace ICSharpCode.PackageManagement
 			remove { projectManager.PackageReferenceRemoved -= value; }
 		}
 		
-		public bool IsInstalled(IPackage package)
+		public bool IsPackageInstalled(IPackage package)
 		{
 			return projectManager.IsInstalled(package);
 		}
