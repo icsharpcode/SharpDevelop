@@ -334,7 +334,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		bool AnyProjectsSelected(IList<IPackageManagementSelectedProject> projects)
+		protected virtual bool AnyProjectsSelected(IList<IPackageManagementSelectedProject> projects)
 		{
 			return projects.Any(project => project.IsSelected);
 		}
@@ -342,17 +342,24 @@ namespace ICSharpCode.PackageManagement
 		void InstallPackagesForSelectedProjects(IList<IPackageManagementSelectedProject> projects)
 		{
 			if (CanInstallPackage(projects)) {
-				var actions = new List<ProcessPackageAction>();
-				foreach (IPackageManagementSelectedProject selectedProject in projects) {
-					if (selectedProject.IsSelected) {
-						ProcessPackageAction action = CreateInstallPackageAction(selectedProject);
-						actions.Add(action);
-					}
-				}
+				IList<ProcessPackageAction> actions = GetProcessPackageActionsForSelectedProjects(projects);
 				RunActionsIfAnyExist(actions);
 			}
 		}
-			
+		
+		public virtual IList<ProcessPackageAction> GetProcessPackageActionsForSelectedProjects(
+			IList<IPackageManagementSelectedProject> selectedProjects)
+		{
+			var actions = new List<ProcessPackageAction>();
+			foreach (IPackageManagementSelectedProject selectedProject in selectedProjects) {
+				if (selectedProject.IsSelected) {
+					ProcessPackageAction action = CreateInstallPackageAction(selectedProject);
+					actions.Add(action);
+				}
+			}
+			return actions;
+		}
+		
 		bool CanInstallPackage(IList<IPackageManagementSelectedProject> projects)
 		{
 			IPackageManagementSelectedProject project = projects.FirstOrDefault();
@@ -371,9 +378,9 @@ namespace ICSharpCode.PackageManagement
 			return true;
 		}
 		
-		ProcessPackageOperationsAction CreateInstallPackageAction(IPackageManagementSelectedProject selectedProject)
+		protected ProcessPackageAction CreateInstallPackageAction(IPackageManagementSelectedProject selectedProject)
 		{
-			IPackageManagementProject project = selectedProject.Project;	
+			IPackageManagementProject project = selectedProject.Project;
 			project.Logger = logger;
 			
 			ProcessPackageOperationsAction action = CreateInstallPackageAction(project);
@@ -381,7 +388,17 @@ namespace ICSharpCode.PackageManagement
 			return action;
 		}
 		
-		void RunActionsIfAnyExist(List<ProcessPackageAction> actions)
+		protected ProcessPackageAction CreateUninstallPackageAction(IPackageManagementSelectedProject selectedProject)
+		{
+			IPackageManagementProject project = selectedProject.Project;
+			project.Logger = logger;
+			
+			ProcessPackageAction action = project.CreateUninstallPackageAction();
+			action.Package = package;
+			return action;
+		}
+		
+		void RunActionsIfAnyExist(IList<ProcessPackageAction> actions)
 		{
 			if (actions.Any()) {
 				actionRunner.Run(actions);			

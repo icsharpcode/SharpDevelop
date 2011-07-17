@@ -73,6 +73,8 @@
     <Compile Include="Src\Design\DesignTimeSelectProjectsViewModel.cs" />
     <Compile Include="Src\Design\FakePackageOperation.cs" />
     <Compile Include="Src\Design\FakeSelectedProject.cs" />
+    <Compile Include="Src\InstalledPackageViewModel.cs" />
+    <Compile Include="Src\InstalledPackageViewModelFactory.cs" />
     <Compile Include="Src\IPackageManagementSelectedProject.cs" />
     <Compile Include="Src\ISelectProjectsService.cs" />
     <Compile Include="Src\ISolutionPackageRepository.cs" />

@@ -72,7 +72,9 @@
     <Compile Include="Src\Helpers\FakeSelectProjectsService.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepositoryFactory.cs" />
     <Compile Include="Src\Helpers\SelectedProjectCollectionAssert.cs" />
+    <Compile Include="Src\Helpers\TestableInstalledPackageViewModel.cs" />
     <Compile Include="Src\Helpers\TestablePackageFromRepository.cs" />
+    <Compile Include="Src\InstalledPackageViewModelTests.cs" />
     <Compile Include="Src\ManagePackagesCommandTests.cs" />
     <Compile Include="Src\ConsolePackageActionRunnerTests.cs" />
     <Compile Include="Src\DefaultProjectTemplatePackageSourceTests.cs" />

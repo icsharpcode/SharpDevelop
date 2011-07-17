@@ -15,10 +15,12 @@ namespace ICSharpCode.PackageManagement
 			ITaskFactory taskFactory)
 		{
 			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents, actionRunner);
+			var updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
+			var installedPackageViewModelFactory = new InstalledPackageViewModelFactory(packageViewModelFactory);
 			
 			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
-			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
-			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, installedPackageViewModelFactory, taskFactory);
+			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, registeredPackageRepositories, updatedPackageViewModelFactory, taskFactory);
 			RecentPackagesViewModel = new RecentPackagesViewModel(packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
 		}
 		

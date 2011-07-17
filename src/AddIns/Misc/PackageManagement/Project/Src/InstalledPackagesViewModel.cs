@@ -19,7 +19,7 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageViewModelFactory packageViewModelFactory,
+			InstalledPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{

@@ -18,19 +18,6 @@ namespace ICSharpCode.PackageManagement
 		public UpdatedPackagesViewModel(
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageViewModelFactory packageViewModelFactory,
-			ITaskFactory taskFactory)
-			: this(
-				solution,
-				registeredPackageRepositories,
-				new UpdatedPackageViewModelFactory(packageViewModelFactory),
-				taskFactory)
-		{
-		}
-		
-		public UpdatedPackagesViewModel(
-			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredPackageRepositories,
 			UpdatedPackageViewModelFactory packageViewModelFactory,			
 			ITaskFactory taskFactory)
 			: base(

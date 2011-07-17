@@ -40,10 +40,11 @@ namespace PackageManagement.Tests
 			taskFactory = new FakeTaskFactory();
 			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
+			var updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
 			viewModel = new UpdatedPackagesViewModel(
 				solution,
 				registeredPackageRepositories,
-				packageViewModelFactory,
+				updatedPackageViewModelFactory,
 				taskFactory);
 		}
 		
