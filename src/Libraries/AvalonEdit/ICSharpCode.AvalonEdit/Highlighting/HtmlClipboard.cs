@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
@@ -86,7 +87,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					highlightedLine = highlighter.HighlightLine(line.LineNumber);
 				else
 					highlightedLine = new HighlightedLine(document, line);
-				SimpleSegment s = segment.GetOverlap(line);
+				SimpleSegment s = SimpleSegment.GetOverlap(segment, line);
 				if (html.Length > 0)
 					html.AppendLine("<br>");
 				html.Append(highlightedLine.ToHtml(s.Offset, s.EndOffset, options));

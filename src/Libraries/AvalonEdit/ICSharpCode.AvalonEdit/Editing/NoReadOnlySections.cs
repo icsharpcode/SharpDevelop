@@ -2,10 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using ICSharpCode.AvalonEdit.Document;
+using System.Linq;
+
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {

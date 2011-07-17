@@ -5,6 +5,8 @@ using System;
 using System.Globalization;
 using System.Windows.Documents;
 
+using ICSharpCode.Editor;
+
 namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>

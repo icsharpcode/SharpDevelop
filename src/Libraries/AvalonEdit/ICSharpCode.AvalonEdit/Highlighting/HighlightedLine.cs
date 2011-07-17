@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
@@ -111,7 +111,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			List<HtmlElement> elements = new List<HtmlElement>();
 			for (int i = 0; i < this.Sections.Count; i++) {
 				HighlightedSection s = this.Sections[i];
-				if (s.GetOverlap(requestedSegment).Length > 0) {
+				if (SimpleSegment.GetOverlap(s, requestedSegment).Length > 0) {
 					elements.Add(new HtmlElement(s.Offset, i, false, s.Color));
 					elements.Add(new HtmlElement(s.Offset + s.Length, i, true, s.Color));
 				}

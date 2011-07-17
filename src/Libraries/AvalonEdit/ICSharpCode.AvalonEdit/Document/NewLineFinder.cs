@@ -2,9 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {

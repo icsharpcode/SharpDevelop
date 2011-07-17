@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Documents;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Snippets
 {
@@ -91,7 +92,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		{
 			// Don't copy text if the segments overlap (we would get an endless loop).
 			// This can happen if the user deletes the text between the replaceable element and the bound element.
-			if (segment.GetOverlap(targetElement.Segment) == SimpleSegment.Invalid) {
+			if (SimpleSegment.GetOverlap(segment, targetElement.Segment) == SimpleSegment.Invalid) {
 				int offset = segment.Offset;
 				int length = segment.Length;
 				string text = boundElement.ConvertText(targetElement.Text);

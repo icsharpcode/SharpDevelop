@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Text;
 
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {

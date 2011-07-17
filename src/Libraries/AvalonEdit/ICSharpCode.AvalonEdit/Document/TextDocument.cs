@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Globalization;
-using System.Linq.Expressions;
 using System.Threading;
+
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// <inheritdoc cref="VerifyAccess"/>
 	/// <para>However, there is a single method that is thread-safe: <see cref="CreateSnapshot()"/> (and its overloads).</para>
 	/// </remarks>
-	public sealed class TextDocument : ITextSource, INotifyPropertyChanged
+	public sealed class TextDocument : IDocument, INotifyPropertyChanged
 	{
 		#region Thread ownership
 		readonly object lockObject = new object();
@@ -196,6 +196,11 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <remarks><inheritdoc cref="Changing"/></remarks>
 		public event EventHandler TextChanged;
 		
+		event EventHandler IDocument.ChangeCompleted {
+			add { this.TextChanged += value; }
+			remove { this.TextChanged -= value; }
+		}
+		
 		/// <inheritdoc/>
 		public int TextLength {
 			get {
@@ -257,11 +262,26 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </remarks>
 		public event EventHandler<DocumentChangeEventArgs> Changing;
 		
+		// Unfortunately EventHandler<T> is invariant, so we have to use two separate events
+		private event EventHandler<TextChangeEventArgs> textChanging;
+		
+		event EventHandler<TextChangeEventArgs> IDocument.TextChanging {
+			add { textChanging += value; }
+			remove { textChanging -= value; }
+		}
+		
 		/// <summary>
 		/// Is raised after the document has changed.
 		/// </summary>
 		/// <remarks><inheritdoc cref="Changing"/></remarks>
 		public event EventHandler<DocumentChangeEventArgs> Changed;
+		
+		private event EventHandler<TextChangeEventArgs> textChanged;
+		
+		event EventHandler<TextChangeEventArgs> IDocument.TextChanged {
+			add { textChanged += value; }
+			remove { textChanged -= value; }
+		}
 		
 		/// <summary>
 		/// Creates a snapshot of the current text.
@@ -279,6 +299,17 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			lock (lockObject) {
 				return new RopeTextSource(rope.Clone());
+			}
+		}
+		
+		/// <summary>
+		/// Creates a snapshot of a part of the current text.
+		/// </summary>
+		/// <remarks><inheritdoc cref="CreateSnapshot()"/></remarks>
+		public ITextSource CreateSnapshot(int offset, int length)
+		{
+			lock (lockObject) {
+				return new RopeTextSource(rope.GetRange(offset, length));
 			}
 		}
 		
@@ -307,15 +338,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
-		/// <summary>
-		/// Creates a snapshot of a part of the current text.
-		/// </summary>
-		/// <remarks><inheritdoc cref="CreateSnapshot()"/></remarks>
-		public ITextSource CreateSnapshot(int offset, int length)
-		{
-			lock (lockObject) {
-				return new RopeTextSource(rope.GetRange(offset, length));
-			}
+		ITextSourceVersion ITextSource.Version {
+			get { return CreateChangeTrackingCheckpoint(); }
 		}
 		
 		/// <inheritdoc/>
@@ -323,6 +347,14 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			lock (lockObject) {
 				return new RopeTextReader(rope);
+			}
+		}
+		
+		/// <inheritdoc/>
+		public System.IO.TextReader CreateReader(int offset, int length)
+		{
+			lock (lockObject) {
+				return new RopeTextReader(rope.GetRange(offset, length));
 			}
 		}
 		#endregion
@@ -613,6 +645,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			// fire DocumentChanging event
 			if (Changing != null)
 				Changing(this, args);
+			if (textChanging != null)
+				textChanging(this, args);
 			
 			undoStack.Push(this, args);
 			
@@ -661,6 +695,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			// fire DocumentChanged event
 			if (Changed != null)
 				Changed(this, args);
+			if (textChanged != null)
+				textChanged(this, args);
 		}
 		#endregion
 		
@@ -684,6 +720,11 @@ namespace ICSharpCode.AvalonEdit.Document
 			return lineTree.GetByNumber(number);
 		}
 		
+		IDocumentLine IDocument.GetLineByNumber(int lineNumber)
+		{
+			return GetLineByNumber(lineNumber);
+		}
+		
 		/// <summary>
 		/// Gets a document lines by offset.
 		/// Runtime: O(log n)
@@ -697,8 +738,14 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 			return lineTree.GetByOffset(offset);
 		}
+		
+		IDocumentLine IDocument.GetLineByOffset(int offset)
+		{
+			return GetLineByOffset(offset);
+		}
 		#endregion
 		
+		#region GetOffset / GetLocation
 		/// <summary>
 		/// Gets the offset from a text location.
 		/// </summary>
@@ -731,7 +778,9 @@ namespace ICSharpCode.AvalonEdit.Document
 			DocumentLine line = GetLineByOffset(offset);
 			return new TextLocation(line.LineNumber, offset - line.Offset + 1);
 		}
+		#endregion
 		
+		#region Line Trackers
 		readonly ObservableCollection<ILineTracker> lineTrackers = new ObservableCollection<ILineTracker>();
 		
 		/// <summary>
@@ -744,7 +793,9 @@ namespace ICSharpCode.AvalonEdit.Document
 				return lineTrackers;
 			}
 		}
+		#endregion
 		
+		#region UndoStack
 		UndoStack undoStack;
 		
 		/// <summary>
@@ -764,7 +815,9 @@ namespace ICSharpCode.AvalonEdit.Document
 				}
 			}
 		}
+		#endregion
 		
+		#region CreateAnchor
 		/// <summary>
 		/// Creates a new <see cref="TextAnchor"/> at the specified offset.
 		/// </summary>
@@ -777,6 +830,12 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 			return anchorTree.CreateAnchor(offset);
 		}
+		
+		ITextAnchor IDocument.CreateAnchor(int offset)
+		{
+			return CreateAnchor(offset);
+		}
+		#endregion
 		
 		#region LineCount
 		/// <summary>
@@ -832,5 +891,25 @@ namespace ICSharpCode.AvalonEdit.Document
 			#endif
 		}
 		#endregion
+		
+		void IDocument.Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
+		{
+			throw new NotImplementedException();
+		}
+		
+		void IDocument.StartUndoableAction()
+		{
+			throw new NotImplementedException();
+		}
+		
+		void IDocument.EndUndoableAction()
+		{
+			throw new NotImplementedException();
+		}
+		
+		IDisposable IDocument.OpenUndoGroup()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

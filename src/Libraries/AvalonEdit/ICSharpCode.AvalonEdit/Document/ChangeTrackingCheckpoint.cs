@@ -1,11 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+
+using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -20,8 +22,10 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// <para>Once you have two checkpoints, you can call <see cref="ChangeTrackingCheckpoint.GetChangesTo"/> to retrieve the complete list
 	/// of document changes that happened between those versions of the document.</para>
 	/// </remarks>
-	public sealed class ChangeTrackingCheckpoint
+	public sealed class ChangeTrackingCheckpoint : ITextSourceVersion
 	{
+		static readonly ChangeTrackingCheckpoint checkpointBelongsToNoDocument = new ChangeTrackingCheckpoint(null);
+		
 		// Object that is unique per document.
 		// Used to determine if two checkpoints belong to the same document.
 		// We don't use a reference to the document itself to allow the GC to reclaim the document memory
@@ -135,6 +139,34 @@ namespace ICSharpCode.AvalonEdit.Document
 				offset = e.GetNewOffset(offset, movement);
 			}
 			return offset;
+		}
+		
+		static ChangeTrackingCheckpoint GetCheckPoint(ITextSourceVersion version)
+		{
+			if (version == null)
+				return null;
+			else
+				return version as ChangeTrackingCheckpoint ?? checkpointBelongsToNoDocument;
+		}
+		
+		bool ITextSourceVersion.BelongsToSameDocumentAs(ITextSourceVersion other)
+		{
+			return BelongsToSameDocumentAs(GetCheckPoint(other));
+		}
+		
+		int ITextSourceVersion.CompareAge(ITextSourceVersion other)
+		{
+			return CompareAge(GetCheckPoint(other));
+		}
+		
+		IEnumerable<TextChangeEventArgs> ITextSourceVersion.GetChangesTo(ITextSourceVersion other)
+		{
+			return GetChangesTo(GetCheckPoint(other));
+		}
+		
+		int ITextSourceVersion.MoveOffsetTo(ITextSourceVersion other, int oldOffset, AnchorMovementType movement)
+		{
+			return MoveOffsetTo(GetCheckPoint(other), oldOffset, movement);
 		}
 	}
 }

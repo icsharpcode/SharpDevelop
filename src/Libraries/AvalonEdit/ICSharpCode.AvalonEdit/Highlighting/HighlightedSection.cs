@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {

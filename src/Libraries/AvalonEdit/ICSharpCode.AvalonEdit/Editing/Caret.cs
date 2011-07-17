@@ -12,13 +12,14 @@ using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
 	/// Helper class with caret-related methods.
 	/// </summary>
-	public sealed class Caret
+	public sealed class Caret : ITextEditorCaret
 	{
 		readonly TextArea textArea;
 		readonly TextView textView;
@@ -225,6 +226,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// the PositionChanged event is raised only once at the end of the document update.
 		/// </summary>
 		public event EventHandler PositionChanged;
+		
+		event EventHandler ITextEditorCaret.LocationChanged {
+			add { this.PositionChanged += value; }
+			remove { this.PositionChanged -= value; }
+		}
 		
 		bool raisePositionChangedOnUpdateFinished;
 		

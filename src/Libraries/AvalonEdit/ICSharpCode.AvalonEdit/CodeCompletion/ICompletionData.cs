@@ -3,8 +3,8 @@
 
 using System;
 using System.Windows.Media;
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.CodeCompletion
 {

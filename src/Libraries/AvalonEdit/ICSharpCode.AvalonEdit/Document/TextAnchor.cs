@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -33,7 +34,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// int newOffset = anchor.Offset;
 	/// </code>
 	/// </example>
-	public sealed class TextAnchor
+	public sealed class TextAnchor : ITextAnchor
 	{
 		readonly TextDocument document;
 		internal TextAnchorNode node;
@@ -167,28 +168,5 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			return "[TextAnchor Offset=" + Offset + "]";
 		}
-	}
-	
-	/// <summary>
-	/// Defines how a text anchor moves.
-	/// </summary>
-	public enum AnchorMovementType
-	{
-		/// <summary>
-		/// When text is inserted at the anchor position, the type of the insertion
-		/// determines where the caret moves to. For normal insertions, the anchor will stay
-		/// behind the inserted text.
-		/// </summary>
-		Default,
-		/// <summary>
-		/// When text is inserted at the anchor position, the anchor will stay
-		/// before the inserted text.
-		/// </summary>
-		BeforeInsertion,
-		/// <summary>
-		/// When text is insered at the anchor position, the anchor will move
-		/// after the inserted text.
-		/// </summary>
-		AfterInsertion
 	}
 }

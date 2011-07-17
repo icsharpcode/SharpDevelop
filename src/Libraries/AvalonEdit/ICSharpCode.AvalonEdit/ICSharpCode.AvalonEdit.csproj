@@ -102,8 +102,8 @@
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>
     <Compile Include="Document\ILineTracker.cs" />
-    <Compile Include="Document\ISegment.cs" />
-    <Compile Include="Document\ITextSource.cs" />
+    <Compile Include="Document\SimpleSegment.cs" />
+    <Compile Include="Document\RopeTextSource.cs" />
     <Compile Include="Document\IUndoableOperation.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>
@@ -123,7 +123,6 @@
     <Compile Include="Document\TextAnchorTree.cs">
       <DependentUpon>TextAnchor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Document\TextLocation.cs" />
     <Compile Include="Document\TextSegment.cs" />
     <Compile Include="Document\TextUtilities.cs" />
     <Compile Include="Document\UndoOperationGroup.cs">
@@ -411,5 +410,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Highlighting\Resources\CSS-Mode.xshd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NRefactory\ICSharpCode.Editor\ICSharpCode.Editor.csproj">
+      <Project>{F054A788-B591-4561-A8BA-AE745BBEB817}</Project>
+      <Name>ICSharpCode.Editor</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

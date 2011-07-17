@@ -3,66 +3,13 @@
 
 using System;
 using System.Diagnostics;
-using ICSharpCode.AvalonEdit.Utils;
 using System.Globalization;
+
+using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
-	/// <summary>
-	/// An (Offset,Length)-pair.
-	/// </summary>
-	/// <seealso cref="TextSegment"/>
-	/// <seealso cref="AnchorSegment"/>
-	public interface ISegment
-	{
-		/// <summary>
-		/// Gets the start offset of the segment.
-		/// </summary>
-		int Offset { get; }
-		
-		/// <summary>
-		/// Gets the length of the segment.
-		/// </summary>
-		/// <remarks>Must not be negative.</remarks>
-		int Length { get; }
-		
-		/// <summary>
-		/// Gets the end offset of the segment.
-		/// </summary>
-		/// <remarks>EndOffset = Offset + Length;</remarks>
-		int EndOffset { get; }
-	}
-	
-	static class SegmentExtensions
-	{
-		/// <summary>
-		/// Gets whether the segment contains the offset.
-		/// </summary>
-		/// <returns>
-		/// True, if offset is between segment.Start and segment.End (inclusive); otherwise, false.
-		/// </returns>
-		public static bool Contains(this ISegment segment, int offset)
-		{
-			int start = segment.Offset;
-			int end = start + segment.Length;
-			return offset >= start && offset <= end;
-		}
-		
-		/// <summary>
-		/// Gets the overlapping portion of the segments.
-		/// Returns SimpleSegment.Invalid if the segments don't overlap.
-		/// </summary>
-		public static SimpleSegment GetOverlap(this ISegment segment, ISegment other)
-		{
-			int start = Math.Max(segment.Offset, other.Offset);
-			int end = Math.Min(segment.EndOffset, other.EndOffset);
-			if (end < start)
-				return SimpleSegment.Invalid;
-			else
-				return new SimpleSegment(start, end - start);
-		}
-	}
-	
 	/// <summary>
 	/// Represents a simple segment (Offset,Length pair) that is not automatically updated
 	/// on document changes.
@@ -70,6 +17,20 @@ namespace ICSharpCode.AvalonEdit.Document
 	struct SimpleSegment : IEquatable<SimpleSegment>, ISegment
 	{
 		public static readonly SimpleSegment Invalid = new SimpleSegment(-1, -1);
+		
+		/// <summary>
+		/// Gets the overlapping portion of the segments.
+		/// Returns SimpleSegment.Invalid if the segments don't overlap.
+		/// </summary>
+		public static SimpleSegment GetOverlap(ISegment segment1, ISegment segment2)
+		{
+			int start = Math.Max(segment1.Offset, segment2.Offset);
+			int end = Math.Min(segment1.EndOffset, segment2.EndOffset);
+			if (end < start)
+				return SimpleSegment.Invalid;
+			else
+				return new SimpleSegment(start, end - start);
+		}
 		
 		public readonly int Offset, Length;
 		

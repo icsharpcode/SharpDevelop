@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Editor;
 
 namespace ICSharpCode.AvalonEdit.Snippets
 {

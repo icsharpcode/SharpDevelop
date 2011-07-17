@@ -5,6 +5,8 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 
+using ICSharpCode.Editor;
+
 namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>
@@ -22,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// and the data structure also updates all offsets in O(lg N) whenever a line is inserted or removed.
 	/// </para>
 	/// </remarks>
-	public sealed partial class DocumentLine : ISegment
+	public sealed partial class DocumentLine : IDocumentLine
 	{
 		#region Constructor
 		#if DEBUG
