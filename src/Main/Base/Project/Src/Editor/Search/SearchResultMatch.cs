@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Editor.Search
@@ -68,12 +69,12 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			this.length   = length;
 		}
 		
-		public virtual Location GetStartPosition(IDocument document)
+		public virtual TextLocation GetStartPosition(IDocument document)
 		{
 			return document.OffsetToPosition(Math.Min(Offset, document.TextLength));
 		}
 		
-		public virtual Location GetEndPosition(IDocument document)
+		public virtual TextLocation GetEndPosition(IDocument document)
 		{
 			return document.OffsetToPosition(Math.Min(Offset + Length, document.TextLength));
 		}
@@ -97,14 +98,14 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	
 	public class SimpleSearchResultMatch : SearchResultMatch
 	{
-		Location position;
+		TextLocation position;
 		
-		public override Location GetStartPosition(IDocument doc)
+		public override TextLocation GetStartPosition(IDocument doc)
 		{
 			return position;
 		}
 		
-		public override Location GetEndPosition(IDocument doc)
+		public override TextLocation GetEndPosition(IDocument doc)
 		{
 			return position;
 		}
@@ -117,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			}
 		}
 		
-		public SimpleSearchResultMatch(ProvidedDocumentInformation providedDocumentInformation, string displayText, Location position)
+		public SimpleSearchResultMatch(ProvidedDocumentInformation providedDocumentInformation, string displayText, TextLocation position)
 			: base(providedDocumentInformation, 0, 0)
 		{
 			this.position = position;

@@ -3,11 +3,11 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop
 {
+	/*
 	/// <summary>
 	/// Describes a ProjectContentRegistry in the AddInTree.
 	/// </summary>
@@ -39,4 +39,5 @@ namespace ICSharpCode.SharpDevelop
 			this.codon = codon;
 		}
 	}
+	*/
 }

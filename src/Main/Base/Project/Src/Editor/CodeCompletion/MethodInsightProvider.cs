@@ -7,9 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.CSharp;
-
+/*
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	/// <summary>
@@ -141,3 +139,4 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		}
 	}
 }
+*/

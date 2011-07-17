@@ -9,9 +9,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
@@ -24,7 +24,6 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 	public class AvalonEditTextEditorAdapter : ITextEditor, IWeakEventListener
 	{
 		readonly TextEditor textEditor;
-		AvalonEditDocumentAdapter document;
 		
 		public TextEditor TextEditor {
 			get { return textEditor; }
@@ -73,50 +72,17 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		}
 		
 		public IDocument Document {
-			get { return document; }
+			get { return textEditor.Document; }
 		}
 		
-		public ITextEditorCaret Caret { get; private set; }
+		public ITextEditorCaret Caret { 
+			get { return textEditor.TextArea.Caret; }
+		}
+		
 		public virtual ITextEditorOptions Options { get; private set; }
 		
 		public virtual ILanguageBinding Language {
 			get { return AggregatedLanguageBinding.NullLanguageBinding; }
-		}
-		
-		sealed class CaretAdapter : ITextEditorCaret
-		{
-			Caret caret;
-			
-			public CaretAdapter(Caret caret)
-			{
-				Debug.Assert(caret != null);
-				this.caret = caret;
-			}
-			
-			public int Offset {
-				get { return caret.Offset; }
-				set { caret.Offset = value; }
-			}
-			
-			public int Line {
-				get { return caret.Line; }
-				set { caret.Line = value;}
-			}
-			
-			public int Column {
-				get { return caret.Column; }
-				set { caret.Column = value; }
-			}
-			
-			public ICSharpCode.NRefactory.Location Position {
-				get { return AvalonEditDocumentAdapter.ToLocation(caret.Location); }
-				set { caret.Location = AvalonEditDocumentAdapter.ToPosition(value); }
-			}
-			
-			public event EventHandler PositionChanged {
-				add    { caret.PositionChanged += value; }
-				remove { caret.PositionChanged -= value; }
-			}
 		}
 		
 		sealed class OptionsAdapter : ITextEditorOptions

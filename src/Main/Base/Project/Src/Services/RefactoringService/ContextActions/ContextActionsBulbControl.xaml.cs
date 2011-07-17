@@ -13,6 +13,7 @@ using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
+	/*
 	/// <summary>
 	/// Interaction logic for ContextActionsBulbControl.xaml
 	/// </summary>
@@ -76,4 +77,5 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			e.Handled = true;
 		}
 	}
+	*/
 }

@@ -8,7 +8,7 @@ using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
-
+/*
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
@@ -123,3 +123,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 }
+*/

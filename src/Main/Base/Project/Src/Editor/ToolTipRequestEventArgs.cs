@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Editor
@@ -26,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <summary>
 		/// The mouse position, in document coordinates.
 		/// </summary>
-		public Location LogicalPosition { get; set; }
+		public TextLocation LogicalPosition { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets the content to show as a tooltip.

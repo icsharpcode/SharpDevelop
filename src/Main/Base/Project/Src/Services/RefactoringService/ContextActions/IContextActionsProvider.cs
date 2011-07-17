@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
-
+/*
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
@@ -24,3 +24,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		bool IsVisible { get; set; }
 	}
 }
+*/

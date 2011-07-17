@@ -75,12 +75,14 @@
 		     class    = "ICSharpCode.SharpDevelop.Project.ProjectBrowserPad"
 		     defaultPosition = "Left" />
 		
+		<!--
 		<Pad id       = "ClassBrowser"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ClassScoutLabel}"
 		     icon     = "PadIcons.ClassBrowser"
 		     class    = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad"
 		     defaultPosition = "Right" />
+		-->
 		
 		<Pad id       = "SideBar"
 		     category = "Main"

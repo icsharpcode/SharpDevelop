@@ -6,9 +6,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -191,12 +190,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-		public static IList<IClass> GetPossibleStartupObjects(IProject project)
+		public static IList<ITypeDefinition> GetPossibleStartupObjects(IProject project)
 		{
-			List<IClass> results = new List<IClass>();
+			List<ITypeDefinition> results = new List<ITypeDefinition>();
 			IProjectContent pc = ParserService.GetProjectContent(project);
 			if (pc != null) {
-				foreach (IClass c in pc.Classes) {
+				foreach (ITypeDefinition c in pc.GetTypes()) {
 					foreach (IMethod m in c.Methods) {
 						if (m.IsStatic && m.Name == "Main") {
 							results.Add(c);

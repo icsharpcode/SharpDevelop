@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Media;
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
@@ -72,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			get { return 100; }
 		}
 		
-		public CurrentLineBookmark(FileName fileName, Location location) : base(fileName, location)
+		public CurrentLineBookmark(FileName fileName, TextLocation location) : base(fileName, location)
 		{
 			this.IsSaved = false;
 			this.IsVisibleInBookmarkPad = false;

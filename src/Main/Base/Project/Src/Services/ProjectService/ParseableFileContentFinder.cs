@@ -4,8 +4,8 @@
 using System;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -21,14 +21,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Retrieves the file contents for the specified project items.
 		/// </summary>
-		public ITextBuffer Create(FileName fileName)
+		public ITextSource Create(FileName fileName)
 		{
 			foreach (FileName name in viewContentFileNamesCollection) {
 				if (FileUtility.IsEqualFileName(name, fileName))
 					return WorkbenchSingleton.SafeThreadFunction(ParserService.GetParseableFileContent, fileName.ToString());
 			}
 			try {
-				return new StringTextBuffer(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(fileName, ParserService.DefaultFileEncoding));
+				return new StringTextSource(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(fileName, ParserService.DefaultFileEncoding));
 			} catch (IOException) {
 				return null;
 			} catch (UnauthorizedAccessException) {

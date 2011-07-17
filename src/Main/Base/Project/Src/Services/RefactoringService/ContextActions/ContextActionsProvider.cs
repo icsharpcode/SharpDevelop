@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Refactoring;
-
+/*
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
@@ -17,3 +17,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public abstract IEnumerable<IContextAction> GetAvailableActions(EditorContext context);
 	}
 }
+*/

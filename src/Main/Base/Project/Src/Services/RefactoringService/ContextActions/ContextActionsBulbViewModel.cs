@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-
+/*
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
@@ -85,3 +85,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 }
+*/

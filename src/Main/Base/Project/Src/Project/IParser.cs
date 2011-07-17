@@ -1,9 +1,10 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using System;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -17,12 +18,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 			set;
 		}
-		
-		LanguageProperties Language {
-			get;
-		}
-		
-		IExpressionFinder CreateExpressionFinder(string fileName);
 		
 		/// <summary>
 		/// Gets if the parser can parse the specified file.
@@ -48,8 +43,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// SharpDevelop may call IParser.Parse in parallel. This will be done on the same IParser instance
 		/// if there are two parallel parse requests for the same file. Parser implementations must be thread-safe.
 		/// </remarks>
-		ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent);
+		IParsedFile Parse(IProjectContent projectContent, string fileName, ITextSource fileContent);
 		
-		IResolver CreateResolver();
+		//IResolver CreateResolver();
 	}
 }

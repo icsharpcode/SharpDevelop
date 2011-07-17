@@ -3,8 +3,8 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.SharpDevelop.Dom;
 
+/*
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	/// <summary>
@@ -26,3 +26,4 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		}
 	}
 }
+*/

@@ -5,9 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
-
 using ICSharpCode.Core.WinForms;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -198,18 +197,20 @@ namespace ICSharpCode.SharpDevelop
 		
 		#region Get Methods for Entity Images
 		
-		static int GetModifierOffset(ModifierEnum modifier)
+		static int GetModifierOffset(Accessibility accessibility)
 		{
-			if ((modifier & ModifierEnum.Public) == ModifierEnum.Public) {
-				return 0;
+			switch (accessibility) {
+				case Accessibility.Public:
+					return 0;
+				case Accessibility.Protected:
+				case Accessibility.ProtectedOrInternal:
+					return protectedModifierOffset;
+				case Accessibility.Internal:
+				case Accessibility.ProtectedAndInternal:
+					return internalModifierOffset;
+				default:
+					return privateModifierOffset;
 			}
-			if ((modifier & ModifierEnum.Protected) == ModifierEnum.Protected) {
-				return protectedModifierOffset;
-			}
-			if ((modifier & ModifierEnum.Internal) == ModifierEnum.Internal) {
-				return internalModifierOffset;
-			}
-			return privateModifierOffset;
 		}
 		
 		public static ClassBrowserImage GetIcon(IEntity entity)
@@ -264,7 +265,7 @@ namespace ICSharpCode.SharpDevelop
 			return entityImages[EventIndex + GetModifierOffset(evt.Modifiers)];
 		}
 		
-		public static ClassBrowserImage GetIcon(IClass c)
+		public static ClassBrowserImage GetIcon(ITypeDefinition c)
 		{
 			int imageIndex = ClassIndex;
 			switch (c.ClassType) {

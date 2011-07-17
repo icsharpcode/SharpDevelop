@@ -2,65 +2,63 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Diagnostics;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop
 {
 	public class ParseInformationEventArgs : EventArgs
 	{
-		FileName fileName;
-		IProjectContent projectContent;
-		ICompilationUnit oldCompilationUnit;
-		ParseInformation newParseInformation;
+		IParsedFile oldParseInformation;
+		IParsedFile newParseInformation;
 		
 		public FileName FileName {
-			get { return fileName; }
+			get { return FileName.Create((oldParseInformation ?? newParseInformation).FileName); }
 		}
 		
 		public IProjectContent ProjectContent {
-			get { return projectContent; }
+			get { return (oldParseInformation ?? newParseInformation).ProjectContent; }
+		}
+		
+		public IParsedFile OldCompilationUnit {
+			get { return oldParseInformation; }
 		}
 		
 		/// <summary>
-		/// Gets the old compilation unit.
+		/// The old parse information.
 		/// </summary>
-		public ICompilationUnit OldCompilationUnit {
+		[Obsolete]
+		public IParsedFile OldParseInformation {
 			get { return oldCompilationUnit; }
 		}
 		
 		/// <summary>
 		/// The new parse information.
 		/// </summary>
-		public ParseInformation NewParseInformation {
+		public IParsedFile NewParseInformation {
 			get { return newParseInformation; }
 		}
 		
-		/// <summary>
-		/// The new compilation unit.
-		/// </summary>
-		public ICompilationUnit NewCompilationUnit {
-			get {
-				if (newParseInformation != null)
-					return newParseInformation.CompilationUnit;
-				else
-					return null;
-			}
+		[Obsolete]
+		public IParsedFile NewCompilationUnit {
+			get { return newParseInformation; }
 		}
 		
 		public bool IsPrimaryParseInfoForFile {
 			get; private set;
 		}
 		
-		public ParseInformationEventArgs(FileName fileName, IProjectContent projectContent, ICompilationUnit oldCompilationUnit, ParseInformation newParseInformation, bool isPrimaryParseInfoForFile)
+		public ParseInformationEventArgs(IParsedFile oldParseInformation, IParsedFile newParseInformation, bool isPrimaryParseInfoForFile)
 		{
-			if (fileName == null)
-				throw new ArgumentNullException("fileName");
-			if (projectContent == null)
-				throw new ArgumentNullException("projectContent");
-			this.fileName = fileName;
-			this.projectContent = projectContent;
-			this.oldCompilationUnit = oldCompilationUnit;
+			if (oldParseInformation == null && newParseInformation == null)
+				throw new ArgumentNullException();
+			if (oldParseInformation != null && newParseInformation != null) {
+				Debug.Assert(oldParseInformation.ProjectContent == newParseInformation.ProjectContent);
+				Debug.Assert(FileUtility.IsEqualFileName(oldParseInformation.FileName, newParseInformation.FileName));
+			}
+			this.oldParseInformation = oldParseInformation;
 			this.newParseInformation = newParseInformation;
 			this.IsPrimaryParseInfoForFile = isPrimaryParseInfoForFile;
 		}
@@ -69,10 +67,10 @@ namespace ICSharpCode.SharpDevelop
 	public class ParserUpdateStepEventArgs : EventArgs
 	{
 		FileName fileName;
-		ITextBuffer content;
-		ParseInformation parseInformation;
+		ITextSource content;
+		IParsedFile parseInformation;
 		
-		public ParserUpdateStepEventArgs(FileName fileName, ITextBuffer content, ParseInformation parseInformation)
+		public ParserUpdateStepEventArgs(FileName fileName, ITextSource content, IParsedFile parseInformation)
 		{
 			this.fileName = fileName;
 			this.content = content;
@@ -85,13 +83,13 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public ITextBuffer Content {
+		public ITextSource Content {
 			get {
 				return content;
 			}
 		}
 		
-		public ParseInformation ParseInformation {
+		public IParsedFile ParseInformation {
 			get {
 				return parseInformation;
 			}

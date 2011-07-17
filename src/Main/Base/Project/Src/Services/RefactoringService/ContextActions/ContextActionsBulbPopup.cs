@@ -2,10 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
+	/*
 	/// <summary>
 	/// Description of ContextActionsBulbPopup.
 	/// </summary>
@@ -51,4 +53,5 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.VerticalOffset -= 16;
 		}
 	}
+	*/
 }

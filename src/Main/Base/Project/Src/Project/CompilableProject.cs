@@ -141,10 +141,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
-		public abstract override ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
-			get;
-		}
-		
 		[Browsable(false)]
 		public string TargetFrameworkVersion {
 			get { return GetEvaluatedProperty("TargetFrameworkVersion") ?? "v2.0"; }
@@ -201,14 +197,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			set {
 				SetProperty("OutputType", value.ToString());
 			}
-		}
-		
-		protected override ParseProjectContent CreateProjectContent()
-		{
-			ParseProjectContent newProjectContent = new ParseProjectContent(this);
-			var mscorlib = AssemblyParserService.GetRegistryForReference(new ReferenceProjectItem(this, "mscorlib")).Mscorlib;
-			newProjectContent.AddReferencedContent(mscorlib);
-			return newProjectContent;
 		}
 		
 		#region Starting (debugging)

@@ -8,8 +8,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -57,19 +57,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		List<ProjectSection> ProjectSections {
 			get;
 		}
-		
-		/// <summary>
-		/// Gets the language properties used for this project. This member is thread-safe.
-		/// </summary>
-		ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
-			get;
-		}
-		
-		/// <summary>
-		/// Gets the ambience used for the project. This member is thread-safe.
-		/// Because the IAmbience interface is not thread-safe, every call returns a new instance.
-		/// </summary>
-		ICSharpCode.SharpDevelop.Dom.IAmbience GetAmbience();
 		
 		/// <summary>
 		/// Gets the name of the project file.
@@ -236,7 +223,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This method should only be called by ParserService.LoadSolutionProjectsInternal()!
 		/// Return null if you don't want to create any project content.
 		/// </summary>
-		ParseProjectContent CreateProjectContent();
+		IProjectContent CreateProjectContent();
 		
 		/// <summary>
 		/// Creates a new ProjectItem for the passed MSBuild item.

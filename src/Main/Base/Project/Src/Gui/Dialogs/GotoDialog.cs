@@ -12,10 +12,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Project;
@@ -175,9 +175,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 
-		void AddAllMembersMatchingText(IClass c, string text)
+		void AddAllMembersMatchingText(ITypeDefinition c, string text)
 		{
-			foreach (IClass innerClass in c.InnerClasses) {
+			foreach (ITypeDefinition innerClass in c.InnerClasses) {
 				AddAllMembersMatchingText(innerClass, text);
 			}
 			foreach (IMethod m in c.Methods) {
@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return list;
 		}
 		
-		void AddClasses(string text, ArrayList list, IEnumerable<IClass> classes)
+		void AddClasses(string text, ArrayList list, IEnumerable<ITypeDefinition> classes)
 		{
 			foreach (IClass c in classes) {
 				string className = c.Name;
@@ -312,7 +312,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			newItems.Add(item);
 		}
 		
-		void AddItem(IClass c, int matchType)
+		void AddItem(ITypeDefinition c, int matchType)
 		{
 			AddItem(c, ClassBrowserIconService.GetIcon(c), matchType);
 		}

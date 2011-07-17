@@ -184,20 +184,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		#region Language Properties / GetAmbience
-		[Browsable(false)]
-		public virtual ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
-			get {
-				return ICSharpCode.SharpDevelop.Dom.LanguageProperties.None;
-			}
-		}
-		
-		public virtual ICSharpCode.SharpDevelop.Dom.IAmbience GetAmbience()
-		{
-			return null;
-		}
-		#endregion
-		
 		#region Configuration / Platform management
 		string activeConfiguration = "Debug";
 		string activePlatform = "AnyCPU";
@@ -442,15 +428,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				findFileCache.TryGetValue(fileName, out outputItem);
 				return outputItem;
 			}
-		}
-		
-		ParseProjectContent IProject.CreateProjectContent()
-		{
-			return this.CreateProjectContent();
-		}
-		protected virtual ParseProjectContent CreateProjectContent()
-		{
-			return null;
 		}
 		
 		/// <summary>

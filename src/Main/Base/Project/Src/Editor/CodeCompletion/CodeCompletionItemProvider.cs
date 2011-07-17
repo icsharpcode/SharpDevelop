@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+/*
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,8 +9,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -522,3 +523,4 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		}
 	}
 }
+*/

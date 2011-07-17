@@ -7,6 +7,7 @@ using System.Windows.Documents;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.SharpDevelop.Editor
@@ -22,21 +23,18 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <remarks>
 		/// Use the more efficient <see cref="LoadReadOnlyDocumentFromBuffer"/> if you only need a read-only document.
 		/// </remarks>
-		public static IDocument LoadDocumentFromBuffer(ITextBuffer buffer)
+		[Obsolete("Use the TextDocument constructor instead")]
+		public static IDocument LoadDocumentFromBuffer(ITextSource buffer)
 		{
-			if (buffer == null)
-				throw new ArgumentNullException("buffer");
-			var doc = new TextDocument(GetTextSource(buffer));
-			return new AvalonEditDocumentAdapter(doc, null);
+			return new TextDocument(buffer);
 		}
 		
 		/// <summary>
 		/// Creates a new read-only document from the specified text buffer.
 		/// </summary>
-		public static IDocument LoadReadOnlyDocumentFromBuffer(ITextBuffer buffer)
+		[Obsolete("Use the ReadOnlyDocument constructor instead")]
+		public static IDocument LoadReadOnlyDocumentFromBuffer(ITextSource buffer)
 		{
-			if (buffer == null)
-				throw new ArgumentNullException("buffer");
 			return new ReadOnlyDocument(buffer);
 		}
 		
@@ -102,24 +100,24 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Finds the first word start in the document before offset.
 		/// </summary>
 		/// <returns>The offset of the word start, or -1 if there is no word start before the specified offset.</returns>
-		public static int FindPrevWordStart(this ITextBuffer textBuffer, int offset)
+		public static int FindPrevWordStart(this ITextSource textSource, int offset)
 		{
-			return TextUtilities.GetNextCaretPosition(GetTextSource(textBuffer), offset, LogicalDirection.Backward, CaretPositioningMode.WordStart);
+			return TextUtilities.GetNextCaretPosition(textSource, offset, LogicalDirection.Backward, CaretPositioningMode.WordStart);
 		}
 		
 		/// <summary>
 		/// Finds the first word start in the document before offset.
 		/// </summary>
 		/// <returns>The offset of the word start, or -1 if there is no word start before the specified offset.</returns>
-		public static int FindNextWordStart(this ITextBuffer textBuffer, int offset)
+		public static int FindNextWordStart(this ITextSource textSource, int offset)
 		{
-			return TextUtilities.GetNextCaretPosition(GetTextSource(textBuffer), offset, LogicalDirection.Forward, CaretPositioningMode.WordStart);
+			return TextUtilities.GetNextCaretPosition(textSource, offset, LogicalDirection.Forward, CaretPositioningMode.WordStart);
 		}
 		
 		/// <summary>
 		/// Gets the word at the specified position.
 		/// </summary>
-		public static string GetWordAt(this ITextBuffer document, int offset)
+		public static string GetWordAt(this ITextSource document, int offset)
 		{
 			if (offset < 0 || offset >= document.TextLength || !IsWordPart(document.GetCharAt(offset))) {
 				return String.Empty;
@@ -149,9 +147,9 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <param name="document">The document.</param>
 		/// <param name="offset">The offset where the indentation starts.</param>
 		/// <returns>The indentation text.</returns>
-		public static string GetWhitespaceAfter(ITextBuffer textBuffer, int offset)
+		public static string GetWhitespaceAfter(ITextSource textSource, int offset)
 		{
-			ISegment segment = TextUtilities.GetWhitespaceAfter(GetTextSource(textBuffer), offset);
+			ISegment segment = TextUtilities.GetWhitespaceAfter(textSource, offset);
 			return textBuffer.GetText(segment.Offset, segment.Length);
 		}
 		
@@ -161,9 +159,9 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <param name="document">The document.</param>
 		/// <param name="offset">The offset where the indentation ends.</param>
 		/// <returns>The indentation text.</returns>
-		public static string GetWhitespaceBefore(ITextBuffer textBuffer, int offset)
+		public static string GetWhitespaceBefore(ITextSource textSource, int offset)
 		{
-			ISegment segment = TextUtilities.GetWhitespaceBefore(GetTextSource(textBuffer), offset);
+			ISegment segment = TextUtilities.GetWhitespaceBefore(textSource, offset);
 			return textBuffer.GetText(segment.Offset, segment.Length);
 		}
 		
@@ -203,81 +201,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 		}
 		
 		#region ITextSource implementation
-		public static ICSharpCode.AvalonEdit.Document.ITextSource GetTextSource(ITextBuffer textBuffer)
+		[Obsolete("We now directly use ITextSource everywhere, no need for adapters")]
+		public static ITextSource GetTextSource(ITextSource textBuffer)
 		{
-			if (textBuffer == null)
-				throw new ArgumentNullException("textBuffer");
-			
-			var textSourceAdapter = textBuffer as AvalonEditTextSourceAdapter;
-			if (textSourceAdapter != null)
-				return textSourceAdapter.textSource;
-			
-			var documentAdapter = textBuffer as AvalonEditDocumentAdapter;
-			if (documentAdapter != null)
-				return documentAdapter.document;
-			
-			return new TextBufferTextSource(textBuffer);
-		}
-		
-		sealed class TextBufferTextSource : ICSharpCode.AvalonEdit.Document.ITextSource
-		{
-			readonly ITextBuffer textBuffer;
-			
-			public TextBufferTextSource(ITextBuffer textBuffer)
-			{
-				this.textBuffer = textBuffer;
-			}
-			
-			public event EventHandler TextChanged {
-				add    { textBuffer.TextChanged += value; }
-				remove { textBuffer.TextChanged -= value; }
-			}
-			
-			public string Text {
-				get { return textBuffer.Text; }
-			}
-			
-			public int TextLength {
-				get { return textBuffer.TextLength; }
-			}
-			
-			public char GetCharAt(int offset)
-			{
-				return textBuffer.GetCharAt(offset);
-			}
-			
-			public string GetText(int offset, int length)
-			{
-				return textBuffer.GetText(offset, length);
-			}
-			
-			public System.IO.TextReader CreateReader()
-			{
-				return textBuffer.CreateReader();
-			}
-			
-			public ITextSource CreateSnapshot()
-			{
-				return GetTextSource(textBuffer.CreateSnapshot());
-			}
-			
-			public ITextSource CreateSnapshot(int offset, int length)
-			{
-				return GetTextSource(textBuffer.CreateSnapshot(offset, length));
-			}
-			
-			public int IndexOfAny(char[] anyOf, int startIndex, int count)
-			{
-				int endIndex = startIndex + count;
-				for (int i = startIndex; i < endIndex; i++) {
-					char c = textBuffer.GetCharAt(i);
-					foreach (char d in anyOf) {
-						if (c == d)
-							return i;
-					}
-				}
-				return -1;
-			}
+			return textBuffer;
 		}
 		#endregion
 	}

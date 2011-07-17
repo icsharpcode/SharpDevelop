@@ -9,7 +9,6 @@ using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -37,11 +36,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			ctl = Editor.AvalonEdit.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
 			ctl.IsReadOnly = true;
-			ctl.MouseDoubleClick += OnDoubleClick;
+			/*ctl.MouseDoubleClick += OnDoubleClick;
 			ParserService.ParserUpdateStepFinished += OnParserUpdateStep;
-			ctl.IsVisibleChanged += delegate { UpdateTick(null); };
+			ctl.IsVisibleChanged += delegate { UpdateTick(null); };*/
 		}
-		
+		/*
 		/// <summary>
 		/// Cleans up all used resources
 		/// </summary>
@@ -155,6 +154,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			currentFileName = fileName;
 			ctl.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
-		}
+		}*/
 	}
 }

@@ -4,10 +4,9 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using System.IO;
-using RegistryContentPair = System.Collections.Generic.KeyValuePair<ICSharpCode.SharpDevelop.Dom.ProjectContentRegistry, ICSharpCode.SharpDevelop.Dom.IProjectContent>;
+//using RegistryContentPair = System.Collections.Generic.KeyValuePair<ICSharpCode.SharpDevelop.Dom.ProjectContentRegistry, ICSharpCode.SharpDevelop.Dom.IProjectContent>;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -16,6 +15,7 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public static class AssemblyParserService
 	{
+		/*
 		static IList<ProjectContentRegistryDescriptor> registries;
 		static ProjectContentRegistry defaultProjectContentRegistry = new ProjectContentRegistry();
 		static string domPersistencePath;
@@ -160,5 +160,6 @@ namespace ICSharpCode.SharpDevelop
 			
 			referencedContentRegistry.UnloadProjectContent(referencedContent);
 		}
+		*/
 	}
 }

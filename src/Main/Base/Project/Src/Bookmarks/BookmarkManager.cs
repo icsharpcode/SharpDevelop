@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
@@ -107,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public static void ToggleBookmark(ITextEditor editor, int line,
 		                                  Predicate<SDBookmark> canToggle,
-		                                  Func<Location, SDBookmark> bookmarkFactory)
+		                                  Func<TextLocation, SDBookmark> bookmarkFactory)
 		{
 			foreach (SDBookmark bookmark in GetBookmarks(new FileName(editor.FileName))) {
 				if (canToggle(bookmark) && bookmark.LineNumber == line) {

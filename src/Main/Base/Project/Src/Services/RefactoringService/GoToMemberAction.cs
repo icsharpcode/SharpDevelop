@@ -2,13 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	/// <summary>
-	/// Description of GoToMemberAction.
-	/// </summary>
+	/*
 	public class GoToMemberAction : IContextAction
 	{
 		public string Title { get; private set; }
@@ -33,4 +30,5 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			FileService.JumpToFilePosition(cu.FileName, region.BeginLine, region.BeginColumn);
 		}
 	}
+	*/
 }

@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop
@@ -19,12 +19,14 @@ namespace ICSharpCode.SharpDevelop
 			get;
 		}
 		
+		/*
 		/// <summary>
 		/// Provides access to the properties for this language.
 		/// </summary>
 		LanguageProperties Properties {
 			get;
 		}
+		*/
 		
 		/// <summary>
 		/// Provides access to the bracket search logic for this language.

@@ -5,9 +5,8 @@ using System;
 using System.Collections;
 using System.Linq;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using System.Collections.Generic;
-
+/*
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	public abstract class CtrlSpaceCompletionItemProvider : CodeCompletionItemProvider
@@ -143,3 +142,4 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		}
 	}
 }
+*/

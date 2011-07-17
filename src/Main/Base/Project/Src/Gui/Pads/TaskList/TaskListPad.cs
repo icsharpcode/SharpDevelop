@@ -4,10 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -19,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static TaskListPad instance;
 		Dictionary<string, bool> displayedTokens;
-		IClass oldClass;
+		ITypeDefinition oldClass;
 		int selectedScopeIndex = 0;
 		bool isInitialized = false;
 		
@@ -205,7 +204,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return true;
 		}
 		
-		IClass GetCurrentClass()
+		ITypeDefinition GetCurrentClass()
 		{
 			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
 				return null;
@@ -222,7 +221,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		
-		IClass GetCurrentClass(Task item)
+		ITypeDefinition GetCurrentClass(Task item)
 		{
 			// Tasks are created by parsing, so the parse information for item.FileName should already be present.
 			// If they aren't, that's because the file might have been deleted/renamed in the meantime.

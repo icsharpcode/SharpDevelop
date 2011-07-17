@@ -3,9 +3,9 @@
 
 using System.Windows.Controls;
 using System.Windows.Documents;
-using ICSharpCode.SharpDevelop.Dom;
 using System;
 
+/*
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	/// <summary>
@@ -101,3 +101,4 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		}
 	}
 }
+*/

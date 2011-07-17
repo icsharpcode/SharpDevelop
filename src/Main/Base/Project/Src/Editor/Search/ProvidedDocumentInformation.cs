@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.SharpDevelop.Editor.Search
@@ -12,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	{
 		ITextEditor textEditor;
 		IDocument document;
-		ITextBuffer textBuffer;
+		ITextSource textBuffer;
 		FileName fileName;
 		int currentOffset;
 		bool documentCreatedFromTextBuffer;
@@ -26,10 +27,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		public IDocument Document {
 			get {
 				if (document == null) {
-					TextDocument textDocument = new TextDocument();
-					textDocument.Text = textBuffer.Text;
-					textDocument.UndoStack.ClearAll();
-					document = new AvalonEditDocumentAdapter(textDocument, null);
+					this.document = new TextDocument(textBuffer);
 					this.textBuffer = null;
 				}
 				return document;
@@ -105,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			this.endOffset = this.CurrentOffset;
 		}
 		
-		public ProvidedDocumentInformation(ITextBuffer textBuffer, string fileName, int currentOffset)
+		public ProvidedDocumentInformation(ITextSource textBuffer, string fileName, int currentOffset)
 		{
 			this.textBuffer    = textBuffer;
 			this.fileName      = FileName.Create(fileName);

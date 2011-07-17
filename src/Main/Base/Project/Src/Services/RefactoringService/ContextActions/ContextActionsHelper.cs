@@ -8,9 +8,9 @@ using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Refactoring;
 
+/*
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	public class ContextActionsHelper
@@ -117,3 +117,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 }
+*/

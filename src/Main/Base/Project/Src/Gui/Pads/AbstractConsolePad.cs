@@ -9,13 +9,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
@@ -89,9 +89,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Creates a snapshot of the editor content.
 		/// This method is thread-safe.
 		/// </summary>
-		public ITextBuffer CreateSnapshot()
+		public ITextSource CreateSnapshot()
 		{
-			return new StringTextBuffer(GetText());
+			return this.TextEditor.Document.CreateSnapshot();
 		}
 		
 		string IEditable.Text {
@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public virtual ICSharpCode.SharpDevelop.Editor.IDocument GetDocumentForFile(OpenedFile file)
+		public virtual ICSharpCode.Editor.IDocument GetDocumentForFile(OpenedFile file)
 		{
 			return null;
 		}

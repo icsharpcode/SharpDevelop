@@ -11,8 +11,6 @@ using System.Windows.Forms;
 using Mono.Cecil;
 using ICSharpCode.Build.Tasks;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui

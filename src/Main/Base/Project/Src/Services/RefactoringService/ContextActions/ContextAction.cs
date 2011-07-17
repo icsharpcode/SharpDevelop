@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
+	/*
 	/// <summary>
 	/// Base class for implementing one context action.
 	/// Useful for implementing <see cref="IContextActionsProvider" /> that provides just one action - common scenario.
@@ -34,4 +35,5 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			Execute(this.Context);
 		}
 	}
+	*/
 }

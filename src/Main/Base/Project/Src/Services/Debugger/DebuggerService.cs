@@ -6,10 +6,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -270,6 +269,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			var currentLine = doc.GetLine(logicPos.Y);
 			if (logicPos.X > currentLine.Length)
 				return;
+			/*
 			string textContent = doc.Text;
 			ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, doc.PositionToOffset(logicPos.Line, logicPos.Column));
 			string expression = (expressionResult.Expression ?? "").Trim();
@@ -299,9 +299,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					e.SetToolTip("no expr: " + expressionResult.ToString());
 				}
 				#endif
-			}
+			}*/
 		}
 		
+		/*
 		static string GetText(ResolveResult result, string expression, out bool debuggerCanShowValue)
 		{
 			debuggerCanShowValue = false;
@@ -405,7 +406,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				text.Append(ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionItem.ConvertDocumentation(documentation));
 			}
 			return text.ToString();
-		}
+		}*/
 		#endregion
 	}
 	

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+/* TODO: Reimplement C#<->VB converter
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -44,3 +45,4 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 }
+*/

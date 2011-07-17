@@ -10,8 +10,6 @@ using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project.Commands;
@@ -212,6 +210,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		}
 	}
 
+	/*
 	public abstract class NRefactoryLanguageConverter : LanguageConverter
 	{
 		protected abstract void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials,
@@ -275,6 +274,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			p.SetProperty("NoWarn", null);
 		}
 	}
+	*/
 	
 	/// <summary>
 	/// Exception used when converting a file fails.

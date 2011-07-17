@@ -95,10 +95,8 @@
     </Compile>
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Editor\AddInHighlightingResource.cs" />
-    <Compile Include="Src\Editor\AvalonEdit\AvalonEditDocumentAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditSyntaxHighlighterAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextEditorAdapter.cs" />
-    <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextSourceAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
     <Compile Include="Src\Editor\AvalonEdit\TextContentCondition.cs" />
@@ -151,24 +149,18 @@
     <Compile Include="Src\Editor\Commands\ShowColorDialog.cs" />
     <Compile Include="Src\Editor\DocumentUtilitites.cs" />
     <Compile Include="Src\Editor\IBracketSearcher.cs" />
-    <Compile Include="Src\Editor\IDocument.cs" />
-    <Compile Include="Src\Editor\IDocumentLine.cs" />
     <Compile Include="Src\Editor\IFileDocumentProvider.cs" />
     <Compile Include="Src\Editor\IFormattingStrategy.cs" />
     <Compile Include="Src\Editor\PermanentAnchor.cs" />
     <Compile Include="Src\Editor\ISyntaxHighlighter.cs" />
-    <Compile Include="Src\Editor\ITextAnchor.cs" />
     <Compile Include="Src\Editor\ITextAreaToolTipProvider.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Editor\ITextBuffer.cs" />
     <Compile Include="Src\Editor\ITextEditor.cs" />
     <Compile Include="Src\Editor\ITextMarker.cs" />
     <Compile Include="Src\Editor\ITooltip.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Editor\ReadOnlyDocument.cs" />
-    <Compile Include="Src\Editor\RefactoringDocumentAdapter.cs" />
     <Compile Include="Src\Editor\Search\ISearchResult.cs" />
     <Compile Include="Src\Editor\Search\ISearchResultFactory.cs" />
     <Compile Include="Src\Editor\Search\ProvidedDocumentInformation.cs" />
@@ -326,7 +318,6 @@
     <Compile Include="Src\Services\Debugger\Tooltips\ITreeNode.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\IVisualizerCommand.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\PinBookmark.cs" />
-    <Compile Include="Src\Services\DecompilerService\DecompilerService.cs" />
     <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
@@ -346,6 +337,7 @@
     <Compile Include="Src\Services\File\FileService.cs" />
     <Compile Include="Src\Services\File\FileEventArgs.cs" />
     <Compile Include="Src\Services\ParserService\AssemblyParserService.cs" />
+    <Compile Include="Src\Services\ParserService\DomAssemblyName.cs" />
     <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
@@ -395,7 +387,6 @@
     <Compile Include="Src\Services\Language\Language.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ProjectActiveEvaluator.cs" />
-    <Compile Include="Src\Services\AmbienceService\NetAmbience.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceService.cs" />
     <Compile Include="Src\Services\AmbienceService\CodeDOMGeneratorUtility.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowOpenEvaluator.cs" />
@@ -595,20 +586,12 @@
     <Compile Include="Src\Gui\Pads\ErrorList\ErrorListPad.cs" />
     <Compile Include="Src\Gui\Pads\ErrorList\ErrorListToolbarCommands.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\CompilerMessageViewToolbarCommands.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\ClassBrowser.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\ClassBrowserToolbarCommands.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\ProjectNode.cs" />
     <Compile Include="Src\Gui\Components\ExtTreeView\ExtTreeNode.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\ClassNode.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\MemberNode.cs" />
     <Compile Include="Src\Gui\Components\ExtTreeView\ExtTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\Gui\Components\ExtTreeView\ExtFolderNode.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\TextEventHandler.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\ReferenceFolderNode.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\BaseTypesNode.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\DerivedTypesNode.cs" />
     <Compile Include="Src\Project\Solution\SolutionFolder.cs" />
     <Compile Include="Src\Project\Solution\SolutionItem.cs" />
     <Compile Include="Src\Project\Solution\ProjectSection.cs" />
@@ -751,13 +734,6 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\AbstractProjectNode.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\ClassNodeBuilders.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\DefaultClassNodeBuilder.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\DefaultProjectNodeBuilder.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\ProjectNodeBuilders.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IClassNodeBuilder.cs" />
-    <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IProjectNodeBuilder.cs" />
     <Compile Include="Src\Services\RefactoringService\NamespaceRefactoringService.cs" />
     <Compile Include="Src\Services\RefactoringService\RefactorMenu.cs" />
     <Compile Include="Src\Services\NavigationService\DefaultNavigationPoint.cs" />
@@ -769,11 +745,9 @@
     <Compile Include="Src\Project\BuildError.cs" />
     <Compile Include="Src\Services\HelpProvider.cs" />
     <Compile Include="Src\Services\ParserService\CodeCompletionOptions.cs" />
-    <Compile Include="Src\Services\ParserService\DomHostCallback.cs" />
     <Compile Include="Src\Services\ParserService\Doozer\ProjectContentRegistryDescriptor.cs" />
     <Compile Include="Src\Services\ParserService\Doozer\ProjectContentRegistryDoozer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CompareProjectPropertyConditionEvaluator.cs" />
-    <Compile Include="Src\Services\ParserService\NetCFProjectContentRegistry.cs" />
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.Designer.cs">
       <DependentUpon>SolutionConfigurationEditor.cs</DependentUpon>
     </Compile>
@@ -842,10 +816,13 @@
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.Editor\ICSharpCode.Editor.csproj">
+      <Project>{F054A788-B591-4561-A8BA-AE745BBEB817}</Project>
+      <Name>ICSharpCode.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
@@ -861,11 +838,9 @@
     <Folder Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\InnerExpand" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Folder Include="Src\Services\Debugger\Tooltips" />
-    <Folder Include="Src\Services\DecompilerService" />
     <Folder Include="Src\Services\RefactoringService\ContextActions" />
     <Folder Include="Src\Services\WebProjectService" />
     <Folder Include="Src\Util" />
-    <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
     <Folder Include="Src\Services\NavigationService" />
     <ProjectReference Include="..\..\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
@@ -875,11 +850,6 @@
     <ProjectReference Include="..\..\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Src\Gui\Dialogs\SolutionConfiguration" />

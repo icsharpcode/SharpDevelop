@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop
@@ -36,6 +36,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		/*
 		public LanguageProperties Properties {
 			get {
 				foreach (ILanguageBinding binding in allBindings) {
@@ -46,6 +47,7 @@ namespace ICSharpCode.SharpDevelop
 				return LanguageProperties.None;
 			}
 		}
+		*/
 		
 		public void Attach(ITextEditor editor)
 		{

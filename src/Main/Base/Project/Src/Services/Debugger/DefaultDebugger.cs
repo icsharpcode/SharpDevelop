@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -132,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// Gets the tooltip control that shows the value of given variable.
 		/// Return null if no tooltip is available.
 		/// </summary>
-		public object GetTooltipControl(Location logicalPosition, string variable)
+		public object GetTooltipControl(TextLocation logicalPosition, string variable)
 		{
 			return null;
 		}

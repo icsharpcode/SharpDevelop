@@ -4,10 +4,8 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using ICSharpCode.NRefactory.PrettyPrinter;
 
+/*
 namespace ICSharpCode.SharpDevelop
 {
 	public static class AmbienceService
@@ -129,3 +127,4 @@ namespace ICSharpCode.SharpDevelop
 		public static event EventHandler AmbienceChanged;
 	}
 }
+*/

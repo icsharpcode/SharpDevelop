@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -70,9 +70,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	
 	public class ClassBookmark : IBookmark
 	{
-		IClass @class;
+		ITypeDefinition @class;
 		
-		public IClass Class {
+		public ITypeDefinition Class {
 			get {
 				return @class;
 			}
@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public ClassBookmark(IClass @class)
+		public ClassBookmark(ITypeDefinition @class)
 		{
 			this.@class = @class;
 		}

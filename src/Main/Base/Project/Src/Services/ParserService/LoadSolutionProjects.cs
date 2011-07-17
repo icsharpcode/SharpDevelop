@@ -6,8 +6,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -57,13 +57,15 @@ namespace ICSharpCode.SharpDevelop
 		
 		#region Reparse projects
 		// list of projects waiting to reparse references
-		static List<ParseProjectContent> reParse1 = new List<ParseProjectContent>();
+		static List<IProjectContent> reParse1 = new List<ParseProjectContent>();
 		
 		// list of projects waiting to reparse code
-		static List<ParseProjectContent> reParse2 = new List<ParseProjectContent>();
+		static List<IProjectContent> reParse2 = new List<ParseProjectContent>();
 		
 		public static void Reparse(IProject project, bool initReferences, bool parseCode)
 		{
+			throw new NotImplementedException();
+			/*
 			if (jobs == null)
 				return; // do nothing if service wasn't initialized (e.g. some unit tests)
 			ParseProjectContent pc = ParserService.GetProjectContent(project) as ParseProjectContent;
@@ -93,9 +95,10 @@ namespace ICSharpCode.SharpDevelop
 					}
 				}
 				jobs.StartRunningIfRequired();
-			}
+			}*/
 		}
 		
+		/*
 		static void ReInitializeReferences(ParseProjectContent pc, IProgressMonitor progressMonitor)
 		{
 			lock (reParse1) {
@@ -110,12 +113,12 @@ namespace ICSharpCode.SharpDevelop
 				reParse2.Remove(pc);
 			}
 			pc.ReInitialize2(progressMonitor);
-		}
+		}*/
 		#endregion
 		
 		// do not use an event for this because a solution might be loaded before ParserService
 		// is initialized
-		internal static void OnSolutionLoaded(List<ParseProjectContent> createdContents)
+		internal static void OnSolutionLoaded(List<IProjectContent> createdContents)
 		{
 			WorkbenchSingleton.DebugAssertMainThread();
 			Debug.Assert(jobs != null);
@@ -151,7 +154,7 @@ namespace ICSharpCode.SharpDevelop
 			return StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing} ")  + projectName + "...";
 		}
 		
-		internal static void InitNewProject(ParseProjectContent pc)
+		internal static void InitNewProject(IProjectContent pc)
 		{
 			jobs.AddJob(new JobTask(pc.Initialize1,
 			                        GetLoadReferenceTaskTitle(pc.ProjectName),

@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -14,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// </summary>
 	public abstract class SDMarkerBookmark : SDBookmark
 	{
-		public SDMarkerBookmark(FileName fileName, Location location) : base(fileName, location)
+		public SDMarkerBookmark(FileName fileName, TextLocation location) : base(fileName, location)
 		{
 			//SetMarker();
 		}

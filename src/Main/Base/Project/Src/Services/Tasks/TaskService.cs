@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 

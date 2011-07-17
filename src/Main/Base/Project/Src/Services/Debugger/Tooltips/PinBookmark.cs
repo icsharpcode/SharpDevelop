@@ -4,13 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Windows;
 
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
@@ -23,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public static readonly IImage PinImage = new ResourceServiceImage("Bookmarks.Pin");
 		
-		public PinBookmark(FileName fileName, Location location) : base(fileName, location)
+		public PinBookmark(FileName fileName, TextLocation location) : base(fileName, location)
 		{
 			Nodes = new ObservableCollection<ITreeNode>();
 			IsVisibleInBookmarkPad = false;

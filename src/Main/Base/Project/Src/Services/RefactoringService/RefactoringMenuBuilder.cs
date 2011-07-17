@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+/*
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.Visitors;
@@ -108,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					// Include menu for the underlying expression of the
 					// indexer expression as well.
 					AddTopLevelItems(textEditor, expressionResult, true);
-				}*/
+				} * /
 			} else if (rr is TypeResolveResult) {
 				item = MakeItem(definitions, ((TypeResolveResult)rr).ResolvedClass);
 			} else if (rr is LocalResolveResult) {
@@ -263,3 +264,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 }
+*/

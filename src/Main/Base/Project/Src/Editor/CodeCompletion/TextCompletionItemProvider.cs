@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-
+/*
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	/// <summary>
@@ -30,3 +30,4 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		}
 	}
 }
+*/

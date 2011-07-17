@@ -9,10 +9,9 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-
+/*
 namespace ICSharpCode.SharpDevelop
 {
 	public sealed class ParseProjectContent : DefaultProjectContent
@@ -300,3 +299,4 @@ namespace ICSharpCode.SharpDevelop
 		}
 	}
 }
+*/

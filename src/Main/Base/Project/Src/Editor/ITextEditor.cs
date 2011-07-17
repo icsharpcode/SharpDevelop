@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Input;
-
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
@@ -19,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		}
 	}
 	
+	/*
 	/// <summary>
 	/// Interface for text editors.
 	/// </summary>
@@ -119,6 +120,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// </summary>
 		IEnumerable<ICompletionItem> GetSnippets();
 	}
+	*/
 	
 	public interface ITextEditorOptions : INotifyPropertyChanged
 	{
@@ -153,35 +155,5 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets whether errors should be underlined.
 		/// </summary>
 		bool UnderlineErrors { get; }
-	}
-	
-	public interface ITextEditorCaret
-	{
-		/// <summary>
-		/// Gets/Sets the caret offset;
-		/// </summary>
-		int Offset { get; set; }
-		
-		/// <summary>
-		/// Gets/Sets the caret line number.
-		/// Line numbers are counted starting from 1.
-		/// </summary>
-		int Line { get; set; }
-		
-		/// <summary>
-		/// Gets/Sets the caret column number.
-		/// Column numbers are counted starting from 1.
-		/// </summary>
-		int Column { get; set; }
-		
-		/// <summary>
-		/// Gets/sets the caret position.
-		/// </summary>
-		Location Position { get; set; }
-		
-		/// <summary>
-		/// Is raised whenever the position of the caret has changed.
-		///	</summary>
-		event EventHandler PositionChanged;
 	}
 }

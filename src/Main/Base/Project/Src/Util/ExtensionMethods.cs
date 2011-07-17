@@ -8,18 +8,15 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
 
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using WinForms = System.Windows.Forms;
@@ -499,33 +496,6 @@ namespace ICSharpCode.SharpDevelop
 				list.Add(itemToAdd);
 		}
 		
-		public static ExpressionResult FindFullExpressionAtCaret(this ITextEditor editor)
-		{
-			if (editor == null)
-				throw new ArgumentNullException("editor");
-			return ParserService.FindFullExpression(editor.Caret.Line, editor.Caret.Column, editor.Document, editor.FileName);
-		}
-		
-		public static ResolveResult ResolveSymbolAtCaret(this ITextEditor editor)
-		{
-			if (editor == null)
-				throw new ArgumentNullException("editor");
-			return ParserService.Resolve(editor.Caret.Line, editor.Caret.Column, editor.Document, editor.FileName);
-		}
-		
-		public static bool IsEmpty(ExpressionResult expr)
-		{
-			return expr.Region.IsEmpty;
-		}
-		
-		public static void WriteTo(this Stream sourceStream, Stream targetStream)
-		{
-			byte[] buffer = new byte[4096];
-			int bytes;
-			while ((bytes = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
-				targetStream.Write(buffer, 0, bytes);
-		}
-		
 		public static XElement FormatXml(this XElement element, int indentationLevel)
 		{
 			StringWriter sw = new StringWriter();
@@ -595,22 +565,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 #region Dom, AST, Editor, Document		
-		public static Location GetStart(this DomRegion region)
-		{
-			return new Location(region.BeginColumn, region.BeginLine);
-		}
-		
-		public static Location GetEnd(this DomRegion region)
-		{
-			return new Location(region.EndColumn, region.EndLine);
-		}
-		
-		public static int PositionToOffset(this IDocument document, Location location)
-		{
-			return document.PositionToOffset(location.Line, location.Column);
-		}
-		
-		public static string GetText(this IDocument document, Location startPos, Location endPos)
+		public static string GetText(this IDocument document, TextLocation startPos, TextLocation endPos)
 		{
 			int startOffset = document.PositionToOffset(startPos);
 			return document.GetText(startOffset, document.PositionToOffset(endPos) - startOffset);

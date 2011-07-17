@@ -7,12 +7,11 @@ using System.IO;
 using System.Text;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-
+/*
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	public static class FindReferencesAndRenameHelper
@@ -28,15 +27,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 				
 				// do rename
-				/*
-				 MessageService.ShowMessageFormatted("Extracting interface",
-				                                    @"Extracting {0} [{1}] from {2} into {3}",
-				                                    extractInterface.NewInterfaceName,
-				                                    extractInterface.FullyQualifiedName,
-				                                    extractInterface.ClassEntity.Name,
-				                                    extractInterface.NewFileName
-				                                   );
-`				*/
+//				 MessageService.ShowMessageFormatted("Extracting interface",
+//				                                    @"Extracting {0} [{1}] from {2} into {3}",
+//				                                    extractInterface.NewInterfaceName,
+//				                                    extractInterface.FullyQualifiedName,
+//				                                    extractInterface.ClassEntity.Name,
+//				                                    extractInterface.NewFileName
+//				                                   );
 			}
 			
 			string newInterfaceFileName = Path.Combine(Path.GetDirectoryName(c.CompilationUnit.FileName),
@@ -562,3 +559,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#endregion
 	}
 }
+*/

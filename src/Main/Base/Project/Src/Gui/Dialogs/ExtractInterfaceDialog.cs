@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-
+/*
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -188,3 +188,4 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#endregion
 	}
 }
+*/

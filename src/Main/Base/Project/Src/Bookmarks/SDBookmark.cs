@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
@@ -14,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	[TypeConverter(typeof(BookmarkConverter))]
 	public abstract class SDBookmark : BookmarkBase
 	{
-		public SDBookmark(FileName fileName, Location location) : base(location)
+		public SDBookmark(FileName fileName, TextLocation location) : base(location)
 		{
 			this.fileName = fileName;
 		}
@@ -97,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// </summary>
 	public sealed class Bookmark : SDBookmark
 	{ 
-		public Bookmark(FileName fileName, Location location) : base(fileName, location)
+		public Bookmark(FileName fileName, TextLocation location) : base(fileName, location)
 		{
 		}
 	}

@@ -1,0 +1,26 @@
+﻿
+Commented code, needs to be ported and re-enabled:
+	AssemblyParserService
+	ParseProjectContent
+	ProjectContentRegistryDescriptor
+	Ambiences
+	Tooltips (DebuggerService.GetText)
+	DefinitionViewPad
+	Class Browser (removed from source tree; to be reimplemented using WPF)
+	NRefactoryLanguageConverter
+	Context Actions (EditorContext etc.)
+	RefactoringService
+	FindReferencesAndRenameHelper
+	NamespaceRefactoringsService
+	RefactoringMenuBuilder
+
+Stuff that was renamed/moved:
+	ICSharpCode.SharpDevelop.Dom -> the type system and resolvers now are part of ICSharpCode.NRefactory
+	IDocument, ITextEditor -> moved to ICSharpCode.Editor assembly
+	IClass -> ITypeDefinition
+	ParseInformation -> IParsedFile
+	ICompilationUnit -> IParsedFile
+	ITextBuffer -> ITextSource (in ICSharpCode.Editor assembly)
+	IReturnType -> ITypeReference (unresolved) or IType (resolved)
+	Location -> TextLocation or AstLocation. Use AstLocation only when directly working with the AST, and TextLocation otherwise.
+	TextLocation -> moved to ICSharpCode.Editor assembly

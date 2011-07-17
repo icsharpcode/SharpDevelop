@@ -1,11 +1,10 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Windows.Input;
-using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -14,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// </summary>
 	public class BookmarkBase : IBookmark
 	{
-		Location location;
+		TextLocation location;
 		
 		IDocument document;
 		ITextAnchor anchor;
@@ -79,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			get { return anchor; }
 		}
 		
-		public Location Location {
+		public TextLocation Location {
 			get {
 				if (anchor != null)
 					return anchor.Location;
@@ -141,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public BookmarkBase(Location location)
+		public BookmarkBase(TextLocation location)
 		{
 			this.Location = location;
 		}

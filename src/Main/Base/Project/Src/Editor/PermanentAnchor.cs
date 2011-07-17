@@ -4,10 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Editor
@@ -105,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public event EventHandler Deleted;
 		
 		/// <inheritdoc/>
-		public Location Location {
+		public TextLocation Location {
 			get {
 				if (isDeleted)
 					throw new InvalidOperationException();
