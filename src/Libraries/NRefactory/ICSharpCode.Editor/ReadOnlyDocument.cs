@@ -48,7 +48,7 @@ namespace ICSharpCode.Editor
 		}
 		
 		/// <inheritdoc/>
-		public IDocumentLine GetLine(int lineNumber)
+		public IDocumentLine GetLineByNumber(int lineNumber)
 		{
 			if (lineNumber < 1 || lineNumber > lines.Length)
 				throw new ArgumentOutOfRangeException("lineNumber", lineNumber, "Value must be between 1 and " + lines.Length);
@@ -121,7 +121,7 @@ namespace ICSharpCode.Editor
 		/// <inheritdoc/>
 		public IDocumentLine GetLineByOffset(int offset)
 		{
-			return GetLine(GetLineNumberForOffset(offset));
+			return GetLineByNumber(GetLineNumberForOffset(offset));
 		}
 		
 		int GetLineNumberForOffset(int offset)
@@ -168,7 +168,7 @@ namespace ICSharpCode.Editor
 		}
 		
 		/// <inheritdoc/>
-		public int TotalNumberOfLines {
+		public int LineCount {
 			get { return lines.Length; }
 		}
 		
@@ -181,11 +181,11 @@ namespace ICSharpCode.Editor
 			get { return textSource.TextLength; }
 		}
 		
-		event EventHandler<TextChangeEventArgs> IDocument.Changing { add {} remove {} }
+		event EventHandler<TextChangeEventArgs> IDocument.TextChanging { add {} remove {} }
 		
-		event EventHandler<TextChangeEventArgs> IDocument.Changed { add {} remove {} }
+		event EventHandler<TextChangeEventArgs> IDocument.TextChanged { add {} remove {} }
 		
-		event EventHandler IDocument.TextChanged { add {} remove {} }
+		event EventHandler IDocument.ChangeCompleted { add {} remove {} }
 		
 		void IDocument.Insert(int offset, string text)
 		{
