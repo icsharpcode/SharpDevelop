@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
-
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Editor;
 
@@ -440,6 +440,21 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		/// <remarks><inheritdoc cref="Changing"/></remarks>
 		public event EventHandler UpdateFinished;
+		
+		void IDocument.StartUndoableAction()
+		{
+			BeginUpdate();
+		}
+		
+		void IDocument.EndUndoableAction()
+		{
+			EndUpdate();
+		}
+		
+		IDisposable IDocument.OpenUndoGroup()
+		{
+			return RunUpdate();
+		}
 		#endregion
 		
 		#region Fire events after update
@@ -897,19 +912,36 @@ namespace ICSharpCode.AvalonEdit.Document
 			throw new NotImplementedException();
 		}
 		
-		void IDocument.StartUndoableAction()
-		{
-			throw new NotImplementedException();
+		#region Service Provider
+		IServiceProvider serviceProvider;
+		
+		/// <summary>
+		/// Gets/Sets the service provider associated with this document.
+		/// By default, every TextDocument has its own ServiceContainer; and has the document itself
+		/// registered as <see cref="IDocument"/> and <see cref="TextDocument"/>.
+		/// </summary>
+		public IServiceProvider ServiceProvider {
+			get {
+				VerifyAccess();
+				if (serviceProvider == null) {
+					var container = new ServiceContainer();
+					container.AddService(typeof(IDocument), this);
+					container.AddService(typeof(TextDocument), this);
+				}
+				return serviceProvider;
+			}
+			set {
+				VerifyAccess();
+				if (value == null)
+					throw new ArgumentNullException();
+				serviceProvider = value;
+			}
 		}
 		
-		void IDocument.EndUndoableAction()
+		object IServiceProvider.GetService(Type serviceType)
 		{
-			throw new NotImplementedException();
+			return this.ServiceProvider.GetService(serviceType);
 		}
-		
-		IDisposable IDocument.OpenUndoGroup()
-		{
-			throw new NotImplementedException();
-		}
+		#endregion
 	}
 }

@@ -1638,9 +1638,18 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			get { return services; }
 		}
 		
-		object IServiceProvider.GetService(Type serviceType)
+		/// <summary>
+		/// Retrieves a service from the text view.
+		/// If the service is not found in the <see cref="Services"/> container,
+		/// this method will also look for it in the current document's service provider.
+		/// </summary>
+		public object GetService(Type serviceType)
 		{
-			return services.GetService(serviceType);
+			object instance = services.GetService(serviceType);
+			if (instance == null && document != null) {
+				instance = document.ServiceProvider.GetService(serviceType);
+			}
+			return instance;
 		}
 		
 		void ConnectToTextView(object obj)
