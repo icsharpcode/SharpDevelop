@@ -134,6 +134,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public Version Version {
+	
 			get { return package.Version; }
 		}
 		
@@ -344,9 +345,7 @@ namespace ICSharpCode.PackageManagement
 				var actions = new List<ProcessPackageAction>();
 				foreach (IPackageManagementSelectedProject selectedProject in projects) {
 					if (selectedProject.IsSelected) {
-						selectedProject.Project.Logger = logger;
-						InstallPackageAction action = selectedProject.Project.CreateInstallPackageAction();
-						action.Package = package;
+						ProcessPackageAction action = CreateInstallPackageAction(selectedProject);
 						actions.Add(action);
 					}
 				}
@@ -370,6 +369,16 @@ namespace ICSharpCode.PackageManagement
 				return packageManagementEvents.OnAcceptLicenses(licensedPackages);
 			}
 			return true;
+		}
+		
+		ProcessPackageOperationsAction CreateInstallPackageAction(IPackageManagementSelectedProject selectedProject)
+		{
+			IPackageManagementProject project = selectedProject.Project;	
+			project.Logger = logger;
+			
+			ProcessPackageOperationsAction action = CreateInstallPackageAction(project);
+			action.Package = package;
+			return action;
 		}
 		
 		void RunActionsIfAnyExist(List<ProcessPackageAction> actions)

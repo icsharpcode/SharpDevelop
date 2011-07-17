@@ -51,6 +51,7 @@ namespace PackageManagement.Tests.Helpers
 			this.FakePackage = package;
 			this.FakeActionRunner = actionRunner;
 			this.FakeLogger = logger;
+			this.FakePackageManagementEvents = packageManagementEvents;
 		}
 	}
 }
