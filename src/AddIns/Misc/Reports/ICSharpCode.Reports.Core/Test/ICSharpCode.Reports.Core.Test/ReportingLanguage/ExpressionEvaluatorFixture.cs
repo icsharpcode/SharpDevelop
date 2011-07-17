@@ -29,6 +29,30 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage
 		
 		
 		[Test]
+		public void ExtractExpressionPartFromString()
+		{
+			const string expression = "c = 5 + 3";
+			Assert.That(EvaluationHelper.ExtractExpressionPart(expression),Is.EqualTo("5 + 3"));
+		}
+		
+		
+		[Test]
+		public void MissingEqualSignReturnsEmptyString ()
+		{
+			const string expression = "5 + 3";
+			Assert.That(EvaluationHelper.ExtractExpressionPart(expression),Is.EqualTo(String.Empty));
+		}
+		
+		
+		[Test]
+		public void ExtractResultPartFromString()
+		{
+			const string expression = "c = 5 + 3";
+			Assert.That(EvaluationHelper.ExtractResultPart(expression),Is.EqualTo("c"));
+		}
+		
+        
+		[Test]
 		public void SimpleEvaluation ()
 		{
 			string expression = "=5 + 2";

@@ -19,15 +19,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		private SinglePage singlePage;
 		private IDataManager dataManager;
 
-		
 		[Test]
-		public void CheckTable ()
-		{
-			Assert.AreEqual(4,this.testTable.Rows.Count);
-		}
-		
-		[Test]
-		
 		public void Return_FieldName_If_DataNavigator_Invalid()
 		{
 			const string expression = "=Fields!Name";
@@ -37,7 +29,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		
 		
 		[Test]
-		public void Can_Compile_Misspelled_Simple_FieldReference()
+		public void Misspelled_Simple_FieldReference()
 		{
 			const string expression = "=fields!Name";
 			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo("Name"));
@@ -54,10 +46,8 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo(testVal));          
 		}
 		
-		
-		
+
 		[Test]
-		[Ignore]
 		public void Unkown_ColumnName ()
 		{
 			const string expression = "=Fields!Unknown";
@@ -66,13 +56,15 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		
 		
 		[Test]
-		[IgnoreAttribute]
-		public void ExtractFieldbyName ()
+		public void Extract_Field_ByName ()
 		{
 			const string expression = "=Fields!Name";
+			DataRow r = testTable.Rows[0];
+			string result = r["Name"].ToString();
 			Assert.That(this.evaluator.Evaluate(expression),
-			            Is.EqualTo(this.testTable.Rows.Count.ToString()));
+			            Is.EqualTo(result));	            
 		}
+		
 		
 		[TestFixtureSetUp]
 		public void Init()

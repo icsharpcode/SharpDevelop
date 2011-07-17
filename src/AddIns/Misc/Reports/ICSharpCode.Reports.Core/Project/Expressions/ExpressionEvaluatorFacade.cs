@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 using SimpleExpressionEvaluator;
 using SimpleExpressionEvaluator.Evaluation;
@@ -33,10 +35,18 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		public string Evaluate (string expression)
 		{
 			try {
-				if (EvaluationHelper.CanEvaluate(expression)) {
-					this.context.ContextObject = this.SinglePage;
-					return EvaluateExpression(expression);
+				
+				string s = EvaluationHelper.ExtractExpressionPart(expression);
+				if (s.Length > 0) {
+					this.context.ContextObject =this.SinglePage ;
+					return EvaluateExpression (s);
 				}
+				
+//				if (EvaluationHelper.CanEvaluate(expression)) {
+//					this.context.ContextObject = this.SinglePage;
+//					return EvaluateExpression(expression);
+//				}
+				
 			} catch (Exception e) {
 				expression = e.Message;
 				WriteLogMessage(e);
@@ -45,7 +55,23 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			return expression;
 		}
 
+		public string Evaluate (string expression, object row)
+		{
+			try {
+				string s = EvaluationHelper.ExtractExpressionPart(expression);
+				if (s.Length > 0) {
+					this.context.ContextObject = row;
+					return EvaluateExpression (s);
+				}
+			} catch (Exception e) {
+				expression = e.Message;
+				WriteLogMessage(e);
+			}
+			
+			return expression;
+		}
 		
+		/*
 		public string Evaluate (string expression, object row)
 		{
 			try {
@@ -60,6 +86,23 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			
 			return expression;
 		}
+		*/
+		
+		public void Evaluate (IReportExpression expressionItem)
+		{
+			if (expressionItem == null) {
+				throw new ArgumentException("expressionItem");
+			}
+			string expr = String.Empty;
+			if (!String.IsNullOrEmpty(expressionItem.Expression)) {
+				expr = expressionItem.Expression;
+			} else {
+				expr = expressionItem.Text;
+			}
+			
+			expressionItem.Text = Evaluate(expr);
+		}
+		
 		
 		
 		string EvaluateExpression(string expression)

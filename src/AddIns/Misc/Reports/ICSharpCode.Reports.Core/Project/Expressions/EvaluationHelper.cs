@@ -9,6 +9,7 @@
 using System;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 using SimpleExpressionEvaluator;
 
@@ -17,7 +18,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 	/// <summary>
 	/// Description of EvaluationHelper.
 	/// </summary>
-	public class EvaluationHelper
+	internal class EvaluationHelper
 	{
 		
 		public static IExpressionEvaluatorFacade  SetupEvaluator ()
@@ -32,11 +33,6 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				
 				throw new ArgumentNullException("singlePage");
 			}
-			/*
-			if (dataNavigator == null) {
-				throw new ArgumentNullException("dataNavigator");
-			}
-			 * */
 			singlePage.IDataNavigator = dataNavigator;
 			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(singlePage);
 			return evaluatorFacade;
@@ -45,7 +41,8 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		
 		public static void EvaluateReportItems (IExpressionEvaluatorFacade  evaluator,ReportItemCollection items)
 		{
-			foreach(BaseReportItem column in items) {
+			foreach(BaseReportItem column in items)
+			{
 				var container = column as ISimpleContainer ;
 				if (container != null) {
 					EvaluateReportItems(evaluator,container.Items);
@@ -53,26 +50,11 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				
 				IReportExpression expressionItem = column as IReportExpression;
 				if (expressionItem != null) {
-					EvaluateItem(evaluator,expressionItem);
+					evaluator.Evaluate(expressionItem);
 				}
 			}
 		}
 
-		public static void EvaluateItem( IExpressionEvaluatorFacade evaluator,IReportExpression expressionItem)
-		{
-			string expr = String.Empty;
-			if (expressionItem != null)
-			{
-				if (!String.IsNullOrEmpty(expressionItem.Expression)) {
-					expr = expressionItem.Expression;
-				} else {
-					expr = expressionItem.Text; 
-				}
-			}
-
-			expressionItem.Text = evaluator.Evaluate(expr);
-		}
-		
 		
 		public static void EvaluateRow(IExpressionEvaluatorFacade evaluator,ExporterCollection row)
 		{
@@ -81,9 +63,10 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				if (container != null) {
 					EvaluateRow(evaluator,container.Items);
 				}
+				
 				IReportExpression expressionItem = column as IReportExpression;
 				if (expressionItem != null) {
-					EvaluateItem(evaluator,expressionItem);
+					evaluator.Evaluate(expressionItem);
 				}
 			}
 		}
@@ -95,6 +78,19 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				return true;
 			}
 			return false;
+		}
+		
+		
+		public static string ExtractExpressionPart (string src)
+		{
+			char v = Convert.ToChar("=");
+			return StringHelpers.RightOf(src,v).Trim();
+		}
+		
+		public static string ExtractResultPart (string src)
+		{
+			char v = Convert.ToChar("=");
+			return StringHelpers.LeftOf(src,v).Trim();
 		}
 	}
 }

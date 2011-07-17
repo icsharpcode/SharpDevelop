@@ -34,8 +34,24 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			if (String.IsNullOrEmpty(expression)) {
 				return null;
 			}
+			ParseTree node = this.compiler.Parse(expression);
+			if (node.Root == null) {
+				return null;
+			}
+			return CompileExpression<T>(node.Root);
+		}
+		
+		
+		/*
+		public override IExpression<T> CompileExpression<T>(string expression)
+		{
+			if (String.IsNullOrEmpty(expression)) {
+				return null;
+			}
 			
 			string cleaned = CleanupExpressionString(expression);
+			
+			
 			if (!String.IsNullOrEmpty(cleaned)) {
 				ParseTree node = this.compiler.Parse(cleaned);
 				if (node.Root == null) {
@@ -56,7 +72,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			}
 			return str.TrimStart (delim.ToCharArray());
 		}
-		
+		*/
 		
 		// Dron't call base
 		protected override IExpression<T> CompileExpression<T>(ParseTreeNode root)

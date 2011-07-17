@@ -33,13 +33,6 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage
 		}
 		
 		
-		[Test]
-		public void Can_Handle_Null_Expression()
-		{
-			const string expression = null;			
-			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo(null));
-		}
-		
 		#endregion
 		
 		#region SyntaxError
@@ -60,7 +53,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage
 		public void Can_Compile_Simple_Number()
 		{
 			const string expression = " =1.1";
-			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo(expression));
+			Assert.That(this.evaluator.Evaluate(expression),Is.StringStarting("1"));
 		}
 		
 		

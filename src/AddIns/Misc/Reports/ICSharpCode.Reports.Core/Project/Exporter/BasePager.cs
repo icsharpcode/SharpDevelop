@@ -247,7 +247,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 				IReportExpression expressionItem = exportColumn as IReportExpression;
 				if (expressionItem != null) {
-					EvaluationHelper.EvaluateItem(evaluatorFassade,expressionItem);
+					evaluatorFassade.Evaluate(expressionItem);
 				}
 			}
 		}

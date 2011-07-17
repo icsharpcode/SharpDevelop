@@ -93,7 +93,6 @@
     <Compile Include="ReportingLanguage\IntegrationTests\AggregateFunctionsFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\AggregateFunctionsFromIListFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\ConcatFieldsFixture.cs" />
-    <Compile Include="ReportingLanguage\IntegrationTests\FieldReferenceFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\GlobalFunctions.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\SimpleCompilerFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\SubstringFixture.cs" />

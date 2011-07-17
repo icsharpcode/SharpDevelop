@@ -71,8 +71,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
         {
            
            const string expression = "=count(intvalue,current > 2)";
-           Assert.That(this.evaluator.Evaluate(expression),
-                       Is.EqualTo("2"));
+           Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo("2"));           
         }
 		
 //		[Test]
@@ -138,16 +137,6 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		
 		#endregion
 
-		
-		
-		#region test
-		private void settest ()
-		{
-			
-		}
-		
-		#endregion
-		
 		
 		[TestFixtureSetUp]
 		public void Init()
