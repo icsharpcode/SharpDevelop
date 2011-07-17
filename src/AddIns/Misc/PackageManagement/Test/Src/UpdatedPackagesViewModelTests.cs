@@ -158,5 +158,31 @@ namespace PackageManagement.Tests
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
+		
+		[Test]
+		public void ReadPackages_SolutionInitiallySelectedWithOneNewerPackageAndProjectSelectedBeforeSecondReadOfPackages_NewerPackageVersionDisplayed()
+		{
+			CreateSolution();
+			NoProjectsSelected();
+			CreateViewModel(solution);
+			AddPackageToSolution("1.0.0.0");
+			FakePackage newerPackage = AddPackageToAggregateRepository("1.1.0.0");
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			TestableProject msbuildProject = ProjectHelper.CreateTestProject("Test");
+			solution.FakeActiveMSBuildProject = msbuildProject;
+			solution.FakeActiveProject = new FakePackageManagementProject("Test");
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				newerPackage
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
 	}
 }

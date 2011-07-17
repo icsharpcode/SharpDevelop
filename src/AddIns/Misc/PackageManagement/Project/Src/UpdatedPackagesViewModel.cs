@@ -11,7 +11,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UpdatedPackagesViewModel : PackagesViewModel
 	{
-		IPackageManagementSolution solution;
+		PackageManagementSelectedProjects selectedProjects;
 		UpdatedPackages updatedPackages;
 		string errorMessage = String.Empty;
 		
@@ -29,7 +29,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public UpdatedPackagesViewModel(
-			IPackageManagementSolution packageManagementService,
+			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			UpdatedPackageViewModelFactory packageViewModelFactory,			
 			ITaskFactory taskFactory)
@@ -38,7 +38,7 @@ namespace ICSharpCode.PackageManagement
 				packageViewModelFactory,
 				taskFactory)
 		{
-			this.solution = packageManagementService;
+			this.selectedProjects = new PackageManagementSelectedProjects(solution);
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
@@ -54,7 +54,6 @@ namespace ICSharpCode.PackageManagement
 		
 		IQueryable<IPackage> GetInstalledPackages(IPackageRepository aggregateRepository)
 		{
-			var selectedProjects = new PackageManagementSelectedProjects(solution);
 			return selectedProjects.GetInstalledPackages(aggregateRepository);
 		}
 		
