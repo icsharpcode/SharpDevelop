@@ -14,6 +14,8 @@ namespace ICSharpCode.PackageManagement
 	public class PackageManagementSelectedProjects
 	{
 		IPackageManagementSolution solution;
+		bool? singledProjectSelected;
+		IProject singleMSBuildProjectSelected;
 		
 		public PackageManagementSelectedProjects(IPackageManagementSolution solution)
 		{
@@ -33,12 +35,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool HasSingleProjectSelected()
 		{
-			return GetSingleMSBuildProjectSelected() != null;
-		}
-		
-		IProject GetSingleMSBuildProjectSelected()
-		{
-			return solution.GetActiveMSBuildProject();
+			if (!singledProjectSelected.HasValue) {
+				singleMSBuildProjectSelected = solution.GetActiveMSBuildProject();
+				singledProjectSelected = singleMSBuildProjectSelected != null;
+			}
+			return singledProjectSelected.Value;
 		}
 		
 		IEnumerable<IProject> GetOpenProjects()
@@ -48,8 +49,7 @@ namespace ICSharpCode.PackageManagement
 		
 		IPackageManagementSelectedProject GetSingleProjectSelected(IPackageFromRepository package)
 		{
-			IProject project = GetSingleMSBuildProjectSelected();
-			return CreateSelectedProject(project, package);
+			return CreateSelectedProject(singleMSBuildProjectSelected, package);
 		}
 		
 		IPackageManagementSelectedProject CreateSelectedProject(IProject msbuildProject, IPackageFromRepository package)
@@ -88,8 +88,7 @@ namespace ICSharpCode.PackageManagement
 		
 		string GetSingleProjectSelectedName()
 		{
-			IProject project = GetSingleMSBuildProjectSelected();
-			return project.Name;
+			return singleMSBuildProjectSelected.Name;
 		}
 		
 		string GetSolutionFileNameWithoutFullPath()

@@ -19,28 +19,28 @@ namespace PackageManagement.Tests.Helpers
 		public TestablePackageViewModel(FakePackageManagementSolution solution)
 			: this(
 				new FakePackage("Test"),
-				solution,
+				new PackageManagementSelectedProjects(solution),
 				new FakePackageManagementEvents(),
 				new FakePackageActionRunner(),
 				new FakeLogger())
 		{
+			this.FakeSolution = solution;
 		}
 		
 		public TestablePackageViewModel(
 			FakePackage package,
-			FakePackageManagementSolution solution,
+			PackageManagementSelectedProjects selectedProjects,
 			FakePackageManagementEvents packageManagementEvents,
 			FakePackageActionRunner actionRunner,
 			FakeLogger logger)
 			: base(
 				package,
-				solution,
+				selectedProjects,
 				packageManagementEvents,
 				actionRunner,
 				logger)
 		{
 			this.FakePackage = package;
-			this.FakeSolution = solution;
 			this.FakePackageManagementEvents = packageManagementEvents;
 			this.FakeActionRunner = actionRunner;
 			this.FakeLogger = logger;

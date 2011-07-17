@@ -157,6 +157,17 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void AddPackage_PackageAddedSuccessfully_SourcePackageRepositoryWhenGettingPackageOperations()
+		{
+			CreateViewModel();
+			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
+			
+			viewModel.AddPackage();
+						
+			Assert.IsFalse(fakeSolution.IsGetActiveProjectWithNoParametersCalled);
+		}
+		
+		[Test]
 		public void AddPackage_PackageAddedSuccessfully_PackageIsInstalled()
 		{
 			CreateViewModel();

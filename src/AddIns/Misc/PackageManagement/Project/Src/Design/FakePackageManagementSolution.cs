@@ -28,10 +28,12 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public int GetActiveProjectCallCount;
 		public FakePackageManagementProject FakeActiveProject = new FakePackageManagementProject();
+		public bool IsGetActiveProjectWithNoParametersCalled;
 		
 		public virtual IPackageManagementProject GetActiveProject()
 		{
 			GetActiveProjectCallCount++;
+			IsGetActiveProjectWithNoParametersCalled = true;
 			
 			return FakeActiveProject;
 		}

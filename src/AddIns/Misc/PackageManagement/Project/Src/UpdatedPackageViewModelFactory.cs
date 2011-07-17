@@ -17,7 +17,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			return new UpdatedPackageViewModel(
 				package,
-				Solution,
+				SelectedProjects,
 				PackageManagementEvents,
 				PackageActionRunner,
 				Logger);

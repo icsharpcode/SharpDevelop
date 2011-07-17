@@ -76,6 +76,33 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void GetProjects_SolutionHasTwoProjectsAndOneProjectSelectedInitiallyAndGetProjectsCalledAgainAfterNoProjectsAreSelected_ReturnsProjectSelectedInProjects()
+		{
+			CreateSelectedProjects();
+			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
+			IProject project = projectsAddedToSolution[1];
+			project.Name = "MyProject";
+			fakeSolution.FakeActiveMSBuildProject = project;
+			
+			var fakeProject = fakeSolution.AddFakeProjectToReturnFromGetProject("MyProject");
+			
+			var fakePackage = new FakePackage();
+			var projects = new List<IPackageManagementSelectedProject>();
+			projects.AddRange(selectedProjects.GetProjects(fakePackage));
+			
+			projects.Clear();
+			
+			NoProjectsSelected();
+			projects.AddRange(selectedProjects.GetProjects(fakePackage));
+			
+			var expectedProject = new FakeSelectedProject("MyProject");
+			var expectedProjects = new List<IPackageManagementSelectedProject>();
+			expectedProjects.Add(expectedProject);
+			
+			SelectedProjectCollectionAssert.AreEqual(expectedProjects, projects);
+		}
+		
+		[Test]
 		public void GetProjects_SolutionHasTwoProjectsAndOneProjectSelectedInProjectsBrowserAndPackageIsInstalledInProject_ReturnsProjectAndIsSelectedIsTrue()
 		{
 			CreateSelectedProjects();
@@ -383,6 +410,20 @@ namespace PackageManagement.Tests
 			NoProjectsSelected();
 			
 			bool singleProjectSelected = selectedProjects.HasSingleProjectSelected();
+			
+			Assert.IsFalse(singleProjectSelected);
+		}
+		
+		[Test]
+		public void HasSingleProjectSelected_NoProjectsInitiallySelectedAndProjectSelectedAfterInitialCall_IsUnchangedAndReturnsFalse()
+		{
+			CreateSelectedProjects();
+			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
+			NoProjectsSelected();
+			
+			bool singleProjectSelected = selectedProjects.HasSingleProjectSelected();
+			fakeSolution.FakeActiveMSBuildProject = fakeSolution.FakeMSBuildProjects[0];
+			singleProjectSelected = selectedProjects.HasSingleProjectSelected();
 			
 			Assert.IsFalse(singleProjectSelected);
 		}

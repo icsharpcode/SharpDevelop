@@ -16,7 +16,6 @@ namespace ICSharpCode.PackageManagement
 		DelegateCommand removePackageCommand;
 		DelegateCommand managePackageCommand;
 		
-		IPackageManagementSolution solution;
 		PackageManagementSelectedProjects selectedProjects;
 		IPackageManagementEvents packageManagementEvents;
 		IPackageFromRepository package;
@@ -26,18 +25,16 @@ namespace ICSharpCode.PackageManagement
 		
 		public PackageViewModel(
 			IPackageFromRepository package,
-			IPackageManagementSolution solution,
+			PackageManagementSelectedProjects selectedProjects,
 			IPackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
 			ILogger logger)
 		{
 			this.package = package;
-			this.solution = solution;
+			this.selectedProjects = selectedProjects;
 			this.packageManagementEvents = packageManagementEvents;
 			this.actionRunner = actionRunner;
 			this.logger = CreateLogger(logger);
-			
-			selectedProjects = new PackageManagementSelectedProjects(solution);
 			
 			CreateCommands();
 		}
@@ -175,9 +172,14 @@ namespace ICSharpCode.PackageManagement
 		
 		void GetPackageOperations()
 		{
-			IPackageManagementProject project = solution.GetActiveProject();
+			IPackageManagementProject project = GetActiveProject();
 			project.Logger = logger;
 			packageOperations = project.GetInstallPackageOperations(package, false);
+		}
+		
+		IPackageManagementProject GetActiveProject()
+		{
+			return selectedProjects.GetActiveProject(package.Repository);
 		}
 		
 		bool CanInstallPackage()
@@ -236,15 +238,13 @@ namespace ICSharpCode.PackageManagement
 		
 		void InstallPackage()
 		{
-			InstallPackage(package, packageOperations);
+			InstallPackage(packageOperations);
 			OnPropertyChanged(model => model.IsAdded);
 		}
 		
-		void InstallPackage(
-			IPackageFromRepository package,
-			IEnumerable<PackageOperation> packageOperations)
+		void InstallPackage(IEnumerable<PackageOperation> packageOperations)
 		{
-			IPackageManagementProject project = solution.GetActiveProject(package.Repository);
+			IPackageManagementProject project = GetActiveProject();
 			ProcessPackageOperationsAction action = CreateInstallPackageAction(project);
 			action.Package = package;
 			action.Operations = packageOperations;
@@ -280,7 +280,7 @@ namespace ICSharpCode.PackageManagement
 		void TryUninstallingPackage()
 		{
 			try {
-				IPackageManagementProject project = solution.GetActiveProject(package.Repository);
+				IPackageManagementProject project = GetActiveProject();
 				UninstallPackageAction action = project.CreateUninstallPackageAction();
 				action.Package = package;
 				actionRunner.Run(action);

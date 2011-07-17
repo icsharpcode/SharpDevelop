@@ -12,11 +12,11 @@ namespace ICSharpCode.PackageManagement
 	{
 		public UpdatedPackageViewModel(
 			IPackageFromRepository package,
-			IPackageManagementSolution solution,
+			PackageManagementSelectedProjects selectedProjects,
 			IPackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
 			ILogger logger)
-			: base(package, solution, packageManagementEvents, actionRunner, logger)
+			: base(package, selectedProjects, packageManagementEvents, actionRunner, logger)
 		{
 		}
 		
