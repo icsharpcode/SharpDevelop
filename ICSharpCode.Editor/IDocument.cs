@@ -10,7 +10,7 @@ namespace ICSharpCode.Editor
 	/// Line and column counting starts at 1.
 	/// Offset counting starts at 0.
 	/// </summary>
-	public interface IDocument : ITextSource, IServiceProvider
+	public interface IDocument : ITextSource
 	{
 		/// <summary>
 		/// Gets/Sets the text of the whole document..
@@ -18,20 +18,41 @@ namespace ICSharpCode.Editor
 		new string Text { get; set; } // hides TextBuffer.Text to add the setter
 		
 		/// <summary>
-		/// Is raised when the Text property changes.
+		/// This event is called directly before a change is applied to the document.
 		/// </summary>
-		event EventHandler TextChanged;
+		/// <remarks>
+		/// It is invalid to modify the document within this event handler.
+		/// Aborting the change (by throwing an exception) is likely to cause corruption of data structures
+		/// that listen to the Changing and Changed events.
+		/// </remarks>
+		event EventHandler<TextChangeEventArgs> TextChanging;
 		
 		/// <summary>
-		/// Gets the total number of lines in the document.
+		/// This event is called directly after a change is applied to the document.
 		/// </summary>
-		int TotalNumberOfLines { get; }
+		/// <remarks>
+		/// It is invalid to modify the document within this event handler.
+		/// Aborting the event handler (by throwing an exception) is likely to cause corruption of data structures
+		/// that listen to the Changing and Changed events.
+		/// </remarks>
+		event EventHandler<TextChangeEventArgs> TextChanged;
+		
+		/// <summary>
+		/// This event is called after a group of changes is completed.
+		/// </summary>
+		/// <seealso cref="EndUndoableAction"/>
+		event EventHandler ChangeCompleted;
+		
+		/// <summary>
+		/// Gets the number of lines in the document.
+		/// </summary>
+		int LineCount { get; }
 		
 		/// <summary>
 		/// Gets the document line with the specified number.
 		/// </summary>
 		/// <param name="lineNumber">The number of the line to retrieve. The first line has number 1.</param>
-		IDocumentLine GetLine(int lineNumber);
+		IDocumentLine GetLineByNumber(int lineNumber);
 		
 		/// <summary>
 		/// Gets the document line that contains the specified offset.
@@ -117,25 +138,5 @@ namespace ICSharpCode.Editor
 		/// </summary>
 		/// <inheritdoc cref="ITextAnchor" select="remarks|example"/>
 		ITextAnchor CreateAnchor(int offset);
-		
-		/// <summary>
-		/// This event is called directly before a change is applied to the document.
-		/// </summary>
-		/// <remarks>
-		/// It is invalid to modify the document within this event handler.
-		/// Aborting the change (by throwing an exception) is likely to cause corruption of data structures
-		/// that listen to the Changing and Changed events.
-		/// </remarks>
-		event EventHandler<TextChangeEventArgs> Changing;
-		
-		/// <summary>
-		/// This event is called directly after a change is applied to the document.
-		/// </summary>
-		/// <remarks>
-		/// It is invalid to modify the document within this event handler.
-		/// Aborting the event handler (by throwing an exception) is likely to cause corruption of data structures
-		/// that listen to the Changing and Changed events.
-		/// </remarks>
-		event EventHandler<TextChangeEventArgs> Changed;
 	}
 }
