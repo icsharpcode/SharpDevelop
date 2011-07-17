@@ -25,7 +25,9 @@ namespace ICSharpCode.PackageManagement
 			var actions = new List<ProcessPackageAction>();
 			foreach (IPackageManagementSelectedProject selectedProject in selectedProjects) {
 				ProcessPackageAction action = CreatePackageAction(selectedProject);
-				actions.Add(action);
+				if (action != null) {
+					actions.Add(action);
+				}
 			}
 			return actions;
 		}
@@ -35,7 +37,22 @@ namespace ICSharpCode.PackageManagement
 			if (selectedProject.IsSelected) {
 				return base.CreateInstallPackageAction(selectedProject);
 			}
-			return base.CreateUninstallPackageAction(selectedProject);
+			return CreateUninstallPackageActionForSelectedProject(selectedProject);
+		}
+		
+		ProcessPackageAction CreateUninstallPackageActionForSelectedProject(IPackageManagementSelectedProject selectedProject)
+		{
+			ProcessPackageAction action = base.CreateUninstallPackageAction(selectedProject);
+			if (IsPackageInstalled(action.Project)) {
+				return action;
+			}
+			return null;
+		}
+		
+		bool IsPackageInstalled(IPackageManagementProject project)
+		{
+			IPackage package = GetPackage();
+			return project.IsPackageInstalled(package);
 		}
 		
 		protected override bool AnyProjectsSelected(IList<IPackageManagementSelectedProject> projects)

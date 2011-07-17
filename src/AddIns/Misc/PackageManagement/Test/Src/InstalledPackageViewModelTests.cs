@@ -71,6 +71,18 @@ namespace PackageManagement.Tests
 			fakeSolution.AddFakeProjectToReturnFromGetProject(projectName2);
 		}
 		
+		void AddViewModelPackageToTwoSelectedProjectPackages(string projectName1, string projectName2)
+		{
+			FakePackage package = viewModel.FakePackage;
+			fakeSolution.FakeProjectsToReturnFromGetProject[projectName1].FakePackages.Add(package);
+			fakeSolution.FakeProjectsToReturnFromGetProject[projectName2].FakePackages.Add(package);
+		}
+
+		void AddViewModelPackageToFirstSelectedProjectPackages()
+		{
+			FirstSelectedProject.FakeProject.FakePackages.Add(viewModel.FakePackage);
+		}
+		
 		[Test]
 		public void GetProcessPackageActionsForSelectedProjects_OneProjectIsSelected_ReturnsOneAction()
 		{
@@ -112,6 +124,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			CreateOneFakeSelectedProject("Test");
 			FirstSelectedProject.IsSelected = false;
+			AddViewModelPackageToFirstSelectedProjectPackages();
 			GetPackageActionsForSelectedProjects();
 			
 			var action = packageActions[0] as UninstallPackageAction;
@@ -141,6 +154,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			CreateOneFakeSelectedProject("Test");
 			FirstSelectedProject.IsSelected = false;
+			AddViewModelPackageToFirstSelectedProjectPackages();
 			GetPackageActionsForSelectedProjects();
 			
 			var action = packageActions[0] as UninstallPackageAction;
@@ -170,6 +184,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			CreateOneFakeSelectedProject("Test");
 			FirstSelectedProject.IsSelected = false;
+			AddViewModelPackageToFirstSelectedProjectPackages();
 			GetPackageActionsForSelectedProjects();
 			
 			ILogger logger = FirstSelectedProject.Project.Logger;
@@ -179,10 +194,23 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void GetProcessPackageActionsForSelectedProjects_OneProjectWithIsSelectedSetToFalseButPackageDoesNotExistInProject_NoActionsReturned()
+		{
+			CreateViewModel();
+			CreateOneFakeSelectedProject("Test");
+			FirstSelectedProject.IsSelected = false;
+			GetPackageActionsForSelectedProjects();
+		
+			Assert.AreEqual(0, packageActions.Count);
+		}
+		
+		[Test]
 		public void ManagePackage_SolutionWithTwoProjectsAndUserUnselectsBothProjects_TwoProjectsAreUninstalled()
 		{
 			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
 			viewModel.FakePackageManagementEvents.OnSelectProjectsReturnValue = true;
+			AddViewModelPackageToTwoSelectedProjectPackages("Project A", "Project B");
+			viewModel.FakePackageManagementEvents.ProjectsToSelect.Add("UnknownProject");
 			viewModel.ManagePackage();
 			
 			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
