@@ -169,7 +169,7 @@ namespace PackageManagement.Tests
 				Id = "Test",
 				Version = new Version("1.0.0.0")
 			};
-			fakeSolution.AddPackageToActiveProjectLocalRepository(oldPackage);
+			fakeSolution.FakeProjectToReturnFromGetProject.FakePackages.Add(oldPackage);
 			
 			var newPackage = new FakePackage() {
 				Id = "Test",

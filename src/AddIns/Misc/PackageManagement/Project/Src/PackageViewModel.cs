@@ -172,14 +172,14 @@ namespace ICSharpCode.PackageManagement
 		
 		void GetPackageOperations()
 		{
-			IPackageManagementProject project = GetActiveProject();
+			IPackageManagementProject project = GetSingleProjectSelected();
 			project.Logger = logger;
 			packageOperations = project.GetInstallPackageOperations(package, false);
 		}
 		
-		IPackageManagementProject GetActiveProject()
+		IPackageManagementProject GetSingleProjectSelected()
 		{
-			return selectedProjects.GetActiveProject(package.Repository);
+			return selectedProjects.GetSingleProjectSelected(package.Repository);
 		}
 		
 		bool CanInstallPackage()
@@ -244,7 +244,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void InstallPackage(IEnumerable<PackageOperation> packageOperations)
 		{
-			IPackageManagementProject project = GetActiveProject();
+			IPackageManagementProject project = GetSingleProjectSelected();
 			ProcessPackageOperationsAction action = CreateInstallPackageAction(project);
 			action.Package = package;
 			action.Operations = packageOperations;
@@ -280,7 +280,7 @@ namespace ICSharpCode.PackageManagement
 		void TryUninstallingPackage()
 		{
 			try {
-				IPackageManagementProject project = GetActiveProject();
+				IPackageManagementProject project = GetSingleProjectSelected();
 				UninstallPackageAction action = project.CreateUninstallPackageAction();
 				action.Package = package;
 				actionRunner.Run(action);

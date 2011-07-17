@@ -73,7 +73,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public Dictionary<string, FakePackageManagementProject> FakeProjectsToReturnFromGetProject
 			= new Dictionary<string, FakePackageManagementProject>();
 		
-		public IPackageManagementProject GetProject(IPackageRepository sourceRepository, IProject project)
+		public virtual IPackageManagementProject GetProject(IPackageRepository sourceRepository, IProject project)
 		{
 			RepositoryPassedToGetProject = sourceRepository;
 			ProjectPassedToGetProject = project;

@@ -25,6 +25,7 @@ namespace PackageManagement.Tests.Helpers
 				new FakeLogger())
 		{
 			this.FakeSolution = solution;
+			solution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject();
 		}
 		
 		public TestablePackageViewModel(
@@ -63,7 +64,7 @@ namespace PackageManagement.Tests.Helpers
 			var operation = new FakePackageOperation(FakePackage, PackageAction.Install);
 			
 			FakeSolution
-				.FakeActiveProject
+				.FakeProjectToReturnFromGetProject
 				.FakeInstallOperations
 				.Add(operation);
 			
@@ -74,7 +75,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			var package = new FakePackage("PackageToUninstall");			
 			var operation = new FakePackageOperation(package, PackageAction.Uninstall);
-			FakeSolution.FakeActiveProject.FakeInstallOperations.Add(operation);
+			FakeSolution.FakeProjectToReturnFromGetProject.FakeInstallOperations.Add(operation);
 			return operation;
 		}
 	}

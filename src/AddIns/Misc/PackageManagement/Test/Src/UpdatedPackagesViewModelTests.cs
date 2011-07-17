@@ -61,7 +61,7 @@ namespace PackageManagement.Tests
 		FakePackage AddPackageToLocalRepository(string version)
 		{
 			FakePackage package = FakePackage.CreatePackageWithVersion(version);
-			solution.AddPackageToActiveProjectLocalRepository(package);
+			solution.FakeProjectToReturnFromGetProject.FakePackages.Add(package);
 			return package;
 		}
 		
@@ -128,10 +128,10 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ReadPackages_GetActiveProjectThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
+		public void ReadPackages_GetProjectThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
 		{
 			CreateExceptionThrowingSolution();
-			exceptionThrowingSolution.ExceptionToThrowWhenGetActiveProjectCalled =
+			exceptionThrowingSolution.ExceptionToThrowWhenGetProjectCalled =
 				new Exception("Test");
 			CreateViewModel(exceptionThrowingSolution);
 			viewModel.ReadPackages();

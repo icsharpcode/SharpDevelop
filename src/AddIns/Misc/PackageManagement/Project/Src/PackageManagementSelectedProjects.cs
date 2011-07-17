@@ -14,7 +14,7 @@ namespace ICSharpCode.PackageManagement
 	public class PackageManagementSelectedProjects
 	{
 		IPackageManagementSolution solution;
-		bool? singledProjectSelected;
+		bool? singleProjectSelected;
 		IProject singleMSBuildProjectSelected;
 		
 		public PackageManagementSelectedProjects(IPackageManagementSolution solution)
@@ -35,11 +35,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool HasSingleProjectSelected()
 		{
-			if (!singledProjectSelected.HasValue) {
+			if (!singleProjectSelected.HasValue) {
 				singleMSBuildProjectSelected = solution.GetActiveMSBuildProject();
-				singledProjectSelected = singleMSBuildProjectSelected != null;
+				singleProjectSelected = singleMSBuildProjectSelected != null;
 			}
-			return singledProjectSelected.Value;
+			return singleProjectSelected.Value;
 		}
 		
 		IEnumerable<IProject> GetOpenProjects()
@@ -101,8 +101,8 @@ namespace ICSharpCode.PackageManagement
 		/// </summary>
 		public bool IsPackageInstalled(IPackageFromRepository package)
 		{
-			IPackageManagementProject project = solution.GetActiveProject(package.Repository);
-			if (project != null) {
+			if (HasSingleProjectSelected()) {
+				IPackageManagementProject project = GetSingleProjectSelected(package.Repository);
 				return project.IsPackageInstalled(package);
 			}
 			return IsPackageInstalledInSolution(package);
@@ -121,15 +121,18 @@ namespace ICSharpCode.PackageManagement
 		public IQueryable<IPackage> GetInstalledPackages(IPackageRepository sourceRepository)
 		{
 			if (HasSingleProjectSelected()) {
-				IPackageManagementProject project = GetActiveProject(sourceRepository);
+				IPackageManagementProject project = GetSingleProjectSelected(sourceRepository);
 				return project.GetPackages();
 			}
 			return GetPackagesInstalledInSolution();
 		}
 		
-		public IPackageManagementProject GetActiveProject(IPackageRepository repository)
+		public IPackageManagementProject GetSingleProjectSelected(IPackageRepository repository)
 		{
-			return solution.GetActiveProject(repository);
+			if (HasSingleProjectSelected()) {
+				return solution.GetProject(repository, singleMSBuildProjectSelected);
+			}
+			return null;
 		}
 	}
 }

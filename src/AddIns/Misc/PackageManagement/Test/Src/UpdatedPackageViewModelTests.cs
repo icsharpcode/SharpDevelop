@@ -23,7 +23,7 @@ namespace PackageManagement.Tests
 		{
 			viewModel = new TestableUpdatedPackageViewModel();
 			fakeSolution = viewModel.FakeSolution;
-			fakeProject = fakeSolution.FakeActiveProject;
+			fakeProject = fakeSolution.FakeProjectToReturnFromGetProject;
 			updatePackageAction = fakeProject.FakeUpdatePackageAction;
 			fakeActionRunner = viewModel.FakeActionRunner;
 		}
@@ -34,7 +34,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddPackage();
 						
-			Assert.AreEqual(viewModel.FakePackage.Repository, fakeSolution.RepositoryPassedToGetActiveProject);
+			Assert.AreEqual(viewModel.FakePackage.Repository, fakeSolution.RepositoryPassedToGetProject);
 		}
 	
 		[Test]

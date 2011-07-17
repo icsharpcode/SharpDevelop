@@ -277,7 +277,7 @@ namespace PackageManagement.Tests
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
 			
 			var package = new FakePackage("Test");
-			fakeSolution.FakeActiveProject.FakePackages.Add(package);
+			fakeSolution.FakeProjectToReturnFromGetProject.FakePackages.Add(package);
 			
 			bool installed = selectedProjects.IsPackageInstalled(package);
 			
@@ -307,7 +307,7 @@ namespace PackageManagement.Tests
 			var package = new FakePackage("Test");
 			bool installed = selectedProjects.IsPackageInstalled(package);
 			
-			IPackageRepository repository = fakeSolution.RepositoryPassedToGetActiveProject;
+			IPackageRepository repository = fakeSolution.RepositoryPassedToGetProject;
 			IPackageRepository expectedRepository = package.FakePackageRepository;
 			
 			Assert.AreEqual(expectedRepository, repository);
@@ -362,31 +362,44 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void GetActiveProject_ProjectSelected_ReturnsProject()
+		public void GetSingleProjectSelected_ProjectSelected_ReturnsProject()
 		{
 			CreateSelectedProjects();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
 			
 			var repository = new FakePackageRepository();
-			IPackageManagementProject project = selectedProjects.GetActiveProject(repository);
+			IPackageManagementProject project = selectedProjects.GetSingleProjectSelected(repository);
 			
-			FakePackageManagementProject expectedProject = fakeSolution.FakeActiveProject;
+			FakePackageManagementProject expectedProject = fakeSolution.FakeProjectToReturnFromGetProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
 		
 		[Test]
-		public void GetActiveProject_ProjectSelectedAndRepositoryPassed_ReturnsProjectCreatedWithRepository()
+		public void GetSingleProjectSelected_ProjectSelectedAndRepositoryPassed_ReturnsProjectCreatedWithRepository()
 		{
 			CreateSelectedProjects();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
 			
 			var repository = new FakePackageRepository();
-			IPackageManagementProject project = selectedProjects.GetActiveProject(repository);
+			IPackageManagementProject project = selectedProjects.GetSingleProjectSelected(repository);
 			
-			Assert.AreEqual(repository, fakeSolution.RepositoryPassedToGetActiveProject);
+			Assert.AreEqual(repository, fakeSolution.RepositoryPassedToGetProject);
+		}
+		
+		[Test]
+		public void GetSingleProjectSelected_NoProjectSelectedAndRepositoryPassed_ReturnsProjectCreatedWithRepository()
+		{
+			CreateSelectedProjects();
+			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
+			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
+			
+			var repository = new FakePackageRepository();
+			IPackageManagementProject project = selectedProjects.GetSingleProjectSelected(repository);
+			
+			Assert.AreEqual(repository, fakeSolution.RepositoryPassedToGetProject);
 		}
 		
 		[Test]
@@ -454,9 +467,12 @@ namespace PackageManagement.Tests
 			CreateSelectedProjects();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
+			fakeSolution.FakeActiveMSBuildProject.Name = "MyProject";
 			
 			var package = new FakePackage("Test");
-			fakeSolution.FakeActiveProject.FakePackages.Add(package);
+			var project = new FakePackageManagementProject("MyProject");
+			project.FakePackages.Add(package);
+			fakeSolution.FakeProjectsToReturnFromGetProject.Add("MyProject", project);
 			
 			var repository = new FakePackageRepository();
 			IQueryable<IPackage> packages = selectedProjects.GetInstalledPackages(repository);
@@ -478,9 +494,22 @@ namespace PackageManagement.Tests
 			var expectedRepository = new FakePackageRepository();
 			IQueryable<IPackage> packages = selectedProjects.GetInstalledPackages(expectedRepository);
 			
-			IPackageRepository repository = fakeSolution.RepositoryPassedToGetActiveProject;
+			IPackageRepository repository = fakeSolution.RepositoryPassedToGetProject;
 			
 			Assert.AreEqual(expectedRepository, repository);
+		}
+		
+		[Test]
+		public void GetSingleProjectSelected_NoProjectSelected_ReturnsNull()
+		{
+			CreateSelectedProjects();
+			AddSolutionWithTwoProjectsToProjectService();
+			NoProjectsSelected();
+			
+			var repository = new FakePackageRepository();
+			IPackageManagementProject project = selectedProjects.GetSingleProjectSelected(repository);
+			
+			Assert.IsNull(project);
 		}
 	}
 }

@@ -32,6 +32,7 @@ namespace PackageManagement.Tests.Helpers
 				new FakeLogger())
 		{
 			this.FakeSolution = solution;
+			solution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject("MyProject");
 		}
 		
 		public TestableUpdatedPackageViewModel(
