@@ -1,7 +1,7 @@
 ﻿﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+	// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
-using System;
+	using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -562,7 +562,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				resolveExpr = expr;
 				return ((MemberReferenceExpression)expr).MemberName;
 			}
-			if (expr is IdentifierExpression) { 
+			if (expr is IdentifierExpression) {
 				resolveExpr = expr;
 				return ((IdentifierExpression)expr).Identifier;
 			}
@@ -594,26 +594,31 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			Scan(arrayCreateExpression.Initializer);
 			if (resolverEnabled) {
-				ArrayTypeReference arrType;
+				IType arrType;
 				if (arrayCreateExpression.Type.IsNull) {
-					var types = new List<ITypeDefinition>();
+					var elements = new List<ResolveResult>();
 					foreach (var init in arrayCreateExpression.Initializer.Elements) {
-						var def = Resolve(init).Type.GetDefinition ();
-						if (def == null)
-							continue;
-						types.Add(def);
+						var rr = Resolve(init);
+						if (!rr.IsError)
+							elements.Add(rr);
 					}
-					var elementType = types.FirstOrDefault(t => !types.Any(s => !s.IsDerivedFrom(t, resolver.Context))) ?? SharedTypes.UnknownType;
-					arrType = new ArrayTypeReference (elementType, 1);
+					TypeInference typeInference = new TypeInference(resolver.Context, new Conversions(resolver.Context));
+					bool success;
+					IType elementType = typeInference.GetBestCommonType(elements, out success);
+					arrType = new ArrayType(elementType, 1);
 				} else {
-					var baseType = MakeTypeReference(arrayCreateExpression.Type);
-					arrType = new ArrayTypeReference (baseType, 1 + arrayCreateExpression.Arguments.Count);
-					foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers) {
-						arrType = new ArrayTypeReference (arrType, spec.Dimensions);
+					arrType = ResolveType(arrayCreateExpression.Type);
+					foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
+						arrType = new ArrayType(arrType, spec.Dimensions);
+					}
+					// HACK: find a better way to represent this in the AST
+					if (arrayCreateExpression.Arguments.Count == 0) {
+						arrType = new ArrayType(arrType, 1);
+					} else {
+						arrType = new ArrayType(arrType, arrayCreateExpression.Arguments.Count);
 					}
 				}
-	
-				return new ResolveResult (arrType.Resolve (resolver.Context));
+				return new ResolveResult (arrType);
 			}
 			return null;
 		}

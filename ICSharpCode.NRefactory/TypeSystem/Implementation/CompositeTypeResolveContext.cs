@@ -100,7 +100,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				for (int i = 0; i < sync.Length; i++) {
 					sync[i] = children[i].Synchronize();
 					if (sync[i] == null)
-						throw new InvalidOperationException(children[i] + ".ToString() returned null");
+						throw new InvalidOperationException(children[i] + ".Synchronize() returned null");
 				}
 				ISynchronizedTypeResolveContext r = new CompositeSynchronizedTypeResolveContext(sync, new CacheManager(), true);
 				success = true;
