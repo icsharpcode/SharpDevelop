@@ -219,13 +219,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		void Start(bool withDebugging);
 		
 		/// <summary>
-		/// Creates a new project content for this project.
-		/// This method should only be called by ParserService.LoadSolutionProjectsInternal()!
-		/// Return null if you don't want to create any project content.
-		/// </summary>
-		IProjectContent CreateProjectContent();
-		
-		/// <summary>
 		/// Creates a new ProjectItem for the passed MSBuild item.
 		/// </summary>
 		ProjectItem CreateProjectItem(IProjectItemBackendStore item);

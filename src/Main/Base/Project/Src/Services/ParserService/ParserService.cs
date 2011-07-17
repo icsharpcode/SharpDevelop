@@ -46,6 +46,17 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		public static ITypeResolveContext CurrentTypeResolveContext {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public static ITypeResolveContext GetTypeResolveContext(IProject project)
+		{
+			throw new NotImplementedException();
+		}
+		
 		public static IProjectContent GetProjectContent(IProject project)
 		{
 			lock (projectContents) {
@@ -171,7 +182,7 @@ namespace ICSharpCode.SharpDevelop
 			if (GetParser(fileName) == null)
 				return;
 			
-			ITextBuffer snapshot;
+			ITextSource snapshot;
 			IEditable editable = viewContent as IEditable;
 			if (editable != null)
 				snapshot = editable.CreateSnapshot();
@@ -179,8 +190,8 @@ namespace ICSharpCode.SharpDevelop
 				snapshot = GetParseableFileContent(viewContent.PrimaryFileName);
 			
 			lastParseRun = BeginParse(fileName, snapshot).ContinueWith(
-				delegate(Task<ParseInformation> backgroundTask) {
-					ParseInformation parseInfo = backgroundTask.Result;
+				delegate(Task<IParsedFile> backgroundTask) {
+					IParsedFile parseInfo = backgroundTask.Result;
 					RaiseParserUpdateStepFinished(new ParserUpdateStepEventArgs(fileName, snapshot, parseInfo));
 				});
 		}
@@ -270,7 +281,7 @@ namespace ICSharpCode.SharpDevelop
 		#endregion
 		
 		#region Parse Information Management
-		static readonly IParsedFile[] emptyCompilationUnitArray = new ICompilationUnit[0];
+		static readonly IParsedFile[] emptyCompilationUnitArray = new IParsedFile[0];
 		
 		sealed class FileEntry
 		{
@@ -300,7 +311,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			public IParsedFile GetParseInformation(IProjectContent content)
 			{
-				ParseInformation p = GetExistingParseInformation(content);
+				IParsedFile p = GetExistingParseInformation(content);
 				if (p != null)
 					return p;
 				else
@@ -317,7 +328,7 @@ namespace ICSharpCode.SharpDevelop
 						return p;
 					lock (this) {
 						if (this.oldUnits != null) {
-							ICompilationUnit cu = this.oldUnits.FirstOrDefault(c => c.ProjectContent == content);
+							IParsedFile cu = this.oldUnits.FirstOrDefault(c => c.ProjectContent == content);
 							return cu;
 						} else {
 							return null;
@@ -349,7 +360,7 @@ namespace ICSharpCode.SharpDevelop
 							// Detect when a file belongs to multiple projects but the ParserService hasn't realized
 							// that, yet. In this case, do another parse run to detect all parent projects.
 							if (!(parentProjectContent != null && this.oldUnits.Length == 1 && this.oldUnits[0].ProjectContent != parentProjectContent)) {
-								return this.parseInfo;
+								return this.mainParseInfo;
 							}
 						}
 					}
@@ -368,8 +379,8 @@ namespace ICSharpCode.SharpDevelop
 				// risking deadlocks.
 				
 				// parse once for each project content that contains the file
-				ICompilationUnit[] newUnits = new ICompilationUnit[projectContents.Count];
-				ICompilationUnit resultUnit = null;
+				IParsedFile[] newUnits = new IParsedFile[projectContents.Count];
+				IParsedFile resultUnit = null;
 				for (int i = 0; i < newUnits.Length; i++) {
 					IProjectContent pc = projectContents[i];
 					try {
@@ -387,59 +398,58 @@ namespace ICSharpCode.SharpDevelop
 					// ensure we never go backwards in time (we need to repeat this check after we've reacquired the lock)
 					if (fileContentVersion != null && this.bufferVersion != null && this.bufferVersion.BelongsToSameDocumentAs(fileContentVersion)) {
 						if (this.bufferVersion.CompareAge(fileContentVersion) >= 0) {
-							if (parentProjectContent != null && parentProjectContent != parseInfo.CompilationUnit.ProjectContent) {
-								ICompilationUnit oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == parentProjectContent);
+							if (parentProjectContent != null) {
+								IParsedFile oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == parentProjectContent);
 								if (oldUnit != null)
-									return new ParseInformation(oldUnit);
+									return oldUnit;
 							}
-							return this.parseInfo;
+							return this.mainParseInfo;
 						}
 					}
 					
-					ParseInformation newParseInfo = new ParseInformation(resultUnit);
+					IParsedFile newParseInfo = resultUnit;
 					
 					for (int i = 0; i < newUnits.Length; i++) {
 						IProjectContent pc = projectContents[i];
 						// update the compilation unit
-						ICompilationUnit oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == pc);
+						IParsedFile oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == pc);
 						pc.UpdateCompilationUnit(oldUnit, newUnits[i], fileName);
-						ParseInformation newUnitParseInfo = (newUnits[i] == resultUnit) ? newParseInfo : new ParseInformation(newUnits[i]);
-						RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, pc, oldUnit, newUnitParseInfo, newUnits[i] == resultUnit));
+						RaiseParseInformationUpdated(new ParseInformationEventArgs(oldUnit, newUnits[i], newUnits[i] == resultUnit));
 					}
 					
 					// remove all old units that don't exist anymore
-					foreach (ICompilationUnit oldUnit in oldUnits) {
+					foreach (IParsedFile oldUnit in oldUnits) {
 						if (!newUnits.Any(n => n.ProjectContent == oldUnit.ProjectContent)) {
 							oldUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
-							RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, oldUnit.ProjectContent, oldUnit, null, false));
+							RaiseParseInformationUpdated(new ParseInformationEventArgs(oldUnit, null, false));
 						}
 					}
 					
 					this.bufferVersion = fileContentVersion;
 					this.oldUnits = newUnits;
-					this.parseInfo = newParseInfo;
+					this.mainParseInfo = newParseInfo;
 					return newParseInfo;
 				}
 			}
 			
 			public void Clear()
 			{
-				ParseInformation parseInfo;
-				ICompilationUnit[] oldUnits;
+				IParsedFile parseInfo;
+				IParsedFile[] oldUnits;
 				lock (this) {
 					// by setting the disposed flag, we'll cause all running ParseFile() calls to return null and not
 					// call into the parser anymore, so we can do the remainder of the clean-up work outside the lock
 					this.disposed = true;
-					parseInfo = this.parseInfo;
+					parseInfo = this.mainParseInfo;
 					oldUnits = this.oldUnits;
 					this.oldUnits = null;
 					this.bufferVersion = null;
-					this.parseInfo = null;
+					this.mainParseInfo = null;
 				}
-				foreach (ICompilationUnit oldUnit in oldUnits) {
+				foreach (IParsedFile oldUnit in oldUnits) {
 					oldUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
-					bool isPrimary = parseInfo != null && parseInfo.CompilationUnit == oldUnit;
-					RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, oldUnit.ProjectContent, oldUnit, null, isPrimary));
+					bool isPrimary = parseInfo == oldUnit;
+					RaiseParseInformationUpdated(new ParseInformationEventArgs(oldUnit, null, isPrimary));
 				}
 			}
 			

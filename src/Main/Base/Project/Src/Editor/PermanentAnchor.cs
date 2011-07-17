@@ -48,9 +48,9 @@ namespace ICSharpCode.SharpDevelop.Editor
 				return;
 			Debug.Assert(currentDocument == null && document != null);
 			this.currentDocument = document;
-			line = Math.Min(line, document.TotalNumberOfLines);
-			column = Math.Min(column, document.GetLine(line).Length + 1);
-			baseAnchor = document.CreateAnchor(document.PositionToOffset(line, column));
+			line = Math.Min(line, document.LineCount);
+			column = Math.Min(column, document.GetLineByNumber(line).Length + 1);
+			baseAnchor = document.CreateAnchor(document.GetOffset(line, column));
 			baseAnchor.MovementType = movementType;
 			baseAnchor.SurviveDeletion = surviveDeletion;
 			baseAnchor.Deleted += baseAnchor_Deleted;
@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 				return;
 			Debug.Assert(currentDocument != null);
 			
-			Location loc = baseAnchor.Location;
+			TextLocation loc = baseAnchor.Location;
 			line = loc.Line;
 			column = loc.Column;
 			
@@ -111,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 				if (baseAnchor != null)
 					return baseAnchor.Location;
 				else
-					return new Location(column, line);
+					return new TextLocation(column, line);
 			}
 		}
 		

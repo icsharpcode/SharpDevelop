@@ -9,9 +9,9 @@ using System.ComponentModel.Design;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -412,15 +412,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (gridItem != null) {
 				Type component = gridItem.PropertyDescriptor.ComponentType;
 				if (component != null) {
-					ICSharpCode.SharpDevelop.Dom.IClass c = ParserService.CurrentProjectContent.GetClass(component.FullName, 0);
-					if (c != null) {
-						foreach (ICSharpCode.SharpDevelop.Dom.IProperty p in c.DefaultReturnType.GetProperties()) {
-							if (gridItem.PropertyDescriptor.Name == p.Name) {
-								HelpProvider.ShowHelp(p);
-								return;
+					using (var ctx = ParserService.CurrentTypeResolveContext.Synchronize()) {
+						ITypeDefinition c = ctx.GetTypeDefinition(component.Namespace, component.Name, 0, StringComparer.Ordinal);
+						if (c != null) {
+							foreach (IProperty p in c.GetProperties(ctx)) {
+								if (gridItem.PropertyDescriptor.Name == p.Name) {
+									HelpProvider.ShowHelp(p);
+									return;
+								}
 							}
+							HelpProvider.ShowHelp(c);
 						}
-						HelpProvider.ShowHelp(c);
 					}
 				}
 			}

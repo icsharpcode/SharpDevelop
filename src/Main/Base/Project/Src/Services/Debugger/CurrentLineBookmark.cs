@@ -39,16 +39,16 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			endLine     = makerEndLine;
 			endColumn   = makerEndColumn;
 			
-			if (startLine < 1 || startLine > document.TotalNumberOfLines)
+			if (startLine < 1 || startLine > document.LineCount)
 				return;
-			if (endLine < 1 || endLine > document.TotalNumberOfLines) {
+			if (endLine < 1 || endLine > document.LineCount) {
 				endLine = startLine;
 				endColumn = int.MaxValue;
 			}
 			if (startColumn < 1)
 				startColumn = 1;
 			
-			IDocumentLine line = document.GetLine(startLine);
+			IDocumentLine line = document.GetLineByNumber(startLine);
 			if (endColumn < 1 || endColumn > line.Length)
 				endColumn = line.Length;
 			instance = new CurrentLineBookmark(fileName, new Location(startColumn, startLine));
@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		protected override ITextMarker CreateMarker(ITextMarkerService markerService)
 		{
-			IDocumentLine line = this.Document.GetLine(startLine);
+			IDocumentLine line = this.Document.GetLineByNumber(startLine);
 			ITextMarker marker = markerService.Create(line.Offset + startColumn - 1, Math.Max(endColumn - startColumn, 1));
 			marker.BackgroundColor = Colors.Yellow;
 			marker.ForegroundColor = Colors.Blue;

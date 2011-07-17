@@ -3,7 +3,7 @@
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	partial class ExtractInterfaceDialog
+	partial class ExtractInterfaceDialog : System.Windows.Forms.Form
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.

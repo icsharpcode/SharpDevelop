@@ -266,7 +266,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(e.Editor.FileName);
 			if (expressionFinder == null)
 				return;
-			var currentLine = doc.GetLine(logicPos.Y);
+			var currentLine = doc.GetLineByNumber(logicPos.Y);
 			if (logicPos.X > currentLine.Length)
 				return;
 			/*

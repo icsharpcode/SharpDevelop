@@ -110,16 +110,16 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		                                  Predicate<SDBookmark> canToggle,
 		                                  Func<TextLocation, SDBookmark> bookmarkFactory)
 		{
-			foreach (SDBookmark bookmark in GetBookmarks(new FileName(editor.FileName))) {
+			foreach (SDBookmark bookmark in GetBookmarks(FileName.Create(editor.FileName))) {
 				if (canToggle(bookmark) && bookmark.LineNumber == line) {
 					BookmarkManager.RemoveMark(bookmark);
 					return;
 				}
 			}
 			// no bookmark at that line: create a new bookmark
-			int lineStartOffset = editor.Document.GetLine(line).Offset;
+			int lineStartOffset = editor.Document.GetLineByNumber(line).Offset;
 			int column = 1 + DocumentUtilitites.GetWhitespaceAfter(editor.Document, lineStartOffset).Length;
-			BookmarkManager.AddMark(bookmarkFactory(new Location(column, line)));
+			BookmarkManager.AddMark(bookmarkFactory(new TextLocation(column, line)));
 		}
 		
 		public static void RemoveAll(Predicate<SDBookmark> match)

@@ -223,8 +223,8 @@ namespace ICSharpCode.SharpDevelop
 				return GetIcon(entity as IField);
 			else if (entity is IEvent)
 				return GetIcon(entity as IEvent);
-			else if (entity is IClass)
-				return GetIcon(entity as IClass);
+			else if (entity is ITypeDefinition)
+				return GetIcon(entity as ITypeDefinition);
 			else
 				throw new ArgumentException("unknown entity type");
 		}
@@ -234,35 +234,44 @@ namespace ICSharpCode.SharpDevelop
 			if (method.IsOperator)
 				return Operator;
 			else if (method.IsExtensionMethod)
-				return entityImages[ExtensionMethodIndex + GetModifierOffset(method.Modifiers)];
+				return entityImages[ExtensionMethodIndex + GetModifierOffset(method.Accessibility)];
 			else
-				return entityImages[MethodIndex + GetModifierOffset(method.Modifiers)];
+				return entityImages[MethodIndex + GetModifierOffset(method.Accessibility)];
 		}
 		
 		public static ClassBrowserImage GetIcon(IProperty property)
 		{
 			if (property.IsIndexer)
-				return entityImages[IndexerIndex + GetModifierOffset(property.Modifiers)];
+				return entityImages[IndexerIndex + GetModifierOffset(property.Accessibility)];
 			else
-				return entityImages[PropertyIndex + GetModifierOffset(property.Modifiers)];
+				return entityImages[PropertyIndex + GetModifierOffset(property.Accessibility)];
 		}
 		
 		public static ClassBrowserImage GetIcon(IField field)
 		{
 			if (field.IsConst) {
 				return Const;
-			} else if (field.IsParameter) {
-				return Parameter;
-			} else if (field.IsLocalVariable) {
-				return LocalVariable;
 			} else {
-				return entityImages[FieldIndex + GetModifierOffset(field.Modifiers)];
+				return entityImages[FieldIndex + GetModifierOffset(field.Accessibility)];
+			}
+		}
+		
+		public static ClassBrowserImage GetIcon(IVariable v)
+		{
+			if (v.IsConst) {
+				return Const;
+			} else if (v is IField) {
+				return GetIcon((IField)v);
+			} else if (v is IParameter) {
+				return Parameter;
+			} else {
+				return LocalVariable;
 			}
 		}
 		
 		public static ClassBrowserImage GetIcon(IEvent evt)
 		{
-			return entityImages[EventIndex + GetModifierOffset(evt.Modifiers)];
+			return entityImages[EventIndex + GetModifierOffset(evt.Accessibility)];
 		}
 		
 		public static ClassBrowserImage GetIcon(ITypeDefinition c)
@@ -282,97 +291,7 @@ namespace ICSharpCode.SharpDevelop
 					imageIndex = InterfaceIndex;
 					break;
 			}
-			return entityImages[imageIndex + GetModifierOffset(c.Modifiers)];
-		}
-		
-		static int GetVisibilityOffset(MethodBase methodinfo)
-		{
-			if (methodinfo.IsAssembly) {
-				return internalModifierOffset;
-			}
-			if (methodinfo.IsPrivate) {
-				return privateModifierOffset;
-			}
-			if (!(methodinfo.IsPrivate || methodinfo.IsPublic)) {
-				return protectedModifierOffset;
-			}
-			return 0;
-		}
-		
-		public static ClassBrowserImage GetIcon(MethodBase methodinfo)
-		{
-			return entityImages[MethodIndex + GetVisibilityOffset(methodinfo)];
-		}
-		
-		public static ClassBrowserImage GetIcon(PropertyInfo propertyinfo)
-		{
-			if (propertyinfo.CanRead && propertyinfo.GetGetMethod(true) != null) {
-				return entityImages[PropertyIndex + GetVisibilityOffset(propertyinfo.GetGetMethod(true))];
-			}
-			if (propertyinfo.CanWrite && propertyinfo.GetSetMethod(true) != null) {
-				return entityImages[PropertyIndex + GetVisibilityOffset(propertyinfo.GetSetMethod(true))];
-			}
-			return entityImages[PropertyIndex];
-		}
-		
-		public static ClassBrowserImage GetIcon(FieldInfo fieldinfo)
-		{
-			if (fieldinfo.IsLiteral) {
-				return Const;
-			}
-			
-			if (fieldinfo.IsAssembly) {
-				return entityImages[FieldIndex + internalModifierOffset];
-			}
-			
-			if (fieldinfo.IsPrivate) {
-				return entityImages[FieldIndex + privateModifierOffset];
-			}
-			
-			if (!(fieldinfo.IsPrivate || fieldinfo.IsPublic)) {
-				return entityImages[FieldIndex + protectedModifierOffset];
-			}
-			
-			return entityImages[FieldIndex];
-		}
-		
-		public static ClassBrowserImage GetIcon(EventInfo eventinfo)
-		{
-			if (eventinfo.GetAddMethod(true) != null) {
-				return entityImages[EventIndex + GetVisibilityOffset(eventinfo.GetAddMethod(true))];
-			}
-			return entityImages[EventIndex];
-		}
-		
-		public static ClassBrowserImage GetIcon(System.Type type)
-		{
-			int BASE = ClassIndex;
-			
-			if (type.IsValueType) {
-				BASE = StructIndex;
-			}
-			if (type.IsEnum) {
-				BASE = EnumIndex;
-			}
-			if (type.IsInterface) {
-				BASE = InterfaceIndex;
-			}
-			if (type.IsSubclassOf(typeof(System.Delegate))) {
-				BASE = DelegateIndex;
-			}
-			
-			if (type.IsNestedPrivate) {
-				return entityImages[BASE + privateModifierOffset];
-			}
-			
-			if (type.IsNotPublic || type.IsNestedAssembly) {
-				return entityImages[BASE + internalModifierOffset];
-			}
-			
-			if (type.IsNestedFamily) {
-				return entityImages[BASE + protectedModifierOffset];
-			}
-			return entityImages[BASE];
+			return entityImages[imageIndex + GetModifierOffset(c.Accessibility)];
 		}
 		#endregion
 		

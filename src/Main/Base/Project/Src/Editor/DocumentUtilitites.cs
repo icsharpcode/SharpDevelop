@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			if (newLineText == null)
 				throw new ArgumentNullException("newLineText");
 			string newLineTextTrim = newLineText.Trim(whitespaceChars);
-			string oldLineText = line.Text;
+			string oldLineText = document.GetText(line);
 			if (oldLineText == newLineText)
 				return;
 			int pos = oldLineText.IndexOf(newLineTextTrim, StringComparison.Ordinal);
@@ -150,7 +150,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public static string GetWhitespaceAfter(ITextSource textSource, int offset)
 		{
 			ISegment segment = TextUtilities.GetWhitespaceAfter(textSource, offset);
-			return textBuffer.GetText(segment.Offset, segment.Length);
+			return textSource.GetText(segment.Offset, segment.Length);
 		}
 		
 		/// <summary>
@@ -162,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public static string GetWhitespaceBefore(ITextSource textSource, int offset)
 		{
 			ISegment segment = TextUtilities.GetWhitespaceBefore(textSource, offset);
-			return textBuffer.GetText(segment.Offset, segment.Length);
+			return textSource.GetText(segment.Offset, segment.Length);
 		}
 		
 		/// <summary>
@@ -170,13 +170,13 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// </summary>
 		public static string GetLineTerminator(IDocument document, int lineNumber)
 		{
-			IDocumentLine line = document.GetLine(lineNumber);
+			IDocumentLine line = document.GetLineByNumber(lineNumber);
 			if (line.DelimiterLength == 0) {
 				// at the end of the document, there's no line delimiter, so use the delimiter
 				// from the previous line
 				if (lineNumber == 1)
 					return Environment.NewLine;
-				line = document.GetLine(lineNumber - 1);
+				line = document.GetLineByNumber(lineNumber - 1);
 			}
 			return document.GetText(line.Offset + line.Length, line.DelimiterLength);
 		}
@@ -195,7 +195,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");
-			IDocumentLine line = document.GetLineForOffset(offset);
+			IDocumentLine line = document.GetLineByOffset(offset);
 			text = NormalizeNewLines(text, document, line.LineNumber);
 			document.Insert(offset, text);
 		}

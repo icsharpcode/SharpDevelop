@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			get {
 				return String.Format("{0}{1}",
 				                     this.NewInterfaceName,
-				                     Path.GetExtension(ClassEntity.CompilationUnit.FileName));
+				                     Path.GetExtension(ClassEntity.Region.FileName));
 			}
 		}
 	}

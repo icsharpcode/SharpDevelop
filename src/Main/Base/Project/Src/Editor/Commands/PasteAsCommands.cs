@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		
 		protected string GetIndentation(IDocument document, int line)
 		{
-			return DocumentUtilitites.GetWhitespaceAfter(document, document.GetLine(line).Offset);
+			return DocumentUtilitites.GetWhitespaceAfter(document, document.GetLineByNumber(line).Offset);
 		}
 	}
 	
@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				}
 			}
 			IDocument document = editor.Document;
-			int insertionPos = document.GetLine(editor.Caret.Line).Offset + indentation.Length;
+			int insertionPos = document.GetLineByNumber(editor.Caret.Line).Offset + indentation.Length;
 			document.Insert(insertionPos, insertedText.ToString());
 		}
 		

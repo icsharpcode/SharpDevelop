@@ -13,6 +13,7 @@ Commented code, needs to be ported and re-enabled:
 	FindReferencesAndRenameHelper
 	NamespaceRefactoringsService
 	RefactoringMenuBuilder
+	TaskService.UpdateCommentTags
 
 Stuff that was renamed/moved:
 	ICSharpCode.SharpDevelop.Dom -> the type system and resolvers now are part of ICSharpCode.NRefactory

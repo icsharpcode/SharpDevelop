@@ -97,8 +97,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (provider != null) {
 				// ensure we don't attach multiple times to the same editor
-				provider.TextEditor.Caret.PositionChanged -= CaretPositionChanged;
-				provider.TextEditor.Caret.PositionChanged += CaretPositionChanged;
+				provider.TextEditor.Caret.LocationChanged -= CaretPositionChanged;
+				provider.TextEditor.Caret.LocationChanged += CaretPositionChanged;
 			}
 		}
 
@@ -106,11 +106,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (this.selectedScopeIndex > 2)
 			{
-				IClass current = GetCurrentClass();
+				ITypeDefinition current = GetCurrentClass();
 				
 				if (oldClass == null) oldClass = current;
 				
-				if ((current != null) && (current.FullyQualifiedName != oldClass.FullyQualifiedName))
+				if ((current != null) && (current.ReflectionName != oldClass.ReflectionName))
 					UpdateItems();
 			}
 		}
@@ -179,8 +179,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		bool IsInScope(Task item)
 		{
-			IClass current = GetCurrentClass();
-			IClass itemClass = GetCurrentClass(item);
+			ITypeDefinition current = GetCurrentClass();
+			ITypeDefinition itemClass = GetCurrentClass(item);
 			
 			switch (this.selectedScopeIndex) {
 				case 0:
@@ -209,11 +209,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
 				return null;
 			
-			ParseInformation parseInfo = ParserService.GetParseInformation(WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName);
+			IParsedFile parseInfo = ParserService.GetParseInformation(WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName);
 			if (parseInfo != null) {
 				IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
 				if (positionable != null) {
-					IClass c = parseInfo.CompilationUnit.GetInnermostClass(positionable.Line, positionable.Column);
+					ITypeDefinition c = parseInfo.GetTypeDefinition(positionable.Line, positionable.Column);
 					if (c != null) return c;
 				}
 			}
@@ -226,9 +226,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// Tasks are created by parsing, so the parse information for item.FileName should already be present.
 			// If they aren't, that's because the file might have been deleted/renamed in the meantime.
 			// We use GetExistingParseInformation to avoid trying to parse a file that might have been deleted/renamed.
-			ParseInformation parseInfo = ParserService.GetExistingParseInformation(item.FileName);
+			IParsedFile parseInfo = ParserService.GetExistingParseInformation(item.FileName);
 			if (parseInfo != null) {
-				IClass c = parseInfo.CompilationUnit.GetInnermostClass(item.Line, item.Column);
+				ITypeDefinition c = parseInfo.GetTypeDefinition(item.Line, item.Column);
 				if (c != null) return c;
 			}
 			

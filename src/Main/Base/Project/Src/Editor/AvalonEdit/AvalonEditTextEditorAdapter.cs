@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 	/// <summary>
 	/// Wraps AvalonEdit to provide the ITextEditor interface.
 	/// </summary>
-	public class AvalonEditTextEditorAdapter : ITextEditor, IWeakEventListener
+	public class AvalonEditTextEditorAdapter : ITextEditor
 	{
 		readonly TextEditor textEditor;
 		
@@ -34,10 +34,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			if (textEditor == null)
 				throw new ArgumentNullException("textEditor");
 			this.textEditor = textEditor;
-			this.Caret = new CaretAdapter(textEditor.TextArea.Caret);
 			this.Options = new OptionsAdapter(textEditor.Options);
-			TextEditorWeakEventManager.DocumentChanged.AddListener(textEditor, this);
-			OnDocumentChanged();
 		}
 		
 		public static TextEditor CreateAvalonEditInstance()
@@ -47,28 +44,6 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			if (!(editor is TextEditor))
 				throw new NotSupportedException("Expected text editor to be AvalonEdit");
 			return (TextEditor)editor;
-		}
-		
-		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
-		{
-			if (managerType == typeof(TextEditorWeakEventManager.DocumentChanged)) {
-				OnDocumentChanged();
-				return true;
-			}
-			return false;
-		}
-		
-		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
-		{
-			return ReceiveWeakEvent(managerType, sender, e);
-		}
-		
-		void OnDocumentChanged()
-		{
-			if (textEditor.Document != null)
-				document = new AvalonEditDocumentAdapter(textEditor.Document, this);
-			else
-				document = null;
 		}
 		
 		public IDocument Document {

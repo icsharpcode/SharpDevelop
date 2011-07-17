@@ -567,13 +567,13 @@ namespace ICSharpCode.SharpDevelop
 #region Dom, AST, Editor, Document		
 		public static string GetText(this IDocument document, TextLocation startPos, TextLocation endPos)
 		{
-			int startOffset = document.PositionToOffset(startPos);
-			return document.GetText(startOffset, document.PositionToOffset(endPos) - startOffset);
+			int startOffset = document.GetOffset(startPos);
+			return document.GetText(startOffset, document.GetOffset(endPos) - startOffset);
 		}
 		
 		public static void ClearSelection(this ITextEditor editor)
 		{
-			editor.Select(editor.Document.PositionToOffset(editor.Caret.Position), 0);
+			editor.Select(editor.Document.GetOffset(editor.Caret.Location), 0);
 		}
 #endregion		
 	}

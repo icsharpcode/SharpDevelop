@@ -233,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (int.TryParse(text, out num)) {
 				ITextEditor editor = GetEditor();
 				if (editor != null) {
-					num = Math.Min(editor.Document.TotalNumberOfLines, Math.Max(1, num));
+					num = Math.Min(editor.Document.LineCount, Math.Max(1, num));
 					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrow, num, int.MaxValue);
 				}
 			}
@@ -361,7 +361,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (tag is int) {
 					ITextEditor editor = GetEditor();
 					if (editor != null) {
-						int i = Math.Min(editor.Document.TotalNumberOfLines, Math.Max(1, (int)tag));
+						int i = Math.Min(editor.Document.LineCount, Math.Max(1, (int)tag));
 						editor.JumpTo(i, int.MaxValue);
 					}
 				} else if (tag is IClass) {

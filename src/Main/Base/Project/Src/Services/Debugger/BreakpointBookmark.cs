@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		protected override ITextMarker CreateMarker(ITextMarkerService markerService)
 		{
-			IDocumentLine line = this.Document.GetLine(this.LineNumber);
+			IDocumentLine line = this.Document.GetLineByNumber(this.LineNumber);
 			ITextMarker marker = markerService.Create(line.Offset, line.Length);
 			marker.BackgroundColor = Color.FromRgb(180, 38, 38);
 			marker.ForegroundColor = Colors.White;

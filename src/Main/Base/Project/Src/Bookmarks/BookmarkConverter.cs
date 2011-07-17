@@ -6,8 +6,8 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text;
 using System.Windows;
-
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						scriptLanguage = v[6];
 						script = v[7];
 					
-						var bbm = new Debugging.BreakpointBookmark(fileName, new Location(columnNumber, lineNumber), action, scriptLanguage, script);
+						var bbm = new Debugging.BreakpointBookmark(fileName, new TextLocation(columnNumber, lineNumber), action, scriptLanguage, script);
 						bbm.IsEnabled = bool.Parse(v[4]);
 						bbm.Action = action;
 						bbm.ScriptLanguage = scriptLanguage;
@@ -53,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						bookmark = bbm;
 						break;
 					case "PinBookmark":
-						var pin = new PinBookmark(fileName, new Location(columnNumber, lineNumber));
+						var pin = new PinBookmark(fileName, new TextLocation(columnNumber, lineNumber));
 						pin.Comment = v[4];
 						pin.PinPosition = 
 							new Point
@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						bookmark = pin;
 						break;
 					default:
-						bookmark = new Bookmark(fileName, new Location(columnNumber, lineNumber));
+						bookmark = new Bookmark(fileName, new TextLocation(columnNumber, lineNumber));
 						break;
 				}
 				return bookmark;

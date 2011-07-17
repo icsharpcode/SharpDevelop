@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			var editorUIService = editor == null ? null : editor.GetService(typeof(IEditorUIService)) as IEditorUIService;
 			if (editorUIService != null) {
 				var document = editor.Document;
-				int offset = document.PositionToOffset(line, column);
+				int offset = document.GetOffset(line, column);
 				if (openAtWordStart) {
 					int wordStart = document.FindPrevWordStart(offset);
 					if (wordStart != -1) {

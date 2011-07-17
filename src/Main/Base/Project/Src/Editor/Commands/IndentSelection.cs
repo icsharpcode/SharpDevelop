@@ -26,11 +26,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				return;
 			
 			int beginLine = 1;
-			int endLine = provider.TextEditor.Document.TotalNumberOfLines;
+			int endLine = provider.TextEditor.Document.LineCount;
 			
 			if (provider.TextEditor.SelectionLength != 0) {
-				beginLine = provider.TextEditor.Document.GetLineForOffset(provider.TextEditor.SelectionStart).LineNumber;
-				endLine = provider.TextEditor.Document.GetLineForOffset(provider.TextEditor.SelectionStart + provider.TextEditor.SelectionLength).LineNumber;
+				beginLine = provider.TextEditor.Document.GetLineByOffset(provider.TextEditor.SelectionStart).LineNumber;
+				endLine = provider.TextEditor.Document.GetLineByOffset(provider.TextEditor.SelectionStart + provider.TextEditor.SelectionLength).LineNumber;
 			}
 			
 			provider.TextEditor.Language.FormattingStrategy.IndentLines(provider.TextEditor, beginLine, endLine);

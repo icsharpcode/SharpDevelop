@@ -220,7 +220,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				string originalInclude = item.GetMetadataValue("OriginalItemSpec");
 				ReferenceProjectItem reference;
 				if (referenceDict.TryGetValue(originalInclude, out reference)) {
-					reference.AssemblyName = new Dom.DomAssemblyName(item.GetMetadataValue("FusionName"));
+					reference.AssemblyName = new DomAssemblyName(item.GetMetadataValue("FusionName"));
 					//string fullPath = item.GetEvaluatedMetadata("FullPath"); is incorrect for relative paths
 					string fullPath = FileUtility.GetAbsolutePath(baseProject.Directory, item.GetMetadataValue("Identity"));
 					reference.FileName = fullPath;

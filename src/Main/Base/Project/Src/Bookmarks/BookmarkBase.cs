@@ -38,9 +38,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		void CreateAnchor()
 		{
 			if (document != null) {
-				int lineNumber = Math.Max(1, Math.Min(location.Line, document.TotalNumberOfLines));
-				int lineLength = document.GetLine(lineNumber).Length;
-				int offset = document.PositionToOffset(
+				int lineNumber = Math.Max(1, Math.Min(location.Line, document.LineCount));
+				int lineLength = document.GetLineByNumber(lineNumber).Length;
+				int offset = document.GetOffset(
 					lineNumber,
 					Math.Max(1, Math.Min(location.Column, lineLength + 1))
 				);
@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		void AnchorDeleted(object sender, EventArgs e)
 		{
 			// the anchor just became invalid, so don't try to use it again
-			location = Location.Empty;
+			location = TextLocation.Empty;
 			anchor = null;
 			RemoveMark();
 		}

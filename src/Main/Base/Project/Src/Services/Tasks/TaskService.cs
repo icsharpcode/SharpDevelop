@@ -144,6 +144,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		/*
 		static void UpdateCommentTags(FileName fileName, IList<TagComment> tagComments)
 		{
 			List<Task> newTasks = new List<Task>();
@@ -188,6 +189,7 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 		}
+*/
 
 		static void OnCleared(EventArgs e)
 		{
