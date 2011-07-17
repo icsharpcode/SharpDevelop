@@ -85,7 +85,15 @@ namespace ICSharpCode.PackageManagement
 		public override void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
 		{
 			ProjectManager.RemovePackageReference(package.Id, forceRemove, removeDependencies);
-			base.UninstallPackage(package, forceRemove, removeDependencies);
+			if (!IsPackageReferencedByOtherProjects(package)) {
+				base.UninstallPackage(package, forceRemove, removeDependencies);
+			}
+		}
+		
+		bool IsPackageReferencedByOtherProjects(IPackage package)
+		{
+			var sharedRepository = LocalRepository as ISharedPackageRepository;
+			return sharedRepository.IsReferenced(package.Id, package.Version);
 		}
 		
 		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
