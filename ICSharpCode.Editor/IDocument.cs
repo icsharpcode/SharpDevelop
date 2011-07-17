@@ -10,7 +10,7 @@ namespace ICSharpCode.Editor
 	/// Line and column counting starts at 1.
 	/// Offset counting starts at 0.
 	/// </summary>
-	public interface IDocument : ITextSource
+	public interface IDocument : ITextSource, IServiceProvider
 	{
 		/// <summary>
 		/// Gets/Sets the text of the whole document..

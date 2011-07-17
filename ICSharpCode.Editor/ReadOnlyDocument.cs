@@ -312,8 +312,7 @@ namespace ICSharpCode.Editor
 			return textSource.IndexOfAny(anyOf, startIndex, count);
 		}
 		
-		/// <inheritdoc/>
-		public object GetService(Type serviceType)
+		object IServiceProvider.GetService(Type serviceType)
 		{
 			return null;
 		}
