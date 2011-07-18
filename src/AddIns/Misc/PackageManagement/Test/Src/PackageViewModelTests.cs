@@ -28,15 +28,22 @@ namespace PackageManagement.Tests
 		FakePackageActionRunner fakeActionRunner;
 		List<FakeSelectedProject> fakeSelectedProjects;
 		
-		void CreateViewModel()
+		void CreateFakeSolution()
 		{
 			fakeSolution = new FakePackageManagementSolution();
+			fakeSolution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject();
+		}
+		
+		void CreateViewModel()
+		{
+			CreateFakeSolution();
 			CreateViewModel(fakeSolution);
 		}
 		
 		void CreateViewModelWithExceptionThrowingSolution()
 		{
 			exceptionThrowingSolution = new ExceptionThrowingPackageManagementSolution();
+			exceptionThrowingSolution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject();
 			CreateViewModel(exceptionThrowingSolution);
 		}
 		
@@ -67,8 +74,9 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModelWithTwoProjectsSelected(string projectName1, string projectName2)
 		{
-			CreateViewModel();
+			CreateFakeSolution();
 			AddTwoProjectsSelected(projectName1, projectName2);
+			CreateViewModel(fakeSolution);
 		}
 
 		void AddTwoProjectsSelected(string projectName1, string projectName2)
@@ -707,10 +715,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void IsAdded_SolutionSelectedContainingOneProjectAndPackageIsInstalledInSolutionSharedRepository_ReturnsTrue()
 		{
-			CreateViewModel();
+			CreateFakeSolution();
 			AddProjectToSolution();
 			fakeSolution.NoProjectsSelected();
 			fakeSolution.FakeInstalledPackages.Add(fakePackage);
+			CreateViewModel(fakeSolution);
 			
 			bool added = viewModel.IsAdded;
 			
@@ -732,10 +741,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void IsManaged_SolutionSelectedContainingTwoProjects_ReturnsTrue()
 		{
-			CreateViewModel();
+			CreateFakeSolution();
 			AddProjectToSolution();
 			AddProjectToSolution();
 			fakeSolution.NoProjectsSelected();
+			CreateViewModel(fakeSolution);
 			
 			bool managed = viewModel.IsManaged;
 			
@@ -745,9 +755,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void IsManaged_SolutionWithOneProjectSelected_ReturnsFalse()
 		{
-			CreateViewModel();
+			CreateFakeSolution();
 			AddProjectToSolution();
 			fakeSolution.FakeActiveMSBuildProject = fakeSolution.FakeMSBuildProjects[0];
+			CreateViewModel(fakeSolution);
 			
 			bool managed = viewModel.IsManaged;
 			

@@ -18,11 +18,6 @@ namespace PackageManagement.Tests.Helpers
 		public ILogger LoggerUsedWhenCreatingPackageResolver;
 		public FakePackageActionRunner FakeActionRunner;
 		
-		public TestableUpdatedPackageViewModel()
-			: this(new FakePackageManagementSolution())
-		{
-		}
-		
 		public TestableUpdatedPackageViewModel(FakePackageManagementSolution solution)
 			: this(
 				new FakePackage(),
@@ -32,7 +27,6 @@ namespace PackageManagement.Tests.Helpers
 				new FakeLogger())
 		{
 			this.FakeSolution = solution;
-			solution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject("MyProject");
 		}
 		
 		public TestableUpdatedPackageViewModel(

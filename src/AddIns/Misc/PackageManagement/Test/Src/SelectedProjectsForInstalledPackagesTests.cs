@@ -16,10 +16,14 @@ namespace PackageManagement.Tests
 	{
 		SelectedProjectsForInstalledPackages selectedProjects;
 		FakePackageManagementSolution fakeSolution;
+
+		void CreateFakeSolution()
+		{
+			fakeSolution = new FakePackageManagementSolution();
+		}
 		
 		void CreateSelectedProjects()
 		{
-			fakeSolution = new FakePackageManagementSolution();
 			selectedProjects = new SelectedProjectsForInstalledPackages(fakeSolution);
 		}
 		
@@ -40,7 +44,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetProjects_SolutionHasTwoProjectsAndOneProjectSelectedInProjectsBrowserAndPackageIsInstalledInProject_ReturnsProjectAndIsSelectedIsTrue()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			projectsAddedToSolution[0].Name = "Aaa";
 			IProject msbuildProject = projectsAddedToSolution[1];
@@ -52,6 +56,8 @@ namespace PackageManagement.Tests
 			fakeProject.FakePackages.Add(fakePackage);
 			fakeSolution.AddFakeProjectToReturnFromGetProject("Aaa");
 
+			CreateSelectedProjects();
+			
 			var projects = new List<IPackageManagementSelectedProject>();
 			projects.AddRange(selectedProjects.GetProjects(fakePackage));
 			
@@ -67,7 +73,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetProjects_SolutionHasTwoProjectsAndNoProjectSelectedInProjectsBrowserAndPackageIsInstalledInFirstProject_ReturnsAllProjectsInSolutionWithIsSelectedIsTrue()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			projectsAddedToSolution[0].Name = "Project A";
 			projectsAddedToSolution[1].Name = "Project B";
@@ -77,6 +83,8 @@ namespace PackageManagement.Tests
 			var fakeProject = fakeSolution.AddFakeProjectToReturnFromGetProject("Project A");
 			fakeProject.FakePackages.Add(fakePackage);
 			fakeSolution.AddFakeProjectToReturnFromGetProject("Project B");
+			
+			CreateSelectedProjects();
 			
 			var projects = new List<IPackageManagementSelectedProject>();
 			projects.AddRange(selectedProjects.GetProjects(fakePackage));

@@ -22,8 +22,12 @@ namespace PackageManagement.Tests
 		
 		void CreateSelectedProjects()
 		{
-			fakeSolution = new FakePackageManagementSolution();
 			selectedProjects = new PackageManagementSelectedProjects(fakeSolution);
+		}
+	
+		void CreateFakeSolution()
+		{
+			fakeSolution = new FakePackageManagementSolution();
 		}
 		
 		List<IProject> AddSolutionWithOneProjectToProjectService()
@@ -56,13 +60,14 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetProjects_SolutionHasTwoProjectsAndOneProjectSelectedInProjectsBrowser_ReturnsProjectSelectedInProjects()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			IProject project = projectsAddedToSolution[1];
 			project.Name = "MyProject";
 			fakeSolution.FakeActiveMSBuildProject = project;
 			
 			var fakeProject = fakeSolution.AddFakeProjectToReturnFromGetProject("MyProject");
+			CreateSelectedProjects();
 			
 			var fakePackage = new FakePackage();
 			var projects = new List<IPackageManagementSelectedProject>();
@@ -78,13 +83,14 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetProjects_SolutionHasTwoProjectsAndOneProjectSelectedInitiallyAndGetProjectsCalledAgainAfterNoProjectsAreSelected_ReturnsProjectSelectedInProjects()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			IProject project = projectsAddedToSolution[1];
 			project.Name = "MyProject";
 			fakeSolution.FakeActiveMSBuildProject = project;
 			
 			var fakeProject = fakeSolution.AddFakeProjectToReturnFromGetProject("MyProject");
+			CreateSelectedProjects();
 			
 			var fakePackage = new FakePackage();
 			var projects = new List<IPackageManagementSelectedProject>();
@@ -105,10 +111,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void HasMultipleProjects_SolutionHasTwoProjectsAndOneProjectSelectedInProjectsBrowser_ReturnsFalse()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			IProject expectedProject = projectsAddedToSolution[1];
 			fakeSolution.FakeActiveMSBuildProject = expectedProject;
+			CreateSelectedProjects();
 			
 			bool hasMultipleProjects = selectedProjects.HasMultipleProjects();
 			
@@ -118,7 +125,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetProjects_SolutionHasTwoProjectsAndNoProjectSelectedInProjectsBrowser_ReturnsAllProjectsInSolutionForPackage()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			projectsAddedToSolution[0].Name = "Project A";
 			projectsAddedToSolution[1].Name = "Project B";
@@ -126,6 +133,7 @@ namespace PackageManagement.Tests
 			
 			fakeSolution.AddFakeProjectToReturnFromGetProject("Project A");
 			fakeSolution.AddFakeProjectToReturnFromGetProject("Project B");
+			CreateSelectedProjects();
 			
 			var fakePackage = new FakePackage();
 			var projects = new List<IPackageManagementSelectedProject>();
@@ -141,9 +149,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void HasMultipleProjects_SolutionHasTwoProjectsAndNoProjectSelectedInProjectsBrowser_ReturnsTrue()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveProject = null;
+			CreateSelectedProjects();
 			
 			bool hasMultipleProjects = selectedProjects.HasMultipleProjects();
 			
@@ -153,9 +162,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void HasMultipleProjects_SolutionHasOneProjectAndNoProjectSelectedInProjectsBrowser_ReturnsFalse()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithOneProjectToProjectService();
 			fakeSolution.FakeActiveProject = null;
+			CreateSelectedProjects();
 			
 			bool hasMultipleProjects = selectedProjects.HasMultipleProjects();
 			
@@ -165,10 +175,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void SelectionName_SolutionHasOneProject_ReturnsProjectNameWithoutFileExtension()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithOneProjectToProjectService();
 			projectsAddedToSolution[0].Name = "MyProject";
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
+			CreateSelectedProjects();
 			
 			string name = selectedProjects.SelectionName;
 			
@@ -178,10 +189,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void SelectionName_SolutionHasTwoProjectsAndNoProjectSelected_ReturnsSolutionFileNameWithoutFullPath()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			NoProjectsSelected();
 			fakeSolution.FileName = @"d:\projects\MyProject\MySolution.sln";
+			CreateSelectedProjects();
 			
 			string name = selectedProjects.SelectionName;
 			
@@ -191,12 +203,13 @@ namespace PackageManagement.Tests
 		[Test]
 		public void IsPackageInstalled_PackageInstalledInSolutionWithTwoProjectsAndNoProjectSelected_ReturnsTrue()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			NoProjectsSelected();
 			
 			var package = new FakePackage("Test");
 			fakeSolution.FakeInstalledPackages.Add(package);
+			CreateSelectedProjects();
 			
 			bool installed = selectedProjects.IsPackageInstalled(package);
 			
@@ -206,9 +219,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void IsPackageInstalled_PackageIsInstalledInSolutionWithTwoProjectsAndNoProjectSelected_ReturnsFalse()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			AddSolutionWithTwoProjectsToProjectService();
 			NoProjectsSelected();
+			CreateSelectedProjects();
 			
 			var package = new FakePackage("Test");
 			bool installed = selectedProjects.IsPackageInstalled(package);
@@ -219,12 +233,13 @@ namespace PackageManagement.Tests
 		[Test]
 		public void IsPackageInstalled_PackageIsInstalledInProjectAndProjectSelected_ReturnsTrue()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
 			
 			var package = new FakePackage("Test");
 			fakeSolution.FakeProjectToReturnFromGetProject.FakePackages.Add(package);
+			CreateSelectedProjects();
 			
 			bool installed = selectedProjects.IsPackageInstalled(package);
 			
@@ -234,9 +249,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void IsPackageInstalled_PackageIsNotInstalledInProjectAndProjectSelected_ReturnsFalse()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
+			CreateSelectedProjects();
 			
 			var package = new FakePackage("Test");
 			bool installed = selectedProjects.IsPackageInstalled(package);
@@ -247,9 +263,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void IsPackageInstalled_PackagePackageIsNotInstalledInProjectAndProjectSelected_ProjectCreatedUsingPackageRepository()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
+			CreateSelectedProjects();
 			
 			var package = new FakePackage("Test");
 			bool installed = selectedProjects.IsPackageInstalled(package);
@@ -263,12 +280,13 @@ namespace PackageManagement.Tests
 		[Test]
 		public void IsPackageInstalledInSolution_PackageInstalledInSolutionWithTwoProjectsAndOneProjectSelected_ReturnsTrue()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
 			
 			var package = new FakePackage("Test");
 			fakeSolution.FakeInstalledPackages.Add(package);
+			CreateSelectedProjects();
 			
 			bool installed = selectedProjects.IsPackageInstalledInSolution(package);
 			
@@ -278,9 +296,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void IsPackageInstalledInSolution_PackageNotInstalledInSolutionWithTwoProjectsAndOneProjectSelected_ReturnsFalse()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
+			CreateSelectedProjects();
 			
 			var package = new FakePackage("Test");
 			
@@ -292,12 +311,13 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetPackagesInstalledInSolution_PackageInstalledInSolutionAndProjectNotSelected_ReturnsPackageInstalledInSolution()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			NoProjectsSelected();
 			
 			var package = new FakePackage("Test");
 			fakeSolution.FakeInstalledPackages.Add(package);
+			CreateSelectedProjects();
 			
 			IQueryable<IPackage> packages = selectedProjects.GetPackagesInstalledInSolution();
 			
@@ -311,9 +331,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetSingleProjectSelected_ProjectSelected_ReturnsProject()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
+			CreateSelectedProjects();
 			
 			var repository = new FakePackageRepository();
 			IPackageManagementProject project = selectedProjects.GetSingleProjectSelected(repository);
@@ -326,9 +347,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetSingleProjectSelected_ProjectSelectedAndRepositoryPassed_ReturnsProjectCreatedWithRepository()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
+			CreateSelectedProjects();
 			
 			var repository = new FakePackageRepository();
 			IPackageManagementProject project = selectedProjects.GetSingleProjectSelected(repository);
@@ -339,9 +361,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetSingleProjectSelected_NoProjectSelectedAndRepositoryPassed_ReturnsProjectCreatedWithRepository()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
+			CreateSelectedProjects();
 			
 			var repository = new FakePackageRepository();
 			IPackageManagementProject project = selectedProjects.GetSingleProjectSelected(repository);
@@ -352,10 +375,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void HasSingleProjectSelected_SolutionHasTwoProjectsAndOneProjectSelectedInProjectsBrowser_ReturnsTrue()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			IProject expectedProject = projectsAddedToSolution[1];
 			fakeSolution.FakeActiveMSBuildProject = expectedProject;
+			CreateSelectedProjects();
 			
 			bool singleProjectSelected = selectedProjects.HasSingleProjectSelected();
 			
@@ -365,9 +389,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void HasSingleProjectSelected_SolutionHasTwoProjectsAndNoProjectsSelectedInProjectsBrowser_ReturnsFalse()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			NoProjectsSelected();
+			CreateSelectedProjects();
 			
 			bool singleProjectSelected = selectedProjects.HasSingleProjectSelected();
 			
@@ -377,9 +402,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void HasSingleProjectSelected_NoProjectsInitiallySelectedAndProjectSelectedAfterInitialCall_IsUnchangedAndReturnsFalse()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			NoProjectsSelected();
+			CreateSelectedProjects();
 			
 			bool singleProjectSelected = selectedProjects.HasSingleProjectSelected();
 			fakeSolution.FakeActiveMSBuildProject = fakeSolution.FakeMSBuildProjects[0];
@@ -391,12 +417,13 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetInstalledPackages_PackageInstalledInSolutionAndProjectNotSelected_ReturnsPackageInstalledInSolution()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			NoProjectsSelected();
 			
 			var package = new FakePackage("Test");
 			fakeSolution.FakeInstalledPackages.Add(package);
+			CreateSelectedProjects();
 			
 			var repository = new FakePackageRepository();
 			IQueryable<IPackage> packages = selectedProjects.GetInstalledPackages(repository);
@@ -411,7 +438,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetInstalledPackages_PackageInstalledInProjectAndProjectIsSelected_ReturnsPackageInstalledInProject()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
 			fakeSolution.FakeActiveMSBuildProject.Name = "MyProject";
@@ -420,6 +447,7 @@ namespace PackageManagement.Tests
 			var project = new FakePackageManagementProject("MyProject");
 			project.FakePackages.Add(package);
 			fakeSolution.FakeProjectsToReturnFromGetProject.Add("MyProject", project);
+			CreateSelectedProjects();
 			
 			var repository = new FakePackageRepository();
 			IQueryable<IPackage> packages = selectedProjects.GetInstalledPackages(repository);
@@ -434,9 +462,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetInstalledPackages_PackageInstalledInProjectAndProjectIsSelected_CreatesProjectUsingRepository()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
 			fakeSolution.FakeActiveMSBuildProject = projectsAddedToSolution[0];
+			CreateSelectedProjects();
 			
 			var expectedRepository = new FakePackageRepository();
 			IQueryable<IPackage> packages = selectedProjects.GetInstalledPackages(expectedRepository);
@@ -449,14 +478,39 @@ namespace PackageManagement.Tests
 		[Test]
 		public void GetSingleProjectSelected_NoProjectSelected_ReturnsNull()
 		{
-			CreateSelectedProjects();
+			CreateFakeSolution();
 			AddSolutionWithTwoProjectsToProjectService();
 			NoProjectsSelected();
+			CreateSelectedProjects();
 			
 			var repository = new FakePackageRepository();
 			IPackageManagementProject project = selectedProjects.GetSingleProjectSelected(repository);
 			
 			Assert.IsNull(project);
+		}
+		
+		[Test]
+		public void GetProjects_SolutionHasTwoProjectsAndOneProjectSelectedInitiallyAndActiveProjectChangedInSolutionAfterInstanceCreated_ReturnsProjectSelectedInProjects()
+		{
+			CreateFakeSolution();
+			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
+			IProject project = projectsAddedToSolution[1];
+			project.Name = "MyProject";
+			fakeSolution.FakeActiveMSBuildProject = project;
+			var fakeProject = fakeSolution.AddFakeProjectToReturnFromGetProject("MyProject");
+			CreateSelectedProjects();
+				
+			NoProjectsSelected();
+			
+			var fakePackage = new FakePackage();
+			var projects = new List<IPackageManagementSelectedProject>();
+			projects.AddRange(selectedProjects.GetProjects(fakePackage));
+			
+			var expectedProject = new FakeSelectedProject("MyProject");
+			var expectedProjects = new List<IPackageManagementSelectedProject>();
+			expectedProjects.Add(expectedProject);
+			
+			SelectedProjectCollectionAssert.AreEqual(expectedProjects, projects);
 		}
 	}
 }

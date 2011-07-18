@@ -20,6 +20,7 @@ namespace ICSharpCode.PackageManagement
 		public PackageManagementSelectedProjects(IPackageManagementSolution solution)
 		{
 			this.solution = solution;
+			GetHasSingleProjectSelected();
 		}
 		
 		public IEnumerable<IPackageManagementSelectedProject> GetProjects(IPackageFromRepository package)
@@ -36,10 +37,15 @@ namespace ICSharpCode.PackageManagement
 		public bool HasSingleProjectSelected()
 		{
 			if (!singleProjectSelected.HasValue) {
-				singleMSBuildProjectSelected = solution.GetActiveMSBuildProject();
-				singleProjectSelected = singleMSBuildProjectSelected != null;
+				GetHasSingleProjectSelected();
 			}
 			return singleProjectSelected.Value;
+		}
+		
+		void GetHasSingleProjectSelected()
+		{
+			singleMSBuildProjectSelected = solution.GetActiveMSBuildProject();
+			singleProjectSelected = singleMSBuildProjectSelected != null;
 		}
 		
 		IEnumerable<IProject> GetOpenProjects()
