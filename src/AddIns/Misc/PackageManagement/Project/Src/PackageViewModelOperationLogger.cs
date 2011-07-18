@@ -23,10 +23,12 @@ namespace ICSharpCode.PackageManagement
 		{
 			AddingPackageMessageFormat = "Installing...{0}";
 			RemovingPackageMessageFormat = "Uninstalling...{0}";
+			ManagingPackageMessageFormat = "Managing...{0}";
 		}
 		
 		public string AddingPackageMessageFormat { get; set; }
 		public string RemovingPackageMessageFormat { get; set; }
+		public string ManagingPackageMessageFormat { get; set; }
 		
 		public void Log(MessageLevel level, string message, params object[] args)
 		{
@@ -81,6 +83,12 @@ namespace ICSharpCode.PackageManagement
 		public void LogError(Exception ex)
 		{
 			LogInformation(ex.ToString());
+		}
+		
+		public void LogManagingPackage()
+		{
+			string message =  GetFormattedStartPackageOperationMessage(ManagingPackageMessageFormat);
+			LogInformation(message);			
 		}
 	}
 }

@@ -31,6 +31,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public void RemovePackage(IPackage package)
 		{
 			IsRemovePackageCalled = true;
+			FakePackages.Remove(package as FakePackage);
 		}
 		
 		public string Source { get; set; }

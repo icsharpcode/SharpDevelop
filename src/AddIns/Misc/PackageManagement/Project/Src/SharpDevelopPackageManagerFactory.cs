@@ -31,35 +31,24 @@ namespace ICSharpCode.PackageManagement
 			this.options = options;
 		}
 		
-		public ISharpDevelopPackageManager CreatePackageManager(IPackageRepository packageRepository, MSBuildBasedProject project)
-		{
-			IFileSystem fileSystem = CreateFileSystemThatWillContainPackages(project);
-			return CreatePackageManager(fileSystem, packageRepository, project);
-		}
-		
-		IFileSystem CreateFileSystemThatWillContainPackages(MSBuildBasedProject project)
-		{
-			var repositoryPath = new SolutionPackageRepositoryPath(project, options);
-			return new PhysicalFileSystem(repositoryPath.PackageRepositoryPath);
-		}
-		
-		ISharpDevelopPackageManager CreatePackageManager(
-			IFileSystem fileSystem, 
-			IPackageRepository packageRepository, 
+		public ISharpDevelopPackageManager CreatePackageManager(
+			IPackageRepository sourceRepository,
 			MSBuildBasedProject project)
 		{
-			DefaultPackagePathResolver pathResolver = new DefaultPackagePathResolver(fileSystem);
-			ISharedPackageRepository sharedRepository = CreateSharedRepository(pathResolver, fileSystem);
+			SolutionPackageRepository solutionPackageRepository = CreateSolutionPackageRepository(project.ParentSolution);
 			IProjectSystem projectSystem = CreateProjectSystem(project);
 			PackageOperationsResolverFactory packageOperationResolverFactory = new PackageOperationsResolverFactory();
 			
 			return new SharpDevelopPackageManager(
-				packageRepository,
+				sourceRepository,
 				projectSystem,
-				fileSystem,
-				sharedRepository,
-				pathResolver,
+				solutionPackageRepository,
 				packageOperationResolverFactory);
+		}
+		
+		SolutionPackageRepository CreateSolutionPackageRepository(Solution solution)
+		{
+			return new SolutionPackageRepository(solution, packageRepositoryFactory, options);
 		}
 		
 		IProjectSystem CreateProjectSystem(MSBuildBasedProject project)

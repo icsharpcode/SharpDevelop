@@ -23,6 +23,7 @@ namespace ICSharpCode.PackageManagement
 			IPackageActionRunner actionRunner)
 		{
 			this.Solution = solution;
+			this.SelectedProjects = new PackageManagementSelectedProjects(solution);
 			this.PackageManagementEvents = packageManagementEvents;
 			this.PackageActionRunner = actionRunner;
 			this.Logger = new PackageManagementLogger(packageManagementEvents);
@@ -32,13 +33,14 @@ namespace ICSharpCode.PackageManagement
 		{
 			return new PackageViewModel(
 				package,
-				Solution,
+				SelectedProjects,
 				PackageManagementEvents,
 				PackageActionRunner,
 				Logger);
 		}
 		
 		public IPackageManagementSolution Solution { get; private set; }
+		public PackageManagementSelectedProjects SelectedProjects { get; private set; }
 		public IPackageManagementEvents PackageManagementEvents { get; private set; }
 		public ILogger Logger { get; private set; }
 		public IPackageActionRunner PackageActionRunner { get; private set; }

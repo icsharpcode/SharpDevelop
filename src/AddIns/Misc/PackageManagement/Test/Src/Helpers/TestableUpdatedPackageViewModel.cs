@@ -26,30 +26,32 @@ namespace PackageManagement.Tests.Helpers
 		public TestableUpdatedPackageViewModel(FakePackageManagementSolution solution)
 			: this(
 				new FakePackage(),
-				solution,
+				new PackageManagementSelectedProjects(solution),
 				new FakePackageManagementEvents(),
 				new FakePackageActionRunner(),
 				new FakeLogger())
-		{		
+		{
+			this.FakeSolution = solution;
+			solution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject("MyProject");
 		}
 		
 		public TestableUpdatedPackageViewModel(
 			FakePackage package,
-			FakePackageManagementSolution solution,
+			PackageManagementSelectedProjects selectedProjects,
 			FakePackageManagementEvents packageManagementEvents,
 			FakePackageActionRunner actionRunner,
 			FakeLogger logger)
 			: base(
 				package,
-				solution,
+				selectedProjects,
 				packageManagementEvents,
 				actionRunner,
 				logger)
 		{
 			this.FakePackage = package;
-			this.FakeSolution = solution;
 			this.FakeActionRunner = actionRunner;
 			this.FakeLogger = logger;
+			this.FakePackageManagementEvents = packageManagementEvents;
 		}
 	}
 }

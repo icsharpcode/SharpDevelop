@@ -12,64 +12,55 @@ namespace ICSharpCode.PackageManagement
 {
 	public class ManagePackagesViewModel : ViewModelBase<ManagePackagesViewModel>, IDisposable
 	{
-		IPackageManagementSolution solution;
 		IThreadSafePackageManagementEvents packageManagementEvents;
-		ILicenseAcceptanceService licenseAcceptanceService;
+		ManagePackagesUserPrompts userPrompts;
+		PackagesViewModels packagesViewModels;
+		ManagePackagesViewTitle viewTitle;
 		string message;
 		bool hasError;
 		
 		public ManagePackagesViewModel(
-			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredPackageRepositories,
+			PackagesViewModels packagesViewModels,
+			ManagePackagesViewTitle viewTitle,
 			IThreadSafePackageManagementEvents packageManagementEvents,
-			IPackageActionRunner actionRunner,
-			ILicenseAcceptanceService licenseAcceptanceService,
-			ITaskFactory taskFactory)
+			ManagePackagesUserPrompts userPrompts)
 		{
-			this.solution = solution;
+			this.packagesViewModels = packagesViewModels;
+			this.viewTitle = viewTitle;
 			this.packageManagementEvents = packageManagementEvents;
-			this.licenseAcceptanceService = licenseAcceptanceService;
+			this.userPrompts = userPrompts;
 			
 			packageManagementEvents.PackageOperationError += PackageOperationError;
 			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
-			packageManagementEvents.AcceptLicenses += AcceptLicenses;
 			
-			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents, actionRunner);
-			
-			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
-			InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
-			UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, registeredPackageRepositories, packageViewModelFactory, taskFactory);
-			RecentPackagesViewModel = new RecentPackagesViewModel(packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
-			
-			AvailablePackagesViewModel.ReadPackages();
-			InstalledPackagesViewModel.ReadPackages();
-			UpdatedPackagesViewModel.ReadPackages();
-			RecentPackagesViewModel.ReadPackages();
+			packagesViewModels.ReadPackages();
 		}
 		
-		public AvailablePackagesViewModel AvailablePackagesViewModel { get; private set; }
-		public InstalledPackagesViewModel InstalledPackagesViewModel { get; private set; }
-		public RecentPackagesViewModel RecentPackagesViewModel { get; private set; }
-		public UpdatedPackagesViewModel UpdatedPackagesViewModel { get; private set; }
+		public AvailablePackagesViewModel AvailablePackagesViewModel {
+			get { return packagesViewModels.AvailablePackagesViewModel; }
+		}
+		
+		public InstalledPackagesViewModel InstalledPackagesViewModel {
+			get { return packagesViewModels.InstalledPackagesViewModel; }
+		}
+		
+		public RecentPackagesViewModel RecentPackagesViewModel {
+			get { return packagesViewModels.RecentPackagesViewModel; }
+		}
+		
+		public UpdatedPackagesViewModel UpdatedPackagesViewModel {
+			get { return packagesViewModels.UpdatedPackagesViewModel; }
+		}
 		
 		public string Title {
-			get { return GetTitle(); }
-		}
-		
-		string GetTitle()
-		{
-			IPackageManagementProject project = solution.GetActiveProject();
-			return String.Format("{0} - Manage Packages", project.Name);
+			get { return viewTitle.Title; }
 		}
 		
 		public void Dispose()
 		{
-			AvailablePackagesViewModel.Dispose();
-			InstalledPackagesViewModel.Dispose();
-			RecentPackagesViewModel.Dispose();
-			UpdatedPackagesViewModel.Dispose();
+			packagesViewModels.Dispose();
+			userPrompts.Dispose();
 			
-			packageManagementEvents.AcceptLicenses -= AcceptLicenses;
 			packageManagementEvents.PackageOperationError -= PackageOperationError;
 			packageManagementEvents.PackageOperationsStarting -= PackageOperationsStarting;
 			packageManagementEvents.Dispose();
@@ -111,11 +102,6 @@ namespace ICSharpCode.PackageManagement
 		{
 			this.Message = null;
 			this.HasError = false;
-		}
-		
-		void AcceptLicenses(object sender, AcceptLicensesEventArgs e)
-		{
-			e.IsAccepted = licenseAcceptanceService.AcceptLicenses(e.Packages);
 		}
 	}
 }

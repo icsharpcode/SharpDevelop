@@ -3,13 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using NuGet;
 
-namespace ICSharpCode.PackageManagement.Scripting
+namespace ICSharpCode.PackageManagement
 {
-	public interface ISolutionPackageRepository
+	public interface ISelectProjectsService
 	{
-		string GetInstallPath(IPackage package);
-		IEnumerable<IPackage> GetPackagesByDependencyOrder();
+		bool SelectProjects(IEnumerable<IPackageManagementSelectedProject> projects);
 	}
 }

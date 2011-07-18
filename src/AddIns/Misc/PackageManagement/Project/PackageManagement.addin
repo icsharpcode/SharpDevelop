@@ -20,7 +20,7 @@
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem
 				id="ManagePackages"
-				label="Manage Packages"
+				label="Manage Packages..."
 				insertafter="AddWebReference"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>		
@@ -32,7 +32,7 @@
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem
 				id="ManagePackages"
-				label="Manage Packages"
+				label="Manage Packages..."
 				insertafter="AddWebReference"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
@@ -44,10 +44,22 @@
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem
 				id="ManagePackages"
-				label="Manage Packages"
+				label="Manage Packages..."
 				insertafter="AddWebReference"
 				insertbefore="AddSeparator"
 				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>				
+		</Condition>
+	</Path>
+	
+	<!-- Projects window context menu - solution selected -->
+	<Path path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode">
+		<Condition name="WriteableSolution" action="Disable">
+			<MenuItem
+				id="ManagePackagesForSolution"
+				label="Manage Packages..."
+				insertafter="CombineAddMenu"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
 		</Condition>
 	</Path>
 

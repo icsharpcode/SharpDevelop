@@ -14,12 +14,17 @@ namespace ICSharpCode.PackageManagement.Design
 	public class FakePackageManagementProject : IPackageManagementProject
 	{
 		public FakePackageManagementProject()
+			: this("Test")
+		{
+		}
+		
+		public FakePackageManagementProject(string name)
 		{
 			FakeInstallPackageAction = new FakeInstallPackageAction(this);
 			FakeUninstallPackageAction = new FakeUninstallPackageAction(this);
 			FakeUpdatePackageAction = new FakeUpdatePackageAction(this);
 			
-			Name = "Test";
+			this.Name = name;
 		}
 		
 		public FakeInstallPackageAction FakeInstallPackageAction;
@@ -28,13 +33,9 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public string Name { get; set; }
 		
-		public bool IsInstalledReturnValue;
-		public IPackage PackagePassedToIsInstalled;
-		
-		public bool IsInstalled(IPackage package)
+		public bool IsPackageInstalled(IPackage package)
 		{
-			PackagePassedToIsInstalled = package;
-			return IsInstalledReturnValue;
+			return FakePackages.Contains(package);
 		}
 		
 		public List<FakePackage> FakePackages = new List<FakePackage>();
@@ -44,11 +45,11 @@ namespace ICSharpCode.PackageManagement.Design
 			return FakePackages.AsQueryable();
 		}
 		
-		public List<PackageOperation> FakeInstallOperations = new List<PackageOperation>();
+		public List<FakePackageOperation> FakeInstallOperations = new List<FakePackageOperation>();
 		public IPackage PackagePassedToGetInstallPackageOperations;
 		public bool IgnoreDependenciesPassedToGetInstallPackageOperations;
 		
-		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
+		public virtual IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
 		{
 			PackagePassedToGetInstallPackageOperations = package;
 			IgnoreDependenciesPassedToGetInstallPackageOperations = ignoreDependencies;
@@ -69,10 +70,20 @@ namespace ICSharpCode.PackageManagement.Design
 			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
 		}
 		
-		public void AddFakeInstallOperation()
+		public FakePackageOperation AddFakeInstallOperation()
 		{
-			var operation = new PackageOperation(new FakePackage(), PackageAction.Install);
+			var package = new FakePackage("MyPackage");
+			var operation = new FakePackageOperation(package, PackageAction.Install);
 			FakeInstallOperations.Add(operation);
+			return operation;
+		}
+		
+		public FakePackageOperation AddFakeUninstallOperation()
+		{
+			var package = new FakePackage("MyPackage");
+			var operation = new FakePackageOperation(package, PackageAction.Uninstall);
+			FakeInstallOperations.Add(operation);
+			return operation;			
 		}
 		
 		public FakePackageRepository FakeSourceRepository = new FakePackageRepository();

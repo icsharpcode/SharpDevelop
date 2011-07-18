@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -14,8 +16,16 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository);
 		IPackageManagementProject GetProject(PackageSource source, string projectName);
 		IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName);
+		IPackageManagementProject GetProject(IPackageRepository sourceRepository, IProject project);
+		
+		IProject GetActiveMSBuildProject();
 		IEnumerable<IProject> GetMSBuildProjects();
+		bool HasMultipleProjects();
+		
+		bool IsPackageInstalled(IPackage package);
+		IQueryable<IPackage> GetPackages();
 		
 		bool IsOpen { get; }
+		string FileName { get; }
 	}
 }

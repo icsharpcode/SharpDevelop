@@ -12,24 +12,38 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UpdatedPackages
 	{
-		IPackageManagementProject project;
 		IPackageRepository sourceRepository;
+		IQueryable<IPackage> installedPackages;
 		
 		public UpdatedPackages(
 			IPackageManagementProject project,
 			IPackageRepository aggregateRepository)
+			: this(
+				project.GetPackages(),
+				aggregateRepository)
 		{
-			this.project = project;
-			this.sourceRepository = aggregateRepository;
+		}
+		
+		public UpdatedPackages(
+			IQueryable<IPackage> installedPackages,
+			IPackageRepository aggregrateRepository)
+		{
+			this.installedPackages = installedPackages;
+			this.sourceRepository = aggregrateRepository;
 		}
 		
 		public string SearchTerms { get; set; }
 		
 		public IEnumerable<IPackage> GetUpdatedPackages()
 		{
-			IQueryable<IPackage> localPackages = project.GetPackages();
+			IQueryable<IPackage> localPackages = installedPackages;
 			localPackages = FilterPackages(localPackages);
 			return GetUpdatedPackages(sourceRepository, localPackages);
+		}
+		
+		IQueryable<IPackage> GetInstalledPackages()
+		{
+			return installedPackages;
 		}
 		
 		IQueryable<IPackage> FilterPackages(IQueryable<IPackage> localPackages)

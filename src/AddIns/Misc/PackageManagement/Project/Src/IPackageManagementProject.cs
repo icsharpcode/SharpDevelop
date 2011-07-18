@@ -23,7 +23,7 @@ namespace ICSharpCode.PackageManagement
 		
 		Project ConvertToDTEProject();
 		
-		bool IsInstalled(IPackage package);
+		bool IsPackageInstalled(IPackage package);
 		
 		IQueryable<IPackage> GetPackages();
 		

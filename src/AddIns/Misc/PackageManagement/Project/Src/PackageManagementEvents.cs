@@ -66,5 +66,17 @@ namespace ICSharpCode.PackageManagement
 				PackageOperationMessageLogged(this, eventArgs);
 			}
 		}
+		
+		public event EventHandler<SelectProjectsEventArgs> SelectProjects;
+		
+		public bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> projects)
+		{
+			if (SelectProjects != null) {
+				var eventArgs = new SelectProjectsEventArgs(projects);
+				SelectProjects(this, eventArgs);
+				return eventArgs.IsAccepted;
+			}
+			return true;
+		}
 	}
 }

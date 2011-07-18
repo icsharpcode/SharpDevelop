@@ -11,6 +11,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		event EventHandler PackageOperationsStarting;
 		event EventHandler<AcceptLicensesEventArgs> AcceptLicenses;
+		event EventHandler<SelectProjectsEventArgs> SelectProjects;
 		event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
 		event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
 		event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
@@ -22,5 +23,6 @@ namespace ICSharpCode.PackageManagement
 		void OnParentPackageInstalled(IPackage package);
 		void OnParentPackageUninstalled(IPackage package);
 		void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args);
+		bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> selectedProjects);
 	}
 }

@@ -16,11 +16,16 @@ namespace PackageManagement.Tests.Helpers
 		public FakeLogger FakeLogger = new FakeLogger();
 		public FakePackageActionRunner FakeActionRunner = new FakePackageActionRunner();
 		
+		public FakePackageViewModelFactory()
+		{
+			SelectedProjects = new PackageManagementSelectedProjects(FakeSolution);
+		}
+		
 		public PackageViewModel CreatePackageViewModel(IPackageFromRepository package)
 		{
 			return new PackageViewModel(
 				package,
-				FakeSolution,
+				SelectedProjects,
 				FakePackageManagementEvents,
 				FakeActionRunner,
 				FakeLogger);
@@ -29,6 +34,8 @@ namespace PackageManagement.Tests.Helpers
 		public IPackageManagementSolution Solution { 
 			get { return FakeSolution; }
 		}
+		
+		public PackageManagementSelectedProjects SelectedProjects { get; set; }
 		
 		public IPackageManagementEvents PackageManagementEvents {
 			get { return FakePackageManagementEvents; }
