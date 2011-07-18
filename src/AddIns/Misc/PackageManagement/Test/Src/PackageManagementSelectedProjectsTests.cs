@@ -103,33 +103,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void GetProjects_SolutionHasTwoProjectsAndOneProjectSelectedInProjectsBrowserAndPackageIsInstalledInProject_ReturnsProjectAndIsSelectedIsTrue()
-		{
-			CreateSelectedProjects();
-			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
-			projectsAddedToSolution[0].Name = "Aaa";
-			IProject msbuildProject = projectsAddedToSolution[1];
-			msbuildProject.Name = "MyProject";
-			fakeSolution.FakeActiveMSBuildProject = msbuildProject;
-			
-			var fakePackage = new FakePackage();
-			var fakeProject = fakeSolution.AddFakeProjectToReturnFromGetProject("MyProject");
-			fakeProject.FakePackages.Add(fakePackage);
-			fakeSolution.AddFakeProjectToReturnFromGetProject("Aaa");
-
-			var projects = new List<IPackageManagementSelectedProject>();
-			projects.AddRange(selectedProjects.GetProjects(fakePackage));
-			
-			var expectedProject = new FakeSelectedProject("MyProject", selected: true);
-			var expectedProjects = new List<IPackageManagementSelectedProject>();
-			expectedProjects.Add(expectedProject);
-			
-			SelectedProjectCollectionAssert.AreEqual(expectedProjects, projects);
-			Assert.AreEqual(fakePackage.FakePackageRepository, fakeSolution.RepositoryPassedToGetProject);
-			Assert.AreEqual(msbuildProject, fakeSolution.ProjectPassedToGetProject);
-		}
-		
-		[Test]
 		public void HasMultipleProjects_SolutionHasTwoProjectsAndOneProjectSelectedInProjectsBrowser_ReturnsFalse()
 		{
 			CreateSelectedProjects();
@@ -163,32 +136,6 @@ namespace PackageManagement.Tests
 			expectedProjects.Add(new FakeSelectedProject("Project B"));
 			
 			SelectedProjectCollectionAssert.AreEqual(expectedProjects, projects);
-		}
-		
-		[Test]
-		public void GetProjects_SolutionHasTwoProjectsAndNoProjectSelectedInProjectsBrowserAndPackageIsInstalledInFirstProject_ReturnsAllProjectsInSolutionWithIsSelectedIsTrue()
-		{
-			CreateSelectedProjects();
-			List<IProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService();
-			projectsAddedToSolution[0].Name = "Project A";
-			projectsAddedToSolution[1].Name = "Project B";
-			fakeSolution.FakeActiveProject = null;
-			
-			var fakePackage = new FakePackage("Test");
-			var fakeProject = fakeSolution.AddFakeProjectToReturnFromGetProject("Project A");
-			fakeProject.FakePackages.Add(fakePackage);
-			fakeSolution.AddFakeProjectToReturnFromGetProject("Project B");
-			
-			var projects = new List<IPackageManagementSelectedProject>();
-			projects.AddRange(selectedProjects.GetProjects(fakePackage));
-						
-			var expectedProjects = new List<IPackageManagementSelectedProject>();
-			expectedProjects.Add(new FakeSelectedProject("Project A", selected: true));
-			expectedProjects.Add(new FakeSelectedProject("Project B", selected: false));
-			
-			SelectedProjectCollectionAssert.AreEqual(expectedProjects, projects);
-			Assert.AreEqual(fakePackage.FakePackageRepository, fakeSolution.RepositoryPassedToGetProject);
-			Assert.AreEqual(projectsAddedToSolution, fakeSolution.ProjectsPassedToGetProject);
 		}
 		
 		[Test]

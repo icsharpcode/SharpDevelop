@@ -68,6 +68,11 @@ namespace PackageManagement.Tests
 		void CreateViewModelWithTwoProjectsSelected(string projectName1, string projectName2)
 		{
 			CreateViewModel();
+			AddTwoProjectsSelected(projectName1, projectName2);
+		}
+
+		void AddTwoProjectsSelected(string projectName1, string projectName2)
+		{			
 			AddProjectToSolution();
 			AddProjectToSolution();
 			fakeSolution.FakeMSBuildProjects[0].Name = projectName1;
@@ -762,29 +767,6 @@ namespace PackageManagement.Tests
 			var expectedSelectedProjects = new List<IPackageManagementSelectedProject>();
 			expectedSelectedProjects.Add(new FakeSelectedProject("Project A"));
 			expectedSelectedProjects.Add(new FakeSelectedProject("Project B"));
-			
-			SelectedProjectCollectionAssert.AreEqual(expectedSelectedProjects, selectedProjects);
-		}
-		
-		[Test]
-		public void ManagePackage_TwoProjectsSelectedAndPackageIsInstalledInFirstProject_UserPromptedToSelectTwoProjectsAndBothProjectsHaveIsSelectedSetToTrue()
-		{
-			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
-			SetPackageIdAndVersion("MyPackage", "1.1.3.44");
-			
-			FakePackageManagementProject fakeProject = fakeSolution.FakeProjectsToReturnFromGetProject["Project A"];
-			fakeProject.FakePackages.Add(fakePackage);
-
-			UserCancelsProjectSelection();
-			
-			viewModel.ManagePackage();
-			
-			IEnumerable<IPackageManagementSelectedProject> selectedProjects = 
-				fakePackageManagementEvents.SelectedProjectsPassedToOnSelectProjects;
-			
-			var expectedSelectedProjects = new List<IPackageManagementSelectedProject>();
-			expectedSelectedProjects.Add(new FakeSelectedProject("Project A", selected: true));
-			expectedSelectedProjects.Add(new FakeSelectedProject("Project B", selected: false));
 			
 			SelectedProjectCollectionAssert.AreEqual(expectedSelectedProjects, selectedProjects);
 		}

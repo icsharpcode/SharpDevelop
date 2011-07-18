@@ -11,7 +11,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		public InstalledPackageViewModel(
 			IPackageFromRepository package,
-			PackageManagementSelectedProjects selectedProjects,
+			SelectedProjectsForInstalledPackages selectedProjects,
 			IPackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
 			ILogger logger)

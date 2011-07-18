@@ -271,6 +271,7 @@
     <Compile Include="Src\Scripting\PowerShellMissingConsoleHost.cs" />
     <Compile Include="Src\Scripting\PowerShellWorkingDirectory.cs" />
     <Compile Include="Src\Scripting\ResetPowerShellWorkingDirectoryOnSolutionClosed.cs" />
+    <Compile Include="Src\SelectedProjectsForInstalledPackages.cs" />
     <Compile Include="Src\SelectProjectsEventArgs.cs" />
     <Compile Include="Src\SelectProjectsService.cs" />
     <Compile Include="Src\SelectProjectsView.xaml.cs">

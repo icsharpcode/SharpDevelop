@@ -19,12 +19,16 @@ namespace PackageManagement.Tests
 		List<IPackageManagementSelectedProject> fakeSelectedProjects;
 		IList<ProcessPackageAction> packageActions;
 		FakePackageActionRunner fakeActionRunner;
+		FakePackage fakePackage;
+		FakePackageManagementEvents fakePackageManagementEvents;
 		
 		void CreateViewModel()
 		{
 			viewModel = new TestableInstalledPackageViewModel();
 			fakeSolution = viewModel.FakeSolution;
 			fakeActionRunner = viewModel.FakeActionRunner;
+			fakePackage = viewModel.FakePackage;
+			fakePackageManagementEvents = viewModel.FakePackageManagementEvents;
 		}
 		
 		void CreateEmptyFakeSelectedProjectsList()
@@ -81,6 +85,24 @@ namespace PackageManagement.Tests
 		void AddViewModelPackageToFirstSelectedProjectPackages()
 		{
 			FirstSelectedProject.FakeProject.FakePackages.Add(viewModel.FakePackage);
+		}
+		
+		void AddTwoProjectsSelected(string projectName1, string projectName2)
+		{			
+			AddProjectToSolution();
+			AddProjectToSolution();
+			fakeSolution.FakeMSBuildProjects[0].Name = projectName1;
+			fakeSolution.FakeMSBuildProjects[1].Name = projectName2;
+			fakeSolution.NoProjectsSelected();
+			
+			fakeSolution.AddFakeProjectToReturnFromGetProject(projectName1);
+			fakeSolution.AddFakeProjectToReturnFromGetProject(projectName2);
+		}
+		
+		void SetPackageIdAndVersion(string id, string version)
+		{
+			fakePackage.Id = id;
+			fakePackage.Version = new Version(version);
 		}
 		
 		[Test]
@@ -220,6 +242,30 @@ namespace PackageManagement.Tests
 			Assert.AreEqual(2, actions.Count);
 			Assert.AreEqual(viewModel.FakePackage, firstAction.Package);
 			Assert.AreEqual(viewModel.FakePackage, secondAction.Package);
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsSelectedAndPackageIsInstalledInFirstProject_UserPromptedToSelectTwoProjectsAndBothProjectsHaveIsSelectedSetToTrue()
+		{
+			CreateViewModel();
+			AddTwoProjectsSelected("Project A", "Project B");
+			SetPackageIdAndVersion("MyPackage", "1.1.3.44");
+			
+			FakePackageManagementProject fakeProject = fakeSolution.FakeProjectsToReturnFromGetProject["Project A"];
+			fakeProject.FakePackages.Add(fakePackage);
+
+			viewModel.FakePackageManagementEvents.OnSelectProjectsReturnValue = false;
+			
+			viewModel.ManagePackage();
+			
+			IEnumerable<IPackageManagementSelectedProject> selectedProjects = 
+				fakePackageManagementEvents.SelectedProjectsPassedToOnSelectProjects;
+			
+			var expectedSelectedProjects = new List<IPackageManagementSelectedProject>();
+			expectedSelectedProjects.Add(new FakeSelectedProject("Project A", selected: true));
+			expectedSelectedProjects.Add(new FakeSelectedProject("Project B", selected: false));
+			
+			SelectedProjectCollectionAssert.AreEqual(expectedSelectedProjects, selectedProjects);
 		}
 	}
 }
