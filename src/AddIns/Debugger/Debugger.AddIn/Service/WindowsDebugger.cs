@@ -18,7 +18,6 @@ using Debugger.AddIn.TreeModel;
 using Debugger.Interop.CorPublish;
 using Debugger.MetaData;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Services;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.ILAst;
@@ -1001,7 +1000,9 @@ namespace ICSharpCode.SharpDevelop.Services
 
 						// update marker
 						var debugType = (DebugType)frame.MethodInfo.DeclaringType;
-						string title = "[" + debugType.Name + "]";
+						string fullTypeName = debugType.FullNameWithoutGenericArguments;
+						string shortTypeName = fullTypeName.Substring(fullTypeName.LastIndexOf('.') + 1);
+						string title = "[" + shortTypeName + "]";
 						foreach (var vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<AbstractViewContentWithoutFile>()) {
 							if (string.Equals(vc.TitleName, title, StringComparison.OrdinalIgnoreCase)) {
 								CurrentLineBookmark.SetPosition(vc, line, 0, line, 0);

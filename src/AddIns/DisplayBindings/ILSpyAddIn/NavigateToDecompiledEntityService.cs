@@ -35,7 +35,7 @@ namespace ICSharpCode.ILSpyAddIn
 			if (rpc != null) {
 				string assemblyLocation = ILSpyController.GetAssemblyLocation(rpc);
 				if (!string.IsNullOrEmpty(assemblyLocation) && File.Exists(assemblyLocation)) {
-					NavigateTo(assemblyLocation, declaringType.FullyQualifiedName, ((AbstractEntity)entity).DocumentationTag);
+					NavigateTo(assemblyLocation, declaringType.DotNetName, ((AbstractEntity)entity).DocumentationTag);
 					return true;
 				}
 			}

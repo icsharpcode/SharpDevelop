@@ -52,7 +52,7 @@ namespace ICSharpCode.ILSpyAddIn
 			this.jumpToEntityTagWhenDecompilationFinished = entityTag;
 			
 			string shortTypeName = fullTypeName.Substring(fullTypeName.LastIndexOf('.') + 1);
-			this.TitleName = "[" + ReflectionHelper.SplitTypeParameterCountFromReflectionName(shortTypeName) + "]";
+			this.TitleName = "[" + shortTypeName + "]";
 			
 			Thread thread = new Thread(DecompilationThread);
 			thread.Name = "Decompiler (" + shortTypeName + ")";
