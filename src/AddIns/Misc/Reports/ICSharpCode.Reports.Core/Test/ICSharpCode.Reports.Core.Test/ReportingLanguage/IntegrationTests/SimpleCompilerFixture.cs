@@ -66,6 +66,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage
 		
 		#endregion
 		
+		
 		#region Setup
 		
 		[SetUp]

@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
+using SimpleExpressionEvaluator.Utilities;
+
 
 /// <summary>
 /// This Class handles all List's with IList
@@ -213,6 +215,43 @@ namespace ICSharpCode.Reports.Core {
 		{
 			if (item is BaseDataItem)
 			{
+				string result = String.Empty;
+				PropertyPath path = fillFrom.ParsePropertyPath(item.ColumnName);
+				if (path != null)
+				{
+					var pp = path.Evaluate(fillFrom);
+					if (pp != null)
+					{
+						result = pp.ToString();
+					}
+				} else 
+				{
+					result = WrongColumnName(item.ColumnName);
+				}
+				
+				item.DBValue = result;
+			}
+			else
+			{
+				//image processing from IList
+				BaseImageItem baseImageItem = item as BaseImageItem;
+				
+				if (baseImageItem != null) {
+					PropertyDescriptor p = this.listProperties.Find(baseImageItem.ColumnName, true);
+					if (p != null) {
+						baseImageItem.Image = p.GetValue(this.Current) as System.Drawing.Image;
+					}
+					return;
+				}
+				
+			}
+		}
+		
+		/*
+		private void FillInternal(object fillFrom,IDataItem item)
+		{
+			if (item is BaseDataItem)
+			{
 				var retVal = FollowPropertyPath(fillFrom,item.ColumnName);
 				if (retVal != null) {
 					item.DBValue = retVal.ToString();
@@ -236,7 +275,7 @@ namespace ICSharpCode.Reports.Core {
 				
 			}
 		}
-		
+		*/
 		
 		public override void Fill(IDataItem item)
 		{
@@ -247,7 +286,7 @@ namespace ICSharpCode.Reports.Core {
 	
 		//http://stackoverflow.com/questions/366332/best-way-to-get-sub-properties-using-getproperty
 		
-		
+		/*
 		private static  object FollowPropertyPath(object value, string path)
 		{
 			Type currentType = value.GetType();
@@ -267,7 +306,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 			return value;
 		}
-		
+		*/
 		
 		#endregion
 			
@@ -283,7 +322,32 @@ namespace ICSharpCode.Reports.Core {
         	return this.baseList[pos];
         }
 
+        public override CurrentItemsCollection FillDataRow(int pos)
+        {
+        	CurrentItemsCollection ci = new CurrentItemsCollection();
+        	var obj = CurrentFromPosition(pos);
+        	if (obj != null)
+        	{
+        		CurrentItem currentItem = null;
+        		foreach (PropertyDescriptor pd in this.listProperties)
+        		{
+        			currentItem = new CurrentItem();
+        			currentItem.ColumnName = pd.Name;
+        			currentItem.DataType = pd.PropertyType;
+        			
+        			PropertyPath prop = obj.ParsePropertyPath(pd.Name);
+        			if (prop != null)
+        			{
+        				var pp = prop.Evaluate(obj);
+        				currentItem.Value = pp.ToString();
+        			}
+        			ci.Add(currentItem);
+        		}
+        	}
+        	return ci;
+        }
         
+        /*
         public override CurrentItemsCollection FillDataRow(int pos)
         {
             CurrentItemsCollection ci = new CurrentItemsCollection();
@@ -311,7 +375,7 @@ namespace ICSharpCode.Reports.Core {
             }
             return ci;
         }
-
+*/
 
        
 		public override CurrentItemsCollection FillDataRow()

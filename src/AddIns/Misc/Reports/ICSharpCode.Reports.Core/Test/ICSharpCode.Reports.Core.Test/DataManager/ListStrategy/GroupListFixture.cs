@@ -174,8 +174,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(modifyedCollection,rs);
 			IDataNavigator dataNavigator = dm.GetNavigator;
 			
-//			IExpressionEvaluatorFacade  evaluator = new ExpressionEvaluatorFacade();
-			
 			ReportItemCollection searchCol = new ReportItemCollection();
 			
 			searchCol.Add(new BaseDataItem ()

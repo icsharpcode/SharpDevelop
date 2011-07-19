@@ -28,13 +28,6 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		}
 		
 		
-		[Test]
-		public void Misspelled_Simple_FieldReference()
-		{
-			const string expression = "=fields!Name";
-			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo("Name"));
-		}
-		
 		
 		[Test]
 		public void Evaluate_If_DataNavigator_Is_Invalid()

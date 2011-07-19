@@ -38,7 +38,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				
 				string s = EvaluationHelper.ExtractExpressionPart(expression);
 				if (s.Length > 0) {
-					this.context.ContextObject =this.SinglePage ;
+					this.context.ContextObject = this.SinglePage ;
 					return EvaluateExpression (s);
 				}
 				

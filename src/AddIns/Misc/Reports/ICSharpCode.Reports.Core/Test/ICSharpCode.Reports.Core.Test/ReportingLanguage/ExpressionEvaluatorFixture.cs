@@ -51,6 +51,8 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage
 			Assert.That(EvaluationHelper.ExtractResultPart(expression),Is.EqualTo("c"));
 		}
 		
+		
+		
         
 		[Test]
 		public void SimpleEvaluation ()

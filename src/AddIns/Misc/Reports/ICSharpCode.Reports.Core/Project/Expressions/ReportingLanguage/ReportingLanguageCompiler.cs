@@ -175,6 +175,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				case "IfThen":
 					IExpression condition = CompileExpressionNode(factory,astNode.ChildNodes[1].ChildNodes[0]);
 					IExpression trueExpr = CompileExpressionNode(factory, astNode.ChildNodes[3]);
+//					IExpression falseExpr = CompileExpressionNode(factory, astNode.ChildNodes[3]);
 					IExpression falseExpr = null;
 					if (astNode.ChildNodes.Count == 6)
 						falseExpr = CompileExpressionNode(factory, astNode.ChildNodes[5]);
