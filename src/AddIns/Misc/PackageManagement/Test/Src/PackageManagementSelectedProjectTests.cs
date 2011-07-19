@@ -34,6 +34,28 @@ namespace PackageManagement.Tests
 			string name = selectedProject.Name;
 			
 			Assert.AreEqual("Test", name);
-		}		
+		}
+		
+		[Test]
+		public void IsSelected_SelectedNotSpecifiedInConstructor_ReturnsFalse()
+		{
+			CreateFakePackageManagementProject();
+			CreateSelectedProject(fakeProject);
+			
+			bool selected = selectedProject.IsSelected;
+			
+			Assert.IsFalse(selected);
+		}
+		
+		[Test]
+		public void IsEnabled_EnabledNotSpecifiedInConstructor_ReturnsTrue()
+		{
+			CreateFakePackageManagementProject();
+			CreateSelectedProject(fakeProject);
+			
+			bool enabled = selectedProject.IsEnabled;
+			
+			Assert.IsTrue(enabled);
+		}
 	}
 }

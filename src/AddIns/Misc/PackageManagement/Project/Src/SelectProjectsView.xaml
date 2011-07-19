@@ -27,12 +27,9 @@
 				
 				<CheckBox
 					Margin="4, 2"
-					IsChecked="{Binding IsSelected}"/>
-				
-				<TextBlock
-					Grid.Column="1"
-					Margin="4, 0"
-					Text="{Binding Name}"/>
+					IsEnabled="{Binding IsEnabled, Mode=OneWay}"
+					IsChecked="{Binding IsSelected}"
+					Content="{Binding Name}"/>
 			</Grid>
 		</DataTemplate>
 	</Window.Resources>
