@@ -82,7 +82,7 @@ namespace PackageManagement.Tests
 			project.SetProperty("TargetFrameworkProfile", null);
 			CreateProjectSystem(project);
 			
-			FrameworkName expectedName = new FrameworkName(".NETFramework, Profile=Full, Version=v4.0");
+			FrameworkName expectedName = new FrameworkName(".NETFramework, Version=v4.0");
 			
 			Assert.AreEqual(expectedName, projectSystem.TargetFramework);
 		}
@@ -110,7 +110,7 @@ namespace PackageManagement.Tests
 			project.SetProperty("TargetFrameworkProfile", null);
 			CreateProjectSystem(project);
 			
-			FrameworkName expectedName = new FrameworkName("Silverlight, Profile=Full, Version=v2.0");
+			FrameworkName expectedName = new FrameworkName("Silverlight, Version=v2.0");
 			
 			Assert.AreEqual(expectedName, projectSystem.TargetFramework);
 		}

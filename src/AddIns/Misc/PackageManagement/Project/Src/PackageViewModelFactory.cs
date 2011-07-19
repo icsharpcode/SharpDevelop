@@ -40,7 +40,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public IPackageManagementSolution Solution { get; private set; }
-		public PackageManagementSelectedProjects SelectedProjects { get; private set; }
+		public PackageManagementSelectedProjects SelectedProjects { get; protected set; }
 		public IPackageManagementEvents PackageManagementEvents { get; private set; }
 		public ILogger Logger { get; private set; }
 		public IPackageActionRunner PackageActionRunner { get; private set; }

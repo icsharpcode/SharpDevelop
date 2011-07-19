@@ -24,12 +24,23 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel()
 		{
-			viewModel = new TestableUpdatedPackageViewModel();
-			fakeSolution = viewModel.FakeSolution;
+			CreateFakeSolution();
+			CreateViewModel(fakeSolution);
+		}
+		
+		void CreateViewModel(FakePackageManagementSolution fakeSolution)
+		{
+			viewModel = new TestableUpdatedPackageViewModel(fakeSolution);
 			fakeProject = fakeSolution.FakeProjectToReturnFromGetProject;
 			updatePackageAction = fakeProject.FakeUpdatePackageAction;
 			fakeActionRunner = viewModel.FakeActionRunner;
 			fakePackageManagementEvents = viewModel.FakePackageManagementEvents;
+		}
+		
+		void CreateFakeSolution()
+		{
+			fakeSolution = new FakePackageManagementSolution();
+			fakeSolution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject("MyProject");
 		}
 		
 		void AddProjectToSolution()
@@ -40,7 +51,7 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModelWithTwoProjectsSelected(string projectName1, string projectName2)
 		{
-			CreateViewModel();
+			CreateFakeSolution();
 			AddProjectToSolution();
 			AddProjectToSolution();
 			fakeSolution.FakeMSBuildProjects[0].Name = projectName1;
@@ -49,6 +60,8 @@ namespace PackageManagement.Tests
 			
 			fakeSolution.AddFakeProjectToReturnFromGetProject(projectName1);
 			fakeSolution.AddFakeProjectToReturnFromGetProject(projectName2);
+			
+			CreateViewModel(fakeSolution);
 		}
 		
 		[Test]

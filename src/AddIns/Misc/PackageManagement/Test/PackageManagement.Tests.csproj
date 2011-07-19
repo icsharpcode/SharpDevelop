@@ -223,6 +223,7 @@
     <Compile Include="Src\Scripting\PowerShellMissingConsoleHostTests.cs" />
     <Compile Include="Src\Scripting\PowerShellWorkingDirectoryTests.cs" />
     <Compile Include="Src\Scripting\ResetPowerShellWorkingDirectoryOnSolutionClosedTests.cs" />
+    <Compile Include="Src\SelectedProjectsForInstalledPackagesTests.cs" />
     <Compile Include="Src\SelectProjectsViewModelTests.cs" />
     <Compile Include="Src\SolutionPackageRepositoryPathTests.cs" />
     <Compile Include="Src\PackageSourceViewModelTests.cs" />
