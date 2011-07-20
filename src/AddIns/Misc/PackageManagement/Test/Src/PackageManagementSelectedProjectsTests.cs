@@ -73,7 +73,7 @@ namespace PackageManagement.Tests
 			var projects = new List<IPackageManagementSelectedProject>();
 			projects.AddRange(selectedProjects.GetProjects(fakePackage));
 			
-			var expectedProject = new FakeSelectedProject("MyProject");
+			var expectedProject = new FakeSelectedProject("MyProject", selected: false, enabled: true);
 			var expectedProjects = new List<IPackageManagementSelectedProject>();
 			expectedProjects.Add(expectedProject);
 			
@@ -101,7 +101,7 @@ namespace PackageManagement.Tests
 			NoProjectsSelected();
 			projects.AddRange(selectedProjects.GetProjects(fakePackage));
 			
-			var expectedProject = new FakeSelectedProject("MyProject");
+			var expectedProject = new FakeSelectedProject("MyProject", selected: false, enabled: true);
 			var expectedProjects = new List<IPackageManagementSelectedProject>();
 			expectedProjects.Add(expectedProject);
 			
@@ -140,8 +140,8 @@ namespace PackageManagement.Tests
 			projects.AddRange(selectedProjects.GetProjects(fakePackage));
 						
 			var expectedProjects = new List<IPackageManagementSelectedProject>();
-			expectedProjects.Add(new FakeSelectedProject("Project A"));
-			expectedProjects.Add(new FakeSelectedProject("Project B"));
+			expectedProjects.Add(new FakeSelectedProject("Project A", selected: false, enabled: true));
+			expectedProjects.Add(new FakeSelectedProject("Project B", selected: false, enabled: true));
 			
 			SelectedProjectCollectionAssert.AreEqual(expectedProjects, projects);
 		}
@@ -506,7 +506,7 @@ namespace PackageManagement.Tests
 			var projects = new List<IPackageManagementSelectedProject>();
 			projects.AddRange(selectedProjects.GetProjects(fakePackage));
 			
-			var expectedProject = new FakeSelectedProject("MyProject");
+			var expectedProject = new FakeSelectedProject("MyProject", selected: false, enabled: true);
 			var expectedProjects = new List<IPackageManagementSelectedProject>();
 			expectedProjects.Add(expectedProject);
 			

@@ -23,7 +23,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			var projectsAsString = new List<string>();
 			foreach (IPackageManagementSelectedProject project in projects) {
-				string text = String.Format("Name: {0}, IsSelected: {1}", project.Name, project.IsSelected);
+				string text = String.Format("Name: {0}, IsSelected: {1}, IsEnabled: {2}",
+					project.Name,
+					project.IsSelected,
+					project.IsEnabled);
 				projectsAsString.Add(text);
 			}
 			return projectsAsString;

@@ -22,17 +22,24 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public FakeSelectedProject(string name, bool selected)
+			: this(name, selected, true)
+		{
+		}
+		
+		public FakeSelectedProject(string name, bool selected, bool enabled)
 		{
 			this.Name = name;
 			this.IsSelected = selected;
+			this.IsEnabled = enabled;
 		}
 		
 		public string Name { get; set; }
 		public bool IsSelected { get; set; }
+		public bool IsEnabled { get; set; }
 		
 		public override string ToString()
 		{
-			return String.Format("Name: {0}, IsSelected: {1}", Name, IsSelected);
+			return String.Format("Name: {0}, IsSelected: {1}, IsEnabled: {2}", Name, IsSelected, IsEnabled);
 		}
 		
 		public FakeInstallPackageAction FakeInstallPackageAction {
