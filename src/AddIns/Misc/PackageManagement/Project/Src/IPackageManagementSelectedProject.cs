@@ -11,6 +11,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		string Name { get; }
 		bool IsSelected { get; set; }
+		bool IsEnabled { get; set; }
 		
 		IPackageManagementProject Project { get; }
 	}

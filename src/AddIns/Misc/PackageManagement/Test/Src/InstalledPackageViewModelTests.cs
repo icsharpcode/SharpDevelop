@@ -262,8 +262,8 @@ namespace PackageManagement.Tests
 				fakePackageManagementEvents.SelectedProjectsPassedToOnSelectProjects;
 			
 			var expectedSelectedProjects = new List<IPackageManagementSelectedProject>();
-			expectedSelectedProjects.Add(new FakeSelectedProject("Project A", selected: true));
-			expectedSelectedProjects.Add(new FakeSelectedProject("Project B", selected: false));
+			expectedSelectedProjects.Add(new FakeSelectedProject("Project A", selected: true, enabled: true));
+			expectedSelectedProjects.Add(new FakeSelectedProject("Project B", selected: false, enabled: true));
 			
 			SelectedProjectCollectionAssert.AreEqual(expectedSelectedProjects, selectedProjects);
 		}

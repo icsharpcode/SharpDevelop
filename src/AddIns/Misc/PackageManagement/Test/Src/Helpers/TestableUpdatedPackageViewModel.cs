@@ -21,7 +21,7 @@ namespace PackageManagement.Tests.Helpers
 		public TestableUpdatedPackageViewModel(FakePackageManagementSolution solution)
 			: this(
 				new FakePackage(),
-				new PackageManagementSelectedProjects(solution),
+				new SelectedProjectsForUpdatedPackages(solution),
 				new FakePackageManagementEvents(),
 				new FakePackageActionRunner(),
 				new FakeLogger())
@@ -31,7 +31,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public TestableUpdatedPackageViewModel(
 			FakePackage package,
-			PackageManagementSelectedProjects selectedProjects,
+			SelectedProjectsForUpdatedPackages selectedProjects,
 			FakePackageManagementEvents packageManagementEvents,
 			FakePackageActionRunner actionRunner,
 			FakeLogger logger)

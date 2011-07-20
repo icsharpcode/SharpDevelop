@@ -68,13 +68,19 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementProject project,
 			IPackageFromRepository package)
 		{
+			bool enabled = IsProjectEnabled(project, package);
 			bool selected = IsProjectSelected(project, package);
-			return new PackageManagementSelectedProject(project, selected);
+			return new PackageManagementSelectedProject(project, selected, enabled);
 		}
 		
 		protected virtual bool IsProjectSelected(IPackageManagementProject project, IPackageFromRepository package)
 		{
 			return false;
+		}
+		
+		protected virtual bool IsProjectEnabled(IPackageManagementProject project, IPackageFromRepository package)
+		{
+			return true;
 		}
 		
 		public bool HasMultipleProjects()

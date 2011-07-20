@@ -10,7 +10,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		public UpdatedPackageViewModel(
 			IPackageFromRepository package,
-			PackageManagementSelectedProjects selectedProjects,
+			SelectedProjectsForUpdatedPackages selectedProjects,
 			IPackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
 			ILogger logger)
