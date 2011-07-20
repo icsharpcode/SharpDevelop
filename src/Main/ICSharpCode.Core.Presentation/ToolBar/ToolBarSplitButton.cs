@@ -16,6 +16,7 @@ namespace ICSharpCode.Core.Presentation
 		ICommand menuCommand;
 		object caller;
 		Codon codon;
+		Label innerLabel;
 		
 		public ToolBarSplitButton(Codon codon, object caller, IList submenu)
 		{
@@ -24,7 +25,7 @@ namespace ICSharpCode.Core.Presentation
 			this.codon = codon;
 			this.caller = caller;
 
-			this.Content = ToolBarService.CreateToolBarItemContent(codon);
+			this.Content = ToolBarService.CreateToolBarItemContent(codon, out innerLabel);
 			if (codon.Properties.Contains("name")) {
 				this.Name = codon.Properties["name"];
 			}
@@ -42,6 +43,10 @@ namespace ICSharpCode.Core.Presentation
 		{
 			if (codon.Properties.Contains("tooltip")) {
 				this.ToolTip = StringParser.Parse(codon.Properties["tooltip"]);
+			}
+			
+			if (codon.Properties.Contains("label")) {
+				innerLabel.Content = StringParser.Parse(codon.Properties["label"]);
 			}
 		}
 		

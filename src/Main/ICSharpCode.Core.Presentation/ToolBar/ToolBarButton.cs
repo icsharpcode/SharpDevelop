@@ -18,6 +18,7 @@ namespace ICSharpCode.Core.Presentation
 		readonly Codon codon;
 		readonly object caller;
 		readonly string inputGestureText;
+		Label innerLabel;
 		
 		public ToolBarButton(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand)
 		{
@@ -26,7 +27,7 @@ namespace ICSharpCode.Core.Presentation
 			this.codon = codon;
 			this.caller = caller;
 			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
-			this.Content = ToolBarService.CreateToolBarItemContent(codon);
+			this.Content = ToolBarService.CreateToolBarItemContent(codon, out innerLabel);
 
 			if (codon.Properties.Contains("name")) {
 				this.Name = codon.Properties["name"];
@@ -68,6 +69,10 @@ namespace ICSharpCode.Core.Presentation
 				if (!string.IsNullOrEmpty(inputGestureText))
 					toolTip = toolTip + " (" + inputGestureText + ")";
 				this.ToolTip = toolTip;
+			}
+			
+			if (codon.Properties.Contains("label"))	{
+				innerLabel.Content = StringParser.Parse(codon.Properties["label"]);
 			}
 		}
 		

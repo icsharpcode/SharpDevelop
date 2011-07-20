@@ -15,6 +15,7 @@ namespace ICSharpCode.Core.Presentation
 	{
 		readonly Codon codon;
 		readonly object caller;
+		Label innerLabel;
 		
 		public ToolBarDropDownButton(Codon codon, object caller, IList subMenu)
 		{
@@ -23,7 +24,7 @@ namespace ICSharpCode.Core.Presentation
 			this.codon = codon;
 			this.caller = caller;
 
-			this.Content = ToolBarService.CreateToolBarItemContent(codon);
+			this.Content = ToolBarService.CreateToolBarItemContent(codon, out innerLabel);
 			if (codon.Properties.Contains("name")) {
 				this.Name = codon.Properties["name"];
 			}
@@ -35,6 +36,10 @@ namespace ICSharpCode.Core.Presentation
 		{
 			if (codon.Properties.Contains("tooltip")) {
 				this.ToolTip = StringParser.Parse(codon.Properties["tooltip"]);
+			}
+
+			if (codon.Properties.Contains("label")) {
+				innerLabel.Content = StringParser.Parse(codon.Properties["label"]);
 			}
 		}
 		
