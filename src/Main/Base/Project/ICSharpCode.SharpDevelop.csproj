@@ -315,6 +315,7 @@
     <Compile Include="Src\Project\TargetFramework.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
+    <Compile Include="Src\Services\Debugger\DecompiledBreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\IPinDebuggerControl.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\ITreeNode.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\IVisualizerCommand.cs" />

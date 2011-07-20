@@ -294,7 +294,13 @@ namespace Debugger
 				List<Breakpoint> collection = new List<Breakpoint>();
 				collection.AddRange(this.Debugger.Breakpoints);
 				
+				var currentModuleTypes = this.GetNamesOfDefinedTypes();
 				foreach (Breakpoint b in collection) {
+					if (b is ILBreakpoint) {
+						// set the breakpoint only if the module contains the type
+						if (!currentModuleTypes.Contains(b.TypeName))
+							continue;
+					}
 					b.SetBreakpoint(this);
 				}
 			}
@@ -339,7 +345,7 @@ namespace Debugger
 				return;
 			}
 			try {
-				this.CorModule2.SetJMCStatus(1, 0, ref unused);
+				this.CorModule2.SetJMCStatus(process.Options.EnableJustMyCode ? 1 : 0, 0, ref unused);
 			} catch (COMException e) {
 				// Cannot use JMC on this code (likely wrong JIT settings).
 				if ((uint)e.ErrorCode == 0x80131323) {

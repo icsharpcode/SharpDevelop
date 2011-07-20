@@ -346,7 +346,7 @@ namespace Debugger
 			                     this.startLine, this.startColumn, this.endLine, this.endColumn);
 		}
 		
-		#region ILSpy
+		#region Decompiled breakpoint
 		
 		public static SourcecodeSegment CreateForIL(Module module, int line, int metadataToken, int iLOffset)
 		{

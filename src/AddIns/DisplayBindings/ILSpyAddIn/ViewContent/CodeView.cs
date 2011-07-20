@@ -14,11 +14,24 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.ILSpyAddIn.ViewContent
 {
+	class DecompiledTextEditorAdapter : AvalonEditTextEditorAdapter
+	{
+		public DecompiledTextEditorAdapter(TextEditor textEditor) : base(textEditor)
+		{}
+		
+		public string DecompiledFullTypeName { get; set; }
+		
+		public override ICSharpCode.Core.FileName FileName {
+			get { return ICSharpCode.Core.FileName.Create(DecompiledFullTypeName); }
+		}
+	}
+	
 	/// <summary>
 	/// Equivalent to AE.AddIn CodeEditor, but without editing capabilities.
 	/// </summary>
@@ -26,26 +39,31 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 	{
 		public event EventHandler DocumentChanged;
 		
-		readonly AvalonEditTextEditorAdapter adapter = new AvalonEditTextEditorAdapter(new SharpDevelopTextEditor { IsReadOnly = true });
+		readonly DecompiledTextEditorAdapter adapter;
 		readonly IconBarManager iconBarManager;
 		readonly IconBarMargin iconMargin;
 		readonly TextMarkerService textMarkerService;
 		
-		public CodeView()
+		public CodeView(string decompiledFullTypeName)
 		{
+			DecompiledFullTypeName = decompiledFullTypeName;
+			this.adapter = new DecompiledTextEditorAdapter(new SharpDevelopTextEditor { IsReadOnly = true }) {
+				DecompiledFullTypeName = decompiledFullTypeName
+			};
 			this.Children.Add(adapter.TextEditor);
 			adapter.TextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
 			
 			// add margin
-			iconMargin = new IconBarMargin(iconBarManager = new IconBarManager());
-			adapter.TextEditor.TextArea.LeftMargins.Insert(0, iconMargin);
-			adapter.TextEditor.TextArea.TextView.VisualLinesChanged += delegate { iconMargin.InvalidateVisual(); };
+			this.iconMargin = new IconBarMargin(iconBarManager = new IconBarManager());
+			this.adapter.TextEditor.TextArea.LeftMargins.Insert(0, iconMargin);
+			this.adapter.TextEditor.TextArea.TextView.VisualLinesChanged += delegate { iconMargin.InvalidateVisual(); };
 			
 			// add marker service
-			textMarkerService = new TextMarkerService(this);
-			adapter.TextEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
-			adapter.TextEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
-			adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
+			this.textMarkerService = new TextMarkerService(this);
+			this.adapter.TextEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
+			this.adapter.TextEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
+			this.adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
+			this.adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
 			
 			// add events
 			this.adapter.TextEditor.MouseHover += TextEditorMouseHover;
@@ -210,6 +228,16 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 		
 		public IconBarManager IconBarManager {
 			get { return iconBarManager; }
+		}
+		
+		public AvalonEditTextEditorAdapter Adapter {
+			get {
+				return adapter;
+			}
+		}
+		
+		public string DecompiledFullTypeName {
+			get; private set; 
 		}
 		
 		public void Dispose()

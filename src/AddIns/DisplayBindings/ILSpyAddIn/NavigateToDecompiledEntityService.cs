@@ -5,9 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -60,7 +58,7 @@ namespace ICSharpCode.ILSpyAddIn
 			WorkbenchSingleton.Workbench.ShowView(new DecompiledViewContent(assemblyFile, typeName, entityTag));
 		}
 		
-		public bool NavigateToMember(string assemblyFile, string typeName, string entityTag)
+		public bool NavigateToMember(string assemblyFile, string typeName, string entityTag, int lineNumber)
 		{
 			//close the window if exists - this is a workaround
 			foreach (var vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
@@ -69,7 +67,10 @@ namespace ICSharpCode.ILSpyAddIn
 					break;
 				}
 			}
-			WorkbenchSingleton.Workbench.ShowView(new DecompiledViewContent(assemblyFile, typeName, entityTag));
+			
+			var view = new DecompiledViewContent(assemblyFile, typeName, entityTag);
+			view.DecompilationFinished += delegate { view.JumpTo(lineNumber); };
+			WorkbenchSingleton.Workbench.ShowView(view);
 			return true;
 		}
 	}

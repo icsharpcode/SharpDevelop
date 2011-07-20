@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Windows;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -33,6 +34,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			
 			BookmarkManager.Added   += BookmarkAdded;
 			BookmarkManager.Removed += BookmarkRemoved;
+			
+			ExternalDebugInformation = new Dictionary<int, object>();
 		}
 		
 		static void GetDescriptors()
@@ -107,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// Gets or sets the external debug information.
 		/// <summary>This constains the code mappings and local variables.</summary>
 		/// </summary>
-		public static object ExternalDebugInformation { get; set; }
+		public static Dictionary<int, object> ExternalDebugInformation { get; set; }
 		
 		/// <summary>
 		/// Gets or sets the current token and IL offset. Used for step in/out.
@@ -248,6 +251,16 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				location => new BreakpointBookmark(editor.FileName, location, BreakpointAction.Break, "", ""));
 		}
 		
+		public static void ToggleBreakpointAt(MemberReference memberReference, ITextEditor editor, int lineNumber)
+		{
+			// no bookmark on the line: create a new breakpoint
+			BookmarkManager.ToggleBookmark(
+				editor, lineNumber,
+				b => b.CanToggle,
+				location => new DecompiledBreakpointBookmark(
+					memberReference, 0, 0, editor.FileName, location, BreakpointAction.Break, "", ""));
+		}
+		
 		/* TODO: reimplement this stuff
 		static void ViewContentOpened(object sender, ViewContentEventArgs e)
 		{
@@ -261,12 +274,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			CurrentLineBookmark.Remove();
 		}
 		
-		public static void JumpToCurrentLine(string SourceFullFilename, int StartLine, int StartColumn, int EndLine, int EndColumn)
+		public static void JumpToCurrentLine(string sourceFullFilename, int startLine, int startColumn, int endLine, int endColumn)
 		{
-			IViewContent viewContent = FileService.OpenFile(SourceFullFilename);
+			IViewContent viewContent = FileService.OpenFile(sourceFullFilename);
 			if (viewContent is ITextEditorProvider)
-				((ITextEditorProvider)viewContent).TextEditor.JumpTo(StartLine, StartColumn);
-			CurrentLineBookmark.SetPosition(viewContent, StartLine, StartColumn, EndLine, EndColumn);
+				((ITextEditorProvider)viewContent).TextEditor.JumpTo(startLine, startColumn);
+			CurrentLineBookmark.SetPosition(viewContent, startLine, startColumn, endLine, endColumn);
 		}
 		
 		#region Tool tips
@@ -283,7 +296,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			Location logicPos = e.LogicalPosition;
 			var doc = e.Editor.Document;
 			string fileName;
-			if (string.IsNullOrEmpty(e.Editor.FileName)) {
+			if (!File.Exists(e.Editor.FileName)) {
 				dynamic viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 				fileName = string.Format("decompiled/{0}.cs", viewContent.FullTypeName);
 			} else {

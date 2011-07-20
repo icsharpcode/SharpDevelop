@@ -136,6 +136,12 @@ namespace Debugger
 		
 		public bool IsInExternalCode {
 			get {
+				if (SelectedStackFrame == null && SelectedThread.MostRecentStackFrame == null)
+					return true;
+				
+				if (SelectedStackFrame == null && SelectedThread.MostRecentStackFrame != null)
+					return true;
+				
 				return SelectedStackFrame.ToString() != SelectedThread.MostRecentStackFrame.ToString();
 			}
 		}

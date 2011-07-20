@@ -464,19 +464,22 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		SourceCodeMapping GetCurrentCodeMapping(out bool isMatch)
 		{
-			DecompileInformation debugInformation = (DecompileInformation)DebuggerService.ExternalDebugInformation;
+			var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
+			int typeToken = frame.MethodInfo.DeclaringType.MetadataToken;
+			int methodToken = frame.MethodInfo.MetadataToken;
+			
+			DecompileInformation debugInformation = (DecompileInformation)DebuggerService.ExternalDebugInformation[typeToken];
 			isMatch = false;
 			
 			if (debugInformation == null)
 				return null;
-			var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
-			int token = frame.MethodInfo.MetadataToken;
+			
 			
 			// get the mapped instruction from the current line marker or the next one
-			if (!debugInformation.CodeMappings.ContainsKey(token))
+			if (!debugInformation.CodeMappings.ContainsKey(methodToken))
 				return null;
-			var mappings = (List<MemberMapping>)debugInformation.CodeMappings[token];
-			return mappings.GetInstructionByTokenAndOffset(token, frame.IP, out isMatch);
+			var mappings = (List<MemberMapping>)debugInformation.CodeMappings[methodToken];
+			return mappings.GetInstructionByTokenAndOffset(methodToken, frame.IP, out isMatch);
 		}
 		
 		Debugger.StackFrame GetStackFrame()
@@ -745,7 +748,44 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void AddBreakpoint(BreakpointBookmark bookmark)
 		{
-			Breakpoint breakpoint = debugger.Breakpoints.Add(bookmark.FileName, null, bookmark.LineNumber, 0, bookmark.IsEnabled);
+			Breakpoint breakpoint = null;
+			
+			if (bookmark is DecompiledBreakpointBookmark) {
+				var dbb = (DecompiledBreakpointBookmark)bookmark;
+				var memberReference = dbb.MemberReference;
+				if (!DebuggerService.ExternalDebugInformation.ContainsKey(memberReference.MetadataToken.ToInt32()))
+					return;
+				
+				// check if the codemappings exists for bookmark line
+				DecompileInformation data = (DecompileInformation)DebuggerService.ExternalDebugInformation[memberReference.MetadataToken.ToInt32()];
+				var storage = data.CodeMappings;
+				int token = 0;
+				foreach (var key in storage.Keys) {
+					var instruction = storage[key].GetInstructionByLineNumber(dbb.LineNumber, out token);
+					
+					if (instruction == null) {
+						continue;
+					}
+					
+					dbb.ILFrom = instruction.ILInstructionOffset.From;
+					dbb.ILTo = instruction.ILInstructionOffset.To;
+					
+					breakpoint = new ILBreakpoint(
+						debugger,
+						dbb.MemberReference.FullName,
+						dbb.LineNumber,
+						memberReference.MetadataToken.ToInt32(),
+						instruction.MemberMapping.MetadataToken,
+						dbb.ILFrom,
+						dbb.IsEnabled);
+					
+					debugger.Breakpoints.Add(breakpoint);
+					break;
+				}
+			} else {
+				breakpoint = debugger.Breakpoints.Add(bookmark.FileName, null, bookmark.LineNumber, 0, bookmark.IsEnabled);
+			}
+			
 			MethodInvoker setBookmarkColor = delegate {
 				if (debugger.Processes.Count == 0) {
 					bookmark.IsHealthy = true;
@@ -753,10 +793,13 @@ namespace ICSharpCode.SharpDevelop.Services
 				} else if (!breakpoint.IsSet) {
 					bookmark.IsHealthy = false;
 					bookmark.Tooltip = "Breakpoint was not found in any loaded modules";
-				} else if (breakpoint.OriginalLocation.CheckSum == null) {
+				} else if (breakpoint.OriginalLocation == null || breakpoint.OriginalLocation.CheckSum == null) {
 					bookmark.IsHealthy = true;
 					bookmark.Tooltip = null;
 				} else {
+					if (!File.Exists(bookmark.FileName))
+						return;
+					
 					byte[] fileMD5;
 					IEditable file = FileService.GetOpenFile(bookmark.FileName) as IEditable;
 					if (file != null) {
@@ -888,12 +931,14 @@ namespace ICSharpCode.SharpDevelop.Services
 				debuggedProcess.Paused          -= debuggedProcess_DebuggingPaused;
 				debuggedProcess.ExceptionThrown -= debuggedProcess_ExceptionThrown;
 				debuggedProcess.Resumed         -= debuggedProcess_DebuggingResumed;
+				debuggedProcess.ModulesAdded 	-= debuggedProcess_ModulesAdded;
 			}
 			debuggedProcess = process;
 			if (debuggedProcess != null) {
 				debuggedProcess.Paused          += debuggedProcess_DebuggingPaused;
 				debuggedProcess.ExceptionThrown += debuggedProcess_ExceptionThrown;
 				debuggedProcess.Resumed         += debuggedProcess_DebuggingResumed;
+				debuggedProcess.ModulesAdded 	+= debuggedProcess_ModulesAdded;
 				
 				debuggedProcess.BreakAtBeginning = BreakAtBeginning;
 			}
@@ -902,6 +947,23 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			JumpToCurrentLine();
 			OnProcessSelected(new ProcessEventArgs(process));
+		}
+		
+		void debuggedProcess_ModulesAdded(object sender, ModuleEventArgs e)
+		{
+			var currentModuleTypes = e.Module.GetNamesOfDefinedTypes();
+			foreach (var bookmark in DebuggerService.Breakpoints.OfType<DecompiledBreakpointBookmark>()) {
+				var breakpoint = debugger.Breakpoints.FirstOrDefault(
+						b => b is ILBreakpoint && b.Line == bookmark.LineNumber && 
+						((ILBreakpoint)b).MetadataToken == bookmark.MemberReference.MetadataToken.ToInt32());
+				if (breakpoint == null)
+					continue;
+				// set the breakpoint only if the module contains the type
+				if (!currentModuleTypes.Contains(breakpoint.TypeName))
+					continue;
+				
+				breakpoint.SetBreakpoint(e.Module);
+			}
 		}
 		
 		void debuggedProcess_DebuggingPaused(object sender, ProcessEventArgs e)
@@ -980,14 +1042,16 @@ namespace ICSharpCode.SharpDevelop.Services
 					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 				}
 			} else {
-				DecompileInformation externalData = (DecompileInformation)DebuggerService.ExternalDebugInformation;
-				
 				// use most recent stack frame because we don't have the symbols
 				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
-				
 				if (frame == null)
 					return;
+				int typeToken = frame.MethodInfo.DeclaringType.MetadataToken;
 				
+				// get external data
+				object data = null;
+				DebuggerService.ExternalDebugInformation.TryGetValue(typeToken, out data);
+				DecompileInformation externalData = data as DecompileInformation;
 				int token = frame.MethodInfo.MetadataToken;
 				int ilOffset = frame.IP;
 				int line;
@@ -1050,7 +1114,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		public static object GetLocalVariableIndex(Debugger.StackFrame stackFrame, string variableName)
 		{
 			// get the target name
-			int token = stackFrame.MethodInfo.MetadataToken;
+			int typeToken = stackFrame.MethodInfo.DeclaringType.MetadataToken;
+			int methodToken = stackFrame.MethodInfo.MetadataToken;
 			int index = variableName.IndexOf('.');
 			string targetName = variableName;
 			if (index != -1) {
@@ -1060,11 +1125,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			// get local variable index and store it in UserData property - used in evaluator
 			object data = null;
 			IEnumerable<ILVariable> list;
-			DecompileInformation externalData = (DecompileInformation)DebuggerService.ExternalDebugInformation;
+			DecompileInformation externalData = (DecompileInformation)DebuggerService.ExternalDebugInformation[typeToken];
 			if (externalData == null)
 				return null;
 			
-			if (externalData.LocalVariables.TryGetValue(token, out list)) {
+			if (externalData.LocalVariables.TryGetValue(methodToken, out list)) {
 				var variable = list.FirstOrDefault(v => v.Name == targetName);
 				if (variable != null && variable.OriginalVariable != null) {
 					data = new[] { variable.OriginalVariable.Index };
