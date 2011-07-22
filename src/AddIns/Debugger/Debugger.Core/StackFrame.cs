@@ -63,7 +63,7 @@ namespace Debugger
 		/// (That is has accesss to the .pdb file) </summary>
 		public bool HasSymbols {
 			get {
-				return GetSegmentForOffet(0) != null;
+				return GetSegmentForOffset(0) != null;
 			}
 		}
 		
@@ -143,7 +143,7 @@ namespace Debugger
 		
 		public int SourceCodeLine { get; set; }
 		
-		SourcecodeSegment GetSegmentForOffet(int offset)
+		SourcecodeSegment GetSegmentForOffset(int offset)
 		{
 			if (SourceCodeLine != 0)
 				return SourcecodeSegment.ResolveForIL(this.MethodInfo.DebugModule, corFunction, SourceCodeLine, offset, ILRanges);
@@ -241,7 +241,7 @@ namespace Debugger
 		/// </summary>
 		public SourcecodeSegment NextStatement {
 			get {
-				return GetSegmentForOffet(IP);
+				return GetSegmentForOffset(IP);
 			}
 		}
 		

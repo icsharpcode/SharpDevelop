@@ -27,6 +27,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			if (tecp != null) {
 				SetPosition(tecp.TextEditor.FileName, tecp.TextEditor.Document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
 			} else {
+				if (makerStartLine == 0)
+					return;
+				
 				dynamic codeView = viewContent.Control;
 				SetPosition(null, codeView.TextEditor.Document as IDocument, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
 				codeView.IconBarManager.Bookmarks.Add(CurrentLineBookmark.instance);

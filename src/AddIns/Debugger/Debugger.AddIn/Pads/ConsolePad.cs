@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return "The process is running";
 			}
 			try {
-				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, process.SelectedStackFrame);
+				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, process.SelectedThread.MostRecentStackFrame);
 				return ExpressionEvaluator.FormatValue(val);
 			} catch (GetValueException e) {
 				return e.Message;
@@ -107,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (this.process == null || this.process.IsRunning)
 				return;
 			
-			if (this.process.SelectedStackFrame == null || this.process.SelectedStackFrame.NextStatement == null)
+			if (this.process.SelectedThread.MostRecentStackFrame == null || this.process.SelectedThread.MostRecentStackFrame.NextStatement == null)
 				return;
 			
 			foreach (char ch in e.Text) {
@@ -119,7 +119,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void ShowDotCompletion(string currentText)
 		{
-			var seg = process.SelectedStackFrame.NextStatement;
+			if (this.process.SelectedThread.MostRecentStackFrame == null || this.process.SelectedThread.MostRecentStackFrame.NextStatement == null)
+				return;
+			
+			var seg = process.SelectedThread.MostRecentStackFrame.NextStatement;
 			
 			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
 			var info = ParserService.GetParseInformation(seg.Filename);
