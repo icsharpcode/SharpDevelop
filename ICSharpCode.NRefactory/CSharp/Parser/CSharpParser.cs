@@ -1180,6 +1180,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			
+			public override object Visit (Mono.CSharp.EmptyExpression emptyExpression)
+			{
+				return new ICSharpCode.NRefactory.CSharp.EmptyExpression (Convert (emptyExpression.Location));
+			}
+			
 			public override object Visit (EmptyExpressionStatement emptyExpressionStatement)
 			{
 				return new EmptyExpression (Convert (emptyExpressionStatement.Location));
