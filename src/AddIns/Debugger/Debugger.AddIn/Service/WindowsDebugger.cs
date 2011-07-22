@@ -1125,10 +1125,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			// get local variable index and store it in UserData property - used in evaluator
 			object data = null;
 			IEnumerable<ILVariable> list;
-			DecompileInformation externalData = (DecompileInformation)DebuggerService.ExternalDebugInformation[typeToken];
-			if (externalData == null)
+			if (DebuggerService.ExternalDebugInformation == null || !DebuggerService.ExternalDebugInformation.ContainsKey(typeToken))
 				return null;
 			
+			DecompileInformation externalData = (DecompileInformation)DebuggerService.ExternalDebugInformation[typeToken];
 			if (externalData.LocalVariables.TryGetValue(methodToken, out list)) {
 				var variable = list.FirstOrDefault(v => v.Name == targetName);
 				if (variable != null && variable.OriginalVariable != null) {
