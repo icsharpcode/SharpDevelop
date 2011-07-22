@@ -90,22 +90,26 @@ namespace ICSharpCode.NRefactory.Documentation
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
 			
-			using (XmlTextReader xmlReader = new XmlTextReader(fileName)) {
-				xmlReader.XmlResolver = null; // no DTD resolving
-				xmlReader.MoveToContent();
-				if (string.IsNullOrEmpty(xmlReader.GetAttribute("redirect"))) {
-					this.fileName = fileName;
-					ReadXmlDoc(xmlReader);
-				} else {
-					string redirectionTarget = GetRedirectionTarget(xmlReader.GetAttribute("redirect"));
-					if (redirectionTarget != null) {
-						Debug.WriteLine("XmlDoc " + fileName + " is redirecting to " + redirectionTarget);
-						using (XmlTextReader redirectedXmlReader = new XmlTextReader(redirectionTarget)) {
-							this.fileName = redirectionTarget;
-							ReadXmlDoc(redirectedXmlReader);
-						}
+			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete)) {
+				using (XmlTextReader xmlReader = new XmlTextReader(fs)) {
+					xmlReader.XmlResolver = null; // no DTD resolving
+					xmlReader.MoveToContent();
+					if (string.IsNullOrEmpty(xmlReader.GetAttribute("redirect"))) {
+						this.fileName = fileName;
+						ReadXmlDoc(xmlReader);
 					} else {
-						throw new XmlException("XmlDoc " + fileName + " is redirecting to " + xmlReader.GetAttribute("redirect") + ", but that file was not found.");
+						string redirectionTarget = GetRedirectionTarget(xmlReader.GetAttribute("redirect"));
+						if (redirectionTarget != null) {
+							Debug.WriteLine("XmlDoc " + fileName + " is redirecting to " + redirectionTarget);
+							using (FileStream redirectedFs = new FileStream(redirectionTarget, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete)) {
+								using (XmlTextReader redirectedXmlReader = new XmlTextReader(redirectedFs)) {
+									this.fileName = redirectionTarget;
+									ReadXmlDoc(redirectedXmlReader);
+								}
+							}
+						} else {
+							throw new XmlException("XmlDoc " + fileName + " is redirecting to " + xmlReader.GetAttribute("redirect") + ", but that file was not found.");
+						}
 					}
 				}
 			}
@@ -138,7 +142,11 @@ namespace ICSharpCode.NRefactory.Documentation
 				return dir + Path.DirectorySeparatorChar;
 		}
 		
-		internal static string LookupLocalizedXmlDoc(string fileName)
+		/// <summary>
+		/// Given the assembly file name, looks up the XML documentation file name.
+		/// Returns null if no XML documentation file is found.
+		/// </summary>
+		public static string LookupLocalizedXmlDoc(string fileName)
 		{
 			string xmlFileName = Path.ChangeExtension(fileName, ".xml");
 			string currentCulture = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
