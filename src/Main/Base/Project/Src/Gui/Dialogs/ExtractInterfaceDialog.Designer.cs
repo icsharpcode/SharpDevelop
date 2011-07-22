@@ -3,6 +3,7 @@
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	/*
 	partial class ExtractInterfaceDialog : System.Windows.Forms.Form
 	{
 		/// <summary>
@@ -267,4 +268,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 		private System.Windows.Forms.TextBox txtInterfaceName;
 		private System.Windows.Forms.Label lblInterfaceName;
 	}
+	*/
 }

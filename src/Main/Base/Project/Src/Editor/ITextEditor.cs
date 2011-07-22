@@ -19,7 +19,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 		}
 	}
 	
-	/*
 	/// <summary>
 	/// Interface for text editors.
 	/// </summary>
@@ -120,7 +119,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// </summary>
 		IEnumerable<ICompletionItem> GetSnippets();
 	}
-	*/
 	
 	public interface ITextEditorOptions : INotifyPropertyChanged
 	{

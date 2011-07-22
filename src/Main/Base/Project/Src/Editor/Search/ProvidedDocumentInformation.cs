@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			}
 			set {
 				if (textEditor != null) {
-					textEditor.Caret.Position = document.OffsetToPosition(value + 1);
+					textEditor.Caret.Location = document.GetLocation(value);
 				} else {
 					currentOffset = value;
 				}

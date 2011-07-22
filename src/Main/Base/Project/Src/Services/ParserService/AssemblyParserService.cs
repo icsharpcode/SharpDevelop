@@ -3,10 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
 using System.IO;
-//using RegistryContentPair = System.Collections.Generic.KeyValuePair<ICSharpCode.SharpDevelop.Dom.ProjectContentRegistry, ICSharpCode.SharpDevelop.Dom.IProjectContent>;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Xml;
+
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Documentation;
+using ICSharpCode.NRefactory.TypeSystem;
+using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -15,151 +20,172 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public static class AssemblyParserService
 	{
-		/*
-		static IList<ProjectContentRegistryDescriptor> registries;
-		static ProjectContentRegistry defaultProjectContentRegistry = new ProjectContentRegistry();
-		static string domPersistencePath;
-		
-		internal static void Initialize()
+		#region Get Assembly By File Name
+		sealed class LoadedAssembly
 		{
-			if (registries == null) {
-				registries = AddInTree.BuildItems<ProjectContentRegistryDescriptor>("/Workspace/ProjectContentRegistry", null, false);
-				if (!string.IsNullOrEmpty(domPersistencePath)) {
-					Directory.CreateDirectory(domPersistencePath);
-					defaultProjectContentRegistry.ActivatePersistence(domPersistencePath);
-				}
+			public readonly Task<IProjectContent> ProjectContent;
+			public readonly DateTime AssemblyFileLastWriteTime;
+			
+			public LoadedAssembly(Task<IProjectContent> projectContent, DateTime assemblyFileLastWriteTime)
+			{
+				this.ProjectContent = projectContent;
+				this.AssemblyFileLastWriteTime = assemblyFileLastWriteTime;
 			}
+		}
+		
+		static Dictionary<FileName, WeakReference> projectContentDictionary = new Dictionary<FileName, WeakReference>();
+		
+		[ThreadStatic] static Dictionary<FileName, LoadedAssembly> up2dateProjectContents;
+		
+		public static IProjectContent GetAssembly(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			bool isNewTask;
+			LoadedAssembly asm = GetLoadedAssembly(fileName, cancellationToken, out isNewTask);
+			if (isNewTask)
+				asm.ProjectContent.RunSynchronously();
+			return asm.ProjectContent.Result;
+		}
+		
+		public static Task<IProjectContent> GetAssemblyAsync(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			bool isNewTask;
+			LoadedAssembly asm = GetLoadedAssembly(fileName, cancellationToken, out isNewTask);
+			if (isNewTask)
+				asm.ProjectContent.Start();
+			return asm.ProjectContent;
 		}
 		
 		/// <summary>
-		/// Gets/Sets the cache directory used for DOM persistence.
+		/// "using (AssemblyParserService.AvoidRedundantChecks())"
+		/// Within the using block, the AssemblyParserService will only check once per assembly if the
+		/// existing cached project content (if any) is up to date.
+		/// Any additional accesses will return that cached project content without causing an update check.
+		/// This applies only to the thread that called AvoidRedundantChecks() - other threads will
+		/// perform update checks as usual.
 		/// </summary>
-		public static string DomPersistencePath {
-			get {
-				return domPersistencePath;
-			}
-			set {
-				if (registries != null)
-					throw new InvalidOperationException("Cannot set DomPersistencePath after ParserService was initialized");
-				domPersistencePath = value;
-			}
-		}
-		
-		public static ProjectContentRegistry DefaultProjectContentRegistry {
-			get {
-				return defaultProjectContentRegistry;
-			}
-		}
-		
-		public static ProjectContentRegistry GetRegistryForReference(ReferenceProjectItem item)
+		public static IDisposable AvoidRedundantChecks()
 		{
-			if (item is ProjectReferenceProjectItem || item.Project == null) {
-				return defaultProjectContentRegistry;
+			if (up2dateProjectContents != null)
+				return null;
+			up2dateProjectContents = new Dictionary<FileName, LoadedAssembly>();
+			return new CallbackOnDispose(delegate { up2dateProjectContents = null; });
+		}
+		
+		static LoadedAssembly GetLoadedAssembly(FileName fileName, CancellationToken cancellationToken, out bool isNewTask)
+		{
+			isNewTask = false;
+			LoadedAssembly asm;
+			if (up2dateProjectContents != null) {
+				if (up2dateProjectContents.TryGetValue(fileName, out asm))
+					return asm;
 			}
-			foreach (ProjectContentRegistryDescriptor registry in registries) {
-				if (registry.UseRegistryForProject(item.Project)) {
-					ProjectContentRegistry r = registry.Registry;
-					if (r != null) {
-						return r;
-					} else {
-						return defaultProjectContentRegistry; // fallback when registry class not found
+			DateTime lastWriteTime = File.GetLastWriteTimeUtc(fileName);
+			lock (projectContentDictionary) {
+				WeakReference wr;
+				if (projectContentDictionary.TryGetValue(fileName, out wr)) {
+					asm = (LoadedAssembly)wr.Target;
+					if (asm != null && asm.AssemblyFileLastWriteTime == lastWriteTime) {
+						return asm;
 					}
+				} else {
+					wr = null;
 				}
-			}
-			return defaultProjectContentRegistry;
-		}
-		
-		public static IProjectContent GetExistingProjectContentForReference(ReferenceProjectItem item)
-		{
-			if (item is ProjectReferenceProjectItem) {
-				if (((ProjectReferenceProjectItem)item).ReferencedProject == null)
-				{
-					return null;
+				var task = new Task<IProjectContent>(() => LoadAssembly(fileName, cancellationToken), cancellationToken);
+				task.Wait();
+				isNewTask = true;
+				asm = new LoadedAssembly(task, lastWriteTime);
+				if (wr != null) {
+					wr.Target = asm;
+				} else {
+					wr = new WeakReference(asm);
+					projectContentDictionary.Add(fileName, wr);
 				}
-				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
+				return asm;
 			}
-			return GetRegistryForReference(item).GetExistingProjectContent(item.FileName);
 		}
+		#endregion
 		
-		public static IProjectContent GetProjectContentForReference(ReferenceProjectItem item)
+		#region Load Assembly + XML documentation
+		static IProjectContent LoadAssembly(string fileName, CancellationToken cancellationToken)
 		{
-			if (item is ProjectReferenceProjectItem) {
-				if (((ProjectReferenceProjectItem)item).ReferencedProject == null)
-				{
-					return null;
-				}
-				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
-			}
-			return GetRegistryForReference(item).GetProjectContentForReference(item.Include, item.FileName);
-		}
-		
-		/// <summary>
-		/// Refreshes the project content for the specified reference if required.
-		/// This method does nothing if the reference is not an assembly reference, is not loaded or already is up-to-date.
-		/// </summary>
-		public static void RefreshProjectContentForReference(ReferenceProjectItem item)
-		{
-			if (item is ProjectReferenceProjectItem) {
-				return;
-			}
-			ProjectContentRegistry registry = GetRegistryForReference(item);
-			registry.RunLocked(
-				delegate {
-					IProjectContent rpc = GetExistingProjectContentForReference(item);
-					if (rpc == null) {
-						LoggingService.Debug("RefreshProjectContentForReference: not refreshing (rpc==null) " + item.FileName);
-						return;
-					}
-					if (rpc.IsUpToDate) {
-						LoggingService.Debug("RefreshProjectContentForReference: not refreshing (rpc.IsUpToDate) " + item.FileName);
-						return;
-					}
-					LoggingService.Debug("RefreshProjectContentForReference " + item.FileName);
-					
-					HashSet<IProject> projectsToRefresh = new HashSet<IProject>();
-					HashSet<IProjectContent> unloadedReferenceContents = new HashSet<IProjectContent>();
-					UnloadReferencedContent(projectsToRefresh, unloadedReferenceContents, registry, rpc);
-					
-					foreach (IProject p in projectsToRefresh) {
-						ParserService.Reparse(p, true, false);
-					}
-				});
-		}
-		
-		static void UnloadReferencedContent(HashSet<IProject> projectsToRefresh, HashSet<IProjectContent> unloadedReferenceContents, ProjectContentRegistry referencedContentRegistry, IProjectContent referencedContent)
-		{
-			LoggingService.Debug("Unload referenced content " + referencedContent);
+			var param = new ReaderParameters();
+			param.AssemblyResolver = new DummyAssemblyResolver();
+			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);
 			
-			List<RegistryContentPair> otherContentsToUnload = new List<RegistryContentPair>();
-			foreach (ProjectContentRegistryDescriptor registry in registries) {
-				if (registry.IsRegistryLoaded) {
-					foreach (IProjectContent pc in registry.Registry.GetLoadedProjectContents()) {
-						if (pc.ReferencedContents.Contains(referencedContent)) {
-							if (unloadedReferenceContents.Add(pc)) {
-								LoggingService.Debug("Mark dependent content for unloading " + pc);
-								otherContentsToUnload.Add(new RegistryContentPair(registry.Registry, pc));
-							}
-						}
-					}
+			CecilLoader l = new CecilLoader();
+			string xmlDocFile = FindXmlDocumentation(fileName, asm.MainModule.Runtime);
+			if (xmlDocFile != null) {
+				try {
+					l.DocumentationProvider = new XmlDocumentationProvider(xmlDocFile);
+				} catch (XmlException ex) {
+					LoggingService.Warn("Ignoring error while reading xml doc from " + xmlDocFile, ex);
+				} catch (IOException ex) {
+					LoggingService.Warn("Ignoring error while reading xml doc from " + xmlDocFile, ex);
+				} catch (UnauthorizedAccessException ex) {
+					LoggingService.Warn("Ignoring error while reading xml doc from " + xmlDocFile, ex);
 				}
+			}
+			l.InterningProvider = new SimpleInterningProvider();
+			l.CancellationToken = cancellationToken;
+			return l.LoadAssembly(asm);
+		}
+		
+		// used to prevent Cecil from loading referenced assemblies
+		sealed class DummyAssemblyResolver : IAssemblyResolver
+		{
+			public AssemblyDefinition Resolve(AssemblyNameReference name)
+			{
+				return null;
 			}
 			
-			foreach (IProjectContent pc in ParserService.AllProjectContents) {
-				IProject project = (IProject)pc.Project;
-				if (projectsToRefresh.Contains(project))
-					continue;
-				if (pc.ReferencedContents.Remove(referencedContent)) {
-					LoggingService.Debug("UnloadReferencedContent: Mark project for reparsing " + project.Name);
-					projectsToRefresh.Add(project);
-				}
+			public AssemblyDefinition Resolve(string fullName)
+			{
+				return null;
 			}
 			
-			foreach (RegistryContentPair pair in otherContentsToUnload) {
-				UnloadReferencedContent(projectsToRefresh, unloadedReferenceContents, pair.Key, pair.Value);
+			public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
+			{
+				return null;
 			}
 			
-			referencedContentRegistry.UnloadProjectContent(referencedContent);
+			public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters)
+			{
+				return null;
+			}
 		}
-		*/
+		
+		static readonly string referenceAssembliesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Reference Assemblies\Microsoft\\Framework");
+		static readonly string frameworkPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework");
+		
+		static string FindXmlDocumentation(string assemblyFileName, TargetRuntime runtime)
+		{
+			string fileName;
+			switch (runtime) {
+				case TargetRuntime.Net_1_0:
+					fileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v1.0.3705", assemblyFileName));
+					break;
+				case TargetRuntime.Net_1_1:
+					fileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v1.1.4322", assemblyFileName));
+					break;
+				case TargetRuntime.Net_2_0:
+					fileName = LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v2.0.50727", assemblyFileName))
+						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, "v3.5"))
+						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, "v3.0"))
+						?? LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v3.5\Profile\Client"));
+					break;
+				case TargetRuntime.Net_4_0:
+				default:
+					fileName = LookupLocalizedXmlDoc(Path.Combine(referenceAssembliesPath, @".NETFramework\v4.0", assemblyFileName))
+						?? LookupLocalizedXmlDoc(Path.Combine(frameworkPath, "v4.0.30319", assemblyFileName));
+					break;
+			}
+			return fileName;
+		}
+		
+		static string LookupLocalizedXmlDoc(string fileName)
+		{
+			return XmlDocumentationProvider.LookupLocalizedXmlDoc(fileName);
+		}
+		#endregion
 	}
 }
