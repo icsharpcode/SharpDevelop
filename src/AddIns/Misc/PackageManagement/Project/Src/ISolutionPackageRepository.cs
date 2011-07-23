@@ -13,6 +13,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		string GetInstallPath(IPackage package);
 		IEnumerable<IPackage> GetPackagesByDependencyOrder();
+		IEnumerable<IPackage> GetPackagesByReverseDependencyOrder();
 		IQueryable<IPackage> GetPackages();
 		bool IsInstalled(IPackage package);
 		

@@ -17,6 +17,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementProject GetProject(PackageSource source, string projectName);
 		IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName);
 		IPackageManagementProject GetProject(IPackageRepository sourceRepository, IProject project);
+		IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository);
 		
 		IProject GetActiveMSBuildProject();
 		IEnumerable<IProject> GetMSBuildProjects();
@@ -24,6 +25,7 @@ namespace ICSharpCode.PackageManagement
 		
 		bool IsPackageInstalled(IPackage package);
 		IQueryable<IPackage> GetPackages();
+		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
 		
 		bool IsOpen { get; }
 		string FileName { get; }

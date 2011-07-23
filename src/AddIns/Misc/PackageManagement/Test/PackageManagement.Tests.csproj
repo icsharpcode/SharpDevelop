@@ -246,6 +246,7 @@
     <Compile Include="Src\ThreadSafePackageManagementEventsTests.cs" />
     <Compile Include="Src\UninstallPackageActionTests.cs" />
     <Compile Include="Src\UpdateAllPackagesInProjectTests.cs" />
+    <Compile Include="Src\UpdateAllPackagesInSolutionTests.cs" />
     <Compile Include="Src\UpdatedPackagesViewModelTests.cs" />
     <Compile Include="Src\PackageViewModelTests.cs" />
     <Compile Include="Src\PagesTests.cs" />

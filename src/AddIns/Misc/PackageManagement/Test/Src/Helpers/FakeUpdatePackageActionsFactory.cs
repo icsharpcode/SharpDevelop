@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.PackageManagement;
+using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -10,12 +11,28 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public FakeUpdatePackageActions FakeUpdateAllPackagesInProject = 
 			new FakeUpdatePackageActions();
+		
 		public IPackageManagementProject ProjectPassedToCreateUpdateAllPackagesInProject;
 		
 		public IUpdatePackageActions CreateUpdateAllPackagesInProject(IPackageManagementProject project)
 		{
 			ProjectPassedToCreateUpdateAllPackagesInProject = project;
 			return FakeUpdateAllPackagesInProject;
+		}
+		
+		public FakeUpdatePackageActions FakeUpdateAllPackagesInSolution = 
+			new FakeUpdatePackageActions();
+		
+		public IPackageManagementSolution SolutionPassedToCreateUpdateAllPackagesInSolution;
+		public IPackageRepository SourceRepositoryPassedToCreateUpdateAllPackagesInSolution;
+		
+		public IUpdatePackageActions CreateUpdateAllPackagesInSolution(
+			IPackageManagementSolution solution,
+			IPackageRepository sourceRepository)
+		{
+			SolutionPassedToCreateUpdateAllPackagesInSolution = solution;
+			SourceRepositoryPassedToCreateUpdateAllPackagesInSolution = sourceRepository;
+			return FakeUpdateAllPackagesInSolution;
 		}
 	}
 }

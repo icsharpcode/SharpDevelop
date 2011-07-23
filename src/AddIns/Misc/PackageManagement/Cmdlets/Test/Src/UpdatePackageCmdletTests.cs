@@ -6,6 +6,7 @@ using System.Management.Automation;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
+using NuGet;
 using NUnit.Framework;
 using PackageManagement.Cmdlets.Tests.Helpers;
 using PackageManagement.Tests.Helpers;
@@ -20,15 +21,19 @@ namespace PackageManagement.Cmdlets.Tests
 		FakePackageManagementProject fakeProject;
 		FakeUpdatePackageActionsFactory fakeUpdateActionsFactory;
 		FakeUpdatePackageActions fakeUpdateAllPackagesInProject;
+		FakePackageManagementSolution fakeSolution;
+		FakeUpdatePackageActions fakeUpdateAllPackagesInSolution;
 		
 		void CreateCmdletWithoutActiveProject()
 		{
 			cmdlet = new TestableUpdatePackageCmdlet();
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
+			fakeSolution = fakeConsoleHost.FakeSolution;
 			fakeProject = fakeConsoleHost.FakeProject;
 			fakeUpdateActionsFactory = cmdlet.FakeUpdatePackageActionsFactory;
 			fakeUpdateAllPackagesInProject = fakeUpdateActionsFactory.FakeUpdateAllPackagesInProject;
+			fakeUpdateAllPackagesInSolution = fakeUpdateActionsFactory.FakeUpdateAllPackagesInSolution;
 		}
 				
 		FakeUpdatePackageAction UpdatePackageInSingleProjectAction {
@@ -46,6 +51,19 @@ namespace PackageManagement.Cmdlets.Tests
 		
 		FakeUpdatePackageAction SecondUpdateActionWhenUpdatingAllPackagesInProject {
 			get { return GetUpdatingAllPackagesInProjectAction(1); }
+		}
+		
+		FakeUpdatePackageAction FirstUpdateActionWhenUpdatingAllPackagesInSolution {
+			get { return GetUpdatingAllPackagesInSolutionAction(0); }
+		}
+		
+		FakeUpdatePackageAction GetUpdatingAllPackagesInSolutionAction(int index)
+		{
+			return fakeUpdateActionsFactory.FakeUpdateAllPackagesInSolution.FakeActions[index];
+		}
+		
+		FakeUpdatePackageAction SecondUpdateActionWhenUpdatingAllPackagesInSolution {
+			get { return GetUpdatingAllPackagesInSolutionAction(1); }
 		}
 		
 		void CreateCmdletWithActivePackageSourceAndProject()
@@ -96,6 +114,19 @@ namespace PackageManagement.Cmdlets.Tests
 			var action = new FakeUpdatePackageAction(fakeProject);
 			action.PackageId = packageId;
 			fakeUpdateActionsFactory.FakeUpdateAllPackagesInProject.FakeActions.Add(action);
+		}
+		
+		void CreateTwoUpdateActionsWhenUpdatingAllPackagesInSolution(string packageId1, string packageId2)
+		{
+			CreateUpdateActionWhenUpdatingAllPackagesInSolution(packageId1);
+			CreateUpdateActionWhenUpdatingAllPackagesInSolution(packageId2);
+		}
+		
+		void CreateUpdateActionWhenUpdatingAllPackagesInSolution(string packageId)
+		{
+			var action = new FakeUpdatePackageAction(fakeProject);
+			action.PackageId = packageId;
+			fakeUpdateActionsFactory.FakeUpdateAllPackagesInSolution.FakeActions.Add(action);
 		}
 		
 		[Test]
@@ -150,7 +181,7 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageIdSpecified_UpdatePackageActionIsExecuted()
+		public void ProcessRecord_PackageIdAndProjectNameSpecified_UpdatePackageActionIsExecuted()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			SetIdParameter("Test");
@@ -239,7 +270,7 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_UpdateAllPackagesInProject_CreatesUpdateAllPackagesProject()
+		public void ProcessRecord_UpdateAllPackagesInProject_CreatesUpdateAllPackagesInProject()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			SetProjectNameParameter("MyProject");
@@ -250,7 +281,21 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			Assert.AreEqual(fakeProject, project);
 		}
-				
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInProjectWhenPackageIdIsEmptyString_CreatesUpdateAllPackagesInProject()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			SetIdParameter(String.Empty);
+			RunCmdlet();
+			
+			IPackageManagementProject project = 
+				fakeUpdateActionsFactory.ProjectPassedToCreateUpdateAllPackagesInProject;
+			
+			Assert.AreEqual(fakeProject, project);
+		}
+		
 		[Test]
 		public void ProcessRecord_UpdateAllPackagesInProject_ProjectNameUsedToCreateProject()
 		{
@@ -325,7 +370,7 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_UpdateAllPackagesInProjectWhenOnePackageInProject_ActionsUsesCmdletAsScriptRunner()
+		public void ProcessRecord_UpdateAllPackagesInProjectWhenOnePackageInProject_ActionsUseCmdletAsScriptRunner()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			SetProjectNameParameter("MyProject");
@@ -333,6 +378,111 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			IPackageScriptRunner runner = fakeUpdateAllPackagesInProject.PackageScriptRunner;
+			
+			Assert.AreEqual(cmdlet, runner);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInSolution_CreatesUpdateAllPackagesSolution()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			RunCmdlet();
+			
+			IPackageManagementSolution solution = 
+				fakeUpdateActionsFactory.SolutionPassedToCreateUpdateAllPackagesInSolution;
+			
+			Assert.AreEqual(fakeSolution, solution);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInSolutionWhenSourceSpecified_PackageSourceUsedToGetRepository()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetSourceParameter("Test");
+			RunCmdlet();
+			
+			PackageSource packageSource = fakeConsoleHost.PackageSourcePassedToGetRepository;
+			PackageSource expectedPackageSource = fakeConsoleHost.PackageSourceToReturnFromGetActivePackageSource;
+			
+			Assert.AreEqual(expectedPackageSource, packageSource);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInSolutionWhenSourceSpecified_SourceUsedPassedGetActvePackageSourceFromConsoleHost()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetSourceParameter("Test");
+			RunCmdlet();
+			
+			string packageSource = fakeConsoleHost.PackageSourcePassedToGetActivePackageSource;
+			
+			Assert.AreEqual("Test", packageSource);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInSolution_RepositoryUsedToCreateUpdateAllPackagesInSolution()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			RunCmdlet();
+			
+			IPackageRepository repository = fakeUpdateActionsFactory.SourceRepositoryPassedToCreateUpdateAllPackagesInSolution;
+			IPackageRepository expectedRepository = fakeConsoleHost.FakePackageRepository;
+			
+			Assert.AreEqual(expectedRepository, repository);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInSolutionWhenTwoUpdateActionsReturned_TwoUpdateActionsAreExecuted()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			CreateTwoUpdateActionsWhenUpdatingAllPackagesInSolution("PackageA", "PackageB");
+			RunCmdlet();
+			
+			bool[] executedActions = new bool[] {
+				FirstUpdateActionWhenUpdatingAllPackagesInSolution.IsExecuted,
+				SecondUpdateActionWhenUpdatingAllPackagesInSolution.IsExecuted
+			};
+			
+			bool[] expectedExecutedActions = new bool[] {
+				true,
+				true
+			};
+			
+			CollectionAssert.AreEqual(expectedExecutedActions, executedActions);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInSolutionAndIgnoreDependenciesIsTrue_ActionDoesNotUpdateDependencies()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			CreateUpdateActionWhenUpdatingAllPackagesInSolution("PackageA");
+			EnableIgnoreDependenciesParameter();
+			RunCmdlet();
+			
+			bool update = fakeUpdateAllPackagesInSolution.UpdateDependencies;
+			
+			Assert.IsFalse(update);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInSolutionAndIgnoreDependenciesIsFalse_ActionUpdatesDependencies()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			CreateUpdateActionWhenUpdatingAllPackagesInSolution("PackageA");
+			RunCmdlet();
+			
+			bool update = fakeUpdateAllPackagesInSolution.UpdateDependencies;
+			
+			Assert.IsTrue(update);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInSolution_ActionsUseCmdletAsScriptRunner()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			RunCmdlet();
+			
+			IPackageScriptRunner runner = fakeUpdateAllPackagesInSolution.PackageScriptRunner;
 			
 			Assert.AreEqual(cmdlet, runner);
 		}

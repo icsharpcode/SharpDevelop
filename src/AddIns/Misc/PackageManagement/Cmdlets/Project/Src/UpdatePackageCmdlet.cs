@@ -51,15 +51,25 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		protected override void ProcessRecord()
 		{
 			ThrowErrorIfProjectNotOpen();
-			if (IsPackageIdMissing) {
-				UpdateAllPackagesInProject();
+			if (IsPackageIdMissing()) {
+				if (HasProjectName()) {
+					UpdateAllPackagesInProject();
+				} else {
+					UpdateAllPackagesInSolution();
+				}
 			} else {
 				UpdatePackageInSingleProject();
 			}
 		}
 		
-		bool IsPackageIdMissing {
-			get { return Id == null; }
+		bool IsPackageIdMissing()
+		{
+			return String.IsNullOrEmpty(Id);
+		}
+		
+		bool HasProjectName()
+		{
+			return ProjectName != null;
 		}
 		
 		void UpdateAllPackagesInProject()
@@ -72,6 +82,25 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		{
 			IPackageManagementProject project = GetProject();
 			return updatePackageActionsFactory.CreateUpdateAllPackagesInProject(project);
+		}
+		
+		void UpdateAllPackagesInSolution()
+		{
+			IUpdatePackageActions actions = CreateUpdateAllPackagesInSolution();
+			RunActions(actions);
+		}
+		
+		IUpdatePackageActions CreateUpdateAllPackagesInSolution()
+		{
+			IPackageManagementSolution solution = ConsoleHost.Solution;
+			IPackageRepository repository = GetActivePackageRepository();
+			return updatePackageActionsFactory.CreateUpdateAllPackagesInSolution(solution, repository);
+		}
+		
+		IPackageRepository GetActivePackageRepository()
+		{
+			PackageSource packageSource = ConsoleHost.GetActivePackageSource(Source);
+			return ConsoleHost.GetPackageRepository(packageSource);
 		}
 		
 		void UpdatePackageInSingleProject()

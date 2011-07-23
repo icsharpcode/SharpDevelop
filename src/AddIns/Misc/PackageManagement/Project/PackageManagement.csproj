@@ -318,6 +318,7 @@
     <Compile Include="Src\ThreadSafePackageManagementEvents.cs" />
     <Compile Include="Src\UninstallPackageAction.cs" />
     <Compile Include="Src\UpdateAllPackagesInProject.cs" />
+    <Compile Include="Src\UpdateAllPackagesInSolution.cs" />
     <Compile Include="Src\UpdatedPackagesViewModel.cs" />
     <Compile Include="Src\PackageViewModel.cs" />
     <Compile Include="Src\PackageViewModelFactory.cs" />

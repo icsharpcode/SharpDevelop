@@ -33,6 +33,10 @@ namespace ICSharpCode.PackageManagement.Design
 			get { return FakeUpdatePackageActionsCreated[0]; }
 		}
 		
+		public FakeUpdatePackageAction SecondFakeUpdatePackageActionCreated {
+			get { return FakeUpdatePackageActionsCreated[1]; }
+		}
+		
 		public List<FakeUpdatePackageAction> FakeUpdatePackageActionsCreated = 
 			new List<FakeUpdatePackageAction>();
 		

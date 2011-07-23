@@ -35,6 +35,13 @@ namespace PackageManagement.Tests.Helpers
 			return FakePackages;
 		}
 		
+		public List<FakePackage> FakePackagesByReverseDependencyOrder = new List<FakePackage>();
+		
+		public IEnumerable<IPackage> GetPackagesByReverseDependencyOrder()
+		{
+			return FakePackagesByReverseDependencyOrder;
+		}
+		
 		public bool IsInstalled(IPackage package)
 		{
 			return FakeSharedRepository.FakePackages.Exists(p => p == package);

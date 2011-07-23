@@ -71,5 +71,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 				"The Package Management Console requires Windows PowerShell 2.0.\r\n" +
 				"PowerShell 2.0 can be downloaded from http://support.microsoft.com/kb/968929";
 		}
+		
+		public IPackageRepository GetPackageRepository(PackageSource packageSource)
+		{
+			return null;
+		}
 	}
 }
