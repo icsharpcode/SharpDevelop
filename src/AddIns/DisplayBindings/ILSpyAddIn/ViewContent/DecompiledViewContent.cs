@@ -27,6 +27,7 @@ namespace ICSharpCode.ILSpyAddIn
 	{
 		readonly string assemblyFile;
 		readonly string fullTypeName;
+		readonly string tempFileName;
 		
 		/// <summary>
 		/// Entity to jump to once decompilation has finished.
@@ -48,6 +49,8 @@ namespace ICSharpCode.ILSpyAddIn
 			
 			string shortTypeName = fullTypeName.Substring(fullTypeName.LastIndexOf('.') + 1);
 			this.TitleName = "[" + shortTypeName + "]";
+			tempFileName = string.Format("decompiled/{0}.cs", fullTypeName);
+			this.InfoTip = tempFileName;
 			
 			Thread thread = new Thread(DecompilationThread);
 			thread.Name = "Decompiler (" + shortTypeName + ")";
@@ -205,8 +208,6 @@ namespace ICSharpCode.ILSpyAddIn
 		#region Update UI
 		void UpdateIconMargin(string text)
 		{
-			string tempFileName = string.Format("decompiled/{0}.cs", fullTypeName);
-			
 			codeView.IconBarManager.UpdateClassMemberBookmarks(ParserService.ParseFile(tempFileName, new StringTextBuffer(text)));
 			
 			// load bookmarks
