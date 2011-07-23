@@ -79,6 +79,8 @@
     <Compile Include="Src\ISelectProjectsService.cs" />
     <Compile Include="Src\ISolutionPackageRepository.cs" />
     <Compile Include="Src\ISolutionPackageRepositoryFactory.cs" />
+    <Compile Include="Src\IUpdatePackageActions.cs" />
+    <Compile Include="Src\IUpdatePackageActionsFactory.cs" />
     <Compile Include="Src\ManagePackagesCommand.cs" />
     <Compile Include="Src\AggregateExceptionErrorMessage.cs" />
     <Compile Include="Src\ConsolePackageActionRunner.cs" />
@@ -315,6 +317,7 @@
     <Compile Include="Src\SolutionPackageRepository.cs" />
     <Compile Include="Src\ThreadSafePackageManagementEvents.cs" />
     <Compile Include="Src\UninstallPackageAction.cs" />
+    <Compile Include="Src\UpdateAllPackagesInProject.cs" />
     <Compile Include="Src\UpdatedPackagesViewModel.cs" />
     <Compile Include="Src\PackageViewModel.cs" />
     <Compile Include="Src\PackageViewModelFactory.cs" />
@@ -355,6 +358,7 @@
     <Compile Include="Src\UpdatedPackageViewModel.cs" />
     <Compile Include="Src\UpdatedPackageViewModelFactory.cs" />
     <Compile Include="Src\UpdatePackageAction.cs" />
+    <Compile Include="Src\UpdatePackageActionsFactory.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
     <Compile Include="Src\PackageManagementViewModels.cs" />
     <Compile Include="Src\VisualStudio\NotInstalledException.cs" />

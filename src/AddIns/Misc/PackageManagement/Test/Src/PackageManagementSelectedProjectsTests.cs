@@ -503,8 +503,7 @@ namespace PackageManagement.Tests
 			NoProjectsSelected();
 			
 			var fakePackage = new FakePackage();
-			var projects = new List<IPackageManagementSelectedProject>();
-			projects.AddRange(selectedProjects.GetProjects(fakePackage));
+			List<IPackageManagementSelectedProject> projects = selectedProjects.GetProjects(fakePackage).ToList();
 			
 			var expectedProject = new FakeSelectedProject("MyProject", selected: false, enabled: true);
 			var expectedProjects = new List<IPackageManagementSelectedProject>();

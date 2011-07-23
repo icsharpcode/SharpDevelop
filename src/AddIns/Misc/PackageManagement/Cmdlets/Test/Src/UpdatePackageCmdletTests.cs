@@ -3,6 +3,7 @@
 
 using System;
 using System.Management.Automation;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using NUnit.Framework;
@@ -17,7 +18,8 @@ namespace PackageManagement.Cmdlets.Tests
 		TestableUpdatePackageCmdlet cmdlet;
 		FakeCmdletTerminatingError fakeTerminatingError;
 		FakePackageManagementProject fakeProject;
-		FakeUpdatePackageAction fakeUpdatePackageAction;
+		FakeUpdatePackageActionsFactory fakeUpdateActionsFactory;
+		FakeUpdatePackageActions fakeUpdateAllPackagesInProject;
 		
 		void CreateCmdletWithoutActiveProject()
 		{
@@ -25,9 +27,27 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeTerminatingError = cmdlet.FakeCmdletTerminatingError;
 			fakeConsoleHost = cmdlet.FakePackageManagementConsoleHost;
 			fakeProject = fakeConsoleHost.FakeProject;
-			fakeUpdatePackageAction = fakeProject.FakeUpdatePackageAction;
+			fakeUpdateActionsFactory = cmdlet.FakeUpdatePackageActionsFactory;
+			fakeUpdateAllPackagesInProject = fakeUpdateActionsFactory.FakeUpdateAllPackagesInProject;
 		}
 				
+		FakeUpdatePackageAction UpdatePackageInSingleProjectAction {
+			get { return fakeProject.FirstFakeUpdatePackageActionCreated; }
+		}
+		
+		FakeUpdatePackageAction FirstUpdateActionWhenUpdatingAllPackagesInProject {
+			get { return GetUpdatingAllPackagesInProjectAction(0); }
+		}
+		
+		FakeUpdatePackageAction GetUpdatingAllPackagesInProjectAction(int index)
+		{
+			return fakeUpdateActionsFactory.FakeUpdateAllPackagesInProject.FakeActions[index];
+		}
+		
+		FakeUpdatePackageAction SecondUpdateActionWhenUpdatingAllPackagesInProject {
+			get { return GetUpdatingAllPackagesInProjectAction(1); }
+		}
+		
 		void CreateCmdletWithActivePackageSourceAndProject()
 		{
 			CreateCmdletWithoutActiveProject();
@@ -65,6 +85,19 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.ProjectName = name;
 		}
 		
+		void CreateTwoUpdateActionsWhenUpdatingAllPackagesInProject(string packageId1, string packageId2)
+		{
+			CreateUpdateActionWhenUpdatingAllPackagesInProject(packageId1);
+			CreateUpdateActionWhenUpdatingAllPackagesInProject(packageId2);
+		}
+		
+		void CreateUpdateActionWhenUpdatingAllPackagesInProject(string packageId)
+		{
+			var action = new FakeUpdatePackageAction(fakeProject);
+			action.PackageId = packageId;
+			fakeUpdateActionsFactory.FakeUpdateAllPackagesInProject.FakeActions.Add(action);
+		}
+		
 		[Test]
 		public void ProcessRecord_NoActiveProject_ThrowsNoProjectOpenTerminatingError()
 		{
@@ -76,104 +109,34 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageIdSpecified_PackageIdUsedToUpdatePackage()
+		public void ProcessRecord_PackageIdAndProjectNameSpecified_PackageIdUsedToUpdatePackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			
 			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actualPackageId = fakeUpdatePackageAction.PackageId;
+			string actualPackageId = UpdatePackageInSingleProjectAction.PackageId;
 			 
 			Assert.AreEqual("Test", actualPackageId);
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageIdSpecified_NullPackageSourceUsedToCreateProject()
+		public void ProcessRecord_PackageIdAndProjectNameSpecified_NullPackageSourceUsedToCreateProject()
 		{
-			CreateCmdletWithoutActiveProject();
-			AddDefaultProjectToConsoleHost();
-			var packageSource = AddPackageSourceToConsoleHost();
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualPackageSource = fakeConsoleHost.PackageSourcePassedToGetProject;
+			string actualPackageSource = fakeConsoleHost.PackageSourcePassedToGetProject;
 			
 			Assert.IsNull(actualPackageSource);
 		}
 		
 		[Test]
-		public void ProcessRecord_IgnoreDependenciesParameterSet_UpdateDependenciesIsFalseWhenUpdatingPackage()
-		{
-			CreateCmdletWithActivePackageSourceAndProject();
-			
-			SetIdParameter("Test");
-			EnableIgnoreDependenciesParameter();
-			RunCmdlet();
-			
-			bool result = fakeUpdatePackageAction.UpdateDependencies;
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void ProcessRecord_IgnoreDependenciesParameterNotSet_UpdateDependenciesIsTrueWhenUpdatingPackage()
-		{
-			CreateCmdletWithActivePackageSourceAndProject();
-			
-			SetIdParameter("Test");
-			RunCmdlet();
-			
-			bool result = fakeUpdatePackageAction.UpdateDependencies;
-			
-			Assert.IsTrue(result);
-		}
-		
-		[Test]
-		public void ProcessRecord_SourceParameterSet_CustomSourceUsedWhenUpdatingPackage()
-		{
-			CreateCmdletWithActivePackageSourceAndProject();
-			
-			SetIdParameter("Test");
-			SetSourceParameter("http://sharpdevelop.net/packages");
-			RunCmdlet();
-			
-			var expected = "http://sharpdevelop.net/packages";
-			var actual = fakeConsoleHost.PackageSourcePassedToGetProject;
-			
-			Assert.AreEqual(expected, actual);
-		}
-		
-		[Test]
-		public void ProcessRecord_PackageVersionParameterSet_VersionUsedWhenUpdatingPackage()
-		{
-			CreateCmdletWithActivePackageSourceAndProject();
-			
-			SetIdParameter("Test");
-			var version = new Version("1.0.1");
-			SetVersionParameter(version);
-			RunCmdlet();
-			
-			var actualVersion = fakeUpdatePackageAction.PackageVersion;
-			
-			Assert.AreEqual(version, actualVersion);
-		}
-		
-		[Test]
-		public void ProcessRecord_PackageVersionParameterNotSet_VersionUsedWhenUpdatingPackageIsNull()
-		{
-			CreateCmdletWithActivePackageSourceAndProject();
-			
-			SetIdParameter("Test");
-			RunCmdlet();
-			
-			var actualVersion = fakeUpdatePackageAction.PackageVersion;
-			
-			Assert.IsNull(actualVersion);
-		}
-		
-		[Test]
-		public void ProcessRecord_ProjectNameSpecified_ProjectMatchingProjectNameUsedWhenUpdatingPackage()
+		public void ProcessRecord_ProjectNameAndPackageIdSpecified_ProjectMatchingProjectNameUsedWhenUpdatingPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			
@@ -181,13 +144,41 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actualProjectName = fakeConsoleHost.ProjectNamePassedToGetProject;
+			string actualProjectName = fakeConsoleHost.ProjectNamePassedToGetProject;
 			
 			Assert.AreEqual("MyProject", actualProjectName);
 		}
 		
 		[Test]
-		public void ProcessRecord_ProjectNameSpecified_ProjectNameUsedToFindProject()
+		public void ProcessRecord_PackageIdSpecified_UpdatePackageActionIsExecuted()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			RunCmdlet();
+			
+			bool executed = UpdatePackageInSingleProjectAction.IsExecuted;
+			
+			Assert.IsTrue(executed);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdAndProjectNameAndIgnoreDependenciesParameterSet_UpdateDependenciesIsFalseWhenUpdatingPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			EnableIgnoreDependenciesParameter();
+			RunCmdlet();
+			
+			bool result = UpdatePackageInSingleProjectAction.UpdateDependencies;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdAndProjectNameAndIgnoreDependenciesParameterNotSet_UpdateDependenciesIsTrueWhenUpdatingPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			
@@ -195,38 +186,155 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actual = fakeConsoleHost.ProjectNamePassedToGetProject;
-			var expected = "MyProject";
+			bool result = UpdatePackageInSingleProjectAction.UpdateDependencies;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdAndProjectNameAndSourceParameterSet_CustomSourceUsedWhenUpdatingPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			SetSourceParameter("http://sharpdevelop.net/packages");
+			RunCmdlet();
+			
+			string expected = "http://sharpdevelop.net/packages";
+			string actual = fakeConsoleHost.PackageSourcePassedToGetProject;
 			
 			Assert.AreEqual(expected, actual);
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageIdSpecified_PackageIsUpdated()
+		public void ProcessRecord_PackageIdAndProjectNameAndPackageVersionParameterSet_VersionUsedWhenUpdatingPackage()
 		{
-			CreateCmdletWithoutActiveProject();
-			AddDefaultProjectToConsoleHost();
-			AddPackageSourceToConsoleHost();
+			CreateCmdletWithActivePackageSourceAndProject();
+			
 			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			var version = new Version("1.0.1");
+			SetVersionParameter(version);
 			RunCmdlet();
 			
-			bool executed = fakeUpdatePackageAction.IsExecuted;
+			Version actualVersion = UpdatePackageInSingleProjectAction.PackageVersion;
 			
-			Assert.IsTrue(executed);
+			Assert.AreEqual(version, actualVersion);
 		}
 		
 		[Test]
-		public void ProcessRecord_PackageIdSpecified_CmdletUsedAsScriptRunner()
+		public void ProcessRecord_PackageIdAndProjectNameSpecified_CmdletUsedAsScriptRunner()
 		{
 			CreateCmdletWithoutActiveProject();
 			AddDefaultProjectToConsoleHost();
 			AddPackageSourceToConsoleHost();
 			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			IPackageScriptRunner scriptRunner = fakeUpdatePackageAction.PackageScriptRunner;
+			IPackageScriptRunner scriptRunner = UpdatePackageInSingleProjectAction.PackageScriptRunner;
 			
 			Assert.AreEqual(cmdlet, scriptRunner);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInProject_CreatesUpdateAllPackagesProject()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			RunCmdlet();
+			
+			IPackageManagementProject project = 
+				fakeUpdateActionsFactory.ProjectPassedToCreateUpdateAllPackagesInProject;
+			
+			Assert.AreEqual(fakeProject, project);
+		}
+				
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInProject_ProjectNameUsedToCreateProject()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			RunCmdlet();
+			
+			string projectName = fakeConsoleHost.ProjectNamePassedToGetProject;
+			
+			Assert.AreEqual("MyProject", projectName);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInProjectWhenSourceSpecified_PackageSourceUsedToCreateProject()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			SetSourceParameter("http://sharpdevelop.com");
+			RunCmdlet();
+			
+			string packageSource = fakeConsoleHost.PackageSourcePassedToGetProject;
+			
+			Assert.AreEqual("http://sharpdevelop.com", packageSource);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInProjectWhenTwoPackagesInProject_TwoUpdateActionsAreExecuted()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			CreateTwoUpdateActionsWhenUpdatingAllPackagesInProject("PackageA", "PackageB");
+			RunCmdlet();
+			
+			bool[] executedActions = new bool[] {
+				FirstUpdateActionWhenUpdatingAllPackagesInProject.IsExecuted,
+				SecondUpdateActionWhenUpdatingAllPackagesInProject.IsExecuted
+			};
+			
+			bool[] expectedExecutedActions = new bool[] {
+				true,
+				true
+			};
+			
+			CollectionAssert.AreEqual(expectedExecutedActions, executedActions);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInProjectWhenOnePackageInProjectAndIgnoreDependenciesIsTrue_ActionDoesNotUpdateDependencies()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			CreateUpdateActionWhenUpdatingAllPackagesInProject("PackageA");
+			EnableIgnoreDependenciesParameter();
+			RunCmdlet();
+			
+			bool update = fakeUpdateAllPackagesInProject.UpdateDependencies;
+			
+			Assert.IsFalse(update);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInProjectWhenOnePackageInProjectAndIgnoreDependenciesIsFalse_ActionUpdatesDependencies()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			CreateUpdateActionWhenUpdatingAllPackagesInProject("PackageA");
+			RunCmdlet();
+			
+			bool update = fakeUpdateAllPackagesInProject.UpdateDependencies;
+			
+			Assert.IsTrue(update);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInProjectWhenOnePackageInProject_ActionsUsesCmdletAsScriptRunner()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			CreateUpdateActionWhenUpdatingAllPackagesInProject("PackageA");
+			RunCmdlet();
+			
+			IPackageScriptRunner runner = fakeUpdateAllPackagesInProject.PackageScriptRunner;
+			
+			Assert.AreEqual(cmdlet, runner);
 		}
 	}
 }

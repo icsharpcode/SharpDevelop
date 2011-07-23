@@ -15,9 +15,11 @@ namespace ICSharpCode.PackageManagement
 			: base(project, packageManagementEvents)
 		{
 			UpdateDependencies = true;
+			UpdateIfPackageDoesNotExistInProject = true;
 		}
 		
 		public bool UpdateDependencies { get; set; }
+		public bool UpdateIfPackageDoesNotExistInProject { get; set; }
 		
 		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
@@ -26,8 +28,18 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void ExecuteCore()
 		{
-			Project.UpdatePackage(Package, Operations, UpdateDependencies);
-			OnParentPackageInstalled();
+			if (ShouldUpdatePackage()) {
+				Project.UpdatePackage(Package, Operations, UpdateDependencies);
+				OnParentPackageInstalled();
+			}
+		}
+		
+		bool ShouldUpdatePackage()
+		{
+			if (!UpdateIfPackageDoesNotExistInProject) {
+				return PackageIdExistsInProject();
+			}
+			return true;
 		}
 	}
 }

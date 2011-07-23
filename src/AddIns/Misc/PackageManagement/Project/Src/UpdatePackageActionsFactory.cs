@@ -2,13 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface ISharpDevelopProjectManager : IProjectManager
+	public class UpdatePackageActionsFactory : IUpdatePackageActionsFactory
 	{
-		IPackagePathResolver PathResolver { get; }
-		bool IsInstalled(string packageId);
+		public IUpdatePackageActions CreateUpdateAllPackagesInProject(IPackageManagementProject project)
+		{
+			return new UpdateAllPackagesInProject(project);
+		}
 	}
 }

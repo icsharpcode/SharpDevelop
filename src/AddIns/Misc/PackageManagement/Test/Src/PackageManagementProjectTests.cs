@@ -447,5 +447,58 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual("MyProject", name);
 		}
+		
+		[Test]
+		public void IsInstalled_PackageIdPassedAndPackageIsInstalled_ReturnsTrue()
+		{
+			CreateProject();
+			fakeProjectManager.IsInstalledReturnValue = true;
+			
+			bool installed = project.IsPackageInstalled("Test");
+			
+			Assert.IsTrue(installed);
+		}
+		
+		[Test]
+		public void IsInstalled_PackageIdPassedAndPackageIsNotInstalled_ReturnsFalse()
+		{
+			CreateProject();
+			fakeProjectManager.IsInstalledReturnValue = false;
+			
+			bool installed = project.IsPackageInstalled("Test");
+			
+			Assert.IsFalse(installed);
+		}
+		
+		[Test]
+		public void IsInstalled_PackageIdPassedPackageIsInstalled_PackageIdPassedToProjectManager()
+		{
+			CreateProject();
+			fakeProjectManager.IsInstalledReturnValue = false;
+			
+			project.IsPackageInstalled("Test");
+			string id = fakeProjectManager.PackageIdPassedToIsInstalled;
+			
+			Assert.AreEqual("Test", id);
+		}
+		
+		[Test]
+		public void GetPackagesInReverseDependencyOrder_TwoPackages_ReturnsPackagesFromProjectLocalRepositoryInCorrectOrder()
+		{
+			CreateProject();
+			FakePackage packageA = fakeProjectManager.FakeLocalRepository.AddFakePackageWithVersion("A", "1.0");
+			FakePackage packageB = fakeProjectManager.FakeLocalRepository.AddFakePackageWithVersion("B", "1.0");
+			
+			packageB.DependenciesList.Add(new PackageDependency("A"));
+			
+			var expectedPackages = new FakePackage[] {
+				packageB,
+				packageA
+			};
+			
+			IEnumerable<IPackage> packages = project.GetPackagesInReverseDependencyOrder();
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, packages);
+		}
 	}
 }

@@ -50,10 +50,12 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public IPackage PackagePassedToOnParentPackageInstalled;
+		public bool IsOnParentPackageInstalledCalled;
 		
 		public void OnParentPackageInstalled(IPackage package)
 		{
 			PackagePassedToOnParentPackageInstalled = package;
+			IsOnParentPackageInstalledCalled = true;
 		}
 		
 		public IPackage PackagePassedToOnParentPackageUninstalled;

@@ -71,6 +71,8 @@
     </Compile>
     <Compile Include="Src\Helpers\FakeSelectProjectsService.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepositoryFactory.cs" />
+    <Compile Include="Src\Helpers\FakeUpdatePackageActions.cs" />
+    <Compile Include="Src\Helpers\FakeUpdatePackageActionsFactory.cs" />
     <Compile Include="Src\Helpers\SelectedProjectCollectionAssert.cs" />
     <Compile Include="Src\Helpers\TestableInstalledPackageViewModel.cs" />
     <Compile Include="Src\Helpers\TestablePackageFromRepository.cs" />
@@ -227,6 +229,7 @@
     <Compile Include="Src\SelectedProjectsForInstalledPackagesTests.cs" />
     <Compile Include="Src\SelectedProjectsForUpdatedPackagesTests.cs" />
     <Compile Include="Src\SelectProjectsViewModelTests.cs" />
+    <Compile Include="Src\SharpDevelopProjectManagerTests.cs" />
     <Compile Include="Src\SolutionPackageRepositoryPathTests.cs" />
     <Compile Include="Src\PackageSourceViewModelTests.cs" />
     <Compile Include="Src\PackagesViewModelTests.cs" />
@@ -242,6 +245,7 @@
     <Compile Include="Src\SolutionPackageRepositoryTests.cs" />
     <Compile Include="Src\ThreadSafePackageManagementEventsTests.cs" />
     <Compile Include="Src\UninstallPackageActionTests.cs" />
+    <Compile Include="Src\UpdateAllPackagesInProjectTests.cs" />
     <Compile Include="Src\UpdatedPackagesViewModelTests.cs" />
     <Compile Include="Src\PackageViewModelTests.cs" />
     <Compile Include="Src\PagesTests.cs" />

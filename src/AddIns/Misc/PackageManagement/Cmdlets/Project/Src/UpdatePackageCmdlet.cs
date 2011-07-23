@@ -9,30 +9,37 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement.Cmdlets
 {
-	[Cmdlet(VerbsData.Update, "Package")]
+	[Cmdlet(VerbsData.Update, "Package", DefaultParameterSetName = "All")]
 	public class UpdatePackageCmdlet : PackageManagementCmdlet
 	{
+		IUpdatePackageActionsFactory updatePackageActionsFactory;
+		
 		public UpdatePackageCmdlet()
 			: this(
+				new UpdatePackageActionsFactory(),
 				PackageManagementServices.ConsoleHost,
 				null)
 		{
 		}
 		
 		public UpdatePackageCmdlet(
+			IUpdatePackageActionsFactory updatePackageActionsFactory,
 			IPackageManagementConsoleHost consoleHost,
 			ICmdletTerminatingError terminatingError)
 			: base(consoleHost, terminatingError)
 		{
+			this.updatePackageActionsFactory = updatePackageActionsFactory;
 		}
 		
-		[Parameter(Position = 0, Mandatory = true)]
+		[Parameter(Position = 0, Mandatory = true, ParameterSetName = "Project")]
+		[Parameter(Position = 0, ParameterSetName = "All")]
 		public string Id { get; set; }
 		
-		[Parameter(Position = 1)]
+		[Parameter(Position = 1, ParameterSetName = "Project")]
+		[Parameter(Position = 1, ParameterSetName = "All")]
 		public string ProjectName { get; set; }
 		
-		[Parameter(Position = 2)]
+		[Parameter(Position = 2, ParameterSetName = "Project")]
 		public Version Version { get; set; }
 		
 		[Parameter(Position = 3)]
@@ -44,10 +51,30 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		protected override void ProcessRecord()
 		{
 			ThrowErrorIfProjectNotOpen();
-			UpdatePackage();
+			if (IsPackageIdMissing) {
+				UpdateAllPackagesInProject();
+			} else {
+				UpdatePackageInSingleProject();
+			}
 		}
 		
-		void UpdatePackage()
+		bool IsPackageIdMissing {
+			get { return Id == null; }
+		}
+		
+		void UpdateAllPackagesInProject()
+		{
+			IUpdatePackageActions actions = CreateUpdateAllPackagesInProject();
+			RunActions(actions);
+		}
+		
+		IUpdatePackageActions CreateUpdateAllPackagesInProject()
+		{
+			IPackageManagementProject project = GetProject();
+			return updatePackageActionsFactory.CreateUpdateAllPackagesInProject(project);
+		}
+		
+		void UpdatePackageInSingleProject()
 		{
 			IPackageManagementProject project = GetProject();
 			UpdatePackageAction action = CreateUpdatePackageAction(project);
@@ -64,9 +91,23 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			UpdatePackageAction action = project.CreateUpdatePackageAction();
 			action.PackageId = Id;
 			action.PackageVersion = Version;
-			action.UpdateDependencies = !IgnoreDependencies.IsPresent;
+			action.UpdateDependencies = UpdateDependencies;
 			action.PackageScriptRunner = this;
 			return action;
+		}
+		
+		bool UpdateDependencies {
+			get { return !IgnoreDependencies.IsPresent; }
+		}
+		
+		void RunActions(IUpdatePackageActions updateActions)
+		{
+			updateActions.UpdateDependencies = UpdateDependencies;
+			updateActions.PackageScriptRunner = this;
+			
+			foreach (UpdatePackageAction action in updateActions.CreateActions()) {
+				action.Execute();
+			}
 		}
 	}
 }
