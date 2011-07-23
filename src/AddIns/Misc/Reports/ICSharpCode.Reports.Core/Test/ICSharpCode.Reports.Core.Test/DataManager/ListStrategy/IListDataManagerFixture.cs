@@ -248,66 +248,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		
 		#endregion
 		
-		#region RangeEnumerator
-		/*
-		[Test]
-		public void RangeEnumeratorFromBeginToEnd()
-		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,new ReportSettings());
-			IDataNavigator dn = dm.GetNavigator;
-			int start = 0;
-			int end = 10;
-			System.Collections.IEnumerator en = dn.RangeEnumerator(start,end);
-			
-			while (en.MoveNext()) {
-				object o = en.Current;
-				Contributor view = en.Current as Contributor;
-				start++;
-			}
-			Assert.AreEqual(start -1,dn.CurrentRow);
-		}
-		
-		[Test]
-		public void RangeEnumeratFrom5To10 ()
-		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,
-			                                                                      new ReportSettings());
-		
-			IDataNavigator dn = dm.GetNavigator;
-			int start = 5;
-			int end = 10;
-			System.Collections.IEnumerator en = dn.RangeEnumerator(start,end);
-			
-			while (en.MoveNext()) {
-				object o = en.Current;
-				//Contributor view = en.Current as Contributor;
-				start++;
-			}
-			Assert.AreEqual(start -1,dn.CurrentRow);
-		}
-		
-		[Test]
-		[ExpectedException(typeof(ArgumentException))]
-		public void RangeEnumeratorThrowExceptionIfStartGreateEnd ()
-		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,
-			                                                                      new ReportSettings());
-			IDataNavigator dn = dm.GetNavigator;
-			int start = 10;
-			int end = 5;
-			System.Collections.IEnumerator en = dn.RangeEnumerator(start,end);
-			while (en.MoveNext()) {
-				object o = en.Current;
-				Contributor view = en.Current as Contributor;
-				start++;
-			}
-			Assert.AreEqual(start -1,dn.CurrentRow);
-		}
-		*/
-		#endregion
 		
 		#region get included class
-		
 			
 		ContributorCollection ModifyCollection ()
 		{

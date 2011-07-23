@@ -18,8 +18,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 	{
 		private PagesCollection pages;
 		private readonly object pageLock = new object();
-		
-//		private Point currentBottom;
 
 		public event EventHandler<PageCreatedEventArgs> PageCreated;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
@@ -49,26 +47,35 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Create and Init new page
 		
-		
-		protected ExporterPage InitNewPage ()
+		protected void InitNewPage ()
 		{
 			bool firstPage;
-			this.ReportModel.ReportSettings.LeftMargin = this.ReportModel.ReportSettings.LeftMargin;
+			
 			if (this.Pages.Count == 0) {
 				firstPage = true;
 			} else {
 				firstPage = false;
 			}
 			
-			SectionBounds sectionBounds  = new SectionBounds (this.ReportModel.ReportSettings,firstPage);
-			ExporterPage sp = ExporterPage.CreateInstance(sectionBounds,this.pages.Count + 1);
-			return sp;
+			this.ReportModel.ReportSettings.LeftMargin = this.ReportModel.ReportSettings.LeftMargin;
+			var sectionBounds  = new SectionBounds (this.ReportModel.ReportSettings,firstPage);
+			
+			this.SinglePage = ExporterPage.CreateInstance(sectionBounds,this.pages.Count + 1);
+			
+			if (this.EvaluatorFacade == null)
+			{
+				Console.WriteLine ("");
+				Console.WriteLine ("InitNewPage create evaluator");
+				EvaluatorFacade = EvaluationHelper.CreateEvaluator(SinglePage,SinglePage.IDataNavigator);
+			}
+			EvaluatorFacade.SinglePage = this.SinglePage;
 		}
+		
 		
 		
 		protected virtual void BuildNewPage ()
 		{
-			this.SinglePage = this.InitNewPage();
+			InitNewPage();
 			PrintHelper.InitPage(this.SinglePage,this.ReportModel.ReportSettings);
 			this.SinglePage.CalculatePageBounds(this.ReportModel);
 		}
@@ -77,8 +84,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		#region Converters
-		
-
 		protected ExporterCollection ConvertSection (BaseSection section,int dataRow)
 		{
 			Point currentBottom = Point.Empty;
@@ -93,7 +98,91 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (section.Items.Count > 0)
 			{
 				Size sectionSize = section.Size;
+
+				Rectangle desiredRectangle = LayoutHelper.CalculateSectionLayout(this.Graphics,section);
+				LayoutHelper.FixSectionLayout(desiredRectangle,section);
+				section.Items.SortByLocation();
+				GapList gapCalculator = new GapList();
+				gapCalculator.CalculateGapList(section);
+				int i = 0;
 				
+				foreach (BaseReportItem item in section.Items)
+				{
+					ISimpleContainer simpleContainer = item as ISimpleContainer;
+					
+					if (simpleContainer != null)
+					{
+						Offset = new Point(Offset.X,Offset.Y + gapCalculator.GapBetweenItems[i] );
+						var containerSize = simpleContainer.Size;
+						
+						EvaluationHelper.EvaluateReportItems(EvaluatorFacade,simpleContainer.Items);
+						
+						var layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
+						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
+						/*
+						 * */
+
+						
+						/*
+				section.Items.ForEach(delegate(BaseReportItem aitem)
+				                      {
+//				                      	Console.WriteLine(item.Location);
+				                      });
+				var h = section.Items.FindHighestElement();
+						 */
+						section.MeasureOverride(section.Size);
+						/** */
+						Offset = BaseConverter.ConvertContainer(convertedSection,simpleContainer,Offset.X,Offset);
+						simpleContainer.Size = containerSize;
+					}
+					else
+					{
+						var converteditem = ExportHelper.ConvertLineItem(item,Offset);
+						if (converteditem != null) {
+						if (converteditem.StyleDecorator.DisplayRectangle.Bottom > currentBottom.Y) {
+							currentBottom = new Point(converteditem.StyleDecorator.Location.X,converteditem.StyleDecorator.DisplayRectangle.Bottom);
+						}
+						
+						convertedSection.Add((BaseExportColumn)converteditem );
+							
+						}
+//						if (converteditem.StyleDecorator.DisplayRectangle.Bottom > currentBottom.Y) {
+//							currentBottom = new Point(converteditem.StyleDecorator.Location.X,converteditem.StyleDecorator.DisplayRectangle.Bottom);
+//						}
+//						
+//						convertedSection.Add((BaseExportColumn)converteditem );
+						
+					}
+					i ++;
+				}
+				Offset = new Point (Offset.X,Offset.Y + gapCalculator.LastGap);
+//				Offset = new Point (Offset.X,Offset.Y + 5);
+				
+				if (currentBottom.Y > Offset.Y) {
+					Offset = new Point (Offset.X,currentBottom.Y);
+				}
+//				Offset = new Point (Offset.X,Offset.Y + gapCalculator.LastGap);
+			}
+			SectionBounds.Offset = Offset;
+			return convertedSection;
+		}
+		
+
+		protected ExporterCollection old_ConvertSection (BaseSection section,int dataRow)
+		{
+			Point currentBottom = Point.Empty;
+			FireSectionRenderEvent (section ,dataRow);
+			PrintHelper.AdjustParent(section,section.Items);
+			PrintHelper.AdjustSectionLocation(section);
+			
+			var convertedSection = new ExporterCollection();
+			Offset = SectionBounds.Offset;
+			Point startOffset = Offset;
+			
+			if (section.Items.Count > 0)
+			{
+				Size sectionSize = section.Size;
+				Console.WriteLine ("BasePager-createEval for {0}",section.Name);
 				IExpressionEvaluatorFacade evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.SinglePage.IDataNavigator);
 
 				Rectangle desiredRectangle = LayoutHelper.CalculateSectionLayout(this.Graphics,section);
@@ -220,6 +309,28 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (this.Pages.Count == 0) {
 				return;
 			}
+			Console.WriteLine ("FinishRendereing create IExpressionEvaluatorFacade");
+			
+			//IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(this.SinglePage);
+			//Evaluator.SinglePage = this.SinglePage;
+			foreach (ExporterPage page in this.pages)
+			{
+				page.TotalPages = this.Pages.Count;
+//				dataNavigator.Reset();
+//				dataNavigator.MoveNext();
+				page.IDataNavigator = dataNavigator;
+				EvaluatorFacade.SinglePage = page;
+				EvaluateRecursive(EvaluatorFacade,page.Items);
+			}
+		}
+		
+		/*
+		protected  void FinishRendering (IDataNavigator dataNavigator)
+		{
+			if (this.Pages.Count == 0) {
+				return;
+			}
+			Console.WriteLine ("FinishRendereing create IExpressionEvaluatorFacade");
 			
 			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(this.SinglePage);
 			
@@ -231,7 +342,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				EvaluateRecursive(evaluatorFacade,p.Items);
 			}
 		}
-		
+		*/
 		
 		private static void EvaluateRecursive (IExpressionEvaluatorFacade evaluatorFassade,ExporterCollection items)
 		{
@@ -244,7 +355,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 						EvaluateRecursive(evaluatorFassade,ec.Items);
 					}
 				}
-
 				IReportExpression expressionItem = exportColumn as IReportExpression;
 				if (expressionItem != null) {
 					evaluatorFassade.Evaluate(expressionItem);
@@ -312,14 +422,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected Graphics Graphics {get; private set;}
 		
+		protected IExpressionEvaluatorFacade EvaluatorFacade {get; private set;}
+		
+		public IReportModel ReportModel {get;private set;}
+
+		protected ExporterPage SinglePage {get;private set;}
+		
 		protected SectionBounds SectionBounds
 		{
 			get { return SinglePage.SectionBounds; }
 		}
 		
-		public IReportModel ReportModel {get;set;}
-
-		protected ExporterPage SinglePage {get;set;}
 		
 		public PagesCollection Pages
 		{
@@ -332,6 +445,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				}
 			}
 		}
+		
 		#endregion
 	}
 }

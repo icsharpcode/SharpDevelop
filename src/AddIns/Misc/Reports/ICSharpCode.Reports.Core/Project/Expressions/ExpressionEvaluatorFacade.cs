@@ -23,6 +23,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		
 		public ExpressionEvaluatorFacade(IPageInfo pageInfo)
 		{
+			Console.WriteLine("Eval-fassade Constr");
 			compiler = new ReportingLanguageCompiler();
 			this.context = new ExpressionContext(null);
 			 context.ResolveUnknownVariable += VariableStore;
@@ -59,7 +60,8 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		{
 			try {
 				string s = EvaluationHelper.ExtractExpressionPart(expression);
-				if (s.Length > 0) {
+				if (s.Length > 0)
+				{
 					this.context.ContextObject = row;
 					return EvaluateExpression (s);
 				}
@@ -67,7 +69,6 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				expression = e.Message;
 				WriteLogMessage(e);
 			}
-			
 			return expression;
 		}
 		
