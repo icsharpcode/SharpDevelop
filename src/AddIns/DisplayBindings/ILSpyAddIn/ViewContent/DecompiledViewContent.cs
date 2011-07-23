@@ -233,6 +233,11 @@ namespace ICSharpCode.ILSpyAddIn
 				
 				debugInformation.CodeMappings[token].GetInstructionByTokenAndOffset(token, ilOffset, out member, out line);
 				
+				// HACK : if the codemappings are not built
+				if (line == 0) {
+					DebuggerService.CurrentDebugger.StepOver();
+					return;
+				}
 				// update bookmark & marker
 				codeView.UnfoldAndScroll(line);
 				CurrentLineBookmark.SetPosition(this, line, 0, line, 0);
