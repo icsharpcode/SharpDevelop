@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		{
 			compiler = new ReportingLanguageCompiler();
 			this.context = new ExpressionContext(null);
-			context.ResolveUnknownVariable += VariableStore;
+			 context.ResolveUnknownVariable += VariableStore;
 			context.ResolveMissingFunction += FunctionStore;
 			SinglePage = pageInfo;
 			compiler.SinglePage = pageInfo;
@@ -37,7 +37,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			try {
 				
 				string s = EvaluationHelper.ExtractExpressionPart(expression);
-				if (s.Length > 0) {
+				if (s.Length > 0) {				    
 					this.context.ContextObject = this.SinglePage ;
 					return EvaluateExpression (s);
 				}
@@ -107,7 +107,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		
 		string EvaluateExpression(string expression)
 		{
-			IExpression compiled = compiler.CompileExpression<string>(expression);
+            IExpression compiled = compiler.CompileExpression<string>(expression);
 			if (compiled != null) {
 				return (compiled.Evaluate(context)).ToString();
 			}
@@ -120,6 +120,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			Console.WriteLine("");
 			Console.WriteLine("ExpressionEvaluatorFacade.Evaluate");
 			Console.WriteLine(e.Message);
+            Console.WriteLine(e.TargetSite);
 			Console.WriteLine("");
 		}
 		

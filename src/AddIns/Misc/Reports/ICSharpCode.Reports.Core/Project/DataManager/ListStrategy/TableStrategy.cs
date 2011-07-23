@@ -125,9 +125,7 @@ namespace ICSharpCode.Reports.Core
 			if (row != null) {
 				CurrentItem c = null;
 				foreach (DataColumn dc in table.Columns) {
-					c = new CurrentItem();
-					c.ColumnName = dc.ColumnName;
-					c.DataType = dc.DataType;
+					c = new CurrentItem(dc.ColumnName,dc.DataType);
 					c.Value = row[dc.ColumnName];
 					ci.Add(c);
 				}

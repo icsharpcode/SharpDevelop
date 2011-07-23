@@ -213,7 +213,8 @@ namespace ICSharpCode.Reports.Core {
 		
 		private void FillInternal(object fillFrom,IDataItem item)
 		{
-			if (item is BaseDataItem)
+		    
+            if (item is BaseDataItem)
 			{
 				string result = String.Empty;
 				PropertyPath path = fillFrom.ParsePropertyPath(item.ColumnName);
@@ -331,15 +332,15 @@ namespace ICSharpCode.Reports.Core {
         		CurrentItem currentItem = null;
         		foreach (PropertyDescriptor pd in this.listProperties)
         		{
-        			currentItem = new CurrentItem();
-        			currentItem.ColumnName = pd.Name;
-        			currentItem.DataType = pd.PropertyType;
-        			
+        		    currentItem = new CurrentItem(pd.Name, pd.PropertyType);
         			PropertyPath prop = obj.ParsePropertyPath(pd.Name);
         			if (prop != null)
         			{
         				var pp = prop.Evaluate(obj);
-        				currentItem.Value = pp.ToString();
+                        if (pp != null)
+                        {
+                           currentItem.Value = pp.ToString(); 
+                        }
         			}
         			ci.Add(currentItem);
         		}
@@ -385,9 +386,7 @@ namespace ICSharpCode.Reports.Core {
 				CurrentItem c = null;
 				foreach (PropertyDescriptor pd in this.listProperties)
 				{
-					c = new CurrentItem();
-					c.ColumnName = pd.Name;
-					c.DataType = pd.PropertyType;
+					c = new CurrentItem(pd.Name,pd.PropertyType);
                     var s = pd.GetValue(this.Current);
                     if (s != null)
                     {
