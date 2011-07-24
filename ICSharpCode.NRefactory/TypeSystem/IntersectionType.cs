@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
@@ -103,33 +104,37 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return types;
 		}
 		
-		public override IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter)
-		{
-			filter = FilterNonStatic(filter);
-			return types.SelectMany(t => t.GetEvents(context, filter));
-		}
-		
 		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter)
 		{
-			filter = FilterNonStatic(filter);
-			return types.SelectMany(t => t.GetMethods(context, filter));
+			return ParameterizedType.GetMethods(this, context, FilterNonStatic(filter));
 		}
 		
 		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter)
 		{
-			filter = FilterNonStatic(filter);
-			return types.SelectMany(t => t.GetProperties(context, filter));
+			return ParameterizedType.GetProperties(this, context, FilterNonStatic(filter));
 		}
 		
 		public override IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter)
 		{
-			filter = FilterNonStatic(filter);
-			return types.SelectMany(t => t.GetFields(context, filter));
+			return ParameterizedType.GetFields(this, context, FilterNonStatic(filter));
+		}
+		
+		public override IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter)
+		{
+			return ParameterizedType.GetEvents(this, context, FilterNonStatic(filter));
+		}
+		
+		public override IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter)
+		{
+			return ParameterizedType.GetMembers(this, context, FilterNonStatic(filter));
 		}
 		
 		static Predicate<T> FilterNonStatic<T>(Predicate<T> filter) where T : class, IMember
 		{
-			return member => !member.IsStatic && (filter == null || filter(member));
+			if (filter == null)
+				return member => !member.IsStatic;
+			else
+				return member => !member.IsStatic && filter(member);
 		}
 	}
 }

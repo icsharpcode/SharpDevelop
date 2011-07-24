@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 
@@ -434,27 +433,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
-			ITypeDefinition compound = GetCompoundClass();
-			if (compound != this)
-				return compound.GetMethods(context, filter);
-			
-			List<IMethod> methods = new List<IMethod>();
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					int baseCount = 0;
-					foreach (var baseType in GetBaseTypes(context)) {
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							methods.AddRange(baseType.GetMethods(context, filter));
-							baseCount++;
-						}
-					}
-					if (baseCount > 1)
-						RemoveDuplicates(methods);
-					AddFilteredRange(methods, this.Methods.Where(m => !m.IsConstructor), filter);
-				}
-			}
-			return methods;
+			return ParameterizedType.GetMethods(this, context, filter);
 		}
 		
 		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
@@ -464,7 +443,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return compound.GetConstructors(context, filter);
 			
 			List<IMethod> methods = new List<IMethod>();
-			AddFilteredRange(methods, this.Methods.Where(m => m.IsConstructor && !m.IsStatic), filter);
+			foreach (IMethod m in this.Methods) {
+				if (m.IsConstructor && !m.IsStatic) {
+					if (filter == null || filter(m))
+						methods.Add(m);
+				}
+			}
 			
 			if (this.AddDefaultConstructorIfRequired) {
 				if (this.ClassType == ClassType.Class && methods.Count == 0
@@ -480,129 +464,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
 		{
-			ITypeDefinition compound = GetCompoundClass();
-			if (compound != this)
-				return compound.GetProperties(context, filter);
-			
-			List<IProperty> properties = new List<IProperty>();
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					int baseCount = 0;
-					foreach (var baseType in GetBaseTypes(context)) {
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							properties.AddRange(baseType.GetProperties(context, filter));
-							baseCount++;
-						}
-					}
-					if (baseCount > 1)
-						RemoveDuplicates(properties);
-					AddFilteredRange(properties, this.Properties, filter);
-				}
-			}
-			return properties;
+			return ParameterizedType.GetProperties(this, context, filter);
 		}
 		
 		public virtual IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null)
 		{
-			ITypeDefinition compound = GetCompoundClass();
-			if (compound != this)
-				return compound.GetFields(context, filter);
-			
-			List<IField> fields = new List<IField>();
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					int baseCount = 0;
-					foreach (var baseType in GetBaseTypes(context)) {
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							fields.AddRange(baseType.GetFields(context, filter));
-							baseCount++;
-						}
-					}
-					if (baseCount > 1)
-						RemoveDuplicates(fields);
-					AddFilteredRange(fields, this.Fields, filter);
-				}
-			}
-			return fields;
+			return ParameterizedType.GetFields(this, context, filter);
 		}
 		
 		public virtual IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null)
 		{
-			ITypeDefinition compound = GetCompoundClass();
-			if (compound != this)
-				return compound.GetEvents(context, filter);
-			
-			List<IEvent> events = new List<IEvent>();
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					int baseCount = 0;
-					foreach (var baseType in GetBaseTypes(context)) {
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							events.AddRange(baseType.GetEvents(context, filter));
-							baseCount++;
-						}
-					}
-					if (baseCount > 1)
-						RemoveDuplicates(events);
-					AddFilteredRange(events, this.Events, filter);
-				}
-			}
-			return events;
+			return ParameterizedType.GetEvents(this, context, filter);
 		}
 		
 		public virtual IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null)
 		{
-			ITypeDefinition compound = GetCompoundClass();
-			if (compound != this)
-				return compound.GetMembers(context, filter);
-			
-			List<IMember> members = new List<IMember>();
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					int baseCount = 0;
-					foreach (var baseType in GetBaseTypes(context)) {
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							members.AddRange(baseType.GetMembers(context, filter));
-							baseCount++;
-						}
-					}
-					if (baseCount > 1)
-						RemoveDuplicates(members);
-					AddFilteredRange(members, this.Methods.Where(m => !m.IsConstructor), filter);
-					AddFilteredRange(members, this.Properties, filter);
-					AddFilteredRange(members, this.Fields, filter);
-					AddFilteredRange(members, this.Events, filter);
-				}
-			}
-			return members;
-		}
-		
-		static void AddFilteredRange<T>(List<T> targetList, IEnumerable<T> sourceList, Predicate<T> filter) where T : class
-		{
-			if (filter == null) {
-				targetList.AddRange(sourceList);
-			} else {
-				foreach (T element in sourceList) {
-					if (filter(element))
-						targetList.Add(element);
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Removes duplicate members from the list.
-		/// This is necessary when the same member can be inherited twice due to multiple inheritance.
-		/// </summary>
-		static void RemoveDuplicates<T>(List<T> list) where T : class
-		{
-			if (list.Count > 1) {
-				HashSet<T> hash = new HashSet<T>();
-				list.RemoveAll(m => !hash.Add(m));
-			}
+			return ParameterizedType.GetMembers(this, context, filter);
 		}
 		
 		// we use reference equality

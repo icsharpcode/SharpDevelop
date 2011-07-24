@@ -230,6 +230,7 @@
     <Compile Include="TypeSystem\Implementation\AbstractFreezable.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractMember.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractType.cs" />
+    <Compile Include="TypeSystem\Implementation\BaseTypeCollector.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultAccessor.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultAttribute.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultEvent.cs" />

@@ -61,44 +61,96 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the direct base types.
 		/// </summary>
+		/// <param name="context">The context used for resolving type references</param>
+		/// <returns>Returns the direct base types including interfaces</returns>
 		IEnumerable<IType> GetBaseTypes(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets inner classes (including inherited inner classes).
 		/// </summary>
+		/// <param name="context">The context used for resolving type references</param>
+		/// <param name="filter">The filter used to select which types to return.
+		/// The filter is tested on the unparameterized types.</param>
+		/// <remarks>
+		/// If this type is parameterized, the nested type will also be parameterized.
+		/// Any additional type parameters on the nested type will be parameterized with the
+		/// corresponding ITypeParameter.
+		/// </remarks>
 		IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null);
-		
-		/// <summary>
-		/// Gets all methods that can be called on this return type.
-		/// </summary>
-		/// <remarks>The list does not include constructors.</remarks>
-		IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null);
 		
 		/// <summary>
 		/// Gets all instance constructors for this type.
 		/// </summary>
-		/// <remarks>This list does not include constructors in base classes or static constructors.</remarks>
+		/// <param name="context">The context used for resolving type references</param>
+		/// <param name="filter">The filter used to select which constructors to return.
+		/// The filter is tested on the original method definitions (before specialization).</param>
+		/// <remarks>
+		/// This list does not include constructors in base classes or static constructors.
+		/// For methods on parameterized types, type substitution will be performed on the method signature,
+		/// and the appriopriate <see cref="SpecializedMethod"/> will be returned.
+		/// </remarks>
 		IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null);
 		
 		/// <summary>
-		/// Gets all properties that can be called on this return type.
+		/// Gets all methods that can be called on this type.
 		/// </summary>
+		/// <param name="context">The context used for resolving type references</param>
+		/// <param name="filter">The filter used to select which methods to return.
+		/// The filter is tested on the original method definitions (before specialization).</param>
+		/// <remarks>
+		/// The list does not include constructors.
+		/// For methods on parameterized types, type substitution will be performed on the method signature,
+		/// and the appriopriate <see cref="SpecializedMethod"/> will be returned.
+		/// </remarks>
+		IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null);
+		
+		/// <summary>
+		/// Gets all properties that can be called on this type.
+		/// </summary>
+		/// <param name="context">The context used for resolving type references</param>
+		/// <param name="filter">The filter used to select which properties to return.
+		/// The filter is tested on the original property definitions (before specialization).</param>
+		/// <remarks>
+		/// For properties on parameterized types, type substitution will be performed on the property signature,
+		/// and the appriopriate <see cref="SpecializedProperty"/> will be returned.
+		/// </remarks>
 		IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null);
 		
 		/// <summary>
-		/// Gets all fields that can be called on this return type.
+		/// Gets all fields that can be accessed on this type.
 		/// </summary>
+		/// <param name="context">The context used for resolving type references</param>
+		/// <param name="filter">The filter used to select which constructors to return.
+		/// The filter is tested on the original field definitions (before specialization).</param>
+		/// <remarks>
+		/// For fields on parameterized types, type substitution will be performed on the field's return type,
+		/// and the appriopriate <see cref="SpecializedField"/> will be returned.
+		/// </remarks>
 		IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null);
 		
 		/// <summary>
-		/// Gets all events that can be called on this return type.
+		/// Gets all events that can be accessed on this type.
 		/// </summary>
+		/// <param name="context">The context used for resolving type references</param>
+		/// <param name="filter">The filter used to select which events to return.
+		/// The filter is tested on the original event definitions (before specialization).</param>
+		/// <remarks>
+		/// For fields on parameterized types, type substitution will be performed on the event's return type,
+		/// and the appriopriate <see cref="SpecializedEvent"/> will be returned.
+		/// </remarks>
 		IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null);
 		
 		/// <summary>
-		/// Gets all members that can be called on this return type.
-		/// This is the union of GetFields(),GetProperties(),GetMethods() and GetEvents(). This does not include constructors.
+		/// Gets all members that can be called on this type.
 		/// </summary>
+		/// <param name="context">The context used for resolving type references</param>
+		/// <param name="filter">The filter used to select which members to return.
+		/// The filter is tested on the original member definitions (before specialization).</param>
+		/// <remarks>
+		/// The resulting list is the union of GetFields(), GetProperties(), GetMethods() and GetEvents().
+		/// It does not include constructors.
+		/// For parameterized types, type substitution will be performed.
+		/// </remarks>
 		IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null);
 	}
 	

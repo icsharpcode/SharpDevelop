@@ -206,20 +206,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return types;
 		}
 		
-		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
-		{
-			Substitution substitution = new Substitution(typeArguments);
-			Func<ITypeReference, ITypeReference> substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
-			List<IMethod> methods = genericType.GetMethods(context, filter).ToList();
-			for (int i = 0; i < methods.Count; i++) {
-				SpecializedMethod m = new SpecializedMethod(methods[i]);
-				m.SetDeclaringType(this);
-				m.SubstituteTypes(substitutionFunc);
-				methods[i] = m;
-			}
-			return methods;
-		}
-		
 		public IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
 			Substitution substitution = new Substitution(typeArguments);
@@ -234,88 +220,191 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return methods;
 		}
 		
+		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
+		{
+			return GetMethods(this, context, filter);
+		}
+		
+		internal static IEnumerable<IMethod> GetMethods(IType type, ITypeResolveContext context, Predicate<IMethod> filter)
+		{
+			Predicate<IMethod> newFilter;
+			if (filter == null)
+				newFilter = m => !m.IsConstructor;
+			else
+				newFilter = m => !m.IsConstructor && filter(m);
+			return type.GetNonInterfaceBaseTypes(context).SelectMany(t => GetMethodsInternal(t, context, newFilter));
+		}
+		
+		static IEnumerable<IMethod> GetMethodsInternal(IType baseType, ITypeResolveContext context, Predicate<IMethod> filter)
+		{
+			ITypeDefinition baseTypeDef = baseType.GetDefinition();
+			if (baseTypeDef == null)
+				yield break;
+			baseTypeDef = baseTypeDef.GetCompoundClass();
+			ParameterizedType pt = baseType as ParameterizedType;
+			if (pt != null) {
+				Substitution substitution = null;
+				Func<ITypeReference, ITypeReference> substitutionFunc = null;
+				foreach (IMethod m in baseTypeDef.Methods) {
+					if (!(filter == null || filter(m)))
+						continue;
+					if (substitution == null) {
+						substitution = new Substitution(pt.typeArguments);
+						substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
+					}
+					SpecializedMethod sm = new SpecializedMethod(m);
+					sm.SetDeclaringType(pt);
+					sm.SubstituteTypes(substitutionFunc);
+					yield return sm;
+				}
+			} else {
+				foreach (IMethod m in baseTypeDef.Methods) {
+					if (filter == null || filter(m))
+						yield return m;
+				}
+			}
+		}
+		
 		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
 		{
-			Substitution substitution = new Substitution(typeArguments);
-			Func<ITypeReference, ITypeReference> substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
-			List<IProperty> properties = genericType.GetProperties(context, filter).ToList();
-			for (int i = 0; i < properties.Count; i++) {
-				SpecializedProperty p = new SpecializedProperty(properties[i]);
-				p.SetDeclaringType(this);
-				p.SubstituteTypes(substitutionFunc);
-				properties[i] = p;
+			return GetProperties(this, context, filter);
+		}
+		
+		internal static IEnumerable<IProperty> GetProperties(IType type, ITypeResolveContext context, Predicate<IProperty> filter)
+		{
+			return type.GetNonInterfaceBaseTypes(context).SelectMany(t => GetPropertiesInternal(t, context, filter));
+		}
+		
+		static IEnumerable<IProperty> GetPropertiesInternal(IType baseType, ITypeResolveContext context, Predicate<IProperty> filter)
+		{
+			ITypeDefinition baseTypeDef = baseType.GetDefinition();
+			if (baseTypeDef == null)
+				yield break;
+			baseTypeDef = baseTypeDef.GetCompoundClass();
+			ParameterizedType pt = baseType as ParameterizedType;
+			if (pt != null) {
+				Substitution substitution = null;
+				Func<ITypeReference, ITypeReference> substitutionFunc = null;
+				foreach (IProperty p in baseTypeDef.Properties) {
+					if (!(filter == null || filter(p)))
+						continue;
+					if (substitution == null) {
+						substitution = new Substitution(pt.typeArguments);
+						substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
+					}
+					SpecializedProperty sp = new SpecializedProperty(p);
+					sp.SetDeclaringType(pt);
+					sp.SubstituteTypes(substitutionFunc);
+					yield return sp;
+				}
+			} else {
+				foreach (IProperty p in baseTypeDef.Properties) {
+					if (filter == null || filter(p))
+						yield return p;
+				}
 			}
-			return properties;
 		}
 		
 		public IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null)
 		{
-			Substitution substitution = new Substitution(typeArguments);
-			List<IField> fields = genericType.GetFields(context, filter).ToList();
-			for (int i = 0; i < fields.Count; i++) {
-				SpecializedField f = new SpecializedField(fields[i]);
-				f.SetDeclaringType(this);
-				f.ReturnType = f.ReturnType.Resolve(context).AcceptVisitor(substitution);
-				fields[i] = f;
+			return GetFields(this, context, filter);
+		}
+		
+		internal static IEnumerable<IField> GetFields(IType type, ITypeResolveContext context, Predicate<IField> filter)
+		{
+			return type.GetNonInterfaceBaseTypes(context).SelectMany(t => GetFieldsInternal(t, context, filter));
+		}
+		
+		static IEnumerable<IField> GetFieldsInternal(IType baseType, ITypeResolveContext context, Predicate<IField> filter)
+		{
+			ITypeDefinition baseTypeDef = baseType.GetDefinition();
+			if (baseTypeDef == null)
+				yield break;
+			baseTypeDef = baseTypeDef.GetCompoundClass();
+			ParameterizedType pt = baseType as ParameterizedType;
+			if (pt != null) {
+				Substitution substitution = null;
+				Func<ITypeReference, ITypeReference> substitutionFunc = null;
+				foreach (IField f in baseTypeDef.Fields) {
+					if (!(filter == null || filter(f)))
+						continue;
+					if (substitution == null) {
+						substitution = new Substitution(pt.typeArguments);
+						substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
+					}
+					SpecializedField sf = new SpecializedField(f);
+					sf.SetDeclaringType(pt);
+					sf.ReturnType = f.ReturnType.Resolve(context).AcceptVisitor(substitution);
+					yield return sf;
+				}
+			} else {
+				foreach (IField f in baseTypeDef.Fields) {
+					if (filter == null || filter(f))
+						yield return f;
+				}
 			}
-			return fields;
 		}
 		
 		public IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null)
 		{
-			Substitution substitution = new Substitution(typeArguments);
-			List<IEvent> events = genericType.GetEvents(context, filter).ToList();
-			for (int i = 0; i < events.Count; i++) {
-				SpecializedEvent e = new SpecializedEvent(events[i]);
-				e.SetDeclaringType(this);
-				e.ReturnType = e.ReturnType.Resolve(context).AcceptVisitor(substitution);
-				events[i] = e;
+			return GetEvents(this, context, filter);
+		}
+		
+		internal static IEnumerable<IEvent> GetEvents(IType type, ITypeResolveContext context, Predicate<IEvent> filter)
+		{
+			return type.GetNonInterfaceBaseTypes(context).SelectMany(t => GetEventsInternal(t, context, filter));
+		}
+		
+		static IEnumerable<IEvent> GetEventsInternal(IType baseType, ITypeResolveContext context, Predicate<IEvent> filter)
+		{
+			ITypeDefinition baseTypeDef = baseType.GetDefinition();
+			if (baseTypeDef == null)
+				yield break;
+			baseTypeDef = baseTypeDef.GetCompoundClass();
+			ParameterizedType pt = baseType as ParameterizedType;
+			if (pt != null) {
+				Substitution substitution = null;
+				Func<ITypeReference, ITypeReference> substitutionFunc = null;
+				foreach (IEvent e in baseTypeDef.Events) {
+					if (!(filter == null || filter(e)))
+						continue;
+					if (substitution == null) {
+						substitution = new Substitution(pt.typeArguments);
+						substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
+					}
+					SpecializedEvent se = new SpecializedEvent(e);
+					se.SetDeclaringType(pt);
+					se.ReturnType = e.ReturnType.Resolve(context).AcceptVisitor(substitution);
+					yield return se;
+				}
+			} else {
+				foreach (IEvent e in baseTypeDef.Events) {
+					if (filter == null || filter(e))
+						yield return e;
+				}
 			}
-			return events;
 		}
 		
 		public IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null)
 		{
-			Substitution substitution = new Substitution(typeArguments);
-			Func<ITypeReference, ITypeReference> substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
-			List<IMember> members = genericType.GetMembers(context, filter).ToList();
-			for (int i = 0; i < members.Count; i++) {
-				members[i] = Specialize(members[i], substitutionFunc);
-			}
-			return members;
+			return GetMembers(this, context, filter);
 		}
 		
-		IMember Specialize(IMember member, Func<ITypeReference, ITypeReference> substitution)
+		internal static IEnumerable<IMember> GetMembers(IType type, ITypeResolveContext context, Predicate<IMember> filter)
 		{
-			IMethod method = member as IMethod;
-			if (method != null) {
-				SpecializedMethod m = new SpecializedMethod(method);
-				m.SetDeclaringType(this);
-				m.SubstituteTypes(substitution);
-				return m;
-			}
-			IProperty property = member as IProperty;
-			if (property != null) {
-				SpecializedProperty p = new SpecializedProperty(property);
-				p.SetDeclaringType(this);
-				p.SubstituteTypes(substitution);
-				return p;
-			}
-			IField field = member as IField;
-			if (field != null) {
-				SpecializedField f = new SpecializedField(field);
-				f.SetDeclaringType(this);
-				f.ReturnType = substitution(f.ReturnType);
-				return f;
-			}
-			IEvent ev = member as IEvent;
-			if (ev != null) {
-				SpecializedEvent e = new SpecializedEvent(ev);
-				e.SetDeclaringType(this);
-				e.ReturnType = substitution(e.ReturnType);
-				return e;
-			}
-			throw new ArgumentException("Unknown member");
+			Predicate<IMethod> methodFilter;
+			if (filter == null)
+				methodFilter = m => !m.IsConstructor;
+			else
+				methodFilter = m => !m.IsConstructor && filter(m);
+			return type.GetNonInterfaceBaseTypes(context).SelectMany(
+				delegate (IType t) {
+					IEnumerable<IMember> members = GetMethodsInternal(t, context, methodFilter);
+					members = members.Concat(GetPropertiesInternal(t, context, filter));
+					members = members.Concat(GetFieldsInternal(t, context, filter));
+					members = members.Concat(GetEventsInternal(t, context, filter));
+					return members;
+				});
 		}
 		
 		public override bool Equals(object obj)
