@@ -8,20 +8,15 @@ using NUnit.Framework;
 
 namespace RubyBinding.Tests.Converter
 {
-	/// <summary>
-	/// Tests the CSharpToRubyConverter correctly converts a local
-	/// variable in the constructor.
-	/// </summary>
 	[TestFixture]
-	public class LocalVariableAssignedInConstructorTestFixture
-	{		
+	public class LocalVariableDefinitionsOnSameLineTests
+	{
 		string csharp =
 			"class Foo\r\n" +
 			"{\r\n" +
 			"    public Foo()\r\n" +
 			"    {\r\n" +
-			"        int i = 0;\r\n" +
-			"        int i = 2;\r\n" +
+			"        int i = 0, i = 2;\r\n" +
 			"    }\r\n" +
 			"}";
 		
@@ -40,6 +35,30 @@ namespace RubyBinding.Tests.Converter
 				"end";
 			
 			Assert.AreEqual(expectedRuby, Ruby);
+		}
+		
+		string vnetClassWithTwoArrayLocalVariablesOnSameLine =
+			"class Foo\r\n" +
+			"    Public Sub New()\r\n" +
+			"    	Dim i(10), j(20) as integer\r\n" +
+			"    End Sub\r\n" +
+			"end class";
+		
+		[Test]
+		public void ConvertVBNetClassWithTwoArrayVariablesOnSameLine()
+		{
+			NRefactoryToRubyConverter converter = new NRefactoryToRubyConverter(SupportedLanguage.VBNet);
+			converter.IndentString = "    ";
+			string ruby = converter.Convert(vnetClassWithTwoArrayLocalVariablesOnSameLine);
+			string expectedRuby =
+				"class Foo\r\n" +
+				"    def initialize()\r\n" +
+				"        i = Array.CreateInstance(System::Int32, 10)\r\n" +
+				"        j = Array.CreateInstance(System::Int32, 20)\r\n" +
+				"    end\r\n" +
+				"end";
+			
+			Assert.AreEqual(expectedRuby, ruby);
 		}
 	}
 }

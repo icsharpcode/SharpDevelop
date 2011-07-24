@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop
 					if (reference != null) {
 						// TODO: Translate me
 //						progressMonitor.TaskName = "Loading " + reference.ShortName + "...";
-						AddReference(reference, false);
+						AddReference(reference, false, progressMonitor.CancellationToken);
 					}
 				}
 			}
@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		void AddReference(ReferenceProjectItem reference, bool updateInterDependencies)
+		void AddReference(ReferenceProjectItem reference, bool updateInterDependencies, CancellationToken cancellationToken)
 		{
 			try {
 				AddReferencedContent(AssemblyParserService.GetProjectContentForReference(reference));
@@ -122,6 +122,13 @@ namespace ICSharpCode.SharpDevelop
 				// If the user removes the reference and then re-adds it, there might be other references
 				// in the project depending on it, so we do the refresh after the old reference was added.
 				AssemblyParserService.RefreshProjectContentForReference(reference);
+			} catch (OperationCanceledException) {
+				throw;
+			} catch (ObjectDisposedException e) {
+				// ObjectDisposedException can happen if project gets disposed while LoadSolutionProjectsThread is running.
+				// We will ignore the ObjectDisposedException and throw OperationCanceledException instead.
+				cancellationToken.ThrowIfCancellationRequested();
+				MessageService.ShowException(e);
 			} catch (Exception e) {
 				MessageService.ShowException(e);
 			}
@@ -268,7 +275,7 @@ namespace ICSharpCode.SharpDevelop
 				double fileCountInverse = 1.0 / fileContents.Count;
 				Parallel.ForEach(
 					fileContents,
-					new ParallelOptions { 
+					new ParallelOptions {
 						MaxDegreeOfParallelism = Environment.ProcessorCount * 2,
 						CancellationToken = progressMonitor.CancellationToken
 					},

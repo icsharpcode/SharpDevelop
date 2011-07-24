@@ -103,6 +103,7 @@
     <Compile Include="Converter\ForeachConversionTestFixture.cs" />
     <Compile Include="Converter\ForeachConversionWithMethodCallTestFixture.cs" />
     <Compile Include="Converter\ForLoopConversionTestFixture.cs" />
+    <Compile Include="Converter\ForNextConversionTests.cs" />
     <Compile Include="Converter\GenerateMainMethodCallTestFixture.cs" />
     <Compile Include="Converter\GenericListConversionTestFixture.cs" />
     <Compile Include="Converter\IfBlockStatementConversionTestFixture.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Converter\IntegerMethodParameterTestFixture.cs" />
     <Compile Include="Converter\LocalVariableAssignedInConstructorTestFixture.cs" />
     <Compile Include="Converter\LocalVariableDeclarationInIfStatementTestFixture.cs" />
+    <Compile Include="Converter\LocalVariableDefinitionsOnSameLineTests.cs" />
     <Compile Include="Converter\LocalVariableNotInitializedTestFixture.cs" />
     <Compile Include="Converter\MethodCallInConstructorTestFixture.cs" />
     <Compile Include="Converter\MethodParameterConversionTestFixture.cs" />
@@ -121,6 +123,7 @@
     <Compile Include="Converter\MethodWithBodyConversionTestFixture.cs" />
     <Compile Include="Converter\ModulusOperatorConversionTestFixture.cs" />
     <Compile Include="Converter\MultiLineCommentConversionTestFixture.cs" />
+    <Compile Include="Converter\MultipleFieldsOnSameLineTests.cs" />
     <Compile Include="Converter\NestedClassConversionTestFixture.cs" />
     <Compile Include="Converter\NestedIfStatementConversionTestFixture.cs" />
     <Compile Include="Converter\NullConversionTestFixture.cs" />
@@ -146,6 +149,7 @@
     <Compile Include="Converter\UnaryOperatorConversionTests.cs" />
     <Compile Include="Converter\UsingStatementConversionTestFixture.cs" />
     <Compile Include="Converter\VBClassConversionTestFixture.cs" />
+    <Compile Include="Converter\VBExitConversionTests.cs" />
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
     <Compile Include="Converter\XmlDocCommentConversionTestFixture.cs" />
