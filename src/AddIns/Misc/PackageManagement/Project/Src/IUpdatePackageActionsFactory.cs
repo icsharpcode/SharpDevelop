@@ -13,5 +13,10 @@ namespace ICSharpCode.PackageManagement
 		IUpdatePackageActions CreateUpdateAllPackagesInSolution(
 			IPackageManagementSolution solution,
 			IPackageRepository sourceRepository);
+		
+		 IUpdatePackageActions CreateUpdatePackageInAllProjects(
+			PackageReference packageReference,
+			IPackageManagementSolution solution,
+			IPackageRepository sourceRepository);
 	}
 }

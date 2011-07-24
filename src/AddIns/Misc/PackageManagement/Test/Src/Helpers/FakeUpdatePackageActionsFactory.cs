@@ -34,5 +34,23 @@ namespace PackageManagement.Tests.Helpers
 			SourceRepositoryPassedToCreateUpdateAllPackagesInSolution = sourceRepository;
 			return FakeUpdateAllPackagesInSolution;
 		}
+		
+		public FakeUpdatePackageActions FakeUpdatePackageInAllProjects = 
+			new FakeUpdatePackageActions();
+		
+		public IPackageManagementSolution SolutionPassedToCreateUpdatePackageInAllProjects;
+		public IPackageRepository SourceRepositoryPassedToCreateUpdatePackageInAllProjects;
+		public PackageReference PackageReferencePassedToCreateUpdatePackageInAllProjects;
+		
+		 public IUpdatePackageActions CreateUpdatePackageInAllProjects(
+			PackageReference packageReference,
+			IPackageManagementSolution solution,
+			IPackageRepository sourceRepository)
+		{
+			PackageReferencePassedToCreateUpdatePackageInAllProjects = packageReference;
+			SolutionPassedToCreateUpdatePackageInAllProjects = solution;
+			SourceRepositoryPassedToCreateUpdatePackageInAllProjects = sourceRepository;
+			return FakeUpdatePackageInAllProjects;
+		}
 	}
 }

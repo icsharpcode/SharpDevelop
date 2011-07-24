@@ -360,6 +360,7 @@
     <Compile Include="Src\UpdatedPackageViewModelFactory.cs" />
     <Compile Include="Src\UpdatePackageAction.cs" />
     <Compile Include="Src\UpdatePackageActionsFactory.cs" />
+    <Compile Include="Src\UpdatePackageInAllProjects.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
     <Compile Include="Src\PackageManagementViewModels.cs" />
     <Compile Include="Src\VisualStudio\NotInstalledException.cs" />
