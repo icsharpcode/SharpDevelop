@@ -100,5 +100,19 @@ namespace ICSharpCode.PackageManagement
 				Package = Project.SourceRepository.FindPackage(PackageId, PackageVersion);
 			}
 		}
+		
+		protected bool PackageIdExistsInProject()
+		{
+			string id = GetPackageId();
+			return Project.IsPackageInstalled(id);
+		}
+		
+		string GetPackageId()
+		{
+			if (Package != null) {
+				return Package.Id;
+			}
+			return PackageId;
+		}
 	}
 }

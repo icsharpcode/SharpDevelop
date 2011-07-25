@@ -30,10 +30,15 @@ namespace SearchAndReplace
 			}
 		}
 		
+		static bool IsWordPart(char c)
+		{
+			return char.IsLetterOrDigit(c) || c == '_';
+		}
+		
 		public static bool IsWholeWordAt(IDocument document, int offset, int length)
 		{
-			return (offset - 1 < 0 || Char.IsWhiteSpace(document.GetCharAt(offset - 1))) &&
-				(offset + length + 1 >= document.TextLength || Char.IsWhiteSpace(document.GetCharAt(offset + length)));
+			return (offset - 1 < 0 || !IsWordPart(document.GetCharAt(offset - 1))) &&
+			       (offset + length + 1 >= document.TextLength || !IsWordPart(document.GetCharAt(offset + length)));
 		}
 		
 		public static ISearchStrategy CreateSearchStrategy(SearchStrategyType type)

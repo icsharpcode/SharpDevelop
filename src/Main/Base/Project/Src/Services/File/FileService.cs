@@ -533,6 +533,14 @@ namespace ICSharpCode.SharpDevelop
 			bool loggingResumed = false;
 			
 			try {
+				// jump to decompiled type from filename
+				if (fileName.Contains(",")) {
+					int index = fileName.IndexOf(",");
+					string assemblyName = fileName.Substring(0, index);
+					string typeName = fileName.Substring(index + 1, fileName.Length - index - 1);
+					NavigationService.NavigateTo(assemblyName, typeName, string.Empty, line);
+					return null;
+				}
 				
 				IViewContent content = OpenFile(fileName);
 				if (content is IPositionable) {
@@ -547,11 +555,11 @@ namespace ICSharpCode.SharpDevelop
 					NavigationService.Log(content);
 				}
 				
-				LoggingService.InfoFormatted("FileService\n\tJumped to File Position:  [{0} : {1}x{2}]", fileName, line, column);
-				
 				return content;
 				
 			} finally {
+				LoggingService.InfoFormatted("FileService\n\tJumped to File Position:  [{0} : {1}x{2}]", fileName, line, column);
+				
 				if (!loggingResumed) {
 					NavigationService.ResumeLogging();
 				}

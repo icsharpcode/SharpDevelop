@@ -34,17 +34,11 @@ namespace SearchAndReplace
 			return true;
 		}
 		
-		bool IsWholeWordAt(IDocument document, int offset, int length)
-		{
-			return (offset - 1 < 0 || !Char.IsLetterOrDigit(document.GetCharAt(offset - 1))) &&
-			       (offset + length + 1 >= document.TextLength || !Char.IsLetterOrDigit(document.GetCharAt(offset + length)));
-		}
-		
 		int InternalFindNext(ITextIterator textIterator)
 		{
 			while (textIterator.MoveAhead(1)) {
 				if (SearchOptions.MatchCase ? MatchCaseSensitive(textIterator.Document, textIterator.Position, searchPattern) : MatchCaseInsensitive(textIterator.Document, textIterator.Position, searchPattern)) {
-					if (!SearchOptions.MatchWholeWord || IsWholeWordAt(textIterator.Document, textIterator.Position, searchPattern.Length)) {
+					if (!SearchOptions.MatchWholeWord || SearchReplaceUtilities.IsWholeWordAt(textIterator.Document, textIterator.Position, searchPattern.Length)) {
 						return textIterator.Position;
 					}
 				}
@@ -59,7 +53,7 @@ namespace SearchAndReplace
 					textIterator.Position = offset;
 				}
 				if (SearchOptions.MatchCase ? MatchCaseSensitive(textIterator.Document, textIterator.Position, searchPattern) : MatchCaseInsensitive(textIterator.Document, textIterator.Position, searchPattern)) {
-					if (!SearchOptions.MatchWholeWord || IsWholeWordAt(textIterator.Document, textIterator.Position, searchPattern.Length)) {
+					if (!SearchOptions.MatchWholeWord || SearchReplaceUtilities.IsWholeWordAt(textIterator.Document, textIterator.Position, searchPattern.Length)) {
 						if (TextSelection.IsInsideRange(textIterator.Position + searchPattern.Length - 1, offset, length)) {
 							return textIterator.Position;
 						} else {

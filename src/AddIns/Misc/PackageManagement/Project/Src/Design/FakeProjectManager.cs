@@ -84,6 +84,14 @@ namespace ICSharpCode.PackageManagement.Design
 			return IsInstalledReturnValue;
 		}
 		
+		public string PackageIdPassedToIsInstalled;
+		
+		public bool IsInstalled(string packageId)
+		{
+			PackageIdPassedToIsInstalled = packageId;
+			return IsInstalledReturnValue;
+		}
+		
 		public void FirePackageReferenceAdded(IPackage package)
 		{
 			OnPackageReferenceAdded(package);

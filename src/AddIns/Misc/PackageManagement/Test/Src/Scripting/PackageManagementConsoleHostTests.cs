@@ -623,5 +623,29 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.AreEqual(expectedText, text);
 		}
+		
+		[Test]
+		public void GetPackageRepository_PackageSourceSpecified_ReturnsPackageRepositoryFromRegisteredRepositories()
+		{
+			CreateHost();
+			
+			var packageSource = new PackageSource("Test");
+			IPackageRepository repository = host.GetPackageRepository(packageSource);
+			FakePackageRepository expectedRepository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			
+			Assert.AreEqual(expectedRepository, repository);
+		}
+		
+		[Test]
+		public void GetPackageRepository_PackageSourceSpecified_PackagSourceUsedToGetRepository()
+		{
+			CreateHost();
+			
+			var expectedPackageSource = new PackageSource("Test");
+			IPackageRepository repository = host.GetPackageRepository(expectedPackageSource);
+			PackageSource packageSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
+			
+			Assert.AreEqual(expectedPackageSource, packageSource);
+		}
 	}
 }

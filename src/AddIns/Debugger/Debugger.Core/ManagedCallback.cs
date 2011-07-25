@@ -320,6 +320,17 @@ namespace Debugger
 			EnterCallback(PausedReason.Other, "CreateProcess", pProcess);
 
 			// Process is added in NDebugger.Start
+			// disable NGen
+			if (!this.process.Options.EnableJustMyCode && !this.process.Options.StepOverNoSymbols) {
+				ICorDebugProcess2 pProcess2 = pProcess as ICorDebugProcess2;
+				if (pProcess2 != null && Process.DebugMode == DebugModeFlag.Debug) {
+					try {
+						pProcess2.SetDesiredNGENCompilerFlags((uint)CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION);
+					} catch (COMException) {
+						// we cannot set the NGEN flag => no evaluation for optimized code.
+					}
+				}
+			}
 
 			ExitCallback();
 		}

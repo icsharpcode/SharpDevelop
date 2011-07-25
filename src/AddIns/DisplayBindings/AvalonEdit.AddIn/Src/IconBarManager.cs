@@ -40,7 +40,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public event EventHandler RedrawRequested;
 		
-		internal void UpdateClassMemberBookmarks(ParseInformation parseInfo)
+		public void UpdateClassMemberBookmarks(ParseInformation parseInfo)
 		{
 			for (int i = bookmarks.Count - 1; i >= 0; i--) {
 				if (IsClassMemberBookmark(bookmarks[i]))

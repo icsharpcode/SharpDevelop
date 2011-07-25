@@ -65,13 +65,20 @@ namespace PackageManagement.Tests
 			return project;
 		}
 		
+		FakePackage AddPackageInReverseDependencyOrderToSolution(string packageId)
+		{
+			var package = new FakePackage(packageId);
+			fakeSolutionPackageRepository.FakePackagesByReverseDependencyOrder.Add(package);
+			return package;
+		}
+		
 		[Test]
 		public void GetActiveProject_ProjectIsSelected_CreatesProjectUsingCurrentProjectSelectedInSharpDevelop()
 		{
 			CreateSolution();
 			
 			IPackageManagementProject activeProject = solution.GetActiveProject();
-			IProject actualProject = fakeProjectFactory.ProjectPassedToCreateProject;
+			IProject actualProject = fakeProjectFactory.FirstProjectPassedToCreateProject;
 			
 			Assert.AreEqual(testProject, actualProject);
 		}
@@ -83,7 +90,7 @@ namespace PackageManagement.Tests
 			
 			IPackageManagementProject activeProject = solution.GetActiveProject();
 			
-			IPackageRepository repository = fakeProjectFactory.RepositoryPassedToCreateProject;
+			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
 			IPackageRepository expectedRepository = fakeRegisteredPackageRepositories.ActiveRepository;
 			
 			Assert.AreEqual(expectedRepository, repository);
@@ -95,7 +102,7 @@ namespace PackageManagement.Tests
 			CreateSolution();
 			
 			IPackageManagementProject activeProject = solution.GetActiveProject();
-			IPackageManagementProject expectedProject = fakeProjectFactory.FakeProject;
+			IPackageManagementProject expectedProject = fakeProjectFactory.FirstFakeProjectCreated;
 			
 			Assert.AreEqual(expectedProject, activeProject);
 		}
@@ -107,7 +114,7 @@ namespace PackageManagement.Tests
 			var expectedRepository = new FakePackageRepository();
 			solution.GetActiveProject(expectedRepository);
 			
-			IPackageRepository repository = fakeProjectFactory.RepositoryPassedToCreateProject;
+			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
 			
 			Assert.AreEqual(expectedRepository, repository);
 		}
@@ -122,7 +129,7 @@ namespace PackageManagement.Tests
 			
 			solution.GetActiveProject(expectedRepository);
 			
-			MSBuildBasedProject project = fakeProjectFactory.ProjectPassedToCreateProject;
+			MSBuildBasedProject project = fakeProjectFactory.FirstProjectPassedToCreateProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -134,7 +141,7 @@ namespace PackageManagement.Tests
 			var expectedRepository = new FakePackageRepository();
 			IPackageManagementProject project = solution.GetActiveProject(expectedRepository);
 			
-			FakePackageManagementProject expectedProject = fakeProjectFactory.FakeProject;
+			FakePackageManagementProject expectedProject = fakeProjectFactory.FirstFakeProjectCreated;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -148,7 +155,7 @@ namespace PackageManagement.Tests
 			
 			solution.GetProject(source, "Test");
 			
-			MSBuildBasedProject project = fakeProjectFactory.ProjectPassedToCreateProject;
+			MSBuildBasedProject project = fakeProjectFactory.FirstProjectPassedToCreateProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -162,7 +169,7 @@ namespace PackageManagement.Tests
 			
 			solution.GetProject(source, "TEST");
 			
-			MSBuildBasedProject project = fakeProjectFactory.ProjectPassedToCreateProject;
+			MSBuildBasedProject project = fakeProjectFactory.FirstProjectPassedToCreateProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -175,7 +182,7 @@ namespace PackageManagement.Tests
 			var source = new PackageSource("http://sharpdevelop.net");
 			IPackageManagementProject project = solution.GetProject(source, "Test");
 			
-			FakePackageManagementProject expectedProject = fakeProjectFactory.FakeProject;
+			FakePackageManagementProject expectedProject = fakeProjectFactory.FirstFakeProjectCreated;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -202,7 +209,7 @@ namespace PackageManagement.Tests
 			
 			solution.GetProject(repository, "Test");
 			
-			MSBuildBasedProject project = fakeProjectFactory.ProjectPassedToCreateProject;
+			MSBuildBasedProject project = fakeProjectFactory.FirstProjectPassedToCreateProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -216,7 +223,7 @@ namespace PackageManagement.Tests
 			
 			solution.GetProject(repository, expectedProject);
 			
-			MSBuildBasedProject project = fakeProjectFactory.ProjectPassedToCreateProject;
+			MSBuildBasedProject project = fakeProjectFactory.FirstProjectPassedToCreateProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -230,7 +237,7 @@ namespace PackageManagement.Tests
 			
 			IPackageManagementProject project = solution.GetProject(repository, msbuildProject);
 			
-			FakePackageManagementProject expectedProject = fakeProjectFactory.FakeProject;
+			FakePackageManagementProject expectedProject = fakeProjectFactory.FirstFakeProjectCreated;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -244,7 +251,7 @@ namespace PackageManagement.Tests
 			
 			solution.GetProject(expectedRepository, expectedProject);
 			
-			IPackageRepository repository = fakeProjectFactory.RepositoryPassedToCreateProject;
+			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
 			
 			Assert.AreEqual(expectedRepository, repository);
 		}
@@ -258,7 +265,7 @@ namespace PackageManagement.Tests
 			
 			solution.GetProject(repository, "TEST");
 			
-			MSBuildBasedProject project = fakeProjectFactory.ProjectPassedToCreateProject;
+			MSBuildBasedProject project = fakeProjectFactory.FirstProjectPassedToCreateProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -272,7 +279,7 @@ namespace PackageManagement.Tests
 			
 			IPackageManagementProject project = solution.GetProject(repository, "Test");
 			
-			FakePackageManagementProject expectedProject = fakeProjectFactory.FakeProject;
+			FakePackageManagementProject expectedProject = fakeProjectFactory.FirstFakeProjectCreated;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -286,7 +293,7 @@ namespace PackageManagement.Tests
 			
 			solution.GetProject(expectedRepository, "Test");
 			
-			IPackageRepository actualRepository = fakeProjectFactory.RepositoryPassedToCreateProject;
+			IPackageRepository actualRepository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
 		}
@@ -453,6 +460,84 @@ namespace PackageManagement.Tests
 			};
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, packages);
+		}
+		
+		[Test]
+		public void GetPackagesInReverseDependencyOrder_TwoPackages_ReturnsPackagesFromSolutionLocalRepositoryInCorrectOrder()
+		{
+			CreateSolution();
+			FakePackage packageA = AddPackageInReverseDependencyOrderToSolution("A");
+			FakePackage packageB = AddPackageInReverseDependencyOrderToSolution("A");
+			
+			packageB.DependenciesList.Add(new PackageDependency("A"));
+			
+			var expectedPackages = new FakePackage[] {
+				packageB,
+				packageA
+			};
+			
+			IEnumerable<IPackage> packages = solution.GetPackagesInReverseDependencyOrder();
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, packages);
+		}
+		
+		[Test]
+		public void GetProjects_SolutionHasOneProject_ReturnsOneProject()
+		{
+			CreateSolution();
+			AddProjectToOpenProjects("MyProject");
+			var repository = new FakePackageRepository();
+			List<IPackageManagementProject> projects = solution.GetProjects(repository).ToList();
+			
+			Assert.AreEqual(1, projects.Count);
+		}
+		
+		[Test]
+		public void GetProjects_SolutionHasOneProject_RepositoryUsedToCreateProject()
+		{
+			CreateSolution();
+			AddProjectToOpenProjects("MyProject");
+			var expectedRepository = new FakePackageRepository();
+			List<IPackageManagementProject> projects = solution.GetProjects(expectedRepository).ToList();
+			
+			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
+			
+			Assert.AreEqual(expectedRepository, repository);
+		}
+		
+		[Test]
+		public void GetProjects_SolutionHasOneProject_MSBuildProjectUsedToCreateProject()
+		{
+			CreateSolution();
+			TestableProject expectedProject = AddProjectToOpenProjects("MyProject");
+			var repository = new FakePackageRepository();
+			List<IPackageManagementProject> projects = solution.GetProjects(repository).ToList();
+			
+			MSBuildBasedProject project = fakeProjectFactory.FirstProjectPassedToCreateProject;
+			
+			Assert.AreEqual(expectedProject, project);
+		}
+		
+		[Test]
+		public void GetProjects_SolutionHasNoProjects_ReturnsNoProjects()
+		{
+			CreateSolution();
+			var repository = new FakePackageRepository();
+			List<IPackageManagementProject> projects = solution.GetProjects(repository).ToList();
+			
+			Assert.AreEqual(0, projects.Count);
+		}
+		
+		[Test]
+		public void GetProjects_SolutionHasTwoProjects_ReturnsTwoProjects()
+		{
+			CreateSolution();
+			AddProjectToOpenProjects("One");
+			AddProjectToOpenProjects("Two");
+			var repository = new FakePackageRepository();
+			List<IPackageManagementProject> projects = solution.GetProjects(repository).ToList();
+			
+			Assert.AreEqual(2, projects.Count);
 		}
 	}
 }

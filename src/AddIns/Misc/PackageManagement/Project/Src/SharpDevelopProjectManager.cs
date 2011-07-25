@@ -8,12 +8,18 @@ namespace ICSharpCode.PackageManagement
 {
 	public class SharpDevelopProjectManager : ProjectManager, ISharpDevelopProjectManager
 	{
-		public SharpDevelopProjectManager(IPackageRepository sourceRepository,
+		public SharpDevelopProjectManager(
+			IPackageRepository sourceRepository,
 			IPackagePathResolver pathResolver,
 			IProjectSystem project,
 			IPackageRepository localRepository)
 			: base(sourceRepository, pathResolver, project, localRepository)
 		{
+		}
+		
+		public bool IsInstalled(string packageId)
+		{
+			return LocalRepository.Exists(packageId);
 		}
 	}
 }

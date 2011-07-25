@@ -18,7 +18,6 @@ namespace PackageManagement.Tests
 		TestableUpdatedPackageViewModel viewModel;
 		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementProject fakeProject;
-		FakeUpdatePackageAction updatePackageAction;
 		FakePackageActionRunner fakeActionRunner;
 		FakePackageManagementEvents fakePackageManagementEvents;
 		
@@ -32,10 +31,14 @@ namespace PackageManagement.Tests
 		{
 			viewModel = new TestableUpdatedPackageViewModel(fakeSolution);
 			fakeProject = fakeSolution.FakeProjectToReturnFromGetProject;
-			updatePackageAction = fakeProject.FakeUpdatePackageAction;
 			fakeActionRunner = viewModel.FakeActionRunner;
 			fakePackageManagementEvents = viewModel.FakePackageManagementEvents;
 		}
+		
+		FakeUpdatePackageAction FirstUpdatePackageActionCreated {
+			get { return fakeProject.FirstFakeUpdatePackageActionCreated; }
+		}
+
 		
 		void CreateFakeSolution()
 		{
@@ -80,7 +83,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			FakePackage expectedPackage = viewModel.FakePackage;
-			IPackage actualPackage = updatePackageAction.Package;
+			IPackage actualPackage = FirstUpdatePackageActionCreated.Package;
 						
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}
@@ -92,7 +95,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			IEnumerable<PackageOperation> expectedOperations = viewModel.FakePackageOperationResolver.PackageOperations;
-			IEnumerable<PackageOperation> actualOperations = updatePackageAction.Operations;
+			IEnumerable<PackageOperation> actualOperations = FirstUpdatePackageActionCreated.Operations;
 						
 			Assert.AreEqual(expectedOperations, actualOperations);
 		}
@@ -105,7 +108,7 @@ namespace PackageManagement.Tests
 			
 			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
 
-			Assert.AreEqual(updatePackageAction, actionExecuted);
+			Assert.AreEqual(FirstUpdatePackageActionCreated, actionExecuted);
 		}
 		
 		[Test]

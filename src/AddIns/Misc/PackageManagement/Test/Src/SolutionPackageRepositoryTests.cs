@@ -151,6 +151,25 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void GetPackagesByReverseDependencyOrder_TwoPackagesInSharedRepositorySecondPackageDependsOnFirst_ReturnsSecondPackageFirst()
+		{
+			CreateSolution(@"d:\projects\myproject\myproject.sln");
+			CreateRepository(solution);
+			FakePackage firstPackage = AddPackageToSharedRepository("First");
+			FakePackage secondPackage = AddPackageToSharedRepository("Second");
+			secondPackage.AddDependency("First");
+						
+			List<IPackage> actualPackages = repository.GetPackagesByReverseDependencyOrder().ToList();
+			
+			var expectedPackages = new IPackage[] {
+				secondPackage,
+				firstPackage
+			};
+			
+			Assert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
 		public void IsInstalled_PackageIsInSharedRepository_ReturnsTrue()
 		{
 			CreateSolution(@"d:\projects\myproject\myproject.sln");

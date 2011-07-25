@@ -154,5 +154,18 @@ namespace ICSharpCode.PackageManagement
 			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
 			return repository.GetPackages();
 		}
+		
+		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
+		{
+			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
+			return repository.GetPackagesByReverseDependencyOrder();
+		}
+		
+		public IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository)
+		{
+			foreach (MSBuildBasedProject msbuildProject in GetMSBuildProjects()) {
+				yield return projectFactory.CreateProject(sourceRepository, msbuildProject);
+			}
+		}
 	}
 }

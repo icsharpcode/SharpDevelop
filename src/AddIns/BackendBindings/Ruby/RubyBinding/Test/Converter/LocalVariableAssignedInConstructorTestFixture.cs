@@ -40,6 +40,6 @@ namespace RubyBinding.Tests.Converter
 				"end";
 			
 			Assert.AreEqual(expectedRuby, Ruby);
-		}		
+		}
 	}
 }

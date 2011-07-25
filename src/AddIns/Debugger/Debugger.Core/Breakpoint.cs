@@ -21,7 +21,7 @@ namespace Debugger
 
 		SourcecodeSegment originalLocation;
 		
-		List<ICorDebugFunctionBreakpoint> corBreakpoints = new List<ICorDebugFunctionBreakpoint>();
+		protected List<ICorDebugFunctionBreakpoint> corBreakpoints = new List<ICorDebugFunctionBreakpoint>();
 		
 		public event EventHandler<BreakpointEventArgs> Hit;
 		public event EventHandler<BreakpointEventArgs> Set;
@@ -29,6 +29,7 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public NDebugger Debugger {
 			get { return debugger; }
+			protected set { debugger = value; }
 		}
 		
 		public string FileName {
@@ -62,10 +63,14 @@ namespace Debugger
 			get { return originalLocation; }
 		}
 		
-		public bool IsSet { 
-			get { 
+		public bool IsSet {
+			get {
 				return corBreakpoints.Count > 0;
 			}
+		}
+		
+		public string TypeName {
+			get; protected set;
 		}
 		
 		protected virtual void OnHit(BreakpointEventArgs e)
@@ -88,6 +93,8 @@ namespace Debugger
 			}
 		}
 		
+		public Breakpoint() { }
+		
 		public Breakpoint(NDebugger debugger, ICorDebugFunctionBreakpoint corBreakpoint)
 		{
 			this.debugger = debugger;
@@ -104,7 +111,7 @@ namespace Debugger
 			this.enabled = enabled;
 		}
 		
-		internal bool IsOwnerOf(ICorDebugBreakpoint breakpoint) 
+		internal bool IsOwnerOf(ICorDebugBreakpoint breakpoint)
 		{
 			foreach(ICorDebugFunctionBreakpoint corFunBreakpoint in corBreakpoints) {
 				if (((ICorDebugBreakpoint)corFunBreakpoint).Equals(breakpoint)) return true;
@@ -116,18 +123,18 @@ namespace Debugger
 		{
 			foreach(ICorDebugFunctionBreakpoint corBreakpoint in corBreakpoints) {
 				#if DEBUG
-					// Get repro
-					corBreakpoint.Activate(0);
+				// Get repro
+				corBreakpoint.Activate(0);
 				#else
-					try {
-						corBreakpoint.Activate(0);
-					} catch(COMException e) {
-						// Sometimes happens, but we had not repro yet.
-						// 0x80131301: Process was terminated.
-						if ((uint)e.ErrorCode == 0x80131301)
-							continue;
-						throw;
-					}
+				try {
+					corBreakpoint.Activate(0);
+				} catch(COMException e) {
+					// Sometimes happens, but we had not repro yet.
+					// 0x80131301: Process was terminated.
+					if ((uint)e.ErrorCode == 0x80131301)
+						continue;
+					throw;
+				}
 				#endif
 			}
 			corBreakpoints.Clear();
@@ -138,9 +145,9 @@ namespace Debugger
 			corBreakpoints.Clear();
 		}
 		
-		internal bool SetBreakpoint(Module module)
+		public virtual bool SetBreakpoint(Module module)
 		{
-			if (this.fileName == null) 
+			if (this.fileName == null)
 				return false;
 			
 			SourcecodeSegment segment = SourcecodeSegment.Resolve(module, FileName, CheckSum, Line, Column);
@@ -165,20 +172,57 @@ namespace Debugger
 		}
 	}
 	
+	public class ILBreakpoint : Breakpoint
+	{
+		public ILBreakpoint(NDebugger debugger, string typeName, int line, int metadataToken, int memberToken, int offset, bool enabled)
+		{
+			this.Debugger = debugger;
+			this.Line = line;
+			this.TypeName = typeName;
+			this.MetadataToken = metadataToken;
+			this.MemberMetadataToken = memberToken;
+			this.ILOffset = offset;
+			this.Enabled = enabled;
+		}
+		
+		public int MetadataToken { get; private set; }
+		
+		public int MemberMetadataToken { get; private set; }
+		
+		public int ILOffset { get; private set; }
+		
+		public override bool SetBreakpoint(Module module)
+		{
+			SourcecodeSegment segment = SourcecodeSegment.CreateForIL(module, this.Line, MemberMetadataToken, ILOffset);
+			if (segment == null)
+				return false;
+			try {
+				ICorDebugFunctionBreakpoint corBreakpoint = segment.CorFunction.GetILCode().CreateBreakpoint((uint)segment.ILStart);
+				corBreakpoint.Activate(Enabled ? 1 : 0);
+				corBreakpoints.Add(corBreakpoint);
+				
+				OnSet(new BreakpointEventArgs(this));
+				return true;
+			} catch
+				#if DEBUG
+				(System.Exception ex)
+				#endif
+			{
+				return false;
+			}
+		}
+	}
+	
 	[Serializable]
 	public class BreakpointEventArgs : DebuggerEventArgs
 	{
-		Breakpoint breakpoint;
-		
 		public Breakpoint Breakpoint {
-			get {
-				return breakpoint;
-			}
+			get; private set;
 		}
 		
 		public BreakpointEventArgs(Breakpoint breakpoint): base(breakpoint.Debugger)
 		{
-			this.breakpoint = breakpoint;
+			this.Breakpoint = breakpoint;
 		}
 	}
 }

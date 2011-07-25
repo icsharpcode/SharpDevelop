@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
@@ -58,8 +60,8 @@ namespace PackageManagement.Tests
 			CreateSelectedProjects();
 			
 			var fakePackage = new FakePackage("Test");
-			var projects = new List<IPackageManagementSelectedProject>();
-			projects.AddRange(selectedProjects.GetProjects(fakePackage));
+			List<IPackageManagementSelectedProject> projects =
+				selectedProjects.GetProjects(fakePackage).ToList();
 			
 			var expectedProjects = new List<IPackageManagementSelectedProject>();
 			expectedProjects.Add(new FakeSelectedProject("Project A", selected: false, enabled: false));
@@ -81,8 +83,8 @@ namespace PackageManagement.Tests
 			projectA.FakePackages.Add(olderFakePackage);
 				
 			var fakePackage = new FakePackage("Test", "1.2");
-			var projects = new List<IPackageManagementSelectedProject>();
-			projects.AddRange(selectedProjects.GetProjects(fakePackage));
+			List<IPackageManagementSelectedProject> projects =
+				selectedProjects.GetProjects(fakePackage).ToList();
 			
 			var expectedProjects = new List<IPackageManagementSelectedProject>();
 			expectedProjects.Add(new FakeSelectedProject("Project A", selected: true, enabled: true));

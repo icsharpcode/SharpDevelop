@@ -24,8 +24,10 @@ namespace ICSharpCode.PackageManagement
 		Project ConvertToDTEProject();
 		
 		bool IsPackageInstalled(IPackage package);
+		bool IsPackageInstalled(string packageId);
 		
 		IQueryable<IPackage> GetPackages();
+		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
 		
 		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies);
 		

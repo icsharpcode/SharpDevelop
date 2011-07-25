@@ -118,5 +118,16 @@ namespace PackageManagement.Tests.Helpers
 		{
 			CommandsExecuted.Add(command);
 		}
+		
+		public FakePackageRepository FakePackageRepository = 
+			new FakePackageRepository();
+		
+		public PackageSource PackageSourcePassedToGetRepository;
+		
+		public IPackageRepository GetPackageRepository(PackageSource packageSource)
+		{
+			PackageSourcePassedToGetRepository = packageSource;
+			return FakePackageRepository;
+		}
 	}
 }

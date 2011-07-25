@@ -63,5 +63,10 @@ namespace PackageManagement.Tests.Helpers
 			PackagePassedToUpdatePackageReference = package;
 			UpdateDependenciesPassedToUpdatePackageReference = updateDependencies;
 		}
+		
+		public FakePackage AddFakePackageToProjectLocalRepository(string packageId, string version)
+		{
+			return FakeLocalRepository.AddFakePackageWithVersion(packageId, version);
+		}
 	}
 }

@@ -549,7 +549,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public override object TrackedVisitExitStatement(ExitStatement exitStatement, object data)
 		{
-			Console.WriteLine("VisitExitStatement");
+			AppendIndentedLine("break");
 			return null;
 		}
 		
@@ -595,9 +595,51 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
+		/// <summary>
+		/// Converts from an NRefactory VB.NET for next loop:
+		/// 
+		/// for i As Integer = 0 To 4
+		/// Next
+		/// 
+		/// to Python's:
+		/// 
+		/// i = 0
+		/// while i &lt; 5:
+		/// </summary>
 		public override object TrackedVisitForNextStatement(ForNextStatement forNextStatement, object data)
 		{
-			Console.WriteLine("VisitForNextStatement");
+			// Convert the for loop's initializers.
+			string variableName = forNextStatement.VariableName;
+			AppendIndented(variableName);
+			Append(" = ");
+			forNextStatement.Start.AcceptVisitor(this, data);
+			AppendLine();
+			
+			// Convert the for loop's test expression.
+			AppendIndented("while ");
+			Append(variableName);
+			Append(" <= ");
+			forNextStatement.End.AcceptVisitor(this, data);
+			Append(":");
+			AppendLine();
+			
+			// Visit the for loop's body.
+			IncreaseIndent();
+			forNextStatement.EmbeddedStatement.AcceptVisitor(this, data);
+			
+			// Convert the for loop's increment statement.
+			AppendIndented(variableName);
+			Append(" = ");
+			Append(variableName);
+			Append(" + ");
+			if (forNextStatement.Step.IsNull) {
+				Append("1");
+			} else {
+				forNextStatement.Step.AcceptVisitor(this, data);
+			}
+			AppendLine();
+			DecreaseIndent();
+			
 			return null;
 		}
 		
@@ -765,15 +807,18 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public override object TrackedVisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
-			VariableDeclaration variableDeclaration = localVariableDeclaration.Variables[0];
-			if (!variableDeclaration.Initializer.IsNull) {
-
-				// Create variable declaration.
-				AppendIndented(variableDeclaration.Name + " = ");
-				
-				// Generate the variable initializer.
-				variableDeclaration.Initializer.AcceptVisitor(this, data);
-				AppendLine();
+			foreach (VariableDeclaration variableDeclaration in localVariableDeclaration.Variables) {
+				if (!variableDeclaration.Initializer.IsNull) {
+					
+					AddTypeToArrayInitializerIfMissing(variableDeclaration);
+	
+					// Create variable declaration.
+					AppendIndented(variableDeclaration.Name + " = ");
+					
+					// Generate the variable initializer.
+					variableDeclaration.Initializer.AcceptVisitor(this, data);
+					AppendLine();
+				}
 			}
 			return null;
 		}
@@ -1428,9 +1473,8 @@ namespace ICSharpCode.PythonBinding
 		/// Checks that the field declaration has an initializer that
 		/// sets an initial value.
 		/// </summary>
-		static bool FieldHasInitialValue(FieldDeclaration fieldDeclaration)
+		static bool FieldHasInitialValue(VariableDeclaration variableDeclaration)
 		{
-			VariableDeclaration variableDeclaration = fieldDeclaration.Fields[0];
 			Expression initializer = variableDeclaration.Initializer;
 			return !initializer.IsNull;
 		}
@@ -1515,8 +1559,10 @@ namespace ICSharpCode.PythonBinding
 			// Check the current class's fields.
 			if (constructorInfo != null) {
 				foreach (FieldDeclaration field in constructorInfo.Fields) {
-					if (field.Fields[0].Name == name) {
-						return true;
+					foreach (VariableDeclaration variable in field.Fields) {
+						if (variable.Name == name) {
+							return true;
+						}
 					}
 				}
 			}
@@ -1653,10 +1699,7 @@ namespace ICSharpCode.PythonBinding
 			AppendDocstring(xmlDocComments);
 			if (constructorInfo.Fields.Count > 0) {
 				foreach (FieldDeclaration field in constructorInfo.Fields) {
-					// Ignore field if it has no initializer.
-					if (FieldHasInitialValue(field)) {
-						CreateFieldInitialization(field);
-					}
+					CreateFieldInitialization(field);
 				}
 			}
 			
@@ -1688,11 +1731,33 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		void CreateFieldInitialization(FieldDeclaration field)
 		{
-			VariableDeclaration variable = field.Fields[0];
-			string oldVariableName = variable.Name;
-			variable.Name = "self._" + variable.Name;
-			VisitVariableDeclaration(variable, null);
-			variable.Name = oldVariableName;
+			foreach (VariableDeclaration variable in field.Fields) {				
+				// Ignore field if it has no initializer.
+				if (FieldHasInitialValue(variable)) {
+					AddTypeToArrayInitializerIfMissing(variable);
+					
+					string oldVariableName = variable.Name;
+					variable.Name = "self._" + variable.Name;
+					VisitVariableDeclaration(variable, null);
+					variable.Name = oldVariableName;
+				}
+			}
+		}
+		
+		void AddTypeToArrayInitializerIfMissing(VariableDeclaration variable)
+		{
+			ArrayCreateExpression arrayCreate = variable.Initializer as ArrayCreateExpression;
+			if (IsArrayMissingTypeToCreate(arrayCreate)) {
+				arrayCreate.CreateType = variable.TypeReference;
+			}
+		}
+		
+		bool IsArrayMissingTypeToCreate(ArrayCreateExpression arrayCreate)
+		{
+			if (arrayCreate != null) {
+				return String.IsNullOrEmpty(arrayCreate.CreateType.Type);
+			}
+			return false;
 		}
 		
 		/// <summary>

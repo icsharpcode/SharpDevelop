@@ -76,6 +76,11 @@ namespace ICSharpCode.PackageManagement
 			return packageSorter.GetPackagesByDependencyOrder(repository);
 		}
 		
+		public IEnumerable<IPackage> GetPackagesByReverseDependencyOrder()
+		{
+			return GetPackagesByDependencyOrder().Reverse();
+		}
+		
 		public bool IsInstalled(IPackage package)
 		{
 			return repository.Exists(package);

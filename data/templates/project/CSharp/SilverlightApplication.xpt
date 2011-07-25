@@ -19,36 +19,39 @@
 		
 		<ProjectItems>
 			<Reference Include="System.Windows" />
-		    <Reference Include="mscorlib" />
-		    <Reference Include="system" />
-		    <Reference Include="System.Core" />
-		    <Reference Include="System.Net" />
-		    <Reference Include="System.Xml" />
-		    <Reference Include="System.Windows.Browser" />
+			<Reference Include="mscorlib" />
+			<Reference Include="system" />
+			<Reference Include="System.Core" />
+			<Reference Include="System.Net" />
+			<Reference Include="System.Xml" />
+			<Reference Include="System.Windows.Browser" />
 		</ProjectItems>
 		
-		<PropertyGroup>
+		<PropertyGroup escapeValue="False">
 			<ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+		</PropertyGroup>
+		
+		<PropertyGroup>
 			<OutputType>Library</OutputType>
-		    <AppDesignerFolder>Properties</AppDesignerFolder>
-		    <RootNamespace>${StandardNamespace}</RootNamespace>
-		    <AssemblyName>${StandardNamespace}</AssemblyName>
-		    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-		    <SilverlightApplication>true</SilverlightApplication>
-		    <SupportedCultures>
-		    </SupportedCultures>
-		    <XapOutputs>true</XapOutputs>
-		    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
-		    <XapFilename>${StandardNamespace}.xap</XapFilename>
-		    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
-		    <SilverlightAppEntry>${StandardNamespace}.App</SilverlightAppEntry>
-		    <TestPageFileName>TestPage.html</TestPageFileName>
-		    <CreateTestPage>true</CreateTestPage>
-		    <ValidateXaml>true</ValidateXaml>
-		    <UsePlatformExtensions>false</UsePlatformExtensions>
-		    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>			
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<RootNamespace>${StandardNamespace}</RootNamespace>
+			<AssemblyName>${StandardNamespace}</AssemblyName>
+			<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+			<SilverlightApplication>true</SilverlightApplication>
+			<SupportedCultures>
+			</SupportedCultures>
+			<XapOutputs>true</XapOutputs>
+			<GenerateSilverlightManifest>true</GenerateSilverlightManifest>
+			<XapFilename>${StandardNamespace}.xap</XapFilename>
+			<SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+			<SilverlightAppEntry>${StandardNamespace}.App</SilverlightAppEntry>
+			<TestPageFileName>TestPage.html</TestPageFileName>
+			<CreateTestPage>true</CreateTestPage>
+			<ValidateXaml>true</ValidateXaml>
+			<UsePlatformExtensions>false</UsePlatformExtensions>
+			<ThrowErrorsInValidation>true</ThrowErrorsInValidation>			
 			<NoStdLib>true</NoStdLib>
-		    <NoConfig>true</NoConfig>			
+			<NoConfig>true</NoConfig>	
 		</PropertyGroup>
 		
 		<PropertyGroup configuration="Debug" escapeValue="false">
@@ -66,12 +69,12 @@
 		<Files>
 		
 			<File name="App.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-             x:Class="${StandardNamespace}.App"
-             >
-    <Application.Resources>
-        
-    </Application.Resources>
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+			 x:Class="${StandardNamespace}.App"
+			 >
+	<Application.Resources>
+		
+	</Application.Resources>
 </Application>]]></File>
 
 			<File name="App.xaml.cs" SubType="Code" DependentUpon="App.xaml"><![CDATA[using System;
@@ -132,12 +135,12 @@ namespace ${StandardNamespace}
 }]]></File>
 
 			<File name="MainPage.xaml" buildAction="Page" language="XML"><![CDATA[<UserControl x:Class="${StandardNamespace}.MainPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    Width="400" Height="300">
-    <Grid x:Name="LayoutRoot" Background="White">
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+	Width="400" Height="300">
+	<Grid x:Name="LayoutRoot" Background="White">
 
-    </Grid>
+	</Grid>
 </UserControl>]]></File>
 
 			<File name="MainPage.xaml.cs" SubType="Code" DependentUpon="MainPage.xaml"><![CDATA[using System;
@@ -164,10 +167,10 @@ namespace ${StandardNamespace}
 }]]></File>
 
 			<File name="Properties\AppManifest.xml"><![CDATA[<Deployment xmlns="http://schemas.microsoft.com/client/2007/deployment"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 >
-    <Deployment.Parts>
-    </Deployment.Parts>
+	<Deployment.Parts>
+	</Deployment.Parts>
 </Deployment>]]></File>
 			
 			<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />

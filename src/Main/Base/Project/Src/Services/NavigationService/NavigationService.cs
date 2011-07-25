@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -90,7 +91,7 @@ namespace ICSharpCode.SharpDevelop
 		#region Public Properties
 		
 		/// <summary>
-		/// <b>true</b> if we can navigate back to a previous point; <b>false</b> 
+		/// <b>true</b> if we can navigate back to a previous point; <b>false</b>
 		/// if there are no points in the history.
 		/// </summary>
 		public static bool CanNavigateBack {
@@ -99,7 +100,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		/// <summary>
 		/// <b>true</b> if we can navigate forwards to a point prevously left
-		/// via navigating backwards; <b>false</b> if all the points in the 
+		/// via navigating backwards; <b>false</b> if all the points in the
 		/// history are in the "past".
 		/// </summary>
 		public static bool CanNavigateForwards {
@@ -110,7 +111,7 @@ namespace ICSharpCode.SharpDevelop
 		/// Gets the number of points in the navigation history.
 		/// </summary>
 		/// <remarks>
-		/// <b>Note:</b> jumping forwards or backwards requires at least 
+		/// <b>Note:</b> jumping forwards or backwards requires at least
 		/// two points in the history; otherwise navigating has no meaning.
 		/// </remarks>
 		public static int Count {
@@ -151,12 +152,12 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-/*		static void Log(IWorkbenchWindow window)
+		/*		static void Log(IWorkbenchWindow window)
 		{
 			if (window==null) return;
 			Log(window.ActiveViewContent);
 		}
-*/		
+		 */
 
 		
 		/// <summary>
@@ -189,7 +190,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <remarks>
 		/// Refactoring this out of Log() allows the NavigationService
 		/// to call this and ensure it will work regardless of the
-		/// requested state of loggingSuspended, as in 
+		/// requested state of loggingSuspended, as in
 		/// <see cref="ClearHistory()"/> where we want to log
 		/// the current position after clearing the
 		/// history.
@@ -199,7 +200,7 @@ namespace ICSharpCode.SharpDevelop
 			if (p == null
 			    || String.IsNullOrEmpty(p.FileName)
 			   )
-			    { 
+			{
 				return;
 			}
 			if (currentNode==null) {
@@ -228,7 +229,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 
 		/// <summary>
-		/// Gets a <see cref="List{T}"/> of the <see cref="INavigationPoint">INavigationPoints</see> that 
+		/// Gets a <see cref="List{T}"/> of the <see cref="INavigationPoint">INavigationPoints</see> that
 		/// are currently in the collection.
 		/// </summary>
 		public static ICollection<INavigationPoint> Points
@@ -251,11 +252,11 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		/// <param name="clearCurrentPosition">Do we clear the current position as well as the rest of the history?</param>
 		/// <remarks>
-		/// <para>The current position is often used to "seed" the next history to ensure 
+		/// <para>The current position is often used to "seed" the next history to ensure
 		/// that the first significant movement after clearing the history allows
 		/// us to jump "back" immediately.</para>
 		/// <para>Remembering the current position across requests to clear the history
-		/// does not always make sense, however, such as when a solution is closing, 
+		/// does not always make sense, however, such as when a solution is closing,
 		/// hence the ability to explicitly control it's retention.</para>
 		/// </remarks>
 		public static void ClearHistory(bool clearCurrentPosition)
@@ -270,10 +271,10 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Navigates to an <see cref="INavigationPoint"/> that is an arbitrary 
+		/// Navigates to an <see cref="INavigationPoint"/> that is an arbitrary
 		/// number of points away from the <see cref="CurrentPosition"/>.
 		/// </summary>
-		/// <param name="delta">Number of points to move; negative deltas move 
+		/// <param name="delta">Number of points to move; negative deltas move
 		/// backwards while positive deltas move forwards through the history.</param>
 		public static void Go(int delta)
 		{
@@ -323,7 +324,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		/// <summary>
 		/// Navigates the view (i.e. the workbench) to whatever
-		/// <see cref="INavigationPoint"/> is the current 
+		/// <see cref="INavigationPoint"/> is the current
 		/// position in the internal model.
 		/// </summary>
 		/// <remarks>Factoring this out of code that manipulates
@@ -396,8 +397,8 @@ namespace ICSharpCode.SharpDevelop
 		{
 			IViewContent vc = WorkbenchSingleton.Workbench.ActiveViewContent;
 			if (vc == null) return;
-			LoggingService.DebugFormatted("NavigationService\n\tActiveViewContent: {0}\n\t          Subview: {1}", 
-			                              vc.TitleName, 
+			LoggingService.DebugFormatted("NavigationService\n\tActiveViewContent: {0}\n\t          Subview: {1}",
+			                              vc.TitleName,
 			                              vc.TabPageText);
 			Log(vc);
 		}
@@ -407,7 +408,7 @@ namespace ICSharpCode.SharpDevelop
 		/// to reflect the change.
 		/// </summary>
 		/// <param name="sender"/>
-		/// <param name="e"><see cref="FileRenameEventArgs"/> describing 
+		/// <param name="e"><see cref="FileRenameEventArgs"/> describing
 		/// the file rename.</param>
 		static void FileService_FileRenamed(object sender, FileRenameEventArgs e)
 		{
@@ -427,7 +428,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		#endregion
-			
+		
 		#region Public Events
 
 		/// <summary>
@@ -445,5 +446,72 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		#endregion
+		
+		#region Navigate To Entity
+		public static bool NavigateTo(Dom.IEntity entity)
+		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			var cu = entity.CompilationUnit;
+			Dom.DomRegion region;
+			if (entity is Dom.IClass)
+				region = ((Dom.IClass)entity).Region;
+			else if (entity is Dom.IMember)
+				region = ((Dom.IMember)entity).Region;
+			else
+				region = Dom.DomRegion.Empty;
+			
+			if (cu == null || string.IsNullOrEmpty(cu.FileName) || region.IsEmpty) {
+				foreach (var item in AddInTree.BuildItems<INavigateToEntityService>("/SharpDevelop/Services/NavigateToEntityService", null, false)) {
+					if (item.NavigateToEntity(entity))
+						return true;
+				}
+				return false;
+			} else {
+				return FileService.JumpToFilePosition(cu.FileName, region.BeginLine, region.BeginColumn) != null;
+			}
+		}
+		#endregion
+		
+		#region Navigate to Member
+		
+		public static bool NavigateTo(string assemblyFile, string typeName, string entityTag, int lineNumber = 0)
+		{
+			if (string.IsNullOrEmpty(assemblyFile))
+				throw new ArgumentException("assemblyFile is null or empty");
+			
+			if (string.IsNullOrEmpty(typeName))
+				throw new ArgumentException("typeName is null or empty");
+			
+			foreach (var item in AddInTree.BuildItems<INavigateToMemberService>("/SharpDevelop/Services/NavigateToEntityService", null, false)) {
+				if (item.NavigateToMember(assemblyFile, typeName, entityTag, lineNumber))
+					return true;
+			}
+			return false;
+		}
+		
+		#endregion
+	}
+	
+	/// <summary>
+	/// Called by <see cref="NavigationService.NavigateTo"/> when the entity is not defined in source code.
+	/// </summary>
+	/// <remarks>
+	/// Loaded from addin tree path "/SharpDevelop/Services/NavigateToEntityService"
+	/// </remarks>
+	public interface INavigateToEntityService
+	{
+		bool NavigateToEntity(Dom.IEntity entity);
+	}
+	
+	/// <summary>
+	/// Called by <see cref="NavigationService.NavigateTo"/> when the member reference is not defined in source code.
+	/// </summary>
+	/// <remarks>
+	/// Loaded from addin tree path "/SharpDevelop/Services/NavigateToEntityService"
+	/// </remarks>
+	public interface INavigateToMemberService
+	{
+		bool NavigateToMember(string assemblyFile, string typeName, string entityTag, int lineNumber);
 	}
 }

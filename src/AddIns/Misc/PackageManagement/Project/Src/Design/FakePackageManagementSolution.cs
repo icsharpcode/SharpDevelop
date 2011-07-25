@@ -132,5 +132,31 @@ namespace ICSharpCode.PackageManagement.Design
 			FakeProjectsToReturnFromGetProject.Add(name, project);
 			return project;
 		}
+		
+		public List<FakePackage> FakePackagesInReverseDependencyOrder = 
+			new List<FakePackage>();
+		
+		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
+		{
+			return FakePackagesInReverseDependencyOrder;
+		}
+		
+		public List<FakePackageManagementProject> FakeProjects =
+			new List<FakePackageManagementProject>();
+		
+		public IPackageRepository SourceRepositoryPassedToGetProjects;
+		
+		public IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository)
+		{
+			SourceRepositoryPassedToGetProjects = sourceRepository;
+			return FakeProjects;
+		}
+		
+		public FakePackageManagementProject AddFakeProject(string projectName)
+		{
+			var project = new FakePackageManagementProject(projectName);
+			FakeProjects.Add(project);
+			return project;
+		}
 	}
 }

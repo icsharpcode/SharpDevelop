@@ -23,15 +23,15 @@ namespace Debugger.AddIn.Tooltips
 
 		public DebuggerPopup(DebuggerTooltipControl parentControl, Location logicalPosition, bool showPins = true)
 		{
-			this.innerControl = new DebuggerTooltipControl(parentControl, logicalPosition, showPins);
+			this.innerControl = new DebuggerTooltipControl(parentControl, logicalPosition) { ShowPins = showPins };
 			this.innerControl.containingPopup = this;
 			this.Child = this.innerControl;
 			this.IsLeaf = false;
 			
 			//this.KeyDown += new KeyEventHandler(DebuggerPopup_KeyDown);
 
-			//this.contentControl.Focusable = true;
-			//Keyboard.Focus(this.contentControl);
+			//this.innerControl.Focusable = true;
+			//Keyboard.Focus(this.innerControl);
 			//this.AllowsTransparency = true;
 			//this.PopupAnimation = PopupAnimation.Slide;
 		}

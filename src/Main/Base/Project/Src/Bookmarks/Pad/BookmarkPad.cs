@@ -140,7 +140,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		void BookmarkManagerRemoved(object sender, BookmarkEventArgs e)
 		{
-			listView.Remove(new ListViewPadItemModel(e.Bookmark));
+			if (ShowBookmarkInThisPad(e.Bookmark))
+				listView.Remove(new ListViewPadItemModel(e.Bookmark));
 		}
 		
 		void listView_ItemActivated(object sender, EventArgs e)
