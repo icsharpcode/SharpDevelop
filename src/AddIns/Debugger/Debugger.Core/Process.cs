@@ -14,6 +14,29 @@ namespace Debugger
 {
 	internal enum DebuggeeStateAction { Keep, Clear }
 	
+	/// <summary>
+	/// Debug Mode Flags.
+	/// </summary>
+	public enum DebugModeFlag
+	{
+		/// <summary>
+		/// Run in the same mode as without debugger.
+		/// </summary>
+		Default,
+		/// <summary>
+		/// Run in forced optimized mode.
+		/// </summary>
+		Optimized,
+		/// <summary>
+		/// Run in debug mode (easy inspection) but slower.
+		/// </summary>
+		Debug,
+		/// <summary>
+		/// Run in ENC mode (ENC possible) but even slower than debug
+		/// </summary>
+		Enc
+	}
+	
 	public class Process: DebuggerObject
 	{
 		NDebugger debugger;
@@ -27,6 +50,7 @@ namespace Debugger
 		AppDomainCollection appDomains;
 		
 		string workingDirectory;
+		
 		
 		public NDebugger Debugger {
 			get { return debugger; }
@@ -106,6 +130,23 @@ namespace Debugger
 		
 		public string WorkingDirectory {
 			get { return workingDirectory; }
+		}
+		
+		public static DebugModeFlag DebugMode { get; set; }
+		
+		public bool IsInExternalCode {
+			get {
+				if (SelectedStackFrame == null && SelectedThread.MostRecentStackFrame == null)
+					return true;
+				
+				if (SelectedStackFrame == null && SelectedThread.MostRecentStackFrame != null)
+					return true;
+				
+				if (SelectedThread.MostRecentStackFrame == null)
+					return true;
+				
+				return !(SelectedStackFrame.HasSymbols && SelectedThread.MostRecentStackFrame.HasSymbols);
+			}
 		}
 		
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string workingDirectory)
@@ -666,13 +707,18 @@ namespace Debugger
 							breakpoint.Remove();
 						breakpoint = null;
 					};
-				} catch { 
+				} catch {
 					// the app does not have an entry point - COM exception
 				}
 				BreakAtBeginning = false;
 			}
+			
+			if (ModulesAdded != null)
+				ModulesAdded(this, new ModuleEventArgs(e.Item));
 		}
 		
 		#endregion
+		
+		public event EventHandler<ModuleEventArgs> ModulesAdded;
 	}
 }
