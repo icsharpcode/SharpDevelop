@@ -1414,7 +1414,8 @@
 									<Component Id="ILSpyAddInFiles" Guid="F1422563-5927-4D98-B4D4-33FE5576C665" DiskId="1">
 										<File Id="ILSpyAddIn.dll" Name="ILSpyAddIn.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.dll" KeyPath="yes" />
 										<File Id="ILSpyAddIn.addin" Name="ILSpyAddIn.addin" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.addin" />
-										<File Id="newNRefactory.dll" Name="newNRefactory.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\newNRefactory.dll" />
+										<File Id="NRefactory.dll" Name="NRefactory.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.NRefactory.dll" />
+										<File Id="ICSharpCode.NewNRefactory.dll" Name="ICSharpCode.NewNRefactory.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.NewNRefactory.dll" />
 										<File Id="ICSharpCode.Decompiler.dll" Name="ICSharpCode.Decompiler.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.Decompiler.dll" />
 									</Component>
 								</Directory>
