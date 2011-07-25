@@ -1425,6 +1425,8 @@
 									<File Source="..\..\AddIns\Debugger\Debugger.AddIn.addin" Id="Debugger.AddIn.addin" Name="Debugger.AddIn.addin" />
 									<File Source="..\..\AddIns\Debugger\Debugger.AddIn.dll" Id="Debugger.AddIn.dll" Name="Debugger.AddIn.dll" />
 									<File Source="..\..\AddIns\Debugger\Debugger.Core.dll" Id="Debugger.Core.dll" Name="Debugger.Core.dll" />
+									<File Source="..\..\AddIns\Debugger\ICSharpCode.NewNRefactory.dll" Id="Debugger.ICSharpCode.NewNRefactory.dll" Name="Debugger.ICSharpCode.NewNRefactory.dll" />
+									<File Source="..\..\AddIns\Debugger\ICSharpCode.Decompiler.dll" Id="Debugger.ICSharpCode.Decompiler.dll" Name="Debugger.ICSharpCode.Decompiler.dll" />
 								</Component>
 							</Directory>
 							<Directory Id="MiscAddInsFolder" Name="Misc">
