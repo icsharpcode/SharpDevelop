@@ -505,8 +505,13 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			}
 			
+			if (debuggedProcess.IsRunning) {
+				MessageService.ShowMessage(errorProcessRunning, "${res:XML.MainMenu.DebugMenu.StepInto}");
+				return;
+			}
+			
 			var frame = debuggedProcess.SelectedStackFrame ?? debuggedProcess.SelectedThread.MostRecentStackFrame;
-			if (frame == null || debuggedProcess.IsRunning) {
+			if (frame == null) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
 				if (IsInExternalCode) {
@@ -525,8 +530,13 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			}
 			
+			if (debuggedProcess.IsRunning) {
+				MessageService.ShowMessage(errorProcessRunning, "${res:XML.MainMenu.DebugMenu.StepOver}");
+				return;
+			}
+			
 			var frame = debuggedProcess.SelectedStackFrame ?? debuggedProcess.SelectedThread.MostRecentStackFrame;
-			if (frame == null || debuggedProcess.IsRunning) {
+			if (frame == null) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepOver}");
 			} else {
 				if (IsInExternalCode) {
@@ -545,8 +555,13 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			}
 			
+			if (debuggedProcess.IsRunning) {
+				MessageService.ShowMessage(errorProcessRunning, "${res:XML.MainMenu.DebugMenu.StepOut}");
+				return;
+			}
+			
 			var frame = debuggedProcess.SelectedStackFrame ?? debuggedProcess.SelectedThread.MostRecentStackFrame;
-			if (frame == null || debuggedProcess.IsRunning) {
+			if (frame == null) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
 				if (IsInExternalCode) {
