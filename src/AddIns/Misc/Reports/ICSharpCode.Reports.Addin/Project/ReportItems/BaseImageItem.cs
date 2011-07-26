@@ -11,6 +11,7 @@ using System.Xml.Serialization;
 
 using ICSharpCode.Reports.Addin.TypeProviders;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -22,12 +23,8 @@ namespace ICSharpCode.Reports.Addin
 	{
 		private string imageFileName;
 		private Image image;
-		private bool scaleImageToSize;
 		private GlobalEnums.ImageSource imageSource;
-		private string columnName;
-		private string baseTableName;
 		private string reportFileName;
-		private string relativeFileName;
 		
 		public BaseImageItem()
 		{
@@ -55,7 +52,7 @@ namespace ICSharpCode.Reports.Addin
 			                               this.ClientRectangle.Bottom -1);
 
 			base.DrawControl(graphics,rect);
-			if (this.scaleImageToSize) {
+			if (this.ScaleImageToSize) {
 				graphics.DrawImageUnscaled(this.Image,this.Location.X,this.Location.Y);
 			} else {
 				graphics.DrawImage(this.Image,this.ClientRectangle);
@@ -71,7 +68,7 @@ namespace ICSharpCode.Reports.Addin
 			get { return imageFileName; }
 			set { imageFileName = value;
 				if (!String.IsNullOrEmpty(reportFileName)) {
-					this.relativeFileName = FileUtility.GetRelativePath(Path.GetFullPath(this.reportFileName),Path.GetFullPath(this.ImageFileName));
+					this.RelativeFileName = FileUtility.GetRelativePath(Path.GetFullPath(this.reportFileName),Path.GetFullPath(this.ImageFileName));
 				}
 			}
 		}
@@ -155,10 +152,8 @@ namespace ICSharpCode.Reports.Addin
 		
 		
 		[Category("Layout")]
-		public bool ScaleImageToSize {
-			get { return scaleImageToSize; }
-			set { scaleImageToSize = value; }
-		}
+		public bool ScaleImageToSize {get;set;}
+		
 		
 		
 		[Category("Image")]
@@ -170,22 +165,16 @@ namespace ICSharpCode.Reports.Addin
 		
 		
 		
-		[Category("Image from Database")]
-		public string ColumnName {
-			get { return columnName; }
-			set {
-				columnName = value;
-			}
-		}
+		[Category("DataBinding")]
+		public string ColumnName {get;set;}
 		
 		
-		[Category("Image from Database")]
-		public string BaseTableName {
-			get { return baseTableName; }
-			set {
-				baseTableName = value;
-			}
-		}
+		[Category("DataBinding")]
+		public string BaseTableName {get;set;}
+		
+		
+		[Category("DataBinding")]
+		public string DataType {get;set;}
 		
 		
 		[XmlIgnoreAttribute]
@@ -198,10 +187,8 @@ namespace ICSharpCode.Reports.Addin
 		
 		[Category("Image")]
 		[Browsable(false)]
-		public string RelativeFileName {
-			get { return relativeFileName; }
-			set { relativeFileName = value;}
-		}
+		public string RelativeFileName {get;set;}
+			
 		
 		
 		[XmlIgnoreAttribute]
@@ -210,12 +197,12 @@ namespace ICSharpCode.Reports.Addin
 		public string AbsoluteFileName
 		{
 			get {
-				if (!string.IsNullOrEmpty(relativeFileName)) {
+				if (!string.IsNullOrEmpty(RelativeFileName)) {
 					Console.WriteLine("");
 					
 					string testFileName = String.Empty;
 					if (! String.IsNullOrEmpty(reportFileName)) {
-						testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
+						testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.RelativeFileName));
 					} 
 
 					if (File.Exists(testFileName)){
@@ -224,13 +211,15 @@ namespace ICSharpCode.Reports.Addin
 					} else {
 						Console.WriteLine("AbsoluteFileName can't load image");
 						Console.WriteLine("Report Filename {0}",this.reportFileName);
-						Console.WriteLine("Relative Filename {0}",this.relativeFileName);
+						Console.WriteLine("Relative Filename {0}",this.RelativeFileName);
 						Console.WriteLine("Image Filename {0}",this.ImageFileName);
 					}
 				}
 				return this.ImageFileName;
 			}
 		}
+		
+		public new string Name {get;set;}
 		
 		#endregion
 	}

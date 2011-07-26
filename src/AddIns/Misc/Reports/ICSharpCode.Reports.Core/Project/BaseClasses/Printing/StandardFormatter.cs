@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using ICSharpCode.Reports.Core.Project.BaseClasses;
 
 /// <summary>
 /// This Class handles the formatting of Output Values depending on there
@@ -17,18 +18,11 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 	internal static class StandardFormatter
 	{
 		
-		private static TypeCode TypeCodeFromString (string type) {
-			if (String.IsNullOrEmpty(type)) {
-				throw new ArgumentNullException("type");
-			}
-			return Type.GetTypeCode( Type.GetType(type));
-		}
-		
 		
 		public static string FormatOutput(string valueToFormat,string format,
 		                                     string dataType, string nullValue )
 		{
-			TypeCode typeCode = TypeCodeFromString(dataType);
+			TypeCode typeCode = TypeHelpers.TypeCodeFromString(dataType);
 			return StandardFormatter.FormatItem(valueToFormat,format,
 			                                    typeCode,nullValue);
 		}

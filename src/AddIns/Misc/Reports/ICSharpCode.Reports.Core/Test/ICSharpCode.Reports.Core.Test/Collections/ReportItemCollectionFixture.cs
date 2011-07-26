@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.Reports.Core.Globals;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Core.Test.Basics

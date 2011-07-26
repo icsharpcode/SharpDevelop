@@ -4,6 +4,7 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.BaseClasses;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 using NUnit.Framework;
 
@@ -52,49 +53,32 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		public void MeasureReportHeaderForFirstPageWithEmptyItems()
 		{
 			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
-			BaseSection baseSection = new BaseSection();
-			baseSection.Location = new Point (50,50);
-			baseSection.Size = new Size (727,60);
+			var baseSection = CreateSection();
 			sectionBounds.MeasureReportHeader(baseSection);
-			Assert.AreEqual(0,sectionBounds.ReportHeaderRectangle.Size.Height,
-			                "ItemsCollection is empty, so Size.Height should be '0'");
-			                
-			Assert.AreEqual(sectionBounds.MarginBounds.Width,
-			                sectionBounds.ReportHeaderRectangle.Width);
+			Size size = new Size(baseSection.Size.Width,0);
+			Assert.That(sectionBounds.ReportHeaderRectangle.Size,Is.EqualTo(size));
 		}
 		
 		
 		[Test]
-		public void MeasureReportHeaderForFirstPageWithItems()
+		public void ReportHeader_For_FirstPage_WithItems()
 		{
-			/*
 			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
+			BaseSection reportHeader = CreateSection();
+			reportHeader.Items.Add(new BaseTextItem());
 			
-			BaseSection baseSection = new BaseSection();
-			baseSection.Location = new Point (50,50);
-			baseSection.Size = new Size (727,60);
+			sectionBounds.MeasureReportHeader(reportHeader);
 		
-			baseSection.Items.Add(new BaseTextItem());
-			sectionBounds.MeasureReportHeader(baseSection);
-			Assert.AreEqual(baseSection.Size.Height + sectionBounds.Gap,
-			                sectionBounds.ReportHeaderRectangle.Size.Height,
-			                "ItemsCollection is not empty, so Size.Height should NOT be '0'");
-			Assert.AreEqual(sectionBounds.MarginBounds.Width,
-			                sectionBounds.ReportHeaderRectangle.Width);
-			                */
+			Assert.That(sectionBounds.ReportHeaderRectangle.Size,Is.EqualTo(reportHeader.Size));            
 		}
 		
 		
 		[Test]
 		public void MeasureReportHeaderForAnyPage ()
 		{
-			BaseSection bs = new BaseSection();
-			bs.Location = new Point (50,50);
-			bs.Size = new Size (727,60);
-			Sut.MeasureReportHeader(bs);
+			var baseSection = CreateSection();
+			Sut.MeasureReportHeader(baseSection);
 			Assert.AreEqual(0,Sut.ReportHeaderRectangle.Size.Height);
-			int a = Sut.MarginBounds.Width;
-			Assert.AreEqual(Sut.MarginBounds.Width,Sut.ReportHeaderRectangle.Width);
 		}
 		
 		#endregion
@@ -110,23 +94,28 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		
 		
 		[Test]
-		public void MeasurePageHeader()
+		public void PageHeader_No_Items()
 		{
-			/*
-			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
-			BaseSection baseSection = new BaseSection();
-			baseSection.Location = new Point (50,50);
-			baseSection.Size = new Size (727,60);
-			sectionBounds.MeasurePageHeader(baseSection);
-			Assert.AreEqual(baseSection.Size.Height + sectionBounds.Gap, sectionBounds.PageHeaderRectangle.Size.Height,
-			                "ItemsCollection is empty, so Size.Height should be '0'");
-			               
-			Assert.AreEqual(sectionBounds.MarginBounds.Width,
-			                sectionBounds.PageHeaderRectangle.Width);
-			                */
+			BaseSection baseSection = CreateSection();
+			
+			Sut.MeasurePageHeader(baseSection);
+			Size size = new Size (baseSection.Size.Width,0);
+
+			Assert.That(Sut.PageHeaderRectangle.Size,Is.EqualTo(size));
 		}
 		
-		
+	
+		[Test]
+		public void PageHeader_Location_One_Point_Under_ReportHeader()
+		{
+			BaseSection reportHeader = CreateSection();
+			BaseSection pageHeader = CreateSection();
+			Sut.MeasureReportHeader(reportHeader);
+			Sut.MeasurePageHeader(pageHeader);
+			
+			Assert.That (pageHeader.SectionOffset,Is.EqualTo(Sut.ReportHeaderRectangle.Bottom + 1));
+		}
+	
 		#endregion
 		
 		#region MeasurePageFooter
@@ -144,20 +133,26 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		{
 			var setting = new ReportSettings();
 			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
-			BaseSection baseSection = new BaseSection();
-			baseSection.Location = new Point (50,50);
-			baseSection.Size = new Size (727,60);
-			sectionBounds.MeasurePageFooter(baseSection);
-			Assert.AreEqual(baseSection.Size.Height,
-			                sectionBounds.PageFooterRectangle.Size.Height);
-			                
-			               
-			Assert.AreEqual(sectionBounds.MarginBounds.Width,
-			                sectionBounds.PageFooterRectangle.Width);
-			//int i = sectionBounds.PageSize.Height - setting.BottomMargin;
-			//Assert.AreEqual(i,sectionBounds.PageFooterRectangle.Location.Y);
+			BaseSection pageFootter = CreateSection();
+
+			sectionBounds.MeasurePageFooter(pageFootter);
+			Size expectedSize = pageFootter.Size;
+			
+			Assert.That(expectedSize,Is.EqualTo(sectionBounds.PageFooterRectangle.Size));
 		}
 		
+		
+		[Test]
+		public void PageFooter_From_PageEnd_Uppward()
+		{
+			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
+			BaseSection pageFootter = CreateSection();
+
+			sectionBounds.MeasurePageFooter(pageFootter);
+			int top = sectionBounds.MarginBounds.Bottom - pageFootter.Size.Height;
+			
+			Assert.That(sectionBounds.PageFooterRectangle.Top,Is.EqualTo(top));
+		}
 		#endregion
 		
 		#region MeasureReportFooter
@@ -169,70 +164,67 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 			Sut.MeasureReportFooter(null);
 		}
 		
+		
 		[Test]
-		public void MeasureReportFooterNoPageFooterCalculated()
+		public void ReportFooter_No_PageFooter_Is_Calculated()
 		{
 			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
-			BaseSection baseSection = new BaseSection();
-			baseSection.Location = new Point (50,50);
-			baseSection.Size = new Size (727,60);
-			sectionBounds.MeasureReportFooter(baseSection);
-			Assert.AreEqual(baseSection.Size.Height ,sectionBounds.ReportFooterRectangle.Size.Height);
-			                			                    
-			Assert.AreEqual(sectionBounds.MarginBounds.Width,
-			                sectionBounds.ReportFooterRectangle.Width);
+			BaseSection reportFootter = CreateSection();
+			sectionBounds.MeasureReportFooter(reportFootter);
+			Size expectedSize = reportFootter.Size;
+			Assert.That(sectionBounds.ReportFooterRectangle.Size,Is.EqualTo(expectedSize));
 		}
 		
-		
+	
 		[Test]
 		public void MeasureReportFooterPageFooterIsCalculated()
 		{
 			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
-			BaseSection baseSection = new BaseSection();
-			baseSection.Location = new Point (50,50);
-			baseSection.Size = new Size (727,60);
-			sectionBounds.MeasurePageFooter(baseSection);
-			sectionBounds.MeasureReportFooter(baseSection);
+			BaseSection pageFootter = CreateSection();
+			BaseSection reportFootter = CreateSection();
 			
-			Assert.AreEqual(baseSection.Size.Height , sectionBounds.ReportFooterRectangle.Size.Height,			               
-			                "ItemsCollection is empty, so Size.Height should be '0'");
-			Assert.AreEqual(sectionBounds.MarginBounds.Width,
-			                sectionBounds.ReportFooterRectangle.Width);
+			sectionBounds.MeasurePageFooter(pageFootter);			
+			sectionBounds.MeasureReportFooter(reportFootter);
+			
+			int top = sectionBounds.MarginBounds.Bottom - pageFootter.Size.Height - reportFootter.Size.Height -1;
+			Assert.That(sectionBounds.ReportFooterRectangle.Top,Is.EqualTo(top));
+			
 		}
 		#endregion
 		
 		[Test]
-		public void DetailStart ()
+		public void DetailArea_Start_One_Below_PageHeader ()
 		{
-			/*
 			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
-			BaseSection baseSection = new BaseSection();
-			baseSection.Location = new Point (50,50);
-			baseSection.Size = new Size (727,60);
-			sectionBounds.MeasurePageHeader(baseSection);
-			Point p = new Point(sectionBounds.PageHeaderRectangle.Left,sectionBounds.PageHeaderRectangle.Bottom + sectionBounds.Gap	);
-			Assert.AreEqual(p,sectionBounds.DetailStart);
-			*/
+			BaseSection pageHeader = new BaseSection();
+			sectionBounds.MeasurePageHeader(pageHeader);
+			Point p = new Point(sectionBounds.PageHeaderRectangle.Left,sectionBounds.PageHeaderRectangle.Bottom +1	);
+			Assert.That(sectionBounds.DetailArea.Location,Is.EqualTo(p));
 		}
 			
 		[Test]
-		public void DetailEnds ()
+		public void DetailArea_Ends_One_Above_PageFooter()
 		{
-			/*
 			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
-			BaseSection baseSection = new BaseSection();
-			baseSection.Location = new Point (50,50);
-			baseSection.Size = new Size (727,60);
-			sectionBounds.MeasurePageFooter(baseSection);
-			Point p = new Point(sectionBounds.PageFooterRectangle.Left,sectionBounds.PageFooterRectangle.Top - sectionBounds.Gap);
-			Assert.AreEqual(p,sectionBounds.DetailEnds);
-			*/
+			BaseSection pageFooter = new BaseSection();
+			sectionBounds.MeasurePageFooter(pageFooter);
+			Point p = new Point(sectionBounds.PageFooterRectangle.Left,sectionBounds.PageFooterRectangle.Y );
+			Assert.That(sectionBounds.DetailArea.Top + sectionBounds.DetailArea.Height,Is.EqualTo(p.Y));
 		}
+		
 		
 		public override void Setup()
 		{
 			ReportSettings rs = new ReportSettings();
 			Sut = new SectionBounds(rs,false);
+		}
+		
+		BaseSection CreateSection()
+		{
+			var sec = new BaseSection();
+			sec.Location = new Point (50,50);
+			sec.Size = new Size (727,60);
+			return sec;
 		}
 	}
 }

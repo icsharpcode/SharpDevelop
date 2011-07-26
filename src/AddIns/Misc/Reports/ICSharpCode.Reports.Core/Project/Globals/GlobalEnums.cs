@@ -13,7 +13,8 @@ using System.Reflection;
 	/// 	created on - 13.12.2004 09:39:14
 	/// </remarks>
 	/// 
-namespace ICSharpCode.Reports.Core {	
+namespace ICSharpCode.Reports.Core.Globals
+{
 	public sealed class GlobalEnums
 	{
 		private GlobalEnums() {	

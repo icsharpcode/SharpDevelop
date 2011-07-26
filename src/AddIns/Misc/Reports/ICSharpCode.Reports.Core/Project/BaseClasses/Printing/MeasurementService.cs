@@ -17,18 +17,26 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 
 		public static  Size MeasureReportItem(Graphics graphics,IReportItem item)
 		{
+			
 			BaseTextItem textItem = item as BaseTextItem;
-			if (textItem != null) {
+			if (textItem != null)
+			{
 				string str = String.Empty;
 				BaseDataItem dataItem = item as BaseDataItem;
-				if (dataItem != null) {
+				if (dataItem != null)
+				{
 					str = dataItem.DBValue;
-				} else {
+				}
+				else
+				{
 					BaseTextItem it = item as BaseTextItem;
-					if (it != null) {
+					
+					if (it != null)
+					{
 						str = it.Text;
 					}
 				}
+				
 				
 				SizeF sf = graphics.MeasureString(str.TrimEnd(),
 				                                  textItem.Font,
@@ -37,6 +45,5 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			}
 			return item.Size;
 		}
-		
 	}
 }

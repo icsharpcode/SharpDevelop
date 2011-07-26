@@ -11,66 +11,24 @@ namespace ICSharpCode.Reports.Core.Exporter
 	/// </summary>
 	public class TextStyleDecorator:BaseStyleDecorator
 	{
-		private Font font;
-		
-		private StringFormat stringFormat;
-		private StringTrimming stringTrimming;
-		private ContentAlignment contentAlignment;
-		private string dataType;
-		private string formatString;
-		
-		
+
 		public TextStyleDecorator():base()
 		{
 		}
 		
+		public Font Font {get;set;}
 		
-		public Font Font {
-			get {
-				return font;
-			}
-			set {
-				font = value;
-			}
-		}
+		public StringFormat StringFormat {get;set;}
 		
+		public StringTrimming StringTrimming {get;set;}
+			
+		public ContentAlignment ContentAlignment {get;set;}
+			
 		
-		public StringFormat StringFormat {
-			get {
-				return stringFormat;
-			}
-			set {
-				stringFormat = value;
-			}
-		}
+		public string DataType {get;set;}
+	
+		public string FormatString {get;set;}
 		
-		public StringTrimming StringTrimming {
-			get {
-				return stringTrimming;
-			}
-			set {
-				stringTrimming = value;
-			}
-		}
-		
-		public ContentAlignment ContentAlignment {
-			get {
-				return contentAlignment;
-			}
-			set {
-				contentAlignment = value;
-			}
-		}
-		
-		public string DataType {
-			get { return dataType; }
-			set { dataType = value; }
-		}
-		
-		public string FormatString {
-			get { return formatString; }
-			set { formatString = value; }
-		}
-		
+		public System.Windows.Forms.RightToLeft RightToLeft {get;set;}
 	}
 }

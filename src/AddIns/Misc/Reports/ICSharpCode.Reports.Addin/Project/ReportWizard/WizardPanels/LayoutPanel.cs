@@ -5,7 +5,7 @@ using System;
 using System.Drawing;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
-
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
