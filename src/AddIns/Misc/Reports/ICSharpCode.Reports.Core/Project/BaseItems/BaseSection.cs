@@ -148,11 +148,11 @@ namespace ICSharpCode.Reports.Core
 
 //			resultSize.Width = double.IsPositiveInfinity(availableSize.Width) ?
 //				resultSize.Width : availableSize.Width;
-//			
+//
 //			resultSize.Height = double.IsPositiveInfinity(availableSize.Height) ?
 //				resultSize.Height : availableSize.Height;
 			
-				resultSize.Width = double.IsPositiveInfinity(availableSize.Width) ?
+			resultSize.Width = double.IsPositiveInfinity(availableSize.Width) ?
 				resultSize.Width : availableSize.Width;
 			var b = double.IsPositiveInfinity(availableSize.Height);
 			resultSize.Height = double.IsPositiveInfinity(availableSize.Height) ?

@@ -54,15 +54,23 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.ReportingService
 		{
 			if (singlePage.IDataNavigator.CurrentRow > -1)
 			{
-				var dataRow = singlePage.IDataNavigator.GetDataRow;
-				var item = dataRow.Find(variable.VariableName);
-				if (item != null) {
-					retval = item.Value.ToString();
-				} else {
-					retval = GlobalValues.UnkownFunctionMessage(variable.VariableName);
-					WriteLogmessage(variable);
+				try {
+					var dataRow = singlePage.IDataNavigator.GetDataRow;
+					var item = dataRow.Find(variable.VariableName);
+					
+					if (item != null) {
+						retval = item.Value.ToString();
+					} else {
+						retval = GlobalValues.UnkownFunctionMessage(variable.VariableName);
+						WriteLogmessage(variable);
+					}
+					
+					return retval;
+				} catch (Exception e) {
+					Console.WriteLine ("Error in FieldReference.ExtractValueFromSinglePage");
+					Console.WriteLine("IDataNavigator currentrow =  {0} count = {1}",singlePage.IDataNavigator.CurrentRow,singlePage.IDataNavigator.Count);
+					throw e;
 				}
-				return retval;
 			}
 			return variable.VariableName;
 		}

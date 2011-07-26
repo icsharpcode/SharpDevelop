@@ -200,6 +200,8 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
+	
+		#region Fill
 		
 		public override void Fill(int position,ReportItemCollection collection)
 		{
@@ -210,6 +212,11 @@ namespace ICSharpCode.Reports.Core {
             }
 		}
 	
+		public override void Fill(IDataItem item)
+		{
+			FillInternal(Current,item);
+		}
+		
 		
 		private void FillInternal(object fillFrom,IDataItem item)
 		{
@@ -247,67 +254,6 @@ namespace ICSharpCode.Reports.Core {
 				
 			}
 		}
-		
-		/*
-		private void FillInternal(object fillFrom,IDataItem item)
-		{
-			if (item is BaseDataItem)
-			{
-				var retVal = FollowPropertyPath(fillFrom,item.ColumnName);
-				if (retVal != null) {
-					item.DBValue = retVal.ToString();
-				} else {
-					item.DBValue = String.Empty;
-				}
-			}
-			
-			else
-			{
-				//image processing from IList
-				BaseImageItem baseImageItem = item as BaseImageItem;
-				
-				if (baseImageItem != null) {
-					PropertyDescriptor p = this.listProperties.Find(baseImageItem.ColumnName, true);
-					if (p != null) {
-						baseImageItem.Image = p.GetValue(this.Current) as System.Drawing.Image;
-					}
-					return;
-				}
-				
-			}
-		}
-		*/
-		
-		public override void Fill(IDataItem item)
-		{
-			FillInternal(Current,item);
-		}
-		
-		#region PropertyPath from StackOverflow
-	
-		//http://stackoverflow.com/questions/366332/best-way-to-get-sub-properties-using-getproperty
-		
-		/*
-		private static  object FollowPropertyPath(object value, string path)
-		{
-			Type currentType = value.GetType();
-			foreach (string propertyName in path.Split('.'))
-			{
-				
-				PropertyInfo property = currentType.GetProperty(propertyName);
-				
-				if (property != null) {
-					
-					value = property.GetValue(value, null);
-					currentType = property.PropertyType;
-				} else {
-					
-					return WrongColumnName(path);
-				}
-			}
-			return value;
-		}
-		*/
 		
 		#endregion
 			

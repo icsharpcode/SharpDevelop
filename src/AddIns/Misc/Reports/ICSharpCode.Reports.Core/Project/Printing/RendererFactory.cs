@@ -29,7 +29,7 @@ namespace ICSharpCode.Reports.Core
 			
 			if (t.Equals(typeof(BaseRowItem))) {
 //				return new GroupedRowConverter (dataNavigator,singlePage,layouter);
-				Console.WriteLine("render Row");
+//				Console.WriteLine("render Row");
 			}
 			return null;
 		}

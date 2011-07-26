@@ -23,7 +23,6 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		
 		public ExpressionEvaluatorFacade(IPageInfo pageInfo)
 		{
-			Console.WriteLine("Eval-fassade Constr");
 			compiler = new ReportingLanguageCompiler();
 			this.context = new ExpressionContext(null);
 			 context.ResolveUnknownVariable += VariableStore;
@@ -36,17 +35,12 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		public string Evaluate (string expression)
 		{
 			try {
-				
 				string s = EvaluationHelper.ExtractExpressionPart(expression);
+				string r = EvaluationHelper.ExtractResultPart(expression);
 				if (s.Length > 0) {				    
 					this.context.ContextObject = this.SinglePage ;
 					return EvaluateExpression (s);
 				}
-				
-//				if (EvaluationHelper.CanEvaluate(expression)) {
-//					this.context.ContextObject = this.SinglePage;
-//					return EvaluateExpression(expression);
-//				}
 				
 			} catch (Exception e) {
 				expression = e.Message;
@@ -72,22 +66,6 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			return expression;
 		}
 		
-		/*
-		public string Evaluate (string expression, object row)
-		{
-			try {
-				if (EvaluationHelper.CanEvaluate(expression)) {
-					this.context.ContextObject = row;
-					return EvaluateExpression (expression);
-				}
-			} catch (Exception e) {
-				expression = e.Message;
-				WriteLogMessage(e);
-			}
-			
-			return expression;
-		}
-		*/
 		
 		public void Evaluate (IReportExpression expressionItem)
 		{
@@ -100,15 +78,13 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			} else {
 				expr = expressionItem.Text;
 			}
-			
 			expressionItem.Text = Evaluate(expr);
 		}
 		
 		
-		
 		string EvaluateExpression(string expression)
 		{
-            IExpression compiled = compiler.CompileExpression<string>(expression);
+			IExpression compiled = compiler.CompileExpression<string>(expression);
 			if (compiled != null) {
 				return (compiled.Evaluate(context)).ToString();
 			}

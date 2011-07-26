@@ -64,8 +64,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			if (this.EvaluatorFacade == null)
 			{
-				Console.WriteLine ("");
-				Console.WriteLine ("InitNewPage create evaluator");
 				EvaluatorFacade = EvaluationHelper.CreateEvaluator(SinglePage,SinglePage.IDataNavigator);
 			}
 			EvaluatorFacade.SinglePage = this.SinglePage;
@@ -182,7 +180,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (section.Items.Count > 0)
 			{
 				Size sectionSize = section.Size;
-				Console.WriteLine ("BasePager-createEval for {0}",section.Name);
 				IExpressionEvaluatorFacade evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.SinglePage.IDataNavigator);
 
 				Rectangle desiredRectangle = LayoutHelper.CalculateSectionLayout(this.Graphics,section);
@@ -309,40 +306,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (this.Pages.Count == 0) {
 				return;
 			}
-			Console.WriteLine ("FinishRendereing create IExpressionEvaluatorFacade");
-			
-			//IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(this.SinglePage);
-			//Evaluator.SinglePage = this.SinglePage;
 			foreach (ExporterPage page in this.pages)
 			{
 				page.TotalPages = this.Pages.Count;
-//				dataNavigator.Reset();
-//				dataNavigator.MoveNext();
 				page.IDataNavigator = dataNavigator;
 				EvaluatorFacade.SinglePage = page;
 				EvaluateRecursive(EvaluatorFacade,page.Items);
 			}
 		}
 		
-		/*
-		protected  void FinishRendering (IDataNavigator dataNavigator)
-		{
-			if (this.Pages.Count == 0) {
-				return;
-			}
-			Console.WriteLine ("FinishRendereing create IExpressionEvaluatorFacade");
-			
-			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(this.SinglePage);
-			
-			foreach (ExporterPage p in this.pages)
-			{
-				p.TotalPages = this.Pages.Count;
-				p.IDataNavigator = dataNavigator;
-				evaluatorFacade.SinglePage = p;
-				EvaluateRecursive(evaluatorFacade,p.Items);
-			}
-		}
-		*/
 		
 		private static void EvaluateRecursive (IExpressionEvaluatorFacade evaluatorFassade,ExporterCollection items)
 		{

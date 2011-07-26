@@ -110,7 +110,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		
 		#region Properties
-//		public bool Visible {get;set;}
+		public bool Visible {get;set;}
 		
 		public  bool VisibleInReport {get;set;}
 		

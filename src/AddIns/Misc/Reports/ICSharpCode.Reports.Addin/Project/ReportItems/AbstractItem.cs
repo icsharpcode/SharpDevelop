@@ -64,12 +64,8 @@ namespace ICSharpCode.Reports.Addin
 		Description("Draw a Border around the Item")]
 		public bool DrawBorder {get;set;}
 		
-		
 		protected new Size DefaultSize {get;set;}
 			
-		
-		
-		
 		public  bool VisibleInReport {get;set;}
 		
 		#endregion

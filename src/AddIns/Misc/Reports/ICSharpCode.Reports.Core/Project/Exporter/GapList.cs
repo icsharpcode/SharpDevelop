@@ -27,9 +27,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			for (int i = 0; i < section.Items.Count; i++) {
 				GapBetweenItems[i] = CalculateGap(oldItem,section.Items[i]);
 			}
-			for (int i = 0; i < section.Items.Count; i++) {
-				Console.WriteLine(GapBetweenItems[i]);
-			}
 			GapBetweenItems[section.Items.Count] = CalculateLastGap(section);
 		}
 		

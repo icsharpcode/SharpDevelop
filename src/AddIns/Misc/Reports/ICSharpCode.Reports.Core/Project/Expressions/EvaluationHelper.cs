@@ -33,7 +33,6 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				
 				throw new ArgumentNullException("singlePage");
 			}
-			Console.WriteLine ("EvaluationHelper.CreateEvaluator");
 			singlePage.IDataNavigator = dataNavigator;
 			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(singlePage);
 			return evaluatorFacade;
