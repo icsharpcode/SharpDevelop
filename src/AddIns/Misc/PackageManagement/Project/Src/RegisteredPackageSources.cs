@@ -11,16 +11,23 @@ namespace ICSharpCode.PackageManagement
 {
 	public class RegisteredPackageSources : ObservableCollection<PackageSource>
 	{
-		public static readonly string DefaultPackageSourceUrl = "http://go.microsoft.com/fwlink/?LinkID=206669";
+		public static readonly string DefaultPackageSourceUrl = "https://go.microsoft.com/fwlink/?LinkID=206669";
 		public static readonly string DefaultPackageSourceName = "NuGet Official Package Source";
 		
 		public static readonly PackageSource DefaultPackageSource = 
 			new PackageSource(DefaultPackageSourceUrl, DefaultPackageSourceName);
 		
 		public RegisteredPackageSources(IEnumerable<PackageSource> packageSources)
+			: this(packageSources, DefaultPackageSource)
+		{
+		}
+		
+		public RegisteredPackageSources(
+			IEnumerable<PackageSource> packageSources,
+			PackageSource defaultPackageSource)
 		{
 			AddPackageSources(packageSources);
-			AddDefaultPackageSourceIfNoRegisteredPackageSources();
+			AddDefaultPackageSourceIfNoRegisteredPackageSources(defaultPackageSource);
 		}
 		
 		void AddPackageSources(IEnumerable<PackageSource> packageSources)
@@ -30,10 +37,10 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		void AddDefaultPackageSourceIfNoRegisteredPackageSources()
+		void AddDefaultPackageSourceIfNoRegisteredPackageSources(PackageSource defaultPackageSource)
 		{
 			if (HasNoRegisteredPackageSources) {
-				Add(DefaultPackageSource);
+				Add(defaultPackageSource);
 			}
 		}
 		

@@ -31,11 +31,20 @@ using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
+	public interface ICodeEditor
+	{
+		TextDocument Document { get; }
+		
+		void Redraw(ISegment segment, DispatcherPriority priority);
+		
+		event EventHandler DocumentChanged;
+	}
+	
 	/// <summary>
 	/// Integrates AvalonEdit with SharpDevelop.
 	/// Also provides support for Split-View (showing two AvalonEdit instances using the same TextDocument)
 	/// </summary>
-	public class CodeEditor : Grid, IDisposable
+	public class CodeEditor : Grid, IDisposable, ICodeEditor
 	{
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
 		

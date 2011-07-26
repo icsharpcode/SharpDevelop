@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
@@ -30,16 +31,37 @@ namespace ICSharpCode.PackageManagement
 			this.powerShellDetection = powerShellDetection;
 		}
 		
+		public void Run(IEnumerable<ProcessPackageAction> actions)
+		{
+			if (ShouldRunActionsInConsole(actions)) {
+				consolePackageActionRunner.Run(actions);
+			} else {
+				foreach (ProcessPackageAction action in actions) {
+					action.Execute();
+				}
+			}
+		}
+		
+		bool ShouldRunActionsInConsole(IEnumerable<ProcessPackageAction> actions)
+		{
+			foreach (ProcessPackageAction action in actions) {
+				if (ShouldRunActionInConsole(action)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		public void Run(ProcessPackageAction action)
 		{
-			if (RunActionInConsole(action)) {
+			if (ShouldRunActionInConsole(action)) {
 				consolePackageActionRunner.Run(action);
 			} else {
 				action.Execute();
 			}
 		}
 		
-		bool RunActionInConsole(ProcessPackageAction action)
+		bool ShouldRunActionInConsole(ProcessPackageAction action)
 		{
 			if (action.HasPackageScriptsToRun()) {
 				if (powerShellDetection.IsPowerShell2Installed()) {

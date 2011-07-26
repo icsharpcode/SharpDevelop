@@ -715,6 +715,21 @@
 										<Component Guid="47C2A81B-8BC1-4762-BE7F-8989E8DE0703" Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass" DiskId="1">
 											<File Source="..\..\data\templates\file\CSharp\RecentFilesCollection.cs" Name="RecentFilesCollection.cs" Id="RecentFilesCollection.cs" KeyPath="yes" />
 										</Component>
+										<Component Id="CSharpMvcControllerFileTemplate" Guid="93AF3CAF-FA60-4765-9D24-415535A7F1F2" DiskId="1">
+											<File Id="CSharp.Mvc.Controller.xft" Name="CSharp.Mvc.Controller.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.Controller.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcViewContentPageFileTemplate" Guid="04C2BEF8-DB03-4D56-9176-E85529DB6789" DiskId="1">
+											<File Id="CSharp.Mvc.ViewContentPage.xft" Name="CSharp.Mvc.ViewContentPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.ViewContentPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcViewMasterPageFileTemplate" Guid="1482F786-8437-4402-8798-D0EF2664FCB4" DiskId="1">
+											<File Id="CSharp.Mvc.ViewMasterPage.xft" Name="CSharp.Mvc.ViewMasterPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.ViewMasterPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcViewPageFileTemplate" Guid="6C77F3F2-AF84-4927-BD9C-1995D8F30559" DiskId="1">
+											<File Id="CSharp.Mvc.ViewPage.xft" Name="CSharp.Mvc.ViewPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.ViewPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcViewUserControlFileTemplate" Guid="FF8B0A8A-6C11-471E-AAAC-351D8D762973" DiskId="1">
+											<File Id="CSharp.Mvc.ViewUserControl.xft" Name="CSharp.Mvc.ViewUserControl.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.ViewUserControl.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscFileTemplatesFolder" Name="Misc">
 										<Component Guid="F47EE9EB-321F-4D98-A373-BFE2C2D801D0" Id="EmptyHTMLFileTemplate" DiskId="1">
@@ -771,6 +786,21 @@
 											<File Id="VB.WPFUserControl.xft" Name="VB.WPFUserControl.xft" Source="..\..\data\templates\file\VB\VB.WPFUserControl.xft" />
 											<File Id="VB.WPFWindow.xft" Name="VB.WPFWindow.xft" Source="..\..\data\templates\file\VB\VB.WPFWindow.xft" />
 										</Component>
+										<Component Id="VBMvcControllerFileTemplate" Guid="E56644A3-2A6C-4E49-88E2-85EEDA3B0999" DiskId="1">
+											<File Id="VB.Mvc.Controller.xft" Name="VB.Mvc.Controller.xft" Source="..\..\data\templates\file\VB\VB.Mvc.Controller.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcViewContentPageFileTemplate" Guid="D1A45934-F42E-4B69-82CA-FF0769A39268" DiskId="1">
+											<File Id="VB.Mvc.ViewContentPage.xft" Name="VB.Mvc.ViewContentPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.ViewContentPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcViewMasterPageFileTemplate" Guid="014285CD-C24F-4C40-9C31-089C83E09660" DiskId="1">
+											<File Id="VB.Mvc.ViewMasterPage.xft" Name="VB.Mvc.ViewMasterPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.ViewMasterPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcViewPageFileTemplate" Guid="4C6C4367-AC3E-49F3-AA89-2EC2AF5D27C5" DiskId="1">
+											<File Id="VB.Mvc.ViewPage.xft" Name="VB.Mvc.ViewPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.ViewPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcViewUserControlFileTemplate" Guid="A6272501-2DB7-48B5-AF86-7D53016DF29A" DiskId="1">
+											<File Id="VB.Mvc.ViewUserControl.xft" Name="VB.Mvc.ViewUserControl.xft" Source="..\..\data\templates\file\VB\VB.Mvc.ViewUserControl.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 								</Directory>
 								<Directory Id="ProjectTemplatesFolder" Name="project">
@@ -809,6 +839,9 @@
 										<Component Id="CSharpMvcWebProjectTemplate" Guid="82060284-5670-4B2F-8AB0-BE075D09D4BE" DiskId="1">
 											<File Id="CSharp.MvcWebProject.xpt" Name="MvcWebProject.xpt" Source="..\..\data\templates\project\CSharp\MvcWebProject.xpt" KeyPath="yes" />
 										</Component>
+										<Component Id="EmptyCSharpMvcWebProjectTemplate" Guid="3EA7EF3D-F72A-446C-AA21-BA97EF9B321A" DiskId="1">
+											<File Id="Empty.CSharp.MvcWebProject.xpt" Name="EmptyMvcWebProject.xpt" Source="..\..\data\templates\project\CSharp\EmptyMvcWebProject.xpt" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
 										<Component Guid="F9A7F832-6EC8-4B15-A037-146BD028C9D5" Id="MiscProjectTemplates" DiskId="1">
@@ -844,12 +877,23 @@
 										<Component Id="VBMvcWebProjectTemplate" Guid="FBDC313E-FC77-4500-84EC-35F0E19925C1" DiskId="1">
 											<File Id="VB.MvcWebProject.xpt" Name="MvcWebProject.xpt" Source="..\..\data\templates\project\VB\MvcWebProject.xpt" KeyPath="yes" />
 										</Component>
+										<Component Id="EmptyVBMvcWebProjectTemplate" Guid="DCCCBDDE-6F8A-4163-8294-F84E5E76917C" DiskId="1">
+											<File Id="Empty.VB.MvcWebProject.xpt" Name="EmptyMvcWebProject.xpt" Source="..\..\data\templates\project\VB\EmptyMvcWebProject.xpt" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">
 										<File Source="..\..\data\templates\project\ComplexExample.xpt.test" Id="ComplexExample.xpt.test" Name="ComplexExample.xpt.test" />
 									</Component>
 									<Component Guid="56D8230D-F249-4BC8-A2A3-0BC800F29253" Id="AddInWritingHelp" DiskId="1">
 										<File Source="..\..\data\templates\project\AddInWritingHelp.txt" Id="AddInWritingHelp.txt" Name="AddInWritingHelp.txt" />
+									</Component>
+								</Directory>
+								<Directory Id="ProjectTemplatePackages" Name="packages">
+									<Component Id="JQuery161NuGetPackage" Guid="E3651407-A9CF-4CE9-8603-1C9ABA7ED173" DiskId="1">
+										<File Id="jQuery.1.6.1.nupkg" Name="jQuery.1.6.1.nupkg" Source="..\..\data\templates\packages\jQuery.1.6.1.nupkg" KeyPath="yes" />
+									</Component>
+									<Component Id="Modernizr17NuGetPackage" Guid="0913F3F6-C4A6-4E3C-B80D-CA61A91E0213" DiskId="1">
+										<File Id="Modernizr.1.7.nupkg" Name="Modernizr.1.7.nupkg" Source="..\..\data\templates\packages\Modernizr.1.7.nupkg" KeyPath="yes" />
 									</Component>
 								</Directory>
 							</Directory>
@@ -1366,12 +1410,23 @@
 										<File Id="EmptySettingsFile.xft" Name="EmptySettingsFile.xft" Source="..\..\AddIns\DisplayBindings\SettingsEditor\EmptySettingsFile.xft" />
 									</Component>
 								</Directory>
+								<Directory Id="Decompiler" Name="Decompiler">
+									<Component Id="ILSpyAddInFiles" Guid="F1422563-5927-4D98-B4D4-33FE5576C665" DiskId="1">
+										<File Id="ILSpyAddIn.dll" Name="ILSpyAddIn.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.dll" KeyPath="yes" />
+										<File Id="ILSpyAddIn.addin" Name="ILSpyAddIn.addin" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.addin" />
+										<File Id="NRefactory.dll" Name="NRefactory.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.NRefactory.dll" />
+										<File Id="ICSharpCode.NewNRefactory.dll" Name="ICSharpCode.NewNRefactory.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.NewNRefactory.dll" />
+										<File Id="ICSharpCode.Decompiler.dll" Name="ICSharpCode.Decompiler.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.Decompiler.dll" />
+									</Component>
+								</Directory>
 							</Directory>
 							<Directory Id="DebuggerFolder" Name="Debugger">
 								<Component Guid="27C66A5A-0149-45F4-B1AF-C320FE005E6B" Id="DebuggerAddInFiles" DiskId="1">
 									<File Source="..\..\AddIns\Debugger\Debugger.AddIn.addin" Id="Debugger.AddIn.addin" Name="Debugger.AddIn.addin" />
 									<File Source="..\..\AddIns\Debugger\Debugger.AddIn.dll" Id="Debugger.AddIn.dll" Name="Debugger.AddIn.dll" />
 									<File Source="..\..\AddIns\Debugger\Debugger.Core.dll" Id="Debugger.Core.dll" Name="Debugger.Core.dll" />
+									<File Source="..\..\AddIns\Debugger\ICSharpCode.NewNRefactory.dll" Id="Debugger.ICSharpCode.NewNRefactory.dll" Name="ICSharpCode.NewNRefactory.dll" />
+									<File Source="..\..\AddIns\Debugger\ICSharpCode.Decompiler.dll" Id="Debugger.ICSharpCode.Decompiler.dll" Name="ICSharpCode.Decompiler.dll" />
 								</Component>
 							</Directory>
 							<Directory Id="MiscAddInsFolder" Name="Misc">
@@ -1513,12 +1568,6 @@
 										<File Source="..\..\AddIns\Misc\SharpDevelopReports\itextsharp.dll" Name="itextsharp.dll" Id="itextsharp.dll" KeyPath="yes" />
 									</Component>
 								</Directory>
-								<Directory Id="ILSpyAddIn" Name="ILSpyAddIn">
-									<Component Id="ILSpyAddInFiles" Guid="F1422563-5927-4D98-B4D4-33FE5576C665" DiskId="1">
-										<File Id="ILSpyAddIn.dll" Name="ILSpyAddIn.dll" Source="..\..\AddIns\Misc\ILSpyAddIn\ILSpyAddIn.dll" KeyPath="yes" />
-										<File Id="ILSpyAddIn.addin" Name="ILSpyAddIn.addin" Source="..\..\AddIns\Misc\ILSpyAddIn\ILSpyAddIn.addin" />
-									</Component>
-								</Directory>
 								<Directory Id="PackageManagement" Name="PackageManagement">
 									<Component Id="NuGetCoreDll" Guid="AA347D26-712F-4BF7-BB74-517F6BFC563F" DiskId="1">
 										<File Id="NuGet.Core.dll" Name="NuGet.Core.dll" Source="..\..\AddIns\Misc\PackageManagement\NuGet.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.Core.dll" AssemblyManifest="NuGet.Core.dll" />
@@ -1549,6 +1598,25 @@
 									<Component Id="PackageManagementPowerShellDll" Guid="78A57EFC-EB7D-4982-A6DA-42F061BCA2D2" DiskId="1">
 										<File Id="PackageManagement.PowerShell.dll" Name="PackageManagement.PowerShell.dll" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.PowerShell.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.PowerShell.dll" AssemblyManifest="PackageManagement.PowerShell.dll" />
 									</Component>
+								</Directory>
+								<Directory Id="TextTemplating" Name="TextTemplating">
+									<Component Id="MonoTextTemplatingDll" Guid="07BFBED7-FC7B-4CF3-BD00-DCA8E8E7C17B" DiskId="1">
+										<File Id="Mono.TextTemplating.dll" Name="Mono.TextTemplating.dll" Source="..\..\AddIns\Misc\TextTemplating\Mono.TextTemplating.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Mono.TextTemplating.dll" AssemblyManifest="Mono.TextTemplating.dll" />
+									</Component>
+									<Component Id="TextTemplatingAddin" Guid="4641009D-3B33-4D5D-8910-48543211BAD1" DiskId="1">
+										<File Id="TextTemplating.addin" Name="TextTemplating.addin" Source="..\..\AddIns\Misc\TextTemplating\TextTemplating.addin" KeyPath="yes" />
+									</Component>
+									<Component Id="TextTemplatingDll" Guid="EB7774C9-9C60-46F5-95C1-17D86E743F83" DiskId="1">
+										<File Id="TextTemplating.dll" Name="TextTemplating.dll" Source="..\..\AddIns\Misc\TextTemplating\TextTemplating.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="TextTemplating.dll" AssemblyManifest="TextTemplating.dll" />
+									</Component>
+									<Directory Id="TextTemplatingTemplates" Name="Templates">
+										<Component Id="CSharpTextTemplateFileTemplate" Guid="D271B972-2CBB-4615-9D35-23F75969CA9B" DiskId="1">
+											<File Id="CSharp.TextTemplate.xft" Name="CSharp.TextTemplate.xft" Source="..\..\AddIns\Misc\TextTemplating\Templates\CSharp.TextTemplate.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBTextTemplateFileTemplate" Guid="21E9FFAB-491C-48A4-BD3D-41E596C50D66" DiskId="1">
+											<File Id="VB.TextTemplate.xft" Name="VB.TextTemplate.xft" Source="..\..\AddIns\Misc\TextTemplating\Templates\VB.TextTemplate.xft" KeyPath="yes" />
+										</Component>
+									</Directory>
 								</Directory>
 							</Directory>
 							<Directory Id="VersionControlAddInsFolder" Name="VersionControl">

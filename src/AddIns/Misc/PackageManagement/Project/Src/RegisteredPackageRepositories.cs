@@ -15,11 +15,6 @@ namespace ICSharpCode.PackageManagement
 		PackageSource activePackageSource;
 		IPackageRepository activePackageRepository;
 		
-		public RegisteredPackageRepositories(PackageManagementOptions options)
-			: this(new PackageRepositoryCache(options.PackageSources, options.RecentPackages), options)
-		{
-		}
-		
 		public RegisteredPackageRepositories(
 			IPackageRepositoryCache repositoryCache,
 			PackageManagementOptions options)
@@ -35,7 +30,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IPackageRepository CreateRepository(PackageSource source)
 		{
-			return repositoryCache.CreateRepository(source);
+			return repositoryCache.CreateRepository(source.Source);
 		}
 		
 		public IPackageRepository CreateAggregateRepository()
@@ -81,10 +76,10 @@ namespace ICSharpCode.PackageManagement
 		
 		void CreateActiveRepository()
 		{
-			if (ActivePackageSource.IsAggregate) {
+			if (ActivePackageSource.IsAggregate()) {
 				activePackageRepository = CreateAggregateRepository();
 			} else {
-				activePackageRepository = repositoryCache.CreateRepository(ActivePackageSource);
+				activePackageRepository = repositoryCache.CreateRepository(ActivePackageSource.Source);
 			}
 		}
 	}

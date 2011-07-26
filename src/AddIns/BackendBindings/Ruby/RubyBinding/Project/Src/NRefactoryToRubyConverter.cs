@@ -401,7 +401,13 @@ namespace ICSharpCode.RubyBinding
 			expressionStatement.Expression.AcceptVisitor(this, data);
 			AppendLine();
 			return null;
-		}		
+		}
+		
+		public override object TrackedVisitExitStatement(ExitStatement exitStatement, object data)
+		{
+			AppendIndentedLine("break");
+			return null;
+		}
 		
 		public override object TrackedVisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
@@ -457,7 +463,43 @@ namespace ICSharpCode.RubyBinding
 			
 			return null;
 		}
-
+		
+		public override object TrackedVisitForNextStatement(ForNextStatement forNextStatement, object data)
+		{
+			// Convert the for loop's initializers.
+			string variableName = forNextStatement.VariableName;
+			AppendIndented(variableName);
+			Append(" = ");
+			forNextStatement.Start.AcceptVisitor(this, data);
+			AppendLine();
+			
+			// Convert the for loop's test expression.
+			AppendIndented("while ");
+			Append(variableName);
+			Append(" <= ");
+			forNextStatement.End.AcceptVisitor(this, data);
+			AppendLine();
+			
+			// Visit the for loop's body.
+			IncreaseIndent();
+			forNextStatement.EmbeddedStatement.AcceptVisitor(this, data);
+			
+			// Convert the for loop's increment statement.
+			AppendIndented(variableName);
+			Append(" = ");
+			Append(variableName);
+			Append(" + ");
+			if (forNextStatement.Step.IsNull) {
+				Append("1");
+			} else {
+				forNextStatement.Step.AcceptVisitor(this, data);
+			}
+			AppendLine();
+			DecreaseIndent();
+			AppendIndentedLine("end");
+			
+			return null;
+		}
 		
 		public override object TrackedVisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
@@ -558,15 +600,17 @@ namespace ICSharpCode.RubyBinding
 		/// </summary>
 		public override object TrackedVisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
-			VariableDeclaration variableDeclaration = localVariableDeclaration.Variables[0];
-			if (!variableDeclaration.Initializer.IsNull) {
-
-				// Create variable declaration.
-				AppendIndented(variableDeclaration.Name + " = ");
-				
-				// Generate the variable initializer.
-				variableDeclaration.Initializer.AcceptVisitor(this, data);
-				AppendLine();
+			foreach (VariableDeclaration variableDeclaration in localVariableDeclaration.Variables) {
+				if (!variableDeclaration.Initializer.IsNull) {
+	
+					// Create variable declaration.
+					AppendIndented(variableDeclaration.Name + " = ");
+					
+					// Generate the variable initializer.
+					AddTypeToArrayInitializerIfMissing(variableDeclaration);
+					variableDeclaration.Initializer.AcceptVisitor(this, data);
+					AppendLine();
+				}
 			}
 			return null;
 		}
@@ -603,7 +647,6 @@ namespace ICSharpCode.RubyBinding
 			AppendLine();
 			
 			IncreaseIndent();
-//			AppendDocstring(xmlDocComments);
 			if (methodDeclaration.Body.Children.Count > 0) {
 				methodDeclaration.Body.AcceptVisitor(this, data);
 			}			
@@ -828,7 +871,6 @@ namespace ICSharpCode.RubyBinding
 			AppendBaseTypes(typeDeclaration.BaseTypes);
 			AppendLine();
 			IncreaseIndent();
-//			AppendDocstring(xmlDocComments);
 			if (typeDeclaration.Children.Count > 0) {
 				// Look for fields or a constructor for the type.
 				constructorInfo = RubyConstructorInfo.GetConstructorInfo(typeDeclaration);
@@ -987,8 +1029,10 @@ namespace ICSharpCode.RubyBinding
 			// Check the current class's fields.
 			if (constructorInfo != null) {
 				foreach (FieldDeclaration field in constructorInfo.Fields) {
-					if (field.Fields[0].Name == name) {
-						return true;
+					foreach (VariableDeclaration variable in field.Fields) {
+						if (variable.Name == name) {
+							return true;
+						}
 					}
 				}
 			}
@@ -1183,13 +1227,9 @@ namespace ICSharpCode.RubyBinding
 			
 			// Add fields at start of constructor.
 			IncreaseIndent();
-//			AppendDocstring(xmlDocComments);
 			if (constructorInfo.Fields.Count > 0) {
 				foreach (FieldDeclaration field in constructorInfo.Fields) {
-					// Ignore field if it has no initializer.
-					if (FieldHasInitialValue(field)) {
-						CreateFieldInitialization(field);
-					}
+					CreateFieldInitialization(field);
 				}
 			}
 			
@@ -1217,20 +1257,41 @@ namespace ICSharpCode.RubyBinding
 		/// Checks that the field declaration has an initializer that
 		/// sets an initial value.
 		/// </summary>
-		static bool FieldHasInitialValue(FieldDeclaration fieldDeclaration)
+		static bool FieldHasInitialValue(VariableDeclaration variableDeclaration)
 		{
-			VariableDeclaration variableDeclaration = fieldDeclaration.Fields[0];
 			Expression initializer = variableDeclaration.Initializer;
 			return !initializer.IsNull;
 		}
 		
 		void CreateFieldInitialization(FieldDeclaration field)
 		{
-			VariableDeclaration variable = field.Fields[0];
-			string oldVariableName = variable.Name;
-			variable.Name = "@" + variable.Name;
-			VisitVariableDeclaration(variable, null);
-			variable.Name = oldVariableName;
+			foreach (VariableDeclaration variable in field.Fields) {
+				// Ignore field if it has no initializer.
+				if (FieldHasInitialValue(variable)) {
+					AddTypeToArrayInitializerIfMissing(variable);
+					
+					string oldVariableName = variable.Name;
+					variable.Name = "@" + variable.Name;
+					VisitVariableDeclaration(variable, null);
+					variable.Name = oldVariableName;
+				}
+			}
+		}
+		
+		void AddTypeToArrayInitializerIfMissing(VariableDeclaration variable)
+		{
+			ArrayCreateExpression arrayCreate = variable.Initializer as ArrayCreateExpression;
+			if (IsArrayMissingTypeToCreate(arrayCreate)) {
+				arrayCreate.CreateType = variable.TypeReference;
+			}
+		}
+		
+		bool IsArrayMissingTypeToCreate(ArrayCreateExpression arrayCreate)
+		{
+			if (arrayCreate != null) {
+				return String.IsNullOrEmpty(arrayCreate.CreateType.Type);
+			}
+			return false;
 		}
 		
 		/// <summary>

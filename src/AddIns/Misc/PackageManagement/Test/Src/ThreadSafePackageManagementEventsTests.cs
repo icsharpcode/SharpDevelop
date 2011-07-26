@@ -67,7 +67,7 @@ namespace PackageManagement.Tests
 			var expectedPackages = new List<IPackage>();
 			bool result = threadSafeEvents.OnAcceptLicenses(expectedPackages);
 			
-			IEnumerable<IPackage> packages = fakeEvents.PackagesPassedToOnAcceptLicenses;
+			IEnumerable<IPackage> packages = fakeEvents.LastPackagesPassedToOnAcceptLicenses;
 			
 			Assert.AreEqual(expectedPackages, packages);
 		}
@@ -76,7 +76,7 @@ namespace PackageManagement.Tests
 		public void OnAcceptLicenses_NoInvokeRequired_NonThreadSafeOnAcceptLicensesMethodCalledAndReturnsResult()
 		{
 			CreateEvents();
-			fakeEvents.AcceptLicensesReturnValue = false;
+			fakeEvents.OnAcceptLicensesReturnValue = false;
 			bool result = threadSafeEvents.OnAcceptLicenses(null);
 			
 			Assert.IsFalse(result);
@@ -401,6 +401,55 @@ namespace PackageManagement.Tests
 			
 			threadSafeEvents.Dispose();
 			unsafeEvents.OnParentPackageUninstalled(new FakePackage());
+			
+			Assert.IsFalse(eventHandlerFired);
+		}
+		
+		[Test]
+		public void OnSelectProjects_NoInvokeRequired_NonThreadSafeOnSelectProjectsMethodCalled()
+		{
+			CreateEvents();
+			var expectedSelectedProjects = new List<IPackageManagementSelectedProject>();
+			bool result = threadSafeEvents.OnSelectProjects(expectedSelectedProjects);
+			
+			IEnumerable<IPackageManagementSelectedProject> selectedProjects = 
+				fakeEvents.SelectedProjectsPassedToOnSelectProjects;
+			
+			Assert.AreEqual(expectedSelectedProjects, selectedProjects);
+		}
+		
+		[Test]
+		public void OnSelectLicenses_NoInvokeRequired_NonThreadSafeOnSelectProjectsMethodCalledAndReturnsResult()
+		{
+			CreateEvents();
+			fakeEvents.OnSelectProjectsReturnValue = true;
+			var projects = new List<IPackageManagementSelectedProject>();
+			bool result = threadSafeEvents.OnSelectProjects(projects);
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void SelectProjects_UnsafeEventFired_ThreadSafeEventFired()
+		{
+			CreateEventsWithRealPackageManagementEvents();
+			bool fired = false;
+			threadSafeEvents.SelectProjects += (sender, e) => fired = true;
+			var projects = new List<IPackageManagementSelectedProject>();
+			unsafeEvents.OnSelectProjects(projects);
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void SelectProjects_UnsafeEventFiredAfterEventHandlerRemoved_ThreadSafeEventIsNotFired()
+		{
+			CreateEventsWithRealPackageManagementEvents();
+			eventHandlerFired = false;
+			threadSafeEvents.SelectProjects += OnEventHandlerFired;
+			threadSafeEvents.SelectProjects -= OnEventHandlerFired;
+			var projects = new List<IPackageManagementSelectedProject>();
+			unsafeEvents.OnSelectProjects(projects);
 			
 			Assert.IsFalse(eventHandlerFired);
 		}

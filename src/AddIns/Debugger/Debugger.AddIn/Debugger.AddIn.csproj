@@ -98,6 +98,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Options\DebuggingOptionsPanel.xaml.cs">
+      <DependentUpon>DebuggingOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Pads\CallStackPad.xaml.cs">
       <DependentUpon>CallStackPad.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -144,12 +148,6 @@
     <Compile Include="IsActiveBreakpointCondition.cs" />
     <Compile Include="IsBreakpointCondition.cs" />
     <Compile Include="Options\DebuggingOptions.cs" />
-    <Compile Include="Options\DebuggingOptionsPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Options\DebuggingOptionsPanel.Designer.cs">
-      <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="Options\DebuggingSymbolsPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -254,7 +252,6 @@
     <Compile Include="Visualizers\Graph\Layout\TreeModel\ContentNode.cs" />
     <Compile Include="Visualizers\Graph\Layout\TreeModel\ContentNodeEventArgs.cs" />
     <Compile Include="Visualizers\Graph\Layout\TreeModel\ContentPropertyNode.cs" />
-    <Compile Include="Visualizers\Graph\NodeControlCache.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraphControl.xaml.cs">
       <DependentUpon>ObjectGraphControl.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -291,9 +288,6 @@
     <Compile Include="Service\RemotingConfigurationHelpper.cs" />
     <Compile Include="Service\RunToCursorCommand.cs" />
     <Compile Include="Service\WindowsDebugger.cs" />
-    <EmbeddedResource Include="Options\DebuggingOptionsPanel.resx">
-      <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Options\DebuggingSymbolsPanel.resx">
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -359,6 +353,15 @@
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
+      <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
+      <Name>ICSharpCode.Decompiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\Mono.Cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -393,6 +396,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Options\DebuggingOptionsPanel.xaml" />
     <Page Include="Pads\CallStackPad.xaml" />
     <Page Include="Pads\Controls\ConditionCell.xaml" />
     <Page Include="Pads\Controls\SimpleListViewControl.xaml" />

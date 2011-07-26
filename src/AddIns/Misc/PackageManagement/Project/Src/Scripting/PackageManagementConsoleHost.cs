@@ -250,5 +250,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			ScriptingConsole.SendLine(command);
 		}
+		
+		public IPackageRepository GetPackageRepository(PackageSource packageSource)
+		{
+			return registeredRepositories.CreateRepository(packageSource);
+		}
 	}
 }

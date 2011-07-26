@@ -42,11 +42,14 @@ namespace PackageManagement.Tests
 			
 			fakePackageOperationResolverFactory = new FakePackageOperationResolverFactory();
 			
+			var fakeSolutionPackageRepository = new FakeSolutionPackageRepository();
+			fakeSolutionPackageRepository.FileSystem = fakeFileSystem;
+			fakeSolutionPackageRepository.PackagePathResolver = pathResolver;
+			fakeSolutionPackageRepository.FakeSharedRepository = fakeSolutionSharedRepository;
+			
 			packageManager = new SharpDevelopPackageManager(fakeFeedSourceRepository,
 				packageRefRepositoryHelper.FakeProjectSystem,
-				fakeFileSystem,
-				fakeSolutionSharedRepository,
-				pathResolver,
+				fakeSolutionPackageRepository,
 				fakePackageOperationResolverFactory);
 		}
 		
@@ -165,7 +168,7 @@ namespace PackageManagement.Tests
 		
 		PackageOperation CreateOneInstallPackageOperation()
 		{
-			var package = CreateFakePackage();
+			FakePackage package = CreateFakePackage();
 			package.Id = "PackageToInstall";
 			
 			return new PackageOperation(package, PackageAction.Install);
@@ -250,7 +253,7 @@ namespace PackageManagement.Tests
 		public void InstallPackage_PackageInstancePassed_AddsReferenceToProject()
 		{
 			CreatePackageManager();
-			var package = InstallPackage();
+			FakePackage package = InstallPackage();
 			
 			Assert.AreEqual(package, testableProjectManager.PackagePassedToAddPackageReference);
 		}
@@ -322,7 +325,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackageManager();
 			CreateTestableProjectManager();
-			var package = InstallPackageAndIgnoreDependencies();
+			FakePackage package = InstallPackageAndIgnoreDependencies();
 			
 			Assert.AreEqual(package, testableProjectManager.PackagePassedToAddPackageReference);
 		}
@@ -342,7 +345,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackageManager();
 			CreateTestableProjectManager();
-			var package = InstallPackageAndDoNotIgnoreDependencies();
+			FakePackage package = InstallPackageAndDoNotIgnoreDependencies();
 			
 			Assert.AreEqual(package, testableProjectManager.PackagePassedToAddPackageReference);
 		}
@@ -352,7 +355,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackageManager();
 			CreateTestableProjectManager();
-			var package = UninstallPackage();
+			FakePackage package = UninstallPackage();
 			
 			Assert.AreEqual(package.Id, testableProjectManager.PackagePassedToRemovePackageReference.Id);
 		}
@@ -420,13 +423,55 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void UninstallPackage_PackageReferencedByNoProjects_PackageIsRemovedFromSharedSolutionRepository()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			
+			FakePackage package = CreateFakePackage();
+			package.Id = "MyPackageId";
+			
+			testableProjectManager.FakeLocalRepository.FakePackages.Add(package);
+			fakeSolutionSharedRepository.FakePackages.Add(package);
+
+			packageManager.UninstallPackage(package);
+			
+			bool containsPackage = fakeSolutionSharedRepository.FakePackages.Contains(package);
+			
+			Assert.IsFalse(containsPackage);
+		}
+		
+		[Test]
+		public void UninstallPackage_PackageReferencedByTwoProjects_PackageIsNotRemovedFromSharedSolutionRepository()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			
+			FakePackage package = CreateFakePackage();
+			package.Id = "MyPackageId";
+			package.Version = new Version("1.4.5.2");
+			
+			testableProjectManager.FakeLocalRepository.FakePackages.Add(package);
+			fakeSolutionSharedRepository.FakePackages.Add(package);
+			fakeSolutionSharedRepository.PackageIdsReferences.Add("MyPackageId");
+
+			packageManager.UninstallPackage(package);
+			
+			bool containsPackage = fakeSolutionSharedRepository.FakePackages.Contains(package);
+			
+			Assert.IsTrue(containsPackage);
+			Assert.AreEqual("MyPackageId", fakeSolutionSharedRepository.PackageIdPassedToIsReferenced);
+			Assert.AreEqual(package.Version, fakeSolutionSharedRepository.VersionPassedToIsReferenced);
+		}
+		
+		[Test]
 		public void GetInstallPackageOperations_PackageOperationResolverFactoryUsed_PackageOperationsReturnedFromPackageOperationsResolverCreated()
 		{
 			CreatePackageManager();
 			var package = new FakePackage();			
-			var operations = GetInstallPackageOperations(package);
+			IEnumerable<PackageOperation> operations = GetInstallPackageOperations(package);
 			
-			var expectedOperations = fakePackageOperationResolverFactory.FakeInstallPackageOperationResolver.PackageOperations;
+			IEnumerable<PackageOperation> expectedOperations = fakePackageOperationResolverFactory.FakeInstallPackageOperationResolver.PackageOperations;
 			
 			Assert.AreEqual(expectedOperations, operations);
 		}
@@ -438,8 +483,8 @@ namespace PackageManagement.Tests
 			var package = new FakePackage();
 			GetInstallPackageOperations(package);
 			
-			var expectedRepository = packageManager.LocalRepository;
-			var actualRepository = fakePackageOperationResolverFactory.LocalRepositoryPassedToCreateInstallPackageOperationsResolver;
+			IPackageRepository expectedRepository = packageManager.LocalRepository;
+			IPackageRepository actualRepository = fakePackageOperationResolverFactory.LocalRepositoryPassedToCreateInstallPackageOperationsResolver;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
 		}
@@ -451,8 +496,8 @@ namespace PackageManagement.Tests
 			var package = new FakePackage();
 			GetInstallPackageOperations(package);
 			
-			var expectedRepository = packageManager.SourceRepository;
-			var actualRepository = fakePackageOperationResolverFactory.SourceRepositoryPassedToCreateInstallPackageOperationsResolver;
+			IPackageRepository expectedRepository = packageManager.SourceRepository;
+			IPackageRepository actualRepository = fakePackageOperationResolverFactory.SourceRepositoryPassedToCreateInstallPackageOperationsResolver;
 			
 			Assert.AreEqual(expectedRepository, actualRepository);
 		}
@@ -464,7 +509,7 @@ namespace PackageManagement.Tests
 			var package = new FakePackage();
 			GetInstallPackageOperations(package);
 			
-			var result = fakePackageOperationResolverFactory.IgnoreDependenciesPassedToCreateInstallPackageOperationResolver;
+			bool result = fakePackageOperationResolverFactory.IgnoreDependenciesPassedToCreateInstallPackageOperationResolver;
 			
 			Assert.IsFalse(result);
 		}
@@ -476,8 +521,8 @@ namespace PackageManagement.Tests
 			var package = new FakePackage();
 			GetInstallPackageOperations(package);
 			
-			var expectedLogger = packageManager.Logger;
-			var actualLogger = fakePackageOperationResolverFactory.LoggerPassedToCreateInstallPackageOperationResolver;
+			ILogger expectedLogger = packageManager.Logger;
+			ILogger actualLogger = fakePackageOperationResolverFactory.LoggerPassedToCreateInstallPackageOperationResolver;
 			
 			Assert.AreEqual(expectedLogger, actualLogger);
 		}
@@ -489,7 +534,7 @@ namespace PackageManagement.Tests
 			var package = new FakePackage();
 			GetInstallPackageOperations(package);
 			
-			var actualPackage = fakePackageOperationResolverFactory
+			IPackage actualPackage = fakePackageOperationResolverFactory
 				.FakeInstallPackageOperationResolver
 				.PackagePassedToResolveOperations;
 			
@@ -512,7 +557,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackageManager();
 			CreateTestableProjectManager();
-			var package = UpdatePackageWithNoPackageOperations();
+			FakePackage package = UpdatePackageWithNoPackageOperations();
 			
 			Assert.AreEqual(package, testableProjectManager.PackagePassedToUpdatePackageReference);
 		}
@@ -522,7 +567,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackageManager();
 			CreateTestableProjectManager();
-			var package = UpdatePackageWithNoPackageOperations();
+			FakePackage package = UpdatePackageWithNoPackageOperations();
 			
 			Assert.IsTrue(testableProjectManager.UpdateDependenciesPassedToUpdatePackageReference);
 		}

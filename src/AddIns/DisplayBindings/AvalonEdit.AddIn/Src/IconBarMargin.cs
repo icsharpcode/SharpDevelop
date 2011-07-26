@@ -11,7 +11,10 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
+using Mono.Cecil;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -20,9 +23,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public class IconBarMargin : AbstractMargin, IDisposable
 	{
-		readonly IconBarManager manager;
+		readonly IBookmarkMargin manager;
 		
-		public IconBarMargin(IconBarManager manager)
+		public IconBarMargin(IBookmarkMargin manager)
 		{
 			if (manager == null)
 				throw new ArgumentNullException("manager");
@@ -232,7 +235,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					// no bookmark on the line: create a new breakpoint
 					ITextEditor textEditor = TextView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
 					if (textEditor != null) {
-						ICSharpCode.SharpDevelop.Debugging.DebuggerService.ToggleBreakpointAt(textEditor, line);
+						DebuggerService.ToggleBreakpointAt(textEditor, line);
+						return;
+					}
+					// create breakpoint for the decompiled content
+					dynamic viewContent = WorkbenchSingleton.Workbench.ActiveContent;
+					if (viewContent is AbstractViewContentWithoutFile) {
+						dynamic codeView = ((AbstractViewContentWithoutFile)viewContent).Control;
+						var editor = codeView.TextEditor as ITextEditor;
+						var memberReference = viewContent.MemberReference as MemberReference;
+						if (editor != null && !string.IsNullOrEmpty(editor.FileName))
+							DebuggerService.ToggleBreakpointAt(memberReference, editor, line);
 					}
 				}
 			}

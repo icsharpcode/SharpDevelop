@@ -10,6 +10,7 @@ using Debugger.AddIn.Visualizers.Graph;
 using Debugger.MetaData;
 using ICSharpCode.SharpDevelop.Debugging;
 using Debugger.AddIn.Visualizers.Utils;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers
 {
@@ -36,10 +37,6 @@ namespace Debugger.AddIn.Visualizers
 		{
 		}
 		
-		public override bool CanExecute { 
-			get { return true; }
-		}
-		
 		public override string ToString()
 		{
 			return "Object graph visualizer";
@@ -47,10 +44,10 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
-			if (this.Expression != null) {
-				var objectGraphWindow = ObjectGraphWindow.EnsureShown();
-				objectGraphWindow.ShownExpression = this.Expression;
-			}
+			if (this.Expression == null)
+				return;
+			var objectGraphWindow = ObjectGraphWindow.EnsureShown();
+			objectGraphWindow.ShownExpression = this.Expression;
 		}
 	}
 }

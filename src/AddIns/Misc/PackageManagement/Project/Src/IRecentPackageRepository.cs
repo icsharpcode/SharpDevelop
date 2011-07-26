@@ -9,5 +9,6 @@ namespace ICSharpCode.PackageManagement
 	public interface IRecentPackageRepository : IPackageRepository
 	{
 		void Clear();
+		bool HasRecentPackages { get; }
 	}
 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using NuGet;
 
@@ -13,6 +14,7 @@ namespace PackageManagement.Tests.Helpers
 		#pragma warning disable 0067
 		public event EventHandler PackageOperationsStarting;
 		public event EventHandler<AcceptLicensesEventArgs> AcceptLicenses;
+		public event EventHandler<SelectProjectsEventArgs> SelectProjects;
 		public event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
@@ -33,22 +35,27 @@ namespace PackageManagement.Tests.Helpers
 			ExceptionPassedToOnPackageOperationError = ex;
 		}
 		
-		public IEnumerable<IPackage> PackagesPassedToOnAcceptLicenses;
+		public IEnumerable<IPackage> LastPackagesPassedToOnAcceptLicenses;
 		public bool IsOnAcceptLicensesCalled;
-		public bool AcceptLicensesReturnValue;
+		public bool OnAcceptLicensesReturnValue;
+		public List<IEnumerable<IPackage>> PackagesPassedToAcceptLicenses = 
+			new List<IEnumerable<IPackage>>();
 		
 		public bool OnAcceptLicenses(IEnumerable<IPackage> packages)
 		{
-			PackagesPassedToOnAcceptLicenses = packages;
+			LastPackagesPassedToOnAcceptLicenses = packages;
+			PackagesPassedToAcceptLicenses.Add(packages);
 			IsOnAcceptLicensesCalled = true;
-			return AcceptLicensesReturnValue;
+			return OnAcceptLicensesReturnValue;
 		}
 		
 		public IPackage PackagePassedToOnParentPackageInstalled;
+		public bool IsOnParentPackageInstalledCalled;
 		
 		public void OnParentPackageInstalled(IPackage package)
 		{
 			PackagePassedToOnParentPackageInstalled = package;
+			IsOnParentPackageInstalledCalled = true;
 		}
 		
 		public IPackage PackagePassedToOnParentPackageUninstalled;
@@ -72,6 +79,34 @@ namespace PackageManagement.Tests.Helpers
 		public void Dispose()
 		{
 			IsDisposed = true;
+		}
+		
+		public bool OnSelectProjectsReturnValue;
+		public IEnumerable<IPackageManagementSelectedProject> SelectedProjectsPassedToOnSelectProjects;
+		public bool IsOnSelectProjectsCalled;
+		public List<string> ProjectsToSelect = new List<string>();
+		
+		public bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> selectedProjects)
+		{
+			IsOnSelectProjectsCalled = true;
+			SelectedProjectsPassedToOnSelectProjects = selectedProjects;
+			
+			SetIsSelectedForSelectedProjects(selectedProjects);
+			
+			return OnSelectProjectsReturnValue;
+		}
+		
+		void SetIsSelectedForSelectedProjects(IEnumerable<IPackageManagementSelectedProject> selectedProjects)
+		{
+			if (ProjectsToSelect.Any()) {
+				List<IPackageManagementSelectedProject> selectedProjectsAsList = selectedProjects.ToList();
+				selectedProjectsAsList.ForEach(p => p.IsSelected = ProjectsToSelect.Contains(p.Name));
+			}
+		}
+		
+		public List<IPackage> GetPackagesPassedToOnAcceptLicensesAsList()
+		{
+			return new List<IPackage>(LastPackagesPassedToOnAcceptLicenses);
 		}
 	}
 }

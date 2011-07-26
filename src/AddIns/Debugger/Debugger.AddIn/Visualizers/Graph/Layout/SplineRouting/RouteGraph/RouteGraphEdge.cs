@@ -8,7 +8,7 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
-	/// Edge in the RouteGraph.
+	/// Straight edge in the <see cref="RouteGraph />.
 	/// </summary>
 	public class RouteGraphEdge
 	{

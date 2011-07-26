@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+
+	<Config
+		name="MVC Controller"
+		icon="VBNet.File.NewClass"
+		category="VB"
+		subcategory="ASP.NET MVC"
+		defaultname="Controller${Number}.vb"
+		language="VBNET"/>
+	 
+	<Description>MVC Controller</Description>
+	
+	<Files>
+		<File name="${FullName}" language="VBNET">
+<![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports System.Web.Mvc
+
+Public Class ${ClassName}
+	Inherits Controller
+	
+	Function Index() As ActionResult
+		Return View()
+	End Function
+End Class
+]]>
+		</File>
+	</Files>
+</Template>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+	
+	<Config
+		name="MVC View User Control"
+		icon="C#.File.NewClass"
+		category="C#"
+		subcategory="ASP.NET MVC"
+		defaultname="ViewUserControl${Number}.ascx"
+		language="C#"/>
+	 
+	<Description>MVC View User Control</Description>
+	
+	<Files>
+		<File name="${FullName}" language="C#">
+<![CDATA[<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
+
+]]>
+		</File>
+	</Files>
+</Template>
+

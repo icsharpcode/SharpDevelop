@@ -55,9 +55,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		
 		public override void ActivateItem()
 		{
-			if (c.CompilationUnit != null) {
-				FileService.JumpToFilePosition(c.CompilationUnit.FileName, c.Region.BeginLine, c.Region.BeginColumn);
-			}
+			NavigationService.NavigateTo(c);
 		}
 		
 		protected override void Initialize()

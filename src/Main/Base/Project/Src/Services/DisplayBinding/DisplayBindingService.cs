@@ -82,6 +82,11 @@ namespace ICSharpCode.SharpDevelop
 		public static IDisplayBinding GetBindingPerFileName(string filename)
 		{
 			WorkbenchSingleton.AssertMainThread();
+			if (FileUtility.IsUrl(filename)) {
+				// The normal display binding dispatching code can't handle URLs (e.g. because it uses Path.GetExtension),
+				// so we'll directly return the browser display binding.
+				return new BrowserDisplayBinding.BrowserDisplayBinding();
+			}
 			DisplayBindingDescriptor codon = GetDefaultCodonPerFileName(filename);
 			return codon == null ? null : codon.Binding;
 		}

@@ -4,38 +4,51 @@
 using System;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementViewModels
 	{
-		AddPackageReferenceViewModel addPackageReferenceViewModel;
+		ManagePackagesViewModel managePackagesViewModel;
 		RegisteredPackageSourcesViewModel registeredPackageSourcesViewModel;
+		RegisteredPackageSourcesViewModel registeredProjectTemplatePackageSourcesViewModel;
 		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
 		PackageManagementConsoleViewModel packageManagementConsoleViewModel;
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		
-		public AddPackageReferenceViewModel AddPackageReferenceViewModel {
+		public ManagePackagesViewModel ManagePackagesViewModel {
 			get {
-				CreateAddPackageReferenceViewModel();
-				return addPackageReferenceViewModel;
+				CreateManagePackagesViewModel();
+				return managePackagesViewModel;
 			}
 		}
 		
-		void CreateAddPackageReferenceViewModel()
+		void CreateManagePackagesViewModel()
 		{
 			CreateRegisteredPackageRepositories();
 			CreateSolution();
-			var packageManagementEvents = new ThreadSafePackageManagementEvents(PackageManagementServices.PackageManagementEvents);
-			addPackageReferenceViewModel = 
-				new AddPackageReferenceViewModel(
-					solution,
-					registeredPackageRepositories,
+			ThreadSafePackageManagementEvents packageManagementEvents = CreateThreadSafePackageManagementEvents();
+			PackagesViewModels packagesViewModels = CreatePackagesViewModels(packageManagementEvents);
+
+			managePackagesViewModel = 
+				new ManagePackagesViewModel(
+					packagesViewModels,
+					new ManagePackagesViewTitle(solution),
 					packageManagementEvents,
-					PackageManagementServices.PackageActionRunner,
-					new LicenseAcceptanceService(),
-					new PackageManagementTaskFactory());
+					new ManagePackagesUserPrompts(packageManagementEvents));
+		}
+		
+		void CreateRegisteredPackageRepositories()
+		{
+			if (registeredPackageRepositories == null) {
+				if (IsInDesignMode()) {
+					registeredPackageRepositories = new DesignTimeRegisteredPackageRepositories();
+				} else {
+					registeredPackageRepositories = PackageManagementServices.RegisteredPackageRepositories;
+				}
+			}
 		}
 		
 		void CreateSolution()
@@ -49,15 +62,20 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		void CreateRegisteredPackageRepositories()
+		ThreadSafePackageManagementEvents CreateThreadSafePackageManagementEvents()
 		{
-			if (registeredPackageRepositories == null) {
-				if (IsInDesignMode()) {
-					registeredPackageRepositories = new DesignTimeRegisteredPackageRepositories();
-				} else {
-					registeredPackageRepositories = PackageManagementServices.RegisteredPackageRepositories;
-				}
-			}			
+			return new ThreadSafePackageManagementEvents(
+				PackageManagementServices.PackageManagementEvents);
+		}
+		
+		PackagesViewModels CreatePackagesViewModels(IThreadSafePackageManagementEvents packageManagementEvents)
+		{
+			return new PackagesViewModels(
+				solution,
+				registeredPackageRepositories,
+				packageManagementEvents,
+				PackageManagementServices.PackageActionRunner,
+				new PackageManagementTaskFactory());
 		}
 		
 		bool IsInDesignMode()
@@ -68,19 +86,55 @@ namespace ICSharpCode.PackageManagement
 		public RegisteredPackageSourcesViewModel RegisteredPackageSourcesViewModel {
 			get {
 				if (registeredPackageSourcesViewModel == null) {
-					CreateRegisteredPackageSourcesViewModel();
+					RegisteredPackageSources packageSources = GetRegisteredPackageSources();
+					registeredPackageSourcesViewModel = 
+						CreateRegisteredPackageSourcesViewModel(packageSources);
 				}
 				return registeredPackageSourcesViewModel;
 			}
 		}
 		
-		void CreateRegisteredPackageSourcesViewModel()
+		RegisteredPackageSources GetRegisteredPackageSources()
+		{
+			if (IsInDesignMode()) {
+				return CreateDesignTimeRegisteredPackageSources();
+			} else {
+				return PackageManagementServices.Options.PackageSources;
+			}
+		}
+		
+		RegisteredPackageSources CreateDesignTimeRegisteredPackageSources()
+		{
+			return new RegisteredPackageSources(new PackageSource[0]);
+		}
+		
+		RegisteredPackageSourcesViewModel CreateRegisteredPackageSourcesViewModel(RegisteredPackageSources packageSources)
 		{
 			CreateRegisteredPackageRepositories();
 			if (IsInDesignMode()) {
-				registeredPackageSourcesViewModel = new DesignTimeRegisteredPackageSourcesViewModel();
+				return new DesignTimeRegisteredPackageSourcesViewModel();
 			} else {
-				registeredPackageSourcesViewModel = new RegisteredPackageSourcesViewModel(PackageManagementServices.Options);
+				return new RegisteredPackageSourcesViewModel(packageSources);
+			}
+		}
+		
+		public RegisteredPackageSourcesViewModel RegisteredProjectTemplatePackageSourcesViewModel {
+			get {
+				if (registeredProjectTemplatePackageSourcesViewModel == null) {
+					RegisteredPackageSources packageSources = GetProjectTemplatePackageSources();
+					registeredProjectTemplatePackageSourcesViewModel =
+						CreateRegisteredPackageSourcesViewModel(packageSources);
+				}
+				return registeredProjectTemplatePackageSourcesViewModel;
+			}
+		}
+		
+		RegisteredPackageSources GetProjectTemplatePackageSources()
+		{
+			if (IsInDesignMode()) {
+				return CreateDesignTimeRegisteredPackageSources();
+			} else {
+				return PackageManagementServices.ProjectTemplatePackageSources;
 			}
 		}
 		

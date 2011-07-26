@@ -32,6 +32,10 @@ namespace ICSharpCode.PackageManagement
 			projectManager = packageManager.ProjectManager;
 		}
 		
+		public string Name {
+			get { return msbuildProject.Name; }
+		}
+		
 		public IPackageRepository SourceRepository { get; private set; }
 		
 		public ILogger Logger {
@@ -65,9 +69,14 @@ namespace ICSharpCode.PackageManagement
 			remove { projectManager.PackageReferenceRemoved -= value; }
 		}
 		
-		public bool IsInstalled(IPackage package)
+		public bool IsPackageInstalled(IPackage package)
 		{
 			return projectManager.IsInstalled(package);
+		}
+		
+		public bool IsPackageInstalled(string packageId)
+		{
+			return projectManager.IsInstalled(packageId);
 		}
 		
 		public IQueryable<IPackage> GetPackages()
@@ -113,6 +122,14 @@ namespace ICSharpCode.PackageManagement
 		public Project ConvertToDTEProject()
 		{
 			return new Project(msbuildProject);
+		}
+		
+		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
+		{
+			var packageSorter = new PackageSorter();
+			return packageSorter
+				.GetPackagesByDependencyOrder(projectManager.LocalRepository)
+				.Reverse();
 		}
 	}
 }

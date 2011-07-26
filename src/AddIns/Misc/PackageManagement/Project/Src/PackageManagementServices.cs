@@ -20,15 +20,23 @@ namespace ICSharpCode.PackageManagement
 		static readonly ResetPowerShellWorkingDirectoryOnSolutionClosed resetPowerShellWorkingDirectory;
 		static readonly PackageActionsToRun packageActionsToRun = new PackageActionsToRun();
 		static readonly PackageActionRunner packageActionRunner;
+		static readonly IPackageRepositoryCache projectTemplatePackageRepositoryCache;
+		static readonly RegisteredProjectTemplatePackageSources projectTemplatePackageSources;
+		static readonly PackageRepositoryCache packageRepositoryCache;
 		
 		static PackageManagementServices()
 		{
 			options = new PackageManagementOptions();
-			registeredPackageRepositories = new RegisteredPackageRepositories(options);
+			packageRepositoryCache = new PackageRepositoryCache(options.PackageSources, options.RecentPackages);
+			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
+			projectTemplatePackageSources = new RegisteredProjectTemplatePackageSources();
+			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(packageRepositoryCache, projectTemplatePackageSources);
+			
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
-			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
-			consoleHostProvider = new PackageManagementConsoleHostProvider(solution, registeredPackageRepositories);
 			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
+			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
+			
+			consoleHostProvider = new PackageManagementConsoleHostProvider(solution, registeredPackageRepositories);
 			runPackageInitializationScripts = new RunPackageInitializationScriptsOnSolutionOpen(projectService);
 			resetPowerShellWorkingDirectory = new ResetPowerShellWorkingDirectoryOnSolutionClosed(projectService, ConsoleHost);
 			var consolePackageActionRunner = new ConsolePackageActionRunner(ConsoleHost, packageActionsToRun);
@@ -51,6 +59,10 @@ namespace ICSharpCode.PackageManagement
 			get { return registeredPackageRepositories; }
 		}
 		
+		public static IPackageRepositoryCache PackageRepositoryCache {
+			get { return packageRepositoryCache; }
+		}
+		
 		public static IPackageManagementEvents PackageManagementEvents {
 			get { return packageManagementEvents; }
 		}
@@ -69,6 +81,14 @@ namespace ICSharpCode.PackageManagement
 		
 		public static IPackageActionRunner PackageActionRunner {
 			get { return packageActionRunner; }
+		}
+		
+		public static IPackageRepositoryCache ProjectTemplatePackageRepositoryCache {
+			get { return projectTemplatePackageRepositoryCache; }
+		}
+		
+		public static RegisteredPackageSources ProjectTemplatePackageSources {
+			get { return projectTemplatePackageSources.PackageSources; }
 		}
 	}
 }

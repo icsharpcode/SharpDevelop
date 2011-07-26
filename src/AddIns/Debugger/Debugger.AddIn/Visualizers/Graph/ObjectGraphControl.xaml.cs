@@ -38,7 +38,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		static double mouseWheelZoomSpeed = 0.05;
 		
-		/// <summary> Long-lived map telling which graph nodes and content nodes the user expanded. </summary>
+		/// <summary> Tells which graph nodes and content nodes the user expanded. </summary>
 		static Expanded expanded = new Expanded();
 
 		public ObjectGraphControl()
@@ -62,10 +62,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public void Refresh()
 		{
-			// Almost all of the blocking is done ContentPropertyNode.Evaluate,
-			// which is being called by WPF for all the properties.
-			// It would be better if we were filling the node texts ourselves in a loop,
-			// so that we could cancel any time. UI would redraw gradually thanks to INotifyPropertyChanged.
 			try {
 				Debugger.AddIn.TreeModel.Utils.DoEvents(debuggerService.DebuggedProcess);
 			} catch(AbortedBecauseDebuggeeResumedException) { 
@@ -80,7 +76,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 				return;
 			}
 			if (debuggerService.IsProcessRunning) {
-				// "Process not paused" exception still occurs
 				ErrorMessage("Cannot inspect when the process is running.");
 				return;
 			}
@@ -122,14 +117,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 		}
 		
-		/// <summary>
-		/// ObjectGraph visualizer caches UI controls, this clears the cache.
-		/// </summary>
-		public void ClearUIControlCache()
-		{
-			NodeControlCache.Instance.Clear();
-		}
-		
 		private void Inspect_Button_Click(object sender, RoutedEventArgs e)
 		{
 			this.Refresh();
@@ -144,12 +131,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		void LayoutGraph(ObjectGraph graph)
 		{
-			if (this.oldPosGraph != null) {
-				foreach (var oldNode in this.oldPosGraph.Nodes) {
-					// controls from old graph would be garbage collected, reuse them
-					NodeControlCache.Instance.ReturnForReuse(oldNode.NodeVisualControl);
-				}
-			}
 			this.oldPosGraph = this.currentPosGraph;
 			Log.Debug("Debugger visualizer: Calculating graph layout");
 			var layoutDirection = layoutViewModel.SelectedEnumValue;
@@ -180,7 +161,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			this.txtError.Text = message;
 			this.pnlError.Visibility = Visibility.Visible;
-			//MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
 		}
 		
 		void RegisterExpandCollapseEvents(PositionedGraph posGraph)
@@ -211,7 +191,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 			expanded.Expressions.SetExpanded(e.Property.Expression);
 			
 			// add edge (+ possibly nodes) to underlying object graph (no need to fully rebuild)
-			// TODO can add more nodes if they are expanded - now this adds always one node
 			e.Property.ObjectGraphProperty.TargetNode = this.objectGraphBuilder.ObtainNodeForExpression(e.Property.Expression);
 			LayoutGraph(this.objectGraph);
 		}

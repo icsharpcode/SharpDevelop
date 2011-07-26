@@ -2,9 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
+using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -16,16 +18,53 @@ namespace PackageManagement.Tests
 		TestableUpdatedPackageViewModel viewModel;
 		FakePackageManagementSolution fakeSolution;
 		FakePackageManagementProject fakeProject;
-		FakeUpdatePackageAction updatePackageAction;
 		FakePackageActionRunner fakeActionRunner;
+		FakePackageManagementEvents fakePackageManagementEvents;
 		
 		void CreateViewModel()
 		{
-			viewModel = new TestableUpdatedPackageViewModel();
-			fakeSolution = viewModel.FakeSolution;
-			fakeProject = fakeSolution.FakeProject;
-			updatePackageAction = fakeProject.FakeUpdatePackageAction;
+			CreateFakeSolution();
+			CreateViewModel(fakeSolution);
+		}
+		
+		void CreateViewModel(FakePackageManagementSolution fakeSolution)
+		{
+			viewModel = new TestableUpdatedPackageViewModel(fakeSolution);
+			fakeProject = fakeSolution.FakeProjectToReturnFromGetProject;
 			fakeActionRunner = viewModel.FakeActionRunner;
+			fakePackageManagementEvents = viewModel.FakePackageManagementEvents;
+		}
+		
+		FakeUpdatePackageAction FirstUpdatePackageActionCreated {
+			get { return fakeProject.FirstFakeUpdatePackageActionCreated; }
+		}
+
+		
+		void CreateFakeSolution()
+		{
+			fakeSolution = new FakePackageManagementSolution();
+			fakeSolution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject("MyProject");
+		}
+		
+		void AddProjectToSolution()
+		{
+			TestableProject project = ProjectHelper.CreateTestProject();
+			fakeSolution.FakeMSBuildProjects.Add(project);
+		}
+		
+		void CreateViewModelWithTwoProjectsSelected(string projectName1, string projectName2)
+		{
+			CreateFakeSolution();
+			AddProjectToSolution();
+			AddProjectToSolution();
+			fakeSolution.FakeMSBuildProjects[0].Name = projectName1;
+			fakeSolution.FakeMSBuildProjects[1].Name = projectName2;
+			fakeSolution.NoProjectsSelected();
+			
+			fakeSolution.AddFakeProjectToReturnFromGetProject(projectName1);
+			fakeSolution.AddFakeProjectToReturnFromGetProject(projectName2);
+			
+			CreateViewModel(fakeSolution);
 		}
 		
 		[Test]
@@ -34,7 +73,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddPackage();
 						
-			Assert.AreEqual(viewModel.FakePackage.Repository, fakeSolution.RepositoryPassedToGetActiveProject);
+			Assert.AreEqual(viewModel.FakePackage.Repository, fakeSolution.RepositoryPassedToGetProject);
 		}
 	
 		[Test]
@@ -43,8 +82,8 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddPackage();
 			
-			var expectedPackage = viewModel.FakePackage;
-			var actualPackage = updatePackageAction.Package;
+			FakePackage expectedPackage = viewModel.FakePackage;
+			IPackage actualPackage = FirstUpdatePackageActionCreated.Package;
 						
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}
@@ -55,8 +94,8 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddPackage();
 			
-			var expectedOperations = viewModel.FakePackageOperationResolver.PackageOperations;
-			var actualOperations = updatePackageAction.Operations;
+			IEnumerable<PackageOperation> expectedOperations = viewModel.FakePackageOperationResolver.PackageOperations;
+			IEnumerable<PackageOperation> actualOperations = FirstUpdatePackageActionCreated.Operations;
 						
 			Assert.AreEqual(expectedOperations, actualOperations);
 		}
@@ -69,7 +108,23 @@ namespace PackageManagement.Tests
 			
 			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
 
-			Assert.AreEqual(updatePackageAction, actionExecuted);
+			Assert.AreEqual(FirstUpdatePackageActionCreated, actionExecuted);
+		}
+		
+		[Test]
+		public void ManagePackage_OneProjectSelectedByUser_PackageIsUpdated()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			fakePackageManagementEvents.ProjectsToSelect.Add("Project B");
+			fakePackageManagementEvents.OnSelectProjectsReturnValue = true;
+			viewModel.ManagePackage();
+			
+			FakePackage expectedPackage = viewModel.FakePackage;
+			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			var updatePackageAction = actions[0] as UpdatePackageAction;
+			IPackage actualPackage = updatePackageAction.Package;
+						
+			Assert.AreEqual(expectedPackage, actualPackage);
 		}
 	}
 }

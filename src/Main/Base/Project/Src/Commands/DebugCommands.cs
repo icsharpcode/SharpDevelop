@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (!DebuggerService.CurrentDebugger.IsDebugging) {
 				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
 				new Execute().Run();
-			} else { 
+			} else {
 				DebuggerService.CurrentDebugger.StepOver();
 			}
 		}
@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (!DebuggerService.CurrentDebugger.IsDebugging) {
 				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
 				new Execute().Run();
-			} else { 
+			} else {
 				DebuggerService.CurrentDebugger.StepInto();
 			}
 		}
@@ -119,12 +119,20 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
+			var viewContent = WorkbenchSingleton.Workbench.ActiveContent;
+			ITextEditorProvider provider = viewContent as ITextEditorProvider;
 			
 			if (provider != null) {
 				ITextEditor editor = provider.TextEditor;
 				if (!string.IsNullOrEmpty(editor.FileName)) {
 					DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line);
+				}
+			} else {
+				if (viewContent is AbstractViewContentWithoutFile) {
+					dynamic codeView = ((AbstractViewContentWithoutFile)viewContent).Control;
+					var editor = codeView.TextEditor as ITextEditor;
+					if (editor != null && !string.IsNullOrEmpty(editor.FileName))
+						DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line);
 				}
 			}
 		}

@@ -12,19 +12,23 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 	{
 		public FakeCmdletTerminatingError FakeCmdletTerminatingError;
 		public FakePackageManagementConsoleHost FakePackageManagementConsoleHost;
+		public FakeUpdatePackageActionsFactory FakeUpdatePackageActionsFactory;
 		
 		public TestableUpdatePackageCmdlet()
 			: this(
+				new FakeUpdatePackageActionsFactory(),
 				new FakePackageManagementConsoleHost(),
 				new FakeCmdletTerminatingError())
 		{
 		}
 		
 		public TestableUpdatePackageCmdlet(
+			FakeUpdatePackageActionsFactory updatePackageActionsFactory,
 			FakePackageManagementConsoleHost consoleHost,
 			FakeCmdletTerminatingError cmdletTerminatingError)
-			: base(consoleHost, cmdletTerminatingError)
+			: base(updatePackageActionsFactory, consoleHost, cmdletTerminatingError)
 		{
+			this.FakeUpdatePackageActionsFactory = updatePackageActionsFactory;
 			this.FakePackageManagementConsoleHost = consoleHost;
 			this.FakeCmdletTerminatingError = cmdletTerminatingError;
 		}

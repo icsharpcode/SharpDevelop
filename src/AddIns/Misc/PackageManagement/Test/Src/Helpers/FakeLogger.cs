@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NuGet;
 
 namespace PackageManagement.Tests.Helpers
@@ -37,6 +38,11 @@ namespace PackageManagement.Tests.Helpers
 		{
 			string formattedMessage = String.Format(message, args);
 			FormattedMessagesLogged.Add(formattedMessage);
+		}
+		
+		public bool FormattedMessagesLoggedContainsText(string text)
+		{
+			return FormattedMessagesLogged.Any(message => message.Contains(text));
 		}
 	}
 }

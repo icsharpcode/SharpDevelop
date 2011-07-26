@@ -145,6 +145,11 @@ namespace ICSharpCode.PackageManagement
 			remove { unsafeEvents.PackageOperationMessageLogged -= value; }
 		}
 		
+		public event EventHandler<SelectProjectsEventArgs> SelectProjects {
+			add { unsafeEvents.SelectProjects += value; }
+			remove { unsafeEvents.SelectProjects -= value; }
+		}
+		
 		public void OnPackageOperationsStarting()
 		{
 			unsafeEvents.OnPackageOperationsStarting();
@@ -173,6 +178,11 @@ namespace ICSharpCode.PackageManagement
 		public void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args)
 		{
 			unsafeEvents.OnPackageOperationMessageLogged(level, message, args);
+		}
+		
+		public bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> selectedProjects)
+		{
+			return unsafeEvents.OnSelectProjects(selectedProjects);
 		}
 	}
 }

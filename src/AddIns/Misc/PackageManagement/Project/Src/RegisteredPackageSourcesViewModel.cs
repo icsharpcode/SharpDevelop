@@ -15,7 +15,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		ObservableCollection<PackageSourceViewModel> packageSourceViewModels = 
 			new ObservableCollection<PackageSourceViewModel>();
-		PackageManagementOptions options;
+		RegisteredPackageSources packageSources;
 		IFolderBrowser folderBrowser;
 		
 		DelegateCommand addPackageSourceCommmand;
@@ -28,16 +28,16 @@ namespace ICSharpCode.PackageManagement
 		PackageSourceViewModel selectedPackageSourceViewModel;
 		
 		public RegisteredPackageSourcesViewModel(
-			PackageManagementOptions options)
-			: this(options, new FolderBrowser())
+			RegisteredPackageSources packageSources)
+			: this(packageSources, new FolderBrowser())
 		{
 		}
 		
 		public RegisteredPackageSourcesViewModel(
-			PackageManagementOptions options,
+			RegisteredPackageSources packageSources,
 			IFolderBrowser folderBrowser)
 		{
-			this.options = options;
+			this.packageSources = packageSources;
 			this.folderBrowser = folderBrowser;
 			CreateCommands();
 		}
@@ -90,7 +90,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Load()
 		{
-			foreach (PackageSource packageSource in options.PackageSources) {
+			foreach (PackageSource packageSource in packageSources) {
 				AddPackageSourceToViewModel(packageSource);
 			}
 		}
@@ -103,10 +103,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Save()
 		{
-			options.PackageSources.Clear();
+			packageSources.Clear();
 			foreach (PackageSourceViewModel packageSourceViewModel in packageSourceViewModels) {
 				PackageSource source = packageSourceViewModel.GetPackageSource();
-				options.PackageSources.Add(source);
+				packageSources.Add(source);
 			}
 		}
 		
@@ -242,7 +242,6 @@ namespace ICSharpCode.PackageManagement
 		{
 			NewPackageSourceUrl = folder;
 			NewPackageSourceName = GetPackageSourceNameFromFolder(folder);
-			
 		}
 		
 		string GetPackageSourceNameFromFolder(string folder)

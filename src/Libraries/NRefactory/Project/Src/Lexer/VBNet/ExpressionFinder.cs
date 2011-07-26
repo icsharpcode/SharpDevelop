@@ -59,6 +59,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				case SnippetType.Expression:
 					currentState = startOfExpression;
 					break;
+				case SnippetType.Statements:
+					currentState = startOfBlock;
+					break;
 			}
 			
 			Advance();

@@ -10,6 +10,7 @@ namespace ICSharpCode.NRefactory.Parser.VB {
 
 partial class ExpressionFinder {
 	const int startOfExpression = 55;
+	const int startOfBlock = 259;
 	const int endOfStatementTerminatorAndBlock = 263;
 	static BitArray GetExpectedSet(int state)
 	{

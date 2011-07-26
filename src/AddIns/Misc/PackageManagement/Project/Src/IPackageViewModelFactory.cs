@@ -12,6 +12,7 @@ namespace ICSharpCode.PackageManagement
 		PackageViewModel CreatePackageViewModel(IPackageFromRepository package);
 		
 		IPackageManagementSolution Solution { get; }
+		PackageManagementSelectedProjects SelectedProjects { get; }
 		IPackageManagementEvents PackageManagementEvents { get; }
 		IPackageActionRunner PackageActionRunner { get; }
 	}

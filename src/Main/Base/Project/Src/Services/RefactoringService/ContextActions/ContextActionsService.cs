@@ -113,7 +113,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (ParserService.LoadSolutionProjectsThreadRunning)
 				yield break;
-			
 			// could run providers in parallel
 			foreach (var provider in providers) {
 				foreach (var action in provider.GetAvailableActions(this.EditorContext)) {

@@ -18,29 +18,29 @@ namespace PackageManagement.Tests.Helpers
 		
 		public TestablePackageViewModel(FakePackageManagementSolution solution)
 			: this(
-				new FakePackage(),
-				solution,
+				new FakePackage("Test"),
+				new PackageManagementSelectedProjects(solution),
 				new FakePackageManagementEvents(),
 				new FakePackageActionRunner(),
 				new FakeLogger())
 		{
+			this.FakeSolution = solution;
 		}
 		
 		public TestablePackageViewModel(
 			FakePackage package,
-			FakePackageManagementSolution solution,
+			PackageManagementSelectedProjects selectedProjects,
 			FakePackageManagementEvents packageManagementEvents,
 			FakePackageActionRunner actionRunner,
 			FakeLogger logger)
 			: base(
 				package,
-				solution,
+				selectedProjects,
 				packageManagementEvents,
 				actionRunner,
 				logger)
 		{
 			this.FakePackage = package;
-			this.FakeSolution = solution;
 			this.FakePackageManagementEvents = packageManagementEvents;
 			this.FakeActionRunner = actionRunner;
 			this.FakeLogger = logger;
@@ -51,6 +51,7 @@ namespace PackageManagement.Tests.Helpers
 			PackageViewModelOperationLogger operationLogger = base.CreateLogger(logger);
 			operationLogger.AddingPackageMessageFormat = "Installing...{0}";
 			operationLogger.RemovingPackageMessageFormat = "Uninstalling...{0}";
+			operationLogger.ManagingPackageMessageFormat = "Managing...{0}";
 			OperationLoggerCreated = operationLogger;
 			return operationLogger;
 		}
@@ -59,10 +60,10 @@ namespace PackageManagement.Tests.Helpers
 		
 		public PackageOperation AddOneFakeInstallPackageOperationForViewModelPackage()
 		{
-			var operation = new PackageOperation(FakePackage, PackageAction.Install);
+			var operation = new FakePackageOperation(FakePackage, PackageAction.Install);
 			
 			FakeSolution
-				.FakeProject
+				.FakeProjectToReturnFromGetProject
 				.FakeInstallOperations
 				.Add(operation);
 			
@@ -72,8 +73,8 @@ namespace PackageManagement.Tests.Helpers
 		public PackageOperation AddOneFakeUninstallPackageOperation()
 		{
 			var package = new FakePackage("PackageToUninstall");			
-			var operation = new PackageOperation(package, PackageAction.Uninstall);
-			FakeSolution.FakeProject.FakeInstallOperations.Add(operation);
+			var operation = new FakePackageOperation(package, PackageAction.Uninstall);
+			FakeSolution.FakeProjectToReturnFromGetProject.FakeInstallOperations.Add(operation);
 			return operation;
 		}
 	}

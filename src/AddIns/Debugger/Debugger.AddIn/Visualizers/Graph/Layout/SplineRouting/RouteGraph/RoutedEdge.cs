@@ -10,7 +10,7 @@ using System.Windows;
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
-	/// The result of the main method EdgeRouter.RouteEdges(), passed back to the user.
+	/// Polyline in a plane, calculated by <see cref="EdgeRouter.RouteEdges" />, passed back to the user.
 	/// </summary>
 	public class RoutedEdge
 	{

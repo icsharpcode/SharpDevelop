@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
 namespace PackageManagement.Tests.Helpers
@@ -12,6 +13,7 @@ namespace PackageManagement.Tests.Helpers
 	public class ExceptionThrowingPackageManagementSolution : FakePackageManagementSolution
 	{
 		public Exception ExceptionToThrowWhenGetActiveProjectCalled { get; set; }
+		public Exception ExceptionToThrowWhenGetProjectCalled { get; set; }
 		
 		public override IPackageManagementProject GetActiveProject()
 		{
@@ -27,6 +29,14 @@ namespace PackageManagement.Tests.Helpers
 				throw ExceptionToThrowWhenGetActiveProjectCalled;
 			}
 			return base.GetActiveProject(sourceRepository);
+		}
+		
+		public override IPackageManagementProject GetProject(IPackageRepository sourceRepository, IProject project)
+		{
+			if (ExceptionToThrowWhenGetProjectCalled != null) {
+				throw ExceptionToThrowWhenGetProjectCalled;
+			}
+			return base.GetProject(sourceRepository, project);
 		}
 	}
 }

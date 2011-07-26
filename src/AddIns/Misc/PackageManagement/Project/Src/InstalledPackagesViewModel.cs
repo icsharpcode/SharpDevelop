@@ -13,13 +13,13 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementSolution solution;
 		IPackageManagementEvents packageManagementEvents;
 		IPackageManagementProject project;
-		string errorMessage = String.Empty;
+		string errorMessage;
 
 		public InstalledPackagesViewModel(
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageViewModelFactory packageViewModelFactory,
+			InstalledPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
@@ -53,10 +53,13 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			if (project == null) {
+			if (errorMessage != null) {
 				ThrowOriginalExceptionWhenTryingToGetProjectManager();
 			}
-			return project.GetPackages();
+			if (project != null) {
+				return project.GetPackages();
+			}
+			return solution.GetPackages();
 		}
 		
 		void ThrowOriginalExceptionWhenTryingToGetProjectManager()

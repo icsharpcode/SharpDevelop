@@ -8,7 +8,7 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
-	/// Description of EdgeRouter.
+	/// Entry point to the edge routing algorithm.
 	/// </summary>
 	public class EdgeRouter
 	{

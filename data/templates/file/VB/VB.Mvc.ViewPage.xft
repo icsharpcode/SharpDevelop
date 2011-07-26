@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+
+	<Config
+		name="MVC View Page"
+		icon="VBNet.File.NewClass"
+		category="VB"
+		subcategory="ASP.NET MVC"
+		defaultname="ViewPage${Number}.aspx"
+		language="VBNET"/>
+	 
+	<Description>MVC View Page</Description>
+	
+	<Files>
+		<File name="${FullName}" language="VBNET">
+<![CDATA[<%@ Page Language="VB" Inherits="System.Web.Mvc.ViewPage" %>
+
+<!DOCTYPE html>
+<html>
+	<head runat="server">
+		<title></title>
+	</head>
+	<body>
+		
+	</body>
+</html>
+]]>
+		</File>
+	</Files>
+</Template>

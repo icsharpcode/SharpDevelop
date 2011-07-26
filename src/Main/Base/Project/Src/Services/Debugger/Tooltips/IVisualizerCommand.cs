@@ -13,11 +13,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	public interface IVisualizerCommand
 	{
 		/// <summary>
-		/// Can this command execute?
-		/// </summary>
-		bool CanExecute { get; }
-		
-		/// <summary>
 		/// Executes this visualizer command.
 		/// </summary>
 		void Execute();

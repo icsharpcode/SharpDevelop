@@ -320,6 +320,17 @@ namespace Debugger
 			EnterCallback(PausedReason.Other, "CreateProcess", pProcess);
 
 			// Process is added in NDebugger.Start
+			// disable NGen
+			if (!this.process.Options.EnableJustMyCode && !this.process.Options.StepOverNoSymbols) {
+				ICorDebugProcess2 pProcess2 = pProcess as ICorDebugProcess2;
+				if (pProcess2 != null && Process.DebugMode == DebugModeFlag.Debug) {
+					try {
+						pProcess2.SetDesiredNGENCompilerFlags((uint)CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION);
+					} catch (COMException) {
+						// we cannot set the NGEN flag => no evaluation for optimized code.
+					}
+				}
+			}
 
 			ExitCallback();
 		}
@@ -498,7 +509,8 @@ namespace Debugger
 			// Watch out for the zeros and null!
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
-			if ((ExceptionType)exceptionType == ExceptionType.Unhandled || process.PauseOnHandledException) {
+			if ((ExceptionType)exceptionType == ExceptionType.Unhandled || 
+			    (process.Options != null && process.Options.PauseOnHandledExceptions)) {
 				process.SelectedThread.CurrentException = new Exception(new Value(process.AppDomains[pAppDomain], process.SelectedThread.CorThread.GetCurrentException()).GetPermanentReference());
 				process.SelectedThread.CurrentException_DebuggeeState = process.DebuggeeState;
 				process.SelectedThread.CurrentExceptionType = (ExceptionType)exceptionType;
