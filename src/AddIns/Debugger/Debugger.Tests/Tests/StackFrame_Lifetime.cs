@@ -73,7 +73,7 @@ namespace Debugger.Tests {
         ChainIndex="1"
         FrameIndex="1"
         HasSymbols="True"
-        MethodInfo="static void Debugger.Tests.StackFrame_Lifetime.Function(Int32 i)"
+        MethodInfo="static System.Void Debugger.Tests.StackFrame_Lifetime.Function(System.Int32 i)"
         NextStatement="StackFrame_Lifetime.cs:18,4-18,40"
         Thread="Thread Name =  Suspended = False" />
     </SelectedStackFrame>
@@ -84,7 +84,7 @@ namespace Debugger.Tests {
         ChainIndex="1"
         FrameIndex="1"
         HasSymbols="True"
-        MethodInfo="static void Debugger.Tests.StackFrame_Lifetime.Function(Int32 i)"
+        MethodInfo="static System.Void Debugger.Tests.StackFrame_Lifetime.Function(System.Int32 i)"
         NextStatement="StackFrame_Lifetime.cs:19,4-19,18"
         Thread="Thread Name =  Suspended = False" />
     </Old_StackFrame>
@@ -93,7 +93,7 @@ namespace Debugger.Tests {
         ChainIndex="1"
         FrameIndex="2"
         HasSymbols="True"
-        MethodInfo="static void Debugger.Tests.StackFrame_Lifetime.SubFunction()"
+        MethodInfo="static System.Void Debugger.Tests.StackFrame_Lifetime.SubFunction()"
         NextStatement="StackFrame_Lifetime.cs:25,4-25,40"
         Thread="Thread Name =  Suspended = False" />
     </SelectedStackFrame>
@@ -104,7 +104,7 @@ namespace Debugger.Tests {
         ChainIndex="1"
         FrameIndex="1"
         HasSymbols="True"
-        MethodInfo="static void Debugger.Tests.StackFrame_Lifetime.Function(Int32 i)"
+        MethodInfo="static System.Void Debugger.Tests.StackFrame_Lifetime.Function(System.Int32 i)"
         NextStatement="StackFrame_Lifetime.cs:20,4-20,40"
         Thread="Thread Name =  Suspended = False" />
     </Old_StackFrame>
@@ -114,7 +114,7 @@ namespace Debugger.Tests {
         ChainIndex="1"
         FrameIndex="1"
         HasSymbols="True"
-        MethodInfo="static void Debugger.Tests.StackFrame_Lifetime.Function(Int32 i)"
+        MethodInfo="static System.Void Debugger.Tests.StackFrame_Lifetime.Function(System.Int32 i)"
         NextStatement="StackFrame_Lifetime.cs:20,4-20,40"
         Thread="Thread Name =  Suspended = False" />
     </SelectedStackFrame>
@@ -123,7 +123,7 @@ namespace Debugger.Tests {
       <StackFrame
         ChainIndex="1"
         HasSymbols="True"
-        MethodInfo="static void Debugger.Tests.StackFrame_Lifetime.Main()"
+        MethodInfo="static System.Void Debugger.Tests.StackFrame_Lifetime.Main()"
         NextStatement="StackFrame_Lifetime.cs:13,4-13,40"
         Thread="Thread Name =  Suspended = False" />
     </Main>
@@ -134,7 +134,7 @@ namespace Debugger.Tests {
         FrameIndex="1"
         HasSymbols="True"
         IsInvalid="True"
-        MethodInfo="static void Debugger.Tests.StackFrame_Lifetime.Function(Int32 i)"
+        MethodInfo="static System.Void Debugger.Tests.StackFrame_Lifetime.Function(System.Int32 i)"
         NextStatement="{Exception: The requested frame index is too big}"
         Thread="Thread Name =  Suspended = False" />
     </Old_StackFrame>
@@ -142,7 +142,7 @@ namespace Debugger.Tests {
       <StackFrame
         ChainIndex="1"
         HasSymbols="True"
-        MethodInfo="static void Debugger.Tests.StackFrame_Lifetime.Main()"
+        MethodInfo="static System.Void Debugger.Tests.StackFrame_Lifetime.Main()"
         NextStatement="StackFrame_Lifetime.cs:13,4-13,40"
         Thread="Thread Name =  Suspended = False" />
     </SelectedStackFrame>

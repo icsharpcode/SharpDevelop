@@ -2,8 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -12,11 +10,11 @@ namespace ICSharpCode.PackageManagement
 	{
 		public UpdatedPackageViewModel(
 			IPackageFromRepository package,
-			IPackageManagementSolution solution,
+			SelectedProjectsForUpdatedPackages selectedProjects,
 			IPackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
 			ILogger logger)
-			: base(package, solution, packageManagementEvents, actionRunner, logger)
+			: base(package, selectedProjects, packageManagementEvents, actionRunner, logger)
 		{
 		}
 		

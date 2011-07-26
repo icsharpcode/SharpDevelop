@@ -68,7 +68,7 @@ namespace Debugger.MetaData
 					sb.Append(this.ReturnType.Name);
 					sb.Append(" ");
 				} else {
-					sb.Append("void ");
+					sb.Append("System.Void ");
 				}
 				
 				sb.Append(this.DeclaringType.FullName);
@@ -80,9 +80,40 @@ namespace Debugger.MetaData
 					if (!first)
 						sb.Append(", ");
 					first = false;
-					sb.Append(p.ParameterType.Name);
+					sb.Append(p.ParameterType.FullName);
 					sb.Append(" ");
 					sb.Append(p.Name);
+				}
+				sb.Append(")");
+				return sb.ToString();
+			}
+		}
+		
+		/// <summary> Name including the declaring type, return type without parameters names</summary>
+		public string FullNameWithoutParameterNames {
+			get {
+				StringBuilder sb = new StringBuilder();
+				
+				if (this.IsStatic) {
+					sb.Append("static ");
+				}
+				if (this.ReturnType != null) {
+					sb.Append(this.ReturnType.Name);
+					sb.Append(" ");
+				} else {
+					sb.Append("System.Void ");
+				}
+				
+				sb.Append(this.DeclaringType.FullName);
+				sb.Append(".");
+				sb.Append(this.Name);
+				sb.Append("(");
+				bool first = true;
+				foreach(DebugParameterInfo p in GetParameters()) {
+					if (!first)
+						sb.Append(", ");
+					first = false;
+					sb.Append(p.ParameterType.FullName);
 				}
 				sb.Append(")");
 				return sb.ToString();
@@ -343,12 +374,12 @@ namespace Debugger.MetaData
 			uint token = 0;
 			
 			bool success =
-				(Read(code, 0x00) || true) &&                     // nop || nothing 
+				(Read(code, 0x00) || true) &&                     // nop || nothing
 				(Read(code, 0x02, 0x7B) || Read(code, 0x7E)) &&   // ldarg.0; ldfld || ldsfld
 				ReadToken(code, ref token) &&                     //   <field token>
 				(Read(code, 0x0A, 0x2B, 0x00, 0x06) || true) &&   // stloc.0; br.s; offset+00; ldloc.0 || nothing
 				Read(code, 0x2A);                                 // ret
-		
+			
 			if (!success) return;
 			
 			if (this.Process.Options.Verbose) {
@@ -427,7 +458,7 @@ namespace Debugger.MetaData
 					// Look on the method
 					DebugType.IsDefined(
 						this,
-						false,            
+						false,
 						typeof(System.Diagnostics.DebuggerStepThroughAttribute),
 						typeof(System.Diagnostics.DebuggerNonUserCodeAttribute),
 						typeof(System.Diagnostics.DebuggerHiddenAttribute))
@@ -435,7 +466,7 @@ namespace Debugger.MetaData
 					// Look on the type
 					DebugType.IsDefined(
 						declaringType,
-						false,            
+						false,
 						typeof(System.Diagnostics.DebuggerStepThroughAttribute),
 						typeof(System.Diagnostics.DebuggerNonUserCodeAttribute),
 						typeof(System.Diagnostics.DebuggerHiddenAttribute));
@@ -462,6 +493,19 @@ namespace Debugger.MetaData
 					return null;
 				}
 			}
+		}
+		
+		public static Value GetLocalVariableValue(StackFrame context, int varIndex)
+		{
+			ICorDebugValue corVal;
+			try {
+				corVal = context.CorILFrame.GetLocalVariable((uint)varIndex);
+			} catch (COMException e) {
+				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
+				// show the message in case of bad index
+				throw new GetValueException(e.Message);
+			}
+			return new Value(context.AppDomain, corVal);
 		}
 		
 		public DebugLocalVariableInfo GetLocalVariable(int offset, string name)

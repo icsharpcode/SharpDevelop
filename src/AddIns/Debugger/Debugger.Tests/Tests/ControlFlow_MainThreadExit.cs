@@ -62,23 +62,23 @@ namespace Debugger.Tests {
       Selected="Thread Name =  Suspended = False">
       <Item>
         <Thread
-          Callstack="{static void Debugger.Tests.ControlFlow_MainThreadExit.Main()}"
+          Callstack="{static System.Void Debugger.Tests.ControlFlow_MainThreadExit.Main()}"
           CurrentExceptionType="0"
           IsAtSafePoint="True"
           IsInValidState="True"
-          MostRecentStackFrame="static void Debugger.Tests.ControlFlow_MainThreadExit.Main()"
+          MostRecentStackFrame="static System.Void Debugger.Tests.ControlFlow_MainThreadExit.Main()"
           Name=""
           Priority="Normal"
           RuntimeValue="{System.Threading.Thread}"
-          SelectedStackFrame="static void Debugger.Tests.ControlFlow_MainThreadExit.Main()" />
+          SelectedStackFrame="static System.Void Debugger.Tests.ControlFlow_MainThreadExit.Main()" />
       </Item>
       <Item>
         <Thread
-          Callstack="{static Boolean System.Threading.WaitHandle.InternalWaitOne(SafeHandle waitableSafeHandle, Int64 millisecondsTimeout, Boolean hasThreadAffinity, Boolean exitContext), Boolean System.Threading.WaitHandle.WaitOne(Int32 millisecondsTimeout, Boolean exitContext), Boolean System.Threading.WaitHandle.WaitOne(), static void Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime(), static void System.Threading.ThreadHelper.ThreadStart_Context(Object state), static void System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean ignoreSyncCtx), static void System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state), void System.Threading.ThreadHelper.ThreadStart()}"
+          Callstack="{static Boolean System.Threading.WaitHandle.InternalWaitOne(System.Runtime.InteropServices.SafeHandle waitableSafeHandle, System.Int64 millisecondsTimeout, System.Boolean hasThreadAffinity, System.Boolean exitContext), Boolean System.Threading.WaitHandle.WaitOne(System.Int32 millisecondsTimeout, System.Boolean exitContext), Boolean System.Threading.WaitHandle.WaitOne(), static System.Void Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime(), static System.Void System.Threading.ThreadHelper.ThreadStart_Context(System.Object state), static System.Void System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state, System.Boolean ignoreSyncCtx), static System.Void System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state), System.Void System.Threading.ThreadHelper.ThreadStart()}"
           CurrentExceptionType="0"
           IsAtSafePoint="True"
           IsInValidState="True"
-          MostRecentStackFrame="static Boolean System.Threading.WaitHandle.InternalWaitOne(SafeHandle waitableSafeHandle, Int64 millisecondsTimeout, Boolean hasThreadAffinity, Boolean exitContext)"
+          MostRecentStackFrame="static Boolean System.Threading.WaitHandle.InternalWaitOne(System.Runtime.InteropServices.SafeHandle waitableSafeHandle, System.Int64 millisecondsTimeout, System.Boolean hasThreadAffinity, System.Boolean exitContext)"
           Name="Worker thread"
           Priority="Normal"
           RuntimeValue="{System.Threading.Thread}" />
@@ -97,15 +97,15 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Thread
-          Callstack="{static Boolean System.Threading.WaitHandle.InternalWaitOne(SafeHandle waitableSafeHandle, Int64 millisecondsTimeout, Boolean hasThreadAffinity, Boolean exitContext), Boolean System.Threading.WaitHandle.WaitOne(Int32 millisecondsTimeout, Boolean exitContext), Boolean System.Threading.WaitHandle.WaitOne(), static void Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime(), static void System.Threading.ThreadHelper.ThreadStart_Context(Object state), static void System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean ignoreSyncCtx), static void System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state), void System.Threading.ThreadHelper.ThreadStart()}"
+          Callstack="{static Boolean System.Threading.WaitHandle.InternalWaitOne(System.Runtime.InteropServices.SafeHandle waitableSafeHandle, System.Int64 millisecondsTimeout, System.Boolean hasThreadAffinity, System.Boolean exitContext), Boolean System.Threading.WaitHandle.WaitOne(System.Int32 millisecondsTimeout, System.Boolean exitContext), Boolean System.Threading.WaitHandle.WaitOne(), static System.Void Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime(), static System.Void System.Threading.ThreadHelper.ThreadStart_Context(System.Object state), static System.Void System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state, System.Boolean ignoreSyncCtx), static System.Void System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state), System.Void System.Threading.ThreadHelper.ThreadStart()}"
           CurrentExceptionType="0"
           IsAtSafePoint="True"
           IsInValidState="True"
-          MostRecentStackFrame="static Boolean System.Threading.WaitHandle.InternalWaitOne(SafeHandle waitableSafeHandle, Int64 millisecondsTimeout, Boolean hasThreadAffinity, Boolean exitContext)"
+          MostRecentStackFrame="static Boolean System.Threading.WaitHandle.InternalWaitOne(System.Runtime.InteropServices.SafeHandle waitableSafeHandle, System.Int64 millisecondsTimeout, System.Boolean hasThreadAffinity, System.Boolean exitContext)"
           Name="Worker thread"
           Priority="Normal"
           RuntimeValue="{System.Threading.Thread}"
-          SelectedStackFrame="static void Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime()" />
+          SelectedStackFrame="static System.Void Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime()" />
       </Item>
     </ThreadsAfterExit>
     <ProcessExited />

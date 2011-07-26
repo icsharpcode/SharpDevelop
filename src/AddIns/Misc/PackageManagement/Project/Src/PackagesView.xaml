@@ -78,6 +78,14 @@
 					Visibility="Collapsed"
 					Command="{Binding Path=RemovePackageCommand}"
 					VerticalAlignment="Bottom"/>
+				<Button
+					x:Name="managePackageButton"
+					Grid.Column="2"
+					Content="Manage"
+					IsDefault="True"
+					Visibility="Collapsed"
+					Command="{Binding Path=ManagePackageCommand}"
+					VerticalAlignment="Bottom"/>
 			</Grid>
 			
 			<DataTemplate.Triggers>
@@ -88,6 +96,9 @@
 							Value="True"/>
 						<Condition
 							Binding="{Binding Path=IsAdded}"
+							Value="False"/>
+						<Condition
+							Binding="{Binding Path=IsManaged}"
 							Value="False"/>
 					</MultiDataTrigger.Conditions>
 					<Setter
@@ -103,9 +114,26 @@
 						<Condition
 							Binding="{Binding Path=IsAdded}"
 							Value="True"/>
+						<Condition
+							Binding="{Binding Path=IsManaged}"
+							Value="False"/>
 					</MultiDataTrigger.Conditions>
 					<Setter
 						TargetName="removePackageButton"
+						Property="Visibility"
+						Value="Visible"/>
+				</MultiDataTrigger>
+				<MultiDataTrigger>
+					<MultiDataTrigger.Conditions>
+						<Condition 
+							Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
+							Value="True"/>
+						<Condition
+							Binding="{Binding Path=IsManaged}"
+							Value="True"/>
+					</MultiDataTrigger.Conditions>
+					<Setter
+						TargetName="managePackageButton"
 						Property="Visibility"
 						Value="Visible"/>
 				</MultiDataTrigger>

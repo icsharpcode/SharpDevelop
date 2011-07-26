@@ -14,27 +14,42 @@ namespace ICSharpCode.PackageManagement.Design
 	public class FakePackageManagementProject : IPackageManagementProject
 	{
 		public FakePackageManagementProject()
+			: this("Test")
+		{
+		}
+		
+		public FakePackageManagementProject(string name)
 		{
 			FakeInstallPackageAction = new FakeInstallPackageAction(this);
 			FakeUninstallPackageAction = new FakeUninstallPackageAction(this);
-			FakeUpdatePackageAction = new FakeUpdatePackageAction(this);
 			
-			Name = "Test";
+			this.Name = name;
 		}
 		
 		public FakeInstallPackageAction FakeInstallPackageAction;
-		public FakeUpdatePackageAction FakeUpdatePackageAction;
 		public FakeUninstallPackageAction FakeUninstallPackageAction;
+		
+		public FakeUpdatePackageAction FirstFakeUpdatePackageActionCreated {
+			get { return FakeUpdatePackageActionsCreated[0]; }
+		}
+		
+		public FakeUpdatePackageAction SecondFakeUpdatePackageActionCreated {
+			get { return FakeUpdatePackageActionsCreated[1]; }
+		}
+		
+		public List<FakeUpdatePackageAction> FakeUpdatePackageActionsCreated = 
+			new List<FakeUpdatePackageAction>();
 		
 		public string Name { get; set; }
 		
-		public bool IsInstalledReturnValue;
-		public IPackage PackagePassedToIsInstalled;
-		
-		public bool IsInstalled(IPackage package)
+		public bool IsPackageInstalled(string packageId)
 		{
-			PackagePassedToIsInstalled = package;
-			return IsInstalledReturnValue;
+			return FakePackages.Any(p => p.Id == packageId);
+		}
+		
+		public bool IsPackageInstalled(IPackage package)
+		{
+			return FakePackages.Contains(package);
 		}
 		
 		public List<FakePackage> FakePackages = new List<FakePackage>();
@@ -44,11 +59,11 @@ namespace ICSharpCode.PackageManagement.Design
 			return FakePackages.AsQueryable();
 		}
 		
-		public List<PackageOperation> FakeInstallOperations = new List<PackageOperation>();
+		public List<FakePackageOperation> FakeInstallOperations = new List<FakePackageOperation>();
 		public IPackage PackagePassedToGetInstallPackageOperations;
 		public bool IgnoreDependenciesPassedToGetInstallPackageOperations;
 		
-		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
+		public virtual IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
 		{
 			PackagePassedToGetInstallPackageOperations = package;
 			IgnoreDependenciesPassedToGetInstallPackageOperations = ignoreDependencies;
@@ -69,10 +84,20 @@ namespace ICSharpCode.PackageManagement.Design
 			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
 		}
 		
-		public void AddFakeInstallOperation()
+		public FakePackageOperation AddFakeInstallOperation()
 		{
-			var operation = new PackageOperation(new FakePackage(), PackageAction.Install);
+			var package = new FakePackage("MyPackage");
+			var operation = new FakePackageOperation(package, PackageAction.Install);
 			FakeInstallOperations.Add(operation);
+			return operation;
+		}
+		
+		public FakePackageOperation AddFakeUninstallOperation()
+		{
+			var package = new FakePackage("MyPackage");
+			var operation = new FakePackageOperation(package, PackageAction.Uninstall);
+			FakeInstallOperations.Add(operation);
+			return operation;			
 		}
 		
 		public FakePackageRepository FakeSourceRepository = new FakePackageRepository();
@@ -95,12 +120,14 @@ namespace ICSharpCode.PackageManagement.Design
 		public IPackage PackagePassedToUpdatePackage;
 		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
 		public bool UpdateDependenciesPassedToUpdatePackage;
+		public bool IsUpdatePackageCalled;
 		
 		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies)
 		{
 			PackagePassedToUpdatePackage = package;
 			PackageOperationsPassedToUpdatePackage = operations;
 			UpdateDependenciesPassedToUpdatePackage = updateDependencies;
+			IsUpdatePackageCalled = true;
 		}
 		
 		public virtual InstallPackageAction CreateInstallPackageAction()
@@ -115,7 +142,9 @@ namespace ICSharpCode.PackageManagement.Design
 				
 		public UpdatePackageAction CreateUpdatePackageAction()
 		{
-			return FakeUpdatePackageAction;
+			var action = new FakeUpdatePackageAction(this);
+			FakeUpdatePackageActionsCreated.Add(action);
+			return action;
 		}
 		
 		public event EventHandler<PackageOperationEventArgs> PackageInstalled;
@@ -159,6 +188,14 @@ namespace ICSharpCode.PackageManagement.Design
 		public Project ConvertToDTEProject()
 		{
 			return DTEProject;
+		}
+		
+		public List<FakePackage> FakePackagesInReverseDependencyOrder = 
+			new List<FakePackage>();
+		
+		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
+		{
+			return FakePackagesInReverseDependencyOrder;
 		}
 	}
 }

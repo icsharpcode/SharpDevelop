@@ -251,7 +251,7 @@ namespace PackageManagement.Tests
 		{
 			CreateAction();
 			FakePackage package = fakeProject.FakeSourceRepository.AddFakePackageWithVersion("Test", "1.0");
-			var operation = new PackageOperation(package, PackageAction.Install);
+			var operation = new FakePackageOperation(package, PackageAction.Install);
 			action.PackageId = package.Id;
 			action.PackageVersion = package.Version;
 			fakeProject.FakeInstallOperations.Add(operation);
@@ -265,7 +265,7 @@ namespace PackageManagement.Tests
 		{
 			CreateAction();
 			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion("Test", "1.0");
-			var operation = new PackageOperation(expectedPackage, PackageAction.Install);
+			var operation = new FakePackageOperation(expectedPackage, PackageAction.Install);
 			action.PackageId = expectedPackage.Id;
 			action.PackageVersion = expectedPackage.Version;
 			fakeProject.FakeInstallOperations.Add(operation);

@@ -207,8 +207,10 @@ namespace Debugger.AddIn.Tooltips
 				this.childPopup.IsLeaf = true;
 				this.childPopup.HorizontalOffset = buttonPos.X + ChildPopupOpenXOffet;
 				this.childPopup.VerticalOffset = buttonPos.Y + ChildPopupOpenYOffet;
-				this.childPopup.ItemsSource = clickedNode.ChildNodes;
-				this.childPopup.Open();
+				if (clickedNode.ChildNodes != null) {
+					this.childPopup.ItemsSource = clickedNode.ChildNodes;
+					this.childPopup.Open();
+				}
 			} else {
 				
 			}

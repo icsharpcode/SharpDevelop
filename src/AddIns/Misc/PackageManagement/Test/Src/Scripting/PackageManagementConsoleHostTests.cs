@@ -380,7 +380,7 @@ namespace PackageManagement.Tests.Scripting
 			
 			IPackageManagementProject project = host.GetProject(source, "Test");
 			
-			FakePackageManagementProject expectedProject = fakeSolution.FakeActiveProject;
+			FakePackageManagementProject expectedProject = fakeSolution.FakeProjectToReturnFromGetProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -450,7 +450,7 @@ namespace PackageManagement.Tests.Scripting
 			
 			IPackageManagementProject project = host.GetProject(repository, "Test");
 			
-			var expectedProject = fakeSolution.FakeActiveProject;
+			FakePackageManagementProject expectedProject = fakeSolution.FakeProjectToReturnFromGetProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -622,6 +622,30 @@ namespace PackageManagement.Tests.Scripting
 			string expectedText = "test";
 			
 			Assert.AreEqual(expectedText, text);
+		}
+		
+		[Test]
+		public void GetPackageRepository_PackageSourceSpecified_ReturnsPackageRepositoryFromRegisteredRepositories()
+		{
+			CreateHost();
+			
+			var packageSource = new PackageSource("Test");
+			IPackageRepository repository = host.GetPackageRepository(packageSource);
+			FakePackageRepository expectedRepository = fakeRegisteredPackageRepositories.FakePackageRepository;
+			
+			Assert.AreEqual(expectedRepository, repository);
+		}
+		
+		[Test]
+		public void GetPackageRepository_PackageSourceSpecified_PackagSourceUsedToGetRepository()
+		{
+			CreateHost();
+			
+			var expectedPackageSource = new PackageSource("Test");
+			IPackageRepository repository = host.GetPackageRepository(expectedPackageSource);
+			PackageSource packageSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
+			
+			Assert.AreEqual(expectedPackageSource, packageSource);
 		}
 	}
 }

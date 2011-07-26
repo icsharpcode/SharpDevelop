@@ -235,10 +235,6 @@
       <DependentUpon>SelectCulturePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SharpDevelopUIOptions.xaml.cs">
-      <DependentUpon>SharpDevelopUIOptions.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptions.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptionsPanel.xaml.cs">
       <DependentUpon>WebProjectOptionsPanel.xaml</DependentUpon>
@@ -265,9 +261,6 @@
     <Compile Include="Src\Gui\Pads\BaseWatchBox.cs" />
     <Compile Include="Src\Gui\Pads\OutlinePad.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
-    <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\InnerExpand\NamespaceNode.cs" />
-    <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\InnerExpand\MemberNodes.cs" />
-    <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\InnerExpand\TypeNodes.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
     <Compile Include="Src\Gui\ProgressCollector.cs" />
@@ -315,6 +308,7 @@
     <Compile Include="Src\Services\AmbienceService\IAmbience.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
+    <Compile Include="Src\Services\Debugger\DecompiledBreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\IPinDebuggerControl.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\ITreeNode.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\IVisualizerCommand.cs" />
@@ -798,7 +792,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml" />
-    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SharpDevelopUIOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptionsPanel.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml" />
@@ -836,7 +829,6 @@
     <Folder Include="Src\Editor\Commands" />
     <Folder Include="Src\Editor\Search" />
     <Folder Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions" />
-    <Folder Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\InnerExpand" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Folder Include="Src\Services\Debugger\Tooltips" />
     <Folder Include="Src\Services\RefactoringService\ContextActions" />

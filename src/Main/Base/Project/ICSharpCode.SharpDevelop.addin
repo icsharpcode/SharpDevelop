@@ -1080,9 +1080,6 @@
 			<OptionPanel id    = "SelectStyle"
 			             label = "${res:Dialog.Options.IDEOptions.SelectVisualStyle.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel"/>
-			<OptionPanel id    = "IDEUIOptions"
-			             label = "${res:Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SharpDevelopUIOptions"/>
 			<OptionPanel id    = "LoadSave"
 			             label = "${res:Dialog.Options.IDEOptions.LoadSaveOptions.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.LoadSaveOptions"/>

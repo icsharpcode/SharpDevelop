@@ -45,7 +45,7 @@ namespace ICSharpCode.PackageManagement
 		
 		string GetTargetFrameworkProfile()
 		{
-			return GetEvaluatedPropertyOrDefault("TargetFrameworkProfile", "Full");
+			return GetEvaluatedPropertyOrDefault("TargetFrameworkProfile", String.Empty);
 		}
 		
 		string GetEvaluatedPropertyOrDefault(string propertyName, string defaultPropertyValue)

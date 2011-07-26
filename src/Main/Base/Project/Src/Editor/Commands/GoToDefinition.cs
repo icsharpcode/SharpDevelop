@@ -15,11 +15,19 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
 		{
-			if (symbol == null)
-				return;
 			FilePosition pos = symbol.GetDefinitionPosition();
 			if (pos.IsEmpty) {
-				new GoToDecompiledDefinition().Run(symbol);
+				IEntity entity;
+				if (symbol is MemberResolveResult) {
+					entity = ((MemberResolveResult)symbol).ResolvedMember;
+				} else if (symbol is TypeResolveResult) {
+					entity = ((TypeResolveResult)symbol).ResolvedClass;
+				} else {
+					entity = null;
+				}
+				if (entity != null) {
+					NavigationService.NavigateTo(entity);
+				}
 			} else {
 				try {
 					if (pos.Position.IsEmpty)
@@ -33,6 +41,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		}
 	}
 	
+	/*
 	public class GoToDecompiledDefinition : AbstractMenuCommand
 	{
 		/// <summary>
@@ -129,6 +138,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 					FileService.OpenFile(filePath);
 			}
 		}
-	}
+	}*/
 }
 */

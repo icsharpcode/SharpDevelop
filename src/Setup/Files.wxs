@@ -1410,12 +1410,23 @@
 										<File Id="EmptySettingsFile.xft" Name="EmptySettingsFile.xft" Source="..\..\AddIns\DisplayBindings\SettingsEditor\EmptySettingsFile.xft" />
 									</Component>
 								</Directory>
+								<Directory Id="Decompiler" Name="Decompiler">
+									<Component Id="ILSpyAddInFiles" Guid="F1422563-5927-4D98-B4D4-33FE5576C665" DiskId="1">
+										<File Id="ILSpyAddIn.dll" Name="ILSpyAddIn.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.dll" KeyPath="yes" />
+										<File Id="ILSpyAddIn.addin" Name="ILSpyAddIn.addin" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.addin" />
+										<File Id="NRefactory.dll" Name="NRefactory.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.NRefactory.dll" />
+										<File Id="ICSharpCode.NewNRefactory.dll" Name="ICSharpCode.NewNRefactory.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.NewNRefactory.dll" />
+										<File Id="ICSharpCode.Decompiler.dll" Name="ICSharpCode.Decompiler.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.Decompiler.dll" />
+									</Component>
+								</Directory>
 							</Directory>
 							<Directory Id="DebuggerFolder" Name="Debugger">
 								<Component Guid="27C66A5A-0149-45F4-B1AF-C320FE005E6B" Id="DebuggerAddInFiles" DiskId="1">
 									<File Source="..\..\AddIns\Debugger\Debugger.AddIn.addin" Id="Debugger.AddIn.addin" Name="Debugger.AddIn.addin" />
 									<File Source="..\..\AddIns\Debugger\Debugger.AddIn.dll" Id="Debugger.AddIn.dll" Name="Debugger.AddIn.dll" />
 									<File Source="..\..\AddIns\Debugger\Debugger.Core.dll" Id="Debugger.Core.dll" Name="Debugger.Core.dll" />
+									<File Source="..\..\AddIns\Debugger\ICSharpCode.NewNRefactory.dll" Id="Debugger.ICSharpCode.NewNRefactory.dll" Name="ICSharpCode.NewNRefactory.dll" />
+									<File Source="..\..\AddIns\Debugger\ICSharpCode.Decompiler.dll" Id="Debugger.ICSharpCode.Decompiler.dll" Name="ICSharpCode.Decompiler.dll" />
 								</Component>
 							</Directory>
 							<Directory Id="MiscAddInsFolder" Name="Misc">
@@ -1557,12 +1568,6 @@
 										<File Source="..\..\AddIns\Misc\SharpDevelopReports\itextsharp.dll" Name="itextsharp.dll" Id="itextsharp.dll" KeyPath="yes" />
 									</Component>
 								</Directory>
-								<Directory Id="ILSpyAddIn" Name="ILSpyAddIn">
-									<Component Id="ILSpyAddInFiles" Guid="F1422563-5927-4D98-B4D4-33FE5576C665" DiskId="1">
-										<File Id="ILSpyAddIn.dll" Name="ILSpyAddIn.dll" Source="..\..\AddIns\Misc\ILSpyAddIn\ILSpyAddIn.dll" KeyPath="yes" />
-										<File Id="ILSpyAddIn.addin" Name="ILSpyAddIn.addin" Source="..\..\AddIns\Misc\ILSpyAddIn\ILSpyAddIn.addin" />
-									</Component>
-								</Directory>
 								<Directory Id="PackageManagement" Name="PackageManagement">
 									<Component Id="NuGetCoreDll" Guid="AA347D26-712F-4BF7-BB74-517F6BFC563F" DiskId="1">
 										<File Id="NuGet.Core.dll" Name="NuGet.Core.dll" Source="..\..\AddIns\Misc\PackageManagement\NuGet.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.Core.dll" AssemblyManifest="NuGet.Core.dll" />
@@ -1685,7 +1690,7 @@
 			</Directory>
 			<!-- SharpDevelop Start menu folder -->
 			<Directory Id="ProgramMenuFolder" Name="Programs">
-				<Component Id="SharpDevelopProgramMenuItems" Guid="212A9717-E2C6-4522-AB76-9B92B7FB7FB6">
+				<Component Id="SharpDevelopProgramMenuItems" Guid="3EADE27E-9C2E-4905-9FE1-278D65EF10F5">
 					<!--
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
@@ -1696,7 +1701,7 @@
 			</Directory>
 			<!-- Desktop shortcuts -->
 			<Directory Id="DesktopFolder" Name="Desktop">
-				<Component Id="DesktopFolderItems" Guid="03C3A248-04B0-4DE7-B4BA-C2D7275AA9FA">
+				<Component Id="DesktopFolderItems" Guid="F9D43523-857D-49F2-B88D-BC581ACE7B13">
 					<!--
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp

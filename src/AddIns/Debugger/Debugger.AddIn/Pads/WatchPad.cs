@@ -170,25 +170,25 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					Utils.DoEvents(debuggedProcess);
 					List<TreeNode> nodes = new List<TreeNode>();
 					
-					foreach (var nod in watchList.WatchItems) {
+					foreach (var node in watchList.WatchItems) {
 						try {
-							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(nod.Name) ? "is null or empty!" : nod.Name));
-							var nodExpression = debugger.GetExpression(nod.Name);
+							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(node.Name) ? "is null or empty!" : node.Name));
+							var nodExpression = debugger.GetExpression(node.Name);
 							//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
-							ExpressionNode valNode = new ExpressionNode(null, nod.Name, nodExpression);
+							ExpressionNode valNode = new ExpressionNode(null, node.Name, nodExpression);
 							nodes.Add(valNode);
 						}
 						catch (GetValueException) {
-							string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), nod.Name);
-							ErrorInfoNode infoNode = new ErrorInfoNode(nod.Name, error);
+							string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), node.Name);
+							ErrorInfoNode infoNode = new ErrorInfoNode(node.Name, error);
 							nodes.Add(infoNode);
 						}
 					}
 					
 					// rebuild list
 					watchList.WatchItems.Clear();
-					foreach (var nod in nodes)
-						watchList.WatchItems.Add(nod);
+					foreach (var node in nodes)
+						watchList.WatchItems.Add(node);
 				}
 				catch(AbortedBecauseDebuggeeResumedException) { }
 				catch(Exception ex) {

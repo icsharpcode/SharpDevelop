@@ -65,7 +65,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			using(new PrintTimes("Local Variables refresh")) {
 				try {
 					Utils.DoEvents(debuggedProcess);
-					foreach (var item in new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes) {
+					var frame = !debuggedProcess.IsInExternalCode ? debuggedProcess.SelectedStackFrame : debuggedProcess.SelectedThread.MostRecentStackFrame;
+					foreach (var item in new StackFrameNode(frame).ChildNodes) {
 						localVarList.WatchItems.Add(item);
 					}
 				} 

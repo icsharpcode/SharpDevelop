@@ -18,12 +18,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// <summary>
 	/// Handles the text markers for a code editor.
 	/// </summary>
-	sealed class TextMarkerService : DocumentColorizingTransformer, IBackgroundRenderer, ITextMarkerService
+	public sealed class TextMarkerService : DocumentColorizingTransformer, IBackgroundRenderer, ITextMarkerService
 	{
-		readonly CodeEditor codeEditor;
+		readonly ICodeEditor codeEditor;
 		TextSegmentCollection<TextMarker> markers;
 		
-		public TextMarkerService(CodeEditor codeEditor)
+		public TextMarkerService(ICodeEditor codeEditor)
 		{
 			if (codeEditor == null)
 				throw new ArgumentNullException("codeEditor");
@@ -200,7 +200,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#endregion
 	}
 	
-	sealed class TextMarker : TextSegment, ITextMarker
+	public sealed class TextMarker : TextSegment, ITextMarker
 	{
 		readonly TextMarkerService service;
 		

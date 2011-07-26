@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows.Media;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
@@ -14,6 +15,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 {
 	public class CurrentLineBookmark : SDMarkerBookmark
 	{
+		static object syncObject = new object();
 		static CurrentLineBookmark instance;
 		
 		static int startLine;
@@ -24,14 +26,25 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public static void SetPosition(IViewContent viewContent,  int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
 		{
 			ITextEditorProvider tecp = viewContent as ITextEditorProvider;
-			if (tecp != null)
+			if (tecp != null) {
 				SetPosition(tecp.TextEditor.FileName, tecp.TextEditor.Document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
-			else
-				Remove();
+			} else {
+				lock (syncObject) {
+					dynamic codeView = viewContent.Control;
+					var document = codeView.TextEditor.Document as IDocument;
+					SetPosition(null, document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
+					codeView.IconBarManager.Bookmarks.Add(CurrentLineBookmark.instance);
+					codeView.UnfoldAndScroll(makerStartLine);
+					if (document != null)
+						CurrentLineBookmark.instance.Document = document;
+				}
+			}
 		}
 		
 		public static void SetPosition(FileName fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
 		{
+			if (document == null)
+				return;
 			Remove();
 			
 			startLine   = makerStartLine;

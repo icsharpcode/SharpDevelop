@@ -9,5 +9,6 @@ namespace ICSharpCode.PackageManagement
 	public interface ISharpDevelopProjectManager : IProjectManager
 	{
 		IPackagePathResolver PathResolver { get; }
+		bool IsInstalled(string packageId);
 	}
 }

@@ -23,11 +23,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public void Execute()
 		{
-			var cu = this.Class.CompilationUnit;
-			var region = this.Class.Region;
-			if (cu == null || cu.FileName == null || region == null || region.IsEmpty)
-				return;
-			FileService.JumpToFilePosition(cu.FileName, region.BeginLine, region.BeginColumn);
+			NavigationService.NavigateTo(this.Class);
 		}
 	}
 	*/

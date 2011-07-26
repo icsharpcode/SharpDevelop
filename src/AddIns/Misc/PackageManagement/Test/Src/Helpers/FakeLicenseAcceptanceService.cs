@@ -17,7 +17,7 @@ namespace PackageManagement.Tests.Helpers
 		public bool AcceptLicenses(IEnumerable<IPackage> packages)
 		{
 			IsAcceptLicensesCalled = true;
-			PackagesPassedToAcceptLicenses = packages; 
+			PackagesPassedToAcceptLicenses = packages;
 			
 			return AcceptLicensesReturnValue;
 		}
