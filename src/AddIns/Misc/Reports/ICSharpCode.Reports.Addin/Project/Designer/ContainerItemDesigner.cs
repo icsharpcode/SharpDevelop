@@ -34,6 +34,12 @@ namespace ICSharpCode.Reports.Addin.Designer
 			GetService ();	
 		}
 		
+		protected override void PostFilterProperties(System.Collections.IDictionary properties)
+		{
+			DesignerHelper.RemoveProperties(properties);
+			base.PostFilterProperties(properties);
+		}
+		
 		
 		protected override void OnDragDrop(DragEventArgs de)
 		{

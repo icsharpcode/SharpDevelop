@@ -26,6 +26,14 @@ namespace ICSharpCode.Reports.Addin.Designer
 			GetService();
 		}
 		
+		
+		protected override void PostFilterProperties(System.Collections.IDictionary properties)
+		{
+			DesignerHelper.RemoveProperties(properties);
+			base.PostFilterProperties(properties);
+		}
+		
+		
 		private void GetService ()
 		{
 			selectionService = GetService(typeof(ISelectionService)) as ISelectionService;

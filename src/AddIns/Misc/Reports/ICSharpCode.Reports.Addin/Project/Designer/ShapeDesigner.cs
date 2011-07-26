@@ -44,6 +44,13 @@ namespace ICSharpCode.Reports.Addin.Designer
 			
 		}
 		
+		
+		protected override void PostFilterProperties(System.Collections.IDictionary properties)
+		{
+			DesignerHelper.RemoveProperties(properties);
+			base.PostFilterProperties(properties);
+		}
+		
 		private void OnComponentChanging (object sender,ComponentChangingEventArgs e)
 		{
 //			System.Console.WriteLine("changing");

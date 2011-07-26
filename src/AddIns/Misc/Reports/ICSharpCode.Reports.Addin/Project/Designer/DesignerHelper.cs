@@ -48,6 +48,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 			properties.Remove("TabStop");
 			properties.Remove("Tag");
 			properties.Remove("UseWaitCursor");
+			properties.Remove("Visible");
 		}
 		
 		public static void Remove (IDictionary properties,string[] toRemove)
