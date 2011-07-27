@@ -7,7 +7,7 @@ using System.Data;
 using NUnit.Framework;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 
-namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
+namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 {
 
 	[TestFixture]
@@ -19,7 +19,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
 		[Test]
 		public void TableStrategy_CanInit()
 		{
-			TableStrategy ts = new TableStrategy(this.table,new ReportSettings());
+			var ts = new ICSharpCode.Reports.Core.TableStrategy(this.table,new ReportSettings());
 			Assert.That(ts != null);
 		}
 		
@@ -27,22 +27,10 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
 		#region Grouping
 		
 		[Test]
-		public void Add_GroupColumn_IsGrouped_true()
-		{
-			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
-			TableStrategy tableStrategy =GroupTableStrategyFactory (gc);
-			tableStrategy.Bind();
-			Assert.That(tableStrategy.IsGrouped == true);
-		}
-		
-		
-		
-		
-		[Test]
 		public void CanGroup_All_Elements_are_GroupComparer ()
 		{
 			GroupColumn groupComparer = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
-			TableStrategy tableStrategy = GroupTableStrategyFactory (groupComparer);
+			ICSharpCode.Reports.Core.TableStrategy tableStrategy = GroupTableStrategyFactory (groupComparer);
 			tableStrategy.Bind();
 			foreach (BaseComparer element in tableStrategy.IndexList) 
 			{
@@ -56,7 +44,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
 		public void CanGroup_All_Elements_Contains_Children ()
 		{
 			GroupColumn groupComparer = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
-			TableStrategy tableStrategy =GroupTableStrategyFactory (groupComparer);
+			var  tableStrategy =GroupTableStrategyFactory (groupComparer);
 			tableStrategy.Bind();
 			foreach (BaseComparer element in tableStrategy.IndexList) 
 			{
@@ -69,16 +57,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
 		
 		
 		#region Sorting
-		
-		[Test]
-		public void TableStrategy_Set_IsSorted()
-		{
-			SortColumn sc = new SortColumn("Last",System.ComponentModel.ListSortDirection.Ascending);
-			var tableStrategy = SortTableStrategyFactory(sc);
-			tableStrategy.Bind();
-			Assert.That(tableStrategy.IsSorted == true);
-		}
-		
 		
 		[Test]
 		public void CanSort_String_Ascending()
@@ -142,7 +120,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
 			reportSettings.SortColumnsCollection.Add(sc);
 			reportSettings.SortColumnsCollection.Add(sc1);
 			
-			var tableStrategy = new TableStrategy(this.table,reportSettings);
+			var tableStrategy = new ICSharpCode.Reports.Core.TableStrategy(this.table,reportSettings);
 			string v1 = String.Empty;
 			
 			foreach (BaseComparer element in tableStrategy.IndexList) {
@@ -155,22 +133,27 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
 		
 		#endregion
 		
-		private TableStrategy SortTableStrategyFactory (SortColumn sortColumn)
+		
+		#region Setup/TearDown
+		
+		private ICSharpCode.Reports.Core.TableStrategy SortTableStrategyFactory (SortColumn sortColumn)
 		{
 			var reportSettings = new ReportSettings();
 			reportSettings.SortColumnsCollection.Add(sortColumn);
-			var tableStrategy = new TableStrategy(this.table,reportSettings);
+			var tableStrategy = new ICSharpCode.Reports.Core.TableStrategy(this.table,reportSettings);
 			return tableStrategy;
 		}
 		
 		
-		private TableStrategy GroupTableStrategyFactory (GroupColumn sortColumn)
+		private ICSharpCode.Reports.Core.TableStrategy GroupTableStrategyFactory (GroupColumn sortColumn)
 		{
 			var reportSettings = new ReportSettings();
 			reportSettings.GroupColumnsCollection.Add(sortColumn);
-			var tableStrategy = new TableStrategy(this.table,reportSettings);
+			var tableStrategy = new ICSharpCode.Reports.Core.TableStrategy(this.table,reportSettings);
 			return tableStrategy;
 		}
+		
+		
 		[TestFixtureSetUp]
 		public void Init()
 		{
@@ -183,5 +166,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
 		{
 			// TODO: Add tear down code.
 		}
+		
+		#endregion
 	}
 }

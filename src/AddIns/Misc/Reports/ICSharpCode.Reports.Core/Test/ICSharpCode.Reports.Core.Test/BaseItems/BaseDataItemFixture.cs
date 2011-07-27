@@ -23,10 +23,9 @@ namespace ICSharpCode.Reports.Core.Test.BaseItems
 		{
 			BaseDataItem bdi = new BaseDataItem();
 			Assert.AreEqual("System.String",bdi.DataType);
-			Assert.AreEqual(GlobalValues.UnboundName,bdi.ColumnName);
 			Assert.IsTrue(String.IsNullOrEmpty(bdi.BaseTableName));
-			Assert.AreEqual("." + GlobalValues.UnboundName,bdi.MappingName);
 		}
+		
 		
 		[Test]
 		public void ConstructurWithColumnName()
@@ -104,7 +103,7 @@ namespace ICSharpCode.Reports.Core.Test.BaseItems
 		public void ExportColumnIsNotNull ()
 		{
 			BaseDataItem bt = new BaseDataItem();
-			BaseExportColumn bec = bt.CreateExportColumn();
+			var bec = bt.CreateExportColumn();
 			Assert.IsNotNull(bec);
 		}
 		
@@ -113,7 +112,7 @@ namespace ICSharpCode.Reports.Core.Test.BaseItems
 		public void TypeofExportShouldBeExportText ()
 		{
 			BaseTextItem bt = new BaseDataItem();
-			BaseExportColumn bec = bt.CreateExportColumn();
+			var bec = bt.CreateExportColumn();
 			Type t = typeof(ExportText);
 			Assert.AreEqual(t,bec.GetType(),"Type should be 'ExportText");
 		}

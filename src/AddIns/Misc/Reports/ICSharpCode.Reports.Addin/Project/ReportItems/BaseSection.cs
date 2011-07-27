@@ -2,13 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 
-using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Addin.TypeProviders;
-using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -20,11 +17,6 @@ namespace ICSharpCode.Reports.Addin
 	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.SectionDesigner))]
 	public class BaseSection:AbstractItem
 	{
-		private int  sectionOffset;
-		private int sectionMargin;
-		private bool pageBreakAfter;
-		private bool  canGrow ;
-		private bool canShrink ;
 
 		public BaseSection():base()
 		{
@@ -49,31 +41,18 @@ namespace ICSharpCode.Reports.Addin
 		
 		#region Propertys
 		
-		public int SectionOffset {
-			get { return sectionOffset; }
-			set { sectionOffset = value; }
-		}
+		[Browsable(false)]
+		public int SectionOffset {get;set;}
 		
-		public int SectionMargin {
-			get { return sectionMargin; }
-			set { sectionMargin = value; }
-		}
-		
-		public bool PageBreakAfter {
-			get { return pageBreakAfter; }
-			set { pageBreakAfter = value; }
-		}
-		
-		public bool CanGrow {
-			get { return canGrow; }
-			set { canGrow = value; }
-		}
-		
-		public bool CanShrink {
-			get { return canShrink; }
-			set { canShrink = value; }
-		}
-		
+		[Browsable(false)]	
+		public int SectionMargin {get;set;}
+			
+		public bool PageBreakAfter {get;set;}
+			
+		public bool CanGrow {get;set;}
+			
+		public bool CanShrink {get;set;}
+			
 		#endregion
 	}
 	

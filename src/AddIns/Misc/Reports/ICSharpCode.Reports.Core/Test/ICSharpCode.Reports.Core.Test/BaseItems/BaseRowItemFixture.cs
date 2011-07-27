@@ -38,7 +38,7 @@ namespace ICSharpCode.Reports.Core.Test.BaseItems
 		public void ExportColumnIsNotNull ()
 		{
 			BaseRowItem bri = new BaseRowItem();
-			BaseExportColumn bec = bri.CreateExportColumn();
+			var bec = bri.CreateExportColumn();
 			Assert.IsNotNull(bec);
 		}
 		
@@ -46,7 +46,7 @@ namespace ICSharpCode.Reports.Core.Test.BaseItems
 		public void TypeofExportShouldBeExportContainer ()
 		{
 			BaseRowItem bri = new BaseRowItem();
-			BaseExportColumn bec = bri.CreateExportColumn();
+			var bec = bri.CreateExportColumn();
 			Type t = typeof(ExportContainer);
 			Assert.AreEqual(t,bec.GetType(),"Type should be 'ExportContainer");
 		}
@@ -57,7 +57,6 @@ namespace ICSharpCode.Reports.Core.Test.BaseItems
 			BaseRowItem bri = new BaseRowItem();
 			ExportContainer ec = (ExportContainer)bri.CreateExportColumn();
 			Assert.AreEqual (0,ec.Items.Count,"Items.Count should BeforePrintEventArgs '0'");
-			Assert.IsTrue(ec.IsContainer);
 			Assert.AreEqual(bri.Size,ec.StyleDecorator.Size);                 
 		}
 		#endregion

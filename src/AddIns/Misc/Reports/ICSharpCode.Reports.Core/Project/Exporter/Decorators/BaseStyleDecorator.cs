@@ -4,6 +4,9 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+
+using ICSharpCode.Reports.Core.Globals;
+
 namespace ICSharpCode.Reports.Core.Exporter
 {
 	/// <summary>

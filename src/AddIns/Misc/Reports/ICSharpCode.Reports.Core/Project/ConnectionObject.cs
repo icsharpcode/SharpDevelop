@@ -4,7 +4,6 @@
 using System;
 using System.Data;
 using System.Data.Common;
-//using System.Data.OleDb;
 
 /// <summary>
 /// This class handles the connection to a DataBase 

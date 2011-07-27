@@ -15,13 +15,13 @@ namespace ICSharpCode.Reports.Addin.Designer
 	/// <summary>
 	/// Description of RowItemDesigner.
 	/// </summary>
-	public class RowItemDesigner:ParentControlDesigner
+	public class ContainerItemDesigner:ParentControlDesigner
 	{
 		
 		private ISelectionService selectionService;
 		private IComponentChangeService componentChangeService;
 		
-		public RowItemDesigner()
+		public ContainerItemDesigner()
 		{
 		}
 		
@@ -32,6 +32,12 @@ namespace ICSharpCode.Reports.Addin.Designer
 			}
 			base.Initialize(component);
 			GetService ();	
+		}
+		
+		protected override void PostFilterProperties(System.Collections.IDictionary properties)
+		{
+			DesignerHelper.RemoveProperties(properties);
+			base.PostFilterProperties(properties);
 		}
 		
 		

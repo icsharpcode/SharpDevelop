@@ -8,7 +8,7 @@ using System.Data;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 using NUnit.Framework;
 
-namespace ICSharpCode.Reports.Core.Test.DataManager
+namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 {
 	
 	[TestFixture]
@@ -17,13 +17,15 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		DataTable table;
 		
+		
 		[Test]
-		public void GroupingCollection_EmptyGrouping_IsGrouped_False()
+		public void Can_add_GroupColumn ()
 		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,new ReportSettings());
-			DataNavigator dataNav = dm.GetNavigator;
+			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
+			ReportSettings rs = new ReportSettings();
 			
-			Assert.That(dataNav.IsGrouped == false);
+			rs.GroupColumnsCollection.Add(gc);
+			Assert.AreEqual(1,rs.GroupColumnsCollection.Count);
 		}
 		
 		
@@ -32,21 +34,14 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		{
 			var dataNavigator = PrepareStringGrouping();
 			dataNavigator.MoveNext();
-			IDataNavigator child = dataNavigator.GetChildNavigator();
+			IDataNavigator child = dataNavigator.GetChildNavigator;
 			AvailableFieldsCollection availableFieldsCollection = child.AvailableFields;
 			Assert.That(availableFieldsCollection,Is.Not.Null);
 			Assert.That(availableFieldsCollection.Count,Is.GreaterThan(0));
 		}
 		
+		
 		#region Group by String
-		
-		[Test]
-		public void GroupingCollection_ContainsGrouping_IsGrouped_True()
-		{
-			var dataNavigator = PrepareStringGrouping();
-			Assert.That(dataNavigator.IsGrouped == true);
-		}
-		
 		
 		[Test]
 		public void Has_Children()
@@ -65,7 +60,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			{
 				if (dataNavigator.HasChildren)
 				{
-					var childNavigator = dataNavigator.GetChildNavigator();
+					var childNavigator = dataNavigator.GetChildNavigator;
 					Assert.That(childNavigator.Count,Is.GreaterThan(0));
 				}
 			}
@@ -79,7 +74,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			while (dataNavigator.MoveNext()) {
 				if (dataNavigator.HasChildren)
 				{
-					var childNavigator = dataNavigator.GetChildNavigator();
+					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
 						Assert.That(dataNavigator.HasChildren,Is.True);
@@ -103,7 +98,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			while (dataNavigator.MoveNext()) {
 				if (dataNavigator.HasChildren)
 				{
-					var childNavigator = dataNavigator.GetChildNavigator();
+					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
 						Assert.That(dataNavigator.HasChildren,Is.True);
@@ -118,14 +113,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		
 		[Test]
-		public void DataTimeCollection_Contains_IsGrouped_False()
-		{
-			var dataNavigator = PrepareDateTimeGrouping();
-			Assert.That(dataNavigator.IsGrouped == true);
-		}
-		
-		
-		[Test]
 		public void DataTime_Has_Children()
 		{
 			var dataNav = PrepareDateTimeGrouping();
@@ -134,13 +121,10 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			}
 		}
 		
-		
 		#endregion
 		
-	
 		#region Try make recursive with ChildNavigator
 	
-		
 		[Test]
 		public void Can_Get_ChildNavigator ()
 		{
@@ -151,16 +135,15 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 				if (dataNavigator.HasChildren) {
 					DataRow r = dataNavigator.Current as DataRow;
 					
-					
-					IDataNavigator child = dataNavigator.GetChildNavigator();
 					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString() ;
+					IDataNavigator child = dataNavigator.GetChildNavigator;
+					
 					Console.WriteLine(v2);
 					Assert.That (child,Is.Not.Null);
 					RecursiveCall(child);
 				}
 			}
 		}
-		
 		
 		
 		private void RecursiveCall (IDataNavigator startNavigator)
@@ -171,7 +154,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 				string v1 = r["last"].ToString() + " :" +  r[3].ToString();
 				Console.WriteLine("\t {0}",v1);
 				if (startNavigator.HasChildren) {
-					IDataNavigator child = startNavigator.GetChildNavigator();
+					IDataNavigator child = startNavigator.GetChildNavigator;
 					Console.WriteLine("header {0} - Child_Count:{1}",v1,child.Count);
 					RecursiveCall (child);
 				}
@@ -181,7 +164,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 	
 		
 		#endregion
-		
 		
 		
 		private IDataNavigator PrepareStringGrouping ()
@@ -196,8 +178,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		private IDataNavigator PrepareDateTimeGrouping ()
 		{
-			Console.WriteLine("PrepareDateTimeGrouping ()");
-			
 			GroupColumn gc = new GroupColumn("RandomDate",1,ListSortDirection.Ascending);
 			ReportSettings rs = new ReportSettings();
 			rs.GroupColumnsCollection.Add(gc);
