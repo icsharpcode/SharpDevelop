@@ -16,6 +16,10 @@
 		<Class id="ILSpy" class="ICSharpCode.ILSpyAddIn.NavigateToDecompiledEntityService"/>
 	</Path>
 	
+	<Path name="/SharpDevelop/Services/DebuggerDecompilerService">
+		<Class id="DebuggerDecompilerService" class="ICSharpCode.ILSpyAddIn.DebuggerDecompilerService"/>
+	</Path>
+	
 	<!-- Text editor context menu: Launch ILSpy command -->
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">

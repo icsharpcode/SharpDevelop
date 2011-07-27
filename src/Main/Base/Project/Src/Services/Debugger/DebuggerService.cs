@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -35,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			BookmarkManager.Added   += BookmarkAdded;
 			BookmarkManager.Removed += BookmarkRemoved;
 			
-			ExternalDebugInformation = new Dictionary<int, object>();
+			ExternalDebugInformation = new ConcurrentDictionary<int, object>();
 		}
 		
 		static void GetDescriptors()
@@ -110,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// Gets or sets the external debug information.
 		/// <summary>This constains the code mappings and local variables.</summary>
 		/// </summary>
-		public static Dictionary<int, object> ExternalDebugInformation { get; set; }
+		public static ConcurrentDictionary<int, object> ExternalDebugInformation { get; private set; }
 		
 		/// <summary>
 		/// Gets or sets the current token and IL offset. Used for step in/out.
@@ -461,5 +462,26 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			DebuggerService.HandleToolTipRequest(e);
 		}
+	}
+	
+	/// <summary>
+	/// Interface for common debugger-decompiler mapping operations.
+	/// </summary>
+	public interface IDebuggerDecompilerService
+	{
+		/// <summary>
+		/// Decompiles on demand a type.
+		/// </summary>
+		void DecompileOnDemand(TypeDefinition type);
+		
+		/// <summary>
+		/// Gets the IL from and IL to.
+		/// </summary>
+		bool GetILAndTokenByLineNumber(int typeToken, int lineNumber, out int[] ilRanges, out int memberToken);
+		
+		/// <summary>
+		/// Gets the ILRange and source code line number.
+		/// </summary>
+		bool GetILAndLineNumber(int typeToken, int memberToken, int ilOffset, out int[] ilRange, out int line, out bool isMatch);
 	}
 }

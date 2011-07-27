@@ -14,8 +14,6 @@ using System.Windows.Forms;
 using Debugger.AddIn.Visualizers;
 using Debugger.MetaData;
 using ICSharpCode.Core;
-using ICSharpCode.Decompiler;
-using ICSharpCode.Decompiler.ILAst;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -159,17 +157,8 @@ namespace Debugger.AddIn.TreeModel
 			Value val;
 			try {
 				var process = WindowsDebugger.DebuggedProcess;
-				var context = !process.IsInExternalCode ? process.SelectedStackFrame : process.SelectedThread.MostRecentStackFrame;
-				object data = WindowsDebugger.GetLocalVariableIndex(WindowsDebugger.DebuggedProcess.SelectedThread.MostRecentStackFrame, Name);
-				if (expression is MemberReferenceExpression) {
-					var memberExpression = (MemberReferenceExpression)expression;
-					memberExpression.TargetObject.UserData = data;
-				} else {
-					expression.UserData = data;
-				}
-				
 				// evaluate expression
-				val = expression.Evaluate(WindowsDebugger.DebuggedProcess);
+				val = expression.Evaluate(process);
 			} catch (GetValueException e) {
 				error = e;
 				this.Text = e.Message;

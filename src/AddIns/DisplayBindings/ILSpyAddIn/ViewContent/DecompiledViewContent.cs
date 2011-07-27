@@ -168,22 +168,17 @@ namespace ICSharpCode.ILSpyAddIn
 				.PreOrder((AstNode)astBuilder.CompilationUnit, n => n.Children)
 				.Where(n => n is AttributedNode && n.Annotation<Tuple<int, int>>() != null);
 			MemberReference = typeDefinition;
+			
 			int token = MemberReference.MetadataToken.ToInt32();
-			if (!DebuggerService.ExternalDebugInformation.ContainsKey(token)) {
-				DebuggerService.ExternalDebugInformation.Add(token, new DecompileInformation {
-				                                             	CodeMappings = astBuilder.CodeMappings,
-				                                             	LocalVariables = astBuilder.LocalVariables,
-				                                             	DecompiledMemberReferences = astBuilder.DecompiledMemberReferences,
-				                                             	AstNodes = nodes
-				                                             });
-			} else {
-				DebuggerService.ExternalDebugInformation[token] = new DecompileInformation {
-				                                             	CodeMappings = astBuilder.CodeMappings,
-				                                             	LocalVariables = astBuilder.LocalVariables,
-				                                             	DecompiledMemberReferences = astBuilder.DecompiledMemberReferences,
-				                                             	AstNodes = nodes
-				                                             };
-			}
+			var info = new DecompileInformation {
+				CodeMappings = astBuilder.CodeMappings,
+				LocalVariables = astBuilder.LocalVariables,
+				DecompiledMemberReferences = astBuilder.DecompiledMemberReferences,
+				AstNodes = nodes
+			};
+			
+			// save the data
+			DebuggerService.ExternalDebugInformation.AddOrUpdate(token, info, (k, v) => info);
 		}
 		
 		void OnDecompilationFinished(StringWriter output)
@@ -222,37 +217,42 @@ namespace ICSharpCode.ILSpyAddIn
 			if (!DebuggerService.IsDebuggerStarted)
 				return;
 			
-			if (DebuggerService.DebugStepInformation != null) {
-				// get debugging information
-				DecompileInformation debugInformation = (DecompileInformation)DebuggerService.ExternalDebugInformation[MemberReference.MetadataToken.ToInt32()];
-				int token = DebuggerService.DebugStepInformation.Item1;
-				int ilOffset = DebuggerService.DebugStepInformation.Item2;
-				int line;
-				MemberReference member;
-				if (debugInformation.CodeMappings == null || !debugInformation.CodeMappings.ContainsKey(token))
-					return;
-				
-				debugInformation.CodeMappings[token].GetInstructionByTokenAndOffset(token, ilOffset, out member, out line);
-				
-				// HACK : if the codemappings are not built
-				if (line == 0) {
-					DebuggerService.CurrentDebugger.StepOver();
-					return;
-				}
-				// update bookmark & marker
-				codeView.UnfoldAndScroll(line);
-				CurrentLineBookmark.SetPosition(this, line, 0, line, 0);
+			if (MemberReference == null || MemberReference.MetadataToken == null)
+				return;
+			
+			int typeToken = MemberReference.MetadataToken.ToInt32();			
+			if (!DebuggerService.ExternalDebugInformation.ContainsKey(typeToken))
+				return;
+			
+			// get debugging information
+			DecompileInformation debugInformation = (DecompileInformation)DebuggerService.ExternalDebugInformation[typeToken];
+			int token = DebuggerService.DebugStepInformation.Item1;
+			int ilOffset = DebuggerService.DebugStepInformation.Item2;
+			int line;
+			MemberReference member;
+			if (debugInformation.CodeMappings == null || !debugInformation.CodeMappings.ContainsKey(token))
+				return;
+			
+			debugInformation.CodeMappings[token].GetInstructionByTokenAndOffset(token, ilOffset, out member, out line);
+			
+			// HACK : if the codemappings are not built
+			if (line <= 0) {
+				DebuggerService.CurrentDebugger.StepOver();
+				return;
 			}
+			// update bookmark & marker
+			codeView.UnfoldAndScroll(line);
+			CurrentLineBookmark.SetPosition(this, line, 0, line, 0);
 		}
 		
 		public void JumpTo(int lineNumber)
-		{
-			if (lineNumber <= 0)
-				return;
-			
+		{			
 			if (codeView == null)
 				return;
 			
+			if (lineNumber <= 0 || lineNumber > codeView.Document.LineCount)
+				return;
+
 			codeView.UnfoldAndScroll(lineNumber);
 		}
 		#endregion
