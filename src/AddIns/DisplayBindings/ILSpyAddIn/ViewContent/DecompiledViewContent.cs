@@ -178,7 +178,7 @@ namespace ICSharpCode.ILSpyAddIn
 			};
 			
 			// save the data
-			DebuggerService.ExternalDebugInformation.AddOrUpdate(token, info, (k, v) => info);
+			DebuggerDecompilerService.DebugInformation.AddOrUpdate(token, info, (k, v) => info);
 		}
 		
 		void OnDecompilationFinished(StringWriter output)
@@ -216,16 +216,17 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			if (!DebuggerService.IsDebuggerStarted)
 				return;
-			
 			if (MemberReference == null || MemberReference.MetadataToken == null)
 				return;
 			
 			int typeToken = MemberReference.MetadataToken.ToInt32();			
-			if (!DebuggerService.ExternalDebugInformation.ContainsKey(typeToken))
+			if (!DebuggerDecompilerService.DebugInformation.ContainsKey(typeToken))
+				return;
+			if (DebuggerService.DebugStepInformation == null)
 				return;
 			
 			// get debugging information
-			DecompileInformation debugInformation = (DecompileInformation)DebuggerService.ExternalDebugInformation[typeToken];
+			DecompileInformation debugInformation = (DecompileInformation)DebuggerDecompilerService.DebugInformation[typeToken];
 			int token = DebuggerService.DebugStepInformation.Item1;
 			int ilOffset = DebuggerService.DebugStepInformation.Item2;
 			int line;

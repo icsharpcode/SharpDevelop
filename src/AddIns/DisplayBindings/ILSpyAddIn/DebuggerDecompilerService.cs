@@ -1,6 +1,8 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Collections.Concurrent;
+
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -13,10 +15,21 @@ namespace ICSharpCode.ILSpyAddIn
 	/// </summary>
 	public class DebuggerDecompilerService : IDebuggerDecompilerService
 	{
-		private bool CheckMappings(int typeToken)
+		static DebuggerDecompilerService()
 		{
-			object data = null;
-			DebuggerService.ExternalDebugInformation.TryGetValue(typeToken, out data);
+			DebugInformation = new ConcurrentDictionary<int, DecompileInformation>();
+		}
+		
+		/// <summary>
+		/// Gets or sets the external debug information.
+		/// <summary>This constains the code mappings and local variables.</summary>
+		/// </summary>
+		internal static ConcurrentDictionary<int, DecompileInformation> DebugInformation { get; private set; }
+		
+		public bool CheckMappings(int typeToken)
+		{
+			DecompileInformation data = null;
+			DebugInformation.TryGetValue(typeToken, out data);
 			DecompileInformation information = data as DecompileInformation;
 			
 			if (information == null)
@@ -50,7 +63,7 @@ namespace ICSharpCode.ILSpyAddIn
 				};
 				
 				// save the data
-				DebuggerService.ExternalDebugInformation.AddOrUpdate(token, info, (k, v) => info);
+				DebugInformation.AddOrUpdate(token, info, (k, v) => info);
 			} catch {
 				return;
 			}
@@ -63,7 +76,7 @@ namespace ICSharpCode.ILSpyAddIn
 			if (!CheckMappings(typeToken))
 				return false;
 			
-			var data = (DecompileInformation)DebuggerService.ExternalDebugInformation[typeToken];
+			var data = (DecompileInformation)DebugInformation[typeToken];
 			var mappings = data.CodeMappings;
 			foreach (var key in mappings.Keys) {
 				var list = mappings[key];
@@ -88,8 +101,12 @@ namespace ICSharpCode.ILSpyAddIn
 			if (!CheckMappings(typeToken))
 				return false;
 			
-			var data = (DecompileInformation)DebuggerService.ExternalDebugInformation[typeToken];
+			var data = (DecompileInformation)DebugInformation[typeToken];
 			var mappings = data.CodeMappings;
+			
+			if (!mappings.ContainsKey(memberToken))
+				return false;
+			
 			var map = mappings[memberToken].GetInstructionByTokenAndOffset(memberToken, ilOffset, out isMatch);
 			if (map != null) {
 				ilRange = map.ToArray(isMatch);

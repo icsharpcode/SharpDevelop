@@ -753,7 +753,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				var decompilerService = GetDecompilerService();
 				int token = memberReference.MetadataToken.ToInt32();
 				
-				if (!DebuggerService.ExternalDebugInformation.ContainsKey(token))
+				if (!decompilerService.CheckMappings(token))
 					decompilerService.DecompileOnDemand(memberReference as TypeDefinition);
 				
 				int[] ilRanges;

@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -35,8 +34,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			
 			BookmarkManager.Added   += BookmarkAdded;
 			BookmarkManager.Removed += BookmarkRemoved;
-			
-			ExternalDebugInformation = new ConcurrentDictionary<int, object>();
 		}
 		
 		static void GetDescriptors()
@@ -106,12 +103,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		}
 		
 		#region Debug third party code
-		
-		/// <summary>
-		/// Gets or sets the external debug information.
-		/// <summary>This constains the code mappings and local variables.</summary>
-		/// </summary>
-		public static ConcurrentDictionary<int, object> ExternalDebugInformation { get; private set; }
 		
 		/// <summary>
 		/// Gets or sets the current token and IL offset. Used for step in/out.
@@ -469,6 +460,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	/// </summary>
 	public interface IDebuggerDecompilerService
 	{
+		/// <summary>
+		/// Checks the code mappings.
+		/// </summary>
+		bool CheckMappings(int typeToken);
+		
 		/// <summary>
 		/// Decompiles on demand a type.
 		/// </summary>
