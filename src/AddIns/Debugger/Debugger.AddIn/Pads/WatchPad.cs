@@ -162,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RefreshPad()
 		{
-			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null)
+			if (debuggedProcess == null || debuggedProcess.IsRunning)
 				return;
 			
 			using(new PrintTimes("Watch Pad refresh")) {
