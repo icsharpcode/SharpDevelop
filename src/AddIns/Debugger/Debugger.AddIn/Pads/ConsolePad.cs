@@ -53,7 +53,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			try {
 				var context = !process.IsInExternalCode ? process.SelectedStackFrame : process.SelectedThread.MostRecentStackFrame;
-				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, context);
+				var debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+				object data = debugger.debuggerDecompilerService.GetLocalVariableIndex(context.MethodInfo.DeclaringType.MetadataToken, 
+				                                                                       context.MethodInfo.MetadataToken, 
+				                                                                       code);
+				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, context, data);
 				return ExpressionEvaluator.FormatValue(val);
 			} catch (GetValueException e) {
 				return e.Message;

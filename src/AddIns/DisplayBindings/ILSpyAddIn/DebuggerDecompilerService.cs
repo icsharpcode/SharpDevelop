@@ -2,16 +2,18 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.Decompiler.ILAst;
 using ICSharpCode.SharpDevelop.Debugging;
 using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
 {
 	/// <summary>
-	/// Description of DebuggerDecompilerService.
+	/// Stores the decompilation information.
 	/// </summary>
 	public class DebuggerDecompilerService : IDebuggerDecompilerService
 	{
@@ -20,11 +22,20 @@ namespace ICSharpCode.ILSpyAddIn
 			DebugInformation = new ConcurrentDictionary<int, DecompileInformation>();
 		}
 		
+		internal static IDebuggerDecompilerService Instance { get; private set; }
+		
 		/// <summary>
 		/// Gets or sets the external debug information.
 		/// <summary>This constains the code mappings and local variables.</summary>
 		/// </summary>
 		internal static ConcurrentDictionary<int, DecompileInformation> DebugInformation { get; private set; }
+		
+		public DebuggerDecompilerService()
+		{
+			Instance = this;
+		}
+		
+		public Tuple<int, int> DebugStepInformation { get; set; }
 		
 		public bool CheckMappings(int typeToken)
 		{
@@ -115,6 +126,45 @@ namespace ICSharpCode.ILSpyAddIn
 			}
 			
 			return false;
+		}
+		
+		public IEnumerable<string> GetLocalVariables(int typeToken, int memberToken)
+		{
+			if (DebugInformation == null || !DebugInformation.ContainsKey(typeToken))
+				yield break;
+
+			var externalData = DebugInformation[typeToken];
+			IEnumerable<ILVariable> list;
+			
+			if (externalData.LocalVariables.TryGetValue(memberToken, out list)) {
+				foreach (var local in list) {
+					if (local.IsParameter)
+						continue;
+					if (string.IsNullOrEmpty(local.Name))
+						continue;
+					yield return local.Name;
+				}
+			}
+		}
+		
+		public object GetLocalVariableIndex(int typeToken, int memberToken, string name)
+		{
+			if (DebugInformation == null || !DebugInformation.ContainsKey(typeToken))
+				return null;
+
+			var externalData = DebugInformation[typeToken];
+			IEnumerable<ILVariable> list;
+			
+			if (externalData.LocalVariables.TryGetValue(memberToken, out list)) {
+				foreach (var local in list) {
+					if (local.IsParameter)
+						continue;
+					if (local.Name == name)
+						return new[] { local.OriginalVariable.Index };
+				}
+			}
+			
+			return null;
 		}
 	}
 }

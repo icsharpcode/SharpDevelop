@@ -157,6 +157,18 @@ namespace Debugger.AddIn.TreeModel
 			Value val;
 			try {
 				var process = WindowsDebugger.DebuggedProcess;
+				var context = !process.IsInExternalCode ? process.SelectedStackFrame : process.SelectedThread.MostRecentStackFrame;
+				var debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+				object data = debugger.debuggerDecompilerService.GetLocalVariableIndex(context.MethodInfo.DeclaringType.MetadataToken, 
+				                                                                       context.MethodInfo.MetadataToken, 
+				                                                                       Name);
+				
+				if (expression is MemberReferenceExpression) {
+					var memberExpression = (MemberReferenceExpression)expression;
+					memberExpression.TargetObject.UserData = data;
+				} else {
+					expression.UserData = data;
+				}
 				// evaluate expression
 				val = expression.Evaluate(process);
 			} catch (GetValueException e) {

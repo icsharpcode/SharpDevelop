@@ -102,15 +102,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			get { return debuggerStarted; }
 		}
 		
-		#region Debug third party code
-		
-		/// <summary>
-		/// Gets or sets the current token and IL offset. Used for step in/out.
-		/// </summary>
-		public static Tuple<int, int> DebugStepInformation { get; set; }
-		
-		#endregion
-		
 		public static event EventHandler DebugStarting;
 		public static event EventHandler DebugStarted;
 		public static event EventHandler DebugStopped;
@@ -461,6 +452,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	public interface IDebuggerDecompilerService
 	{
 		/// <summary>
+		/// Gets or sets the current method token and IL offset. Used for step in/out.
+		/// </summary>
+		Tuple<int, int> DebugStepInformation { get; set; }
+		
+		/// <summary>
 		/// Checks the code mappings.
 		/// </summary>
 		bool CheckMappings(int typeToken);
@@ -479,5 +475,15 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// Gets the ILRange and source code line number.
 		/// </summary>
 		bool GetILAndLineNumber(int typeToken, int memberToken, int ilOffset, out int[] ilRange, out int line, out bool isMatch);
+		
+		/// <summary>
+		/// Gets the local variables of a type and a member.
+		/// </summary>
+		IEnumerable<string> GetLocalVariables(int typeToken, int memberToken);
+		
+		/// <summary>
+		/// Gets the local variable index.
+		/// </summary>
+		object GetLocalVariableIndex(int typeToken, int memberToken, string name);
 	}
 }

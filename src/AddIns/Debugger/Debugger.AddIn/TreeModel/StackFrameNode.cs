@@ -1,10 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
-using Debugger.MetaData;
 using System.Collections.Generic;
+using Debugger.MetaData;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -33,12 +36,27 @@ namespace Debugger.AddIn.TreeModel
 				expression.ImageName = imageName;
 				yield return expression;
 			}
-			foreach(DebugLocalVariableInfo locVar in stackFrame.MethodInfo.GetLocalVariables(this.StackFrame.IP)) {
-				string imageName;
-				var image = ExpressionNode.GetImageForLocalVariable(out imageName);
-				var expression = new ExpressionNode(image, locVar.Name, locVar.GetExpression());
-				expression.ImageName = imageName;
-				yield return expression;
+			if (this.stackFrame.HasSymbols) {
+				foreach(DebugLocalVariableInfo locVar in stackFrame.MethodInfo.GetLocalVariables(this.StackFrame.IP)) {
+					string imageName;
+					var image = ExpressionNode.GetImageForLocalVariable(out imageName);
+					var expression = new ExpressionNode(image, locVar.Name, locVar.GetExpression());
+					expression.ImageName = imageName;
+					yield return expression;
+				}
+			} else {
+				WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+				if (debugger.debuggerDecompilerService != null) {
+					int typeToken = this.stackFrame.MethodInfo.DeclaringType.MetadataToken;
+					int methodToken = this.stackFrame.MethodInfo.MetadataToken;
+					foreach (var localVar in debugger.debuggerDecompilerService.GetLocalVariables(typeToken, methodToken)) {
+						string imageName;
+						var image = ExpressionNode.GetImageForLocalVariable(out imageName);
+						var expression = new ExpressionNode(image, localVar, ExpressionEvaluator.ParseExpression(localVar, SupportedLanguage.CSharp));
+						expression.ImageName = imageName;
+						yield return expression;
+					}
+				}
 			}
 			if (stackFrame.Thread.CurrentException != null) {
 				yield return new ExpressionNode(null, "__exception", new IdentifierExpression("__exception"));
