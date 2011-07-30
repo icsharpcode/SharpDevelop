@@ -17,7 +17,9 @@ namespace ICSharpCode.WixBinding
 		
 		public IDesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new WixDialogDesignerLoader(designer, generator as IWixDialogDesignerGenerator);
+			#warning reimplement this
+			throw new NotImplementedException();
+//			return new WixDialogDesignerLoader(designer, generator as IWixDialogDesignerGenerator);
 		}
 		
 		/// <summary>

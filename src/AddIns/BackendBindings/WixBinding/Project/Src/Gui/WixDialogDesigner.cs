@@ -32,7 +32,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		public WixDialogDesigner(IViewContent view, WixDialogDesignerLoaderProvider designerLoaderProvider, WixDialogDesignerGenerator designerGenerator)
-			: base(view, designerLoaderProvider, designerGenerator)
+			: base(view, designerLoaderProvider, designerGenerator, (IDesignerSourceProvider)designerGenerator)
 		{
 			designerLoaderProvider.Designer = this;
 		}

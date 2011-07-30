@@ -144,8 +144,10 @@ namespace ICSharpCode.Scripting
 		
 		void CreateComponents()
 		{
-			IComponentWalker walker = CreateComponentWalker(this);
-			walker.CreateComponent(generator.ViewContent.DesignerCodeFileContent);
+			#warning member missing
+			throw new NotImplementedException();
+//			IComponentWalker walker = CreateComponentWalker(this);
+//			walker.CreateComponent(generator.ViewContent.DesignerCodeFileContent);
 		}
 		
 		protected virtual IComponentWalker CreateComponentWalker(IComponentCreator componentCreator)

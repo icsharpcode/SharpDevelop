@@ -18,5 +18,19 @@ namespace ICSharpCode.PythonBinding
 		{
 			return new PythonDesignerLoader(generator as IScriptingDesignerGenerator);
 		}	
+		
+		public FormsDesignerViewContent ViewContent {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		IDesignerLoader IDesignerLoaderProvider.CreateLoader(IDesignerGenerator generator)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

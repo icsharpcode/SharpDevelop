@@ -56,7 +56,8 @@ namespace ICSharpCode.PythonBinding
 			
 			IDesignerLoaderProvider loader = new PythonDesignerLoaderProvider();
 			IDesignerGenerator generator = new PythonDesignerGenerator(textEditorOptions);
-			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
+			IDesignerSourceProvider sourceProvider = (IDesignerSourceProvider)generator;
+			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator, sourceProvider) };
 		}
 		
 		/// <summary>

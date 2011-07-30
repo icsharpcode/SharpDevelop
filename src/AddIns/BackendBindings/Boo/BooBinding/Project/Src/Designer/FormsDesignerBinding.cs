@@ -50,7 +50,8 @@ namespace Grunwald.BooBinding.Designer
 			
 			IDesignerLoaderProvider loader = new BooDesignerLoaderProvider();
 			IDesignerGenerator generator = new BooDesignerGenerator();
-			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
+			IDesignerSourceProvider sourceProvider = (IDesignerSourceProvider)generator;
+			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator, sourceProvider) };
 		}
 	}
 	
