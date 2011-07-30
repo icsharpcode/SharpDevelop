@@ -96,8 +96,7 @@ namespace ICSharpCode.Reports.Core {
 				}
 				CreateGroupedChildren(childList,element);
 				compVal = groupValue;
-			}
-//			ShowIndexList(IndexList);
+			}			ShowIndexList(IndexList);
 		}
 		
 		

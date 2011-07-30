@@ -177,7 +177,11 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
             SqlConnection sqlConnection = null;
             sqlConnection = new SqlConnection();
             sqlConnection.ConnectionString = datasource.ConnectionString;
-
+            
+            var sq = new System.Data.SqlClient.SqlConnectionStringBuilder();
+ sq.ConnectionString = sqlConnection.ConnectionString;
+ 
+ 
             try
             {
                 sqlConnection.Open();
