@@ -7,14 +7,16 @@ namespace ICSharpCode.FormsDesigner.Services
 {
 	public struct AssemblyInfo : IEquatable<AssemblyInfo>
 	{
-		public static readonly AssemblyInfo Empty = new AssemblyInfo("", false);
+		public static readonly AssemblyInfo Empty = new AssemblyInfo("", "", false);
 		
-		public readonly string FullNameOrPath;
+		public readonly string FullName;
+		public readonly string Path;
 		public readonly bool IsInGac;
 		
-		public AssemblyInfo(string fullNameOrPath, bool isInGac)
+		public AssemblyInfo(string fullName, string path, bool isInGac)
 		{
-			this.FullNameOrPath = fullNameOrPath;
+			this.FullName = fullName;
+			this.Path = path;
 			this.IsInGac = isInGac;
 		}
 		
@@ -26,16 +28,18 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		public bool Equals(AssemblyInfo other)
 		{
-			return this.FullNameOrPath == other.FullNameOrPath && this.IsInGac == other.IsInGac;
+			return this.FullName == other.FullName && this.Path == other.Path && this.IsInGac == other.IsInGac;
 		}
 		
 		public override int GetHashCode()
 		{
 			int hashCode = 0;
 			unchecked {
-				if (FullNameOrPath != null)
-					hashCode += 1000000007 * FullNameOrPath.GetHashCode();
-				hashCode += 1000000009 * IsInGac.GetHashCode();
+				if (FullName != null)
+					hashCode += 1000000007 * FullName.GetHashCode();
+				if (Path != null)
+					hashCode += 1000000009 * Path.GetHashCode();
+				hashCode += 1000000021 * IsInGac.GetHashCode();
 			}
 			return hashCode;
 		}

@@ -297,16 +297,16 @@ namespace ICSharpCode.FormsDesigner.Services
 					
 					foreach (AssemblyInfo a in assemblies) {
 						if (a.IsInGac)
-							LoadAssembly(new AssemblyName(a.FullNameOrPath), false);
+							LoadAssembly(new AssemblyName(a.FullName), false);
 						else
-							LoadAssembly(a.FullNameOrPath);
+							LoadAssembly(a.Path);
 					}
 					
 					Assembly assembly;
 					if (assemblyInfo.IsInGac)
-						assembly = LoadAssembly(new AssemblyName(assemblyInfo.FullNameOrPath), false);
+						assembly = LoadAssembly(new AssemblyName(assemblyInfo.FullName), false);
 					else
-						assembly = LoadAssembly(assemblyInfo.FullNameOrPath);
+						assembly = LoadAssembly(assemblyInfo.Path);
 					
 					if (assembly != null)
 						type = assembly.GetType(name, throwOnError, ignoreCase);

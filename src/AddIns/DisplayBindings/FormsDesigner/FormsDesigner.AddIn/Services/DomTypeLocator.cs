@@ -46,16 +46,9 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			if (pc != null) {
 				// find assembly containing type by using SharpDevelop.Dom
-				IClass foundClass;
-				if (name.Contains("`")) {
-					int typeParameterCount;
-					int.TryParse(name.Substring(name.IndexOf('`') + 1), out typeParameterCount);
-					foundClass = pc.GetClass(name.Substring(0, name.IndexOf('`')).Replace('+', '.'), typeParameterCount);
-				} else {
-					foundClass = pc.GetClass(name.Replace('+', '.'), 0);
-				}
+				IClass foundClass = pc.GetClassByReflectionName(name, true);
 				if (foundClass != null) {
-					AssemblyInfo assembly = GetPathToAssembly(pc);
+					AssemblyInfo assembly = GetPathToAssembly(foundClass.ProjectContent);
 					
 					if (assembly == AssemblyInfo.Empty) {
 						referencedAssemblies = new AssemblyInfo[0];
@@ -109,15 +102,18 @@ namespace ICSharpCode.FormsDesigner.Services
 
 		AssemblyInfo GetPathToAssembly(IProjectContent pc)
 		{
-			bool isInGac = pc.Project == null && pc is ReflectionProjectContent;
 			string path = "";
+			string fullName = "";
 			
-			if (pc.Project != null)
+			if (pc.Project != null) {
 				path = ((IProject)pc.Project).OutputAssemblyFullPath;
-			else if (pc is ReflectionProjectContent)
+				fullName = ((IProject)pc.Project).AssemblyName;
+			} else if (pc is ReflectionProjectContent) {
 				path = ((ReflectionProjectContent)pc).AssemblyLocation;
+				fullName = ((ReflectionProjectContent)pc).AssemblyFullName;
+			}
 			
-			return new AssemblyInfo(path, isInGac);
+			return new AssemblyInfo(fullName, path, GacInterop.IsWithinGac(path));
 		}
 	}
 	
