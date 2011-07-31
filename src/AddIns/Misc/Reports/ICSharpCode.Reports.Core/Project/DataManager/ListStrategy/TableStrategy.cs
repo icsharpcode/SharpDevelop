@@ -154,13 +154,13 @@ namespace ICSharpCode.Reports.Core
 					base.IndexList = this.BuildSortIndex (ReportSettings.SortColumnsCollection);
 				} else {
 					// if we have no sorting, we build the indexlist as well
-					base.IndexList = this.IndexBuilder(ReportSettings.SortColumnsCollection);
+					base.IndexList = this.UnsortedIndex(ReportSettings.SortColumnsCollection);
 				}
 			}
 		}
 		
 		
-		private IndexList IndexBuilder(SortColumnCollection col)
+		private IndexList UnsortedIndex(SortColumnCollection col)
 		{
 			IndexList arrayList = new IndexList();
 			for (int rowIndex = 0; rowIndex < this.table.Rows.Count; rowIndex++){
@@ -174,6 +174,9 @@ namespace ICSharpCode.Reports.Core
 		public override void Group ()
 		{
 			base.Group();
+//			if (ReportSettings.SortColumnsCollection.Count > 0) {
+//				ReportSettings.GroupColumnsCollection.AddRange(ReportSettings.SortColumnsCollection);
+//			}
 			IndexList groupedIndexList = new IndexList("group");
 			groupedIndexList = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
 //			ShowIndexList(sortedIndexList);

@@ -379,18 +379,19 @@ namespace ICSharpCode.Reports.Addin
 			nodeAvailableFields.ContextMenuAddinTreePath = String.Empty;
 			this.nodeModel.Nodes.Add(this.nodeAvailableFields);
 			
-	
+			nodeGrouping = new SectionNode (ResourceService.GetString("SharpReport.FieldsExplorer.Grouping"));
+			nodeGrouping.ImageIndex = folderClosed;
+			nodeGrouping.SelectedImageIndex = folderOpen;
+			nodeGrouping.ContextMenuAddinTreePath = ExplorerTree.sectionContextMenu;
+			this.nodeModel.Nodes.Add(this.nodeGrouping);
+			
 			nodeSorting = new SectionNode (ResourceService.GetString("SharpReport.FieldsExplorer.Sorting"));
 			nodeSorting.ImageIndex = folderClosed;
 			nodeSorting.SelectedImageIndex = folderOpen;
 			nodeSorting.ContextMenuAddinTreePath = ExplorerTree.sectionContextMenu;
 			this.nodeModel.Nodes.Add(this.nodeSorting);
 			
-			nodeGrouping = new SectionNode (ResourceService.GetString("SharpReport.FieldsExplorer.Grouping"));
-			nodeGrouping.ImageIndex = folderClosed;
-			nodeGrouping.SelectedImageIndex = folderOpen;
-			nodeGrouping.ContextMenuAddinTreePath = ExplorerTree.sectionContextMenu;
-			this.nodeModel.Nodes.Add(this.nodeGrouping);
+			
 			
 			nodeFunction = new TreeNode(ResourceService.GetString("SharpReport.FieldsExplorer.Functions"));
 			nodeFunction.ImageIndex = folderClosed;

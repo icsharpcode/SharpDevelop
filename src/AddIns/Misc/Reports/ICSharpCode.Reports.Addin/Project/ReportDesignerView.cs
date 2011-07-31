@@ -99,7 +99,6 @@ namespace ICSharpCode.Reports.Addin
 		
 		#endregion
 		
-		
 		#region setup designer
 		
 		private void LoadDesigner(Stream stream)
@@ -243,7 +242,6 @@ namespace ICSharpCode.Reports.Addin
 		}
 		#endregion
 
-		
 		private void MergeFormChanges()
 		{
 			System.Diagnostics.Trace.WriteLine("View:MergeFormChanges()");
@@ -254,8 +252,6 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		
-		
 		public string ReportFileContent {
 			get {
 				if (this.IsDirty) {
@@ -264,7 +260,6 @@ namespace ICSharpCode.Reports.Addin
 				return this.reportFileContent; }
 			set { this.reportFileContent = value; }
 		}
-		
 		
 		#region ReportExplorer
 		
@@ -297,7 +292,6 @@ namespace ICSharpCode.Reports.Addin
 		
 		#endregion
 		
-		
 		#region SelectionService
 		
 		private void SelectionChangedHandler(object sender, EventArgs args)
@@ -313,7 +307,6 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		#endregion
-		
 		
 		#region Transaction
 		
@@ -332,10 +325,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		#endregion
 		
-		
-		
 		#region ComponentChangeService
-		
 		
 		private void OnComponentChanged (object sender, ComponentChangedEventArgs e)
 		{
@@ -370,11 +360,8 @@ namespace ICSharpCode.Reports.Addin
 			this.PrimaryFile.MakeDirty();
 		}
 		
-		
 		#endregion
-		
-		
-		
+	
 		#region HasPropertyContainer implementation
 		
 		private void UpdatePropertyPad()
@@ -413,10 +400,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		#endregion
 		
-		
 		#region IUnDohandler
-		
-		#endregion
 		
 		public bool EnableUndo {
 			get {
@@ -452,6 +436,8 @@ namespace ICSharpCode.Reports.Addin
 				undoEngine.Redo();
 			}
 		}
+		
+		#endregion
 		
 		#region IClipboardHandler implementation
 		
@@ -551,7 +537,6 @@ namespace ICSharpCode.Reports.Addin
 		
 		#endregion
 		
-		
 		#region IPrintable
 		
 		
@@ -596,7 +581,6 @@ namespace ICSharpCode.Reports.Addin
 		}
 	
 		#endregion
-		
 		
 		#region IDesignerHost implementation
 		

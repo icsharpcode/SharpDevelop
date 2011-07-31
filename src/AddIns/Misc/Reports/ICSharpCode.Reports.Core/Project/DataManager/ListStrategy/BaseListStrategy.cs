@@ -96,7 +96,8 @@ namespace ICSharpCode.Reports.Core {
 				}
 				CreateGroupedChildren(childList,element);
 				compVal = groupValue;
-			}			ShowIndexList(IndexList);
+			}			
+//			ShowIndexList(IndexList);
 		}
 		
 		
@@ -234,6 +235,9 @@ namespace ICSharpCode.Reports.Core {
 		public virtual void Group()
 		{
 			this.IndexList.Clear();
+			if (ReportSettings.SortColumnsCollection.Count > 0) {
+				ReportSettings.GroupColumnsCollection.AddRange(ReportSettings.SortColumnsCollection);
+			}
 		}
 		
 		public virtual void Bind() 
