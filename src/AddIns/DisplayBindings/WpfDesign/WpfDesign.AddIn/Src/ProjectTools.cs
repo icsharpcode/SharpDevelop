@@ -20,20 +20,24 @@ namespace ICSharpCode.WpfDesign.AddIn
 		/// Add files to the current project at the project node.
 		/// </summary>
 		/// <param name="fileNames">list of files that have to be added.</param>
-		internal static void AddFiles(string []fileNames)
+		internal static IEnumerable<FileProjectItem> AddFiles(string[] fileNames, ItemType itemType)
 		{
 			IProject project=ProjectService.CurrentProject;	
 			Debug.Assert(project!=null);				
 			
-			foreach(var file in fileNames){
-				string relFileName=FileUtility.GetRelativePath(project.Directory,file);
-				FileProjectItem fileProjectItem=new FileProjectItem(project,project.GetDefaultItemType(file),relFileName);
-				FileNode fileNode=new FileNode(file,FileNodeStatus.InProject);
-				fileNode.ProjectItem=fileProjectItem;				
-				ProjectService.AddProjectItem(project,fileProjectItem);
+			List<FileProjectItem> resultItems = new List<FileProjectItem>();
+			foreach (string file in fileNames) {
+				FileProjectItem item = project.FindFile(file);
+				if (item != null)
+					continue; // file already belongs to the project
+				string relFileName = FileUtility.GetRelativePath(project.Directory,file);
+				item = new FileProjectItem(project, itemType, relFileName);
+				ProjectService.AddProjectItem(project, item);
+				resultItems.Add(item);
 			}
 			project.Save();
 			ProjectBrowserPad.RefreshViewAsync();
+			return resultItems;
 		}
 		
 		/// <summary>
@@ -41,18 +45,17 @@ namespace ICSharpCode.WpfDesign.AddIn
 		/// </summary>
 		/// <param name="Extension"></param>
 		/// <returns></returns>
-		internal static List<KeyValuePair<string, string>> RetrieveFiles(string []Extension)
+		internal static List<FileProjectItem> RetrieveFiles(string []Extension)
 		{
-			List<KeyValuePair<string, string>> files=new List<KeyValuePair<string, string>>();
+			List<FileProjectItem> files=new List<FileProjectItem>();
 			IProject project=ProjectService.CurrentProject;
 			Debug.Assert(project!=null);
 			
 			foreach(var item in project.Items){
 				FileProjectItem fileProjectItem=item as FileProjectItem;
 				if(fileProjectItem!=null){
-					string dirName=Path.GetDirectoryName(fileProjectItem.VirtualName);
-					if(Extension.Contains(Path.GetExtension(fileProjectItem.VirtualName)))
-						files.Add(new KeyValuePair<string, string>(dirName, fileProjectItem.FileName));
+					if(Extension.Contains(Path.GetExtension(fileProjectItem.VirtualName).ToLowerInvariant()))
+						files.Add(fileProjectItem);
 				}
 			}
 			
