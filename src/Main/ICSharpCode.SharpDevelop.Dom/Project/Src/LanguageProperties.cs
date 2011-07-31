@@ -248,6 +248,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return "[" + base.ToString() + "]";
 		}
 		
+		public static LanguageProperties GetLanguage(string language)
+		{
+			switch(language)
+			{
+				case "VBNet":
+				case "VB":
+					return LanguageProperties.VBNet;
+				default:
+					return LanguageProperties.CSharp;
+			}
+		}
+		
 		#region CSharpProperties
 		internal sealed class CSharpProperties : LanguageProperties
 		{
@@ -532,11 +544,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			public override TextFinderMatch Find(string inputText, int startPosition)
 			{
 				int pos = inputText.IndexOf(searchText, startPosition);
-				if (pos >= 0) {
+				if (pos > 0) {
 					return new TextFinderMatch(pos, searchText.Length, pos - 1);
-				} else {
-					return TextFinderMatch.Empty;
 				}
+				return TextFinderMatch.Empty;
 			}
 		}
 		#endregion

@@ -58,6 +58,15 @@
     <StartProgram>..\..\..\..\bin\SharpDevelop.exe</StartProgram>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GraphSharp">
+      <HintPath>..\..\..\Libraries\GraphSharp\GraphSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="GraphSharp.Controls">
+      <HintPath>..\..\..\Libraries\GraphSharp\GraphSharp.Controls.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -67,19 +76,21 @@
     <Reference Include="PresentationFramework.Aero">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="QuickGraph">
+      <HintPath>..\..\..\Libraries\GraphSharp\QuickGraph.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsFormsIntegration">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="WindowsFormsIntegration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
@@ -87,8 +98,43 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Options\DebuggingOptionsPanel.xaml.cs">
+      <DependentUpon>DebuggingOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Pads\CallStackPad.xaml.cs">
       <DependentUpon>CallStackPad.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Pads\Commands\MemoryPadCommands.cs" />
+    <Compile Include="Pads\Commands\ParallelStacksViewCommands.cs" />
+    <Compile Include="Pads\Commands\SelectLanguageCommand.cs" />
+    <Compile Include="Pads\Commands\WatchPadCommands.cs" />
+    <Compile Include="Pads\Controls\ConditionCell.xaml.cs">
+      <DependentUpon>ConditionCell.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pads\Controls\Converters.cs" />
+    <Compile Include="Pads\Controls\SimpleListViewControl.xaml.cs">
+      <DependentUpon>SimpleListViewControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Pads\Controls\TreeListView.cs" />
+    <Compile Include="Pads\Controls\WatchList.xaml.cs">
+      <DependentUpon>WatchList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pads\Controls\WatchListAutoCompleteCell.cs">
+      <DependentUpon>WatchListAutoCompleteCell.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pads\MemoryPad.cs" />
+    <Compile Include="Pads\ParallelPad\DrawSurface.xaml.cs">
+      <DependentUpon>DrawSurface.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Pads\ParallelPad\ParallelStackPad.cs" />
+    <Compile Include="Pads\ParallelPad\ParallelStacksGraph.cs" />
+    <Compile Include="Pads\ParallelPad\SelectedFrameBookmark.cs" />
+    <Compile Include="Pads\ParallelPad\ThreadStack.xaml.cs">
+      <DependentUpon>ThreadStack.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Pads\WatchInputBox.xaml.cs">
@@ -102,12 +148,6 @@
     <Compile Include="IsActiveBreakpointCondition.cs" />
     <Compile Include="IsBreakpointCondition.cs" />
     <Compile Include="Options\DebuggingOptions.cs" />
-    <Compile Include="Options\DebuggingOptionsPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Options\DebuggingOptionsPanel.Designer.cs">
-      <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="Options\DebuggingSymbolsPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -115,8 +155,6 @@
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Pads\ObjectGraphPad.cs" />
-    <Compile Include="Pads\SelectLanguageCommand.cs" />
-    <Compile Include="Pads\WatchPadCommands.cs" />
     <Compile Include="Pads\BreakPointsPad.cs" />
     <Compile Include="Pads\ConsolePad.cs">
       <SubType>UserControl</SubType>
@@ -147,7 +185,30 @@
       <DependentUpon>EditBreakpointScriptWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Service\ProcessMonitor.cs" />
+    <Compile Include="Tooltips\DebuggerPopup.cs" />
+    <Compile Include="Tooltips\DebuggerTooltipControl.xaml.cs">
+      <DependentUpon>DebuggerTooltipControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tooltips\LazyItemsControl.cs" />
+    <Compile Include="Tooltips\PinCloseControl.xaml.cs">
+      <DependentUpon>PinCloseControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tooltips\PinDebuggerControl.xaml.cs">
+      <DependentUpon>PinDebuggerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tooltips\PinLayer.cs" />
+    <Compile Include="Tooltips\PinningBinding.cs" />
+    <Compile Include="Tooltips\VirtualizingIEnumerable.cs" />
+    <Compile Include="Tooltips\VisualizerPicker.cs">
+      <DependentUpon>VisualizerPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TreeModel\DebuggerResourceService.cs" />
+    <Compile Include="TreeModel\ICorDebug.cs" />
+    <Compile Include="TreeModel\IEnumerableNode.cs" />
+    <Compile Include="TreeModel\IListNode.cs" />
+    <Compile Include="TreeModel\SavedTreeNode.cs" />
+    <Compile Include="TreeModel\TreeNode.cs" />
     <Compile Include="Visualizers\Commands\ExpressionVisualizerCommand.cs" />
     <Compile Include="Visualizers\Commands\GridVisualizerCommand.cs" />
     <Compile Include="Visualizers\Commands\IVisualizerDescriptor.cs" />
@@ -160,20 +221,19 @@
     <Compile Include="Visualizers\Common\DebuggerVisualizerException.cs" />
     <Compile Include="Visualizers\Common\IEvaluate.cs" />
     <Compile Include="Visualizers\Common\IListValuesProvider.cs" />
+    <Compile Include="Visualizers\Common\ObjectProperty.cs" />
     <Compile Include="Visualizers\Common\ObjectPropertyComparer.cs" />
     <Compile Include="Visualizers\Common\VirtualizingCollection.cs" />
     <Compile Include="Visualizers\Common\VirtualizingObservableCollection.cs" />
-    <Compile Include="Visualizers\Controls\DragScrollViewer.cs" />
+    <Compile Include="Visualizers\Graph\Drawing\BoolToBoldConverter.cs" />
     <Compile Include="Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml.cs">
       <DependentUpon>PositionedGraphNodeControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Visualizers\Graph\Expanded.cs" />
-    <Compile Include="Visualizers\Graph\ExpandedContentNodes.cs" />
-    <Compile Include="Visualizers\Graph\ExpandedExpressions.cs" />
-    <Compile Include="Visualizers\Graph\Layout\ContentNodeEventArgs.cs" />
-    <Compile Include="Visualizers\Graph\Layout\ContentPropertyNode.cs" />
-    <Compile Include="Visualizers\Graph\Layout\ContentNode.cs" />
+    <Compile Include="Visualizers\Graph\ExpandedPaths\Expanded.cs" />
+    <Compile Include="Visualizers\Graph\ExpandedPaths\ExpandedContentNodes.cs" />
+    <Compile Include="Visualizers\Graph\ExpandedPaths\ExpandedExpressions.cs" />
+    <Compile Include="Visualizers\Graph\ExpandedPaths\ExpandedPaths.cs" />
     <Compile Include="Visualizers\Graph\Layout\GraphEdgeRouter.cs" />
     <Compile Include="Visualizers\Graph\Layout\SplineRouting\Box.cs" />
     <Compile Include="Visualizers\Graph\Layout\SplineRouting\Edge.cs" />
@@ -188,20 +248,24 @@
     <Compile Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph\RouteGraph.cs" />
     <Compile Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph\RouteGraphEdge.cs" />
     <Compile Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph\RouteVertex.cs" />
-    <Compile Include="Visualizers\Graph\Layout\SplineRouting\ShortestPath\AStarShortestPathFinder.cs" />
-    <Compile Include="Visualizers\Graph\NodeControlCache.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\ShortestPath\DijkstraShortestPathFinder.cs" />
+    <Compile Include="Visualizers\Graph\Layout\TreeModel\ContentNode.cs" />
+    <Compile Include="Visualizers\Graph\Layout\TreeModel\ContentNodeEventArgs.cs" />
+    <Compile Include="Visualizers\Graph\Layout\TreeModel\ContentPropertyNode.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraphControl.xaml.cs">
       <DependentUpon>ObjectGraphControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
-    <Compile Include="Visualizers\Graph\TreeModel\AbstractNode.cs" />
-    <Compile Include="Visualizers\Graph\TreeModel\BaseClassNode.cs" />
-    <Compile Include="Visualizers\Graph\TreeModel\ThisNode.cs" />
-    <Compile Include="Visualizers\Graph\TreeModel\NonPublicMembersNode.cs" />
-    <Compile Include="Visualizers\Graph\TreeModel\PropertyNode.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\PropertiesFirstComparer.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\AbstractNode.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\BaseClassNode.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\RawViewNode.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\ThisNode.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\NonPublicMembersNode.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\PropertyNode.cs" />
     <Compile Include="Visualizers\GridVisualizer\ValueProviders\GridValuesProvider.cs" />
-    <Compile Include="Visualizers\IEnumerableNode.cs" />
+    <Compile Include="Visualizers\PresentationBindings\DragScrollViewer.cs" />
     <Compile Include="Visualizers\PresentationBindings\GridViewColumnHider.cs" />
     <Compile Include="Visualizers\PresentationBindings\GridViewHideableColumn.cs" />
     <Compile Include="Visualizers\PresentationBindings\TooltipVisibilityConverter.cs" />
@@ -224,9 +288,6 @@
     <Compile Include="Service\RemotingConfigurationHelpper.cs" />
     <Compile Include="Service\RunToCursorCommand.cs" />
     <Compile Include="Service\WindowsDebugger.cs" />
-    <EmbeddedResource Include="Options\DebuggingOptionsPanel.resx">
-      <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Options\DebuggingSymbolsPanel.resx">
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -239,7 +300,6 @@
     </Compile>
     <Compile Include="Pads\DebuggerPad.cs" />
     <Compile Include="Pads\RunningThreadsPad.Menu.cs" />
-    <Compile Include="TreeModel\TreeNode.cs" />
     <Compile Include="TreeModel\Adapters\TreeViewVarNode.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -252,20 +312,15 @@
     <Compile Include="TreeModel\Utils.cs" />
     <Compile Include="Visualizers\Graph\Drawing\CanvasLocationAdapter.cs" />
     <Compile Include="Visualizers\Graph\Drawing\GraphDrawer.cs" />
-    <Compile Include="Visualizers\Graph\ExpandedPaths.cs" />
     <Compile Include="Visualizers\Graph\Layout\GraphDiff.cs" />
     <Compile Include="Visualizers\Graph\Layout\GraphMatcher.cs" />
     <Compile Include="Visualizers\Graph\Layout\PositionedEdge.cs" />
     <Compile Include="Visualizers\Graph\Layout\PositionedGraph.cs" />
-    <Compile Include="Visualizers\Graph\Layout\PositionedGraphNode.cs" />
+    <Compile Include="Visualizers\Graph\Layout\PositionedNode.cs" />
     <Compile Include="Visualizers\Graph\Layout\PositionedNodeProperty.cs" />
     <Compile Include="Visualizers\Graph\Layout\PositionedPropertyEventArgs.cs" />
     <Compile Include="Visualizers\Graph\Layout\Tree\LayoutDirection.cs" />
-    <Compile Include="Visualizers\Graph\Layout\Tree\TreeEdge.cs" />
-    <Compile Include="Visualizers\Graph\Layout\Tree\TreeLayouter.cs" />
-    <Compile Include="Visualizers\Graph\Layout\Tree\TreeGraphNode.cs" />
-    <Compile Include="Visualizers\Graph\Layout\Tree\TreeGraphNodeLR.cs" />
-    <Compile Include="Visualizers\Graph\Layout\Tree\TreeGraphNodeTB.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\TreeLayout.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\ObjectGraph.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\ObjectGraphBuilder.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\ObjectGraphNode.cs" />
@@ -277,7 +332,6 @@
     <Compile Include="Visualizers\GridVisualizer\ObjectValue.cs" />
     <Compile Include="Visualizers\GridVisualizer\ValueProviders\EnumerableValuesProvider.cs" />
     <Compile Include="Visualizers\GridVisualizer\ValueProviders\ListValuesProvider.cs" />
-    <Compile Include="Visualizers\ObjectProperty.cs" />
     <Compile Include="Visualizers\Utils\DebuggerHelpers.cs" />
     <Compile Include="Visualizers\Utils\DictionaryExtensions.cs" />
     <Compile Include="Visualizers\Utils\Lookup.cs" />
@@ -285,8 +339,6 @@
     <Compile Include="Visualizers\Graph\ObjectGraphWindow.xaml.cs">
       <DependentUpon>ObjectGraphWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Visualizers\ICorDebug.cs" />
-    <Compile Include="Visualizers\IListNode.cs" />
     <Compile Include="Visualizers\PresentationBindings\DisplayAttribute.cs" />
     <Compile Include="Visualizers\PresentationBindings\EnumViewModel.cs" />
     <Compile Include="Visualizers\PresentationBindings\ViewModelBase.cs" />
@@ -335,12 +387,25 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Options\DebuggingOptionsPanel.xaml" />
     <Page Include="Pads\CallStackPad.xaml" />
+    <Page Include="Pads\Controls\ConditionCell.xaml" />
+    <Page Include="Pads\Controls\SimpleListViewControl.xaml" />
+    <Page Include="Pads\Controls\WatchList.xaml" />
+    <Page Include="Pads\Controls\WatchListAutoCompleteCell.xaml" />
+    <Page Include="Pads\ParallelPad\DrawSurface.xaml" />
+    <Page Include="Pads\ParallelPad\ThreadStack.xaml" />
     <Page Include="Pads\WatchInputBox.xaml" />
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />
+    <Page Include="Tooltips\DebuggerTooltipControl.xaml" />
+    <Page Include="Tooltips\PinCloseControl.xaml" />
+    <Page Include="Tooltips\PinControlsDictionary.xaml" />
+    <Page Include="Tooltips\PinDebuggerControl.xaml" />
+    <Page Include="Tooltips\VisualizerPicker.xaml" />
     <Page Include="Visualizers\Graph\Drawing\NodeControlResources.xaml" />
     <Page Include="Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml" />
     <Page Include="Visualizers\Graph\ObjectGraphControl.xaml" />
+    <Page Include="Visualizers\GridVisualizer\ColumnPicker.xaml" />
     <Page Include="Visualizers\GridVisualizer\GridVisualizerWindow.xaml" />
     <Page Include="Visualizers\TextVisualizer\TextVisualizerWindow.xaml" />
     <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
@@ -358,17 +423,22 @@
       <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Pads\Commands" />
+    <Folder Include="Pads\Controls" />
+    <Folder Include="Pads\ParallelPad" />
+    <Folder Include="Tooltips" />
     <Folder Include="Visualizers\Graph" />
     <Folder Include="Visualizers\Graph\Drawing" />
     <Folder Include="Visualizers\Graph\Layout" />
+    <Folder Include="Visualizers\Graph\Layout\TreeModel" />
     <Folder Include="Visualizers\Graph\Layout\SplineRouting" />
     <Folder Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph" />
     <Folder Include="Visualizers\Graph\Layout\SplineRouting\ShortestPath" />
     <Folder Include="Visualizers\Graph\Layout\Tree" />
-    <Folder Include="Visualizers\Graph\TreeModel" />
+    <Folder Include="Visualizers\Graph\ExpandedPaths" />
+    <Folder Include="Visualizers\Graph\ObjectGraph\TreeModel" />
     <Folder Include="Visualizers\Graph\ObjectGraph" />
     <Folder Include="Visualizers\GridVisualizer\ValueProviders" />
-    <Folder Include="Visualizers\Controls" />
     <Folder Include="Visualizers\Common" />
     <Folder Include="Visualizers\Commands" />
     <Folder Include="Visualizers\TextVisualizer" />

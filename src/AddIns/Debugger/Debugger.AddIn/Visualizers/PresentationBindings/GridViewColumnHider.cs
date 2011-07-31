@@ -23,10 +23,8 @@ namespace Debugger.AddIn.Visualizers
 		public bool IsVisible
 		{
 			get { return isVisible; }
-			set
-			{
-				if (isVisible != value)
-				{
+			set {
+				if (isVisible != value)	{
 					isVisible = value;
 					OnPropertyChanged("IsVisible");
 					ExtensionMethods.RaiseEvent(IsVisibleChanged, this, EventArgs.Empty);
@@ -55,7 +53,10 @@ namespace Debugger.AddIn.Visualizers
 		{
 			foreach (var column in gridView.Columns)
 			{
-				var columnWithVisibility = new GridViewColumnWithVisibility { Column = column, IsVisible = true };
+				// show / hide right in the beginning if supported
+				bool isDefaultVisible = (column is GridViewHideableColumn) ? ((GridViewHideableColumn)column).IsVisibleDefault : true;
+				// wrap into our ViewModel
+				var columnWithVisibility = new GridViewColumnWithVisibility { Column = column, IsVisible = isDefaultVisible };
 				allColumns.Add(columnWithVisibility);
 				columnWithVisibility.IsVisibleChanged += columnWithVisibility_IsVisibleChanged;
 			}
@@ -74,8 +75,8 @@ namespace Debugger.AddIn.Visualizers
 		bool canBeHidden(GridViewColumn column)
 		{
 			var columnHideable = column as GridViewHideableColumn;
-			if (columnHideable != null && (!columnHideable.CanBeHidden))
-			{
+			// disable hiding if supported
+			if (columnHideable != null && (!columnHideable.CanBeHidden)) {
 				return false;
 			}
 			return true;

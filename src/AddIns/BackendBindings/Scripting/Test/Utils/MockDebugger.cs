@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -122,7 +123,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public object GetTooltipControl(string variable)
+		public object GetTooltipControl(Location logicalPosition, string variable)
 		{
 			throw new NotImplementedException();
 		}
@@ -170,5 +171,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 				DebugStopped(this, e);
 			}
 		}		
+		
+		public bool BreakAtBeginning { get; set; }
 	}
 }

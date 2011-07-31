@@ -144,6 +144,19 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
+		bool enableAnimations = true;
+		
+		[DefaultValue(true)]
+		public bool EnableAnimations {
+			get { return enableAnimations; }
+			set {
+				if (enableAnimations != value) {
+					enableAnimations = value;
+					OnPropertyChanged("EnableAnimations");
+				}
+			}
+		}
+		
 		bool useSmartIndentation = true;
 		
 		[DefaultValue(true)]
@@ -179,6 +192,19 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				if (enableQuickClassBrowser != value) {
 					enableQuickClassBrowser = value;
 					OnPropertyChanged("EnableQuickClassBrowser");
+				}
+			}
+		}
+		
+		bool showHiddenDefinitions = false;
+		
+		[DefaultValue(false)]
+		public bool ShowHiddenDefinitions {
+			get { return showHiddenDefinitions; }
+			set {
+				if (showHiddenDefinitions != value) {
+					showHiddenDefinitions = value;
+					OnPropertyChanged("ShowHiddenDefinitions");
 				}
 			}
 		}

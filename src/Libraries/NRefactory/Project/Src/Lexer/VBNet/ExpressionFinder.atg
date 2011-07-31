@@ -283,11 +283,18 @@ ImportsStatement =
 	)
 	(. PopContext(); .)
 	StatementTerminator
-
 .
 
 AttributeBlock =
-	"<" (. wasNormalAttribute = true; PushContext(Context.Attribute, la, t); .) [ ( "Assembly" | "Module" ) ":" (. wasNormalAttribute = false; .) ] { ANY } ">" (. PopContext(); .) [ EOL ]
+	"<" (. wasNormalAttribute = true; PushContext(Context.Attribute, la, t); .)
+	Attribute { "," Attribute }
+	">" (. PopContext(); .) [ EOL ]
+.
+
+Attribute =
+	[ EXPECTEDCONFLICT("Assembly") ( "Assembly" | "Module" ) ":" (. wasNormalAttribute = false; .) ]
+	// TypeName already contains an argument list production
+	TypeName
 .
 
 NamespaceMemberDeclaration =
@@ -367,13 +374,13 @@ TypeOrMemberModifier =
 
 InterfaceEvent =
 	"Event" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
-	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | "(" [ ParameterList ] ")" ]
+	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | ParameterListInParenthesis ]
 	StatementTerminator
 .
 
 InterfaceProperty =
 	"Property" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
-	[ "(" [ ParameterList ] ")" ] [ "As" (. PushContext(Context.Type, la, t); .) { AttributeBlock } TypeName (. PopContext(); .) ]
+	[ ParameterListInParenthesis ] [ "As" (. PushContext(Context.Type, la, t); .) { AttributeBlock } TypeName (. PopContext(); .) ]
 	StatementTerminator
 .
 
@@ -435,7 +442,7 @@ ExternalMemberDeclaration =
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
 	"Lib" LiteralString
 	[ "Alias" LiteralString ]
-	[ "(" [ ParameterList ] ")" ]
+	[ ParameterListInParenthesis ]
 	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
 	StatementTerminator
 .
@@ -443,10 +450,10 @@ ExternalMemberDeclaration =
 EventMemberDeclaration =
 	"Event"
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
-	( "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | [ "(" [ ParameterList ] ")" ] )
+	( "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | [ ParameterListInParenthesis ] )
 	[ "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/
 	  { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ } ]
-	/* the TypeName production already allows the "." IdentifierOrKeyword syntax, so to avoid an ambiguous grammer we just leave that out */
+	/* the TypeName production already allows the "." IdentifierOrKeyword syntax, so to avoid an ambiguous grammar we just leave that out */
 	StatementTerminator
 .
 
@@ -463,8 +470,8 @@ CustomEventMemberDeclaration =
 PropertyDeclaration =
 	"Property"
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
-	[ "(" [ ParameterList ] ")" ]
-	[ "As"  { AttributeBlock } ( NewExpression | (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ) ]
+	[ ParameterListInParenthesis ]
+	[ "As" (. PushContext(Context.Type, la, t); .) { AttributeBlock } ( NewExpression |  TypeName ) (. PopContext(); .) ]
 	[ "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/
 	    { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ } ]
 	[ "=" Expression ] StatementTerminator
@@ -474,10 +481,10 @@ PropertyDeclaration =
 	//        so we need to simulate it
 	(.OnEachPossiblePath: SetIdentifierExpected(la); .) }
 	[ (. PushContext(Context.Member, la, t); .)
-	( "Get" | "Set" ) [ "(" [ ParameterList ] ")" ]
+	( "Get" | "Set" ) [ ParameterListInParenthesis ]
 		StatementTerminatorAndBlock
 		"End" ( "Get" | "Set" ) StatementTerminator
-	[ { AttributeBlock } { AccessModifier } ( "Get" | "Set" ) [ "(" [ ParameterList ] ")" ]
+	[ { AttributeBlock } { AccessModifier } ( "Get" | "Set" ) [ ParameterListInParenthesis ]
 		StatementTerminatorAndBlock
 		"End" ( "Get" | "Set" ) StatementTerminator ]
 	
@@ -512,12 +519,15 @@ Parameter =
 	(. PushContext(Context.Parameter, la, t); .)
 	{ AttributeBlock } { ParameterModifier }
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	[ "?" ] { "(" { "," } ")" }
 	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
 	[ "=" Expression ]
 	(. PopContext(); .)
 .
 
-StatementTerminatorAndBlock =
+StatementTerminatorAndBlock
+	(.NamedState:startOfBlock.)
+=
 	(. PushContext(Context.Body, la, t); .)
 	StatementTerminator
 	{ EXPECTEDCONFLICT("End")
@@ -686,13 +696,17 @@ LambdaExpression =
 .
 
 SubLambdaExpression =
-	"Sub" "(" [ ParameterList ] ")"
+	"Sub" ParameterListInParenthesis
 	( GREEDY Statement | StatementTerminatorAndBlock "End" "Sub" )
 .
 
 FunctionLambdaExpression =
-	"Function" "(" [ ParameterList ] ")"
+	"Function" ParameterListInParenthesis
 	( GREEDY Expression | [ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] StatementTerminatorAndBlock "End" "Function" )
+.
+
+ParameterListInParenthesis =
+	"(" (. PushContext(Context.Default, la, t); .) [ ParameterList ] (. PopContext(); .) ")"
 .
 
 QueryExpression
@@ -848,7 +862,7 @@ PrimitiveTypeName =
 	
 TypeName = ( "Global" | Identifier | PrimitiveTypeName | "?" /* used for ? = completion */ ) { TypeSuffix } { "." IdentifierOrKeyword { TypeSuffix } } .
 
-TypeSuffix = "(" ( "Of" [ TypeName ] { "," [ TypeName ] } | [ ArgumentList ] ) ")" .
+TypeSuffix = "?" | "(" (. PushContext(Context.Expression, la, t); .) ( "Of" [ (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] { "," [ (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] } | [ ArgumentList ] ) (. PopContext(); .) ")" .
 
 IdentifierOrKeyword = ident
 | "AddHandler"
@@ -1076,12 +1090,14 @@ VariableDeclarationStatement =
 	( "Dim" | "Static" | "Const" )
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .)
 	Identifier (. PopContext(); .) [ "?" ] { "(" [ Expression ] { "," [ Expression ] } ")" }
+	[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
+	[ "=" Expression ]
 	{ ","
 		(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .)
 		Identifier (. PopContext(); .) [ "?" ] { "(" [ Expression ] { "," [ Expression ] } ")" }
+		[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
+		[ "=" Expression ]
 	}
-	[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
-	[ "=" Expression ]
 .
 
 WithOrLockStatement =
@@ -1093,7 +1109,7 @@ AddOrRemoveHandlerStatement =
 .
 
 RaiseEventStatement =
-	"RaiseEvent" IdentifierOrKeyword [ "(" [ ArgumentList ] ")" ]
+	"RaiseEvent" IdentifierOrKeyword [ "(" (. PushContext(Context.Expression, la, t); .) [ ArgumentList ] (. PopContext(); .) ")" ]
 .
 
 IfStatement =

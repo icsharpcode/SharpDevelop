@@ -23,7 +23,16 @@ namespace ICSharpCode.PythonBinding
 		public static DomRegion GetBodyRegion(Statement body, SourceLocation header)
 		{
 			int columnAfterColonCharacter = header.Column + 1;
-			return new DomRegion(header.Line, header.Column + 1, body.End.Line, body.End.Column);
+			SourceLocation bodyEnd = GetBodyEndLocation(body);
+			return new DomRegion(header.Line, columnAfterColonCharacter, bodyEnd.Line, bodyEnd.Column);
+		}
+		
+		static SourceLocation GetBodyEndLocation(Statement body)
+		{
+			if (body.Parent != null) {
+				return body.End;
+			}
+			return SourceLocation.Invalid;
 		}
 		
 		public static DomRegion GetBodyRegion(FunctionDefinition methodDefinition)

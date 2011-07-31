@@ -37,6 +37,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Enumerate projects/folders
 		public IProject FindProjectContainingFile(string fileName)
 		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			
 			IProject currentProject = ProjectService.CurrentProject;
 			if (currentProject != null && currentProject.IsFileInProject(fileName))
 				return currentProject;
@@ -561,6 +564,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			for(int i=0; i<projectsToLoad.Count; i++) {
 				ProjectLoadInformation loadInfo = projectsToLoad[i];
 				IList<ProjectSection> projectSections = readProjectSections[i];
+				loadInfo.ProjectSections = projectSections;
 				
 				// set the target platform
 				SolutionItem projectConfig = newSolution.GetProjectConfiguration(loadInfo.Guid);

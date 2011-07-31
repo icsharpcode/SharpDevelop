@@ -27,17 +27,25 @@
 			<Reference Include="System.Xml" />
 		</ProjectItems>
 		
+		<ProjectItems>
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Drawing" />
+			<Import Include="System.Diagnostics" />
+			<Import Include="System.Windows.Forms" />
+		</ProjectItems>
+		
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<MyType>WindowsFormsWithCustomSubMain</MyType>
 		</PropertyGroup>
 		
 		<Files>
 			<File name="NotificationIcon.vb"><![CDATA[${StandardHeader.VBNET}
-Imports System.Diagnostics
-Imports System.Drawing
 Imports System.Threading
-Imports System.Windows.Forms
 
 Public NotInheritable Class NotificationIcon
 	Private notifyIcon As NotifyIcon
@@ -76,8 +84,8 @@ Public NotInheritable Class NotificationIcon
 				notificationIcon.notifyIcon.Visible = True
 				Application.Run()
 				notificationIcon.notifyIcon.Dispose()
-					' The application is already running
-					' TODO: Display message box or change focus to existing application instance
+				' The application is already running
+				' TODO: Display message box or change focus to existing application instance
 			Else
 			End If
 		End Using

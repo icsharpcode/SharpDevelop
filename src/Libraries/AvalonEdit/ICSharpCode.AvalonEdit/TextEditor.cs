@@ -13,7 +13,9 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -470,13 +472,13 @@ namespace ICSharpCode.AvalonEdit
 			TextEditor editor = (TextEditor)d;
 			var leftMargins = editor.TextArea.LeftMargins;
 			if ((bool)e.NewValue) {
-				var lineNumbers = new LineNumberMargin();
+				LineNumberMargin lineNumbers = new LineNumberMargin();
+				Line line = (Line)DottedLineMargin.Create();
 				leftMargins.Insert(0, lineNumbers);
-				leftMargins.Insert(1, DottedLineMargin.Create(editor));
-				lineNumbers.SetBinding(Control.ForegroundProperty,
-				                       new Binding("LineNumbersForeground") {
-				                       	Source = editor
-				                       });
+				leftMargins.Insert(1, line);
+				var lineNumbersForeground = new Binding("LineNumbersForeground") { Source = editor };
+				line.SetBinding(Line.StrokeProperty, lineNumbersForeground);
+				lineNumbers.SetBinding(Control.ForegroundProperty, lineNumbersForeground);
 			} else {
 				for (int i = 0; i < leftMargins.Count; i++) {
 					if (leftMargins[i] is LineNumberMargin) {
@@ -667,6 +669,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public void ScrollToEnd()
 		{
+			ApplyTemplate(); // ensure scrollViewer is created
 			if (scrollViewer != null)
 				scrollViewer.ScrollToEnd();
 		}
@@ -676,6 +679,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public void ScrollToHome()
 		{
+			ApplyTemplate(); // ensure scrollViewer is created
 			if (scrollViewer != null)
 				scrollViewer.ScrollToHome();
 		}
@@ -685,6 +689,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public void ScrollToHorizontalOffset(double offset)
 		{
+			ApplyTemplate(); // ensure scrollViewer is created
 			if (scrollViewer != null)
 				scrollViewer.ScrollToHorizontalOffset(offset);
 		}
@@ -694,6 +699,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public void ScrollToVerticalOffset(double offset)
 		{
+			ApplyTemplate(); // ensure scrollViewer is created
 			if (scrollViewer != null)
 				scrollViewer.ScrollToVerticalOffset(offset);
 		}
@@ -1102,6 +1108,11 @@ namespace ICSharpCode.AvalonEdit
 			TextView textView = textArea.TextView;
 			TextDocument document = textView.Document;
 			if (scrollViewer != null && document != null) {
+				if (line < 1)
+					line = 1;
+				if (line > document.LineCount)
+					line = document.LineCount;
+				
 				IScrollInfo scrollInfo = textView;
 				if (!scrollInfo.CanHorizontallyScroll) {
 					// Word wrap is enabled. Ensure that we have up-to-date info about line height so that we scroll

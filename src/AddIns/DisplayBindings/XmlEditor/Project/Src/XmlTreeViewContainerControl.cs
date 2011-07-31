@@ -38,9 +38,15 @@ namespace ICSharpCode.XmlEditor
 		public event EventHandler DirtyChanged;
 		
 		public XmlTreeViewContainerControl()
+			: this(new XmlSchemaCompletionCollection(), null)
+		{
+		}
+		
+		public XmlTreeViewContainerControl(XmlSchemaCompletionCollection schemas, XmlSchemaCompletion defaultSchema)
 		{
 			InitializeComponent();
 			InitImages();
+			editor = new XmlTreeEditor(this, schemas, defaultSchema);
 		}
 		
 		/// <summary>
@@ -135,23 +141,23 @@ namespace ICSharpCode.XmlEditor
 			IsErrorMessageTextBoxVisible = true;
 		}
 		
-		/// <summary>
-		/// Displays the specified xml as a tree.
-		/// </summary>
-		public void LoadXml(string xml, XmlSchemaCompletionCollection schemas, XmlSchemaCompletion defaultSchema)
+		public void LoadXml(string xml)
 		{
 			textBox.Clear();
 			IsAttributesGridVisible = true;
 			ClearAttributes();
 			
-			editor = new XmlTreeEditor(this, schemas, defaultSchema);
 			editor.LoadXml(xml);
 			
-			// Expand document element node.
+			ExpandRootDocumentElementNode();
+		}
+		
+		void ExpandRootDocumentElementNode()
+		{
 			if (xmlElementTreeView.Nodes.Count > 0) {
 				xmlElementTreeView.Nodes[0].Expand();
-			}			
-		}	
+			}	
+		}
 		
 		/// <summary>
 		/// Gets or sets the xml document to be shown in this

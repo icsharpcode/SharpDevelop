@@ -13,9 +13,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class PositionedGraph
 	{
-		private List<PositionedGraphNode> nodes = new List<PositionedGraphNode>();
+		private List<PositionedNode> nodes = new List<PositionedNode>();
 		
-		public PositionedGraphNode Root { get; set; }
+		public PositionedNode Root { get; set; }
 		
 		public System.Windows.Rect BoundingRect
 		{
@@ -33,12 +33,12 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <summary>
 		/// All nodes in the graph.
 		/// </summary>
-		public IEnumerable<PositionedGraphNode> Nodes
+		public IEnumerable<PositionedNode> Nodes
 		{
 			get { return nodes; }
 		}
 		
-		internal void AddNode(PositionedGraphNode node)
+		internal void AddNode(PositionedNode node)
 		{
 			this.nodes.Add(node);
 		}
@@ -50,7 +50,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			get
 			{
-				foreach	(PositionedGraphNode node in this.Nodes)
+				foreach	(PositionedNode node in this.Nodes)
 				{
 					foreach (PositionedEdge edge in node.Edges)
 					{

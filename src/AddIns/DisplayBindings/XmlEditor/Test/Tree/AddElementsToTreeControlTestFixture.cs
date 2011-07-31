@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System;
 using System.Windows.Forms;
 using System.Xml;
+using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Tree
 {
@@ -19,13 +20,12 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void SetUpFixture()
 		{
-			using (XmlTreeViewContainerControl treeViewContainer = new XmlTreeViewContainerControl()) {
-				treeViewContainer.LoadXml("<root/>", new XmlSchemaCompletionCollection(), null);
+			using (DerivedXmlTreeViewContainerControl treeViewContainer = new DerivedXmlTreeViewContainerControl()) {
+				treeViewContainer.LoadXml("<root/>");
 				
 				doc = treeViewContainer.Document;
 				XmlTreeViewControl treeView = treeViewContainer.TreeView;
 				
-				//treeView.DocumentElement = doc.DocumentElement;
 				rootNode = (XmlElementTreeNode)treeView.Nodes[0];
 
 				// No node selected in treeview - adding a child 

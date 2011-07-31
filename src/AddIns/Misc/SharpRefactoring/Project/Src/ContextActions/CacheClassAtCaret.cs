@@ -12,7 +12,8 @@ using ICSharpCode.SharpDevelop.Refactoring;
 namespace SharpRefactoring.ContextActions
 {
 	/// <summary>
-	/// Description of CacheClassAtCaret.
+	/// Caches information about the class at the caret in the editor.
+	/// Used by ContextActions.
 	/// </summary>
 	public class CacheClassAtCaret : IContextActionCache
 	{
@@ -50,7 +51,6 @@ namespace SharpRefactoring.ContextActions
 				return;
 			var c = this.Class;
 			
-			// TODO cache
 			var classDecls = context.GetClassDeclarationsOnCurrentLine().ToList();
 			this.IsCaretAtClassDeclaration = classDecls.Count == 1 && (classDecls[0].FullyQualifiedName == c.FullyQualifiedName);
 			

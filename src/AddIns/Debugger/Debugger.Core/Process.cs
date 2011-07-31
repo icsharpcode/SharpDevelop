@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-using Debugger.Interop;
 using Debugger.Interop.CorDebug;
+using Debugger.Interop.CorSym;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
 
@@ -79,7 +79,7 @@ namespace Debugger
 			}
 		}
 		
-		public SourcecodeSegment NextStatement { 
+		public SourcecodeSegment NextStatement {
 			get {
 				if (SelectedStackFrame == null || IsRunning) {
 					return null;
@@ -87,6 +87,11 @@ namespace Debugger
 					return SelectedStackFrame.NextStatement;
 				}
 			}
+		}
+		
+		public bool BreakAtBeginning {
+			get;
+			set;
 		}
 		
 		public AppDomainCollection AppDomains {
@@ -113,6 +118,7 @@ namespace Debugger
 			
 			activeEvals = new EvalCollection(debugger);
 			modules = new ModuleCollection(debugger);
+			modules.Added += OnModulesAdded;
 			threads = new ThreadCollection(debugger);
 			appDomains = new AppDomainCollection(debugger);
 		}
@@ -138,21 +144,21 @@ namespace Debugger
 			
 			fixed (uint* pprocessStartupInfo = processStartupInfo)
 				fixed (uint* pprocessInfo = processInfo)
-					outProcess =
-						debugger.CorDebug.CreateProcess(
-							filename,   // lpApplicationName
-							  // If we do not prepend " ", the first argument migh just get lost
-							" " + arguments,                       // lpCommandLine
-							ref secAttr,                       // lpProcessAttributes
-							ref secAttr,                      // lpThreadAttributes
-							1,//TRUE                    // bInheritHandles
-							0x00000010 /*CREATE_NEW_CONSOLE*/,    // dwCreationFlags
-							IntPtr.Zero,                       // lpEnvironment
-							workingDirectory,                       // lpCurrentDirectory
-							(uint)pprocessStartupInfo,        // lpStartupInfo
-							(uint)pprocessInfo,               // lpProcessInformation,
-							CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS   // debuggingFlags
-							);
+				outProcess =
+				debugger.CorDebug.CreateProcess(
+					filename,   // lpApplicationName
+					// If we do not prepend " ", the first argument migh just get lost
+					" " + arguments,                       // lpCommandLine
+					ref secAttr,                       // lpProcessAttributes
+					ref secAttr,                      // lpThreadAttributes
+					1,//TRUE                    // bInheritHandles
+					0x00000010 /*CREATE_NEW_CONSOLE*/,    // dwCreationFlags
+					IntPtr.Zero,                       // lpEnvironment
+					workingDirectory,                       // lpCurrentDirectory
+					(uint)pprocessStartupInfo,        // lpStartupInfo
+					(uint)pprocessInfo,               // lpProcessInformation,
+					CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS   // debuggingFlags
+				);
 			
 			return new Process(debugger, outProcess, workingDirectory);
 		}
@@ -203,14 +209,7 @@ namespace Debugger
 		
 		#region Exceptions
 		
-		bool pauseOnHandledException = false;
-		
 		public event EventHandler<ExceptionEventArgs> ExceptionThrown;
-		
-		public bool PauseOnHandledException {
-			get { return pauseOnHandledException; }
-			set { pauseOnHandledException = value; }
-		}
 		
 		protected internal virtual void OnExceptionThrown(ExceptionEventArgs e)
 		{
@@ -265,7 +264,6 @@ namespace Debugger
 				Resumed(this, new ProcessEventArgs(this));
 			}
 		}
-		
 		
 		#endregion
 		
@@ -353,8 +351,12 @@ namespace Debugger
 			}
 		}
 		
-		public bool IsRunning { 
+		public bool IsRunning {
 			get { return pauseSession == null; }
+		}
+		
+		public uint Id {
+			get { return corProcess.GetID(); }
 		}
 		
 		public bool IsPaused {
@@ -413,7 +415,7 @@ namespace Debugger
 			
 			corProcess.Detach();
 			
-			// modules			
+			// modules
 			foreach(Module m in this.Modules)
 			{
 				m.Dispose();
@@ -424,7 +426,7 @@ namespace Debugger
 			// threads
 			this.threads.Clear();
 			
-			NotifyHasExited();	
+			NotifyHasExited();
 		}
 		
 		public void Continue()
@@ -524,6 +526,19 @@ namespace Debugger
 			
 			// Do not mark the process as exited
 			// This is done once ExitProcess callback is received
+		}
+		
+		/// <summary>
+		/// Clears the internal Expression cache used too speed up Expression evaluation.
+		/// Use this if your code evaluates expressions in a way which would cause
+		/// the cache to grow too large. The cache holds PermanentReferences so it
+		/// shouldn't grow larger than a few hundred items.
+		/// </summary>
+		public void ClearExpressionCache()
+		{
+			if (this.ExpressionsCache != null ){
+				this.ExpressionsCache.Clear();
+			}
 		}
 		
 		void SelectSomeThread()
@@ -627,5 +642,37 @@ namespace Debugger
 				debugger.MTA2STA.PerformAllCalls();
 			}
 		}
+		
+		#region Break at begining
+		
+		private void OnModulesAdded(object sender, CollectionItemEventArgs<Module> e)
+		{
+			if (BreakAtBeginning) {
+				if (e.Item.SymReader == null) return; // No symbols
+				
+				try {
+					// create a BP at entry point
+					uint entryPoint = e.Item.SymReader.GetUserEntryPoint();
+					if (entryPoint == 0) return; // no EP
+					var mainFunction = e.Item.CorModule.GetFunctionFromToken(entryPoint);
+					var corBreakpoint = mainFunction.CreateBreakpoint();
+					corBreakpoint.Activate(1);
+					
+					// create a SD BP
+					var breakpoint = new Breakpoint(this.debugger, corBreakpoint);
+					this.debugger.Breakpoints.Add(breakpoint);
+					breakpoint.Hit += delegate {
+						if (breakpoint != null)
+							breakpoint.Remove();
+						breakpoint = null;
+					};
+				} catch { 
+					// the app does not have an entry point - COM exception
+				}
+				BreakAtBeginning = false;
+			}
+		}
+		
+		#endregion
 	}
 }

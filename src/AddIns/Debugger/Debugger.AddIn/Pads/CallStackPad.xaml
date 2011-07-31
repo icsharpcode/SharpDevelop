@@ -6,10 +6,24 @@
 		<ListView Name="view" MouseLeftButtonUp="View_MouseLeftButtonUp" KeyDown="View_KeyDown">
 			<ListView.View>
 				<GridView>
+					<GridViewColumn Header="{sd:Localize MainWindow.Windows.Debug.CallStack.Module}">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding ModuleName}" Foreground="{Binding FontColor}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
 					<GridViewColumn Header="{sd:Localize Global.Name}">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding Name}" Foreground="{Binding FontColor}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="{sd:Localize MainWindow.Windows.Debug.CallStack.LineString}">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Line}" Foreground="{Binding FontColor}" />
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>

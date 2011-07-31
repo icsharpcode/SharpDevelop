@@ -4,6 +4,1932 @@
         <name>IronPython.Modules</name>
     </assembly>
     <members>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.Adler32">
+            <summary>
+            This class represents adler32 checksum algorithm
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Adler32.GetAdler32Checksum(System.Int64,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            This static method returns adler32 checksum of the buffer data
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.Deflate">
+            <summary>
+            Implementation of the Deflate compression algorithm.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.MAX_MEM_LEVEL">
+            <summary>
+            Maximum memory level
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.Z_DEFAULT_COMPRESSION">
+            <summary>
+            Defalult compression method
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.DEF_MEM_LEVEL">
+            <summary>
+            Default memory level
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.NeedMore">
+            <summary>
+            block not completed, need more input or more output
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.BlockDone">
+            <summary>
+            Block internalFlush performed
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.FinishStarted">
+            <summary>
+            Finish started, need only more output at next deflate
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.FinishDone">
+            <summary>
+            finish done, accept no more input or output
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.PRESET_DICT">
+            <summary>
+            preset dictionary flag in zlib header
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.Z_DEFLATED">
+            <summary>
+            The deflate compression method
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.Buf_size">
+            <summary>
+            The size of the buffer
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.REP_3_6">
+            <summary>
+            repeat previous bit length 3-6 times (2 bits of repeat count)
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.REPZ_3_10">
+            <summary>
+            repeat a zero length 3-10 times  (3 bits of repeat count)
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.REPZ_11_138">
+            <summary>
+            repeat a zero length 11-138 times  (7 bits of repeat count)
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.config_table">
+            <summary>
+            Deflate class congiration table
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.strm">
+            <summary>
+            Pointer back to this zlib stream
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.status">
+            <summary>
+            As the name implies
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.pending_buf">
+            <summary>
+            Output still pending
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.pending_buf_size">
+            <summary>
+            Size of Pending_buf
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.pending_out">
+            <summary>
+            Next pending byte to output to the stream
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.pending">
+            <summary>
+            Number of bytes in the pending buffer
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.noheader">
+            <summary>
+            suppress zlib header and adler32
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.data_type">
+            <summary>
+            UNKNOWN, BINARY or ASCII
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.method">
+            <summary>
+            STORED (for zip only) or DEFLATED
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.last_flush">
+            <summary>
+            Value of internalFlush parameter for previous deflate call
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.w_size">
+            <summary>
+            LZ77 Window size (32K by default)
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.w_bits">
+            <summary>
+            log2(w_size)  (8..16)
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.w_mask">
+            <summary>
+            w_size - 1
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.window">
+            <summary>
+            Sliding Window. Input bytes are ReadPos into the second half of the Window,
+            and move to the first half later to keep a dictionary of at least wSize
+            bytes. With this organization, matches are limited to a distance of
+            wSize-MAX_MATCH bytes, but this ensures that IO is always
+            performed with a length multiple of the block size. Also, it limits
+            the Window size to 64K, which is quite useful on MSDOS.
+            To do: use the user input buffer as sliding Window.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.window_size">
+            <summary>
+            Actual size of Window: 2*wSize, except when the user input buffer is directly used as sliding Window.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.prev">
+            <summary>
+            Link to older string with same hash index. To limit the size of this
+            array to 64K, this link is maintained only for the last 32K strings.
+            An index in this array is thus a Window index modulo 32K.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.head">
+            <summary>
+            Heads of the hash chains or NIL.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.ins_h">
+            <summary>
+            hash index of string to be inserted
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.hash_size">
+            <summary>
+            number of elements in hash table
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.hash_bits">
+            <summary>
+            log2(hash_size)
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.hash_mask">
+            <summary>
+            hash_size-1
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.hash_shift">
+            <summary>
+            Number of bits by which ins_h must be shifted at each input
+            step. It must be such that after MIN_MATCH steps, the oldest
+            byte no longer takes part in the hash key, that is:
+            hash_shift * MIN_MATCH >= hash_bits
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.block_start">
+            <summary>
+            Window position at the beginning of the current output block. Gets negative when the Window is moved backwards.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.match_length">
+            <summary>
+            length of best match
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.prev_match">
+            <summary>
+            previous match
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.match_available">
+            <summary>
+            set if previous match exists
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.strstart">
+            <summary>
+            start of string to insert
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.match_start">
+            <summary>
+            start of matching string
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.lookahead">
+            <summary>
+            number of valid bytes ahead in Window
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.prev_length">
+            <summary>
+            Length of the best match at previous step. Matches not greater than this
+            are discarded. This is used in the lazy match evaluation.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.max_chain_length">
+            <summary>
+            To speed up deflation, hash chains are never searched beyond this
+            length.  A higher limit improves compression ratio but degrades the speed.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.max_lazy_match">
+            <summary>
+            Attempt to find a better match only when the current match is strictly
+            smaller than this value. This mechanism is used only for compression
+            levels >= 4.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate._level">
+            <summary>
+            compression level (1..9)
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.strategy">
+            <summary>
+            favor or force Huffman coding
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.good_match">
+            <summary>
+            Use a faster search when the previous match is longer than this
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.nice_match">
+            <summary>
+            Stop searching when current match exceeds this
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.dyn_ltree">
+            <summary>
+            literal and length tree
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.dyn_dtree">
+            <summary>
+            distance tree
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.bl_tree">
+            <summary>
+             Huffman tree for bit lengths
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.l_desc">
+            <summary>
+            Desc for literal tree
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.d_desc">
+            <summary>
+            desc for distance tree
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.bl_desc">
+            <summary>
+            desc for bit length tree
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.bl_count">
+            <summary>
+            number of codes at each bit length for an optimal tree
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.heap">
+            <summary>
+            heap used to build the Huffman trees
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.heap_len">
+            <summary>
+            number of elements in the heap
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.heap_max">
+            <summary>
+            element of largest frequency
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.depth">
+            <summary>
+            Depth of each subtree used as tie breaker for trees of equal frequency
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.l_buf">
+            <summary>
+            index for literals or lengths
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.lit_bufsize">
+            <summary>
+             Size of match buffer for literals/lengths.  There are 4 reasons for
+             limiting lit_bufsize to 64K:
+               - frequencies can be kept in 16 bit counters
+               - if compression is not successful for the first block, all input
+                 data is still in the Window so we can still emit a stored block even
+                 when input comes from standard input.  (This can also be done for
+                 all blocks if lit_bufsize is not greater than 32K.)
+               - if compression is not successful for a file smaller than 64K, we can
+                 even emit a stored file instead of a stored block (saving 5 bytes).
+                 This is applicable only for zip (not gzip or zlib).
+               - creating new Huffman trees less frequently may not provide fast
+                 adaptation to changes in the input data statistics. (Take for
+                 example a binary file with poorly compressible code followed by
+                 a highly compressible string table.) Smaller buffer sizes give
+                 fast adaptation but have of course the overhead of transmitting
+                 trees more frequently.
+               - I can't count above 4
+            </summary> 
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.last_lit">
+            <summary>
+            running index in l_buf
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.d_buf">
+            <summary>
+            index of pendig_buf
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.opt_len">
+            <summary>
+            bit length of current block with optimal trees
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.static_len">
+            <summary>
+            bit length of current block with static trees
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.matches">
+            <summary>
+            number of string matches in current block
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.last_eob_len">
+            <summary>
+            bit length of EOB code for last block
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.bi_buf">
+            <summary>
+            Output buffer. bits are inserted starting at the bottom (least
+            significant bits).
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.bi_valid">
+            <summary>
+            Number of valid bits in bi_buf.  All bits above the last valid bit
+            are always zero.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.lm_init">
+            <summary>
+            Initialization
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.tr_init">
+            <summary>
+            Initialize the tree data structures for a new zlib stream.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.init_block">
+            <summary>
+            Initializes block
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.pqdownheap(System.Int16[],System.Int32)">
+            <summary>
+             Restore the heap property by moving down the tree starting at node k,
+             exchanging a node with the smallest of its two sons if necessary, stopping
+             when the heap property is re-established (each father smaller than its
+             two sons).
+             </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.scan_tree(System.Int16[],System.Int32)">
+            <summary>
+             Scan a literal or distance tree to determine the frequencies of the codes
+             in the bit length tree.
+             </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.build_bl_tree">
+            <summary>
+             Construct the Huffman tree for the bit lengths and return the index in
+             bl_order of the last bit length code to send.
+             </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.send_all_trees(System.Int32,System.Int32,System.Int32)">
+            <summary>
+             Send the header for a block using dynamic Huffman trees: the counts, the
+             lengths of the bit length codes, the literal tree and the distance tree.
+             IN assertion: lcodes >= 257, dcodes >= 1, blcodes >= 4.
+             </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.send_tree(System.Int16[],System.Int32)">
+            <summary>
+             Send a literal or distance tree in compressed form, using the codes in
+             bl_tree.
+             </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.put_byte(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+             Output a byte on the stream.
+             IN assertion: there is enough room in Pending_buf.
+             </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.put_byte(System.Byte)">
+            <summary>
+            Adds a byte to the buffer
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate._tr_align">
+            <summary>
+             Send one empty static block to give enough lookahead for inflate.
+             This takes 10 bits, of which 7 may remain in the bit buffer.
+             The current inflate code requires 9 bits of lookahead. If the
+             last two codes for the previous block (real code plus EOB) were coded
+             on 5 bits or less, inflate may have only 5+3 bits of lookahead to decode
+             the last real code. In this case we send two empty static blocks instead
+             of one. (There are no problems if the previous block is stored or fixed.)
+             To simplify the code, we assume the worst case of last real code encoded
+             on one bit only.
+             </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate._tr_tally(System.Int32,System.Int32)">
+            <summary>
+            Save the match info and tally the frequency counts. Return true if
+            the current block must be flushed.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.compress_block(System.Int16[],System.Int16[])">
+            <summary>
+             Send the block data compressed using the given Huffman trees
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.set_data_type">
+            <summary>
+            Set the data type to ASCII or BINARY, using a crude approximation:
+            binary if more than 20% of the bytes are &lt;= 6 or &gt;= 128, ascii otherwise.
+            IN assertion: the fields freq of dyn_ltree are set and the total of all
+            frequencies does not exceed 64K (to fit in an int on 16 bit machines).
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.bi_flush">
+            <summary>
+            Flush the bit buffer, keeping at most 7 bits in it.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.bi_windup">
+            <summary>
+            Flush the bit buffer and align the output on a byte boundary
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.copy_block(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Copy a stored block, storing first the length and its
+            one's complement if requested.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.flush_block_only(System.Boolean)">
+            <summary>
+            Flushes block
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.deflate_stored(System.Int32)">
+            <summary>
+            Copy without compression as much as possible from the input stream, return
+            the current block state.
+            This function does not insert new strings in the dictionary since
+            uncompressible data is probably not useful. This function is used
+            only for the level=0 compression option.
+            NOTE: this function should be optimized to avoid extra copying from
+            Window to Pending_buf.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate._tr_stored_block(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Send a stored block
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate._tr_flush_block(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Determine the best encoding for the current block: dynamic trees, static
+            trees or store, and output the encoded block to the zip file.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.fill_window">
+            <summary>
+             Fill the Window when the lookahead becomes insufficient.
+             Updates strstart and lookahead.
+            
+             IN assertion: lookahead less than MIN_LOOKAHEAD
+             OUT assertions: strstart less than or equal to window_size-MIN_LOOKAHEAD
+                At least one byte has been ReadPos, or _avail_in == 0; reads are
+                performed for at least two bytes (required for the zip translate_eol
+                option -- not supported here).
+             </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.deflate_fast(System.Int32)">
+            <summary>
+             Compress as much as possible from the input stream, return the current
+             block state.
+             This function does not perform lazy evaluation of matches and inserts
+             new strings in the dictionary only for unmatched strings or for short
+             matches. It is used only for the fast compression options.
+             </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.deflate_slow(System.Int32)">
+            <summary>
+             Same as above, but achieves better compression. We use a lazy
+             evaluation for matches: a match is finally adopted only if there is
+             no better match at the next Window position.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.longest_match(System.Int32)">
+            <summary>
+            Finds the longest matching data part
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.deflateInit(ComponentAce.Compression.Libs.ZLib.ZStream,System.Int32,System.Int32)">
+            <summary>
+            Deflate algorithm initialization
+            </summary>
+            <param name="strm">ZStream object</param>
+            <param name="level">Compression level</param>
+            <param name="bits">Window bits</param>
+            <returns>A result code</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.deflateInit(ComponentAce.Compression.Libs.ZLib.ZStream,System.Int32)">
+            <summary>
+            Initializes deflate algorithm
+            </summary>
+            <param name="strm">ZStream object</param>
+            <param name="level">Compression level</param>
+            <returns>Operation result result code</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.deflateInit2(ComponentAce.Compression.Libs.ZLib.ZStream,System.Int32,System.Int32,System.Int32,System.Int32,ComponentAce.Compression.Libs.ZLib.CompressionStrategy)">
+            <summary>
+            Deflate algorithm initialization
+            </summary>
+            <param name="strm">ZStream object</param>
+            <param name="level">Compression level</param>
+            <param name="method">Compression method</param>
+            <param name="windowBits">Window bits</param>
+            <param name="memLevel">Memory level</param>
+            <param name="strategy">Compression strategy</param>
+            <returns>Operation result code</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.deflateReset(ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Resets the current state of deflate object
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.deflateEnd">
+            <summary>
+            Finish compression with deflate algorithm
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.deflateParams(ComponentAce.Compression.Libs.ZLib.ZStream,System.Int32,ComponentAce.Compression.Libs.ZLib.CompressionStrategy)">
+            <summary>
+            Sets deflate algorithm parameters
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.deflateSetDictionary(ComponentAce.Compression.Libs.ZLib.ZStream,System.Byte[],System.Int32)">
+            <summary>
+            Sets deflate dictionary
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.deflate(ComponentAce.Compression.Libs.ZLib.ZStream,ComponentAce.Compression.Libs.ZLib.FlushStrategy)">
+            <summary>
+            Performs data compression with the deflate algorithm
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.#cctor">
+            <summary>
+            Static constructor initializes config_table
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.Deflate.level">
+            <summary>
+            Compression level
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.Deflate.Pending">
+            <summary>
+            Number of bytes in the pending buffer
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.Deflate.Pending_buf">
+            <summary>
+            Output still pending
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.Deflate.Pending_out">
+            <summary>
+            Next pending byte to output to the stream
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.Deflate.NoHeader">
+            <summary>
+            suppress zlib header and adler32
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.Deflate.Config">
+            <summary>
+            Deflate algorithm configuration parameters class
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.Config.good_length">
+            <summary>
+            reduce lazy search above this match length
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.Config.max_lazy">
+            <summary>
+            do not perform lazy search above this match length
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Deflate.Config.nice_length">
+            <summary>
+            quit search above this match length
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Deflate.Config.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Constructor which initializes class inner fields
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.mode">
+            <summary>
+            current inflate_block mode 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.left">
+            <summary>
+            if STORED, bytes left to copy 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.table">
+            <summary>
+            table lengths (14 bits) 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.index">
+            <summary>
+            index into blens (or border) 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.blens">
+            <summary>
+            bit lengths of codes 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.bb">
+            <summary>
+            bit length tree depth 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.tb">
+            <summary>
+            bit length decoding tree 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.codes">
+            <summary>
+            if CODES, current state 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.last">
+            <summary>
+            true if this block is the last block 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.bitk">
+            <summary>
+            bits in bit buffer 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.bitb">
+            <summary>
+            bit buffer 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.hufts">
+            <summary>
+            single malloc for tree space 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.window">
+            <summary>
+            sliding Window 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.end">
+            <summary>
+            one byte after sliding Window 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.read">
+            <summary>
+            Window ReadPos pointer 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.write">
+            <summary>
+            Window WritePos pointer 
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.needCheck">
+            <summary>
+            need check
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfBlocks.check">
+            <summary>
+            check on output 
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfBlocks.reset(ComponentAce.Compression.Libs.ZLib.ZStream,System.Int64[])">
+            <summary>
+            Resets this InfBlocks class instance
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfBlocks.proc(ComponentAce.Compression.Libs.ZLib.ZStream,System.Int32)">
+            <summary>
+            Block processing functions
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfBlocks.free(ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Frees inner buffers
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfBlocks.set_dictionary(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sets dictionary
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfBlocks.sync_point">
+            <summary>
+             Returns true if inflate is currently at the End of a block generated
+             by Z_SYNC_FLUSH or Z_FULL_FLUSH. 
+             </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfBlocks.inflate_flush(ComponentAce.Compression.Libs.ZLib.ZStream,System.Int32)">
+            <summary>
+            copy as much as possible from the sliding Window to the output area
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.InfBlocks.Window">
+            <summary>
+            sliding window 
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.InfBlocks.End">
+            <summary>
+            one byte after sliding Window 
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.InfBlocks.ReadPos">
+            <summary>
+            Window ReadPos pointer 
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.InfBlocks.WritePos">
+            <summary>
+            Window WritePos pointer 
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.InfBlocks.BitK">
+            <summary>
+            bits in bit buffer 
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.InfBlocks.BitB">
+            <summary>
+            bit buffer 
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.InflateCodesMode">
+            <summary>
+            Inflate codes mode
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.InfCodes">
+            <summary>
+            This class is used by the InfBlocks class
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfCodes.mode">
+            <summary>
+            current inflate_codes mode
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfCodes.count">
+            <summary>
+            length
+            </summary>        
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfCodes.tree">
+            <summary>
+            pointer into tree
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfCodes.tree_index">
+            <summary>
+            current index of the tree
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfCodes.need">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfCodes.lbits">
+            <summary>
+            ltree bits decoded per branch
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfCodes.dbits">
+            <summary>
+            dtree bits decoded per branch
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfCodes.ltree">
+            <summary>
+            literal/length/eob tree
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfCodes.ltree_index">
+            <summary>
+            literal/length/eob tree index
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfCodes.dtree">
+            <summary>
+            distance tree
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InfCodes.dtree_index">
+            <summary>
+            distance tree index
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfCodes.#ctor(System.Int32,System.Int32,System.Int32[],System.Int32,System.Int32[],System.Int32,ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Constructor which takes literal, distance trees, corresponding bites decoded for branches, corresponding indexes and a ZStream object 
+            </summary>        
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfCodes.#ctor(System.Int32,System.Int32,System.Int32[],System.Int32[],ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Constructor which takes literal, distance trees, corresponding bites decoded for branches and a ZStream object 
+            </summary>   
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfCodes.proc(ComponentAce.Compression.Libs.ZLib.InfBlocks,ComponentAce.Compression.Libs.ZLib.ZStream,System.Int32)">
+            <summary>
+            Block processing method
+            </summary>
+            <param name="s">An instance of the InfBlocks class</param>
+            <param name="z">A ZStream object</param>
+            <param name="r">A result code</param>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfCodes.free(ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Frees allocated resources
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfCodes.inflate_fast(System.Int32,System.Int32,System.Int32[],System.Int32,System.Int32[],System.Int32,ComponentAce.Compression.Libs.ZLib.InfBlocks,ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Fast inflate procedure. Called with number of bytes left to WritePos in Window at least 258
+            (the maximum string length) and number of input bytes available
+            at least ten.  The ten bytes are six bytes for the longest length/
+            distance pair plus four bytes for overloading the bit buffer.
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.InflateMode">
+            <summary>
+            This enumeration contains modes of inflate processing
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.METHOD">
+            <summary>
+            waiting for method byte
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.FLAG">
+            <summary>
+            waiting for flag byte
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.DICT4">
+            <summary>
+            four dictionary check bytes to go
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.DICT3">
+            <summary>
+            three dictionary check bytes to go
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.DICT2">
+            <summary>
+            two dictionary check bytes to go
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.DICT1">
+            <summary>
+            one dictionary check byte to go
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.DICT0">
+            <summary>
+            waiting for inflateSetDictionary
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.BLOCKS">
+            <summary>
+            decompressing blocks
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.CHECK4">
+            <summary>
+            four check bytes to go
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.CHECK3">
+            <summary>
+            three check bytes to go
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.CHECK2">
+            <summary>
+            two check bytes to go
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.CHECK1">
+            <summary>
+            one check byte to go
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.DONE">
+            <summary>
+            finished check, done
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.InflateMode.BAD">
+            <summary>
+            got an error--stay here
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Inflate.mode">
+            <summary>
+            current inflate mode
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Inflate.method">
+            <summary>
+            if FLAGS, method byte
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Inflate.was">
+            <summary>
+            computed check value
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Inflate.need">
+            <summary>
+            stream check value
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Inflate.marker">
+            <summary>
+            if BAD, inflateSync's marker bytes count
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Inflate.nowrap">
+            <summary>
+            flag for no wrapper
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Inflate.wbits">
+            <summary>
+            log2(Window size)  (8..15, defaults to 15)
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Inflate.blocks">
+            <summary>
+            current inflate_blocks state
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Inflate.inflateReset(ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Resets the Inflate algorithm
+            </summary>
+            <param name="z">A ZStream object</param>
+            <returns>A result code</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Inflate.inflateEnd(ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Finishes the inflate algorithm processing
+            </summary>
+            <param name="z">A ZStream object</param>
+            <returns>Operation result code</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Inflate.inflateInit(ComponentAce.Compression.Libs.ZLib.ZStream,System.Int32)">
+            <summary>
+            Initializes the inflate algorithm
+            </summary>
+            <param name="z">A ZStream object</param>
+            <param name="windowBits">Window size</param>
+            <returns>Operation result code</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Inflate.inflate(ComponentAce.Compression.Libs.ZLib.ZStream,ComponentAce.Compression.Libs.ZLib.FlushStrategy)">
+            <summary>
+            Runs inflate algorithm
+            </summary>
+            <param name="z">A ZStream object</param>
+            <param name="flush">Flush strategy</param>
+            <returns>Operation result code</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Inflate.inflateSetDictionary(ComponentAce.Compression.Libs.ZLib.ZStream,System.Byte[],System.Int32)">
+            <summary>
+            Sets dictionary for the inflate operation
+            </summary>
+            <param name="z">A ZStream object</param>
+            <param name="dictionary">An array of byte - dictionary</param>
+            <param name="dictLength">Dictionary length</param>
+            <returns>Operation result code</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Inflate.inflateSync(ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Inflate synchronization
+            </summary>
+            <param name="z">A ZStream object</param>
+            <returns>Operation result code</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Inflate.inflateSyncPoint(ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+             Returns true if inflate is currently at the End of a block generated
+             by Z_SYNC_FLUSH or Z_FULL_FLUSH. This function is used by one PPP
+             implementation to provide an additional safety check. PPP uses Z_SYNC_FLUSH
+             but removes the length bytes of the resulting empty stored block. When
+             decompressing, PPP checks that at the End of input packet, inflate is
+             waiting for these length bytes.
+             </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.InfTreeUtil">
+            <summary>
+            Contains utility information for the InfTree class
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfTree.huft_build(System.Int32[],System.Int32,System.Int32,System.Int32,System.Int32[],System.Int32[],System.Int32[],System.Int32[],System.Int32[],System.Int32[],System.Int32[])">
+            <summary>
+            Given a list of code lengths and a maximum table size, make a set of
+            tables to decode that set of codes.  
+            </summary>
+            <returns>Return (int)ZLibResultCode.Z_OK on success, (int)ZLibResultCode.Z_DATA_ERROR if the given code set is incomplete (the tables are still built in this case), (int)ZLibResultCode.Z_DATA_ERROR if the input is invalid (an over-subscribed set of lengths), or (int)ZLibResultCode.Z_DATA_ERROR if not enough memory.
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfTree.inflate_trees_bits(System.Int32[],System.Int32[],System.Int32[],System.Int32[],ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Build trees
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfTree.inflate_trees_dynamic(System.Int32,System.Int32,System.Int32[],System.Int32[],System.Int32[],System.Int32[],System.Int32[],System.Int32[],ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Builds dynamic trees
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.InfTree.inflate_trees_fixed(System.Int32[],System.Int32[],System.Int32[][],System.Int32[][],ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Build fixed trees
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.StaticTree.MAX_BL_BITS">
+            <summary>
+             Bit length codes must not exceed MAX_BL_BITS bits
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.Tree">
+            <summary>
+            This class represents a tree and is used in the Deflate class
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Tree.dyn_tree">
+            <summary>
+            The dynamic tree
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Tree.max_code">
+            <summary>
+            Largest code with non zero frequency
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.Tree.stat_desc">
+            <summary>
+            the corresponding static tree
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Tree.d_code(System.Int32)">
+            <summary>
+            Mapping from a distance to a distance code. dist is the distance - 1 and
+            must not have side effects. _dist_code[256] and _dist_code[257] are never
+            used.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Tree.gen_bitlen(ComponentAce.Compression.Libs.ZLib.Deflate)">
+            <summary>
+             Compute the optimal bit lengths for a tree and update the total bit length
+             for the current block.
+             IN assertion: the fields freq and dad are set, heap[heap_max] and
+                above are the tree nodes sorted by increasing frequency.
+             OUT assertions: the field count is set to the optimal bit length, the
+                 array bl_count contains the frequencies for each bit length.
+                 The length opt_len is updated; static_len is also updated if stree is
+                 not null.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Tree.build_tree(ComponentAce.Compression.Libs.ZLib.Deflate)">
+            <summary>
+             Construct one Huffman tree and assigns the code bit strings and lengths.
+             Update the total bit length for the current block.
+             IN assertion: the field freq is set for all tree elements.
+             OUT assertions: the fields count and code are set to the optimal bit length
+                 and corresponding code. The length opt_len is updated; static_len is
+                 also updated if stree is not null. The field max_code is set.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Tree.gen_codes(System.Int16[],System.Int32,System.Int16[])">
+            <summary>
+             Generate the codes for a given tree and bit counts (which need not be
+             optimal).
+             IN assertion: the array bl_count contains the bit length statistics for
+             the given tree and the field count is set for all tree elements.
+             OUT assertion: the field code is set for all tree elements of non
+                 zero code length.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.Tree.bi_reverse(System.Int32,System.Int32)">
+            <summary>
+             Reverse the first count bits of a code, using straightforward code (a faster
+             method would use a table)
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.Tree.DynTree">
+            <summary>
+            The dynamic tree
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.Tree.MaxCode">
+            <summary>
+            Largest code with non zero frequency
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.Tree.StatDesc">
+            <summary>
+            the corresponding static tree
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.ZLibCompressionLevel">
+            <summary>
+            Some constants for specifying compression levels. Methods which takes a compression level as a parameter expects an integer value from 0 to 9. You can either specify an integer value or use constants for some most widely used compression levels.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibCompressionLevel.Z_NO_COMPRESSION">
+            <summary>
+             No compression should be used at all.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibCompressionLevel.Z_BEST_SPEED">
+            <summary>
+            Minimal compression, but greatest speed.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibCompressionLevel.Z_BEST_COMPRESSION">
+            <summary>
+            Maximum compression, but slowest.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibCompressionLevel.Z_DEFAULT_COMPRESSION">
+            <summary>
+            Select default compression level (good compression, good speed).
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.CompressionStrategy">
+            <summary>
+            Compression strategies. The strategy parameter is used to tune the compression algorithm. The strategy parameter only affects the compression ratio but not the correctness of the compressed output even if it is not set appropriately.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.CompressionStrategy.Z_FILTERED">
+            <summary>
+            This strategy is designed for filtered data. Data which consists of mostly small values, with random distribution should use Z_FILTERED. With this strategy, less string matching is performed.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.CompressionStrategy.Z_HUFFMAN_ONLY">
+            <summary>
+            Z_HUFFMAN_ONLY forces Huffman encoding only (no string match)
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.CompressionStrategy.Z_DEFAULT_STRATEGY">
+            <summary>
+            The default strategy is the most commonly used. With this strategy, string matching and huffman compression are balanced.
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.FlushStrategy">
+            <summary>
+            Flush strategies
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_NO_FLUSH">
+            <summary>
+              Do not internalFlush data, but just write data as normal to the output buffer. This is the normal way in which data is written to the output buffer.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_PARTIAL_FLUSH">
+            <summary>
+            Obsolete. You should use Z_SYNC_FLUSH instead.
+            </summary>        
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_SYNC_FLUSH">
+            <summary>
+            All pending output is flushed to the output buffer and the output is aligned on a byte boundary, so that the decompressor can get all input data available so far.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_FULL_FLUSH">
+            <summary>
+            All output is flushed as with Z_SYNC_FLUSH, and the compression state is reset so that decompression can restart from this point if previous compressed data has been damaged or if random access is desired. Using Z_FULL_FLUSH too often can seriously degrade the compression. ZLib_InflateSync will locate points in the compression string where a full has been performed.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_FINISH">
+            <summary>
+            Notifies the module that the input has now been exhausted. Pending input is processed, pending output is flushed and calls return with Z_STREAM_END if there was enough output space.
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.ZLibResultCode">
+            <summary>
+            Results of operations in ZLib library
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK">
+            <summary>
+             No failure was encountered, the operation completed without problem.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_END">
+            <summary>
+            No failure was encountered, and the input has been exhausted.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_NEED_DICT">
+            <summary>
+            A preset dictionary is required for decompression of the data.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_ERRNO">
+            <summary>
+            An internal error occurred
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_ERROR">
+            <summary>
+            The stream structure was inconsistent
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_DATA_ERROR">
+            <summary>
+            Input data has been corrupted (for decompression).
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_MEM_ERROR">
+            <summary>
+            Memory allocation failed.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_BUF_ERROR">
+            <summary>
+            There was not enough space in the output buffer.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_VERSION_ERROR">
+            <summary>
+            The version supplied does not match that supported by the ZLib module.
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.DeflateState">
+            <summary>
+            States of deflate operation
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.BlockType">
+            <summary>
+            Data block types, i.e. binary or ascii text
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.ZLibUtil">
+            <summary>
+            Helper class
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibUtil.MAX_WBITS">
+            <summary>
+            Max Window size
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibUtil.PRESET_DICT">
+            <summary>
+            preset dictionary flag in zlib header
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibUtil.zLibBufSize">
+            <summary>
+            The size of the buffer
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibUtil.Z_DEFLATED">
+            <summary>
+            Deflate compression method index
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZLibUtil.DIST_CODE_LEN">
+            <summary>
+            see definition of array dist_code below
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.Identity(System.Int64)">
+            <summary>
+            This method returns the literal value received
+            </summary>
+            <param name="literal">The literal to return</param>
+            <returns>The received value</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.Identity(System.UInt64)">
+            <summary>
+            This method returns the literal value received
+            </summary>
+            <param name="literal">The literal to return</param>
+            <returns>The received value</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.Identity(System.Single)">
+            <summary>
+            This method returns the literal value received
+            </summary>
+            <param name="literal">The literal to return</param>
+            <returns>The received value</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.Identity(System.Double)">
+            <summary>
+            This method returns the literal value received
+            </summary>
+            <param name="literal">The literal to return</param>
+            <returns>The received value</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.URShift(System.Int32,System.Int32)">
+            <summary>
+            Performs an unsigned bitwise right shift with the specified number
+            </summary>
+            <param name="number">Number to operate on</param>
+            <param name="bits">Ammount of bits to shift</param>
+            <returns>The resulting number from the shift operation</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.URShift(System.Int32,System.Int64)">
+            <summary>
+            Performs an unsigned bitwise right shift with the specified number
+            </summary>
+            <param name="number">Number to operate on</param>
+            <param name="bits">Ammount of bits to shift</param>
+            <returns>The resulting number from the shift operation</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.URShift(System.Int64,System.Int32)">
+            <summary>
+            Performs an unsigned bitwise right shift with the specified number
+            </summary>
+            <param name="number">Number to operate on</param>
+            <param name="bits">Ammount of bits to shift</param>
+            <returns>The resulting number from the shift operation</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.URShift(System.Int64,System.Int64)">
+            <summary>
+            Performs an unsigned bitwise right shift with the specified number
+            </summary>
+            <param name="number">Number to operate on</param>
+            <param name="bits">Ammount of bits to shift</param>
+            <returns>The resulting number from the shift operation</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.ReadInput(System.IO.Stream,System.Byte[],System.Int32,System.Int32)">
+            <summary>Reads a number of characters from the current source Stream and writes the data to the target array at the specified index.</summary>
+            <param name="sourceStream">The source Stream to ReadPos from.</param>
+            <param name="target">Contains the array of characters ReadPos from the source Stream.</param>
+            <param name="start">The starting index of the target array.</param>
+            <param name="count">The maximum number of characters to ReadPos from the source Stream.</param>
+            <returns>The number of characters ReadPos. The number will be less than or equal to count depending on the data available in the source Stream. Returns -1 if the End of the stream is reached.</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.ReadInput(System.IO.TextReader,System.Byte[],System.Int32,System.Int32)">
+            <summary>Reads a number of characters from the current source TextReader and writes the data to the target array at the specified index.</summary>
+            <param name="sourceTextReader">The source TextReader to ReadPos from</param>
+            <param name="target">Contains the array of characteres ReadPos from the source TextReader.</param>
+            <param name="start">The starting index of the target array.</param>
+            <param name="count">The maximum number of characters to ReadPos from the source TextReader.</param>
+            <returns>The number of characters ReadPos. The number will be less than or equal to count depending on the data available in the source TextReader. Returns -1 if the End of the stream is reached.</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.ToByteArray(System.String)">
+            <summary>
+            Converts a string to an array of bytes
+            </summary>
+            <param name="sourceString">The string to be converted</param>
+            <returns>The new array of bytes</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.ToCharArray(System.Byte[])">
+            <summary>
+            Converts an array of bytes to an array of chars
+            </summary>
+            <param name="byteArray">The array of bytes to convert</param>
+            <returns>The new array of chars</returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZLibUtil.CopyLargeArrayToSmall.CopyData">
+            <summary>
+            Copies large array which was passed as srcBuf to the Initialize method into the destination array which were passes as destBuff
+            </summary>
+            <returns>The number of bytes copied</returns>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.ZStream">
+            <summary>
+            ZStream is used to store user data to compress/decompress.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream.MAX_MEM_LEVEL">
+            <summary>
+            Maximum memory level
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream._next_in">
+            <summary>
+            Next input byte array
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream._next_in_index">
+            <summary>
+            Index of the first byte in the <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in">input array</see>.
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream._avail_in">
+            <summary>
+            Number of bytes available at _next_in
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream._total_in">
+            <summary>
+            total nb of input bytes ReadPos so far
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream._next_out">
+            <summary>
+            Byte array for the next output block
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream._next_out_index">
+            <summary>
+            Index of the first byte in the _next_out array
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream._avail_out">
+            <summary>
+            Remaining free space at _next_out
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream._total_out">
+            <summary>
+            Total number of bytes in output array
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream._msg">
+            <summary>
+            A string to store operation result message (corresponding to result codes)
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream._dstate">
+            <summary>
+            A deflate object to perform data compression
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream._istate">
+            <summary>
+            Inflate object to perform data decompression
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream.data_type">
+            <summary>
+            Best guess about the data type: ascii or binary
+            </summary>
+        </member>
+        <member name="F:ComponentAce.Compression.Libs.ZLib.ZStream._adler">
+            <summary>
+            A checksum computed with Adler algorithm
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateInit">
+            <summary>
+            Initializes the internal stream state for decompression. The fields <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/>, <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in"/> must be 
+            initialized before by the caller. If <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> is not <c>null</c> and <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in"/> is large 
+            enough (the exact value depends on the compression method), <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateInit"/> determines the compression 
+            method from the ZLib header and allocates all data structures accordingly; otherwise the allocation will be deferred 
+            to the first call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>. 
+            </summary>
+            <returns>
+            inflateInit returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> if success, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_MEM_ERROR"/> if there was not enough memory,  
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_VERSION_ERROR"/> if the ZLib library version is incompatible with the version assumed by the caller. 
+            <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.msg"/> is set to <c>null</c> if there is no error message. <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateInit"/> does not perform any decompression 
+            apart from reading the ZLib header if present: this will be done by <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>. (So <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> and <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in"/> 
+            may be modified, but <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out"/> and <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/> are unchanged.)
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateInit(System.Int32)">
+            <summary>
+            This is another version of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateInit"/> with an extra parameter. The fields <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/>, <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in"/> must be 
+            initialized before by the caller. If <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> is not <c>null</c> and <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in"/> is large enough 
+            (the exact value depends on the compression method), <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateInit(System.Int32)"/> determines the compression method from 
+            the ZLib header and allocates all data structures accordingly; otherwise the allocation will be deferred to the first 
+            call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>. 
+            </summary>
+            <param name="windowBits">The <c>windowBits</c> parameter is the base two logarithm of the maximum window size (the size of the history buffer). 
+            It should be in the range <c>8..15</c> for this version of the library. The default value is 15 if <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateInit(System.Int32)"/> is used instead.
+            If a compressed stream with a larger window size is given as input, <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> will return with the error code 
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_DATA_ERROR"/> instead of trying to allocate a larger window.</param>
+            <returns>
+            inflateInit returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> if success, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_MEM_ERROR"/> if there was not enough memory,
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_ERROR"/> if a parameter is invalid (such as a negative memLevel). <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.msg"/> is set to null 
+            if there is no error message. <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateInit(System.Int32)"/> does not perform any decompression apart from reading the ZLib header 
+            if present: this will be done by <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>. (So <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> and <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in"/> may be modified, 
+            but <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out"/> and <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/> are unchanged.)
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)">
+            <summary>
+            <para>This method decompresses as much data as possible, and stops when the input buffer (<see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/>) becomes empty or 
+            the output buffer (<see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out"/>) becomes full. It may some introduce some output latency (reading input without producing any output) 
+            except when forced to flush. </para>
+            <para>The detailed semantics are as follows. <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> performs one or both of the following actions: </para>
+            <para>
+            <list type="bullet">
+            <item>Decompress more input starting at <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> and update <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> and <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in"/> 
+            accordingly. If not all input can be processed (because there is not enough room in the output buffer), <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> is updated and 
+            processing will resume at this point for the next call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>. </item>
+            <item>Provide more output starting at <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out"/> and update <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out"/> and <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/> 
+            accordingly. <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> provides as much output as possible, until there is no more input data or no more space in 
+            the output buffer (see below about the <paramref name="flush"/> parameter).</item>
+            </list>
+            </para>
+            </summary>
+            <param name="flush"><see cref="T:ComponentAce.Compression.Libs.ZLib.FlushStrategy">Flush strategy</see> to use.</param>
+            <remarks>
+            <para>Before the call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>, the application should ensure that at least one of the actions is possible, by providing 
+            more input and/or consuming more output, and updating the next_* and avail_* values accordingly. The application can consume the uncompressed 
+            output when it wants, for example when the output buffer is full (<c>avail_out == 0</c>), or after each call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>. 
+            If <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> and with zero <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/>, it must be called again 
+            after making room in the <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out">output buffer</see> because there might be more output pending. </para>
+            <para>If the parameter <paramref name="flush"/> is set to <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_SYNC_FLUSH"/>, <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> flushes 
+            as much output as possible to the output buffer. The flushing behavior of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> is not specified for values of 
+            the <paramref name="flush"/> parameter other than <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_SYNC_FLUSH"/> and <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_FINISH"/>, 
+            but the current implementation actually flushes as much output as possible anyway. </para>
+            <para><see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> should normally be called until it returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_END"/> or an error. 
+            However if all decompression is to be performed in a single step (a single call of inflate), the parameter <paramref name="flush"/> 
+            should be set to <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_FINISH"/>. In this case all pending input is processed and all pending output is flushed; 
+            <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/> must be large enough to hold all the uncompressed data. (The size of the uncompressed data may have been 
+            saved by the compressor for this purpose.) The next operation on this stream must be <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateEnd"/> to deallocate the decompression 
+            state. The use of <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_FINISH"/> is never required, but can be used to inform <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> that a faster 
+            routine may be used for the single <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> call. </para>
+            <para>If a preset dictionary is needed at this point (see <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateSetDictionary(System.Byte[],System.Int32)"/>), <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> sets strm-adler 
+            to the adler32 checksum of the dictionary chosen by the compressor and returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_NEED_DICT"/>; otherwise it 
+            sets strm-&gt;adler to the adler32 checksum of all output produced so far (that is, <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.total_out"/> bytes) and returns
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/>, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_END"/> or an error code as described below. At the end of the stream, 
+            <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>) checks that its computed adler32 checksum is equal to that saved by the compressor and returns
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_END"/> only if the checksum is correct.</para>
+            </remarks>
+            <returns>
+            <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> if some progress has been made (more input processed or more output produced), 
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_END"/> if the end of the compressed data has been reached and all uncompressed output has been produced, 
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_NEED_DICT"/> if a preset dictionary is needed at this point, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_DATA_ERROR"/> if 
+            the input data was corrupted (input stream not conforming to the ZLib format or incorrect adler32 checksum), 
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_ERROR"/> if the stream structure was inconsistent (for example if <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> or 
+            <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out"/> was <c>null</c>), <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_MEM_ERROR"/> if there was not enough memory, 
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_BUF_ERROR"/> if no progress is possible or if there was not enough room in the output buffer 
+            when <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_FINISH"/> is used. In the <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_DATA_ERROR"/> case, the application 
+            may then call <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateSync"/> to look for a good compression block.
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateEnd">
+            <summary>
+            All dynamically allocated data structures for this stream are freed. This function discards any unprocessed input and does not flush any 
+            pending output.
+            </summary>
+            <returns>
+            inflateEnd returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> if success, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_ERROR"/> 
+            if the stream state was inconsistent. In the error case, msg may be set but then points to a static string (which must not be deallocated).
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateSync">
+            <summary>
+            Skips invalid compressed data until a full flush point (see the description of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)">deflate with Z_FULL_FLUSH</see>) can be found, 
+            or until all available input is skipped. No output is provided.
+            </summary>
+            <returns>
+            <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateSync"/> returns <seec ref="ZLibResultCode.Z_OK"/> if a full flush point has been found, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_BUF_ERROR"/>
+            if no more input was provided, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_DATA_ERROR"/> if no flush point has been found, or 
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_ERROR"/> if the stream structure was inconsistent. In the success case, the application may save the current 
+            current value of <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.total_in"/> which indicates where valid compressed data was found. In the error case, the application may repeatedly 
+            call <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateSync"/>, providing more input each time, until success or end of the input data.
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateSetDictionary(System.Byte[],System.Int32)">
+            <summary>
+            Initializes the decompression dictionary from the given uncompressed byte sequence. This function must be called immediately after a call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> if this call returned <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_NEED_DICT"/>. The dictionary chosen by the compressor can be determined from the Adler32 value returned by this call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>. The compressor and decompresser must use exactly the same dictionary.
+            </summary>
+            <param name="dictionary">A byte array - a dictionary.</param>
+            <param name="dictLength">The length of the dictionary.</param>
+            <returns>
+            inflateSetDictionary returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> if success, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_ERROR"/> if a parameter is invalid (such as <c>null</c> dictionary) or the stream state is inconsistent, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_DATA_ERROR"/> if the given dictionary doesn't match the expected one (incorrect Adler32 value). inflateSetDictionary does not perform any decompression: this will be done by subsequent calls of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>.
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateInit(System.Int32)">
+            <summary>
+            Initializes the internal stream state for compression. 
+            </summary>
+            <param name="level">An integer value from 0 to 9 indicating the desired compression level.</param>
+            <returns>
+            deflateInit returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> if success, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_MEM_ERROR"/> if there was not enough memory, 
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_ERROR"/> if level is not a valid compression level. <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.msg"/> is set to <c>null</c> if there is 
+            no error message. <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateInit(System.Int32)"/> does not perform any compression: this will be done by <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>.
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateInit(System.Int32,System.Int32)">
+            <summary>
+            Initializes the internal stream state for compression. 
+            </summary>
+            <param name="level">An integer value from 0 to 9 indicating the desired compression level.</param>
+            <param name="bits"> The windowBits parameter is the base two logarithm of the window size (the size of the history buffer). It should be in the 
+            range 8..15 for this version of the library. Larger values of this parameter result in better compression at the expense of memory usage. 
+            The default value is 15 if deflateInit is used instead.</param>
+            <returns>
+            deflateInit returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> if success, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_MEM_ERROR"/> if there was not enough memory,
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_ERROR"/> if level is not a valid compression level. <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.msg"/> is set to <c>null</c> if there 
+            is no error message. <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateInit(System.Int32,System.Int32)"/> does not perform any compression: this will be done by <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>.
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)">
+            <summary>
+            <para>Deflate compresses as much data as possible, and stops when the <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in">input buffer</see> becomes empty or the 
+            <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out">output buffer</see> becomes full. It may introduce some output latency (reading input without producing any output) 
+            except when forced to flush.</para>
+            <para>The detailed semantics are as follows. deflate performs one or both of the following actions:
+            <list type="bullet">
+            <item>Compress more input starting at <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> and update <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> and <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in"/> accordingly. 
+            If not all input can be processed (because there is not enough room in the output buffer), <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> and <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in"/> 
+            are updated and processing will resume at this point for the next call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>. </item>
+            <item>Provide more output starting at <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out"/> and update <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out"/> and <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/> accordingly. 
+            This action is forced if the parameter flush is non zero. Forcing flush frequently degrades the compression ratio, so this parameter should 
+            be set only when necessary (in interactive applications). Some output may be provided even if flush is not set.</item>
+            </list>
+            </para>
+            </summary>
+            <param name="flush">The <see cref="T:ComponentAce.Compression.Libs.ZLib.FlushStrategy">flush strategy</see> to use.</param>
+            <remarks>
+            <para>
+            Before the call of <seec ref="deflate"/>, the application should ensure that at least one of the actions is possible, by providing 
+            more input and/or consuming more output, and updating <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in"/> or <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/> accordingly ; <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/> 
+            should never be zero before the call. The application can consume the compressed output when it wants, for example when the output buffer is full
+            (<c>avail_out == 0</c>), or after each call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>. If <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> 
+            and with zero <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/>, it must be called again after making room in the output buffer because there might be more output pending. 
+            </para>
+            <para>
+            If the parameter <paramref name="flush"/> is set to <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_SYNC_FLUSH"/>, all pending output is flushed to the 
+            <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out">output buffer</see> and the output is aligned on a byte boundary, so that the decompressor can get all input 
+            data available so far. (In particular <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in"/> is zero after the call if enough output space has been provided before the call.) 
+            Flushing may degrade compression for some compression algorithms and so it should be used only when necessary. 
+            </para>
+            <para>
+            If flush is set to <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_FULL_FLUSH"/>, all output is flushed as with <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_SYNC_FLUSH"/>, 
+            and the compression state is reset so that decompression can restart from this point if previous compressed data has been damaged or if 
+            random access is desired. Using <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_FULL_FLUSH"/> too often can seriously degrade the compression.
+            </para>
+            </remarks>
+            <returns>
+            <para>
+            If deflate returns with <c><see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/> == 0</c>, this function must be called again with the same value of the flush
+            parameter and more output space (updated <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/>), until the flush is complete (<see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> returns with
+            non-zero <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/>). 
+            </para>
+            <para>
+            If the parameter <paramref name="flush"/> is set to <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_FINISH"/>, pending input is processed, pending 
+            output is flushed and deflate returns with <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_END"/> if there was enough output space ; 
+            if deflate returns with <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/>, this function must be called again with <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_FINISH"/> 
+            and more output space (updated <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/>) but no more input data, until it returns with <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_END"/> 
+            or an error. After deflate has returned <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_END"/>, the only possible operation on the stream is
+            <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateEnd"/>. </para>
+            <para>
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_FINISH"/> can be used immediately after <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateInit(System.Int32)"/> if all the compression is to be 
+            done in a single step. In this case, avail_out must be at least 0.1% larger than avail_in plus 12 bytes. If deflate does not return 
+            Z_STREAM_END, then it must be called again as described above. 
+            </para>
+            <para>
+            <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> sets strm-&gt; adler to the adler32 checksum of all input read so far (that is, <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.total_in"/> bytes). 
+            </para>
+            <para>
+            <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> may update data_type if it can make a good guess about the input data type (<see cref="T:ComponentAce.Compression.Libs.ZLib.BlockType">Z_ASCII or Z_BINARY</see>).
+            In doubt, the data is considered binary. This field is only for information purposes and does not affect the compression algorithm in any manner. 
+            </para>
+            <para>
+            <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> if some progress has been made (more input processed or more output produced), 
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_END"/> if all input has been consumed and all output has been produced (only when flush is set to
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.FlushStrategy.Z_FINISH"/>), <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_ERROR"/> if the stream state was inconsistent (for example if 
+            <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> or <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out"/> was <c>null</c>), <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_BUF_ERROR"/> if no progress is possible
+            (for example <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in"/> or <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/> was zero).
+            </para>
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateEnd">
+            <summary>
+            All dynamically allocated data structures for this stream are freed. This function discards any unprocessed input and does not flush any pending 
+            output.
+            </summary>
+            <returns>
+            deflateEnd returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> if success, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_ERROR"/> if the stream state was inconsistent, 
+            <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_DATA_ERROR"/> if the stream was freed prematurely (some input or output was discarded). In the error case, 
+            <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.msg"/> may be set but then points to a static string (which must not be deallocated).
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateParams(System.Int32,ComponentAce.Compression.Libs.ZLib.CompressionStrategy)">
+            <summary>
+            Dynamically update the compression level and compression strategy. The interpretation of level is as in <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateInit(System.Int32)"/>. 
+            This can be used to switch between compression and straight copy of the input data, or to switch to a different kind of input data 
+            requiring a different strategy. If the compression level is changed, the input available so far is compressed with the old level 
+            (and may be flushed); the new level will take effect only at the next call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>
+            </summary>
+            <param name="level">An integer value indicating the desired compression level.</param>
+            <param name="strategy">A <see cref="T:ComponentAce.Compression.Libs.ZLib.FlushStrategy">flush strategy</see> to use.</param>
+            <remarks>
+            Before the call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateParams(System.Int32,ComponentAce.Compression.Libs.ZLib.CompressionStrategy)"/>, the stream state must be set as for a call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>, since the 
+            currently available input may have to be compressed and flushed. In particular, <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/> must be non-zero.
+            </remarks>
+            <returns>
+            deflateParams returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> if success, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_ERROR"/> if the source stream 
+            state was inconsistent or if a parameter was invalid, <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_BUF_ERROR"/> if <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out"/> was zero.
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateSetDictionary(System.Byte[],System.Int32)">
+            <summary>
+            Initializes the compression dictionary from the given byte sequence without producing any compressed output. This function must be called 
+            immediately after <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateInit(System.Int32)"/>, before any call of <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>. The compressor and decompressor must use 
+            exactly the same dictionary (see <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.inflateSetDictionary(System.Byte[],System.Int32)"/>).
+            </summary>
+            <param name="dictionary">A byte array - a dictionary.</param>
+            <param name="dictLength">The length of the dictionary byte array</param>
+            <remarks>
+            <para>
+            The dictionary should consist of strings (byte sequences) that are likely to be encountered later in the data to be compressed, 
+            with the most commonly used strings preferably put towards the end of the dictionary. Using a dictionary is most useful when the data 
+            to be compressed is short and can be predicted with good accuracy; the data can then be compressed better than with the default empty dictionary.
+            </para>
+            <para>Depending on the size of the compression data structures selected by <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateInit(System.Int32)"/>, a part of the dictionary may 
+            in effect be discarded, for example if the dictionary is larger than the window size in <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>. Thus the strings most likely 
+            to be useful should be put at the end of the dictionary, not at the front.</para>
+            <para>Upon return of this function, adler is set to the Adler32 value of the dictionary; the decompresser may later use this value to determine 
+            which dictionary has been used by the compressor. (The Adler32 value applies to the whole dictionary even if only a subset of the dictionary 
+            is actually used by the compressor.)</para>
+            </remarks>
+            <returns>
+            deflateSetDictionary returns <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_OK"/> if success, or <see cref="F:ComponentAce.Compression.Libs.ZLib.ZLibResultCode.Z_STREAM_ERROR"/> if a parameter 
+            is invalid (such as <c>null</c> dictionary) or the stream state is inconsistent (for example if <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> has already been 
+            called for this stream or if the compression method is bsort). <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflateSetDictionary(System.Byte[],System.Int32)"/> does not perform any compression: 
+            this will be done by <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/>.
+            </returns>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.flush_pending">
+            <summary>
+            Flush as much pending output as possible. All <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> output goes through this function so some applications may wish to 
+            modify it to avoid allocating a large <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out"/> buffer and copying into it.
+            </summary>
+            <seealso cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.read_buf(System.Byte[],System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.read_buf(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Read a new buffer from the current input stream, update the adler32 and total number of bytes read.  All <see cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.deflate(ComponentAce.Compression.Libs.ZLib.FlushStrategy)"/> input goes 
+            through this function so some applications may wish to modify it to avoid allocating a large <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in"/> buffer and copying from it.
+            </summary>
+            <seealso cref="M:ComponentAce.Compression.Libs.ZLib.ZStream.flush_pending"/>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStream.free">
+            <summary>
+            Frees all inner <see cref="T:ComponentAce.Compression.Libs.ZLib.ZStream"/> buffers.
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.adler">
+            <summary>
+            Adler-32 value for uncompressed data processed so far.
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.Data_type">
+            <summary>
+            Best guess about the data type: ascii or binary
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in">
+            <summary>
+            Gets/Sets the next input byte array.
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in_index">
+            <summary>
+            Index of the first byte in the <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in">input array</see>.
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_in">
+            <summary>
+            Gets/Sets the number of bytes available in the <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in">input buffer</see>.
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.total_in">
+            <summary>
+            Gets/Sets the total number of bytes in the <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_in">input buffer</see>.
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out">
+            <summary>
+            Gets/Sets the buffer for the next output data.
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out_index">
+            <summary>
+            Gets/Sets the index of the first byte in the <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out"/> byte array to write to.
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.avail_out">
+            <summary>
+            Gets/Sets the remaining free space in the <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out"/> buffer.
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.total_out">
+            <summary>
+            Gets/Sets the total number of bytes in the <see cref="P:ComponentAce.Compression.Libs.ZLib.ZStream.next_out">output array</see>.
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.msg">
+            <summary>
+            Gets sets the last error message occurred during class operations.
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.dstate">
+            <summary>
+            A deflate object to perform data compression
+            </summary>
+        </member>
+        <member name="P:ComponentAce.Compression.Libs.ZLib.ZStream.istate">
+            <summary>
+            Inflate object to perform data decompression
+            </summary>
+        </member>
+        <member name="T:ComponentAce.Compression.Libs.ZLib.ZStreamException">
+            <summary>
+            Exceptions that occur in ZStream
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStreamException.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.ZStreamException.#ctor(System.String)">
+            <summary>
+            Constructor which takes one parameter - an error message
+            </summary>
+        </member>
         <member name="M:IronPython.Modules.PythonCodecs.charmap_build(System.String)">
             <summary>
             Creates an optimized encoding mapping that can be consumed by an optimized version of charmap_encode.
@@ -30,7 +1956,17 @@
             portions of modules.
             </summary>
         </member>
-        <member name="T:IronPython.Modules.PythonBytesIOModule._BytesIO">
+        <member name="M:IronPython.Modules.PythonIOModule.GetBytes(System.Object,System.String)">
+            <summary>
+            Convert string or bytes into bytes
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonIOModule.GetBytes(System.Object)">
+            <summary>
+            Convert most bytearray-like objects into IList of byte
+            </summary>
+        </member>
+        <member name="T:IronPython.Modules.PythonIOModule.BytesIO">
             <summary>
             BytesIO([initializer]) -> object
             
@@ -38,26 +1974,32 @@
             buffer, ready for reading and writing.
             </summary>
         </member>
-        <member name="M:IronPython.Modules.PythonBytesIOModule._BytesIO.close">
+        <member name="M:IronPython.Modules.PythonIOModule.BytesIO.close(IronPython.Runtime.CodeContext)">
             <summary>
             close() -> None.  Disable all I/O operations.
             </summary>
         </member>
-        <member name="M:IronPython.Modules.PythonBytesIOModule._BytesIO.flush">
-            <summary>
-            flush() -> None.  Does nothing.
-            </summary>
-        </member>
-        <member name="M:IronPython.Modules.PythonBytesIOModule._BytesIO.getvalue">
+        <member name="M:IronPython.Modules.PythonIOModule.BytesIO.getvalue">
             <summary>
             getvalue() -> bytes.
             
             Retrieve the entire contents of the BytesIO object.
             </summary>
         </member>
-        <member name="P:IronPython.Modules.PythonBytesIOModule._BytesIO.closed">
+        <member name="P:IronPython.Modules.PythonIOModule.BytesIO.closed">
             <summary>
             True if the file is closed.
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonIOModule.TextIOWrapper.ReadChunk(IronPython.Runtime.CodeContext)">
+            <summary>
+            Read and decode the next chunk from the buffered reader. Returns true if EOF was
+            not reached. Places decoded string in _decodedChars.
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonIOModule.FileIO.StandardizeMode(System.String)">
+            <summary>
+            Remove all 'b's from mode string to simplify parsing
             </summary>
         </member>
         <member name="M:IronPython.Modules.PythonCollections.deque.WalkDeque(IronPython.Modules.PythonCollections.deque.DequeWalker)">
@@ -76,19 +2018,19 @@
             Convert object to ushort, throwing ValueError on overflow.
             </summary>
         </member>
-        <member name="T:IronPython.Modules.PythonPickle.IFileInput">
+        <member name="T:IronPython.Modules.PythonPickle.FileInput">
             <summary>
             Interface for "file-like objects" that implement the protocol needed by load() and friends.
             This enables the creation of thin wrappers that make fast .NET types and slow Python types look the same.
             </summary>
         </member>
-        <member name="T:IronPython.Modules.PythonPickle.IFileOutput">
+        <member name="T:IronPython.Modules.PythonPickle.FileOutput">
             <summary>
             Interface for "file-like objects" that implement the protocol needed by dump() and friends.
             This enables the creation of thin wrappers that make fast .NET types and slow Python types look the same.
             </summary>
         </member>
-        <member name="M:IronPython.Modules.PythonPickle.PicklerObject.SaveObject(IronPython.Runtime.CodeContext,System.Object)">
+        <member name="M:IronPython.Modules.PythonPickle.PicklerObject.SaveObject(IronPython.Modules.PythonPickle.PicklerObject,IronPython.Runtime.CodeContext,System.Object)">
             <summary>
             Call the appropriate reduce method for obj and pickle the object using
             the resulting data. Use the first available of
@@ -128,6 +2070,11 @@
             </summary>
         </member>
         <member name="M:IronPython.Modules.PythonPickle.PicklerObject.WriteIntAsString(IronPython.Runtime.CodeContext,System.Object)">
+            <summary>
+            Write value in pickle decimalnl_short format.
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonPickle.PicklerObject.WriteIntAsString(IronPython.Runtime.CodeContext,System.Int32)">
             <summary>
             Write value in pickle decimalnl_short format.
             </summary>
@@ -172,6 +2119,13 @@
             Emit a series of opcodes that will set append all items indexed by iter
             to the object at the top of the stack. Use APPENDS if possible, but
             append no more than BatchSize items at a time.
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonPickle.PicklerObject.BatchSetItems(IronPython.Runtime.CodeContext,IronPython.Runtime.PythonDictionary)">
+            <summary>
+            Emit a series of opcodes that will set all (key, value) pairs indexed by
+            iter in the object at the top of the stack. Use SETITEMS if possible,
+            but append no more than BatchSize items at a time.
             </summary>
         </member>
         <member name="M:IronPython.Modules.PythonPickle.PicklerObject.BatchSetItems(IronPython.Runtime.CodeContext,System.Collections.IEnumerator)">
@@ -229,6 +2183,26 @@
             CultureInfo.
             </summary>
         </member>
+        <member name="M:IronPython.Modules.PythonMath.erf(System.Double)">
+            <summary>
+            Error function on real values
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonMath.erfc(System.Double)">
+            <summary>
+            Complementary error function on real values: erfc(x) =  1 - erf(x)
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonMath.gamma(System.Double)">
+            <summary>
+            Gamma function on real values
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonMath.lgamma(System.Double)">
+            <summary>
+            Natural log of absolute value of Gamma function
+            </summary>
+        </member>
         <member name="M:IronPython.Modules.PythonNT.access(IronPython.Runtime.CodeContext,System.String,System.Int32)">
             <summary>
             Checks for the specific permissions, provided by the mode parameter, are available for the provided path.  Permissions can be:
@@ -241,6 +2215,12 @@
             <summary>
             single instance of environment dictionary is shared between multiple runtimes because the environment
             is shared by multiple runtimes.
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonNT.lstat(System.String)">
+            <summary>
+            lstat(path) -> stat result 
+            Like stat(path), but do not follow symbolic links.
             </summary>
         </member>
         <member name="M:IronPython.Modules.PythonNT.spawnl(IronPython.Runtime.CodeContext,System.Int32,System.String,System.Object[])">
@@ -1128,6 +3108,15 @@
             required to represent the integer followed by the bytes
             </summary>
         </member>
+        <member name="M:IronPython.Modules.PythonSubprocess.DuplicateHandle(IronPython.Runtime.CodeContext,System.Numerics.BigInteger,IronPython.Modules.PythonSubprocessHandle,System.Numerics.BigInteger,System.Int32,System.Boolean,System.Object)">
+            <summary>
+            Duplicates a subprocess handle which was created for piping.
+            
+            This is only called when we're duplicating the handle to make it inheritable to the child process.  In CPython
+            the parent handle is always reliably garbage collected.  Because we know this handle is not going to be 
+            used we close the handle being duplicated.
+            </summary>
+        </member>
         <member name="M:IronPython.Modules.PythonWeakRef.ref.__hash__(IronPython.Runtime.CodeContext)">
             <summary>
             Special hash function because IStructuralEquatable.GetHashCode is not allowed to throw.
@@ -1158,6 +3147,12 @@
             <summary>
             Special equality function because IStructuralEquatable.Equals is not allowed to throw.
             </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonWinReg.HKEYType.GetKey">
+            <summary>
+            Returns the underlying .NET RegistryKey
+            </summary>
+            <returns></returns>
         </member>
     </members>
 </doc>

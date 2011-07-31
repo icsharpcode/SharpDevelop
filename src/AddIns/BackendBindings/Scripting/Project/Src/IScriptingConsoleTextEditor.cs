@@ -24,9 +24,14 @@ namespace ICSharpCode.Scripting
 		event ConsoleTextEditorKeyEventHandler PreviewKeyDown;
 		
 		/// <summary>
-		/// Inserts text at the current cursor location.
+		/// Appends text to the end of the text editor.
 		/// </summary>
-		void Write(string text);
+		void Append(string text);
+		
+		/// <summary>
+		/// Clears all the text in the text editor.
+		/// </summary>
+		void Clear();
 		
 		/// <summary>
 		/// Replaces the text at the specified index on the current line with the specified text.
@@ -77,5 +82,12 @@ namespace ICSharpCode.Scripting
 		/// Makes the current text content read only. Text can be entered at the end.
 		/// </summary>
 		void MakeCurrentContentReadOnly();
+		
+		void ScrollToEnd();
+		
+		/// <summary>
+		/// Returns the total number of columns/characters that are visible without scrolling.
+		/// </summary>
+		int GetMaximumVisibleColumns();
 	}
 }

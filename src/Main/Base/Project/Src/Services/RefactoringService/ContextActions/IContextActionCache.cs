@@ -6,7 +6,7 @@ using System;
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
-	/// Data shared by multiple Context actions. Stored in EditorContext.GetCached().
+	/// Temporary data shared by multiple Context actions. Stored in EditorContext.GetCached().
 	/// </summary>
 	public interface IContextActionCache
 	{

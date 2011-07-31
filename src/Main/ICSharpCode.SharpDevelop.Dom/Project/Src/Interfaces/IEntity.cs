@@ -49,6 +49,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 
+		/// <summary>
+		/// Returns true if this entity has the 'abstract' modifier set. 
+		/// (Returns false for interface members).
+		/// </summary>
 		bool IsAbstract {
 			get;
 		}

@@ -17,6 +17,11 @@ namespace ICSharpCode.NRefactory.Visitors
 	{
 		Stack<INode> parentNodes = new Stack<INode>();
 		
+		/// <summary>
+		/// Sets StartLocation and EndLocation (region) of every node to union of regions of its children.
+		/// Parsers don't do this by default:
+		/// e.g. "a.Foo()" is InvocationExpression, its region includes only the "()" and it has a child MemberReferenceExpression, with region ".Foo".
+		/// </summary>
 		public SetRegionInclusionVisitor()
 		{
 			parentNodes.Push(null);
@@ -34,7 +39,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				if (node is PropertyDeclaration) {
 					// PropertyDeclaration has correctly set BodyStart and BodyEnd by the parser,
 					// but it has no subnode "body", just 2 children GetRegion and SetRegion which don't span
-					// the whole (BodyStart, BodyEnd) region => We have to handle PropertyDeclaration as a special case.
+					// the whole (BodyStart, BodyEnd) region => we have to handle PropertyDeclaration as a special case.
 					node.EndLocation = ((PropertyDeclaration)node).BodyEnd;
 				}
 				
@@ -60,7 +65,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					parent.EndLocation = node.EndLocation;
 			}
 			
-			// Block statement as a special case - we want it without the '{' and '}'
+			// Block statement as a special case - we want block contents without the '{' and '}'
 			if (node is BlockStatement) {
 				var firstSatement = node.Children.FirstOrDefault();
 				if (firstSatement != null) {

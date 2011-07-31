@@ -94,15 +94,35 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			var backgroundColor = new SolidColorBrush(Colors.Yellow);
 			drawingContext.DrawRectangle(backgroundColor, null, background);
 			
-			// hover cell
+			// hovering
 			if (currentCell.X >= 0 || currentCell.Y >= 0) {
-				var rect = new Rect(
+				
+				// hover x line
+				var rect = new Rect(0,
+				                (currentCell.Y - scaledOffsetY) * CellHeight - offsetDiffY,
+				                CellWidth * cellsVertically,
+				                CellHeight);
+				
+				var brush = new SolidColorBrush(Colors.GreenYellow);
+				drawingContext.DrawRectangle(brush, null, rect);
+				
+				// hover y line
+				rect = new Rect((currentCell.X - scaledOffsetX) * CellWidth - offsetDiffX,
+				                0,
+				                CellWidth,
+				                CellHeight * cellsHorizontally);
+				
+				brush = new SolidColorBrush(Colors.GreenYellow);
+				drawingContext.DrawRectangle(brush, null, rect);
+				
+				// hover cell
+				rect = new Rect(
 					(currentCell.X - scaledOffsetX) * CellWidth - offsetDiffX,
 					(currentCell.Y - scaledOffsetY) * CellHeight - offsetDiffY,
 					CellWidth,
 					CellHeight);
 
-				var brush = new SolidColorBrush(Colors.Red);
+				brush = new SolidColorBrush(Colors.Red);
 				drawingContext.DrawRectangle(brush, null, rect);
 			}
 			

@@ -1,0 +1,33 @@
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+using System;
+
+namespace ICSharpCode.PackageManagement.Scripting
+{
+	public class ResetPowerShellWorkingDirectoryOnSolutionClosed
+	{
+		IPackageManagementConsoleHost consoleHost;
+		
+		public ResetPowerShellWorkingDirectoryOnSolutionClosed(
+			IPackageManagementProjectService projectService,
+			IPackageManagementConsoleHost consoleHost)
+		{
+			this.consoleHost = consoleHost;
+			projectService.SolutionClosed += SolutionClosed;
+		}
+		
+		void SolutionClosed(object sender, EventArgs e)
+		{
+			if (consoleHost.IsRunning) {
+				UpdateWorkingDirectory();
+			}
+		}
+		
+		void UpdateWorkingDirectory()
+		{
+			string command = "Invoke-UpdateWorkingDirectory";
+			consoleHost.ExecuteCommand(command);
+		}
+	}
+}

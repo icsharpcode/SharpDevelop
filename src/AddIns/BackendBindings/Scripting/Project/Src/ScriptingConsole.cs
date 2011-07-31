@@ -34,6 +34,7 @@ namespace ICSharpCode.Scripting
 		{
 			this.textEditor = textEditor;
 			this.unreadLines = unreadLines;
+			this.ScrollToEndWhenTextWritten = true;
 			textEditor.PreviewKeyDown += ProcessPreviewKeyDown;
 		}
 		
@@ -69,7 +70,7 @@ namespace ICSharpCode.Scripting
 		/// </summary>
 		public void Write(string text, ScriptingStyle style)
 		{
-			textEditor.Write(text);
+			textEditor.Append(text);
 			if (style == ScriptingStyle.Prompt) {
 				firstPromptDisplayed = true;
 				promptLength = text.Length;
@@ -78,13 +79,17 @@ namespace ICSharpCode.Scripting
 				
 				textEditor.MakeCurrentContentReadOnly();
 			}
+			
+			if (ScrollToEndWhenTextWritten) {
+				ScrollToEnd();
+			}
 		}
 		
 		void WriteFirstLineOfSentText()
 		{
 			if (textSent.HasLine) {
 				string line = textSent.RemoveFirstLine();
-				textEditor.Write(line);
+				textEditor.Append(line);
 			}
 		}
 		
@@ -339,6 +344,23 @@ namespace ICSharpCode.Scripting
 		public string ReadFirstUnreadLine()
 		{
 			return unreadLines.RemoveFirstLine();
+		}
+		
+		public bool ScrollToEndWhenTextWritten { get; set; }
+		
+		void ScrollToEnd()
+		{
+			textEditor.ScrollToEnd();
+		}
+		
+		public int GetMaximumVisibleColumns()
+		{
+			return textEditor.GetMaximumVisibleColumns();
+		}
+		
+		public void Clear()
+		{
+			textEditor.Clear();
 		}
 	}
 }

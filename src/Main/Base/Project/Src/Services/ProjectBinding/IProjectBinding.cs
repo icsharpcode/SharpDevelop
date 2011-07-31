@@ -27,5 +27,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// it 'controls'.
 		/// </summary>
 		IProject CreateProject(ProjectCreateInformation info);
+		
+		/// <summary>
+		/// Determines whether this ProjectBinding handling missing project file 
+		/// itself or it relies on the default logic of creating MissingProject project
+		/// </summary>
+		bool HandlingMissingProject { get; }
 	}
 }

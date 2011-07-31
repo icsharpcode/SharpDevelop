@@ -17,7 +17,7 @@ namespace PythonBinding.Tests.Utils.Tests
 		{
 			string code =
 				"class foo:\r\n" +
-				"pass";
+				"    pass";
 			
 			ParseInformation parseInfo = PythonParserHelper.CreateParseInfo(code);
 			Assert.AreEqual("foo", parseInfo.CompilationUnit.Classes[0].Name);

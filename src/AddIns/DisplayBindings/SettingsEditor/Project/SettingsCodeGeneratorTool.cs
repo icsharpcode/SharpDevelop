@@ -3,12 +3,14 @@
 
 using System;
 using System.CodeDom;
+using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
 
 using ICSharpCode.EasyCodeDom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SettingsEditor
@@ -26,7 +28,11 @@ namespace ICSharpCode.SettingsEditor
 			}
 			
 			CodeCompileUnit ccu = new CodeCompileUnit();
-			ccu.AddNamespace(setDoc.GeneratedClassNamespace).Types.Add(CreateClass(setDoc));
+			var ns = ccu.AddNamespace(setDoc.GeneratedClassNamespace);
+			ns.Types.Add(CreateClass(setDoc));
+			if (setDoc.UseMySettingsClassName) {
+				ns.Types.Add(CreateMySettingsProperty(setDoc));
+			}
 			context.WriteCodeDomToFile(item, context.GetOutputFileName(item, ".Designer"), ccu);
 		}
 		
@@ -47,7 +53,12 @@ namespace ICSharpCode.SettingsEditor
 				.InvokeMethod("Synchronized", Easy.New(Easy.TypeRef(c)))
 				.CastTo(Easy.TypeRef(c));
 			
-			c.AddProperty(f, "Default");
+			var defaultProperty = c.AddProperty(f, "Default");
+			
+			if (setDoc.UseMySettingsClassName) {
+				c.AddAttribute(typeof(EditorBrowsableAttribute), Easy.Prim(EditorBrowsableState.Advanced));
+				AddAutoSaveLogic(c, defaultProperty);
+			}
 			
 			foreach (SettingsEntry entry in setDoc.Entries) {
 				Type entryType = entry.Type ?? typeof(string);
@@ -97,6 +108,72 @@ namespace ICSharpCode.SettingsEditor
 				}
 			}
 			
+			return c;
+		}
+		
+		void AddAutoSaveLogic(CodeTypeDeclaration c, CodeMemberProperty defaultProperty)
+		{
+			// VB auto-safe logic:
+			
+			c.Members.Add(new CodeSnippetTypeMember(
+				@"		#Region ""Support for My.Application.SaveMySettingsOnExit""
+		#If _MyType = ""WindowsForms"" Then
+		Private Shared addedHandler As Boolean
+		Private Shared addedHandlerLockObject As New Object
+
+		<Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)> _
+		Private Shared Sub AutoSaveSettings(ByVal sender As Global.System.Object, ByVal e As Global.System.EventArgs)
+			If My.Application.SaveMySettingsOnExit Then
+				My.Settings.Save()
+			End If
+		End Sub
+		#End If
+		#End Region".Replace("\t", EditorControlService.GlobalOptions.IndentationString)
+			));
+			
+			defaultProperty.GetStatements.Insert(0, new CodeSnippetStatement(
+				@"				#If _MyType = ""WindowsForms"" Then
+				If Not addedHandler Then
+					SyncLock addedHandlerLockObject
+						If Not addedHandler Then
+							AddHandler My.Application.Shutdown, AddressOf AutoSaveSettings
+							addedHandler = True
+						End If
+					End SyncLock
+				End If
+				#End If".Replace("\t", EditorControlService.GlobalOptions.IndentationString)
+			));
+		}
+		
+		class CodeLiteralDirective : CodeDirective
+		{
+			string text;
+			
+			public CodeLiteralDirective(string text)
+			{
+				this.text = text;
+			}
+			
+			public override string ToString()
+			{
+				return text;
+			}
+		}
+		
+		CodeTypeDeclaration CreateMySettingsProperty(SettingsDocument setDoc)
+		{
+			CodeTypeDeclaration c = new CodeTypeDeclaration("MySettingsProperty");
+			c.UserData["Module"] = true;
+			c.AddAttribute(new CodeTypeReference("Microsoft.VisualBasic.HideModuleNameAttribute"));
+			c.AddAttribute(typeof(DebuggerNonUserCodeAttribute));
+			c.AddAttribute(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute));
+			c.TypeAttributes = TypeAttributes.NotPublic;
+			
+			CodeTypeReference r = new CodeTypeReference(setDoc.GeneratedFullClassName);
+			var p = c.AddProperty(r, "Settings");
+			p.Attributes = MemberAttributes.Assembly | MemberAttributes.Static;
+			p.Getter.Return(Easy.Type(r).Property("Default"));
+			p.AddAttribute(typeof(System.ComponentModel.Design.HelpKeywordAttribute), Easy.Prim("My.Settings"));
 			return c;
 		}
 	}

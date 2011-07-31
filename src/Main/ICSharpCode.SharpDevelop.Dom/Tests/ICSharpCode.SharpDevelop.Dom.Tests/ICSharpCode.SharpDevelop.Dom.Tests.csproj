@@ -52,8 +52,10 @@
     <Compile Include="CodeSnippetConverterTests.cs" />
     <Compile Include="CSharpAmbienceTests.cs" />
     <Compile Include="ImplementInterfaceTests.cs" />
+    <Compile Include="IndexBeforeTextFinderTests.cs" />
     <Compile Include="NRefactoryAstConverterTests.cs" />
     <Compile Include="NRefactoryRefactoringProviderTests.cs" />
+    <Compile Include="NUnitHelpers\IndexBeforeTextFinderHelper.cs" />
     <Compile Include="NUnitHelpers\SyntaxHelpers.cs" />
     <Compile Include="NUnitHelpers\Constraints.cs" />
     <Compile Include="ProjectContentClassManagementTest.cs" />

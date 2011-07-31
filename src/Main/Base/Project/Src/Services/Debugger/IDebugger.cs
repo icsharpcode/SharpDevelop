@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Debugging
@@ -22,6 +23,13 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// </summary>
 		bool IsProcessRunning {
 			get;
+		}
+		
+		/// <summary>
+		/// Gets or sets whether the debugger should break at the first line of execution.
+		/// </summary>
+		bool BreakAtBeginning {
+			get; set; 
 		}
 		
 		bool CanDebug(IProject project);
@@ -73,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// Gets the tooltip control that shows the value of given variable.
 		/// Return null if no tooltip is available.
 		/// </summary>
-		object GetTooltipControl(string variable);
+		object GetTooltipControl(Location logicalPosition, string variable);
 		
 		/// <summary>
 		/// Queries the debugger whether it is possible to set the instruction pointer to a given position.

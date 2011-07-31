@@ -15,6 +15,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public sealed class XmlDoc : IDisposable
 	{
 		static readonly List<string> xmlDocLookupDirectories = new List<string> {
+			Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"),
 			System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
 		};
 		

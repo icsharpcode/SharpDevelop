@@ -122,7 +122,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void ActivateItem()
 		{
-			FileService.OpenFile(FileName);
+			var viewContent = FileService.OpenFile(FileName);
+			if (fileNodeStatus == FileNodeStatus.Missing && viewContent != null) {
+				fileNodeStatus = FileNodeStatus.InProject;
+				SetIcon();
+			}
 		}
 		
 //		protected override void Initialize()

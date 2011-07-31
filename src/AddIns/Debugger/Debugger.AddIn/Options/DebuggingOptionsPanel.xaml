@@ -1,0 +1,42 @@
+﻿<gui:OptionPanel x:Class="Debugger.AddIn.Options.DebuggingOptionsPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+    xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+    xmlns:debugger="clr-namespace:ICSharpCode.SharpDevelop.Services;assembly=Debugger.AddIn"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
+    <StackPanel>
+        <GroupBox Margin="5" Header="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping}">
+        	<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
+	    		<CheckBox x:Name="chbEnableJustMyCode"
+	        	          Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping.EnableJustMyCode}"
+	                      IsChecked="{sd:OptionBinding debugger:DebuggingOptions.EnableJustMyCode}" />
+	    		<CheckBox x:Name="chbStepOverNoSymbols"
+	        	          Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping.StepOverNoSymbols}"
+	                      IsChecked="{sd:OptionBinding debugger:DebuggingOptions.StepOverNoSymbols}" />
+        		<CheckBox x:Name="chbStepOverDebuggerAttributes"
+	        	          Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping.StepOverDebuggerAttributes}"
+	                      IsChecked="{sd:OptionBinding debugger:DebuggingOptions.StepOverDebuggerAttributes}" />
+        		
+        		<CheckBox x:Name="chbStepOverAllProperties" 
+        		          Checked="ChbStepOverAllProperties_CheckedChanged"
+        		          Unchecked="ChbStepOverAllProperties_CheckedChanged"
+	        	          Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping.StepOverAllProperties}"
+	                      IsChecked="{sd:OptionBinding debugger:DebuggingOptions.StepOverAllProperties}" />
+        		<CheckBox x:Name="chbStepOverSingleLineProperties"
+	        	          Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping.StepOverSingleLineProperties}"
+	                      IsChecked="{sd:OptionBinding debugger:DebuggingOptions.StepOverSingleLineProperties}" />
+        		<CheckBox x:Name="chbStepOverFieldAccessProperties"
+	        	          Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping.StepOverFieldAccessProperties}"
+	                      IsChecked="{sd:OptionBinding debugger:DebuggingOptions.StepOverFieldAccessProperties}" />
+			</widgets:StackPanelWithSpacing>
+        </GroupBox>
+		<GroupBox Margin="5" Header="{sd:Localize Dialog.Options.IDEOptions.Debugging.Exceptions}">
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
+	    		<CheckBox x:Name="chbPauseOnHandledExceptions"
+	        	          Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions}"
+	                      IsChecked="{sd:OptionBinding debugger:DebuggingOptions.PauseOnHandledExceptions}" />	
+			</widgets:StackPanelWithSpacing>
+		</GroupBox>
+    </StackPanel>
+</gui:OptionPanel>

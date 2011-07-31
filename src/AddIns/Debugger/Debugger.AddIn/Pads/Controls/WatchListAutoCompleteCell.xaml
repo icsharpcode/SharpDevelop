@@ -1,0 +1,11 @@
+﻿<UserControl x:Class="Debugger.AddIn.Pads.Controls.WatchListAutoCompleteCell"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto" MinWidth="200"/>
+		</Grid.ColumnDefinitions>
+		<ContentPresenter
+			Name="ConsolePanel" />
+	</Grid>	
+</UserControl>

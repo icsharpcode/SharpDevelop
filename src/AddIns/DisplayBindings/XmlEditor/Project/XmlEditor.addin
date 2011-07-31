@@ -24,18 +24,25 @@
 	<Path name="/AddIns/DefaultTextEditor/CodeCompletion">
 		<CodeCompletionBinding
 			id="Xml"
-			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco"
+			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj"
 			class="ICSharpCode.XmlEditor.XmlCodeCompletionBinding"/>
 	</Path>
 	
 	<Path name="/AddIns/XmlEditor/DefaultSchemaFileAssociations">
 		<SchemaFileAssociation id=".addin" namespaceUri="http://www.icsharpcode.net/2005/addin"/>
+		<SchemaFileAssociation id=".booproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
 		<SchemaFileAssociation id=".build" namespaceUri="http://nant.sf.net/release/0.85/nant.xsd"/>
 		<SchemaFileAssociation id=".config" namespaceUri="urn:app-config" />
-		<SchemaFileAssociation id=".manifest" namespaceUri="urn:schemas-microsoft-com:asm.v1"/>
-		<SchemaFileAssociation id=".proj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
 		<SchemaFileAssociation id=".csproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
+		<SchemaFileAssociation id=".fsproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
+		<SchemaFileAssociation id=".manifest" namespaceUri="urn:schemas-microsoft-com:asm.v1"/>
+		<SchemaFileAssociation id=".nuspec" namespaceUri="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"/>
+		<SchemaFileAssociation id=".proj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
+		<SchemaFileAssociation id=".pyproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
+		<SchemaFileAssociation id=".rbproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
 		<SchemaFileAssociation id=".vbproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
+		<SchemaFileAssociation id=".vcxproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
+		<SchemaFileAssociation id=".wixproj" namespaceUri="http://schemas.microsoft.com/developer/msbuild/2003"/>
 		<SchemaFileAssociation id=".wxi" namespaceUri="http://schemas.microsoft.com/wix/2003/01/wi"/>
 		<SchemaFileAssociation id=".wxl" namespaceUri="http://schemas.microsoft.com/wix/2006/localization"/>
 		<SchemaFileAssociation id=".wxs" namespaceUri="http://schemas.microsoft.com/wix/2003/01/wi"/>
@@ -48,7 +55,7 @@
 		<LanguageBinding
 			id="Xml"
 			class="ICSharpCode.XmlEditor.XmlLanguageBinding"
-			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco" />
+			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/DisplayBindings">
@@ -61,7 +68,7 @@
 	<!-- Extra project browser icons -->
 	<Path name="/Workspace/Icons">
 		<Icon id="ExtraXmlFileIcon"
-			extensions=".manifest;.config;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.xaml"
+			extensions=".manifest;.config;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.xaml;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj"
 			resource="FileIcons.XmlIcon" />
 	</Path>
 	
@@ -129,60 +136,6 @@
 		</ComplexCondition>
 	</Path>
 	
-	<!-- Right click menu -->
-	<Path name="/SharpDevelop/ViewContent/XmlEditor/ContextMenu">
-		<MenuItem id="Cut"
-			label="${res:XML.TextAreaContextMenu.Cut}"
-			icon="Icons.16x16.CutIcon"
-			shortcut="Control|X"
-			class="ICSharpCode.SharpDevelop.Commands.Cut"/>
-		<MenuItem id="Copy"
-			label="${res:XML.TextAreaContextMenu.Copy}"
-			icon="Icons.16x16.CopyIcon"
-			shortcut="Control|C"
-			class="ICSharpCode.SharpDevelop.Commands.Copy"/>
-		<MenuItem id="Paste"
-			label="${res:XML.TextAreaContextMenu.Paste}"
-			icon="Icons.16x16.PasteIcon"
-			shortcut="Control|V"
-			class="ICSharpCode.SharpDevelop.Commands.Paste"/>
-		<MenuItem id="Delete"
-			label="${res:XML.MainMenu.EditMenu.Delete}"
-			icon="Icons.16x16.DeleteIcon"
-			class="ICSharpCode.SharpDevelop.Commands.Delete"/>
-		<MenuItem id="Separator1" type="Separator"/>
-		<MenuItem id="Save"
-			label="${res:XML.MainMenu.FileMenu.Save}"
-			icon="Icons.16x16.SaveIcon"
-			shortcut="Control|S"
-			class="ICSharpCode.SharpDevelop.Commands.SaveFile"/>
-		<MenuItem id="SaveAs"
-			label="${res:XML.MainMenu.FileMenu.SaveAs}"
-			class="ICSharpCode.SharpDevelop.Commands.SaveFileAs"/>
-		<MenuItem id="File"
-			label="${res:XML.MainMenu.FileMenu.Close}"
-			class="ICSharpCode.SharpDevelop.Commands.CloseFile"/>
-		<MenuItem id="Separator2" type="Separator"/>
-		<MenuItem id="Indent"
-			label="${res:XML.TextAreaContextMenu.Indent}"
-			shortcut="Control|I"
-			class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection"/>
-		<MenuItem id="HideXPathResults"
-			label="${res:ICSharpCode.XmlEditor.HideXPathResults}"
-			class="ICSharpCode.XmlEditor.RemoveXPathHighlightingCommand"/>
-		<MenuItem id="GoToDefinition"
-			label="${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
-			class="ICSharpCode.XmlEditor.GoToSchemaDefinitionCommand"/>
-		<MenuItem id="FileMode" label="${res:XML.TextAreaContextMenu.FileMode}" type="Menu">
-		<MenuItem id="HighlightBuilder" type="Builder" class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.HighlightingTypeBuilder"/>
-		</MenuItem>
-		<MenuItem id="Separator3" type="Separator"/>
-		<MenuItem id="Options"
-			label="${res:XML.TextAreaContextMenu.BufferOptions}"
-			icon="Icons.16x16.PropertiesIcon"
-			class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowBufferOptions"/>
-		</Path>
-	
 	<!-- Options panel -->
 	<Path path="/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		<OptionPanel id="XmlSchemasPanel"
@@ -194,11 +147,6 @@
 			insertbefore="XmlSchemasPanel"
 			label="${res:ICSharpCode.XmlEditor.XmlEditorOptionsPanel.Title}"
 			class="ICSharpCode.XmlEditor.XmlEditorOptionsPanel"/>
-	</Path>
-	
-	<Path path="/AddIns/XmlEditor/EditActions">
-		<EditAction id="XmlCompletionPopup" class="ICSharpCode.XmlEditor.CodeCompletionPopupCommand"  keys="Control|Space"/>
-		<EditAction id="GoToDefinition" class="ICSharpCode.XmlEditor.GoToSchemaDefinitionEditAction" keys="Control|Enter"/>
 	</Path>
 	
 	<!-- XPath Query pad -->
@@ -242,21 +190,21 @@
 			label="${res:XML.TextAreaContextMenu.Cut}"
 			icon="Icons.16x16.CutIcon"
 			shortcut="Control|X"
-			class="ICSharpCode.SharpDevelop.Commands.Cut"/>
+			class="ICSharpCode.XmlEditor.CutXmlTreeNode"/>
 		<MenuItem id="Copy"
 			label="${res:XML.TextAreaContextMenu.Copy}"
 			icon="Icons.16x16.CopyIcon"
 			shortcut="Control|C"
-			class="ICSharpCode.SharpDevelop.Commands.Copy"/>
+			class="ICSharpCode.XmlEditor.CopyXmlTreeNode"/>
 		<MenuItem id="Paste"
 			label="${res:XML.TextAreaContextMenu.Paste}"
 			icon="Icons.16x16.PasteIcon"
 			shortcut="Control|V"
-			class="ICSharpCode.SharpDevelop.Commands.Paste"/>
+			class="ICSharpCode.XmlEditor.PasteXmlTreeNode"/>
 		<MenuItem id="Delete"
 			label="${res:XML.MainMenu.EditMenu.Delete}"
 			icon="Icons.16x16.DeleteIcon"
-			class="ICSharpCode.SharpDevelop.Commands.Delete"/>
+			class="ICSharpCode.XmlEditor.DeleteXmlTreeNode"/>
 		<MenuItem id="EditItemsSeparator" type="Separator"/>
 		<ComplexCondition action="Disable">
 			<Or>

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+	Background="Transparent"
+	x:Class="Debugger.AddIn.Tooltips.PinCloseControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary
+					Source="PinControlsDictionary.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+	<StackPanel>
+		<Button
+			Name="CloseButton"
+			Click="CloseButton_Click"
+			Template="{StaticResource CloseButtonTemplate}" />
+		<ToggleButton
+			Name="UnpinButton"
+			Checked="UnpinButton_Checked"
+			Unchecked="UnpinButton_Unchecked"
+			Template="{StaticResource PinButtonTemplate}" />
+		<ToggleButton
+			Name="CommentButton"
+			Checked="CommentButton_Checked"
+			Unchecked="CommentButton_Unchecked"
+			Template="{StaticResource CommentButtonTemplate}" />
+	</StackPanel>
+</UserControl>

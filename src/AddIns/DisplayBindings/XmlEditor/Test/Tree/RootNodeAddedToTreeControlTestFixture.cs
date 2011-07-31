@@ -1,12 +1,14 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.XmlEditor;
-using NUnit.Framework;
 using System;
 using System.Windows.Forms;
 using System.Xml;
+
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.XmlEditor;
+using NUnit.Framework;
+using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Tree
 {
@@ -23,9 +25,8 @@ namespace XmlEditor.Tests.Tree
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			using (XmlTreeViewContainerControl treeViewContainer = new XmlTreeViewContainerControl()) {
-				
-				treeViewContainer.LoadXml("<test/>", new XmlSchemaCompletionCollection(), null);
+			using (DerivedXmlTreeViewContainerControl treeViewContainer = new DerivedXmlTreeViewContainerControl()) {
+				treeViewContainer.LoadXml("<test/>");
 				
 				doc = treeViewContainer.Document;
 				XmlTreeViewControl treeView = treeViewContainer.TreeView;

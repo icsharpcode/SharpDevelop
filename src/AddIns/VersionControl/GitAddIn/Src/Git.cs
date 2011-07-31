@@ -71,6 +71,11 @@ namespace ICSharpCode.GitAddIn
 		public static void RunGit(string workingDir, string arguments, Action<int> finished)
 		{
 			GitMessageView.AppendLine(workingDir + "> git " + arguments);
+			string git = FindGit();
+			if (git == null) {
+				GitMessageView.AppendLine("Could not find git.exe");
+				return;
+			}
 			ProcessRunner runner = new ProcessRunner();
 			runner.WorkingDirectory = workingDir;
 			runner.LogStandardOutputAndError = false;
@@ -82,7 +87,34 @@ namespace ICSharpCode.GitAddIn
 				if (finished != null)
 					finished(runner.ExitCode);
 			};
-			runner.Start("cmd", "/c git " + arguments);
+			runner.Start(git, arguments);
+		}
+		
+		/// <summary>
+		/// Finds 'git.exe'
+		/// </summary>
+		public static string FindGit()
+		{
+			string[] paths = Environment.GetEnvironmentVariable("PATH").Split(';');
+			foreach (string path in paths) {
+				try {
+					string exe = Path.Combine(path, "git.exe");
+					if (File.Exists(exe))
+						return exe;
+					string cmd = Path.Combine(path, "git.cmd");
+					if (File.Exists(cmd)) {
+						exe = Path.Combine(path, "..\\bin\\git.exe");
+						if (File.Exists(exe))
+							return exe;
+					}
+				} catch (ArgumentException) {
+					// ignore invalid entries in PATH
+				}
+			}
+			string gitExe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86, Environment.SpecialFolderOption.DoNotVerify), "bin\\git.exe");
+			if (File.Exists(gitExe))
+				return gitExe;
+			return null;
 		}
 		
 		/*
@@ -103,7 +135,9 @@ namespace ICSharpCode.GitAddIn
 					runner.Kill();
 				};
 				runner.WorkingDirectory = workingDir;
-				runner.Start("git", arguments);
+				string git = FindGit();
+				if (git == null) ...
+				runner.Start(git, arguments);
 				runner.WaitForExit();
 				if (runner.ExitCode == 0) {
 					return runner.StandardOutput;

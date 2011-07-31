@@ -52,19 +52,20 @@ namespace PythonBinding.Tests.Designer
 			
 		protected override string GetTextEditorCode()
 		{
-			return "from System.Windows.Forms import Form\r\n" +
-					"\r\n" +
-					"class MainForm(Form):\r\n" +
-					"\tdef __init__(self):\r\n" +
-					"\t\tself.InitializeComponents()\r\n" +
-					"\t\r\n" +
-					"\tdef InitializeComponents(self):\r\n" +
-					"\t\tself._button1 = System.Windows.Forms.Button()\r\n" +
-					"\t\tself._button1.Click += mybuttonclick\r\n" +
-					"\t\tself.Controls.Add(self._button1)\r\n" +
-					"\t\r\n" +
-					"\tdef mybuttonclick(self, sender, e)\r\n" +
-					"\t\tpass\r\n";
+			return
+				"from System.Windows.Forms import Form\r\n" +
+				"\r\n" +
+				"class MainForm(Form):\r\n" +
+				"    def __init__(self):\r\n" +
+				"        self.InitializeComponents()\r\n" +
+				"    \r\n" +
+				"    def InitializeComponents(self):\r\n" +
+				"        self._button1 = System.Windows.Forms.Button()\r\n" +
+				"        self._button1.Click += mybuttonclick\r\n" +
+				"        self.Controls.Add(self._button1)\r\n" +
+				"    \r\n" +
+				"    def mybuttonclick(self, sender, e):\r\n" +
+				"        pass\r\n";
 		}
 	}
 }

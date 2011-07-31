@@ -240,7 +240,7 @@ namespace ICSharpCode.CodeCoverage
 				CodeCoverageSequencePoint sequencePoint = methodNode.Method.SequencePoints[0];
 				if (sequencePoint.HasDocument()) {
 					if (classNode == null) {
-						OpenFile(sequencePoint.Document, sequencePoint.Line - 1, sequencePoint.Column - 1);
+						OpenFile(sequencePoint.Document, sequencePoint.Line, sequencePoint.Column);
 					} else {
 						OpenFile(sequencePoint.Document, 1, 1);
 					}
@@ -310,8 +310,8 @@ namespace ICSharpCode.CodeCoverage
 				textEditor.Load(fileName); 
 			}
 			textEditor.ScrollToEnd();
-			textEditor.TextArea.Caret.Line = line - 1;
-			textEditor.ScrollToLine(line - 1); 
+			textEditor.TextArea.Caret.Location = new ICSharpCode.AvalonEdit.Document.TextLocation(line, column);
+			textEditor.ScrollToLine(line);
 			CodeCoverageService.ShowCodeCoverage(new AvalonEditTextEditorAdapter(textEditor), fileName);
 		}
 		

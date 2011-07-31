@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			instance = this;
 			toolBar = new ToolBar();
 			ToolBarTray.SetIsLocked(toolBar, true);
-			defaultToolbarItems = ToolBarService.CreateToolBarItems(this, "/SharpDevelop/Pads/SearchResultPad/Toolbar");
+			defaultToolbarItems = ToolBarService.CreateToolBarItems(dockPanel, this, "/SharpDevelop/Pads/SearchResultPad/Toolbar");
 			foreach (object toolBarItem in defaultToolbarItems) {
 				toolBar.Items.Add(toolBarItem);
 			}

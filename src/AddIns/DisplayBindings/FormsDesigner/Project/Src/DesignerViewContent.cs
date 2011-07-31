@@ -10,13 +10,14 @@ using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.FormsDesigner.UndoRedo;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -277,7 +278,7 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService());
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
-			serviceContainer.AddService(typeof(ProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
+			serviceContainer.AddService(typeof(ProjectResourceService), CreateProjectResourceService());
 			
 			// Provide the ImageResourceEditor for all Image and Icon properties
 			this.addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
@@ -327,6 +328,21 @@ namespace ICSharpCode.FormsDesigner
 			hasUnmergedChanges = false;
 			
 			LoggingService.Info("Form Designer: END INITIALIZE");
+		}
+		
+		ProjectResourceService CreateProjectResourceService()
+		{
+			IProjectContent projectContent = GetProjectContentForFile();
+			return new ProjectResourceService(projectContent);
+		}
+		
+		IProjectContent GetProjectContentForFile()
+		{
+			ParseInformation parseInfo = ParserService.GetParseInformation(this.DesignerCodeFile.FileName);
+			if (parseInfo != null) {
+				return parseInfo.CompilationUnit.ProjectContent;
+			}
+			return DefaultProjectContent.DummyProjectContent;
 		}
 		
 		bool hasUnmergedChanges;
@@ -388,16 +404,10 @@ namespace ICSharpCode.FormsDesigner
 			
 			bool savedIsDirty = (this.DesignerCodeFile == null) ? false : this.DesignerCodeFile.IsDirty;
 			this.UserContent = this.pleaseWaitLabel;
-			Application.DoEvents();
 			if (this.DesignerCodeFile != null) {
 				this.DesignerCodeFile.IsDirty = savedIsDirty;
 			}
 			
-			// We cannot dispose the design surface now because of SD2-451:
-			// When the switch to the source view was triggered by a double-click on an event
-			// in the PropertyPad, "InvalidOperationException: The container cannot be disposed
-			// at design time" is thrown.
-			// This is solved by calling dispose after the double-click event has been processed.
 			if (designSurface != null) {
 				designSurface.Loading -= this.DesignerLoading;
 				designSurface.Loaded -= this.DesignerLoaded;
@@ -420,12 +430,46 @@ namespace ICSharpCode.FormsDesigner
 					selectionService.SelectionChanged -= SelectionChangedHandler;
 				}
 				
-				if (disposing) {
+				designSurface.Unloaded += delegate {
+					ServiceContainer serviceContainer = designSurface.GetService(typeof(ServiceContainer)) as ServiceContainer;
+					if (serviceContainer != null) {
+						// Workaround for .NET bug: .NET unregisters the designer host only if no component throws an exception,
+						// but then in a finally block assumes that the designer host is already unloaded.
+						// Thus we would get the confusing "InvalidOperationException: The container cannot be disposed at design time"
+						// when any component throws an exception.
+						
+						// See http://community.sharpdevelop.net/forums/p/10928/35288.aspx
+						// Reproducible with a custom control that has a designer that crashes on unloading
+						// e.g. http://www.codeproject.com/KB/toolbars/WinFormsRibbon.aspx
+						
+						// We work around this problem by unregistering the designer host manually.
+						try {
+							var services = (Dictionary<Type, object>)typeof(ServiceContainer).InvokeMember(
+								"Services",
+								BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.NonPublic,
+								null, serviceContainer, null);
+							foreach (var pair in services.ToArray()) {
+								if (pair.Value is IDesignerHost) {
+									serviceContainer.GetType().InvokeMember(
+										"RemoveFixedService",
+										BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.NonPublic,
+										null, serviceContainer, new object[] { pair.Key });
+								}
+							}
+						} catch (Exception ex) {
+							LoggingService.Error(ex);
+						}
+					}
+				};
+				try {
 					designSurface.Dispose();
-				} else {
-					WorkbenchSingleton.SafeThreadAsyncCall(designSurface.Dispose);
+				} catch (ExceptionCollection exceptions) {
+					foreach (Exception ex in exceptions.Exceptions) {
+						LoggingService.Error(ex);
+					}
+				} finally {
+					designSurface = null;
 				}
-				designSurface = null;
 			}
 			
 			this.typeResolutionService = null;
@@ -517,7 +561,6 @@ namespace ICSharpCode.FormsDesigner
 			this.reloadPending = false;
 			this.unloading = false;
 			this.UserContent = this.pleaseWaitLabel;
-			Application.DoEvents();
 		}
 		
 		void DesignerUnloading(object sender, EventArgs e)
@@ -526,7 +569,6 @@ namespace ICSharpCode.FormsDesigner
 			this.unloading = true;
 			if (!this.disposing) {
 				this.UserContent = this.pleaseWaitLabel;
-				Application.DoEvents();
 			}
 		}
 		
@@ -960,12 +1002,10 @@ namespace ICSharpCode.FormsDesigner
 			// the reload can interrupt the starting of the debugger.
 			// To prevent this, we explicitly raise the Idle event here.
 			LoggingService.Debug("Forms designer: DebugStarting raises the Idle event to force pending reload now");
-			Application.DoEvents();
 			Cursor oldCursor = Cursor.Current;
 			Cursor.Current = Cursors.WaitCursor;
 			try {
 				Application.RaiseIdle(EventArgs.Empty);
-				Application.DoEvents();
 			} finally {
 				Cursor.Current = oldCursor;
 			}

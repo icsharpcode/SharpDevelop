@@ -8,7 +8,7 @@ using System.Linq;
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
-	/// Description of RouteVertex.
+	/// One node in the <see cref="RouteGraph" />, represents a box corner.
 	/// </summary>
 	public class RouteVertex : IPoint
 	{
@@ -41,9 +41,14 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		public double Distance { get; set; }
 		public bool IsPermanent { get; set; }
 		public RouteVertex Predecessor { get; set; }
+		/// <summary>
+		/// Edge endpoints are not available for routing through them.
+		/// </summary>
 		public bool IsEdgeEndpoint { get; set; }
 		public bool IsUsed { get; set; }
 		public bool IsAvailable { get { return !IsUsed && !IsEdgeEndpoint; } }
+		
+		public double Penalization { get; set; }
 		
 		public void Reset()
 		{

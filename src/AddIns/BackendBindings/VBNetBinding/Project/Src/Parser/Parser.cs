@@ -56,7 +56,7 @@ namespace ICSharpCode.VBNetBinding
 				    && directive.Arg.StartsWith("region", StringComparison.OrdinalIgnoreCase)
 				    && regionStartDirectives.Any()) {
 					ICSharpCode.NRefactory.PreprocessingDirective start = regionStartDirectives.Pop();
-					cu.FoldingRegions.Add(new FoldingRegion(start.Arg.TrimComments().Trim('"'), DomRegion.FromLocation(start.StartPosition, directive.EndPosition)));
+					cu.FoldingRegions.Add(new FoldingRegion(start.Arg.TrimComments().Trim().Trim('"'), DomRegion.FromLocation(start.StartPosition, directive.EndPosition)));
 				}
 			}
 		}

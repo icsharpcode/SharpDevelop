@@ -26,12 +26,14 @@ namespace CSharpBinding
 				int otherOffset = -1;
 				if (index > -1)
 					otherOffset = SearchBracketForward(document, offset, openingBrackets[index], closingBrackets[index]);
+				
 				index = closingBrackets.IndexOf(c);
 				if (index > -1)
 					otherOffset = SearchBracketBackward(document, offset - 2, openingBrackets[index], closingBrackets[index]);
 				
 				if (otherOffset > -1)
-					return new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1, Math.Max(offset - 1, otherOffset), 1);
+					return new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1,
+					                               Math.Max(offset - 1, otherOffset), 1);
 			}
 			
 			return null;

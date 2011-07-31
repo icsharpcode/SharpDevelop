@@ -44,6 +44,7 @@
     <DefineConstants>TRACE;PUBLICINTERPROCESS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -58,6 +59,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -88,6 +90,9 @@
     <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
       <Link>Src\Project\MSBuildEngine\ExtendedBinaryReader.cs</Link>
     </Compile>
+    <Compile Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml.cs">
+      <DependentUpon>ListViewPad.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Editor\AddInHighlightingResource.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditDocumentAdapter.cs" />
@@ -112,6 +117,7 @@
     <Compile Include="Src\Editor\Commands\FindReferences.cs" />
     <Compile Include="Src\Editor\Commands\GotoLineNumber.cs" />
     <Compile Include="Src\Editor\Commands\SymbolUnderCaretMenuCommand.cs" />
+    <Compile Include="Src\Editor\IDocumentBaseVersionProvider.cs" />
     <Compile Include="Src\Editor\IEditorControlService.cs" />
     <Compile Include="Src\Editor\IEditorUIService.cs" />
     <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />
@@ -237,6 +243,10 @@
       <DependentUpon>SelectCulturePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptions.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptionsPanel.xaml.cs">
+      <DependentUpon>WebProjectOptionsPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.Designer.cs">
       <DependentUpon>ToolNotFoundDialog.cs</DependentUpon>
@@ -305,16 +315,10 @@
     <Compile Include="Src\Project\TargetFramework.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
-    <Compile Include="Src\Services\Debugger\Tooltips\DebuggerPopup.cs" />
-    <Compile Include="Src\Services\Debugger\Tooltips\DebuggerTooltipControl.xaml.cs">
-      <DependentUpon>DebuggerTooltipControl.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Src\Services\Debugger\Tooltips\IPinDebuggerControl.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\ITreeNode.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\IVisualizerCommand.cs" />
-    <Compile Include="Src\Services\Debugger\Tooltips\LazyItemsControl.cs" />
-    <Compile Include="Src\Services\Debugger\Tooltips\VirtualizingIEnumerable.cs" />
-    <Compile Include="Src\Services\Debugger\Tooltips\VisualizerPicker.cs" />
+    <Compile Include="Src\Services\Debugger\Tooltips\PinBookmark.cs" />
     <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
@@ -350,6 +354,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbViewModel.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsHelper.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsPopupBase.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsService.cs" />
@@ -361,7 +366,6 @@
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsPopup.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionViewModel.cs" />
-    <Compile Include="Src\Services\RefactoringService\ContextActionsHelper.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionCache.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionsProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
@@ -377,9 +381,6 @@
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingService.cs" />
     <Resource Include="Src\Services\RefactoringService\ContextActions\bulb.png" />
     <Resource Include="Src\Services\RefactoringService\ContextActions\pencil.png" />
-    <Resource Include="Src\Services\Debugger\Tooltips\magnifier.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingDoozer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CombineOpenEvaluator.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingDoozer.cs" />
@@ -732,6 +733,7 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
+    <Compile Include="Src\Services\WebProjectService\WebProjectService.cs" />
     <Compile Include="Src\Util\FakeXmlViewContent.cs" />
     <Compile Include="Src\Util\TreeNode.cs" />
     <Compile Include="Src\Util\NativeMethods.cs" />
@@ -812,6 +814,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptionsPanel.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsHeaderedControl.xaml" />
@@ -825,6 +829,10 @@
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\Mono.Cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
@@ -835,12 +843,16 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Src\Bookmarks\Pad\Controls" />
     <Folder Include="Src\Editor\AvalonEdit" />
     <Folder Include="Src\Editor\CodeCompletion" />
     <Folder Include="Src\Editor\Commands" />
     <Folder Include="Src\Editor\Search" />
+    <Folder Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions" />
     <Folder Include="Src\Gui\Pads\TaskList" />
+    <Folder Include="Src\Services\Debugger\Tooltips" />
     <Folder Include="Src\Services\RefactoringService\ContextActions" />
+    <Folder Include="Src\Services\WebProjectService" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
     <Folder Include="Src\Services\NavigationService" />
@@ -877,8 +889,6 @@
     <Page Include="Src\Gui\Dialogs\TreeViewOptionsDialog.xaml" />
     <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />
     <Page Include="Src\Project\Converter\UpgradeView.xaml" />
-    <Page Include="Src\Services\Debugger\Tooltips\DebuggerTooltipControl.xaml" />
-    <Page Include="Src\Services\Debugger\Tooltips\VisualizerPicker.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="PostBuildEvent.proj" />

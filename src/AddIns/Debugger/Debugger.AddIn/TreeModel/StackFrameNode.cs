@@ -4,6 +4,7 @@
 using Debugger.MetaData;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -26,10 +27,18 @@ namespace Debugger.AddIn.TreeModel
 		IEnumerable<TreeNode> LazyGetChildNodes()
 		{
 			foreach(DebugParameterInfo par in stackFrame.MethodInfo.GetParameters()) {
-				yield return new ExpressionNode(ExpressionNode.GetImageForParameter(), par.Name, par.GetExpression());
+				string imageName;
+				var image = ExpressionNode.GetImageForParameter(out imageName);
+				var expression = new ExpressionNode(image, par.Name, par.GetExpression());
+				expression.ImageName = imageName;
+				yield return expression;
 			}
 			foreach(DebugLocalVariableInfo locVar in stackFrame.MethodInfo.GetLocalVariables(this.StackFrame.IP)) {
-				yield return new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), locVar.Name, locVar.GetExpression());
+				string imageName;
+				var image = ExpressionNode.GetImageForLocalVariable(out imageName);
+				var expression = new ExpressionNode(image, locVar.Name, locVar.GetExpression());
+				expression.ImageName = imageName;
+				yield return expression;
 			}
 			if (stackFrame.Thread.CurrentException != null) {
 				yield return new ExpressionNode(null, "__exception", new IdentifierExpression("__exception"));

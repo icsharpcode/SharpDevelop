@@ -11,6 +11,8 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using ICSharpCode.Core.Presentation;
+
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
@@ -27,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public new void Focus()
 		{
-			var firstButton = SearchVisualTree<Button>(this);
+			var firstButton = WpfTreeNavigation.TryFindChild<Button>(this);
 			if (firstButton == null)
 				return;
 			firstButton.Focus();
@@ -44,22 +46,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (ActionExecuted != null)
 				ActionExecuted(this, EventArgs.Empty);
-		}
-		
-		/// <summary>
-		/// Returns the first occurence of object of type <paramref name="T" /> in the visual tree of <paramref name="dependencyObject" />.
-		/// </summary>
-		public static T SearchVisualTree<T>(DependencyObject root) where T : DependencyObject
-		{
-			if (root is T)
-				return (T)root;
-			for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
-			{
-				var foundChild = SearchVisualTree<T>(VisualTreeHelper.GetChild(root, i));
-				if (foundChild != null)
-					return foundChild;
-			}
-			return null;
 		}
 		
 		public static readonly DependencyProperty ItemTemplateProperty =

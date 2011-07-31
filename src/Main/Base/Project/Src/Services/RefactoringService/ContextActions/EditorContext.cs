@@ -16,9 +16,9 @@ using ICSharpCode.SharpDevelop.Editor;
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
-	/// Helper class for <see cref="IContextActionsProvider.GetAvailableActions"></see>.
-	/// Never keep long-lived references to this class
-	/// - the AST serves as one-time cache and does not get updated when editor text changes.
+	/// Contains information about code around the caret in the editor - useful for implementing Context actions.
+	/// Do not keep your own references to EditorContext.
+	/// It serves as one-time cache and does not get updated when editor text changes.
 	/// </summary>
 	public class EditorContext
 	{
@@ -27,20 +27,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		int CaretColumn { get; set; }
 		
 		/// <summary>
-		/// Language independent.
+		/// The expression at editor caret. Language independent.
 		/// </summary>
 		public ExpressionResult CurrentExpression { get; private set; }
 		/// <summary>
-		/// Language independent.
+		/// The resolved symbol at editor caret. Language independent.
 		/// </summary>
 		public ResolveResult CurrentSymbol { get; private set; }
 		
 		/// <summary>
-		/// Language independent.
+		/// ParseInformation for current file. Language independent.
 		/// </summary>
 		public ParseInformation CurrentParseInformation { get; private set; }
 		
-		public IProjectContent ProjectContent { 
+		public IProjectContent ProjectContent {
 			get {
 				if (CurrentParseInformation != null)
 					return CurrentParseInformation.CompilationUnit.ProjectContent;
@@ -49,22 +49,33 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
+		/// <summary>
+		/// The editor line containing the caret.
+		/// </summary>
 		public IDocumentLine CurrentLine { get; private set; }
 		/// <summary>
-		/// Only available for C# and VB.
+		/// Parsed AST of the current editor line. Only available for C# and VB.
 		/// </summary>
 		public INode CurrentLineAST { get; private set; }
 		/// <summary>
-		/// Only available for C# and VB.
+		/// Parsed AST of the member containing the editor caret. Only available for C# and VB.
 		/// </summary>
 		public INode CurrentMemberAST { get; private set; }
 		/// <summary>
-		/// Only available for C# and VB.
+		/// Parsed AST of the element at editor caret. Only available for C# and VB.
 		/// </summary>
-		public INode CurrentElement { get; private set; }
+		INode CurrentElement { get; set; }
 		
 		NRefactoryResolver Resolver { get; set; }
 		
+		/// <summary>
+		/// Caches values shared by Context actions. Used in <see cref="GetCached"></see>
+		/// </summary>
+		Dictionary<Type, object> cachedValues = new Dictionary<Type, object>();
+		
+		/// <summary>
+		/// Fully initializes the EditorContext.
+		/// </summary>
 		public EditorContext(ITextEditor editor)
 		{
 			if (editor == null)
@@ -89,8 +100,73 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.CurrentMemberAST = GetCurrentMemberAST(editor);
 			
 			this.CurrentElement = FindInnermostNode(this.CurrentMemberAST, new Location(CaretColumn, CaretLine));
-			
 //			DebugLog();
+		}
+		
+		public ResolveResult ResolveExpression(Expression expression)
+		{
+			ExpressionResult expr = GetExpressionAt(this.Editor, expression.EndLocation.Line, expression.EndLocation.Column);
+			return ResolveExpression(expr, this.Editor, expression.EndLocation.Line, expression.EndLocation.Column);
+		}
+		
+		/// <summary>
+		/// Do not call from your Context actions - used by SharpDevelop.
+		/// Sets contents of editor context to null to prevent memory leaks. Used in case users implementing IContextActionProvider
+		/// keep long-lived references to EditorContext even when warned not to do so.
+		/// </summary>
+		public void Clear()
+		{
+			this.Editor = null;
+			this.CurrentElement = null;
+			this.CurrentLineAST = null;
+			this.CurrentMemberAST = null;
+			this.CurrentParseInformation = null;
+			this.CurrentSymbol = null;
+			this.Resolver = null;
+			this.cachedValues.Clear();
+		}
+		
+		/// <summary>
+		/// Gets cached value shared by context actions. Initializes a new value if not present.
+		/// </summary>
+		public T GetCached<T>() where T : IContextActionCache, new()
+		{
+			Type t = typeof(T);
+			if (cachedValues.ContainsKey(t)) {
+				return (T)cachedValues[t];
+			} else {
+				T cached = new T();
+				cached.Initialize(this);
+				cachedValues[t] = cached;
+				return cached;
+			}
+		}
+		
+		/// <summary>
+		/// Checks if the caret is exactly at AST node of given type (e.g. "if" of IfElseStatement).
+		/// If yes, returns it. If not, returns null.
+		/// </summary>
+		public TNode GetCurrentElement<TNode>() where TNode : class, INode
+		{
+			if (this.CurrentElement is TNode)
+				return (TNode)this.CurrentElement;
+			return null;
+		}
+		
+		/// <summary>
+		/// Checks if caret is within AST node of given type (e.g. anywhere inside IfElseStatement).
+		/// If yes, returns it. If not, returns null.
+		/// </summary>
+		public TNode GetContainingElement<TNode>() where TNode : class, INode
+		{
+			var node = this.CurrentElement;
+			while(node != null)
+			{
+				if (node is TNode)
+					return (TNode)node;
+				node = node.Parent;
+			}
+			return null;
 		}
 		
 		void DebugLog()
@@ -105,50 +181,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	----------------------
 	CurrentLineAST: {2}
 	----------------------
-	AstNodeAtCaret: {3}
+	CurrentASTNode: [{3}] {4}
 	----------------------
-	CurrentMemberAST: {4}
+	CurrentMemberAST: {5}
 	----------------------",
 				CurrentExpression, CurrentSymbol, CurrentLineAST,
+				CurrentElement == null ? "" : CurrentElement.GetType().ToString(),
 				CurrentElement == null ? "" : CurrentElement.ToString().TakeStartEllipsis(400),
 				CurrentMemberAST == null ? "" : CurrentMemberAST.ToString().TakeStartEllipsis(400)));
 		}
 		
-		public TNode GetCurrentElement<TNode>() where TNode : class, INode
-		{
-			if (this.CurrentElement is TNode)
-				return (TNode)this.CurrentElement;
-			return null;
-		}
-		
-		public TNode GetContainingElement<TNode>() where TNode : class, INode
-		{
-			var node = this.CurrentElement;
-			while(node != null)
-			{
-				if (node is TNode)
-					return (TNode)node;
-				node = node.Parent;
-			}
-			return null;
-		}
-		
-		Dictionary<Type, object> cachedValues = new Dictionary<Type, object>();
-		
-		public T GetCached<T>() where T : IContextActionCache, new()
-		{
-			Type t = typeof(T);
-			if (cachedValues.ContainsKey(t)) {
-				return (T)cachedValues[t];
-			} else {
-				T cached = new T();
-				cached.Initialize(this);
-				cachedValues[t] = cached;
-				return cached;
-			}
-		}
-		
-		public static INode FindInnermostNode(INode node, Location position)
+		static INode FindInnermostNode(INode node, Location position)
 		{
 			if (node == null)
 				return null;
@@ -199,10 +242,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 
 		ExpressionResult GetExpressionAtCaret(ITextEditor editor)
 		{
-			ExpressionResult expr = ParserService.FindFullExpression(CaretLine, CaretColumn, editor.Document, editor.FileName);
-			// if no expression, look one character back (works better with method calls - Foo()(*caret*))
-			if (string.IsNullOrWhiteSpace(expr.Expression) && CaretColumn > 1)
-				expr = ParserService.FindFullExpression(CaretLine, CaretColumn - 1, editor.Document, editor.FileName);
+			return GetExpressionAt(editor, this.CaretLine, this.CaretColumn);
+		}
+		
+		ExpressionResult GetExpressionAt(ITextEditor editor, int caretLine, int caretColumn)
+		{
+			ExpressionResult expr = ParserService.FindFullExpression(caretLine, caretColumn, editor.Document, editor.FileName);
+			// if no expression, look one character back (works better with method calls, e.g. Foo()(*caret*))
+			if (string.IsNullOrWhiteSpace(expr.Expression) && caretColumn > 1)
+				expr = ParserService.FindFullExpression(caretLine, caretColumn - 1, editor.Document, editor.FileName);
 			return expr;
 		}
 		
@@ -214,12 +262,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			var snippetParser = GetSnippetParser(editor);
 			if (snippetParser == null)
 				return null;
-			//try	{
-				return snippetParser.Parse(currentLine.Text);
-			//}
-			//catch {
-			//	return null;
-			//}
+			return snippetParser.Parse(currentLine.Text);
 		}
 		
 		SnippetParser GetSnippetParser(ITextEditor editor)
@@ -245,14 +288,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		INode GetCurrentMemberAST(ITextEditor editor)
 		{
-			//try {
-				var resolver = GetInitializedNRefactoryResolver(editor, this.CaretLine, this.CaretColumn);
-				if (resolver == null)
-					return null;
-				return resolver.ParseCurrentMember(editor.Document.Text);
-			//} catch {
-			//	return null;
-			//}
+			var resolver = GetInitializedNRefactoryResolver(editor, this.CaretLine, this.CaretColumn);
+			if (resolver == null)
+				return null;
+			return resolver.ParseCurrentMember(editor.Document.Text);
 		}
 		
 		NRefactoryResolver GetInitializedNRefactoryResolver(ITextEditor editor, int caretLine, int caretColumn)

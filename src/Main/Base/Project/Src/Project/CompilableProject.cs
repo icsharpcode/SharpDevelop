@@ -1,18 +1,16 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using System.Xml.Linq;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project.Converter;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
+
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -219,6 +217,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (IsSilverlightProject) {
 					return TestPageFileName.Length > 0;
 				}
+				if (IsWebProject)
+					return true;
+				
 				switch (this.StartAction) {
 					case StartAction.Project:
 						return OutputType == OutputType.Exe || OutputType == OutputType.WinExe;
@@ -281,8 +282,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				string pagePath = "file:///" + Path.Combine(OutputFullPath, TestPageFileName);
 				return new  ProcessStartInfo(pagePath);
 			}
+			
 			switch (this.StartAction) {
 				case StartAction.Project:
+					if (IsWebProject)
+						return new ProcessStartInfo("http://localhost");
+					
 					return CreateStartInfo(this.OutputAssemblyFullPath);
 				case StartAction.Program:
 					return CreateStartInfo(this.StartProgram);
@@ -355,6 +360,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
 				return guids.Contains("A1591282-1198-4647-A2B1-27E5FF5F6F3B");
+			}
+		}
+		
+		[Browsable(false)]
+		public override bool IsWebProject {
+			get {
+				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
+				return guids.Contains("349c5851-65df-11da-9384-00065b846f21");
 			}
 		}
 		
@@ -580,31 +593,39 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public static FileName GetAppConfigFile(IProject project, bool createIfNotExists)
+		{
+			FileName appConfigFileName = Core.FileName.Create(Path.Combine(project.Directory, "app.config"));
+			
+			if (!File.Exists(appConfigFileName)) {
+				if (createIfNotExists) {
+					File.WriteAllText(appConfigFileName,
+					                  "<?xml version=\"1.0\"?>" + Environment.NewLine +
+					                  "<configuration>" + Environment.NewLine
+					                  + "</configuration>");
+				} else {
+					return null;
+				}
+			}
+			
+			if (!project.IsFileInProject(appConfigFileName)) {
+				FileProjectItem fpi = new FileProjectItem(project, ItemType.None, "app.config");
+				ProjectService.AddProjectItem(project, fpi);
+				FileService.FireFileCreated(appConfigFileName, false);
+				ProjectBrowserPad.RefreshViewAsync();
+			}
+			return appConfigFileName;
+		}
+		
 		void UpdateAppConfig(TargetFramework newFramework)
 		{
 			// When changing the target framework, update any existing app.config
 			// Also, for applications (not libraries), create an app.config is it is required for the target framework
 			bool createAppConfig = newFramework.RequiresAppConfigEntry && (this.OutputType != OutputType.Library && this.OutputType != OutputType.Module);
 			
-			string appConfigFileName = Path.Combine(this.Directory, "app.config");
-			
-			if (!File.Exists(appConfigFileName)) {
-				if (createAppConfig) {
-					File.WriteAllText(appConfigFileName,
-					                  "<?xml version=\"1.0\"?>" + Environment.NewLine +
-					                  "<configuration>" + Environment.NewLine
-					                  + "</configuration>");
-				} else {
-					return;
-				}
-			}
-			
-			if (!IsFileInProject(appConfigFileName)) {
-				FileProjectItem fpi = new FileProjectItem(this, ItemType.None, "app.config");
-				ProjectService.AddProjectItem(this, fpi);
-				FileService.FireFileCreated(appConfigFileName, false);
-				ProjectBrowserPad.RefreshViewAsync();
-			}
+			string appConfigFileName = GetAppConfigFile(this, createAppConfig);
+			if (appConfigFileName == null)
+				return;
 			
 			using (FakeXmlViewContent xml = new FakeXmlViewContent(appConfigFileName)) {
 				if (xml.Document != null) {
@@ -616,13 +637,12 @@ namespace ICSharpCode.SharpDevelop.Project
 							// <configSections> must be first element
 							configuration.Elements().First().AddAfterSelf(startup);
 						} else {
-							configuration.AddFirst(startup);
+							startup = configuration.AddFirstWithIndentation(startup);
 						}
 					}
 					XElement supportedRuntime = startup.Element("supportedRuntime");
 					if (supportedRuntime == null) {
-						supportedRuntime = new XElement("supportedRuntime");
-						startup.AddFirst(supportedRuntime);
+						supportedRuntime = startup.AddFirstWithIndentation(new XElement("supportedRuntime"));
 					}
 					supportedRuntime.SetAttributeValue("version", newFramework.SupportedRuntimeVersion);
 					supportedRuntime.SetAttributeValue("sku", newFramework.SupportedSku);

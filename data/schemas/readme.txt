@@ -27,14 +27,20 @@ NAnt 0.85 schema.
 http://nant.sourceforge.net/release/0.85/nant.xsd
 GNU General Public License.
 
+nuspec.xsd
+----------
+
+NuGet 1.1 schema
+Apache license 2.0 (http://nuget.codeplex.com/license)
+
 WiX schemas
 -----------
 
-complus.xsd
 difxapp.xsd
 firewall.xsd
 gaming.xsd
 iis.xsd
+lux.xsd
 msmq.xsd
 netfx.xsd
 ps.xsd

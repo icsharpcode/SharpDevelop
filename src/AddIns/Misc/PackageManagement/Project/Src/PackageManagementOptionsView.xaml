@@ -1,0 +1,59 @@
+﻿<gui:OptionPanel
+	x:Class="ICSharpCode.PackageManagement.PackageManagementOptionsView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+	xmlns:pm="clr-namespace:ICSharpCode.PackageManagement"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	
+	<Grid>
+		<Grid.Resources>
+			<pm:PackageManagementViewModels x:Key="ViewModels"/>
+			<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+		</Grid.Resources>
+		
+		<Grid.DataContext>
+			<Binding Source="{StaticResource ViewModels}" Path="PackageManagementOptionsViewModel"/>
+		</Grid.DataContext>
+		
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		
+		<GroupBox
+			Grid.Row="0"
+			Header="_Recent Packages">
+			<StackPanel
+				Orientation="Horizontal">
+				<Button
+					Padding="7, 2"
+					Command="{Binding Path=ClearRecentPackagesCommand}"
+					Content="Clear Recent Packages"/>
+				<TextBlock
+					Margin="4, 4"
+					Visibility="{Binding Path=HasNoRecentPackages, Converter={StaticResource BoolToVisibility}}"
+					Text="No recent packages"/>
+			</StackPanel>
+		</GroupBox>
+		<GroupBox
+			Grid.Row="1"
+			Header="Packages _Cache">
+			<StackPanel
+				Orientation="Horizontal">
+				<Button
+					Padding="7, 2"
+					Command="{Binding Path=ClearCachedPackagesCommand}"
+					Content="Clear Package Cache"/>
+				<Button
+					Margin="8, 0, 0, 0"
+					Padding="7, 2"
+					Command="{Binding Path=BrowseCachedPackagesCommand}"
+					Content="..."/>
+				<TextBlock
+					Margin="4, 4"
+					Visibility="{Binding Path=HasNoCachedPackages, Converter={StaticResource BoolToVisibility}}"
+					Text="No cached packages"/>
+			</StackPanel>
+		</GroupBox>
+	</Grid>
+</gui:OptionPanel>

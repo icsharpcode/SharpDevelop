@@ -53,9 +53,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			this.Options = new TextEditorOptions();
 			Debug.Assert(singleCharacterElementGenerator != null); // assert that the option change created the builtin element generators
 			
-			layers = new UIElementCollection(this, this);
+			layers = new LayerCollection(this);
 			InsertLayer(textLayer, KnownLayer.Text, LayerInsertionPosition.Replace);
+			
+			this.hoverLogic = new MouseHoverLogic(this);
+			this.hoverLogic.MouseHover += (sender, e) => RaiseHoverEventPair(e, PreviewMouseHoverEvent, MouseHoverEvent);
+			this.hoverLogic.MouseHoverStopped += (sender, e) => RaiseHoverEventPair(e, PreviewMouseHoverStoppedEvent, MouseHoverStoppedEvent);
 		}
+
 		#endregion
 		
 		#region Document Property
@@ -293,13 +298,54 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		#region Layers
 		internal readonly TextLayer textLayer;
-		readonly UIElementCollection layers;
+		readonly LayerCollection layers;
 		
 		/// <summary>
 		/// Gets the list of layers displayed in the text view.
 		/// </summary>
 		public UIElementCollection Layers {
 			get { return layers; }
+		}
+		
+		sealed class LayerCollection : UIElementCollection
+		{
+			readonly TextView textView;
+			
+			public LayerCollection(TextView textView)
+				: base(textView, textView)
+			{
+				this.textView = textView;
+			}
+			
+			public override void Clear()
+			{
+				base.Clear();
+				textView.LayersChanged();
+			}
+			
+			public override int Add(UIElement element)
+			{
+				int r = base.Add(element);
+				textView.LayersChanged();
+				return r;
+			}
+			
+			public override void RemoveAt(int index)
+			{
+				base.RemoveAt(index);
+				textView.LayersChanged();
+			}
+			
+			public override void RemoveRange(int index, int count)
+			{
+				base.RemoveRange(index, count);
+				textView.LayersChanged();
+			}
+		}
+		
+		void LayersChanged()
+		{
+			textLayer.index = layers.IndexOf(textLayer);
 		}
 		
 		/// <summary>
@@ -351,18 +397,128 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		/// <inheritdoc/>
 		protected override int VisualChildrenCount {
-			get { return layers.Count; }
+			get { return layers.Count + inlineObjects.Count; }
 		}
 		
 		/// <inheritdoc/>
 		protected override Visual GetVisualChild(int index)
 		{
-			return layers[index];
+			int cut = textLayer.index + 1;
+			if (index < cut)
+				return layers[index];
+			else if (index < cut + inlineObjects.Count)
+				return inlineObjects[index - cut].Element;
+			else
+				return layers[index - inlineObjects.Count];
 		}
 		
 		/// <inheritdoc/>
 		protected override System.Collections.IEnumerator LogicalChildren {
-			get { return layers.GetEnumerator(); }
+			get {
+				return inlineObjects.Select(io => io.Element).Concat(layers.Cast<UIElement>()).GetEnumerator();
+			}
+		}
+		#endregion
+		
+		#region Inline object handling
+		List<InlineObjectRun> inlineObjects = new List<InlineObjectRun>();
+		
+		/// <summary>
+		/// Adds a new inline object.
+		/// </summary>
+		internal void AddInlineObject(InlineObjectRun inlineObject)
+		{
+			Debug.Assert(inlineObject.VisualLine != null);
+			
+			// Remove inline object if its already added, can happen e.g. when recreating textrun for word-wrapping
+			bool alreadyAdded = false;
+			for (int i = 0; i < inlineObjects.Count; i++) {
+				if (inlineObjects[i].Element == inlineObject.Element) {
+					RemoveInlineObjectRun(inlineObjects[i], true);
+					inlineObjects.RemoveAt(i);
+					alreadyAdded = true;
+					break;
+				}
+			}
+			
+			inlineObjects.Add(inlineObject);
+			if (!alreadyAdded) {
+				AddVisualChild(inlineObject.Element);
+			}
+			inlineObject.Element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+			inlineObject.desiredSize = inlineObject.Element.DesiredSize;
+		}
+		
+		void MeasureInlineObjects()
+		{
+			// As part of MeasureOverride(), re-measure the inline objects
+			foreach (InlineObjectRun inlineObject in inlineObjects) {
+				if (inlineObject.VisualLine.IsDisposed) {
+					// Don't re-measure inline objects that are going to be removed anyways.
+					// If the inline object will be reused in a different VisualLine, we'll measure it in the AddInlineObject() call.
+					continue;
+				}
+				inlineObject.Element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+				if (!inlineObject.Element.DesiredSize.IsClose(inlineObject.desiredSize)) {
+					// the element changed size -> recreate its parent visual line
+					inlineObject.desiredSize = inlineObject.Element.DesiredSize;
+					if (allVisualLines.Remove(inlineObject.VisualLine)) {
+						DisposeVisualLine(inlineObject.VisualLine);
+					}
+				}
+			}
+		}
+		
+		List<VisualLine> visualLinesWithOutstandingInlineObjects = new List<VisualLine>();
+		
+		void RemoveInlineObjects(VisualLine visualLine)
+		{
+			// Delay removing inline objects:
+			// A document change immediately invalidates affected visual lines, but it does not
+			// cause an immediate redraw.
+			// To prevent inline objects from flickering when they are recreated, we delay removing
+			// inline objects until the next redraw.
+			if (visualLine.hasInlineObjects) {
+				visualLinesWithOutstandingInlineObjects.Add(visualLine);
+			}
+		}
+		
+		/// <summary>
+		/// Remove the inline objects that were marked for removal.
+		/// </summary>
+		void RemoveInlineObjectsNow()
+		{
+			if (visualLinesWithOutstandingInlineObjects.Count == 0)
+				return;
+			inlineObjects.RemoveAll(
+				ior => {
+					if (visualLinesWithOutstandingInlineObjects.Contains(ior.VisualLine)) {
+						RemoveInlineObjectRun(ior, false);
+						return true;
+					}
+					return false;
+				});
+			visualLinesWithOutstandingInlineObjects.Clear();
+		}
+
+		// Remove InlineObjectRun.Element from TextLayer.
+		// Caller of RemoveInlineObjectRun will remove it from inlineObjects collection.
+		void RemoveInlineObjectRun(InlineObjectRun ior, bool keepElement)
+		{
+			if (!keepElement && ior.Element.IsKeyboardFocusWithin) {
+				// When the inline element that has the focus is removed, WPF will reset the
+				// focus to the main window without raising appropriate LostKeyboardFocus events.
+				// To work around this, we manually set focus to the next focusable parent.
+				UIElement element = this;
+				while (element != null && !element.Focusable) {
+					element = VisualTreeHelper.GetParent(element) as UIElement;
+				}
+				if (element != null)
+					Keyboard.Focus(element);
+			}
+			ior.VisualLine = null;
+			if (!keepElement)
+				RemoveVisualChild(ior.Element);
 		}
 		#endregion
 		
@@ -405,11 +561,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// Causes the text editor to regenerate the specified visual line.
 		/// </summary>
-		public void Redraw(VisualLine visualLine, DispatcherPriority redrawPriority)
+		public void Redraw(VisualLine visualLine, DispatcherPriority redrawPriority = DispatcherPriority.Normal)
 		{
 			VerifyAccess();
 			if (allVisualLines.Remove(visualLine)) {
-				visibleVisualLines = null;
 				DisposeVisualLine(visualLine);
 				InvalidateMeasure(redrawPriority);
 			}
@@ -418,10 +573,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// Causes the text editor to redraw all lines overlapping with the specified segment.
 		/// </summary>
-		public void Redraw(int offset, int length, DispatcherPriority redrawPriority)
+		public void Redraw(int offset, int length, DispatcherPriority redrawPriority = DispatcherPriority.Normal)
 		{
 			VerifyAccess();
-			bool removedLine = false;
 			bool changedSomethingBeforeOrInLine = false;
 			for (int i = 0; i < allVisualLines.Count; i++) {
 				VisualLine visualLine = allVisualLines[i];
@@ -430,14 +584,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				if (offset <= lineEnd) {
 					changedSomethingBeforeOrInLine = true;
 					if (offset + length >= lineStart) {
-						removedLine = true;
 						allVisualLines.RemoveAt(i--);
 						DisposeVisualLine(visualLine);
 					}
 				}
-			}
-			if (removedLine) {
-				visibleVisualLines = null;
 			}
 			if (changedSomethingBeforeOrInLine) {
 				// Repaint not only when something in visible area was changed, but also when anything in front of it
@@ -463,7 +613,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// Causes the text editor to redraw all lines overlapping with the specified segment.
 		/// Does nothing if segment is null.
 		/// </summary>
-		public void Redraw(ISegment segment, DispatcherPriority redrawPriority)
+		public void Redraw(ISegment segment, DispatcherPriority redrawPriority = DispatcherPriority.Normal)
 		{
 			if (segment != null) {
 				Redraw(segment.Offset, segment.Length, redrawPriority);
@@ -491,11 +641,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (newVisualLines != null && newVisualLines.Contains(visualLine)) {
 				throw new ArgumentException("Cannot dispose visual line because it is in construction!");
 			}
+			visibleVisualLines = null;
 			visualLine.IsDisposed = true;
 			foreach (TextLine textLine in visualLine.TextLines) {
 				textLine.Dispose();
 			}
-			textLayer.RemoveInlineObjects(visualLine);
+			RemoveInlineObjects(visualLine);
 		}
 		#endregion
 		
@@ -563,7 +714,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				TextRunProperties globalTextRunProperties = CreateGlobalTextRunProperties();
 				VisualLineTextParagraphProperties paragraphProperties = CreateParagraphProperties(globalTextRunProperties);
 				
-				while (heightTree.GetIsCollapsed(documentLine)) {
+				while (heightTree.GetIsCollapsed(documentLine.LineNumber)) {
 					documentLine = documentLine.PreviousLine;
 				}
 				
@@ -676,11 +827,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				ClearVisualLines();
 			lastAvailableSize = availableSize;
 			
-			textLayer.RemoveInlineObjectsNow();
-			
 			foreach (UIElement layer in layers) {
 				layer.Measure(availableSize);
 			}
+			MeasureInlineObjects();
+			
 			InvalidateVisual(); // = InvalidateArrange+InvalidateRender
 			textLayer.InvalidateVisual();
 			
@@ -699,13 +850,16 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				}
 			}
 			
-			textLayer.RemoveInlineObjectsNow();
+			// remove inline objects only at the end, so that inline objects that were re-used are not removed from the editor
+			RemoveInlineObjectsNow();
 			
 			maxWidth += AdditionalHorizontalScrollAmount;
 			double heightTreeHeight = this.DocumentHeight;
 			TextEditorOptions options = this.Options;
 			if (options.AllowScrollBelowDocument) {
-				heightTreeHeight = Math.Max(heightTreeHeight, Math.Min(heightTreeHeight - 50, scrollOffset.Y) + scrollViewport.Height);
+				if (!double.IsInfinity(scrollViewport.Height)) {
+					heightTreeHeight = Math.Max(heightTreeHeight, Math.Min(heightTreeHeight - 50, scrollOffset.Y) + scrollViewport.Height);
+				}
 			}
 			
 			SetScrollData(availableSize,
@@ -820,7 +974,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		                           IVisualLineTransformer[] lineTransformersArray,
 		                           Size availableSize)
 		{
-			if (heightTree.GetIsCollapsed(documentLine))
+			if (heightTree.GetIsCollapsed(documentLine.LineNumber))
 				throw new InvalidOperationException("Trying to build visual line from collapsed line");
 			
 			Debug.WriteLine("Building line " + documentLine.LineNumber);
@@ -836,7 +990,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			
 			#if DEBUG
 			for (int i = visualLine.FirstDocumentLine.LineNumber + 1; i <= visualLine.LastDocumentLine.LineNumber; i++) {
-				if (!heightTree.GetIsCollapsed(document.GetLineByNumber(i)))
+				if (!heightTree.GetIsCollapsed(i))
 					throw new InvalidOperationException("Line " + i + " was skipped by a VisualLineElementGenerator, but it is not collapsed.");
 			}
 			#endif
@@ -946,7 +1100,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 						foreach (var span in textLine.GetTextRunSpans()) {
 							InlineObjectRun inline = span.Value as InlineObjectRun;
 							if (inline != null && inline.VisualLine != null) {
-								Debug.Assert(textLayer.inlineObjects.Contains(inline));
+								Debug.Assert(inlineObjects.Contains(inline));
 								double distance = textLine.GetDistanceFromCharacterHit(new CharacterHit(offset, 0));
 								inline.Element.Arrange(new Rect(new Point(pos.X + distance, pos.Y), inline.Element.DesiredSize));
 							}
@@ -1230,18 +1384,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					null))
 				{
 					wideSpaceWidth = Math.Max(1, line.WidthIncludingTrailingWhitespace);
-					defaultLineHeight = line.Height;
+					defaultLineHeight = Math.Max(1, line.Height);
 				}
 			} else {
 				wideSpaceWidth = FontSize / 2;
 				defaultLineHeight = FontSize + 3;
 			}
-		}
-		
-		void InvalidateWideSpaceWidthAndDefaultLineHeight()
-		{
-			wideSpaceWidth = 0;
-			defaultLineHeight = 0;
+			// Update heightTree.DefaultLineHeight, if a document is loaded.
+			if (heightTree != null)
+				heightTree.DefaultLineHeight = defaultLineHeight;
 		}
 		
 		static double ValidateVisualOffset(double offset)
@@ -1406,6 +1557,17 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			return null;
 		}
 		
+		/// <summary>
+		/// Gets the visual top position (relative to start of document) from a document line number.
+		/// </summary>
+		public double GetVisualTopByDocumentLine(int line)
+		{
+			VerifyAccess();
+			if (heightTree == null)
+				throw ThrowUtil.NoDocumentAssigned();
+			return heightTree.GetVisualPosition(heightTree.GetLineByNumber(line));
+		}
+		
 		VisualLineElement GetVisualLineElementFromPosition(Point visualPosition)
 		{
 			VisualLine vl = GetVisualLineFromVisualTop(visualPosition.Y);
@@ -1555,63 +1717,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			remove { RemoveHandler(MouseHoverStoppedEvent, value); }
 		}
 		
-		DispatcherTimer mouseHoverTimer;
-		Point mouseHoverStartPoint;
-		MouseEventArgs mouseHoverLastEventArgs;
-		bool mouseHovering;
+		MouseHoverLogic hoverLogic;
 		
-		/// <inheritdoc/>
-		protected override void OnMouseMove(MouseEventArgs e)
+		void RaiseHoverEventPair(MouseEventArgs e, RoutedEvent tunnelingEvent, RoutedEvent bubblingEvent)
 		{
-			base.OnMouseMove(e);
-			Point newPosition = e.GetPosition(this);
-			Vector mouseMovement = mouseHoverStartPoint - newPosition;
-			if (Math.Abs(mouseMovement.X) > SystemParameters.MouseHoverWidth
-			    || Math.Abs(mouseMovement.Y) > SystemParameters.MouseHoverHeight)
-			{
-				StopHovering();
-				mouseHoverStartPoint = newPosition;
-				mouseHoverLastEventArgs = e;
-				mouseHoverTimer = new DispatcherTimer(SystemParameters.MouseHoverTime, DispatcherPriority.Background,
-				                                      OnMouseHoverTimerElapsed, this.Dispatcher);
-				mouseHoverTimer.Start();
-			}
-			// do not set e.Handled - allow others to also handle MouseMove
-		}
-		
-		/// <inheritdoc/>
-		protected override void OnMouseLeave(MouseEventArgs e)
-		{
-			base.OnMouseLeave(e);
-			StopHovering();
-			// do not set e.Handled - allow others to also handle MouseLeave
-		}
-		
-		void StopHovering()
-		{
-			if (mouseHoverTimer != null) {
-				mouseHoverTimer.Stop();
-				mouseHoverTimer = null;
-			}
-			if (mouseHovering) {
-				mouseHovering = false;
-				RaiseHoverEventPair(PreviewMouseHoverStoppedEvent, MouseHoverStoppedEvent);
-			}
-		}
-		
-		void OnMouseHoverTimerElapsed(object sender, EventArgs e)
-		{
-			mouseHoverTimer.Stop();
-			mouseHoverTimer = null;
-			
-			mouseHovering = true;
-			RaiseHoverEventPair(PreviewMouseHoverEvent, MouseHoverEvent);
-		}
-		
-		void RaiseHoverEventPair(RoutedEvent tunnelingEvent, RoutedEvent bubblingEvent)
-		{
-			var mouseDevice = mouseHoverLastEventArgs.MouseDevice;
-			var stylusDevice = mouseHoverLastEventArgs.StylusDevice;
+			var mouseDevice = e.MouseDevice;
+			var stylusDevice = e.StylusDevice;
 			int inputTime = Environment.TickCount;
 			var args1 = new MouseEventArgs(mouseDevice, inputTime, stylusDevice) {
 				RoutedEvent = tunnelingEvent,
@@ -1628,12 +1739,21 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		#endregion
 		
 		/// <summary>
-		/// Collapses lines for the purpose of scrolling. This method is meant for
-		/// <see cref="VisualLineElementGenerator"/>s that cause <see cref="VisualLine"/>s to span
+		/// Collapses lines for the purpose of scrolling. <see cref="DocumentLine"/>s marked as collapsed will be hidden
+		/// and not used to start the generation of a <see cref="VisualLine"/>.
+		/// </summary>
+		/// <remarks>
+		/// This method is meant for <see cref="VisualLineElementGenerator"/>s that cause <see cref="VisualLine"/>s to span
 		/// multiple <see cref="DocumentLine"/>s. Do not call it without providing a corresponding
 		/// <see cref="VisualLineElementGenerator"/>.
 		/// If you want to create collapsible text sections, see <see cref="Folding.FoldingManager"/>.
-		/// </summary>
+		/// 
+		/// Note that if you want a VisualLineElement to span from line N to line M, then you need to collapse only the lines
+		/// N+1 to M. Do not collapse line N itself.
+		/// 
+		/// When you no longer need the section to be collapsed, call <see cref="CollapsedLineSection.Uncollapse()"/> on the
+		/// <see cref="CollapsedLineSection"/> returned from this method.
+		/// </remarks>
 		public CollapsedLineSection CollapseLines(DocumentLine start, DocumentLine end)
 		{
 			VerifyAccess();
@@ -1668,20 +1788,29 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			base.OnPropertyChanged(e);
 			if (TextFormatterFactory.PropertyChangeAffectsTextFormatter(e.Property)) {
-				RecreateCachedElements();
+				// first, create the new text formatter:
 				RecreateTextFormatter();
-				InvalidateWideSpaceWidthAndDefaultLineHeight();
+				// changing text formatter requires recreating the cached elements
+				RecreateCachedElements();
+				// and we need to re-measure the font metrics:
+				MeasureWideSpaceWidthAndDefaultLineHeight();
+			} else if (e.Property == Control.ForegroundProperty
+			           || e.Property == TextView.NonPrintableCharacterBrushProperty)
+			{
+				// changing brushes requires recreating the cached elements
+				RecreateCachedElements();
+				Redraw();
 			}
-			if (e.Property == Control.ForegroundProperty
-			    || e.Property == Control.FontFamilyProperty
+			if (e.Property == Control.FontFamilyProperty
 			    || e.Property == Control.FontSizeProperty
 			    || e.Property == Control.FontStretchProperty
 			    || e.Property == Control.FontStyleProperty
-			    || e.Property == Control.FontWeightProperty
-			    || e.Property == TextView.NonPrintableCharacterBrushProperty)
+			    || e.Property == Control.FontWeightProperty)
 			{
+				// changing font properties requires recreating cached elements
 				RecreateCachedElements();
-				InvalidateWideSpaceWidthAndDefaultLineHeight();
+				// and we need to re-measure the font metrics:
+				MeasureWideSpaceWidthAndDefaultLineHeight();
 				Redraw();
 			}
 		}

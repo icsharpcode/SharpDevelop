@@ -104,6 +104,7 @@
     <Compile Include="Src\Services\PropertyService\Properties.cs" />
     <Compile Include="Src\Services\PropertyService\PropertyChangedEvent.cs" />
     <Compile Include="Src\Services\PropertyService\PropertyService.cs" />
+    <Compile Include="Src\Services\RegistryService\RegistryService.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceNotFoundException.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceService.cs" />
     <Compile Include="Src\Services\ServiceManager.cs" />
@@ -132,6 +133,7 @@
   <ItemGroup>
     <Folder Include="Src\Services\LoggingService" />
     <Folder Include="Src\Services\AnalyticsMonitor" />
+    <Folder Include="Src\Services\RegistryService" />
     <Folder Include="Src\Services\ResourceService" />
     <Content Include="..\..\..\..\data\schemas\AddIn.xsd">
       <Link>Src\AddInTree\AddIn\AddIn.xsd</Link>

@@ -28,8 +28,9 @@ namespace PythonBinding.Tests.Designer
 		public void ExpectedCodeAfterEventHandlerInserted()
 		{
 			string expectedCode = GetTextEditorCode();			
-			string eventHandler = "\tdef mybuttonclick(self, sender, e):\r\n" +
-								"\t\tpass";
+			string eventHandler =
+				"\tdef mybuttonclick(self, sender, e):\r\n" +
+				"\t\tpass";
 			expectedCode = expectedCode + "\r\n" + eventHandler;
 			
 			Assert.AreEqual(expectedCode, viewContent.DesignerCodeFileContent);
@@ -37,18 +38,19 @@ namespace PythonBinding.Tests.Designer
 		
 		protected override string GetTextEditorCode()
 		{
-			return "from System.Windows.Forms import Form\r\n" +
-					"\r\n" +
-					"class MainForm(Form):\r\n" +
-					"\tdef __init__(self):\r\n" +
-					"\t\tself.InitializeComponents()\r\n" +
-					"\t\r\n" +
-					"\tdef InitializeComponents(self):\r\n" +
-					"\t\tself._button1 = System.Windows.Forms.Button()\r\n" +
-					"\t\tself._button1.Click += mybuttonclick\r\n" +
-					"\t\r\n" +
-					"\tdef mybuttonclick(self)\r\n" +
-					"\t\tpass\r\n";
+			return
+				"from System.Windows.Forms import Form\r\n" +
+				"\r\n" +
+				"class MainForm(Form):\r\n" +
+				"\tdef __init__(self):\r\n" +
+				"\t\tself.InitializeComponents()\r\n" +
+				"\t\r\n" +
+				"\tdef InitializeComponents(self):\r\n" +
+				"\t\tself._button1 = System.Windows.Forms.Button()\r\n" +
+				"\t\tself._button1.Click += mybuttonclick\r\n" +
+				"\t\r\n" +
+				"\tdef mybuttonclick(self):\r\n" +
+				"\t\tpass\r\n";
 		}		
 	}
 }

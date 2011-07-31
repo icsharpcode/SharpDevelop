@@ -48,6 +48,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		GridSplitter gridSplitter;
 		readonly IconBarManager iconBarManager;
 		readonly TextMarkerService textMarkerService;
+		readonly IChangeWatcher changeWatcher;
 		ErrorPainter errorPainter;
 		
 		public CodeEditorView PrimaryTextEditor {
@@ -116,6 +117,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					} else {
 						this.errorPainter.UpdateErrors();
 					}
+					changeWatcher.Initialize(this.DocumentAdapter);
 					
 					FetchParseInformation();
 				}
@@ -143,6 +145,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			textMarkerService = new TextMarkerService(this);
 			iconBarManager = new IconBarManager();
+			changeWatcher = new DefaultChangeWatcher();
 			
 			primaryTextEditor = CreateTextEditor();
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
@@ -175,6 +178,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				secondaryTextEditor.UpdateCustomizedHighlighting();
 		}
 		
+		/// <summary>
+		/// This method is called to create a new text editor view (=once for the primary editor; and whenever splitting the editor)
+		/// </summary>
 		protected virtual CodeEditorView CreateTextEditor()
 		{
 			CodeEditorView codeEditorView = new CodeEditorView();
@@ -199,6 +205,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
 			codeEditorView.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
 			
+			codeEditorView.TextArea.LeftMargins.Add(new ChangeMarkerMargin(changeWatcher));
+			
 			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
 			
 			codeEditorView.TextArea.MouseRightButtonDown += TextAreaMouseRightButtonDown;
@@ -219,8 +227,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 
 		protected virtual void DisposeTextEditor(CodeEditorView textEditor)
 		{
-			// detach IconBarMargin from IconBarManager
-			textEditor.TextArea.LeftMargins.OfType<IconBarMargin>().Single().TextView = null;
+			foreach (var d in textEditor.TextArea.LeftMargins.OfType<IDisposable>())
+				d.Dispose();
 			textEditor.Dispose();
 		}
 		
@@ -314,6 +322,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				secondaryTextEditor.SetBinding(TextEditor.IsReadOnlyProperty,
 				                               new Binding(TextEditor.IsReadOnlyProperty.Name) { Source = primaryTextEditor });
 				secondaryTextEditor.SyntaxHighlighting = primaryTextEditor.SyntaxHighlighting;
+				secondaryTextEditor.UpdateCustomizedHighlighting();
 				
 				gridSplitter = new GridSplitter {
 					Height = 4,
@@ -400,6 +409,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// disable all code completion bindings when CC is disabled
 			if (!CodeCompletionOptions.EnableCodeCompletion)
 				return;
+			
+			TextArea textArea = GetTextEditorFromSender(sender).TextArea;
+			if (textArea.ActiveInputHandler != textArea.DefaultInputHandler)
+				return; // deactivate CC for non-default input handlers
 			
 			ITextEditor adapter = GetAdapterFromSender(sender);
 			

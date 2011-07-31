@@ -29,14 +29,10 @@ namespace ICSharpCode.Core.Presentation
 					isCheckedBinding = SetBinding(IsCheckedProperty, new Binding("IsChecked") { Source = cmd, Mode = BindingMode.OneWay });
 				}
 			}
-			
-			if (codon.Properties.Contains("icon")) {
-				var image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));
-				image.Height = 16;
-				image.SetResourceReference(StyleProperty, ToolBarService.ImageStyleKey);
-				this.Content = image;
-			} else {
-				this.Content = codon.Id;
+
+			this.Content = ToolBarService.CreateToolBarItemContent(codon);
+			if (codon.Properties.Contains("name")) {
+				this.Name = codon.Properties["name"];
 			}
 			UpdateText();
 			

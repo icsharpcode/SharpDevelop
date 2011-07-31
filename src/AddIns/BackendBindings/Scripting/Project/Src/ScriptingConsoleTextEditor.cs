@@ -2,10 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Drawing;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
@@ -16,9 +18,9 @@ namespace ICSharpCode.Scripting
 	public class ScriptingConsoleTextEditor : IScriptingConsoleTextEditor
 	{
 		TextEditor textEditor;
-		Color customLineColour = Color.LightGray;
 		BeginReadOnlySectionProvider readOnlyRegion;
 		CompletionWindow completionWindow;
+		double? characterWidth;
 		
 		public ScriptingConsoleTextEditor(TextEditor textEditor)
 		{
@@ -42,20 +44,9 @@ namespace ICSharpCode.Scripting
 			textEditor.PreviewKeyDown -= OnTextEditorPreviewKeyDown;
 		}
 		
-		public Color CustomLineColour {
-			get { return customLineColour; }
-		}
-		
-		public void Write(string text)
+		public void Append(string text)
 		{
-			TextLocation location = GetCurrentCursorLocation();
-			int offset = textEditor.Document.GetOffset(location);
-			textEditor.Document.Insert(offset, text);
-		}
-		
-		TextLocation GetCurrentCursorLocation()
-		{
-			return new TextLocation(Line + 1, Column + 1);
+			textEditor.AppendText(text);
 		}
 		
 		public int Column {
@@ -146,6 +137,56 @@ namespace ICSharpCode.Scripting
 				completionWindow.Closed -= CompletionWindowClosed;
 				completionWindow = null;
 			}
+		}
+		
+		public void ScrollToEnd()
+		{
+			textEditor.ScrollToEnd();
+		}
+		
+		public int GetMaximumVisibleColumns()
+		{
+			return (int)((textEditor.ViewportWidth + CharacterWidth - 1) / CharacterWidth);
+		}
+		
+		double CharacterWidth {
+			get {
+				if (!characterWidth.HasValue) {
+					GetCharacterWidth();
+				}
+				return characterWidth.Value;
+			}
+		}
+		
+		void GetCharacterWidth()
+		{
+			FormattedText formattedText = CreateFormattedTextForSingleCharacter();
+			characterWidth = formattedText.Width;
+		}
+		
+		FormattedText CreateFormattedTextForSingleCharacter()
+		{
+			return new FormattedText(
+				"W",
+				CultureInfo.InvariantCulture, 
+				textEditor.FlowDirection, 
+				CreateTextEditorTypeFace(),
+				textEditor.FontSize,
+				textEditor.Foreground);
+		}
+		
+		Typeface CreateTextEditorTypeFace()
+		{
+			return new Typeface(
+				textEditor.FontFamily,
+				textEditor.FontStyle,
+				textEditor.FontWeight,
+				textEditor.FontStretch);
+		}
+		
+		public void Clear()
+		{
+			textEditor.Clear();
 		}
 	}
 }

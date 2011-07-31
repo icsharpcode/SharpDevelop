@@ -48,6 +48,7 @@
 		<Class class="SharpRefactoring.ContextActions.CheckAssignmentNotNull" />
 		<Class class="SharpRefactoring.ContextActions.ParamCheckForNull" />
 		<Class class="SharpRefactoring.ContextActions.ParamRangeCheck" />
+		<Class class="SharpRefactoring.ContextActions.CheckMemberNotNull" />
 	</Path>
 
 	<Path name="/SharpDevelop/ViewContent/TextEditor/OverrideCompletionHandler">

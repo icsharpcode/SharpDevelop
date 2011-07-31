@@ -109,6 +109,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		public override BlockStatement ParseBlock()
 		{
+			lexer.SetInitialContext(SnippetType.Statements);
 			lexer.NextToken();
 			compilationUnit = new CompilationUnit();
 			
@@ -129,7 +130,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		public override List<INode> ParseTypeMembers()
 		{
-			lexer.NextToken();			
+			lexer.NextToken();
 			TypeDeclaration newType = new TypeDeclaration(Modifiers.None, null);
 			BlockStart(newType);
 			ClassBody(newType);

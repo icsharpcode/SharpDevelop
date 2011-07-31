@@ -6,7 +6,6 @@ using ICSharpCode.AvalonEdit;
 using ICSharpCode.RubyBinding;
 using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
-using IronRuby.Hosting;
 using IronRuby.Runtime;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
@@ -50,14 +49,14 @@ namespace RubyBinding.Tests.Console
 		public void OptionsParserCreatedIsRubyOptionsParser()
 		{
 			OptionsParser parser = host.CallCreateOptionsParser();
-			Assert.IsInstanceOf(typeof(RubyOptionsParser), parser);
+			Assert.IsInstanceOf(typeof(IronRuby.Hosting.RubyOptionsParser), parser);
 		}
 		
 		[Test]
 		public void CommandLineCreatedIsRubyCommandLine()
 		{
 			CommandLine commandLine = host.CallCreateCommandLine();
-			Assert.IsInstanceOf(typeof(RubyCommandLine), commandLine);
+			Assert.IsInstanceOf(typeof(IronRuby.Hosting.RubyCommandLine), commandLine);
 		}
 
 		[Test]

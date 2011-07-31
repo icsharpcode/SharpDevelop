@@ -23,14 +23,14 @@ namespace ICSharpCode.Scripting.Tests.Console
 		}
 		
 		[Test]
-		public void WriteLine()
+		public void WriteLine_WriteLine_NewLineWritten()
 		{
 			TestableScriptingConsole.WriteLine();
 			Assert.AreEqual(Environment.NewLine, FakeConsoleTextEditor.Text);
 		}
 		
 		[Test]
-		public void WriteLineWithText()
+		public void WriteLine_WriteLineWithText_TextPlusNewLineWritten()
 		{
 			TestableScriptingConsole.WriteLine("test", ScriptingStyle.Out);
 			string expectedText = "test" + Environment.NewLine;
@@ -38,7 +38,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 		}	
 		
 		[Test]
-		public void TwoWrites()
+		public void Write_TwoWrites_BothWrittenToTextEditor()
 		{
 			TestableScriptingConsole.Write("a", ScriptingStyle.Out);
 			TestableScriptingConsole.Write("b", ScriptingStyle.Out);
@@ -46,9 +46,53 @@ namespace ICSharpCode.Scripting.Tests.Console
 		}
 		
 		[Test]
-		public void DoesNotHasLinesWaitingToBeRead()
+		public void Constructor_NewInstance_DoesNotHaveLinesWaitingToBeRead()
 		{
 			Assert.IsFalse(TestableScriptingConsole.IsLineAvailable);
+		}
+		
+		[Test]
+		public void Write_WritePromptWhenScrollToEndWhenTextWritten_TextEditorIsScrolled()
+		{
+			TestableScriptingConsole.ScrollToEndWhenTextWritten = true;
+			TestableScriptingConsole.Write("a", ScriptingStyle.Prompt);
+			
+			Assert.IsTrue(FakeConsoleTextEditor.IsScrollToEndCalled);
+		}
+		
+		[Test]
+		public void Write_WritePromptWhenScrollToEndWhenTextWrittenIsFalse_TextEditorIsNotScrolled()
+		{
+			TestableScriptingConsole.ScrollToEndWhenTextWritten = false;
+			TestableScriptingConsole.Write("a", ScriptingStyle.Prompt);
+			
+			Assert.IsFalse(FakeConsoleTextEditor.IsScrollToEndCalled);
+		}
+		
+		[Test]
+		public void Write_WriteErrorWhenScrollToEndWhenTextWrittenIsTrue_TextEditorIsScrolled()
+		{
+			TestableScriptingConsole.ScrollToEndWhenTextWritten = true;
+			TestableScriptingConsole.Write("a", ScriptingStyle.Error);
+			
+			Assert.IsTrue(FakeConsoleTextEditor.IsScrollToEndCalled);
+		}
+		
+		[Test]
+		public void ScrollToEndWhenTextWritten_NewInstance_IsTrue()
+		{
+			Assert.IsTrue(TestableScriptingConsole.ScrollToEndWhenTextWritten);
+		}
+		
+		[Test]
+		public void Clear_TextEditorHasText_RemovesAllText()
+		{
+			TestableScriptingConsole.Write("a", ScriptingStyle.Prompt);
+			TestableScriptingConsole.Clear();
+			
+			bool cleared = FakeConsoleTextEditor.IsClearCalled;
+			
+			Assert.IsTrue(cleared);
 		}
 	}
 }

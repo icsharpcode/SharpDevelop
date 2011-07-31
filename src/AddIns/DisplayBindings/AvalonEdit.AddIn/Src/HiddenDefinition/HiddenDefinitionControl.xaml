@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+	x:Class="ICSharpCode.AvalonEdit.AddIn.HiddenDefinition.HiddenDefinitionControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.Options"
+	Background="#FFFFE7">
+	<Border BorderBrush="Black"
+		BorderThickness="1"
+		Background="Transparent">
+		<StackPanel Background="Transparent">
+			<TextBlock x:Name="DefinitionTextBlock"/>
+		</StackPanel>
+	</Border>
+</UserControl>

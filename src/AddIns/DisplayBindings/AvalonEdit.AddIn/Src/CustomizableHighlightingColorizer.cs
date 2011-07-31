@@ -35,6 +35,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.TextArea.ClearValue(TextArea.SelectionForegroundProperty);
 			textEditor.TextArea.TextView.ClearValue(TextView.NonPrintableCharacterBrushProperty);
 			
+			// 'assigned' flags are used so that the first matching customization wins.
+			// This is necessary because more specific customizations come first in the list
+			// (language-specific customizations are first, followed by 'all languages' customizations)
 			bool assignedDefaultText = false;
 			bool assignedSelectedText = false;
 			bool assignedNonPrintableCharacter = false;

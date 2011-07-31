@@ -378,7 +378,12 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				InsertCodeAfter(((IMethodOrProperty)member).BodyRegion.EndLine, document,
 				                GetIndentation(document, member.Region.BeginLine), nodes);
 			} else {
-				InsertCodeAfter(member.Region.EndLine, document,
+				int line = member.Region.EndLine;
+				// VB uses the position after the EOL as end location for fields, so insert after
+				// the previous line if the end position is pointing to the start of a line.
+				if (member.Region.EndColumn == 1)
+					line--;
+				InsertCodeAfter(line, document,
 				                GetIndentation(document, member.Region.BeginLine), nodes);
 			}
 		}
@@ -416,7 +421,6 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		/// </summary>
 		protected void InsertCodeAfter(int insertLine, IRefactoringDocument document, string indentation, bool startWithEmptyLine, params AbstractNode[] nodes)
 		{
-			IRefactoringDocumentLine lineSegment = document.GetLine(insertLine + 1);
 			StringBuilder b = new StringBuilder();
 			for (int i = 0; i < nodes.Length; i++) {
 				if (options.EmptyLinesBetweenMembers) {
@@ -426,7 +430,13 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				}
 				b.Append(GenerateCode(nodes[i], indentation));
 			}
-			document.Insert(lineSegment.Offset, b.ToString());
+			if (insertLine < document.TotalNumberOfLines) {
+				IRefactoringDocumentLine lineSegment = document.GetLine(insertLine + 1);
+				document.Insert(lineSegment.Offset, b.ToString());
+			} else {
+				b.Insert(0, Environment.NewLine);
+				document.Insert(document.TextLength, b.ToString());
+			}
 		}
 		
 		/// <summary>
@@ -606,7 +616,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		
 		// FIXME this whole method could be probably replaced by DOM.ExtensionMethodsPublic.HasMember
 		public static bool InterfaceMemberAlreadyImplemented<T>(IEnumerable<T> existingMembers, T interfaceMember,
-		                                                 out bool requireAlternativeImplementation)
+		                                                        out bool requireAlternativeImplementation)
 			where T : class, IMember
 		{
 			IReturnType interf = interfaceMember.DeclaringTypeReference;

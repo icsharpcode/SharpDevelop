@@ -1,0 +1,240 @@
+<UserControl x:Class="Debugger.AddIn.Tooltips.PinDebuggerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:local="clr-namespace:Debugger.AddIn.Tooltips"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary
+					Source="PinControlsDictionary.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+	<Grid>
+		<Grid.Resources>
+			<LinearGradientBrush x:Key="DataGridBackground"
+				StartPoint="0,-0.03"
+				EndPoint="0,1">
+				<GradientStop
+					Color="White" />
+				<GradientStop
+					Color="#FFFAFCFE"
+					Offset="0.983" />
+				<GradientStop
+					Color="#FFECF7FC"
+					Offset="0.07" />
+				<GradientStop
+					Color="#FFEEF7FA"
+					Offset="0.436" />
+			</LinearGradientBrush>
+			
+			<Style x:Key="CellStyle"
+			       TargetType="{x:Type DataGridCell}">
+				<Setter
+					Property="Focusable"
+					Value="false" />
+				<!-- Focusable=true blocks shortcuts if cell is focused -->
+				<Setter
+					Property="BorderThickness"
+					Value="0" />
+				<Setter Property="Width" Value="Auto" />
+				<Style.Triggers>
+					<Trigger
+						Property="IsSelected"
+						Value="True">
+						<!-- disable selection highlight -->
+						<Setter
+							Property="Foreground"
+							Value="Black" />
+						<Setter
+							Property="Background"
+							Value="{x:Null}" />
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+			
+			<Style x:Key="RowStyle"
+			       TargetType="{x:Type DataGridRow}">
+				<Setter
+					Property="Background"
+					Value="Transparent"></Setter>
+			</Style>
+			
+			<Style x:Key="DataGridStyle" TargetType="DataGrid">
+				<Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
+				<Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+				<Setter Property="GridLinesVisibility" Value="None"/>
+				<Setter Property="RowHeight" Value="18"/>
+				<Setter Property="MaxHeight" Value="202"/>
+				<Setter Property="MinHeight" Value="20" />
+				<Setter Property="SelectionMode" Value="Single"/>
+				<Setter Property="SelectionUnit" Value="FullRow"/>
+				<Setter Property="AutoGenerateColumns" Value="False"/>
+				<Setter Property="CanUserAddRows" Value="False"/>
+				<Setter Property="HeadersVisibility" Value="None"/>
+				<Setter Property="BorderBrush" Value="Gray"/>
+				<Setter Property="Background" Value="{StaticResource DataGridBackground}"/>
+				<Setter Property="CellStyle" Value="{StaticResource CellStyle}"/>
+				<Setter Property="RowStyle" Value="{StaticResource RowStyle}"/>
+				<Style.Triggers>
+					<Trigger Property="IsMouseOver" Value="True">
+						<Setter Property="Cursor" Value="Arrow"/>
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+		</Grid.Resources>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="Auto"/>
+		</Grid.ColumnDefinitions>
+		<StackPanel VerticalAlignment="Center">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<DataGrid
+					Width="21"
+					BorderThickness="1,1,0,1"
+					Background="White"
+					x:Name="ExpandersGrid"
+					Style="{StaticResource DataGridStyle}"
+					ItemsSource="{Binding}">
+					<DataGrid.Columns>
+						<DataGridTemplateColumn>
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Grid
+										Background="White">
+										<StackPanel
+											VerticalAlignment="Center">
+											<ToggleButton
+												x:Name="btnExpander"
+												Style="{StaticResource ExpandCollapseToggleStyle}"
+												Checked="BtnExpander_Checked"
+												Unchecked="BtnExpander_Unchecked"
+												Padding="0"
+												Margin="0" />
+										</StackPanel>
+									</Grid>
+									<DataTemplate.Triggers>
+										<DataTrigger
+											Binding="{Binding Path=HasChildNodes}"
+											Value="False">
+											<Setter
+												TargetName="btnExpander"
+												Property="Visibility"
+												Value="Collapsed" />
+										</DataTrigger>
+									</DataTemplate.Triggers>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+					</DataGrid.Columns>
+				</DataGrid>
+				
+				<DataGrid
+					BorderThickness="0,1,0,1"
+					Grid.Column="1"
+					IsEnabled="False"
+					ColumnWidth="SizeToCells"
+					Style="{StaticResource DataGridStyle}"
+					ItemsSource="{Binding}"
+					Foreground="Black"
+					Name="dataGrid">
+					<DataGrid.Columns>
+						<DataGridTemplateColumn>
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Image
+										Source="{Binding ImageSource}"></Image>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+						<DataGridTemplateColumn
+							MinWidth="20"
+							Header="Name">
+							<!-- Name -->
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Border
+										BorderBrush="#FFDDDDDD"
+										BorderThickness="0 0 1 0">
+										<TextBlock
+											Style="{StaticResource TextBlockStyle}"
+											Text="{Binding Path=FullName, Mode=OneWay}"
+											VerticalAlignment="Center"></TextBlock>
+									</Border>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+						<DataGridTemplateColumn IsReadOnly="True"
+							Width="SizeToCells"
+							Header="Text">
+							<!-- Text (value) -->
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<TextBox
+										Style="{StaticResource TextStyle}"
+										IsEnabled="false"
+										Text="{Binding Path=Text}" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+					</DataGrid.Columns>
+				</DataGrid>
+				
+				<DataGrid
+					MaxWidth="20"
+					BorderThickness="1"
+					Grid.Column="2"
+					x:Name="ImagesGrid"
+					Style="{StaticResource DataGridStyle}"
+					ItemsSource="{Binding}">
+					<DataGrid.Columns>
+						<DataGridTemplateColumn>
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Button Click="Button_Click" Template="{StaticResource RefreshButton}"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+					</DataGrid.Columns>
+				</DataGrid>
+			</Grid>
+			<!--	comment textbox	-->
+			<Border
+				Name="BorderComment"
+				Background="White"
+				BorderThickness="1,0,1,1"
+				BorderBrush="Gray"
+				Height="0"
+				MaxHeight="50">
+				<TextBox
+					FontFamily="Khmer UI"
+					BorderBrush="Gray"
+					BorderThickness="1"
+					FontSize="12"
+					Name="CommentTextBox"
+					TextChanged="CommentTextBox_TextChanged"
+					Margin="3"/>
+			</Border>
+		</StackPanel>
+		
+		<local:PinCloseControl
+			VerticalAlignment="Center"
+			Background="Transparent"
+			Grid.Column="1"
+			Margin="5,0,0,0"
+			x:Name="PinCloseControl">
+			<local:PinCloseControl.Effect>
+				<DropShadowEffect
+					ShadowDepth="5"
+					Direction="330"
+					Color="Black"
+					Opacity="0.5"/>
+			</local:PinCloseControl.Effect>
+		</local:PinCloseControl>
+	</Grid>
+</UserControl>

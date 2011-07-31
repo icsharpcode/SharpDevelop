@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,7 +14,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-
 using Debugger.AddIn.Visualizers.Graph.Layout;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
@@ -27,73 +27,73 @@ namespace Debugger.AddIn.Visualizers.Graph
 	{
 		private WindowsDebugger debuggerService;
 		
-		public ObjectGraphWindow()
+		private ObjectGraphWindow()
 		{
 			InitializeComponent();
 			
 			debuggerService = DebuggerService.CurrentDebugger as WindowsDebugger;
-			if (debuggerService == null)
-				throw new ApplicationException("Only windows debugger is currently supported");
-			
-			registerEvents();
-			instance = this;
+			if (debuggerService == null) throw new DebuggerVisualizerException("Only windows debugger is currently supported");
 		}
 		
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			unregisterEvents();
-			this.objectGraphControl.ClearUIControlCache();
-			instance = null;
+			UnregisterDebuggerEvents();
+			ObjectGraphWindow.Instance = null;			// allow release
 		}
 		
 		public ICSharpCode.NRefactory.Ast.Expression ShownExpression
 		{
-			get {
-				return this.objectGraphControl.ShownExpression;
-			}
-			set {
-				this.objectGraphControl.ShownExpression = value;
-			}
+			get { return this.objectGraphControl.ShownExpression; }
+			set { this.objectGraphControl.ShownExpression = value; }
 		}
 		
-		static ObjectGraphWindow instance;
 		/// <summary> When Window is visible, returns reference to the Window. Otherwise returns null. </summary>
-		public static ObjectGraphWindow Instance
-		{
-			get { return instance; }
-		}
+		public static ObjectGraphWindow Instance { get; private set; }
 		
+		/// <summary>
+		/// Shows the singleton instance of ObjectGraphWindow and also returns it.
+		/// </summary>
+		/// <returns></returns>
 		public static ObjectGraphWindow EnsureShown()
 		{
-			var window = ObjectGraphWindow.Instance ?? new ObjectGraphWindow();
-			window.Topmost = true;
-			window.Show();
-			return window;
+			if (ObjectGraphWindow.Instance == null) {
+				ObjectGraphWindow.Instance = new ObjectGraphWindow();
+				ObjectGraphWindow.Instance.Topmost = true;
+			}
+			ObjectGraphWindow.Instance.RegisterDebuggerEvents();
+			ObjectGraphWindow.Instance.Show();
+			return ObjectGraphWindow.Instance;
 		}
 		
-		private void registerEvents()
+		static bool isDebuggerEventsRegistered = false;
+		
+		void RegisterDebuggerEvents()
 		{
-			debuggerService.IsProcessRunningChanged += new EventHandler(debuggerService_IsProcessRunningChanged);
-			debuggerService.DebugStopped += new EventHandler(debuggerService_DebugStopped);
+			if (!isDebuggerEventsRegistered) {
+				debuggerService.IsProcessRunningChanged += DebuggerService_IsProcessRunningChanged;
+				debuggerService.DebugStopped += DebuggerService_DebugStopped;
+				// cannot use debuggerService.IsProcessRunningChanged.GetInvocationList() from outside
+				isDebuggerEventsRegistered = true;
+			}
 		}
 		
-		private void unregisterEvents()
+		void UnregisterDebuggerEvents()
 		{
-			debuggerService.IsProcessRunningChanged -= new EventHandler(debuggerService_IsProcessRunningChanged);
-			debuggerService.DebugStopped -= new EventHandler(debuggerService_DebugStopped);
+			debuggerService.IsProcessRunningChanged -= DebuggerService_IsProcessRunningChanged;
+			debuggerService.DebugStopped -= DebuggerService_DebugStopped;
+			isDebuggerEventsRegistered = false;
 		}
 		
-		public void debuggerService_IsProcessRunningChanged(object sender, EventArgs e)
+		void DebuggerService_IsProcessRunningChanged(object sender, EventArgs e)
 		{
 			// on step or breakpoint hit
-			if (!debuggerService.IsProcessRunning)
-			{
+			if (!debuggerService.IsProcessRunning) {
 				this.objectGraphControl.Refresh();
 			}
 		}
 		
-		public void debuggerService_DebugStopped(object sender, EventArgs e)
+		void DebuggerService_DebugStopped(object sender, EventArgs e)
 		{
 			this.Close();
 		}

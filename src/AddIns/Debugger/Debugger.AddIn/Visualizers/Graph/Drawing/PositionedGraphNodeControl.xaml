@@ -13,8 +13,13 @@
 	</UserControl.Resources>
 	
     <aero:SystemDropShadowChrome>
-    <Grid>
-        <ListView Name="listView" AlternationCount="2" ScrollViewer.VerticalScrollBarVisibility="Auto">
+    <StackPanel Orientation="Vertical">
+    	
+    	<Border x:Name="typeNameHeaderBorder" Background="#ddeeff" Height="20" Margin="1,0" BorderThickness="1,1,1,0" BorderBrush="DarkGray" HorizontalAlignment="Stretch" Padding="1">
+    		<TextBlock Text="{Binding TypeName}"></TextBlock>
+    	</Border>
+    	
+        <ListView Name="listView" ScrollViewer.VerticalScrollBarVisibility="Auto" Width="200" Height="300">
             <ListView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                     <GradientStop Color="#ddeeff"  Offset="0.0" />
@@ -24,21 +29,14 @@
             </ListView.Background>
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
+                	<EventSetter Event="MouseEnter" Handler="ListViewItem_MouseEnter"></EventSetter>
+                	<EventSetter Event="MouseLeave" Handler="ListViewItem_MouseLeave"></EventSetter>
                     <Setter Property="Background" Value="Transparent" />
                     <Setter Property="Margin" Value="0"></Setter>
                     <Setter Property="BorderThickness" Value="1" />
                     <Setter Property="Focusable" Value="false" />
                     <Style.Triggers>
-
-                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
-                            <Setter Property="Background" Value="Transparent"></Setter>
-                        </Trigger>
-                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                            <Setter Property="Background" Value="Transparent"></Setter>
-                        </Trigger>
-
                         <DataTrigger Binding="{Binding IsNested}" Value="True">
-                            <Setter Property="Background" Value="Transparent"></Setter>
                             <Setter Property="Foreground" Value="#666666"></Setter>
                             <Setter Property="FontStyle" Value="Italic"></Setter>
                         </DataTrigger>
@@ -52,20 +50,21 @@
                 <GridView>
                         <GridView.ColumnHeaderContainerStyle>
                             <Style>
-                            		<!-- 
-                                <Setter Property="FrameworkElement.Visibility" Value="Collapsed"/>	-->
+                            		<!--	<Setter Property="FrameworkElement.Visibility" Value="Collapsed"/>	-->
                         	 		<Setter Property="FrameworkElement.Height" Value="1"/>
                             </Style>
                         </GridView.ColumnHeaderContainerStyle>
+                	    <!-- Databound item is ContentNode -->
                         <GridView.Columns>
-                        	   <!-- Expand button (either property or nested) -->
-                            <GridViewColumn Header="Plus" Width="20">
+                        	<!-- Expand button (either property or nested) -->
+                            <GridViewColumn Header="Plus" Width="20" x:Name="columnExpander">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Margin="0 2 0 0">
                                             <ToggleButton x:Name="Expander" Margin="-6 0" IsChecked="{Binding IsExpanded}" Click="NestedExpandButton_Click" Padding="0"></ToggleButton>
                                             <ToggleButton x:Name="PropertyExpander" Margin="-6 0" IsChecked="{Binding IsPropertyExpanded}" Click="PropertyExpandButton_Click" Padding="0"></ToggleButton>
                                         </StackPanel>
+                                    	<!-- Do this by converter, not Triggers! -->
                                         <DataTemplate.Triggers>
                                             <DataTrigger Binding="{Binding Path=HasChildren}" Value="False">
                                                 <Setter TargetName="Expander"
@@ -76,29 +75,34 @@
                                                     Property="Visibility" Value="Collapsed"/>
                                             </DataTrigger>
                                         </DataTemplate.Triggers>
-											
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                        	   <!-- Name -->
-                            <GridViewColumn Header="Name" Width="Auto">
+                        	<!-- Icon -->
+                        	<GridViewColumn Header="Icon" Width="10" x:Name="columnMemberIcon" >
+                                <GridViewColumn.CellTemplate>
+                                	<DataTemplate>
+                        				<Image Width="10" Height="10" Source="{Binding MemberIcon}" Margin="-6 0"></Image>
+									</DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                        	</GridViewColumn>
+                        	<!-- Name -->
+                            <GridViewColumn Header="Name" Width="60" x:Name="columnName">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        		<!--
-                                        		<TextBlock Text="hello" MinWidth="100"></TextBlock>
-												-->
                                     	<StackPanel Orientation="Horizontal">
-                                            <TextBlock MouseDown="TextBlock_MouseDown" Text="{Binding Name}"></TextBlock></StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontWeight="{Binding IsPropertyExpanded, Converter={StaticResource BoolToBoldConverter}}"></TextBlock>
+                                    	</StackPanel>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                        	   <!-- Text -->
-                            <GridViewColumn Header="Value      " Width="Auto" CellTemplate="{StaticResource valueColumnTemplate}">
+                        	 <!-- Text -->
+                            <GridViewColumn Header="Value" Width="60" CellTemplate="{StaticResource valueColumnTemplate}" x:Name="columnText">
                             </GridViewColumn>
                         </GridView.Columns>
                     </GridView>
             </ListView.View>
         </ListView>
-    </Grid>
+    </StackPanel>
     </aero:SystemDropShadowChrome>
 </UserControl>

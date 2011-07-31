@@ -84,6 +84,7 @@
     <Compile Include="Src\AvalonEditViewContent.cs" />
     <Compile Include="Src\BracketHighlightRenderer.cs" />
     <Compile Include="Src\CaretReferencesRenderer.cs" />
+    <Compile Include="Src\ChangeMarkerMargin.cs" />
     <Compile Include="Src\ChooseEncodingDialog.xaml.cs">
       <DependentUpon>ChooseEncodingDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -93,7 +94,26 @@
     <Compile Include="Src\CodeEditorAdapter.cs" />
     <Compile Include="Src\CodeEditorView.cs" />
     <Compile Include="Src\ContextActionsRenderer.cs" />
+    <Compile Include="Src\DefaultChangeWatcher.cs" />
+    <Compile Include="Src\DiffControl.xaml.cs">
+      <DependentUpon>DiffControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\ExpressionHighlightRenderer.cs" />
+    <Compile Include="Src\CodeManipulation.cs" />
+    <Compile Include="Src\CaretHighlightAdorner.cs" />
+    <Compile Include="Src\HiddenDefinition\HiddenDefinitionControl.xaml.cs">
+      <DependentUpon>HiddenDefinitionControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\HiddenDefinition\HiddenDefinitionRenderer.cs" />
+    <Compile Include="Src\LineChangeInfo.cs" />
+    <Compile Include="Src\MyersDiff\DocumentSequence.cs" />
+    <Compile Include="Src\MyersDiff\Edit.cs" />
+    <Compile Include="Src\MyersDiff\ISequence.cs" />
+    <Compile Include="Src\MyersDiff\MyersDiff.cs" />
+    <Compile Include="Src\MyersDiff\StringSequence.cs" />
+    <Compile Include="Src\MyersDiff\Utils.cs" />
     <Compile Include="Src\NewLineConsistencyCheck.cs" />
     <Compile Include="Src\SharpDevelopTextEditor.cs" />
     <Compile Include="Src\Commands\FoldingCommands.cs" />
@@ -160,6 +180,8 @@
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\DiffControl.xaml" />
+    <Page Include="Src\HiddenDefinition\HiddenDefinitionControl.xaml" />
     <Page Include="Src\SharpDevelopCompletionWindow.xaml">
       <DependentUpon>SharpDevelopCompletionWindow.cs</DependentUpon>
     </Page>
@@ -216,5 +238,9 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\MyersDiff" />
+    <Folder Include="Src\HiddenDefinition" />
   </ItemGroup>
 </Project>

@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath, activationMethod: "MainMenu", immediatelyExpandMenuBuildersForShortcuts: true);
 			
-			toolBars = ToolBarService.CreateToolBars(this, "/SharpDevelop/Workbench/ToolBar");
+			toolBars = ToolBarService.CreateToolBars(this, this, "/SharpDevelop/Workbench/ToolBar");
 			foreach (ToolBar tb in toolBars) {
 				DockPanel.SetDock(tb, Dock.Top);
 				dockPanel.Children.Insert(1, tb);
@@ -529,26 +529,38 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		#endregion
 		
+		System.Windows.WindowState lastNonMinimizedWindowState = System.Windows.WindowState.Normal;
+		Rect restoreBoundsBeforeClosing;
+		
+		protected override void OnStateChanged(EventArgs e)
+		{
+			base.OnStateChanged(e);
+			if (this.WindowState != System.Windows.WindowState.Minimized)
+				lastNonMinimizedWindowState = this.WindowState;
+		}
+		
 		public Properties CreateMemento()
 		{
 			Properties prop = new Properties();
-			prop.Set("WindowState", this.WindowState);
-			if (this.WindowState == System.Windows.WindowState.Normal) {
-				prop.Set("Left", this.Left);
-				prop.Set("Top", this.Top);
-				prop.Set("Width", this.Width);
-				prop.Set("Height", this.Height);
+			prop.Set("WindowState", lastNonMinimizedWindowState);
+			var bounds = this.RestoreBounds;
+			if (bounds.IsEmpty) bounds = restoreBoundsBeforeClosing;
+			if (!bounds.IsEmpty) {
+				prop.Set("Bounds", bounds);
 			}
 			return prop;
 		}
 		
 		public void SetMemento(Properties memento)
 		{
-			this.Left = memento.Get("Left", 10.0);
-			this.Top = memento.Get("Top", 10.0);
-			this.Width = memento.Get("Width", 600.0);
-			this.Height = memento.Get("Height", 400.0);
-			this.WindowState = memento.Get("WindowState", System.Windows.WindowState.Maximized);
+			Rect bounds = memento.Get("Bounds", new Rect(10, 10, 750, 550));
+			bounds = FormLocationHelper.Validate(bounds);
+			this.Left = bounds.Left;
+			this.Top = bounds.Top;
+			this.Width = bounds.Width;
+			this.Height = bounds.Height;
+			lastNonMinimizedWindowState = memento.Get("WindowState", System.Windows.WindowState.Maximized);
+			this.WindowState = lastNonMinimizedWindowState;
 		}
 		
 		protected override void OnClosing(CancelEventArgs e)
@@ -573,6 +585,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				Project.ProjectService.CloseSolution();
 				ParserService.StopParserThread();
+				
+				restoreBoundsBeforeClosing = this.RestoreBounds;
 				
 				this.WorkbenchLayout = null;
 				
@@ -613,9 +627,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			try {
 				if (data != null && data.GetDataPresent(DataFormats.FileDrop)) {
 					string[] files = (string[])data.GetData(DataFormats.FileDrop);
-					foreach (string file in files) {
-						if (File.Exists(file)) {
-							return DragDropEffects.Link;
+					if (files != null) {
+						foreach (string file in files) {
+							if (File.Exists(file)) {
+								return DragDropEffects.Link;
+							}
 						}
 					}
 				}
@@ -632,7 +648,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (!e.Handled && e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) {
 					e.Handled = true;
 					string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-					
+					if (files == null)
+						return;
 					foreach (string file in files) {
 						if (File.Exists(file)) {
 							Project.IProjectLoader loader = Project.ProjectService.GetProjectLoader(file);

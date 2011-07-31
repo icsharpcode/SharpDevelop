@@ -245,7 +245,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		public static void JumpToCurrentLine(string SourceFullFilename, int StartLine, int StartColumn, int EndLine, int EndColumn)
 		{
-			IViewContent viewContent = FileService.JumpToFilePosition(SourceFullFilename, StartLine, StartColumn);
+			IViewContent viewContent = FileService.OpenFile(SourceFullFilename);
+			if (viewContent is ITextEditorProvider)
+				((ITextEditorProvider)viewContent).TextEditor.JumpTo(StartLine, StartColumn);
 			CurrentLineBookmark.SetPosition(viewContent, StartLine, StartColumn, EndLine, EndColumn);
 		}
 		
@@ -282,7 +284,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				}
 				if (toolTipText != null) {
 					if (debuggerCanShowValue && currentDebugger != null) {
-						object toolTip = currentDebugger.GetTooltipControl(expressionResult.Expression);
+						object toolTip = currentDebugger.GetTooltipControl(e.LogicalPosition, expressionResult.Expression);
 						if (toolTip != null)
 							e.SetToolTip(toolTip);
 						else

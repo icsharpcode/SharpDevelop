@@ -44,10 +44,10 @@ namespace PythonBinding.Tests.Resolver
 		}
 		
 		[Test]
-		public void ResolveResultContainingTypeHasTwoRoundMethods()
+		public void ResolveResultContainingTypeHasFourRoundMethods()
 		{
 			List<IMethod> exitMethods = GetRoundMethods();
-			Assert.AreEqual(2, exitMethods.Count);
+			Assert.AreEqual(4, exitMethods.Count);
 		}
 		
 		List<IMethod> GetRoundMethods()
@@ -78,10 +78,10 @@ namespace PythonBinding.Tests.Resolver
 		}
 		
 		[Test]
-		public void OneRoundMethodHasTwoParameters()
+		public void ThreeRoundMethodsHaveTwoParameters()
 		{
 			int parameterCount = 2;
-			Assert.AreEqual(1, GetRoundMethods(parameterCount).Count);
+			Assert.AreEqual(3, GetRoundMethods(parameterCount).Count);
 		}
 		
 		[Test]

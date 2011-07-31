@@ -83,10 +83,13 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\AssignStylesheetCommand.cs" />
+    <Compile Include="Src\CopyXmlTreeNode.cs" />
     <Compile Include="Src\CreateSchemaCommand.cs" />
+    <Compile Include="Src\CutXmlTreeNode.cs" />
     <Compile Include="Src\DefaultParserService.cs" />
     <Compile Include="Src\DefaultXmlFileExtensions.cs" />
     <Compile Include="Src\DefaultXmlSchemaFileAssociations.cs" />
+    <Compile Include="Src\DeleteXmlTreeNode.cs" />
     <Compile Include="Src\EncodedStringWriter.cs" />
     <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\FoldingManagerAdapter.cs" />
@@ -109,6 +112,7 @@
     <Compile Include="Src\IXmlSchemasPanel.cs" />
     <Compile Include="Src\IXmlTreeView.cs" />
     <Compile Include="Src\OpenStylesheetCommand.cs" />
+    <Compile Include="Src\PasteXmlTreeNode.cs" />
     <Compile Include="Src\QualifiedName.cs" />
     <Compile Include="Src\QualifiedNameCollection.cs" />
     <Compile Include="Src\RegisteredXmlSchemaError.cs" />
@@ -168,6 +172,7 @@
     </Compile>
     <Compile Include="Src\XmlTextTreeNode.cs" />
     <Compile Include="Src\XmlTreeEditor.cs" />
+    <Compile Include="Src\XmlTreeNodeClipboardCommand.cs" />
     <Compile Include="Src\XmlTreeView.cs" />
     <Compile Include="Src\XmlTreeViewContainerControl.cs">
       <SubType>UserControl</SubType>

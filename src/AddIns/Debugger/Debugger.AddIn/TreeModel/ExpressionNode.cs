@@ -3,22 +3,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
-
 using Debugger.AddIn.Visualizers;
-using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.SharpDevelop.Services;
+using TreeNode = Debugger.AddIn.TreeModel.TreeNode;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -26,21 +24,25 @@ namespace Debugger.AddIn.TreeModel
 	/// Node in the tree which can be defined by a debugger expression.
 	/// The expression will be lazily evaluated when needed.
 	/// </summary>
-	public class ExpressionNode: TreeNode, ISetText, IContextMenu
+	public class ExpressionNode: TreeNode, ISetText, INotifyPropertyChanged
 	{
 		bool evaluated;
 		
 		Expression expression;
 		bool canSetText;
 		GetValueException error;
-		
 		string fullText;
+		
+		public bool Evaluated {
+			get { return evaluated; }
+			set { evaluated = value; }
+		}
 		
 		public Expression Expression {
 			get { return expression; }
 		}
 		
-		public bool CanSetText {
+		public override bool CanSetText {
 			get {
 				if (!evaluated) EvaluateExpression();
 				return canSetText;
@@ -54,10 +56,28 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
+		public string FullText {
+			get { return fullText; }
+		}
+		
 		public override string Text {
 			get {
 				if (!evaluated) EvaluateExpression();
 				return base.Text;
+			}
+			set {
+				if (value != base.Text) {
+					base.Text = value;
+					NotifyPropertyChanged("Text");
+				}
+			}
+		}
+		
+		public override string FullName {
+			get {
+				if (!evaluated) EvaluateExpression();
+				
+				return this.expression.PrettyPrint() ?? Name.Trim();
 			}
 		}
 		
@@ -211,7 +231,7 @@ namespace Debugger.AddIn.TreeModel
 				.Replace("\a", "\\a")
 				.Replace("\f", "\\f")
 				.Replace("\v", "\\v")
-				.Replace("\"", "\\\"");  
+				.Replace("\"", "\\\"");
 		}
 		
 		string FormatInteger(object i)
@@ -269,8 +289,10 @@ namespace Debugger.AddIn.TreeModel
 			return size >= 7 && runs <= (size + 7) / 8;
 		}
 		
-		public bool SetText(string newText)
+		public override bool SetText(string newText)
 		{
+			string fullName = FullName;
+			
 			Value val = null;
 			try {
 				val = this.Expression.Evaluate(WindowsDebugger.DebuggedProcess);
@@ -300,27 +322,31 @@ namespace Debugger.AddIn.TreeModel
 			return false;
 		}
 		
-		public static IImage GetImageForThis()
+		public static IImage GetImageForThis(out string imageName)
 		{
-			return DebuggerResourceService.GetImage("Icons.16x16.Parameter");
+			imageName = "Icons.16x16.Parameter";
+			return DebuggerResourceService.GetImage(imageName);
 		}
 		
-		public static IImage GetImageForParameter()
+		public static IImage GetImageForParameter(out string imageName)
 		{
-			return DebuggerResourceService.GetImage("Icons.16x16.Parameter");
+			imageName = "Icons.16x16.Parameter";
+			return DebuggerResourceService.GetImage(imageName);
 		}
 		
-		public static IImage GetImageForLocalVariable()
+		public static IImage GetImageForLocalVariable(out string imageName)
 		{
-			return DebuggerResourceService.GetImage("Icons.16x16.Local");
+			imageName = "Icons.16x16.Local";
+			return DebuggerResourceService.GetImage(imageName);
 		}
 		
-		public static IImage GetImageForArrayIndexer()
+		public static IImage GetImageForArrayIndexer(out string imageName)
 		{
-			return DebuggerResourceService.GetImage("Icons.16x16.Field");
+			imageName = "Icons.16x16.Field";
+			return DebuggerResourceService.GetImage(imageName);
 		}
 		
-		public static IImage GetImageForMember(IDebugMemberInfo memberInfo)
+		public static IImage GetImageForMember(IDebugMemberInfo memberInfo, out string imageName)
 		{
 			string name = string.Empty;
 			if (memberInfo.IsPublic) {
@@ -340,23 +366,25 @@ namespace Debugger.AddIn.TreeModel
 			} else {
 				throw new DebuggerException("Unknown member type " + memberInfo.GetType().FullName);
 			}
-			return DebuggerResourceService.GetImage("Icons.16x16." + name);
+			
+			imageName = "Icons.16x16." + name;
+			return DebuggerResourceService.GetImage(imageName);
 		}
 		
-		public ContextMenuStrip GetContextMenu()
-		{
-			if (this.Error != null) return GetErrorContextMenu();
-			
-			ContextMenuStrip menu = new ContextMenuStrip();
-			
-			ToolStripMenuItem copyItem;
-			copyItem = new ToolStripMenuItem();
-			copyItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CopyToClipboard");
-			copyItem.Checked = false;
-			copyItem.Click += delegate {
-				ClipboardWrapper.SetText(fullText);
-			};
-			
+//		public ContextMenuStrip GetContextMenu()
+//		{
+//			if (this.Error != null) return GetErrorContextMenu();
+//
+//			ContextMenuStrip menu = new ContextMenuStrip();
+//
+//			ToolStripMenuItem copyItem;
+//			copyItem = new ToolStripMenuItem();
+//			copyItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CopyToClipboard");
+//			copyItem.Checked = false;
+//			copyItem.Click += delegate {
+//				ClipboardWrapper.SetText(fullText);
+//			};
+		
 //			ToolStripMenuItem hexView;
 //			hexView = new ToolStripMenuItem();
 //			hexView.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowInHexadecimal");
@@ -370,14 +398,14 @@ namespace Debugger.AddIn.TreeModel
 //				if (WatchPad.Instance != null)
 //					WatchPad.Instance.RefreshPad();
 //			};
-			
-			menu.Items.AddRange(new ToolStripItem[] {
-			                    	copyItem,
-			                    	//hexView
-			                    });
-			
-			return menu;
-		}
+		
+//			menu.Items.AddRange(new ToolStripItem[] {
+//			                    	copyItem,
+//			                    	//hexView
+//			                    });
+//
+//			return menu;
+//		}
 		
 		public ContextMenuStrip GetErrorContextMenu()
 		{
@@ -401,6 +429,16 @@ namespace Debugger.AddIn.TreeModel
 		public static WindowsDebugger WindowsDebugger {
 			get {
 				return (WindowsDebugger)DebuggerService.CurrentDebugger;
+			}
+		}
+		
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		
+		private void NotifyPropertyChanged(string info)
+		{
+			if (PropertyChanged != null)
+			{
+				PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(info));
 			}
 		}
 	}

@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -99,10 +100,22 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public string GetOutputFileName(FileProjectItem baseItem, string additionalExtension)
 		{
+			return GetOutputFileName(baseItem, additionalExtension, true);
+		}
+		
+		public string GetOutputFileName(FileProjectItem baseItem, string additionalExtension, bool isPrimaryOutput)
+		{
 			if (baseItem == null)
 				throw new ArgumentNullException("baseItem");
 			if (baseItem.Project != project)
 				throw new ArgumentException("baseItem is not from project this CustomToolContext belongs to");
+			
+			if (isPrimaryOutput) {
+				string lastGenOutput = baseItem.GetEvaluatedMetadata("LastGenOutput");
+				if (!string.IsNullOrEmpty(lastGenOutput)) {
+					return Path.Combine(Path.GetDirectoryName(baseItem.FileName), lastGenOutput);
+				}
+			}
 			
 			string newExtension = null;
 			if (project.LanguageProperties.CodeDomProvider != null) {
@@ -120,22 +133,55 @@ namespace ICSharpCode.SharpDevelop.Project
 				newExtension = "." + newExtension;
 			}
 			
-			return Path.ChangeExtension(baseItem.FileName, additionalExtension + newExtension);
+			string newFileName = Path.ChangeExtension(baseItem.FileName, additionalExtension + newExtension);
+			int retryIndex = 0;
+			while (true) {
+				FileProjectItem item = project.FindFile(newFileName);
+				// If the file does not exist in the project, we can use that name.
+				if (item == null)
+					return newFileName;
+				// If the file already exists in the project, use it only if it belongs to our base item
+				if (string.Equals(item.DependentUpon, Path.GetFileName(baseItem.FileName), StringComparison.OrdinalIgnoreCase))
+					return newFileName;
+				// Otherwise, find another free file name
+				retryIndex++;
+				newFileName = Path.ChangeExtension(baseItem.FileName, additionalExtension + retryIndex + newExtension);
+			}
 		}
 		
 		public FileProjectItem EnsureOutputFileIsInProject(FileProjectItem baseItem, string outputFileName)
 		{
+			return EnsureOutputFileIsInProject(baseItem, outputFileName, true);
+		}
+		
+		public FileProjectItem EnsureOutputFileIsInProject(FileProjectItem baseItem, string outputFileName, bool isPrimaryOutput)
+		{
+			if (baseItem == null)
+				throw new ArgumentNullException("baseItem");
+			if (baseItem.Project != project)
+				throw new ArgumentException("baseItem is not from project this CustomToolContext belongs to");
+			
 			WorkbenchSingleton.AssertMainThread();
+			bool saveProject = false;
+			if (isPrimaryOutput) {
+				if (baseItem.GetEvaluatedMetadata("LastGenOutput") != Path.GetFileName(outputFileName)) {
+					saveProject = true;
+					baseItem.SetEvaluatedMetadata("LastGenOutput", Path.GetFileName(outputFileName));
+				}
+			}
 			FileProjectItem outputItem = project.FindFile(outputFileName);
 			if (outputItem == null) {
 				outputItem = new FileProjectItem(project, ItemType.Compile);
 				outputItem.FileName = outputFileName;
 				outputItem.DependentUpon = Path.GetFileName(baseItem.FileName);
+				outputItem.SetEvaluatedMetadata("AutoGen", "True");
 				ProjectService.AddProjectItem(project, outputItem);
 				FileService.FireFileCreated(outputFileName, false);
-				project.Save();
+				saveProject = true;
 				ProjectBrowserPad.RefreshViewAsync();
 			}
+			if (saveProject)
+				project.Save();
 			return outputItem;
 		}
 		
@@ -144,6 +190,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			WorkbenchSingleton.AssertMainThread();
 			CodeDomProvider provider = project.LanguageProperties.CodeDomProvider;
 			CodeGeneratorOptions options = new CodeDOMGeneratorUtility().CreateCodeGeneratorOptions;
+			
+			if (project.LanguageProperties == LanguageProperties.VBNet) {
+				// the root namespace is implicit in VB
+				foreach (CodeNamespace ns in ccu.Namespaces) {
+					if (string.Equals(ns.Name, project.RootNamespace, StringComparison.OrdinalIgnoreCase)) {
+						ns.Name = string.Empty;
+					} else if (ns.Name.StartsWith(project.RootNamespace + ".", StringComparison.OrdinalIgnoreCase)) {
+						ns.Name = ns.Name.Substring(project.RootNamespace.Length + 1);
+					}
+				}
+			}
 			
 			string codeOutput;
 			using (StringWriter writer = new StringWriter()) {
@@ -463,7 +520,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					activeToolRun = null;
 					if(toolRuns.Count > 0) {
 						CustomToolRun nextRun = toolRuns.Dequeue();
-						if(nextRun != null) {						
+						if(nextRun != null) {
 							RunCustomTool(nextRun);
 						}
 					}

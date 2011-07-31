@@ -3,7 +3,7 @@ Cecil 0.9: http://evain.net/blog/articles/2010/04/12/mono-cecil-0-9-cecil-light
 
 * License
 
-    Copyright (c) 2008 - 2010 Jb Evain
+    Copyright (c) 2008 - 2011 Jb Evain
 
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the

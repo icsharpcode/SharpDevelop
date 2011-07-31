@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -15,6 +16,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public string Platform { get; internal set; }
 		public string ProjectName { get; private set; }
 		public string TypeGuid { get; set; }
+		public IList<ProjectSection> ProjectSections {get; set;}
 		internal string Guid { get; set; }
 		
 		Gui.IProgressMonitor progressMonitor = new Gui.DummyProgressMonitor();

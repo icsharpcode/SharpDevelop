@@ -2737,6 +2737,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.CaretCheckBox" xml:space="preserve">
     <value>Caretzeile anzeigen</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EnableAnimationsCheckBox" xml:space="preserve">
+    <value>Aktiviere Animationen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Markierung an Zeilen&amp;ende anzeigen</value>
   </data>
@@ -5567,6 +5570,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.ExceptionHistory.Time" xml:space="preserve">
     <value>Zeit</value>
   </data>
+  <data name="MainWindow.Windows.Debug.HideZoomControl" xml:space="preserve">
+    <value>Zoom Steuerelement zeigen/verstecken</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Local" xml:space="preserve">
     <value>Lokal</value>
   </data>
@@ -5936,6 +5942,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
     <value>Öffne übergeordneten Ordner im Explorer</value>
   </data>
+  <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
+    <value>Alle Knoten einklappen</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.AddExistingFiles" xml:space="preserve">
     <value>Vorhandene Dateien hinzufügen</value>
   </data>
@@ -6076,36 +6085,6 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Alle Webreferenzen löschen</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.FindReflectorPath" xml:space="preserve">
-    <value>Pfad zu Reflector auswählen</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.ReflectorFoundInPath" xml:space="preserve">
-    <value>Reflector wurde im folgenden Verzeichnis gefunden:</value>
-  </data>
-  <data name="ReflectorAddIn.IdeOptions.ReflectorTitle" xml:space="preserve">
-    <value>Reflector</value>
-  </data>
-  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
-    <value>.NET Reflector öffnen</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
-    <value>Reflector konnte am angegebenen Ort nicht gefunden werden, oder SharpDevelop hat keine ausreichenden Rechte, um darauf zuzugreifen.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
-    <value>Der Pfad zu Reflector wurde noch nicht festgelegt.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorRemotingFailed" xml:space="preserve">
-    <value>Die Verbindung zu Reflector konnte nicht hergestellt werden.</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.PathToReflectorExe" xml:space="preserve">
-    <value>Voller Pfad zu Reflector.exe</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.ReflectorInfo" xml:space="preserve">
-    <value>Dieses Feature benötigt den .NET Reflector von Red Gate. Falls Sie ihn noch nicht haben, können Sie ihn dort kostenlos herunterladen:</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialogTitle" xml:space="preserve">
-    <value>Pfad zu Reflector festlegen</value>
   </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>Assemblies (*.dll)|*.dll</value>

@@ -1,0 +1,22 @@
+﻿<Template author="Matt Ward" version="1.0">	
+	<Config
+		name="Text Template"
+		icon="TextTemplate.File"
+		category="VB"
+		defaultname="TextTemplate${Number}.tt"
+		language="Default"/>
+	 
+	<Description>A T4 Text Template for the VB.NET language.</Description>
+
+	<Files>
+		<File
+      name="${FullName}"
+      language="Default"
+      buildAction="None"
+      Generator="TextTemplatingFileGenerator">
+<![CDATA[<#@ template language="VB" #>
+<#@ output extension=".txt" #>
+]]></File>
+	</Files>
+	<AdditionalOptions/>
+</Template>

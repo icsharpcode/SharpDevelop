@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>ICSharpCode.TextEditor</id>
+    <version>3.2.1.6466</version>
+    <authors>SharpDevelop</authors>
+    <owners>SharpDevelop</owners>
+    <licenseUrl>http://www.opensource.org/licenses/lgpl-2.1.php</licenseUrl>
+    <projectUrl>http://wiki.sharpdevelop.net/Using%20the%20texteditor.ashx</projectUrl>
+    <iconUrl>http://community.sharpdevelop.net/blogs/mattward/SharpDevelop.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Text editor used in SharpDevelop 3.</description>
+    <summary>Text editor used in SharpDevelop 3.</summary>
+    <language>en-US</language>
+  </metadata>
+</package>

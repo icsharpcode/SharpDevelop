@@ -4,6 +4,7 @@
 	x:Class="ICSharpCode.SharpDevelop.Gui.TabbedOptionsDialog"
 	Height="425"
 	Width="450"
+	WindowStartupLocation="CenterOwner"
 	Style="{x:Static core:GlobalStyles.DialogWindowStyle}">
 	<Grid Name="grid">
 		<Grid.RowDefinitions>

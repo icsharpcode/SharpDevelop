@@ -8,7 +8,7 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
-	/// Description of EdgeStartEnd.
+	/// Pair of Edge start and end point, useful for grouping edges by source & target.
 	/// </summary>
 	public class EdgeStartEnd
 	{
@@ -20,11 +20,12 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 			var other = obj as EdgeStartEnd;
 			if (other == null)
 				return false;
-			return this.From == other.From && this.To == other.To;
+			return (this.From == other.From && this.To == other.To) || (this.From == other.To && this.To == other.From);
 		}
 		
 		public override int GetHashCode()
 		{
+			// commutative
 			return this.From.GetHashCode() ^ this.To.GetHashCode();
 		}
 	}

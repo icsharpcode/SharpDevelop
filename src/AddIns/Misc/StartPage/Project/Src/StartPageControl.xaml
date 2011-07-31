@@ -31,6 +31,7 @@
 					Stretch="Fill"
 					Source="../Resources/balken_mitte.gif" />
 			</DockPanel>
+			<TextBlock Grid.Row="0" Margin="4" TextAlignment="Right" VerticalAlignment="Bottom" Name="versionTextBlock" />
 			<ItemsControl
 				Name="startPageItems"
 				Focusable="False"

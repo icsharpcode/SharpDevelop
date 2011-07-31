@@ -77,7 +77,7 @@
     <Compile Include="Src\ContextActions\CheckAssignmentCache.cs" />
     <Compile Include="Src\ContextActions\CheckAssignmentNull.cs" />
     <Compile Include="Src\ContextActions\CheckAssignmentNotNull.cs" />
-    <Compile Include="Src\ContextActions\DelegateAction.cs" />
+    <Compile Include="Src\ContextActions\CheckMemberNotNull.cs" />
     <Compile Include="Src\ContextActions\Extensions.cs" />
     <Compile Include="Src\ContextActions\FindTypeDeclarationsVisitor.cs" />
     <Compile Include="Src\ContextActions\GenerateMember.cs" />

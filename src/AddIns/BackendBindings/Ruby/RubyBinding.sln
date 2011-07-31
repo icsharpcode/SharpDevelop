@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.0.6808
+# SharpDevelop 4.1.0.7318-alpha
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RubyBinding", "RubyBinding\Project\RubyBinding.csproj", "{C896FFFF-5B6C-4B0E-B6DF-049865F501B4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RubyBinding.Tests", "RubyBinding\Test\RubyBinding.Tests.csproj", "{01DF0475-0CB2-4E81-971B-BADC60CDE3A5}"
@@ -27,6 +27,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Scripting", "..\Scripting\Project\ICSharpCode.Scripting.csproj", "{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Scripting.Tests", "..\Scripting\Test\ICSharpCode.Scripting.Tests.csproj", "{85C09AD8-183B-403A-869A-7226646218A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Core.WinForms", "..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj", "{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,5 +100,13 @@ Global
 		{85C09AD8-183B-403A-869A-7226646218A9}.Release|Any CPU.ActiveCfg = Release|x86
 		{85C09AD8-183B-403A-869A-7226646218A9}.Release|x86.Build.0 = Release|x86
 		{85C09AD8-183B-403A-869A-7226646218A9}.Release|x86.ActiveCfg = Release|x86
+		{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}.Debug|x86.Build.0 = Debug|Any CPU
+		{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}.Release|Any CPU.Build.0 = Release|Any CPU
+		{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}.Release|x86.Build.0 = Release|Any CPU
+		{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal

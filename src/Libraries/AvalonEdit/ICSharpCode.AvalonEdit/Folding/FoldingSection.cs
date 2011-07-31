@@ -13,9 +13,9 @@ namespace ICSharpCode.AvalonEdit.Folding
 	/// </summary>
 	public sealed class FoldingSection : TextSegment
 	{
-		FoldingManager manager;
+		readonly FoldingManager manager;
 		bool isFolded;
-		CollapsedLineSection collapsedSection;
+		internal CollapsedLineSection[] collapsedSections;
 		string title;
 		
 		/// <summary>
@@ -32,16 +32,27 @@ namespace ICSharpCode.AvalonEdit.Folding
 							DocumentLine endLine = manager.document.GetLineByOffset(EndOffset);
 							if (startLine != endLine) {
 								DocumentLine startLinePlusOne = startLine.NextLine;
-								collapsedSection = manager.textView.CollapseLines(startLinePlusOne, endLine);
+								collapsedSections = manager.CollapseLines(startLinePlusOne, endLine);
 							}
 						}
 					} else {
 						RemoveCollapsedLineSection();
 					}
 					if (manager != null)
-						manager.textView.Redraw(this, DispatcherPriority.Normal);
+						manager.Redraw(this);
 				}
 			}
+		}
+		
+		internal CollapsedLineSection CollapseSection(TextView textView)
+		{
+			DocumentLine startLine = manager.document.GetLineByOffset(StartOffset);
+			DocumentLine endLine = manager.document.GetLineByOffset(EndOffset);
+			if (startLine != endLine) {
+				DocumentLine startLinePlusOne = startLine.NextLine;
+				return textView.CollapseLines(startLinePlusOne, endLine);
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -55,7 +66,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 				if (title != value) {
 					title = value;
 					if (this.IsFolded && manager != null)
-						manager.textView.Redraw(this, DispatcherPriority.Normal);
+						manager.Redraw(this);
 				}
 			}
 		}
@@ -74,16 +85,13 @@ namespace ICSharpCode.AvalonEdit.Folding
 		
 		void RemoveCollapsedLineSection()
 		{
-			if (collapsedSection != null) {
-				if (collapsedSection.Start != null)
-					collapsedSection.Uncollapse();
-				collapsedSection = null;
+			if (collapsedSections != null) {
+				foreach (var collapsedSection in collapsedSections) {
+					if (collapsedSection != null && collapsedSection.Start != null)
+						collapsedSection.Uncollapse();
+				}
+				collapsedSections = null;
 			}
-		}
-		
-		internal void Removed()
-		{
-			manager = null;
 		}
 	}
 }

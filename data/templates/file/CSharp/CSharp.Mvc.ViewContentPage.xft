@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+	
+	<Config
+		name="MVC View Content Page"
+		icon="C#.File.NewClass"
+		category="C#"
+		subcategory="ASP.NET MVC"
+		defaultname="ViewContentPage${Number}.aspx"
+		language="C#"/>
+	 
+	<Description>MVC View Content Page</Description>
+	
+	<Files>
+		<File name="${FullName}" language="C#">
+<![CDATA[<%@ Page Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage" %>
+
+<asp:Content ContentPlaceHolderId="Title" runat="server">
+</asp:Content>
+
+<asp:Content ContentPlaceHolderId="Main" runat="server">
+</asp:Content>
+]]>
+		</File>
+	</Files>
+</Template>
+

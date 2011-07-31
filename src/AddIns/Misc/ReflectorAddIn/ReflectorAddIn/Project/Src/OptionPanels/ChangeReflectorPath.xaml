@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<gui:OptionPanel
+	x:Class="ReflectorAddIn.OptionPanels.ChangeReflectorPath" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<StackPanel
+		Orientation="Vertical">
+		<GroupBox
+			Header="{core:Localize ReflectorAddIn.SetReflectorPathDialogTitle}">
+			<widgets:StackPanelWithSpacing>
+				<TextBlock
+					TextWrapping="Wrap"
+					Height="46"
+					Name="StatusLabel" />
+				<Button
+					HorizontalAlignment="Center"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					Name="OpenSearchPathButton"
+					Content="{core:Localize ReflectorAddIn.IdeOptions.FindReflectorPath}"
+					Click="FindReflectorPathClick" />
+			</widgets:StackPanelWithSpacing>
+		</GroupBox>
+	</StackPanel>
+</gui:OptionPanel>

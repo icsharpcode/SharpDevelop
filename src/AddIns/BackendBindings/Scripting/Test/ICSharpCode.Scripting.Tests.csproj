@@ -54,6 +54,9 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -85,6 +88,7 @@
     <Compile Include="Console\ScriptingConsoleReadTests.cs" />
     <Compile Include="Console\ScriptingConsoleSendLineTests.cs" />
     <Compile Include="Console\ScriptingConsoleSendTextTests.cs" />
+    <Compile Include="Console\ScriptingConsoleTests.cs" />
     <Compile Include="Console\ScriptingConsoleTestsBase.cs" />
     <Compile Include="Console\ScriptingConsoleTextEditorTests.cs" />
     <Compile Include="Console\ScriptingConsoleUnreadLinesTests.cs" />
@@ -92,6 +96,7 @@
     <Compile Include="Console\SendLineToScriptingConsoleCommandTests.cs" />
     <Compile Include="Console\SendSelectedTextToScriptingConsoleCommandTests.cs" />
     <Compile Include="Console\SendToScriptingConsoleCommandTestsBase.cs" />
+    <Compile Include="Console\ThreadSafeScriptingConsoleEventsTests.cs" />
     <Compile Include="Console\ThreadSafeScriptingConsoleTests.cs" />
     <Compile Include="Console\TwoConsoleLinesWaitingTests.cs" />
     <Compile Include="Designer\CallBeginInitOnLoadTests.cs" />

@@ -28,7 +28,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <summary>
 		/// ViewModel used for combobox items.
 		/// </summary>
-		class EntityItem : IComparable<EntityItem>
+		class EntityItem : IComparable<EntityItem>, System.ComponentModel.INotifyPropertyChanged
 		{
 			IEntity entity;
 			IImage image;
@@ -95,6 +95,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			public override string ToString()
 			{
 				return text;
+			}
+			
+			// I'm not sure if it actually was a leak or caused by something else, but I saw QCB.EntityItem being alive for longer
+			// than it should when looking at the heap with WinDbg.
+			// Maybe this was caused by http://support.microsoft.com/kb/938416/en-us, so I'm adding INotifyPropertyChanged to be sure.
+			event System.ComponentModel.PropertyChangedEventHandler System.ComponentModel.INotifyPropertyChanged.PropertyChanged {
+				add { }
+				remove { }
 			}
 		}
 		

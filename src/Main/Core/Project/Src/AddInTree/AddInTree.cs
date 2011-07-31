@@ -347,10 +347,11 @@ namespace ICSharpCode.Core
 			List<AddIn> list = new List<AddIn>();
 			Dictionary<string, Version> dict = new Dictionary<string, Version>();
 			Dictionary<string, AddIn> addInDict = new Dictionary<string, AddIn>();
+			var nameTable = new System.Xml.NameTable();
 			foreach (string fileName in addInFiles) {
 				AddIn addIn;
 				try {
-					addIn = AddIn.Load(fileName);
+					addIn = AddIn.Load(fileName, nameTable);
 				} catch (AddInLoadException ex) {
 					LoggingService.Error(ex);
 					if (ex.InnerException != null) {
