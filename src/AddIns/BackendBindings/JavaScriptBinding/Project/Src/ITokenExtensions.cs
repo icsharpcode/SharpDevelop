@@ -3,6 +3,7 @@
 
 using System;
 using Antlr.Runtime;
+using Xebic.Parsers.ES3;
 
 namespace ICSharpCode.JavaScriptBinding
 {
@@ -16,6 +17,11 @@ namespace ICSharpCode.JavaScriptBinding
 		public static int EndColumn(this IToken token)
 		{
 			return token.CharPositionInLine + token.Text.Length + 1;
+		}
+		
+		public static bool IsSingleLineComment(this IToken token)
+		{
+			return token.Type == ES3Lexer.SingleLineComment;
 		}
 	}
 }

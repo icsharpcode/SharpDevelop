@@ -57,11 +57,15 @@
     <Compile Include="Src\JavaScriptAst.cs" />
     <Compile Include="Src\JavaScriptAstFactory.cs" />
     <Compile Include="Src\JavaScriptAstWalker.cs" />
+    <Compile Include="Src\JavaScriptRegion.cs" />
+    <Compile Include="Src\JavaScriptRegionEnd.cs" />
+    <Compile Include="Src\JavaScriptRegionStart.cs" />
     <Compile Include="Src\JavaScriptCompilationUnit.cs" />
     <Compile Include="Src\JavaScriptFunctionDefinition.cs" />
     <Compile Include="Src\JavaScriptGlobalClass.cs" />
     <Compile Include="Src\JavaScriptMethodRegion.cs" />
     <Compile Include="Src\JavaScriptParser.cs" />
+    <Compile Include="Src\JavaScriptRegionWalker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />

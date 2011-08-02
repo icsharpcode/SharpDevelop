@@ -26,6 +26,7 @@ namespace ICSharpCode.JavaScriptBinding
 		{
 			if (ast.IsValid) {
 				Walk(ast.Tree);
+				WalkRegions();
 			}
 		}
 		
@@ -51,6 +52,12 @@ namespace ICSharpCode.JavaScriptBinding
 			foreach (CommonTree child in children) {
 				Walk(child);
 			}
+		}
+		
+		void WalkRegions()
+		{
+			var regionWalker = new JavaScriptRegionWalker(ast, compilationUnit);
+			regionWalker.Walk();
 		}
 	}
 }

@@ -66,6 +66,14 @@ namespace JavaScriptBinding.Tests
 			get { return FirstClass.Methods[0]; }
 		}
 		
+		FoldingRegion FirstRegion {
+			get { return compilationUnit.FoldingRegions[0]; }
+		}
+		
+		FoldingRegion SecondRegion {
+			get { return compilationUnit.FoldingRegions[1]; }
+		}
+		
 		[Test]
 		public void CanParse_CSharpProjectPassed_ReturnsTrue()
 		{
@@ -278,6 +286,222 @@ namespace JavaScriptBinding.Tests
 			var expectedRegion = new DomRegion(beginLine, beginColumn, endLine, endColumn);
 			
 			Assert.AreEqual(expectedRegion, methodBodyRegion);
+		}
+		
+		[Test]
+		public void Parse_JavaScriptCodeHasOneRegion_OneFoldingRegionAddedToCompilationUnit()
+		{
+			string code = 
+				"//#region MyRegion\r\n" +
+				"var a = 1;\r\n" +
+				"//#endregion\r\n";
+			
+			ParseJavaScript(code);
+			
+			int count = compilationUnit.FoldingRegions.Count;
+			
+			Assert.AreEqual(1, count);
+		}
+		
+		[Test]
+		public void Parse_JavaScriptCodeHasOneRegionWithName_FoldingRegionAddedWithName()
+		{
+			string code = 
+				"//#region MyRegion\r\n" +
+				"var a = 1;\r\n" +
+				"//#endregion\r\n";
+			
+			ParseJavaScript(code);
+			
+			string name = FirstRegion.Name;
+			
+			Assert.AreEqual("MyRegion", name);
+		}
+		
+		[Test]
+		public void Parse_JavaScriptCodeHasNoRegions_NoFoldingRegionsAddedToCompilationUnit()
+		{
+			string code = "var a = 1;";
+			
+			ParseJavaScript(code);
+			
+			int count = compilationUnit.FoldingRegions.Count;
+			
+			Assert.AreEqual(0, count);
+		}
+		
+		[Test]
+		public void Parse_JavaScriptCodeSingleCommentEndsWithRegionTextButDoesNotStartWithRegion_NoRegionsAddedToCompilationUnit()
+		{
+			string code = 
+				"//not a #region test\r\n" +
+				"var a = 1;\r\n" +
+				"//not an #endregion\r\n";
+			
+			ParseJavaScript(code);
+			
+			Assert.AreEqual(0, compilationUnit.FoldingRegions.Count);
+		}
+		
+		[Test]
+		public void Parse_JavaScriptCodeHasOneRegion_RegionLocationIsSpecified()
+		{
+			string code = 
+				"//#region MyRegion\r\n" +
+				"var a = 1;\r\n" +
+				"//#endregion\r\n";
+			
+			ParseJavaScript(code);
+			
+			DomRegion location = FirstRegion.Region;
+			
+			int beginLine = 1;
+			int endLine = 3;
+			int beginColumn = 1;
+			int endColumn = 13;
+			
+			var expectedLocation = new DomRegion(beginLine, beginColumn, endLine, endColumn);
+			
+			Assert.AreEqual(expectedLocation, location);
+		}
+		
+		[Test]
+		public void Parse_JavaScriptCodeHasRegionStartOnly_NoRegionsAddedToCompilationUnit()
+		{
+			string code = 
+				"//#region MyRegion\r\n" +
+				"var a = 1;\r\n";
+			
+			ParseJavaScript(code);
+			
+			Assert.AreEqual(0, compilationUnit.FoldingRegions.Count);
+		}
+		
+		[Test]
+		public void Parse_JavaScriptCodeHasOneRegionWithEndRegionFollowedByText_TextFollowingEndRegionIsNotPartOfFold()
+		{
+			string code = 
+				"//#region MyRegion\r\n" +
+				"var a = 1;\r\n" +
+				"//#endregion abc\r\n";
+			
+			ParseJavaScript(code);
+			
+			DomRegion location = FirstRegion.Region;
+			
+			int beginLine = 1;
+			int endLine = 3;
+			int beginColumn = 1;
+			int endColumn = 13;
+			
+			var expectedLocation = new DomRegion(beginLine, beginColumn, endLine, endColumn);
+			
+			Assert.AreEqual(expectedLocation, location);
+		}
+		
+		[Test]
+		public void Parse_JavaScriptCodeHasTwoRegions_TwoRegionsAddedToCompilationUnit()
+		{
+			string code = 
+				"//#region One\r\n" +
+				"var a = 1;\r\n" +
+				"//#endregion\r\n" +
+				"\r\n" +
+				"//#region Two\r\n" +
+				"var b = 1;\r\n" +
+				"//#endregion\r\n";
+			
+			ParseJavaScript(code);
+			
+			Assert.AreEqual(2, compilationUnit.FoldingRegions.Count);
+		}
+		
+		[Test]
+		public void Parse_JavaScriptCodeHasTwoRegions_RegionsHaveCorrectLocationsAndNames()
+		{
+			string code = 
+				"//#region One\r\n" +
+				"var a = 1;\r\n" +
+				"//#endregion\r\n" +
+				"\r\n" +
+				"//#region Two\r\n" +
+				"var b = 1;\r\n" +
+				"//#endregion\r\n";
+			
+			ParseJavaScript(code);
+			
+			DomRegion firstRegionLocation = FirstRegion.Region;
+			
+			int beginLine = 1;
+			int endLine = 3;
+			int beginColumn = 1;
+			int endColumn = 13;
+			
+			var expectedFirstRegionLocation = new DomRegion(beginLine, beginColumn, endLine, endColumn);
+			
+			DomRegion secondRegionLocation = SecondRegion.Region;
+			
+			beginLine = 5;
+			endLine = 7;
+			beginColumn = 1;
+			endColumn = 13;
+			
+			var expectedSecondRegionLocation = new DomRegion(beginLine, beginColumn, endLine, endColumn);
+			
+			Assert.AreEqual(expectedFirstRegionLocation, firstRegionLocation);
+			Assert.AreEqual("One", FirstRegion.Name);
+			Assert.AreEqual(expectedSecondRegionLocation, secondRegionLocation);
+			Assert.AreEqual("Two", SecondRegion.Name);
+		}
+		
+		[Test]
+		public void Parse_JavaScriptCodeHasEndRegionButNoStartRegion_NoRegionsAddedToCompilationUnit()
+		{
+			string code = 
+				"var a = 1;\r\n" +
+				"//#endregion\r\n";
+			
+			ParseJavaScript(code);
+			
+			Assert.AreEqual(0, compilationUnit.FoldingRegions.Count);
+		}
+		
+		[Test]
+		public void Parse_JavaScriptCodeHasTwoNestedRegions_RegionsHaveCorrectLocationsAndNames()
+		{
+			string code = 
+				"//#region One\r\n" +
+				"var a = 1;\r\n" +
+				"//#region Two\r\n" +
+				"var b = 1;\r\n" +
+				"//#endregion\r\n" +
+				"var c = 1;\r\n" +
+				"//#endregion\r\n";
+			
+			ParseJavaScript(code);
+			
+			DomRegion firstRegionLocation = FirstRegion.Region;
+			
+			int beginLine = 3;
+			int endLine = 5;
+			int beginColumn = 1;
+			int endColumn = 13;
+			
+			var expectedFirstRegionLocation = new DomRegion(beginLine, beginColumn, endLine, endColumn);
+			
+			DomRegion secondRegionLocation = SecondRegion.Region;
+			
+			beginLine = 1;
+			endLine = 7;
+			beginColumn = 1;
+			endColumn = 13;
+			
+			var expectedSecondRegionLocation = new DomRegion(beginLine, beginColumn, endLine, endColumn);
+			
+			Assert.AreEqual(expectedFirstRegionLocation, firstRegionLocation);
+			Assert.AreEqual("Two", FirstRegion.Name);
+			Assert.AreEqual(expectedSecondRegionLocation, secondRegionLocation);
+			Assert.AreEqual("One", SecondRegion.Name);
 		}
 	}
 }

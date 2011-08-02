@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 
@@ -29,6 +30,11 @@ namespace ICSharpCode.JavaScriptBinding
 		public IToken GetToken(int index)
 		{
 			return tokenStream.Get(index);
+		}
+		
+		public IList<IToken> GetTokens()
+		{
+			return tokenStream.GetTokens();
 		}
 	}
 }
