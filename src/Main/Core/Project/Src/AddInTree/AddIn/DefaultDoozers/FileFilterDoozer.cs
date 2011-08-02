@@ -31,8 +31,9 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
+			Codon codon = args.Codon;
 			return new FileFilterDescriptor {
 				Name = StringParser.Parse(codon.Properties["name"]),
 				Extensions = codon.Properties["extensions"]

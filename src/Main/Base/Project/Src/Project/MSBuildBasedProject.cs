@@ -1176,7 +1176,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			AddInTreeNode node = AddInTree.GetTreeNode(MSBuildEngine.AdditionalPropertiesPath, false);
 			if (node != null) {
 				foreach (Codon codon in node.Codons) {
-					object item = codon.BuildItem(null, new System.Collections.ArrayList());
+					object item = node.BuildChildItem(codon, null);
 					if (item != null) {
 						string text = item.ToString();
 						globalProperties[codon.Id] = text;

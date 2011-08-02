@@ -70,13 +70,13 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			string ext = codon.Properties["extensions"];
+			string ext = args.Codon["extensions"];
 			if (ext != null && ext.Length > 0)
-				return new LazyCodeCompletionBinding(codon, ext.Split(';'));
+				return new LazyCodeCompletionBinding(args.Codon, ext.Split(';'));
 			else
-				return codon.AddIn.CreateObject(codon.Properties["class"]);
+				return args.AddIn.CreateObject(args.Codon["class"]);
 		}
 	}
 	

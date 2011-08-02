@@ -61,9 +61,9 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return new MenuItemDescriptor(caller, codon, subItems);
+			return new MenuItemDescriptor(args.Caller, args.Codon, args.BuildSubItems<object>());
 		}
 	}
 	

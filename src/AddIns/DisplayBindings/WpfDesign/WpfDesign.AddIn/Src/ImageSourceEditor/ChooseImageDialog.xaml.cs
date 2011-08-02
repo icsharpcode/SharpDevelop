@@ -27,7 +27,6 @@ namespace ICSharpCode.WpfDesign.AddIn.ImageSourceEditor
 		static readonly string[] Extension = {".jpg", ".bmp", ".png", ".gif", ".ico", ".dib", ".jpe", ".jpeg", ".tif", ".tiff"};
 		
 		private ObservableCollection<ImageData> _data = new ObservableCollection<ImageData>();
-		string initiallySelectedFileName;
 		
 		public ChooseImageDialog()
 		{
