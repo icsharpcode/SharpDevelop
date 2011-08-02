@@ -484,7 +484,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override IEntity VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
 		{
-			DefaultProperty p = new DefaultProperty(currentTypeDefinition, "Items");
+			DefaultProperty p = new DefaultProperty(currentTypeDefinition, "Item");
 			p.EntityType = EntityType.Indexer;
 			p.Region = MakeRegion(indexerDeclaration);
 			p.BodyRegion = MakeBraceRegion(indexerDeclaration);

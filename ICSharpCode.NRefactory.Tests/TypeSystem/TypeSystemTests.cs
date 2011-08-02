@@ -199,6 +199,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			var testClass = testCasePC.GetTypeDefinition(typeof(PropertyTest));
 			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
+			Assert.AreEqual("Item", p.Name);
 			Assert.IsTrue(p.CanGet);
 			Assert.AreEqual(Accessibility.Public, p.Accessibility);
 			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
