@@ -12,13 +12,14 @@ namespace MattEverson.SourceAnalysis
 	public static class StyleCopWrapper
 	{		
 	    public static readonly string MasterSettingsFileName = Path.Combine(PropertyService.ConfigDirectory, @"Settings.SourceAnalysis");
+	    public const string STYLE_COP_FILE = "StyleCop.dll";
 	    
 		public static bool IsStyleCopPath(string styleCopPath)
 		{
 			if (string.IsNullOrEmpty(styleCopPath))
 				return false;
-			else
-				return File.Exists(Path.Combine(styleCopPath, "Microsoft.StyleCop.dll"));
+			
+			return File.Exists(styleCopPath);
 		}
 		
 		public static string FindStyleCopPath()

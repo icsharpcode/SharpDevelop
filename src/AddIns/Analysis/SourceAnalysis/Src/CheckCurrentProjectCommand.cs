@@ -15,6 +15,7 @@ namespace MattEverson.SourceAnalysis
 			BuildOptions options = new BuildOptions(BuildTarget.Rebuild, CallbackMethod);
 			options.TargetForDependencies = BuildTarget.Build;
 			options.ProjectAdditionalProperties["RunSourceAnalysis"] = "true";
+			options.ProjectAdditionalProperties["StyleCopFile"] = StyleCopWrapper.FindStyleCopPath() ?? string.Empty;
 			BuildEngine.BuildInGui(this.ProjectToBuild, options);
 		}
 	}
