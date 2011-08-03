@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<Template
+	author="Eusebiu Marcu"
+	created="03/08/2011"
+	lastModified="03/08/2011"
+	version="1.0">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>WCF Service</Name>
+		<Category>C#</Category>
+		<Subcategory>WCF</Subcategory>
+		<Icon>C#.Project.Form</Icon>
+		<Description>WCF Service</Description>
+		<SupportedTargetFrameworks>v3.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+
+	<!-- Actions -->
+	<Actions>
+		<Open filename="ServiceCalculator.svc.cs"/>
+	</Actions>
+
+	<Project language="C#">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.ServiceModel" />
+		</ProjectItems>
+		
+		<PropertyGroup escapeValue="False">
+			<OutputType>Library</OutputType>
+			<ProjectTypeGuids>{3D9AD99F-2412-4246-B90B-4EAA41C64699};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Debug">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Release">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
+			<File name="ServiceCalculator.svc">
+<![CDATA[
+<%@ServiceHost language="C#" Debug="true" Service="${StandardNamespace}.ServiceCalculator"%>
+]]>
+			</File>
+			<File name="ServiceCalculator.svc.cs" DependentUpon="ServiceCalculator.svc">
+<![CDATA[${StandardHeader.C#}
+using System;
+using System.ServiceModel;
+
+namespace ${StandardNamespace}
+{
+	[ServiceContract]
+	public interface ICalculator
+	{
+	   [OperationContract]
+	   double Add(double n1, double n2);
+	   [OperationContract]
+	   double Subtract(double n1, double n2);
+	   [OperationContract]
+	   double Multiply(double n1, double n2);
+	   [OperationContract]
+	   double Divide(double n1, double n2);
+	}
+	
+	public class ServiceCalculator : ICalculator
+	{
+	   public double Add(double n1, double n2)
+	   {
+		  return n1 + n2;
+	   }
+	   public double Subtract(double n1, double n2)
+	   {
+		  return n1 - n2;
+	   }
+	   public double Multiply(double n1, double n2)
+	   {
+		  return n1 * n2;
+	   }
+	   public double Divide(double n1, double n2)
+	   {
+		  return n1 / n2;
+	   }
+	} 
+}
+]]>
+			</File>
+			<File name="web.config">
+<![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <system.serviceModel>
+    <services>
+      <!-- This section is optional with the default configuration model introduced in .NET Framework 4 -->
+      <service name="${StandardNamespace}.ServiceCalculator">
+        <!-- This endpoint is exposed at the base address provided by host: http://localhost/${ProjectName}/ServiceCalculator.svc  -->
+        <endpoint address=""
+                  binding="wsHttpBinding"
+                  contract="${StandardNamespace}.ICalculator" />
+      </service>
+    </services>
+  </system.serviceModel>
+
+</configuration>
+]]>
+			</File>
+		</Files>
+	</Project>
+</Template>
