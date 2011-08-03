@@ -126,6 +126,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				string PROCESSOR_ARCHITEW6432 = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432");
 				if (!string.IsNullOrEmpty(PROCESSOR_ARCHITEW6432)) {
+					if (PROCESSOR_ARCHITEW6432 == "AMD64")
+						PROCESSOR_ARCHITEW6432 = "x86-64";
 					str += "Running under WOW6432, processor architecture: " + PROCESSOR_ARCHITEW6432 + Environment.NewLine;
 				}
 			} catch {}
