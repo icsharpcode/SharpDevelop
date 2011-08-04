@@ -313,6 +313,12 @@
 				<ComponentRef Id="VBMvcViewContentPageFileTemplate"/>
 				<ComponentRef Id="VBMvcViewMasterPageFileTemplate"/>
 				<ComponentRef Id="VBMvcViewUserControlFileTemplate"/>
+				
+				<ComponentRef Id="CSharpWcfServiceProjectTemplate"/>
+				<ComponentRef Id="CSharpWcfServiceFileTemplate"/>
+				<ComponentRef Id="VBWcfServiceProjectTemplate"/>
+				<ComponentRef Id="VBWcfServiceFileTemplate"/>
+				
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>

@@ -222,13 +222,13 @@ namespace ICSharpCode.ILSpyAddIn
 			int typeToken = MemberReference.MetadataToken.ToInt32();			
 			if (!DebuggerDecompilerService.DebugInformation.ContainsKey(typeToken))
 				return;
-			if (DebuggerService.DebugStepInformation == null)
+			if (DebuggerDecompilerService.Instance == null || DebuggerDecompilerService.Instance.DebugStepInformation == null)
 				return;
 			
 			// get debugging information
 			DecompileInformation debugInformation = (DecompileInformation)DebuggerDecompilerService.DebugInformation[typeToken];
-			int token = DebuggerService.DebugStepInformation.Item1;
-			int ilOffset = DebuggerService.DebugStepInformation.Item2;
+			int token = DebuggerDecompilerService.Instance.DebugStepInformation.Item1;
+			int ilOffset = DebuggerDecompilerService.Instance.DebugStepInformation.Item2;
 			int line;
 			MemberReference member;
 			if (debugInformation.CodeMappings == null || !debugInformation.CodeMappings.ContainsKey(token))

@@ -50,6 +50,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		Process debuggedProcess;
 		ProcessMonitor monitor;
 		
+		internal IDebuggerDecompilerService debuggerDecompilerService;
+		
 		//DynamicTreeDebuggerRow currentTooltipRow;
 		//Expression             currentTooltipExpression;
 		
@@ -470,8 +472,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			int methodToken = frame.MethodInfo.MetadataToken;
 			
 			// get the mapped instruction from the current line marker or the next one
-			var decompilerService = GetDecompilerService();
-			if (!decompilerService.GetILAndLineNumber(typeToken, methodToken, frame.IP, out ilRange, out line, out isMatch)){
+			if (!debuggerDecompilerService.GetILAndLineNumber(typeToken, methodToken, frame.IP, out ilRange, out line, out isMatch)){
 				frame.SourceCodeLine = 0;
 				frame.ILRanges = new [] { 0, 1 };
 			} else {
@@ -581,10 +582,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			
 			var stackFrame = !debuggedProcess.IsInExternalCode ? debuggedProcess.SelectedStackFrame : debuggedProcess.SelectedThread.MostRecentStackFrame;
-
 			try {
+				object data = debuggerDecompilerService.GetLocalVariableIndex(stackFrame.MethodInfo.DeclaringType.MetadataToken, 
+				                                                              stackFrame.MethodInfo.MetadataToken,
+				                                                              variableName);
 				// evaluate expression
-				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, stackFrame);
+				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, stackFrame, data);
 			} catch {
 				throw;
 			}
@@ -713,10 +716,14 @@ namespace ICSharpCode.SharpDevelop.Services
 				new RemotingConfigurationHelpper(path).Configure();
 			}
 			
+			// get decompiler service
+			var items = AddInTree.BuildItems<IDebuggerDecompilerService>("/SharpDevelop/Services/DebuggerDecompilerService", null, false);
+			if (items.Count > 0)
+				debuggerDecompilerService = items[0];
+			
+			// init NDebugger
 			debugger = new NDebugger();
-			
-			debugger.Options = DebuggingOptions.Instance;
-			
+			debugger.Options = DebuggingOptions.Instance;			
 			debugger.DebuggerTraceMessage    += debugger_TraceMessage;
 			debugger.Processes.Added         += debugger_ProcessStarted;
 			debugger.Processes.Removed       += debugger_ProcessExited;
@@ -750,15 +757,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (bookmark is DecompiledBreakpointBookmark) {
 				var dbb = (DecompiledBreakpointBookmark)bookmark;
 				var memberReference = dbb.MemberReference;
-				var decompilerService = GetDecompilerService();
 				int token = memberReference.MetadataToken.ToInt32();
 				
-				if (!decompilerService.CheckMappings(token))
-					decompilerService.DecompileOnDemand(memberReference as TypeDefinition);
+				if (!debuggerDecompilerService.CheckMappings(token))
+					debuggerDecompilerService.DecompileOnDemand(memberReference as TypeDefinition);
 				
 				int[] ilRanges;
 				int methodToken;
-				if (decompilerService.GetILAndTokenByLineNumber(token, dbb.LineNumber, out ilRanges, out methodToken)) {
+				if (debuggerDecompilerService.GetILAndTokenByLineNumber(token, dbb.LineNumber, out ilRanges, out methodToken)) {
 					dbb.ILFrom = ilRanges[0];
 					dbb.ILTo = ilRanges[1];
 					// create BP
@@ -1032,6 +1038,10 @@ namespace ICSharpCode.SharpDevelop.Services
 					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 				}
 			} else {
+				if (debuggerDecompilerService == null) {
+					LoggingService.Warn("No IDebuggerDecompilerService found!");
+					return;
+				}
 				// use most recent stack frame because we don't have the symbols
 				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 				if (frame == null)
@@ -1042,12 +1052,11 @@ namespace ICSharpCode.SharpDevelop.Services
 				int methodToken = frame.MethodInfo.MetadataToken;
 				int ilOffset = frame.IP;
 				
-				var decompilerService = GetDecompilerService();
 				int[] ilRanges = null;
 				int line = -1;
 				bool isMatch = false;
-				if (decompilerService.GetILAndLineNumber(typeToken, methodToken, ilOffset, out ilRanges, out line, out isMatch)) {
-					DebuggerService.DebugStepInformation = null; // we do not need to step into/out
+				if (debuggerDecompilerService.GetILAndLineNumber(typeToken, methodToken, ilOffset, out ilRanges, out line, out isMatch)) {
+					debuggerDecompilerService.DebugStepInformation = null; // we do not need to step into/out
 
 					// update marker
 					var debugType = (DebugType)frame.MethodInfo.DeclaringType;
@@ -1077,17 +1086,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			var debugType = (DebugType)frame.MethodInfo.DeclaringType;
 			string fullName = debugType.FullNameWithoutGenericArguments;
-			DebuggerService.DebugStepInformation = Tuple.Create(token, ilOffset);
+			debuggerDecompilerService.DebugStepInformation = Tuple.Create(token, ilOffset);
 			NavigationService.NavigateTo(debugType.DebugModule.FullPath, debugType.FullNameWithoutGenericArguments, string.Empty);
-		}
-		
-		IDebuggerDecompilerService GetDecompilerService()
-		{
-			var items = AddInTree.BuildItems<IDebuggerDecompilerService>("/SharpDevelop/Services/DebuggerDecompilerService", null, false);
-			if (items.Count == 0)
-				return null;
-			
-			return items[0];
 		}
 		
 		StopAttachedProcessDialogResult ShowStopAttachedProcessDialog()
