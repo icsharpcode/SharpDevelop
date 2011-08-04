@@ -29,13 +29,16 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				SetPosition(tecp.TextEditor.FileName, tecp.TextEditor.Document, markerStartLine, markerStartColumn, markerEndLine, markerEndColumn);
 			} else {
 				lock (syncObject) {
-					dynamic codeView = viewContent.Control;
-					var document = codeView.TextEditor.Document as IDocument;
-					SetPosition(codeView.Adapter.FileName, document, markerStartLine, markerStartColumn, markerEndLine, markerEndColumn);
-					codeView.IconBarManager.Bookmarks.Add(CurrentLineBookmark.instance);
-					codeView.UnfoldAndScroll(markerStartLine);
-					if (document != null)
-						CurrentLineBookmark.instance.Document = document;
+					// get the decompiled view if exists
+					if (viewContent != null && viewContent.Control != null) {
+						dynamic codeView = viewContent.Control;
+						var document = codeView.TextEditor.Document as IDocument;
+						SetPosition(codeView.Adapter.FileName, document, markerStartLine, markerStartColumn, markerEndLine, markerEndColumn);
+						codeView.IconBarManager.Bookmarks.Add(CurrentLineBookmark.instance);
+						codeView.UnfoldAndScroll(markerStartLine);
+						if (document != null)
+							CurrentLineBookmark.instance.Document = document;
+					}
 				}
 			}
 		}
