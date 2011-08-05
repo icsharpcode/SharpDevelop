@@ -2,17 +2,20 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
+using ICSharpCode.Core;
 using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn.LaunchILSpy
 {
-	class ILSpyAssemblyResolver : DefaultAssemblyResolver
+	class ILSpyAssemblyResolver : IAssemblyResolver
 	{
 		readonly DirectoryInfo directoryInfo;
+		readonly IDictionary<string, AssemblyDefinition> cache;
 		
 		public ILSpyAssemblyResolver(string decompiledAssemblyFolder)
 		{
@@ -20,29 +23,66 @@ namespace ICSharpCode.ILSpyAddIn.LaunchILSpy
 				throw new ArgumentException("Invalid working folder");
 			
 			this.directoryInfo = new DirectoryInfo(decompiledAssemblyFolder);
+			this.cache = new Dictionary<string, AssemblyDefinition> ();
 		}
 		
-		public override AssemblyDefinition Resolve(AssemblyNameReference name)
+		public AssemblyDefinition Resolve(AssemblyNameReference name)
 		{
+			return this.Resolve(name, new ReaderParameters());
+		}
+		
+		public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
+		{
+			if (name == null)
+				throw new ArgumentNullException("name");
+			
+			if (parameters == null)
+				throw new ArgumentNullException("parameters");
+			
 			try {
-				// search default
-				var defaultAssembly = base.Resolve(name);
-				if (defaultAssembly != null)
-					return defaultAssembly;
-			} catch (AssemblyResolutionException) {
+				AssemblyDefinition assembly = null;
+				if (cache.TryGetValue(name.FullName, out assembly))
+					return assembly;
+
 				// serach into assemblyDecompiledFolder
 				var file = this.directoryInfo.GetFiles()
 					.Where(f => f != null && f.FullName.Contains(name.Name))
 					.FirstOrDefault();
-				if (file != null)
-					return AssemblyDefinition.ReadAssembly(file.FullName);
 				
-				// search using  ILSpy's GacInterop.FindAssemblyInNetGac()
-				string fileInGac = FindAssemblyInNetGac(name);
-				if (!string.IsNullOrEmpty(fileInGac))
-					return AssemblyDefinition.ReadAssembly(fileInGac);
+				if (file != null) {
+					assembly = AssemblyDefinition.ReadAssembly(file.FullName, parameters);
+				}
+				
+				if (assembly == null) {
+					// search using ILSpy's GacInterop.FindAssemblyInNetGac()
+					string fileInGac = FindAssemblyInNetGac(name);
+					if (!string.IsNullOrEmpty(fileInGac)) {
+						assembly = AssemblyDefinition.ReadAssembly(fileInGac, parameters);
+					}
+				}
+				
+				// update caches
+				if (assembly != null) {
+					this.cache.Add(assembly.FullName, assembly);
+				}
+				return assembly;
+			} catch (Exception ex) {
+				LoggingService.Error("Exception: " + ex.Message);
+				return null;
 			}
-			return null;
+		}
+		
+		public AssemblyDefinition Resolve(string fullName)
+		{
+			return this.Resolve(fullName, new ReaderParameters());
+		}
+		
+		public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters)
+		{
+			if (string.IsNullOrEmpty(fullName))
+				throw new ArgumentException("fullName is null or empty");
+
+			return Resolve(AssemblyNameReference.Parse(fullName), parameters);
 		}
 		
 		#region FindAssemblyInGac
