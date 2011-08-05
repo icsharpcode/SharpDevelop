@@ -1672,12 +1672,6 @@
 				</MenuItem>
 			</Condition>
 			
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
-				<MenuItem id = "ShowQuickHelp"
-				          label = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}"
-				          shortcut = "Control|Q"
-				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.QuickDocumentation"/>
-			</Condition>
 			<Condition name = "SolutionOpen" action="Disable">
 				<MenuItem id = "Upgrade"
 				          label = "${res:ICSharpCode.SharpDevelop.Project.UpgradeView.Title}"
