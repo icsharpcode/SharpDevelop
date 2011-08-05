@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			string language = ProjectService.CurrentProject.Language;
 			
 			// FIXME languages
-			TextNode text = new TextNode(e.Data.GetData(DataFormats.StringFormat).ToString(),
+			TextNode text = new TextNode(null, e.Data.GetData(DataFormats.StringFormat).ToString(),
 			                             language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp);
 
 			if (!watchList.WatchItems.Contains(text))
@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			// rebuild list
 			var nodes = new List<TreeNode>();
 			foreach (var nod in watchList.WatchItems)
-				nodes.Add(new TextNode(nod.Name,
+				nodes.Add(new TextNode(null, nod.Name,
 				                       language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp));
 			
 			watchList.WatchItems.Clear();
@@ -175,7 +175,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(nod.Name) ? "is null or empty!" : nod.Name));
 							var nodExpression = debugger.GetExpression(nod.Name);
 							//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
-							ExpressionNode valNode = new ExpressionNode(null, nod.Name, nodExpression);
+							ExpressionNode valNode = new ExpressionNode(null, null, nod.Name, nodExpression);
 							nodes.Add(valNode);
 						}
 						catch (GetValueException) {

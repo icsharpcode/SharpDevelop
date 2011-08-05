@@ -2,6 +2,7 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using System.Collections.Generic;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -10,7 +11,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class TextNode : TreeNode, ISetText
 	{
-		public TextNode(string text, SupportedLanguage language)
+		public TextNode(TreeNode parent, string text, SupportedLanguage language)
+			: base(parent)
 		{
 			this.Name = text;
 			this.Language = language;
@@ -39,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	
 	public class ErrorInfoNode : ICorDebug.InfoNode
 	{
-		public ErrorInfoNode(string name, string text) : base(name, text)
+		public ErrorInfoNode(string name, string text) : base(null, name, text)
 		{
 			IconImage = DebuggerResourceService.GetImage("Icons.16x16.Error");
 		}

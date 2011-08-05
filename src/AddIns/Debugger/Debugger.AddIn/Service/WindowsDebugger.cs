@@ -606,7 +606,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				var tooltipExpression = GetExpression(variableName);
 				string imageName;
 				var image = ExpressionNode.GetImageForLocalVariable(out imageName);
-				ExpressionNode expressionNode = new ExpressionNode(image, variableName, tooltipExpression);
+				ExpressionNode expressionNode = new ExpressionNode(null, image, variableName, tooltipExpression);
 				expressionNode.ImageName = imageName;
 				return new DebuggerTooltipControl(logicalPosition, expressionNode);
 			} catch (GetValueException) {
@@ -627,7 +627,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					image = new ResourceServiceImage(currentImageName);
 					imageName = currentImageName;
 				}
-				ExpressionNode expressionNode = new ExpressionNode(image, variable, expression);
+				ExpressionNode expressionNode = new ExpressionNode(null, image, variable, expression);
 				expressionNode.ImageName = imageName;
 				return expressionNode;
 			} catch (GetValueException) {
