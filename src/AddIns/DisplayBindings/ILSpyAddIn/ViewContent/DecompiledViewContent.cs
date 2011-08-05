@@ -9,6 +9,7 @@ using System.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.ILSpyAddIn.LaunchILSpy;
 using ICSharpCode.ILSpyAddIn.ViewContent;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Utils;
@@ -151,7 +152,7 @@ namespace ICSharpCode.ILSpyAddIn
 			ReaderParameters readerParameters = new ReaderParameters();
 			// Use new assembly resolver instance so that the AssemblyDefinitions can be garbage-collected
 			// once the code is decompiled.
-			readerParameters.AssemblyResolver = new DefaultAssemblyResolver();
+			readerParameters.AssemblyResolver = new ILSpyAssemblyResolver(Path.GetDirectoryName(assemblyFile));
 			
 			ModuleDefinition module = ModuleDefinition.ReadModule(assemblyFile, readerParameters);
 			TypeDefinition typeDefinition = module.GetType(fullTypeName);
