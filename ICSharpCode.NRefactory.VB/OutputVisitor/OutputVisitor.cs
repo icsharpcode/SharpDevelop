@@ -270,20 +270,16 @@ namespace ICSharpCode.NRefactory.VB
 		void WriteClassTypeKeyword(TypeDeclaration typeDeclaration)
 		{
 			switch (typeDeclaration.ClassType) {
-				case ICSharpCode.NRefactory.TypeSystem.ClassType.Class:
+				case ClassType.Class:
 					WriteKeyword("Class");
 					break;
-				case ICSharpCode.NRefactory.TypeSystem.ClassType.Enum:
-					break;
-				case ICSharpCode.NRefactory.TypeSystem.ClassType.Interface:
+				case ClassType.Interface:
 					WriteKeyword("Interface");
 					break;
-				case ICSharpCode.NRefactory.TypeSystem.ClassType.Struct:
+				case ClassType.Struct:
 					WriteKeyword("Structure");
 					break;
-				case ICSharpCode.NRefactory.TypeSystem.ClassType.Delegate:
-					break;
-				case ICSharpCode.NRefactory.TypeSystem.ClassType.Module:
+				case ClassType.Module:
 					WriteKeyword("Module");
 					break;
 				default:

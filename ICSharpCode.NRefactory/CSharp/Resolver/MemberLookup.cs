@@ -225,8 +225,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (type is ITypeParameter) {
 				// this can happen only with type parameters
 				for (int i = members.Count - 1; i >= 0; i--) {
-					ITypeDefinition d = members[i].DeclaringTypeDefinition;
-					if (d.ClassType != ClassType.Interface)
+					if (members[i].DeclaringTypeDefinition.Kind != TypeKind.Interface)
 						continue;
 					IMethod mi = members[i] as IMethod;
 					for (int j = 0; j < members.Count; j++) {
@@ -262,7 +261,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		static bool IsNonInterfaceType(ITypeDefinition def)
 		{
 			// return type if def is neither an interface nor System.Object
-			return def.ClassType != ClassType.Interface && !(def.Name == "Object" && def.Namespace == "System" && def.TypeParameterCount == 0);
+			return def.Kind != TypeKind.Interface && !(def.Name == "Object" && def.Namespace == "System" && def.TypeParameterCount == 0);
 		}
 		
 		static ITypeDefinition GetDeclaringTypeDef(IType type)

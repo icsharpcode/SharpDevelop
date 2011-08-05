@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		protected ITypeOrNamespaceReference MakeReference(string namespaceName)
 		{
 			string[] nameParts = namespaceName.Split('.');
-			ITypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.UsingScope, true);
+			ITypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.UsingScope, SimpleNameLookupMode.TypeInUsingDeclaration);
 			for (int i = 1; i < nameParts.Length; i++) {
 				r = new MemberTypeOrNamespaceReference(r, nameParts[i], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.UsingScope);
 			}
@@ -82,7 +82,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (value == null)
 				return new ConstantResolveResult(SharedTypes.Null, null);
 			IType type = ResolveType(value.GetType());
-			if (type.IsEnum())
+			if (type.Kind == TypeKind.Enum)
 				value = Convert.ChangeType(value, Enum.GetUnderlyingType(value.GetType()));
 			return new ConstantResolveResult(type, value);
 		}

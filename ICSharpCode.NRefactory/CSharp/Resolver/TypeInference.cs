@@ -739,14 +739,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return VarianceModifier.Invariant; }
 			}
 			
-			IType ITypeParameter.BoundTo {
-				get { return null; }
-			}
-			
-			ITypeParameter ITypeParameter.UnboundTypeParameter {
-				get { return null; }
-			}
-			
 			bool IFreezable.IsFrozen {
 				get { return true; }
 			}
@@ -757,6 +749,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			DomRegion ITypeParameter.Region {
 				get { return DomRegion.Empty; }
+			}
+			
+			public override TypeKind Kind {
+				get { return TypeKind.TypeParameter; }
 			}
 		}
 		#endregion
@@ -784,7 +780,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		static IType GetFirstTypePreferNonInterfaces(IList<IType> result)
 		{
-			return result.FirstOrDefault(c => c.GetDefinition().ClassType != ClassType.Interface)
+			return result.FirstOrDefault(c => c.Kind != TypeKind.Interface)
 				?? result.FirstOrDefault() ?? SharedTypes.UnknownType;
 		}
 		

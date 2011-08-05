@@ -138,12 +138,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets whether the type is an enumeration type.
 		/// </summary>
+		[Obsolete("Use type.Kind == TypeKind.Enum instead")]
 		public static bool IsEnum(this IType type)
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			ITypeDefinition def = type.GetDefinition();
-			return def != null && def.ClassType == ClassType.Enum;
+			return type.Kind == TypeKind.Enum;
 		}
 		
 		/// <summary>
@@ -156,13 +156,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (context == null)
 				throw new ArgumentNullException("context");
 			ITypeDefinition def = enumType.GetDefinition();
-			if (def != null && def.ClassType == ClassType.Enum) {
+			if (def != null && def.Kind == TypeKind.Enum) {
 				if (def.BaseTypes.Count == 1)
 					return def.BaseTypes[0].Resolve(context);
 				else
 					return KnownTypeReference.Int32.Resolve(context);
 			} else {
-				throw new ArgumentException("enumType must be an enum");
+				return SharedTypes.UnknownType;
 			}
 		}
 		
@@ -174,8 +174,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			ITypeDefinition def = type.GetDefinition();
-			return def != null && def.ClassType == ClassType.Delegate;
+			return type.Kind == TypeKind.Delegate;
 		}
 		
 		/// <summary>
@@ -189,7 +188,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (type == null)
 				throw new ArgumentNullException("type");
 			ITypeDefinition def = type.GetDefinition();
-			if (def != null && def.ClassType == ClassType.Delegate) {
+			if (def != null && def.Kind == TypeKind.Delegate) {
 				foreach (IMethod method in def.Methods) {
 					if (method.Name == "Invoke") {
 						ParameterizedType pt = type as ParameterizedType;

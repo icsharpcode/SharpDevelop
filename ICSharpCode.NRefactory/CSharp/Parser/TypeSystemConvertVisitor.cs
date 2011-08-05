@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override IEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
-			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, true) as ITypeOrNamespaceReference;
+			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, SimpleNameLookupMode.TypeInUsingDeclaration) as ITypeOrNamespaceReference;
 			if (u != null)
 				usingScope.Usings.Add(u);
 			return null;
@@ -105,7 +105,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override IEntity VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
-			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, true) as ITypeOrNamespaceReference;
+			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, SimpleNameLookupMode.TypeInUsingDeclaration) as ITypeOrNamespaceReference;
 			if (u != null)
 				usingScope.UsingAliases.Add(new KeyValuePair<string, ITypeOrNamespaceReference>(usingDeclaration.Alias, u));
 			return null;
@@ -146,22 +146,31 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override IEntity VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			var td = currentTypeDefinition = CreateTypeDefinition(typeDeclaration.Name);
-			td.ClassType = typeDeclaration.ClassType;
 			td.Region = MakeRegion(typeDeclaration);
 			td.BodyRegion = MakeBraceRegion(typeDeclaration);
 			td.AddDefaultConstructorIfRequired = true;
 			
-			ConvertAttributes(td.Attributes, typeDeclaration.Attributes);
 			ApplyModifiers(td, typeDeclaration.Modifiers);
-			if (td.ClassType == ClassType.Interface)
-				td.IsAbstract = true; // interfaces are implicitly abstract
-			else if (td.ClassType == ClassType.Enum || td.ClassType == ClassType.Struct)
-				td.IsSealed = true; // enums/structs are implicitly sealed
+			switch (typeDeclaration.ClassType) {
+				case ClassType.Enum:
+					td.Kind = TypeKind.Enum;
+					break;
+				case ClassType.Interface:
+					td.Kind = TypeKind.Interface;
+					td.IsAbstract = true; // interfaces are implicitly abstract
+					break;
+				case ClassType.Struct:
+					td.Kind = TypeKind.Struct;
+					td.IsSealed = true; // enums/structs are implicitly sealed
+					break;
+			}
+			
+			ConvertAttributes(td.Attributes, typeDeclaration.Attributes);
 			
 			ConvertTypeParameters(td.TypeParameters, typeDeclaration.TypeParameters, typeDeclaration.Constraints, EntityType.TypeDefinition);
 			
 			foreach (AstType baseType in typeDeclaration.BaseTypes) {
-				td.BaseTypes.Add(ConvertType(baseType));
+				td.BaseTypes.Add(ConvertType(baseType, SimpleNameLookupMode.BaseTypeReference));
 			}
 			
 			foreach (AttributedNode member in typeDeclaration.Members) {
@@ -177,7 +186,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override IEntity VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
 		{
 			var td = currentTypeDefinition = CreateTypeDefinition(delegateDeclaration.Name);
-			td.ClassType = ClassType.Delegate;
+			td.Kind = TypeKind.Delegate;
 			td.Region = MakeRegion(delegateDeclaration);
 			td.BaseTypes.Add(multicastDelegateReference);
 			
@@ -590,7 +599,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		static void ApplyModifiers(TypeSystem.Implementation.AbstractMember m, Modifiers modifiers)
 		{
 			// members from interfaces are always Public+Abstract.
-			if (m.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
+			if (m.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				m.Accessibility = Accessibility.Public;
 				m.IsAbstract = true;
 				return;
@@ -689,18 +698,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region Types
-		ITypeReference ConvertType(AstType type, bool isInUsingDeclaration = false)
+		ITypeReference ConvertType(AstType type, SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type)
 		{
-			return ConvertType(type, currentTypeDefinition, currentMethod, usingScope, isInUsingDeclaration);
+			return ConvertType(type, currentTypeDefinition, currentMethod, usingScope, lookupMode);
 		}
 		
-		internal static ITypeReference ConvertType(AstType type, ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope, bool isInUsingDeclaration)
+		internal static ITypeReference ConvertType(AstType type, ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope, SimpleNameLookupMode lookupMode)
 		{
 			SimpleType s = type as SimpleType;
 			if (s != null) {
 				List<ITypeReference> typeArguments = new List<ITypeReference>();
 				foreach (var ta in s.TypeArguments) {
-					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration));
+					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, lookupMode));
 				}
 				if (typeArguments.Count == 0 && parentMethodDefinition != null) {
 					// SimpleTypeOrNamespaceReference doesn't support method type parameters,
@@ -714,7 +723,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					// empty SimpleType is used for typeof(List<>).
 					return SharedTypes.UnboundTypeArgument;
 				}
-				return new SimpleTypeOrNamespaceReference(s.Identifier, typeArguments, parentTypeDefinition, parentUsingScope, isInUsingDeclaration);
+				return new SimpleTypeOrNamespaceReference(s.Identifier, typeArguments, parentTypeDefinition, parentUsingScope, lookupMode);
 			}
 			
 			PrimitiveType p = type as PrimitiveType;
@@ -767,19 +776,19 @@ namespace ICSharpCode.NRefactory.CSharp
 						t = null;
 					}
 				} else {
-					t = ConvertType(m.Target, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration) as ITypeOrNamespaceReference;
+					t = ConvertType(m.Target, parentTypeDefinition, parentMethodDefinition, parentUsingScope, lookupMode) as ITypeOrNamespaceReference;
 				}
 				if (t == null)
 					return SharedTypes.UnknownType;
 				List<ITypeReference> typeArguments = new List<ITypeReference>();
 				foreach (var ta in m.TypeArguments) {
-					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration));
+					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, lookupMode));
 				}
 				return new MemberTypeOrNamespaceReference(t, m.MemberName, typeArguments, parentTypeDefinition, parentUsingScope);
 			}
 			ComposedType c = type as ComposedType;
 			if (c != null) {
-				ITypeReference t = ConvertType(c.BaseType, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration);
+				ITypeReference t = ConvertType(c.BaseType, parentTypeDefinition, parentMethodDefinition, parentUsingScope, lookupMode);
 				if (c.HasNullableSpecifier) {
 					t = NullableType.Create(t);
 				}

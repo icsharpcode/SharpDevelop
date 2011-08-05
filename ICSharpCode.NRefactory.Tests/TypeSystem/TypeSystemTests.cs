@@ -223,7 +223,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void EnumTest()
 		{
 			var e = testCasePC.GetTypeDefinition(typeof(MyEnum));
-			Assert.AreEqual(ClassType.Enum, e.ClassType);
+			Assert.AreEqual(TypeKind.Enum, e.Kind);
 			Assert.AreEqual(false, e.IsReferenceType(ctx));
 			Assert.AreEqual("System.Int16", e.BaseTypes[0].Resolve(ctx).ReflectionName);
 			Assert.AreEqual(new[] { "System.Enum" }, e.GetBaseTypes(ctx).Select(t => t.ReflectionName).ToArray());
@@ -261,17 +261,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void GetNestedTypesFromGenericClassTest()
+		{
+			ITypeDefinition b = ctx.GetTypeDefinition(typeof(Base<>));
+			// Base.GetNestedTypes() = { Base`1+Nested`1[`0, unbound] }
+			
+		}
+		
+		[Test]
 		public void GetNestedTypesFromBaseClassTest()
 		{
 			ITypeDefinition d = ctx.GetTypeDefinition(typeof(Derived<,>));
 			
 			IType pBase = d.BaseTypes.Single().Resolve(ctx);
 			Assert.AreEqual(typeof(Base<>).FullName + "[[`1]]", pBase.ReflectionName);
-			// Base<`1>.GetNestedTypes() = Base<`1>.Nested<>
+			// Base[`1].GetNestedTypes() = { Base`1+Nested`1[`1, unbound] }
 			Assert.AreEqual(new[] { typeof(Base<>.Nested<>).FullName + "[[`1],[]]" },
 			                pBase.GetNestedTypes(ctx).Select(n => n.ReflectionName).ToArray());
 			
-			// Derived<,>.GetNestedTypes() = Base<`1>.Nested<>
+			// Derived.GetNestedTypes() = { Base`1+Nested`1[`1, unbound] }
 			Assert.AreEqual(new[] { typeof(Base<>.Nested<>).FullName + "[[`1],[]]" },
 			                d.GetNestedTypes(ctx).Select(n => n.ReflectionName).ToArray());
 			// This is 'leaking' the type parameter from B as is usual when retrieving any members from an unbound type.
@@ -280,7 +288,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[Test]
 		public void ParameterizedTypeGetNestedTypesFromBaseClassTest()
 		{
-			// Derived<string,int>.GetNestedTypes() = Base<int>.Nested<>
+			// Derived[string,int].GetNestedTypes() = { Base`1+Nested`1[int, unbound] }
 			var d = typeof(Derived<string, int>).ToTypeReference().Resolve(ctx);
 			Assert.AreEqual(new[] { typeof(Base<>.Nested<>).FullName + "[[System.Int32],[]]" },
 			                d.GetNestedTypes(ctx).Select(n => n.ReflectionName).ToArray());

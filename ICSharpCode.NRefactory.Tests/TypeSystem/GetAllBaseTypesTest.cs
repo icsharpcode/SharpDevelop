@@ -116,7 +116,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			// struct S : IEquatable<S> {}
 			// don't use a Cecil-loaded struct for this test; we're testing the implicit addition of System.ValueType
 			DefaultTypeDefinition s = new DefaultTypeDefinition(mscorlib, string.Empty, "S");
-			s.ClassType = ClassType.Struct;
+			s.Kind = TypeKind.Struct;
 			s.BaseTypes.Add(new ParameterizedType(mscorlib.GetTypeDefinition(typeof(IEquatable<>)), new[] { s }));
 			IType[] expected = {
 				s,

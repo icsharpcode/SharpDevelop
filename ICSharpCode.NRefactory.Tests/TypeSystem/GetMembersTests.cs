@@ -25,15 +25,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void MultipleInheritanceTest()
 		{
 			DefaultTypeDefinition b1 = new DefaultTypeDefinition(mscorlib, string.Empty, "B1");
-			b1.ClassType = ClassType.Interface;
+			b1.Kind = TypeKind.Interface;
 			b1.Properties.Add(new DefaultProperty(b1, "P1"));
 			
 			DefaultTypeDefinition b2 = new DefaultTypeDefinition(mscorlib, string.Empty, "B1");
-			b2.ClassType = ClassType.Interface;
+			b2.Kind = TypeKind.Interface;
 			b2.Properties.Add(new DefaultProperty(b1, "P2"));
 			
 			DefaultTypeDefinition c = new DefaultTypeDefinition(mscorlib, string.Empty, "C");
-			c.ClassType = ClassType.Interface;
+			c.Kind = TypeKind.Interface;
 			c.BaseTypes.Add(b1);
 			c.BaseTypes.Add(b2);
 			
@@ -102,7 +102,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			a.NestedTypes.Add(b);
 			
-			Assert.AreSame(b, a.GetNestedTypes(mscorlib).Single());
+			// A<> gets self-parameterized, B<> stays unbound
+			Assert.AreEqual("A`1+B`1[[`0],[]]", a.GetNestedTypes(mscorlib).Single().ReflectionName);
 			
 			ParameterizedType pt = new ParameterizedType(a, new [] { KnownTypeReference.String.Resolve(mscorlib) });
 			Assert.AreEqual("A`1+B`1[[System.String],[]]", pt.GetNestedTypes(mscorlib).Single().ReflectionName);

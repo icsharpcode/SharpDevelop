@@ -1514,88 +1514,49 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ResolveSimpleName
-		enum SimpleNameLookupMode
-		{
-			/// <summary>
-			/// Normal name lookup in expressions
-			/// </summary>
-			Expression,
-			/// <summary>
-			/// Name lookup in expression, where the expression is the target of an invocation.
-			/// Such a lookup will only return methods and delegate-typed fields.
-			/// </summary>
-			InvocationTarget,
-			/// <summary>
-			/// Normal name lookup in type references.
-			/// </summary>
-			Type,
-			/// <summary>
-			/// Name lookup in the type reference inside a using declaration.
-			/// </summary>
-			TypeInUsingDeclaration,
-			/// <summary>
-			/// Name lookup for unbound types "Dictionary&lt;,&gt;". Can only occur within typeof-expressions.
-			/// </summary>
-			UnboundType
-		}
-		
 		public ResolveResult ResolveSimpleName(string identifier, IList<IType> typeArguments, bool isInvocationTarget = false)
 		{
 			// C# 4.0 spec: §7.6.2 Simple Names
-			
-			if (identifier == null)
-				throw new ArgumentNullException("identifier");
-			if (typeArguments == null)
-				throw new ArgumentNullException("typeArguments");
-			
-			if (typeArguments.Count == 0) {
-				foreach (IVariable v in this.LocalVariables) {
-					if (v.Name == identifier) {
-						object constantValue = v.IsConst ? v.ConstantValue.GetValue(context) : null;
-						return new LocalResolveResult(v, v.Type.Resolve(context), constantValue);
-					}
-				}
-				IParameterizedMember parameterizedMember = this.CurrentMember as IParameterizedMember;
-				if (parameterizedMember != null) {
-					foreach (IParameter p in parameterizedMember.Parameters) {
-						if (p.Name == identifier) {
-							return new LocalResolveResult(p, p.Type.Resolve(context));
-						}
-					}
-				}
-			}
 			
 			return LookupSimpleNameOrTypeName(
 				identifier, typeArguments,
 				isInvocationTarget ? SimpleNameLookupMode.InvocationTarget : SimpleNameLookupMode.Expression);
 		}
 		
-		public ResolveResult LookupSimpleNamespaceOrTypeName(string identifier, IList<IType> typeArguments, bool isUsingDeclaration = false)
+		public ResolveResult LookupSimpleNameOrTypeName(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode)
 		{
+			// C# 4.0 spec: §3.8 Namespace and type names; §7.6.2 Simple Names
+			
 			if (identifier == null)
 				throw new ArgumentNullException("identifier");
 			if (typeArguments == null)
 				throw new ArgumentNullException("typeArguments");
 			
-			return LookupSimpleNameOrTypeName(identifier, typeArguments,
-			                                  isUsingDeclaration ? SimpleNameLookupMode.TypeInUsingDeclaration : SimpleNameLookupMode.Type);
-		}
-		
-		ResolveResult LookupSimpleNameOrTypeName(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode)
-		{
-			// C# 4.0 spec: §3.8 Namespace and type names; §7.6.2 Simple Names
-			
 			cancellationToken.ThrowIfCancellationRequested();
 			
 			int k = typeArguments.Count;
-			bool parameterizeResultType = k > 0;
-			if (parameterizeResultType) {
-				if (typeArguments.All(t => t.Equals(SharedTypes.UnboundTypeArgument)))
-					parameterizeResultType = false;
-			}
 			
-			// look in type parameters of current method
 			if (k == 0) {
+				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
+					// Look in local variables
+					foreach (IVariable v in this.LocalVariables) {
+						if (v.Name == identifier) {
+							object constantValue = v.IsConst ? v.ConstantValue.GetValue(context) : null;
+							return new LocalResolveResult(v, v.Type.Resolve(context), constantValue);
+						}
+					}
+					// Look in parameters of current method
+					IParameterizedMember parameterizedMember = this.CurrentMember as IParameterizedMember;
+					if (parameterizedMember != null) {
+						foreach (IParameter p in parameterizedMember.Parameters) {
+							if (p.Name == identifier) {
+								return new LocalResolveResult(p, p.Type.Resolve(context));
+							}
+						}
+					}
+				}
+				
+				// look in type parameters of current method
 				IMethod m = this.CurrentMember as IMethod;
 				if (m != null) {
 					foreach (ITypeParameter tp in m.TypeParameters) {
@@ -1603,6 +1564,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							return new TypeResolveResult(tp);
 					}
 				}
+			}
+			
+			bool parameterizeResultType = k > 0;
+			if (parameterizeResultType) {
+				if (typeArguments.All(t => t.Equals(SharedTypes.UnboundTypeArgument)))
+					parameterizeResultType = false;
 			}
 			
 			// look in current type definitions
@@ -1615,6 +1582,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						if (typeParameters[i].Name == identifier)
 							return new TypeResolveResult(typeParameters[i]);
 					}
+				}
+				
+				if (lookupMode == SimpleNameLookupMode.BaseTypeReference && t == this.CurrentTypeDefinition) {
+					// don't look in current type when resolving a base type reference
+					continue;
 				}
 				
 				MemberLookup lookup = new MemberLookup(context, t, t.ProjectContent);
@@ -2091,8 +2063,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ITypeDefinition t = CurrentTypeDefinition;
 			if (t != null) {
 				foreach (IType baseType in t.GetBaseTypes(context)) {
-					ITypeDefinition baseTypeDef = baseType.GetDefinition();
-					if (baseTypeDef != null && baseTypeDef.ClassType != ClassType.Interface) {
+					if (baseType.Kind != TypeKind.Unknown && baseType.Kind != TypeKind.Interface) {
 						return new ResolveResult(baseType);
 					}
 				}

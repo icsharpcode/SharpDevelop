@@ -13,6 +13,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	public interface IType : ITypeReference, INamedElement, IEquatable<IType>
 	{
 		/// <summary>
+		/// Gets the type kind.
+		/// </summary>
+		TypeKind Kind { get; }
+		
+		/// <summary>
 		/// Gets whether the type is a reference type or value type.
 		/// </summary>
 		/// <returns>
@@ -70,13 +75,32 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <param name="context">The context used for resolving type references</param>
 		/// <param name="filter">The filter used to select which types to return.
-		/// The filter is tested on the unparameterized types.</param>
+		/// The filter is tested on the original type definitions (before parameterization).</param>
 		/// <remarks>
-		/// If this type is parameterized, the nested type will also be parameterized.
-		/// Any additional type parameters on the nested type will be parameterized with
-		/// <see cref="SharedType.UnboundTypeArgument"/>.
+		/// If the nested type is generic (and has more type parameters than the outer class),
+		/// this method will return a parameterized type,
+		/// where the additional type parameters are set to <see cref="SharedType.UnboundTypeArgument"/>.
+		/// 
+		/// Type parameters belonging to the outer class will have the value copied from the outer type
+		/// if it is a parameterized type. Otherwise, those existing type parameters will be self-parameterized,
+		/// and thus 'leaked' to the caller in the same way the GetMembers() method does not specialize members
+		/// from an <see cref="ITypeDefinition"/> and 'leaks' type parameters in member signatures.
 		/// </remarks>
+		/// <example>
+		/// <code>
+		/// class Base&lt;T> {
+		/// 	class Nested&lt;X> {}
+		/// }
+		/// class Derived&lt;A, B> : Base&lt;B> {}
+		/// 
+		/// Derived[string,int].GetNestedTypes() = { Base`1+Nested`1[int, unbound] }
+		/// Derived.GetNestedTypes() = { Base`1+Nested`1[`1, unbound] }
+		/// Base[`1].GetNestedTypes() = { Base`1+Nested`1[`1, unbound] }
+		/// Base.GetNestedTypes() = { Base`1+Nested`1[`0, unbound] }
+		/// </code>
+		/// </example>
 		IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null);
+		
 		// Note that we cannot 'leak' the additional type parameter as we leak the normal type parameters, because
 		// the index might collide. For example,
 		//   class Base<T> { class Nested<X> {} }

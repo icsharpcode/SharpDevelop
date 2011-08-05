@@ -16,9 +16,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly UsingScope parentUsingScope;
 		readonly string identifier;
 		readonly IList<ITypeReference> typeArguments;
-		readonly bool isInUsingDeclaration;
+		readonly SimpleNameLookupMode lookupMode;
 		
-		public SimpleTypeOrNamespaceReference(string identifier, IList<ITypeReference> typeArguments, ITypeDefinition parentTypeDefinition, UsingScope parentUsingScope, bool isInUsingDeclaration = false)
+		public SimpleTypeOrNamespaceReference(string identifier, IList<ITypeReference> typeArguments, ITypeDefinition parentTypeDefinition, UsingScope parentUsingScope, SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type)
 		{
 			if (identifier == null)
 				throw new ArgumentNullException("identifier");
@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.typeArguments = typeArguments ?? EmptyList<ITypeReference>.Instance;
 			this.parentTypeDefinition = parentTypeDefinition;
 			this.parentUsingScope = parentUsingScope;
-			this.isInUsingDeclaration = isInUsingDeclaration;
+			this.lookupMode = lookupMode;
 		}
 		
 		/// <summary>
@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public SimpleTypeOrNamespaceReference AddSuffix(string suffix)
 		{
-			return new SimpleTypeOrNamespaceReference(identifier + suffix, typeArguments, parentTypeDefinition, parentUsingScope, isInUsingDeclaration);
+			return new SimpleTypeOrNamespaceReference(identifier + suffix, typeArguments, parentTypeDefinition, parentUsingScope, lookupMode);
 		}
 		
 		public ResolveResult DoResolve(ITypeResolveContext context)
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			for (int i = 0; i < typeArgs.Length; i++) {
 				typeArgs[i] = typeArguments[i].Resolve(context);
 			}
-			return r.LookupSimpleNamespaceOrTypeName(identifier, typeArgs, isInUsingDeclaration);
+			return r.LookupSimpleNameOrTypeName(identifier, typeArgs, lookupMode);
 		}
 		
 		public NamespaceResolveResult ResolveNamespace(ITypeResolveContext context)

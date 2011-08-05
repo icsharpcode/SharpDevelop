@@ -78,6 +78,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.typeArguments = typeArguments;
 		}
 		
+		public TypeKind Kind {
+			get { return genericType.Kind; }
+		}
+		
 		public bool? IsReferenceType(ITypeResolveContext context)
 		{
 			return genericType.IsReferenceType(context);
@@ -174,38 +178,43 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
 		{
-			/*
-			class Base<T> {
-				class Nested<X> {}
-			}
-			class Derived<A, B> : Base<B> {}
-			
-			Derived<string,int>.GetNestedTypes() = { Base`1+Nested<int, > }
-			Derived.GetNestedTypes() = { Base`1+Nested<`1, > }
-			Base<`1>.GetNestedTypes() = { Base`1+Nested<`1, > }
-			Base.GetNestedTypes() = { Base`1+Nested }
-			
-			Empty type arguments are represented by SharedTypes.UnboundTypeArgument.
-			 */
-			Substitution substitution = new Substitution(typeArguments);
-			List<IType> types = genericType.GetNestedTypes(context, filter).ToList();
-			for (int i = 0; i < types.Count; i++) {
-				ITypeDefinition def = types[i] as ITypeDefinition;
-				if (def != null && def.TypeParameterCount > 0) {
-					// (partially) parameterize the nested type definition
-					IType[] newTypeArgs = new IType[def.TypeParameterCount];
-					for (int j = 0; j < newTypeArgs.Length; j++) {
-						if (j < typeArguments.Length)
-							newTypeArgs[j] = typeArguments[j];
-						else
-							newTypeArgs[j] = SharedTypes.UnboundTypeArgument;
-					}
-					types[i] = new ParameterizedType(def, newTypeArgs);
+			return GetNestedTypes(this, context, filter);
+		}
+		
+		internal static IEnumerable<IType> GetNestedTypes(IType type, ITypeResolveContext context, Predicate<ITypeDefinition> filter)
+		{
+			return type.GetNonInterfaceBaseTypes(context).SelectMany(t => GetNestedTypesInternal(t, context, filter));
+		}
+		
+		static IEnumerable<IType> GetNestedTypesInternal(IType baseType, ITypeResolveContext context, Predicate<ITypeDefinition> filter)
+		{
+			ITypeDefinition baseTypeDef = baseType.GetDefinition();
+			if (baseTypeDef == null)
+				yield break;
+			baseTypeDef = baseTypeDef.GetCompoundClass();
+			int outerTypeParameterCount = baseTypeDef.TypeParameterCount;
+			ParameterizedType pt = baseType as ParameterizedType;
+			foreach (ITypeDefinition nestedType in baseTypeDef.NestedTypes) {
+				if (!(filter == null || filter(nestedType)))
+					continue;
+				int innerTypeParameterCount = nestedType.TypeParameterCount;
+				if (innerTypeParameterCount == 0 || (pt == null && innerTypeParameterCount == outerTypeParameterCount)) {
+					// The nested type has no new type parameters, and there are no type arguments
+					// to copy from the outer type
+					// -> we can directly return the nested type definition
+					yield return nestedType;
 				} else {
-					types[i] = types[i].AcceptVisitor(substitution);
+					// We need to parameterize the nested type
+					IType[] newTypeArguments = new IType[innerTypeParameterCount];
+					for (int i = 0; i < outerTypeParameterCount; i++) {
+						newTypeArguments[i] = pt != null ? pt.typeArguments[i] : baseTypeDef.TypeParameters[i];
+					}
+					for (int i = outerTypeParameterCount; i < innerTypeParameterCount; i++) {
+						newTypeArguments[i] = SharedTypes.UnboundTypeArgument;
+					}
+					yield return new ParameterizedType(nestedType, newTypeArguments);
 				}
 			}
-			return types;
 		}
 		
 		public IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
@@ -471,7 +480,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new ParameterizedType(def, ta);
 		}
 	}
-	
+
 	/// <summary>
 	/// ParameterizedTypeReference is a reference to generic class that specifies the type parameters.
 	/// Example: List&lt;string&gt;

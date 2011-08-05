@@ -15,26 +15,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the type representing resolve errors.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "It's immutable")]
-		public readonly static IType UnknownType = new UnknownTypeImpl();
+		public readonly static IType UnknownType = new SharedTypeImpl(TypeKind.Unknown, "?", isReferenceType: null);
 		
 		/// <summary>
 		/// The null type is used as type of the null literal. It is a reference type without any members; and it is a subtype of all reference types.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "It's immutable")]
-		public readonly static IType Null = new NullType();
+		public readonly static IType Null = new SharedTypeImpl(TypeKind.Null, "null", isReferenceType: true);
 		
 		/// <summary>
 		/// Type representing the C# 'dynamic' type.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "It's immutable")]
-		public readonly static IType Dynamic = new DynamicType();
+		public readonly static IType Dynamic = new SharedTypeImpl(TypeKind.Dynamic, "dynamic", isReferenceType: true);
 		
 		/// <summary>
 		/// A type used for unbound type arguments in partially parameterized types.
 		/// </summary>
 		/// <see cref="IType.GetNestedTypes"/>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "It's immutable")]
-		public readonly static IType UnboundTypeArgument = new UnboundType();
+		public readonly static IType UnboundTypeArgument = new SharedTypeImpl(TypeKind.UnboundTypeArgument, "", isReferenceType: null);
 		
 		/*
 		 * I'd like to define static instances for common types like
@@ -55,100 +55,40 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		 * would have to return true even though these are two distinct definitions.
 		 */
 		
-		/// <summary>
-		/// Type representing resolve errors.
-		/// </summary>
-		sealed class UnknownTypeImpl : AbstractType
+		sealed class SharedTypeImpl : AbstractType
 		{
+			readonly TypeKind kind;
+			readonly string name;
+			readonly bool? isReferenceType;
+			
+			public SharedTypeImpl(TypeKind kind, string name, bool? isReferenceType)
+			{
+				this.kind = kind;
+				this.name = name;
+				this.isReferenceType = isReferenceType;
+			}
+			
+			public override TypeKind Kind {
+				get { return kind; }
+			}
+			
 			public override string Name {
-				get { return "?"; }
+				get { return name; }
 			}
 			
 			public override bool? IsReferenceType(ITypeResolveContext context)
 			{
-				return null;
+				return isReferenceType;
 			}
 			
 			public override bool Equals(IType other)
 			{
-				return other is UnknownTypeImpl;
+				return other != null && other.Kind == kind;
 			}
 			
 			public override int GetHashCode()
 			{
-				return 950772036;
-			}
-		}
-		
-		/// <summary>
-		/// Type of the 'null' literal.
-		/// </summary>
-		sealed class NullType : AbstractType
-		{
-			public override string Name {
-				get { return "null"; }
-			}
-			
-			public override bool? IsReferenceType(ITypeResolveContext context)
-			{
-				return true;
-			}
-			
-			public override bool Equals(IType other)
-			{
-				return other is NullType;
-			}
-			
-			public override int GetHashCode()
-			{
-				return 362709548;
-			}
-		}
-		
-		/// <summary>
-		/// Type representing the C# 'dynamic' type.
-		/// </summary>
-		sealed class DynamicType : AbstractType
-		{
-			public override string Name {
-				get { return "dynamic"; }
-			}
-			
-			public override bool? IsReferenceType(ITypeResolveContext context)
-			{
-				return true;
-			}
-			
-			public override bool Equals(IType other)
-			{
-				return other is DynamicType;
-			}
-			
-			public override int GetHashCode()
-			{
-				return 31986112;
-			}
-		}
-		
-		sealed class UnboundType : AbstractType
-		{
-			public override string Name {
-				get { return string.Empty; }
-			}
-			
-			public override bool? IsReferenceType(ITypeResolveContext context)
-			{
-				return null;
-			}
-			
-			public override bool Equals(IType other)
-			{
-				return other is UnboundType;
-			}
-			
-			public override int GetHashCode()
-			{
-				return 151719123;
+				return (int)kind;
 			}
 		}
 	}

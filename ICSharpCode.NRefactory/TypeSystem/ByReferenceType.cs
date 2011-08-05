@@ -10,6 +10,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 		}
 		
+		public override TypeKind Kind {
+			get { return TypeKind.ByReference; }
+		}
+		
 		public override string NameSuffix {
 			get {
 				return "&";

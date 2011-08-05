@@ -50,6 +50,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.name = name;
 		}
 		
+		public TypeKind Kind {
+			get { return TypeKind.TypeParameter; }
+		}
+		
 		public string Name {
 			get { return name; }
 		}
@@ -87,7 +91,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						ITypeDefinition constraintDef = constraint.GetDefinition();
 						// While interfaces are reference types, an interface constraint does not
 						// force the type parameter to be a reference type; so we need to explicitly look for classes here.
-						if (constraintDef != null && constraintDef.ClassType == ClassType.Class)
+						if (constraintDef != null && constraintDef.Kind == TypeKind.Class)
 							return true;
 						if (constraint is ITypeParameter) {
 							bool? isReferenceType = constraint.IsReferenceType(context);
@@ -204,14 +208,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		IType ITypeParameter.BoundTo {
-			get { return null; }
-		}
-		
-		ITypeParameter ITypeParameter.UnboundTypeParameter {
-			get { return null; }
-		}
-		
 		public IType AcceptVisitor(TypeVisitor visitor)
 		{
 			return visitor.VisitTypeParameter(this);
@@ -229,11 +225,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			DefaultTypeDefinition c = new DefaultTypeDefinition(dummyProjectContent, string.Empty, this.Name);
 			c.Region = this.Region;
 			if (HasValueTypeConstraint) {
-				c.ClassType = ClassType.Struct;
+				c.Kind = TypeKind.Struct;
 			} else if (HasDefaultConstructorConstraint) {
-				c.ClassType = ClassType.Class;
+				c.Kind = TypeKind.Class;
 			} else {
-				c.ClassType = ClassType.Interface;
+				c.Kind = TypeKind.Interface;
 			}
 			return c;
 		}
@@ -324,7 +320,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (parameter == this)
 					return true;
 				foreach (DefaultTypeParameter parameterBaseType in parameter.GetNonCircularBaseTypes(context).Where(t => t is DefaultTypeParameter)) {
-					stack.Push(parameterBaseType); 
+					stack.Push(parameterBaseType);
 				}
 				if (stack.Count == 0)
 					return false;
@@ -343,8 +339,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			foreach (ITypeReference constraint in this.Constraints) {
 				IType c = constraint.Resolve(context);
 				yield return c;
-				ITypeDefinition cdef = c.GetDefinition();
-				if (!(cdef != null && cdef.ClassType == ClassType.Interface))
+				if (c.Kind != TypeKind.Interface)
 					hasNonInterfaceConstraint = true;
 			}
 			// Do not add the 'System.Object' constraint if there is another constraint with a base class.

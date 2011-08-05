@@ -836,17 +836,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				TypeDefinition td = this.typeDefinition;
 				// set classtype
 				if (td.IsInterface) {
-					this.ClassType = ClassType.Interface;
+					this.Kind = TypeKind.Interface;
 				} else if (td.IsEnum) {
-					this.ClassType = ClassType.Enum;
+					this.Kind = TypeKind.Enum;
 				} else if (td.IsValueType) {
-					this.ClassType = ClassType.Struct;
+					this.Kind = TypeKind.Struct;
 				} else if (IsDelegate(td)) {
-					this.ClassType = ClassType.Delegate;
+					this.Kind = TypeKind.Delegate;
 				} else if (IsModule(td)) {
-					this.ClassType = ClassType.Module;
+					this.Kind = TypeKind.Module;
 				} else {
-					this.ClassType = ClassType.Class;
+					this.Kind = TypeKind.Class;
 				}
 				this.IsSealed = td.IsSealed;
 				this.IsAbstract = td.IsAbstract;
@@ -902,7 +902,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			void InitMembers(CecilLoader loader)
 			{
-				this.AddDefaultConstructorIfRequired = (this.ClassType == ClassType.Struct || this.ClassType == ClassType.Enum);
+				this.AddDefaultConstructorIfRequired = (this.Kind == TypeKind.Struct || this.Kind == TypeKind.Enum);
 				if (typeDefinition.HasMethods) {
 					foreach (MethodDefinition method in typeDefinition.Methods) {
 						if (loader.IsVisible(method.Attributes)) {
@@ -1034,7 +1034,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		void TranslateModifiers(MethodDefinition method, AbstractMember m)
 		{
-			if (m.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
+			if (m.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				// interface members don't have modifiers, but we want to handle them as "public abstract"
 				m.Accessibility = Accessibility.Public;
 				m.IsAbstract = true;

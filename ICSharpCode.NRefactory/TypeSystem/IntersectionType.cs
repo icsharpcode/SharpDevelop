@@ -40,6 +40,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new IntersectionType(arr);
 		}
 		
+		public override TypeKind Kind {
+				get { return TypeKind.Intersection; }
+			}
+		
 		public override string Name {
 			get {
 				StringBuilder b = new StringBuilder();

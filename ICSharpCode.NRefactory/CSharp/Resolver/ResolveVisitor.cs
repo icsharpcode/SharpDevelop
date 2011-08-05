@@ -1065,7 +1065,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ITypeReference MakeTypeReference(AstType type)
 		{
-			return TypeSystemConvertVisitor.ConvertType(type, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope, false);
+			return TypeSystemConvertVisitor.ConvertType(type, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope, SimpleNameLookupMode.Type);
 		}
 		
 		static bool IsVar(AstType returnType)

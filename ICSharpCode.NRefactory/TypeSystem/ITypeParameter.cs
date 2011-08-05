@@ -58,18 +58,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		VarianceModifier Variance { get; }
 		
 		/// <summary>
-		/// Gets the type that was used to bind this type parameter.
-		/// This property returns null for generic methods/classes, it
-		/// is non-null only for constructed versions of generic methods.
-		/// </summary>
-		IType BoundTo { get; }
-		
-		/// <summary>
-		/// If this type parameter was bound, returns the unbound version of it.
-		/// </summary>
-		ITypeParameter UnboundTypeParameter { get; }
-		
-		/// <summary>
 		/// Gets the region where the type parameter is defined.
 		/// </summary>
 		DomRegion Region { get; }

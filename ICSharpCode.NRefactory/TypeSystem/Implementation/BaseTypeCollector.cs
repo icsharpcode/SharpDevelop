@@ -43,9 +43,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (!this.Contains(type)) {
 				this.Add(type);
 				foreach (IType baseType in type.GetBaseTypes(context)) {
-					if (SkipImplementedInterfaces && def != null && def.ClassType != ClassType.Interface) {
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null && baseTypeDef.ClassType == ClassType.Interface) {
+					if (SkipImplementedInterfaces && def != null && def.Kind != TypeKind.Interface) {
+						if (baseType.Kind == TypeKind.Interface) {
 							// skip the interface
 							continue;
 						}

@@ -30,8 +30,13 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		private MinimalResolveContext()
 		{
 			List<ITypeDefinition> types = new List<ITypeDefinition>();
-			types.Add(systemObject = new DefaultTypeDefinition(this, "System", "Object"));
-			types.Add(systemValueType = new DefaultTypeDefinition(this, "System", "ValueType") { BaseTypes = { systemObject } });
+			types.Add(systemObject = new DefaultTypeDefinition(this, "System", "Object") {
+			          	Accessibility = Accessibility.Public
+			          });
+			types.Add(systemValueType = new DefaultTypeDefinition(this, "System", "ValueType") {
+			          	Accessibility = Accessibility.Public,
+			          	BaseTypes = { systemObject }
+			          });
 			types.Add(CreateStruct("System", "Boolean"));
 			types.Add(CreateStruct("System", "SByte"));
 			types.Add(CreateStruct("System", "Byte"));
@@ -44,7 +49,11 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			types.Add(CreateStruct("System", "Single"));
 			types.Add(CreateStruct("System", "Double"));
 			types.Add(CreateStruct("System", "Decimal"));
-			types.Add(new DefaultTypeDefinition(this, "System", "String") { BaseTypes = { systemObject } });
+			types.Add(new DefaultTypeDefinition(this, "System", "String") {
+			          	Accessibility = Accessibility.Public,
+			          	BaseTypes = { systemObject }
+			          });
+			types.Add(new VoidTypeDefinition(this));
 			foreach (ITypeDefinition type in types)
 				type.Freeze();
 			this.types = types.AsReadOnly();
@@ -53,7 +62,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		ITypeDefinition CreateStruct(string nameSpace, string name)
 		{
 			return new DefaultTypeDefinition(this, nameSpace, name) {
-				ClassType = ClassType.Struct,
+				Kind = TypeKind.Struct,
+				Accessibility = Accessibility.Public,
 				BaseTypes = { systemValueType }
 			};
 		}

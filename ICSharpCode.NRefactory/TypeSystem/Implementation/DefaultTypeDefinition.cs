@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		DomRegion bodyRegion;
 		
 		// 1 byte per enum + 2 bytes for flags
-		ClassType classType;
+		TypeKind kind = TypeKind.Class;
 		Accessibility accessibility;
 		BitVector16 flags;
 		const ushort FlagSealed    = 0x0001;
@@ -77,11 +77,26 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.name = name;
 		}
 		
-		public ClassType ClassType {
-			get { return classType; }
+		public TypeKind Kind {
+			get { return kind; }
 			set {
 				CheckBeforeMutation();
-				classType = value;
+				kind = value;
+			}
+		}
+		
+		public bool? IsReferenceType(ITypeResolveContext context)
+		{
+			switch (kind) {
+				case TypeKind.Class:
+				case TypeKind.Interface:
+				case TypeKind.Delegate:
+					return true;
+				case TypeKind.Enum:
+				case TypeKind.Struct:
+					return false;
+				default:
+					return null;
 			}
 		}
 		
@@ -158,21 +173,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					.Concat(this.Properties.SafeCast<IProperty, IMember>())
 					.Concat(this.Methods.SafeCast<IMethod, IMember>())
 					.Concat(this.Events.SafeCast<IEvent, IMember>());
-			}
-		}
-		
-		public bool? IsReferenceType(ITypeResolveContext context)
-		{
-			switch (this.ClassType) {
-				case ClassType.Class:
-				case ClassType.Interface:
-				case ClassType.Delegate:
-					return true;
-				case ClassType.Enum:
-				case ClassType.Struct:
-					return false;
-				default:
-					return null;
 			}
 		}
 		
@@ -350,25 +350,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
 			bool hasNonInterface = false;
-			if (baseTypes != null && this.ClassType != ClassType.Enum) {
+			if (baseTypes != null && kind != TypeKind.Enum) {
 				foreach (ITypeReference baseTypeRef in baseTypes) {
 					IType baseType = baseTypeRef.Resolve(context);
-					ITypeDefinition baseTypeDef = baseType.GetDefinition();
-					if (baseTypeDef == null || baseTypeDef.ClassType != ClassType.Interface)
+					if (baseType.Kind != TypeKind.Interface)
 						hasNonInterface = true;
 					yield return baseType;
 				}
 			}
 			if (!hasNonInterface && !(this.Name == "Object" && this.Namespace == "System" && this.TypeParameterCount == 0)) {
 				Type primitiveBaseType;
-				switch (classType) {
-					case ClassType.Enum:
+				switch (kind) {
+					case TypeKind.Enum:
 						primitiveBaseType = typeof(Enum);
 						break;
-					case ClassType.Struct:
+					case TypeKind.Struct:
+					case TypeKind.Void:
 						primitiveBaseType = typeof(ValueType);
 						break;
-					case ClassType.Delegate:
+					case TypeKind.Delegate:
 						primitiveBaseType = typeof(Delegate);
 						break;
 					default:
@@ -405,30 +405,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
 		{
-			ITypeDefinition compound = GetCompoundClass();
-			if (compound != this)
-				return compound.GetNestedTypes(context, filter);
-			
-			List<IType> nestedTypes = new List<IType>();
-			using (var busyLock = BusyManager.Enter(this)) {
-				if (busyLock.Success) {
-					foreach (var baseTypeRef in this.BaseTypes) {
-						IType baseType = baseTypeRef.Resolve(context);
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null && baseTypeDef.ClassType != ClassType.Interface) {
-							// get nested types from baseType (not baseTypeDef) so that generics work correctly
-							nestedTypes.AddRange(baseType.GetNestedTypes(context, filter));
-							break; // there is at most 1 non-interface base
-						}
-					}
-					foreach (ITypeDefinition nestedType in this.NestedTypes) {
-						if (filter == null || filter(nestedType)) {
-							nestedTypes.Add(nestedType);
-						}
-					}
-				}
-			}
-			return nestedTypes;
+			return ParameterizedType.GetNestedTypes(this, context, filter);
 		}
 		
 		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
@@ -451,8 +428,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			
 			if (this.AddDefaultConstructorIfRequired) {
-				if (this.ClassType == ClassType.Class && methods.Count == 0
-				    || this.ClassType == ClassType.Enum || this.ClassType == ClassType.Struct)
+				if (kind == TypeKind.Class && methods.Count == 0 && !this.IsStatic
+				    || kind == TypeKind.Enum || kind == TypeKind.Struct)
 				{
 					var m = DefaultMethod.CreateDefaultConstructor(this);
 					if (filter == null || filter(m))

@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public VoidTypeDefinition(IProjectContent projectContent)
 			: base(projectContent, "System", "Void")
 		{
-			this.ClassType = ClassType.Struct;
+			this.Kind = TypeKind.Void;
 			this.Accessibility = Accessibility.Public;
 			this.IsSealed = true;
 		}
@@ -42,6 +42,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter)
 		{
 			return EmptyList<IProperty>.Instance;
+		}
+		
+		public override IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter)
+		{
+			return EmptyList<IMember>.Instance;
 		}
 	}
 }

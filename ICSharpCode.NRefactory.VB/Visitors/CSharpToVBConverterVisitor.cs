@@ -822,7 +822,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 		{
 			// TODO add missing features!
 			
-			if (typeDeclaration.ClassType == ClassType.Enum) {
+			if (typeDeclaration.ClassType == CSharp.ClassType.Enum) {
 				var type = new EnumDeclaration();
 				CopyAnnotations(typeDeclaration, type);
 				
@@ -846,7 +846,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 				
 				CSharp.Attribute stdModAttr;
 				
-				if (typeDeclaration.ClassType == ClassType.Class && HasAttribute(typeDeclaration.Attributes, "Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute", out stdModAttr)) {
+				if (typeDeclaration.ClassType == CSharp.ClassType.Class && HasAttribute(typeDeclaration.Attributes, "Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute", out stdModAttr)) {
 					type.ClassType = ClassType.Module;
 					// remove AttributeSection if only one attribute is present
 					var attrSec = (CSharp.AttributeSection)stdModAttr.Parent;
@@ -854,8 +854,21 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 						attrSec.Remove();
 					else
 						stdModAttr.Remove();
-				} else
-					type.ClassType = typeDeclaration.ClassType;
+				} else {
+					switch (typeDeclaration.ClassType) {
+						case CSharp.ClassType.Class:
+							type.ClassType = ClassType.Class;
+							break;
+						case CSharp.ClassType.Struct:
+							type.ClassType = ClassType.Struct;
+							break;
+						case CSharp.ClassType.Interface:
+							type.ClassType = ClassType.Interface;
+							break;
+						default:
+							throw new InvalidOperationException("Invalid value for ClassType");
+					}
+				}
 				
 				if ((typeDeclaration.Modifiers & CSharp.Modifiers.Static) == CSharp.Modifiers.Static) {
 					type.ClassType = ClassType.Module;

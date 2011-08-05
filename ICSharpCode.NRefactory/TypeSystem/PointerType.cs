@@ -12,6 +12,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 		}
 		
+		public override TypeKind Kind {
+			get { return TypeKind.Pointer; }
+		}
+		
 		public override string NameSuffix {
 			get {
 				return "*";
