@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		protected IType ResolveType(Type type)
 		{
 			IType t = type.ToTypeReference().Resolve(context);
-			if (t == SharedTypes.UnknownType)
+			if (SharedTypes.UnknownType.Equals(t))
 				throw new InvalidOperationException("Could not resolve type");
 			return t;
 		}

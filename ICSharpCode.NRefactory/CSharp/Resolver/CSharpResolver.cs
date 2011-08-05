@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			public DomRegion DeclarationRegion {
-				get { return region; } 
+				get { return region; }
 			}
 			
 			public ITypeReference Type {
@@ -310,7 +310,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return true; }
 			}
 			
-				bool IEntity.IsPrivate {
+			bool IEntity.IsPrivate {
 				get { return false; }
 			}
 			
@@ -375,7 +375,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			
-			if (expression.Type == SharedTypes.Dynamic)
+			if (SharedTypes.Dynamic.Equals(expression.Type))
 				return DynamicResult;
 			
 			// C# 4.0 spec: §7.3.3 Unary operator overload resolution
@@ -469,7 +469,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §7.3.6.1
 			TypeCode code = ReflectionHelper.GetTypeCode(type);
-			if (isNullable && type == SharedTypes.Null)
+			if (isNullable && SharedTypes.Null.Equals(type))
 				code = TypeCode.SByte; // cause promotion of null to int32
 			switch (op) {
 				case UnaryOperatorType.Minus:
@@ -626,7 +626,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			
-			if (lhs.Type == SharedTypes.Dynamic || rhs.Type == SharedTypes.Dynamic)
+			if (SharedTypes.Dynamic.Equals(lhs.Type) || SharedTypes.Dynamic.Equals(rhs.Type))
 				return DynamicResult;
 			
 			// C# 4.0 spec: §7.3.4 Binary operator overload resolution
@@ -656,14 +656,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			// TODO: find user-defined operators
 			
-			if (lhsType == SharedTypes.Null && rhsType.IsReferenceType(context) == false
-			    || lhsType.IsReferenceType(context) == false && rhsType == SharedTypes.Null)
+			if (SharedTypes.Null.Equals(lhsType) && rhsType.IsReferenceType(context) == false
+			    || lhsType.IsReferenceType(context) == false && SharedTypes.Null.Equals(rhsType))
 			{
 				isNullable = true;
 			}
 			if (op == BinaryOperatorType.ShiftLeft || op == BinaryOperatorType.ShiftRight) {
 				// special case: the shift operators allow "var x = null << null", producing int?.
-				if (lhsType == SharedTypes.Null && rhsType == SharedTypes.Null)
+				if (SharedTypes.Null.Equals(lhsType) && SharedTypes.Null.Equals(rhsType))
 					isNullable = true;
 				// for shift operators, do unary promotion independently on both arguments
 				lhs = UnaryNumericPromotion(UnaryOperatorType.Plus, ref lhsType, isNullable, lhs);
@@ -709,7 +709,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						} else if (rhsType is PointerType && IsInteger(ReflectionHelper.GetTypeCode(lhsType))) {
 							return new ResolveResult(rhsType);
 						}
-						if (lhsType == SharedTypes.Null && rhsType == SharedTypes.Null)
+						if (SharedTypes.Null.Equals(lhsType) && SharedTypes.Null.Equals(rhsType))
 							return new ErrorResolveResult(SharedTypes.Null);
 					}
 					break;
@@ -737,7 +737,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						} else if (lhsType is PointerType && lhsType.Equals(rhsType)) {
 							return new ResolveResult(KnownTypeReference.Int64.Resolve(context));
 						}
-						if (lhsType == SharedTypes.Null && rhsType == SharedTypes.Null)
+						if (SharedTypes.Null.Equals(lhsType) && SharedTypes.Null.Equals(rhsType))
 							return new ErrorResolveResult(SharedTypes.Null);
 					}
 					break;
@@ -920,10 +920,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			TypeCode lhsCode = ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(lhs.Type));
 			TypeCode rhsCode = ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(rhs.Type));
 			// if one of the inputs is the null literal, promote that to the type of the other operand
-			if (isNullable && lhs.Type == SharedTypes.Null) {
+			if (isNullable && SharedTypes.Null.Equals(lhs.Type)) {
 				lhs = CastTo(rhsCode, isNullable, lhs, allowNullableConstants);
 				lhsCode = rhsCode;
-			} else if (isNullable && rhs.Type == SharedTypes.Null) {
+			} else if (isNullable && SharedTypes.Null.Equals(rhs.Type)) {
 				rhs = CastTo(lhsCode, isNullable, rhs, allowNullableConstants);
 				rhsCode = lhsCode;
 			}
@@ -1516,10 +1516,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveSimpleName
 		enum SimpleNameLookupMode
 		{
+			/// <summary>
+			/// Normal name lookup in expressions
+			/// </summary>
 			Expression,
+			/// <summary>
+			/// Name lookup in expression, where the expression is the target of an invocation.
+			/// Such a lookup will only return methods and delegate-typed fields.
+			/// </summary>
 			InvocationTarget,
+			/// <summary>
+			/// Normal name lookup in type references.
+			/// </summary>
 			Type,
-			TypeInUsingDeclaration
+			/// <summary>
+			/// Name lookup in the type reference inside a using declaration.
+			/// </summary>
+			TypeInUsingDeclaration,
+			/// <summary>
+			/// Name lookup for unbound types "Dictionary&lt;,&gt;". Can only occur within typeof-expressions.
+			/// </summary>
+			UnboundType
 		}
 		
 		public ResolveResult ResolveSimpleName(string identifier, IList<IType> typeArguments, bool isInvocationTarget = false)
@@ -1571,6 +1588,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			cancellationToken.ThrowIfCancellationRequested();
 			
 			int k = typeArguments.Count;
+			bool parameterizeResultType = k > 0;
+			if (parameterizeResultType) {
+				if (typeArguments.All(t => t.Equals(SharedTypes.UnboundTypeArgument)))
+					parameterizeResultType = false;
+			}
 			
 			// look in type parameters of current method
 			if (k == 0) {
@@ -1600,11 +1622,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
 					r = lookup.Lookup(t, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
 				} else {
-					r = lookup.LookupType(t, identifier, typeArguments);
+					r = lookup.LookupType(t, identifier, typeArguments, parameterizeResultType);
 				}
 				if (!(r is UnknownMemberResolveResult)) // but do return AmbiguousMemberResolveResult
 					return r;
 			}
+			
 			// look in current namespace definitions
 			for (UsingScope n = this.UsingScope; n != null; n = n.Parent) {
 				// first look for a namespace
@@ -1620,7 +1643,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ITypeDefinition def = context.GetTypeDefinition(n.NamespaceName, identifier, k, StringComparer.Ordinal);
 				if (def != null) {
 					IType result = def;
-					if (k != 0) {
+					if (parameterizeResultType) {
 						result = new ParameterizedType(def, typeArguments);
 					}
 					if (n.HasAlias(identifier))
@@ -1654,10 +1677,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							def = context.GetTypeDefinition(ns.NamespaceName, identifier, k, StringComparer.Ordinal);
 							if (def != null) {
 								if (firstResult == null) {
-									if (k == 0)
-										firstResult = def;
-									else
+									if (parameterizeResultType)
 										firstResult = new ParameterizedType(def, typeArguments);
+									else
+										firstResult = def;
 								} else {
 									return new AmbiguousTypeResolveResult(firstResult);
 								}
@@ -1727,7 +1750,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return ErrorResult;
 			}
 			
-			if (target.Type == SharedTypes.Dynamic)
+			if (SharedTypes.Dynamic.Equals(target.Type))
 				return DynamicResult;
 			
 			MemberLookup lookup = CreateMemberLookup();
@@ -1811,7 +1834,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			cancellationToken.ThrowIfCancellationRequested();
 			
-			if (target.Type == SharedTypes.Dynamic)
+			if (SharedTypes.Dynamic.Equals(target.Type))
 				return DynamicResult;
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
@@ -1921,7 +1944,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				} else {
 					// argument might be a lambda or delegate type, so we have to try to guess the delegate type
 					IType type = arguments[i].Type;
-					if (type == SharedTypes.Null || type == SharedTypes.UnknownType) {
+					if (SharedTypes.Null.Equals(type) || SharedTypes.UnknownType.Equals(type)) {
 						list.Add(new DefaultParameter(KnownTypeReference.Object, argumentNames[i]));
 					} else {
 						list.Add(new DefaultParameter(type, argumentNames[i]));
@@ -1971,7 +1994,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			
-			if (target.Type == SharedTypes.Dynamic)
+			if (SharedTypes.Dynamic.Equals(target.Type))
 				return DynamicResult;
 			
 			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
@@ -2088,7 +2111,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Conversions c = new Conversions(context);
 			bool isValid;
 			IType resultType;
-			if (trueExpression.Type == SharedTypes.Dynamic || falseExpression.Type == SharedTypes.Dynamic) {
+			if (SharedTypes.Dynamic.Equals(trueExpression.Type) || SharedTypes.Dynamic.Equals(falseExpression.Type)) {
 				resultType = SharedTypes.Dynamic;
 				isValid = true;
 			} else if (HasType(trueExpression) && HasType(falseExpression)) {
@@ -2124,7 +2147,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		bool HasType(ResolveResult r)
 		{
-			return r.Type != SharedTypes.UnknownType && r.Type != SharedTypes.Null;
+			return !(SharedTypes.UnknownType.Equals(r.Type) || SharedTypes.Null.Equals(r.Type));
 		}
 		#endregion
 		

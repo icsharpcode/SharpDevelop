@@ -589,9 +589,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		static void ApplyModifiers(TypeSystem.Implementation.AbstractMember m, Modifiers modifiers)
 		{
-			// members from interfaces are always Public.
+			// members from interfaces are always Public+Abstract.
 			if (m.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
 				m.Accessibility = Accessibility.Public;
+				m.IsAbstract = true;
 				return;
 			}
 			m.Accessibility = GetAccessibility(modifiers) ?? Accessibility.Private;
@@ -709,6 +710,10 @@ namespace ICSharpCode.NRefactory.CSharp
 							return tp;
 					}
 				}
+				if (typeArguments.Count == 0 && string.IsNullOrEmpty(s.Identifier)) {
+					// empty SimpleType is used for typeof(List<>).
+					return SharedTypes.UnboundTypeArgument;
+				}
 				return new SimpleTypeOrNamespaceReference(s.Identifier, typeArguments, parentTypeDefinition, parentUsingScope, isInUsingDeclaration);
 			}
 			
@@ -742,7 +747,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					case "double":
 						return KnownTypeReference.Double;
 					case "decimal":
-						return ReflectionHelper.ToTypeReference(TypeCode.Decimal);
+						return KnownTypeReference.Decimal;
 					case "char":
 						return KnownTypeReference.Char;
 					case "void":
@@ -943,12 +948,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new ConstantBinaryOperator(left, binaryOperatorExpression.Operator, right);
 			}
 			
-			static readonly GetClassTypeReference systemType = new GetClassTypeReference("System", "Type", 0);
-			
 			public override ConstantExpression VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 			{
 				if (isAttributeArgument) {
-					return new PrimitiveConstantExpression(systemType, convertVisitor.ConvertType(typeOfExpression.Type));
+					return new PrimitiveConstantExpression(KnownTypeReference.Type, convertVisitor.ConvertType(typeOfExpression.Type));
 				} else {
 					return null;
 				}

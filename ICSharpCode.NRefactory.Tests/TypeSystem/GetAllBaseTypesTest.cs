@@ -5,11 +5,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
+	using Unbound = ReflectionHelper.UnboundTypeArgument;
+	
 	[TestFixture]
 	public class GetAllBaseTypesTest
 	{
@@ -133,6 +136,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				         typeof(IList), typeof(ICollection), typeof(IEnumerable),
 				         typeof(IEnumerable<string>), typeof(ICollection<string>), typeof(IList<string>)),
 				GetAllBaseTypes(typeof(List<string>)));
+		}
+		
+		[Test]
+		public void BaseTypesOfUnboundDictionary()
+		{
+			Assert.AreEqual(
+				new [] {
+					typeof(Dictionary<,>).FullName,
+					typeof(ICollection<>).FullName + "[[" + typeof(KeyValuePair<,>).FullName + "[[`0],[`1]]]]",
+					typeof(IDictionary<,>).FullName + "[[`0],[`1]]",
+					typeof(IEnumerable<>).FullName + "[[" + typeof(KeyValuePair<,>).FullName + "[[`0],[`1]]]]",
+					typeof(ICollection).FullName,
+					typeof(IDictionary).FullName,
+					typeof(IEnumerable).FullName,
+					typeof(object).FullName,
+					typeof(IDeserializationCallback).FullName,
+					typeof(ISerializable).FullName,
+				},
+				GetAllBaseTypes(typeof(Dictionary<,>)).Select(t => t.ReflectionName).ToArray());
 		}
 		
 		[Test]

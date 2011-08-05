@@ -176,14 +176,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			/*
 			class Base<T> {
-				class Nested {}
+				class Nested<X> {}
 			}
 			class Derived<A, B> : Base<B> {}
 			
-			Derived<string,int>.GetNestedTypes() = { Base`1+Nested<int> }
-			Derived.GetNestedTypes() = { Base`1+Nested<B> }
-			Base<B>.GetNestedTypes() = { Base`1+Nested<B> }
-			Base.GetNestedTypes() = { Base`1+Nested<T2> } where T2 = copy of T in Base`1+Nested
+			Derived<string,int>.GetNestedTypes() = { Base`1+Nested<int, > }
+			Derived.GetNestedTypes() = { Base`1+Nested<`1, > }
+			Base<`1>.GetNestedTypes() = { Base`1+Nested<`1, > }
+			Base.GetNestedTypes() = { Base`1+Nested }
+			
+			Empty type arguments are represented by SharedTypes.UnboundTypeArgument.
 			 */
 			Substitution substitution = new Substitution(typeArguments);
 			List<IType> types = genericType.GetNestedTypes(context, filter).ToList();
@@ -193,10 +195,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					// (partially) parameterize the nested type definition
 					IType[] newTypeArgs = new IType[def.TypeParameterCount];
 					for (int j = 0; j < newTypeArgs.Length; j++) {
-						if (i < typeArguments.Length)
-							newTypeArgs[j] = typeArguments[i];
+						if (j < typeArguments.Length)
+							newTypeArgs[j] = typeArguments[j];
 						else
-							newTypeArgs[j] = def.TypeParameters[j];
+							newTypeArgs[j] = SharedTypes.UnboundTypeArgument;
 					}
 					types[i] = new ParameterizedType(def, newTypeArgs);
 				} else {

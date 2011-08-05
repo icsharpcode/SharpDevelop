@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		public ResolveResult LookupType(IType declaringType, string name, IList<IType> typeArguments)
+		public ResolveResult LookupType(IType declaringType, string name, IList<IType> typeArguments, bool parameterizeResultType = true)
 		{
 			int typeArgumentCount = typeArguments.Count;
 			Predicate<ITypeDefinition> typeFilter = delegate (ITypeDefinition d) {
@@ -116,7 +116,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			List<IType> types = declaringType.GetNestedTypes(context, typeFilter).ToList();
 			RemoveTypesHiddenByOtherTypes(types);
 			if (types.Count > 0)
-				return CreateTypeResolveResult(types[0], types.Count > 1, typeArguments);
+				return CreateTypeResolveResult(types[0], types.Count > 1, typeArguments, parameterizeResultType);
 			else
 				return new UnknownMemberResolveResult(declaringType, name, typeArguments);
 		}
@@ -141,9 +141,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ResolveResult CreateTypeResolveResult(IType returnedType, bool isAmbiguous, IList<IType> typeArguments)
+		ResolveResult CreateTypeResolveResult(IType returnedType, bool isAmbiguous, IList<IType> typeArguments, bool parameterizeResultType)
 		{
-			if (typeArguments.Count > 0) {
+			if (parameterizeResultType && typeArguments.Count > 0) {
 				// parameterize the type if necessary
 				ITypeDefinition returnedTypeDef = returnedType as ITypeDefinition;
 				if (returnedTypeDef != null)
@@ -247,7 +247,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			if (types.Count > 0) {
 				bool isAmbiguous = !(types.Count == 1 && members.Count == 0);
-				return CreateTypeResolveResult(types[0], isAmbiguous, typeArguments);
+				return CreateTypeResolveResult(types[0], isAmbiguous, typeArguments, true);
 			}
 			if (members.Count == 0)
 				return new UnknownMemberResolveResult(type, name, typeArguments);

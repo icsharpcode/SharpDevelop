@@ -76,10 +76,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("assemblyDefinition");
 			ITypeResolveContext oldEarlyBindContext = this.EarlyBindContext;
 			try {
+				// Read assembly attributes
 				IList<IAttribute> assemblyAttributes = new List<IAttribute>();
-				foreach (var attr in assemblyDefinition.CustomAttributes) {
-					assemblyAttributes.Add(ReadAttribute(attr));
-				}
+				AddAttributes(assemblyDefinition, assemblyAttributes);
+				
 				if (this.InterningProvider != null)
 					assemblyAttributes = this.InterningProvider.InternList(assemblyAttributes);
 				else
@@ -357,13 +357,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Attributes
-		void AddAttributes(ICustomAttributeProvider customAttributeProvider, IEntity targetEntity)
+		#region Assembly Attributes
+		static readonly ITypeReference typeForwardedToAttributeTypeRef = typeof(TypeForwardedToAttribute).ToTypeReference();
+		
+		void AddAttributes(AssemblyDefinition assembly, IList<IAttribute> outputList)
 		{
-			if (customAttributeProvider.HasCustomAttributes) {
-				AddCustomAttributes(customAttributeProvider.CustomAttributes, targetEntity.Attributes);
+			if (assembly.HasCustomAttributes) {
+				AddCustomAttributes(assembly.CustomAttributes, outputList);
+			}
+			
+			// TypeForwardedToAttribute
+			foreach (ExportedType type in assembly.MainModule.ExportedTypes) {
+				if (type.IsForwarder) {
+					int typeParameterCount;
+					string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
+					var typeForwardedTo = new DefaultAttribute(typeForwardedToAttributeTypeRef, new[] { KnownTypeReference.Type });
+					var typeRef = new GetClassTypeReference(type.Namespace, name, typeParameterCount);
+					typeForwardedTo.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.Type, typeRef));
+					outputList.Add(typeForwardedTo);
+				}
 			}
 		}
+		#endregion
 		
+		#region Parameter Attributes
 		static readonly IAttribute inAttribute = new DefaultAttribute(typeof(InAttribute).ToTypeReference(), null);
 		static readonly IAttribute outAttribute = new DefaultAttribute(typeof(OutAttribute).ToTypeReference(), null);
 		
@@ -379,7 +396,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				AddCustomAttributes(parameter.CustomAttributes, targetParameter.Attributes);
 			}
 		}
+		#endregion
 		
+		#region Method Attributes
 		static readonly ITypeReference dllImportAttributeTypeRef = typeof(DllImportAttribute).ToTypeReference();
 		static readonly SimpleConstantValue trueValue = new SimpleConstantValue(KnownTypeReference.Boolean, true);
 		static readonly SimpleConstantValue falseValue = new SimpleConstantValue(KnownTypeReference.Boolean, true);
@@ -506,18 +525,24 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			attribute.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(name, value));
 		}
+		#endregion
 		
+		#region Type Attributes
 		static readonly DefaultAttribute serializableAttribute = new DefaultAttribute(typeof(SerializableAttribute).ToTypeReference(), null);
+		static readonly DefaultAttribute comImportAttribute = new DefaultAttribute(typeof(ComImportAttribute).ToTypeReference(), null);
 		static readonly ITypeReference structLayoutAttributeTypeRef = typeof(StructLayoutAttribute).ToTypeReference();
 		static readonly ITypeReference layoutKindTypeRef = typeof(LayoutKind).ToTypeReference();
 		static readonly ITypeReference charSetTypeRef = typeof(CharSet).ToTypeReference();
 		
 		void AddAttributes(TypeDefinition typeDefinition, ITypeDefinition targetEntity)
 		{
-			#region SerializableAttribute
+			// SerializableAttribute
 			if (typeDefinition.IsSerializable)
 				targetEntity.Attributes.Add(serializableAttribute);
-			#endregion
+			
+			// ComImportAttribute
+			if (typeDefinition.IsImport)
+				targetEntity.Attributes.Add(comImportAttribute);
 			
 			#region StructLayoutAttribute
 			LayoutKind layoutKind = LayoutKind.Auto;
@@ -568,25 +593,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				AddCustomAttributes(typeDefinition.CustomAttributes, targetEntity.Attributes);
 			}
 		}
+		#endregion
 		
+		#region Field Attributes
 		static readonly ITypeReference fieldOffsetAttributeTypeRef = typeof(FieldOffsetAttribute).ToTypeReference();
 		static readonly DefaultAttribute nonSerializedAttribute = new DefaultAttribute(typeof(NonSerializedAttribute).ToTypeReference(), null);
 		
 		void AddAttributes(FieldDefinition fieldDefinition, IEntity targetEntity)
 		{
-			#region FieldOffsetAttribute
+			// FieldOffsetAttribute
 			if (fieldDefinition.HasLayoutInfo) {
 				DefaultAttribute fieldOffset = new DefaultAttribute(fieldOffsetAttributeTypeRef, new[] { KnownTypeReference.Int32 });
 				fieldOffset.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.Int32, fieldDefinition.Offset));
 				targetEntity.Attributes.Add(fieldOffset);
 			}
-			#endregion
 			
-			#region NonSerializedAttribute
+			// NonSerializedAttribute
 			if (fieldDefinition.IsNotSerialized) {
 				targetEntity.Attributes.Add(nonSerializedAttribute);
 			}
-			#endregion
 			
 			if (fieldDefinition.HasMarshalInfo) {
 				targetEntity.Attributes.Add(ConvertMarshalInfo(fieldDefinition.MarshalInfo));
@@ -596,6 +621,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				AddCustomAttributes(fieldDefinition.CustomAttributes, targetEntity.Attributes);
 			}
 		}
+		#endregion
+		
+		#region Event Attributes
+		void AddAttributes(EventDefinition eventDefinition, IEntity targetEntity)
+		{
+			if (eventDefinition.HasCustomAttributes) {
+				AddCustomAttributes(eventDefinition.CustomAttributes, targetEntity.Attributes);
+			}
+		}
+		#endregion
+		
+		#region Property Attributes
+		void AddAttributes(PropertyDefinition propertyDefinition, IEntity targetEntity)
+		{
+			if (propertyDefinition.HasCustomAttributes) {
+				AddCustomAttributes(propertyDefinition.CustomAttributes, targetEntity.Attributes);
+			}
+		}
+		#endregion
 		
 		#region MarshalAsAttribute (ConvertMarshalInfo)
 		static readonly ITypeReference marshalAsAttributeTypeRef = typeof(MarshalAsAttribute).ToTypeReference();
@@ -610,6 +654,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		#endregion
 		
+		#region Custom Attributes (ReadAttribute)
 		void AddCustomAttributes(Mono.Collections.Generic.Collection<CustomAttribute> attributes, IList<IAttribute> targetCollection)
 		{
 			foreach (var cecilAttribute in attributes) {
@@ -660,6 +705,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			return a;
 		}
+		#endregion
 		#endregion
 		
 		#region Read Constant Value

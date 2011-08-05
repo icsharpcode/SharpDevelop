@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
@@ -70,6 +71,41 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(2, indexer.Parameters.Count);
 			Assert.AreEqual("System.Int32", indexer.Parameters[0].Type.Resolve(mscorlib).ReflectionName);
 			Assert.AreEqual("System.Int32", indexer.Parameters[1].Type.Resolve(mscorlib).ReflectionName);
+		}
+		
+		[Test]
+		public void GetNestedTypesOfUnboundGenericClass()
+		{
+			ITypeDefinition dictionary = mscorlib.GetTypeDefinition(typeof(Dictionary<,>));
+			IType keyCollection = dictionary.GetNestedTypes(mscorlib).Single(t => t.Name == "KeyCollection");
+			Assert.IsTrue(keyCollection is ITypeDefinition);
+		}
+		
+		[Test]
+		public void GetNestedTypesOfBoundGenericClass()
+		{
+			IType dictionary = typeof(Dictionary<string, int>).ToTypeReference().Resolve(mscorlib);
+			IType keyCollection = dictionary.GetNestedTypes(mscorlib).Single(t => t.Name == "KeyCollection");
+			Assert.AreEqual(typeof(Dictionary<string, int>.KeyCollection).ToTypeReference().Resolve(mscorlib), keyCollection);
+		}
+		
+		[Test]
+		public void GetGenericNestedTypeOfBoundGenericClass()
+		{
+			// class A<X> { class B<Y> { } }
+			DefaultTypeDefinition a = new DefaultTypeDefinition(mscorlib, string.Empty, "A");
+			a.TypeParameters.Add(new DefaultTypeParameter(EntityType.TypeDefinition, 0, "X"));
+			
+			DefaultTypeDefinition b = new DefaultTypeDefinition(a, "B");
+			b.TypeParameters.Add(a.TypeParameters[0]);
+			b.TypeParameters.Add(new DefaultTypeParameter(EntityType.TypeDefinition, 1, "Y"));
+			
+			a.NestedTypes.Add(b);
+			
+			Assert.AreSame(b, a.GetNestedTypes(mscorlib).Single());
+			
+			ParameterizedType pt = new ParameterizedType(a, new [] { KnownTypeReference.String.Resolve(mscorlib) });
+			Assert.AreEqual("A`1+B`1[[System.String],[]]", pt.GetNestedTypes(mscorlib).Single().ReflectionName);
 		}
 	}
 }

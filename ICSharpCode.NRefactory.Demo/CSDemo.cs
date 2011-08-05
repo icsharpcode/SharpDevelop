@@ -144,9 +144,13 @@ namespace ICSharpCode.NRefactory.Demo
 		{
 			AstNode node = e.Node.Tag as AstNode;
 			if (node != null) {
-				int startOffset = GetOffset(csharpCodeTextBox, node.StartLocation);
-				int endOffset = GetOffset(csharpCodeTextBox, node.EndLocation);
-				csharpCodeTextBox.Select(startOffset, endOffset - startOffset);
+				if (node.StartLocation.IsEmpty || node.EndLocation.IsEmpty) {
+					csharpCodeTextBox.DeselectAll();
+				} else {
+					int startOffset = GetOffset(csharpCodeTextBox, node.StartLocation);
+					int endOffset = GetOffset(csharpCodeTextBox, node.EndLocation);
+					csharpCodeTextBox.Select(startOffset, endOffset - startOffset);
+				}
 			}
 		}
 		

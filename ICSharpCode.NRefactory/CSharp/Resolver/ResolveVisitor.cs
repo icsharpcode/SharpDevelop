@@ -885,13 +885,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return resolver.ResolveThisReference();
 		}
 		
-		static readonly GetClassTypeReference systemType = new GetClassTypeReference("System", "Type", 0);
-		
 		public override ResolveResult VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
 			ScanChildren(typeOfExpression);
 			if (resolverEnabled)
-				return new ResolveResult(systemType.Resolve(resolver.Context));
+				return new ResolveResult(KnownTypeReference.Type.Resolve(resolver.Context));
 			else
 				return null;
 		}
@@ -935,7 +933,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							resultType = SharedTypes.UnknownType;
 						break;
 					case UndocumentedExpressionType.RefType:
-						resultType = systemType;
+						resultType = KnownTypeReference.Type;
 						break;
 					case UndocumentedExpressionType.MakeRef:
 						resultType = typeof(TypedReference).ToTypeReference();

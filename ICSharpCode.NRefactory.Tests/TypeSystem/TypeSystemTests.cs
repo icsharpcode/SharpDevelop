@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.TypeSystem.TestCase;
@@ -112,7 +113,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void AssemblyAttribute()
 		{
 			var attributes = testCasePC.AssemblyAttributes;
-			var typeTest = attributes.First(a => a.AttributeType.Resolve(ctx).FullName == typeof(TypeTestAttribute).FullName);
+			var typeTest = attributes.Single(a => a.AttributeType.Resolve(ctx).FullName == typeof(TypeTestAttribute).FullName);
 			var posArgs = typeTest.GetPositionalArguments(ctx);
 			Assert.AreEqual(3, posArgs.Count);
 			// first argument is (int)42
@@ -128,6 +129,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("System.String", crt.TypeArguments[0].FullName);
 			// ? for NUnit.TestAttribute (because that assembly isn't in ctx)
 			Assert.AreEqual("System.Collections.Generic.IList`1[[?]]", crt.TypeArguments[1].ReflectionName);
+		}
+		
+		[Test]
+		public void TypeForwardedTo_Attribute()
+		{
+			var attributes = testCasePC.AssemblyAttributes;
+			var forwardAttribute = attributes.Single(a => a.AttributeType.Resolve(ctx).FullName == typeof(TypeForwardedToAttribute).FullName);
+			var posArgs = forwardAttribute.GetPositionalArguments(ctx);
+			Assert.AreEqual(1, posArgs.Count);
+			IType rt = (IType)posArgs[0].GetValue(ctx);
+			Assert.AreEqual("System.Func`2", rt.ReflectionName);
 		}
 		
 		[Test]
@@ -249,10 +261,28 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void GetNestedTypesFromBaseClassTest()
+		{
+			ITypeDefinition d = ctx.GetTypeDefinition(typeof(Derived<,>));
+			
+			IType pBase = d.BaseTypes.Single().Resolve(ctx);
+			Assert.AreEqual(typeof(Base<>).FullName + "[[`1]]", pBase.ReflectionName);
+			// Base<`1>.GetNestedTypes() = Base<`1>.Nested<>
+			Assert.AreEqual(new[] { typeof(Base<>.Nested<>).FullName + "[[`1],[]]" },
+			                pBase.GetNestedTypes(ctx).Select(n => n.ReflectionName).ToArray());
+			
+			// Derived<,>.GetNestedTypes() = Base<`1>.Nested<>
+			Assert.AreEqual(new[] { typeof(Base<>.Nested<>).FullName + "[[`1],[]]" },
+			                d.GetNestedTypes(ctx).Select(n => n.ReflectionName).ToArray());
+			// This is 'leaking' the type parameter from B as is usual when retrieving any members from an unbound type.
+		}
+		
+		[Test]
 		public void ParameterizedTypeGetNestedTypesFromBaseClassTest()
 		{
+			// Derived<string,int>.GetNestedTypes() = Base<int>.Nested<>
 			var d = typeof(Derived<string, int>).ToTypeReference().Resolve(ctx);
-			Assert.AreEqual(new[] { typeof(Base<>.Nested).FullName + "[[System.Int32]]" },
+			Assert.AreEqual(new[] { typeof(Base<>.Nested<>).FullName + "[[System.Int32],[]]" },
 			                d.GetNestedTypes(ctx).Select(n => n.ReflectionName).ToArray());
 		}
 		
@@ -365,14 +395,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsTrue(p.Type is ArrayTypeReference);
 		}
 		
-		[Test, Ignore("C# Parser does not set the variance")]
+		[Test]
 		public void GenericDelegate_Variance()
 		{
 			ITypeDefinition type = ctx.GetTypeDefinition(typeof(GenericDelegate<,>));
 			Assert.AreEqual(VarianceModifier.Contravariant, type.TypeParameters[0].Variance);
 			Assert.AreEqual(VarianceModifier.Covariant, type.TypeParameters[1].Variance);
 			
-			Assert.AreSame(type.TypeParameters[1], type.TypeParameters[0].Constraints[0]);
+			Assert.AreSame(type.TypeParameters[1], type.TypeParameters[0].Constraints[0].Resolve(ctx));
 		}
 		
 		[Test]
@@ -394,6 +424,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("Invoke", m.Name);
 			Assert.AreEqual("System.Object", m.ReturnType.Resolve(ctx).FullName);
 			Assert.AreEqual("System.String", m.Parameters[0].Type.Resolve(ctx).FullName);
+		}
+		
+		[Test]
+		public void ComInterfaceTest()
+		{
+			ITypeDefinition type = ctx.GetTypeDefinition(typeof(IAssemblyEnum));
+			// [ComImport]
+			Assert.AreEqual(1, type.Attributes.Count(a => a.AttributeType.Resolve(ctx).FullName == typeof(ComImportAttribute).FullName));
+			
+			IMethod m = type.Methods.Single();
+			Assert.AreEqual("GetNextAssembly", m.Name);
+			Assert.AreEqual(Accessibility.Public, m.Accessibility);
+			Assert.IsTrue(m.IsAbstract);
+			Assert.IsFalse(m.IsVirtual);
 		}
 	}
 }

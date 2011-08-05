@@ -88,6 +88,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public static readonly ITypeReference Double = new GetClassTypeReference("System", "Double", 0);
 		
 		/// <summary>
+		/// Gets a type reference pointing to the <c>decimal</c> type.
+		/// </summary>
+		public static readonly ITypeReference Decimal = new GetClassTypeReference("System", "Decimal", 0);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>System.Type</c> type.
+		/// </summary>
+		public static readonly ITypeReference Type = new GetClassTypeReference("System", "Type", 0);
+		
+		/// <summary>
 		/// Gets all known type references.
 		/// </summary>
 		public static IEnumerable<ITypeReference> AllKnownTypeReferences {
@@ -95,7 +105,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new[] {
 					Void, Object, Boolean,
 					SByte, Byte, Int16, UInt16, Int32, UInt32, Int64, UInt64,
-					String, Char, Single, Double
+					String, Char, Single, Double, Decimal,
+					Type
 				};
 			}
 		}

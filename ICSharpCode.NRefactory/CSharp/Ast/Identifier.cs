@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Identifier.cs
 //  
 // Author:
@@ -30,8 +30,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class Identifier : AstNode, IRelocatable
 	{
-		public static readonly Identifier Null = new NullIdentifier ();
-		class NullIdentifier : Identifier
+		public new static readonly Identifier Null = new NullIdentifier ();
+		sealed class NullIdentifier : Identifier
 		{
 			public override bool IsNull {
 				get {

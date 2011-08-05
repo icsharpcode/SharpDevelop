@@ -99,6 +99,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets whether the type is an open type (contains type parameters).
 		/// </summary>
+		/// <example>
+		/// <code>
+		/// class X&lt;T&gt; {
+		///   List&lt;T&gt; open;
+		///   X&lt;X&lt;T[]&gt;&gt; open;
+		///   X&lt;string&gt; closed;
+		///   int closed;
+		/// }
+		/// </code>
+		/// </example>
 		public static bool IsOpen(this IType type)
 		{
 			if (type == null)
@@ -109,8 +119,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
-		/// Gets whether the type is unbound.
+		/// Gets whether the type is unbound (is a generic type, but no type arguments were provided).
 		/// </summary>
+		/// <remarks>
+		/// In "<c>typeof(List&lt;Dictionary&lt;,&gt;&gt;)</c>", only the Dictionary is unbound, the List is considered
+		/// bound despite containing an unbound type.
+		/// This method returns false for partially parameterized types (<c>Dictionary&lt;string, &gt;</c>).
+		/// </remarks>
 		public static bool IsUnbound(this IType type)
 		{
 			if (type == null)

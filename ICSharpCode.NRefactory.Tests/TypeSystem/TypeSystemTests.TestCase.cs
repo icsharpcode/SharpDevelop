@@ -4,9 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 [assembly: ICSharpCode.NRefactory.TypeSystem.TestCase.TypeTestAttribute(
 	42, typeof(System.Action<>), typeof(IDictionary<string, IList<NUnit.Framework.TestAttribute>>))]
+
+[assembly: TypeForwardedTo(typeof(Func<,>))]
 
 namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 {
@@ -60,7 +63,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	}
 	
 	public class Base<T> {
-		public class Nested {}
+		public class Nested<X> {}
 	}
 	public class Derived<A, B> : Base<B> {}
 	
@@ -94,5 +97,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	{
 		public void MethodWithOutParameter(out int x) { x = 0; }
 		public void MethodWithParamsArray(params object[] x) {}
+	}
+	
+	[ComImport(), Guid("21B8916C-F28E-11D2-A473-00C04F8EF448"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	public interface IAssemblyEnum
+	{
+		[PreserveSig()]
+		int GetNextAssembly(uint dwFlags);
 	}
 }

@@ -29,6 +29,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "It's immutable")]
 		public readonly static IType Dynamic = new DynamicType();
 		
+		/// <summary>
+		/// A type used for unbound type arguments in partially parameterized types.
+		/// </summary>
+		/// <see cref="IType.GetNestedTypes"/>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "It's immutable")]
+		public readonly static IType UnboundTypeArgument = new UnboundType();
+		
 		/*
 		 * I'd like to define static instances for common types like
 		 * void, int, etc.; but there are two problems with this:
@@ -120,6 +127,28 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			public override int GetHashCode()
 			{
 				return 31986112;
+			}
+		}
+		
+		sealed class UnboundType : AbstractType
+		{
+			public override string Name {
+				get { return string.Empty; }
+			}
+			
+			public override bool? IsReferenceType(ITypeResolveContext context)
+			{
+				return null;
+			}
+			
+			public override bool Equals(IType other)
+			{
+				return other is UnboundType;
+			}
+			
+			public override int GetHashCode()
+			{
+				return 151719123;
 			}
 		}
 	}

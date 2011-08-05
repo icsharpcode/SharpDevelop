@@ -73,10 +73,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// The filter is tested on the unparameterized types.</param>
 		/// <remarks>
 		/// If this type is parameterized, the nested type will also be parameterized.
-		/// Any additional type parameters on the nested type will be parameterized with the
-		/// corresponding ITypeParameter.
+		/// Any additional type parameters on the nested type will be parameterized with
+		/// <see cref="SharedType.UnboundTypeArgument"/>.
 		/// </remarks>
 		IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null);
+		// Note that we cannot 'leak' the additional type parameter as we leak the normal type parameters, because
+		// the index might collide. For example,
+		//   class Base<T> { class Nested<X> {} }
+		//   class Derived<A, B> : Base<B> { }
+		// 
+		// Derived<string, int>.GetNestedTypes() = Base+Nested<int, UnboundTypeArgument>
+		// Derived.GetNestedTypes() = Base+Nested<`1, >
+		//  Here `1 refers to B, and there's no way to return X as it would collide with B.
 		
 		/// <summary>
 		/// Gets all instance constructors for this type.

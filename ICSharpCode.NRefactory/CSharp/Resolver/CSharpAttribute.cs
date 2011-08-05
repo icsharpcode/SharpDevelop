@@ -111,8 +111,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (attrType == null)
 				return SharedTypes.UnknownType;
 			
-			if (type == SharedTypes.UnknownType || !(type.GetDefinition () != null && type.GetDefinition ().IsDerivedFrom (attrType, context)))
-				type =  withSuffix.Resolve(context);
+			if (type.GetDefinition() == null || !type.GetDefinition().IsDerivedFrom(attrType, context))
+				type = withSuffix.Resolve(context);
 			
 			return type;
 		}

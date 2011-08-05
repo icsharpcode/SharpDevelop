@@ -191,7 +191,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool NullLiteralConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.5
-			return fromType == SharedTypes.Null && NullableType.IsNullable(toType);
+			return SharedTypes.Null.Equals(fromType) && NullableType.IsNullable(toType);
 			// This function only handles the conversion from the null literal to nullable value types,
 			// reference types are handled by ImplicitReferenceConversion instead.
 		}
@@ -207,7 +207,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return false;
 			
 			// conversion from null literal is always possible
-			if (fromType == SharedTypes.Null)
+			if (SharedTypes.Null.Equals(fromType))
 				return true;
 			
 			ArrayType fromArray = fromType as ArrayType;
@@ -242,7 +242,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool IsSubtypeOf(IType s, IType t)
 		{
 			// conversion to dynamic + object are always possible
-			if (t == SharedTypes.Dynamic || t.Equals(objectType))
+			if (t.Equals(SharedTypes.Dynamic) || t.Equals(objectType))
 				return true;
 			
 			// let GetAllBaseTypes do the work for us
@@ -305,7 +305,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool ImplicitDynamicConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.8
-			return fromType == SharedTypes.Dynamic;
+			return SharedTypes.Dynamic.Equals(fromType);
 		}
 		#endregion
 		
@@ -360,7 +360,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §18.4 Pointer conversions
 			if (fromType is PointerType && toType is PointerType && toType.ReflectionName == "System.Void*")
 				return true;
-			if (fromType == SharedTypes.Null && toType is PointerType)
+			if (SharedTypes.Null.Equals(fromType) && toType is PointerType)
 				return true;
 			return false;
 		}
