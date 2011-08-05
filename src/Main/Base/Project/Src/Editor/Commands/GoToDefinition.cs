@@ -15,6 +15,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
 		{
+			if (symbol == null)
+				return;
+			
 			FilePosition pos = symbol.GetDefinitionPosition();
 			if (pos.IsEmpty) {
 				IEntity entity;
