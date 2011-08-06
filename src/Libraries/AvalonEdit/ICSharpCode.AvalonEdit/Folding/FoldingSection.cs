@@ -72,6 +72,15 @@ namespace ICSharpCode.AvalonEdit.Folding
 		}
 		
 		/// <summary>
+		/// Gets the content of the collapsed lines as text.
+		/// </summary>
+		public string TextContent {
+			get {
+				return manager.document.GetText(StartOffset, EndOffset - StartOffset);
+			}
+		}
+		
+		/// <summary>
 		/// Gets/Sets an additional object associated with this folding section.
 		/// </summary>
 		public object Tag { get; set; }
