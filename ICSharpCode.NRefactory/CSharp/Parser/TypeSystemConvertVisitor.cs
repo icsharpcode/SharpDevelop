@@ -658,20 +658,26 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		internal static ITypeReference ConvertAttributeType(AstType type, ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope)
+		{
+			ITypeReference tr = ConvertType(type, parentTypeDefinition, parentMethodDefinition, parentUsingScope, SimpleNameLookupMode.Type);
+			if (!type.GetChildByRole(AstNode.Roles.Identifier).IsVerbatim) {
+				// Try to add "Attribute" suffix, but only if the identifier
+				// (=last identifier in fully qualified name) isn't a verbatim identifier.
+				SimpleTypeOrNamespaceReference st = tr as SimpleTypeOrNamespaceReference;
+				MemberTypeOrNamespaceReference mt = tr as MemberTypeOrNamespaceReference;
+				if (st != null)
+					return new AttributeTypeReference(st, st.AddSuffix("Attribute"));
+				else if (mt != null)
+					return new AttributeTypeReference(mt, mt.AddSuffix("Attribute"));
+			}
+			return tr;
+		}
+		
 		IAttribute ConvertAttribute(CSharp.Attribute attr)
 		{
 			DomRegion region = MakeRegion(attr);
-			ITypeReference type = ConvertType(attr.Type);
-			if (!attr.Type.GetChildByRole(AstNode.Roles.Identifier).IsVerbatim) {
-				// Try to add "Attribute" suffix, but only if the identifier
-				// (=last identifier in fully qualified name) isn't a verbatim identifier.
-				SimpleTypeOrNamespaceReference st = type as SimpleTypeOrNamespaceReference;
-				MemberTypeOrNamespaceReference mt = type as MemberTypeOrNamespaceReference;
-				if (st != null)
-					type = new AttributeTypeReference(st, st.AddSuffix("Attribute"));
-				else if (mt != null)
-					type = new AttributeTypeReference(mt, mt.AddSuffix("Attribute"));
-			}
+			ITypeReference type = ConvertAttributeType(attr.Type, currentTypeDefinition, currentMethod, usingScope);
 			List<IConstantValue> positionalArguments = null;
 			List<KeyValuePair<string, IConstantValue>> namedCtorArguments = null;
 			List<KeyValuePair<string, IConstantValue>> namedArguments = null;

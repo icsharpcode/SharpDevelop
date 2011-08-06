@@ -742,26 +742,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			DefaultAttribute a = new DefaultAttribute(ReadTypeReference(attribute.AttributeType), ctorParameters);
-			try {
-				if (attribute.HasConstructorArguments) {
-					foreach (var arg in attribute.ConstructorArguments) {
-						a.PositionalArguments.Add(ReadConstantValue(arg));
-					}
+			if (attribute.HasConstructorArguments) {
+				foreach (var arg in attribute.ConstructorArguments) {
+					a.PositionalArguments.Add(ReadConstantValue(arg));
 				}
-			} catch (InvalidOperationException) {
-				// occurs when Cecil can't decode an argument
 			}
-			try {
-				if (attribute.HasFields || attribute.HasProperties) {
-					foreach (var arg in attribute.Fields) {
-						a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
-					}
-					foreach (var arg in attribute.Properties) {
-						a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
-					}
+			if (attribute.HasFields || attribute.HasProperties) {
+				foreach (var arg in attribute.Fields) {
+					a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
 				}
-			} catch (InvalidOperationException) {
-				// occurs when Cecil can't decode an argument
+				foreach (var arg in attribute.Properties) {
+					a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
+				}
 			}
 			return a;
 		}
@@ -773,12 +765,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		void AddSecurityAttributes(Mono.Collections.Generic.Collection<SecurityDeclaration> securityDeclarations, IList<IAttribute> targetCollection)
 		{
 			foreach (var secDecl in securityDeclarations) {
-				foreach (var secAttribute in secDecl.SecurityAttributes) {
-					ITypeReference attributeType = ReadTypeReference(secAttribute.AttributeType);
-					var a = new DefaultAttribute(attributeType, new[] { securityActionTypeReference });
-					a.PositionalArguments.Add(new SimpleConstantValue(securityActionTypeReference, (ushort)secDecl.Action));
-					
-					try {
+				try {
+					foreach (var secAttribute in secDecl.SecurityAttributes) {
+						ITypeReference attributeType = ReadTypeReference(secAttribute.AttributeType);
+						var a = new DefaultAttribute(attributeType, new[] { securityActionTypeReference });
+						a.PositionalArguments.Add(new SimpleConstantValue(securityActionTypeReference, (ushort)secDecl.Action));
+						
 						if (secAttribute.HasFields || secAttribute.HasProperties) {
 							foreach (var arg in secAttribute.Fields) {
 								a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
@@ -787,10 +779,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 								a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
 							}
 						}
-					} catch (InvalidOperationException) {
-						// occurs when Cecil can't decode an argument
+						targetCollection.Add(a);
 					}
-					targetCollection.Add(a);
+				} catch (ResolutionException) {
+					// occurs when Cecil can't decode an argument
 				}
 			}
 		}

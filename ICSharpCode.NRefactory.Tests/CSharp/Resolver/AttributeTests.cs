@@ -18,19 +18,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual("System.Runtime", result.NamespaceName);
 		}
 		
-		[Test]
+		[Test, Ignore("Parser produces incorrect position (attribute position doesn't include empty arg list)")]
 		public void AttributeWithShortName()
 		{
-			string program = "using System; [$Obsolete$] class Test {}";
+			string program = "using System; [$Obsolete$()] class Test {}";
 			
 			TypeResolveResult result = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("System.ObsoleteAttribute", result.Type.FullName);
 		}
 		
-		[Test]
+		[Test, Ignore("Parser produces incorrect position (attribute position doesn't include empty arg list)")]
 		public void QualifiedAttributeWithShortName()
 		{
-			string program = "using System; [$System.Obsolete$] class Test {}";
+			string program = "using System; [$System.Obsolete$()] class Test {}";
 			
 			TypeResolveResult result = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("System.ObsoleteAttribute", result.Type.FullName);
@@ -52,6 +52,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			var mrr = Resolve<MemberResolveResult>(program);
 			Assert.AreEqual("System.LoaderOptimizationAttribute..ctor", mrr.Member.FullName);
 			Assert.AreEqual("System.LoaderOptimization", (mrr.Member as IMethod).Parameters[0].Type.Resolve(context).FullName);
+		}
+		
+		[Test]
+		public void AttributeWithoutArgumentListRefersToConstructor()
+		{
+			string program = "using System; [$Obsolete$] class Test {}";
+			
+			MemberResolveResult result = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("System.ObsoleteAttribute..ctor", result.Member.FullName);
 		}
 		
 		[Test]

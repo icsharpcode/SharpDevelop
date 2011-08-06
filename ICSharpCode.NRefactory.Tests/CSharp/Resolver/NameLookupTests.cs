@@ -191,27 +191,45 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreSame(SharedTypes.UnknownType, result.Type);
 		}
 		
-		[Test]
-		public void PropertyNameAmbiguousWithTypeName()
-		{
-			string program = @"class A {
+		const string propertyNameAmbiguousWithTypeNameProgram = @"class A {
 	public Color Color { get; set; }
 	
 	void Method() {
 		$
 	}
 }
-class Color { public static readonly Color Empty = null; }
+class Color {
+	public static readonly Color Empty = null;
+	public static int M() { }
+	public int M(int a) { }
+}
 ";
+		
+		[Test]
+		public void PropertyNameAmbiguousWithTypeName()
+		{
+			string program = propertyNameAmbiguousWithTypeNameProgram;
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program.Replace("$", "$Color$ c;"));
 			Assert.AreEqual("Color", trr.Type.Name);
 			
 			MemberResolveResult mrr = Resolve<MemberResolveResult>(program.Replace("$", "x = $Color$;"));
 			Assert.AreEqual("Color", mrr.Member.Name);
-			
+		}
+		
+		[Test]
+		public void PropertyNameAmbiguousWithTypeName_MemberAccessOnAmbiguousIdentifier()
+		{
+			string program = propertyNameAmbiguousWithTypeNameProgram;
 			Resolve<MemberResolveResult>(program.Replace("$", "$Color$ = Color.Empty;"));
 			Resolve<TypeResolveResult>(program.Replace("$", "Color = $Color$.Empty;"));
-			Resolve<MemberResolveResult>(program.Replace("$", "x = $Color$.ToString();"));
+		}
+		
+		[Test]
+		public void PropertyNameAmbiguousWithTypeName_MethodInvocationOnAmbiguousIdentifier()
+		{
+			string program = propertyNameAmbiguousWithTypeNameProgram;
+			Resolve<MemberResolveResult>(program.Replace("$", "x = $Color$.M(1);"));
+			Resolve<TypeResolveResult>(program.Replace("$", "x = $Color$.M();"));
 		}
 		
 		[Test]

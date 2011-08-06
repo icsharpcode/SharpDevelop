@@ -41,8 +41,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public IMethod ResolveConstructor(ITypeResolveContext context)
 		{
+			CSharpResolver r = new CSharpResolver(context);
 			IType type = attributeType.Resolve(context);
-			throw new NotImplementedException();
+			int totalArgumentCount = 0;
+			if (positionalArguments != null)
+				totalArgumentCount += positionalArguments.Count;
+			if (namedCtorArguments != null)
+				totalArgumentCount += namedCtorArguments.Count;
+			ResolveResult[] arguments = new ResolveResult[totalArgumentCount];
+			string[] argumentNames = new string[totalArgumentCount];
+			int i = 0;
+			if (positionalArguments != null) {
+				while (i < positionalArguments.Count) {
+					IConstantValue cv = positionalArguments[i];
+					arguments[i] = new ConstantResolveResult(cv.GetValueType(context), cv.GetValue(context));
+					i++;
+				}
+			}
+			if (namedCtorArguments != null) {
+				foreach (var pair in namedCtorArguments) {
+					argumentNames[i] = pair.Key;
+					arguments[i] = new ConstantResolveResult(pair.Value.GetValueType(context), pair.Value.GetValue(context));
+					i++;
+				}
+			}
+			MemberResolveResult mrr = r.ResolveObjectCreation(type, arguments, argumentNames) as MemberResolveResult;
+			return mrr != null ? mrr.Member as IMethod : null;
 		}
 		
 		public IList<IConstantValue> GetPositionalArguments(ITypeResolveContext context)

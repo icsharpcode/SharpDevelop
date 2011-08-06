@@ -38,6 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	{
 		static readonly ResolveResult errorResult = new ErrorResolveResult(SharedTypes.UnknownType);
 		CSharpResolver resolver;
+		SimpleNameLookupMode currentTypeLookupMode = SimpleNameLookupMode.Type;
 		readonly ParsedFile parsedFile;
 		readonly Dictionary<AstNode, ResolveResult> resolveResultCache = new Dictionary<AstNode, ResolveResult>();
 		readonly Dictionary<AstNode, CSharpResolver> resolverBeforeDict = new Dictionary<AstNode, CSharpResolver>();
@@ -232,7 +233,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				if (newTypeDefinition != null)
 					resolver.CurrentTypeDefinition = newTypeDefinition;
-				ScanChildren(typeDeclaration);
+				
+				for (AstNode child = typeDeclaration.FirstChild; child != null; child = child.NextSibling) {
+					if (child.Role == TypeDeclaration.BaseTypeRole) {
+						currentTypeLookupMode = SimpleNameLookupMode.BaseTypeReference;
+						Scan(child);
+						currentTypeLookupMode = SimpleNameLookupMode.Type;
+					} else {
+						Scan(child);
+					}
+				}
+				
 				return newTypeDefinition != null ? new TypeResolveResult(newTypeDefinition) : errorResult;
 			} finally {
 				resolver.CurrentTypeDefinition = previousTypeDefinition;
@@ -254,6 +265,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
 			return VisitFieldOrEventDeclaration(fieldDeclaration);
+		}
+		
+		public override ResolveResult VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration, object data)
+		{
+			return VisitFieldOrEventDeclaration(fixedFieldDeclaration);
 		}
 		
 		public override ResolveResult VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
@@ -302,6 +318,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				return errorResult;
+			} else {
+				return null;
+			}
+		}
+		
+		public override ResolveResult VisitFixedVariableInitializer(FixedVariableInitializer fixedVariableInitializer, object data)
+		{
+			ScanChildren(fixedVariableInitializer);
+			if (resolverEnabled) {
+				if (resolver.CurrentMember != null)
+					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+				else
+					return errorResult;
 			} else {
 				return null;
 			}
@@ -468,11 +497,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				resolver.CurrentMember = null;
 			}
 		}
-		
-		public override ResolveResult VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration, object data)
-		{
-			throw new NotImplementedException();
-		}
 		#endregion
 		
 		#region Track CheckForOverflow
@@ -534,15 +558,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Visit Expressions
-		static bool IsTargetOfInvocation(AstNode node)
-		{
-			InvocationExpression ie = node.Parent as InvocationExpression;
-			return ie != null && ie.Target == node;
-		}
-		
 		IType ResolveType(AstType type)
 		{
-			return MakeTypeReference(type).Resolve(resolver.Context);
+			return Resolve(type).Type;
 		}
 		
 		public override ResolveResult VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
@@ -717,32 +735,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return errorResult;
 		}
 		
-		public override ResolveResult VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
-		{
-			if (resolverEnabled) {
-				List<IType> typeArguments = new List<IType>();
-				foreach (AstType typeArgument in identifierExpression.TypeArguments) {
-					typeArguments.Add(ResolveType(typeArgument));
-				}
-				return resolver.ResolveSimpleName(identifierExpression.Identifier, typeArguments,
-				                                  IsTargetOfInvocation(identifierExpression));
-			} else {
-				ScanChildren(identifierExpression);
-				return null;
-			}
-		}
-		
-		ResolveResult[] GetArguments(IEnumerable<Expression> argumentExpressions, out string[] argumentNames)
-		{
-			argumentNames = null; // TODO: add support for named arguments
-			ResolveResult[] arguments = new ResolveResult[argumentExpressions.Count()];
-			int i = 0;
-			foreach (AstNode argument in argumentExpressions) {
-				arguments[i++] = Resolve(argument);
-			}
-			return arguments;
-		}
-		
 		public override ResolveResult VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
 			if (resolverEnabled) {
@@ -752,19 +744,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return resolver.ResolveIndexer(target, arguments, argumentNames);
 			} else {
 				ScanChildren(indexerExpression);
-				return null;
-			}
-		}
-		
-		public override ResolveResult VisitInvocationExpression(InvocationExpression invocationExpression, object data)
-		{
-			if (resolverEnabled) {
-				ResolveResult target = Resolve(invocationExpression.Target);
-				string[] argumentNames;
-				ResolveResult[] arguments = GetArguments(invocationExpression.Arguments, out argumentNames);
-				return resolver.ResolveInvocation(target, arguments, argumentNames);
-			} else {
-				ScanChildren(invocationExpression);
 				return null;
 			}
 		}
@@ -781,23 +760,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
 			throw new NotImplementedException();
-		}
-		
-		public override ResolveResult VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
-		{
-			if (resolverEnabled) {
-				ResolveResult target = Resolve(memberReferenceExpression.Target);
-				List<IType> typeArguments = new List<IType>();
-				foreach (AstType typeArgument in memberReferenceExpression.TypeArguments) {
-					typeArguments.Add(ResolveType(typeArgument));
-				}
-				return resolver.ResolveMemberAccess(target, memberReferenceExpression.MemberName,
-				                                    typeArguments,
-				                                    IsTargetOfInvocation(memberReferenceExpression));
-			} else {
-				ScanChildren(memberReferenceExpression);
-				return null;
-			}
 		}
 		
 		public override ResolveResult VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression, object data)
@@ -948,6 +910,187 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region Visit Identifier/MemberReference/Invocation-Expression
+		// IdentifierExpression, MemberReferenceExpression and InvocationExpression
+		// are grouped together because they have to work together for
+		// "7.6.4.1 Identical simple names and type names" support
+		List<IType> GetTypeArguments(IEnumerable<AstType> typeArguments)
+		{
+			List<IType> result = new List<IType>();
+			foreach (AstType typeArgument in typeArguments) {
+				result.Add(ResolveType(typeArgument));
+			}
+			return result;
+		}
+		
+		ResolveResult[] GetArguments(IEnumerable<Expression> argumentExpressions, out string[] argumentNames)
+		{
+			argumentNames = null;
+			ResolveResult[] arguments = new ResolveResult[argumentExpressions.Count()];
+			int i = 0;
+			foreach (AstNode argument in argumentExpressions) {
+				NamedArgumentExpression nae = argument as NamedArgumentExpression;
+				AstNode argumentValue;
+				if (nae != null) {
+					if (argumentNames == null)
+						argumentNames = new string[arguments.Length];
+					argumentNames[i] = nae.Identifier;
+					argumentValue = nae.Expression;
+				} else {
+					argumentValue = argument;
+				}
+				arguments[i++] = Resolve(argumentValue);
+			}
+			return arguments;
+		}
+		
+		static bool IsTargetOfInvocation(AstNode node)
+		{
+			InvocationExpression ie = node.Parent as InvocationExpression;
+			return ie != null && ie.Target == node;
+		}
+		
+		bool IsVariableReferenceWithSameType(ResolveResult rr, string identifier, out TypeResolveResult trr)
+		{
+			if (!(rr is MemberResolveResult || rr is LocalResolveResult)) {
+				trr = null;
+				return false;
+			}
+			trr = resolver.LookupSimpleNameOrTypeName(identifier, EmptyList<IType>.Instance, SimpleNameLookupMode.Type) as TypeResolveResult;
+			return trr != null && trr.Type.Equals(rr.Type);
+		}
+		
+		/// <summary>
+		/// Gets whether 'rr' is considered a static access on the target identifier.
+		/// </summary>
+		/// <param name="rr">Resolve Result of the MemberReferenceExpression</param>
+		/// <param name="invocationRR">Resolve Result of the InvocationExpression</param>
+		bool IsStaticResult(ResolveResult rr, ResolveResult invocationRR)
+		{
+			if (rr is TypeResolveResult)
+				return true;
+			MemberResolveResult mrr = (rr is MethodGroupResolveResult ? invocationRR : rr) as MemberResolveResult;
+			return mrr != null && mrr.Member.IsStatic;
+		}
+		
+		public override ResolveResult VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
+		{
+			// Note: this method is not called when it occurs in a situation where an ambiguity between
+			// simple names and type names might occur.
+			if (resolverEnabled) {
+				var typeArguments = GetTypeArguments(identifierExpression.TypeArguments);
+				return resolver.ResolveSimpleName(identifierExpression.Identifier, typeArguments,
+				                                  IsTargetOfInvocation(identifierExpression));
+			} else {
+				ScanChildren(identifierExpression);
+				return null;
+			}
+		}
+		
+		public override ResolveResult VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+		{
+			// target = Resolve(identifierExpression = memberReferenceExpression.Target)
+			// trr = ResolveType(identifierExpression)
+			// rr = Resolve(memberReferenceExpression)
+			
+			IdentifierExpression identifierExpression = memberReferenceExpression.Target as IdentifierExpression;
+			if (identifierExpression != null && identifierExpression.TypeArguments.Count == 0) {
+				// Special handling for §7.6.4.1 Identicial simple names and type names
+				ResolveResult target = resolver.ResolveSimpleName(identifierExpression.Identifier, EmptyList<IType>.Instance);
+				TypeResolveResult trr;
+				if (IsVariableReferenceWithSameType(target, identifierExpression.Identifier, out trr)) {
+					// It's ambiguous
+					ResolveResult rr = ResolveMemberReferenceOnGivenTarget(target, memberReferenceExpression);
+					resolveResultCache.Add(identifierExpression, IsStaticResult(rr, null) ? trr : target);
+					return rr;
+				} else {
+					// It's not ambiguous
+					resolveResultCache.Add(identifierExpression, target);
+					if (resolverEnabled) {
+						return ResolveMemberReferenceOnGivenTarget(target, memberReferenceExpression);
+					} else {
+						// Scan children (but not the IdentifierExpression which we already resolved)
+						for (AstNode child = memberReferenceExpression.FirstChild; child != null; child = child.NextSibling) {
+							if (child != identifierExpression)
+								Scan(child);
+						}
+						return null;
+					}
+				}
+			} else {
+				// Regular code path
+				if (resolverEnabled) {
+					ResolveResult target = Resolve(memberReferenceExpression.Target);
+					return ResolveMemberReferenceOnGivenTarget(target, memberReferenceExpression);
+				} else {
+					ScanChildren(memberReferenceExpression);
+					return null;
+				}
+			}
+		}
+		
+		ResolveResult ResolveMemberReferenceOnGivenTarget(ResolveResult target, MemberReferenceExpression memberReferenceExpression)
+		{
+			var typeArguments = GetTypeArguments(memberReferenceExpression.TypeArguments);
+			return resolver.ResolveMemberAccess(
+				target, memberReferenceExpression.MemberName, typeArguments,
+				IsTargetOfInvocation(memberReferenceExpression));
+		}
+		
+		public override ResolveResult VisitInvocationExpression(InvocationExpression invocationExpression, object data)
+		{
+			// rr = Resolve(invocationExpression)
+			// target = Resolve(memberReferenceExpression = invocationExpression.Target)
+			// idRR = Resolve(identifierExpression = memberReferenceExpression.Target)
+			// trr = ResolveType(identifierExpression)
+			
+			MemberReferenceExpression mre = invocationExpression.Target as MemberReferenceExpression;
+			IdentifierExpression identifierExpression = mre != null ? mre.Target as IdentifierExpression : null;
+			if (identifierExpression != null && identifierExpression.TypeArguments.Count == 0) {
+				// Special handling for §7.6.4.1 Identicial simple names and type names
+				ResolveResult idRR = resolver.ResolveSimpleName(identifierExpression.Identifier, EmptyList<IType>.Instance);
+				ResolveResult target = ResolveMemberReferenceOnGivenTarget(idRR, mre);
+				resolveResultCache.Add(mre, target);
+				TypeResolveResult trr;
+				if (IsVariableReferenceWithSameType(idRR, identifierExpression.Identifier, out trr)) {
+					// It's ambiguous
+					ResolveResult rr = ResolveInvocationOnGivenTarget(target, invocationExpression);
+					resolveResultCache.Add(identifierExpression, IsStaticResult(target, rr) ? trr : idRR);
+					return rr;
+				} else {
+					// It's not ambiguous
+					resolveResultCache.Add(identifierExpression, idRR);
+					if (resolverEnabled) {
+						return ResolveInvocationOnGivenTarget(target, invocationExpression);
+					} else {
+						// Scan children (but not the MRE which we already resolved)
+						for (AstNode child = invocationExpression.FirstChild; child != null; child = child.NextSibling) {
+							if (child != mre)
+								Scan(child);
+						}
+						return null;
+					}
+				}
+			} else {
+				// Regular code path
+				if (resolverEnabled) {
+					ResolveResult target = Resolve(invocationExpression.Target);
+					return ResolveInvocationOnGivenTarget(target, invocationExpression);
+				} else {
+					ScanChildren(invocationExpression);
+					return null;
+				}
+			}
+		}
+		
+		ResolveResult ResolveInvocationOnGivenTarget(ResolveResult target, InvocationExpression invocationExpression)
+		{
+			string[] argumentNames;
+			ResolveResult[] arguments = GetArguments(invocationExpression.Arguments, out argumentNames);
+			return resolver.ResolveInvocation(target, arguments, argumentNames);
+		}
+		#endregion
+		
 		#region Local Variable Scopes (Block Statements)
 		public override ResolveResult VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
@@ -1056,23 +1199,48 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		ITypeReference MakeTypeReference(AstType type, AstNode initializerExpression, bool isForEach)
 		{
-			if (initializerExpression != null && IsVar(type)) {
-				return new VarTypeReference(this, resolver.Clone(), initializerExpression, isForEach);
+			bool needsResolving;
+			if (mode == ResolveVisitorNavigationMode.ResolveAll) {
+				needsResolving = true;
 			} else {
-				return MakeTypeReference(type);
+				var modeForType = navigator.Scan(type);
+				needsResolving = (modeForType == ResolveVisitorNavigationMode.Resolve || modeForType == ResolveVisitorNavigationMode.ResolveAll);
 			}
-		}
-		
-		ITypeReference MakeTypeReference(AstType type)
-		{
-			return TypeSystemConvertVisitor.ConvertType(type, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope, SimpleNameLookupMode.Type);
+			if (initializerExpression != null && IsVar(type)) {
+				var typeRef = new VarTypeReference(this, resolver.Clone(), initializerExpression, isForEach);
+				if (needsResolving) {
+					// Hack: I don't see a clean way to make the 'var' SimpleType resolve to the inferred type,
+					// so we just do it here and store the result in the resolver cache.
+					IType actualType = typeRef.Resolve(resolver.Context);
+					if (actualType.Kind != TypeKind.Unknown) {
+						resolveResultCache.Add(type, new TypeResolveResult(actualType));
+					} else {
+						resolveResultCache.Add(type, errorResult);
+					}
+					return actualType;
+				} else {
+					return typeRef;
+				}
+			} else {
+				// Perf: avoid duplicate resolving of the type (once as ITypeReference, once directly in ResolveVisitor)
+				// if possible. By using ResolveType when we know we need to resolve the node anyways, the resolve cache
+				// can take care of the duplicate call.
+				if (needsResolving)
+					return ResolveType(type);
+				else
+					return MakeTypeReference(type);
+			}
 		}
 		
 		static bool IsVar(AstType returnType)
 		{
-			return returnType is SimpleType
-				&& ((SimpleType)returnType).Identifier == "var"
-				&& ((SimpleType)returnType).TypeArguments.Count == 0;
+			SimpleType st = returnType as SimpleType;
+			return st != null && st.Identifier == "var" && st.TypeArguments.Count == 0;
+		}
+		
+		ITypeReference MakeTypeReference(AstType type)
+		{
+			return TypeSystemConvertVisitor.ConvertType(type, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope, currentTypeLookupMode);
 		}
 		
 		sealed class VarTypeReference : ITypeReference
@@ -1099,6 +1267,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				var oldMode = visitor.mode;
 				var oldResolver = visitor.resolver;
+				var oldTypeLookupMode = visitor.currentTypeLookupMode;
 				try {
 					visitor.mode = ResolveVisitorNavigationMode.Resolve;
 					visitor.resolver = storedContext;
@@ -1113,6 +1282,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				} finally {
 					visitor.mode = oldMode;
 					visitor.resolver = oldResolver;
+					visitor.currentTypeLookupMode = oldTypeLookupMode;
 					
 					visitor = null;
 					storedContext = null;
@@ -1153,57 +1323,44 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Attributes
-		ITypeReference GetAttributeType (Attribute attribute)
-		{
-			var withoutSuffix = MakeTypeReference(attribute.Type);
-			ITypeReference withSuffix;
-			if (attribute.Type is SimpleType) {
-				var st = (SimpleType)attribute.Type;
-				withSuffix = MakeTypeReference(new SimpleType (st.Identifier + "Attribute"));
-			} else if (attribute.Type is MemberType) {
-				var mt = (MemberType)attribute.Type;
-				withSuffix = MakeTypeReference(new MemberType (mt.Target.Clone (), mt.MemberName + "Attribute"));
-			} else {
-				// unsupported type.
-				return SharedTypes.UnknownType;
-			}
-			return new AttributeTypeReference(withoutSuffix, withSuffix);
-		}
-		
 		public override ResolveResult VisitAttribute(Attribute attribute, object data)
 		{
-			ScanChildren(attribute);
 			if (resolverEnabled) {
-				var type = GetAttributeType (attribute).Resolve (resolver.Context);
-				if (!attribute.HasArgumentList)
-					return new TypeResolveResult (type);
-				// try if the attribute usage references a constructuor
+				var type = ResolveType(attribute.Type);
+				
+				// Separate arguments into ctor arguments and non-ctor arguments:
+				var constructorArguments = attribute.Arguments.Where(a => !(a is AssignmentExpression));
+				var nonConstructorArguments = attribute.Arguments.Where(a => a is AssignmentExpression);
+				
+				// Scan the non-constructor arguments
+				foreach (var arg in nonConstructorArguments)
+					Scan(arg);
+				
+				// Resolve the ctor arguments and find the matching ctor overload
 				string[] argumentNames;
-				ResolveResult[] arguments = GetArguments(attribute.Arguments, out argumentNames);
-				var result = resolver.ResolveObjectCreation(type, arguments, argumentNames);
-				Console.WriteLine (result);
-				// if this is an error give back type resolve result, an attribute arg list isn't a constructor reference
-				// in all cases. - is it better to always give back the type resolve result ?
-				if (result.IsError)
-					return new TypeResolveResult (type);
-				return result;
+				ResolveResult[] arguments = GetArguments(constructorArguments, out argumentNames);
+				return resolver.ResolveObjectCreation(type, arguments, argumentNames);
+			} else {
+				ScanChildren(attribute);
+				return null;
 			}
-			return null;
 		}
 		#endregion
 		
 		#region Using Declaration
 		public override ResolveResult VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
-			// TODO: set isInUsingDeclaration
+			currentTypeLookupMode = SimpleNameLookupMode.TypeInUsingDeclaration;
 			ScanChildren(usingDeclaration);
+			currentTypeLookupMode = SimpleNameLookupMode.Type;
 			return null;
 		}
 		
 		public override ResolveResult VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
-			// TODO: set isInUsingDeclaration
+			currentTypeLookupMode = SimpleNameLookupMode.TypeInUsingDeclaration;
 			ScanChildren(usingDeclaration);
+			currentTypeLookupMode = SimpleNameLookupMode.Type;
 			return null;
 		}
 		#endregion
@@ -1211,37 +1368,76 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Type References
 		public override ResolveResult VisitPrimitiveType(PrimitiveType primitiveType, object data)
 		{
-			ScanChildren(primitiveType);
-			return new TypeResolveResult(ResolveType(primitiveType));
+			if (!resolverEnabled)
+				return null;
+			IType type = MakeTypeReference(primitiveType).Resolve(resolver.Context);
+			if (type.Kind != TypeKind.Unknown)
+				return new TypeResolveResult(type);
+			else
+				return errorResult;
+		}
+		
+		ResolveResult HandleAttributeType(AstType astType)
+		{
+			ScanChildren(astType);
+			IType type = TypeSystemConvertVisitor.ConvertAttributeType(astType, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope).Resolve(resolver.Context);
+			if (type.Kind != TypeKind.Unknown)
+				return new TypeResolveResult(type);
+			else
+				return errorResult;
 		}
 		
 		public override ResolveResult VisitSimpleType(SimpleType simpleType, object data)
 		{
-			ScanChildren(simpleType);
-			return ResolveTypeOrNamespace(simpleType);
-		}
-		
-		ResolveResult ResolveTypeOrNamespace(AstType type)
-		{
-			ITypeReference typeRef = MakeTypeReference(type);
-			ITypeOrNamespaceReference typeOrNsRef = typeRef as ITypeOrNamespaceReference;
-			if (typeOrNsRef != null) {
-				return typeOrNsRef.DoResolve(resolver.Context);
-			} else {
-				return new TypeResolveResult(typeRef.Resolve(resolver.Context));
+			if (!resolverEnabled) {
+				ScanChildren(simpleType);
+				return null;
 			}
+			if (simpleType.Parent is Attribute) {
+				return HandleAttributeType(simpleType);
+			}
+			
+			var typeArguments = GetTypeArguments(simpleType.TypeArguments);
+			return resolver.LookupSimpleNameOrTypeName(simpleType.Identifier, typeArguments, currentTypeLookupMode);
 		}
 		
 		public override ResolveResult VisitMemberType(MemberType memberType, object data)
 		{
-			ScanChildren(memberType);
-			return ResolveTypeOrNamespace(memberType);
+			if (!resolverEnabled) {
+				ScanChildren(memberType);
+				return null;
+			}
+			if (memberType.Parent is Attribute) {
+				return HandleAttributeType(memberType);
+			}
+			ResolveResult target;
+			if (memberType.IsDoubleColon && memberType.Target is SimpleType) {
+				target = resolver.ResolveAlias(((SimpleType)memberType.Target).Identifier);
+			} else {
+				target = Resolve(memberType.Target);
+			}
+			
+			var typeArguments = GetTypeArguments(memberType.TypeArguments);
+			return resolver.ResolveMemberAccess(target, memberType.MemberName, typeArguments);
 		}
 		
 		public override ResolveResult VisitComposedType(ComposedType composedType, object data)
 		{
-			ScanChildren(composedType);
-			return new TypeResolveResult(ResolveType(composedType));
+			if (!resolverEnabled) {
+				ScanChildren(composedType);
+				return null;
+			}
+			IType t = ResolveType(composedType.BaseType);
+			if (composedType.HasNullableSpecifier) {
+				t = NullableType.Create(t, resolver.Context);
+			}
+			for (int i = 0; i < composedType.PointerRank; i++) {
+				t = new PointerType(t);
+			}
+			foreach (var a in composedType.ArraySpecifiers.Reverse()) {
+				t = new ArrayType(t, a.Dimensions);
+			}
+			return new TypeResolveResult(t);
 		}
 		#endregion
 		
@@ -1266,11 +1462,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		public override ResolveResult VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public override ResolveResult VisitFixedVariableInitializer(FixedVariableInitializer fixedVariableInitializer, object data)
 		{
 			throw new NotImplementedException();
 		}
