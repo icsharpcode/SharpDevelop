@@ -48,25 +48,6 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Creates a new PixelSnapper object containing the image with the
-		/// specified resource name.
-		/// </summary>
-		/// <param name="name">
-		/// The name of the requested bitmap.
-		/// </param>
-		/// <exception cref="ResourceNotFoundException">
-		/// Is thrown when the GlobalResource manager can't find a requested resource.
-		/// </exception>
-		[Obsolete("Use layout rounding instead")]
-		public static System.Windows.Controls.Image GetPixelSnappedImage(string name)
-		{
-			return new System.Windows.Controls.Image {
-				Source = GetBitmapSource(name),
-				UseLayoutRounding = true
-			};
-		}
-		
-		/// <summary>
 		/// Returns a BitmapSource from the resource database, it handles localization
 		/// transparent for the user.
 		/// </summary>

@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		#region Manage Project Contents
 		/// <summary>
-		/// Fetches the current project content.
+		/// Gets the project content for the current project.
 		/// </summary>
 		public static IProjectContent CurrentProjectContent {
 			[DebuggerStepThrough]
@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IProjectContent GetProjectContent(IProject project)
 		{
-			lock (projectContents) {
+			lock (syncLock) {
 				IProjectContent pc;
 				if (projectContents.TryGetValue(project, out pc)) {
 					return pc;
@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			List<IProjectContent> result = new List<IProjectContent>();
 			List<IProjectContent> linkResults = new List<IProjectContent>();
-			lock (projectContents) {
+			lock (syncLock) {
 				foreach (KeyValuePair<IProject, IProjectContent> projectContent in projectContents) {
 					FileProjectItem file = projectContent.Key.FindFile(fileName);
 					if (file != null) {
@@ -130,7 +130,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		internal static void RemoveProjectContentForRemovedProject(IProject project)
 		{
-			lock (projectContents) {
+			lock (syncLock) {
 				projectContents.Remove(project);
 			}
 		}
@@ -287,7 +287,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			readonly FileName fileName;
 			internal readonly IParser parser;
-			volatile IParsedFile mainParseInfo;
+			volatile IParsedFile mainParsedFile;
 			ITextSourceVersion bufferVersion;
 			IParsedFile[] oldUnits = emptyCompilationUnitArray;
 			bool disposed;
@@ -305,7 +305,7 @@ namespace ICSharpCode.SharpDevelop
 			{
 				lock (this) {
 					this.oldUnits = new IParsedFile[] { cu };
-					this.mainParseInfo = cu;
+					this.mainParsedFile = cu;
 				}
 			}
 			
@@ -321,9 +321,9 @@ namespace ICSharpCode.SharpDevelop
 			public IParsedFile GetExistingParseInformation(IProjectContent content)
 			{
 				if (content == null) {
-					return this.mainParseInfo; // read volatile
+					return this.mainParsedFile; // read volatile
 				} else {
-					IParsedFile p = this.mainParseInfo; // read volatile
+					IParsedFile p = this.mainParsedFile; // read volatile
 					if (p != null && p.ProjectContent == content)
 						return p;
 					lock (this) {
@@ -360,7 +360,7 @@ namespace ICSharpCode.SharpDevelop
 							// Detect when a file belongs to multiple projects but the ParserService hasn't realized
 							// that, yet. In this case, do another parse run to detect all parent projects.
 							if (!(parentProjectContent != null && this.oldUnits.Length == 1 && this.oldUnits[0].ProjectContent != parentProjectContent)) {
-								return this.mainParseInfo;
+								return this.mainParsedFile;
 							}
 						}
 					}
@@ -379,17 +379,24 @@ namespace ICSharpCode.SharpDevelop
 				// risking deadlocks.
 				
 				// parse once for each project content that contains the file
+				ParseInformation[] newParseInfo = new ParseInformation[projectContents.Count];
 				IParsedFile[] newUnits = new IParsedFile[projectContents.Count];
+				ParseInformation resultParseInfo = null;
 				IParsedFile resultUnit = null;
-				for (int i = 0; i < newUnits.Length; i++) {
+				for (int i = 0; i < projectContents.Count; i++) {
 					IProjectContent pc = projectContents[i];
 					try {
-						newUnits[i] = parser.Parse(pc, fileName, fileContent);
+						newParseInfo[i] = parser.Parse(pc, fileName, fileContent);
 					} catch (Exception ex) {
 						throw new ApplicationException("Error parsing " + fileName, ex);
 					}
-					if (i == 0 || pc == parentProjectContent)
+					if (newParseInfo[i] == null)
+						throw new NullReferenceException(parser.GetType().Name + ".Parse() returned null");
+					newUnits[i] = newParseInfo[i].ParsedFile;
+					if (i == 0 || pc == parentProjectContent) {
+						resultParseInfo = newParseInfo[i];
 						resultUnit = newUnits[i];
+					}
 				}
 				lock (this) {
 					if (this.disposed)
@@ -403,32 +410,32 @@ namespace ICSharpCode.SharpDevelop
 								if (oldUnit != null)
 									return oldUnit;
 							}
-							return this.mainParseInfo;
+							return this.mainParsedFile;
 						}
 					}
-					
-					IParsedFile newParseInfo = resultUnit;
 					
 					for (int i = 0; i < newUnits.Length; i++) {
 						IProjectContent pc = projectContents[i];
 						// update the compilation unit
 						IParsedFile oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == pc);
-						pc.UpdateCompilationUnit(oldUnit, newUnits[i], fileName);
-						RaiseParseInformationUpdated(new ParseInformationEventArgs(oldUnit, newUnits[i], newUnits[i] == resultUnit));
+						// ensure the new unit is frozen beforewe make it visible to the outside world
+						newUnits[i].Freeze();
+						pc.UpdateCompilationUnit(oldUnit, newUnits[i]);
+						RaiseParseInformationUpdated(new ParseInformationEventArgs(oldUnit, newParseInfo[i], newParseInfo[i] == resultParseInfo));
 					}
 					
 					// remove all old units that don't exist anymore
 					foreach (IParsedFile oldUnit in oldUnits) {
 						if (!newUnits.Any(n => n.ProjectContent == oldUnit.ProjectContent)) {
-							oldUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
+							oldUnit.ProjectContent.UpdateCompilationUnit(oldUnit, null);
 							RaiseParseInformationUpdated(new ParseInformationEventArgs(oldUnit, null, false));
 						}
 					}
 					
 					this.bufferVersion = fileContentVersion;
 					this.oldUnits = newUnits;
-					this.mainParseInfo = newParseInfo;
-					return newParseInfo;
+					this.mainParsedFile = resultUnit;
+					return resultUnit;
 				}
 			}
 			
@@ -440,11 +447,11 @@ namespace ICSharpCode.SharpDevelop
 					// by setting the disposed flag, we'll cause all running ParseFile() calls to return null and not
 					// call into the parser anymore, so we can do the remainder of the clean-up work outside the lock
 					this.disposed = true;
-					parseInfo = this.mainParseInfo;
+					parseInfo = this.mainParsedFile;
 					oldUnits = this.oldUnits;
 					this.oldUnits = null;
 					this.bufferVersion = null;
-					this.mainParseInfo = null;
+					this.mainParsedFile = null;
 				}
 				foreach (IParsedFile oldUnit in oldUnits) {
 					oldUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
@@ -771,7 +778,14 @@ namespace ICSharpCode.SharpDevelop
 			// To ensure events are raised in the same order, we always invoke on the main thread.
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
-					LoggingService.Debug("ParseInformationUpdated " + e.FileName + " new!=null:" + (e.NewCompilationUnit!=null));
+					string addition;
+					if (e.OldParsedFile == null)
+						addition = " (new)";
+					else if (e.NewParsedFile == null)
+						addition = " (removed)";
+					else
+						addition = " (updated)";
+					LoggingService.Debug("ParseInformationUpdated " + e.FileName + addition);
 					ParseInformationUpdated(null, e);
 				});
 		}
@@ -826,7 +840,7 @@ namespace ICSharpCode.SharpDevelop
 					LoggingService.Debug("Creating project content for " + project.Name);
 					ParseProjectContent newContent = project.CreateProjectContent();
 					if (newContent != null) {
-						lock (projectContents) {
+						lock (syncLock) {
 							projectContents[project] = newContent;
 						}
 						createdContents.Add(newContent);
@@ -841,7 +855,7 @@ namespace ICSharpCode.SharpDevelop
 		internal static void OnSolutionClosed()
 		{
 			LoadSolutionProjects.OnSolutionClosed();
-			lock (projectContents) {
+			lock (syncLock) {
 				foreach (IProjectContent content in projectContents.Values) {
 					content.Dispose();
 				}
@@ -853,7 +867,7 @@ namespace ICSharpCode.SharpDevelop
 		static void ClearAllFileEntries()
 		{
 			FileEntry[] entries;
-			lock (fileEntryDict) {
+			lock (syncLock) {
 				entries = fileEntryDict.Values.ToArray();
 				fileEntryDict.Clear();
 			}
@@ -864,9 +878,9 @@ namespace ICSharpCode.SharpDevelop
 		/// <remarks>Can return null.</remarks>
 		internal static IProjectContent CreateProjectContentForAddedProject(IProject project)
 		{
-			ParseProjectContent newContent = project.CreateProjectContent();
+			IProjectContent newContent = project.CreateProjectContent();
 			if (newContent != null) {
-				lock (projectContents) {
+				lock (syncLock) {
 					projectContents[project] = newContent;
 				}
 				LoadSolutionProjects.InitNewProject(newContent);

@@ -182,7 +182,8 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Checks that a single directory entry (file or subdirectory) name is valid.
+		/// Checks that a single directory entry (file or subdirectory) name is valid
+		///  <b>and shows a MessageBox if it is not valid</b>.
 		/// </summary>
 		/// <param name="name">A single file name not the full path</param>
 		public static bool CheckDirectoryEntryName(string name)
@@ -191,16 +192,6 @@ namespace ICSharpCode.SharpDevelop
 				return true;
 			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", name}}));
 			return false;
-		}
-		
-		/// <summary>
-		/// Checks that a single directory name is valid.
-		/// </summary>
-		/// <param name="name">A single directory name not the full path</param>
-		[Obsolete("Use CheckDirectoryEntryName instead")]
-		public static bool CheckDirectoryName(string name)
-		{
-			return CheckDirectoryEntryName(name);
 		}
 		
 		internal sealed class LoadFileWrapper

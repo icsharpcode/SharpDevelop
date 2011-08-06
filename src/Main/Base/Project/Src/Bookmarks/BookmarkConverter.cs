@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						scriptLanguage = v[6];
 						script = v[7];
 						
-						var bbm = new Debugging.BreakpointBookmark(fileName, new TextLocation(columnNumber, lineNumber), action, scriptLanguage, script);
+						var bbm = new Debugging.BreakpointBookmark(fileName, new TextLocation(lineNumber, columnNumber), action, scriptLanguage, script);
 						bbm.IsEnabled = bool.Parse(v[4]);
 						bbm.Action = action;
 						bbm.ScriptLanguage = scriptLanguage;
@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						int ilfrom = Convert.ToInt32(v[8]);
 						int ilto = Convert.ToInt32(v[9]);
 						
-						bbm = new DecompiledBreakpointBookmark(null, ilfrom, ilto, fileName, new Location(columnNumber, lineNumber), action, scriptLanguage, script);
+						bbm = new DecompiledBreakpointBookmark(null, ilfrom, ilto, fileName, new TextLocation(lineNumber, columnNumber), action, scriptLanguage, script);
 						bbm.IsEnabled = bool.Parse(v[4]);
 						bbm.Action = action;
 						bbm.ScriptLanguage = scriptLanguage;
@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						bookmark = bbm;
 						break;
 					case "PinBookmark":
-						var pin = new PinBookmark(fileName, new TextLocation(columnNumber, lineNumber));
+						var pin = new PinBookmark(fileName, new TextLocation(lineNumber, columnNumber));
 						pin.Comment = v[4];
 						pin.PinPosition =
 							new Point
@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						bookmark = pin;
 						break;
 					default:
-						bookmark = new Bookmark(fileName, new TextLocation(columnNumber, lineNumber));
+						bookmark = new Bookmark(fileName, new TextLocation(lineNumber, columnNumber));
 						break;
 				}
 				return bookmark;

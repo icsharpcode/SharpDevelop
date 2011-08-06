@@ -119,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			// no bookmark at that line: create a new bookmark
 			int lineStartOffset = editor.Document.GetLineByNumber(line).Offset;
 			int column = 1 + DocumentUtilitites.GetWhitespaceAfter(editor.Document, lineStartOffset).Length;
-			BookmarkManager.AddMark(bookmarkFactory(new TextLocation(column, line)));
+			BookmarkManager.AddMark(bookmarkFactory(new TextLocation(line, column)));
 		}
 		
 		public static void RemoveAll(Predicate<SDBookmark> match)

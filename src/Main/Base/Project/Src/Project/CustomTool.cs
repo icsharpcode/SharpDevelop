@@ -10,8 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -216,7 +216,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			                         },
 			                         outputFileName, FileErrorPolicy.Inform);
 			EnsureOutputFileIsInProject(baseItem, outputFileName);
-			ParserService.BeginParse(outputFileName, new StringTextBuffer(codeOutput));
+			ParserService.BeginParse(outputFileName, new StringTextSource(codeOutput));
 		}
 		
 		public void GenerateCodeDomAsync(FileProjectItem baseItem, string outputFileName, Func<CodeCompileUnit> func)

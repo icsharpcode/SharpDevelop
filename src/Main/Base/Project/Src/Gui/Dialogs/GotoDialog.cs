@@ -150,7 +150,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				AddSourceFiles(file, lineNr);
 			} else {
 				AddSourceFiles(text, 0);
-				foreach (IClass c in SearchClasses(text)) {
+				foreach (ITypeDefinition c in SearchClasses(text)) {
 					AddItem(c, GetMatchType(text, c.Name));
 				}
 				AddAllMembersMatchingText(text);
@@ -166,9 +166,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			ITextEditor editor = GetEditor();
 			if (editor != null) {
-				ParseInformation parseInfo = ParserService.GetExistingParseInformation(editor.FileName);
+				IParsedFile parseInfo = ParserService.GetExistingParseInformation(editor.FileName);
 				if (parseInfo != null) {
-					foreach (IClass c in parseInfo.CompilationUnit.Classes) {
+					foreach (ITypeDefinition c in parseInfo.TopLevelTypeDefinitions) {
 						AddAllMembersMatchingText(c, text);
 					}
 				}
@@ -177,7 +177,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 
 		void AddAllMembersMatchingText(ITypeDefinition c, string text)
 		{
-			foreach (ITypeDefinition innerClass in c.InnerClasses) {
+			foreach (ITypeDefinition innerClass in c.NestedTypes) {
 				AddAllMembersMatchingText(innerClass, text);
 			}
 			foreach (IMethod m in c.Methods) {
@@ -239,31 +239,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		ArrayList SearchClasses(string text)
+		List<ITypeDefinition> SearchClasses(string text)
 		{
-			ArrayList list = new ArrayList();
+			List<ITypeDefinition> list = new List<ITypeDefinition>();
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
 					IProjectContent projectContent = ParserService.GetProjectContent(project);
 					if (projectContent != null) {
-						AddClasses(text, list, projectContent.Classes);
+						foreach (ITypeDefinition c in projectContent.GetAllTypes()) {
+							string className = c.Name;
+							if (className.Length >= text.Length) {
+								if (className.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0) {
+									list.Add(c);
+								}
+							}
+						}
 					}
 				}
 			}
 			return list;
-		}
-		
-		void AddClasses(string text, ArrayList list, IEnumerable<ITypeDefinition> classes)
-		{
-			foreach (IClass c in classes) {
-				string className = c.Name;
-				if (className.Length >= text.Length) {
-					if (className.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0) {
-						list.Add(c);
-					}
-				}
-				AddClasses(text, list, c.InnerClasses);
-			}
 		}
 		
 		const int MatchType_NoMatch = -1;
@@ -328,7 +322,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void AddItem(IEntity e, IImage image, int matchType)
 		{
-			AddItem(e.Name + " (" + e.FullyQualifiedName + ")", image, e, matchType);
+			AddItem(e.Name + " (" + e.FullName + ")", image, e, matchType);
 		}
 		
 		void cancelButtonClick(object sender, RoutedEventArgs e)
@@ -336,10 +330,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Close();
 		}
 		
-		void GotoRegion(DomRegion region, string fileName)
+		void GotoRegion(DomRegion region)
 		{
-			if (fileName != null && !region.IsEmpty) {
-				FileService.JumpToFilePosition(fileName, region.BeginLine, region.BeginColumn);
+			if (!region.IsEmpty && !string.IsNullOrEmpty(region.FileName)) {
+				FileService.JumpToFilePosition(region.FileName, region.BeginLine, region.BeginColumn);
 			}
 		}
 		
@@ -364,14 +358,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 						int i = Math.Min(editor.Document.LineCount, Math.Max(1, (int)tag));
 						editor.JumpTo(i, int.MaxValue);
 					}
-				} else if (tag is IClass) {
-					IClass c = tag as IClass;
-					CodeCompletionDataUsageCache.IncrementUsage(c.DotNetName);
-					GotoRegion(c.Region, c.CompilationUnit.FileName);
+				} else if (tag is ITypeDefinition) {
+					ITypeDefinition c = tag as ITypeDefinition;
+					CodeCompletionDataUsageCache.IncrementUsage(c.ReflectionName);
+					GotoRegion(c.Region);
 				} else if (tag is IMember) {
 					IMember m = tag as IMember;
-					CodeCompletionDataUsageCache.IncrementUsage(m.DotNetName);
-					GotoRegion(m.Region, m.DeclaringType.CompilationUnit.FileName);
+					CodeCompletionDataUsageCache.IncrementUsage(m.ReflectionName);
+					GotoRegion(m.Region);
 				} else if (tag is FileLineReference) {
 					FileLineReference flref = (FileLineReference)tag;
 					if (flref.Line <= 0) {

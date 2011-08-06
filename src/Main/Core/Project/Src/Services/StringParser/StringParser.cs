@@ -46,17 +46,6 @@ namespace ICSharpCode.Core
 			return Parse(input, (StringTagPair[])null);
 		}
 		
-		/// <summary>
-		/// Parses an array and replaces the elements in the existing array.
-		/// </summary>
-		[Obsolete("Call Parse(string) in a loop / consider using LINQ Select instead")]
-		public static void Parse(string[] inputs)
-		{
-			for (int i = 0; i < inputs.Length; ++i) {
-				inputs[i] = Parse(inputs[i]);
-			}
-		}
-		
 		public static void RegisterStringTagProvider(IStringTagProvider tagProvider)
 		{
 			if (tagProvider == null)

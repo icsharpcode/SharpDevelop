@@ -11,6 +11,7 @@ using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Services;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Internal.Templates;
@@ -393,7 +394,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					File.Copy(binaryFileName, parsedFileName);
 				else
 					File.WriteAllText(parsedFileName, parsedContent, ParserService.DefaultFileEncoding);
-				ParserService.ParseFile(parsedFileName, new StringTextBuffer(parsedContent));
+				ParserService.ParseFile(parsedFileName, new StringTextSource(parsedContent));
 			} else {
 				if (!String.IsNullOrEmpty(binaryFileName)) {
 					LoggingService.Warn("binary file was skipped");

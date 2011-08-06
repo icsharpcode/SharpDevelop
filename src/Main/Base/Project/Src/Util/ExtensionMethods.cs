@@ -438,15 +438,6 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Creates a new image for the image source.
-		/// </summary>
-		[ObsoleteAttribute("Use layout rounding instead")]
-		public static UIElement CreatePixelSnappedImage(this IImage image)
-		{
-			return CreateImage(image);
-		}
-		
-		/// <summary>
 		/// Translates a WinForms menu to WPF.
 		/// </summary>
 		public static ICollection TranslateToWpf(this ToolStripItem[] items)

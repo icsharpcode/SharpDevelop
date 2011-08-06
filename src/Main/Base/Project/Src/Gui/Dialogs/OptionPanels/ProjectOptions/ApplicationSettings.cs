@@ -47,8 +47,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			b = helper.BindString("startupObjectComboBox", "StartupObject", TextBoxEditMode.EditEvaluatedProperty);
 			b.RegisterLocationButton(locationButton);
-			foreach (IClass c in GetPossibleStartupObjects(project)) {
-				Get<ComboBox>("startupObject").Items.Add(c.FullyQualifiedName);
+			foreach (ITypeDefinition c in GetPossibleStartupObjects(project)) {
+				Get<ComboBox>("startupObject").Items.Add(c.FullName);
 			}
 			
 			b = helper.BindString("applicationIconTextBox", "ApplicationIcon", TextBoxEditMode.EditEvaluatedProperty);

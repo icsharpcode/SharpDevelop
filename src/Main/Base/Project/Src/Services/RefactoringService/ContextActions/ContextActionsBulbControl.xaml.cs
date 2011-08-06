@@ -13,7 +13,6 @@ using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	/*
 	/// <summary>
 	/// Interaction logic for ContextActionsBulbControl.xaml
 	/// </summary>
@@ -31,11 +30,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			remove { this.ActionsTreeView.ActionExecuted -= value; }
 		}
 		
+		/*
 		public new ContextActionsBulbViewModel DataContext
 		{
 			get { return (ContextActionsBulbViewModel)base.DataContext; }
 			set { base.DataContext = value; }
 		}
+		*/
 		
 		bool isOpen;
 		public bool IsOpen {
@@ -69,7 +70,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		void Expander_Expanded(object sender, RoutedEventArgs e)
 		{
-			this.DataContext.LoadHiddenActions();
+			throw new NotImplementedException();
+			#warning NotImplementedException
+			//this.DataContext.LoadHiddenActions();
 		}
 		
 		void CheckBox_Click(object sender, RoutedEventArgs e)
@@ -77,5 +80,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			e.Handled = true;
 		}
 	}
-	*/
 }

@@ -219,6 +219,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		void Start(bool withDebugging);
 		
 		/// <summary>
+		/// Creates a new project content for this project.
+		/// Return null if you don't want to create any project content.
+		/// </summary>
+		/// <remarks>
+		/// This method is called by the SharpDevelop infrastructure.
+		/// If you want to get the PC for a project, use the methods on <see cref="ParserService"/>.
+		/// </remarks>
+		IProjectContent CreateProjectContent();
+		
+		/// <summary>
 		/// Creates a new ProjectItem for the passed MSBuild item.
 		/// </summary>
 		ProjectItem CreateProjectItem(IProjectItemBackendStore item);

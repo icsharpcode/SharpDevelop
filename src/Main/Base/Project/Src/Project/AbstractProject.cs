@@ -10,6 +10,7 @@ using System.IO;
 using System.Xml.Linq;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
@@ -428,6 +429,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				findFileCache.TryGetValue(fileName, out outputItem);
 				return outputItem;
 			}
+		}
+		
+		IProjectContent IProject.CreateProjectContent()
+		{
+			return this.CreateProjectContent();
+		}
+		protected virtual IProjectContent CreateProjectContent()
+		{
+			return null;
 		}
 		
 		/// <summary>

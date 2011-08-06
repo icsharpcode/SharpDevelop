@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public override void Drop(int lineNumber)
 		{
-			this.Location = new Location(ColumnNumber, lineNumber);
+			this.Location = new TextLocation(lineNumber, ColumnNumber);
 		}		
 	}
 	

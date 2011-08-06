@@ -85,11 +85,11 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
-			if (e.NewParseInformation == ParserService.GetExistingParseInformation(e.FileName)) {
+			if (e.NewParsedFile == ParserService.GetExistingParseInformation(e.FileName)) {
 				// Call UpdateCommentTags only for the main parse information (if a file is in multiple projects),
 				// and only if the results haven't already been replaced with a more recent ParseInformation.
-				if (e.NewCompilationUnit != null) {
-					UpdateCommentTags(e.FileName, e.NewCompilationUnit.TagComments);
+				if (e.NewParseInformation != null) {
+					UpdateCommentTags(e.FileName, e.NewParseInformation.TagComments);
 				} else {
 					UpdateCommentTags(e.FileName, new List<TagComment>());
 				}
@@ -144,8 +144,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		/*
-		static void UpdateCommentTags(FileName fileName, IList<TagComment> tagComments)
+		static void UpdateCommentTags(FileName fileName, IEnumerable<TagComment> tagComments)
 		{
 			List<Task> newTasks = new List<Task>();
 			foreach (TagComment tag in tagComments) {
@@ -189,7 +188,6 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 		}
-*/
 
 		static void OnCleared(EventArgs e)
 		{

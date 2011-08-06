@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 using Mono.Cecil;
@@ -10,7 +11,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	public class DecompiledBreakpointBookmark : BreakpointBookmark
 	{
-		public DecompiledBreakpointBookmark(MemberReference member, int ilFrom, int ilTo, FileName fileName, Location location, BreakpointAction action, string scriptLanguage, string script) : base(fileName, location, action, scriptLanguage, script)
+		public DecompiledBreakpointBookmark(MemberReference member, int ilFrom, int ilTo, FileName fileName, TextLocation location, BreakpointAction action, string scriptLanguage, string script) : base(fileName, location, action, scriptLanguage, script)
 		{
 			this.MemberReference = member;
 			this.ILFrom = ilFrom;

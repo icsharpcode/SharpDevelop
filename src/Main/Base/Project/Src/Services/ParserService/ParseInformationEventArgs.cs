@@ -11,54 +11,78 @@ namespace ICSharpCode.SharpDevelop
 {
 	public class ParseInformationEventArgs : EventArgs
 	{
-		IParsedFile oldParseInformation;
-		IParsedFile newParseInformation;
+		IParsedFile oldParsedFile;
+		ParseInformation newParseInformation;
 		
 		public FileName FileName {
-			get { return FileName.Create((oldParseInformation ?? newParseInformation).FileName); }
+			get {
+				if (newParseInformation != null)
+					return newParseInformation.FileName;
+				else
+					return FileName.Create(oldParsedFile.FileName);
+			}
 		}
 		
 		public IProjectContent ProjectContent {
-			get { return (oldParseInformation ?? newParseInformation).ProjectContent; }
-		}
-		
-		public IParsedFile OldCompilationUnit {
-			get { return oldParseInformation; }
+			get {
+				if (newParseInformation != null)
+					return newParseInformation.ProjectContent;
+				else
+					return oldParsedFile.ProjectContent;
+			}
 		}
 		
 		/// <summary>
-		/// The old parse information.
+		/// The old parsed file.
+		/// Returns null if no old parse information exists (first parse run).
 		/// </summary>
-		[Obsolete]
-		public IParsedFile OldParseInformation {
-			get { return oldCompilationUnit; }
+		public IParsedFile OldParsedFile {
+			get { return oldParsedFile; }
+		}
+		
+		/// <summary>
+		/// The new parsed file.
+		/// Returns null if no new parse information exists (file was removed from project).
+		/// </summary>
+		public IParsedFile NewParsedFile {
+			get { return newParseInformation != null ? newParseInformation.ParsedFile : null; }
 		}
 		
 		/// <summary>
 		/// The new parse information.
+		/// Returns null if no new parse information exists (file was removed from project).
 		/// </summary>
-		public IParsedFile NewParseInformation {
+		public ParseInformation NewParseInformation {
 			get { return newParseInformation; }
 		}
 		
 		[Obsolete]
-		public IParsedFile NewCompilationUnit {
-			get { return newParseInformation; }
+		public IParsedFile OldCompilationUnit {
+			get { return this.OldParsedFile; }
 		}
 		
+		[Obsolete]
+		public IParsedFile NewCompilationUnit {
+			get { return this.NewParsedFile; }
+		}
+		
+		/// <summary>
+		/// Gets whether this parse information is the primary information for the given file.
+		/// Secondary parse informations exist when a single file is used in multiple projects.
+		/// </summary>
 		public bool IsPrimaryParseInfoForFile {
 			get; private set;
 		}
 		
-		public ParseInformationEventArgs(IParsedFile oldParseInformation, IParsedFile newParseInformation, bool isPrimaryParseInfoForFile)
+		public ParseInformationEventArgs(IParsedFile oldParsedFile, ParseInformation newParseInformation, bool isPrimaryParseInfoForFile)
 		{
-			if (oldParseInformation == null && newParseInformation == null)
+			if (oldParsedFile == null && newParseInformation == null)
 				throw new ArgumentNullException();
-			if (oldParseInformation != null && newParseInformation != null) {
-				Debug.Assert(oldParseInformation.ProjectContent == newParseInformation.ProjectContent);
-				Debug.Assert(FileUtility.IsEqualFileName(oldParseInformation.FileName, newParseInformation.FileName));
+			if (oldParsedFile != null && newParseInformation != null) {
+				Debug.Assert(oldParsedFile.ProjectContent == newParseInformation.ProjectContent);
+				Debug.Assert(FileUtility.IsEqualFileName(oldParsedFile.FileName, newParseInformation.FileName));
 			}
-			this.oldParseInformation = oldParseInformation;
+			this.oldParsedFile = oldParsedFile;
 			this.newParseInformation = newParseInformation;
 			this.IsPrimaryParseInfoForFile = isPrimaryParseInfoForFile;
 		}
@@ -68,10 +92,12 @@ namespace ICSharpCode.SharpDevelop
 	{
 		FileName fileName;
 		ITextSource content;
-		IParsedFile parseInformation;
+		ParseInformation parseInformation;
 		
-		public ParserUpdateStepEventArgs(FileName fileName, ITextSource content, IParsedFile parseInformation)
+		public ParserUpdateStepEventArgs(FileName fileName, ITextSource content, ParseInformation parseInformation)
 		{
+			if (parseInformation == null)
+				throw new ArgumentNullException("parseInformation");
 			this.fileName = fileName;
 			this.content = content;
 			this.parseInformation = parseInformation;
@@ -89,7 +115,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public IParsedFile ParseInformation {
+		public ParseInformation ParseInformation {
 			get {
 				return parseInformation;
 			}

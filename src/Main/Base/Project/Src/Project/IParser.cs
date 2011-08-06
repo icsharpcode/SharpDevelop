@@ -38,12 +38,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <param name="projectContent">The parent project of the file.</param>
 		/// <param name="fileName">The name of the file being parsed.</param>
 		/// <param name="fileContent">The content of the file.</param>
-		/// <returns>The compilation unit representing the parse results.</returns>
+		/// <returns>The parse information representing the parse results.</returns>
 		/// <remarks>
 		/// SharpDevelop may call IParser.Parse in parallel. This will be done on the same IParser instance
 		/// if there are two parallel parse requests for the same file. Parser implementations must be thread-safe.
 		/// </remarks>
-		IParsedFile Parse(IProjectContent projectContent, string fileName, ITextSource fileContent);
+		ParseInformation Parse(IProjectContent projectContent, string fileName, ITextSource fileContent);
 		
 		//IResolver CreateResolver();
 	}

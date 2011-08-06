@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using Mono.Cecil;
@@ -448,27 +449,20 @@ namespace ICSharpCode.SharpDevelop
 		#endregion
 		
 		#region Navigate To Entity
-		public static bool NavigateTo(Dom.IEntity entity)
+		public static bool NavigateTo(IEntity entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
-			var cu = entity.CompilationUnit;
-			Dom.DomRegion region;
-			if (entity is Dom.IClass)
-				region = ((Dom.IClass)entity).Region;
-			else if (entity is Dom.IMember)
-				region = ((Dom.IMember)entity).Region;
-			else
-				region = Dom.DomRegion.Empty;
+			var region = entity.Region;
 			
-			if (cu == null || string.IsNullOrEmpty(cu.FileName) || region.IsEmpty) {
+			if (region.IsEmpty || string.IsNullOrEmpty(region.FileName)) {
 				foreach (var item in AddInTree.BuildItems<INavigateToEntityService>("/SharpDevelop/Services/NavigateToEntityService", null, false)) {
 					if (item.NavigateToEntity(entity))
 						return true;
 				}
 				return false;
 			} else {
-				return FileService.JumpToFilePosition(cu.FileName, region.BeginLine, region.BeginColumn) != null;
+				return FileService.JumpToFilePosition(region.FileName, region.BeginLine, region.BeginColumn) != null;
 			}
 		}
 		#endregion
@@ -501,7 +495,7 @@ namespace ICSharpCode.SharpDevelop
 	/// </remarks>
 	public interface INavigateToEntityService
 	{
-		bool NavigateToEntity(Dom.IEntity entity);
+		bool NavigateToEntity(IEntity entity);
 	}
 	
 	/// <summary>

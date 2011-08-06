@@ -142,20 +142,6 @@ namespace ICSharpCode.Core
 		
 		#endregion
 		
-		[Obsolete("Use System.IO.Path.Combine instead")]
-		public static string Combine(params string[] paths)
-		{
-			if (paths == null || paths.Length == 0) {
-				return String.Empty;
-			}
-			
-			string result = paths[0];
-			for (int i = 1; i < paths.Length; i++) {
-				result = Path.Combine(result, paths[i]);
-			}
-			return result;
-		}
-		
 		public static bool IsUrl(string path)
 		{
 			if (path == null)
@@ -417,15 +403,6 @@ namespace ICSharpCode.Core
 			return !((nameWithoutExtension.StartsWith("COM") ||
 			          nameWithoutExtension.StartsWith("LPT")) &&
 			         Char.IsDigit(ch));
-		}
-		
-		/// <summary>
-		/// Checks that a single directory name (not the full path) is valid.
-		/// </summary>
-		[ObsoleteAttribute("Use IsValidDirectoryEntryName instead")]
-		public static bool IsValidDirectoryName(string name)
-		{
-			return IsValidDirectoryEntryName(name);
 		}
 		
 		/// <summary>

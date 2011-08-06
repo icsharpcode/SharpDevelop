@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop
 			if (task.Line >= 1 && task.Line <= textEditor.Document.LineCount) {
 				LoggingService.Debug(task.ToString());
 				int offset = textEditor.Document.GetOffset(task.Line, task.Column);
-				int endOffset = TextUtilities.GetNextCaretPosition(DocumentUtilitites.GetTextSource(textEditor.Document), offset, System.Windows.Documents.LogicalDirection.Forward, CaretPositioningMode.WordBorderOrSymbol);
+				int endOffset = TextUtilities.GetNextCaretPosition(textEditor.Document, offset, System.Windows.Documents.LogicalDirection.Forward, CaretPositioningMode.WordBorderOrSymbol);
 				if (endOffset < 0) endOffset = textEditor.Document.TextLength;
 				int length = endOffset - offset;
 				

@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			IDocumentLine line = document.GetLineByNumber(startLine);
 			if (endColumn < 1 || endColumn > line.Length)
 				endColumn = line.Length;
-			instance = new CurrentLineBookmark(fileName, new Location(startColumn, startLine));
+			instance = new CurrentLineBookmark(fileName, new TextLocation(startLine, startColumn));
 			BookmarkManager.AddMark(instance);
 		}
 		

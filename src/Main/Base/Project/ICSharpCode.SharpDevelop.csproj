@@ -333,6 +333,7 @@
     <Compile Include="Src\Services\File\FileEventArgs.cs" />
     <Compile Include="Src\Services\ParserService\AssemblyParserService.cs" />
     <Compile Include="Src\Services\ParserService\DomAssemblyName.cs" />
+    <Compile Include="Src\Services\ParserService\ParseInformation.cs" />
     <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
@@ -367,6 +368,7 @@
     <Compile Include="Src\Services\RefactoringService\GoToClassAction.cs" />
     <Compile Include="Src\Services\RefactoringService\GoToMemberAction.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />
+    <Compile Include="Src\Services\Tasks\TagComment.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />
     <Compile Include="Src\Services\Tasks\TaskService.cs" />
     <Compile Include="Src\Services\DisplayBinding\IDisplayBinding.cs" />
@@ -740,8 +742,6 @@
     <Compile Include="Src\Project\BuildError.cs" />
     <Compile Include="Src\Services\HelpProvider.cs" />
     <Compile Include="Src\Services\ParserService\CodeCompletionOptions.cs" />
-    <Compile Include="Src\Services\ParserService\Doozer\ProjectContentRegistryDescriptor.cs" />
-    <Compile Include="Src\Services\ParserService\Doozer\ProjectContentRegistryDoozer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CompareProjectPropertyConditionEvaluator.cs" />
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.Designer.cs">
       <DependentUpon>SolutionConfigurationEditor.cs</DependentUpon>

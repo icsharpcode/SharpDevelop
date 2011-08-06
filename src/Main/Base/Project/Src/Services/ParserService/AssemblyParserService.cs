@@ -68,13 +68,31 @@ namespace ICSharpCode.SharpDevelop
 			if (up2dateProjectContents != null)
 				return null;
 			up2dateProjectContents = new Dictionary<FileName, LoadedAssembly>();
-			return new CallbackOnDispose(delegate { up2dateProjectContents = null; });
+			return new CallbackOnDispose(
+				delegate {
+					up2dateProjectContents = null;
+					lock (projectContentDictionary) {
+						CleanWeakDictionary();
+					}
+				});
+		}
+		
+		static void CleanWeakDictionary()
+		{
+			List<FileName> removed = new List<FileName>();
+			foreach (var pair in projectContentDictionary) {
+				if (!pair.Value.IsAlive)
+					removed.Add(pair.Key);
+			}
+			foreach (var key in removed)
+				projectContentDictionary.Remove(key);
 		}
 		
 		static LoadedAssembly GetLoadedAssembly(FileName fileName, CancellationToken cancellationToken, out bool isNewTask)
 		{
 			isNewTask = false;
 			LoadedAssembly asm;
+			var up2dateProjectContents = AssemblyParserService.up2dateProjectContents;
 			if (up2dateProjectContents != null) {
 				if (up2dateProjectContents.TryGetValue(fileName, out asm))
 					return asm;
@@ -97,6 +115,8 @@ namespace ICSharpCode.SharpDevelop
 				if (wr != null) {
 					wr.Target = asm;
 				} else {
+					if (up2dateProjectContents == null)
+						CleanWeakDictionary();
 					wr = new WeakReference(asm);
 					projectContentDictionary.Add(fileName, wr);
 				}

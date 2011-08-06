@@ -111,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 				if (baseAnchor != null)
 					return baseAnchor.Location;
 				else
-					return new TextLocation(column, line);
+					return new TextLocation(line, column);
 			}
 		}
 		

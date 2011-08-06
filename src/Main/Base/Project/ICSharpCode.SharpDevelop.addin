@@ -40,7 +40,6 @@
 			<Doozer name="ProjectBinding" class="ICSharpCode.SharpDevelop.ProjectBindingDoozer"/>
 			<Doozer name="LanguageBinding" class="ICSharpCode.SharpDevelop.LanguageBindingDoozer"/>
 			<Doozer name="Parser" class="ICSharpCode.SharpDevelop.ParserDoozer"/>
-			<Doozer name="ProjectContentRegistry" class="ICSharpCode.SharpDevelop.ProjectContentRegistryDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
 			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionBindingDoozer"/>
 			<Doozer name="Debugger" class="ICSharpCode.SharpDevelop.Debugging.DebuggerDoozer"/>
@@ -2171,21 +2170,6 @@
 		<String id = "System.Windows.Forms" text = "System.Windows.Forms"/>
 		<String id = "System.Xml" text = "System.Xml"/>
 		<String id = "System.Xml.Linq" text = "System.Xml.Linq"/>
-	</Path>
-	
-	<Path name = "/Workspace/ProjectContentRegistry">
-		<ComplexCondition>
-			<Or>
-				<Condition name = "ProjectActive" activeproject="C#"/>
-				<Condition name = "ProjectActive" activeproject="VBNet"/>
-			</Or>
-			<Condition name = "CompareProjectProperty" property = "SharpDevelopTargetFrameworkVersion" equals = "CF 2.0">
-				<ProjectContentRegistry id="NetCF20" class="ICSharpCode.SharpDevelop.NetCF20ProjectContentRegistry"/>
-			</Condition>
-			<Condition name = "CompareProjectProperty" property = "SharpDevelopTargetFrameworkVersion" equals = "CF 3.5">
-				<ProjectContentRegistry id="NetCF35" class="ICSharpCode.SharpDevelop.NetCF35ProjectContentRegistry"/>
-			</Condition>
-		</ComplexCondition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/BackendBindings/TemplateCommands">

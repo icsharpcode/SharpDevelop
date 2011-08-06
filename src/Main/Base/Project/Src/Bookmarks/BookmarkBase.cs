@@ -26,7 +26,6 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				if (document != value) {
 					if (anchor != null) {
 						location = anchor.Location;
-						anchor = null;
 					}
 					document = value;
 					CreateAnchor();
@@ -37,6 +36,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		void CreateAnchor()
 		{
+			if (anchor != null) {
+				// Detach from Deleted event: don't delete the bookmark
+				// if the anchor at the old position is deleted after the anchor was moved
+				anchor.Deleted -= AnchorDeleted;
+			}
 			if (document != null) {
 				int lineNumber = Math.Max(1, Math.Min(location.Line, document.LineCount));
 				int lineLength = document.GetLineByNumber(lineNumber).Length;

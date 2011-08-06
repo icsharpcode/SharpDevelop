@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (openAtWordStart) {
 					int wordStart = document.FindPrevWordStart(offset);
 					if (wordStart != -1) {
-						var wordStartLocation = document.OffsetToPosition(wordStart);
+						var wordStartLocation = document.GetLocation(wordStart);
 						line = wordStartLocation.Line;
 						column = wordStartLocation.Column;
 					}

@@ -99,8 +99,10 @@ namespace SearchAndReplace
 				Close();
 			} else if (searchKeyboardShortcut == e.KeyData && !searchButton.Checked) {
 				EnableSearchMode(true);
+				e.Handled = true;
 			} else if (replaceKeyboardShortcut == e.KeyData && !replaceButton.Checked) {
 				EnableSearchMode(false);
+				e.Handled = true;
 			}
 		}
 		

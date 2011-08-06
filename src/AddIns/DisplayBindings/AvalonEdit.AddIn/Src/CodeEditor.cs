@@ -544,7 +544,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.VerifyAccess();
 			// When parse information is updated quickly in succession, only do a single update
 			// to the latest version.
-			updateParseInfoTo = e.NewParseInformation;
+			updateParseInfoTo = e.NewParsedFile;
 			this.Dispatcher.BeginInvoke(
 				DispatcherPriority.Background,
 				new Action(
