@@ -42,6 +42,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.typeParameterCount = typeParameterCount;
 		}
 		
+		public string Namespace { get { return nameSpace; } }
+		public string Name { get { return name; } }
+		public int TypeParameterCount { get { return typeParameterCount; } }
+		
 		/*
 		sealed class CachedResult
 		{

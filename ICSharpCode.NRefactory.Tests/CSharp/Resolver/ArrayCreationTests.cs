@@ -59,5 +59,31 @@ class A {
 			var result = Resolve(program);
 			Assert.AreEqual("System.Int64[]", result.Type.ReflectionName);
 		}
+		
+		[Test]
+		public void InferredType2D()
+		{
+			string program = @"using System.Collections.Generic;
+class A {
+	static void Main() {
+		var a = $new [,] { { 1 }, { 1L } }$;
+	}
+}
+";
+			var result = Resolve(program);
+			Assert.AreEqual("System.Int64[,]", result.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void ArrayInitializerExpression()
+		{
+			string program = @"using System.Collections.Generic;
+class A {
+	int[] a = ${ 1 }$;
+}
+";
+			var result = Resolve(program);
+			Assert.AreEqual("System.Int32[]", result.Type.ReflectionName);
+		}
 	}
 }

@@ -90,7 +90,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public IType DeclaringType {
 			get {
 				ITypeDefinition declaringTypeDef = genericType.DeclaringTypeDefinition;
-				if (declaringTypeDef != null && declaringTypeDef.TypeParameterCount > 0) {
+				if (declaringTypeDef != null && declaringTypeDef.TypeParameterCount > 0
+				    && declaringTypeDef.TypeParameterCount <= genericType.TypeParameterCount)
+				{
 					IType[] newTypeArgs = new IType[declaringTypeDef.TypeParameterCount];
 					Array.Copy(this.typeArguments, 0, newTypeArgs, 0, newTypeArgs.Length);
 					return new ParameterizedType(declaringTypeDef, newTypeArgs);

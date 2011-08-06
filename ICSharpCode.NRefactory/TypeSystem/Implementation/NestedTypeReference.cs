@@ -35,6 +35,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.additionalTypeParameterCount = additionalTypeParameterCount;
 		}
 		
+		public ITypeReference DeclaringTypeReference {
+			get { return declaringTypeRef; }
+		}
+		
+		public string Name {
+			get { return name; }
+		}
+		
+		public int AdditionalTypeParameterCount {
+			get { return additionalTypeParameterCount; }
+		}
+		
 		public IType Resolve(ITypeResolveContext context)
 		{
 			ITypeDefinition declaringType = declaringTypeRef.Resolve(context) as ITypeDefinition;

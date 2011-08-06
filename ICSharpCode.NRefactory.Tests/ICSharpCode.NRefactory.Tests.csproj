@@ -135,6 +135,7 @@
     <Compile Include="CSharp\Resolver\ResolverTestBase.cs" />
     <Compile Include="CSharp\Resolver\UnaryOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\UnsafeCodeTests.cs" />
+    <Compile Include="Documentation\IDStringTests.cs" />
     <Compile Include="FormattingTests\TestBraceStlye.cs" />
     <Compile Include="FormattingTests\TestFormattingBugs.cs" />
     <Compile Include="FormattingTests\TestSpacingVisitor.cs" />
@@ -168,6 +169,7 @@
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\Parser\" />
+    <Folder Include="Documentation" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

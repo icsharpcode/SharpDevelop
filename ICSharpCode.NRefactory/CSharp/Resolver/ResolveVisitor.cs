@@ -610,35 +610,35 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			Scan(arrayCreateExpression.Initializer);
-			if (resolverEnabled) {
-				IType arrType;
-				if (arrayCreateExpression.Type.IsNull) {
-					var elements = new List<ResolveResult>();
-					foreach (var init in arrayCreateExpression.Initializer.Elements) {
-						var rr = Resolve(init);
-						if (!rr.IsError)
-							elements.Add(rr);
-					}
-					TypeInference typeInference = new TypeInference(resolver.Context, new Conversions(resolver.Context));
-					bool success;
-					IType elementType = typeInference.GetBestCommonType(elements, out success);
-					arrType = new ArrayType(elementType, 1);
-				} else {
-					arrType = ResolveType(arrayCreateExpression.Type);
-					foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
-						arrType = new ArrayType(arrType, spec.Dimensions);
-					}
-					// HACK: find a better way to represent this in the AST
-					if (arrayCreateExpression.Arguments.Count == 0) {
-						arrType = new ArrayType(arrType, 1);
-					} else {
-						arrType = new ArrayType(arrType, arrayCreateExpression.Arguments.Count);
-					}
-				}
-				return new ResolveResult (arrType);
+			ScanChildren(arrayCreateExpression);
+			if (!resolverEnabled) {
+				return null;
 			}
-			return null;
+			IType arrType;
+			if (arrayCreateExpression.Type.IsNull) {
+				var elements = new List<ResolveResult>();
+				foreach (var init in arrayCreateExpression.Initializer.Elements) {
+					var rr = Resolve(init);
+					if (!rr.IsError)
+						elements.Add(rr);
+				}
+				TypeInference typeInference = new TypeInference(resolver.Context, new Conversions(resolver.Context));
+				bool success;
+				IType elementType = typeInference.GetBestCommonType(elements, out success);
+				arrType = new ArrayType(elementType, 1);
+			} else {
+				arrType = ResolveType(arrayCreateExpression.Type);
+				foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
+					arrType = new ArrayType(arrType, spec.Dimensions);
+				}
+				// HACK: find a better way to represent this in the AST
+				if (arrayCreateExpression.Arguments.Count == 0) {
+					arrType = new ArrayType(arrType, 1);
+				} else {
+					arrType = new ArrayType(arrType, arrayCreateExpression.Arguments.Count);
+				}
+			}
+			return new ResolveResult (arrType);
 		}
 		
 		public override ResolveResult VisitAsExpression(AsExpression asExpression, object data)
@@ -1450,14 +1450,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data)
 		{
-			ScanChildren(constructorInitializer);
-			return null;
+			if (!resolverEnabled) {
+				ScanChildren(constructorInitializer);
+				return null;
+			}
+			ResolveResult target;
+			if (constructorInitializer.ConstructorInitializerType == ConstructorInitializerType.Base) {
+				target = resolver.ResolveBaseReference();
+			} else {
+				target = resolver.ResolveThisReference();
+			}
+			string[] argumentNames;
+			ResolveResult[] arguments = GetArguments(constructorInitializer.Arguments, out argumentNames);
+			return resolver.ResolveObjectCreation(target.Type, arguments, argumentNames);
 		}
 		
 		public override ResolveResult VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
 			// TODO: array initializers are valid expressions if the parent node is a variable/field declaration
 			// that explicitly defines an array type
+			ScanChildren(arrayInitializerExpression);
 			return errorResult;
 		}
 		

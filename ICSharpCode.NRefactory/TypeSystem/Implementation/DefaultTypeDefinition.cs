@@ -391,12 +391,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return new ITypeDefinition[] { this };
 		}
 		
-		public ITypeDefinition GetDefinition()
+		ITypeDefinition IType.GetDefinition()
 		{
 			return this;
 		}
 		
-		public IType Resolve(ITypeResolveContext context)
+		IType ITypeReference.Resolve(ITypeResolveContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");

@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// check for members of outer classes (private members of outer classes can be accessed)
 					var lookupTypeDefinition = currentTypeDefinition;
 					while (lookupTypeDefinition != null) {
-						if (entity.DeclaringTypeDefinition.Equals (lookupTypeDefinition)) 
+						if (entity.DeclaringTypeDefinition.Equals (lookupTypeDefinition))
 							return true;
 						lookupTypeDefinition = lookupTypeDefinition.DeclaringTypeDefinition;
 					}
@@ -144,10 +144,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult CreateTypeResolveResult(IType returnedType, bool isAmbiguous, IList<IType> typeArguments, bool parameterizeResultType)
 		{
 			if (parameterizeResultType && typeArguments.Count > 0) {
-				// parameterize the type if necessary
-				ITypeDefinition returnedTypeDef = returnedType as ITypeDefinition;
-				if (returnedTypeDef != null)
-					returnedType = new ParameterizedType(returnedTypeDef, typeArguments);
+				// Complete the partial parameterization
+				ParameterizedType pt = returnedType as ParameterizedType;
+				if (pt != null) {
+					IType[] newTypeArguments = new IType[pt.TypeParameterCount];
+					pt.TypeArguments.CopyTo(newTypeArguments, 0);
+					typeArguments.CopyTo(newTypeArguments, newTypeArguments.Length - typeArguments.Count);
+					returnedType = new ParameterizedType(pt.GetDefinition(), newTypeArguments);
+				}
 			}
 			if (isAmbiguous)
 				return new AmbiguousTypeResolveResult(returnedType);

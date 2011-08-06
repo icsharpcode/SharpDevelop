@@ -19,12 +19,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// Compared with <see cref="TypeStorage"/>, this class adds support for the IProjectContent interface,
 	/// for partial classes, and for multi-threading.
 	/// </remarks>
-	public sealed class SimpleProjectContent : AbstractAnnotatable, IProjectContent
+	public class SimpleProjectContent : AbstractAnnotatable, IProjectContent
 	{
-		// This class is sealed by design:
-		// the synchronization story doesn't mix well with someone trying to extend this class.
-		// If you wanted to derive from this: use delegation, not inheritance.
-		
 		readonly TypeStorage types = new TypeStorage();
 		readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
 		readonly Dictionary<string, IParsedFile> fileDict = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);

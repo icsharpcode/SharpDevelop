@@ -305,7 +305,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		/// <inheritdoc/>
 		public string GetDocumentation(IEntity entity)
 		{
-			return GetDocumentation(GetDocumentationKey(entity));
+			return GetDocumentation(IDStringProvider.GetIDString(entity));
 		}
 		
 		/// <summary>
@@ -363,15 +363,6 @@ namespace ICSharpCode.NRefactory.Documentation
 					return null;
 				}
 			}
-		}
-		#endregion
-		
-		#region GetDocumentationKey
-		public static string GetDocumentationKey(IEntity entity)
-		{
-			if (entity == null)
-				throw new ArgumentNullException("entity");
-			throw new NotImplementedException();
 		}
 		#endregion
 	}

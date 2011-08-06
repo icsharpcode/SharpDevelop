@@ -21,9 +21,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.dimensions = dimensions;
 		}
 		
-			public override TypeKind Kind {
-				get { return TypeKind.Array; }
-			}
+		public override TypeKind Kind {
+			get { return TypeKind.Array; }
+		}
 		
 		public int Dimensions {
 			get { return dimensions; }

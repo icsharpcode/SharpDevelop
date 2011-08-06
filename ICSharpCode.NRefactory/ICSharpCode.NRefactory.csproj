@@ -106,6 +106,7 @@
     <Compile Include="CSharp\Resolver\ConstantValues.cs" />
     <Compile Include="CSharp\Resolver\MapTypeIntoNewContext.cs" />
     <Compile Include="CSharp\Resolver\SimpleNameLookupMode.cs" />
+    <Compile Include="Documentation\IDStringProvider.cs" />
     <Compile Include="PatternMatching\BacktrackingInfo.cs" />
     <Compile Include="PatternMatching\Choice.cs" />
     <Compile Include="PatternMatching\AnyNode.cs" />

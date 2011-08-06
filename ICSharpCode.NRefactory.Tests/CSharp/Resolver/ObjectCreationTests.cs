@@ -100,7 +100,7 @@ class A {
 			Assert.AreEqual(0, m.Parameters.Count);
 		}
 		
-		[Test, Ignore("Not implemented")]
+		[Test, Ignore("Parser returns incorrect positions")]
 		public void ChainedConstructorCall()
 		{
 			string program = @"using System;

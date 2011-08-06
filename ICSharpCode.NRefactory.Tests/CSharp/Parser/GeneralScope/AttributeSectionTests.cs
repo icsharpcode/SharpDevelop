@@ -138,5 +138,28 @@ public class Form1 {
 		}
 		
 		// TODO: Tests for other contexts where attributes can appear
+		
+		[Test, Ignore("Parser doesn't support named arguments in attributes")]
+		public void AttributeWithNamedArguments()
+		{
+			ParseUtilCSharp.AssertTypeMember(
+				@"[A(0, a:1, b=2)] class Test {}",
+				new TypeDeclaration {
+					Name = "Test",
+					Attributes = {
+						new AttributeSection {
+							Attributes = {
+								new Attribute {
+									Type = new SimpleType("A"),
+									Arguments = {
+										new PrimitiveExpression(0),
+										new NamedArgumentExpression { Identifier = "a", Expression = new PrimitiveExpression(1) },
+										new AssignmentExpression(new IdentifierExpression("b"), new PrimitiveExpression(2))
+									}
+								}
+							}
+						}
+					}});
+		}
 	}
 }
