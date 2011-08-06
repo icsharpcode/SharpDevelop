@@ -175,20 +175,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return this;
 			}
 			
-			public void Dispose()
+			void IDisposable.Dispose()
 			{
 				// Disposing the synchronization context has no effect
 			}
 			
-			public IParsedFile GetFile(string fileName)
+			IParsedFile IProjectContent.GetFile(string fileName)
 			{
 				return null;
 			}
 			
-			public IEnumerable<IParsedFile> Files {
+			IEnumerable<IParsedFile> IProjectContent.Files {
 				get {
 					return EmptyList<IParsedFile>.Instance;
 				}
+			}
+			
+			void IProjectContent.UpdateProjectContent(IParsedFile oldFile, IParsedFile newFile)
+			{
+				throw new NotSupportedException();
 			}
 			
 			string IDocumentationProvider.GetDocumentation(IEntity entity)
