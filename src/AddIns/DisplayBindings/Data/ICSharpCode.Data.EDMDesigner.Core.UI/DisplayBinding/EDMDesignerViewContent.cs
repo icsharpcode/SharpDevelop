@@ -113,7 +113,18 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
             if (_edmView.EDM.IsEmpty)
             {
                 edmxElement = null;
-                EDMWizardWindow wizard = RunWizard(file, ProjectService.CurrentProject.RootNamespace);
+                
+                string ns = String.Empty;
+                if (ProjectService.CurrentProject == null)
+                {
+                	ns = ICSharpCode.Core.MessageService.ShowInputBox("EDMDesigner","Enter NameSpace","DefaultNamespace");
+                }
+                else
+                {
+                	ns = ProjectService.CurrentProject.RootNamespace;
+                }
+                
+                EDMWizardWindow wizard = RunWizard(file, ns);
 
                 if (wizard.DialogResult == true)
                     _edmView = new EDMView(wizard.EDMXDocument, readMoreAction);
