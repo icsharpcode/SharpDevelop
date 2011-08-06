@@ -1,0 +1,18 @@
+﻿<#@ template language="C#" HostSpecific="true" #>
+<#@ output extension=".aspx" #>
+<#
+	MvcTextTemplateHost mvcHost = (MvcTextTemplateHost)Host;
+#>
+<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
+
+<!DOCTYPE html>
+<html>
+	<head runat="server">
+		<title><#= mvcHost.ViewName #></title>
+	</head>
+	<body>
+		<div id="page">
+		
+		</div>
+	</body>
+</html>

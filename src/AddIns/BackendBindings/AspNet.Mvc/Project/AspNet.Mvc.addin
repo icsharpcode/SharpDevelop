@@ -1,0 +1,36 @@
+﻿<AddIn
+	name="ASP.NET MVC Binding"
+	author="Matt Ward"
+	copyright="prj:///doc/copyright.txt"
+	description="Adds support for ASP.NET MVC"
+	addInManagerHidden="preinstalled">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.AspNet.Mvc"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly=":ICSharpCode.SharpDevelop"/>
+		<Import assembly="$ICSharpCode.TextTemplating/TextTemplating.dll"/>
+		<Import assembly="AspNet.Mvc.dll">
+			<ConditionEvaluator
+				name="IsMvcViewsFolder"
+				class="ICSharpCode.AspNet.Mvc.IsMvcViewFolderSelectedConditionEvaluator"/>
+		</Import>
+	</Runtime>
+	
+	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode/Add">
+		<Condition name="IsMvcViewsFolder" action="Exclude">
+			<MenuItem
+				id="MvcView"
+				insertbefore="New Item"
+				label="View..."
+				icon="Icons.16x16.NewDocumentIcon"
+				class="ICSharpCode.AspNet.Mvc.AddMvcViewToProjectCommand"/>
+			<MenuItem
+				id="MvcSeparator"
+				insertbefore="New Item"
+				type="Separator"/>
+		</Condition>
+	</Path>
+</AddIn>

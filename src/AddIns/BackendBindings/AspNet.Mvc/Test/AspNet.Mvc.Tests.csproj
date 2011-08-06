@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{0B12A079-B2DB-42B9-8A8E-AA5CBC2B3225}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AspNet.Mvc.Tests</RootNamespace>
+    <AssemblyName>AspNet.Mvc.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Helpers\FakeAddMvcItemToProjectView.cs" />
+    <Compile Include="Helpers\FakeMvcTextTemplateHost.cs" />
+    <Compile Include="Helpers\FakeMvcTextTemplateHostFactory.cs" />
+    <Compile Include="Helpers\FakeMvcViewFileGenerator.cs" />
+    <Compile Include="Helpers\FakeSelectedMvcViewFolder.cs" />
+    <Compile Include="Helpers\TestableAddMvcViewToProjectCommand.cs" />
+    <Compile Include="Helpers\TestableProject.cs" />
+    <Compile Include="Helpers\TestableSelectedMvcViewFolder.cs" />
+    <Compile Include="Src\AddMvcViewToProjectCommandTests.cs" />
+    <Compile Include="Src\AddMvcViewToProjectViewModelTests.cs" />
+    <Compile Include="Src\IsMvcViewFolderSelectedConditionTests.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\MvcTextTemplateRepositoryTests.cs" />
+    <Compile Include="Src\MvcViewFileNameTests.cs" />
+    <Compile Include="Src\MvcViewFileGeneratorTests.cs" />
+    <Compile Include="Src\SelectedMvcViewFolderTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Misc\TextTemplating\Project\TextTemplating.csproj">
+      <Project>{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}</Project>
+      <Name>TextTemplating</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Project\AspNet.Mvc.csproj">
+      <Project>{D781721F-C2A7-4E95-B76F-247170AC3B13}</Project>
+      <Name>AspNet.Mvc</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helpers" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

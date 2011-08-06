@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{D781721F-C2A7-4E95-B76F-247170AC3B13}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.AspNet.Mvc</RootNamespace>
+    <AssemblyName>AspNet.Mvc</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <OutputPath>..\..\..\..\..\AddIns\BackendBindings\AspNet.Mvc\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.TextTemplating">
+      <HintPath>..\..\..\Misc\TextTemplating\Project\lib\Mono.TextTemplating.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Src\AddMvcViewToProjectCommand.cs" />
+    <Compile Include="Src\AddMvcViewToProjectView.xaml.cs">
+      <DependentUpon>AddMvcViewToProjectView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\AddMvcViewToProjectViewModel.cs" />
+    <Compile Include="Src\CloseDialogBehaviour.cs" />
+    <Compile Include="Src\DelegateCommand.cs" />
+    <Compile Include="Src\IAddMvcItemToProjectView.cs" />
+    <Compile Include="Src\IMvcTextTemplateHost.cs" />
+    <Compile Include="Src\IMvcTextTemplateHostFactory.cs" />
+    <Compile Include="Src\IMvcViewFileGenerator.cs" />
+    <Compile Include="Src\ISelectedMvcViewFolder.cs" />
+    <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluator.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\MvcTextTemplateHost.cs" />
+    <Compile Include="Src\MvcTextTemplateHostFactory.cs" />
+    <Compile Include="Src\MvcTextTemplateLanguage.cs" />
+    <Compile Include="Src\MvcTextTemplateLanguageConverter.cs" />
+    <Compile Include="Src\MvcTextTemplateRepository.cs" />
+    <Compile Include="Src\MvcViewFileName.cs" />
+    <Compile Include="Src\MvcViewFileGenerator.cs" />
+    <Compile Include="Src\MvcViewTextTemplateFileName.cs" />
+    <Compile Include="Src\SelectedMvcViewFolder.cs" />
+    <Compile Include="Src\ViewModelBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ItemTemplates" />
+    <Folder Include="ItemTemplates\CSharp\CodeTemplates" />
+    <Folder Include="ItemTemplates\CSharp" />
+    <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddView" />
+    <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Misc\TextTemplating\Project\TextTemplating.csproj">
+      <Project>{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}</Project>
+      <Name>TextTemplating</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AspNet.Mvc.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\AddMvcViewToProjectView.xaml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="PostBuildEvent.proj" />
+</Project>
