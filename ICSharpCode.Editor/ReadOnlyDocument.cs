@@ -156,7 +156,7 @@ namespace ICSharpCode.Editor
 			if (offset < 0 || offset > textSource.TextLength)
 				throw new ArgumentOutOfRangeException("offset", offset, "Value must be between 0 and " + textSource.TextLength);
 			int line = GetLineNumberForOffset(offset);
-			return new TextLocation(offset-GetStartOffset(line)+1, line);
+			return new TextLocation(line, offset-GetStartOffset(line)+1);
 		}
 		
 		/// <inheritdoc/>
