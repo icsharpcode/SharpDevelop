@@ -34,6 +34,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the list of all parsed files in the project content.
 		/// </summary>
 		IEnumerable<IParsedFile> Files { get; }
+		
+		/// <summary>
+		/// Removes types and attributes from oldFile from the project, and adds those from newFile.
+		/// </summary>
+		/// <remarks>
+		/// It is not allowed to call this method from within a <c>using (var ctx = context.Synchronize())</c> block
+		/// that involves this project content: this method is a write operation and might (if implemented using locks)
+		/// wait until all read operations have finished, causing deadlocks within Synchronize blocks.
+		/// </remarks>
+		void UpdateProjectContent(IParsedFile oldFile, IParsedFile newFile);
 	}
 	
 	#if WITH_CONTRACTS

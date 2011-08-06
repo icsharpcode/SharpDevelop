@@ -78,7 +78,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
-			typeDefinition.Freeze(); // Type definition must be frozen before it can be added to a project content
 			if (typeDefinition.ProjectContent != this)
 				throw new ArgumentException("Cannot add a type definition that belongs to another project content");
 			

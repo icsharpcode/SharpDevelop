@@ -45,23 +45,45 @@ namespace ICSharpCode.Editor
 		/// <summary>
 		/// Controls how the anchor moves.
 		/// </summary>
+		/// <remarks>Anchor movement is ambiguous if text is inserted exactly at the anchor's location.
+		/// Does the anchor stay before the inserted text, or does it move after it?
+		/// The property <see cref="MovementType"/> will be used to determine which of these two options the anchor will choose.
+		/// The default value is <see cref="AnchorMovementType.Default"/>.</remarks>
 		AnchorMovementType MovementType { get; set; }
 		
 		/// <summary>
+		/// <para>
 		/// Specifies whether the anchor survives deletion of the text containing it.
+		/// </para><para>
 		/// <c>false</c>: The anchor is deleted when the a selection that includes the anchor is deleted.
 		/// <c>true</c>: The anchor is not deleted.
+		/// </para>
 		/// </summary>
+		/// <remarks><inheritdoc cref="IsDeleted" /></remarks>
 		bool SurviveDeletion { get; set; }
 		
 		/// <summary>
 		/// Gets whether the anchor was deleted.
 		/// </summary>
+		/// <remarks>
+		/// <para>When a piece of text containing an anchor is removed, then that anchor will be deleted.
+		/// First, the <see cref="IsDeleted"/> property is set to true on all deleted anchors,
+		/// then the <see cref="Deleted"/> events are raised.
+		/// You cannot retrieve the offset from an anchor that has been deleted.</para>
+		/// <para>This deletion behavior might be useful when using anchors for building a bookmark feature,
+		/// but in other cases you want to still be able to use the anchor. For those cases, set <c><see cref="SurviveDeletion"/> = true</c>.</para>
+		/// </remarks>
 		bool IsDeleted { get; }
 		
 		/// <summary>
 		/// Occurs after the anchor was deleted.
 		/// </summary>
+		/// <remarks>
+		/// <inheritdoc cref="IsDeleted" />
+		/// <para>Due to the 'weak reference' nature of text anchors, you will receive
+		/// the Deleted event only while your code holds a reference to the TextAnchor object.
+		/// </para>
+		/// </remarks>
 		event EventHandler Deleted;
 		
 		/// <summary>

@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
+using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil;
 
@@ -44,6 +44,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets/Sets the interning provider.
 		/// </summary>
 		public IInterningProvider InterningProvider { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the cancellation token used by the cecil loader.
+		/// </summary>
+		public CancellationToken CancellationToken { get; set; }
 		
 		/// <summary>
 		/// Gets a value indicating whether this instance stores references to the cecil objects.
@@ -97,6 +102,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
 				foreach (ModuleDefinition module in assemblyDefinition.Modules) {
 					foreach (TypeDefinition td in module.Types) {
+						this.CancellationToken.ThrowIfCancellationRequested();
 						if (this.IncludeInternalMembers || (td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public) {
 							string name = td.FullName;
 							if (name.Length == 0 || name[0] == '<')
@@ -181,20 +187,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return this;
 			}
 			
-			public void Dispose()
+			void IDisposable.Dispose()
 			{
 				// Disposing the synchronization context has no effect
 			}
 			
-			public IParsedFile GetFile(string fileName)
+			IParsedFile IProjectContent.GetFile(string fileName)
 			{
 				return null;
 			}
 			
-			public IEnumerable<IParsedFile> Files {
+			IEnumerable<IParsedFile> IProjectContent.Files {
 				get {
 					return EmptyList<IParsedFile>.Instance;
 				}
+			}
+			
+			void IProjectContent.UpdateProjectContent(IParsedFile oldFile, IParsedFile newFile)
+			{
+				throw new NotSupportedException();
 			}
 			
 			string IDocumentationProvider.GetDocumentation(IEntity entity)
@@ -846,6 +857,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			public void Init(CecilLoader loader)
 			{
+				loader.CancellationToken.ThrowIfCancellationRequested();
 				InitModifiers();
 				
 				if (typeDefinition.HasGenericParameters) {

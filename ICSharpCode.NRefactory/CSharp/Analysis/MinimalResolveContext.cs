@@ -136,5 +136,10 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				return EmptyList<IParsedFile>.Instance;
 			}
 		}
+		
+		void IProjectContent.UpdateProjectContent(IParsedFile oldFile, IParsedFile newFile)
+		{
+			throw new NotSupportedException();
+		}
 	}
 }

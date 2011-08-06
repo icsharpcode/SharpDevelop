@@ -264,7 +264,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public virtual string Documentation {
-			get { return null; }
+			get {
+				// To save memory, we don't store the documentation provider within the type,
+				// but use our the project content as a documentation provider:
+				IDocumentationProvider provider = projectContent as IDocumentationProvider;
+				if (provider != null)
+					return provider.GetDocumentation(this);
+				else
+					return null;
+			}
 		}
 		
 		public Accessibility Accessibility {

@@ -33,6 +33,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return memberDefinition; }
 		}
 		
+		public override string Documentation {
+			get { return memberDefinition.Documentation; }
+		}
+		
 		public override int GetHashCode()
 		{
 			int hashCode = 0;

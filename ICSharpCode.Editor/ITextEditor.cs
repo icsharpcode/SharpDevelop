@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ICSharpCode.Editor
 {
+	/*
 	/// <summary>
 	/// Interface for text editors.
 	/// </summary>
@@ -64,6 +65,7 @@ namespace ICSharpCode.Editor
 		/// </remarks>
 //		Task<bool> ShowLinkedElements(IEnumerable<LinkedElement> linkedElements);
 	}
+	*/
 	
 	/// <summary>
 	/// Represents the caret in a text editor.
