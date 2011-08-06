@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil;
 
@@ -76,16 +77,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("assemblyDefinition");
 			ITypeResolveContext oldEarlyBindContext = this.EarlyBindContext;
 			try {
-				// Read assembly attributes
+				// Read assembly and module attributes
 				IList<IAttribute> assemblyAttributes = new List<IAttribute>();
+				IList<IAttribute> moduleAttributes = new List<IAttribute>();
 				AddAttributes(assemblyDefinition, assemblyAttributes);
+				AddAttributes(assemblyDefinition.MainModule, moduleAttributes);
 				
-				if (this.InterningProvider != null)
+				if (this.InterningProvider != null) {
 					assemblyAttributes = this.InterningProvider.InternList(assemblyAttributes);
-				else
+					moduleAttributes = this.InterningProvider.InternList(moduleAttributes);
+				} else {
 					assemblyAttributes = new ReadOnlyCollection<IAttribute>(assemblyAttributes);
+					moduleAttributes = new ReadOnlyCollection<IAttribute>(moduleAttributes);
+				}
 				TypeStorage typeStorage = new TypeStorage();
-				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes, this.DocumentationProvider);
+				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes, moduleAttributes, this.DocumentationProvider);
 				
 				this.EarlyBindContext = CompositeTypeResolveContext.Combine(pc, this.EarlyBindContext);
 				List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
@@ -141,20 +147,27 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			readonly string assemblyName;
 			readonly IList<IAttribute> assemblyAttributes;
+			readonly IList<IAttribute> moduleAttributes;
 			readonly IDocumentationProvider documentationProvider;
 			
-			public CecilProjectContent(TypeStorage types, string assemblyName, IList<IAttribute> assemblyAttributes, IDocumentationProvider documentationProvider)
+			public CecilProjectContent(TypeStorage types, string assemblyName, IList<IAttribute> assemblyAttributes, IList<IAttribute> moduleAttributes, IDocumentationProvider documentationProvider)
 				: base(types)
 			{
 				Debug.Assert(assemblyName != null);
 				Debug.Assert(assemblyAttributes != null);
+				Debug.Assert(moduleAttributes != null);
 				this.assemblyName = assemblyName;
 				this.assemblyAttributes = assemblyAttributes;
+				this.moduleAttributes = moduleAttributes;
 				this.documentationProvider = documentationProvider;
 			}
 			
 			public IList<IAttribute> AssemblyAttributes {
 				get { return assemblyAttributes; }
+			}
+			
+			public IList<IAttribute> ModuleAttributes {
+				get { return moduleAttributes; }
 			}
 			
 			public override string ToString()
@@ -359,11 +372,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region Read Attributes
 		#region Assembly Attributes
 		static readonly ITypeReference typeForwardedToAttributeTypeRef = typeof(TypeForwardedToAttribute).ToTypeReference();
+		static readonly ITypeReference assemblyVersionAttributeTypeRef = typeof(System.Reflection.AssemblyVersionAttribute).ToTypeReference();
 		
 		void AddAttributes(AssemblyDefinition assembly, IList<IAttribute> outputList)
 		{
 			if (assembly.HasCustomAttributes) {
 				AddCustomAttributes(assembly.CustomAttributes, outputList);
+			}
+			if (assembly.HasSecurityDeclarations) {
+				AddSecurityAttributes(assembly.SecurityDeclarations, outputList);
+			}
+			
+			// AssemblyVersionAttribute
+			if (assembly.Name.Version != null) {
+				var assemblyVersion = new DefaultAttribute(assemblyVersionAttributeTypeRef, new[] { KnownTypeReference.String });
+				assemblyVersion.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.String, assembly.Name.Version.ToString()));
+				outputList.Add(assemblyVersion);
 			}
 			
 			// TypeForwardedToAttribute
@@ -376,6 +400,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					typeForwardedTo.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.Type, typeRef));
 					outputList.Add(typeForwardedTo);
 				}
+			}
+		}
+		#endregion
+		
+		#region Module Attributes
+		void AddAttributes(ModuleDefinition module, IList<IAttribute> outputList)
+		{
+			if (module.HasCustomAttributes) {
+				AddCustomAttributes(module.CustomAttributes, outputList);
 			}
 		}
 		#endregion
@@ -394,6 +427,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			if (parameter.HasCustomAttributes) {
 				AddCustomAttributes(parameter.CustomAttributes, targetParameter.Attributes);
+			}
+			if (parameter.HasMarshalInfo) {
+				targetParameter.Attributes.Add(ConvertMarshalInfo(parameter.MarshalInfo));
 			}
 		}
 		#endregion
@@ -429,9 +465,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				dllImport.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.String, info.Module.Name));
 				
 				if (info.IsBestFitDisabled)
-					AddNamedArgument(dllImport, "BestFitMapping", falseValue);
+					dllImport.AddNamedArgument("BestFitMapping", falseValue);
 				if (info.IsBestFitEnabled)
-					AddNamedArgument(dllImport, "BestFitMapping", trueValue);
+					dllImport.AddNamedArgument("BestFitMapping", trueValue);
 				
 				CallingConvention callingConvention;
 				switch (info.Attributes & PInvokeAttributes.CallConvMask) {
@@ -454,7 +490,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						throw new NotSupportedException("unknown calling convention");
 				}
 				if (callingConvention != CallingConvention.Winapi)
-					AddNamedArgument(dllImport, "CallingConvention", new SimpleConstantValue(callingConventionTypeRef, (int)callingConvention));
+					dllImport.AddNamedArgument("CallingConvention", callingConventionTypeRef, (int)callingConvention);
 				
 				CharSet charSet = CharSet.None;
 				switch (info.Attributes & PInvokeAttributes.CharSetMask) {
@@ -469,27 +505,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						break;
 				}
 				if (charSet != CharSet.None)
-					dllImport.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
-						"CharSet", new SimpleConstantValue(charSetTypeRef, (int)charSet)));
+					dllImport.AddNamedArgument("CharSet", charSetTypeRef, (int)charSet);
 				
 				if (!string.IsNullOrEmpty(info.EntryPoint) && info.EntryPoint != methodDefinition.Name)
-					AddNamedArgument(dllImport, "EntryPoint", new SimpleConstantValue(KnownTypeReference.String, info.EntryPoint));
+					dllImport.AddNamedArgument("EntryPoint", KnownTypeReference.String, info.EntryPoint);
 				
 				if (info.IsNoMangle)
-					AddNamedArgument(dllImport, "ExactSpelling", trueValue);
+					dllImport.AddNamedArgument("ExactSpelling", trueValue);
 				
 				if ((implAttributes & MethodImplAttributes.PreserveSig) == MethodImplAttributes.PreserveSig)
 					implAttributes &= ~MethodImplAttributes.PreserveSig;
 				else
-					AddNamedArgument(dllImport, "PreserveSig", falseValue);
+					dllImport.AddNamedArgument("PreserveSig", falseValue);
 				
 				if (info.SupportsLastError)
-					AddNamedArgument(dllImport, "SetLastError", trueValue);
+					dllImport.AddNamedArgument("SetLastError", trueValue);
 				
 				if (info.IsThrowOnUnmappableCharDisabled)
-					AddNamedArgument(dllImport, "ThrowOnUnmappableChar", falseValue);
+					dllImport.AddNamedArgument("ThrowOnUnmappableChar", falseValue);
 				if (info.IsThrowOnUnmappableCharEnabled)
-					AddNamedArgument(dllImport, "ThrowOnUnmappableChar", trueValue);
+					dllImport.AddNamedArgument("ThrowOnUnmappableChar", trueValue);
 				
 				attributes.Add(dllImport);
 			}
@@ -513,17 +548,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (methodDefinition.HasCustomAttributes) {
 				AddCustomAttributes(methodDefinition.CustomAttributes, attributes);
 			}
+			if (methodDefinition.HasSecurityDeclarations) {
+				AddSecurityAttributes(methodDefinition.SecurityDeclarations, attributes);
+			}
 			if (methodDefinition.MethodReturnType.HasMarshalInfo) {
 				returnTypeAttributes.Add(ConvertMarshalInfo(methodDefinition.MethodReturnType.MarshalInfo));
 			}
 			if (methodDefinition.MethodReturnType.HasCustomAttributes) {
 				AddCustomAttributes(methodDefinition.MethodReturnType.CustomAttributes, returnTypeAttributes);
 			}
-		}
-		
-		static void AddNamedArgument(DefaultAttribute attribute, string name, IConstantValue value)
-		{
-			attribute.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(name, value));
 		}
 		#endregion
 		
@@ -571,19 +604,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				DefaultAttribute structLayout = new DefaultAttribute(structLayoutAttributeTypeRef, new[] { layoutKindTypeRef });
 				structLayout.PositionalArguments.Add(new SimpleConstantValue(layoutKindTypeRef, (int)layoutKind));
 				if (charSet != CharSet.Ansi) {
-					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
-						"CharSet",
-						new SimpleConstantValue(charSetTypeRef, (int)charSet)));
+					structLayout.AddNamedArgument("CharSet", charSetTypeRef, (int)charSet);
 				}
 				if (typeDefinition.PackingSize > 0) {
-					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
-						"Pack",
-						new SimpleConstantValue(KnownTypeReference.Int32, (int)typeDefinition.PackingSize)));
+					structLayout.AddNamedArgument("Pack", KnownTypeReference.Int32, (int)typeDefinition.PackingSize);
 				}
 				if (typeDefinition.ClassSize > 0) {
-					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
-						"Size",
-						new SimpleConstantValue(KnownTypeReference.Int32, (int)typeDefinition.ClassSize)));
+					structLayout.AddNamedArgument("Size", KnownTypeReference.Int32, (int)typeDefinition.ClassSize);
 				}
 				targetEntity.Attributes.Add(structLayout);
 			}
@@ -591,6 +618,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			if (typeDefinition.HasCustomAttributes) {
 				AddCustomAttributes(typeDefinition.CustomAttributes, targetEntity.Attributes);
+			}
+			if (typeDefinition.HasSecurityDeclarations) {
+				AddSecurityAttributes(typeDefinition.SecurityDeclarations, targetEntity.Attributes);
 			}
 		}
 		#endregion
@@ -649,7 +679,37 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			DefaultAttribute attr = new DefaultAttribute(marshalAsAttributeTypeRef, new[] { unmanagedTypeTypeRef });
 			attr.PositionalArguments.Add(new SimpleConstantValue(unmanagedTypeTypeRef, (int)marshalInfo.NativeType));
-			// TODO: handle classes derived from MarshalInfo
+			
+			FixedArrayMarshalInfo fami = marshalInfo as FixedArrayMarshalInfo;
+			if (fami != null) {
+				attr.AddNamedArgument("SizeConst", KnownTypeReference.Int32, (int)fami.Size);
+				if (fami.ElementType != NativeType.None)
+					attr.AddNamedArgument("ArraySubType", unmanagedTypeTypeRef, (int)fami.ElementType);
+			}
+			SafeArrayMarshalInfo sami = marshalInfo as SafeArrayMarshalInfo;
+			if (sami != null && sami.ElementType != VariantType.None) {
+				attr.AddNamedArgument("SafeArraySubType", typeof(VarEnum).ToTypeReference(), (int)sami.ElementType);
+			}
+			ArrayMarshalInfo ami = marshalInfo as ArrayMarshalInfo;
+			if (ami != null) {
+				if (ami.ElementType != NativeType.Max)
+					attr.AddNamedArgument("ArraySubType", unmanagedTypeTypeRef, (int)ami.ElementType);
+				if (ami.Size >= 0)
+					attr.AddNamedArgument("SizeConst", KnownTypeReference.Int32, (int)ami.Size);
+				if (ami.SizeParameterMultiplier != 0 && ami.SizeParameterIndex >= 0)
+					attr.AddNamedArgument("SizeParamIndex", KnownTypeReference.Int16, (short)ami.SizeParameterIndex);
+			}
+			CustomMarshalInfo cmi = marshalInfo as CustomMarshalInfo;
+			if (cmi != null) {
+				attr.AddNamedArgument("MarshalType", KnownTypeReference.String, cmi.ManagedType.FullName);
+				if (!string.IsNullOrEmpty(cmi.Cookie))
+					attr.AddNamedArgument("MarshalCookie", KnownTypeReference.String, cmi.Cookie);
+			}
+			FixedSysStringMarshalInfo fssmi = marshalInfo as FixedSysStringMarshalInfo;
+			if (fssmi != null) {
+				attr.AddNamedArgument("SizeConst", KnownTypeReference.Int32, (int)fssmi.Size);
+			}
+			
 			return attr;
 		}
 		#endregion
@@ -704,6 +764,35 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				// occurs when Cecil can't decode an argument
 			}
 			return a;
+		}
+		#endregion
+		
+		#region Security Attributes
+		static readonly ITypeReference securityActionTypeReference = typeof(SecurityAction).ToTypeReference();
+		
+		void AddSecurityAttributes(Mono.Collections.Generic.Collection<SecurityDeclaration> securityDeclarations, IList<IAttribute> targetCollection)
+		{
+			foreach (var secDecl in securityDeclarations) {
+				foreach (var secAttribute in secDecl.SecurityAttributes) {
+					ITypeReference attributeType = ReadTypeReference(secAttribute.AttributeType);
+					var a = new DefaultAttribute(attributeType, new[] { securityActionTypeReference });
+					a.PositionalArguments.Add(new SimpleConstantValue(securityActionTypeReference, (ushort)secDecl.Action));
+					
+					try {
+						if (secAttribute.HasFields || secAttribute.HasProperties) {
+							foreach (var arg in secAttribute.Fields) {
+								a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
+							}
+							foreach (var arg in secAttribute.Properties) {
+								a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
+							}
+						}
+					} catch (InvalidOperationException) {
+						// occurs when Cecil can't decode an argument
+					}
+					targetCollection.Add(a);
+				}
+			}
 		}
 		#endregion
 		#endregion

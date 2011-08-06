@@ -21,6 +21,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList<IAttribute> AssemblyAttributes { get; }
 		
 		/// <summary>
+		/// Gets the list of all module attributes in the project.
+		/// </summary>
+		IList<IAttribute> ModuleAttributes { get; }
+		
+		/// <summary>
 		/// Gets a parsed file by its file name.
 		/// </summary>
 		IParsedFile GetFile(string fileName);

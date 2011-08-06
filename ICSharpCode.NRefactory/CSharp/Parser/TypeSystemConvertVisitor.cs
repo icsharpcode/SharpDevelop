@@ -638,6 +638,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			// non-assembly attributes are handled by their parent entity
 			if (attributeSection.AttributeTarget == "assembly") {
 				ConvertAttributes(parsedFile.AssemblyAttributes, attributeSection);
+			} else if (attributeSection.AttributeTarget == "module") {
+				ConvertAttributes(parsedFile.ModuleAttributes, attributeSection);
 			}
 			return null;
 		}

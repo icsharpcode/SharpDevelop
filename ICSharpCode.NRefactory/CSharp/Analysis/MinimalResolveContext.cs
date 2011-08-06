@@ -23,7 +23,6 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		}
 		
 		readonly ReadOnlyCollection<string> namespaces = Array.AsReadOnly(new string[] { "System" });
-		readonly IAttribute[] assemblyAttributes = new IAttribute[0];
 		readonly ITypeDefinition systemObject, systemValueType;
 		readonly ReadOnlyCollection<ITypeDefinition> types;
 		
@@ -101,8 +100,12 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			return null;
 		}
 		
-		public IList<IAttribute> AssemblyAttributes {
-			get { return assemblyAttributes; }
+		IList<IAttribute> IProjectContent.AssemblyAttributes {
+			get { return EmptyList<IAttribute>.Instance; }
+		}
+		
+		IList<IAttribute> IProjectContent.ModuleAttributes {
+			get { return EmptyList<IAttribute>.Instance; }
 		}
 		
 		ICSharpCode.NRefactory.Utils.CacheManager ITypeResolveContext.CacheManager {

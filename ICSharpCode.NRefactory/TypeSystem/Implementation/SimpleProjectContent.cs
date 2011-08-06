@@ -31,31 +31,49 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		#region AssemblyAttributes
 		readonly List<IAttribute> assemblyAttributes = new List<IAttribute>(); // mutable assembly attribute storage
+		readonly List<IAttribute> moduleAttributes = new List<IAttribute>();
 		
 		volatile IAttribute[] readOnlyAssemblyAttributes = {}; // volatile field with copy for reading threads
+		volatile IAttribute[] readOnlyModuleAttributes = {};
 		
 		/// <inheritdoc/>
 		public IList<IAttribute> AssemblyAttributes {
 			get { return readOnlyAssemblyAttributes;  }
 		}
 		
-		void AddRemoveAssemblyAttributes(ICollection<IAttribute> removedAttributes, ICollection<IAttribute> addedAttributes)
+		/// <inheritdoc/>
+		public IList<IAttribute> ModuleAttributes {
+			get { return readOnlyModuleAttributes;  }
+		}
+		
+		static bool AddRemoveAttributes(ICollection<IAttribute> removedAttributes, ICollection<IAttribute> addedAttributes,
+		                                List<IAttribute> attributeStorage)
 		{
 			// API uses ICollection instead of IEnumerable to discourage users from evaluating
 			// the list inside the lock (this method is called inside the write lock)
 			// [[not an issue anymore; the user now passes IParsedFile]]
 			bool hasChanges = false;
 			if (removedAttributes != null && removedAttributes.Count > 0) {
-				if (assemblyAttributes.RemoveAll(removedAttributes.Contains) > 0)
+				if (attributeStorage.RemoveAll(removedAttributes.Contains) > 0)
 					hasChanges = true;
 			}
 			if (addedAttributes != null) {
-				assemblyAttributes.AddRange(addedAttributes);
+				attributeStorage.AddRange(addedAttributes);
 				hasChanges = true;
 			}
-			
-			if (hasChanges)
+			return hasChanges;
+		}
+		
+		void AddRemoveAssemblyAttributes(ICollection<IAttribute> removedAttributes, ICollection<IAttribute> addedAttributes)
+		{
+			if (AddRemoveAttributes(removedAttributes, addedAttributes, assemblyAttributes))
 				readOnlyAssemblyAttributes = assemblyAttributes.ToArray();
+		}
+		
+		void AddRemoveModuleAttributes(ICollection<IAttribute> removedAttributes, ICollection<IAttribute> addedAttributes)
+		{
+			if (AddRemoveAttributes(removedAttributes, addedAttributes, moduleAttributes))
+				readOnlyModuleAttributes = moduleAttributes.ToArray();
 		}
 		#endregion
 		
@@ -110,7 +128,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					}
 					fileDict[newFile.FileName] = newFile;
 				}
-				AddRemoveAssemblyAttributes(oldFile != null ? oldFile.AssemblyAttributes : null, newFile != null ? newFile.AssemblyAttributes : null);
+				AddRemoveAssemblyAttributes(oldFile != null ? oldFile.AssemblyAttributes : null,
+				                            newFile != null ? newFile.AssemblyAttributes : null);
+				
+				AddRemoveModuleAttributes(oldFile != null ? oldFile.ModuleAttributes : null,
+				                          newFile != null ? newFile.ModuleAttributes : null);
 			} finally {
 				readerWriterLock.ExitWriteLock();
 			}

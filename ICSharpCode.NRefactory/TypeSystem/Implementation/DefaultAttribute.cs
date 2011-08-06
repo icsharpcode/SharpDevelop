@@ -163,5 +163,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			DefaultAttribute a = other as DefaultAttribute;
 			return a != null && attributeType == a.attributeType && positionalArguments == a.positionalArguments && namedArguments == a.namedArguments && region == a.region;
 		}
+		
+		public void AddNamedArgument(string name, ITypeReference type, object value)
+		{
+			AddNamedArgument(name, new SimpleConstantValue(type, value));
+		}
+		
+		public void AddNamedArgument(string name, IConstantValue value)
+		{
+			CheckBeforeMutation();
+			this.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(name, value));
+		}
 	}
 }

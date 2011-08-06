@@ -38,6 +38,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList<IAttribute> AssemblyAttributes { get; }
 		
 		/// <summary>
+		/// Gets all module attributes that are defined in this file.
+		/// </summary>
+		IList<IAttribute> ModuleAttributes { get; }
+		
+		/// <summary>
 		/// Gets the top-level type defined at the specified location.
 		/// Returns null if no type is defined at that location.
 		/// </summary>
