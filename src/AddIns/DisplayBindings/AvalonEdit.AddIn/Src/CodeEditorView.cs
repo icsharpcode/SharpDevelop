@@ -248,7 +248,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					FoldingSection collapsedSection = foldingsAtOffset.FirstOrDefault(section => section.IsFolded);
 					
 					if (collapsedSection != null) {
-						args.SetToolTip(collapsedSection.TextContent);
+						args.SetToolTip(collapsedSection.TooltipText);
 					}
 				}
 				
