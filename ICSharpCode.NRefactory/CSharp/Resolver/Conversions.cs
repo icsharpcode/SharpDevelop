@@ -10,9 +10,153 @@ using ICSharpCode.NRefactory.Utils;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
+	/// Holds information about a conversion between two types.
+	/// </summary>
+	public struct Conversion : IEquatable<Conversion>
+	{
+		public static readonly Conversion None = default(Conversion);
+		public static readonly Conversion IdentityConversion = new Conversion(1);
+		public static readonly Conversion ImplicitNumericConversion = new Conversion(2);
+		public static readonly Conversion ImplicitEnumerationConversion = new Conversion(3);
+		public static readonly Conversion ImplicitNullableConversion = new Conversion(4);
+		public static readonly Conversion NullLiteralConversion = new Conversion(5);
+		public static readonly Conversion ImplicitReferenceConversion = new Conversion(6);
+		public static readonly Conversion BoxingConversion = new Conversion(7);
+		public static readonly Conversion ImplicitDynamicConversion = new Conversion(8);
+		public static readonly Conversion ImplicitConstantExpressionConversion = new Conversion(9);
+		public static readonly Conversion ImplicitTypeParameterConversion = new Conversion(10);
+		const int userDefinedImplicitConversionKind = 11;
+		public static readonly Conversion ImplicitPointerConversion = new Conversion(12);
+		const int anonymousFunctionConversionKind = 13;
+		const int methodGroupConversionKind = 14;
+		
+		static readonly string[] conversionNames = {
+			"None",
+			"Identity conversion",
+			"Implicit numeric conversion",
+			"Implicit enumeration conversion",
+			"Implicit nullable conversion",
+			"Null literal conversion",
+			"Implicit reference conversion",
+			"Boxing conversion",
+			"Implicit dynamic conversion",
+			"Implicit constant expression conversion",
+			"Implicit conversion involving type parameter",
+			"User-defined implicit conversion",
+			"Implicit pointer conversion",
+			"Anonymous function conversion",
+			"Method group conversion",
+		};
+		
+		public static Conversion UserDefinedImplicitConversion(IMethod operatorMethod)
+		{
+			return new Conversion(userDefinedImplicitConversionKind, operatorMethod);
+		}
+		
+		public static Conversion MethodGroupConversion(IMethod chosenMethod)
+		{
+			return new Conversion(methodGroupConversionKind, chosenMethod);
+		}
+		
+		public static readonly Conversion AnonymousFunctionConversion = new Conversion(anonymousFunctionConversionKind);
+		
+		readonly int kind;
+		readonly object data;
+		
+		private Conversion(int kind, object data = null)
+		{
+			this.kind = kind;
+			this.data = data;
+		}
+		
+		/// <summary>
+		/// Gets whether this conversion is an implicit conversion.
+		/// </summary>
+		public bool IsImplicitConversion {
+			get {
+				return kind >= IdentityConversion.kind && kind <= methodGroupConversionKind;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether this conversion is user-defined.
+		/// </summary>
+		public bool IsUserDefined {
+			get { return kind == userDefinedImplicitConversionKind; }
+		}
+		
+		/// <summary>
+		/// Gets whether this conversion is a method group conversion.
+		/// </summary>
+		public bool IsMethodGroupConversion {
+			get { return kind == methodGroupConversionKind; }
+		}
+		
+		/// <summary>
+		/// Gets whether this conversion is an anonymous function conversion.
+		/// </summary>
+		public bool IsAnonymousFunctionConversion {
+			get { return kind == anonymousFunctionConversionKind; }
+		}
+		
+		/// <summary>
+		/// Gets the method associated with this conversion.
+		/// For user-defined conversions, this is the method being called.
+		/// For method-group conversions, this is the method that was chosen from the group.
+		/// </summary>
+		public IMethod Method {
+			get { return data as IMethod; }
+		}
+		
+		public override string ToString()
+		{
+			string name = conversionNames[kind];
+			if (data != null)
+				return name + " (" + data + ")";
+			else
+				return name;
+		}
+		
+		public static implicit operator bool(Conversion conversion)
+		{
+			return conversion.kind != 0;
+		}
+		
+		#region Equals and GetHashCode implementation
+		public override int GetHashCode()
+		{
+			if (data != null)
+				return kind ^ data.GetHashCode();
+			else
+				return kind;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			return (obj is Conversion) && Equals((Conversion)obj);
+		}
+		
+		public bool Equals(Conversion other)
+		{
+			return this.kind == other.kind && object.Equals(this.data, other.data);
+		}
+		
+		public static bool operator ==(Conversion lhs, Conversion rhs)
+		{
+			return lhs.Equals(rhs);
+		}
+		
+		public static bool operator !=(Conversion lhs, Conversion rhs)
+		{
+			return !lhs.Equals(rhs);
+		}
+		#endregion
+	}
+	
+	/// <summary>
 	/// Contains logic that determines whether an implicit conversion exists between two types.
 	/// </summary>
-	public class Conversions : IConversions
+	public class Conversions
 	{
 		readonly ITypeResolveContext context;
 		readonly IType objectType;
@@ -27,26 +171,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		#region ImplicitConversion
-		public bool ImplicitConversion(ResolveResult resolveResult, IType toType)
+		public Conversion ImplicitConversion(ResolveResult resolveResult, IType toType)
 		{
 			if (resolveResult == null)
 				throw new ArgumentNullException("resolveResult");
 			if (resolveResult.IsCompileTimeConstant) {
 				if (ImplicitEnumerationConversion(resolveResult, toType))
-					return true;
+					return Conversion.ImplicitEnumerationConversion;
 				if (ImplicitConstantExpressionConversion(resolveResult, toType))
-					return true;
+					return Conversion.ImplicitConstantExpressionConversion;
 			}
-			if (ImplicitConversion(resolveResult.Type, toType))
-				return true;
-			if (AnonymousFunctionConversion(resolveResult, toType))
-				return true;
-			if (MethodGroupConversion(resolveResult, toType))
-				return true;
-			return false;
+			Conversion c;
+			c = ImplicitConversion(resolveResult.Type, toType);
+			if (c) return c;
+			c = AnonymousFunctionConversion(resolveResult, toType);
+			if (c) return c;
+			c = MethodGroupConversion(resolveResult, toType);
+			return c;
 		}
 		
-		public bool ImplicitConversion(IType fromType, IType toType)
+		public Conversion ImplicitConversion(IType fromType, IType toType)
 		{
 			if (fromType == null)
 				throw new ArgumentNullException("fromType");
@@ -54,29 +198,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("toType");
 			// C# 4.0 spec: §6.1
 			if (IdentityConversion(fromType, toType))
-				return true;
+				return Conversion.IdentityConversion;
 			if (ImplicitNumericConversion(fromType, toType))
-				return true;
+				return Conversion.ImplicitNumericConversion;
 			if (ImplicitNullableConversion(fromType, toType))
-				return true;
+				return Conversion.ImplicitNullableConversion;
 			if (NullLiteralConversion(fromType, toType))
-				return true;
+				return Conversion.NullLiteralConversion;
 			if (ImplicitReferenceConversion(fromType, toType))
-				return true;
+				return Conversion.ImplicitReferenceConversion;
 			if (BoxingConversion(fromType, toType))
-				return true;
+				return Conversion.BoxingConversion;
 			if (ImplicitDynamicConversion(fromType, toType))
-				return true;
+				return Conversion.ImplicitDynamicConversion;
 			if (ImplicitTypeParameterConversion(fromType, toType))
-				return true;
+				return Conversion.ImplicitTypeParameterConversion;
 			if (ImplicitPointerConversion(fromType, toType))
-				return true;
-			if (ImplicitUserDefinedConversion(fromType, toType))
-				return true;
-			return false;
+				return Conversion.ImplicitPointerConversion;
+			return UserDefinedImplicitConversion(fromType, toType);
 		}
 		
-		public bool StandardImplicitConversion(IType fromType, IType toType)
+		public Conversion StandardImplicitConversion(IType fromType, IType toType)
 		{
 			if (fromType == null)
 				throw new ArgumentNullException("fromType");
@@ -84,18 +226,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("toType");
 			// C# 4.0 spec: §6.3.1
 			if (IdentityConversion(fromType, toType))
-				return true;
+				return Conversion.IdentityConversion;
 			if (ImplicitNumericConversion(fromType, toType))
-				return true;
+				return Conversion.ImplicitNumericConversion;
 			if (ImplicitNullableConversion(fromType, toType))
-				return true;
+				return Conversion.ImplicitNullableConversion;
 			if (ImplicitReferenceConversion(fromType, toType))
-				return true;
+				return Conversion.ImplicitReferenceConversion;
 			if (ImplicitTypeParameterConversion(fromType, toType))
-				return true;
+				return Conversion.ImplicitTypeParameterConversion;
 			if (BoxingConversion(fromType, toType))
-				return true;
-			return false;
+				return Conversion.BoxingConversion;
+			return Conversion.None;
 		}
 		#endregion
 		
@@ -193,24 +335,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool NullLiteralConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.5
-			return SharedTypes.Null.Equals(fromType) && NullableType.IsNullable(toType);
-			// This function only handles the conversion from the null literal to nullable value types,
-			// reference types are handled by ImplicitReferenceConversion instead.
+			if (SharedTypes.Null.Equals(fromType)) {
+				return NullableType.IsNullable(toType) || toType.IsReferenceType(context) == true;
+			} else {
+				return false;
+			}
 		}
 		#endregion
 		
 		#region ImplicitReferenceConversion
-		public bool ImplicitReferenceConversion(IType fromType, IType toType)
+		bool ImplicitReferenceConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.6
 			
 			// reference conversions are possible only if both types are known to be reference types
 			if (!(fromType.IsReferenceType(context) == true && toType.IsReferenceType(context) == true))
 				return false;
-			
-			// conversion from null literal is always possible
-			if (SharedTypes.Null.Equals(fromType))
-				return true;
 			
 			ArrayType fromArray = fromType as ArrayType;
 			if (fromArray != null) {
@@ -368,8 +508,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		#region ImplicitUserDefinedConversion
-		bool ImplicitUserDefinedConversion(IType fromType, IType toType)
+		#region UserDefinedImplicitConversion
+		Conversion UserDefinedImplicitConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec §6.4.4 User-defined implicit conversions
 			// Currently we only test whether an applicable implicit conversion exists,
@@ -385,37 +525,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				IType targetType = op.ReturnType.Resolve(context);
 				// Try if the operator is applicable:
 				if (StandardImplicitConversion(fromType, sourceType) && StandardImplicitConversion(targetType, toType)) {
-					return true;
+					return Conversion.UserDefinedImplicitConversion(op);
 				}
 				// Try if the operator is applicable in lifted form:
 				if (sourceType.IsReferenceType(context) == false && targetType.IsReferenceType(context) == false) {
 					IType liftedSourceType = NullableType.Create(sourceType, context);
 					IType liftedTargetType = NullableType.Create(targetType, context);
 					if (StandardImplicitConversion(fromType, liftedSourceType) && StandardImplicitConversion(liftedTargetType, toType)) {
-						return true;
+						return Conversion.UserDefinedImplicitConversion(op);
 					}
 				}
 			}
-			return false;
+			return Conversion.None;
 		}
 		#endregion
 		
 		#region AnonymousFunctionConversion
-		bool AnonymousFunctionConversion(ResolveResult resolveResult, IType toType)
+		Conversion AnonymousFunctionConversion(ResolveResult resolveResult, IType toType)
 		{
 			// C# 4.0 spec §6.5 Anonymous function conversions
 			LambdaResolveResult f = resolveResult as LambdaResolveResult;
 			if (f == null)
-				return false;
+				return Conversion.None;
 			if (!f.IsAnonymousMethod) {
 				// It's a lambda, so conversions to expression trees exist
 				// (even if the conversion leads to a compile-time error, e.g. for statement lambdas)
-				bool isExpressionTree;
 				toType = UnpackExpressionTreeType(toType);
 			}
 			IMethod d = toType.GetDelegateInvokeMethod();
 			if (d == null)
-				return false;
+				return Conversion.None;
 			
 			IType[] dParamTypes = new IType[d.Parameters.Count];
 			for (int i = 0; i < dParamTypes.Length; i++) {
@@ -426,13 +565,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (f.HasParameterList) {
 				// If F contains an anonymous-function-signature, then D and F have the same number of parameters.
 				if (d.Parameters.Count != f.Parameters.Count)
-					return false;
+					return Conversion.None;
 				
 				if (f.IsImplicitlyTyped) {
 					// If F has an implicitly typed parameter list, D has no ref or out parameters.
 					foreach (IParameter p in d.Parameters) {
 						if (p.IsOut || p.IsRef)
-							return false;
+							return Conversion.None;
 					}
 				} else {
 					// If F has an explicitly typed parameter list, each parameter in D has the same type
@@ -441,9 +580,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						IParameter pD = d.Parameters[i];
 						IParameter pF = f.Parameters[i];
 						if (pD.IsRef != pF.IsRef || pD.IsOut != pF.IsOut)
-							return false;
+							return Conversion.None;
 						if (!dParamTypes[i].Equals(pF.Type.Resolve(context)))
-							return false;
+							return Conversion.None;
 					}
 				}
 			} else {
@@ -451,11 +590,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// type, as long as no parameter of D has the out parameter modifier.
 				foreach (IParameter p in d.Parameters) {
 					if (p.IsOut)
-						return false;
+						return Conversion.None;
 				}
 			}
 			
-			return f.IsValid(dParamTypes, dReturnType, this);
+			if (f.IsValid(dParamTypes, dReturnType, this)) {
+				return Conversion.AnonymousFunctionConversion;
+			} else {
+				return Conversion.None;
+			}
 		}
 
 		static IType UnpackExpressionTreeType(IType type)
@@ -470,15 +613,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region MethodGroupConversion
-		bool MethodGroupConversion(ResolveResult resolveResult, IType toType)
+		Conversion MethodGroupConversion(ResolveResult resolveResult, IType toType)
 		{
 			// C# 4.0 spec §6.6 Method group conversions
 			MethodGroupResolveResult rr = resolveResult as MethodGroupResolveResult;
 			if (rr == null)
-				return false;
+				return Conversion.None;
 			IMethod m = toType.GetDelegateInvokeMethod();
 			if (m == null)
-				return false;
+				return Conversion.None;
 			
 			ResolveResult[] args = new ResolveResult[m.Parameters.Count];
 			for (int i = 0; i < args.Length; i++) {
@@ -492,7 +635,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			var or = rr.PerformOverloadResolution(context, args, allowExpandingParams: false);
-			return or.FoundApplicableCandidate;
+			if (or.FoundApplicableCandidate)
+				return Conversion.MethodGroupConversion((IMethod)or.BestCandidate);
+			else
+				return Conversion.None;
 		}
 		#endregion
 		

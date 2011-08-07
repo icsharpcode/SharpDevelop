@@ -248,13 +248,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			List<TP> typeParametersToFix = new List<TP>();
 			foreach (TP Xi in typeParameters) {
 				if (Xi.IsFixed == false) {
-					if (!typeParameters.Any((TP Xj) => DependsOn(Xi, Xj))) {
+					if (!typeParameters.Any((TP Xj) => !Xj.IsFixed && DependsOn(Xi, Xj))) {
 						typeParametersToFix.Add(Xi);
 					}
 				}
 			}
 			// If no such type variables exist, all unfixed type variables Xi are fixed for which all of the following hold:
 			if (typeParametersToFix.Count == 0) {
+				Log("Type parameters cannot be fixed due to dependency cycles");
+				Log("Trying to break the cycle by fixing any TPs that have non-empty bounds...");
 				foreach (TP Xi in typeParameters) {
 					// Xi has a non­empty set of bounds
 					if (!Xi.IsFixed && Xi.HasBounds) {
@@ -276,6 +278,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool unfixedTypeVariablesExist = typeParameters.Any((TP X) => X.IsFixed == false);
 			if (typeParametersToFix.Count == 0 && unfixedTypeVariablesExist) {
 				// If no such type variables exist and there are still unfixed type variables, type inference fails.
+				Log("Type inference fails: there are still unfixed TPs remaining");
 				return false;
 			} else if (!unfixedTypeVariablesExist) {
 				// Otherwise, if no further unfixed type variables exist, type inference succeeds.
@@ -289,7 +292,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// but the input types (§7.4.2.3) do not
 					if (OutputTypeContainsUnfixed(Ei, Ti) && !InputTypesContainsUnfixed(Ei, Ti)) {
 						// an output type inference (§7.4.2.6) is made for ei with type Ti.
-						Log("MakeOutputTypeInference for #" + i);
+						Log("MakeOutputTypeInference for argument #" + i);
 						MakeOutputTypeInference(Ei, Ti);
 					}
 				}
@@ -488,9 +491,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		void MakeExplicitParameterTypeInference(LambdaResolveResult e, IType t)
 		{
 			// C# 4.0 spec: §7.5.2.7 Explicit parameter type inferences
-			Log(" MakeExplicitParameterTypeInference from " + e + " to " + t);
 			if (e.IsImplicitlyTyped || !e.HasParameterList)
 				return;
+			Log(" MakeExplicitParameterTypeInference from " + e + " to " + t);
 			IMethod m = GetDelegateOrExpressionTreeSignature(t);
 			if (m == null)
 				return;

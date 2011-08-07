@@ -109,10 +109,90 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			bool success;
 			Assert.AreEqual(
-				Resolve(typeof(ConsoleKeyInfo)),
+				new [] { ctx.GetTypeDefinition(typeof(ConsoleKeyInfo)) },
 				ti.InferTypeArguments(new [] { T }, new [] { argument },
 				                      new [] { new ParameterizedType(ctx.GetTypeDefinition(typeof(Func<>)), new[] { T }) },
 				                      out success));
+			Assert.IsTrue(success);
+		}
+		#endregion
+		
+		#region Inference with Lambda
+		#region MockImplicitLambda
+		sealed class MockImplicitLambda : LambdaResolveResult
+		{
+			IType[] expectedParameterTypes;
+			IType inferredReturnType;
+			
+			public MockImplicitLambda(IType[] expectedParameterTypes, IType inferredReturnType)
+			{
+				this.expectedParameterTypes = expectedParameterTypes;
+				this.inferredReturnType = inferredReturnType;
+			}
+			
+			public override IList<IParameter> Parameters {
+				get { throw new NotImplementedException(); }
+			}
+			
+			public override bool IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
+			{
+				Assert.AreEqual(expectedParameterTypes, parameterTypes);
+				return conversions.ImplicitConversion(inferredReturnType, returnType);
+			}
+			
+			public override bool IsImplicitlyTyped {
+				get { return true; }
+			}
+			
+			public override bool IsAnonymousMethod {
+				get { return false; }
+			}
+			
+			public override bool HasParameterList {
+				get { return true; }
+			}
+			
+			public override IType GetInferredReturnType(IType[] parameterTypes)
+			{
+				Assert.AreEqual(expectedParameterTypes, parameterTypes);
+				return inferredReturnType;
+			}
+			
+			public override string ToString()
+			{
+				return "[MockImplicitLambda (" + string.Join<IType>(", ", expectedParameterTypes) + ") => " + inferredReturnType + "]";
+			}
+		}
+		#endregion
+		
+		[Test]
+		public void TestLambdaInference()
+		{
+			ITypeParameter[] typeParameters = {
+				new DefaultTypeParameter(EntityType.Method, 0, "X"),
+				new DefaultTypeParameter(EntityType.Method, 1, "Y"),
+				new DefaultTypeParameter(EntityType.Method, 2, "Z")
+			};
+			IType[] parameterTypes = {
+				typeParameters[0],
+				new ParameterizedType(ctx.GetTypeDefinition(typeof(Func<,>)), new[] { typeParameters[0], typeParameters[1] }),
+				new ParameterizedType(ctx.GetTypeDefinition(typeof(Func<,>)), new[] { typeParameters[1], typeParameters[2] })
+			};
+			// Signature:  M<X,Y,Z>(X x, Func<X,Y> y, Func<Y,Z> z) {}
+			// Invocation: M(default(string), s => default(int), t => default(float));
+			ResolveResult[] arguments = {
+				new ResolveResult(KnownTypeReference.String.Resolve(ctx)),
+				new MockImplicitLambda(new[] { KnownTypeReference.String.Resolve(ctx) }, KnownTypeReference.Int32.Resolve(ctx)),
+				new MockImplicitLambda(new[] { KnownTypeReference.Int32.Resolve(ctx) }, KnownTypeReference.Single.Resolve(ctx))
+			};
+			bool success;
+			Assert.AreEqual(
+				new [] {
+					KnownTypeReference.String.Resolve(ctx),
+					KnownTypeReference.Int32.Resolve(ctx),
+					KnownTypeReference.Single.Resolve(ctx)
+				},
+				ti.InferTypeArguments(typeParameters, arguments, parameterTypes, out success));
 			Assert.IsTrue(success);
 		}
 		#endregion
