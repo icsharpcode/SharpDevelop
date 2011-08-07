@@ -104,8 +104,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.explicitlyGivenTypeArguments = typeArguments;
 			
 			this.conversions = new Conversions(context);
+			this.AllowExpandingParams = true;
 		}
 		#endregion
+		
+		/// <summary>
+		/// Gets/Sets whether expanding 'params' into individual elements is allowed.
+		/// The default value is true.
+		/// </summary>
+		public bool AllowExpandingParams { get; set; }
 		
 		#region AddCandidate
 		public OverloadResolutionErrors AddCandidate(IParameterizedMember member)
@@ -118,7 +125,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				//candidates.Add(c);
 			}
 			
-			if (member.Parameters.Count > 0 && member.Parameters[member.Parameters.Count - 1].IsParams) {
+			if (this.AllowExpandingParams && member.Parameters.Count > 0
+			    && member.Parameters[member.Parameters.Count - 1].IsParams)
+			{
 				Candidate expandedCandidate = new Candidate(member, true);
 				// consider expanded form only if it isn't obviously wrong
 				if (CalculateCandidate(expandedCandidate)) {

@@ -37,5 +37,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			return baseTypeReference.Resolve(context).AcceptVisitor(substitution);
 		}
+		
+		public override string ToString()
+		{
+			return "[SubstitutionTypeReference " + baseTypeReference + " " + substitution + "]";
+		}
 	}
 }

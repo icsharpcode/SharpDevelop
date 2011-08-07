@@ -39,8 +39,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			if (ImplicitConversion(resolveResult.Type, toType))
 				return true;
-			// TODO: Anonymous function conversions
-			// TODO: Method group conversions
+			if (AnonymousFunctionConversion(resolveResult, toType))
+				return true;
+			if (MethodGroupConversion(resolveResult, toType))
+				return true;
 			return false;
 		}
 		
@@ -398,6 +400,102 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region AnonymousFunctionConversion
+		bool AnonymousFunctionConversion(ResolveResult resolveResult, IType toType)
+		{
+			// C# 4.0 spec §6.5 Anonymous function conversions
+			LambdaResolveResult f = resolveResult as LambdaResolveResult;
+			if (f == null)
+				return false;
+			if (!f.IsAnonymousMethod) {
+				// It's a lambda, so conversions to expression trees exist
+				// (even if the conversion leads to a compile-time error, e.g. for statement lambdas)
+				bool isExpressionTree;
+				toType = UnpackExpressionTreeType(toType);
+			}
+			IMethod d = toType.GetDelegateInvokeMethod();
+			if (d == null)
+				return false;
+			
+			IType[] dParamTypes = new IType[d.Parameters.Count];
+			for (int i = 0; i < dParamTypes.Length; i++) {
+				dParamTypes[i] = d.Parameters[i].Type.Resolve(context);
+			}
+			IType dReturnType = d.ReturnType.Resolve(context);
+			
+			if (f.HasParameterList) {
+				// If F contains an anonymous-function-signature, then D and F have the same number of parameters.
+				if (d.Parameters.Count != f.Parameters.Count)
+					return false;
+				
+				if (f.IsImplicitlyTyped) {
+					// If F has an implicitly typed parameter list, D has no ref or out parameters.
+					foreach (IParameter p in d.Parameters) {
+						if (p.IsOut || p.IsRef)
+							return false;
+					}
+				} else {
+					// If F has an explicitly typed parameter list, each parameter in D has the same type
+					// and modifiers as the corresponding parameter in F.
+					for (int i = 0; i < f.Parameters.Count; i++) {
+						IParameter pD = d.Parameters[i];
+						IParameter pF = f.Parameters[i];
+						if (pD.IsRef != pF.IsRef || pD.IsOut != pF.IsOut)
+							return false;
+						if (!dParamTypes[i].Equals(pF.Type.Resolve(context)))
+							return false;
+					}
+				}
+			} else {
+				// If F does not contain an anonymous-function-signature, then D may have zero or more parameters of any
+				// type, as long as no parameter of D has the out parameter modifier.
+				foreach (IParameter p in d.Parameters) {
+					if (p.IsOut)
+						return false;
+				}
+			}
+			
+			return f.IsValid(dParamTypes, dReturnType, this);
+		}
+
+		static IType UnpackExpressionTreeType(IType type)
+		{
+			ParameterizedType pt = type as ParameterizedType;
+			if (pt != null && pt.TypeParameterCount == 1 && pt.Name == "Expression" && pt.Namespace == "System.Linq.Expressions") {
+				return pt.TypeArguments[0];
+			} else {
+				return type;
+			}
+		}
+		#endregion
+		
+		#region MethodGroupConversion
+		bool MethodGroupConversion(ResolveResult resolveResult, IType toType)
+		{
+			// C# 4.0 spec §6.6 Method group conversions
+			MethodGroupResolveResult rr = resolveResult as MethodGroupResolveResult;
+			if (rr == null)
+				return false;
+			IMethod m = toType.GetDelegateInvokeMethod();
+			if (m == null)
+				return false;
+			
+			ResolveResult[] args = new ResolveResult[m.Parameters.Count];
+			for (int i = 0; i < args.Length; i++) {
+				IParameter param = m.Parameters[i];
+				IType parameterType = param.Type.Resolve(context);
+				if ((param.IsRef || param.IsOut) && parameterType.Kind == TypeKind.ByReference) {
+					parameterType = ((ByReferenceType)parameterType).ElementType;
+					args[i] = new ByReferenceResolveResult(parameterType, param.IsOut);
+				} else {
+					args[i] = new ResolveResult(parameterType);
+				}
+			}
+			var or = rr.PerformOverloadResolution(context, args, allowExpandingParams: false);
+			return or.FoundApplicableCandidate;
+		}
+		#endregion
+		
 		#region BetterConversion
 		/// <summary>
 		/// Gets the better conversion (C# 4.0 spec, §7.5.3.3)
@@ -405,8 +503,40 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <returns>0 = neither is better; 1 = t1 is better; 2 = t2 is better</returns>
 		public int BetterConversion(ResolveResult resolveResult, IType t1, IType t2)
 		{
-			// TODO: implement the special logic for anonymous functions
-			return BetterConversion(resolveResult.Type, t1, t2);
+			LambdaResolveResult lambda = resolveResult as LambdaResolveResult;
+			if (lambda != null) {
+				if (!lambda.IsAnonymousMethod) {
+					t1 = UnpackExpressionTreeType(t1);
+					t2 = UnpackExpressionTreeType(t2);
+				}
+				IMethod m1 = t1.GetDelegateInvokeMethod();
+				IMethod m2 = t2.GetDelegateInvokeMethod();
+				if (m1 == null || m2 == null)
+					return 0;
+				int r = BetterConversionTarget(t1, t2);
+				if (r != 0)
+					return r;
+				if (m1.Parameters.Count != m2.Parameters.Count)
+					return 0;
+				IType[] parameterTypes = new IType[m1.Parameters.Count];
+				for (int i = 0; i < parameterTypes.Length; i++) {
+					parameterTypes[i] = m1.Parameters[i].Type.Resolve(context);
+					if (!parameterTypes[i].Equals(m2.Parameters[i].Type.Resolve(context)))
+						return 0;
+				}
+				
+				IType ret1 = m1.ReturnType.Resolve(context);
+				IType ret2 = m2.ReturnType.Resolve(context);
+				if (ret1.Kind == TypeKind.Void && ret2.Kind != TypeKind.Void)
+					return 1;
+				if (ret1.Kind != TypeKind.Void && ret2.Kind == TypeKind.Void)
+					return 2;
+				
+				IType inferredRet = lambda.GetInferredReturnType(parameterTypes);
+				return BetterConversion(inferredRet, ret1, ret2);
+			} else {
+				return BetterConversion(resolveResult.Type, t1, t2);
+			}
 		}
 		
 		/// <summary>

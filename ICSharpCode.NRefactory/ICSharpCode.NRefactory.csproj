@@ -104,6 +104,7 @@
     <Compile Include="CSharp\Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="CSharp\Resolver\CSharpAttribute.cs" />
     <Compile Include="CSharp\Resolver\ConstantValues.cs" />
+    <Compile Include="CSharp\Resolver\LambdaResolveResult.cs" />
     <Compile Include="CSharp\Resolver\MapTypeIntoNewContext.cs" />
     <Compile Include="CSharp\Resolver\SimpleNameLookupMode.cs" />
     <Compile Include="Documentation\IDStringProvider.cs" />

@@ -13,7 +13,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	[TestFixture]
 	public class CecilLoaderTests : TypeSystemTests
 	{
-		public static readonly IProjectContent Mscorlib = new CecilLoader().LoadAssemblyFile(typeof(object).Assembly.Location);
+		static readonly Lazy<IProjectContent> mscorlib = new Lazy<IProjectContent>(
+			delegate {
+				return new CecilLoader().LoadAssemblyFile(typeof(object).Assembly.Location);
+			});
+		
+		static readonly Lazy<IProjectContent> systemCore = new Lazy<IProjectContent>(
+			delegate {
+				return new CecilLoader().LoadAssemblyFile(typeof(System.Linq.Enumerable).Assembly.Location);
+			});
+		
+		public static IProjectContent Mscorlib { get { return mscorlib.Value; } }
+		public static IProjectContent SystemCore { get { return systemCore.Value; } }
+		
 		ITypeResolveContext ctx = Mscorlib;
 		
 		[TestFixtureSetUp]

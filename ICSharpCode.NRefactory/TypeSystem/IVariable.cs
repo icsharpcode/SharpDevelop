@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the declaration region of the variable.
 		/// </summary>
-		DomRegion DeclarationRegion { get; }
+		DomRegion Region { get; }
 		
 		/// <summary>
 		/// Gets the type of the variable.

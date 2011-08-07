@@ -19,6 +19,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		const string program = @"
 using System;
 using System.Collections.Generic;
+using OtherNS;
+
 class Base<T> {
 	public class Nested<X> { }
 }
@@ -29,6 +31,9 @@ namespace NS {
 	using L = List<char>;
 	
 	class System { }
+}
+namespace OtherNS {
+	class Array { }
 }
 ";
 		
@@ -180,6 +185,13 @@ namespace NS {
 		public void NullableType()
 		{
 			Assert.AreEqual("ulong?", TypeToString(typeof(ulong?).ToTypeReference()));
+		}
+		
+		[Test]
+		public void AmbiguousType()
+		{
+			Assert.AreEqual("System.Array", TypeToString(typeof(Array).ToTypeReference()));
+			Assert.AreEqual("OtherNS.Array", TypeToString(ctx.GetTypeDefinition("OtherNS", "Array", 0, StringComparer.Ordinal)));
 		}
 	}
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under MIT license (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Local Variable Management
-		sealed class LocalVariable : IVariable
+		class LocalVariable : IVariable
 		{
 			// We store the local variable in a linked list
 			// and provide a stack-like API.
@@ -96,21 +96,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.constantValue = constantValue;
 			}
 			
-			public string Name {
+			string IVariable.Name {
 				get { return name; }
 			}
 			
-			public DomRegion DeclarationRegion {
+			DomRegion IVariable.Region {
 				get { return region; }
 			}
 			
-			public ITypeReference Type {
+			ITypeReference IVariable.Type {
 				get { return type; }
 			}
-			public bool IsConst {
+			bool IVariable.IsConst {
 				get { return constantValue != null; }
 			}
-			public IConstantValue ConstantValue {
+			IConstantValue IVariable.ConstantValue {
 				get { return constantValue; }
 			}
 			
@@ -120,6 +120,51 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return "<Start of Block>";
 				else
 					return name + ":" + type;
+			}
+		}
+		
+		sealed class LambdaParameter : LocalVariable, IParameter
+		{
+			readonly bool isRef;
+			readonly bool isOut;
+			
+			public LambdaParameter(LocalVariable prev, ITypeReference type, DomRegion region, string name, bool isRef, bool isOut)
+				: base(prev, type, region, name, null)
+			{
+				this.isRef = isRef;
+				this.isOut = isOut;
+			}
+			
+			IList<IAttribute> IParameter.Attributes {
+				get { return EmptyList<IAttribute>.Instance; }
+			}
+			
+			IConstantValue IParameter.DefaultValue {
+				get { return null; }
+			}
+			
+			bool IParameter.IsRef {
+				get { return isRef; }
+			}
+			
+			bool IParameter.IsOut {
+				get { return isOut; }
+			}
+			
+			bool IParameter.IsParams {
+				get { return false; }
+			}
+			
+			bool IParameter.IsOptional {
+				get { return false; }
+			}
+			
+			bool IFreezable.IsFrozen {
+				get { return true; }
+			}
+			
+			void IFreezable.Freeze()
+			{
 			}
 		}
 		
@@ -160,7 +205,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
-		/// Gets all currently visible local variables.
+		/// Adds a new lambda parameter to the current block.
+		/// </summary>
+		public IParameter AddLambdaParameter(ITypeReference type, DomRegion declarationRegion, string name, bool isRef, bool isOut)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			if (name == null)
+				throw new ArgumentNullException("name");
+			LambdaParameter p = new LambdaParameter(localVariableStack, type, declarationRegion, name, isRef, isOut);
+			localVariableStack = p;
+			return p;
+		}
+		
+		/// <summary>
+		/// Gets all currently visible local variables and lambda parameters.
 		/// </summary>
 		public IEnumerable<IVariable> LocalVariables {
 			get {
@@ -1731,8 +1790,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				var extensionMethods = GetExtensionMethods(target.Type, identifier, typeArguments.Count);
 				if (extensionMethods.Count > 0) {
 					return new MethodGroupResolveResult(target.Type, identifier, EmptyList<IMethod>.Instance, typeArguments) {
-						ExtensionMethods = extensionMethods
+						extensionMethods = extensionMethods
 					};
+				}
+			} else {
+				MethodGroupResolveResult mgrr = result as MethodGroupResolveResult;
+				if (mgrr != null) {
+					Debug.Assert(mgrr.extensionMethods == null);
+					// set the values that are necessary to make MethodGroupResolveResult.GetExtensionMethods() work
+					mgrr.usingScope = this.UsingScope;
+					mgrr.resolver = this;
 				}
 			}
 			return result;
@@ -1749,7 +1816,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets the extension methods that are called 'name', and can be called with 'typeArgumentCount' explicit type arguments;
 		/// and are applicable with a first argument type of 'targetType'.
 		/// </summary>
-		List<List<IMethod>> GetExtensionMethods(IType targetType, string name, int typeArgumentCount)
+		/// <remarks>
+		/// The results are stored in nested lists because they are grouped by using scope.
+		/// That is, for "using SomeExtensions; namespace X { using MoreExtensions; ... }",
+		/// the return value will be
+		/// new List {
+		///    new List { all extensions from MoreExtensions },
+		///    new List { all extensions from SomeExtensions }
+		/// }
+		/// </remarks>
+		public List<List<IMethod>> GetExtensionMethods(IType targetType, string name, int typeArgumentCount)
 		{
 			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
 			foreach (var inputGroup in GetAllExtensionMethods()) {
@@ -1769,6 +1845,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		List<List<IMethod>> GetAllExtensionMethods()
 		{
 			// TODO: maybe cache the result?
+			// Idea: class ExtensionMethodGroupCache : List<List<IMethod>>
+			// a new ExtensionMethodGroupCache instance would be created whenever the UsingScope is changed
+			// The list contents would be initialized on-demand.
+			// Because cloning the resolver would re-use the cache, it must be thread-safe.
+			// The cache could be passed to the MethodGroupResolveResult instead of passing the resolver.
 			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
 			List<IMethod> m;
 			for (UsingScope scope = this.UsingScope; scope != null; scope = scope.Parent) {
@@ -1811,48 +1892,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
 			if (mgrr != null) {
-				var typeArgumentArray = mgrr.TypeArguments.ToArray();
-				OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, typeArgumentArray);
-				foreach (IMethod method in mgrr.Methods) {
-					// TODO: grouping by class definition?
-					or.AddCandidate(method);
-				}
-				if (!or.FoundApplicableCandidate) {
-					// No applicable match found, so let's try extension methods.
-					
-					var extensionMethods = mgrr.ExtensionMethods;
-					// Look in extension methods pre-calcalculated by ResolveMemberAccess if possible;
-					// otherwise call GetExtensionMethods().
-					if (extensionMethods == null)
-						extensionMethods = GetExtensionMethods(mgrr.TargetType, mgrr.MethodName, mgrr.TypeArguments.Count);
-					
-					if (extensionMethods.Count > 0) {
-						ResolveResult[] extArguments = new ResolveResult[arguments.Length + 1];
-						extArguments[0] = new ResolveResult(mgrr.TargetType);
-						arguments.CopyTo(extArguments, 1);
-						string[] extArgumentNames = null;
-						if (argumentNames != null) {
-							extArgumentNames = new string[argumentNames.Length + 1];
-							argumentNames.CopyTo(extArgumentNames, 1);
-						}
-						var extOr = new OverloadResolution(context, extArguments, extArgumentNames, typeArgumentArray);
-						
-						foreach (var g in extensionMethods) {
-							foreach (var m in g) {
-								extOr.AddCandidate(m);
-							}
-							if (extOr.FoundApplicableCandidate)
-								break;
-						}
-						// For the lack of a better comparison function (the one within OverloadResolution
-						// cannot be used as it depends on the argument set):
-						if (extOr.FoundApplicableCandidate || or.BestCandidate == null) {
-							// Consider an extension method result better than the normal result only
-							// if it's applicable; or if there is no normal result.
-							or = extOr;
-						}
-					}
-				}
+				OverloadResolution or = mgrr.PerformOverloadResolution(context, arguments, argumentNames);
 				if (or.BestCandidate != null) {
 					IType returnType = or.BestCandidate.ReturnType.Resolve(context);
 					returnType = returnType.AcceptVisitor(new MethodTypeParameterSubstitution(or.InferredTypeArguments));

@@ -97,8 +97,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					this.arguments[i] = arguments[i];
 					this.parameterTypes[i] = parameterTypes[i];
 				}
+				Log("Type Inference");
+				Log("  Signature: M<" + string.Join<TP>(", ", this.typeParameters) + ">"
+				    + "(" + string.Join<IType>(", ", this.parameterTypes) + ")");
+				Log("  Arguments: ", arguments);
+				Debug.Indent();
+				
 				PhaseOne();
 				success = PhaseTwo();
+				
+				Debug.Unindent();
+				Log("  Type inference finished " + (success ? "successfully" : "with errors") + ": " +
+				    "M<" + string.Join(", ", this.typeParameters.Select(tp => tp.FixedTo ?? SharedTypes.UnknownType)) + ">");
 				return this.typeParameters.Select(tp => tp.FixedTo ?? SharedTypes.UnknownType).ToArray();
 			} finally {
 				Reset();
@@ -207,7 +217,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			for (int i = 0; i < arguments.Length; i++) {
 				ResolveResult Ei = arguments[i];
 				IType Ti = parameterTypes[i];
-				// TODO: what if Ei is an anonymous function?
+				
+				LambdaResolveResult lrr = Ei as LambdaResolveResult;
+				if (lrr != null) {
+					MakeExplicitParameterTypeInference(lrr, Ti);
+				}
+				if (lrr != null || Ei is MethodGroupResolveResult) {
+					// this is not in the spec???
+					if (OutputTypeContainsUnfixed(Ei, Ti) && !InputTypesContainsUnfixed(Ei, Ti)) {
+						MakeOutputTypeInference(Ei, Ti);
+					}
+				}
+				
 				IType U = Ei.Type;
 				if (U != SharedTypes.UnknownType) {
 					if (Ti is ByReferenceType) {
@@ -284,31 +305,42 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		IType[] InputTypes(ResolveResult e, IType t)
 		{
 			// C# 4.0 spec: §7.5.2.3 Input types
-			/* TODO
-			AnonymousMethodReturnType amrt = e as AnonymousMethodReturnType;
-			if (amrt != null && amrt.HasImplicitlyTypedParameters || e is MethodGroupReturnType) {
-				IMethod m = GetDelegateOrExpressionTreeSignature(t, amrt != null && amrt.CanBeConvertedToExpressionTree);
+			LambdaResolveResult lrr = e as LambdaResolveResult;
+			if (lrr != null && lrr.IsImplicitlyTyped || e is MethodGroupResolveResult) {
+				IMethod m = GetDelegateOrExpressionTreeSignature(t);
 				if (m != null) {
-					return m.Parameters.Select(p => p.ReturnType);
+					IType[] inputTypes = new IType[m.Parameters.Count];
+					for (int i = 0; i < inputTypes.Length; i++) {
+						inputTypes[i] = m.Parameters[i].Type.Resolve(context);
+					}
+					return inputTypes;
 				}
-			}*/
+			}
 			return emptyTypeArray;
 		}
 		
-		
 		IType[] OutputTypes(ResolveResult e, IType t)
 		{
-			// C# 4.0 spec: §7.5.2.4 Input types
-			/*
-			AnonymousMethodReturnType amrt = e as AnonymousMethodReturnType;
-			if (amrt != null || e is MethodGroupReturnType) {
-				IMethod m = GetDelegateOrExpressionTreeSignature(T, amrt != null && amrt.CanBeConvertedToExpressionTree);
+			// C# 4.0 spec: §7.5.2.4 Output types
+			LambdaResolveResult lrr = e as LambdaResolveResult;
+			if (lrr != null && lrr.IsImplicitlyTyped || e is MethodGroupResolveResult) {
+				IMethod m = GetDelegateOrExpressionTreeSignature(t);
 				if (m != null) {
-					return new[] { m.ReturnType };
+					return new[] { m.ReturnType.Resolve(context) };
 				}
 			}
-			 */
 			return emptyTypeArray;
+		}
+		
+		static IMethod GetDelegateOrExpressionTreeSignature(IType t)
+		{
+			ParameterizedType pt = t as ParameterizedType;
+			if (pt != null && pt.TypeParameterCount == 1 && pt.Name == "Expression"
+			    && pt.Namespace == "System.Linq.Expressions")
+			{
+				t = pt.TypeArguments[0];
+			}
+			return t.GetDelegateInvokeMethod();
 		}
 		
 		bool InputTypesContainsUnfixed(ResolveResult argument, IType parameterType)
@@ -382,53 +414,89 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region MakeOutputTypeInference (§7.5.2.6)
 		void MakeOutputTypeInference(ResolveResult e, IType t)
 		{
+			Log(" MakeOutputTypeInference from " + e + " to " + t);
 			// If E is an anonymous function with inferred return type  U (§7.5.2.12) and T is a delegate type or expression
 			// tree type with return type Tb, then a lower-bound inference (§7.5.2.9) is made from U to Tb.
-			/* TODO AnonymousMethodReturnType amrt = e as AnonymousMethodReturnType;
-			if (amrt != null) {
-				IMethod m = GetDelegateOrExpressionTreeSignature(T, amrt.CanBeConvertedToExpressionTree);
+			LambdaResolveResult lrr = e as LambdaResolveResult;
+			if (lrr != null) {
+				IMethod m = GetDelegateOrExpressionTreeSignature(t);
 				if (m != null) {
-					IReturnType inferredReturnType;
-					if (amrt.HasParameterList && amrt.MethodParameters.Count == m.Parameters.Count) {
-						var inferredParameterTypes = m.Parameters.Select(p => SubstituteFixedTypes(p.ReturnType)).ToArray();
-						inferredReturnType = amrt.ResolveReturnType(inferredParameterTypes);
+					IType inferredReturnType;
+					if (lrr.IsImplicitlyTyped) {
+						MethodTypeParameterSubstitution substitution = GetSubstitutionForFixedTPs();
+						IType[] inferredParameterTypes = new IType[m.Parameters.Count];
+						for (int i = 0; i < inferredParameterTypes.Length; i++) {
+							IType parameterType = m.Parameters[i].Type.Resolve(context);
+							inferredParameterTypes[i] = parameterType.AcceptVisitor(substitution);
+						}
+						inferredReturnType = lrr.GetInferredReturnType(inferredParameterTypes);
 					} else {
-						inferredReturnType = amrt.ResolveReturnType();
+						inferredReturnType = lrr.GetInferredReturnType(null);
 					}
-					
-					MakeLowerBoundInference(inferredReturnType, m.ReturnType);
+					MakeLowerBoundInference(inferredReturnType, m.ReturnType.Resolve(context));
 					return;
 				}
-			}*/
+			}
 			// Otherwise, if E is a method group and T is a delegate type or expression tree type
 			// with parameter types T1…Tk and return type Tb, and overload resolution
 			// of E with the types T1…Tk yields a single method with return type U, then a lower­-bound
 			// inference is made from U to Tb.
 			MethodGroupResolveResult mgrr = e as MethodGroupResolveResult;
 			if (mgrr != null) {
-				throw new NotImplementedException();
+				IMethod m = GetDelegateOrExpressionTreeSignature(t);
+				if (m != null) {
+					ResolveResult[] args = new ResolveResult[m.Parameters.Count];
+					MethodTypeParameterSubstitution substitution = GetSubstitutionForFixedTPs();
+					for (int i = 0; i < args.Length; i++) {
+						IParameter param = m.Parameters[i];
+						IType parameterType = param.Type.Resolve(context);
+						parameterType = parameterType.AcceptVisitor(substitution);
+						if ((param.IsRef || param.IsOut) && parameterType.Kind == TypeKind.ByReference) {
+							parameterType = ((ByReferenceType)parameterType).ElementType;
+							args[i] = new ByReferenceResolveResult(parameterType, param.IsOut);
+						} else {
+							args[i] = new ResolveResult(parameterType);
+						}
+					}
+					var or = mgrr.PerformOverloadResolution(context, args,
+					                                        allowExtensionMethods: false,
+					                                        allowExpandingParams: false);
+					if (or.FoundApplicableCandidate && or.BestCandidateAmbiguousWith == null) {
+						IType returnType = or.BestCandidate.ReturnType.Resolve(context);
+						MakeLowerBoundInference(returnType, m.ReturnType.Resolve(context));
+					}
+				}
+				return;
 			}
 			// Otherwise, if E is an expression with type U, then a lower-bound inference is made from U to T.
 			if (e.Type != SharedTypes.UnknownType) {
 				MakeLowerBoundInference(e.Type, t);
 			}
 		}
+		
+		MethodTypeParameterSubstitution GetSubstitutionForFixedTPs()
+		{
+			IType[] fixedTypes = new IType[typeParameters.Length];
+			for (int i = 0; i < fixedTypes.Length; i++) {
+				fixedTypes[i] = typeParameters[i].FixedTo ?? SharedTypes.UnknownType;
+			}
+			return new MethodTypeParameterSubstitution(fixedTypes);
+		}
 		#endregion
 		
 		#region MakeExplicitParameterTypeInference (§7.5.2.7)
-		void MakeExplicitParameterTypeInference(ResolveResult e, IType t)
+		void MakeExplicitParameterTypeInference(LambdaResolveResult e, IType t)
 		{
 			// C# 4.0 spec: §7.5.2.7 Explicit parameter type inferences
-			throw new NotImplementedException();
-			/*AnonymousMethodReturnType amrt = e as AnonymousMethodReturnType;
-			if (amrt != null && amrt.HasParameterList) {
-				IMethod m = GetDelegateOrExpressionTreeSignature(T, amrt.CanBeConvertedToExpressionTree);
-				if (m != null && amrt.MethodParameters.Count == m.Parameters.Count) {
-					for (int i = 0; i < amrt.MethodParameters.Count; i++) {
-						MakeExactInference(amrt.MethodParameters[i].ReturnType, m.Parameters[i].ReturnType);
-					}
-				}
-			}*/
+			Log(" MakeExplicitParameterTypeInference from " + e + " to " + t);
+			if (e.IsImplicitlyTyped || !e.HasParameterList)
+				return;
+			IMethod m = GetDelegateOrExpressionTreeSignature(t);
+			if (m == null)
+				return;
+			for (int i = 0; i < e.Parameters.Count && i < m.Parameters.Count; i++) {
+				MakeExactInference(e.Parameters[i].Type.Resolve(context), m.Parameters[i].Type.Resolve(context));
+			}
 		}
 		#endregion
 		

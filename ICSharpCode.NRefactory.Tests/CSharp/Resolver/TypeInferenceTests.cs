@@ -75,6 +75,48 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region Inference with Method Groups
+		[Test]
+		public void CannotInferFromMethodParameterTypes()
+		{
+			// static void M<A, B>(Func<A, B> f) {}
+			// M(int.Parse); // type inference fails
+			DefaultTypeParameter A = new DefaultTypeParameter(EntityType.Method, 0, "A");
+			DefaultTypeParameter B = new DefaultTypeParameter(EntityType.Method, 1, "B");
+			
+			ITypeDefinition declType = ctx.GetTypeDefinition(typeof(int));
+			var methods = declType.Methods.Where(m => m.Name == "Parse").ToList();
+			var argument = new MethodGroupResolveResult(declType, "Parse", methods, new IType[0]);
+			
+			bool success;
+			ti.InferTypeArguments(new [] { A, B }, new [] { argument },
+			                      new [] { new ParameterizedType(ctx.GetTypeDefinition(typeof(Func<,>)), new[] { A, B }) },
+			                      out success);
+			Assert.IsFalse(success);
+		}
+		
+		[Test]
+		public void InferFromMethodReturnType()
+		{
+			// static void M<T>(Func<T> f) {}
+			// M(Console.ReadKey); // type inference produces ConsoleKeyInfo
+			
+			DefaultTypeParameter T = new DefaultTypeParameter(EntityType.Method, 0, "T");
+			
+			ITypeDefinition declType = ctx.GetTypeDefinition(typeof(Console));
+			var methods = declType.Methods.Where(m => m.Name == "ReadKey").ToList();
+			var argument = new MethodGroupResolveResult(declType, "ReadKey", methods, new IType[0]);
+			
+			bool success;
+			Assert.AreEqual(
+				Resolve(typeof(ConsoleKeyInfo)),
+				ti.InferTypeArguments(new [] { T }, new [] { argument },
+				                      new [] { new ParameterizedType(ctx.GetTypeDefinition(typeof(Func<>)), new[] { T }) },
+				                      out success));
+			Assert.IsTrue(success);
+		}
+		#endregion
+		
 		#region FindTypeInBounds
 		IType[] FindAllTypesInBounds(IList<IType> lowerBounds, IList<IType> upperBounds = null)
 		{

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -29,6 +30,21 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			} else {
 				return base.VisitTypeParameter(type);
 			}
+		}
+		
+		public override string ToString()
+		{
+			StringBuilder b = new StringBuilder();
+			b.Append('[');
+			for (int i = 0; i < typeArguments.Count; i++) {
+				if (i > 0) b.Append(", ");
+				b.Append("``");
+				b.Append(i);
+				b.Append(" -> ");
+				b.Append(typeArguments[i]);
+			}
+			b.Append(']');
+			return b.ToString();
 		}
 	}
 }

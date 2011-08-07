@@ -8,7 +8,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 {
 	public sealed class ParameterListComparer : IEqualityComparer<IParameterizedMember>
 	{
-		public static readonly ParameterListComparer Instance = new ParameterListComparer();
+		ITypeResolveContext context;
+		
+		/// <summary>
+		/// Creates a new ParameterListComparer that compares type <b>references</b>.
+		/// </summary>
+		public ParameterListComparer()
+		{
+		}
+		
+		/// <summary>
+		/// Creates a new ParameterListComparer that uses the specified context to resolve types.
+		/// </summary>
+		public ParameterListComparer(ITypeResolveContext context)
+		{
+			this.context = context;
+		}
 		
 		public bool Equals(IParameterizedMember x, IParameterizedMember y)
 		{
@@ -21,8 +36,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				var b = py[i];
 				if (a == null && b == null)
 					continue;
-				if (a == null || b == null || !a.Type.Equals(b.Type))
+				if (a == null || b == null)
 					return false;
+				if (context != null) {
+					if (!a.Type.Resolve(context).Equals(b.Type.Resolve(context)))
+						return false;
+				} else {
+					if (!a.Type.Equals(b.Type))
+						return false;
+				}
 			}
 			return true;
 		}
@@ -33,7 +55,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			unchecked {
 				foreach (IParameter p in obj.Parameters) {
 					hashCode *= 27;
-					hashCode += p.Type.GetHashCode();
+					if (context != null)
+						hashCode += p.Type.Resolve(context).GetHashCode();
+					else
+						hashCode += p.Type.GetHashCode();
 				}
 			}
 			return hashCode;

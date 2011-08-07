@@ -44,6 +44,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return base.VisitTypeParameter(type);
 				}
 			}
+			
+			public override string ToString()
+			{
+				StringBuilder b = new StringBuilder();
+				b.Append('[');
+				for (int i = 0; i < typeArguments.Length; i++) {
+					if (i > 0) b.Append(", ");
+					b.Append('`');
+					b.Append(i);
+					b.Append(" -> ");
+					b.Append(typeArguments[i]);
+				}
+				b.Append(']');
+				return b.ToString();
+			}
 		}
 		
 		readonly ITypeDefinition genericType;

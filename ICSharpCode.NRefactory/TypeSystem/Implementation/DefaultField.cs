@@ -41,12 +41,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				constantValue = provider.Intern(constantValue);
 		}
 		
-		DomRegion IVariable.DeclarationRegion {
-			get {
-				return Region;
-			}
-		}
-		
 		public bool IsConst {
 			get { return constantValue != null; }
 		}

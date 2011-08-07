@@ -23,11 +23,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IConstantValue DefaultValue { get; }
 		
 		/// <summary>
-		/// Gets the code region where the parameter is defined.
-		/// </summary>
-		DomRegion Region { get; }
-		
-		/// <summary>
 		/// Gets whether this parameter is a C# 'ref' parameter.
 		/// </summary>
 		bool IsRef { get; }

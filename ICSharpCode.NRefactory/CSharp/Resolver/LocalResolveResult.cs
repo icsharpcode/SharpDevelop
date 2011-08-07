@@ -15,12 +15,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly object constantValue;
 		
 		public LocalResolveResult(IVariable variable, IType type, object constantValue = null)
-			: base(type)
+			: base(UnpackTypeIfByRefParameter(type, variable))
 		{
 			if (variable == null)
 				throw new ArgumentNullException("variable");
 			this.variable = variable;
 			this.constantValue = constantValue;
+		}
+		
+		static IType UnpackTypeIfByRefParameter(IType type, IVariable v)
+		{
+			if (type.Kind == TypeKind.ByReference) {
+				IParameter p = v as IParameter;
+				if (p != null && (p.IsRef || p.IsOut))
+					return ((ByReferenceType)type).ElementType;
+			}
+			return type;
 		}
 		
 		public IVariable Variable {

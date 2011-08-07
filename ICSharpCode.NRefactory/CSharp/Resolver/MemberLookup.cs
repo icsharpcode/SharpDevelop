@@ -206,6 +206,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (d != null)
 					members.RemoveAll(m => d.IsDerivedFrom(m.DeclaringTypeDefinition, context));
 			}
+			
+			ParameterListComparer parameterListComparer = new ParameterListComparer(context);
+			
 			// remove members hidden by other members
 			for (int i = members.Count - 1; i >= 0; i--) {
 				ITypeDefinition d = members[i].DeclaringTypeDefinition;
@@ -214,7 +217,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				for (int j = i + 1; j < members.Count; j++) {
 					if (mi != null) {
 						IMethod mj = members[j] as IMethod;
-						if (mj != null && !ParameterListComparer.Instance.Equals(mi, mj))
+						if (mj != null && !parameterListComparer.Equals(mi, mj))
 							continue;
 					}
 					ITypeDefinition s = members[j].DeclaringTypeDefinition;
@@ -235,7 +238,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					for (int j = 0; j < members.Count; j++) {
 						if (mi != null) {
 							IMethod mj = members[j] as IMethod;
-							if (mj != null && !ParameterListComparer.Instance.Equals(mi, mj))
+							if (mj != null && !parameterListComparer.Equals(mi, mj))
 								continue;
 						}
 						ITypeDefinition s = members[j].DeclaringTypeDefinition;
