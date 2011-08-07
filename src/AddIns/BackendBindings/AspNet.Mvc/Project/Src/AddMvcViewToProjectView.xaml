@@ -45,10 +45,12 @@
 			Margin="4"
 			Grid.Row="2">
 			<Button
+				Margin="2, 0"
 				Content="_Add"
 				IsDefault="True"
 				Command="{Binding Path=AddMvcViewCommand}"/>
 			<Button
+				Margin="2, 0"
 				Content="_Cancel"
 				IsCancel="True"/>
 		</StackPanel>
