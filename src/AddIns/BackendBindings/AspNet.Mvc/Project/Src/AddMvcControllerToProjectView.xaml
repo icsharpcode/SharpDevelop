@@ -1,0 +1,58 @@
+﻿<Window
+	x:Class="ICSharpCode.AspNet.Mvc.AddMvcControllerToProjectView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:mvc="clr-namespace:ICSharpCode.AspNet.Mvc"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Title="Add Controller"
+ 	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
+	mvc:CloseWindowBehaviour.IsClosed="{Binding IsClosed}"
+	WindowStartupLocation="CenterOwner"
+	FocusManager.FocusedElement="{Binding ElementName=ControllerNameTextBox}"
+	Height="400"
+	Width="400">
+	
+	<Window.Resources>
+		<Style TargetType="Button" BasedOn="{x:Static core:GlobalStyles.ButtonStyle}"/>
+	</Window.Resources>
+	
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+	
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			
+			<TextBlock
+				Margin="4"
+				FontWeight="Bold"
+				Text="Controller Name:"/>
+			<TextBox
+				x:Name="ControllerNameTextBox"
+				Grid.Column="1"
+				Text="{Binding Path=ControllerName, UpdateSourceTrigger=PropertyChanged}"/>
+		</Grid>
+	
+		<StackPanel
+			Orientation="Horizontal"
+			HorizontalAlignment="Right"
+			Margin="4"
+			Grid.Row="2">
+			<Button
+				Margin="2, 0"
+				Content="_Add"
+				IsDefault="True"
+				Command="{Binding Path=AddMvcControllerCommand}"/>
+			<Button
+				Margin="2, 0"
+				Content="_Cancel"
+				IsCancel="True"/>
+		</StackPanel>
+	</Grid>
+</Window>

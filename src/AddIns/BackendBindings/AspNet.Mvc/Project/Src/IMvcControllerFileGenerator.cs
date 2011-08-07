@@ -6,15 +6,11 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public interface ISelectedMvcViewFolder
+	public interface IMvcControllerFileGenerator
 	{
-		string Path { get; }
-		IProject Project { get; }
+		MvcTextTemplateLanguage Language { get; set; }
+		IProject Project { get; set; }
 		
-		/// <summary>
-		/// Adds the file to the view folder.
-		/// </summary>
-		/// <param name="fileName">The filename should not have any path information</param>
-		void AddFileToProject(string fileName);
+		void GenerateFile(MvcControllerFileName fileName);
 	}
 }

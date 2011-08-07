@@ -6,10 +6,9 @@ using System.IO;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public class MvcViewFileName
+	public class MvcViewFileName : MvcFileName
 	{
 		string viewName = String.Empty;
-		string viewFolder = String.Empty;
 		
 		public string ViewName {
 			get {
@@ -24,39 +23,7 @@ namespace ICSharpCode.AspNet.Mvc
 			viewName = ConvertToEmptyStringIfNull(viewName);
 		}
 		
-		static string ConvertToEmptyStringIfNull(string text)
-		{
-			if (text != null) {
-				return text;
-			}
-			return String.Empty;
-		}
-		
-		public string ViewFolder { 
-			get {
-				EnsureViewFolderIsNotNull();
-				return viewFolder;
-			}
-			set { viewFolder = value; }
-		}
-		
-		void EnsureViewFolderIsNotNull()
-		{
-			viewFolder = ConvertToEmptyStringIfNull(viewFolder);
-		}
-		
-		public override string ToString()
-		{
-			return GetPath();
-		}
-		
-		public string GetPath()
-		{
-			string fileName = GetFileName();
-			return Path.Combine(ViewFolder, fileName);
-		}
-		
-		public string GetFileName()
+		public override string GetFileName()
 		{
 			string viewName = GetViewName();
 			return viewName + ".aspx";

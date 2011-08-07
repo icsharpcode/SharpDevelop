@@ -2,15 +2,17 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public interface IMvcViewFileGenerator
+	public static class MvcTextTemplateLanguageFileNameExtension
 	{
-		MvcTextTemplateLanguage Language { get; set; }
-		IProject Project { get; set; }
-		
-		void GenerateFile(MvcViewFileName fileName);
+		public static string GetFileExtension(MvcTextTemplateLanguage language)
+		{
+			if (language == MvcTextTemplateLanguage.VisualBasic) {
+				return ".vb";
+			}
+			return ".cs";
+		}
 	}
 }

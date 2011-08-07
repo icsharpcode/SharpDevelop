@@ -47,6 +47,12 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\AddMvcControllerToProjectCommand.cs" />
+    <Compile Include="Src\AddMvcControllerToProjectView.xaml.cs">
+      <DependentUpon>AddMvcControllerToProjectView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\AddMvcControllerToProjectViewModel.cs" />
     <Compile Include="Src\AddMvcViewToProjectCommand.cs" />
     <Compile Include="Src\AddMvcViewToProjectView.xaml.cs">
       <DependentUpon>AddMvcViewToProjectView.xaml</DependentUpon>
@@ -56,22 +62,33 @@
     <Compile Include="Src\CloseDialogBehaviour.cs" />
     <Compile Include="Src\DelegateCommand.cs" />
     <Compile Include="Src\IAddMvcItemToProjectView.cs" />
+    <Compile Include="Src\IMvcControllerFileGenerator.cs" />
     <Compile Include="Src\IMvcFileService.cs" />
     <Compile Include="Src\IMvcTextTemplateHost.cs" />
     <Compile Include="Src\IMvcTextTemplateHostFactory.cs" />
     <Compile Include="Src\IMvcViewFileGenerator.cs" />
-    <Compile Include="Src\ISelectedMvcViewFolder.cs" />
+    <Compile Include="Src\ISelectedMvcFolder.cs" />
+    <Compile Include="Src\IsMvcControllerFolderSelectedConditionEvaluator.cs" />
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluator.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\MvcControllerFileGenerator.cs" />
+    <Compile Include="Src\MvcControllerFileName.cs" />
+    <Compile Include="Src\MvcControllerTextTemplateFileName.cs" />
+    <Compile Include="Src\MvcFileGenerator.cs" />
+    <Compile Include="Src\MvcFileName.cs" />
     <Compile Include="Src\MvcFileService.cs" />
+    <Compile Include="Src\MvcTextTemplateFileName.cs" />
     <Compile Include="Src\MvcTextTemplateHost.cs" />
     <Compile Include="Src\MvcTextTemplateHostFactory.cs" />
     <Compile Include="Src\MvcTextTemplateLanguage.cs" />
     <Compile Include="Src\MvcTextTemplateLanguageConverter.cs" />
+    <Compile Include="Src\MvcTextTemplateLanguageFileNameExtension.cs" />
     <Compile Include="Src\MvcTextTemplateRepository.cs" />
     <Compile Include="Src\MvcViewFileName.cs" />
     <Compile Include="Src\MvcViewFileGenerator.cs" />
     <Compile Include="Src\MvcViewTextTemplateFileName.cs" />
+    <Compile Include="Src\SelectedMvcControllerFolder.cs" />
+    <Compile Include="Src\SelectedMvcFolder.cs" />
     <Compile Include="Src\SelectedMvcViewFolder.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
   </ItemGroup>
@@ -81,6 +98,7 @@
     <Folder Include="ItemTemplates\CSharp" />
     <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddView" />
     <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp" />
+    <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddController" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -108,11 +126,16 @@
     <None Include="AspNet.Mvc.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddController\Controller.tt">
+      <LastGenOutput>Controller.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\AddMvcControllerToProjectView.xaml" />
     <Page Include="Src\AddMvcViewToProjectView.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

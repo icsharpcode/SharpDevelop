@@ -6,9 +6,9 @@ using System.IO;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public class MvcViewTextTemplateFileName : MvcTextTemplateFileName
+	public class MvcControllerTextTemplateFileName : MvcTextTemplateFileName
 	{
-		public MvcViewTextTemplateFileName(
+		public MvcControllerTextTemplateFileName(
 			string textTemplatesRootDirectory,
 			MvcTextTemplateLanguage language,
 			string templateName)
@@ -17,7 +17,7 @@ namespace ICSharpCode.AspNet.Mvc
 		}
 		
 		protected override string LanguageSubdirectoryFormatString {
-			get { return "{0}\\CodeTemplates\\AddView\\Aspx{0}"; }
+			get { return "{0}\\CodeTemplates\\AddController"; }
 		}
 	}
 }

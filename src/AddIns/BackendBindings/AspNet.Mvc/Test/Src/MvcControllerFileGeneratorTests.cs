@@ -10,9 +10,9 @@ using NUnit.Framework;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class MvcViewFileGeneratorTests
+	public class MvcControllerFileGeneratorTests
 	{
-		MvcViewFileGenerator generator;
+		MvcControllerFileGenerator generator;
 		TestableProject projectUsedByGenerator;
 		MvcTextTemplateRepository templateRepository;
 		FakeMvcTextTemplateHostFactory fakeHostFactory;
@@ -33,7 +33,7 @@ namespace AspNet.Mvc.Tests
 		{
 			fakeHostFactory = new FakeMvcTextTemplateHostFactory();
 			fakeHost = fakeHostFactory.FakeMvcTextTemplateHost;
-			generator = new MvcViewFileGenerator(fakeHostFactory, templateRepository);
+			generator = new MvcControllerFileGenerator(fakeHostFactory, templateRepository);
 			projectUsedByGenerator = TestableProject.CreateProject();
 			generator.Project = projectUsedByGenerator;
 			ProjectPassedToGeneratorIsCSharpProject();
@@ -47,18 +47,18 @@ namespace AspNet.Mvc.Tests
 		
 		void GenerateFile()
 		{
-			GenerateFile(@"d:\projects\myproject\Views\Home", "Index");
+			GenerateFile(@"d:\projects\myproject\Controllers", "Home");
 		}
 		
 		void GenerateFile(string folder, string name)
 		{
-			var fileName = new MvcViewFileName();
+			var fileName = new MvcControllerFileName();
 			fileName.Folder = folder;
-			fileName.ViewName = name;
+			fileName.ControllerName = name;
 			GenerateFile(fileName);
 		}
 		
-		void GenerateFile(MvcViewFileName fileName)
+		void GenerateFile(MvcControllerFileName fileName)
 		{
 			generator.GenerateFile(fileName);
 		}
@@ -86,24 +86,24 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void GenerateFile_CSharpEmptyViewTemplate_OutputFileGeneratedUsingFileNamePassedToGenerator()
+		public void GenerateFile_CSharpEmptyControllerTemplate_OutputFileGeneratedUsingFileNamePassedToGenerator()
 		{
 			CreateGenerator();
 			ProjectPassedToGeneratorIsCSharpProject();
 			
-			string viewFolder = @"d:\projects\MyProject\Views\Home";
-			string viewName = "Index";
-			GenerateFile(viewFolder, viewName);
+			string controllerFolder = @"d:\projects\MyProject\Controllers";
+			string controllerName = "HomeController";
+			GenerateFile(controllerFolder, controllerName);
 			
 			string outputFileGenerated = fakeHost.OutputFilePassedToProcessTemplate;
 			string expectedOutputFileGenerated = 
-				@"d:\projects\MyProject\Views\Home\Index.aspx";
+				@"d:\projects\MyProject\Controllers\HomeController.cs";
 			
 			Assert.AreEqual(expectedOutputFileGenerated, outputFileGenerated);
 		}
 		
 		[Test]
-		public void GenerateFile_CSharpEmptyViewTemplate_TemplateFileUsedIsIsCSharpEmptyViewTemplate()
+		public void GenerateFile_CSharpControllerTemplate_TemplateFileUsedIsIsCSharpEmptyControllerTemplate()
 		{
 			string templateRootDirectory = @"d:\SharpDev\AddIns\AspNet.Mvc";
 			CreateTemplateRepository(templateRootDirectory);
@@ -114,22 +114,38 @@ namespace AspNet.Mvc.Tests
 			
 			string inputFileName = fakeHost.InputFilePassedToProcessTemplate;
 			string expectedInputFileName = 
-				@"d:\SharpDev\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt";
+				@"d:\SharpDev\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddController\Controller.tt";
 			
 			Assert.AreEqual(expectedInputFileName, inputFileName);
 		}
 		
 		[Test]
-		public void GenerateFile_CSharpEmptyViewTemplate_MvcTextTemplateHostViewNameIsSet()
+		public void GenerateFile_CSharpControllerTemplate_MvcTextTemplateHostControllerNameIsSet()
 		{
 			CreateGenerator();
 			ProjectPassedToGeneratorIsCSharpProject();
 			
-			string viewFolder = @"d:\projects\MyProject\Views\Home";
-			string viewName = "About";
-			GenerateFile(viewFolder, viewName);
+			string controllerFolder = @"d:\projects\MyProject\Controllers";
+			string controllerName = "AboutController";
+			GenerateFile(controllerFolder, controllerName);
 		
-			Assert.AreEqual("About", fakeHost.ViewName);
+			Assert.AreEqual("AboutController", fakeHost.ControllerName);
+		}
+		
+		[Test]
+		public void GenerateFile_CSharpControllerTemplate_MvcTextTemplateHostNamespaceIsTakenFromProject()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			projectUsedByGenerator.RootNamespace = "MyProjectNamespace";
+			
+			string controllerFolder = @"d:\projects\MyProject\Controllers";
+			string controllerName = "AboutController";
+			GenerateFile(controllerFolder, controllerName);
+			
+			string expectedNamespace = "MyProjectNamespace.Controllers";
+			
+			Assert.AreEqual(expectedNamespace, fakeHost.Namespace);
 		}
 	}
 }

@@ -33,5 +33,13 @@ namespace ICSharpCode.AspNet.Mvc
 			var fileName = new MvcViewTextTemplateFileName(textTemplatesRootDirectory, language, templateName);
 			return fileName.GetPath();
 		}
+		
+		public string GetMvcControllerTextTemplateFileName(
+			MvcTextTemplateLanguage language, 
+			string templateName)
+		{
+			var fileName = new MvcControllerTextTemplateFileName(textTemplatesRootDirectory, language, templateName);
+			return fileName.GetPath();
+		}
 	}
 }

@@ -8,6 +8,10 @@ namespace ICSharpCode.AspNet.Mvc
 {
 	public class MvcTextTemplateHost : TextTemplatingHost, IMvcTextTemplateHost
 	{
+		string viewName = String.Empty;
+		string controllerName = String.Empty;
+		string @namespace = String.Empty;
+		
 		public MvcTextTemplateHost(
 			ITextTemplatingAppDomainFactory appDomainFactory,
 			ITextTemplatingAssemblyResolver assemblyResolver,
@@ -29,6 +33,27 @@ namespace ICSharpCode.AspNet.Mvc
 			Imports.Add("ICSharpCode.AspNet.Mvc");
 		}
 		
-		public string ViewName { get; set; }
+		public string ViewName {
+			get { return GetValueOrUseEmptyStringIfNull(viewName); }
+			set { viewName = value; }
+		}
+		
+		string GetValueOrUseEmptyStringIfNull(string value)
+		{
+			if (value != null) {
+				return value;
+			}
+			return String.Empty;
+		}
+		
+		public string ControllerName {
+			get { return GetValueOrUseEmptyStringIfNull(controllerName); }
+			set { controllerName = value; }
+		}
+		
+		public string Namespace {
+			get { return GetValueOrUseEmptyStringIfNull(@namespace); }
+			set { @namespace = value; }
+		}
 	}
 }

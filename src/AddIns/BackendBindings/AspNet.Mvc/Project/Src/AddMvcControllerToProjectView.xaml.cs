@@ -2,15 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Project;
+using System.Windows;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public interface IMvcViewFileGenerator
+	public partial class AddMvcControllerToProjectView : Window, IAddMvcItemToProjectView
 	{
-		MvcTextTemplateLanguage Language { get; set; }
-		IProject Project { get; set; }
-		
-		void GenerateFile(MvcViewFileName fileName);
+		public AddMvcControllerToProjectView()
+		{
+			InitializeComponent();
+		}
 	}
 }

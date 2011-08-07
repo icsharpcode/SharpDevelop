@@ -42,5 +42,31 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(expectedFileName, fileName);
 		}
+		
+		[Test]
+		public void GetMvcControllerTextTemplateFileName_CSharpControllerTemplateRequested_ReturnsFileNameToCSharpControllerTextTemplate()
+		{
+			CreateRepositoryWithAspNetMvcAddInDirectory(@"C:\SD\AddIns\AspNet.Mvc");
+			
+			string fileName = repository.GetMvcControllerTextTemplateFileName(MvcTextTemplateLanguage.CSharp, "Controller");
+			
+			string expectedFileName = 
+				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddController\Controller.tt";
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void GetMvcControllerTextTemplateFileName_VisualBasicControllerTemplateRequested_ReturnsFileNameToVisualBasicControllerTextTemplate()
+		{
+			CreateRepositoryWithAspNetMvcAddInDirectory(@"C:\SD\AddIns\AspNet.Mvc");
+			
+			string fileName = repository.GetMvcControllerTextTemplateFileName(MvcTextTemplateLanguage.VisualBasic, "Controller");
+			
+			string expectedFileName = 
+				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddController\Controller.tt";
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
 	}
 }

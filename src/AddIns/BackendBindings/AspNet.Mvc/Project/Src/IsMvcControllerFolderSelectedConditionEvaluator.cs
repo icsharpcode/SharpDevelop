@@ -2,15 +2,17 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public interface IMvcViewFileGenerator
+	public class IsMvcControllerFolderSelectedConditionEvaluator : IConditionEvaluator
 	{
-		MvcTextTemplateLanguage Language { get; set; }
-		IProject Project { get; set; }
-		
-		void GenerateFile(MvcViewFileName fileName);
+		public bool IsValid(object owner, Condition condition)
+		{
+			var directoryNode = owner as DirectoryNode;
+			return directoryNode != null;
+		}
 	}
 }

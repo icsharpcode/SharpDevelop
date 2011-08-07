@@ -6,43 +6,16 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public class SelectedMvcViewFolder : ISelectedMvcViewFolder
+	public class SelectedMvcViewFolder : SelectedMvcFolder, ISelectedMvcFolder
 	{
-		DirectoryNode directoryNode;
-		
 		public SelectedMvcViewFolder(DirectoryNode directoryNode)
+			: base(directoryNode)
 		{
-			this.directoryNode = directoryNode;
 		}
 		
 		public SelectedMvcViewFolder()
-			: this(ProjectBrowserPad.Instance.SelectedNode as DirectoryNode)
+			: base()
 		{
-		}
-		
-		public string Path {
-			get { return directoryNode.Directory; }
-		}
-		
-		public IProject Project {
-			get { return directoryNode.Project; }
-		}
-		
-		public void AddFileToProject(string fileName)
-		{
-			string fullPath = System.IO.Path.Combine(Path, fileName);
-			AddNewFileToDirectoryNode(fullPath);
-			SaveProject();
-		}
-		
-		protected virtual void AddNewFileToDirectoryNode(string path)
-		{
-			directoryNode.AddNewFile(path);
-		}
-		
-		void SaveProject()
-		{
-			directoryNode.Project.Save();
 		}
 	}
 }

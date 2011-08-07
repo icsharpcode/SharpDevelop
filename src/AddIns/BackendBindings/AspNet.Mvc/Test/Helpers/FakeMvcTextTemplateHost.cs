@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom.Compiler;
 using ICSharpCode.AspNet.Mvc;
 
 namespace AspNet.Mvc.Tests.Helpers
@@ -11,6 +12,11 @@ namespace AspNet.Mvc.Tests.Helpers
 		public bool ProcessTemplateReturnValue = true;
 		public string InputFilePassedToProcessTemplate;
 		public string OutputFilePassedToProcessTemplate;
+		
+		public FakeMvcTextTemplateHost()
+		{
+			this.Errors = new CompilerErrorCollection();
+		}
 		
 		public bool ProcessTemplate(string inputFile, string outputFile)
 		{
@@ -27,5 +33,9 @@ namespace AspNet.Mvc.Tests.Helpers
 		}
 		
 		public string ViewName { get; set; }
+		public string ControllerName { get; set; }
+		public string Namespace { get; set; }
+		
+		public CompilerErrorCollection Errors { get; set; }
 	}
 }

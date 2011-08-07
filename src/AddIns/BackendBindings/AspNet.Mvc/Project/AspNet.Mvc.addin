@@ -16,6 +16,9 @@
 			<ConditionEvaluator
 				name="IsMvcViewsFolder"
 				class="ICSharpCode.AspNet.Mvc.IsMvcViewFolderSelectedConditionEvaluator"/>
+			<ConditionEvaluator
+				name="IsMvcControllersFolder"
+				class="ICSharpCode.AspNet.Mvc.IsMvcControllerFolderSelectedConditionEvaluator"/>
 		</Import>
 	</Runtime>
 	
@@ -27,6 +30,18 @@
 				label="View..."
 				icon="Icons.16x16.NewDocumentIcon"
 				class="ICSharpCode.AspNet.Mvc.AddMvcViewToProjectCommand"/>
+			<MenuItem
+				id="MvcSeparator"
+				insertbefore="New Item"
+				type="Separator"/>
+		</Condition>
+		<Condition name="IsMvcControllersFolder" action="Exclude">
+			<MenuItem
+				id="MvcController"
+				insertbefore="New Item"
+				label="Controller..."
+				icon="Icons.16x16.NewDocumentIcon"
+				class="ICSharpCode.AspNet.Mvc.AddMvcControllerToProjectCommand"/>
 			<MenuItem
 				id="MvcSeparator"
 				insertbefore="New Item"

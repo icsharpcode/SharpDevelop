@@ -77,5 +77,27 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(projectForSelectedFolder, project);
 		}
+		
+		[Test]
+		public void GetTemplateLanguage_ProjectIsVisualBasicProject_ReturnsVisualBasicTemplateLanguage()
+		{
+			CreateSelectedFolder();
+			projectForSelectedFolder.SetLanguage("VBNet");
+			
+			MvcTextTemplateLanguage language = selectedFolder.GetTemplateLanguage();
+			
+			Assert.AreEqual(MvcTextTemplateLanguage.VisualBasic, language);
+		}
+		
+		[Test]
+		public void GetTemplateLanguage_ProjectIsCSharpProject_ReturnsCSharpTemplateLanguage()
+		{
+			CreateSelectedFolder();
+			projectForSelectedFolder.SetLanguage("C#");
+			
+			MvcTextTemplateLanguage language = selectedFolder.GetTemplateLanguage();
+			
+			Assert.AreEqual(MvcTextTemplateLanguage.CSharp, language);
+		}
 	}
 }

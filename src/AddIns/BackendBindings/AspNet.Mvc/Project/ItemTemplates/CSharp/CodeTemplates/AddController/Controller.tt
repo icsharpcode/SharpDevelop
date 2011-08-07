@@ -1,0 +1,21 @@
+﻿<#@ template language="C#" HostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#
+	MvcTextTemplateHost mvcHost = (MvcTextTemplateHost)Host;
+#>
+using System;
+using System.Web.Mvc;
+
+namespace <#= mvcHost.Namespace #>
+{
+	/// <summary>
+	/// Description of <#= mvcHost.ControllerName #>.
+	/// </summary>
+	public class <#= mvcHost.ControllerName #> : Controller
+	{
+		public ActionResult Index()
+		{
+			return View();
+		}
+	}
+}

@@ -7,17 +7,17 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace AspNet.Mvc.Tests.Helpers
 {
-	public class FakeMvcViewFileGenerator : IMvcViewFileGenerator
+	public class FakeMvcControllerFileGenerator : IMvcControllerFileGenerator
 	{
 		public MvcTextTemplateLanguage Language { get; set; }
 		public IProject Project { get; set; }
 		
 		public bool IsGenerateFileCalled;
-		public MvcViewFileName FileNamePassedToGenerateFile;
+		public MvcControllerFileName FileNamePassedToGenerateController;
 		
-		public void GenerateFile(MvcViewFileName fileName)
+		public void GenerateFile(MvcControllerFileName fileName)
 		{
-			FileNamePassedToGenerateFile = fileName;
+			FileNamePassedToGenerateController = fileName;
 			IsGenerateFileCalled = true;
 		}
 	}

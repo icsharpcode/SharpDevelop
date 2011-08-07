@@ -6,18 +6,18 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public class MvcViewFileGenerator : MvcFileGenerator, IMvcViewFileGenerator
+	public class MvcControllerFileGenerator : MvcFileGenerator, IMvcControllerFileGenerator
 	{
 		MvcTextTemplateRepository textTemplateRepository;
 		
-		public MvcViewFileGenerator()
+		public MvcControllerFileGenerator()
 			: this(
 				new MvcTextTemplateHostFactory(),
 				new MvcTextTemplateRepository())
 		{
 		}
 		
-		public MvcViewFileGenerator(
+		public MvcControllerFileGenerator(
 			IMvcTextTemplateHostFactory hostFactory,
 			MvcTextTemplateRepository textTemplateRepository)
 			: base(hostFactory)
@@ -25,20 +25,26 @@ namespace ICSharpCode.AspNet.Mvc
 			this.textTemplateRepository = textTemplateRepository;
 		}
 		
-		public void GenerateFile(MvcViewFileName fileName)
+		public void GenerateFile(MvcControllerFileName fileName)
 		{
 			base.GenerateFile(fileName);
 		}
 		
 		protected override void ConfigureHost(IMvcTextTemplateHost host, MvcFileName fileName)
 		{
-			var viewFileName = fileName as MvcViewFileName;
-			host.ViewName = viewFileName.ViewName;
+			var controllerFileName = fileName as MvcControllerFileName;
+			host.ControllerName = controllerFileName.ControllerName;
+			host.Namespace = GetNamespace();
+		}
+		
+		string GetNamespace()
+		{
+			return Project.RootNamespace + ".Controllers";
 		}
 		
 		protected override string GetTextTemplateFileName()
 		{
-			return textTemplateRepository.GetMvcViewTextTemplateFileName(Language, "Empty");
+			return textTemplateRepository.GetMvcControllerTextTemplateFileName(Language, "Controller");
 		}
 	}
 }

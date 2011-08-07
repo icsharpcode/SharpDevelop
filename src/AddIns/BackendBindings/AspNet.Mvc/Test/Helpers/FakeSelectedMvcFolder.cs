@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace AspNet.Mvc.Tests.Helpers
 {
-	public class FakeSelectedMvcViewFolder : ISelectedMvcViewFolder
+	public class FakeSelectedMvcFolder : ISelectedMvcFolder
 	{
 		public string Path { get; set; }
 		
@@ -27,6 +27,13 @@ namespace AspNet.Mvc.Tests.Helpers
 		public void AddFileToProject(string fileName)
 		{
 			FileNamePassedToAddFile = fileName;
+		}
+		
+		public MvcTextTemplateLanguage TemplateLanguage = MvcTextTemplateLanguage.CSharp;
+		
+		public MvcTextTemplateLanguage GetTemplateLanguage()
+		{
+			return TemplateLanguage;
 		}
 	}
 }

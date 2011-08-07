@@ -6,11 +6,16 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public interface IMvcViewFileGenerator
+	public class SelectedMvcControllerFolder : SelectedMvcFolder
 	{
-		MvcTextTemplateLanguage Language { get; set; }
-		IProject Project { get; set; }
+		public SelectedMvcControllerFolder(DirectoryNode directoryNode)
+			: base(directoryNode)
+		{
+		}
 		
-		void GenerateFile(MvcViewFileName fileName);
+		public SelectedMvcControllerFolder()
+			: base()
+		{
+		}
 	}
 }

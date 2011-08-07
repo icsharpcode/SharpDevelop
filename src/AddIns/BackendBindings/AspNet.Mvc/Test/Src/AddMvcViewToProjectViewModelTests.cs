@@ -15,7 +15,7 @@ namespace AspNet.Mvc.Tests
 	{
 		AddMvcViewToProjectViewModel viewModel;
 		FakeMvcViewFileGenerator fakeViewGenerator;
-		FakeSelectedMvcViewFolder fakeSelectedMvcViewFolder;
+		FakeSelectedMvcFolder fakeSelectedMvcViewFolder;
 		List<string> propertyChangedEvents;
 		FakeMvcFileService fakeFileService;
 		
@@ -27,8 +27,10 @@ namespace AspNet.Mvc.Tests
 		
 		void CreateViewModelWithViewFolderPath(string path)
 		{
-			fakeSelectedMvcViewFolder = new FakeSelectedMvcViewFolder();
+			fakeSelectedMvcViewFolder = new FakeSelectedMvcFolder();
 			fakeSelectedMvcViewFolder.Path = path;
+			fakeSelectedMvcViewFolder.ProjectLanguage = "C#";
+			fakeSelectedMvcViewFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
 			fakeViewGenerator = new FakeMvcViewFileGenerator();
 			fakeFileService = new FakeMvcFileService();
 			viewModel = new AddMvcViewToProjectViewModel(
@@ -50,7 +52,7 @@ namespace AspNet.Mvc.Tests
 			viewModel.ViewName = "MyViewPage";
 			viewModel.AddMvcViewCommand.Execute(null);
 			
-			bool generated = fakeViewGenerator.IsGenerateViewCalled;
+			bool generated = fakeViewGenerator.IsGenerateFileCalled;
 			
 			Assert.IsTrue(generated);
 		}
@@ -62,7 +64,7 @@ namespace AspNet.Mvc.Tests
 			viewModel.ViewName = "Index";
 			viewModel.AddMvcView();
 			
-			MvcViewFileName viewFileName = fakeViewGenerator.FileNamePassedToGenerateView;
+			MvcViewFileName viewFileName = fakeViewGenerator.FileNamePassedToGenerateFile;
 			string fileName = viewFileName.GetPath();
 			string expectedFileName = @"d:\projects\MyProject\Views\Home\Index.aspx";
 			
@@ -73,7 +75,7 @@ namespace AspNet.Mvc.Tests
 		public void AddMvcView_SelectedViewFolderIsInVisualBasicProject_VisualBasicMvcViewFileGenerated()
 		{
 			CreateViewModel();
-			fakeSelectedMvcViewFolder.ProjectLanguage = "VBNet";
+			fakeSelectedMvcViewFolder.TemplateLanguage = MvcTextTemplateLanguage.VisualBasic;
 			viewModel.AddMvcView();
 			
 			MvcTextTemplateLanguage templateLanguage = fakeViewGenerator.Language;
@@ -85,7 +87,7 @@ namespace AspNet.Mvc.Tests
 		public void AddMvcView_SelectedViewFolderIsInCSharpProject_CSharpMvcViewFileGenerated()
 		{
 			CreateViewModel();
-			fakeSelectedMvcViewFolder.ProjectLanguage = "C#";
+			fakeSelectedMvcViewFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
 			viewModel.AddMvcView();
 			
 			MvcTextTemplateLanguage templateLanguage = fakeViewGenerator.Language;

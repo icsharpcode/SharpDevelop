@@ -22,7 +22,7 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateFileName();
 			mvcViewFileName.ViewName = "Index";
-			mvcViewFileName.ViewFolder = @"d:\projects\MyAspProject\Views\About";
+			mvcViewFileName.Folder = @"d:\projects\MyAspProject\Views\About";
 			
 			string fileName = mvcViewFileName.ToString();
 			string expectedFileName = @"d:\projects\MyAspProject\Views\About\Index.aspx";
@@ -34,7 +34,7 @@ namespace AspNet.Mvc.Tests
 		public void GetPath_ViewFolderIsNull_ReturnsViewFileNameUsingOnlyViewName()
 		{
 			CreateFileName();
-			mvcViewFileName.ViewFolder = null;
+			mvcViewFileName.Folder = null;
 			mvcViewFileName.ViewName = "Home";
 			
 			string fileName = mvcViewFileName.GetPath();
@@ -46,7 +46,7 @@ namespace AspNet.Mvc.Tests
 		public void GetPath_ViewNameIsNull_ReturnsView1AsFileNameAndUsesViewFolder()
 		{
 			CreateFileName();
-			mvcViewFileName.ViewFolder = @"d:\projects\MyProject\Views\Home";
+			mvcViewFileName.Folder = @"d:\projects\MyProject\Views\Home";
 			mvcViewFileName.ViewName = null;
 			
 			string fileName = mvcViewFileName.GetPath();
@@ -70,9 +70,9 @@ namespace AspNet.Mvc.Tests
 		public void ViewFolder_ViewFolderIsNull_ReturnsEmptyString()
 		{
 			CreateFileName();
-			mvcViewFileName.ViewFolder = null;
+			mvcViewFileName.Folder = null;
 			
-			string viewFolder = mvcViewFileName.ViewFolder;
+			string viewFolder = mvcViewFileName.Folder;
 			
 			Assert.AreEqual(String.Empty, viewFolder);
 		}
@@ -81,7 +81,7 @@ namespace AspNet.Mvc.Tests
 		public void GetFileName_ViewNameAndViewFolderSpecified_ReturnsViewNameWithExtensionButNoFolderPath()
 		{
 			CreateFileName();
-			mvcViewFileName.ViewFolder = @"d:\projects\myproject\Views";
+			mvcViewFileName.Folder = @"d:\projects\myproject\Views";
 			mvcViewFileName.ViewName = "Index";
 			
 			string fileName = mvcViewFileName.GetFileName();

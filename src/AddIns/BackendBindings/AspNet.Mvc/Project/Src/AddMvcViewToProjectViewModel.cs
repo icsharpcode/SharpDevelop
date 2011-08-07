@@ -10,12 +10,12 @@ namespace ICSharpCode.AspNet.Mvc
 	public class AddMvcViewToProjectViewModel : ViewModelBase<AddMvcViewToProjectViewModel>
 	{
 		IMvcViewFileGenerator viewGenerator;
-		ISelectedMvcViewFolder selectedViewFolder;
+		ISelectedMvcFolder selectedViewFolder;
 		IMvcFileService fileService;
 		MvcViewFileName viewFileName = new MvcViewFileName();
 		bool closed;
 		
-		public AddMvcViewToProjectViewModel(ISelectedMvcViewFolder selectedViewFolder)
+		public AddMvcViewToProjectViewModel(ISelectedMvcFolder selectedViewFolder)
 			: this(
 				selectedViewFolder,
 				new MvcViewFileGenerator(),
@@ -24,14 +24,14 @@ namespace ICSharpCode.AspNet.Mvc
 		}
 		
 		public AddMvcViewToProjectViewModel(
-			ISelectedMvcViewFolder selectedViewFolder,
+			ISelectedMvcFolder selectedViewFolder,
 			IMvcViewFileGenerator viewGenerator,
 			IMvcFileService fileService)
 		{
 			this.selectedViewFolder = selectedViewFolder;
 			this.viewGenerator = viewGenerator;
 			this.fileService = fileService;
-			this.viewFileName.ViewFolder = selectedViewFolder.Path;
+			this.viewFileName.Folder = selectedViewFolder.Path;
 			
 			CreateCommands();
 		}
@@ -72,7 +72,7 @@ namespace ICSharpCode.AspNet.Mvc
 		void GenerateMvcViewFile()
 		{
 			ConfigureMvcViewGenerator();
-			viewGenerator.GenerateView(viewFileName);
+			viewGenerator.GenerateFile(viewFileName);
 		}
 		
 		void ConfigureMvcViewGenerator()
@@ -83,8 +83,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		MvcTextTemplateLanguage GetTemplateLanguage()
 		{
-			string language = selectedViewFolder.Project.Language;
-			return MvcTextTemplateLanguageConverter.Convert(language);
+			return selectedViewFolder.GetTemplateLanguage();
 		}
 		
 		void AddMvcViewFileToProject()
