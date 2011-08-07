@@ -167,5 +167,27 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(expectedFileNameOpened, fileNameOpened);
 		}
+		
+		[Test]
+		public void AddMvcViewCommand_ViewNameIsEmptyString_CommandIsDisabled()
+		{
+			CreateViewModel();
+			viewModel.ViewName = String.Empty;
+			
+			bool canExecute = viewModel.AddMvcViewCommand.CanExecute(null);
+			
+			Assert.IsFalse(canExecute);
+		}
+		
+		[Test]
+		public void AddMvcViewCommand_ViewNameIsNotEmptyString_CommandIsEnable()
+		{
+			CreateViewModel();
+			viewModel.ViewName = "MyView";
+			
+			bool canExecute = viewModel.AddMvcViewCommand.CanExecute(null);
+			
+			Assert.IsTrue(canExecute);
+		}
 	}
 }

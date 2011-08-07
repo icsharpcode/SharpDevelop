@@ -69,5 +69,10 @@ namespace ICSharpCode.AspNet.Mvc
 			}
 			return "View1";
 		}
+		
+		public bool HasValidViewName()
+		{
+			return !String.IsNullOrEmpty(viewName);
+		}
 	}
 }

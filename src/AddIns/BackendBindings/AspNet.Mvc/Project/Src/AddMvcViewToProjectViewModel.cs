@@ -38,7 +38,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void CreateCommands()
 		{
-			AddMvcViewCommand = new DelegateCommand(param => AddMvcView());
+			AddMvcViewCommand = new DelegateCommand(param => AddMvcView(), param => CanAddMvcView());
 		}
 		
 		public ICommand AddMvcViewCommand { get; private set; }
@@ -54,6 +54,11 @@ namespace ICSharpCode.AspNet.Mvc
 				closed = value;
 				OnPropertyChanged(viewModel => viewModel.IsClosed);
 			}
+		}
+		
+		public bool CanAddMvcView()
+		{
+			return viewFileName.HasValidViewName();
 		}
 		
 		public void AddMvcView()

@@ -36,7 +36,7 @@
 			<TextBox
 				x:Name="ViewNameTextBox"
 				Grid.Column="1"
-				Text="{Binding Path=ViewName}"/>
+				Text="{Binding Path=ViewName, UpdateSourceTrigger=PropertyChanged}"/>
 		</Grid>
 	
 		<StackPanel
