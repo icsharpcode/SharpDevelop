@@ -99,6 +99,11 @@
     <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddView" />
     <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp" />
     <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddController" />
+    <Folder Include="ItemTemplates\VisualBasic" />
+    <Folder Include="ItemTemplates\VisualBasic\CodeTemplates" />
+    <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView" />
+    <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic" />
+    <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddController" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -131,6 +136,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddController\Controller.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

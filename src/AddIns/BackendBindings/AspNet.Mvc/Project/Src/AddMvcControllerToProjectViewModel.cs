@@ -31,9 +31,23 @@ namespace ICSharpCode.AspNet.Mvc
 			this.selectedControllerFolder = selectedControllerFolder;
 			this.controllerGenerator = controllerGenerator;
 			this.fileService = fileService;
+			
 			this.controllerFileName.Folder = selectedControllerFolder.Path;
-		
+			
+			SetLanguageForFileGeneration();
 			CreateCommands();
+		}
+		
+		void SetLanguageForFileGeneration()
+		{
+			MvcTextTemplateLanguage language = GetTemplateLanguage();
+			controllerFileName.Language = language;
+			controllerGenerator.Language = language;
+		}
+		
+		MvcTextTemplateLanguage GetTemplateLanguage()
+		{
+			return selectedControllerFolder.GetTemplateLanguage();
 		}
 		
 		void CreateCommands()
@@ -77,13 +91,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void ConfigureMvcControllerGenerator()
 		{
-			controllerGenerator.Language = GetTemplateLanguage();
 			controllerGenerator.Project = selectedControllerFolder.Project;
-		}
-		
-		MvcTextTemplateLanguage GetTemplateLanguage()
-		{
-			return selectedControllerFolder.GetTemplateLanguage();
 		}
 		
 		void AddMvcControllerFileToProject()

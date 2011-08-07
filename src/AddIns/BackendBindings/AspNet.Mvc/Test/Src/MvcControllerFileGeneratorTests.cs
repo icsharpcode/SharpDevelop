@@ -42,7 +42,13 @@ namespace AspNet.Mvc.Tests
 		void ProjectPassedToGeneratorIsCSharpProject()
 		{
 			projectUsedByGenerator.SetLanguage("C#");
-			generator.Language = MvcTextTemplateLanguage.CSharp;			
+			generator.Language = MvcTextTemplateLanguage.CSharp;
+		}
+		
+		void ProjectPassedToGeneratorIsVisualBasicProject()
+		{
+			projectUsedByGenerator.SetLanguage("VBNet");
+			generator.Language = MvcTextTemplateLanguage.VisualBasic;
 		}
 		
 		void GenerateFile()
@@ -64,7 +70,7 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void GenerateFile_CSharpEmptyViewTemplate_MvcTextTemplateHostIsCreated()
+		public void GenerateFile_CSharpControllerTemplate_MvcTextTemplateHostIsCreated()
 		{
 			CreateGenerator();
 			ProjectPassedToGeneratorIsCSharpProject();
@@ -75,7 +81,7 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void GenerateFile_CSharpEmptyViewTemplate_MvcTextTemplateHostIsDisposed()
+		public void GenerateFile_CSharpControllerTemplate_MvcTextTemplateHostIsDisposed()
 		{
 			CreateGenerator();
 			ProjectPassedToGeneratorIsCSharpProject();
@@ -86,7 +92,7 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void GenerateFile_CSharpEmptyControllerTemplate_OutputFileGeneratedUsingFileNamePassedToGenerator()
+		public void GenerateFile_CSharpControllerTemplate_OutputFileGeneratedUsingFileNamePassedToGenerator()
 		{
 			CreateGenerator();
 			ProjectPassedToGeneratorIsCSharpProject();

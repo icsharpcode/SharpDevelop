@@ -19,16 +19,26 @@ namespace AspNet.Mvc.Tests
 		List<string> propertyChangedEvents;
 		FakeMvcFileService fakeFileService;
 		
-		void CreateViewModel()
+		void CreateViewModelWithCSharpProject()
 		{
 			string path = @"d:\projects\MyAspMvcProject\Controllers";
-			CreateViewModelWithControllerFolderPath(path);
+			CreateViewModelWithControllerFolderPath(path, MvcTextTemplateLanguage.CSharp, "C#");
 		}
 		
-		void CreateViewModelWithControllerFolderPath(string path)
+		void CreateViewModelWithVisualBasicProject()
+		{
+			string path = @"d:\projects\MyAspMvcProject\Controllers";
+			CreateViewModelWithControllerFolderPath(path, MvcTextTemplateLanguage.VisualBasic, "VBNet");			
+		}
+		
+		void CreateViewModelWithControllerFolderPath(
+			string path,
+			MvcTextTemplateLanguage language,
+			string projectLanguage)
 		{
 			fakeSelectedMvcControllerFolder = new FakeSelectedMvcFolder();
-			fakeSelectedMvcControllerFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
+			fakeSelectedMvcControllerFolder.TemplateLanguage = language;
+			fakeSelectedMvcControllerFolder.ProjectLanguage = projectLanguage;
 			fakeSelectedMvcControllerFolder.Path = path;
 			fakeControllerGenerator = new FakeMvcControllerFileGenerator();
 			fakeFileService = new FakeMvcFileService();
@@ -46,8 +56,8 @@ namespace AspNet.Mvc.Tests
 		
 		[Test]
 		public void AddMvcControllerCommand_ExecutedWhenControllerNameSpecified_MvcControllerIsGenerated()
-		{
-			CreateViewModel();
+ 		{
+			CreateViewModelWithCSharpProject();
 			viewModel.ControllerName = "MyControllerPage";
 			viewModel.AddMvcControllerCommand.Execute(null);
 			
@@ -59,8 +69,9 @@ namespace AspNet.Mvc.Tests
 		[Test]
 		public void AddMvcController_ControllerNameAndControllerFolderSpecified_ControllerFullPathUsedToGenerateFile()
 		{
-			CreateViewModelWithControllerFolderPath(@"d:\projects\MyProject\Controllers");
-			fakeSelectedMvcControllerFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
+			CreateViewModelWithControllerFolderPath(
+				@"d:\projects\MyProject\Controllers",
+				MvcTextTemplateLanguage.CSharp, "C#");
 			viewModel.ControllerName = "Home";
 			viewModel.AddMvcController();
 			
@@ -74,7 +85,7 @@ namespace AspNet.Mvc.Tests
 		[Test]
 		public void AddMvcController_SelectedControllerFolderIsInVisualBasicProject_VisualBasicMvcControllerFileGenerated()
 		{
-			CreateViewModel();
+			CreateViewModelWithVisualBasicProject();
 			fakeSelectedMvcControllerFolder.TemplateLanguage = MvcTextTemplateLanguage.VisualBasic;
 			viewModel.AddMvcController();
 			
@@ -86,8 +97,7 @@ namespace AspNet.Mvc.Tests
 		[Test]
 		public void AddMvcController_SelectedControllerFolderIsInCSharpProject_CSharpMvcControllerFileGenerated()
 		{
-			CreateViewModel();
-			fakeSelectedMvcControllerFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
+			CreateViewModelWithCSharpProject();
 			viewModel.AddMvcController();
 			
 			MvcTextTemplateLanguage templateLanguage = fakeControllerGenerator.Language;
@@ -98,7 +108,7 @@ namespace AspNet.Mvc.Tests
 		[Test]
 		public void AddMvcController_SelectedControllerFolderIsInVisualBasicProject_VisualBasicProjectIsPassedToMvcControllerGenerator()
 		{
-			CreateViewModel();
+			CreateViewModelWithCSharpProject();
 			fakeSelectedMvcControllerFolder.ProjectLanguage = "VBNet";
 			viewModel.AddMvcController();
 			
@@ -111,7 +121,7 @@ namespace AspNet.Mvc.Tests
 		[Test]
 		public void AddMvcController_FileIsGenerated_FileIsAddedToProject()
 		{
-			CreateViewModel();
+			CreateViewModelWithCSharpProject();
 			viewModel.ControllerName = "Home";
 			fakeSelectedMvcControllerFolder.ProjectLanguage = "C#";
 			fakeSelectedMvcControllerFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
@@ -127,7 +137,7 @@ namespace AspNet.Mvc.Tests
 		[Test]
 		public void AddMvcController_FileIsGenerated_WindowIsClosed()
 		{
-			CreateViewModel();
+			CreateViewModelWithCSharpProject();
 			viewModel.AddMvcController();
 			
 			bool closed = viewModel.IsClosed;
@@ -138,7 +148,7 @@ namespace AspNet.Mvc.Tests
 		[Test]
 		public void IsClosed_MvcControllerFileIsNotGenerated_ReturnsFalse()
 		{
-			CreateViewModel();
+			CreateViewModelWithCSharpProject();
 			bool closed = viewModel.IsClosed;
 			
 			Assert.IsFalse(closed);
@@ -147,7 +157,7 @@ namespace AspNet.Mvc.Tests
 		[Test]
 		public void AddMvcController_FileIsGenerated_PropertyChangedEventIsFiredForIsClosedProperty()
 		{
-			CreateViewModel();
+			CreateViewModelWithCSharpProject();
 			MonitorPropertyChangedEvents();
 			viewModel.AddMvcController();
 			
@@ -159,7 +169,7 @@ namespace AspNet.Mvc.Tests
 		[Test]
 		public void AddMvcController_FileIsGenerated_FileIsOpened()
 		{
-			CreateViewModel();
+			CreateViewModelWithCSharpProject();
 			viewModel.ControllerName = "HomeController";
 			fakeSelectedMvcControllerFolder.ProjectLanguage = "C#";
 			fakeSelectedMvcControllerFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
@@ -175,7 +185,7 @@ namespace AspNet.Mvc.Tests
 		[Test]
 		public void AddMvcControllerCommand_ControllerNameIsEmptyString_CommandIsDisabled()
 		{
-			CreateViewModel();
+			CreateViewModelWithCSharpProject();
 			viewModel.ControllerName = String.Empty;
 			
 			bool canExecute = viewModel.AddMvcControllerCommand.CanExecute(null);
@@ -186,12 +196,26 @@ namespace AspNet.Mvc.Tests
 		[Test]
 		public void AddMvcControllerCommand_ControllerNameIsNotEmptyString_CommandIsEnable()
 		{
-			CreateViewModel();
+			CreateViewModelWithCSharpProject();
 			viewModel.ControllerName = "MyController";
 			
 			bool canExecute = viewModel.AddMvcControllerCommand.CanExecute(null);
 			
 			Assert.IsTrue(canExecute);
+		}
+		
+		[Test]
+		public void AddMvcController_VisualBasicProject_VisualBasicFileIsGenerated()
+		{
+			CreateViewModelWithVisualBasicProject();
+			viewModel.ControllerName = "HomeController";
+			fakeSelectedMvcControllerFolder.Path = @"d:\projects\MyAspMvcProject\Controllers";
+			viewModel.AddMvcController();
+			
+			string fileNameOpened = fakeFileService.FileNamePassedToOpenFile;
+			string expectedFileNameOpened = @"d:\projects\MyAspMvcProject\Controllers\HomeController.vb";
+			
+			Assert.AreEqual(expectedFileNameOpened, fileNameOpened);
 		}
 	}
 }
