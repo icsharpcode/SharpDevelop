@@ -17,6 +17,7 @@ namespace AspNet.Mvc.Tests
 		FakeMvcViewFileGenerator fakeViewGenerator;
 		FakeSelectedMvcViewFolder fakeSelectedMvcViewFolder;
 		List<string> propertyChangedEvents;
+		FakeMvcFileService fakeFileService;
 		
 		void CreateViewModel()
 		{
@@ -29,9 +30,11 @@ namespace AspNet.Mvc.Tests
 			fakeSelectedMvcViewFolder = new FakeSelectedMvcViewFolder();
 			fakeSelectedMvcViewFolder.Path = path;
 			fakeViewGenerator = new FakeMvcViewFileGenerator();
+			fakeFileService = new FakeMvcFileService();
 			viewModel = new AddMvcViewToProjectViewModel(
 				fakeSelectedMvcViewFolder,
-				fakeViewGenerator);
+				fakeViewGenerator,
+				fakeFileService);
 		}
 		
 		void MonitorPropertyChangedEvents()
@@ -148,6 +151,21 @@ namespace AspNet.Mvc.Tests
 			bool fired = propertyChangedEvents.Contains("IsClosed");
 			
 			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void AddMvcView_FileIsGenerated_FileIsOpened()
+		{
+			CreateViewModel();
+			viewModel.ViewName = "Index";
+			fakeSelectedMvcViewFolder.ProjectLanguage = "C#";
+			fakeSelectedMvcViewFolder.Path = @"d:\projects\MyAspMvcProject\Views\Home";
+			viewModel.AddMvcView();
+			
+			string fileNameOpened = fakeFileService.FileNamePassedToOpenFile;
+			string expectedFileNameOpened = @"d:\projects\MyAspMvcProject\Views\Home\Index.aspx";
+			
+			Assert.AreEqual(expectedFileNameOpened, fileNameOpened);
 		}
 	}
 }

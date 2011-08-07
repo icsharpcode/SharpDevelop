@@ -11,15 +11,26 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		IMvcViewFileGenerator viewGenerator;
 		ISelectedMvcViewFolder selectedViewFolder;
+		IMvcFileService fileService;
 		MvcViewFileName viewFileName = new MvcViewFileName();
 		bool closed;
 		
+		public AddMvcViewToProjectViewModel(ISelectedMvcViewFolder selectedViewFolder)
+			: this(
+				selectedViewFolder,
+				new MvcViewFileGenerator(),
+				new MvcFileService())
+		{
+		}
+		
 		public AddMvcViewToProjectViewModel(
 			ISelectedMvcViewFolder selectedViewFolder,
-			IMvcViewFileGenerator viewGenerator)
+			IMvcViewFileGenerator viewGenerator,
+			IMvcFileService fileService)
 		{
 			this.selectedViewFolder = selectedViewFolder;
 			this.viewGenerator = viewGenerator;
+			this.fileService = fileService;
 			this.viewFileName.ViewFolder = selectedViewFolder.Path;
 			
 			CreateCommands();
@@ -49,6 +60,7 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			GenerateMvcViewFile();
 			AddMvcViewFileToProject();
+			OpenMvcViewFileCreated();
 			IsClosed = true;
 		}
 		
@@ -74,6 +86,12 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			string fileName = viewFileName.GetFileName();
 			selectedViewFolder.AddFileToProject(fileName);
+		}
+		
+		void OpenMvcViewFileCreated()
+		{
+			string path = viewFileName.GetPath();
+			fileService.OpenFile(path);
 		}
 	}
 }

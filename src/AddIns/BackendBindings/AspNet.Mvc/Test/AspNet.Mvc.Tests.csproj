@@ -44,6 +44,7 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\FakeAddMvcItemToProjectView.cs" />
+    <Compile Include="Helpers\FakeMvcFileService.cs" />
     <Compile Include="Helpers\FakeMvcTextTemplateHost.cs" />
     <Compile Include="Helpers\FakeMvcTextTemplateHostFactory.cs" />
     <Compile Include="Helpers\FakeMvcViewFileGenerator.cs" />

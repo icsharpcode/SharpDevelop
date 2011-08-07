@@ -27,8 +27,7 @@ namespace ICSharpCode.AspNet.Mvc
 		protected virtual object CreateDataContext()
 		{
 			SelectedMvcViewFolder selectedFolder = GetSelectedFolder();
-			var generator = new MvcViewFileGenerator();
-			return new AddMvcViewToProjectViewModel(selectedFolder, generator);
+			return new AddMvcViewToProjectViewModel(selectedFolder);
 		}
 		
 		SelectedMvcViewFolder GetSelectedFolder()

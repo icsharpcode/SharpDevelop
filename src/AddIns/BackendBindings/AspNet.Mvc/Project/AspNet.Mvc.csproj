@@ -56,12 +56,14 @@
     <Compile Include="Src\CloseDialogBehaviour.cs" />
     <Compile Include="Src\DelegateCommand.cs" />
     <Compile Include="Src\IAddMvcItemToProjectView.cs" />
+    <Compile Include="Src\IMvcFileService.cs" />
     <Compile Include="Src\IMvcTextTemplateHost.cs" />
     <Compile Include="Src\IMvcTextTemplateHostFactory.cs" />
     <Compile Include="Src\IMvcViewFileGenerator.cs" />
     <Compile Include="Src\ISelectedMvcViewFolder.cs" />
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluator.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\MvcFileService.cs" />
     <Compile Include="Src\MvcTextTemplateHost.cs" />
     <Compile Include="Src\MvcTextTemplateHostFactory.cs" />
     <Compile Include="Src\MvcTextTemplateLanguage.cs" />
