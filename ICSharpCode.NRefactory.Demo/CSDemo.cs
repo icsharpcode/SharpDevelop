@@ -182,9 +182,8 @@ namespace ICSharpCode.NRefactory.Demo
 		void ResolveButtonClick(object sender, EventArgs e)
 		{
 			SimpleProjectContent project = new SimpleProjectContent();
-			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(project, "dummy.cs");
-			compilationUnit.AcceptVisitor(convertVisitor, null);
-			project.UpdateProjectContent(null, convertVisitor.ParsedFile);
+			var parsedFile = new TypeSystemConvertVisitor(project, "dummy.cs").Convert(compilationUnit);
+			project.UpdateProjectContent(null, parsedFile);
 			
 			List<ITypeResolveContext> projects = new List<ITypeResolveContext>();
 			projects.Add(project);
@@ -197,7 +196,7 @@ namespace ICSharpCode.NRefactory.Demo
 				if (csharpTreeView.SelectedNode != null) {
 					navigator = new NodeListResolveVisitorNavigator(new[] { (AstNode)csharpTreeView.SelectedNode.Tag });
 				}
-				ResolveVisitor visitor = new ResolveVisitor(resolver, convertVisitor.ParsedFile, navigator);
+				ResolveVisitor visitor = new ResolveVisitor(resolver, parsedFile, navigator);
 				visitor.Scan(compilationUnit);
 				csharpTreeView.BeginUpdate();
 				ShowResolveResultsInTree(csharpTreeView.Nodes, visitor);

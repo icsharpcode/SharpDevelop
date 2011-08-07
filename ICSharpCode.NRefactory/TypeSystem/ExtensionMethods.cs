@@ -170,6 +170,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets whether the type is an delegate type.
 		/// </summary>
 		/// <remarks>This method returns <c>false</c> for System.Delegate itself</remarks>
+		[Obsolete("Use type.Kind == TypeKind.Delegate instead")]
 		public static bool IsDelegate(this IType type)
 		{
 			if (type == null)
@@ -196,7 +197,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 							SpecializedMethod m = new SpecializedMethod(method);
 							m.SetDeclaringType(pt);
 							var substitution = pt.GetSubstitution();
-							m.SubstituteTypes(t => new SubstitutionTypeReference(t, substitution));
+							m.SubstituteTypes(t => SubstitutionTypeReference.Create(t, substitution));
 							return m;
 						}
 						return method;

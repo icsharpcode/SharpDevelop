@@ -23,6 +23,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.substitution = substitution;
 		}
 		
+		public static ITypeReference Create(ITypeReference baseTypeReference, TypeVisitor substitution)
+		{
+			IType baseType = baseTypeReference as IType;
+			if (baseType != null && substitution != null) {
+				return baseType.AcceptVisitor(substitution);
+			} else {
+				return new SubstitutionTypeReference(baseTypeReference, substitution);
+			}
+		}
+		
 		public IType Resolve(ITypeResolveContext context)
 		{
 			return baseTypeReference.Resolve(context).AcceptVisitor(substitution);

@@ -27,9 +27,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			}
 			
 			testCasePC = new SimpleProjectContent();
-			TypeSystemConvertVisitor visitor = new TypeSystemConvertVisitor(testCasePC, fileName);
-			cu.AcceptVisitor(visitor, null);
-			ParsedFile parsedFile = visitor.ParsedFile;
+			ParsedFile parsedFile = new TypeSystemConvertVisitor(testCasePC, fileName).Convert(cu);
 			parsedFile.Freeze();
 			testCasePC.UpdateProjectContent(null, parsedFile);
 		}

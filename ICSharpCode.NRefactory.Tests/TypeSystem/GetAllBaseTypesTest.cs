@@ -166,5 +166,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				         typeof(IEnumerable<>), typeof(ICollection<>), typeof(IList<>)),
 				typeof(List<string>).ToTypeReference().Resolve(context).GetAllBaseTypeDefinitions(context).OrderBy(t => t.ReflectionName).ToArray());
 		}
+		
+		[Test]
+		public void BaseTypeDefinitionsOfStringArray()
+		{
+			Assert.AreEqual(
+				GetTypes(typeof(Array), typeof(object),
+				         typeof(ICloneable), typeof(IStructuralComparable), typeof(IStructuralEquatable),
+				         typeof(IList), typeof(ICollection), typeof(IEnumerable),
+				         typeof(IEnumerable<>), typeof(ICollection<>), typeof(IList<>)),
+				typeof(string[]).ToTypeReference().Resolve(context).GetAllBaseTypeDefinitions(context).OrderBy(t => t.ReflectionName).ToArray());
+		}
 	}
 }

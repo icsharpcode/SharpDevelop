@@ -54,6 +54,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.currentTypeDefinition = currentTypeDefinition;
 		}
 		
+		public ParsedFile Convert(AstNode node)
+		{
+			node.AcceptVisitor(this, null);
+			return parsedFile;
+		}
+		
 		public ParsedFile ParsedFile {
 			get { return parsedFile; }
 		}
@@ -720,8 +726,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, lookupMode));
 				}
 				if (typeArguments.Count == 0 && parentMethodDefinition != null) {
-					// SimpleTypeOrNamespaceReference doesn't support method type parameters,
-					// so we directly handle them here.
+					// SimpleTypeOrNamespaceReference doesn't have a 'current method' context
+					// so we have to handle method type parameters here.
 					foreach (ITypeParameter tp in parentMethodDefinition.TypeParameters) {
 						if (tp.Name == s.Identifier)
 							return tp;

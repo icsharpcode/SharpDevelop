@@ -30,11 +30,10 @@ namespace ICSharpCode.NRefactory.Documentation
 		void Init(string program)
 		{
 			pc = new IDStringTestProjectContent();
-			CSharpParser parser = new CSharpParser();
 			
-			TypeSystemConvertVisitor cv = new TypeSystemConvertVisitor(pc, "program.cs");
-			parser.Parse(new StringReader(program)).AcceptVisitor(cv, null);
-			pc.UpdateProjectContent(null, cv.ParsedFile);
+			var cu = new CSharpParser().Parse(new StringReader(program));
+			var parsedFile = new TypeSystemConvertVisitor(pc, "program.cs").Convert(cu);
+			pc.UpdateProjectContent(null, parsedFile);
 		}
 		
 		ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount = 0)
