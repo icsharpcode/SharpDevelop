@@ -40,6 +40,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public IList<IParameter> Parameters { get { return Member.Parameters; } }
 			
+			/// <summary>
+			/// Conversions applied to the arguments.
+			/// This field is set by the CheckApplicability step.
+			/// </summary>
+			public Conversion[] ArgumentConversions;
+			
 			public bool IsGenericMethod {
 				get {
 					IMethod method = Member as IMethod;
@@ -328,6 +334,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
+			candidate.ArgumentConversions = new Conversion[arguments.Length];
 			// Test whether argument passing mode matches the parameter passing mode
 			for (int i = 0; i < arguments.Length; i++) {
 				int parameterIndex = candidate.ArgumentToParameterMap[i];
@@ -341,7 +348,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (candidate.Parameters[parameterIndex].IsOut || candidate.Parameters[parameterIndex].IsRef)
 						candidate.AddError(OverloadResolutionErrors.ParameterPassingModeMismatch);
 				}
-				if (!conversions.ImplicitConversion(arguments[i], candidate.ParameterTypes[parameterIndex]))
+				Conversion c = conversions.ImplicitConversion(arguments[i], candidate.ParameterTypes[parameterIndex]);
+				candidate.ArgumentConversions[i] = c;
+				if (!c)
 					candidate.AddError(OverloadResolutionErrors.ArgumentTypeMismatch);
 			}
 		}
@@ -553,6 +562,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return Array.AsReadOnly(bestCandidate.InferredTypes);
 				else
 					return EmptyList<IType>.Instance;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the implicit conversions that are being applied to the arguments.
+		/// </summary>
+		public IList<Conversion> ArgumentConversions {
+			get {
+				if (bestCandidate != null && bestCandidate.ArgumentConversions != null)
+					return bestCandidate.ArgumentConversions;
+				else
+					return new Conversion[arguments.Length];
 			}
 		}
 	}

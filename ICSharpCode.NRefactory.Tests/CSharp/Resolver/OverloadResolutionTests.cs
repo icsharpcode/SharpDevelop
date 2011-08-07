@@ -203,7 +203,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return parameters; }
 			}
 			
-			public override bool IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
+			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
 			{
 				return conversions.ImplicitConversion(inferredReturnType, returnType);
 			}

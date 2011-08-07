@@ -426,6 +426,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (m != null) {
 					IType inferredReturnType;
 					if (lrr.IsImplicitlyTyped) {
+						if (m.Parameters.Count != lrr.Parameters.Count)
+							return; // cannot infer due to mismatched parameter lists
 						MethodTypeParameterSubstitution substitution = GetSubstitutionForFixedTPs();
 						IType[] inferredParameterTypes = new IType[m.Parameters.Count];
 						for (int i = 0; i < inferredParameterTypes.Length; i++) {

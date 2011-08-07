@@ -47,6 +47,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets whether the lambda body is valid for the given parameter types and return type.
 		/// </summary>
-		public abstract bool IsValid(IType[] parameterTypes, IType returnType, Conversions conversions);
+		/// <returns>
+		/// Produces a <see cref="Conversion.AnonymousFunctionConversion"/> if the lambda is valid;
+		/// otherwise returns <see cref="Conversion.None"/>.
+		/// </returns>
+		public abstract Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions);
 	}
 }

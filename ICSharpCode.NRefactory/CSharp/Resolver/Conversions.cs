@@ -58,12 +58,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return new Conversion(methodGroupConversionKind, chosenMethod);
 		}
 		
-		public static readonly Conversion AnonymousFunctionConversion = new Conversion(anonymousFunctionConversionKind);
+		/// <summary>
+		/// Creates a new anonymous function conversion.
+		/// </summary>
+		/// <param name="data">Used by ResolveVisitor to pass the LambdaTypeHypothesis.</param>
+		public static Conversion AnonymousFunctionConversion(object data)
+		{
+			return new Conversion(anonymousFunctionConversionKind, data);
+		}
 		
 		readonly int kind;
-		readonly object data;
+		internal readonly object data;
 		
-		private Conversion(int kind, object data = null)
+		public Conversion(int kind, object data = null)
 		{
 			this.kind = kind;
 			this.data = data;
@@ -594,11 +601,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
-			if (f.IsValid(dParamTypes, dReturnType, this)) {
-				return Conversion.AnonymousFunctionConversion;
-			} else {
-				return Conversion.None;
-			}
+			return f.IsValid(dParamTypes, dReturnType, this);
 		}
 
 		static IType UnpackExpressionTreeType(IType type)
@@ -670,6 +673,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (!parameterTypes[i].Equals(m2.Parameters[i].Type.Resolve(context)))
 						return 0;
 				}
+				if (lambda.HasParameterList && parameterTypes.Length != lambda.Parameters.Count)
+					return 0;
 				
 				IType ret1 = m1.ReturnType.Resolve(context);
 				IType ret2 = m2.ReturnType.Resolve(context);

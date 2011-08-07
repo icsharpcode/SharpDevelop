@@ -134,7 +134,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { throw new NotImplementedException(); }
 			}
 			
-			public override bool IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
+			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
 			{
 				Assert.AreEqual(expectedParameterTypes, parameterTypes);
 				return conversions.ImplicitConversion(inferredReturnType, returnType);

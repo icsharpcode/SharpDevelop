@@ -3,9 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading;
-
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
@@ -45,6 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		readonly IResolveVisitorNavigator navigator;
 		ResolveVisitorNavigationMode mode = ResolveVisitorNavigationMode.Scan;
+		List<ImplicitlyTypedLambda> outstandingLambdas;
 		
 		#region Constructor
 		/// <summary>
@@ -186,6 +188,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public ResolveResult GetResolveResult(AstNode node)
 		{
+			MergeOutstandingLambdas();
 			ResolveResult result;
 			if (resolveResultCache.TryGetValue(node, out result))
 				return result;
@@ -199,6 +202,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public CSharpResolver GetResolverStateBefore(AstNode node)
 		{
+			MergeOutstandingLambdas();
 			CSharpResolver r;
 			if (resolverBeforeDict.TryGetValue(node, out r))
 				return r;
@@ -1019,11 +1023,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (IsVariableReferenceWithSameType(target, identifierExpression.Identifier, out trr)) {
 					// It's ambiguous
 					ResolveResult rr = ResolveMemberReferenceOnGivenTarget(target, memberReferenceExpression);
-					resolveResultCache.Add(identifierExpression, IsStaticResult(rr, null) ? trr : target);
+					resolveResultCache[identifierExpression] = IsStaticResult(rr, null) ? trr : target;
 					return rr;
 				} else {
 					// It's not ambiguous
-					resolveResultCache.Add(identifierExpression, target);
+					resolveResultCache[identifierExpression] = target;
 					if (resolverEnabled) {
 						return ResolveMemberReferenceOnGivenTarget(target, memberReferenceExpression);
 					} else {
@@ -1068,16 +1072,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// Special handling for §7.6.4.1 Identicial simple names and type names
 				ResolveResult idRR = resolver.ResolveSimpleName(identifierExpression.Identifier, EmptyList<IType>.Instance);
 				ResolveResult target = ResolveMemberReferenceOnGivenTarget(idRR, mre);
-				resolveResultCache.Add(mre, target);
+				resolveResultCache[mre] = target;
 				TypeResolveResult trr;
 				if (IsVariableReferenceWithSameType(idRR, identifierExpression.Identifier, out trr)) {
 					// It's ambiguous
 					ResolveResult rr = ResolveInvocationOnGivenTarget(target, invocationExpression);
-					resolveResultCache.Add(identifierExpression, IsStaticResult(target, rr) ? trr : idRR);
+					resolveResultCache[identifierExpression] = IsStaticResult(target, rr) ? trr : idRR;
 					return rr;
 				} else {
 					// It's not ambiguous
-					resolveResultCache.Add(identifierExpression, idRR);
+					resolveResultCache[identifierExpression] = idRR;
 					if (resolverEnabled) {
 						return ResolveInvocationOnGivenTarget(target, invocationExpression);
 					} else {
@@ -1129,8 +1133,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					lambdaExpression.Parameters, lambdaExpression.Body,
 					isAnonymousMethod: false, hasParameterList: true);
 			} else {
-				// Implicitly typed lambda
-				throw new NotImplementedException();
+				return new ImplicitlyTypedLambda(lambdaExpression, this);
 			}
 		}
 		
@@ -1178,6 +1181,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType inferredReturnType;
 			IList<ResolveResult> returnValues;
 			bool isValidAsVoidMethod;
+			bool success;
 			
 			public ExplicitlyTypedLambda(IList<IParameter> parameters, bool isAnonymousMethod, CSharpResolver storedContext, ResolveVisitor visitor, AstNode body)
 			{
@@ -1194,74 +1198,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
-			void Analyze()
+			bool Analyze()
 			{
-				if (storedContext == null)
-					return; // already analyzed
-				visitor.ResetContext(
-					storedContext,
-					delegate {
-						Expression expr = body as Expression;
-						if (expr != null) {
-							isValidAsVoidMethod = ExpressionPermittedAsStatement(expr);
-							returnValues = new[] { visitor.Resolve(expr) };
-							inferredReturnType = returnValues[0].Type;
-						} else {
-							AnalyzeLambdaVisitor alv = new AnalyzeLambdaVisitor();
-							body.AcceptVisitor(alv, null);
-							isValidAsVoidMethod = (alv.ReturnExpressions.Count == 0);
-							if (alv.HasVoidReturnStatements) {
-								returnValues = EmptyList<ResolveResult>.Instance;
-							} else {
-								returnValues = new ResolveResult[alv.ReturnExpressions.Count];
-								for (int i = 0; i < returnValues.Count; i++) {
-									returnValues[i] = visitor.Resolve(alv.ReturnExpressions[i]);
-								}
-								TypeInference ti = new TypeInference(visitor.TypeResolveContext);
-								bool success;
-								inferredReturnType = ti.GetBestCommonType(returnValues, out success);
-							}
-						}
-					});
-				storedContext = null;
-				visitor = null;
-				body = null;
+				// If it's not already analyzed
+				if (storedContext != null) {
+					visitor.ResetContext(
+						storedContext,
+						delegate {
+							visitor.AnalyzeLambda(body, out success, out isValidAsVoidMethod, out inferredReturnType, out returnValues);
+						});
+					storedContext = null;
+					visitor = null;
+					body = null;
+				}
+				return success;
 			}
 			
-			static bool ExpressionPermittedAsStatement(Expression expr)
+			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
 			{
-				UnaryOperatorExpression uoe = expr as UnaryOperatorExpression;
-				if (uoe != null) {
-					switch (uoe.Operator) {
-						case UnaryOperatorType.Increment:
-						case UnaryOperatorType.Decrement:
-						case UnaryOperatorType.PostIncrement:
-						case UnaryOperatorType.PostDecrement:
-						case UnaryOperatorType.Await:
-							return true;
-						default:
-							return false;
-					}
-				}
-				return expr is InvocationExpression
-					|| expr is ObjectCreateExpression
-					|| expr is AssignmentExpression;
-			}
-			
-			public override bool IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
-			{
-				Analyze();
-				if (returnType.Kind == TypeKind.Void) {
-					return isValidAsVoidMethod;
-				} else {
-					if (returnValues.Count == 0)
-						return false;
-					foreach (ResolveResult returnRR in returnValues) {
-						if (!conversions.ImplicitConversion(returnRR, returnType))
-							return false;
-					}
-					return true;
-				}
+				if (Analyze() && IsValidLambda(isValidAsVoidMethod, returnValues, returnType, conversions))
+					return Conversion.AnonymousFunctionConversion(null);
+				else
+					return Conversion.None;
 			}
 			
 			public override IType GetInferredReturnType(IType[] parameterTypes)
@@ -1281,10 +1239,281 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			public override bool HasParameterList {
 				get { return parameters != null; }
 			}
+			
+			public override string ToString()
+			{
+				return "[ExplicitlyTypedLambda " + body.Parent + "]";
+			}
 		}
 		#endregion
 		
-		#region Find Return Expressions in Lambda
+		#region Implicitly typed
+		sealed class ImplicitlyTypedLambda : LambdaResolveResult
+		{
+			internal readonly LambdaExpression lambda;
+			readonly CSharpResolver storedContext;
+			readonly ParsedFile parsedFile;
+			readonly List<LambdaTypeHypothesis> hypotheses = new List<LambdaTypeHypothesis>();
+			readonly List<IParameter> parameters = new List<IParameter>();
+			
+			public ImplicitlyTypedLambda(LambdaExpression lambda, ResolveVisitor visitor)
+			{
+				this.lambda = lambda;
+				this.storedContext = visitor.resolver.Clone();
+				this.parsedFile = visitor.parsedFile;
+				foreach (var pd in lambda.Parameters) {
+					parameters.Add(new DefaultParameter(SharedTypes.UnknownType, pd.Name) {
+					               	Region = visitor.MakeRegion(pd)
+					               });
+				}
+				if (visitor.outstandingLambdas == null)
+					visitor.outstandingLambdas = new List<ImplicitlyTypedLambda>();
+				visitor.outstandingLambdas.Add(this);
+			}
+			
+			public override IList<IParameter> Parameters {
+				get { return parameters; }
+			}
+			
+			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
+			{
+				return GetHypothesis(parameterTypes).IsValid(returnType, conversions);
+			}
+			
+			public override IType GetInferredReturnType(IType[] parameterTypes)
+			{
+				return GetHypothesis(parameterTypes).inferredReturnType;
+			}
+			
+			LambdaTypeHypothesis GetHypothesis(IType[] parameterTypes)
+			{
+				if (parameterTypes.Length != parameters.Count)
+					throw new ArgumentException("Incorrect parameter type count");
+				foreach (var h in hypotheses) {
+					bool ok = true;
+					for (int i = 0; i < parameterTypes.Length; i++) {
+						if (!parameterTypes[i].Equals(h.parameterTypes[i])) {
+							ok = false;
+							break;
+						}
+					}
+					if (ok)
+						return h;
+				}
+				ResolveVisitor visitor = new ResolveVisitor(storedContext.Clone(), parsedFile);
+				LambdaTypeHypothesis newHypothesis = new LambdaTypeHypothesis(this, parameterTypes, visitor);
+				hypotheses.Add(newHypothesis);
+				return newHypothesis;
+			}
+			
+			/// <summary>
+			/// Get any hypothesis for this lambda.
+			/// This method is used as fallback if the lambda isn't merged the normal way (AnonymousFunctionConversion)
+			/// </summary>
+			internal LambdaTypeHypothesis GetAnyHypothesis()
+			{
+				if (hypotheses.Count == 0) {
+					// make a new hypothesis with unknown parameter types
+					IType[] parameterTypes = new IType[parameters.Count];
+					for (int i = 0; i < parameterTypes.Length; i++) {
+						parameterTypes[i] = SharedTypes.UnknownType;
+					}
+					return GetHypothesis(parameterTypes);
+				} else {
+					// We have the choice, so pick the hypothesis with the least missing parameter types
+					LambdaTypeHypothesis bestHypothesis = hypotheses[0];
+					int bestHypothesisUnknownParameters = bestHypothesis.CountUnknownParameters();
+					for (int i = 1; i < hypotheses.Count; i++) {
+						int c = hypotheses[i].CountUnknownParameters();
+						if (c < bestHypothesisUnknownParameters ||
+						    (c == bestHypothesisUnknownParameters && hypotheses[i].success && !bestHypothesis.success))
+						{
+							bestHypothesis = hypotheses[i];
+							bestHypothesisUnknownParameters = c;
+						}
+					}
+					return bestHypothesis;
+				}
+			}
+			
+			public override bool IsImplicitlyTyped {
+				get { return true; }
+			}
+			
+			public override bool IsAnonymousMethod {
+				get { return false; }
+			}
+			
+			public override bool HasParameterList {
+				get { return true; }
+			}
+			
+			public override string ToString()
+			{
+				return "[ImplicitlyTypedLambda " + lambda + "]";
+			}
+		}
+		
+		/// <summary>
+		/// Every possible set of parameter types gets its own 'hypothetical world'.
+		/// It uses a nested ResolveVisitor that has its own resolve cache, so that resolve results cannot leave the hypothetical world.
+		/// 
+		/// Only after overload resolution is applied and the actual parameter types are known, the winning hypothesis will be merged
+		/// with the parent ResolveVisitor.
+		/// This is done when the AnonymousFunctionConversion is applied on the parent visitor.
+		/// </summary>
+		sealed class LambdaTypeHypothesis
+		{
+			readonly ImplicitlyTypedLambda lambda;
+			internal readonly IType[] parameterTypes;
+			readonly ResolveVisitor visitor;
+			
+			internal readonly IType inferredReturnType;
+			IList<ResolveResult> returnValues;
+			bool isValidAsVoidMethod;
+			internal bool success;
+			
+			public LambdaTypeHypothesis(ImplicitlyTypedLambda lambda, IType[] parameterTypes, ResolveVisitor visitor)
+			{
+				Debug.Assert(parameterTypes.Length == lambda.Parameters.Count);
+				
+				this.lambda = lambda;
+				this.parameterTypes = parameterTypes;
+				this.visitor = visitor;
+				
+				visitor.resolver.PushBlock();
+				int i = 0;
+				foreach (var pd in lambda.lambda.Parameters) {
+					visitor.resolver.AddLambdaParameter(parameterTypes[i], visitor.MakeRegion(pd), pd.Name, false, false);
+					i++;
+					visitor.Scan(pd);
+				}
+				
+				visitor.AnalyzeLambda(lambda.lambda.Body, out success, out isValidAsVoidMethod, out inferredReturnType, out returnValues);
+				visitor.resolver.PopBlock();
+			}
+			
+			internal int CountUnknownParameters()
+			{
+				int c = 0;
+				foreach (IType t in parameterTypes) {
+					if (t.Kind == TypeKind.Unknown)
+						c++;
+				}
+				return c;
+			}
+			
+			public Conversion IsValid(IType returnType, Conversions conversions)
+			{
+				if (success && IsValidLambda(isValidAsVoidMethod, returnValues, returnType, conversions))
+					return Conversion.AnonymousFunctionConversion(this);
+				else
+					return Conversion.None;
+			}
+			
+			public void MergeInto(ResolveVisitor parentVisitor)
+			{
+				visitor.MergeOutstandingLambdas();
+				foreach (var pair in visitor.resolveResultCache) {
+					parentVisitor.resolveResultCache.Add(pair.Key, pair.Value);
+				}
+				foreach (var pair in visitor.resolverBeforeDict) {
+					parentVisitor.resolverBeforeDict.Add(pair.Key, pair.Value);
+				}
+				parentVisitor.outstandingLambdas.Remove(lambda);
+			}
+		}
+		
+		void MergeOutstandingLambdas()
+		{
+			if (outstandingLambdas == null)
+				return;
+			while (outstandingLambdas.Count > 0) {
+				ImplicitlyTypedLambda implicitlyTypedLambda = outstandingLambdas[0];
+				LambdaExpression lambdaExpr = implicitlyTypedLambda.lambda;
+				AstNode parent = lambdaExpr.Parent;
+				while (parent is ParenthesizedExpression)
+					parent = parent.Parent;
+				CSharpResolver storedResolver;
+				if (resolverBeforeDict.TryGetValue(parent, out storedResolver)) {
+					ResetContext(storedResolver, delegate { Resolve(parent); });
+				}
+				if (outstandingLambdas.Count > 0 && outstandingLambdas[0] == implicitlyTypedLambda) {
+					// Lambda wasn't merged by resolving its parent -> enforce merging
+					implicitlyTypedLambda.GetAnyHypothesis().MergeInto(this);
+				}
+			}
+		}
+		#endregion
+		
+		#region AnalyzeLambda
+		void AnalyzeLambda(AstNode body, out bool success, out bool isValidAsVoidMethod, out IType inferredReturnType, out IList<ResolveResult> returnValues)
+		{
+			mode = ResolveVisitorNavigationMode.ResolveAll;
+			Expression expr = body as Expression;
+			if (expr != null) {
+				isValidAsVoidMethod = ExpressionPermittedAsStatement(expr);
+				returnValues = new[] { Resolve(expr) };
+				inferredReturnType = returnValues[0].Type;
+				success = true;
+			} else {
+				Scan(body);
+				
+				AnalyzeLambdaVisitor alv = new AnalyzeLambdaVisitor();
+				body.AcceptVisitor(alv, null);
+				isValidAsVoidMethod = (alv.ReturnExpressions.Count == 0);
+				if (alv.HasVoidReturnStatements) {
+					returnValues = EmptyList<ResolveResult>.Instance;
+					inferredReturnType = KnownTypeReference.Void.Resolve(resolver.Context);
+					success = true;
+				} else {
+					returnValues = new ResolveResult[alv.ReturnExpressions.Count];
+					for (int i = 0; i < returnValues.Count; i++) {
+						returnValues[i] = resolveResultCache[alv.ReturnExpressions[i]];
+					}
+					TypeInference ti = new TypeInference(resolver.Context);
+					inferredReturnType = ti.GetBestCommonType(returnValues, out success);
+				}
+			}
+			// TODO: check for compiler errors within the lambda body
+			// success &= ..;
+		}
+		
+		static bool ExpressionPermittedAsStatement(Expression expr)
+		{
+			UnaryOperatorExpression uoe = expr as UnaryOperatorExpression;
+			if (uoe != null) {
+				switch (uoe.Operator) {
+					case UnaryOperatorType.Increment:
+					case UnaryOperatorType.Decrement:
+					case UnaryOperatorType.PostIncrement:
+					case UnaryOperatorType.PostDecrement:
+					case UnaryOperatorType.Await:
+						return true;
+					default:
+						return false;
+				}
+			}
+			return expr is InvocationExpression
+				|| expr is ObjectCreateExpression
+				|| expr is AssignmentExpression;
+		}
+		
+		static bool IsValidLambda(bool isValidAsVoidMethod, IList<ResolveResult> returnValues, IType returnType, Conversions conversions)
+		{
+			if (returnType.Kind == TypeKind.Void) {
+				return isValidAsVoidMethod;
+			} else {
+				if (returnValues.Count == 0)
+					return false;
+				foreach (ResolveResult returnRR in returnValues) {
+					if (!conversions.ImplicitConversion(returnRR, returnType))
+						return false;
+				}
+				return true;
+			}
+		}
+		
 		sealed class AnalyzeLambdaVisitor : DepthFirstAstVisitor<object, object>
 		{
 			public bool HasVoidReturnStatements;
