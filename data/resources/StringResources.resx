@@ -7990,6 +7990,9 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug.Description" xml:space="preserve">
     <value>Runs the program without attached debugger.</value>
   </data>
+  <data name="XML.MainMenu.DebugMenu.RunLastBuild" xml:space="preserve">
+    <value>Run last build</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu.StepInto" xml:space="preserve">
     <value>Step into</value>
   </data>

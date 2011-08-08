@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (!DebuggerService.CurrentDebugger.IsDebugging) {
 				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
 				new Execute().Run();
-			} else { 
+			} else {
 				DebuggerService.CurrentDebugger.StepOver();
 			}
 		}
@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (!DebuggerService.CurrentDebugger.IsDebugging) {
 				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
 				new Execute().Run();
-			} else { 
+			} else {
 				DebuggerService.CurrentDebugger.StepInto();
 			}
 		}
@@ -168,6 +168,20 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			DebuggerService.CurrentDebugger.Detach();
+		}
+	}
+	
+	public class ExecuteLastBuild : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			if (ProjectService.OpenSolution == null)
+				return;
+			
+			if (ProjectService.OpenSolution.StartupProject == null)
+				return;
+			
+			ProjectService.OpenSolution.StartupProject.Start(false);
 		}
 	}
 }

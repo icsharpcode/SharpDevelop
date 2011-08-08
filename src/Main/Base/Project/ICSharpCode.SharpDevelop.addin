@@ -1505,6 +1505,15 @@
 				</Condition>
 			</Condition>
 			
+			<Condition name = "SolutionOpen" action="Disable">
+				<Condition name="IsProcessRunning" isdebugging="False" action="Disable">
+					<MenuItem id       = "RunWithoutBuild"
+					          label    = "${res:XML.MainMenu.DebugMenu.RunLastBuild}"
+					          shortcut = "Control|Shift|F5"
+					          class    = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteLastBuild"/>
+				</Condition>
+			</Condition>
+			
 			<Condition name="DebuggerSupports" debuggersupports = "Stop">
 				<Condition name="IsProcessRunning" isdebugging="True" action="Disable">
 					<MenuItem id    = "Stop"
