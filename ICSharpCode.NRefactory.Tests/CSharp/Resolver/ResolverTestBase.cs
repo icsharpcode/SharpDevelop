@@ -121,6 +121,38 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual(expectedType.ToTypeReference().Resolve(context), rr.Type);
 		}
 		
+		protected void TestOperator(UnaryOperatorType op, ResolveResult input,
+		                            Conversion expectedConversion, Type expectedResultType)
+		{
+			var rr = resolver.ResolveUnaryOperator(op, input);
+			AssertType(expectedResultType, rr);
+			Assert.AreEqual(typeof(UnaryOperatorResolveResult), rr.GetType());
+			var uorr = (UnaryOperatorResolveResult)rr;
+			AssertConversion(uorr.Input, input, expectedConversion, "Conversion");
+		}
+		
+		protected void TestOperator(ResolveResult lhs, BinaryOperatorType op, ResolveResult rhs,
+		                            Conversion expectedLeftConversion, Conversion expectedRightConversion, Type expectedResultType)
+		{
+			var rr = resolver.ResolveBinaryOperator(op, lhs, rhs);
+			AssertType(expectedResultType, rr);
+			Assert.AreEqual(typeof(BinaryOperatorResolveResult), rr.GetType());
+			var borr = (BinaryOperatorResolveResult)rr;
+			AssertConversion(borr.Left, lhs, expectedLeftConversion, "Left conversion");
+			AssertConversion(borr.Right, rhs, expectedRightConversion, "Right conversion");
+		}
+		
+		protected void AssertConversion(ResolveResult conversionResult, ResolveResult expectedRR, Conversion expectedConversion, string text)
+		{
+			if (expectedConversion == Conversion.IdentityConversion) {
+				Assert.AreSame(expectedRR, conversionResult, "Expected no " + text);
+			} else {
+				ConversionResolveResult crr = (ConversionResolveResult)conversionResult;
+				Assert.AreEqual(expectedConversion, crr.Conversion, text);
+				Assert.AreSame(expectedRR, crr.Input, "Input of " + text);
+			}
+		}
+		
 		IEnumerable<AstLocation> FindDollarSigns(string code)
 		{
 			int line = 1;

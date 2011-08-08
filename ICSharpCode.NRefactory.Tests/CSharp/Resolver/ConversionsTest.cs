@@ -28,6 +28,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return conversions.ImplicitConversion(from2, to2);
 		}
 		
+		Conversion ExplicitConversion(Type from, Type to)
+		{
+			IType from2 = from.ToTypeReference().Resolve(ctx);
+			IType to2 = to.ToTypeReference().Resolve(ctx);
+			return conversions.ExplicitConversion(from2, to2);
+		}
+		
 		[Test]
 		public void IdentityConversions()
 		{
@@ -196,10 +203,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		[Test]
-		public void PointerConversion()
+		public void ImplicitPointerConversion()
 		{
 			Assert.AreEqual(C.ImplicitPointerConversion, ImplicitConversion(typeof(Null), typeof(int*)));
 			Assert.AreEqual(C.ImplicitPointerConversion, ImplicitConversion(typeof(int*), typeof(void*)));
+		}
+		
+		[Test]
+		public void ExplicitPointerConversion()
+		{
+			Assert.AreEqual(C.ExplicitPointerConversion, ExplicitConversion(typeof(int*), typeof(short)));
+			Assert.AreEqual(C.ExplicitPointerConversion, ExplicitConversion(typeof(short), typeof(void*)));
+			
+			Assert.AreEqual(C.ExplicitPointerConversion, ExplicitConversion(typeof(void*), typeof(int*)));
+			Assert.AreEqual(C.ExplicitPointerConversion, ExplicitConversion(typeof(long*), typeof(byte*)));
 		}
 		
 		[Test]
@@ -217,8 +234,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			DefaultTypeParameter tm = new DefaultTypeParameter(EntityType.Method, 0, "TM");
 			
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(SharedTypes.Null, t));
-			Assert.AreEqual(C.ImplicitTypeParameterConversion, conversions.ImplicitConversion(t, KnownTypeReference.Object.Resolve(ctx)));
-			Assert.AreEqual(C.ImplicitTypeParameterConversion, conversions.ImplicitConversion(t, SharedTypes.Dynamic));
+			Assert.AreEqual(C.BoxingConversion, conversions.ImplicitConversion(t, KnownTypeReference.Object.Resolve(ctx)));
+			Assert.AreEqual(C.BoxingConversion, conversions.ImplicitConversion(t, SharedTypes.Dynamic));
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(t, ctx.GetTypeDefinition(typeof(ValueType))));
 			
 			Assert.AreEqual(C.IdentityConversion, conversions.ImplicitConversion(t, t));
@@ -281,14 +298,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			t.Constraints.Add(ctx.GetTypeDefinition(typeof(IList)));
 			
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(SharedTypes.Null, t));
-			Assert.AreEqual(C.ImplicitTypeParameterConversion,
+			Assert.AreEqual(C.BoxingConversion,
 			                conversions.ImplicitConversion(t, KnownTypeReference.Object.Resolve(ctx)));
-			Assert.AreEqual(C.ImplicitTypeParameterConversion,
+			Assert.AreEqual(C.BoxingConversion,
 			                conversions.ImplicitConversion(t, SharedTypes.Dynamic));
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(t, ctx.GetTypeDefinition(typeof(ValueType))));
-			Assert.AreEqual(C.ImplicitTypeParameterConversion,
+			Assert.AreEqual(C.BoxingConversion,
 			                conversions.ImplicitConversion(t, ctx.GetTypeDefinition(typeof(IList))));
-			Assert.AreEqual(C.ImplicitTypeParameterConversion,
+			Assert.AreEqual(C.BoxingConversion,
 			                conversions.ImplicitConversion(t, ctx.GetTypeDefinition(typeof(IEnumerable))));
 		}
 		

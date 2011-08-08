@@ -18,6 +18,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
@@ -96,6 +98,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public new IParameterizedMember Member {
 			get { return (IParameterizedMember)base.Member; }
+		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			return base.GetChildResults().Concat(this.Arguments);
 		}
 	}
 }

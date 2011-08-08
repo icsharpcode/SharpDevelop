@@ -17,51 +17,24 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
-	/// <summary>
-	/// Represents the result of resolving an expression.
-	/// </summary>
-	public class ResolveResult
+	public class ConversionResolveResult : ResolveResult
 	{
-		IType type;
+		public readonly ResolveResult Input;
+		public readonly Conversion Conversion;
 		
-		public ResolveResult(IType type)
+		public ConversionResolveResult(IType targetType, ResolveResult input, Conversion conversion)
+			: base(targetType)
 		{
-			if (type == null)
-				throw new ArgumentNullException("type");
-			this.type = type;
+			this.Input = input;
+			this.Conversion = conversion;
 		}
 		
-		public IType Type {
-			get { return type; }
-		}
-		
-		public virtual bool IsCompileTimeConstant {
-			get { return false; }
-		}
-		
-		public virtual object ConstantValue {
-			get { return null; }
-		}
-		
-		public virtual bool IsError {
-			get { return false; }
-		}
-		
-		public override string ToString()
-		{
-			return "[" + GetType().Name + " " + type + "]";
-		}
-		
-		public virtual IEnumerable<ResolveResult> GetChildResults()
-		{
-			return Enumerable.Empty<ResolveResult>();
+		public override bool IsError {
+			get { return !Conversion.IsValid; }
 		}
 	}
 }

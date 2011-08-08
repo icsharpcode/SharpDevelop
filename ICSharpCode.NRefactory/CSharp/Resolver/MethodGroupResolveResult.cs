@@ -163,5 +163,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			return or;
 		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			if (targetResult != null)
+				return new[] { targetResult };
+			else
+				return Enumerable.Empty<ResolveResult>();
+		}
 	}
 }

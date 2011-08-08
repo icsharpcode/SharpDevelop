@@ -17,6 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -61,6 +63,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
+		public ResolveResult TargetResult {
+			get { return targetResult; }
+		}
+		
 		public IMember Member {
 			get { return member; }
 		}
@@ -71,6 +77,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override object ConstantValue {
 			get { return constantValue; }
+		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			if (targetResult != null)
+				return new[] { targetResult };
+			else
+				return Enumerable.Empty<ResolveResult>();
 		}
 		
 		public override string ToString()

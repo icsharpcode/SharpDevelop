@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -12,13 +13,34 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	[TestFixture]
 	public class CastTests : ResolverTestBase
 	{
+		void TestCast(Type targetType, ResolveResult input, Conversion expectedConversion)
+		{
+			IType type = targetType.ToTypeReference().Resolve(context);
+			ResolveResult rr = resolver.ResolveCast(type, input);
+			AssertType(targetType, rr);
+			Assert.AreEqual(typeof(ConversionResolveResult), rr.GetType());
+			var crr = (ConversionResolveResult)rr;
+			Assert.AreEqual(expectedConversion, crr.Conversion, "ConversionResolveResult.Conversion");
+			Assert.AreSame(input, crr.Input, "ConversionResolveResult.Input");
+		}
+		
 		[Test]
 		public void SimpleCast()
 		{
-			AssertType(typeof(int), resolver.ResolveCast(ResolveType(typeof(int)), MakeResult(typeof(float))));
-			AssertType(typeof(string), resolver.ResolveCast(ResolveType(typeof(string)), MakeResult(typeof(object))));
-			AssertType(typeof(byte), resolver.ResolveCast(ResolveType(typeof(byte)), MakeResult(typeof(dynamic))));
-			AssertType(typeof(dynamic), resolver.ResolveCast(ResolveType(typeof(dynamic)), MakeResult(typeof(double))));
+			TestCast(typeof(int), MakeResult(typeof(float)), Conversion.ExplicitNumericConversion);
+			TestCast(typeof(string), MakeResult(typeof(object)), Conversion.ExplicitReferenceConversion);
+			TestCast(typeof(byte), MakeResult(typeof(dynamic)), Conversion.ExplicitDynamicConversion);
+			TestCast(typeof(dynamic), MakeResult(typeof(double)), Conversion.BoxingConversion);
+		}
+		
+		[Test]
+		public void NullableCasts()
+		{
+			TestCast(typeof(int), MakeResult(typeof(int?)), Conversion.ExplicitNullableConversion);
+			TestCast(typeof(int?), MakeResult(typeof(int)), Conversion.ImplicitNullableConversion);
+			
+			TestCast(typeof(int?), MakeResult(typeof(long?)), Conversion.ExplicitNullableConversion);
+			TestCast(typeof(long?), MakeResult(typeof(int?)), Conversion.ImplicitNullableConversion);
 		}
 		
 		[Test]

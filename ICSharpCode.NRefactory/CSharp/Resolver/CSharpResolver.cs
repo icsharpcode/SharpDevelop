@@ -38,6 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		static readonly ResolveResult NullResult = new ResolveResult(SharedTypes.Null);
 		
 		readonly ITypeResolveContext context;
+		readonly Conversions conversions;
 		internal readonly CancellationToken cancellationToken;
 		
 		#region Constructor
@@ -51,6 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("context");
 			this.context = context;
 			this.cancellationToken = cancellationToken;
+			this.conversions = new Conversions(context);
 		}
 		#endregion
 		
@@ -450,7 +452,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			cancellationToken.ThrowIfCancellationRequested();
 			
 			if (SharedTypes.Dynamic.Equals(expression.Type))
-				return DynamicResult;
+				return new UnaryOperatorResolveResult(SharedTypes.Dynamic, op, expression);
 			
 			// C# 4.0 spec: §7.3.3 Unary operator overload resolution
 			string overloadableOperatorName = GetOverloadableOperatorName(op);
@@ -459,11 +461,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					case UnaryOperatorType.Dereference:
 						PointerType p = expression.Type as PointerType;
 						if (p != null)
-							return new ResolveResult(p.ElementType);
+							return new UnaryOperatorResolveResult(p.ElementType, op, expression);
 						else
 							return ErrorResult;
 					case UnaryOperatorType.AddressOf:
-						return new ResolveResult(new PointerType(expression.Type));
+						return new UnaryOperatorResolveResult(new PointerType(expression.Type), op, expression);
 					default:
 						throw new ArgumentException("Invalid value for UnaryOperatorType", "op");
 				}
@@ -486,8 +488,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// C# 4.0 spec: §7.6.9 Postfix increment and decrement operators
 					// C# 4.0 spec: §7.7.5 Prefix increment and decrement operators
 					TypeCode code = ReflectionHelper.GetTypeCode(type);
-					if ((code >= TypeCode.SByte && code <= TypeCode.Decimal) || type.IsEnum() || type is PointerType)
-						return new ResolveResult(expression.Type);
+					if ((code >= TypeCode.SByte && code <= TypeCode.Decimal) || type.Kind == TypeKind.Enum || type.Kind == TypeKind.Pointer)
+						return new UnaryOperatorResolveResult(expression.Type, op, expression);
 					else
 						return new ErrorResolveResult(expression.Type);
 				case UnaryOperatorType.Plus:
@@ -500,14 +502,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					methodGroup = logicalNegationOperator;
 					break;
 				case UnaryOperatorType.BitNot:
-					if (type.IsEnum()) {
+					if (type.Kind == TypeKind.Enum) {
 						if (expression.IsCompileTimeConstant && !isNullable) {
 							// evaluate as (E)(~(U)x);
 							var U = expression.ConstantValue.GetType().ToTypeReference().Resolve(context);
 							var unpackedEnum = new ConstantResolveResult(U, expression.ConstantValue);
 							return CheckErrorAndResolveCast(expression.Type, ResolveUnaryOperator(op, unpackedEnum));
 						} else {
-							return new ResolveResult(expression.Type);
+							return new UnaryOperatorResolveResult(expression.Type, op, expression);
 						}
 					} else {
 						methodGroup = bitwiseComplementOperators;
@@ -533,7 +535,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				return new ConstantResolveResult(resultType, val);
 			} else {
-				return new ResolveResult(resultType);
+				expression = Convert(expression, m.Parameters[0].Type, r.ArgumentConversions[0]);
+				return new UnaryOperatorResolveResult(resultType, op, expression);
 			}
 		}
 		#endregion
@@ -548,19 +551,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			switch (op) {
 				case UnaryOperatorType.Minus:
 					if (code == TypeCode.UInt32) {
-						IType targetType = KnownTypeReference.Int64.Resolve(context);
-						type = targetType;
-						if (isNullable) targetType = NullableType.Create(targetType, context);
-						return ResolveCast(targetType, expression);
+						type = KnownTypeReference.Int64.Resolve(context);
+						return Convert(expression, MakeNullable(type, isNullable),
+						               isNullable ? Conversion.ImplicitNullableConversion : Conversion.ImplicitNumericConversion);
 					}
 					goto case UnaryOperatorType.Plus;
 				case UnaryOperatorType.Plus:
 				case UnaryOperatorType.BitNot:
 					if (code >= TypeCode.Char && code <= TypeCode.UInt16) {
-						IType targetType = KnownTypeReference.Int32.Resolve(context);
-						type = targetType;
-						if (isNullable) targetType = NullableType.Create(targetType, context);
-						return ResolveCast(targetType, expression);
+						type = KnownTypeReference.Int32.Resolve(context);
+						return Convert(expression, MakeNullable(type, isNullable),
+						               isNullable ? Conversion.ImplicitNullableConversion : Conversion.ImplicitNumericConversion);
 					}
 					break;
 			}
@@ -700,8 +701,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			
-			if (SharedTypes.Dynamic.Equals(lhs.Type) || SharedTypes.Dynamic.Equals(rhs.Type))
-				return DynamicResult;
+			if (SharedTypes.Dynamic.Equals(lhs.Type) || SharedTypes.Dynamic.Equals(rhs.Type)) {
+				lhs = Convert(lhs, SharedTypes.Dynamic, conversions.ImplicitConversion(lhs, SharedTypes.Dynamic));
+				rhs = Convert(rhs, SharedTypes.Dynamic, conversions.ImplicitConversion(rhs, SharedTypes.Dynamic));
+				return new BinaryOperatorResolveResult(SharedTypes.Dynamic, lhs, op, rhs);
+			}
 			
 			// C# 4.0 spec: §7.3.4 Binary operator overload resolution
 			string overloadableOperatorName = GetOverloadableOperatorName(op);
@@ -765,23 +769,41 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case BinaryOperatorType.Add:
 					methodGroup = CheckForOverflow ? checkedAdditionOperators : uncheckedAdditionOperators;
 					{
-						Conversions conversions = new Conversions(context);
-						if (lhsType.IsEnum() && conversions.ImplicitConversion(rhsType, lhsType.GetEnumUnderlyingType(context))) {
+						if (lhsType.Kind == TypeKind.Enum) {
 							// E operator +(E x, U y);
-							return HandleEnumAdditionOrSubtraction(isNullable, lhsType, op, lhs, rhs);
-						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhsType, rhsType.GetEnumUnderlyingType(context))) {
+							IType underlyingType = MakeNullable(lhsType.GetEnumUnderlyingType(context), isNullable);
+							if (TryConvert(ref rhs, underlyingType)) {
+								return HandleEnumOperator(isNullable, lhsType, op, lhs, rhs);
+							}
+						}
+						if (rhsType.Kind == TypeKind.Enum) {
 							// E operator +(U x, E y);
-							return ResolveBinaryOperator(op, rhs, lhs); // swap arguments
+							IType underlyingType = MakeNullable(rhsType.GetEnumUnderlyingType(context), isNullable);
+							if (TryConvert(ref lhs, underlyingType)) {
+								return HandleEnumOperator(isNullable, rhsType, op, lhs, rhs);
+							}
 						}
-						if (lhsType.IsDelegate() && conversions.ImplicitConversion(rhsType, lhsType)) {
-							return new ResolveResult(lhsType);
-						} else if (rhsType.IsDelegate() && conversions.ImplicitConversion(lhsType, rhsType)) {
-							return new ResolveResult(rhsType);
+						
+						if (lhsType.Kind == TypeKind.Delegate && TryConvert(ref rhs, lhsType)) {
+							return new BinaryOperatorResolveResult(lhsType, lhs, op, rhs);
+						} else if (rhsType.Kind == TypeKind.Delegate && TryConvert(ref lhs, rhsType)) {
+							return new BinaryOperatorResolveResult(rhsType, lhs, op, rhs);
 						}
-						if (lhsType is PointerType && IsInteger(ReflectionHelper.GetTypeCode(rhsType))) {
-							return new ResolveResult(lhsType);
-						} else if (rhsType is PointerType && IsInteger(ReflectionHelper.GetTypeCode(lhsType))) {
-							return new ResolveResult(rhsType);
+						
+						if (lhsType is PointerType) {
+							methodGroup = new [] {
+								new PointerArithmeticOperator(lhsType, lhsType, KnownTypeReference.Int32),
+								new PointerArithmeticOperator(lhsType, lhsType, KnownTypeReference.UInt32),
+								new PointerArithmeticOperator(lhsType, lhsType, KnownTypeReference.Int64),
+								new PointerArithmeticOperator(lhsType, lhsType, KnownTypeReference.UInt64)
+							};
+						} else if (rhsType is PointerType) {
+							methodGroup = new [] {
+								new PointerArithmeticOperator(rhsType, KnownTypeReference.Int32, rhsType),
+								new PointerArithmeticOperator(rhsType, KnownTypeReference.UInt32, rhsType),
+								new PointerArithmeticOperator(rhsType, KnownTypeReference.Int64, rhsType),
+								new PointerArithmeticOperator(rhsType, KnownTypeReference.UInt64, rhsType)
+							};
 						}
 						if (SharedTypes.Null.Equals(lhsType) && SharedTypes.Null.Equals(rhsType))
 							return new ErrorResolveResult(SharedTypes.Null);
@@ -790,27 +812,47 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case BinaryOperatorType.Subtract:
 					methodGroup = CheckForOverflow ? checkedSubtractionOperators : uncheckedSubtractionOperators;
 					{
-						Conversions conversions = new Conversions(context);
-						if (lhsType.IsEnum() && conversions.ImplicitConversion(rhsType, lhsType.GetEnumUnderlyingType(context))) {
+						if (lhsType.Kind == TypeKind.Enum) {
 							// E operator –(E x, U y);
-							return HandleEnumAdditionOrSubtraction(isNullable, lhsType, op, lhs, rhs);
-						} else if (lhsType.IsEnum() && conversions.ImplicitConversion(rhs, lhs.Type)) {
+							IType underlyingType = MakeNullable(lhsType.GetEnumUnderlyingType(context), isNullable);
+							if (TryConvert(ref rhs, underlyingType)) {
+								return HandleEnumOperator(isNullable, lhsType, op, lhs, rhs);
+							}
 							// U operator –(E x, E y);
-							return HandleEnumSubtraction(isNullable, lhsType, lhs, rhs);
-						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhs, rhs.Type)) {
+							if (TryConvert(ref rhs, lhs.Type)) {
+								return HandleEnumSubtraction(isNullable, lhsType, lhs, rhs);
+							}
+						}
+						if (rhsType.Kind == TypeKind.Enum) {
 							// U operator –(E x, E y);
-							return HandleEnumSubtraction(isNullable, lhsType, lhs, rhs);
+							if (TryConvert(ref lhs, rhs.Type)) {
+								return HandleEnumSubtraction(isNullable, rhsType, lhs, rhs);
+							}
 						}
-						if (lhsType.IsDelegate() && conversions.ImplicitConversion(rhsType, lhsType)) {
-							return new ResolveResult(lhsType);
-						} else if (rhsType.IsDelegate() && conversions.ImplicitConversion(lhsType, rhsType)) {
-							return new ResolveResult(rhsType);
+						
+						if (lhsType.Kind == TypeKind.Delegate && TryConvert(ref rhs, lhsType)) {
+							return new BinaryOperatorResolveResult(lhsType, lhs, op, rhs);
+						} else if (rhsType.Kind == TypeKind.Delegate && TryConvert(ref lhs, rhsType)) {
+							return new BinaryOperatorResolveResult(rhsType, lhs, op, rhs);
 						}
-						if (lhsType is PointerType && IsInteger(ReflectionHelper.GetTypeCode(rhsType))) {
-							return new ResolveResult(lhsType);
-						} else if (lhsType is PointerType && lhsType.Equals(rhsType)) {
-							return new ResolveResult(KnownTypeReference.Int64.Resolve(context));
+						
+						if (lhsType is PointerType) {
+							if (rhsType is PointerType) {
+								IType int64 = KnownTypeReference.Int64.Resolve(context);
+								if (lhsType.Equals(rhsType)) {
+									return new BinaryOperatorResolveResult(int64, lhs, op, rhs);
+								} else {
+									return new ErrorResolveResult(int64);
+								}
+							}
+							methodGroup = new [] {
+								new PointerArithmeticOperator(lhsType, lhsType, KnownTypeReference.Int32),
+								new PointerArithmeticOperator(lhsType, lhsType, KnownTypeReference.UInt32),
+								new PointerArithmeticOperator(lhsType, lhsType, KnownTypeReference.Int64),
+								new PointerArithmeticOperator(lhsType, lhsType, KnownTypeReference.UInt64)
+							};
 						}
+						
 						if (SharedTypes.Null.Equals(lhsType) && SharedTypes.Null.Equals(rhsType))
 							return new ErrorResolveResult(SharedTypes.Null);
 					}
@@ -828,11 +870,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case BinaryOperatorType.LessThanOrEqual:
 				case BinaryOperatorType.GreaterThanOrEqual:
 					{
-						Conversions conversions = new Conversions(context);
-						if (lhsType.IsEnum() && conversions.ImplicitConversion(rhs, lhs.Type)) {
+						if (lhsType.Kind == TypeKind.Enum && TryConvert(ref rhs, lhs.Type)) {
 							// bool operator op(E x, E y);
 							return HandleEnumComparison(op, lhsType, isNullable, lhs, rhs);
-						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhs, rhs.Type)) {
+						} else if (rhsType.Kind == TypeKind.Enum && TryConvert(ref lhs, rhs.Type)) {
 							// bool operator op(E x, E y);
 							return HandleEnumComparison(op, rhsType, isNullable, lhs, rhs);
 						} else if (lhsType is PointerType && rhsType is PointerType) {
@@ -866,14 +907,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case BinaryOperatorType.BitwiseOr:
 				case BinaryOperatorType.ExclusiveOr:
 					{
-						Conversions conversions = new Conversions(context);
-						if (lhsType.IsEnum() && conversions.ImplicitConversion(rhs, lhs.Type)) {
-							// E operator op(E x, E y);
-							return HandleEnumAdditionOrSubtraction(isNullable, lhsType, op, lhs, rhs);
-						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhs, rhs.Type)) {
-							// E operator op(E x, E y);
-							return HandleEnumAdditionOrSubtraction(isNullable, rhsType, op, lhs, rhs);
+						Conversion c;
+						if (lhsType.Kind == TypeKind.Enum && TryConvert(ref rhs, lhs.Type)) {
+							// bool operator op(E x, E y);
+							return HandleEnumOperator(isNullable, lhsType, op, lhs, rhs);
+						} else if (rhsType.Kind == TypeKind.Enum && TryConvert(ref lhs, rhs.Type)) {
+							// bool operator op(E x, E y);
+							return HandleEnumOperator(isNullable, rhsType, op, lhs, rhs);
 						}
+						
 						switch (op) {
 							case BinaryOperatorType.BitwiseAnd:
 								methodGroup = bitwiseAndOperators;
@@ -915,7 +957,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				return new ConstantResolveResult(resultType, val);
 			} else {
-				return new ResolveResult(resultType);
+				lhs = Convert(lhs, m.Parameters[0].Type, r.ArgumentConversions[0]);
+				rhs = Convert(rhs, m.Parameters[1].Type, r.ArgumentConversions[1]);
+				return new BinaryOperatorResolveResult(resultType, lhs, op, rhs);
 			}
 		}
 		#endregion
@@ -938,7 +982,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return rhs;
 				return ResolveBinaryOperator(op, lhs, rhs);
 			}
-			return new ResolveResult(KnownTypeReference.Boolean.Resolve(context));
+			IType resultType = KnownTypeReference.Boolean.Resolve(context);
+			return new BinaryOperatorResolveResult(resultType, lhs, op, rhs);
 		}
 		
 		/// <summary>
@@ -958,19 +1003,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return rhs;
 				return CheckErrorAndResolveCast(elementType, ResolveBinaryOperator(BinaryOperatorType.Subtract, lhs, rhs));
 			}
-			return new ResolveResult(isNullable ? NullableType.Create(elementType, context) : elementType);
+			IType resultType = MakeNullable(elementType, isNullable);
+			return new BinaryOperatorResolveResult(resultType, lhs, BinaryOperatorType.Subtract, rhs);
 		}
 		
 		/// <summary>
-		/// Handle the case where an integral value is added to or subtracted from an enum value,
-		/// or when two enum values of the same type are combined using a bitwise operator.
+		/// Handle the following enum operators:
 		/// E operator +(E x, U y);
+		/// E operator +(U x, E y);
 		/// E operator –(E x, U y);
 		/// E operator &amp;(E x, E y);
 		/// E operator |(E x, E y);
 		/// E operator ^(E x, E y);
 		/// </summary>
-		ResolveResult HandleEnumAdditionOrSubtraction(bool isNullable, IType enumType, BinaryOperatorType op, ResolveResult lhs, ResolveResult rhs)
+		ResolveResult HandleEnumOperator(bool isNullable, IType enumType, BinaryOperatorType op, ResolveResult lhs, ResolveResult rhs)
 		{
 			// evaluate as (E)((U)x op (U)y)
 			if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable) {
@@ -983,7 +1029,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return rhs;
 				return CheckErrorAndResolveCast(enumType, ResolveBinaryOperator(op, lhs, rhs));
 			}
-			return new ResolveResult(isNullable ? NullableType.Create(enumType, context) : enumType);
+			IType resultType = MakeNullable(enumType, isNullable);
+			return new BinaryOperatorResolveResult(resultType, lhs, op, rhs);
+		}
+		
+		IType MakeNullable(IType type, bool isNullable)
+		{
+			if (isNullable)
+				return NullableType.Create(type, context);
+			else
+				return type;
 		}
 		#endregion
 		
@@ -1055,15 +1110,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		static bool IsInteger(TypeCode code)
-		{
-			return code >= TypeCode.SByte && code <= TypeCode.UInt64;
-		}
-		
 		ResolveResult CastTo(TypeCode targetType, bool isNullable, ResolveResult expression, bool allowNullableConstants)
 		{
 			IType elementType = targetType.ToTypeReference().Resolve(context);
-			IType nullableType = isNullable ? NullableType.Create(elementType, context) : elementType;
+			IType nullableType = MakeNullable(elementType, isNullable);
+			if (nullableType.Equals(expression.Type))
+				return expression;
 			if (allowNullableConstants && expression.IsCompileTimeConstant) {
 				if (expression.ConstantValue == null)
 					return new ConstantResolveResult(nullableType, null);
@@ -1073,7 +1125,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Debug.Assert(rr.IsCompileTimeConstant);
 				return new ConstantResolveResult(nullableType, rr.ConstantValue);
 			} else {
-				return ResolveCast(nullableType, expression);
+				return Convert(expression, nullableType,
+				               isNullable ? Conversion.ImplicitNullableConversion : Conversion.ImplicitNumericConversion);
 			}
 		}
 		#endregion
@@ -1125,6 +1178,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			public virtual bool CanEvaluateAtCompileTime { get { return true; } }
 			public abstract object Invoke(CSharpResolver resolver, object lhs, object rhs);
+		}
+		
+		sealed class PointerArithmeticOperator : BinaryOperatorMethod
+		{
+			public PointerArithmeticOperator(ITypeReference returnType, ITypeReference parameter1, ITypeReference parameter2)
+			{
+				this.ReturnType = returnType;
+				this.Parameters.Add(new DefaultParameter(parameter1, "x"));
+				this.Parameters.Add(new DefaultParameter(parameter2, "y"));
+			}
+			
+			public override bool CanEvaluateAtCompileTime {
+				get { return false; }
+			}
+			
+			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
+			{
+				throw new NotSupportedException();
+			}
 		}
 		
 		sealed class LambdaBinaryOperatorMethod<T1, T2> : BinaryOperatorMethod
@@ -1517,18 +1589,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Null coalescing operator
 		ResolveResult ResolveNullCoalescingOperator(ResolveResult lhs, ResolveResult rhs)
 		{
-			Conversions conversions = new Conversions(context);
 			if (NullableType.IsNullable(lhs.Type)) {
 				IType a0 = NullableType.GetUnderlyingType(lhs.Type);
-				if (conversions.ImplicitConversion(rhs, a0))
-					return new ResolveResult(a0);
+				if (TryConvert(ref rhs, a0)) {
+					return new BinaryOperatorResolveResult(a0, lhs, BinaryOperatorType.NullCoalescing, rhs);
+				}
 			}
-			if (conversions.ImplicitConversion(rhs, lhs.Type))
-				return new ResolveResult(lhs.Type);
-			if (conversions.ImplicitConversion(lhs, rhs.Type))
-				return new ResolveResult(rhs.Type);
-			else
+			if (TryConvert(ref rhs, lhs.Type)) {
+				return new BinaryOperatorResolveResult(lhs.Type, lhs, BinaryOperatorType.NullCoalescing, rhs);
+			}
+			if (TryConvert(ref lhs, rhs.Type)) {
+				return new BinaryOperatorResolveResult(rhs.Type, lhs, BinaryOperatorType.NullCoalescing, rhs);
+			} else {
 				return new ErrorResolveResult(lhs.Type);
+			}
 		}
 		#endregion
 		
@@ -1541,6 +1615,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ResolveCast
+		bool TryConvert(ref ResolveResult rr, IType targetType)
+		{
+			Conversion c = conversions.ImplicitConversion(rr, targetType);
+			if (c) {
+				rr = Convert(rr, targetType, c);
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		ResolveResult Convert(ResolveResult rr, ITypeReference targetType, Conversion c)
+		{
+			if (c == Conversion.IdentityConversion)
+				return rr;
+			else if (rr.IsCompileTimeConstant && c != Conversion.None)
+				return ResolveCast(targetType.Resolve(context), rr);
+			else
+				return new ConversionResolveResult(targetType.Resolve(context), rr, c);
+		}
+		
 		public ResolveResult ResolveCast(IType targetType, ResolveResult expression)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -1570,8 +1665,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 			}
-			// TODO: return implicit/explicit conversion being applied
-			return new ResolveResult(targetType);
+			Conversion c = conversions.ExplicitConversion(expression, targetType);
+			if (c)
+				return new ConversionResolveResult(targetType, expression, c);
+			else
+				return new ErrorResolveResult(targetType);
 		}
 		
 		object CSharpPrimitiveCast(TypeCode targetType, object input)
@@ -1860,7 +1958,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		/// <summary>
 		/// Gets all extension methods available in the current using scope.
-		/// This list includes unaccessible 
+		/// This list includes unaccessible
 		/// </summary>
 		List<List<IMethod>> GetAllExtensionMethods()
 		{
@@ -2024,9 +2122,31 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			
-			if (SharedTypes.Dynamic.Equals(target.Type))
-				return DynamicResult;
+			switch (target.Type.Kind) {
+				case TypeKind.Dynamic:
+					for (int i = 0; i < arguments.Length; i++) {
+						arguments[i] = Convert(arguments[i], SharedTypes.Dynamic,
+						                       conversions.ImplicitConversion(arguments[i], SharedTypes.Dynamic));
+					}
+					return new ArrayAccessResolveResult(SharedTypes.Dynamic, target, arguments);
+					
+				case TypeKind.Array:
+				case TypeKind.Pointer:
+					// §7.6.6.1 Array access / §18.5.3 Pointer element access
+					for (int i = 0; i < arguments.Length; i++) {
+						if (!(TryConvert(ref arguments[i], KnownTypeReference.Int32.Resolve(context)) ||
+						      TryConvert(ref arguments[i], KnownTypeReference.UInt32.Resolve(context)) ||
+						      TryConvert(ref arguments[i], KnownTypeReference.Int64.Resolve(context)) ||
+						      TryConvert(ref arguments[i], KnownTypeReference.UInt64.Resolve(context))))
+						{
+							// conversion failed
+							arguments[i] = Convert(arguments[i], KnownTypeReference.Int32, Conversion.None);
+						}
+					}
+					return new ArrayAccessResolveResult(((TypeWithElementType)target.Type).ElementType, target, arguments);
+			}
 			
+			// §7.6.6.2 Array access
 			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
 			MemberLookup lookup = CreateMemberLookup();
 			bool allowProtectedAccess = lookup.IsProtectedAccessAllowed(target.Type);
@@ -2137,15 +2257,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			cancellationToken.ThrowIfCancellationRequested();
 			
-			Conversions c = new Conversions(context);
 			bool isValid;
 			IType resultType;
 			if (SharedTypes.Dynamic.Equals(trueExpression.Type) || SharedTypes.Dynamic.Equals(falseExpression.Type)) {
 				resultType = SharedTypes.Dynamic;
 				isValid = true;
 			} else if (HasType(trueExpression) && HasType(falseExpression)) {
-				bool t2f = c.ImplicitConversion(trueExpression.Type, falseExpression.Type);
-				bool f2t = c.ImplicitConversion(falseExpression.Type, trueExpression.Type);
+				bool t2f = conversions.ImplicitConversion(trueExpression.Type, falseExpression.Type);
+				bool f2t = conversions.ImplicitConversion(falseExpression.Type, trueExpression.Type);
 				resultType = (f2t && !t2f) ? trueExpression.Type : falseExpression.Type;
 				// The operator is valid:
 				// a) if there's a conversion in one direction but not the other
@@ -2153,10 +2272,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				isValid = (t2f != f2t) || (t2f && f2t && trueExpression.Type.Equals(falseExpression.Type));
 			} else if (HasType(trueExpression)) {
 				resultType = trueExpression.Type;
-				isValid = c.ImplicitConversion(falseExpression, resultType);
+				isValid = conversions.ImplicitConversion(falseExpression, resultType);
 			} else if (HasType(falseExpression)) {
 				resultType = falseExpression.Type;
-				isValid = c.ImplicitConversion(trueExpression, resultType);
+				isValid = conversions.ImplicitConversion(trueExpression, resultType);
 			} else {
 				return ErrorResult;
 			}

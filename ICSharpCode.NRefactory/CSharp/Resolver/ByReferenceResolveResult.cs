@@ -17,6 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -29,6 +31,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public bool IsOut { get; private set; }
 		public bool IsRef { get { return !IsOut;} }
 		
+		public readonly ResolveResult ElementResult;
+		
+		public ByReferenceResolveResult(ResolveResult elementResult, bool isOut)
+			: this(elementResult.Type, isOut)
+		{
+			this.ElementResult = elementResult;
+		}
+		
 		public ByReferenceResolveResult(IType elementType, bool isOut)
 			: base(new ByReferenceType(elementType))
 		{
@@ -37,6 +47,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public IType ElementType {
 			get { return ((ByReferenceType)this.Type).ElementType; }
+		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			if (ElementResult != null)
+				return new[] { ElementResult };
+			else
+				return Enumerable.Empty<ResolveResult>();
 		}
 		
 		public override string ToString()

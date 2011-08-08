@@ -765,7 +765,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				ResolveResult rr = Resolve(directionExpression.Expression);
-				return new ByReferenceResolveResult(rr.Type, directionExpression.FieldDirection == FieldDirection.Out);
+				return new ByReferenceResolveResult(rr, directionExpression.FieldDirection == FieldDirection.Out);
 			} else {
 				ScanChildren(directionExpression);
 				return null;
