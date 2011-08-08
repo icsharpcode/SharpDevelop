@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		static readonly ResolveResult NullResult = new ResolveResult(SharedTypes.Null);
 		
 		readonly ITypeResolveContext context;
-		readonly Conversions conversions;
+		internal readonly Conversions conversions;
 		internal readonly CancellationToken cancellationToken;
 		
 		#region Constructor
@@ -196,6 +196,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
+		/// Opens a new scope for local variables.
+		/// </summary>
+		public void PushLambdaBlock()
+		{
+			localVariableStack = new LambdaParameter(localVariableStack, null, DomRegion.Empty, null, false, false);
+		}
+		
+		/// <summary>
 		/// Closes the current scope for local variables; removing all variables in that scope.
 		/// </summary>
 		public void PopBlock()
@@ -244,6 +252,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (v.name != null)
 						yield return v;
 				}
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether the resolver is currently within a lambda expression.
+		/// </summary>
+		public bool IsWithinLambdaExpression {
+			get {
+				for (LocalVariable v = localVariableStack; v != null; v = v.prev) {
+					if (v.name == null && v is LambdaParameter)
+						return true;
+				}
+				return false;
 			}
 		}
 		#endregion
@@ -1764,10 +1785,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			Conversion c = conversions.ExplicitConversion(expression, targetType);
-			if (c)
+			if (c) {
 				return new ConversionResolveResult(targetType, expression, c);
-			else
+			} else {
 				return new ErrorResolveResult(targetType);
+			}
 		}
 		
 		object CSharpPrimitiveCast(TypeCode targetType, object input)

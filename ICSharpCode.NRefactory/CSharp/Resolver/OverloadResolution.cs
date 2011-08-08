@@ -650,7 +650,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						parameterType = bestCandidate.ParameterTypes[parameterIndex];
 					else
 						parameterType = SharedTypes.UnknownType;
-					args[i] = new ConversionResolveResult(parameterType, args[i], conversions[i]);
+					args[i] = new ConversionResolveResult(parameterType, arguments[i], conversions[i]);
 				}
 			}
 			return args;

@@ -41,17 +41,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public static readonly Conversion ImplicitDynamicConversion = new Conversion(8);
 		public static readonly Conversion ImplicitConstantExpressionConversion = new Conversion(9);
 		const int userDefinedImplicitConversionKind = 10;
-		public static readonly Conversion ImplicitPointerConversion = new Conversion(11);
-		const int anonymousFunctionConversionKind = 12;
-		const int methodGroupConversionKind = 13;
-		public static readonly Conversion ExplicitNumericConversion = new Conversion(14);
-		public static readonly Conversion ExplicitEnumerationConversion = new Conversion(15);
-		public static readonly Conversion ExplicitNullableConversion = new Conversion(16);
-		public static readonly Conversion ExplicitReferenceConversion = new Conversion(17);
-		public static readonly Conversion UnboxingConversion = new Conversion(18);
-		public static readonly Conversion ExplicitDynamicConversion = new Conversion(19);
-		public static readonly Conversion ExplicitPointerConversion = new Conversion(20);
-		const int userDefinedExplicitConversionKind = 21;
+		const int liftedUserDefinedImplicitConversionKind = 11;
+		public static readonly Conversion ImplicitPointerConversion = new Conversion(12);
+		const int anonymousFunctionConversionKind = 13;
+		const int methodGroupConversionKind = 14;
+		public static readonly Conversion ExplicitNumericConversion = new Conversion(15);
+		public static readonly Conversion ExplicitEnumerationConversion = new Conversion(16);
+		public static readonly Conversion ExplicitNullableConversion = new Conversion(17);
+		public static readonly Conversion ExplicitReferenceConversion = new Conversion(18);
+		public static readonly Conversion UnboxingConversion = new Conversion(19);
+		public static readonly Conversion ExplicitDynamicConversion = new Conversion(20);
+		public static readonly Conversion ExplicitPointerConversion = new Conversion(21);
+		const int userDefinedExplicitConversionKind = 22;
+		const int liftedUserDefinedExplicitConversionKind = 23;
+		
+		const int lastImplicitConversion = methodGroupConversionKind;
 		
 		static readonly string[] conversionNames = {
 			"None",
@@ -65,6 +69,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			"Implicit dynamic conversion",
 			"Implicit constant expression conversion",
 			"User-defined implicit conversion",
+			"Lifted user-defined implicit conversion",
 			"Implicit pointer conversion",
 			"Anonymous function conversion",
 			"Method group conversion",
@@ -75,17 +80,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			"Unboxing conversion",
 			"Explicit dynamic conversion",
 			"Explicit pointer conversion",
-			"User-defined explicit conversion"
+			"User-defined explicit conversion",
+			"Lifted user-defined explicit conversion"
 		};
 		
-		public static Conversion UserDefinedImplicitConversion(IMethod operatorMethod)
+		public static Conversion UserDefinedImplicitConversion(IMethod operatorMethod, bool isLifted)
 		{
-			return new Conversion(userDefinedImplicitConversionKind, operatorMethod);
+			return new Conversion(isLifted ? liftedUserDefinedImplicitConversionKind : userDefinedImplicitConversionKind, operatorMethod);
 		}
 		
-		public static Conversion UserDefinedExplicitConversion(IMethod operatorMethod)
+		public static Conversion UserDefinedExplicitConversion(IMethod operatorMethod, bool isLifted)
 		{
-			return new Conversion(userDefinedExplicitConversionKind, operatorMethod);
+			return new Conversion(isLifted ? liftedUserDefinedExplicitConversionKind : userDefinedExplicitConversionKind, operatorMethod);
 		}
 		
 		public static Conversion MethodGroupConversion(IMethod chosenMethod)
@@ -115,21 +121,41 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets whether this conversion is an implicit conversion.
 		/// </summary>
 		public bool IsImplicitConversion {
-			get { return kind >= IdentityConversion.kind && kind <= methodGroupConversionKind; }
+			get { return kind > 0 && kind <= lastImplicitConversion; }
 		}
 		
 		/// <summary>
 		/// Gets whether this conversion is an explicit conversion.
 		/// </summary>
 		public bool IsExplicitConversion {
-			get { return kind > methodGroupConversionKind; }
+			get { return kind > lastImplicitConversion; }
 		}
 		
 		/// <summary>
 		/// Gets whether this conversion is user-defined.
 		/// </summary>
 		public bool IsUserDefined {
-			get {  return kind == userDefinedImplicitConversionKind || kind == userDefinedExplicitConversionKind; }
+			get {
+				switch (kind) {
+					case userDefinedImplicitConversionKind:
+					case liftedUserDefinedImplicitConversionKind:
+					case userDefinedExplicitConversionKind:
+					case liftedUserDefinedExplicitConversionKind:
+						return true;
+					default:
+						return false;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether this conversion is a lifted version of a user-defined conversion operator.
+		/// </summary>
+		/// <remarks>Lifted versions of builtin conversion operators are classified as nullable-conversion</remarks>
+		public bool IsLifted {
+			get {
+				return kind == liftedUserDefinedImplicitConversionKind || kind == liftedUserDefinedExplicitConversionKind;
+			}
 		}
 		
 		/// <summary>
@@ -713,7 +739,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			var operators = GetApplicableConversionOperators(fromType, toType, false);
 			// TODO: Find most specific conversion
 			if (operators.Count > 0)
-				return Conversion.UserDefinedImplicitConversion(operators[0].Method);
+				return Conversion.UserDefinedImplicitConversion(operators[0].Method, operators[0].IsLifted);
 			else
 				return Conversion.None;
 		}
@@ -724,7 +750,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			var operators = GetApplicableConversionOperators(fromType, toType, true);
 			// TODO: Find most specific conversion
 			if (operators.Count > 0)
-				return Conversion.UserDefinedExplicitConversion(operators[0].Method);
+				return Conversion.UserDefinedExplicitConversion(operators[0].Method, operators[0].IsLifted);
 			else
 				return Conversion.None;
 		}

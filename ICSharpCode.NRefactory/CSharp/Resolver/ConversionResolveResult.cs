@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -29,12 +30,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ConversionResolveResult(IType targetType, ResolveResult input, Conversion conversion)
 			: base(targetType)
 		{
+			if (input == null)
+				throw new ArgumentNullException("input");
 			this.Input = input;
 			this.Conversion = conversion;
 		}
 		
 		public override bool IsError {
 			get { return !Conversion.IsValid; }
+		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			return new [] { Input };
 		}
 	}
 }

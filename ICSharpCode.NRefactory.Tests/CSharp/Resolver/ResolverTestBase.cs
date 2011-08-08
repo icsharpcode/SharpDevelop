@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.NRefactory.CSharp.Parser;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -190,6 +190,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			cu.AcceptVisitor(fnv, null);
 			Assert.IsNotNull(fnv.ResultNode, "Did not find DOM node at the specified location");
 			
+			Debug.WriteLine(new string('=', 70));
+			Debug.WriteLine("Starting new resolver for " + fnv.ResultNode);
+			
 			var navigator = new NodeListResolveVisitorNavigator(new[] { fnv.ResultNode });
 			ResolveResult rr;
 			using (var context = this.context.Synchronize()) {
@@ -198,6 +201,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				rr = rv.GetResolveResult(fnv.ResultNode);
 			}
 			Assert.IsNotNull(rr, "ResolveResult is null - did something go wrong while navigating to the target node?");
+			Debug.WriteLine("ResolveResult is " + rr);
 			return rr;
 		}
 		

@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
-	[TestFixture, Ignore("Lambdas not supported by resolver")]
+	[TestFixture]
 	public class LambdaTests : ResolverTestBase
 	{
 		[Test]
@@ -176,7 +176,7 @@ static class TestClass {
 		return i => $i$.ToString();
 	}
 }";
-			var lrr = Resolve<LocalResolveResult>(program, "i");
+			var lrr = Resolve<LocalResolveResult>(program);
 			Assert.AreEqual("System.Int32", lrr.Type.ReflectionName);
 		}
 		
