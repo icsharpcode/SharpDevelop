@@ -243,6 +243,9 @@
       <DependentUpon>SelectCulturePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Services\ProjectService\SavedData\IProjectSavedData.cs" />
+    <Compile Include="Src\Services\ProjectService\SavedData\ProjectSavedDataConverter.cs" />
+    <Compile Include="Src\Services\ProjectService\SavedData\SavedDataManager.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptions.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptionsPanel.xaml.cs">
       <DependentUpon>WebProjectOptionsPanel.xaml</DependentUpon>
@@ -848,6 +851,7 @@
     <Folder Include="Src\Editor\CodeCompletion" />
     <Folder Include="Src\Editor\Commands" />
     <Folder Include="Src\Editor\Search" />
+    <Folder Include="Src\Services\ProjectService\SavedData" />
     <Folder Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Folder Include="Src\Services\Debugger\Tooltips" />

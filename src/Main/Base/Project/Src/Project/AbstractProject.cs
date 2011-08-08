@@ -7,12 +7,14 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Xml.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Project.SavedData;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -71,6 +73,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			WorkbenchSingleton.AssertMainThread();
 			
+			// breakpoints and files
 			Properties properties = new Properties();
 			properties.Set("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(this).ToArray());
 			List<string> files = new List<string>();
@@ -81,9 +84,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			properties.Set("files", files.ToArray());
 			
+			// web project properties
 			var webOptions = WebProjectsOptions.Instance.GetWebProjectOptions(Name);
 			if (webOptions != null)
 				properties.Set("WebProjectOptions", webOptions);
+			
+			// other project data - logic in ProjectSavedDataConverter
+			properties.Set("projectSavedData_" + Name, SavedDataManager.GetSavedData()
+			               .Where(d => d.ProjectName == Name).ToArray());
 			
 			return properties;
 		}
@@ -99,7 +107,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				filesToOpenAfterSolutionLoad.Add(fileName);
 			}
 			
+			// web project properties
 			WebProjectsOptions.Instance.SetWebProjectOptions(Name, memento.Get("WebProjectOptions", new WebProjectOptions()) as WebProjectOptions);
+			
+			// other project data - logic in ProjectSavedDataConverter
+			foreach(var data in memento.Get("projectSavedData_" + Name, new IProjectSavedData[0])
+			        .Where(d => d.ProjectName == Name)) {
+				SavedDataManager.Add(data);
+			}
 		}
 		#endregion
 		

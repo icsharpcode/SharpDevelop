@@ -5156,7 +5156,7 @@ Goto 'Options-&gt;Visual Style' and change the current language ambience.</value
     <value>ASP.NET/IIS (Express) worker process ({0}) was not found.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>There's no Project Url specified or external program. Check the web server at Project Properties -&amp;gt; Debug tab.</value>
+    <value>There's no Project Url specified or external program. Check the web server at Project Properties -&gt; Debug tab.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
     <value>Server port:</value>
