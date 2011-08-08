@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override NodeType NodeType {
 			get {
-				return NodeType.Unknown;
+				return NodeType.Token;
 			}
 		}
 		

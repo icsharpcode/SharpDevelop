@@ -2484,4 +2484,52 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 	}
+	
+	/// <summary>
+	/// Resolver logging helper.
+	/// Wraps System.Diagnostics.Debug so that resolver-specific logging can be enabled/disabled on demand.
+	/// (it's a huge amount of debug spew and slows down the resolver quite a bit)
+	/// </summary>
+	static class Log
+	{
+		[Conditional("DEBUG")]
+		internal static void WriteLine(string text)
+		{
+			Debug.WriteLine(text);
+		}
+		
+		[Conditional("DEBUG")]
+		internal static void WriteLine(string format, params object[] args)
+		{
+			Debug.WriteLine(format, args);
+		}
+		
+		[Conditional("DEBUG")]
+		internal static void WriteCollection<T>(string text, IEnumerable<T> lines)
+		{
+			#if DEBUG
+			T[] arr = lines.ToArray();
+			if (arr.Length == 0) {
+				Debug.WriteLine(text + "<empty collection>");
+			} else {
+				Debug.WriteLine(text + (arr[0] != null ? arr[0].ToString() : "<null>"));
+				for (int i = 1; i < arr.Length; i++) {
+					Debug.WriteLine(new string(' ', text.Length) + (arr[i] != null ? arr[i].ToString() : "<null>"));
+				}
+			}
+			#endif
+		}
+		
+		[Conditional("DEBUG")]
+		public static void Indent()
+		{
+			Debug.Indent();
+		}
+		
+		[Conditional("DEBUG")]
+		public static void Unindent()
+		{
+			Debug.Unindent();
+		}
+	}
 }

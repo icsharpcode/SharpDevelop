@@ -555,8 +555,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				switch (BetterFunctionMember(candidate, bestCandidate)) {
 					case 0:
-						if (bestCandidateAmbiguousWith == null)
-							bestCandidateAmbiguousWith = candidate;
+						// Overwrite 'bestCandidateAmbiguousWith' so that API users can
+						// detect the set of all ambiguous methods if they look at
+						// bestCandidateAmbiguousWith after each step.
+						bestCandidateAmbiguousWith = candidate;
 						break;
 					case 1:
 						bestCandidate = candidate;

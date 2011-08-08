@@ -146,6 +146,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (node == null || node.IsNull)
 				return;
+			switch (node.NodeType) {
+				case NodeType.Token:
+				case NodeType.Whitespace:
+					return; // skip tokens, identifiers, comments, etc.
+			}
 			if (mode == ResolveVisitorNavigationMode.ResolveAll) {
 				Resolve(node);
 			} else {
@@ -189,6 +194,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				resolver.cancellationToken.ThrowIfCancellationRequested();
 				resolverBeforeDict[node] = resolver.Clone();
 				result = resolveResultCache[node] = node.AcceptVisitor(this, null) ?? errorResult;
+				Log.WriteLine("Resolved '{0}' to {1}", node, result);
 				ProcessConversionsInResult(result);
 			}
 			if (wasScan)
@@ -265,17 +271,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		void ProcessConversion(ResolveResult rr, Conversion conversion, IType targetType)
 		{
 			if (conversion.IsAnonymousFunctionConversion) {
-				Debug.WriteLine("Processing conversion of anonymous function to " + targetType + "...");
+				Log.WriteLine("Processing conversion of anonymous function to " + targetType + "...");
 				AnonymousFunctionConversionData data = conversion.data as AnonymousFunctionConversionData;
 				if (data != null) {
-					Debug.Indent();
+					Log.Indent();
 					if (data.Hypothesis != null)
 						data.Hypothesis.MergeInto(this, data.ReturnType);
 					if (data.ExplicitlyTypedLambda != null)
 						data.ExplicitlyTypedLambda.ApplyReturnType(this, data.ReturnType);
-					Debug.Unindent();
+					Log.Unindent();
 				} else {
-					Debug.WriteLine("  Data not found.");
+					Log.WriteLine("  Data not found.");
 				}
 			}
 		}
@@ -1150,10 +1156,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// It's ambiguous
 					ResolveResult rr = ResolveMemberReferenceOnGivenTarget(target, memberReferenceExpression);
 					resolveResultCache[identifierExpression] = IsStaticResult(rr, null) ? trr : target;
+					Log.WriteLine("Ambiguous simple name '{0}' was resolved to {1}",
+					              identifierExpression, resolveResultCache[identifierExpression]);
 					return rr;
 				} else {
 					// It's not ambiguous
 					resolveResultCache[identifierExpression] = target;
+					Log.WriteLine("Simple name '{0}' was resolved to {1}", identifierExpression, target);
 					if (resolverEnabled) {
 						return ResolveMemberReferenceOnGivenTarget(target, memberReferenceExpression);
 					} else {
@@ -1199,14 +1208,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ResolveResult idRR = resolver.ResolveSimpleName(identifierExpression.Identifier, EmptyList<IType>.Instance);
 				ResolveResult target = ResolveMemberReferenceOnGivenTarget(idRR, mre);
 				resolveResultCache[mre] = target;
+				Log.WriteLine("Member reference '{0}' on potentially-ambiguous simple-name was resolved to {1}", mre, target);
 				TypeResolveResult trr;
 				if (IsVariableReferenceWithSameType(idRR, identifierExpression.Identifier, out trr)) {
 					// It's ambiguous
 					ResolveResult rr = ResolveInvocationOnGivenTarget(target, invocationExpression);
 					resolveResultCache[identifierExpression] = IsStaticResult(target, rr) ? trr : idRR;
+					Log.WriteLine("Ambiguous simple name '{0}' was resolved to {1}",
+					              identifierExpression, resolveResultCache[identifierExpression]);
 					return rr;
 				} else {
 					// It's not ambiguous
+					Log.WriteLine("Simple name '{0}' was resolved to {1}", identifierExpression, idRR);
 					resolveResultCache[identifierExpression] = idRR;
 					if (resolverEnabled) {
 						return ResolveInvocationOnGivenTarget(target, invocationExpression);
@@ -1334,7 +1347,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (visitor.undecidedLambdas == null)
 					visitor.undecidedLambdas = new List<LambdaBase>();
 				visitor.undecidedLambdas.Add(this);
-				Debug.WriteLine("Added undecided explicitly-typed lambda: " + this.LambdaExpression);
+				Log.WriteLine("Added undecided explicitly-typed lambda: " + this.LambdaExpression);
 			}
 			
 			public override IList<IParameter> Parameters {
@@ -1347,16 +1360,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				// If it's not already analyzed
 				if (inferredReturnType == null) {
-					Debug.WriteLine("Analyzing " + this.LambdaExpression + "...");
-					Debug.Indent();
+					Log.WriteLine("Analyzing " + this.LambdaExpression + "...");
+					Log.Indent();
 					
 					visitor.ResetContext(
 						storedContext,
 						delegate {
 							visitor.AnalyzeLambda(body, out success, out isValidAsVoidMethod, out inferredReturnType, out returnValues);
 						});
-					Debug.Unindent();
-					Debug.WriteLine("Finished analyzing " + this.LambdaExpression);
+					Log.Unindent();
+					Log.WriteLine("Finished analyzing " + this.LambdaExpression);
 					
 					if (inferredReturnType == null)
 						throw new InvalidOperationException("AnalyzeLambda() didn't set inferredReturnType");
@@ -1366,11 +1379,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
 			{
-				Debug.WriteLine("Testing validity of {0} for return-type {1}...", this, returnType);
-				Debug.Indent();
+				Log.WriteLine("Testing validity of {0} for return-type {1}...", this, returnType);
+				Log.Indent();
 				bool valid = Analyze() && IsValidLambda(isValidAsVoidMethod, returnValues, returnType, conversions);
-				Debug.Unindent();
-				Debug.WriteLine("{0} is {1} for return-type {2}", this, valid ? "valid" : "invalid", returnType);
+				Log.Unindent();
+				Log.WriteLine("{0} is {1} for return-type {2}", this, valid ? "valid" : "invalid", returnType);
 				if (valid) {
 					return Conversion.AnonymousFunctionConversion(new AnonymousFunctionConversionData(returnType, this));
 				} else {
@@ -1417,7 +1430,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				actualReturnType = returnType;
 				visitor.undecidedLambdas.Remove(this);
 				Analyze();
-				Debug.WriteLine("Applying return type {0} to explicitly-typed lambda {1}", returnType, this.LambdaExpression);
+				Log.WriteLine("Applying return type {0} to explicitly-typed lambda {1}", returnType, this.LambdaExpression);
 				foreach (var returnValue in returnValues) {
 					visitor.ProcessConversion(returnValue, returnType);
 				}
@@ -1464,7 +1477,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (parentVisitor.undecidedLambdas == null)
 					parentVisitor.undecidedLambdas = new List<LambdaBase>();
 				parentVisitor.undecidedLambdas.Add(this);
-				Debug.WriteLine("Added undecided implicitly-typed lambda: " + lambda);
+				Log.WriteLine("Added undecided implicitly-typed lambda: " + lambda);
 			}
 			
 			public override IList<IParameter> Parameters {
@@ -1473,13 +1486,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
 			{
-				Debug.WriteLine("Testing validity of {0} for parameters ({1}) and return-type {2}...",
-				                this, string.Join<IType>(", ", parameterTypes), returnType);
-				Debug.Indent();
+				Log.WriteLine("Testing validity of {0} for parameters ({1}) and return-type {2}...",
+				              this, string.Join<IType>(", ", parameterTypes), returnType);
+				Log.Indent();
 				var hypothesis = GetHypothesis(parameterTypes);
 				Conversion c = hypothesis.IsValid(returnType, conversions);
-				Debug.Unindent();
-				Debug.WriteLine("{0} is {1} for return-type {2}", hypothesis, c ? "valid" : "invalid", returnType);
+				Log.Unindent();
+				Log.WriteLine("{0} is {1} for return-type {2}", hypothesis, c ? "valid" : "invalid", returnType);
 				return c;
 			}
 			
@@ -1589,8 +1602,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.parameterTypes = parameterTypes;
 				this.visitor = visitor;
 				
-				Debug.WriteLine("Analyzing " + ToString() + "...");
-				Debug.Indent();
+				Log.WriteLine("Analyzing " + ToString() + "...");
+				Log.Indent();
 				visitor.resolver.PushLambdaBlock();
 				int i = 0;
 				foreach (var pd in lambda.lambda.Parameters) {
@@ -1601,8 +1614,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				visitor.AnalyzeLambda(lambda.lambda.Body, out success, out isValidAsVoidMethod, out inferredReturnType, out returnValues);
 				visitor.resolver.PopBlock();
-				Debug.Unindent();
-				Debug.WriteLine("Finished analyzing " + ToString());
+				Log.Unindent();
+				Log.WriteLine("Finished analyzing " + ToString());
 			}
 			
 			internal int CountUnknownParameters()
@@ -1643,7 +1656,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				visitor.MergeUndecidedLambdas();
-				Debug.WriteLine("Merging " + ToString());
+				Log.WriteLine("Merging " + ToString());
 				foreach (var pair in visitor.resolveResultCache) {
 					parentVisitor.resolveResultCache.Add(pair.Key, pair.Value);
 				}
@@ -1684,8 +1697,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (undecidedLambdas == null)
 				return;
-			Debug.WriteLine("MergeUndecidedLambdas()...");
-			Debug.Indent();
+			Log.WriteLine("MergeUndecidedLambdas()...");
+			Log.Indent();
 			while (undecidedLambdas.Count > 0) {
 				LambdaBase lambda = undecidedLambdas[0];
 				AstNode parent = lambda.LambdaExpression.Parent;
@@ -1693,21 +1706,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					parent = parent.Parent;
 				CSharpResolver storedResolver;
 				if (parent != null && resolverBeforeDict.TryGetValue(parent, out storedResolver)) {
-					Debug.WriteLine("Trying to resolve '" + parent + "' in order to merge the lambda...");
-					Debug.Indent();
+					Log.WriteLine("Trying to resolve '" + parent + "' in order to merge the lambda...");
+					Log.Indent();
 					ResetContext(storedResolver, delegate { Resolve(parent); });
-					Debug.Unindent();
+					Log.Unindent();
 				} else {
-					Debug.WriteLine("Could not find a suitable parent for '" + lambda);
+					Log.WriteLine("Could not find a suitable parent for '" + lambda);
 				}
 				if (lambda.IsUndecided) {
 					// Lambda wasn't merged by resolving its parent -> enforce merging
-					Debug.WriteLine("Lambda wasn't merged by conversion - enforce merging");
+					Log.WriteLine("Lambda wasn't merged by conversion - enforce merging");
 					lambda.EnforceMerge(this);
 				}
 			}
-			Debug.Unindent();
-			Debug.WriteLine("MergeUndecidedLambdas() finished.");
+			Log.Unindent();
+			Log.WriteLine("MergeUndecidedLambdas() finished.");
 		}
 		
 		/// <summary>
@@ -1750,7 +1763,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// so we can ignore the 'tiSuccess' value
 				}
 			}
-			Debug.WriteLine("Lambda return type was inferred to: " + inferredReturnType);
+			Log.WriteLine("Lambda return type was inferred to: " + inferredReturnType);
 			// TODO: check for compiler errors within the lambda body
 			success = true;
 		}

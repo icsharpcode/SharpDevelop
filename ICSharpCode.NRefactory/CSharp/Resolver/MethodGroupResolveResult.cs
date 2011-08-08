@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -120,12 +121,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public OverloadResolution PerformOverloadResolution(ITypeResolveContext context, ResolveResult[] arguments, string[] argumentNames = null, bool allowExtensionMethods = true, bool allowExpandingParams = true)
 		{
+			Log.WriteLine("Performing overload resolution for " + this);
+			Log.WriteCollection("  Arguments: ", arguments);
+			
 			var typeArgumentArray = this.TypeArguments.ToArray();
 			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, typeArgumentArray);
 			or.AllowExpandingParams = allowExpandingParams;
 			foreach (IMethod method in this.Methods) {
 				// TODO: grouping by class definition?
-				or.AddCandidate(method);
+				
+				Log.Indent();
+				OverloadResolutionErrors errors = or.AddCandidate(method);
+				Log.Unindent();
+				LogOverloadResolution("  Candidate", method, errors, or);
 			}
 			if (allowExtensionMethods && !or.FoundApplicableCandidate) {
 				// No applicable match found, so let's try extension methods.
@@ -133,6 +141,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				var extensionMethods = this.GetExtensionMethods();
 				
 				if (extensionMethods.Count > 0) {
+					Log.WriteLine("No candidate is applicable, trying {0} extension methods groups...", extensionMethods.Count);
 					ResolveResult[] extArguments = new ResolveResult[arguments.Length + 1];
 					extArguments[0] = new ResolveResult(this.TargetType);
 					arguments.CopyTo(extArguments, 1);
@@ -146,8 +155,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					extOr.IsExtensionMethodInvocation = true;
 					
 					foreach (var g in extensionMethods) {
-						foreach (var m in g) {
-							extOr.AddCandidate(m);
+						foreach (var method in g) {
+							Log.Indent();
+							OverloadResolutionErrors errors = extOr.AddCandidate(method);
+							Log.Unindent();
+							LogOverloadResolution("  Extension", method, errors, or);
 						}
 						if (extOr.FoundApplicableCandidate)
 							break;
@@ -161,7 +173,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 			}
+			Log.WriteLine("Overload resolution finished, best candidate is {0}.", or.BestCandidate);
 			return or;
+		}
+		
+		[Conditional("DEBUG")]
+		void LogOverloadResolution(string text, IMethod method, OverloadResolutionErrors errors, OverloadResolution or)
+		{
+			#if DEBUG
+			StringBuilder b = new StringBuilder(text);
+			b.Append(' ');
+			b.Append(method);
+			b.Append(" = ");
+			if (errors == OverloadResolutionErrors.None)
+				b.Append("Success");
+			else
+				b.Append(errors);
+			if (or.BestCandidate == method) {
+				b.Append(" (best candidate so far)");
+			} else if (or.BestCandidateAmbiguousWith == method) {
+				b.Append(" (ambiguous)");
+			}
+			Log.WriteLine(b.ToString());
+			#endif
 		}
 		
 		public override IEnumerable<ResolveResult> GetChildResults()
