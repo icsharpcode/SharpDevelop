@@ -276,7 +276,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			             Conversion.ImplicitNullableConversion, Conversion.IdentityConversion, typeof(bool));
 			
 			TestOperator(MakeResult(typeof(int)), BinaryOperatorType.Equality, MakeResult(typeof(float)),
-			             Conversion.ExplicitNumericConversion, Conversion.IdentityConversion, typeof(bool));
+			             Conversion.ImplicitNumericConversion, Conversion.IdentityConversion, typeof(bool));
 		}
 		
 		[Test]
@@ -504,7 +504,7 @@ class Test {
 		}
 		
 		[Test]
-		public void ThereIsNoLiftedOperatorsForClasses()
+		public void ThereAreNoLiftedOperatorsForClasses()
 		{
 			string program = @"struct S {}
 class A {
@@ -518,10 +518,10 @@ class Test {
 	}
 }
 ";
-			MemberResolveResult trr = Resolve<MemberResolveResult>(program);
-			Assert.IsTrue(trr.IsError); // cannot convert from A to S
-			Assert.AreEqual("A.op_Addition", trr.Member.FullName);
-			Assert.AreEqual("S", trr.Type.ReflectionName);
+			var irr = Resolve<InvocationResolveResult>(program);
+			Assert.IsTrue(irr.IsError); // cannot convert from A to S
+			Assert.AreEqual("A.op_Addition", irr.Member.FullName);
+			Assert.AreEqual("S", irr.Type.ReflectionName);
 		}
 	}
 }

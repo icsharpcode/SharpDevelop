@@ -475,12 +475,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool isNullable = NullableType.IsNullable(expression.Type);
 			
 			// the operator is overloadable:
-			OverloadResolution r = new OverloadResolution(context, new[] { expression });
+			OverloadResolution userDefinedOperatorOR = new OverloadResolution(context, new[] { expression });
 			foreach (var candidate in GetUserDefinedOperatorCandidates(type, overloadableOperatorName)) {
-				r.AddCandidate(candidate);
+				userDefinedOperatorOR.AddCandidate(candidate);
 			}
-			if (r.FoundApplicableCandidate) {
-				return CreateResolveResultForUserDefinedOperator(r);
+			if (userDefinedOperatorOR.FoundApplicableCandidate) {
+				return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR);
 			}
 			
 			expression = UnaryNumericPromotion(op, ref type, isNullable, expression);
@@ -523,13 +523,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					throw new InvalidOperationException();
 			}
+			OverloadResolution builtinOperatorOR = new OverloadResolution(context, new[] { expression });
 			foreach (var candidate in methodGroup) {
-				r.AddCandidate(candidate);
+				builtinOperatorOR.AddCandidate(candidate);
 			}
-			UnaryOperatorMethod m = (UnaryOperatorMethod)r.BestCandidate;
+			UnaryOperatorMethod m = (UnaryOperatorMethod)builtinOperatorOR.BestCandidate;
 			IType resultType = m.ReturnType.Resolve(context);
-			if (r.BestCandidateErrors != OverloadResolutionErrors.None) {
-				return new ErrorResolveResult(resultType);
+			if (builtinOperatorOR.BestCandidateErrors != OverloadResolutionErrors.None) {
+				// If there are any user-defined operators, prefer those over the built-in operators.
+				// It'll be a more informative error.
+				if (userDefinedOperatorOR.BestCandidate != null)
+					return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR);
+				else
+					return new ErrorResolveResult(resultType);
 			} else if (expression.IsCompileTimeConstant && !isNullable) {
 				object val;
 				try {
@@ -539,7 +545,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				return new ConstantResolveResult(resultType, val);
 			} else {
-				expression = Convert(expression, m.Parameters[0].Type, r.ArgumentConversions[0]);
+				expression = Convert(expression, m.Parameters[0].Type, builtinOperatorOR.ArgumentConversions[0]);
 				return new UnaryOperatorResolveResult(resultType, op, expression);
 			}
 		}
@@ -730,15 +736,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType rhsType = NullableType.GetUnderlyingType(rhs.Type);
 			
 			// the operator is overloadable:
-			OverloadResolution r = new OverloadResolution(context, new[] { lhs, rhs });
+			OverloadResolution userDefinedOperatorOR = new OverloadResolution(context, new[] { lhs, rhs });
 			HashSet<IParameterizedMember> userOperatorCandidates = new HashSet<IParameterizedMember>();
 			userOperatorCandidates.UnionWith(GetUserDefinedOperatorCandidates(lhsType, overloadableOperatorName));
 			userOperatorCandidates.UnionWith(GetUserDefinedOperatorCandidates(rhsType, overloadableOperatorName));
 			foreach (var candidate in userOperatorCandidates) {
-				r.AddCandidate(candidate);
+				userDefinedOperatorOR.AddCandidate(candidate);
 			}
-			if (r.FoundApplicableCandidate) {
-				return CreateResolveResultForUserDefinedOperator(r);
+			if (userDefinedOperatorOR.FoundApplicableCandidate) {
+				return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR);
 			}
 			
 			if (SharedTypes.Null.Equals(lhsType) && rhsType.IsReferenceType(context) == false
@@ -946,13 +952,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					throw new InvalidOperationException();
 			}
+			OverloadResolution builtinOperatorOR = new OverloadResolution(context, new[] { lhs, rhs });
 			foreach (var candidate in methodGroup) {
-				r.AddCandidate(candidate);
+				builtinOperatorOR.AddCandidate(candidate);
 			}
-			BinaryOperatorMethod m = (BinaryOperatorMethod)r.BestCandidate;
+			BinaryOperatorMethod m = (BinaryOperatorMethod)builtinOperatorOR.BestCandidate;
 			IType resultType = m.ReturnType.Resolve(context);
-			if (r.BestCandidateErrors != OverloadResolutionErrors.None) {
-				return new ErrorResolveResult(resultType);
+			if (builtinOperatorOR.BestCandidateErrors != OverloadResolutionErrors.None) {
+				// If there are any user-defined operators, prefer those over the built-in operators.
+				// It'll be a more informative error.
+				if (userDefinedOperatorOR.BestCandidate != null)
+					return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR);
+				else
+					return new ErrorResolveResult(resultType);
 			} else if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && m.CanEvaluateAtCompileTime) {
 				object val;
 				try {
@@ -962,8 +974,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				return new ConstantResolveResult(resultType, val);
 			} else {
-				lhs = Convert(lhs, m.Parameters[0].Type, r.ArgumentConversions[0]);
-				rhs = Convert(rhs, m.Parameters[1].Type, r.ArgumentConversions[1]);
+				lhs = Convert(lhs, m.Parameters[0].Type, builtinOperatorOR.ArgumentConversions[0]);
+				rhs = Convert(rhs, m.Parameters[1].Type, builtinOperatorOR.ArgumentConversions[1]);
 				return new BinaryOperatorResolveResult(resultType, lhs, op, rhs);
 			}
 		}
@@ -1617,6 +1629,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (operatorName == null)
 				return EmptyList<IMethod>.Instance;
+			TypeCode c = ReflectionHelper.GetTypeCode(type);
+			if (TypeCode.Boolean <= c && c <= TypeCode.Decimal || c == TypeCode.String) {
+				// The .NET framework contains some of C#'s built-in operators as user-defined operators.
+				// However, we must not use those as user-defined operators (we would skip numeric promotion).
+				return EmptyList<IMethod>.Instance;
+			}
 			// C# 4.0 spec: §7.3.5 Candidate user-defined operators
 			var operators = type.GetMethods(context, m => m.IsOperator && m.Name == operatorName).ToList<IParameterizedMember>();
 			LiftUserDefinedOperators(operators);
