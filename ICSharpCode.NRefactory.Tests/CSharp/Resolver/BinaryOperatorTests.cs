@@ -270,7 +270,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void Equality()
 		{
 			TestOperator(MakeResult(typeof(int*)), BinaryOperatorType.Equality, MakeResult(typeof(uint*)),
-			             Conversion.ImplicitPointerConversion, Conversion.ImplicitPointerConversion, typeof(bool));
+			             Conversion.IdentityConversion, Conversion.IdentityConversion, typeof(bool));
+			
+			TestOperator(MakeResult(typeof(int)), BinaryOperatorType.Equality, MakeResult(typeof(int?)),
+			             Conversion.ImplicitNullableConversion, Conversion.IdentityConversion, typeof(bool));
+			
+			TestOperator(MakeResult(typeof(int)), BinaryOperatorType.Equality, MakeResult(typeof(float)),
+			             Conversion.ExplicitNumericConversion, Conversion.IdentityConversion, typeof(bool));
 		}
 		
 		[Test]
@@ -322,8 +328,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertConstant(false, resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Equality, MakeConstant(0), MakeConstant(StringComparison.Ordinal)));
 			
-			AssertConstant(false, resolver.ResolveBinaryOperator(
-				BinaryOperatorType.Equality, MakeConstant(0), MakeConstant(StringComparison.Ordinal)));
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(0), MakeConstant(StringComparison.CurrentCulture)));
 			
 			Assert.IsFalse(resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Equality, MakeConstant(StringComparison.Ordinal), MakeConstant(1)).IsCompileTimeConstant);
@@ -454,7 +460,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				BinaryOperatorType.NullCoalescing, MakeResult(typeof(string)), MakeResult(typeof(dynamic))));
 		}
 		
-		[Test, Ignore("user-defined operators not yet implemented")]
+		[Test]
 		public void LiftedUserDefined()
 		{
 			AssertType(typeof(TimeSpan), resolver.ResolveBinaryOperator(
@@ -467,7 +473,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				BinaryOperatorType.Subtract, MakeResult(typeof(DateTime?)), MakeResult(typeof(DateTime?))));
 		}
 		
-		[Test, Ignore("user-defined operators not yet implemented")]
+		[Test]
 		public void UserDefinedNeedsLiftingDueToImplicitConversion()
 		{
 			string program = @"struct S {}
@@ -482,15 +488,22 @@ class Test {
 	}
 }
 ";
-			MemberResolveResult trr = Resolve<MemberResolveResult>(program);
-			Assert.IsFalse(trr.IsError);
-			Assert.AreEqual("A.op_Addition", trr.Member.FullName);
+			InvocationResolveResult irr = Resolve<InvocationResolveResult>(program);
+			Assert.IsFalse(irr.IsError);
+			Assert.IsTrue(irr.IsLiftedOperatorInvocation);
+			Assert.AreEqual("A.op_Addition", irr.Member.FullName);
 			// even though we're calling the lifted operator, trr.Member should be the original operator method
-			Assert.AreEqual("S", trr.Member.ReturnType.Resolve(context).ReflectionName);
-			Assert.AreEqual("System.Nullable`1[[S]]", trr.Type.ReflectionName);
+			Assert.AreEqual("S", irr.Member.ReturnType.Resolve(context).ReflectionName);
+			Assert.AreEqual("System.Nullable`1[[S]]", irr.Type.ReflectionName);
+			
+			Conversion lhsConv = ((ConversionResolveResult)irr.Arguments[0]).Conversion;
+			Conversion rhsConv = ((ConversionResolveResult)irr.Arguments[1]).Conversion;
+			Assert.AreEqual(Conversion.ImplicitNullableConversion, lhsConv);
+			Assert.IsTrue(rhsConv.IsUserDefined);
+			Assert.AreEqual("A.op_Implicit", rhsConv.Method.FullName);
 		}
 		
-		[Test, Ignore("user-defined operators not yet implemented")]
+		[Test]
 		public void ThereIsNoLiftedOperatorsForClasses()
 		{
 			string program = @"struct S {}

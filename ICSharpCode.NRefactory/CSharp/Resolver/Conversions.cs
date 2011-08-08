@@ -773,7 +773,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					result.Add(new OperatorInfo(op, sourceType, targetType, false));
 				}
 				// Try if the operator is applicable in lifted form:
-				if (sourceType.IsReferenceType(context) == false && targetType.IsReferenceType(context) == false) {
+				if (NullableType.IsNonNullableValueType(sourceType, context)
+				    && NullableType.IsNonNullableValueType(targetType, context))
+				{
 					IType liftedSourceType = NullableType.Create(sourceType, context);
 					IType liftedTargetType = NullableType.Create(targetType, context);
 					if (isExplicit) {

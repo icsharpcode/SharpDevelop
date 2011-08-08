@@ -304,14 +304,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						for (int i = 0; i < typeParameters.Count; i++) {
 							ITypeParameter tp = typeParameters[i];
 							IType typeArg = newParameterizedType.TypeArguments[i];
+							switch (typeArg.Kind) { // void, null, and pointers cannot be used as type arguments
+								case TypeKind.Void:
+								case TypeKind.Null:
+								case TypeKind.Pointer:
+									ConstraintsValid = false;
+									break;
+							}
 							if (tp.HasReferenceTypeConstraint) {
 								if (typeArg.IsReferenceType(overloadResolution.context) != true)
 									ConstraintsValid = false;
 							}
 							if (tp.HasValueTypeConstraint) {
-								if (typeArg.IsReferenceType(overloadResolution.context) != false)
-									ConstraintsValid = false;
-								if (NullableType.IsNullable(typeArg))
+								if (!NullableType.IsNonNullableValueType(typeArg, overloadResolution.context))
 									ConstraintsValid = false;
 							}
 							if (tp.HasDefaultConstructorConstraint) {
@@ -627,6 +632,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return bestCandidate.ArgumentToParameterMap;
 			else
 				return null;
+		}
+		
+		public IList<ResolveResult> GetArgumentsWithConversions()
+		{
+			if (bestCandidate == null)
+				return arguments;
+			var conversions = this.ArgumentConversions;
+			ResolveResult[] args = new ResolveResult[arguments.Length];
+			for (int i = 0; i < args.Length; i++) {
+				if (conversions[i] == Conversion.IdentityConversion || conversions[i] == Conversion.None) {
+					args[i] = arguments[i];
+				} else {
+					int parameterIndex = bestCandidate.ArgumentToParameterMap[i];
+					IType parameterType;
+					if (parameterIndex >= 0)
+						parameterType = bestCandidate.ParameterTypes[parameterIndex];
+					else
+						parameterType = SharedTypes.UnknownType;
+					args[i] = new ConversionResolveResult(parameterType, args[i], conversions[i]);
+				}
+			}
+			return args;
 		}
 	}
 }

@@ -34,7 +34,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public readonly IList<IType> TypeArguments;
 		
 		public readonly IList<ResolveResult> Arguments;
-		public readonly IList<Conversion> ArgumentConversions;
 		
 		/// <summary>
 		/// Gets whether this invocation is calling an extension method using extension method syntax.
@@ -46,21 +45,46 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public readonly bool IsExpandedForm;
 		
+		/// <summary>
+		/// Gets whether this is a lifted operator invocation.
+		/// </summary>
+		public readonly bool IsLiftedOperatorInvocation;
+		
 		readonly IList<int> argumentToParameterMap;
 		
 		public InvocationResolveResult(ResolveResult targetResult, OverloadResolution or, ITypeResolveContext context)
 			: base(
-				or.IsExtensionMethodInvocation ? new TypeResolveResult(or.BestCandidate.DeclaringType) : targetResult,
+				or.IsExtensionMethodInvocation ? null : targetResult,
 				or.BestCandidate,
 				GetReturnType(or, context))
 		{
 			this.OverloadResolutionErrors = or.BestCandidateErrors;
 			this.TypeArguments = or.InferredTypeArguments;
-			this.Arguments = or.Arguments;
-			this.ArgumentConversions = or.ArgumentConversions;
+			this.argumentToParameterMap = or.GetArgumentToParameterMap();
+			this.Arguments = or.GetArgumentsWithConversions();
+			
 			this.IsExtensionMethodInvocation = or.IsExtensionMethodInvocation;
 			this.IsExpandedForm = or.BestCandidateIsExpandedForm;
-			this.argumentToParameterMap = or.GetArgumentToParameterMap();
+			this.IsLiftedOperatorInvocation = or.BestCandidate is OverloadResolution.ILiftedOperator;
+		}
+		
+		public InvocationResolveResult(
+			ResolveResult targetResult, IParameterizedMember member, IType returnType,
+			IList<ResolveResult> arguments,
+			OverloadResolutionErrors overloadResolutionErrors = OverloadResolutionErrors.None,
+			IList<IType> typeArguments = null,
+			bool isExtensionMethodInvocation = false, bool isExpandedForm = false,
+			bool isLiftedOperatorInvocation = false,
+			IList<int> argumentToParameterMap = null)
+			: base(targetResult, member, returnType)
+		{
+			this.OverloadResolutionErrors = overloadResolutionErrors;
+			this.TypeArguments = typeArguments ?? EmptyList<IType>.Instance;
+			this.Arguments = arguments ?? EmptyList<ResolveResult>.Instance;
+			this.IsExtensionMethodInvocation = isExtensionMethodInvocation;
+			this.IsExpandedForm = isExpandedForm;
+			this.IsLiftedOperatorInvocation = isLiftedOperatorInvocation;
+			this.argumentToParameterMap = argumentToParameterMap;
 		}
 		
 		static IType GetReturnType(OverloadResolution or, ITypeResolveContext context)

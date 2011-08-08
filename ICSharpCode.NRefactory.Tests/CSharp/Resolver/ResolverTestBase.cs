@@ -147,7 +147,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (expectedConversion == Conversion.IdentityConversion) {
 				Assert.AreSame(expectedRR, conversionResult, "Expected no " + text);
 			} else {
-				ConversionResolveResult crr = (ConversionResolveResult)conversionResult;
+				ConversionResolveResult crr = conversionResult as ConversionResolveResult;
+				Assert.IsNotNull(crr, "Could not find ConversionResolveResult for " + text);
 				Assert.AreEqual(expectedConversion, crr.Conversion, text);
 				Assert.AreSame(expectedRR, crr.Input, "Input of " + text);
 			}

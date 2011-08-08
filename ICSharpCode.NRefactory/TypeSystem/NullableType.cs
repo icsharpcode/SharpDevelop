@@ -37,6 +37,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return pt != null && pt.TypeArguments.Count == 1 && pt.FullName == "System.Nullable";
 		}
 		
+		public static bool IsNonNullableValueType(IType type, ITypeResolveContext context)
+		{
+			return type.IsReferenceType(context) == false && !IsNullable(type);
+		}
+		
 		/// <summary>
 		/// Returns the element type, if <paramref name="type"/> is a nullable type.
 		/// Otherwise, returns the type itself.

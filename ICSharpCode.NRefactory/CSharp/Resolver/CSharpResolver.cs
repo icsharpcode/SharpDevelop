@@ -475,8 +475,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool isNullable = NullableType.IsNullable(expression.Type);
 			
 			// the operator is overloadable:
-			// TODO: implicit support for user operators
-			//var candidateSet = GetUnaryOperatorCandidates();
+			OverloadResolution r = new OverloadResolution(context, new[] { expression });
+			foreach (var candidate in GetUserDefinedOperatorCandidates(type, overloadableOperatorName)) {
+				r.AddCandidate(candidate);
+			}
+			if (r.FoundApplicableCandidate) {
+				return CreateResolveResultForUserDefinedOperator(r);
+			}
 			
 			expression = UnaryNumericPromotion(op, ref type, isNullable, expression);
 			OperatorMethod[] methodGroup;
@@ -518,7 +523,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					throw new InvalidOperationException();
 			}
-			OverloadResolution r = new OverloadResolution(context, new[] { expression });
 			foreach (var candidate in methodGroup) {
 				r.AddCandidate(candidate);
 			}
@@ -686,13 +690,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			new LambdaUnaryOperatorMethod<ulong>(i => ~i)
 		);
 		#endregion
-		
-		object GetUserUnaryOperatorCandidates()
-		{
-			// C# 4.0 spec: §7.3.5 Candidate user-defined operators
-			// TODO: implement user-defined operators
-			throw new NotImplementedException();
-		}
 		#endregion
 		
 		#region ResolveBinaryOperator
@@ -732,7 +729,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType lhsType = NullableType.GetUnderlyingType(lhs.Type);
 			IType rhsType = NullableType.GetUnderlyingType(rhs.Type);
 			
-			// TODO: find user-defined operators
+			// the operator is overloadable:
+			OverloadResolution r = new OverloadResolution(context, new[] { lhs, rhs });
+			HashSet<IParameterizedMember> userOperatorCandidates = new HashSet<IParameterizedMember>();
+			userOperatorCandidates.UnionWith(GetUserDefinedOperatorCandidates(lhsType, overloadableOperatorName));
+			userOperatorCandidates.UnionWith(GetUserDefinedOperatorCandidates(rhsType, overloadableOperatorName));
+			foreach (var candidate in userOperatorCandidates) {
+				r.AddCandidate(candidate);
+			}
+			if (r.FoundApplicableCandidate) {
+				return CreateResolveResultForUserDefinedOperator(r);
+			}
 			
 			if (SharedTypes.Null.Equals(lhsType) && rhsType.IsReferenceType(context) == false
 			    || lhsType.IsReferenceType(context) == false && SharedTypes.Null.Equals(rhsType))
@@ -877,7 +884,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							// bool operator op(E x, E y);
 							return HandleEnumComparison(op, rhsType, isNullable, lhs, rhs);
 						} else if (lhsType is PointerType && rhsType is PointerType) {
-							return new ResolveResult(KnownTypeReference.Boolean.Resolve(context));
+							return new BinaryOperatorResolveResult(KnownTypeReference.Boolean.Resolve(context), lhs, op, rhs);
 						}
 						switch (op) {
 							case BinaryOperatorType.Equality:
@@ -907,7 +914,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case BinaryOperatorType.BitwiseOr:
 				case BinaryOperatorType.ExclusiveOr:
 					{
-						Conversion c;
 						if (lhsType.Kind == TypeKind.Enum && TryConvert(ref rhs, lhs.Type)) {
 							// bool operator op(E x, E y);
 							return HandleEnumOperator(isNullable, lhsType, op, lhs, rhs);
@@ -940,7 +946,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					throw new InvalidOperationException();
 			}
-			OverloadResolution r = new OverloadResolution(context, new[] { lhs, rhs });
 			foreach (var candidate in methodGroup) {
 				r.AddCandidate(candidate);
 			}
@@ -1605,12 +1610,87 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		#endregion
+		#endregion
 		
-		object GetUserBinaryOperatorCandidates()
+		#region Get user-defined operator candidates
+		IEnumerable<IParameterizedMember> GetUserDefinedOperatorCandidates(IType type, string operatorName)
 		{
+			if (operatorName == null)
+				return EmptyList<IMethod>.Instance;
 			// C# 4.0 spec: §7.3.5 Candidate user-defined operators
-			// TODO: implement user-defined operators
-			throw new NotImplementedException();
+			var operators = type.GetMethods(context, m => m.IsOperator && m.Name == operatorName).ToList<IParameterizedMember>();
+			LiftUserDefinedOperators(operators);
+			return operators;
+		}
+		
+		void LiftUserDefinedOperators(List<IParameterizedMember> operators)
+		{
+			int nonLiftedMethodCount = operators.Count;
+			// Construct lifted operators
+			for (int i = 0; i < nonLiftedMethodCount; i++) {
+				var liftedMethod = LiftUserDefinedOperator(operators[i]);
+				if (liftedMethod != null)
+					operators.Add(liftedMethod);
+			}
+		}
+		
+		LiftedUserDefinedOperator LiftUserDefinedOperator(IParameterizedMember m)
+		{
+			IType returnType = m.ReturnType.Resolve(context);
+			if (!NullableType.IsNonNullableValueType(returnType, context))
+				return null; // cannot lift this operator
+			LiftedUserDefinedOperator liftedOperator = new LiftedUserDefinedOperator(m);
+			for (int i = 0; i < m.Parameters.Count; i++) {
+				IType parameterType = m.Parameters[i].Type.Resolve(context);
+				if (!NullableType.IsNonNullableValueType(parameterType, context))
+					return null; // cannot lift this operator
+				var p = new DefaultParameter(m.Parameters[i]);
+				p.Type = NullableType.Create(parameterType, context);
+				liftedOperator.Parameters.Add(p);
+			}
+			liftedOperator.ReturnType = NullableType.Create(returnType, context);
+			return liftedOperator;
+		}
+		
+		sealed class LiftedUserDefinedOperator : OperatorMethod, OverloadResolution.ILiftedOperator
+		{
+			internal readonly IParameterizedMember nonLiftedOperator;
+			
+			public LiftedUserDefinedOperator(IParameterizedMember nonLiftedMethod)
+			{
+				this.nonLiftedOperator = nonLiftedMethod;
+			}
+			
+			public IList<IParameter> NonLiftedParameters {
+				get { return nonLiftedOperator.Parameters; }
+			}
+			
+			public override bool Equals(object obj)
+			{
+				LiftedUserDefinedOperator op = obj as LiftedUserDefinedOperator;
+				return op != null && this.nonLiftedOperator.Equals(op.nonLiftedOperator);
+			}
+			
+			public override int GetHashCode()
+			{
+				return nonLiftedOperator.GetHashCode() ^ 0x7191254;
+			}
+		}
+		
+		ResolveResult CreateResolveResultForUserDefinedOperator(OverloadResolution r)
+		{
+			LiftedUserDefinedOperator lifted = r.BestCandidate as LiftedUserDefinedOperator;
+			if (lifted != null) {
+				return new InvocationResolveResult(
+					null, lifted.nonLiftedOperator, lifted.ReturnType.Resolve(context),
+					r.GetArgumentsWithConversions(), r.BestCandidateErrors,
+					typeArguments: r.InferredTypeArguments,
+					isLiftedOperatorInvocation: true,
+					argumentToParameterMap: r.GetArgumentToParameterMap()
+				);
+			} else {
+				return new InvocationResolveResult(null, r, context);
+			}
 		}
 		#endregion
 		
@@ -2177,7 +2257,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				or.AddCandidate(ctor);
 			}
 			if (or.BestCandidate != null) {
-				return new InvocationResolveResult(new TypeResolveResult(type), or, context);
+				return new InvocationResolveResult(null, or, context);
 			} else {
 				return new ErrorResolveResult(type);
 			}
@@ -2261,33 +2341,44 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType resultType;
 			if (SharedTypes.Dynamic.Equals(trueExpression.Type) || SharedTypes.Dynamic.Equals(falseExpression.Type)) {
 				resultType = SharedTypes.Dynamic;
-				isValid = true;
+				isValid = TryConvert(ref trueExpression, resultType) & TryConvert(ref falseExpression, resultType);
 			} else if (HasType(trueExpression) && HasType(falseExpression)) {
-				bool t2f = conversions.ImplicitConversion(trueExpression.Type, falseExpression.Type);
-				bool f2t = conversions.ImplicitConversion(falseExpression.Type, trueExpression.Type);
-				resultType = (f2t && !t2f) ? trueExpression.Type : falseExpression.Type;
+				Conversion t2f = conversions.ImplicitConversion(trueExpression.Type, falseExpression.Type);
+				Conversion f2t = conversions.ImplicitConversion(falseExpression.Type, trueExpression.Type);
 				// The operator is valid:
 				// a) if there's a conversion in one direction but not the other
 				// b) if there are conversions in both directions, and the types are equivalent
-				isValid = (t2f != f2t) || (t2f && f2t && trueExpression.Type.Equals(falseExpression.Type));
+				if (t2f && !f2t) {
+					resultType = falseExpression.Type;
+					isValid = true;
+					trueExpression = Convert(trueExpression, resultType, t2f);
+				} else if (f2t && !t2f) {
+					resultType = trueExpression.Type;
+					isValid = true;
+					falseExpression = Convert(falseExpression, resultType, f2t);
+				} else {
+					resultType = trueExpression.Type;
+					isValid = trueExpression.Type.Equals(falseExpression.Type);
+				}
 			} else if (HasType(trueExpression)) {
 				resultType = trueExpression.Type;
-				isValid = conversions.ImplicitConversion(falseExpression, resultType);
+				isValid = TryConvert(ref falseExpression, resultType);
 			} else if (HasType(falseExpression)) {
 				resultType = falseExpression.Type;
-				isValid = conversions.ImplicitConversion(trueExpression, resultType);
+				isValid = TryConvert(ref trueExpression, resultType);
 			} else {
 				return ErrorResult;
 			}
+			isValid &= TryConvert(ref condition, KnownTypeReference.Boolean.Resolve(context));
 			if (isValid) {
 				if (condition.IsCompileTimeConstant && trueExpression.IsCompileTimeConstant && falseExpression.IsCompileTimeConstant) {
 					bool? val = condition.ConstantValue as bool?;
 					if (val == true)
-						return ResolveCast(resultType, trueExpression);
+						return trueExpression;
 					else if (val == false)
-						return ResolveCast(resultType, falseExpression);
+						return falseExpression;
 				}
-				return new ResolveResult(resultType);
+				return new ConditionalOperatorResolveResult(resultType, condition, trueExpression, falseExpression);
 			} else {
 				return new ErrorResolveResult(resultType);
 			}
