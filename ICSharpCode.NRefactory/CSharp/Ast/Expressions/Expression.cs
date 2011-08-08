@@ -18,8 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -105,11 +103,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		// Make debugging easier by giving Expressions a ToString() implementation
 		public override string ToString()
 		{
-			if (IsNull)
-				return "Null";
-			StringWriter w = new StringWriter();
-			AcceptVisitor(new OutputVisitor(w, new CSharpFormattingOptions()), null);
-			return w.ToString();
+			return DebugToString();
 		}
 		
 		public Expression ReplaceWith(Func<Expression, Expression> replaceFunction)
