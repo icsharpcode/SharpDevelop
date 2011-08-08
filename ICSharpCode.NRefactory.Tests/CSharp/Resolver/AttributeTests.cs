@@ -40,18 +40,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void AttributeConstructor1()
 		{
 			string program = "using System; [$LoaderOptimization(3)$] class Test { }";
-			var mrr = Resolve<MemberResolveResult>(program);
+			var mrr = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("System.LoaderOptimizationAttribute..ctor", mrr.Member.FullName);
-			Assert.AreEqual("System.Byte", (mrr.Member as IMethod).Parameters[0].Type.Resolve(context).FullName);
+			Assert.AreEqual("System.Byte", mrr.Member.Parameters[0].Type.Resolve(context).FullName);
 		}
 		
 		[Test]
 		public void AttributeConstructor2()
 		{
 			string program = "using System; [$LoaderOptimization(LoaderOptimization.NotSpecified)$] class Test { }";
-			var mrr = Resolve<MemberResolveResult>(program);
+			var mrr = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("System.LoaderOptimizationAttribute..ctor", mrr.Member.FullName);
-			Assert.AreEqual("System.LoaderOptimization", (mrr.Member as IMethod).Parameters[0].Type.Resolve(context).FullName);
+			Assert.AreEqual("System.LoaderOptimization", mrr.Member.Parameters[0].Type.Resolve(context).FullName);
 		}
 		
 		[Test]
@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			string program = "using System; [$Obsolete$] class Test {}";
 			
-			MemberResolveResult result = Resolve<MemberResolveResult>(program);
+			var result = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("System.ObsoleteAttribute..ctor", result.Member.FullName);
 		}
 		
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public const AttributeTargets XXX = AttributeTargets.All;
 }
 ";
-			MemberResolveResult result = Resolve<MemberResolveResult>(program);
+			var result = Resolve<MemberResolveResult>(program);
 			Assert.AreEqual("MyAttribute.XXX", result.Member.FullName);
 		}
 		
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 enum E { A, B }
 }
 ";
-			MemberResolveResult result = Resolve<MemberResolveResult>(program);
+			var result = Resolve<MemberResolveResult>(program);
 			Assert.AreEqual("MyNamespace.E.A", result.Member.FullName);
 		}
 		

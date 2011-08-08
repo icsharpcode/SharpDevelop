@@ -115,10 +115,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		/// <summary>
+		/// Gets/Sets whether the methods are extension methods that are being called using extension method syntax.
+		/// </summary>
+		/// <remarks>
+		/// Setting this property to true restricts the possible conversions on the first argument to
+		/// implicit identity, reference, or boxing conversions.
+		/// </remarks>
+		public bool IsExtensionMethodInvocation { get; set; }
+		
+		/// <summary>
 		/// Gets/Sets whether expanding 'params' into individual elements is allowed.
 		/// The default value is true.
 		/// </summary>
 		public bool AllowExpandingParams { get; set; }
+		
+		/// <summary>
+		/// Gets the arguments for which this OverloadResolution instance was created.
+		/// </summary>
+		public IList<ResolveResult> Arguments {
+			get { return arguments; }
+		}
 		
 		#region AddCandidate
 		public OverloadResolutionErrors AddCandidate(IParameterizedMember member)
@@ -348,10 +364,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (candidate.Parameters[parameterIndex].IsOut || candidate.Parameters[parameterIndex].IsRef)
 						candidate.AddError(OverloadResolutionErrors.ParameterPassingModeMismatch);
 				}
-				Conversion c = conversions.ImplicitConversion(arguments[i], candidate.ParameterTypes[parameterIndex]);
+				IType parameterType = candidate.ParameterTypes[parameterIndex];
+				Conversion c = conversions.ImplicitConversion(arguments[i], parameterType);
 				candidate.ArgumentConversions[i] = c;
-				if (!c)
-					candidate.AddError(OverloadResolutionErrors.ArgumentTypeMismatch);
+				if (IsExtensionMethodInvocation && parameterIndex == 0) {
+					// First parameter to extension method must be an identity, reference or boxing conversion
+					if (!(c == Conversion.IdentityConversion || c == Conversion.ImplicitReferenceConversion || c == Conversion.BoxingConversion))
+						candidate.AddError(OverloadResolutionErrors.ArgumentTypeMismatch);
+				} else {
+					if (!c)
+						candidate.AddError(OverloadResolutionErrors.ArgumentTypeMismatch);
+				}
 			}
 		}
 		#endregion
@@ -575,6 +598,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				else
 					return new Conversion[arguments.Length];
 			}
+		}
+		
+		/// <summary>
+		/// Gets an array that maps argument indices to parameter indices.
+		/// For arguments that could not be mapped to any parameter, the value will be -1.
+		/// 
+		/// parameterIndex = GetArgumentToParameterMap()[argumentIndex]
+		/// </summary>
+		public IList<int> GetArgumentToParameterMap()
+		{
+			if (bestCandidate != null)
+				return bestCandidate.ArgumentToParameterMap;
+			else
+				return null;
 		}
 	}
 }

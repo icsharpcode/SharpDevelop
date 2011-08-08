@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			ITypeDefinition declType = ctx.GetTypeDefinition(typeof(int));
 			var methods = declType.Methods.Where(m => m.Name == "Parse").ToList();
-			var argument = new MethodGroupResolveResult(declType, "Parse", methods, new IType[0]);
+			var argument = new MethodGroupResolveResult(new TypeResolveResult(declType), "Parse", methods, new IType[0]);
 			
 			bool success;
 			ti.InferTypeArguments(new [] { A, B }, new [] { argument },
@@ -105,7 +105,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			ITypeDefinition declType = ctx.GetTypeDefinition(typeof(Console));
 			var methods = declType.Methods.Where(m => m.Name == "ReadKey").ToList();
-			var argument = new MethodGroupResolveResult(declType, "ReadKey", methods, new IType[0]);
+			var argument = new MethodGroupResolveResult(new TypeResolveResult(declType), "ReadKey", methods, new IType[0]);
 			
 			bool success;
 			Assert.AreEqual(
@@ -123,15 +123,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			IType[] expectedParameterTypes;
 			IType inferredReturnType;
+			IParameter[] parameters;
 			
 			public MockImplicitLambda(IType[] expectedParameterTypes, IType inferredReturnType)
 			{
 				this.expectedParameterTypes = expectedParameterTypes;
 				this.inferredReturnType = inferredReturnType;
+				this.parameters = new IParameter[expectedParameterTypes.Length];
+				for (int i = 0; i < parameters.Length; i++) {
+					// UnknownType because this lambda is implicitly typed
+					parameters[i] = new DefaultParameter(SharedTypes.UnknownType, "X" + i);
+				}
 			}
 			
 			public override IList<IParameter> Parameters {
-				get { throw new NotImplementedException(); }
+				get { return parameters; }
 			}
 			
 			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)

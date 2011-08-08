@@ -171,7 +171,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		protected T Resolve<T>(string code) where T : ResolveResult
 		{
 			ResolveResult rr = Resolve(code);
-			Assert.IsTrue(rr is T, "Resolve should be " + typeof(T).Name + ", but was " + (rr != null ? rr.GetType().Name : "null"));
+			Assert.IsNotNull(rr);
+			Assert.IsTrue(rr.GetType() == typeof(T), "Resolve should be " + typeof(T).Name + ", but was " + rr.GetType().Name);
 			return (T)rr;
 		}
 		

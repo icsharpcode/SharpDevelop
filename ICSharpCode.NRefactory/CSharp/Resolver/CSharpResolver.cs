@@ -1555,6 +1555,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 			}
+			// TODO: return implicit/explicit conversion being applied
 			return new ResolveResult(targetType);
 		}
 		
@@ -1651,7 +1652,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				MemberLookup lookup = new MemberLookup(context, t, t.ProjectContent);
 				ResolveResult r;
 				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
-					r = lookup.Lookup(t, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
+					r = lookup.Lookup(new TypeResolveResult(t), identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
 				} else {
 					r = lookup.LookupType(t, identifier, typeArguments, parameterizeResultType);
 				}
@@ -1785,11 +1786,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return DynamicResult;
 			
 			MemberLookup lookup = CreateMemberLookup();
-			ResolveResult result = lookup.Lookup(target.Type, identifier, typeArguments, isInvocationTarget);
+			ResolveResult result = lookup.Lookup(target, identifier, typeArguments, isInvocationTarget);
 			if (result is UnknownMemberResolveResult) {
 				var extensionMethods = GetExtensionMethods(target.Type, identifier, typeArguments.Count);
 				if (extensionMethods.Count > 0) {
-					return new MethodGroupResolveResult(target.Type, identifier, EmptyList<IMethod>.Instance, typeArguments) {
+					return new MethodGroupResolveResult(target, identifier, EmptyList<IMethod>.Instance, typeArguments) {
 						extensionMethods = extensionMethods
 					};
 				}
@@ -1842,6 +1843,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return extensionMethodGroups;
 		}
 		
+		/// <summary>
+		/// Gets all extension methods available in the current using scope.
+		/// This list includes unaccessible 
+		/// </summary>
 		List<List<IMethod>> GetAllExtensionMethods()
 		{
 			// TODO: maybe cache the result?
@@ -1873,7 +1878,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			return
 				from c in context.GetTypes(namespaceName, StringComparer.Ordinal)
-				where c.IsStatic && c.HasExtensionMethods
+				where c.IsStatic && c.HasExtensionMethods && c.TypeParameters.Count == 0
 				from m in c.Methods
 				where m.IsExtensionMethod
 				select m;
@@ -1894,9 +1899,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (mgrr != null) {
 				OverloadResolution or = mgrr.PerformOverloadResolution(context, arguments, argumentNames);
 				if (or.BestCandidate != null) {
-					IType returnType = or.BestCandidate.ReturnType.Resolve(context);
-					returnType = returnType.AcceptVisitor(new MethodTypeParameterSubstitution(or.InferredTypeArguments));
-					return new MemberResolveResult(or.BestCandidate, returnType);
+					return new InvocationResolveResult(mgrr.TargetResult, or, context);
 				} else {
 					// No candidate found at all (not even an inapplicable one).
 					// This can happen with empty method groups (as sometimes used with extension methods)
@@ -2019,7 +2022,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				or.AddCandidate(p);
 			}
 			if (or.BestCandidate != null) {
-				return new MemberResolveResult(or.BestCandidate, or.BestCandidate.ReturnType.Resolve(context));
+				return new InvocationResolveResult(target, or, context);
 			} else {
 				return ErrorResult;
 			}
@@ -2039,7 +2042,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				or.AddCandidate(ctor);
 			}
 			if (or.BestCandidate != null) {
-				return new MemberResolveResult(or.BestCandidate, type);
+				return new InvocationResolveResult(new TypeResolveResult(type), or, context);
 			} else {
 				return new ErrorResolveResult(type);
 			}

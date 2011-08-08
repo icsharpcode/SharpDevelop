@@ -14,25 +14,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly IMember member;
 		readonly bool isConstant;
 		readonly object constantValue;
+		readonly ResolveResult targetResult;
 		
-		public MemberResolveResult(IMember member, IType returnType) : base(returnType)
+		public MemberResolveResult(ResolveResult targetResult, IMember member, IType returnType) : base(returnType)
 		{
 			if (member == null)
 				throw new ArgumentNullException("member");
+			this.targetResult = targetResult;
 			this.member = member;
 		}
 		
-		public MemberResolveResult(IMember member, IType returnType, object constantValue) : base(returnType)
+		public MemberResolveResult(ResolveResult targetResult, IMember member, IType returnType, object constantValue) : base(returnType)
 		{
 			if (member == null)
 				throw new ArgumentNullException("member");
+			this.targetResult = targetResult;
 			this.member = member;
 			this.isConstant = true;
 			this.constantValue = constantValue;
 		}
 		
-		public MemberResolveResult(IMember member, ITypeResolveContext context) : base(member.ReturnType.Resolve(context))
+		public MemberResolveResult(ResolveResult targetResult, IMember member, ITypeResolveContext context) : base(member.ReturnType.Resolve(context))
 		{
+			this.targetResult = targetResult;
 			this.member = member;
 			IField field = member as IField;
 			if (field != null) {

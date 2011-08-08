@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	
 	public class AmbiguousMemberResultResult : MemberResolveResult
 	{
-		public AmbiguousMemberResultResult(IMember member, IType returnType) : base(member, returnType)
+		public AmbiguousMemberResultResult(ResolveResult targetResult, IMember member, IType returnType) : base(targetResult, member, returnType)
 		{
 		}
 		

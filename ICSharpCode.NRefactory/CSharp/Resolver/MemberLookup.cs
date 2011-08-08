@@ -162,8 +162,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Performs a member lookup.
 		/// </summary>
-		public ResolveResult Lookup(IType type, string name, IList<IType> typeArguments, bool isInvocation)
+		public ResolveResult Lookup(ResolveResult targetResolveResult, string name, IList<IType> typeArguments, bool isInvocation)
 		{
+			IType type = targetResolveResult.Type;
 			int typeArgumentCount = typeArguments.Count;
 			
 			List<IType> types = new List<IType>();
@@ -259,10 +260,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new UnknownMemberResolveResult(type, name, typeArguments);
 			IMember firstNonMethod = members.FirstOrDefault(m => !(m is IMethod));
 			if (members.Count == 1 && firstNonMethod != null)
-				return new MemberResolveResult(firstNonMethod, context);
+				return new MemberResolveResult(targetResolveResult, firstNonMethod, context);
 			if (firstNonMethod == null)
-				return new MethodGroupResolveResult(type, name, members.ConvertAll(m => (IMethod)m), typeArguments);
-			return new AmbiguousMemberResultResult(firstNonMethod, firstNonMethod.ReturnType.Resolve(context));
+				return new MethodGroupResolveResult(targetResolveResult, name, members.ConvertAll(m => (IMethod)m), typeArguments);
+			return new AmbiguousMemberResultResult(targetResolveResult, firstNonMethod, firstNonMethod.ReturnType.Resolve(context));
 		}
 
 		static bool IsNonInterfaceType(ITypeDefinition def)

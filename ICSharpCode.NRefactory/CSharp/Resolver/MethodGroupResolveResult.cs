@@ -17,26 +17,33 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	{
 		readonly ReadOnlyCollection<IMethod> methods;
 		readonly ReadOnlyCollection<IType> typeArguments;
-		readonly IType targetType;
+		readonly ResolveResult targetResult;
 		readonly string methodName;
 		
-		public MethodGroupResolveResult(IType targetType, string methodName, IList<IMethod> methods, IList<IType> typeArguments) : base(SharedTypes.UnknownType)
+		public MethodGroupResolveResult(ResolveResult targetResult, string methodName, IList<IMethod> methods, IList<IType> typeArguments) : base(SharedTypes.UnknownType)
 		{
-			if (targetType == null)
-				throw new ArgumentNullException("targetType");
+			if (targetResult == null)
+				throw new ArgumentNullException("targetResult");
 			if (methods == null)
 				throw new ArgumentNullException("methods");
-			this.targetType = targetType;
+			this.targetResult = targetResult;
 			this.methodName = methodName;
 			this.methods = new ReadOnlyCollection<IMethod>(methods);
 			this.typeArguments = typeArguments != null ? new ReadOnlyCollection<IType>(typeArguments) : EmptyList<IType>.Instance;
 		}
 		
 		/// <summary>
+		/// Gets the resolve result for the target object.
+		/// </summary>
+		public ResolveResult TargetResult {
+			get { return targetResult; }
+		}
+		
+		/// <summary>
 		/// Gets the type of the reference to the target object.
 		/// </summary>
 		public IType TargetType {
-			get { return targetType; }
+			get { return targetResult.Type; }
 		}
 		
 		/// <summary>
@@ -81,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				UsingScope oldUsingScope = resolver.UsingScope;
 				try {
 					resolver.UsingScope = usingScope;
-					extensionMethods = resolver.GetExtensionMethods(targetType, methodName, typeArguments.Count);
+					extensionMethods = resolver.GetExtensionMethods(this.TargetType, methodName, typeArguments.Count);
 				} finally {
 					resolver.UsingScope = oldUsingScope;
 					resolver = null;
@@ -121,6 +128,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 					var extOr = new OverloadResolution(context, extArguments, extArgumentNames, typeArgumentArray);
 					extOr.AllowExpandingParams = allowExpandingParams;
+					extOr.IsExtensionMethodInvocation = true;
 					
 					foreach (var g in extensionMethods) {
 						foreach (var m in g) {

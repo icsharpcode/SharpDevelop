@@ -332,7 +332,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolverEnabled) {
 				if (variableInitializer.Parent is FieldDeclaration) {
 					if (resolver.CurrentMember != null)
-						return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+						return new MemberResolveResult(null, resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
 				} else {
 					string identifier = variableInitializer.Name;
 					foreach (IVariable v in resolver.LocalVariables) {
@@ -353,7 +353,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ScanChildren(fixedVariableInitializer);
 			if (resolverEnabled) {
 				if (resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+					return new MemberResolveResult(null, resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
 				else
 					return errorResult;
 			} else {
@@ -371,7 +371,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ScanChildren(member);
 				
 				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.Context);
+					return new MemberResolveResult(null, resolver.CurrentMember, resolver.Context);
 				else
 					return errorResult;
 			} finally {
@@ -418,7 +418,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.Context);
+					return new MemberResolveResult(null, resolver.CurrentMember, resolver.Context);
 				else
 					return errorResult;
 			} finally {
@@ -453,7 +453,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.Context);
+					return new MemberResolveResult(null, resolver.CurrentMember, resolver.Context);
 				else
 					return errorResult;
 			} finally {
@@ -522,7 +522,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ScanChildren(enumMemberDeclaration);
 				
 				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.Context);
+					return new MemberResolveResult(null, resolver.CurrentMember, resolver.Context);
 				else
 					return errorResult;
 			} finally {

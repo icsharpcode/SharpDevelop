@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	}
 }
 ";
-			MemberResolveResult result = Resolve<MemberResolveResult>(program);
+			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("A.TargetMethod", result.Member.FullName);
 			Assert.AreEqual("System.Int32", result.Type.ReflectionName);
 		}
@@ -66,7 +66,7 @@ class B : A {
 	}
 }
 ";
-			MemberResolveResult result = Resolve<MemberResolveResult>(program);
+			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("B.GetRandomNumber", result.Member.FullName);
 		}
 		
@@ -87,7 +87,7 @@ class B : A {
 	}
 }
 ";
-			MemberResolveResult result = Resolve<MemberResolveResult>(program);
+			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("B.GetRandomNumber", result.Member.FullName);
 		}
 		
@@ -104,7 +104,7 @@ class B : A {
 	}
 }
 ";
-			MemberResolveResult result = Resolve<MemberResolveResult>(program);
+			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("A.TargetMethod", result.Member.FullName);
 			Assert.AreEqual("System.Int32", result.Type.ReflectionName);
 		}
@@ -202,11 +202,11 @@ class Program {
 	static void T(ref int y) {}
 }";
 			
-			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "T(a)");
-			Assert.IsFalse(((IMethod)mrr.Member).Parameters[0].IsRef);
+			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program, "T(a)");
+			Assert.IsFalse(mrr.Member.Parameters[0].IsRef);
 			
-			mrr = Resolve<MemberResolveResult>(program, "T(ref a)");
-			Assert.IsTrue(((IMethod)mrr.Member).Parameters[0].IsRef);
+			mrr = Resolve<InvocationResolveResult>(program, "T(ref a)");
+			Assert.IsTrue(mrr.Member.Parameters[0].IsRef);
 		}
 		
 		[Test, Ignore("Grouping by declaring type not yet implemented")]
@@ -221,7 +221,7 @@ class Program {
 class DerivedClass : BaseClass {
 	public void Test(object a) { }
 }";
-			MemberResolveResult mrr = Resolve<MemberResolveResult>(program);
+			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
 		}
 		
@@ -237,10 +237,10 @@ class DerivedClass : BaseClass {
 class DerivedClass : BaseClass {
 	public void Test(string a) { }
 }";
-			MemberResolveResult mrr = Resolve<MemberResolveResult>(program);
+			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
 			
-			mrr = Resolve<MemberResolveResult>(program.Replace("(3)", "(\"3\")"));
+			mrr = Resolve<InvocationResolveResult>(program.Replace("(3)", "(\"3\")"));
 			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
 		}
 		
@@ -261,7 +261,7 @@ class DerivedClass : MiddleClass {
 	public override void Test(int a) { }
 }";
 			
-			MemberResolveResult mrr = Resolve<MemberResolveResult>(program);
+			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("MiddleClass.Test", mrr.Member.FullName);
 		}
 	}

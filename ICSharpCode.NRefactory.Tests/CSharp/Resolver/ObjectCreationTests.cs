@@ -20,7 +20,7 @@ class A {
 	}
 }
 ";
-			MemberResolveResult result = Resolve<MemberResolveResult>(program);
+			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("System.Collections.Generic.List..ctor", result.Member.FullName);
 			
 			Assert.AreEqual("System.Collections.Generic.List`1[[System.String]]", result.Type.ReflectionName);
@@ -35,7 +35,7 @@ class A {
 	}
 }
 ";
-			ResolveResult result = Resolve<ResolveResult>(program);
+			ResolveResult result = Resolve<ErrorResolveResult>(program);
 			Assert.AreSame(SharedTypes.UnknownType, result.Type);
 		}
 		
@@ -67,21 +67,18 @@ class A {
 	A(double dblVal) {}
 }
 ";
-			MemberResolveResult result = Resolve<MemberResolveResult>(program.Replace("$", "$new A()$"));
-			IMethod m = (IMethod)result.Member;
-			Assert.IsFalse(m.IsStatic, "new A() is static");
-			Assert.AreEqual(0, m.Parameters.Count, "new A() parameter count");
+			InvocationResolveResult result = Resolve<InvocationResolveResult>(program.Replace("$", "$new A()$"));
+			Assert.IsFalse(result.Member.IsStatic, "new A() is static");
+			Assert.AreEqual(0, result.Member.Parameters.Count, "new A() parameter count");
 			Assert.AreEqual("A", result.Type.FullName);
 			
-			result = Resolve<MemberResolveResult>(program.Replace("$", "$new A(10)$"));
-			m = (IMethod)result.Member;
-			Assert.AreEqual(1, m.Parameters.Count, "new A(10) parameter count");
-			Assert.AreEqual("intVal", m.Parameters[0].Name, "new A(10) parameter");
+			result = Resolve<InvocationResolveResult>(program.Replace("$", "$new A(10)$"));
+			Assert.AreEqual(1, result.Member.Parameters.Count, "new A(10) parameter count");
+			Assert.AreEqual("intVal", result.Member.Parameters[0].Name, "new A(10) parameter");
 			
-			result = Resolve<MemberResolveResult>(program.Replace("$", "$new A(11.1)$"));
-			m = (IMethod)result.Member;
-			Assert.AreEqual(1, m.Parameters.Count, "new A(11.1) parameter count");
-			Assert.AreEqual("dblVal", m.Parameters[0].Name, "new A(11.1) parameter");
+			result = Resolve<InvocationResolveResult>(program.Replace("$", "$new A(11.1)$"));
+			Assert.AreEqual(1, result.Member.Parameters.Count, "new A(11.1) parameter count");
+			Assert.AreEqual("dblVal", result.Member.Parameters[0].Name, "new A(11.1) parameter");
 		}
 		
 		[Test]
@@ -93,11 +90,9 @@ class A {
 	}
 }
 ";
-			MemberResolveResult result = Resolve<MemberResolveResult>(program);
-			IMethod m = (IMethod)result.Member;
-			Assert.IsNotNull(m);
+			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("A", result.Type.ReflectionName);
-			Assert.AreEqual(0, m.Parameters.Count);
+			Assert.AreEqual(0, result.Member.Parameters.Count);
 		}
 		
 		[Test, Ignore("Parser returns incorrect positions")]
@@ -122,13 +117,13 @@ class C : B {
  	{}
 }
 ";
-			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "base(b)");
+			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program, "base(b)");
 			Assert.AreEqual("A..ctor", mrr.Member.FullName);
 			
-			mrr = Resolve<MemberResolveResult>(program, "base(c)");
+			mrr = Resolve<InvocationResolveResult>(program, "base(c)");
 			Assert.AreEqual("B..ctor", mrr.Member.FullName);
 			
-			mrr = Resolve<MemberResolveResult>(program, "this(0)");
+			mrr = Resolve<InvocationResolveResult>(program, "this(0)");
 			Assert.AreEqual("C..ctor", mrr.Member.FullName);
 		}
 	}
