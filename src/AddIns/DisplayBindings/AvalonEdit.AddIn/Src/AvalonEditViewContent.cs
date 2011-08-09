@@ -139,10 +139,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				codeEditor.SyntaxHighlighting =
 					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
 				
-				if (!file.IsUntitled) {
-					codeEditor.PrimaryTextEditor.IsReadOnly = (File.GetAttributes(file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
-				}
-				
 				codeEditor.Load(stream);
 				// Load() causes the undo stack to think stuff changed, so re-mark the file as original if necessary
 				if (!this.PrimaryFile.IsDirty) {

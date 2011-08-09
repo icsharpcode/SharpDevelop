@@ -73,6 +73,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void SelectWindow();
 		
 		/// <summary>
+		/// Refresh window status: title, infotip, lock.
+		/// </summary>
+		void RefreshStatus();
+		
+		/// <summary>
 		/// Is called when the title of this window has changed.
 		/// </summary>
 		event EventHandler TitleChanged;

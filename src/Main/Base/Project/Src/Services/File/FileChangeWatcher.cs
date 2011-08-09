@@ -137,6 +137,7 @@ namespace ICSharpCode.SharpDevelop
 				watcher.Path = Path.GetDirectoryName(fileName);
 				watcher.Filter = Path.GetFileName(fileName);
 				watcher.EnableRaisingEvents = true;
+				watcher.NotifyFilter |= NotifyFilters.Attributes;
 			} catch (PlatformNotSupportedException) {
 				if (watcher != null) {
 					watcher.Dispose();
@@ -173,6 +174,8 @@ namespace ICSharpCode.SharpDevelop
 						delegate { MainForm_Activated(this, EventArgs.Empty); } );
 				}
 			}
+			
+			file.RegisteredViewContents.ForEach(vc => vc.WorkbenchWindow.RefreshStatus());
 		}
 		
 		void MainForm_Activated(object sender, EventArgs e)

@@ -267,6 +267,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Activate();//this.SetAsActive();
 		}
 		
+		public void RefreshStatus()
+		{
+			UpdateActiveViewContent();
+		}
+		
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();

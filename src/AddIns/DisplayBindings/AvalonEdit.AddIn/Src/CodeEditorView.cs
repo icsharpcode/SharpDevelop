@@ -84,6 +84,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return this.Adapter.FileName; }
 		}
 		
+		public new bool IsReadOnly {
+			get {
+				if (!File.Exists(FileName))
+					return base.IsReadOnly;
+				
+				if ((File.GetAttributes(FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+					return true;
+				
+				return base.IsReadOnly;
+			}
+			set {
+				base.IsReadOnly = value;
+			}
+		}
+		
 		protected override void OnOptionChanged(PropertyChangedEventArgs e)
 		{
 			base.OnOptionChanged(e);
