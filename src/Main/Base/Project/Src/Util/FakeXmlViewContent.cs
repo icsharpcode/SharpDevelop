@@ -213,5 +213,14 @@ namespace ICSharpCode.SharpDevelop.Util
 			return null;
 		}
 		#endregion
+		
+		public event EventHandler IsReadOnlyChanged;
+		
+		protected void OnIsReadOnlyChanged(EventArgs e)
+		{
+			if (IsReadOnlyChanged != null) {
+				IsReadOnlyChanged(this, e);
+			}
+		}
 	}
 }

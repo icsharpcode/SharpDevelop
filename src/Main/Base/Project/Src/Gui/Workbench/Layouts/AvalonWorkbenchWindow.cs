@@ -145,8 +145,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			UpdateTitleAndInfoTip();
 			
 			IViewContent newActiveViewContent = this.ActiveViewContent;
-			if (newActiveViewContent != null)
+			if (newActiveViewContent != null) {
 				IsLocked = newActiveViewContent.IsReadOnly;
+				newActiveViewContent.IsReadOnlyChanged += delegate { IsLocked = newActiveViewContent.IsReadOnly; };
+			}
 
 			if (oldActiveViewContent != newActiveViewContent && ActiveViewContentChanged != null) {
 				ActiveViewContentChanged(this, EventArgs.Empty);
@@ -265,11 +267,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void SelectWindow()
 		{
 			Activate();//this.SetAsActive();
-		}
-		
-		public void RefreshStatus()
-		{
-			UpdateActiveViewContent();
 		}
 		
 		public override void OnApplyTemplate()

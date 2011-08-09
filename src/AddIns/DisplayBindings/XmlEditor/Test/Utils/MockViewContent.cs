@@ -53,6 +53,15 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
+		public event EventHandler IsReadOnlyChanged;
+		
+		protected virtual void OnIsReadOnlyChanged(EventArgs e)
+		{
+			if (IsReadOnlyChanged != null) {
+				IsReadOnlyChanged(this, e);
+			}
+		}
+		
 		public object Control {
 			get {
 				throw new NotImplementedException();

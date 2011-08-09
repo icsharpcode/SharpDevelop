@@ -5,15 +5,12 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.AddIn.Options;
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -53,6 +50,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			codeEditor.Document.UndoStack.PropertyChanged += codeEditor_Document_UndoStack_PropertyChanged;
 			codeEditor.CaretPositionChanged += CaretChanged;
 			codeEditor.TextCopied += codeEditor_TextCopied;
+			
+			// get the watcher for the file
+			var watcher = FileChangeWatcher.ActiveWatchers.FirstOrDefault(w => w.File == file);
+			if (watcher != null)
+				watcher.FileChanged += OnFileExternallyChanged;
+		}
+
+		void OnFileExternallyChanged(object sender, EventArgs e)
+		{
+			// handle readonly
+			bool isExternalReadOnly = (File.GetAttributes(this.PrimaryFileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
+			if (isExternalReadOnly != IsReadOnly) {
+				codeEditor.PrimaryTextEditor.IsReadOnly = isExternalReadOnly;
+				OnIsReadOnlyChanged(EventArgs.Empty);
+			}
 		}
 		
 		void codeEditor_Document_UndoStack_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -138,6 +150,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				BookmarksDetach();
 				codeEditor.SyntaxHighlighting =
 					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
+				
+				if (!file.IsUntitled) {
+					codeEditor.PrimaryTextEditor.IsReadOnly = (File.GetAttributes(file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
+				}
 				
 				codeEditor.Load(stream);
 				// Load() causes the undo stack to think stuff changed, so re-mark the file as original if necessary
