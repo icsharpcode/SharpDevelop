@@ -14,7 +14,6 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
-using ICSharpCode.SharpDevelop.Project.SavedData;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -89,9 +88,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (webOptions != null)
 				properties.Set("WebProjectOptions", webOptions);
 			
-			// other project data - logic in ProjectSavedDataConverter
-			properties.Set("projectSavedData_" + Name, SavedDataManager.GetSavedData()
-			               .Where(d => d.ProjectName == Name).ToArray());
+			// other project data
+			properties.Set("projectSavedData", ProjectSpecificProperties ?? new Properties());
 			
 			return properties;
 		}
@@ -110,11 +108,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			// web project properties
 			WebProjectsOptions.Instance.SetWebProjectOptions(Name, memento.Get("WebProjectOptions", new WebProjectOptions()) as WebProjectOptions);
 			
-			// other project data - logic in ProjectSavedDataConverter
-			foreach(var data in memento.Get("projectSavedData_" + Name, new IProjectSavedData[0])
-			        .Where(d => d.ProjectName == Name)) {
-				SavedDataManager.Add(data);
-			}
+			// other project data
+			ProjectSpecificProperties = memento.Get("projectSavedData", new Properties());
 		}
 		#endregion
 		
@@ -587,6 +582,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void SaveProjectExtensions(string name, XElement element)
 		{
+		}
+		
+		public Properties ProjectSpecificProperties {
+			get; protected set;
 		}
 	}
 }

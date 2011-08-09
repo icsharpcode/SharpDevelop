@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Xml.Serialization;
 
 using Debugger;
 using Debugger.AddIn;
@@ -17,7 +18,6 @@ using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Project.SavedData;
 using Exception = System.Exception;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
@@ -69,86 +69,59 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			// wire events that influence the items
 			LoadSavedNodes();
 			ProjectService.SolutionClosed += delegate { watchList.WatchItems.Clear(); };
-			ProjectService.SolutionPreferencesSaving += OnSolutionClosing;
-			ProjectService.ProjectRemoved += OnProjectRemoved;
-			ProjectService.ProjectAdded += OnProjectAdded;
+			ProjectService.ProjectAdded += delegate { LoadSavedNodes(); };
 			ProjectService.SolutionLoaded += delegate { LoadSavedNodes(); };
 		}
 
 		#region Saved nodes
 		
-		void AddNodes(Func<IProjectSavedData, bool> predicate)
-		{
-			if (predicate == null)
-				throw new ArgumentNullException("predicate");
-			
-			// get nodes of current projects
-			List<TextNode> temp = new List<TextNode>();
-			foreach (var data in SavedDataManager.GetSavedData().Where(predicate)) {
-				string[] v = data.SavedString.Split('|');
-
-				TextNode node = new TextNode(null, v[5], (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), v[7])) { ProjectName = data.ProjectName };
-				temp.Add(node);
-			}
-			
-			// add them to watch list
-			temp.ForEach(d => { if (!watchList.WatchItems.Contains(d)) watchList.WatchItems.Add(d); } );
-		}
-		
 		void LoadSavedNodes()
 		{
-			AddNodes(d => d.SavedDataType == ProjectSavedDataType.WatchVariables &&
-			         ProjectService.OpenSolution.Projects.Any(p => p.Name == d.ProjectName));
-			
-			// remove them temporarilly - they will be saved on exit
-			SavedDataManager.RemoveAll(d => d.SavedDataType == ProjectSavedDataType.WatchVariables &&
-			                           ProjectService.OpenSolution.Projects.Any(p => p.Name == d.ProjectName));
-		}
-
-		void OnSolutionClosing(object sender, SolutionEventArgs e)
-		{
-			foreach (var element in watchList.WatchItems) {
-				SavedDataManager.Add((IProjectSavedData)element);
-			}
-		}
-
-		void OnProjectAdded(object sender, ProjectEventArgs e)
-		{
-			AddNodes(d => d.SavedDataType == ProjectSavedDataType.WatchVariables && e.Project.Name == d.ProjectName);
-		}
-
-		void OnProjectRemoved(object sender, ProjectEventArgs e)
-		{
-			if (e.Project == null)
+			var props = GetSavedVariablesProperties();
+			if (props == null)
 				return;
 			
-			// get the specific nodes from the list
-			List<TextNode> nodes = new List<TextNode>();
-			foreach (var element in watchList.WatchItems
-			         .OfType<TextNode>()
-			         .Where(tn => tn.ProjectName == e.Project.Name)) {
-				nodes.Add(element);
+			foreach (var element in props.Elements) {
+				watchList.WatchItems.Add(new TextNode(null, element, (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), props[element])));
 			}
-			
-			// remove nodes from the list
-			nodes.ForEach(n => watchList.WatchItems.Remove(n));
 		}
 
 		void OnWatchItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add) {
 				// add to saved data
-				var data = e.NewItems[0] as IProjectSavedData;
-				if (data != null)
-					SavedDataManager.Add(data);
+				var data = e.NewItems[0] as TextNode;
+				if (data != null) {
+					var props = GetSavedVariablesProperties(); 
+					if (props == null) return;
+					props.Set(data.FullName, data.Language.ToString());
+				}
 			}
 			
 			if (e.Action == NotifyCollectionChangedAction.Remove) {
 				// remove from saved data
-				var data = e.OldItems[0] as IProjectSavedData;
-				if (data != null)
-					SavedDataManager.Remove(data);
+				var data = e.OldItems[0] as TextNode;
+				if (data != null) {
+					var props = GetSavedVariablesProperties();
+					if (props == null) return;
+					props.Remove(data.FullName);
+				}
 			}
+		}
+		
+		Properties GetSavedVariablesProperties()
+		{
+			if (ProjectService.CurrentProject == null)
+				return null;
+			if (ProjectService.CurrentProject.ProjectSpecificProperties == null)
+				return null;
+			
+			var props = ProjectService.CurrentProject.ProjectSpecificProperties.Get("watchVars") as Properties;
+			if (props == null) {
+				ProjectService.CurrentProject.ProjectSpecificProperties.Set("watchVars", new Properties());
+			}
+			
+			return ProjectService.CurrentProject.ProjectSpecificProperties.Get("watchVars") as Properties;
 		}
 
 		#endregion

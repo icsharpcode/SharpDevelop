@@ -214,6 +214,12 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
+		public Properties ProjectSpecificProperties {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public IEnumerable<ProjectItem> GetItemsOfType(ItemType type)
 		{
 			throw new NotImplementedException();
@@ -310,6 +316,5 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		#endregion
-
 	}
 }
