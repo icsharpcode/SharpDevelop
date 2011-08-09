@@ -86,5 +86,10 @@ namespace WixBinding.Tests.Utils
 				TitleChanged(this, e);
 			}
 		}
+		
+		public void RefreshStatus()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
