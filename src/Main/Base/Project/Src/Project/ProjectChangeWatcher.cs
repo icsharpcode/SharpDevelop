@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 
-		bool wasChangedExternally;
+		static bool wasChangedExternally;
 
 		void OnFileChangedEvent(object sender, FileSystemEventArgs e)
 		{

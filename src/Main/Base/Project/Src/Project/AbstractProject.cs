@@ -53,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public virtual void Dispose()
 		{
 			WorkbenchSingleton.AssertMainThread();
-			
+			watcher.Dispose();
 			isDisposed = true;
 			if (Disposed != null) {
 				Disposed(this, EventArgs.Empty);
@@ -116,6 +116,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Filename / Directory
 		volatile string fileName;
 		string cachedDirectoryName;
+		protected ProjectChangeWatcher watcher;
 		
 		/// <summary>
 		/// Gets the name of the project file.
@@ -133,6 +134,15 @@ namespace ICSharpCode.SharpDevelop.Project
 					throw new ArgumentNullException();
 				WorkbenchSingleton.AssertMainThread();
 				Debug.Assert(FileUtility.IsUrl(value) || Path.IsPathRooted(value));
+				
+				if (watcher == null) {
+					watcher = new ProjectChangeWatcher(value);
+					watcher.Enable();
+				} else {
+					watcher.Disable();
+					watcher.Rename(value);
+					watcher.Enable();
+				}
 				
 				lock (SyncRoot) { // locking still required for Directory
 					fileName = value;
