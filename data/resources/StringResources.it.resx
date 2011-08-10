@@ -779,9 +779,6 @@ Installare il .NET Framework SDK per utilizzare il sistema di help.</value>
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' è stato rimosso dalla lista degli elementi da ignorare.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Mantieni aperta la vecchia soluzione</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Acquisisci blocco</value>
   </data>
@@ -808,12 +805,6 @@ Installare il .NET Framework SDK per utilizzare il sistema di help.</value>
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Mostra cronologia per i files sotto il controllo della versione</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Ricarica soluzione</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop ha individuato dei cambiamenti nei file di progetto a causa del sistema di controllo versione. E' necessario ricaricare la soluzione.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Cambia posizione</value>
@@ -2416,6 +2407,12 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Debugging</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Eccezioni</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Fermati sulle Eccezioni gestite</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Stepping</value>
   </data>
@@ -2979,7 +2976,7 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
     <value>Processore Intel 64-bit Itanium</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
-    <value>Processori AMD 64-bit</value>
+    <value>Processore x86-64</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
     <value>Processore compatibile Intel 32-bit</value>
@@ -4815,6 +4812,12 @@ Sono ammesse solo lettere, numeri, spazi, '.' o '_'.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Caricamento ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Mantieni aperta la vecchia soluzione</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Ricarica soluzione</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Converti &amp;progetti selezionati in:</value>
   </data>
@@ -6063,7 +6066,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Percorso/nome del file di copia</value>
   </data>
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
-    <value>Apri la cartella in Explorer</value>
+    <value>Apri la cartella in Esplora risorse</value>
   </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Comprimi tutti i nodi</value>

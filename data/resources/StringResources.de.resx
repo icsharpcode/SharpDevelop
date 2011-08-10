@@ -780,9 +780,6 @@ Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente an
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' wurde von der Ignorier-Liste entfernt.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Alte Projektmappe offen halten</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Datei sperren</value>
   </data>
@@ -809,13 +806,6 @@ Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente an
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Zeige &amp;Vergangenheits-Tab für Dateien unter Versionskontrolle</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Projektmappe neu laden</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop hat festgestellt, dass die Versionskontroll-Operation Projektdateien verändert hat.
-Sie sollten die Projektmappe neu laden.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Umplatzieren</value>
@@ -4802,6 +4792,12 @@ Grund: Der Wert zu dem zurückgesetzt werden soll ist ungültig weil sich eine a
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Lade ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Alte Projektmappe offen halten</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Projektmappe neu laden</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Neue &amp;Compilerversion:</value>

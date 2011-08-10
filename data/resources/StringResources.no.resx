@@ -779,9 +779,6 @@ Du må installere .NET Framework SDK for å få tilgang til hjelpesystemet.</val
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' ble fjernet fra ignorerings-listen.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Behold den gamle løsningen åpen</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Sett lås</value>
   </data>
@@ -808,12 +805,6 @@ Du må installere .NET Framework SDK for å få tilgang til hjelpesystemet.</val
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Vis historikk-fanen for filer under versjonskontroll</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Last inn løsningen på nytt</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop har oppdaget at versjonskontroll-handlingen har endret prosjektfilene. Du bør laste inn løsningen på nytt.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Skift server</value>
@@ -4789,6 +4780,12 @@ Bare bokstaver, tall, mellomrom, '.' eller '_' er tillatt.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Laster ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Behold den gamle løsningen åpen</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Last inn løsningen på nytt</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Konverter valgte &amp;prosjekter til:</value>

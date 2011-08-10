@@ -614,9 +614,6 @@ Yardım sistemini elde edebilmek için .NET Framework SDK 'yı yüklemelisiniz.<
   <data name="AddIns.Subversion.History" xml:space="preserve">
     <value>Geçmiş</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Eski çözümü açık tut</value>
-  </data>
   <data name="AddIns.Subversion.Merge" xml:space="preserve">
     <value>Birleştir</value>
   </data>
@@ -628,12 +625,6 @@ Yardım sistemini elde edebilmek için .NET Framework SDK 'yı yüklemelisiniz.<
   </data>
   <data name="AddIns.Subversion.Options.Title" xml:space="preserve">
     <value>Yansürüm Ayarları</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Çözümü yenile</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop sürüm kontrol işleminin proje dosyalarını değiştirdiğini algıladı. Bu çözümü yenilemeniz gerekiyor.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Yerleştir</value>
@@ -4007,6 +3998,12 @@ Sadece harf,rakam, boşluk, '.' yada '_' kullanabilirsiniz.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Yüklüyor ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Eski çözümü açık tut</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Çözümü yenile</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.CompilerVersion" xml:space="preserve">
     <value>Derleyici Sürümü</value>

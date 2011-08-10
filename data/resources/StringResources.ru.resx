@@ -756,9 +756,6 @@
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' был удалён из чёрного списка.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Держать старое решение открытым</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Заблокировать</value>
   </data>
@@ -785,9 +782,6 @@
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Показывать вкладку истории для файлов управления версиями</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Перезагрузить решение</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Переместить</value>
@@ -4460,6 +4454,12 @@
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Загрузка ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Держать старое решение открытым</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Перезагрузить решение</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Преобразовать выбранные проекты в:</value>

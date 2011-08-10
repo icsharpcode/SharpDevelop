@@ -780,9 +780,6 @@ Opcionalmente puede especificar un directorio de trabajo y argumentos de línea 
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' fue quitado de la lista de ignorados.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Mantener abierta la solución antigua</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Bloquear</value>
   </data>
@@ -809,13 +806,6 @@ Opcionalmente puede especificar un directorio de trabajo y argumentos de línea 
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Mostrar el tab &amp;historial para archivos de control de versión</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Recargar solución</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop ha detectado que la operación de control de versión ha cambiado archivos de proyecto.
-Debería recargar la solución.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Realojar</value>
@@ -2417,6 +2407,12 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Depuración</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Excepciones</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Pausar en excepciones controladas</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Paso por Instrucciones</value>
   </data>
@@ -2614,6 +2610,15 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   </data>
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Apariencia</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
+    <value>Expandir referencias de proyectos (reflect references)</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
+    <value>Opciones de Interfaz Gráfica de Sharp Develop</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
+    <value>Opciones de Interfaz Gráfica de Sharp Develop</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Etiquetas de Comentarios</value>
@@ -4804,6 +4809,12 @@ Solamente letras, dígitos, espacio, '.' o '_' son permitidos.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Cargando ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Mantener abierta la solución antigua</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Recargar solución</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Convertir &amp;proyectos seleccionados a:</value>
   </data>
@@ -5339,6 +5350,24 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ICSharpCode.XmlEditor.XslOutputView.Title" xml:space="preserve">
     <value>Salida XSLT</value>
   </data>
+  <data name="ILSpyAddIn.ILSpyDoesNotExist" xml:space="preserve">
+    <value>ILSpy no se pudo encontrar en la ubicación especificada, o SharpDevelop no tiene suficientes permisos para acceder a dicha ubicación.</value>
+  </data>
+  <data name="ILSpyAddIn.ILSpyPathNotSet" xml:space="preserve">
+    <value>La ruta a ILSpy aun no ha sido establecida.</value>
+  </data>
+  <data name="ILSpyAddIn.OpenILSpyCommand" xml:space="preserve">
+    <value>Abrir ILSpy</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.ILSpyInfo" xml:space="preserve">
+    <value>Esta caracteristica requiere ILSpy. Si aun no la tiene, puede descargarlo gratuitamente aquí:</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.PathToILSpyExe" xml:space="preserve">
+    <value>Ruta completa a ILSpy.exe</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialogTitle" xml:space="preserve">
+    <value>Establecer ruta a ILSpy</value>
+  </data>
   <data name="Internal.ExternalTool.CantLoadToolConfigWarining" xml:space="preserve">
     <value>No se puede cargar archivo de configuración de herramientas externas.</value>
   </data>
@@ -5507,6 +5536,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Lenguaje</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.LineString" xml:space="preserve">
+    <value>Línea</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
+    <value>Módulo</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
     <value>Mostrar los nombres de los argumentos</value>
   </data>
@@ -5515,6 +5550,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
     <value>Mostrar métodos externos</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowLineNumber" xml:space="preserve">
+    <value>Mostrar número de línea</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>Mostrar nombres de módulos</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
     <value>Preguntar</value>
@@ -5662,6 +5703,39 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>Miembros Estáticos (Static)</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
+    <value>Memoria</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.AddressNotFound" xml:space="preserve">
+    <value>La dirección {0} no se encontró!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ByteSize" xml:space="preserve">
+    <value>Mostrar tamaño en bytes:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.JumpTo" xml:space="preserve">
+    <value>Saltar a la dirección:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NextAddress" xml:space="preserve">
+    <value>Siguientes direcciones virtuales</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NoMappings" xml:space="preserve">
+    <value>No hay mapeo para direcciones de memoria!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NotDebuggingOrProcessRunning" xml:space="preserve">
+    <value>Ninguna depuración o proceso esta en ejecución!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.PreviousAddress" xml:space="preserve">
+    <value>Anteriores direcciones virtuales</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ReadingFromFormat" xml:space="preserve">
+    <value>Leyendo desde {0} hasta {1} - tamaño {2}.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.Refresh" xml:space="preserve">
+    <value>Actualizar direcciones actuales</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.UnableToReadFormat" xml:space="preserve">
+    <value>Incapaz de leer la dirección {0} de tamaño {1}.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules" xml:space="preserve">
     <value>Módulos Cargados</value>
@@ -5991,7 +6065,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Copiar ruta/nombre del archivo</value>
   </data>
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
-    <value>Abrir Carpeta Contenedora en el Explorador</value>
+    <value>Abrir carpeta contenedora en el Explorador</value>
   </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Colapsar todos los nodos</value>

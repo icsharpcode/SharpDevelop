@@ -780,9 +780,6 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' is verwijderd uit de negeer lijst.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>De oude oplossing open houden.</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Vergrendel</value>
   </data>
@@ -809,12 +806,6 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Geef gesc&amp;hiedenis tab weer voor versie-controle bestanden</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Oplossing opnieuw laden</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop heeft ontdekt dat de versiecontrole project bestanden gewijzigd heeft. U dient de oplossing opnieuw te laden.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Verplaatsen</value>
@@ -2419,6 +2410,12 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Foutopsporing</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Uitzonderingen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Wachten na afhandeling van uitzonderingen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Stapsgewijs</value>
   </data>
@@ -2981,7 +2978,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Intel 64-bit Itanium processor</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
-    <value>AMD 64-bit processor</value>
+    <value>AMD / Intel 64-bit processor</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
     <value>32 bit Intel-compatibele processor</value>
@@ -4807,6 +4804,12 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Laden van ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>De oude oplossing open houden.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Oplossing opnieuw laden</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Converteer geselecteerde &amp;projecten naar</value>
   </data>
@@ -6055,7 +6058,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Kopieer bestandspad/-naam</value>
   </data>
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
-    <value>Open de map met document in de Explorer</value>
+    <value>Open de document bevattende map in de Explorer</value>
   </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Alle knooppunten invouwen</value>
@@ -7570,6 +7573,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
     <value>Verwijder alle breekpunten</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RunLastBuild" xml:space="preserve">
+    <value>Voer laatste bouw uit.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Uitvoeren &amp;zonder foutopsporing</value>
