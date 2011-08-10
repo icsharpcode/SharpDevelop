@@ -168,7 +168,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							// lambdas must be resolved so that they get stored in the 'undecided' list only once
 							goto case ResolveVisitorNavigationMode.Resolve;
 						}
-						resolverBeforeDict[node] = resolver.Clone();
+						StoreState(node, resolver.Clone());
 						node.AcceptVisitor(this, null);
 						break;
 					case ResolveVisitorNavigationMode.Resolve:
@@ -192,14 +192,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResolveResult result;
 			if (!resolveResultCache.TryGetValue(node, out result)) {
 				resolver.cancellationToken.ThrowIfCancellationRequested();
-				resolverBeforeDict[node] = resolver.Clone();
-				result = resolveResultCache[node] = node.AcceptVisitor(this, null) ?? errorResult;
+				StoreState(node, resolver.Clone());
+				result = node.AcceptVisitor(this, null) ?? errorResult;
 				Log.WriteLine("Resolved '{0}' to {1}", node, result);
+				StoreResult(node, result);
 				ProcessConversionsInResult(result);
 			}
 			if (wasScan)
 				mode = ResolveVisitorNavigationMode.Scan;
 			return result;
+		}
+		
+		void StoreState(AstNode node, CSharpResolver resolverState)
+		{
+			Debug.Assert(resolverState != null);
+			resolverBeforeDict.Add(node, resolverState);
+		}
+		
+		void StoreResult(AstNode node, ResolveResult result)
+		{
+			Debug.Assert(result != null);
+			resolveResultCache.Add(node, result);
+			if (navigator != null)
+				navigator.Resolved(node, result);
 		}
 		
 		protected override ResolveResult VisitChildren(AstNode node, object data)
@@ -1148,21 +1163,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// rr = Resolve(memberReferenceExpression)
 			
 			IdentifierExpression identifierExpression = memberReferenceExpression.Target as IdentifierExpression;
-			if (identifierExpression != null && identifierExpression.TypeArguments.Count == 0) {
+			if (identifierExpression != null && identifierExpression.TypeArguments.Count == 0
+			    && !resolveResultCache.ContainsKey(identifierExpression))
+			{
 				// Special handling for §7.6.4.1 Identicial simple names and type names
+				StoreState(identifierExpression, resolver.Clone());
 				ResolveResult target = resolver.ResolveSimpleName(identifierExpression.Identifier, EmptyList<IType>.Instance);
 				TypeResolveResult trr;
 				if (IsVariableReferenceWithSameType(target, identifierExpression.Identifier, out trr)) {
 					// It's ambiguous
 					ResolveResult rr = ResolveMemberReferenceOnGivenTarget(target, memberReferenceExpression);
-					resolveResultCache[identifierExpression] = IsStaticResult(rr, null) ? trr : target;
-					Log.WriteLine("Ambiguous simple name '{0}' was resolved to {1}",
-					              identifierExpression, resolveResultCache[identifierExpression]);
+					ResolveResult simpleNameRR = IsStaticResult(rr, null) ? trr : target;
+					Log.WriteLine("Ambiguous simple name '{0}' was resolved to {1}", identifierExpression, simpleNameRR);
+					StoreResult(identifierExpression, simpleNameRR);
+					ProcessConversionsInResult(simpleNameRR);
 					return rr;
 				} else {
 					// It's not ambiguous
-					resolveResultCache[identifierExpression] = target;
 					Log.WriteLine("Simple name '{0}' was resolved to {1}", identifierExpression, target);
+					StoreResult(identifierExpression, target);
+					ProcessConversionsInResult(target);
 					if (resolverEnabled) {
 						return ResolveMemberReferenceOnGivenTarget(target, memberReferenceExpression);
 					} else {
@@ -1203,24 +1223,30 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			MemberReferenceExpression mre = invocationExpression.Target as MemberReferenceExpression;
 			IdentifierExpression identifierExpression = mre != null ? mre.Target as IdentifierExpression : null;
-			if (identifierExpression != null && identifierExpression.TypeArguments.Count == 0) {
+			if (identifierExpression != null && identifierExpression.TypeArguments.Count == 0
+			    && !resolveResultCache.ContainsKey(identifierExpression))
+			{
 				// Special handling for §7.6.4.1 Identicial simple names and type names
 				ResolveResult idRR = resolver.ResolveSimpleName(identifierExpression.Identifier, EmptyList<IType>.Instance);
 				ResolveResult target = ResolveMemberReferenceOnGivenTarget(idRR, mre);
-				resolveResultCache[mre] = target;
 				Log.WriteLine("Member reference '{0}' on potentially-ambiguous simple-name was resolved to {1}", mre, target);
+				StoreResult(mre, target);
+				ProcessConversionsInResult(target);
 				TypeResolveResult trr;
 				if (IsVariableReferenceWithSameType(idRR, identifierExpression.Identifier, out trr)) {
 					// It's ambiguous
 					ResolveResult rr = ResolveInvocationOnGivenTarget(target, invocationExpression);
-					resolveResultCache[identifierExpression] = IsStaticResult(target, rr) ? trr : idRR;
+					ResolveResult simpleNameRR = IsStaticResult(target, rr) ? trr : idRR;
 					Log.WriteLine("Ambiguous simple name '{0}' was resolved to {1}",
-					              identifierExpression, resolveResultCache[identifierExpression]);
+					              identifierExpression, simpleNameRR);
+					StoreResult(identifierExpression, simpleNameRR);
+					ProcessConversionsInResult(simpleNameRR);
 					return rr;
 				} else {
 					// It's not ambiguous
 					Log.WriteLine("Simple name '{0}' was resolved to {1}", identifierExpression, idRR);
-					resolveResultCache[identifierExpression] = idRR;
+					StoreResult(identifierExpression, idRR);
+					ProcessConversionsInResult(idRR);
 					if (resolverEnabled) {
 						return ResolveInvocationOnGivenTarget(target, invocationExpression);
 					} else {
@@ -1658,10 +1684,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				visitor.MergeUndecidedLambdas();
 				Log.WriteLine("Merging " + ToString());
 				foreach (var pair in visitor.resolveResultCache) {
-					parentVisitor.resolveResultCache.Add(pair.Key, pair.Value);
+					parentVisitor.StoreResult(pair.Key, pair.Value);
 				}
 				foreach (var pair in visitor.resolverBeforeDict) {
-					parentVisitor.resolverBeforeDict.Add(pair.Key, pair.Value);
+					parentVisitor.StoreState(pair.Key, pair.Value);
 				}
 				parentVisitor.undecidedLambdas.Remove(lambda);
 			}
@@ -2034,9 +2060,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// so we just do it here and store the result in the resolver cache.
 					IType actualType = typeRef.Resolve(resolver.Context);
 					if (actualType.Kind != TypeKind.Unknown) {
-						resolveResultCache.Add(type, new TypeResolveResult(actualType));
+						StoreResult(type, new TypeResolveResult(actualType));
 					} else {
-						resolveResultCache.Add(type, errorResult);
+						StoreResult(type, errorResult);
 					}
 					return actualType;
 				} else {

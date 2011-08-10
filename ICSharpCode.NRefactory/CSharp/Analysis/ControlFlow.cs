@@ -167,7 +167,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			return BuildControlFlowGraph(statement, new ResolveVisitor(
 				new CSharpResolver(context, cancellationToken),
-				null, ConstantModeResolveVisitorNavigator.Skip));
+				null));
 		}
 		
 		public IList<ControlFlowNode> BuildControlFlowGraph(Statement statement, ResolveVisitor resolveVisitor)

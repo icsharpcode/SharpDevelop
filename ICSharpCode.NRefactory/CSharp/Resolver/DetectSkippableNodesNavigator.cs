@@ -22,26 +22,42 @@ using System.Collections.Generic;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// <see cref="IResolveVisitorNavigator"/> implementation that resolves a list of nodes.
-	/// We will skip all nodes which are not the target nodes or ancestors of the target nodes.
+	/// When an <see cref="IResolveVisitorNavigator"/> is searching for specific nodes
+	/// (e.g. all IdentifierExpressions), it has to scan the whole compilation unit for those nodes.
+	/// However, scanning in the ResolveVisitor is expensive (e.g. any lambda that is scanned must be resolved),
+	/// so it makes sense to detect when a whole subtree is scan-only, and skip that tree instead.
+	/// 
+	/// The DetectSkippableNodesNavigator performs this job by running the input IResolveVisitorNavigator
+	/// over the whole AST, and detecting subtrees that are scan-only, and replaces them with Skip.
 	/// </summary>
-	public sealed class NodeListResolveVisitorNavigator : IResolveVisitorNavigator
+	public sealed class DetectSkippableNodesNavigator : IResolveVisitorNavigator
 	{
 		readonly Dictionary<AstNode, ResolveVisitorNavigationMode> dict = new Dictionary<AstNode, ResolveVisitorNavigationMode>();
+		IResolveVisitorNavigator navigator;
 		
-		/// <summary>
-		/// Creates a new NodeListResolveVisitorNavigator that resolves the specified nodes.
-		/// </summary>
-		public NodeListResolveVisitorNavigator(IEnumerable<AstNode> nodes)
+		public DetectSkippableNodesNavigator(IResolveVisitorNavigator navigator, AstNode root)
 		{
-			if (nodes == null)
-				throw new ArgumentNullException("nodes");
-			foreach (var node in nodes) {
-				dict[node] = ResolveVisitorNavigationMode.Resolve;
-				for (var ancestor = node.Parent; ancestor != null && !dict.ContainsKey(ancestor); ancestor = ancestor.Parent) {
-					dict.Add(ancestor, ResolveVisitorNavigationMode.Scan);
-				}
+			this.navigator = navigator;
+			Init(root);
+		}
+		
+		bool Init(AstNode node)
+		{
+			var mode = navigator.Scan(node);
+			if (mode == ResolveVisitorNavigationMode.Skip)
+				return false;
+			
+			bool needsResolve = (mode != ResolveVisitorNavigationMode.Scan);
+			
+			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
+				needsResolve |= Init(child);
 			}
+			
+			if (needsResolve) {
+				// If this node or any child node needs resolving, store the mode in the dictionary.
+				dict.Add(node, mode);
+			}
+			return needsResolve;
 		}
 		
 		/// <inheritdoc/>
@@ -55,8 +71,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		void IResolveVisitorNavigator.Resolved(AstNode node, ResolveResult result)
+		/// <inheritdoc/>
+		public void Resolved(AstNode node, ResolveResult result)
 		{
+			navigator.Resolved(node, result);
 		}
 	}
 }

@@ -269,7 +269,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new MemberResolveResult(targetResolveResult, firstNonMethod, context);
 			if (firstNonMethod == null)
 				return new MethodGroupResolveResult(targetResolveResult, name, members.ConvertAll(m => (IMethod)m), typeArguments);
-			return new AmbiguousMemberResultResult(targetResolveResult, firstNonMethod, firstNonMethod.ReturnType.Resolve(context));
+			return new AmbiguousMemberResolveResult(targetResolveResult, firstNonMethod, firstNonMethod.ReturnType.Resolve(context));
 		}
 
 		static bool IsNonInterfaceType(ITypeDefinition def)

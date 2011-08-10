@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
@@ -26,7 +27,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// <seealso cref="ResolveVisitor"/>
 	public interface IResolveVisitorNavigator
 	{
+		/// <summary>
+		/// Asks the navigator whether to scan, skip, or resolve a node.
+		/// </summary>
 		ResolveVisitorNavigationMode Scan(AstNode node);
+		
+		/// <summary>
+		/// Notifies the navigator that a node was resolved.
+		/// </summary>
+		void Resolved(AstNode node, ResolveResult result);
 	}
 	
 	/// <summary>
@@ -51,17 +60,5 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Resolves all nodes in the current subtree.
 		/// </summary>
 		ResolveAll
-	}
-	
-	sealed class ConstantModeResolveVisitorNavigator : IResolveVisitorNavigator
-	{
-		ResolveVisitorNavigationMode mode;
-		
-		public static readonly IResolveVisitorNavigator Skip = new ConstantModeResolveVisitorNavigator { mode = ResolveVisitorNavigationMode.Skip };
-		
-		ResolveVisitorNavigationMode IResolveVisitorNavigator.Scan(AstNode node)
-		{
-			return mode;
-		}
 	}
 }
