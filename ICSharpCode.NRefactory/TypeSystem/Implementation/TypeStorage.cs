@@ -295,7 +295,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		/// <summary>
 		/// Removes a type definition from this project content.
 		/// </summary>
-		public void RemoveType(ITypeDefinition typeDefinition)
+		public bool RemoveType(ITypeDefinition typeDefinition)
 		{
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
@@ -323,6 +323,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					}
 				}
 			}
+			return wasRemoved;
 		}
 		
 		void RemoveNamespaceIfPossible(Dictionary<string, NamespaceEntry> dict, NamespaceEntry ns)

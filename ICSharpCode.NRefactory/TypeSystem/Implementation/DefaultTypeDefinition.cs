@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-
+using System.Runtime.CompilerServices;
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -29,6 +29,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	{
 		readonly IProjectContent projectContent;
 		readonly ITypeDefinition declaringTypeDefinition;
+		
+		volatile ITypeDefinition compoundTypeDefinition;
 		
 		string ns;
 		string name;
@@ -79,6 +81,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.declaringTypeDefinition = declaringTypeDefinition;
 			this.name = name;
 			this.ns = declaringTypeDefinition.Namespace;
+			
+			this.compoundTypeDefinition = this;
 		}
 		
 		public DefaultTypeDefinition(IProjectContent projectContent, string ns, string name)
@@ -90,6 +94,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.projectContent = projectContent;
 			this.ns = ns ?? string.Empty;
 			this.name = name;
+			
+			this.compoundTypeDefinition = this;
 		}
 		
 		public TypeKind Kind {
@@ -372,6 +378,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
+			ITypeDefinition compound = this.compoundTypeDefinition;
+			if (compound != this)
+				return compound.GetBaseTypes(context);
+			else
+				return GetBaseTypesImpl(context);
+		}
+		
+		IEnumerable<IType> GetBaseTypesImpl(ITypeResolveContext context)
+		{
 			bool hasNonInterface = false;
 			if (baseTypes != null && kind != TypeKind.Enum) {
 				foreach (ITypeReference baseTypeRef in baseTypes) {
@@ -382,31 +397,31 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				}
 			}
 			if (!hasNonInterface && !(this.Name == "Object" && this.Namespace == "System" && this.TypeParameterCount == 0)) {
-				Type primitiveBaseType;
+				string primitiveBaseType;
 				switch (kind) {
 					case TypeKind.Enum:
-						primitiveBaseType = typeof(Enum);
+						primitiveBaseType = "Enum";
 						break;
 					case TypeKind.Struct:
 					case TypeKind.Void:
-						primitiveBaseType = typeof(ValueType);
+						primitiveBaseType = "ValueType";
 						break;
 					case TypeKind.Delegate:
-						primitiveBaseType = typeof(Delegate);
+						primitiveBaseType = "Delegate";
 						break;
 					default:
-						primitiveBaseType = typeof(object);
+						primitiveBaseType = "Object";
 						break;
 				}
-				IType t = context.GetTypeDefinition(primitiveBaseType);
+				IType t = context.GetTypeDefinition("System", primitiveBaseType, 0, StringComparer.Ordinal);
 				if (t != null)
 					yield return t;
 			}
 		}
 		
-		public virtual ITypeDefinition GetCompoundClass()
+		internal void SetCompoundTypeDefinition(ITypeDefinition compoundTypeDefinition)
 		{
-			return this;
+			this.compoundTypeDefinition = compoundTypeDefinition;
 		}
 		
 		public virtual IList<ITypeDefinition> GetParts()
@@ -414,9 +429,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return new ITypeDefinition[] { this };
 		}
 		
-		ITypeDefinition IType.GetDefinition()
+		public ITypeDefinition GetDefinition()
 		{
-			return this;
+			return compoundTypeDefinition;
 		}
 		
 		IType ITypeReference.Resolve(ITypeResolveContext context)
@@ -448,7 +463,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
-			ITypeDefinition compound = GetCompoundClass();
+			ITypeDefinition compound = this.compoundTypeDefinition;
 			if (compound != this)
 				return compound.GetConstructors(context, filter);
 			
@@ -492,11 +507,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return ParameterizedType.GetMembers(this, context, filter);
 		}
 		
-		// we use reference equality
+		#region Equals / GetHashCode
 		bool IEquatable<IType>.Equals(IType other)
 		{
-			return this == other;
+			// Two ITypeDefinitions are considered to be equal if they have the same compound class.
+			ITypeDefinition typeDef = other as ITypeDefinition;
+			return typeDef != null && this.GetDefinition() == typeDef.GetDefinition();
 		}
+		
+		public override bool Equals(object obj)
+		{
+			ITypeDefinition typeDef = obj as ITypeDefinition;
+			return typeDef != null && this.GetDefinition() == typeDef.GetDefinition();
+		}
+		
+		public override int GetHashCode()
+		{
+			return RuntimeHelpers.GetHashCode(compoundTypeDefinition);
+		}
+		#endregion
 		
 		public override string ToString()
 		{

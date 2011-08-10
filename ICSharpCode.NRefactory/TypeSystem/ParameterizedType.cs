@@ -138,7 +138,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public ITypeDefinition GetDefinition()
 		{
-			return genericType;
+			return genericType.GetDefinition();
 		}
 		
 		public IType Resolve(ITypeResolveContext context)
@@ -205,7 +205,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition baseTypeDef = baseType.GetDefinition();
 			if (baseTypeDef == null)
 				yield break;
-			baseTypeDef = baseTypeDef.GetCompoundClass();
+			
 			int outerTypeParameterCount = baseTypeDef.TypeParameterCount;
 			ParameterizedType pt = baseType as ParameterizedType;
 			foreach (ITypeDefinition nestedType in baseTypeDef.NestedTypes) {
@@ -279,8 +279,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition baseTypeDef = baseType.GetDefinition();
 			if (baseTypeDef == null)
 				yield break;
-			baseTypeDef = baseTypeDef.GetCompoundClass();
-			
 			
 			ParameterizedType pt = baseType as ParameterizedType;
 			if (pt != null || (methodTypeArguments != null && methodTypeArguments.Count > 0)) {
@@ -320,7 +318,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition baseTypeDef = baseType.GetDefinition();
 			if (baseTypeDef == null)
 				yield break;
-			baseTypeDef = baseTypeDef.GetCompoundClass();
+			
 			ParameterizedType pt = baseType as ParameterizedType;
 			if (pt != null) {
 				TypeParameterSubstitution substitution = null;
@@ -355,7 +353,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition baseTypeDef = baseType.GetDefinition();
 			if (baseTypeDef == null)
 				yield break;
-			baseTypeDef = baseTypeDef.GetCompoundClass();
+			
 			ParameterizedType pt = baseType as ParameterizedType;
 			if (pt != null) {
 				TypeParameterSubstitution substitution = null;
@@ -390,7 +388,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition baseTypeDef = baseType.GetDefinition();
 			if (baseTypeDef == null)
 				yield break;
-			baseTypeDef = baseTypeDef.GetCompoundClass();
+			
 			ParameterizedType pt = baseType as ParameterizedType;
 			if (pt != null) {
 				TypeParameterSubstitution substitution = null;

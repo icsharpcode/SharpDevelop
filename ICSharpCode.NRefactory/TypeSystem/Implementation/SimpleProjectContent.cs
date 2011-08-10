@@ -96,15 +96,32 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (typeDefinition.ProjectContent != this)
 				throw new ArgumentException("Cannot add a type definition that belongs to another project content");
 			
-			// TODO: handle partial classes
-			types.UpdateType(typeDefinition);
+			ITypeDefinition existingTypeDef = types.GetTypeDefinition(typeDefinition.Namespace, typeDefinition.Name, typeDefinition.TypeParameterCount, StringComparer.Ordinal);
+			if (existingTypeDef != null) {
+				// Add a part to a compound class
+				var newParts = new List<ITypeDefinition>(existingTypeDef.GetParts());
+				newParts.Add(typeDefinition);
+				types.UpdateType(CompoundTypeDefinition.Create(newParts));
+			} else {
+				types.UpdateType(typeDefinition);
+			}
 		}
 		#endregion
 		
 		#region RemoveType
 		void RemoveType(ITypeDefinition typeDefinition)
 		{
-			types.RemoveType (typeDefinition); // <- Daniel: Correct ?
+			var compoundTypeDef = typeDefinition.GetDefinition() as CompoundTypeDefinition;
+			if (compoundTypeDef != null) {
+				// Remove one part from a compound class
+				var newParts = new List<ITypeDefinition>(compoundTypeDef.GetParts());
+				if (newParts.Remove(typeDefinition)) {
+					((DefaultTypeDefinition)typeDefinition).SetCompoundTypeDefinition(typeDefinition);
+				}
+				types.UpdateType(CompoundTypeDefinition.Create(newParts));
+			} else {
+				types.RemoveType(typeDefinition);
+			}
 		}
 		#endregion
 		

@@ -22,6 +22,32 @@ using System.Diagnostics.Contracts;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
+	/// <summary>
+	/// This interface represents a resolved type in the type system.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// A type is potentially
+	/// - a type definition (<see cref="ITypeDefiniton"/>, i.e. a class, struct, interface, delegate, or built-in primitive type)
+	/// - a parameterized type (<see cref="ParameterizedType"/>, e.g. List&lt;int>)
+	/// - a type parameter (<see cref="ITypeParameter"/>, e.g. T)
+	/// - an array (<see cref="ArrayType"/>)
+	/// - a pointer (<see cref="PointerType"/>)
+	/// - a managed reference (<see cref="ByReferenceType"/>)
+	/// - one of the special types (<see cref="SharedTypes.UnknownType"/>, <see cref="SharedTypes.Null"/>,
+	///      <see cref="SharedTypes.Dynamic"/>, <see cref="SharedTypes.UnboundTypeArgument"/>)
+	/// 
+	/// The <see cref="IType.Kind"/> property can be used to switch on the kind of a type.
+	/// </para>
+	/// <para>
+	/// IType uses the null object pattern: <see cref="SharedTypes.UnknownType"/> serves as the null object.
+	/// Methods or properties returning IType never return null unless documented otherwise.
+	/// </para>
+	/// <para>
+	/// Types should be compared for equality using the <see cref="IType.Equals(IType)"/> method.
+	/// Identical types do not necessarily use the same object reference.
+	/// </para>
+	/// </remarks>
 	#if WITH_CONTRACTS
 	[ContractClass(typeof(ITypeContract))]
 	#endif
@@ -48,7 +74,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		/// <summary>
 		/// Gets the underlying type definition.
-		/// Can return null for types which do not have a type definition (for example arrays, pointers, type parameters)
+		/// Can return null for types which do not have a type definition (for example arrays, pointers, type parameters).
+		/// 
+		/// For partial classes, this method always returns the <see cref="CompoundTypeDefinition"/>.
 		/// </summary>
 		ITypeDefinition GetDefinition();
 		
@@ -92,14 +120,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name="filter">The filter used to select which types to return.
 		/// The filter is tested on the original type definitions (before parameterization).</param>
 		/// <remarks>
+		/// <para>
 		/// If the nested type is generic (and has more type parameters than the outer class),
 		/// this method will return a parameterized type,
 		/// where the additional type parameters are set to <see cref="SharedType.UnboundTypeArgument"/>.
-		/// 
+		/// </para>
+		/// <para>
 		/// Type parameters belonging to the outer class will have the value copied from the outer type
 		/// if it is a parameterized type. Otherwise, those existing type parameters will be self-parameterized,
 		/// and thus 'leaked' to the caller in the same way the GetMembers() method does not specialize members
 		/// from an <see cref="ITypeDefinition"/> and 'leaks' type parameters in member signatures.
+		/// </para>
 		/// </remarks>
 		/// <example>
 		/// <code>
@@ -148,9 +179,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name="filter">The filter used to select which constructors to return.
 		/// The filter is tested on the original method definitions (before specialization).</param>
 		/// <remarks>
-		/// This list does not include constructors in base classes or static constructors.
+		/// <para>The result does not include constructors in base classes or static constructors.</para>
+		/// <para>
 		/// For methods on parameterized types, type substitution will be performed on the method signature,
 		/// and the appropriate <see cref="SpecializedMethod"/> will be returned.
+		/// </para>
 		/// </remarks>
 		IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null);
 		
@@ -161,22 +194,44 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name="filter">The filter used to select which methods to return.
 		/// The filter is tested on the original method definitions (before specialization).</param>
 		/// <remarks>
-		/// The list does not include constructors.
+		/// <para>
+		/// The result does not include constructors.
+		/// </para>
+		/// <para>
 		/// For methods on parameterized types, type substitution will be performed on the method signature,
 		/// and the appropriate <see cref="SpecializedMethod"/> will be returned.
+		/// </para>
+		/// <para>
+		/// If the method being returned is generic, and this type is a parameterized type where the type
+		/// arguments involve another method's type parameters, the resulting specialized signature
+		/// will be ambiguous as to which method a type parameter belongs to.
+		/// For example, "List[[``0]].GetMethods()" will return "ConvertAll(Converter`2[[``0, ``0]])".
+		/// 
+		/// If possible, use the other GetMethods() overload to supply type arguments to the method,
+		/// so that both class and method type parameter can be substituted at the same time, so that
+		/// the ambiguity can be avoided.
+		/// </para>
 		/// </remarks>
 		IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null);
 		
 		/// <summary>
 		/// Gets all generic methods that can be called on this type with the specified type arguments.
 		/// </summary>
-		/// <param name="typeArguments">The type arguments used for the call.</param>
+		/// <param name="typeArguments">The type arguments used for the method call.</param>
 		/// <param name="context">The context used for resolving type references</param>
 		/// <param name="filter">The filter used to select which methods to return.
 		/// The filter is tested on the original method definitions (before specialization).</param>
 		/// <remarks>
+		/// <para>The result does not include constructors.</para>
+		/// <para>
 		/// Type substitution will be performed on the method signature, creating a <see cref="SpecializedMethod"/>
 		/// with the specified type arguments.
+		/// </para>
+		/// <para>
+		/// When the list of type arguments is empty, this method acts like the GetMethods() overload without
+		/// the type arguments parameter - that is, it also returns generic methods,
+		/// and the other overload's remarks about ambiguous signatures apply here as well.
+		/// </para>
 		/// </remarks>
 		IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null);
 		
@@ -223,9 +278,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name="filter">The filter used to select which members to return.
 		/// The filter is tested on the original member definitions (before specialization).</param>
 		/// <remarks>
+		/// <para>
 		/// The resulting list is the union of GetFields(), GetProperties(), GetMethods() and GetEvents().
 		/// It does not include constructors.
 		/// For parameterized types, type substitution will be performed.
+		/// </para>
+		/// <para>
+		/// For generic methods, the remarks about ambiguous signatures from the
+		/// <see cref="GetMethods(ITypeResolveContext, Predicate{IMethod})"/> method apply here as well.
+		/// </para>
 		/// </remarks>
 		IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null);
 	}

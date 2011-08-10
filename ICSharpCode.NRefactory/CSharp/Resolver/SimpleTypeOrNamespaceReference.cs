@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult DoResolve(ITypeResolveContext context)
 		{
 			CSharpResolver r = new CSharpResolver(context);
-			r.CurrentTypeDefinition = parentTypeDefinition != null ? parentTypeDefinition.GetCompoundClass() : null;
+			r.CurrentTypeDefinition = parentTypeDefinition;
 			r.UsingScope = parentUsingScope;
 			IType[] typeArgs = new IType[typeArguments.Count];
 			for (int i = 0; i < typeArgs.Length; i++) {

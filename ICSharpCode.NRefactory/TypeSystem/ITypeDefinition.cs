@@ -24,6 +24,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
 	/// Represents a class, enum, interface, struct, delegate or VB module.
+	/// Also used to represent a part of a partial class.
 	/// </summary>
 	#if WITH_CONTRACTS
 	[ContractClass(typeof(ITypeDefinitionContract))]
@@ -32,14 +33,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	{
 		IList<ITypeReference> BaseTypes { get; }
 		IList<ITypeParameter> TypeParameters { get; }
-		
-		/// <summary>
-		/// If this is a partial class, gets the compound class containing information from all parts.
-		/// If this is not a partial class, a reference to this class is returned.
-		/// 
-		/// This method will always retrieve the latest version of the class, which might not contain this class as a part.
-		/// </summary>
-		ITypeDefinition GetCompoundClass();
 		
 		/// <summary>
 		/// If this is a compound class (combination of class parts), this method retrieves all individual class parts.

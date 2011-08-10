@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -113,6 +114,33 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public bool IsOperator {
 			get { return methodDefinition.IsOperator; }
+		}
+		
+		public override string ToString()
+		{
+			StringBuilder b = new StringBuilder("[");
+			b.Append(GetType().Name);
+			b.Append(' ');
+			b.Append(this.DeclaringType.ToString());
+			b.Append('.');
+			b.Append(this.Name);
+			if (typeArguments != null && typeArguments.Count > 0) {
+				b.Append('[');
+				for (int i = 0; i < typeArguments.Count; i++) {
+					if (i > 0) b.Append(", ");
+					b.Append(typeArguments[i].ToString());
+				}
+				b.Append(']');
+			}
+			b.Append('(');
+			for (int i = 0; i < this.Parameters.Count; i++) {
+				if (i > 0) b.Append(", ");
+				b.Append(this.Parameters[i].ToString());
+			}
+			b.Append("):");
+			b.Append(this.ReturnType.ToString());
+			b.Append(']');
+			return b.ToString();
 		}
 	}
 }
