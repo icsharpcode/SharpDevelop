@@ -106,9 +106,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			projectCreateInformation.SolutionPath = oldSolutionPath;
 			projectCreateInformation.ProjectBasePath = oldProjectPath;
 			
-			string newSolutionName = StringParser.Parse(name, new string[,] {
-			                                            	{"ProjectName", projectCreateInformation.SolutionName}
-			                                            });
+			string newSolutionName = StringParser.Parse(name, new StringTagPair("ProjectName", projectCreateInformation.SolutionName));
 			
 			string solutionLocation = Path.Combine(projectCreateInformation.SolutionPath, newSolutionName + ".sln");
 			

@@ -396,7 +396,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 						descriptionCreated = true;
 						if (Overloads > 1) {
 							description += Environment.NewLine +
-								StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.OverloadsCounter}", new string[,] {{"NumOverloads", this.Overloads.ToString()}});
+								StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.OverloadsCounter}", new StringTagPair("NumOverloads", this.Overloads.ToString()));
 						}
 						string entityDoc = entity.Documentation;
 						if (!string.IsNullOrEmpty(entityDoc)) {

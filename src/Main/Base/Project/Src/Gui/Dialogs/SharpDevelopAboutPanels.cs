@@ -95,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static string LicenseSentence {
 			get {
 				return StringParser.Parse("${res:Dialog.About.License}",
-				                          new string[,] {{"License", "GNU Lesser General Public License"}});
+				                          new StringTagPair("License", "GNU Lesser General Public License"));
 			}
 		}
 		

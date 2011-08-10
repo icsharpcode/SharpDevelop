@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (loader != null)	{
 				loader.Load(fileName);
 			} else {
-				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fileName}}));
+				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new StringTagPair("FileName", fileName)));
 			}
 		}
 		
@@ -348,7 +348,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 					if (found == false) {
-						string[,] parseArgs = {{"SolutionName", Path.GetFileName(solutionFile)}, {"ProjectName", Path.GetFileName(fileName)}};
+						var parseArgs = new[] { new StringTagPair("SolutionName", Path.GetFileName(solutionFile)), new StringTagPair("ProjectName", Path.GetFileName(fileName))};
 						int res = MessageService.ShowCustomDialog(MessageService.ProductName,
 						                                          StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject}", parseArgs),
 						                                          0, 2,
@@ -391,7 +391,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				}
 			} else {
-				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fileName}}));
+				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new StringTagPair("FileName", fileName)));
 				return;
 			}
 			solution.AddFolder(project);

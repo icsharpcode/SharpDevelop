@@ -177,7 +177,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (FileUtility.IsValidPath(path))
 				return true;
-			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", path}}));
+			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new StringTagPair("FileName", path)));
 			return false;
 		}
 		
@@ -189,7 +189,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (FileUtility.IsValidDirectoryEntryName(name))
 				return true;
-			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", name}}));
+			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new StringTagPair("FileName", name)));
 			return false;
 		}
 		

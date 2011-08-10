@@ -229,9 +229,9 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				if (p.Errors.Count > 0) {
 					conversionLog.AppendLine();
 					conversionLog.AppendLine(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.Convert.IsNotConverted}",
-					                                            new string[,] {{"FileName", sourceItem.FileName}}));
+					                                            new StringTagPair("FileName", sourceItem.FileName)));
 					conversionLog.AppendLine(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.Convert.ParserErrorCount}",
-					                                            new string[,] {{"ErrorCount", p.Errors.Count.ToString()}}));
+					                                            new StringTagPair("ErrorCount", p.Errors.Count.ToString())));
 					conversionLog.AppendLine(p.Errors.ErrorOutput);
 					base.ConvertFile(sourceItem, targetItem);
 					return;
@@ -250,10 +250,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				if (outputVisitor.Errors.Count > 0) {
 					conversionLog.AppendLine();
 					conversionLog.AppendLine(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.Convert.ConverterErrorCount}",
-					                                            new string[,] {
-					                                            	{"FileName", sourceItem.FileName},
-					                                            	{"ErrorCount", outputVisitor.Errors.Count.ToString()}
-					                                            }));
+					                                            new StringTagPair("FileName", sourceItem.FileName),
+					                                            new StringTagPair("ErrorCount", outputVisitor.Errors.Count.ToString())));
 					conversionLog.AppendLine(outputVisitor.Errors.ErrorOutput);
 				}
 				

@@ -219,7 +219,10 @@ namespace ICSharpCode.SharpDevelop
 				if (!System.IO.File.Exists(fileName))
 					return;
 				
-				string message = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}", new string[,] {{"File", Path.GetFullPath(fileName)}});
+				string message = StringParser.Parse(
+					"${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}",
+					new StringTagPair("File", Path.GetFullPath(fileName))
+				);
 				if ((AutoLoadExternalChangesOption && file.IsDirty == false)
 				    || MessageService.AskQuestion(message, StringParser.Parse("${res:MainWindow.DialogName}")))
 				{

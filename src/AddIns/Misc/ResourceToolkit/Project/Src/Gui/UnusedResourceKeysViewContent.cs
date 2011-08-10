@@ -329,9 +329,13 @@ namespace Hornung.ResourceToolkit.Gui
 				bool ok;
 				
 				if (this.ListView.SelectedItems.Count == 1) {
-					ok = MessageService.AskQuestion(StringParser.Parse("${res:Hornung.ResourceToolkit.DeleteSingleResourceKeyQuestion}", new string[,] { {"Key", this.ListView.SelectedItems[0].SubItems[1].Text}, {"FileName", this.ListView.SelectedItems[0].Group.Header} }));
+					ok = MessageService.AskQuestion(
+						StringParser.Parse("${res:Hornung.ResourceToolkit.DeleteSingleResourceKeyQuestion}",
+						                   new StringTagPair("Key", this.ListView.SelectedItems[0].SubItems[1].Text), 
+						                   new StringTagPair("FileName", this.ListView.SelectedItems[0].Group.Header))
+					);
 				} else {
-					ok = MessageService.AskQuestion(StringParser.Parse("${res:Hornung.ResourceToolkit.DeleteAllSelectedResourceKeysQuestion}", new string[,] { {"Count", this.ListView.SelectedItems.Count.ToString(CultureInfo.CurrentCulture)} }));
+					ok = MessageService.AskQuestion(StringParser.Parse("${res:Hornung.ResourceToolkit.DeleteAllSelectedResourceKeysQuestion}", new StringTagPair("Count", this.ListView.SelectedItems.Count.ToString(CultureInfo.CurrentCulture))));
 				}
 				
 				if (ok) {
