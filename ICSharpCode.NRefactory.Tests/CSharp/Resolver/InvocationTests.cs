@@ -17,7 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -278,6 +280,19 @@ class DerivedClass : MiddleClass {
 			
 			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual("MiddleClass.Test", mrr.Member.FullName);
+		}
+		
+		[Test]
+		public void SubstituteClassAndMethodTypeParametersAtOnce()
+		{
+			string program = @"class C<X> { static void M<T>(X a, T b) { $C<T>.M(b, a)$; } }";
+			var rr = Resolve<InvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			
+			var m = (SpecializedMethod)rr.Member;
+			Assert.AreEqual("X", m.TypeArguments.Single().Name);
+			Assert.AreEqual("T", m.Parameters[0].Type.Resolve(context).Name);
+			Assert.AreEqual("X", m.Parameters[1].Type.Resolve(context).Name);
 		}
 	}
 }

@@ -17,49 +17,62 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
 	/// Represents a specialized IMethod (e.g. after type substitution).
 	/// </summary>
-	public class SpecializedMethod : DefaultMethod
+	public class SpecializedMethod : SpecializedParameterizedMember, IMethod
 	{
-		readonly IMember memberDefinition;
-		IType declaringType;
+		readonly IMethod methodDefinition;
+		readonly IList<IType> typeArguments;
 		
-		public SpecializedMethod(IMethod m) : base(m)
+		public SpecializedMethod(IType declaringType, IMethod methodDefinition, IList<IType> typeArguments = null)
+			: this(declaringType, methodDefinition, typeArguments, GetSubstitution(declaringType, typeArguments), null)
 		{
-			this.memberDefinition = m.MemberDefinition;
-			this.declaringType = m.DeclaringType;
 		}
 		
-		public override IType DeclaringType {
-			get { return declaringType; }
-		}
-		
-		public void SetDeclaringType(IType declaringType)
+		internal SpecializedMethod(IType declaringType, IMethod methodDefinition, IList<IType> typeArguments, TypeVisitor substitution, ITypeResolveContext context) : base(declaringType, methodDefinition, substitution, context)
 		{
-			CheckBeforeMutation();
-			this.declaringType = declaringType;
+			this.methodDefinition = methodDefinition;
+			
+			if (typeArguments != null) {
+				if (typeArguments.Count != methodDefinition.TypeParameters.Count)
+					throw new ArgumentException("Number of type arguments does not match number of type parameters");
+				this.typeArguments = typeArguments;
+			} else {
+				this.typeArguments = EmptyList<IType>.Instance;
+			}
 		}
 		
-		public override IMember MemberDefinition {
-			get { return memberDefinition; }
+		internal static TypeVisitor GetSubstitution(IType declaringType, IList<IType> typeArguments)
+		{
+			ParameterizedType pt = declaringType as ParameterizedType;
+			if (pt != null)
+				return pt.GetSubstitution(typeArguments);
+			else if (typeArguments != null)
+				return new TypeParameterSubstitution(null, typeArguments);
+			else
+				return null;
 		}
 		
-		public override string Documentation {
-			get { return memberDefinition.Documentation; }
+		/// <summary>
+		/// Gets the type arguments passed to this method.
+		/// </summary>
+		public IList<IType> TypeArguments {
+			get { return typeArguments; }
 		}
 		
 		public override int GetHashCode()
 		{
-			int hashCode = 0;
+			int hashCode = base.GetHashCode();
 			unchecked {
-				if (memberDefinition != null)
-					hashCode += 1000000007 * memberDefinition.GetHashCode();
-				if (declaringType != null)
-					hashCode += 1000000009 * declaringType.GetHashCode();
+				for (int i = 0; i < typeArguments.Count; i++) {
+					hashCode *= 362631391;
+					hashCode += typeArguments[i].GetHashCode();
+				}
 			}
 			return hashCode;
 		}
@@ -67,25 +80,39 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override bool Equals(object obj)
 		{
 			SpecializedMethod other = obj as SpecializedMethod;
-			if (other == null)
+			if (!base.Equals(other))
 				return false;
-			return object.Equals(this.memberDefinition, other.memberDefinition) && object.Equals(this.declaringType, other.declaringType);
+			if (typeArguments.Count != other.typeArguments.Count)
+				return false;
+			for (int i = 0; i < typeArguments.Count; i++) {
+				if (!typeArguments[i].Equals(other.typeArguments[i]))
+					return false;
+			}
+			return true;
 		}
 		
-		/// <summary>
-		/// Performs type substitution in parameter types and in the return type.
-		/// </summary>
-		public void SubstituteTypes(Func<ITypeReference, ITypeReference> substitution)
-		{
-			this.ReturnType = substitution(this.ReturnType);
-			var p = this.Parameters;
-			for (int i = 0; i < p.Count; i++) {
-				ITypeReference newType = substitution(p[i].Type);
-				if (newType != p[i].Type) {
-					p[i] = new DefaultParameter(p[i]) { Type = newType };
-				}
-			}
-			// TODO: we might also have to perform substitution within the method's constraints
+		public IList<IAttribute> ReturnTypeAttributes {
+			get { return methodDefinition.ReturnTypeAttributes; }
+		}
+		
+		public IList<ITypeParameter> TypeParameters {
+			get { return methodDefinition.TypeParameters; }
+		}
+		
+		public bool IsExtensionMethod {
+			get { return methodDefinition.IsExtensionMethod; }
+		}
+		
+		public bool IsConstructor {
+			get { return methodDefinition.IsConstructor; }
+		}
+		
+		public bool IsDestructor {
+			get { return methodDefinition.IsDestructor; }
+		}
+		
+		public bool IsOperator {
+			get { return methodDefinition.IsOperator; }
 		}
 	}
 }

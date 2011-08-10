@@ -344,7 +344,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			IMember IMember.MemberDefinition {
-				get { return null; }
+				get { return this; }
 			}
 			
 			IList<IExplicitInterfaceImplementation> IMember.InterfaceImplementations {
@@ -1723,7 +1723,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new InvocationResolveResult(
 					null, lifted.nonLiftedOperator, lifted.ReturnType.Resolve(context),
 					r.GetArgumentsWithConversions(), r.BestCandidateErrors,
-					typeArguments: r.InferredTypeArguments,
 					isLiftedOperatorInvocation: true,
 					argumentToParameterMap: r.GetArgumentToParameterMap()
 				);
@@ -2004,15 +2003,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			NamespaceResolveResult nrr = target as NamespaceResolveResult;
 			if (nrr != null) {
-				if (typeArguments.Count == 0) {
-					string fullName = NamespaceDeclaration.BuildQualifiedName(nrr.NamespaceName, identifier);
-					if (context.GetNamespace(fullName, StringComparer.Ordinal) != null)
-						return new NamespaceResolveResult(fullName);
-				}
-				ITypeDefinition def = context.GetTypeDefinition(nrr.NamespaceName, identifier, typeArguments.Count, StringComparer.Ordinal);
-				if (def != null)
-					return new TypeResolveResult(def);
-				return ErrorResult;
+				return ResolveMemberAccessOnNamespace(nrr, identifier, typeArguments);
 			}
 			
 			if (SharedTypes.Dynamic.Equals(target.Type))
@@ -2021,7 +2012,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			MemberLookup lookup = CreateMemberLookup();
 			ResolveResult result = lookup.Lookup(target, identifier, typeArguments, isInvocationTarget);
 			if (result is UnknownMemberResolveResult) {
-				var extensionMethods = GetExtensionMethods(target.Type, identifier, typeArguments.Count);
+				var extensionMethods = GetExtensionMethods(target.Type, identifier, typeArguments);
 				if (extensionMethods.Count > 0) {
 					return new MethodGroupResolveResult(target, identifier, EmptyList<IMethod>.Instance, typeArguments) {
 						extensionMethods = extensionMethods
@@ -2039,6 +2030,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return result;
 		}
 		
+		public ResolveResult ResolveMemberType(ResolveResult target, string identifier, IList<IType> typeArguments)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			
+			NamespaceResolveResult nrr = target as NamespaceResolveResult;
+			if (nrr != null) {
+				return ResolveMemberAccessOnNamespace(nrr, identifier, typeArguments);
+			}
+			
+			MemberLookup lookup = CreateMemberLookup();
+			return lookup.LookupType(target.Type, identifier, typeArguments);
+		}
+		
+		ResolveResult ResolveMemberAccessOnNamespace(NamespaceResolveResult nrr, string identifier, IList<IType> typeArguments)
+		{
+			if (typeArguments.Count == 0) {
+				string fullName = NamespaceDeclaration.BuildQualifiedName(nrr.NamespaceName, identifier);
+				if (context.GetNamespace(fullName, StringComparer.Ordinal) != null)
+					return new NamespaceResolveResult(fullName);
+			}
+			ITypeDefinition def = context.GetTypeDefinition(nrr.NamespaceName, identifier, typeArguments.Count, StringComparer.Ordinal);
+			if (def != null) {
+				if (typeArguments.Count > 0)
+					return new TypeResolveResult(new ParameterizedType(def, typeArguments));
+				else
+					return new TypeResolveResult(def);
+			}
+			return ErrorResult;
+		}
+		
 		MemberLookup CreateMemberLookup()
 		{
 			return new MemberLookup(context, this.CurrentTypeDefinition, this.UsingScope != null ? this.UsingScope.ProjectContent : null);
@@ -2047,9 +2068,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		#region GetExtensionMethods
 		/// <summary>
-		/// Gets the extension methods that are called 'name', and can be called with 'typeArgumentCount' explicit type arguments;
+		/// Gets the extension methods that are called 'name'
 		/// and are applicable with a first argument type of 'targetType'.
 		/// </summary>
+		/// <param name="targetType">Type of the 'this' argument</param>
+		/// <param name="name">Name of the extension method</param>
+		/// <param name="typeArguments">Explicitly provided type arguments.
+		/// An empty list will return all matching extension method definitions;
+		/// a non-empty list will return <see cref="SpecializedMethod"/>s for all extension methods
+		/// with the matching number of type parameters.</param>
 		/// <remarks>
 		/// The results are stored in nested lists because they are grouped by using scope.
 		/// That is, for "using SomeExtensions; namespace X { using MoreExtensions; ... }",
@@ -2059,13 +2086,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		///    new List { all extensions from SomeExtensions }
 		/// }
 		/// </remarks>
-		public List<List<IMethod>> GetExtensionMethods(IType targetType, string name, int typeArgumentCount)
+		public List<List<IMethod>> GetExtensionMethods(IType targetType, string name, IList<IType> typeArguments = null)
 		{
 			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
 			foreach (var inputGroup in GetAllExtensionMethods()) {
 				List<IMethod> outputGroup = new List<IMethod>();
 				foreach (var method in inputGroup) {
-					if (method.Name == name && (typeArgumentCount == 0 || method.TypeParameters.Count == typeArgumentCount)) {
+					if (method.Name != name)
+						continue;
+					
+					if (typeArguments != null && typeArguments.Count > 0) {
+						if (method.TypeParameters.Count != typeArguments.Count)
+							continue;
+						SpecializedMethod sm = new SpecializedMethod(method.DeclaringType, method, typeArguments);
+						// TODO: verify targetType
+						outputGroup.Add(sm);
+					} else {
 						// TODO: verify targetType
 						outputGroup.Add(method);
 					}

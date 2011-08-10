@@ -261,89 +261,48 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
-			foreach (var baseType in GetNonCircularBaseTypes(context)) {
-				foreach (var m in baseType.GetMethods(context, filter)) {
-					if (!m.IsStatic)
-						yield return m;
-				}
-			}
+			return ParameterizedType.GetMethods(this, context, FilterNonStatic(filter));
+		}
+		
+		public IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null)
+		{
+			return ParameterizedType.GetMethods(this, typeArguments, context, FilterNonStatic(filter));
 		}
 		
 		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
 		{
-			foreach (var baseType in GetNonCircularBaseTypes(context)) {
-				foreach (var m in baseType.GetProperties(context, filter)) {
-					if (!m.IsStatic)
-						yield return m;
-				}
-			}
+			return ParameterizedType.GetProperties(this, context, FilterNonStatic(filter));
 		}
 		
 		public IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null)
 		{
-			foreach (var baseType in GetNonCircularBaseTypes(context)) {
-				foreach (var m in baseType.GetFields(context, filter)) {
-					if (!m.IsStatic)
-						yield return m;
-				}
-			}
+			return ParameterizedType.GetFields(this, context, FilterNonStatic(filter));
 		}
 		
 		public IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null)
 		{
-			foreach (var baseType in GetNonCircularBaseTypes(context)) {
-				foreach (var m in baseType.GetEvents(context, filter)) {
-					if (!m.IsStatic)
-						yield return m;
-				}
-			}
+			return ParameterizedType.GetEvents(this, context, FilterNonStatic(filter));
 		}
 		
 		public IEnumerable<IMember> GetMembers(ITypeResolveContext context, Predicate<IMember> filter = null)
 		{
-			foreach (var baseType in GetNonCircularBaseTypes(context)) {
-				foreach (var m in baseType.GetMembers(context, filter)) {
-					if (!m.IsStatic)
-						yield return m;
-				}
-			}
+			return ParameterizedType.GetMembers(this, context, FilterNonStatic(filter));
 		}
 		
-		// Problem with type parameter resolving - circular declarations
-		//   void Example<S, T> (S s, T t) where S : T where T : S
-		IEnumerable<IType> GetNonCircularBaseTypes(ITypeResolveContext context)
+		static Predicate<T> FilterNonStatic<T>(Predicate<T> filter) where T : class, IMember
 		{
-			var result = this.GetBaseTypes(context).Where(bt => !IsCircular (context, bt));
-			if (result.Any ())
-				return result;
-			
-			// result may be empty, GetBaseTypes doesn't return object/struct when there are only constraints (even circular) as base types are available,
-			// but even when there are only circular references the default base type should be included.
-			IType defaultBaseType = context.GetTypeDefinition("System", HasValueTypeConstraint ? "ValueType" : "Object", 0, StringComparer.Ordinal);
-			if (defaultBaseType != null)
-				return new [] { defaultBaseType };
-			return Enumerable.Empty<IType> ();
-		}
-		
-		bool IsCircular(ITypeResolveContext context, IType baseType)
-		{
-			var parameter = baseType as DefaultTypeParameter;
-			if (parameter == null)
-				return false;
-			var stack = new Stack<DefaultTypeParameter>();
-			while (true) {
-				if (parameter == this)
-					return true;
-				foreach (DefaultTypeParameter parameterBaseType in parameter.GetNonCircularBaseTypes(context).Where(t => t is DefaultTypeParameter)) {
-					stack.Push(parameterBaseType);
-				}
-				if (stack.Count == 0)
-					return false;
-				parameter = stack.Pop();
-			}
+			if (filter == null)
+				return member => !member.IsStatic;
+			else
+				return member => !member.IsStatic && filter(member);
 		}
 		
 		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter)
+		{
+			return EmptyList<IType>.Instance;
+		}
+		
+		IEnumerable<IType> IType.GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter)
 		{
 			return EmptyList<IType>.Instance;
 		}

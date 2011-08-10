@@ -2231,7 +2231,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			var typeArguments = GetTypeArguments(memberType.TypeArguments);
-			return resolver.ResolveMemberAccess(target, memberType.MemberName, typeArguments);
+			return resolver.ResolveMemberType(target, memberType.MemberName, typeArguments);
 		}
 		
 		public override ResolveResult VisitComposedType(ComposedType composedType, object data)

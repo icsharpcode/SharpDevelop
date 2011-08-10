@@ -53,7 +53,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public IType[] InferredTypes;
 			
-			public IList<IParameter> Parameters { get { return Member.Parameters; } }
+			/// <summary>
+			/// Gets the original member parameters (before any substitution!)
+			/// </summary>
+			public readonly IList<IParameter> Parameters;
 			
 			/// <summary>
 			/// Conversions applied to the arguments.
@@ -86,7 +89,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				this.Member = member;
 				this.IsExpandedForm = isExpanded;
-				this.ParameterTypes = new IType[member.Parameters.Count];
+				this.Parameters = ((IParameterizedMember)member.MemberDefinition).Parameters;
+				this.ParameterTypes = new IType[this.Parameters.Count];
 			}
 			
 			public void AddError(OverloadResolutionErrors newError)
@@ -227,8 +231,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				} else {
 					// named argument
-					for (int j = 0; j < candidate.Member.Parameters.Count; j++) {
-						if (argumentNames[i] == candidate.Member.Parameters[j].Name) {
+					for (int j = 0; j < candidate.Parameters.Count; j++) {
+						if (argumentNames[i] == candidate.Parameters[j].Name) {
 							candidate.ArgumentToParameterMap[i] = j;
 						}
 					}
@@ -250,6 +254,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				return;
 			}
+			ParameterizedType parameterizedDeclaringType = candidate.Member.DeclaringType as ParameterizedType;
+			IList<IType> classTypeArguments;
+			if (parameterizedDeclaringType != null) {
+				classTypeArguments = parameterizedDeclaringType.TypeArguments;
+			} else {
+				classTypeArguments = null;
+			}
 			// The method is generic:
 			if (explicitlyGivenTypeArguments != null) {
 				if (explicitlyGivenTypeArguments.Length == method.TypeParameters.Count) {
@@ -268,12 +279,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				TypeInference ti = new TypeInference(context, conversions);
 				bool success;
-				candidate.InferredTypes = ti.InferTypeArguments(method.TypeParameters, arguments, candidate.ParameterTypes, out success);
+				candidate.InferredTypes = ti.InferTypeArguments(method.TypeParameters, arguments, candidate.ParameterTypes, out success, classTypeArguments);
 				if (!success)
 					candidate.AddError(OverloadResolutionErrors.TypeInferenceFailed);
 			}
 			// Now substitute in the formal parameters:
-			var substitution = new ConstraintValidatingSubstitution(candidate.InferredTypes, this);
+			var substitution = new ConstraintValidatingSubstitution(classTypeArguments, candidate.InferredTypes, this);
 			for (int i = 0; i < candidate.ParameterTypes.Length; i++) {
 				candidate.ParameterTypes[i] = candidate.ParameterTypes[i].AcceptVisitor(substitution);
 			}
@@ -281,15 +292,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				candidate.AddError(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyConstraint);
 		}
 		
-		sealed class ConstraintValidatingSubstitution : MethodTypeParameterSubstitution
+		sealed class ConstraintValidatingSubstitution : TypeParameterSubstitution
 		{
-			readonly OverloadResolution overloadResolution;
+			readonly Conversions conversions;
+			readonly ITypeResolveContext context;
 			public bool ConstraintsValid = true;
 			
-			public ConstraintValidatingSubstitution(IType[] typeArguments, OverloadResolution overloadResolution)
-				: base(typeArguments)
+			public ConstraintValidatingSubstitution(IList<IType> classTypeArguments, IList<IType> methodTypeArguments, OverloadResolution overloadResolution)
+				: base(classTypeArguments, methodTypeArguments)
 			{
-				this.overloadResolution = overloadResolution;
+				this.context = overloadResolution.context;
+				this.conversions = overloadResolution.conversions;
 			}
 			
 			public override IType VisitParameterizedType(ParameterizedType type)
@@ -312,11 +325,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 									break;
 							}
 							if (tp.HasReferenceTypeConstraint) {
-								if (typeArg.IsReferenceType(overloadResolution.context) != true)
+								if (typeArg.IsReferenceType(context) != true)
 									ConstraintsValid = false;
 							}
 							if (tp.HasValueTypeConstraint) {
-								if (!NullableType.IsNonNullableValueType(typeArg, overloadResolution.context))
+								if (!NullableType.IsNonNullableValueType(typeArg, context))
 									ConstraintsValid = false;
 							}
 							if (tp.HasDefaultConstructorConstraint) {
@@ -324,25 +337,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 								if (def != null && def.IsAbstract)
 									ConstraintsValid = false;
 								ConstraintsValid &= typeArg.GetConstructors(
-									overloadResolution.context,
+									context,
 									m => m.Parameters.Count == 0 && m.Accessibility == Accessibility.Public
 								).Any();
 							}
 							foreach (IType constraintType in tp.Constraints) {
 								IType c = newParameterizedType.SubstituteInType(constraintType);
-								ConstraintsValid &= overloadResolution.IsConstraintConvertible(typeArg, c);
+								ConstraintsValid &= conversions.IsConstraintConvertible(typeArg, c);
 							}
 						}
 					}
 				}
 				return newType;
 			}
-		}
-		
-		bool IsConstraintConvertible(IType typeArg, IType constraintType)
-		{
-			// TODO: this isn't exactly correct; not all kinds of implicit conversions are allowed here
-			return conversions.ImplicitConversion(typeArg, constraintType);
 		}
 		#endregion
 		
@@ -604,7 +611,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public IList<IType> InferredTypeArguments {
 			get {
 				if (bestCandidate != null && bestCandidate.InferredTypes != null)
-					return Array.AsReadOnly(bestCandidate.InferredTypes);
+					return bestCandidate.InferredTypes;
 				else
 					return EmptyList<IType>.Instance;
 			}
@@ -656,6 +663,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			return args;
+		}
+		
+		public IParameterizedMember GetBestCandidateWithSubstitutedTypeArguments()
+		{
+			if (bestCandidate == null)
+				return null;
+			IMethod method = bestCandidate.Member as IMethod;
+			if (method != null && method.TypeParameters.Count > 0) {
+				return new SpecializedMethod(method.DeclaringType, (IMethod)method.MemberDefinition, bestCandidate.InferredTypes);
+			} else {
+				return bestCandidate.Member;
+			}
 		}
 	}
 }

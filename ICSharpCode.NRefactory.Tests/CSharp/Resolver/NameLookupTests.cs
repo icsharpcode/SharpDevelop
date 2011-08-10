@@ -19,8 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -496,7 +496,7 @@ namespace A.B {
 		
 		
 		[Test]
-		public void InnerTypeResolve ()
+		public void InnerTypeResolve1 ()
 		{
 			string program = @"public class C<T> { public class Inner { } }
 class TestClass {
@@ -507,15 +507,19 @@ class TestClass {
 ";
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("C.Inner", trr.Type.FullName);
-			
-			program = @"public class C<T> { public class D<S,U> { public class Inner { } }}
+		}
+		
+		[Test]
+		public void InnerTypeResolve2 ()
+		{
+			string program = @"public class C<T> { public class D<S,U> { public class Inner { } }}
 class TestClass {
 	void Test() {
 		$C<string>.D<int,TestClass>.Inner$ a;
 	}
 }
 ";
-			trr = Resolve<TypeResolveResult>(program);
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("C.D.Inner", trr.Type.FullName);
 		}
 		
@@ -837,6 +841,19 @@ class B
 }";
 			var mrr = Resolve<MemberResolveResult>(program);
 			Assert.AreEqual("B.x", mrr.Member.FullName);
+		}
+		
+		[Test]
+		public void SubstituteClassAndMethodTypeParametersAtOnce()
+		{
+			string program = @"class C<X> { static void M<T>(X a, T b) { $C<T>.M<X>$(b, a); } }";
+			var rr = Resolve<MethodGroupResolveResult>(program);
+			Assert.AreEqual("X", rr.TypeArguments.Single().Name);
+			
+			var m = (SpecializedMethod)rr.Methods.Single();
+			Assert.AreSame(rr.TypeArguments.Single(), m.TypeArguments.Single());
+			Assert.AreEqual("T", m.Parameters[0].Type.Resolve(context).Name);
+			Assert.AreEqual("X", m.Parameters[1].Type.Resolve(context).Name);
 		}
 	}
 }

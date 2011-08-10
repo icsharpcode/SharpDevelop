@@ -82,7 +82,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return EmptyList<IType>.Instance;
 		}
 		
+		public virtual IEnumerable<IType> GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
+		{
+			return EmptyList<IType>.Instance;
+		}
+		
 		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
+		{
+			return EmptyList<IMethod>.Instance;
+		}
+		
+		public virtual IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter)
 		{
 			return EmptyList<IMethod>.Instance;
 		}

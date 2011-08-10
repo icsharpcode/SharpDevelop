@@ -126,6 +126,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		//  Here `1 refers to B, and there's no way to return X as it would collide with B.
 		
 		/// <summary>
+		/// Gets inner classes (including inherited inner classes)
+		/// that have <c>typeArguments.Count</c> additional type parameters.
+		/// </summary>
+		/// <param name="typeArguments">The type arguments passed to the inner class</param>
+		/// <param name="context">The context used for resolving type references</param>
+		/// <param name="filter">The filter used to select which types to return.
+		/// The filter is tested on the original type definitions (before parameterization).</param>
+		/// <remarks>
+		/// Type parameters belonging to the outer class will have the value copied from the outer type
+		/// if it is a parameterized type. Otherwise, those existing type parameters will be self-parameterized,
+		/// and thus 'leaked' to the caller in the same way the GetMembers() method does not specialize members
+		/// from an <see cref="ITypeDefinition"/> and 'leaks' type parameters in member signatures.
+		/// </remarks>
+		IEnumerable<IType> GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter = null);
+		
+		/// <summary>
 		/// Gets all instance constructors for this type.
 		/// </summary>
 		/// <param name="context">The context used for resolving type references</param>
@@ -134,7 +150,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <remarks>
 		/// This list does not include constructors in base classes or static constructors.
 		/// For methods on parameterized types, type substitution will be performed on the method signature,
-		/// and the appriopriate <see cref="SpecializedMethod"/> will be returned.
+		/// and the appropriate <see cref="SpecializedMethod"/> will be returned.
 		/// </remarks>
 		IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null);
 		
@@ -147,9 +163,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <remarks>
 		/// The list does not include constructors.
 		/// For methods on parameterized types, type substitution will be performed on the method signature,
-		/// and the appriopriate <see cref="SpecializedMethod"/> will be returned.
+		/// and the appropriate <see cref="SpecializedMethod"/> will be returned.
 		/// </remarks>
 		IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null);
+		
+		/// <summary>
+		/// Gets all generic methods that can be called on this type with the specified type arguments.
+		/// </summary>
+		/// <param name="typeArguments">The type arguments used for the call.</param>
+		/// <param name="context">The context used for resolving type references</param>
+		/// <param name="filter">The filter used to select which methods to return.
+		/// The filter is tested on the original method definitions (before specialization).</param>
+		/// <remarks>
+		/// Type substitution will be performed on the method signature, creating a <see cref="SpecializedMethod"/>
+		/// with the specified type arguments.
+		/// </remarks>
+		IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null);
 		
 		/// <summary>
 		/// Gets all properties that can be called on this type.
@@ -159,7 +188,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// The filter is tested on the original property definitions (before specialization).</param>
 		/// <remarks>
 		/// For properties on parameterized types, type substitution will be performed on the property signature,
-		/// and the appriopriate <see cref="SpecializedProperty"/> will be returned.
+		/// and the appropriate <see cref="SpecializedProperty"/> will be returned.
 		/// </remarks>
 		IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null);
 		
@@ -171,7 +200,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// The filter is tested on the original field definitions (before specialization).</param>
 		/// <remarks>
 		/// For fields on parameterized types, type substitution will be performed on the field's return type,
-		/// and the appriopriate <see cref="SpecializedField"/> will be returned.
+		/// and the appropriate <see cref="SpecializedField"/> will be returned.
 		/// </remarks>
 		IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null);
 		
@@ -183,7 +212,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// The filter is tested on the original event definitions (before specialization).</param>
 		/// <remarks>
 		/// For fields on parameterized types, type substitution will be performed on the event's return type,
-		/// and the appriopriate <see cref="SpecializedEvent"/> will be returned.
+		/// and the appropriate <see cref="SpecializedEvent"/> will be returned.
 		/// </remarks>
 		IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null);
 		

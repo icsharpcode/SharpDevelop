@@ -126,12 +126,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			int typeArgumentCount = typeArguments.Count;
 			Predicate<ITypeDefinition> typeFilter = delegate (ITypeDefinition d) {
-				return d.TypeParameterCount == typeArgumentCount && d.Name == name && IsAccessible(d, true);
+				// inner types contain the type parameters of outer types. therefore this count has to been adjusted.
+				int correctedCount = d.TypeParameterCount - (d.DeclaringType != null ? d.DeclaringType.TypeParameterCount : 0);
+				return correctedCount == typeArgumentCount && d.Name == name && IsAccessible(d, true);
 			};
-			List<IType> types = declaringType.GetNestedTypes(context, typeFilter).ToList();
+			List<IType> types;
+			if (parameterizeResultType)
+				types = declaringType.GetNestedTypes(typeArguments, context, typeFilter).ToList();
+			else
+				types = declaringType.GetNestedTypes(context, typeFilter).ToList();
+			
 			RemoveTypesHiddenByOtherTypes(types);
-			if (types.Count > 0)
-				return CreateTypeResolveResult(types[0], types.Count > 1, typeArguments, parameterizeResultType);
+			if (types.Count == 1)
+				return new TypeResolveResult(types[0]);
+			else if (types.Count > 1)
+				return new AmbiguousTypeResolveResult(types[0]);
 			else
 				return new UnknownMemberResolveResult(declaringType, name, typeArguments);
 		}
@@ -156,24 +165,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ResolveResult CreateTypeResolveResult(IType returnedType, bool isAmbiguous, IList<IType> typeArguments, bool parameterizeResultType)
-		{
-			if (parameterizeResultType && typeArguments.Count > 0) {
-				// Complete the partial parameterization
-				ParameterizedType pt = returnedType as ParameterizedType;
-				if (pt != null) {
-					IType[] newTypeArguments = new IType[pt.TypeParameterCount];
-					pt.TypeArguments.CopyTo(newTypeArguments, 0);
-					typeArguments.CopyTo(newTypeArguments, newTypeArguments.Length - typeArguments.Count);
-					returnedType = new ParameterizedType(pt.GetDefinition(), newTypeArguments);
-				}
-			}
-			if (isAmbiguous)
-				return new AmbiguousTypeResolveResult(returnedType);
-			else
-				return new TypeResolveResult(returnedType);
-		}
-		
 		/// <summary>
 		/// Performs a member lookup.
 		/// </summary>
@@ -185,32 +176,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			List<IType> types = new List<IType>();
 			List<IMember> members = new List<IMember>();
 			if (!isInvocation) {
-				// Consider nested types only if it's not an invocation. The type parameter count must match in this case.
+				// Consider nested types only if it's not an invocation.
+				// type.GetNestedTypes() is checking the type parameter count for an exact match.
 				Predicate<ITypeDefinition> typeFilter = delegate (ITypeDefinition d) {
-					// inner types contain the type parameters of outer types. therefore this count has to been adjusted.
-					int correctedCount = d.TypeParameterCount - (d.DeclaringType != null ? d.DeclaringType.TypeParameterCount : 0);
-					return correctedCount == typeArgumentCount && d.Name == name && IsAccessible(d, true);
+					return d.Name == name && IsAccessible(d, true);
 				};
-				types.AddRange(type.GetNestedTypes(context, typeFilter));
+				types.AddRange(type.GetNestedTypes(typeArguments, context, typeFilter));
 			}
 			
 			bool allowProtectedAccess = IsProtectedAccessAllowed(type);
 			
+			Predicate<IMember> memberFilter = delegate(IMember member) {
+				return !member.IsOverride && member.Name == name && IsAccessible(member, allowProtectedAccess);
+			};
 			if (typeArgumentCount == 0) {
-				Predicate<IMember> memberFilter = delegate(IMember member) {
-					return !member.IsOverride && member.Name == name && IsAccessible(member, allowProtectedAccess);
-				};
 				members.AddRange(type.GetMembers(context, memberFilter));
+				// Note: IsInvocable-checking cannot be done as part of the memberFilter;
+				// because it must be done after type substitution.
 				if (isInvocation)
 					members.RemoveAll(m => !IsInvocable(m, context));
 			} else {
 				// No need to check for isInvocation/isInvocable here:
 				// we filter out all non-methods
-				Predicate<IMethod> memberFilter = delegate(IMethod method) {
-					return method.TypeParameters.Count == typeArgumentCount
-						&& !method.IsOverride && method.Name == name && IsAccessible(method, allowProtectedAccess);
-				};
-				members.AddRange(type.GetMethods(context, memberFilter).SafeCast<IMethod, IMember>());
+				members.AddRange(type.GetMethods(typeArguments, context, memberFilter));
 			}
 			
 			// TODO: can't members also hide types?
@@ -269,7 +257,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			if (types.Count > 0) {
 				bool isAmbiguous = !(types.Count == 1 && members.Count == 0);
-				return CreateTypeResolveResult(types[0], isAmbiguous, typeArguments, true);
+				if (isAmbiguous)
+					return new AmbiguousTypeResolveResult(types[0]);
+				else
+					return new TypeResolveResult(types[0]);
 			}
 			if (members.Count == 0)
 				return new UnknownMemberResolveResult(type, name, typeArguments);

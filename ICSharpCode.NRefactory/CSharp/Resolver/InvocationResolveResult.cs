@@ -31,7 +31,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public class InvocationResolveResult : MemberResolveResult
 	{
 		public readonly OverloadResolutionErrors OverloadResolutionErrors;
-		public readonly IList<IType> TypeArguments;
 		
 		public readonly IList<ResolveResult> Arguments;
 		
@@ -55,11 +54,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public InvocationResolveResult(ResolveResult targetResult, OverloadResolution or, ITypeResolveContext context)
 			: base(
 				or.IsExtensionMethodInvocation ? null : targetResult,
-				or.BestCandidate,
-				GetReturnType(or, context))
+				or.GetBestCandidateWithSubstitutedTypeArguments(),
+				context)
 		{
 			this.OverloadResolutionErrors = or.BestCandidateErrors;
-			this.TypeArguments = or.InferredTypeArguments;
 			this.argumentToParameterMap = or.GetArgumentToParameterMap();
 			this.Arguments = or.GetArgumentsWithConversions();
 			
@@ -72,37 +70,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResolveResult targetResult, IParameterizedMember member, IType returnType,
 			IList<ResolveResult> arguments,
 			OverloadResolutionErrors overloadResolutionErrors = OverloadResolutionErrors.None,
-			IList<IType> typeArguments = null,
 			bool isExtensionMethodInvocation = false, bool isExpandedForm = false,
 			bool isLiftedOperatorInvocation = false,
 			IList<int> argumentToParameterMap = null)
 			: base(targetResult, member, returnType)
 		{
 			this.OverloadResolutionErrors = overloadResolutionErrors;
-			this.TypeArguments = typeArguments ?? EmptyList<IType>.Instance;
 			this.Arguments = arguments ?? EmptyList<ResolveResult>.Instance;
 			this.IsExtensionMethodInvocation = isExtensionMethodInvocation;
 			this.IsExpandedForm = isExpandedForm;
 			this.IsLiftedOperatorInvocation = isLiftedOperatorInvocation;
 			this.argumentToParameterMap = argumentToParameterMap;
-		}
-		
-		static IType GetReturnType(OverloadResolution or, ITypeResolveContext context)
-		{
-			if (context == null)
-				throw new ArgumentNullException("context");
-			
-			IType returnType;
-			if (or.BestCandidate.EntityType == EntityType.Constructor)
-				returnType = or.BestCandidate.DeclaringType;
-			else
-				returnType = or.BestCandidate.ReturnType.Resolve(context);
-			
-			var typeArguments = or.InferredTypeArguments;
-			if (typeArguments.Count > 0)
-				return returnType.AcceptVisitor(new MethodTypeParameterSubstitution(typeArguments));
-			else
-				return returnType;
 		}
 		
 		public override bool IsError {

@@ -31,8 +31,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public class MethodGroupResolveResult : ResolveResult
 	{
-		readonly ReadOnlyCollection<IMethod> methods;
-		readonly ReadOnlyCollection<IType> typeArguments;
+		readonly IList<IMethod> methods;
+		readonly IList<IType> typeArguments;
 		readonly ResolveResult targetResult;
 		readonly string methodName;
 		
@@ -44,8 +44,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("methods");
 			this.targetResult = targetResult;
 			this.methodName = methodName;
-			this.methods = new ReadOnlyCollection<IMethod>(methods);
-			this.typeArguments = typeArguments != null ? new ReadOnlyCollection<IType>(typeArguments) : EmptyList<IType>.Instance;
+			this.methods = methods;
+			this.typeArguments = typeArguments ?? EmptyList<IType>.Instance;
 		}
 		
 		/// <summary>
@@ -73,14 +73,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets the methods that were found.
 		/// This list does not include extension methods.
 		/// </summary>
-		public ReadOnlyCollection<IMethod> Methods {
+		public IList<IMethod> Methods {
 			get { return methods; }
 		}
 		
 		/// <summary>
 		/// Gets the type arguments that were explicitly provided.
 		/// </summary>
-		public ReadOnlyCollection<IType> TypeArguments {
+		public IList<IType> TypeArguments {
 			get { return typeArguments; }
 		}
 		
@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				UsingScope oldUsingScope = resolver.UsingScope;
 				try {
 					resolver.UsingScope = usingScope;
-					extensionMethods = resolver.GetExtensionMethods(this.TargetType, methodName, typeArguments.Count);
+					extensionMethods = resolver.GetExtensionMethods(this.TargetType, methodName, typeArguments);
 				} finally {
 					resolver.UsingScope = oldUsingScope;
 					resolver = null;
@@ -173,7 +173,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 			}
-			Log.WriteLine("Overload resolution finished, best candidate is {0}.", or.BestCandidate);
+			Log.WriteLine("Overload resolution finished, best candidate is {0}.", or.GetBestCandidateWithSubstitutedTypeArguments());
 			return or;
 		}
 		

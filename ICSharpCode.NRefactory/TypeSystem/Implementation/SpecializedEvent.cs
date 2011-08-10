@@ -21,55 +21,46 @@ using System;
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
-	/// Represents a specialized IEvent (e.g. after type substitution).
+	/// Represents a specialized IEvent (event after type substitution).
 	/// </summary>
-	public class SpecializedEvent : DefaultEvent
+	public class SpecializedEvent : SpecializedMember, IEvent
 	{
-		readonly IMember memberDefinition;
-		IType declaringType;
+		readonly IEvent eventDefinition;
 		
-		public SpecializedEvent(IEvent e) : base(e)
+		public SpecializedEvent(IType declaringType, IEvent eventDefinition)
+			: base(declaringType, eventDefinition)
 		{
-			this.memberDefinition = e.MemberDefinition;
-			this.declaringType = e.DeclaringType;
+			this.eventDefinition = eventDefinition;
 		}
 		
-		public override IType DeclaringType {
-			get { return declaringType; }
-		}
-		
-		public void SetDeclaringType(IType declaringType)
+		internal SpecializedEvent(IType declaringType, IEvent eventDefinition, TypeVisitor substitution, ITypeResolveContext context)
+			: base(declaringType, eventDefinition, substitution, context)
 		{
-			CheckBeforeMutation();
-			this.declaringType = declaringType;
+			this.eventDefinition = eventDefinition;
 		}
 		
-		public override IMember MemberDefinition {
-			get { return memberDefinition; }
+		public bool CanAdd {
+			get { return eventDefinition.CanAdd; }
 		}
 		
-		public override string Documentation {
-			get { return memberDefinition.Documentation; }
+		public bool CanRemove {
+			get { return eventDefinition.CanRemove; }
 		}
 		
-		public override int GetHashCode()
-		{
-			int hashCode = 0;
-			unchecked {
-				if (memberDefinition != null)
-					hashCode += 1000000007 * memberDefinition.GetHashCode();
-				if (declaringType != null)
-					hashCode += 1000000009 * declaringType.GetHashCode();
-			}
-			return hashCode;
+		public bool CanInvoke {
+			get { return eventDefinition.CanInvoke; }
 		}
 		
-		public override bool Equals(object obj)
-		{
-			SpecializedEvent other = obj as SpecializedEvent;
-			if (other == null)
-				return false;
-			return object.Equals(this.memberDefinition, other.memberDefinition) && object.Equals(this.declaringType, other.declaringType);
+		public IAccessor AddAccessor {
+			get { return eventDefinition.AddAccessor; }
+		}
+		
+		public IAccessor RemoveAccessor {
+			get { return eventDefinition.RemoveAccessor; }
+		}
+		
+		public IAccessor InvokeAccessor {
+			get { return eventDefinition.InvokeAccessor; }
 		}
 	}
 }

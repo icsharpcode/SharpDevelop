@@ -21,55 +21,42 @@ using System;
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
-	/// Represents a specialized IField (e.g. after type substitution).
+	/// Represents a specialized IField (field after type substitution).
 	/// </summary>
-	public class SpecializedField : DefaultField
+	public class SpecializedField : SpecializedMember, IField
 	{
-		readonly IMember memberDefinition;
-		IType declaringType;
+		readonly IField fieldDefinition;
 		
-		public SpecializedField(IField f) : base(f)
+		public SpecializedField(IType declaringType, IField fieldDefinition)
+			: base(declaringType, fieldDefinition)
 		{
-			this.memberDefinition = f.MemberDefinition;
-			this.declaringType = f.DeclaringType;
+			this.fieldDefinition = fieldDefinition;
 		}
 		
-		public override IType DeclaringType {
-			get { return declaringType; }
-		}
-		
-		public void SetDeclaringType(IType declaringType)
+		internal SpecializedField(IType declaringType, IField fieldDefinition, TypeVisitor substitution, ITypeResolveContext context)
+			: base(declaringType, fieldDefinition, substitution, context)
 		{
-			CheckBeforeMutation();
-			this.declaringType = declaringType;
+			this.fieldDefinition = fieldDefinition;
 		}
 		
-		public override IMember MemberDefinition {
-			get { return memberDefinition; }
+		public bool IsReadOnly {
+			get { return fieldDefinition.IsReadOnly; }
 		}
 		
-		public override string Documentation {
-			get { return memberDefinition.Documentation; }
+		public bool IsVolatile {
+			get { return fieldDefinition.IsVolatile; }
 		}
 		
-		public override int GetHashCode()
-		{
-			int hashCode = 0;
-			unchecked {
-				if (memberDefinition != null)
-					hashCode += 1000000007 * memberDefinition.GetHashCode();
-				if (declaringType != null)
-					hashCode += 1000000009 * declaringType.GetHashCode();
-			}
-			return hashCode;
+		ITypeReference IVariable.Type {
+			get { return this.ReturnType; }
 		}
 		
-		public override bool Equals(object obj)
-		{
-			SpecializedField other = obj as SpecializedField;
-			if (other == null)
-				return false;
-			return object.Equals(this.memberDefinition, other.memberDefinition) && object.Equals(this.declaringType, other.declaringType);
+		public bool IsConst {
+			get { return fieldDefinition.IsConst; }
+		}
+		
+		public IConstantValue ConstantValue {
+			get { return fieldDefinition.ConstantValue; }
 		}
 	}
 }

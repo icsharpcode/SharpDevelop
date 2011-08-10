@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			for (int i = 0; i < typeArgs.Length; i++) {
 				typeArgs[i] = typeArguments[i].Resolve(context);
 			}
-			return r.ResolveMemberAccess(targetRR, identifier, typeArgs, false);
+			return r.ResolveMemberType(targetRR, identifier, typeArgs);
 		}
 		
 		public NamespaceResolveResult ResolveNamespace(ITypeResolveContext context)

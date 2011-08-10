@@ -426,14 +426,24 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return this;
 		}
 		
-		public virtual IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
+		public IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
 		{
 			return ParameterizedType.GetNestedTypes(this, context, filter);
+		}
+		
+		public IEnumerable<IType> GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
+		{
+			return ParameterizedType.GetNestedTypes(this, typeArguments, context, filter);
 		}
 		
 		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
 			return ParameterizedType.GetMethods(this, context, filter);
+		}
+		
+		public virtual IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null)
+		{
+			return ParameterizedType.GetMethods(this, typeArguments, context, filter);
 		}
 		
 		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)

@@ -51,7 +51,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.constantValue = constantValue;
 		}
 		
-		public MemberResolveResult(ResolveResult targetResult, IMember member, ITypeResolveContext context) : base(member.ReturnType.Resolve(context))
+		public MemberResolveResult(ResolveResult targetResult, IMember member, ITypeResolveContext context) 
+			: base(member.EntityType == EntityType.Constructor ? member.DeclaringType : member.ReturnType.Resolve(context))
 		{
 			this.targetResult = targetResult;
 			this.member = member;

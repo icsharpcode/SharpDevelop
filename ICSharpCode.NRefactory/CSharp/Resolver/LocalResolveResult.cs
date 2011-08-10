@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override string ToString()
 		{
-			return string.Format("[VariableResolveResult {0}]", variable);
+			return string.Format("[LocalResolveResult {0}]", variable);
 		}
 	}
 }

@@ -310,6 +310,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return Conversion.ImplicitPointerConversion;
 			return Conversion.None;
 		}
+		
+		/// <summary>
+		/// Gets whether the type 'fromType' is convertible to 'toType'
+		/// using one of the conversions allowed when satisying constraints (§4.4.4)
+		/// </summary>
+		public bool IsConstraintConvertible(IType fromType, IType toType)
+		{
+			if (fromType == null)
+				throw new ArgumentNullException("fromType");
+			if (toType == null)
+				throw new ArgumentNullException("toType");
+			
+			if (IdentityConversion(fromType, toType))
+				return true;
+			if (ImplicitReferenceConversion(fromType, toType))
+				return true;
+			if (BoxingConversion(fromType, toType) && !NullableType.IsNullable(fromType))
+				return true;
+			if (ImplicitTypeParameterConversion(fromType, toType))
+				return true;
+			return false;
+		}
 		#endregion
 		
 		#region ExplicitConversion

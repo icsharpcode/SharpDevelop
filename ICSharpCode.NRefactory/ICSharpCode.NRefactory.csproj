@@ -246,7 +246,7 @@
     <Compile Include="TypeSystem\Implementation\DefaultTypeParameter.cs" />
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\CompositeTypeResolveContext.cs" />
-    <Compile Include="TypeSystem\Implementation\MethodTypeParameterSubstitution.cs" />
+    <Compile Include="TypeSystem\Implementation\TypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\Implementation\NestedTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\ProxyTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultTypeDefinition.cs" />
@@ -255,6 +255,7 @@
     <Compile Include="TypeSystem\Implementation\SimpleProjectContent.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedEvent.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedField.cs" />
+    <Compile Include="TypeSystem\Implementation\SpecializedMember.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedMethod.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedProperty.cs" />
     <Compile Include="TypeSystem\Implementation\SubstitutionTypeReference.cs" />
@@ -380,7 +381,6 @@
     <Compile Include="CSharp\Refactoring\NodeSelectionAction.cs" />
     <Compile Include="CSharp\Refactoring\RefactoringContext.cs" />
     <Compile Include="CSharp\Refactoring\Script.cs" />
-    <Compile Include="CSharp\Refactoring\StringBuilderOutputFormatter.cs" />
     <Compile Include="CSharp\Refactoring\TextReplaceAction.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\AddAnotherAccessor.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\CheckIfParameterIsNull.cs" />

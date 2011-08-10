@@ -38,44 +38,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// </remarks>
 	public sealed class ParameterizedType : Immutable, IType
 	{
-		sealed class Substitution : TypeVisitor
-		{
-			readonly IType[] typeArguments;
-			
-			public Substitution(IType[] typeArguments)
-			{
-				this.typeArguments = typeArguments;
-			}
-			
-			public override IType VisitTypeParameter(ITypeParameter type)
-			{
-				int index = type.Index;
-				if (type.OwnerType == EntityType.TypeDefinition) {
-					if (index >= 0 && index < typeArguments.Length)
-						return typeArguments[index];
-					else
-						return SharedTypes.UnknownType;
-				} else {
-					return base.VisitTypeParameter(type);
-				}
-			}
-			
-			public override string ToString()
-			{
-				StringBuilder b = new StringBuilder();
-				b.Append('[');
-				for (int i = 0; i < typeArguments.Length; i++) {
-					if (i > 0) b.Append(", ");
-					b.Append('`');
-					b.Append(i);
-					b.Append(" -> ");
-					b.Append(typeArguments[i]);
-				}
-				b.Append(']');
-				return b.ToString();
-			}
-		}
-		
 		readonly ITypeDefinition genericType;
 		readonly IType[] typeArguments;
 		
@@ -190,21 +152,31 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public IType SubstituteInType(IType type)
 		{
-			return type.AcceptVisitor(new Substitution(typeArguments));
+			return type.AcceptVisitor(new TypeParameterSubstitution(typeArguments, null));
 		}
 		
 		/// <summary>
 		/// Gets a type visitor that performs the substitution of class type parameters with the type arguments
 		/// of this parameterized type.
 		/// </summary>
-		public TypeVisitor GetSubstitution()
+		public TypeParameterSubstitution GetSubstitution()
 		{
-			return new Substitution(typeArguments);
+			return new TypeParameterSubstitution(typeArguments, null);
+		}
+		
+		/// <summary>
+		/// Gets a type visitor that performs the substitution of class type parameters with the type arguments
+		/// of this parameterized type,
+		/// and also substitutes method type parameters with the specified method type arguments.
+		/// </summary>
+		public TypeVisitor GetSubstitution(IList<IType> methodTypeArguments)
+		{
+			return new TypeParameterSubstitution(typeArguments, methodTypeArguments);
 		}
 		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
-			Substitution substitution = new Substitution(typeArguments);
+			var substitution = GetSubstitution();
 			return genericType.GetBaseTypes(context).Select(t => t.AcceptVisitor(substitution));
 		}
 		
@@ -213,12 +185,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return GetNestedTypes(this, context, filter);
 		}
 		
-		internal static IEnumerable<IType> GetNestedTypes(IType type, ITypeResolveContext context, Predicate<ITypeDefinition> filter)
+		public IEnumerable<IType> GetNestedTypes(IList<IType> typeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
 		{
-			return type.GetNonInterfaceBaseTypes(context).SelectMany(t => GetNestedTypesInternal(t, context, filter));
+			return GetNestedTypes(this, typeArguments, context, filter);
 		}
 		
-		static IEnumerable<IType> GetNestedTypesInternal(IType baseType, ITypeResolveContext context, Predicate<ITypeDefinition> filter)
+		internal static IEnumerable<IType> GetNestedTypes(IType type, ITypeResolveContext context, Predicate<ITypeDefinition> filter)
+		{
+			return GetNestedTypes(type, null, context, filter);
+		}
+		
+		internal static IEnumerable<IType> GetNestedTypes(IType type, IList<IType> nestedTypeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter)
+		{
+			return type.GetNonInterfaceBaseTypes(context).SelectMany(t => GetNestedTypesInternal(t, nestedTypeArguments, context, filter));
+		}
+		
+		static IEnumerable<IType> GetNestedTypesInternal(IType baseType, IList<IType> nestedTypeArguments, ITypeResolveContext context, Predicate<ITypeDefinition> filter)
 		{
 			ITypeDefinition baseTypeDef = baseType.GetDefinition();
 			if (baseTypeDef == null)
@@ -227,22 +209,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			int outerTypeParameterCount = baseTypeDef.TypeParameterCount;
 			ParameterizedType pt = baseType as ParameterizedType;
 			foreach (ITypeDefinition nestedType in baseTypeDef.NestedTypes) {
+				int totalTypeParameterCount = nestedType.TypeParameterCount;
+				if (nestedTypeArguments != null) {
+					if (totalTypeParameterCount - outerTypeParameterCount != nestedTypeArguments.Count)
+						continue;
+				}
 				if (!(filter == null || filter(nestedType)))
 					continue;
-				int innerTypeParameterCount = nestedType.TypeParameterCount;
-				if (innerTypeParameterCount == 0 || (pt == null && innerTypeParameterCount == outerTypeParameterCount)) {
+				
+				if (totalTypeParameterCount == 0 || (pt == null && totalTypeParameterCount == outerTypeParameterCount)) {
 					// The nested type has no new type parameters, and there are no type arguments
 					// to copy from the outer type
 					// -> we can directly return the nested type definition
 					yield return nestedType;
 				} else {
 					// We need to parameterize the nested type
-					IType[] newTypeArguments = new IType[innerTypeParameterCount];
+					IType[] newTypeArguments = new IType[totalTypeParameterCount];
 					for (int i = 0; i < outerTypeParameterCount; i++) {
 						newTypeArguments[i] = pt != null ? pt.typeArguments[i] : baseTypeDef.TypeParameters[i];
 					}
-					for (int i = outerTypeParameterCount; i < innerTypeParameterCount; i++) {
-						newTypeArguments[i] = SharedTypes.UnboundTypeArgument;
+					for (int i = outerTypeParameterCount; i < totalTypeParameterCount; i++) {
+						if (nestedTypeArguments != null)
+							newTypeArguments[i] = nestedTypeArguments[i - outerTypeParameterCount];
+						else
+							newTypeArguments[i] = SharedTypes.UnboundTypeArgument;
 					}
 					yield return new ParameterizedType(nestedType, newTypeArguments);
 				}
@@ -251,14 +241,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
-			Substitution substitution = new Substitution(typeArguments);
-			Func<ITypeReference, ITypeReference> substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
+			var substitution = GetSubstitution();
 			List<IMethod> methods = genericType.GetConstructors(context, filter).ToList();
 			for (int i = 0; i < methods.Count; i++) {
-				SpecializedMethod m = new SpecializedMethod(methods[i]);
-				m.SetDeclaringType(this);
-				m.SubstituteTypes(substitutionFunc);
-				methods[i] = m;
+				methods[i] = new SpecializedMethod(this, methods[i], null, substitution, context);
 			}
 			return methods;
 		}
@@ -268,37 +254,48 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return GetMethods(this, context, filter);
 		}
 		
+		public IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter = null)
+		{
+			return GetMethods(this, typeArguments, context, filter);
+		}
+		
 		internal static IEnumerable<IMethod> GetMethods(IType type, ITypeResolveContext context, Predicate<IMethod> filter)
+		{
+			return GetMethods(type, null, context, filter);
+		}
+		
+		internal static IEnumerable<IMethod> GetMethods(IType type, IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter)
 		{
 			Predicate<IMethod> newFilter;
 			if (filter == null)
 				newFilter = m => !m.IsConstructor;
 			else
 				newFilter = m => !m.IsConstructor && filter(m);
-			return type.GetNonInterfaceBaseTypes(context).SelectMany(t => GetMethodsInternal(t, context, newFilter));
+			return type.GetNonInterfaceBaseTypes(context).SelectMany(t => GetMethodsInternal(t, typeArguments, context, newFilter));
 		}
 		
-		static IEnumerable<IMethod> GetMethodsInternal(IType baseType, ITypeResolveContext context, Predicate<IMethod> filter)
+		static IEnumerable<IMethod> GetMethodsInternal(IType baseType, IList<IType> methodTypeArguments, ITypeResolveContext context, Predicate<IMethod> filter)
 		{
 			ITypeDefinition baseTypeDef = baseType.GetDefinition();
 			if (baseTypeDef == null)
 				yield break;
 			baseTypeDef = baseTypeDef.GetCompoundClass();
+			
+			
 			ParameterizedType pt = baseType as ParameterizedType;
-			if (pt != null) {
-				Substitution substitution = null;
-				Func<ITypeReference, ITypeReference> substitutionFunc = null;
+			if (pt != null || (methodTypeArguments != null && methodTypeArguments.Count > 0)) {
+				TypeVisitor substitution = null;
 				foreach (IMethod m in baseTypeDef.Methods) {
+					if (methodTypeArguments != null && methodTypeArguments.Count > 0) {
+						if (m.TypeParameters.Count != methodTypeArguments.Count)
+							continue;
+					}
 					if (!(filter == null || filter(m)))
 						continue;
 					if (substitution == null) {
-						substitution = new Substitution(pt.typeArguments);
-						substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
+						substitution = new TypeParameterSubstitution(pt != null ? pt.typeArguments : null, methodTypeArguments);
 					}
-					SpecializedMethod sm = new SpecializedMethod(m);
-					sm.SetDeclaringType(pt);
-					sm.SubstituteTypes(substitutionFunc);
-					yield return sm;
+					yield return new SpecializedMethod(baseType, m, methodTypeArguments, substitution, context);
 				}
 			} else {
 				foreach (IMethod m in baseTypeDef.Methods) {
@@ -326,19 +323,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			baseTypeDef = baseTypeDef.GetCompoundClass();
 			ParameterizedType pt = baseType as ParameterizedType;
 			if (pt != null) {
-				Substitution substitution = null;
-				Func<ITypeReference, ITypeReference> substitutionFunc = null;
+				TypeParameterSubstitution substitution = null;
 				foreach (IProperty p in baseTypeDef.Properties) {
 					if (!(filter == null || filter(p)))
 						continue;
 					if (substitution == null) {
-						substitution = new Substitution(pt.typeArguments);
-						substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
+						substitution = pt.GetSubstitution();
 					}
-					SpecializedProperty sp = new SpecializedProperty(p);
-					sp.SetDeclaringType(pt);
-					sp.SubstituteTypes(substitutionFunc);
-					yield return sp;
+					yield return new SpecializedProperty(pt, p, substitution, context);
 				}
 			} else {
 				foreach (IProperty p in baseTypeDef.Properties) {
@@ -366,19 +358,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			baseTypeDef = baseTypeDef.GetCompoundClass();
 			ParameterizedType pt = baseType as ParameterizedType;
 			if (pt != null) {
-				Substitution substitution = null;
-				Func<ITypeReference, ITypeReference> substitutionFunc = null;
+				TypeParameterSubstitution substitution = null;
 				foreach (IField f in baseTypeDef.Fields) {
 					if (!(filter == null || filter(f)))
 						continue;
 					if (substitution == null) {
-						substitution = new Substitution(pt.typeArguments);
-						substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
+						substitution = pt.GetSubstitution();
 					}
-					SpecializedField sf = new SpecializedField(f);
-					sf.SetDeclaringType(pt);
-					sf.ReturnType = f.ReturnType.Resolve(context).AcceptVisitor(substitution);
-					yield return sf;
+					yield return new SpecializedField(pt, f, substitution, context);
 				}
 			} else {
 				foreach (IField f in baseTypeDef.Fields) {
@@ -406,19 +393,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			baseTypeDef = baseTypeDef.GetCompoundClass();
 			ParameterizedType pt = baseType as ParameterizedType;
 			if (pt != null) {
-				Substitution substitution = null;
-				Func<ITypeReference, ITypeReference> substitutionFunc = null;
+				TypeParameterSubstitution substitution = null;
 				foreach (IEvent e in baseTypeDef.Events) {
 					if (!(filter == null || filter(e)))
 						continue;
 					if (substitution == null) {
-						substitution = new Substitution(pt.typeArguments);
-						substitutionFunc = t => t.Resolve(context).AcceptVisitor(substitution);
+						substitution = pt.GetSubstitution();
 					}
-					SpecializedEvent se = new SpecializedEvent(e);
-					se.SetDeclaringType(pt);
-					se.ReturnType = e.ReturnType.Resolve(context).AcceptVisitor(substitution);
-					yield return se;
+					yield return new SpecializedEvent(pt, e, substitution, context);
 				}
 			} else {
 				foreach (IEvent e in baseTypeDef.Events) {
@@ -440,14 +422,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				methodFilter = m => !m.IsConstructor;
 			else
 				methodFilter = m => !m.IsConstructor && filter(m);
-			return type.GetNonInterfaceBaseTypes(context).SelectMany(
-				delegate (IType t) {
-					IEnumerable<IMember> members = GetMethodsInternal(t, context, methodFilter);
-					members = members.Concat(GetPropertiesInternal(t, context, filter));
-					members = members.Concat(GetFieldsInternal(t, context, filter));
-					members = members.Concat(GetEventsInternal(t, context, filter));
-					return members;
-				});
+			return type.GetNonInterfaceBaseTypes(context).SelectMany(t => GetMembersInternal(t, context, filter));
+		}
+		
+		static IEnumerable<IMember> GetMembersInternal(IType baseType, ITypeResolveContext context, Predicate<IMember> filter)
+		{
+			foreach (var m in GetMethodsInternal(baseType, null, context, filter))
+				yield return m;
+			foreach (var m in GetPropertiesInternal(baseType, context, filter))
+				yield return m;
+			foreach (var m in GetFieldsInternal(baseType, context, filter))
+				yield return m;
+			foreach (var m in GetEventsInternal(baseType, context, filter))
+				yield return m;
 		}
 		
 		public override bool Equals(object obj)

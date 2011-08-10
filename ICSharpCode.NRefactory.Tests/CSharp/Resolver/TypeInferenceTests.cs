@@ -175,7 +175,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override IType GetInferredReturnType(IType[] parameterTypes)
 			{
-				Assert.AreEqual(expectedParameterTypes, parameterTypes);
+				Assert.AreEqual(expectedParameterTypes, parameterTypes, "Parameters types passed to " + this);
 				return inferredReturnType;
 			}
 			
@@ -215,6 +215,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				},
 				ti.InferTypeArguments(typeParameters, arguments, parameterTypes, out success));
 			Assert.IsTrue(success);
+		}
+		
+		[Test]
+		public void ConvertAllLambdaInference()
+		{
+			ITypeParameter[] classTypeParameters  = { new DefaultTypeParameter(EntityType.TypeDefinition, 0, "T") };
+			ITypeParameter[] methodTypeParameters = { new DefaultTypeParameter(EntityType.Method, 0, "R") };
+			
+			IType[] parameterTypes = {
+				new ParameterizedType(ctx.GetTypeDefinition(typeof(Converter<,>)),
+				                      new[] { classTypeParameters[0], methodTypeParameters[0] })
+			};
+			
+			// Signature:  List<T>.ConvertAll<R>(Converter<T, R> converter);
+			// Invocation: listOfString.ConvertAll(s => default(int));
+			ResolveResult[] arguments = {
+				new MockImplicitLambda(new[] { KnownTypeReference.String.Resolve(ctx) }, KnownTypeReference.Int32.Resolve(ctx))
+			};
+			IType[] classTypeArguments = {
+				KnownTypeReference.String.Resolve(ctx)
+			};
+			
+			bool success;
+			Assert.AreEqual(
+				new [] { KnownTypeReference.Int32.Resolve(ctx) },
+				ti.InferTypeArguments(methodTypeParameters, arguments, parameterTypes, out success, classTypeArguments));
 		}
 		#endregion
 		

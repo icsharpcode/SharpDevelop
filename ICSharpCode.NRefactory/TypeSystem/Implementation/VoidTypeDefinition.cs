@@ -54,6 +54,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return EmptyList<IMethod>.Instance;
 		}
 		
+		public override IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, ITypeResolveContext context, Predicate<IMethod> filter)
+		{
+			return EmptyList<IMethod>.Instance;
+		}
+		
 		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter)
 		{
 			return EmptyList<IProperty>.Instance;

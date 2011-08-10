@@ -209,11 +209,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					if (method.Name == "Invoke") {
 						ParameterizedType pt = type as ParameterizedType;
 						if (pt != null) {
-							SpecializedMethod m = new SpecializedMethod(method);
-							m.SetDeclaringType(pt);
-							var substitution = pt.GetSubstitution();
-							m.SubstituteTypes(t => SubstitutionTypeReference.Create(t, substitution));
-							return m;
+							return new SpecializedMethod(pt, method);
 						}
 						return method;
 					}

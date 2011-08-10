@@ -87,9 +87,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		IType[] parameterTypes;
 		ResolveResult[] arguments;
 		bool[,] dependencyMatrix;
+		IList<IType> classTypeArguments;
 		
 		#region InferTypeArguments (main function)
-		public IType[] InferTypeArguments(IList<ITypeParameter> typeParameters, IList<ResolveResult> arguments, IList<IType> parameterTypes, out bool success)
+		/// <summary>
+		/// Performs type inference.
+		/// </summary>
+		/// <param name="typeParameters">The method type parameters that should be inferred.</param>
+		/// <param name="arguments">The arguments passed to the method.</param>
+		/// <param name="parameterTypes">The parameter types of the method.</param>
+		/// <param name="success">Out: whether type inference was successful</param>
+		/// <param name="classTypeArguments">
+		/// Class type arguments. These are substituted for class type parameters in the formal parameter types
+		/// when inferring a method group or lambda.
+		/// </param>
+		/// <returns>The inferred type arguments.</returns>
+		public IType[] InferTypeArguments(IList<ITypeParameter> typeParameters, IList<ResolveResult> arguments, IList<IType> parameterTypes, out bool success, IList<IType> classTypeArguments = null)
 		{
 			if (typeParameters == null)
 				throw new ArgumentNullException("typeParameters");
@@ -102,6 +115,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				for (int i = 0; i < this.typeParameters.Length; i++) {
 					if (i != typeParameters[i].Index)
 						throw new ArgumentException("Type parameter has wrong index");
+					if (typeParameters[i].OwnerType != EntityType.Method)
+						throw new ArgumentException("Type parameter must be owned by a method");
 					this.typeParameters[i] = new TP(typeParameters[i]);
 				}
 				this.parameterTypes = new IType[Math.Min(arguments.Count, parameterTypes.Count)];
@@ -112,6 +127,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					this.arguments[i] = arguments[i];
 					this.parameterTypes[i] = parameterTypes[i];
 				}
+				this.classTypeArguments = classTypeArguments;
 				Log.WriteLine("Type Inference");
 				Log.WriteLine("  Signature: M<" + string.Join<TP>(", ", this.typeParameters) + ">"
 				              + "(" + string.Join<IType>(", ", this.parameterTypes) + ")");
@@ -137,6 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.parameterTypes = null;
 			this.arguments = null;
 			this.dependencyMatrix = null;
+			this.classTypeArguments = null;
 		}
 		
 		/// <summary>
@@ -443,7 +460,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (lrr.IsImplicitlyTyped) {
 						if (m.Parameters.Count != lrr.Parameters.Count)
 							return; // cannot infer due to mismatched parameter lists
-						MethodTypeParameterSubstitution substitution = GetSubstitutionForFixedTPs();
+						TypeParameterSubstitution substitution = GetSubstitutionForFixedTPs();
 						IType[] inferredParameterTypes = new IType[m.Parameters.Count];
 						for (int i = 0; i < inferredParameterTypes.Length; i++) {
 							IType parameterType = m.Parameters[i].Type.Resolve(context);
@@ -466,7 +483,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				IMethod m = GetDelegateOrExpressionTreeSignature(t);
 				if (m != null) {
 					ResolveResult[] args = new ResolveResult[m.Parameters.Count];
-					MethodTypeParameterSubstitution substitution = GetSubstitutionForFixedTPs();
+					TypeParameterSubstitution substitution = GetSubstitutionForFixedTPs();
 					for (int i = 0; i < args.Length; i++) {
 						IParameter param = m.Parameters[i];
 						IType parameterType = param.Type.Resolve(context);
@@ -494,13 +511,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		MethodTypeParameterSubstitution GetSubstitutionForFixedTPs()
+		TypeParameterSubstitution GetSubstitutionForFixedTPs()
 		{
 			IType[] fixedTypes = new IType[typeParameters.Length];
 			for (int i = 0; i < fixedTypes.Length; i++) {
 				fixedTypes[i] = typeParameters[i].FixedTo ?? SharedTypes.UnknownType;
 			}
-			return new MethodTypeParameterSubstitution(fixedTypes);
+			return new TypeParameterSubstitution(classTypeArguments, fixedTypes);
 		}
 		#endregion
 		

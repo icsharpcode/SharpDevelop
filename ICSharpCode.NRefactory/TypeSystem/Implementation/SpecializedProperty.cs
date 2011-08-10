@@ -21,70 +21,42 @@ using System;
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
-	/// Represents a specialized IProperty (e.g. after type substitution).
+	/// Represents a specialized IProperty (property after type substitution).
 	/// </summary>
-	public class SpecializedProperty : DefaultProperty
+	public class SpecializedProperty : SpecializedParameterizedMember, IProperty
 	{
-		readonly IMember memberDefinition;
-		IType declaringType;
+		readonly IProperty propertyDefinition;
 		
-		public SpecializedProperty(IProperty p) : base(p)
+		public SpecializedProperty(IType declaringType, IProperty propertyDefinition)
+			: base(declaringType, propertyDefinition)
 		{
-			this.memberDefinition = p.MemberDefinition;
-			this.declaringType = p.DeclaringType;
+			this.propertyDefinition = propertyDefinition;
 		}
 		
-		public override IType DeclaringType {
-			get { return declaringType; }
-		}
-		
-		public void SetDeclaringType(IType declaringType)
+		internal SpecializedProperty(IType declaringType, IProperty propertyDefinition, TypeVisitor substitution, ITypeResolveContext context)
+			: base(declaringType, propertyDefinition, substitution, context)
 		{
-			CheckBeforeMutation();
-			this.declaringType = declaringType;
+			this.propertyDefinition = propertyDefinition;
 		}
 		
-		public override IMember MemberDefinition {
-			get { return memberDefinition; }
+		public bool CanGet {
+			get { return propertyDefinition.CanGet; }
 		}
 		
-		public override string Documentation {
-			get { return memberDefinition.Documentation; }
+		public bool CanSet {
+			get { return propertyDefinition.CanSet; }
 		}
 		
-		public override int GetHashCode()
-		{
-			int hashCode = 0;
-			unchecked {
-				if (memberDefinition != null)
-					hashCode += 1000000007 * memberDefinition.GetHashCode();
-				if (declaringType != null)
-					hashCode += 1000000009 * declaringType.GetHashCode();
-			}
-			return hashCode;
+		public IAccessor Getter {
+			get { return propertyDefinition.Getter; }
 		}
 		
-		public override bool Equals(object obj)
-		{
-			SpecializedProperty other = obj as SpecializedProperty;
-			if (other == null)
-				return false;
-			return object.Equals(this.memberDefinition, other.memberDefinition) && object.Equals(this.declaringType, other.declaringType);
+		public IAccessor Setter {
+			get { return propertyDefinition.Setter; }
 		}
 		
-		/// <summary>
-		/// Performs type substitution in parameter types and in the return type.
-		/// </summary>
-		public void SubstituteTypes(Func<ITypeReference, ITypeReference> substitution)
-		{
-			this.ReturnType = substitution(this.ReturnType);
-			var p = this.Parameters;
-			for (int i = 0; i < p.Count; i++) {
-				ITypeReference newType = substitution(p[i].Type);
-				if (newType != p[i].Type) {
-					p[i] = new DefaultParameter(p[i]) { Type = newType };
-				}
-			}
+		public bool IsIndexer {
+			get { return propertyDefinition.IsIndexer; }
 		}
 	}
 }

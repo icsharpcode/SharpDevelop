@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -288,6 +289,26 @@ class TestClass {
 }";
 			var lrr = Resolve<LocalResolveResult>(program);
 			Assert.AreEqual("System.Int32", lrr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void ConvertAllInGenericMethod()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Method<T>(System.Collections.Generic.List<T> list) {
+		$list.ConvertAll(x => (int)x)$;
+	}
+}";
+			var rr = Resolve<InvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			SpecializedMethod m = (SpecializedMethod)rr.Member;
+			Assert.AreEqual("System.Int32", m.TypeArguments[0].ReflectionName);
+			Assert.AreEqual("System.Converter`2[[``0],[System.Int32]]", m.Parameters[0].Type.Resolve(context).ReflectionName);
+			
+			var crr = (ConversionResolveResult)rr.Arguments[0];
+			Assert.IsTrue(crr.Conversion.IsAnonymousFunctionConversion);
+			Assert.AreEqual("System.Converter`2[[``0],[System.Int32]]", crr.Type.ReflectionName);
 		}
 		
 		/* TODO write test for this
