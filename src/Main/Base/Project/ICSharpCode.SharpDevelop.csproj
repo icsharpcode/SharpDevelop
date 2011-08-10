@@ -307,6 +307,7 @@
     <Compile Include="Src\Project\MSBuildEngine\WorkerProcess.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
     <Compile Include="Src\Project\MSBuildItemWrapper.cs" />
+    <Compile Include="Src\Project\ProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\ProjectLoadInformation.cs" />
     <Compile Include="Src\Project\ProjectStartException.cs" />
     <Compile Include="Src\Project\ProjectLoadException.cs" />

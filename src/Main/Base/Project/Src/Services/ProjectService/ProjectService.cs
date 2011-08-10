@@ -378,7 +378,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				}
 			}
-			Solution solution = new Solution();
+			Solution solution = new Solution(new ProjectChangeWatcher(solutionFile));
 			solution.Name = Path.GetFileNameWithoutExtension(fileName);
 			IProjectBinding binding = ProjectBindingService.GetBindingPerProjectFile(fileName);
 			IProject project;

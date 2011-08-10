@@ -302,9 +302,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			} else if (projectDescriptor != null) {
 				bool createNewSolution = projectCreateInformation.Solution == null;
 				if (createNewSolution) {
-					projectCreateInformation.Solution = new Solution();
+					string fileName = Path.Combine(projectCreateInformation.SolutionPath, projectCreateInformation.SolutionName + ".sln");
+					projectCreateInformation.Solution = new Solution(new ProjectChangeWatcher(fileName));
 					projectCreateInformation.Solution.Name = projectCreateInformation.SolutionName;
-					projectCreateInformation.Solution.FileName = Path.Combine(projectCreateInformation.SolutionPath, projectCreateInformation.SolutionName + ".sln");
+					projectCreateInformation.Solution.FileName = fileName;
 				}
 				IProject project = projectDescriptor.CreateProject(projectCreateInformation, this.languagename);
 				if (project != null) {

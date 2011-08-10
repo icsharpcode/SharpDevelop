@@ -90,15 +90,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public string CreateSolution(ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
-			Solution newSolution = new Solution();
-			projectCreateInformation.Solution = newSolution;
-			
-			string newSolutionName = StringParser.Parse(name, new string[,] {
-			                                            	{"ProjectName", projectCreateInformation.SolutionName}
-			                                            });
-			
-			newSolution.Name = newSolutionName;
-			
 			string oldSolutionPath = projectCreateInformation.SolutionPath;
 			string oldProjectPath = projectCreateInformation.ProjectBasePath;
 			if (relativeDirectory != null && relativeDirectory.Length > 0 && relativeDirectory != ".") {
@@ -115,12 +106,22 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			projectCreateInformation.SolutionPath = oldSolutionPath;
 			projectCreateInformation.ProjectBasePath = oldProjectPath;
 			
+			string newSolutionName = StringParser.Parse(name, new string[,] {
+			                                            	{"ProjectName", projectCreateInformation.SolutionName}
+			                                            });
+			
+			string solutionLocation = Path.Combine(projectCreateInformation.SolutionPath, newSolutionName + ".sln");
+			
+			Solution newSolution = new Solution(new ProjectChangeWatcher(solutionLocation));
+			projectCreateInformation.Solution = newSolution;
+			
+			newSolution.Name = newSolutionName;
+			
 			if (!mainFolder.AddContents(newSolution, projectCreateInformation, defaultLanguage, newSolution)) {
 				newSolution.Dispose();
 				return null;
 			}
 			
-			string solutionLocation = Path.Combine(projectCreateInformation.SolutionPath, newSolutionName + ".sln");
 			// Save solution
 			if (File.Exists(solutionLocation)) {
 				
