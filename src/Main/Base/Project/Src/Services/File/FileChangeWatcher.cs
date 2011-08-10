@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.Gui;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -89,7 +90,9 @@ namespace ICSharpCode.SharpDevelop
 			activeWatchers.Add(this);
 			SetWatcher();
 			
-			isFileReadOnly = (System.IO.File.GetAttributes(this.file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
+			if (System.IO.File.Exists(this.file.FileName)) {
+				isFileReadOnly = (System.IO.File.GetAttributes(this.file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
+			}
 		}
 
 		void file_FileNameChanged(object sender, EventArgs e)
