@@ -25,6 +25,16 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class NamedArgumentExpression : Expression
 	{
+		public NamedArgumentExpression()
+		{
+		}
+		
+		public NamedArgumentExpression(string identifier, Expression expression)
+		{
+			this.Identifier = identifier;
+			this.Expression = expression;
+		}
+		
 		public string Identifier {
 			get {
 				return GetChildByRole (Roles.Identifier).Name;

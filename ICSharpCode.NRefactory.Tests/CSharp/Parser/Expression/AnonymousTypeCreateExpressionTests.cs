@@ -19,17 +19,22 @@
 using System;
 using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
+namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 {
 	[TestFixture]
-	public class SwitchStatementTests
+	public class AnonymousTypeCreateExpressionTests
 	{
 		[Test]
-		public void SwitchStatementTest()
+		public void Simple()
 		{
-			SwitchStatement switchStmt = ParseUtilCSharp.ParseStatement<SwitchStatement>("switch (a) { case 4: case 5: break; case 6: break; default: break; }");
-			Assert.AreEqual("a", ((IdentifierExpression)switchStmt.Expression).Identifier);
-			// TODO: Extend test
+			ParseUtilCSharp.AssertExpression(
+				"new { Name = \"Test\", Price, Something.Property }",
+				new AnonymousTypeCreateExpression {
+					Initializers = {
+						new NamedArgumentExpression("Name", new PrimitiveExpression("Test")),
+						new IdentifierExpression("Price"),
+						new IdentifierExpression("Something").Member("Property")
+					}});
 		}
 	}
 }

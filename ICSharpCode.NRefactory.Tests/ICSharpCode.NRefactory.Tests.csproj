@@ -57,6 +57,8 @@
     <Compile Include="CSharp\Analysis\DefiniteAssignmentTests.cs" />
     <Compile Include="CSharp\AstStructureTests.cs" />
     <Compile Include="CSharp\InsertParenthesesVisitorTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\AnonymousTypeCreateExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\ObjectCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\DelegateDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\NamespaceDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\TypeDeclarationTests.cs" />
@@ -89,9 +91,8 @@
     <Compile Include="CSharp\Parser\TypeMembers\OperatorDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\TypeMembers\PropertyDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\TypeSystemConvertVisitorTests.cs" />
-    <Compile Include="CSharp\Parser\Expression\AliasReferenceExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\AnonymousMethodTests.cs" />
-    <Compile Include="CSharp\Parser\Expression\ArrayObjectCreateExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\ArrayCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\AssignmentExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\BaseReferenceExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\BinaryOperatorExpressionTests.cs" />
@@ -152,7 +153,6 @@
     <Compile Include="TypeSystem\TypeSystemTests.cs" />
     <Compile Include="TypeSystem\TypeSystemTests.TestCase.cs" />
     <EmbeddedResource Include="TypeSystem\TypeSystemTests.TestCase.cs" />
-    <Compile Include="Untested.cs" />
     <Compile Include="Utils\CSharpPrimitiveCastTests.cs" />
     <Compile Include="Utils\TreeTraversalTests.cs" />
     <Compile Include="FormattingTests\TextEditorTestAdapter.cs" />

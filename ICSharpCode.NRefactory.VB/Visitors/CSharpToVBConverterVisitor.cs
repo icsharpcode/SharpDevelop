@@ -455,7 +455,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 		{
 			var expr = new AnonymousObjectCreationExpression();
 			
-			ConvertNodes(anonymousTypeCreateExpression.Initializer, expr.Initializer);
+			ConvertNodes(anonymousTypeCreateExpression.Initializers, expr.Initializer);
 			
 			return EndNode(anonymousTypeCreateExpression, expr);
 		}

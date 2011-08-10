@@ -19,17 +19,53 @@
 using System;
 using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
+namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 {
 	[TestFixture]
-	public class SwitchStatementTests
+	public class ArrayCreateExpressionTests
 	{
 		[Test]
-		public void SwitchStatementTest()
+		public void ArrayCreateExpressionTest1()
 		{
-			SwitchStatement switchStmt = ParseUtilCSharp.ParseStatement<SwitchStatement>("switch (a) { case 4: case 5: break; case 6: break; default: break; }");
-			Assert.AreEqual("a", ((IdentifierExpression)switchStmt.Expression).Identifier);
-			// TODO: Extend test
+			ParseUtilCSharp.AssertExpression(
+				"new int[5]",
+				new ArrayCreateExpression {
+					Type = new PrimitiveType("int"),
+					Arguments = { new PrimitiveExpression(5) }
+				});
+		}
+		
+		[Test]
+		public void MultidimensionalNestedArray()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"new int[5,2][,,][]",
+				new ArrayCreateExpression {
+					Type = new PrimitiveType("int"),
+					Arguments = { new PrimitiveExpression(5), new PrimitiveExpression(2) },
+					AdditionalArraySpecifiers = {
+						new ArraySpecifier(3),
+						new ArraySpecifier(1)
+					}
+				});
+		}
+		
+		[Test]
+		public void ImplicitlyTypedArrayCreateExpression()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"new[] { 1, 10, 100, 1000 }",
+				new ArrayCreateExpression {
+					Initializer = new ArrayInitializerExpression {
+						Elements = {
+							new PrimitiveExpression(1),
+							new PrimitiveExpression(10),
+							new PrimitiveExpression(100),
+							new PrimitiveExpression(1000)
+						}
+					}
+				});
+			
 		}
 	}
 }

@@ -746,7 +746,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// 7.6.10.6 Anonymous object creation expressions
 			var anonymousType = new DefaultTypeDefinition(resolver.CurrentTypeDefinition, "$Anonymous$");
 			anonymousType.IsSynthetic = true;
-			foreach (var expr in anonymousTypeCreateExpression.Initializer) {
+			foreach (var expr in anonymousTypeCreateExpression.Initializers) {
 				Expression resolveExpr;
 				var name = GetAnonymousTypePropertyName(expr, out resolveExpr);
 				if (string.IsNullOrEmpty(name))
