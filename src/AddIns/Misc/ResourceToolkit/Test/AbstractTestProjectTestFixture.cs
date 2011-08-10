@@ -45,7 +45,7 @@ namespace ResourceToolkit.Tests
 		{
 			TestHelper.InitializeParsers();
 			
-			this.solution = new Solution();
+			this.solution = new Solution(new MockProjectChangeWatcher());
 			this.project = this.CreateTestProject();
 			ProjectService.CurrentProject = this.project;
 			

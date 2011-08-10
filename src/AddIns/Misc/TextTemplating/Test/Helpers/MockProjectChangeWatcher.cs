@@ -7,15 +7,25 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace TextTemplating.Tests.Helpers
 {
-	public static class ProjectHelper
+	/// <summary>
+	/// Description of MockProjectChangeWatcher.
+	/// </summary>
+	public class MockProjectChangeWatcher : IProjectChangeWatcher
 	{
-		public static TestableProject CreateProject()
+		public MockProjectChangeWatcher()
 		{
-			var info = new ProjectCreateInformation();
-			info.Solution = new Solution(new MockProjectChangeWatcher());
-			info.OutputProjectFileName = @"d:\projects\MyProject\MyProject.csproj";
-			info.ProjectName = "MyProject";
-			return new TestableProject(info);
+		}
+		
+		public void Enable()
+		{
+		}
+		
+		public void Disable()
+		{
+		}
+		
+		public void Rename(string newFileName)
+		{
 		}
 	}
 }

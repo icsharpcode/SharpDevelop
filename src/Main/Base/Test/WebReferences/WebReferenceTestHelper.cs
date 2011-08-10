@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Tests.Utils;
 
 namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 {
@@ -26,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			
 			public TestProject(string languageName)
 				: base(new ProjectCreateInformation {
-				       	Solution = new Solution(new ProjectChangeWatcher("c:\\temp\\TestProject.csproj")),
+				       	Solution = new Solution(new MockProjectChangeWatcher()),
 				       	ProjectName = "TestProject",
 				       	OutputProjectFileName = "c:\\temp\\TestProject.csproj"
 				       })

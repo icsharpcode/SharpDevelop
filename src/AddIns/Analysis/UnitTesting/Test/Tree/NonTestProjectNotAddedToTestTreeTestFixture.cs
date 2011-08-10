@@ -23,7 +23,7 @@ namespace UnitTesting.Tests.Tree
 		[SetUp]
 		public void Init()
 		{
-			solution = new Solution();
+			solution = new Solution(new MockProjectChangeWatcher());
 			testProject = new MockCSharpProject(solution, "A");
 			solution.Folders.Add(testProject);
 			

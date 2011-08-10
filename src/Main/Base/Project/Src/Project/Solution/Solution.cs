@@ -25,9 +25,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		bool isLoading;
 		string fileName = String.Empty;
-		ProjectChangeWatcher changeWatcher;
+		IProjectChangeWatcher changeWatcher;
 		
-		public Solution(ProjectChangeWatcher changeWatcher)
+		public Solution(IProjectChangeWatcher changeWatcher)
 		{
 			preferences = new SolutionPreferences(this);
 			this.MSBuildProjectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
