@@ -159,7 +159,6 @@
     <Compile Include="Utils\MockNUnitTestFramework.cs" />
     <Compile Include="Utils\MockNUnitTestRunnerContext.cs" />
     <Compile Include="Utils\MockProcessRunner.cs" />
-    <Compile Include="Utils\MockProjectChangeWatcher.cs" />
     <Compile Include="Utils\MockRegisteredTestFrameworks.cs" />
     <Compile Include="Utils\MockRunTestCommandContext.cs" />
     <Compile Include="Utils\MockSaveAllFilesCommand.cs" />

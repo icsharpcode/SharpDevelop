@@ -57,7 +57,6 @@
     <Compile Include="CSharp\ICSharpCodeCoreNRefactoryResourceResolverTests.cs" />
     <Compile Include="CSharp\ICSharpCodeCoreResourceResolverTests.cs" />
     <Compile Include="CSharp\SpecificResourceReferenceFinderTests.cs" />
-    <Compile Include="MockProjectChangeWatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="VBNet\AbstractVBNetResourceResolverTestFixture.cs" />

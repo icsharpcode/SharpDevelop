@@ -112,7 +112,6 @@
     <Compile Include="Utils\MockFormsDesignerView.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />
     <Compile Include="Utils\MockPackageFilesViewFactory.cs" />
-    <Compile Include="Utils\MockProjectChangeWatcher.cs" />
     <Compile Include="Utils\MockTextEditor.cs" />
     <Compile Include="Utils\MockTextEditorOptions.cs" />
     <Compile Include="Utils\MockTextFileReader.cs" />

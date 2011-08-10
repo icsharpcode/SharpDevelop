@@ -62,7 +62,6 @@
     <Compile Include="Helpers\FakeTextTemplatingFilePreprocessor.cs" />
     <Compile Include="Helpers\FakeTextTemplatingHost.cs" />
     <Compile Include="Helpers\FakeTextTemplatingFileGenerator.cs" />
-    <Compile Include="Helpers\MockProjectChangeWatcher.cs" />
     <Compile Include="Helpers\ProjectHelper.cs" />
     <Compile Include="Helpers\TestableFileProjectItem.cs" />
     <Compile Include="Helpers\TestableProject.cs" />

@@ -116,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Filename / Directory
 		volatile string fileName;
 		string cachedDirectoryName;
-		protected ProjectChangeWatcher watcher;
+		protected IProjectChangeWatcher watcher;
 		
 		/// <summary>
 		/// Gets the name of the project file.
@@ -134,6 +134,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					throw new ArgumentNullException();
 				WorkbenchSingleton.AssertMainThread();
 				Debug.Assert(FileUtility.IsUrl(value) || Path.IsPathRooted(value));
+				
+				if (WorkbenchSingleton.Workbench == null)
+					watcher = new MockProjectChangeWatcher();
 				
 				if (watcher == null) {
 					watcher = new ProjectChangeWatcher(value);

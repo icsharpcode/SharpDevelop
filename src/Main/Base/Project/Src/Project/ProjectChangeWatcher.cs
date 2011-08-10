@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public sealed class ProjectChangeWatcher : IDisposable, IProjectChangeWatcher
+	public sealed class ProjectChangeWatcher : IProjectChangeWatcher
 	{
 		FileSystemWatcher watcher;
 		string fileName;

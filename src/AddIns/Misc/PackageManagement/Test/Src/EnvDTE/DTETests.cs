@@ -20,7 +20,7 @@ namespace PackageManagement.Tests.EnvDTE
 		void CreateDTE()
 		{
 			fakeProjectService = new FakePackageManagementProjectService();
-			fakeProjectService.OpenSolution = new SD.Solution(new MockProjectChangeWatcher());
+			fakeProjectService.OpenSolution = new SD.Solution(new SD.MockProjectChangeWatcher());
 			fakeFileService = new FakeFileService(null);
 			dte = new DTE(fakeProjectService, fakeFileService);
 		}
