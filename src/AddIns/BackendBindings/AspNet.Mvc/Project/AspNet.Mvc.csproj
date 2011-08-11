@@ -104,6 +104,7 @@
     <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView" />
     <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic" />
     <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddController" />
+    <Folder Include="Resources" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -144,6 +145,7 @@
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <EmbeddedResource Include="Resources\CSharpRazor.xshd" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\AddMvcControllerToProjectView.xaml" />
