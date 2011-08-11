@@ -51,6 +51,37 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
+		public void ArrayWithImplicitSize()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"new int[] { 1 }",
+				new ArrayCreateExpression {
+					Type = new PrimitiveType("int"),
+					Initializer = new ArrayInitializerExpression {
+						Elements = { new PrimitiveExpression(1) }
+					}
+				});
+		}
+		
+		[Test]
+		public void ArrayWithImplicitSize2D()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"new int[,] { { 1 } }",
+				new ArrayCreateExpression {
+					Type = new PrimitiveType("int"),
+					Arguments = { new EmptyExpression(), new EmptyExpression() }, // TODO: can we improve the AST for this?
+					Initializer = new ArrayInitializerExpression {
+						Elements = {
+							new ArrayInitializerExpression {
+								Elements = { new PrimitiveExpression(1) }
+							}
+						}
+					}
+				});
+		}
+		
+		[Test]
 		public void ImplicitlyTypedArrayCreateExpression()
 		{
 			ParseUtilCSharp.AssertExpression(
@@ -63,9 +94,32 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 							new PrimitiveExpression(100),
 							new PrimitiveExpression(1000)
 						}
-					}
-				});
-			
+					}});
+		}
+		
+		[Test]
+		public void ImplicitlyTypedArrayCreateExpression2D()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"new [,] { { 1, 10 }, { 100, 1000 } }",
+				new ArrayCreateExpression {
+					Arguments = { new EmptyExpression(), new EmptyExpression() }, // TODO: can we improve the AST for this?
+					Initializer = new ArrayInitializerExpression {
+						Elements = {
+							new ArrayInitializerExpression {
+								Elements = {
+									new PrimitiveExpression(1),
+									new PrimitiveExpression(10)
+								}
+							},
+							new ArrayInitializerExpression {
+								Elements = {
+									new PrimitiveExpression(100),
+									new PrimitiveExpression(1000)
+								}
+							}
+						}
+					}});
 		}
 	}
 }

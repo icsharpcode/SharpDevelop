@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents an array type.
 	/// </summary>
-	public class ArrayType : TypeWithElementType
+	public sealed class ArrayType : TypeWithElementType
 	{
 		readonly int dimensions;
 		
@@ -83,19 +83,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return baseTypes;
 		}
 		
-		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
+		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
-			return systemArray.Resolve(context).GetMethods(context, filter);
+			return systemArray.Resolve(context).GetMethods(context, filter, options);
 		}
 		
 		static readonly DefaultParameter indexerParam = new DefaultParameter(KnownTypeReference.Int32, string.Empty);
 		
-		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
+		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			ITypeDefinition arrayDef = systemArray.Resolve(context) as ITypeDefinition;
 			if (arrayDef != null) {
-				foreach (IProperty p in arrayDef.GetProperties(context, filter)) {
-					yield return p;
+				if ((options & GetMemberOptions.IgnoreInheritedMembers) == 0) {
+					foreach (IProperty p in arrayDef.GetProperties(context, filter, options)) {
+						yield return p;
+					}
 				}
 				DefaultProperty indexer = new DefaultProperty(arrayDef, "Items") {
 					EntityType = EntityType.Indexer,

@@ -373,7 +373,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (pt != null && pt.TypeParameterCount == 1 && pt.Name == "Expression"
 			    && pt.Namespace == "System.Linq.Expressions")
 			{
-				t = pt.TypeArguments[0];
+				t = pt.GetTypeArgument(0);
 			}
 			return t.GetDelegateInvokeMethod();
 		}
@@ -577,7 +577,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				Log.Indent();
 				for (int i = 0; i < pU.TypeParameterCount; i++) {
-					MakeExactInference(pU.TypeArguments[i], pV.TypeArguments[i]);
+					MakeExactInference(pU.GetTypeArgument(i), pV.GetTypeArgument(i));
 				}
 				Log.Unindent();
 			}
@@ -620,7 +620,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				MakeLowerBoundInference(arrU.ElementType, arrV.ElementType);
 				return;
 			} else if (arrU != null && IsIEnumerableCollectionOrList(pV) && arrU.Dimensions == 1) {
-				MakeLowerBoundInference(arrU.ElementType, pV.TypeArguments[0]);
+				MakeLowerBoundInference(arrU.ElementType, pV.GetTypeArgument(0));
 				return;
 			}
 			// Handle parameterized types:
@@ -638,8 +638,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.Indent();
 				if (uniqueBaseType != null) {
 					for (int i = 0; i < uniqueBaseType.TypeParameterCount; i++) {
-						IType Ui = uniqueBaseType.TypeArguments[i];
-						IType Vi = pV.TypeArguments[i];
+						IType Ui = uniqueBaseType.GetTypeArgument(i);
+						IType Vi = pV.GetTypeArgument(i);
 						if (Ui.IsReferenceType(context) == true) {
 							// look for variance
 							ITypeParameter Xi = pV.GetDefinition().TypeParameters[i];
@@ -704,7 +704,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				MakeUpperBoundInference(arrU.ElementType, arrV.ElementType);
 				return;
 			} else if (arrV != null && IsIEnumerableCollectionOrList(pU) && arrV.Dimensions == 1) {
-				MakeUpperBoundInference(pU.TypeArguments[0], arrV.ElementType);
+				MakeUpperBoundInference(pU.GetTypeArgument(0), arrV.ElementType);
 				return;
 			}
 			// Handle parameterized types:
@@ -722,8 +722,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.Indent();
 				if (uniqueBaseType != null) {
 					for (int i = 0; i < uniqueBaseType.TypeParameterCount; i++) {
-						IType Ui = pU.TypeArguments[i];
-						IType Vi = uniqueBaseType.TypeArguments[i];
+						IType Ui = pU.GetTypeArgument(i);
+						IType Vi = uniqueBaseType.GetTypeArgument(i);
 						if (Ui.IsReferenceType(context) == true) {
 							// look for variance
 							ITypeParameter Xi = pU.GetDefinition().TypeParameters[i];

@@ -323,7 +323,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						var typeParameters = newParameterizedType.GetDefinition().TypeParameters;
 						for (int i = 0; i < typeParameters.Count; i++) {
 							ITypeParameter tp = typeParameters[i];
-							IType typeArg = newParameterizedType.TypeArguments[i];
+							IType typeArg = newParameterizedType.GetTypeArgument(i);
 							switch (typeArg.Kind) { // void, null, and pointers cannot be used as type arguments
 								case TypeKind.Void:
 								case TypeKind.Null:

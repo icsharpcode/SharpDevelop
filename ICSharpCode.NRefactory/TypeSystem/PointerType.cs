@@ -22,7 +22,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	public class PointerType : TypeWithElementType
+	public sealed class PointerType : TypeWithElementType
 	{
 		public PointerType(IType elementType) : base(elementType)
 		{

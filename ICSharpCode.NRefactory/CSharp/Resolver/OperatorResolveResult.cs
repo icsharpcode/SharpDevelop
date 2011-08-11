@@ -208,7 +208,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (SizeArguments != null && InitializerElements != null)
 				return SizeArguments.Concat(InitializerElements);
 			else
-				return SizeArguments ?? InitializerElements ?? Enumerable.Empty<ResolveResult>();
+				return SizeArguments ?? InitializerElements ?? EmptyList<ResolveResult>.Instance;
 		}
 	}
 }

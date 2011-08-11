@@ -203,15 +203,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return result;
 		}
 		
-		ResolveResult[] Resolve(AstNodeCollection<Expression> expressions)
-		{
-			ResolveResult[] results = new ResolveResult[expressions.Count];
-			int pos = 0;
-			foreach (var node in expressions)
-				results[pos++] = Resolve(node);
-			return results;
-		}
-		
 		void StoreState(AstNode node, CSharpResolver resolverState)
 		{
 			Debug.Assert(resolverState != null);
@@ -489,7 +480,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 					}
 				}
-				ResolveAndProcessConversion(variableInitializer.Initializer, result.Type);
+				ArrayInitializerExpression aie = variableInitializer.Initializer as ArrayInitializerExpression;
+				ArrayType arrayType = result.Type as ArrayType;
+				if (aie != null && arrayType != null) {
+					StoreState(aie, resolver.Clone());
+					List<ResolveResult> list = new List<ResolveResult>();
+					UnpackArrayInitializer(list, aie, arrayType.Dimensions);
+					ResolveResult[] initializerElements = list.ToArray();
+					ResolveResult arrayCreation = resolver.ResolveArrayCreation(arrayType.ElementType, arrayType.Dimensions, null, initializerElements);
+					StoreResult(aie, arrayCreation);
+					ProcessConversionsInResult(arrayCreation);
+				} else {
+					ResolveAndProcessConversion(variableInitializer.Initializer, result.Type);
+				}
 				return result;
 			} else {
 				ScanChildren(variableInitializer);
@@ -800,17 +803,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				dimensions = 1;
 				sizeArguments = null;
 			} else {
-				if (arrayCreateExpression.Arguments.All(e => e is EmptyExpression))
+				if (arrayCreateExpression.Arguments.All(e => e is EmptyExpression)) {
 					sizeArguments = null;
-				else
-					sizeArguments = Resolve(arrayCreateExpression.Arguments);
+				} else {
+					sizeArguments = new ResolveResult[dimensions];
+					int pos = 0;
+					foreach (var node in arrayCreateExpression.Arguments)
+						sizeArguments[pos++] = Resolve(node);
+				}
 			}
 			
 			ResolveResult[] initializerElements;
-			if (arrayCreateExpression.Initializer.IsNull)
+			if (arrayCreateExpression.Initializer.IsNull) {
 				initializerElements = null;
-			else
-				initializerElements = Resolve(arrayCreateExpression.Initializer.Elements);
+			} else {
+				List<ResolveResult> list = new List<ResolveResult>();
+				UnpackArrayInitializer(list, arrayCreateExpression.Initializer, dimensions);
+				initializerElements = list.ToArray();
+			}
 			
 			if (arrayCreateExpression.Type.IsNull) {
 				return resolver.ResolveArrayCreation(null, dimensions, sizeArguments, initializerElements);
@@ -821,6 +831,30 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				return resolver.ResolveArrayCreation(elementType, dimensions, sizeArguments, initializerElements);
 			}
+		}
+		
+		void UnpackArrayInitializer(List<ResolveResult> list, ArrayInitializerExpression initializer, int dimensions)
+		{
+			Debug.Assert(dimensions >= 1);
+			if (dimensions > 1) {
+				foreach (var node in initializer.Elements) {
+					ArrayInitializerExpression aie = node as ArrayInitializerExpression;
+					if (aie != null)
+						UnpackArrayInitializer(list, aie, dimensions - 1);
+					else
+						list.Add(Resolve(node));
+				}
+			} else {
+				foreach (var expr in initializer.Elements)
+					list.Add(Resolve(expr));
+			}
+		}
+		
+		public override ResolveResult VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
+		{
+			// Array initializers are handled by their parent expression.
+			ScanChildren(arrayInitializerExpression);
+			return errorResult;
 		}
 		
 		public override ResolveResult VisitAsExpression(AsExpression asExpression, object data)
@@ -1754,8 +1788,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			while (undecidedLambdas.Count > 0) {
 				LambdaBase lambda = undecidedLambdas[0];
 				AstNode parent = lambda.LambdaExpression.Parent;
-				while (ActsAsParenthesizedExpression(parent))
+				// Continue going upwards until we find a node that can be resolved and provides
+				// an expected type.
+				while (parent is ParenthesizedExpression
+				       || parent is CheckedExpression || parent is UncheckedExpression
+				       || parent is NamedArgumentExpression || parent is ArrayInitializerExpression)
+				{
 					parent = parent.Parent;
+				}
 				CSharpResolver storedResolver;
 				if (parent != null && resolverBeforeDict.TryGetValue(parent, out storedResolver)) {
 					Log.WriteLine("Trying to resolve '" + parent + "' in order to merge the lambda...");
@@ -1773,16 +1813,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			Log.Unindent();
 			Log.WriteLine("MergeUndecidedLambdas() finished.");
-		}
-		
-		/// <summary>
-		/// Gets whether the node acts as a parenthesized expression,
-		/// that is, it directly returns
-		/// </summary>
-		static bool ActsAsParenthesizedExpression(AstNode node)
-		{
-			return node is ParenthesizedExpression || node is CheckedExpression || node is UncheckedExpression
-				|| node is NamedArgumentExpression;
 		}
 		#endregion
 		
@@ -2073,16 +2103,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		ITypeReference MakeTypeReference(AstType type, AstNode initializerExpression, bool isForEach)
 		{
-			bool needsResolving;
+			bool typeNeedsResolving;
 			if (mode == ResolveVisitorNavigationMode.ResolveAll) {
-				needsResolving = true;
+				typeNeedsResolving = true;
 			} else {
 				var modeForType = navigator.Scan(type);
-				needsResolving = (modeForType == ResolveVisitorNavigationMode.Resolve || modeForType == ResolveVisitorNavigationMode.ResolveAll);
+				typeNeedsResolving = (modeForType == ResolveVisitorNavigationMode.Resolve || modeForType == ResolveVisitorNavigationMode.ResolveAll);
 			}
 			if (initializerExpression != null && IsVar(type)) {
 				var typeRef = new VarTypeReference(this, resolver.Clone(), initializerExpression, isForEach);
-				if (needsResolving) {
+				if (typeNeedsResolving) {
 					// Hack: I don't see a clean way to make the 'var' SimpleType resolve to the inferred type,
 					// so we just do it here and store the result in the resolver cache.
 					IType actualType = typeRef.Resolve(resolver.Context);
@@ -2099,7 +2129,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// Perf: avoid duplicate resolving of the type (once as ITypeReference, once directly in ResolveVisitor)
 				// if possible. By using ResolveType when we know we need to resolve the node anyways, the resolve cache
 				// can take care of the duplicate call.
-				if (needsResolving)
+				if (typeNeedsResolving)
 					return ResolveType(type);
 				else
 					return MakeTypeReference(type);
@@ -2174,7 +2204,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (baseTypeDef.Namespace == "System.Collections.Generic" && baseTypeDef.TypeParameterCount == 1) {
 						ParameterizedType pt = baseType as ParameterizedType;
 						if (pt != null) {
-							return pt.TypeArguments[0];
+							return pt.GetTypeArgument(0);
 						}
 					} else if (baseTypeDef.Namespace == "System.Collections" && baseTypeDef.TypeParameterCount == 0) {
 						foundSimpleIEnumerable = true;
@@ -2332,14 +2362,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return resolver.ResolveObjectCreation(target.Type, arguments, argumentNames);
 		}
 		#endregion
-		
-		public override ResolveResult VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
-		{
-			// TODO: array initializers are valid expressions if the parent node is a variable/field declaration
-			// that explicitly defines an array type
-			ScanChildren(arrayInitializerExpression);
-			return errorResult;
-		}
 		
 		#region Token Nodes
 		public override ResolveResult VisitIdentifier(Identifier identifier, object data)

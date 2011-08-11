@@ -549,13 +549,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				// conversion from single-dimensional array S[] to IList<T>:
 				ParameterizedType toPT = toType as ParameterizedType;
-				if (fromArray.Dimensions == 1 && toPT != null && toPT.TypeArguments.Count == 1
+				if (fromArray.Dimensions == 1 && toPT != null && toPT.TypeParameterCount == 1
 				    && toPT.Namespace == "System.Collections.Generic"
 				    && (toPT.Name == "IList" || toPT.Name == "ICollection" || toPT.Name == "IEnumerable"))
 				{
 					// array covariance plays a part here as well (string[] is IList<object>)
-					return IdentityConversion(fromArray.ElementType, toPT.TypeArguments[0])
-						|| ImplicitReferenceConversion(fromArray.ElementType, toPT.TypeArguments[0]);
+					return IdentityConversion(fromArray.ElementType, toPT.GetTypeArgument(0))
+						|| ImplicitReferenceConversion(fromArray.ElementType, toPT.GetTypeArgument(0));
 				}
 				// conversion from any array to System.Array and the interfaces it implements:
 				ITypeDefinition systemArray = context.GetTypeDefinition("System", "Array", 0, StringComparer.Ordinal);
@@ -588,14 +588,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (def != null && def.Equals(t.GetDefinition())) {
 				ParameterizedType ps = s as ParameterizedType;
 				ParameterizedType pt = t as ParameterizedType;
-				if (ps != null && pt != null
-				    && ps.TypeArguments.Count == pt.TypeArguments.Count
-				    && ps.TypeArguments.Count == def.TypeParameters.Count)
-				{
+				if (ps != null && pt != null) {
 					// C# 4.0 spec: §13.1.3.2 Variance Conversion
 					for (int i = 0; i < def.TypeParameters.Count; i++) {
-						IType si = ps.TypeArguments[i];
-						IType ti = pt.TypeArguments[i];
+						IType si = ps.GetTypeArgument(i);
+						IType ti = pt.GetTypeArgument(i);
 						if (IdentityConversion(si, ti))
 							continue;
 						ITypeParameter xi = def.TypeParameters[i];
@@ -902,7 +899,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ParameterizedType pt = type as ParameterizedType;
 			if (pt != null && pt.TypeParameterCount == 1 && pt.Name == "Expression" && pt.Namespace == "System.Linq.Expressions") {
-				return pt.TypeArguments[0];
+				return pt.GetTypeArgument(0);
 			} else {
 				return type;
 			}

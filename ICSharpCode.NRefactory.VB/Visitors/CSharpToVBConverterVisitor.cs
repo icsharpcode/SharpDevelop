@@ -2061,7 +2061,8 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 				.GetChildrenByRole(CSharp.AstNode.Roles.Constraint)
 				.SingleOrDefault(c => c.TypeParameter == typeParameterDeclaration.Name);
 			
-			ConvertNodes(constraint == null ? Enumerable.Empty<CSharp.AstType>() : constraint.BaseTypes, param.Constraints);
+			if (constraint != null)
+				ConvertNodes(constraint.BaseTypes, param.Constraints);
 			
 			// TODO : typeParameterDeclaration.Attributes get lost?
 			//ConvertNodes(typeParameterDeclaration.Attributes

@@ -192,11 +192,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AstLocation[] dollars = FindDollarSigns(code).ToArray();
 			Assert.AreEqual(2, dollars.Length, "Expected 2 dollar signs marking start+end of desired node");
 			
-			UsingScope rootUsingScope = resolver.UsingScope;
-			while (rootUsingScope.Parent != null)
-				rootUsingScope = rootUsingScope.Parent;
+			SetUp();
 			
-			ParsedFile parsedFile = new ParsedFile("test.cs", rootUsingScope);
+			ParsedFile parsedFile = new ParsedFile("test.cs", resolver.UsingScope);
 			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(parsedFile, resolver.UsingScope, null);
 			cu.AcceptVisitor(convertVisitor, null);
 			project.UpdateProjectContent(null, convertVisitor.ParsedFile);

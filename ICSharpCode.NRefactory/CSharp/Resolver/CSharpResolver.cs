@@ -2203,7 +2203,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			IMethod invokeMethod = target.Type.GetDelegateInvokeMethod();
 			if (invokeMethod != null) {
-				return new ResolveResult(invokeMethod.ReturnType.Resolve(context));
+				OverloadResolution or = new OverloadResolution(context, arguments, argumentNames);
+				or.AddCandidate(invokeMethod);
+				return new InvocationResolveResult(
+					target, invokeMethod, invokeMethod.ReturnType.Resolve(context),
+					or.GetArgumentsWithConversions(), or.BestCandidateErrors,
+					isExpandedForm: or.BestCandidateIsExpandedForm,
+					isDelegateInvocation: true,
+					argumentToParameterMap: or.GetArgumentToParameterMap());
 			}
 			return ErrorResult;
 		}
