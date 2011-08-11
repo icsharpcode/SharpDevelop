@@ -146,6 +146,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Resources\CSharpRazor.xshd" />
+    <EmbeddedResource Include="Resources\VisualBasicRazor.xshd" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\AddMvcControllerToProjectView.xaml" />

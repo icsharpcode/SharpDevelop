@@ -55,6 +55,11 @@
 			extensions=".cshtml"
 			name="C#/Razor"
 			resource="ICSharpCode.AspNet.Mvc.Resources.CSharpRazor.xshd"/>
+		<SyntaxMode
+			id="VisualBasic.Razor.SyntaxMode"
+			extensions=".vbhtml"
+			name="VBNET/Razor"
+			resource="ICSharpCode.AspNet.Mvc.Resources.VisualBasicRazor.xshd"/>
 	</Path>
 
 	<Path name="/Workspace/Icons">
@@ -62,6 +67,10 @@
 			id="CSharp.Razor.File"
 			extensions=".cshtml"
 			resource="C#.FileIcon"/>
+		<Icon
+			id="VisualBasic.Razor.File"
+			extensions=".vbhtml"
+			resource="VBNet.FileIcon"/>
 	</Path>
 
 	<Path name="/SharpDevelop/Workbench/FileFilter">
@@ -70,5 +79,10 @@
 			insertbefore="AllFiles"
 			name="C# Razor Files (*.cshtml)"
 			extensions="*.cshtml"/>
+		<FileFilter
+			id="VisualBasic.Razor"
+			insertbefore="AllFiles"
+			name="VB Razor Files (*.vbhtml)"
+			extensions="*.vbhtml"/>
 	</Path>
 </AddIn>
