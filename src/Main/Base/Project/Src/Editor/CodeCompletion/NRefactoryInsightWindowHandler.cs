@@ -20,6 +20,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		readonly SupportedLanguage language;
 		readonly int eofToken, commaToken, openParensToken, closeParensToken, openBracketToken, closeBracketToken, openBracesToken, closeBracesToken, statementEndToken;
 		readonly LanguageProperties languageProperties;
+		
+		int highlightedParameter;
 
 		public NRefactoryInsightWindowHandler(SupportedLanguage language)
 		{
@@ -77,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				}
 			};
 			insightWindow.DocumentChanged += onDocumentChanged;
-			insightWindow.SelectedItemChanged += delegate { HighlightParameter(insightWindow, HighlightedParameter); };
+			insightWindow.SelectedItemChanged += delegate { HighlightParameter(insightWindow, highlightedParameter); };
 			onDocumentChanged(null, null);
 		}
 
@@ -167,7 +169,17 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 						if (c == '(' || c == '[') {
 							var insightProvider = new MethodInsightProvider { LookupOffset = offset };
 							var insightItems = insightProvider.ProvideInsight(editor);
-							insightWindow = ShowInsight(editor, insightItems, ResolveCallParameters(editor, call), ch);
+							
+							// find highlighted parameter
+							var parameters = ResolveCallParameters(editor, call);
+							var parameter = parameters.Reverse().FirstOrDefault(p => p != null && p.GetDefinitionPosition().Column < editor.Caret.Column);
+							if (parameter == null) {
+								highlightedParameter = parameters.Count;
+							} else {
+								highlightedParameter = parameters.IndexOf(parameter) + 1;
+							}
+								
+							insightWindow = ShowInsight(editor, insightItems, parameters, ch);
 							return insightWindow != null;
 						} else {
 							Core.LoggingService.Warn("Expected '(' or '[' at start position");
@@ -212,6 +224,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				IMethodOrProperty result = Dom.CSharp.OverloadResolution.FindOverload(methods.Where(m => m != null), argumentTypes, true, false, out overloadIsSure);
 				defaultIndex = methods.IndexOf(result);
 			}
+
 			IInsightWindow insightWindow = editor.ShowInsightWindow(insightItems);
 			if (insightWindow != null) {
 				InitializeOpenedInsightWindow(editor, insightWindow);
@@ -274,8 +287,6 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			}
 		}
 		
-		public int HighlightedParameter { get; set; }
-		
 		public void HighlightParameter(IInsightWindow window, int index)
 		{
 			if (window == null)
@@ -284,7 +295,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			
 			if (item != null)
 				item.HighlightParameter = index;
-			HighlightedParameter = index;
+			highlightedParameter = index;
 		}
 	}
 }
