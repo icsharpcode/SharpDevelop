@@ -89,7 +89,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				this.Member = member;
 				this.IsExpandedForm = isExpanded;
-				this.Parameters = ((IParameterizedMember)member.MemberDefinition).Parameters;
+				if (this.IsGenericMethod) {
+					// For generic methods, go back to the original parameters
+					// (without any type parameter substitution, not even class type parameters)
+					// We'll re-substitute them as part of RunTypeInference().
+					this.Parameters = ((IParameterizedMember)member.MemberDefinition).Parameters;
+				} else {
+					this.Parameters = member.Parameters;
+				}
 				this.ParameterTypes = new IType[this.Parameters.Count];
 			}
 			

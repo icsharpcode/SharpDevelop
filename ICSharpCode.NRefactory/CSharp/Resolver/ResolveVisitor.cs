@@ -203,10 +203,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return result;
 		}
 		
+		ResolveResult[] Resolve(AstNodeCollection<Expression> expressions)
+		{
+			ResolveResult[] results = new ResolveResult[expressions.Count];
+			int pos = 0;
+			foreach (var node in expressions)
+				results[pos++] = Resolve(node);
+			return results;
+		}
+		
 		void StoreState(AstNode node, CSharpResolver resolverState)
 		{
 			Debug.Assert(resolverState != null);
-			resolverBeforeDict.Add(node, resolverState);
+			// It's possible that we re-visit an expression that we scanned over earlier,
+			// so we might have to overwrite an existing state.
+			resolverBeforeDict[node] = resolverState;
 		}
 		
 		void StoreResult(AstNode node, ResolveResult result)
@@ -782,31 +793,34 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (!resolverEnabled) {
 				return null;
 			}
-			IType arrType;
-			if (arrayCreateExpression.Type.IsNull) {
-				var elements = new List<ResolveResult>();
-				foreach (var init in arrayCreateExpression.Initializer.Elements) {
-					var rr = Resolve(init);
-					if (!rr.IsError)
-						elements.Add(rr);
-				}
-				TypeInference typeInference = new TypeInference(resolver.Context, new Conversions(resolver.Context));
-				bool success;
-				IType elementType = typeInference.GetBestCommonType(elements, out success);
-				arrType = new ArrayType(elementType, 1);
+			
+			int dimensions = arrayCreateExpression.Arguments.Count;
+			ResolveResult[] sizeArguments;
+			if (dimensions == 0) {
+				dimensions = 1;
+				sizeArguments = null;
 			} else {
-				arrType = ResolveType(arrayCreateExpression.Type);
-				foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
-					arrType = new ArrayType(arrType, spec.Dimensions);
-				}
-				// HACK: find a better way to represent this in the AST
-				if (arrayCreateExpression.Arguments.Count == 0) {
-					arrType = new ArrayType(arrType, 1);
-				} else {
-					arrType = new ArrayType(arrType, arrayCreateExpression.Arguments.Count);
-				}
+				if (arrayCreateExpression.Arguments.All(e => e is EmptyExpression))
+					sizeArguments = null;
+				else
+					sizeArguments = Resolve(arrayCreateExpression.Arguments);
 			}
-			return new ResolveResult (arrType);
+			
+			ResolveResult[] initializerElements;
+			if (arrayCreateExpression.Initializer.IsNull)
+				initializerElements = null;
+			else
+				initializerElements = Resolve(arrayCreateExpression.Initializer.Elements);
+			
+			if (arrayCreateExpression.Type.IsNull) {
+				return resolver.ResolveArrayCreation(null, dimensions, sizeArguments, initializerElements);
+			} else {
+				IType elementType = ResolveType(arrayCreateExpression.Type);
+				foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
+					elementType = new ArrayType(elementType, spec.Dimensions);
+				}
+				return resolver.ResolveArrayCreation(elementType, dimensions, sizeArguments, initializerElements);
+			}
 		}
 		
 		public override ResolveResult VisitAsExpression(AsExpression asExpression, object data)
@@ -923,6 +937,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new ResolveResult(KnownTypeReference.Boolean.Resolve(resolver.Context));
 			else
 				return null;
+		}
+		
+		public override ResolveResult VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
+		{
+			// Usually, the parent expression takes care of handling NamedArgumentExpressions
+			// by calling GetArguments().
+			if (resolverEnabled) {
+				return Resolve(namedArgumentExpression.Expression);
+			} else {
+				Scan(namedArgumentExpression.Expression);
+				return null;
+			}
 		}
 		
 		public override ResolveResult VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression, object data)
@@ -1728,7 +1754,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			while (undecidedLambdas.Count > 0) {
 				LambdaBase lambda = undecidedLambdas[0];
 				AstNode parent = lambda.LambdaExpression.Parent;
-				while (ActsAsParenthsizedExpression(parent))
+				while (ActsAsParenthesizedExpression(parent))
 					parent = parent.Parent;
 				CSharpResolver storedResolver;
 				if (parent != null && resolverBeforeDict.TryGetValue(parent, out storedResolver)) {
@@ -1753,9 +1779,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets whether the node acts as a parenthesized expression,
 		/// that is, it directly returns
 		/// </summary>
-		static bool ActsAsParenthsizedExpression(AstNode node)
+		static bool ActsAsParenthesizedExpression(AstNode node)
 		{
-			return node is ParenthesizedExpression || node is CheckedExpression || node is UncheckedExpression;
+			return node is ParenthesizedExpression || node is CheckedExpression || node is UncheckedExpression
+				|| node is NamedArgumentExpression;
 		}
 		#endregion
 		
@@ -2312,11 +2339,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// that explicitly defines an array type
 			ScanChildren(arrayInitializerExpression);
 			return errorResult;
-		}
-		
-		public override ResolveResult VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
-		{
-			throw new NotImplementedException();
 		}
 		
 		#region Token Nodes

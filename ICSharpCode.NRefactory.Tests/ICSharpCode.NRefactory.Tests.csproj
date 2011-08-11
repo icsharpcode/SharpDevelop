@@ -119,7 +119,7 @@
     <Compile Include="CSharp\Parser\GeneralScope\AttributeSectionTests.cs" />
     <Compile Include="CSharp\Parser\ParseUtil.cs" />
     <Compile Include="CSharp\Refactoring\TypeSystemAstBuilderTests.cs" />
-    <Compile Include="CSharp\Resolver\ArrayCreationTests.cs" />
+    <Compile Include="CSharp\Resolver\ArrayCreateTests.cs" />
     <Compile Include="CSharp\Resolver\AttributeTests.cs" />
     <Compile Include="CSharp\Resolver\BinaryOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\CastTests.cs" />

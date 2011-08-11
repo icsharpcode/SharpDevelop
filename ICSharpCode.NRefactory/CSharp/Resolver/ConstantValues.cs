@@ -617,37 +617,45 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	public sealed class ConstantArrayCreation : ConstantExpression, ISupportsInterning
 	{
 		// type may be null when the element is being inferred
-		ITypeReference type;
+		ITypeReference elementType;
 		IList<ConstantExpression> arrayElements;
 		
 		public ConstantArrayCreation(ITypeReference type, IList<ConstantExpression> arrayElements)
 		{
 			if (arrayElements == null)
 				throw new ArgumentNullException("arrayElements");
-			this.type = type;
+			this.elementType = type;
 			this.arrayElements = arrayElements;
 		}
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
-			throw new NotImplementedException();
+			ResolveResult[] elements = new ResolveResult[arrayElements.Count];
+			for (int i = 0; i < elements.Length; i++) {
+				elements[i] = arrayElements[i].Resolve(resolver);
+			}
+			if (elementType != null) {
+				return resolver.ResolveArrayCreation(elementType.Resolve(resolver.Context), 1, null, elements, true);
+			} else {
+				return resolver.ResolveArrayCreation(null, 1, null, elements, true);
+			}
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{
-			type = provider.Intern(type);
+			elementType = provider.Intern(elementType);
 			arrayElements = provider.InternList(arrayElements);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
-			return (type != null ? type.GetHashCode() : 0) ^ arrayElements.GetHashCode();
+			return (elementType != null ? elementType.GetHashCode() : 0) ^ arrayElements.GetHashCode();
 		}
 		
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
 			ConstantArrayCreation cac = other as ConstantArrayCreation;
-			return cac != null && this.type == cac.type && this.arrayElements == cac.arrayElements;
+			return cac != null && this.elementType == cac.elementType && this.arrayElements == cac.arrayElements;
 		}
 	}
 }

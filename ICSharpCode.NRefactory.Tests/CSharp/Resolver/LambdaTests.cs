@@ -74,7 +74,7 @@ class SomeClass<T> {
 		
 		#region Lambda In Initializer
 		[Test]
-		public void LambdaInCollectionInitializerTest1()
+		public void LambdaInArrayInitializer1()
 		{
 			string program = @"using System;
 class TestClass {
@@ -90,23 +90,7 @@ class TestClass {
 		}
 		
 		[Test]
-		public void LambdaInCollectionInitializerTest2()
-		{
-			string program = @"using System; using System.Collections.Generic;
-class TestClass {
-	static void Main() {
-		a = new List<Converter<int, string>> {
-			i => $i$.ToString()
-		};
-	}
-}
-";
-			var lrr = Resolve<LocalResolveResult>(program);
-			Assert.AreEqual("System.Int32", lrr.Type.ReflectionName);
-		}
-		
-		[Test]
-		public void LambdaInCollectionInitializerTest3()
+		public void LambdaInArrayInitializer2()
 		{
 			string program = @"using System;
 class TestClass {
@@ -122,7 +106,7 @@ class TestClass {
 		}
 		
 		[Test]
-		public void LambdaInCollectionInitializerTest4()
+		public void LambdaInArrayInitializer3()
 		{
 			string program = @"using System;
 class TestClass {
@@ -136,13 +120,62 @@ class TestClass {
 		}
 		
 		[Test]
-		public void LambdaInCollectionInitializerTest5()
+		public void LambdaInArrayInitializer4()
 		{
 			string program = @"using System;
 class TestClass {
 	Converter<int, string>[] field = {
 		i => $i$.ToString()
 	};
+}
+";
+			var lrr = Resolve<LocalResolveResult>(program);
+			Assert.AreEqual("System.Int32", lrr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void LambdaInCollectionInitializer1()
+		{
+			string program = @"using System; using System.Collections.Generic;
+class TestClass {
+	static void Main() {
+		a = new List<Converter<int, string>> {
+			i => $i$.ToString()
+		};
+	}
+}
+";
+			var lrr = Resolve<LocalResolveResult>(program);
+			Assert.AreEqual("System.Int32", lrr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void LambdaInCollectionInitializer2()
+		{
+			string program = @"using System; using System.Collections.Generic;
+class TestClass {
+	static void Main() {
+		a = new Dictionary<Func<char, string>, Converter<int, string>> {
+			{ i => $i$.ToString(), i => i.ToString() }
+		};
+	}
+}
+";
+			var lrr = Resolve<LocalResolveResult>(program);
+			Assert.AreEqual("System.Char", lrr.Type.ReflectionName);
+		}
+		
+		
+		[Test]
+		public void LambdaInCollectionInitializer3()
+		{
+			string program = @"using System; using System.Collections.Generic;
+class TestClass {
+	static void Main() {
+		a = new Dictionary<Func<char, string>, Converter<int, string>> {
+			{ i => i.ToString(), $i$ => i.ToString() }
+		};
+	}
 }
 ";
 			var lrr = Resolve<LocalResolveResult>(program);

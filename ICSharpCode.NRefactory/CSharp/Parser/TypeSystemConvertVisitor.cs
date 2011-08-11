@@ -995,15 +995,20 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override ConstantExpression VisitArrayCreateExpression(ArrayCreateExpression arrayObjectCreateExpression, object data)
+			public override ConstantExpression VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 			{
-				var initializer = arrayObjectCreateExpression.Initializer;
-				if (isAttributeArgument && !initializer.IsNull) {
+				var initializer = arrayCreateExpression.Initializer;
+				// Attributes only allow one-dimensional arrays
+				if (isAttributeArgument && !initializer.IsNull && arrayCreateExpression.Arguments.Count < 2) {
 					ITypeReference type;
-					if (arrayObjectCreateExpression.Type.IsNull)
+					if (arrayCreateExpression.Type.IsNull) {
 						type = null;
-					else
-						type = convertVisitor.ConvertType(arrayObjectCreateExpression.Type);
+					} else {
+						type = convertVisitor.ConvertType(arrayCreateExpression.Type);
+						foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
+							type = ArrayTypeReference.Create(type, spec.Dimensions);
+						}
+					}
 					ConstantExpression[] elements = new ConstantExpression[initializer.Elements.Count];
 					int pos = 0;
 					foreach (Expression expr in initializer.Elements) {

@@ -726,8 +726,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			cancellationToken.ThrowIfCancellationRequested();
 			
 			if (SharedTypes.Dynamic.Equals(lhs.Type) || SharedTypes.Dynamic.Equals(rhs.Type)) {
-				lhs = Convert(lhs, SharedTypes.Dynamic, conversions.ImplicitConversion(lhs, SharedTypes.Dynamic));
-				rhs = Convert(rhs, SharedTypes.Dynamic, conversions.ImplicitConversion(rhs, SharedTypes.Dynamic));
+				lhs = Convert(lhs, SharedTypes.Dynamic);
+				rhs = Convert(rhs, SharedTypes.Dynamic);
 				return new BinaryOperatorResolveResult(SharedTypes.Dynamic, lhs, op, rhs);
 			}
 			
@@ -1744,6 +1744,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
+		ResolveResult Convert(ResolveResult rr, IType targetType)
+		{
+			return Convert(rr, targetType, conversions.ImplicitConversion(rr, targetType));
+		}
+		
 		ResolveResult Convert(ResolveResult rr, ITypeReference targetType, Conversion c)
 		{
 			if (c == Conversion.IdentityConversion)
@@ -2155,6 +2160,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ResolveInvocation
+		/// <summary>
+		/// Resolves an invocation.
+		/// </summary>
+		/// <param name="target">The target of the invocation. Usually a MethodGroupResolveResult.</param>
+		/// <param name="arguments">
+		/// Arguments passed to the method.
+		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
+		/// </param>
+		/// <param name="argumentNames">
+		/// The argument names. Pass the null string for positional arguments.
+		/// </param>
+		/// <returns>InvocationResolveResult or UnknownMethodResolveResult</returns>
 		public ResolveResult ResolveInvocation(ResolveResult target, ResolveResult[] arguments, string[] argumentNames = null)
 		{
 			// C# 4.0 spec: §7.6.5
@@ -2274,6 +2291,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ResolveIndexer
+		/// <summary>
+		/// Resolves an indexer access.
+		/// </summary>
+		/// <param name="target">Target expression.</param>
+		/// <param name="arguments">
+		/// Arguments passed to the indexer.
+		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
+		/// </param>
+		/// <param name="argumentNames">
+		/// The argument names. Pass the null string for positional arguments.
+		/// </param>
+		/// <returns>ArrayAccessResolveResult, InvocationResolveResult, or ErrorResolveResult</returns>
 		public ResolveResult ResolveIndexer(ResolveResult target, ResolveResult[] arguments, string[] argumentNames = null)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -2281,24 +2310,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			switch (target.Type.Kind) {
 				case TypeKind.Dynamic:
 					for (int i = 0; i < arguments.Length; i++) {
-						arguments[i] = Convert(arguments[i], SharedTypes.Dynamic,
-						                       conversions.ImplicitConversion(arguments[i], SharedTypes.Dynamic));
+						arguments[i] = Convert(arguments[i], SharedTypes.Dynamic);
 					}
 					return new ArrayAccessResolveResult(SharedTypes.Dynamic, target, arguments);
 					
 				case TypeKind.Array:
 				case TypeKind.Pointer:
 					// §7.6.6.1 Array access / §18.5.3 Pointer element access
-					for (int i = 0; i < arguments.Length; i++) {
-						if (!(TryConvert(ref arguments[i], KnownTypeReference.Int32.Resolve(context)) ||
-						      TryConvert(ref arguments[i], KnownTypeReference.UInt32.Resolve(context)) ||
-						      TryConvert(ref arguments[i], KnownTypeReference.Int64.Resolve(context)) ||
-						      TryConvert(ref arguments[i], KnownTypeReference.UInt64.Resolve(context))))
-						{
-							// conversion failed
-							arguments[i] = Convert(arguments[i], KnownTypeReference.Int32, Conversion.None);
-						}
-					}
+					AdjustArrayAccessArguments(arguments);
 					return new ArrayAccessResolveResult(((TypeWithElementType)target.Type).ElementType, target, arguments);
 			}
 			
@@ -2318,9 +2337,38 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return ErrorResult;
 			}
 		}
+		
+		/// <summary>
+		/// Converts all arguments to int,uint,long or ulong.
+		/// </summary>
+		void AdjustArrayAccessArguments(ResolveResult[] arguments)
+		{
+			for (int i = 0; i < arguments.Length; i++) {
+				if (!(TryConvert(ref arguments[i], KnownTypeReference.Int32.Resolve(context)) ||
+				      TryConvert(ref arguments[i], KnownTypeReference.UInt32.Resolve(context)) ||
+				      TryConvert(ref arguments[i], KnownTypeReference.Int64.Resolve(context)) ||
+				      TryConvert(ref arguments[i], KnownTypeReference.UInt64.Resolve(context))))
+				{
+					// conversion failed
+					arguments[i] = Convert(arguments[i], KnownTypeReference.Int32, Conversion.None);
+				}
+			}
+		}
 		#endregion
 		
 		#region ResolveObjectCreation
+		/// <summary>
+		/// Resolves an object creation.
+		/// </summary>
+		/// <param name="type">Type of the object to create.</param>
+		/// <param name="arguments">
+		/// Arguments passed to the constructor.
+		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
+		/// </param>
+		/// <param name="argumentNames">
+		/// The argument names. Pass the null string for positional arguments.
+		/// </param>
+		/// <returns>InvocationResolveResult or ErrorResolveResult</returns>
 		public ResolveResult ResolveObjectCreation(IType type, ResolveResult[] arguments, string[] argumentNames = null)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -2519,53 +2567,51 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		#endregion
-	}
-	
-	/// <summary>
-	/// Resolver logging helper.
-	/// Wraps System.Diagnostics.Debug so that resolver-specific logging can be enabled/disabled on demand.
-	/// (it's a huge amount of debug spew and slows down the resolver quite a bit)
-	/// </summary>
-	static class Log
-	{
-		[Conditional("DEBUG")]
-		internal static void WriteLine(string text)
-		{
-			Debug.WriteLine(text);
-		}
 		
-		[Conditional("DEBUG")]
-		internal static void WriteLine(string format, params object[] args)
+		#region ResolveArrayCreation
+		/// <summary>
+		/// Resolves an array creation.
+		/// </summary>
+		/// <param name="elementType">
+		/// The array element type.
+		/// Pass null to resolve an implicitly-typed array creation.
+		/// </param>
+		/// <param name="dimensions">
+		/// The number of array dimensions.
+		/// </param>
+		/// <param name="sizeArguments">
+		/// The size arguments. May be null if no explicit size was given.
+		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
+		/// </param>
+		/// <param name="initializerElements">
+		/// The initializer elements. May be null if no array initializer was specified.
+		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
+		/// </param>
+		/// <param name="allowArrayConstants">
+		/// Specifies whether to allow treating single-dimensional arrays like compile-time constants.
+		/// This is used for attribute arguments.
+		/// </param>
+		public ResolveResult ResolveArrayCreation(IType elementType, int dimensions = 1, ResolveResult[] sizeArguments = null, ResolveResult[] initializerElements = null, bool allowArrayConstants = false)
 		{
-			Debug.WriteLine(format, args);
-		}
-		
-		[Conditional("DEBUG")]
-		internal static void WriteCollection<T>(string text, IEnumerable<T> lines)
-		{
-			#if DEBUG
-			T[] arr = lines.ToArray();
-			if (arr.Length == 0) {
-				Debug.WriteLine(text + "<empty collection>");
-			} else {
-				Debug.WriteLine(text + (arr[0] != null ? arr[0].ToString() : "<null>"));
-				for (int i = 1; i < arr.Length; i++) {
-					Debug.WriteLine(new string(' ', text.Length) + (arr[i] != null ? arr[i].ToString() : "<null>"));
+			if (sizeArguments != null && dimensions != Math.Max(1, sizeArguments.Length))
+				throw new ArgumentException("dimensions and sizeArguments.Length don't match");
+			if (elementType == null) {
+				TypeInference typeInference = new TypeInference(context, conversions);
+				bool success;
+				elementType = typeInference.GetBestCommonType(initializerElements, out success);
+			}
+			IType arrayType = new ArrayType(elementType, dimensions);
+			
+			if (sizeArguments != null)
+				AdjustArrayAccessArguments(sizeArguments);
+			
+			if (initializerElements != null) {
+				for (int i = 0; i < initializerElements.Length; i++) {
+					initializerElements[i] = Convert(initializerElements[i], elementType);
 				}
 			}
-			#endif
+			return new ArrayCreateResolveResult(arrayType, sizeArguments, initializerElements, allowArrayConstants);
 		}
-		
-		[Conditional("DEBUG")]
-		public static void Indent()
-		{
-			Debug.Indent();
-		}
-		
-		[Conditional("DEBUG")]
-		public static void Unindent()
-		{
-			Debug.Unindent();
-		}
+		#endregion
 	}
 }

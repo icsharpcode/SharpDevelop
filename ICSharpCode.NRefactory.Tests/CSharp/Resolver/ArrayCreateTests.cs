@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	[TestFixture]
 	[Ignore("Parser produces incorrect positions")]
-	public class ArrayCreationTests : ResolverTestBase
+	public class ArrayCreateTests : ResolverTestBase
 	{
 		[Test]
 		public void SimpleArrayCreation()
@@ -99,6 +99,18 @@ class A {
 ";
 			var result = Resolve(program);
 			Assert.AreEqual("System.Int32[]", result.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void ArrayInitializerExpression2D()
+		{
+			string program = @"using System.Collections.Generic;
+class A {
+	int[,] a = ${ { 1 }, { 2 } }$;
+}
+";
+			var result = Resolve(program);
+			Assert.AreEqual("System.Int32[,]", result.Type.ReflectionName);
 		}
 	}
 }
