@@ -175,7 +175,7 @@ Public Class ${ProjectName}Tool
 End Class
 ]]></File>
 			<File name="FileTemplate.xft" src="SharpDevelopCustomToolTemplate.xft.xml" binary="true" CopyToOutputDirectory="Always"/>
-			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.cs"/>
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
 			<File name="AddInWritingHelp.txt" src="..\AddInWritingHelp.txt"/>
 		</Files>
 	</Project>
