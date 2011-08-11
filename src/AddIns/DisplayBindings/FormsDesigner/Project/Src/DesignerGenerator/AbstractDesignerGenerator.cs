@@ -206,14 +206,22 @@ namespace ICSharpCode.FormsDesigner
 		{
 		}
 		
-		public virtual void NotifyFormRenamed(string newName)
+		public virtual void NotifyComponentRenamed(object component, string newName, string oldName)
 		{
 			Reparse();
-			LoggingService.Info("Renaming form to " + newName);
+			LoggingService.Info(string.Format("Renaming form '{0}' to '{1}'.", oldName, newName));
 			if (this.formClass == null) {
 				LoggingService.Warn("Cannot rename, formClass not found");
 			} else {
-				ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, newName);
+				if (component is System.Windows.Forms.Form) {
+					ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, newName);
+				} else {
+					if (component is System.Windows.Forms.Control) {
+						IField field = GetField(this.formClass, oldName);
+						if (field != null)
+							ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameMember(field, newName);
+					}
+				}
 				Reparse();
 			}
 		}
