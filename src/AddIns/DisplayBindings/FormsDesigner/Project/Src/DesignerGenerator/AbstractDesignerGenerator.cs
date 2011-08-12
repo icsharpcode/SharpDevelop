@@ -213,16 +213,18 @@ namespace ICSharpCode.FormsDesigner
 			if (this.formClass == null) {
 				LoggingService.Warn("Cannot rename, formClass not found");
 			} else {
-				if (component is System.Windows.Forms.Form) {
+				if (viewContent.Host == null || viewContent.Host.Container == null || 
+				    viewContent.Host.Container.Components == null || viewContent.Host.Container.Components.Count == 0)
+					return;
+				
+				// verify if we should rename the class
+				if (viewContent.Host.Container.Components[0] == component) {
 					ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, newName);
 				} else {
-					if (component is System.Windows.Forms.Control) {
-						IField field = GetField(this.formClass, oldName);
-						if (field != null) {
-							ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameMember(field, newName);
-						} else {
-							ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, newName);
-						}
+					// rename a member - if exists
+					IField field = GetField(this.formClass, oldName);
+					if (field != null) {
+						ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameMember(field, newName);
 					}
 				}
 				Reparse();
