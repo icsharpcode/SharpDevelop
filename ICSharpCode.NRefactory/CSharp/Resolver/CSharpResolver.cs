@@ -1864,10 +1864,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			bool parameterizeResultType = k > 0;
-			if (parameterizeResultType) {
-				if (typeArguments.All(t => t.Equals(SharedTypes.UnboundTypeArgument)))
-					parameterizeResultType = false;
-			}
+			if (parameterizeResultType && typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument))
+				parameterizeResultType = false;
 			
 			// look in current type definitions
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
@@ -2008,7 +2006,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			NamespaceResolveResult nrr = target as NamespaceResolveResult;
 			if (nrr != null) {
-				return ResolveMemberAccessOnNamespace(nrr, identifier, typeArguments);
+				return ResolveMemberAccessOnNamespace(nrr, identifier, typeArguments, typeArguments.Count > 0);
 			}
 			
 			if (SharedTypes.Dynamic.Equals(target.Type))
@@ -2039,16 +2037,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			
+			bool parameterizeResultType = typeArguments.Count > 0;
+			if (parameterizeResultType && typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument))
+				parameterizeResultType = false;
+			
 			NamespaceResolveResult nrr = target as NamespaceResolveResult;
 			if (nrr != null) {
-				return ResolveMemberAccessOnNamespace(nrr, identifier, typeArguments);
+				return ResolveMemberAccessOnNamespace(nrr, identifier, typeArguments, parameterizeResultType);
 			}
 			
 			MemberLookup lookup = CreateMemberLookup();
-			return lookup.LookupType(target.Type, identifier, typeArguments);
+			return lookup.LookupType(target.Type, identifier, typeArguments, parameterizeResultType);
 		}
 		
-		ResolveResult ResolveMemberAccessOnNamespace(NamespaceResolveResult nrr, string identifier, IList<IType> typeArguments)
+		ResolveResult ResolveMemberAccessOnNamespace(NamespaceResolveResult nrr, string identifier, IList<IType> typeArguments, bool parameterizeResultType)
 		{
 			if (typeArguments.Count == 0) {
 				string fullName = NamespaceDeclaration.BuildQualifiedName(nrr.NamespaceName, identifier);
@@ -2057,7 +2059,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			ITypeDefinition def = context.GetTypeDefinition(nrr.NamespaceName, identifier, typeArguments.Count, StringComparer.Ordinal);
 			if (def != null) {
-				if (typeArguments.Count > 0)
+				if (parameterizeResultType)
 					return new TypeResolveResult(new ParameterizedType(def, typeArguments));
 				else
 					return new TypeResolveResult(def);

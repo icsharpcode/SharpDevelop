@@ -781,12 +781,15 @@ class C1 {
 }";
 			MemberResolveResult mrr;
 			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$Field$"));
+			Assert.IsFalse(mrr.IsError);
 			Assert.AreEqual("C1.Field", mrr.Member.FullName);
 			
 			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$C1.Field$"));
+			Assert.IsFalse(mrr.IsError);
 			Assert.AreEqual("C1.Field", mrr.Member.FullName);
 			
 			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$C2.Field$"));
+			Assert.IsFalse(mrr.IsError);
 			Assert.AreEqual("C1.Field", mrr.Member.FullName);
 		}
 		

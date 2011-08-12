@@ -62,6 +62,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		#region IsAccessible
+		/// <summary>
+		/// Gets whether access to protected instance members of the target type is possible.
+		/// </summary>
 		public bool IsProtectedAccessAllowed(IType targetType)
 		{
 			ITypeDefinition typeDef = targetType.GetDefinition();
@@ -72,8 +75,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets whether <paramref name="entity"/> is accessible in the current class.
 		/// </summary>
 		/// <param name="entity">The entity to test</param>
-		/// <param name="allowProtectedAccess">Whether protected access is allowed.
-		/// True if the type of the reference is derived from the current class.</param>
+		/// <param name="allowProtectedAccess">
+		/// Whether protected access to instance members is allowed.
+		/// True if the type of the reference is derived from the current class.
+		/// Protected static members may be accessibe even if false is passed for this parameter.
+		/// </param>
 		public bool IsAccessible(IEntity entity, bool allowProtectedAccess)
 		{
 			if (entity == null)
@@ -94,7 +100,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case Accessibility.Public:
 					return true;
 				case Accessibility.Protected:
-					return allowProtectedAccess && IsProtectedAccessible(entity.DeclaringTypeDefinition);
+					// For static members and type definitions, we do not require the qualifying reference
+					// to be derived from the current class (allowProtectedAccess).
+					return (allowProtectedAccess || entity.IsStatic || entity.EntityType == EntityType.TypeDefinition)
+						&& IsProtectedAccessible(entity.DeclaringTypeDefinition);
 				case Accessibility.Internal:
 					return IsInternalAccessible(entity.ProjectContent);
 				case Accessibility.ProtectedOrInternal:
