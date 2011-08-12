@@ -154,6 +154,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					Token token;
 					InspectedCall call = new InspectedCall(Location.Empty, null);
 					call.parent = call;
+					// HACK MINI PARSER
+					// The following code tries to find the current nested call until the caret position (= cursorLocation) is
+					// reached. call.commas contains all commas up to the caret position.
+					// DOES NOT HANDLE GENERICS CORRECTLY! This is sufficient for overload "search", because if we miss one 
+					// overload it does not matter. But if we highlight the wrong parameter (see below) it DOES MATTER!
 					while ((token = lexer.NextToken()) != null && token.Kind != eofToken && token.Location < cursorLocation) {
 						if (token.Kind == commaToken) {
 							call.commas.Add(token.Location);
@@ -171,14 +176,10 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 							var insightItems = insightProvider.ProvideInsight(editor);
 							
 							// find highlighted parameter
-							var parameters = ResolveCallParameters(editor, call);
-							var parameter = parameters.Reverse().FirstOrDefault(p => p != null && p.GetDefinitionPosition().Column < editor.Caret.Column);
-							if (parameter == null) {
-								highlightedParameter = parameters.Count;
-							} else {
-								highlightedParameter = parameters.IndexOf(parameter) + 1;
-							}
-								
+							// see mini parser description above; the number of recognized parameters is the index
+							// of the current parameter!
+							var parameters =  ResolveCallParameters(editor, call);
+							highlightedParameter = parameters.Count;
 							insightWindow = ShowInsight(editor, insightItems, parameters, ch);
 							return insightWindow != null;
 						} else {
