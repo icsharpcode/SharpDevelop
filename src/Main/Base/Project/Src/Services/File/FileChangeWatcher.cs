@@ -44,12 +44,17 @@ namespace ICSharpCode.SharpDevelop
 		
 		static int globalDisableCount;
 		
+		public static bool AllChangeWatchersDisabled {
+			get { return globalDisableCount > 0; }
+		}
+		
 		public static void DisableAllChangeWatchers()
 		{
 			WorkbenchSingleton.AssertMainThread();
 			globalDisableCount++;
 			foreach (FileChangeWatcher w in activeWatchers)
 				w.SetWatcher();
+			Project.ProjectChangeWatcher.OnAllChangeWatchersDisabledChanged();
 		}
 		
 		public static void EnableAllChangeWatchers()
@@ -60,6 +65,7 @@ namespace ICSharpCode.SharpDevelop
 			globalDisableCount--;
 			foreach (FileChangeWatcher w in activeWatchers)
 				w.SetWatcher();
+			Project.ProjectChangeWatcher.OnAllChangeWatchersDisabledChanged();
 		}
 		
 		public event EventHandler FileChanged;

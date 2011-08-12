@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -9,6 +10,14 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public sealed class ProjectChangeWatcher : IProjectChangeWatcher
 	{
+		static readonly HashSet<ProjectChangeWatcher> activeWatchers = new HashSet<ProjectChangeWatcher>();
+		
+		internal static void OnAllChangeWatchersDisabledChanged()
+		{
+			foreach (ProjectChangeWatcher watcher in activeWatchers)
+				watcher.SetWatcher();
+		}
+		
 		FileSystemWatcher watcher;
 		string fileName;
 		bool enabled = true;
@@ -16,9 +25,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ProjectChangeWatcher(string fileName)
 		{
 			this.fileName = fileName;
+			
+			WorkbenchSingleton.AssertMainThread();
+			activeWatchers.Add(this);
+			
 			WorkbenchSingleton.MainWindow.Activated += MainFormActivated;
 		}
-
+		
 		public void Enable()
 		{
 			enabled = true;
@@ -44,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				watcher.EnableRaisingEvents = false;
 			}
 
-			if (!enabled)
+			if (!enabled || FileChangeWatcher.AllChangeWatchersDisabled)
 				return;
 
 			if (string.IsNullOrEmpty(fileName))
@@ -90,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		void OnFileChangedEvent(object sender, FileSystemEventArgs e)
 		{
-			LoggingService.Debug("Solution was changed externally: " + e.ChangeType);
+			LoggingService.Debug("Project file " + e.Name + " was changed externally: {1}" + e.ChangeType);
 			if (!wasChangedExternally) {
 				wasChangedExternally = true;
 				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
@@ -117,8 +130,14 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		public void Dispose()
 		{
+			WorkbenchSingleton.AssertMainThread();
 			if (!disposed) {
 				WorkbenchSingleton.MainWindow.Activated -= MainFormActivated;
+				activeWatchers.Remove(this);
+			}
+			if (watcher != null) {
+				watcher.Dispose();
+				watcher = null;
 			}
 			disposed = true;
 		}
