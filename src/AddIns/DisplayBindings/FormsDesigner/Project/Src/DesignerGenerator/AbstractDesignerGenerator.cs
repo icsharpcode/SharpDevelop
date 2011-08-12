@@ -218,8 +218,11 @@ namespace ICSharpCode.FormsDesigner
 				} else {
 					if (component is System.Windows.Forms.Control) {
 						IField field = GetField(this.formClass, oldName);
-						if (field != null)
+						if (field != null) {
 							ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameMember(field, newName);
+						} else {
+							ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, newName);
+						}
 					}
 				}
 				Reparse();
