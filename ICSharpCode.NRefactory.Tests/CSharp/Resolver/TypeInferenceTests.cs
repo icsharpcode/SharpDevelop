@@ -100,8 +100,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			DefaultTypeParameter B = new DefaultTypeParameter(EntityType.Method, 1, "B");
 			
 			ITypeDefinition declType = ctx.GetTypeDefinition(typeof(int));
-			var methods = declType.Methods.Where(m => m.Name == "Parse").ToList();
-			var argument = new MethodGroupResolveResult(new TypeResolveResult(declType), "Parse", methods, new IType[0]);
+			var methods = new MethodListWithDeclaringType(declType, declType.Methods.Where(m => m.Name == "Parse"));
+			var argument = new MethodGroupResolveResult(new TypeResolveResult(declType), "Parse", new[] { methods }, new IType[0]);
 			
 			bool success;
 			ti.InferTypeArguments(new [] { A, B }, new [] { argument },
@@ -119,8 +119,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			DefaultTypeParameter T = new DefaultTypeParameter(EntityType.Method, 0, "T");
 			
 			ITypeDefinition declType = ctx.GetTypeDefinition(typeof(Console));
-			var methods = declType.Methods.Where(m => m.Name == "ReadKey").ToList();
-			var argument = new MethodGroupResolveResult(new TypeResolveResult(declType), "ReadKey", methods, new IType[0]);
+			var methods = new MethodListWithDeclaringType(declType, declType.Methods.Where(m => m.Name == "ReadKey"));
+			var argument = new MethodGroupResolveResult(new TypeResolveResult(declType), "ReadKey", new[] { methods }, new IType[0]);
 			
 			bool success;
 			Assert.AreEqual(

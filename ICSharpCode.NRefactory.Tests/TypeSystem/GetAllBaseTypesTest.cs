@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			DefaultTypeDefinition c2 = new DefaultTypeDefinition(mscorlib, string.Empty, "C2");
 			c1.BaseTypes.Add(c2);
 			c2.BaseTypes.Add(c1);
-			Assert.AreEqual(new [] { c1, c2 }, c1.GetAllBaseTypes(context).ToArray());
+			Assert.AreEqual(new [] { c2, c1 }, c1.GetAllBaseTypes(context).ToArray());
 		}
 		
 		[Test]

@@ -65,8 +65,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			string[] superTypes = c.GetAllBaseTypes(ctx).Select(t => t.ToString()).ToArray();
 			Assert.AreEqual(new string[] {
-			                	"System.SystemException", "System.Exception", "System.Object",
-			                	"System.Runtime.Serialization.ISerializable", "System.Runtime.InteropServices._Exception"
+			                	"System.Object",
+			                	"System.Runtime.Serialization.ISerializable", "System.Runtime.InteropServices._Exception",
+			                	"System.Exception", "System.SystemException"
 			                }, superTypes);
 		}
 		

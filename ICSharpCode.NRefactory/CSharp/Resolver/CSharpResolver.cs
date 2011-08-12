@@ -2019,7 +2019,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (result is UnknownMemberResolveResult) {
 				var extensionMethods = GetExtensionMethods(target.Type, identifier, typeArguments);
 				if (extensionMethods.Count > 0) {
-					return new MethodGroupResolveResult(target, identifier, EmptyList<IMethod>.Instance, typeArguments) {
+					return new MethodGroupResolveResult(target, identifier, EmptyList<MethodListWithDeclaringType>.Instance, typeArguments) {
 						extensionMethods = extensionMethods
 					};
 				}
@@ -2273,8 +2273,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return umrr.MemberName;
 			
 			MethodGroupResolveResult mgrr = rr as MethodGroupResolveResult;
-			if (mgrr != null && mgrr.Methods.Count > 0)
-				return mgrr.Methods[0].Name;
+			if (mgrr != null)
+				return mgrr.MethodName;
 			
 			LocalResolveResult vrr = rr as LocalResolveResult;
 			if (vrr != null)
@@ -2328,16 +2328,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return new ArrayAccessResolveResult(((TypeWithElementType)target.Type).ElementType, target, arguments);
 			}
 			
-			// §7.6.6.2 Array access
+			// §7.6.6.2 Indexer access
 			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
 			MemberLookup lookup = CreateMemberLookup();
-			bool allowProtectedAccess = lookup.IsProtectedAccessAllowed(target.Type);
-			var indexers = target.Type.GetProperties(context, p => p.IsIndexer && lookup.IsAccessible(p, allowProtectedAccess));
-			// TODO: filter indexers hiding other indexers?
-			foreach (IProperty p in indexers) {
-				// TODO: grouping by class definition?
-				or.AddCandidate(p);
-			}
+			var indexers = lookup.LookupIndexers(target.Type);
+			or.AddMethodLists(indexers);
 			if (or.BestCandidate != null) {
 				return new InvocationResolveResult(target, or, context);
 			} else {

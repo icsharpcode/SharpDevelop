@@ -18,7 +18,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -188,6 +190,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return c.Errors;
 		}
 		
+		public static bool IsApplicable(OverloadResolutionErrors errors)
+		{
+			return (errors & ~OverloadResolutionErrors.AmbiguousMatch) == OverloadResolutionErrors.None;
+		}
+		
 		/// <summary>
 		/// Calculates applicability etc. for the candidate.
 		/// </summary>
@@ -217,6 +224,75 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				candidate.ParameterTypes[i] = type;
 			}
 			return true;
+		}
+		#endregion
+		
+		#region AddMethodLists
+		/// <summary>
+		/// Adds all candidates from the method lists.
+		/// 
+		/// This method implements the logic that causes applicable methods in derived types to hide
+		/// all methods in base types.
+		/// </summary>
+		public void AddMethodLists(IList<MethodListWithDeclaringType> methodLists)
+		{
+			if (methodLists == null)
+				throw new ArgumentNullException("methodLists");
+			// Base types come first, so go through the list backwards (derived types first)
+			bool[] isHiddenByDerivedType;
+			if (methodLists.Count > 1)
+				isHiddenByDerivedType = new bool[methodLists.Count];
+			else
+				isHiddenByDerivedType = null;
+			for (int i = methodLists.Count - 1; i >= 0; i--) {
+				if (isHiddenByDerivedType != null && isHiddenByDerivedType[i]) {
+					Log.WriteLine("  Skipping methods in {0} because they are hidden by an applicable method in a derived type", methodLists[i].DeclaringType);
+					continue;
+				}
+				
+				MethodListWithDeclaringType methodList = methodLists[i];
+				bool foundApplicableCandidateInCurrentList = false;
+				
+				for (int j = 0; j < methodList.Count; j++) {
+					IParameterizedMember method = methodList[j];
+					Log.Indent();
+					OverloadResolutionErrors errors = AddCandidate(method);
+					Log.Unindent();
+					LogCandidateAddingResult("  Candidate", method, errors);
+					
+					foundApplicableCandidateInCurrentList |= IsApplicable(errors);
+				}
+				
+				if (foundApplicableCandidateInCurrentList && i > 0) {
+					foreach (IType baseType in methodList.DeclaringType.GetAllBaseTypes(context)) {
+						for (int j = 0; j < i; j++) {
+							if (!isHiddenByDerivedType[j] && baseType.Equals(methodLists[j].DeclaringType))
+								isHiddenByDerivedType[j] = true;
+						}
+					}
+				}
+			}
+		}
+		
+		[Conditional("DEBUG")]
+		internal void LogCandidateAddingResult(string text, IParameterizedMember method, OverloadResolutionErrors errors)
+		{
+			#if DEBUG
+			StringBuilder b = new StringBuilder(text);
+			b.Append(' ');
+			b.Append(method);
+			b.Append(" = ");
+			if (errors == OverloadResolutionErrors.None)
+				b.Append("Success");
+			else
+				b.Append(errors);
+			if (this.BestCandidate == method) {
+				b.Append(" (best candidate so far)");
+			} else if (this.BestCandidateAmbiguousWith == method) {
+				b.Append(" (ambiguous)");
+			}
+			Log.WriteLine(b.ToString());
+			#endif
 		}
 		#endregion
 		
@@ -345,7 +421,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 									ConstraintsValid = false;
 								ConstraintsValid &= typeArg.GetConstructors(
 									context,
-									m => m.Parameters.Count == 0 && m.Accessibility == Accessibility.Public
+									m => m.Parameters.Count == 0 && m.Accessibility == Accessibility.Public,
+									GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions
 								).Any();
 							}
 							foreach (IType constraintType in tp.Constraints) {

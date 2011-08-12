@@ -296,7 +296,7 @@ class Color {
 			Assert.AreEqual("value", result.Variable.Name);
 		}
 		
-		[Test, Ignore("Anonymous methods not supported in resolver")]
+		[Test]
 		public void AnonymousMethodParameters()
 		{
 			string program = @"using System;
@@ -523,7 +523,7 @@ class TestClass {
 			Assert.AreEqual("C.D.Inner", trr.Type.FullName);
 		}
 		
-		[Test, Ignore("parser is broken and produces IdentifierExpression instead of PrimitiveType")]
+		[Test]
 		public void ShortMaxValueTest()
 		{
 			string program = @"using System;
@@ -767,7 +767,7 @@ namespace A {
 			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
 		}
 		
-		[Test, Ignore("Resolver Bug")]
+		[Test]
 		public void SD_1487()
 		{
 			string program = @"using System;
@@ -804,7 +804,7 @@ class Test {
 			Assert.AreEqual("System.Int32", rr.Member.ReturnType.Resolve(context).FullName);
 		}
 		
-		[Test, Ignore("Resolver bug")]
+		[Test]
 		public void MethodHidesEvent()
 		{
 			// see SD-1542
@@ -825,7 +825,7 @@ class Form {
 			Assert.AreEqual("Test.KeyDown", mgrr.Methods.Single().FullName);
 		}
 		
-		[Test, Ignore("partial classes not yet supported")]
+		[Test]
 		public void ProtectedMemberVisibleWhenBaseTypeReferenceIsInOtherPart()
 		{
 			string program = @"using System;
