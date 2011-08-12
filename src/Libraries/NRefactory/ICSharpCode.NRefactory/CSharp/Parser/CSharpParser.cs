@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpParser.cs
 //
 // Author:
@@ -1180,6 +1180,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			
+			public override object Visit (Mono.CSharp.EmptyExpression emptyExpression)
+			{
+				return new ICSharpCode.NRefactory.CSharp.EmptyExpression (Convert (emptyExpression.Location));
+			}
+			
 			public override object Visit (EmptyExpressionStatement emptyExpressionStatement)
 			{
 				return new EmptyExpression (Convert (emptyExpressionStatement.Location));
@@ -2153,8 +2158,14 @@ namespace ICSharpCode.NRefactory.CSharp
 						continue;
 					TypeParameterDeclaration tp = new TypeParameterDeclaration();
 					// TODO: attributes
-//					if (arg.Variance != Variance.None)
-//						throw new NotImplementedException(); // TODO: variance
+					switch (arg.Variance) {
+						case Variance.Covariant:
+							tp.Variance = VarianceModifier.Covariant;
+							break;
+						case Variance.Contravariant:
+							tp.Variance = VarianceModifier.Contravariant;
+							break;
+					}
 					tp.AddChild (Identifier.Create (arg.Name, Convert (arg.Location)), InvocationExpression.Roles.Identifier);
 					parent.AddChild (tp, InvocationExpression.Roles.TypeParameter);
 				}

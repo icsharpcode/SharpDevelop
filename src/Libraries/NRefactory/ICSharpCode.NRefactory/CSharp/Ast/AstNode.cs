@@ -27,6 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -661,6 +662,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (this.IsNull)
 				throw new InvalidOperationException ("Cannot add annotations to the null node");
 			base.AddAnnotation (annotation);
+		}
+		
+		internal string DebugToString()
+		{
+			if (IsNull)
+				return "Null";
+			StringWriter w = new StringWriter();
+			AcceptVisitor(new OutputVisitor(w, new CSharpFormattingOptions()), null);
+			string text = w.ToString().TrimEnd().Replace("\t", "").Replace(w.NewLine, " ");
+			if (text.Length > 100)
+				return text.Substring(0, 97) + "...";
+			else
+				return text;
 		}
 		
 		// the Root role must be available when creating the null nodes, so we can't put it in the Roles class

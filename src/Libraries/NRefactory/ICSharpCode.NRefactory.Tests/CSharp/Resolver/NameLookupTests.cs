@@ -1,11 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -191,27 +206,45 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreSame(SharedTypes.UnknownType, result.Type);
 		}
 		
-		[Test]
-		public void PropertyNameAmbiguousWithTypeName()
-		{
-			string program = @"class A {
+		const string propertyNameAmbiguousWithTypeNameProgram = @"class A {
 	public Color Color { get; set; }
 	
 	void Method() {
 		$
 	}
 }
-class Color { public static readonly Color Empty = null; }
+class Color {
+	public static readonly Color Empty = null;
+	public static int M() { }
+	public int M(int a) { }
+}
 ";
+		
+		[Test]
+		public void PropertyNameAmbiguousWithTypeName()
+		{
+			string program = propertyNameAmbiguousWithTypeNameProgram;
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program.Replace("$", "$Color$ c;"));
 			Assert.AreEqual("Color", trr.Type.Name);
 			
 			MemberResolveResult mrr = Resolve<MemberResolveResult>(program.Replace("$", "x = $Color$;"));
 			Assert.AreEqual("Color", mrr.Member.Name);
-			
+		}
+		
+		[Test]
+		public void PropertyNameAmbiguousWithTypeName_MemberAccessOnAmbiguousIdentifier()
+		{
+			string program = propertyNameAmbiguousWithTypeNameProgram;
 			Resolve<MemberResolveResult>(program.Replace("$", "$Color$ = Color.Empty;"));
 			Resolve<TypeResolveResult>(program.Replace("$", "Color = $Color$.Empty;"));
-			Resolve<MemberResolveResult>(program.Replace("$", "x = $Color$.ToString();"));
+		}
+		
+		[Test]
+		public void PropertyNameAmbiguousWithTypeName_MethodInvocationOnAmbiguousIdentifier()
+		{
+			string program = propertyNameAmbiguousWithTypeNameProgram;
+			Resolve<MemberResolveResult>(program.Replace("$", "x = $Color$.M(1);"));
+			Resolve<TypeResolveResult>(program.Replace("$", "x = $Color$.M();"));
 		}
 		
 		[Test]
@@ -263,7 +296,7 @@ class Color { public static readonly Color Empty = null; }
 			Assert.AreEqual("value", result.Variable.Name);
 		}
 		
-		[Test, Ignore("Anonymous methods not supported in resolver")]
+		[Test]
 		public void AnonymousMethodParameters()
 		{
 			string program = @"using System;
@@ -390,7 +423,7 @@ class TestClass {
 ";
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program.Replace("COL a", "$COL$ a"));
 			Assert.AreEqual("System.Collections.ArrayList", trr.Type.FullName, "COL");
-			ResolveResult rr = Resolve<ResolveResult>(program.Replace("new COL()", "$new COL()$"));
+			ResolveResult rr = Resolve<InvocationResolveResult>(program.Replace("new COL()", "$new COL()$"));
 			Assert.AreEqual("System.Collections.ArrayList", rr.Type.FullName, "a");
 		}
 		
@@ -463,7 +496,7 @@ namespace A.B {
 		
 		
 		[Test]
-		public void InnerTypeResolve ()
+		public void InnerTypeResolve1 ()
 		{
 			string program = @"public class C<T> { public class Inner { } }
 class TestClass {
@@ -474,19 +507,23 @@ class TestClass {
 ";
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("C.Inner", trr.Type.FullName);
-			
-			program = @"public class C<T> { public class D<S,U> { public class Inner { } }}
+		}
+		
+		[Test]
+		public void InnerTypeResolve2 ()
+		{
+			string program = @"public class C<T> { public class D<S,U> { public class Inner { } }}
 class TestClass {
 	void Test() {
 		$C<string>.D<int,TestClass>.Inner$ a;
 	}
 }
 ";
-			trr = Resolve<TypeResolveResult>(program);
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("C.D.Inner", trr.Type.FullName);
 		}
 		
-		[Test, Ignore("parser is broken and produces IdentifierExpression instead of PrimitiveType")]
+		[Test]
 		public void ShortMaxValueTest()
 		{
 			string program = @"using System;
@@ -521,7 +558,7 @@ class TestClass {
 			trr = Resolve<TypeResolveResult>(program.Replace("$", "$global::XX.XX$"));
 			Assert.AreEqual("XX.XX", trr.Type.FullName);
 			
-			MemberResolveResult mrr = Resolve<MemberResolveResult>(program.Replace("$", "$XX.Test()$"));
+			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$XX.Test()$"));
 			Assert.AreEqual("XX.XX.Test", mrr.Member.FullName);
 		}
 		
@@ -633,7 +670,7 @@ namespace A {
 	class BaseClass {
 		public static string Test() {}
 	}";
-			MemberResolveResult mrr = Resolve<MemberResolveResult>(program.Replace("$", "$BaseClass.Test()$"));
+			MemberResolveResult mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$BaseClass.Test()$"));
 			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
 			
 			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$Test$"));
@@ -643,7 +680,7 @@ namespace A {
 			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
 			
 			// returns BaseClass.Test because DerivedClass.Test is not invocable
-			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$DerivedClass.Test()$"));
+			mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$DerivedClass.Test()$"));
 			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
 		}
 		
@@ -730,7 +767,7 @@ namespace A {
 			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
 		}
 		
-		[Test, Ignore("Resolver Bug")]
+		[Test]
 		public void SD_1487()
 		{
 			string program = @"using System;
@@ -744,12 +781,15 @@ class C1 {
 }";
 			MemberResolveResult mrr;
 			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$Field$"));
+			Assert.IsFalse(mrr.IsError);
 			Assert.AreEqual("C1.Field", mrr.Member.FullName);
 			
 			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$C1.Field$"));
+			Assert.IsFalse(mrr.IsError);
 			Assert.AreEqual("C1.Field", mrr.Member.FullName);
 			
 			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$C2.Field$"));
+			Assert.IsFalse(mrr.IsError);
 			Assert.AreEqual("C1.Field", mrr.Member.FullName);
 		}
 		
@@ -767,7 +807,7 @@ class Test {
 			Assert.AreEqual("System.Int32", rr.Member.ReturnType.Resolve(context).FullName);
 		}
 		
-		[Test, Ignore("Resolver bug")]
+		[Test]
 		public void MethodHidesEvent()
 		{
 			// see SD-1542
@@ -788,7 +828,7 @@ class Form {
 			Assert.AreEqual("Test.KeyDown", mgrr.Methods.Single().FullName);
 		}
 		
-		[Test, Ignore("partial classes not yet supported")]
+		[Test]
 		public void ProtectedMemberVisibleWhenBaseTypeReferenceIsInOtherPart()
 		{
 			string program = @"using System;
@@ -804,6 +844,19 @@ class B
 }";
 			var mrr = Resolve<MemberResolveResult>(program);
 			Assert.AreEqual("B.x", mrr.Member.FullName);
+		}
+		
+		[Test, Ignore("Parser produces incorrect positions")]
+		public void SubstituteClassAndMethodTypeParametersAtOnce()
+		{
+			string program = @"class C<X> { static void M<T>(X a, T b) { $C<T>.M<X>$(b, a); } }";
+			var rr = Resolve<MethodGroupResolveResult>(program);
+			Assert.AreEqual("X", rr.TypeArguments.Single().Name);
+			
+			var m = (SpecializedMethod)rr.Methods.Single();
+			Assert.AreSame(rr.TypeArguments.Single(), m.TypeArguments.Single());
+			Assert.AreEqual("T", m.Parameters[0].Type.Resolve(context).Name);
+			Assert.AreEqual("X", m.Parameters[1].Type.Resolve(context).Name);
 		}
 	}
 }

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -144,9 +159,13 @@ namespace ICSharpCode.NRefactory.Demo
 		{
 			AstNode node = e.Node.Tag as AstNode;
 			if (node != null) {
-				int startOffset = GetOffset(csharpCodeTextBox, node.StartLocation);
-				int endOffset = GetOffset(csharpCodeTextBox, node.EndLocation);
-				csharpCodeTextBox.Select(startOffset, endOffset - startOffset);
+				if (node.StartLocation.IsEmpty || node.EndLocation.IsEmpty) {
+					csharpCodeTextBox.DeselectAll();
+				} else {
+					int startOffset = GetOffset(csharpCodeTextBox, node.StartLocation);
+					int endOffset = GetOffset(csharpCodeTextBox, node.EndLocation);
+					csharpCodeTextBox.Select(startOffset, endOffset - startOffset);
+				}
 			}
 		}
 		
@@ -178,9 +197,8 @@ namespace ICSharpCode.NRefactory.Demo
 		void ResolveButtonClick(object sender, EventArgs e)
 		{
 			SimpleProjectContent project = new SimpleProjectContent();
-			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(project, "dummy.cs");
-			compilationUnit.AcceptVisitor(convertVisitor, null);
-			project.UpdateProjectContent(null, convertVisitor.ParsedFile);
+			var parsedFile = new TypeSystemConvertVisitor(project, "dummy.cs").Convert(compilationUnit);
+			project.UpdateProjectContent(null, parsedFile);
 			
 			List<ITypeResolveContext> projects = new List<ITypeResolveContext>();
 			projects.Add(project);
@@ -193,7 +211,7 @@ namespace ICSharpCode.NRefactory.Demo
 				if (csharpTreeView.SelectedNode != null) {
 					navigator = new NodeListResolveVisitorNavigator(new[] { (AstNode)csharpTreeView.SelectedNode.Tag });
 				}
-				ResolveVisitor visitor = new ResolveVisitor(resolver, convertVisitor.ParsedFile, navigator);
+				ResolveVisitor visitor = new ResolveVisitor(resolver, parsedFile, navigator);
 				visitor.Scan(compilationUnit);
 				csharpTreeView.BeginUpdate();
 				ShowResolveResultsInTree(csharpTreeView.Nodes, visitor);

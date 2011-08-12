@@ -445,9 +445,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (anonymousTypeCreateExpression, data);
 		}
 		
-		public virtual S VisitArrayCreateExpression (ArrayCreateExpression arrayObjectCreateExpression, T data)
+		public virtual S VisitArrayCreateExpression (ArrayCreateExpression arrayCreateExpression, T data)
 		{
-			return VisitChildren (arrayObjectCreateExpression, data);
+			return VisitChildren (arrayCreateExpression, data);
 		}
 		
 		public virtual S VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression, T data)

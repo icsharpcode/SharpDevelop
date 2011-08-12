@@ -102,9 +102,17 @@
     <Compile Include="CSharp\Ast\GeneralScope\TypeParameterDeclaration.cs" />
     <Compile Include="CSharp\Ast\MemberType.cs" />
     <Compile Include="CSharp\Refactoring\TypeSystemAstBuilder.cs" />
+    <Compile Include="CSharp\Resolver\DetectSkippableNodesNavigator.cs" />
+    <Compile Include="CSharp\Resolver\Log.cs" />
+    <Compile Include="CSharp\Resolver\OperatorResolveResult.cs" />
+    <Compile Include="CSharp\Resolver\ConversionResolveResult.cs" />
     <Compile Include="CSharp\Resolver\CSharpAttribute.cs" />
     <Compile Include="CSharp\Resolver\ConstantValues.cs" />
+    <Compile Include="CSharp\Resolver\InvocationResolveResult.cs" />
+    <Compile Include="CSharp\Resolver\LambdaResolveResult.cs" />
     <Compile Include="CSharp\Resolver\MapTypeIntoNewContext.cs" />
+    <Compile Include="CSharp\Resolver\SimpleNameLookupMode.cs" />
+    <Compile Include="Documentation\IDStringProvider.cs" />
     <Compile Include="PatternMatching\BacktrackingInfo.cs" />
     <Compile Include="PatternMatching\Choice.cs" />
     <Compile Include="PatternMatching\AnyNode.cs" />
@@ -210,14 +218,12 @@
     <Compile Include="TypeSystem\ArrayType.cs" />
     <Compile Include="TypeSystem\ByReferenceType.cs" />
     <Compile Include="TypeSystem\CecilLoader.cs" />
-    <Compile Include="TypeSystem\ClassType.cs" />
     <Compile Include="TypeSystem\DomRegion.cs" />
     <Compile Include="TypeSystem\EntityType.cs" />
     <Compile Include="TypeSystem\ExtensionMethods.cs" />
     <Compile Include="TypeSystem\IAccessor.cs" />
     <Compile Include="TypeSystem\IAttribute.cs" />
     <Compile Include="TypeSystem\IConstantValue.cs" />
-    <Compile Include="TypeSystem\IConversions.cs" />
     <Compile Include="TypeSystem\IDocumentationProvider.cs" />
     <Compile Include="TypeSystem\IEntity.cs" />
     <Compile Include="TypeSystem\IEvent.cs" />
@@ -230,6 +236,8 @@
     <Compile Include="TypeSystem\Implementation\AbstractFreezable.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractMember.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractType.cs" />
+    <Compile Include="TypeSystem\Implementation\BaseTypeCollector.cs" />
+    <Compile Include="TypeSystem\Implementation\CompoundTypeDefinition.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultAccessor.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultAttribute.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultEvent.cs" />
@@ -241,7 +249,8 @@
     <Compile Include="TypeSystem\Implementation\DefaultTypeParameter.cs" />
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\CompositeTypeResolveContext.cs" />
-    <Compile Include="TypeSystem\Implementation\MethodTypeParameterSubstitution.cs" />
+    <Compile Include="TypeSystem\Implementation\GetMembersHelper.cs" />
+    <Compile Include="TypeSystem\Implementation\TypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\Implementation\NestedTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\ProxyTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultTypeDefinition.cs" />
@@ -250,6 +259,7 @@
     <Compile Include="TypeSystem\Implementation\SimpleProjectContent.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedEvent.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedField.cs" />
+    <Compile Include="TypeSystem\Implementation\SpecializedMember.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedMethod.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedProperty.cs" />
     <Compile Include="TypeSystem\Implementation\SubstitutionTypeReference.cs" />
@@ -275,6 +285,7 @@
     <Compile Include="TypeSystem\ParameterizedType.cs" />
     <Compile Include="TypeSystem\ParameterListComparer.cs" />
     <Compile Include="TypeSystem\ReflectionNameParseException.cs" />
+    <Compile Include="TypeSystem\TypeKind.cs" />
     <Compile Include="TypeSystem\TypeVisitor.cs" />
     <Compile Include="TypeSystem\IVariable.cs" />
     <Compile Include="TypeSystem\PointerType.cs" />
@@ -374,7 +385,6 @@
     <Compile Include="CSharp\Refactoring\NodeSelectionAction.cs" />
     <Compile Include="CSharp\Refactoring\RefactoringContext.cs" />
     <Compile Include="CSharp\Refactoring\Script.cs" />
-    <Compile Include="CSharp\Refactoring\StringBuilderOutputFormatter.cs" />
     <Compile Include="CSharp\Refactoring\TextReplaceAction.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\AddAnotherAccessor.cs" />
     <Compile Include="CSharp\Refactoring\ContextAction\CheckIfParameterIsNull.cs" />
