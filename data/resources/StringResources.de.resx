@@ -298,6 +298,15 @@ Laden Sie ein AddIn aus dem Internet herunter, klicken Sie auf "AddIn installier
   <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
     <value>Zahlensystem</value>
   </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
+    <value>Dezimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Hexadecimal" xml:space="preserve">
+    <value>Hexadezimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Octal" xml:space="preserve">
+    <value>Oktal</value>
+  </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Größe an aktuelle Breite anpassen</value>
   </data>

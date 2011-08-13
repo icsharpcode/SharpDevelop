@@ -4286,7 +4286,7 @@ Noot: Dit beïnvloed eigen aangepaste opmaak niet.</value>
     <value>${CurrentMethodNumber} van ${NumberOfTotalMethods}</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage" xml:space="preserve">
-    <value>Bestand ${File} is extern gewijzigd. Wilt u deze opnieuw laden?</value>
+    <value>Bestand ${File} is extern gewijzigd. Wilt u het herladen?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ForwardsSearchStatusBarMessage" xml:space="preserve">
     <value>Aanvullend zoeken:</value>
@@ -4809,6 +4809,9 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
     <value>Oplossing opnieuw laden</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
+    <value>De oplossing is extern gewijzigd.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Converteer geselecteerde &amp;projecten naar</value>
