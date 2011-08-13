@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
@@ -31,6 +32,12 @@ namespace AspNet.Mvc.Tests
 			return node;
 		}
 		
+		ProjectNode CreateProjectNode()
+		{
+			var project = TestableProject.CreateProject();
+			return new ProjectNode(project);
+		}
+		
 		[Test]
 		public void IsValid_NullOwnerIsPassed_ReturnsFalse()
 		{
@@ -46,6 +53,15 @@ namespace AspNet.Mvc.Tests
 			bool valid = IsValid(owner);
 			
 			Assert.IsTrue(valid);
+		}
+		
+		[Test]
+		public void IsValid_ProjectNodePassed_ReturnsFalse()
+		{
+			ProjectNode owner = CreateProjectNode();
+			bool valid = IsValid(owner);
+			
+			Assert.IsFalse(valid);
 		}
 	}
 }
