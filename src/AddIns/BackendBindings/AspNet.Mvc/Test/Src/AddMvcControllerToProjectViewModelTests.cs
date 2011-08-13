@@ -89,7 +89,7 @@ namespace AspNet.Mvc.Tests
 			fakeSelectedMvcControllerFolder.TemplateLanguage = MvcTextTemplateLanguage.VisualBasic;
 			viewModel.AddMvcController();
 			
-			MvcTextTemplateLanguage templateLanguage = fakeControllerGenerator.Language;
+			MvcTextTemplateLanguage templateLanguage = fakeControllerGenerator.TemplateLanguage;
 			
 			Assert.AreEqual(MvcTextTemplateLanguage.VisualBasic, templateLanguage);
 		}
@@ -100,7 +100,7 @@ namespace AspNet.Mvc.Tests
 			CreateViewModelWithCSharpProject();
 			viewModel.AddMvcController();
 			
-			MvcTextTemplateLanguage templateLanguage = fakeControllerGenerator.Language;
+			MvcTextTemplateLanguage templateLanguage = fakeControllerGenerator.TemplateLanguage;
 			
 			Assert.AreEqual(MvcTextTemplateLanguage.CSharp, templateLanguage);
 		}

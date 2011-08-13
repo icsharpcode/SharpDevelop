@@ -42,7 +42,17 @@ namespace AspNet.Mvc.Tests
 		void ProjectPassedToGeneratorIsCSharpProject()
 		{
 			projectUsedByGenerator.SetLanguage("C#");
-			generator.Language = MvcTextTemplateLanguage.CSharp;			
+			generator.TemplateLanguage = MvcTextTemplateLanguage.CSharp;			
+		}
+		
+		void SelectAspxTemplate()
+		{
+			generator.TemplateType = MvcTextTemplateType.Aspx;
+		}
+		
+		void SelectRazorTemplate()
+		{
+			generator.TemplateType = MvcTextTemplateType.Razor;
 		}
 		
 		void GenerateFile()
@@ -86,10 +96,11 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void GenerateFile_CSharpEmptyViewTemplate_OutputFileGeneratedUsingFileNamePassedToGenerator()
+		public void GenerateFile_CSharpEmptyAspxViewTemplate_OutputFileGeneratedUsingFileNamePassedToGenerator()
 		{
 			CreateGenerator();
 			ProjectPassedToGeneratorIsCSharpProject();
+			SelectAspxTemplate();
 			
 			string viewFolder = @"d:\projects\MyProject\Views\Home";
 			string viewName = "Index";
@@ -103,12 +114,13 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void GenerateFile_CSharpEmptyViewTemplate_TemplateFileUsedIsIsCSharpEmptyViewTemplate()
+		public void GenerateFile_CSharpEmptyAspxViewTemplate_TemplateFileUsedIsIsCSharpEmptyAspxViewTemplate()
 		{
 			string templateRootDirectory = @"d:\SharpDev\AddIns\AspNet.Mvc";
 			CreateTemplateRepository(templateRootDirectory);
 			CreateGenerator(templateRepository);
 			ProjectPassedToGeneratorIsCSharpProject();
+			SelectAspxTemplate();
 			
 			GenerateFile();
 			
@@ -130,6 +142,24 @@ namespace AspNet.Mvc.Tests
 			GenerateFile(viewFolder, viewName);
 		
 			Assert.AreEqual("About", fakeHost.ViewName);
+		}
+		
+		[Test]
+		public void GenerateFile_CSharpEmptyRazorViewTemplate_TemplateFileUsedIsIsCSharpRazorEmptyViewTemplate()
+		{
+			string templateRootDirectory = @"d:\SharpDev\AddIns\AspNet.Mvc";
+			CreateTemplateRepository(templateRootDirectory);
+			CreateGenerator(templateRepository);
+			ProjectPassedToGeneratorIsCSharpProject();
+			SelectRazorTemplate();
+			
+			GenerateFile();
+			
+			string inputFileName = fakeHost.InputFilePassedToProcessTemplate;
+			string expectedInputFileName = 
+				@"d:\SharpDev\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.tt";
+			
+			Assert.AreEqual(expectedInputFileName, inputFileName);
 		}
 	}
 }

@@ -44,7 +44,17 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		protected override string GetTextTemplateFileName()
 		{
-			return textTemplateRepository.GetMvcControllerTextTemplateFileName(Language, "Controller");
+			MvcTextTemplateCriteria templateCriteria = GetTextTemplateCriteria();
+			return textTemplateRepository.GetMvcControllerTextTemplateFileName(templateCriteria);
+		}
+		
+		MvcTextTemplateCriteria GetTextTemplateCriteria()
+		{
+			return new MvcTextTemplateCriteria() {
+				TemplateLanguage = TemplateLanguage,
+				TemplateName = "Controller",
+				TemplateType = MvcTextTemplateType.Aspx
+			};
 		}
 	}
 }

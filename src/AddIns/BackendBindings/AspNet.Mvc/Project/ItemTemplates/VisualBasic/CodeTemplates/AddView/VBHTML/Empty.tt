@@ -1,13 +1,12 @@
 ﻿<#@ template language="VB" HostSpecific="true" #>
-<#@ output extension=".aspx" #>
+<#@ output extension=".vbhtml" #>
 <#
 	Dim mvcHost As MvcTextTemplateHost = DirectCast(Host, MvcTextTemplateHost)
 #>
-<%@ Page Language="VB" Inherits="System.Web.Mvc.ViewPage" %>
 
 <!DOCTYPE html>
 <html>
-	<head runat="server">
+	<head>
 		<title><#= mvcHost.ViewName #></title>
 	</head>
 	<body>

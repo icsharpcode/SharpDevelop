@@ -8,16 +8,19 @@ namespace ICSharpCode.AspNet.Mvc
 {
 	public class MvcViewTextTemplateFileName : MvcTextTemplateFileName
 	{
+		MvcAddViewTextTemplateFolder folder;
+		
 		public MvcViewTextTemplateFileName(
 			string textTemplatesRootDirectory,
-			MvcTextTemplateLanguage language,
-			string templateName)
-			: base(textTemplatesRootDirectory, language, templateName)
+			MvcTextTemplateCriteria templateCriteria)
+			: base(textTemplatesRootDirectory, templateCriteria)
 		{
+			this.folder = new MvcAddViewTextTemplateFolder(templateCriteria);
 		}
 		
-		protected override string LanguageSubdirectoryFormatString {
-			get { return "{0}\\CodeTemplates\\AddView\\Aspx{0}"; }
+		protected override string GetCodeTemplatesSubFolder()
+		{
+			return folder.Name;
 		}
 	}
 }

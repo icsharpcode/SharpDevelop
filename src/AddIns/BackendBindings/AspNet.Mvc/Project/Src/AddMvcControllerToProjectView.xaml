@@ -5,7 +5,7 @@
 	xmlns:mvc="clr-namespace:ICSharpCode.AspNet.Mvc"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="Add Controller"
- 	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
+		Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
 	mvc:CloseWindowBehaviour.IsClosed="{Binding IsClosed}"
 	WindowStartupLocation="CenterOwner"
 	FocusManager.FocusedElement="{Binding ElementName=ControllerNameTextBox}"

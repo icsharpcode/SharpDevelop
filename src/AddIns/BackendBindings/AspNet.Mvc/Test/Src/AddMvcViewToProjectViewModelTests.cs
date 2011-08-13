@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
 using ICSharpCode.SharpDevelop.Project;
@@ -45,6 +46,36 @@ namespace AspNet.Mvc.Tests
 			viewModel.PropertyChanged += (source, e) => propertyChangedEvents.Add(e.PropertyName);
 		}
 		
+		bool ViewModelHasViewEngine(string viewTypeName)
+		{
+			return viewModel.ViewEngines.Any(v => v.Name == viewTypeName);
+		}
+		
+		MvcViewEngineViewModel GetViewEngineFromViewModel(string viewTypeName)
+		{
+			return viewModel.ViewEngines.SingleOrDefault(v => v.Name == viewTypeName);
+		}
+		
+		void CSharpProjectSelected()
+		{
+			fakeSelectedMvcViewFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
+		}
+		
+		void VisualBasicProjectSelected()
+		{
+			fakeSelectedMvcViewFolder.TemplateLanguage = MvcTextTemplateLanguage.VisualBasic;
+		}
+		
+		void SelectAspxViewEngine()
+		{
+			viewModel.SelectedViewEngine = GetViewEngineFromViewModel("ASPX");
+		}
+		
+		void SelectRazorViewEngine()
+		{
+			viewModel.SelectedViewEngine = GetViewEngineFromViewModel("Razor");
+		}
+		
 		[Test]
 		public void AddMvcViewCommand_ExecutedWhenViewNameSpecified_MvcViewIsGenerated()
 		{
@@ -78,7 +109,7 @@ namespace AspNet.Mvc.Tests
 			fakeSelectedMvcViewFolder.TemplateLanguage = MvcTextTemplateLanguage.VisualBasic;
 			viewModel.AddMvcView();
 			
-			MvcTextTemplateLanguage templateLanguage = fakeViewGenerator.Language;
+			MvcTextTemplateLanguage templateLanguage = fakeViewGenerator.TemplateLanguage;
 			
 			Assert.AreEqual(MvcTextTemplateLanguage.VisualBasic, templateLanguage);
 		}
@@ -90,7 +121,7 @@ namespace AspNet.Mvc.Tests
 			fakeSelectedMvcViewFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
 			viewModel.AddMvcView();
 			
-			MvcTextTemplateLanguage templateLanguage = fakeViewGenerator.Language;
+			MvcTextTemplateLanguage templateLanguage = fakeViewGenerator.TemplateLanguage;
 			
 			Assert.AreEqual(MvcTextTemplateLanguage.CSharp, templateLanguage);
 		}
@@ -190,6 +221,128 @@ namespace AspNet.Mvc.Tests
 			bool canExecute = viewModel.AddMvcViewCommand.CanExecute(null);
 			
 			Assert.IsTrue(canExecute);
+		}
+		
+		[Test]
+		public void ViewEngines_RazorAndAspxViewEngines_ContainsRazorViewEngine()
+		{
+			CreateViewModel();
+			
+			bool contains = ViewModelHasViewEngine("Razor");
+			
+			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void ViewTypes_RazorAndAspxViewEngines_RazorViewEngineViewModelHasRazorTemplateType()
+		{
+			CreateViewModel();
+			
+			MvcViewEngineViewModel viewEngine = GetViewEngineFromViewModel("Razor");
+			
+			Assert.AreEqual(MvcTextTemplateType.Razor, viewEngine.TemplateType);
+		}
+		
+		[Test]
+		public void ViewEngines_RazorAndAspxViewTypes_ContainsAspxViewType()
+		{
+			CreateViewModel();
+			
+			bool contains = ViewModelHasViewEngine("ASPX");
+			
+			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void ViewEngines_RazorAndAspxViewEngines_AspxViewEngineViewModelHasAspxTemplateType()
+		{
+			CreateViewModel();
+			
+			MvcViewEngineViewModel viewEngine = GetViewEngineFromViewModel("ASPX");
+			
+			Assert.AreEqual(MvcTextTemplateType.Aspx, viewEngine.TemplateType);
+		}
+		
+		[Test]
+		public void ViewEngines_RazorAndAspxViewEngines_FirstViewEngineInListIsAspxViewEngine()
+		{
+			CreateViewModel();
+			
+			MvcViewEngineViewModel viewEngine = viewModel.ViewEngines.First();
+			
+			Assert.AreEqual(MvcTextTemplateType.Aspx, viewEngine.TemplateType);
+		}
+		
+		[Test]
+		public void SelectedViewEngine_RazorAndAspxViewEngines_ReturnsAspxByDefault()
+		{
+			CreateViewModel();
+			
+			MvcViewEngineViewModel viewEngine = viewModel.SelectedViewEngine;
+			
+			Assert.AreEqual(MvcTextTemplateType.Aspx, viewEngine.TemplateType);			
+		}
+		
+		[Test]
+		public void AddMvcView_CSharpProjectAndRazorViewEngineIsSelected_CSharpRazorViewFileNamePassedToGenerator()
+		{
+			CreateViewModelWithViewFolderPath(@"d:\projects\MyProject\Views\Home");
+			viewModel.ViewName = "Index";
+			CSharpProjectSelected();
+			SelectRazorViewEngine();
+			viewModel.AddMvcView();
+			
+			MvcViewFileName viewFileName = fakeViewGenerator.FileNamePassedToGenerateFile;
+			string fileName = viewFileName.GetPath();
+			string expectedFileName = @"d:\projects\MyProject\Views\Home\Index.cshtml";
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void AddMvcView_VisualBasicProjectAndRazorViewEngineIsSelected_VisualBasicRazorViewFileNamePassedToGenerator()
+		{
+			CreateViewModelWithViewFolderPath(@"d:\projects\MyProject\Views\Home");
+			viewModel.ViewName = "Index";
+			VisualBasicProjectSelected();
+			SelectRazorViewEngine();
+			viewModel.AddMvcView();
+			
+			MvcViewFileName viewFileName = fakeViewGenerator.FileNamePassedToGenerateFile;
+			string fileName = viewFileName.GetPath();
+			string expectedFileName = @"d:\projects\MyProject\Views\Home\Index.vbhtml";
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void AddMvcView_RazorViewEngineIsSelected_RazorViewFileGenerated()
+		{
+			CreateViewModel();
+			fakeViewGenerator.TemplateType = MvcTextTemplateType.Aspx;
+			CSharpProjectSelected();
+			viewModel.ViewName = "Index";
+			SelectRazorViewEngine();
+			viewModel.AddMvcView();
+			
+			MvcTextTemplateType templateType = fakeViewGenerator.TemplateType;
+			
+			Assert.AreEqual(MvcTextTemplateType.Razor, templateType);
+		}
+		
+		[Test]
+		public void AddMvcView_AspxViewEngineIsSelected_AspxViewFileGenerated()
+		{
+			CreateViewModel();
+			fakeViewGenerator.TemplateType = MvcTextTemplateType.Razor;
+			CSharpProjectSelected();
+			viewModel.ViewName = "Index";
+			SelectAspxViewEngine();
+			viewModel.AddMvcView();
+			
+			MvcTextTemplateType templateType = fakeViewGenerator.TemplateType;
+			
+			Assert.AreEqual(MvcTextTemplateType.Aspx, templateType);
 		}
 	}
 }

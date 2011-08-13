@@ -41,7 +41,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		string GetFileExtension()
 		{
-			return MvcTextTemplateLanguageFileNameExtension.GetFileExtension(Language);
+			return MvcTextTemplateFileNameExtension.GetControllerFileExtension(Language);
 		}
 		
 		public bool HasValidControllerName()

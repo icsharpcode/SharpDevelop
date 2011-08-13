@@ -23,10 +23,14 @@ namespace ICSharpCode.AspNet.Mvc
 			viewName = ConvertToEmptyStringIfNull(viewName);
 		}
 		
+		public MvcTextTemplateType TemplateType { get; set; }
+		public MvcTextTemplateLanguage TemplateLanguage { get; set; }
+		
 		public override string GetFileName()
 		{
 			string viewName = GetViewName();
-			return viewName + ".aspx";
+			string viewFileExtension = GetViewFileExtension();
+			return viewName + viewFileExtension;
 		}
 		
 		string GetViewName()
@@ -35,6 +39,11 @@ namespace ICSharpCode.AspNet.Mvc
 				return viewName;
 			}
 			return "View1";
+		}
+		
+		string GetViewFileExtension()
+		{
+			return MvcTextTemplateFileNameExtension.GetViewFileExtension(TemplateType, TemplateLanguage);
 		}
 		
 		public bool HasValidViewName()

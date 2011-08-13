@@ -42,7 +42,7 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			MvcTextTemplateLanguage language = GetTemplateLanguage();
 			controllerFileName.Language = language;
-			controllerGenerator.Language = language;
+			controllerGenerator.TemplateLanguage = language;
 		}
 		
 		MvcTextTemplateLanguage GetTemplateLanguage()

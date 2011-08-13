@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Input;
 
@@ -14,6 +15,8 @@ namespace ICSharpCode.AspNet.Mvc
 		IMvcFileService fileService;
 		MvcViewFileName viewFileName = new MvcViewFileName();
 		bool closed;
+		List<MvcViewEngineViewModel> viewEngines;
+		MvcViewEngineViewModel selectedViewEngine;
 		
 		public AddMvcViewToProjectViewModel(ISelectedMvcFolder selectedViewFolder)
 			: this(
@@ -34,6 +37,7 @@ namespace ICSharpCode.AspNet.Mvc
 			this.viewFileName.Folder = selectedViewFolder.Path;
 			
 			CreateCommands();
+			AddViewEngines();
 		}
 		
 		void CreateCommands()
@@ -56,6 +60,48 @@ namespace ICSharpCode.AspNet.Mvc
 			}
 		}
 		
+		void AddViewEngines()
+		{
+			viewEngines = new List<MvcViewEngineViewModel>();
+			AddAspxViewEngine();
+			AddRazorViewEngine();
+			SelectAspxViewEngine();
+		}
+		
+		void AddAspxViewEngine()
+		{
+			var viewType = new MvcViewEngineViewModel("ASPX", MvcTextTemplateType.Aspx);
+			AddViewEngine(viewType);
+		}
+		
+		void AddRazorViewEngine()
+		{
+			var viewType = new MvcViewEngineViewModel("Razor", MvcTextTemplateType.Razor);
+			AddViewEngine(viewType);
+		}
+		
+		void AddViewEngine(MvcViewEngineViewModel viewEngine)
+		{
+			viewEngines.Add(viewEngine);			
+		}
+		
+		void SelectAspxViewEngine()
+		{
+			SelectedViewEngine = viewEngines[0];
+		}
+		
+		public IEnumerable<MvcViewEngineViewModel> ViewEngines {
+			get { return viewEngines; }
+		}
+		
+		public MvcViewEngineViewModel SelectedViewEngine {
+			get { return selectedViewEngine; }
+			set {
+				selectedViewEngine = value;
+				viewFileName.TemplateType = selectedViewEngine.TemplateType;
+			}
+		}
+		
 		public bool CanAddMvcView()
 		{
 			return viewFileName.HasValidViewName();
@@ -72,13 +118,15 @@ namespace ICSharpCode.AspNet.Mvc
 		void GenerateMvcViewFile()
 		{
 			ConfigureMvcViewGenerator();
+			viewFileName.TemplateLanguage = GetTemplateLanguage();
 			viewGenerator.GenerateFile(viewFileName);
 		}
 		
 		void ConfigureMvcViewGenerator()
 		{
-			viewGenerator.Language = GetTemplateLanguage();
 			viewGenerator.Project = selectedViewFolder.Project;
+			viewGenerator.TemplateLanguage = GetTemplateLanguage();
+			viewGenerator.TemplateType = selectedViewEngine.TemplateType;
 		}
 		
 		MvcTextTemplateLanguage GetTemplateLanguage()

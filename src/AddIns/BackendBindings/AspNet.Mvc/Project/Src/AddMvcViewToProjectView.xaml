@@ -5,7 +5,7 @@
 	xmlns:mvc="clr-namespace:ICSharpCode.AspNet.Mvc"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="Add View"
- 	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
+	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
 	mvc:CloseWindowBehaviour.IsClosed="{Binding IsClosed}"
 	WindowStartupLocation="CenterOwner"
 	FocusManager.FocusedElement="{Binding ElementName=ViewNameTextBox}"
@@ -14,36 +14,52 @@
 	
 	<Window.Resources>
 		<Style TargetType="Button" BasedOn="{x:Static core:GlobalStyles.ButtonStyle}"/>
+
+		<DataTemplate x:Key="ViewEngineTemplate">
+    		<TextBlock Text="{Binding Name}"/>
+    	</DataTemplate>
 	</Window.Resources>
 	
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
+		
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
 	
-		<Grid>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="*"/>
-			</Grid.ColumnDefinitions>
-			
-			<TextBlock
-				Margin="4"
-				FontWeight="Bold"
-				Text="View Name:"/>
-			<TextBox
-				x:Name="ViewNameTextBox"
-				Grid.Column="1"
-				Text="{Binding Path=ViewName, UpdateSourceTrigger=PropertyChanged}"/>
-		</Grid>
+		<TextBlock
+			Margin="4"
+			Text="View Name:"/>
+		<TextBox
+			x:Name="ViewNameTextBox"
+			Grid.Column="1"
+			Margin="2"
+			Text="{Binding Path=ViewName, UpdateSourceTrigger=PropertyChanged}"/>
 	
+		<TextBlock
+			Grid.Row="1"
+			Margin="4"
+			Text="View Engine:"/>
+		<ComboBox
+			Margin="2"
+			Grid.Row="1"
+			Grid.Column="1"
+			ItemsSource="{Binding Path=ViewEngines}"
+			ItemTemplate="{StaticResource ViewEngineTemplate}"
+			SelectedItem="{Binding Path=SelectedViewEngine}"/>
+		
 		<StackPanel
 			Orientation="Horizontal"
 			HorizontalAlignment="Right"
 			Margin="4"
-			Grid.Row="2">
+			Grid.ColumnSpan="2"
+			Grid.Row="3">
 			<Button
 				Margin="2, 0"
 				Content="_Add"

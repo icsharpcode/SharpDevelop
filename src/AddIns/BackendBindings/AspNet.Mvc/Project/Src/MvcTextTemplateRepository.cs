@@ -26,19 +26,15 @@ namespace ICSharpCode.AspNet.Mvc
 			this.textTemplatesRootDirectory = Path.Combine(mvcAddInPath, "ItemTemplates");
 		}
 		
-		public string GetMvcViewTextTemplateFileName(
-			MvcTextTemplateLanguage language,
-			string templateName)
+		public string GetMvcViewTextTemplateFileName(MvcTextTemplateCriteria templateCriteria)
 		{
-			var fileName = new MvcViewTextTemplateFileName(textTemplatesRootDirectory, language, templateName);
+			var fileName = new MvcViewTextTemplateFileName(textTemplatesRootDirectory, templateCriteria);
 			return fileName.GetPath();
 		}
 		
-		public string GetMvcControllerTextTemplateFileName(
-			MvcTextTemplateLanguage language, 
-			string templateName)
+		public string GetMvcControllerTextTemplateFileName(MvcTextTemplateCriteria templateCriteria)
 		{
-			var fileName = new MvcControllerTextTemplateFileName(textTemplatesRootDirectory, language, templateName);
+			var fileName = new MvcControllerTextTemplateFileName(textTemplatesRootDirectory, templateCriteria);
 			return fileName.GetPath();
 		}
 	}

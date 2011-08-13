@@ -8,43 +8,43 @@ namespace ICSharpCode.AspNet.Mvc
 {
 	public abstract class MvcTextTemplateFileName
 	{
-		string textTemplatesRootDirectory;
-		MvcTextTemplateLanguage language;
-		string templateName;
+		string textTemplatesRootFolder;
+		MvcTextTemplateCriteria templateCriteria;
 		
 		public MvcTextTemplateFileName(
-			string textTemplatesRootDirectory,
-			MvcTextTemplateLanguage language,
-			string templateName)
+			string textTemplatesRootFolder,
+			MvcTextTemplateCriteria templateCriteria)
 		{
-			this.textTemplatesRootDirectory = textTemplatesRootDirectory;
-			this.language = language;
-			this.templateName = templateName;
+			this.textTemplatesRootFolder = textTemplatesRootFolder;
+			this.templateCriteria = templateCriteria;
 		}
 		
 		public string GetPath()
 		{
 			string fileName = GetTemplateFileName();
-			string directory = GetTemplateDirectory(language);
+			string directory = GetTemplateFolder();
 			return Path.Combine(directory, fileName);
 		}
 		
 		string GetTemplateFileName()
 		{
-			return templateName + ".tt";
+			return templateCriteria.TemplateName + ".tt";
 		}
 		
-		string GetTemplateDirectory(MvcTextTemplateLanguage language)
+		string GetTemplateFolder()
 		{
-			string languageSubdirectory = GetLanguageSubdirectory(language);
-			return Path.Combine(textTemplatesRootDirectory, languageSubdirectory);
+			string codeTemplatesDirectory = GetCodeTemplatesFolder();
+			string subFolder = GetCodeTemplatesSubFolder();
+			return Path.Combine(codeTemplatesDirectory, subFolder);
 		}
 		
-		string GetLanguageSubdirectory(MvcTextTemplateLanguage language)
+		string GetCodeTemplatesFolder()
 		{
-			return String.Format(LanguageSubdirectoryFormatString, language.ToString());
+			MvcTextTemplateLanguage language = templateCriteria.TemplateLanguage;
+			string subFolder = String.Format("{0}\\CodeTemplates", language.ToString());
+			return Path.Combine(textTemplatesRootFolder, subFolder);
 		}
 		
-		protected abstract string LanguageSubdirectoryFormatString { get; }
+		protected abstract string GetCodeTemplatesSubFolder();
 	}
 }

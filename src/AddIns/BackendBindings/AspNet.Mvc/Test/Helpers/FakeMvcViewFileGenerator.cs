@@ -9,7 +9,8 @@ namespace AspNet.Mvc.Tests.Helpers
 {
 	public class FakeMvcViewFileGenerator : IMvcViewFileGenerator
 	{
-		public MvcTextTemplateLanguage Language { get; set; }
+		public MvcTextTemplateLanguage TemplateLanguage { get; set; }
+		public MvcTextTemplateType TemplateType { get; set; }
 		public IProject Project { get; set; }
 		
 		public bool IsGenerateFileCalled;

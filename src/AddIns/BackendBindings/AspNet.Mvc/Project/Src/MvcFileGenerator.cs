@@ -16,7 +16,7 @@ namespace ICSharpCode.AspNet.Mvc
 			this.hostFactory = hostFactory;
 		}
 		
-		public MvcTextTemplateLanguage Language { get; set; }
+		public MvcTextTemplateLanguage TemplateLanguage { get; set; }
 		public IProject Project { get; set; }
 		
 		public void GenerateFile(MvcFileName fileName)

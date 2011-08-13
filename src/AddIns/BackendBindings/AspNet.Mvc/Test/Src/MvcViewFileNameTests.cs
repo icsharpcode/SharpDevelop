@@ -21,6 +21,8 @@ namespace AspNet.Mvc.Tests
 		public void ToString_ViewNameAndViewFolderSpecified_ReturnsViewFileNameGeneratedFromViewNameAndFolder()
 		{
 			CreateFileName();
+			mvcViewFileName.TemplateType = MvcTextTemplateType.Aspx;
+			mvcViewFileName.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
 			mvcViewFileName.ViewName = "Index";
 			mvcViewFileName.Folder = @"d:\projects\MyAspProject\Views\About";
 			
@@ -46,6 +48,8 @@ namespace AspNet.Mvc.Tests
 		public void GetPath_ViewNameIsNull_ReturnsView1AsFileNameAndUsesViewFolder()
 		{
 			CreateFileName();
+			mvcViewFileName.TemplateType = MvcTextTemplateType.Aspx;
+			mvcViewFileName.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
 			mvcViewFileName.Folder = @"d:\projects\MyProject\Views\Home";
 			mvcViewFileName.ViewName = null;
 			
@@ -81,12 +85,44 @@ namespace AspNet.Mvc.Tests
 		public void GetFileName_ViewNameAndViewFolderSpecified_ReturnsViewNameWithExtensionButNoFolderPath()
 		{
 			CreateFileName();
+			mvcViewFileName.TemplateType = MvcTextTemplateType.Aspx;
+			mvcViewFileName.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
 			mvcViewFileName.Folder = @"d:\projects\myproject\Views";
 			mvcViewFileName.ViewName = "Index";
 			
 			string fileName = mvcViewFileName.GetFileName();
 			
 			Assert.AreEqual("Index.aspx", fileName);
+		}
+		
+		[Test]
+		public void GetPath_CSharpRazor_ReturnsCSharpRazorFileName()
+		{
+			CreateFileName();
+			mvcViewFileName.TemplateType = MvcTextTemplateType.Razor;
+			mvcViewFileName.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
+			mvcViewFileName.ViewName = "Index";
+			mvcViewFileName.Folder = @"d:\projects\MyAspProject\Views\About";
+			
+			string fileName = mvcViewFileName.GetPath();
+			string expectedFileName = @"d:\projects\MyAspProject\Views\About\Index.cshtml";
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void GetPath_VisualBasicRazor_ReturnsVisualBasicRazorFileName()
+		{
+			CreateFileName();
+			mvcViewFileName.TemplateType = MvcTextTemplateType.Razor;
+			mvcViewFileName.TemplateLanguage = MvcTextTemplateLanguage.VisualBasic;
+			mvcViewFileName.ViewName = "Index";
+			mvcViewFileName.Folder = @"d:\projects\MyAspProject\Views\About";
+			
+			string fileName = mvcViewFileName.GetPath();
+			string expectedFileName = @"d:\projects\MyAspProject\Views\About\Index.vbhtml";
+			
+			Assert.AreEqual(expectedFileName, fileName);
 		}
 	}
 }

@@ -22,7 +22,13 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateRepositoryWithAspNetMvcAddInDirectory(@"C:\SD\AddIns\AspNet.Mvc");
 			
-			string fileName = repository.GetMvcViewTextTemplateFileName(MvcTextTemplateLanguage.CSharp, "Empty");
+			var templateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = MvcTextTemplateLanguage.CSharp,
+				TemplateName = "Empty",
+				TemplateType = MvcTextTemplateType.Aspx
+			};
+			
+			string fileName = repository.GetMvcViewTextTemplateFileName(templateCriteria);
 			
 			string expectedFileName = 
 				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt";
@@ -35,7 +41,13 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateRepositoryWithAspNetMvcAddInDirectory(@"C:\SD\AddIns\AspNet.Mvc");
 			
-			string fileName = repository.GetMvcViewTextTemplateFileName(MvcTextTemplateLanguage.VisualBasic, "Empty");
+			var templateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = MvcTextTemplateLanguage.VisualBasic,
+				TemplateName = "Empty",
+				TemplateType = MvcTextTemplateType.Aspx
+			};
+			
+			string fileName = repository.GetMvcViewTextTemplateFileName(templateCriteria);
 			
 			string expectedFileName = 
 				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Empty.tt";
@@ -48,7 +60,13 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateRepositoryWithAspNetMvcAddInDirectory(@"C:\SD\AddIns\AspNet.Mvc");
 			
-			string fileName = repository.GetMvcControllerTextTemplateFileName(MvcTextTemplateLanguage.CSharp, "Controller");
+				var templateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = MvcTextTemplateLanguage.CSharp,
+				TemplateName = "Controller",
+				TemplateType = MvcTextTemplateType.Aspx
+			};
+
+			string fileName = repository.GetMvcControllerTextTemplateFileName(templateCriteria);
 			
 			string expectedFileName = 
 				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddController\Controller.tt";
@@ -61,10 +79,73 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateRepositoryWithAspNetMvcAddInDirectory(@"C:\SD\AddIns\AspNet.Mvc");
 			
-			string fileName = repository.GetMvcControllerTextTemplateFileName(MvcTextTemplateLanguage.VisualBasic, "Controller");
+			var templateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = MvcTextTemplateLanguage.VisualBasic,
+				TemplateName = "Controller",
+				TemplateType = MvcTextTemplateType.Aspx
+			};
+			
+			string fileName = repository.GetMvcControllerTextTemplateFileName(templateCriteria);
 			
 			string expectedFileName = 
 				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddController\Controller.tt";
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void GetMvcViewTextTemplateFileName_CSharpEmptyRazorTemplateRequested_ReturnsFileNameToCSharpEmptyRazorTextTemplate()
+		{
+			CreateRepositoryWithAspNetMvcAddInDirectory(@"C:\SD\AddIns\AspNet.Mvc");
+			
+			var templateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = MvcTextTemplateLanguage.CSharp,
+				TemplateName = "Empty",
+				TemplateType = MvcTextTemplateType.Razor
+			};
+			
+			string fileName = repository.GetMvcViewTextTemplateFileName(templateCriteria);
+			
+			string expectedFileName = 
+				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.tt";
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void GetMvcViewTextTemplateFileName_VisualBasicEmptyRazorTemplateRequested_ReturnsFileNameToVisualBasicEmptyRazorTextTemplate()
+		{
+			CreateRepositoryWithAspNetMvcAddInDirectory(@"C:\SD\AddIns\AspNet.Mvc");
+			
+			var templateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = MvcTextTemplateLanguage.VisualBasic,
+				TemplateName = "Empty",
+				TemplateType = MvcTextTemplateType.Razor
+			};
+			
+			string fileName = repository.GetMvcViewTextTemplateFileName(templateCriteria);
+			
+			string expectedFileName = 
+				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Empty.tt";
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void GetMvcControllerTextTemplateFileName_RazorCSharpControllerTemplateRequested_ReturnsFileNameToCSharpControllerTextTemplate()
+		{
+			CreateRepositoryWithAspNetMvcAddInDirectory(@"C:\SD\AddIns\AspNet.Mvc");
+			
+			var templateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = MvcTextTemplateLanguage.CSharp,
+				TemplateName = "Controller",
+				TemplateType = MvcTextTemplateType.Razor
+			};
+			
+			string fileName = repository.GetMvcControllerTextTemplateFileName(templateCriteria);
+			
+			string expectedFileName = 
+				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddController\Controller.tt";
 			
 			Assert.AreEqual(expectedFileName, fileName);
 		}

@@ -71,22 +71,29 @@
     <Compile Include="Src\IsMvcControllerFolderSelectedConditionEvaluator.cs" />
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluator.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\MvcAddViewTextTemplateFolder.cs" />
     <Compile Include="Src\MvcControllerFileGenerator.cs" />
     <Compile Include="Src\MvcControllerFileName.cs" />
     <Compile Include="Src\MvcControllerTextTemplateFileName.cs" />
     <Compile Include="Src\MvcFileGenerator.cs" />
     <Compile Include="Src\MvcFileName.cs" />
     <Compile Include="Src\MvcFileService.cs" />
+    <Compile Include="Src\MvcTextTemplateCriteria.cs" />
     <Compile Include="Src\MvcTextTemplateFileName.cs" />
     <Compile Include="Src\MvcTextTemplateHost.cs" />
     <Compile Include="Src\MvcTextTemplateHostFactory.cs" />
     <Compile Include="Src\MvcTextTemplateLanguage.cs" />
     <Compile Include="Src\MvcTextTemplateLanguageConverter.cs" />
-    <Compile Include="Src\MvcTextTemplateLanguageFileNameExtension.cs" />
+    <Compile Include="Src\MvcTextTemplateLanguageExtensions.cs" />
+    <Compile Include="Src\MvcTextTemplateFileNameExtension.cs" />
     <Compile Include="Src\MvcTextTemplateRepository.cs" />
+    <Compile Include="Src\MvcTextTemplateType.cs" />
+    <Compile Include="Src\MvcTextTemplateTypeExtensions.cs" />
+    <Compile Include="Src\MvcTextTemplateTypeFolderName.cs" />
     <Compile Include="Src\MvcViewFileName.cs" />
     <Compile Include="Src\MvcViewFileGenerator.cs" />
     <Compile Include="Src\MvcViewTextTemplateFileName.cs" />
+    <Compile Include="Src\MvcViewTypeViewModel.cs" />
     <Compile Include="Src\SelectedMvcControllerFolder.cs" />
     <Compile Include="Src\SelectedMvcFolder.cs" />
     <Compile Include="Src\SelectedMvcViewFolder.cs" />
@@ -99,11 +106,13 @@
     <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddView" />
     <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp" />
     <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddController" />
+    <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML" />
     <Folder Include="ItemTemplates\VisualBasic" />
     <Folder Include="ItemTemplates\VisualBasic\CodeTemplates" />
     <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView" />
     <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic" />
     <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddController" />
+    <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML" />
     <Folder Include="Resources" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +148,9 @@
     <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddController\Controller.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -147,6 +159,9 @@
     </None>
     <EmbeddedResource Include="Resources\CSharpRazor.xshd" />
     <EmbeddedResource Include="Resources\VisualBasicRazor.xshd" />
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Empty.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\AddMvcControllerToProjectView.xaml" />

@@ -8,7 +8,7 @@ namespace ICSharpCode.AspNet.Mvc
 {
 	public interface IMvcControllerFileGenerator
 	{
-		MvcTextTemplateLanguage Language { get; set; }
+		MvcTextTemplateLanguage TemplateLanguage { get; set; }
 		IProject Project { get; set; }
 		
 		void GenerateFile(MvcControllerFileName fileName);

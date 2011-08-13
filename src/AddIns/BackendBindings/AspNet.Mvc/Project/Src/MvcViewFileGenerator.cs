@@ -25,6 +25,8 @@ namespace ICSharpCode.AspNet.Mvc
 			this.textTemplateRepository = textTemplateRepository;
 		}
 		
+		public MvcTextTemplateType TemplateType { get; set; }
+		
 		public void GenerateFile(MvcViewFileName fileName)
 		{
 			base.GenerateFile(fileName);
@@ -38,7 +40,17 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		protected override string GetTextTemplateFileName()
 		{
-			return textTemplateRepository.GetMvcViewTextTemplateFileName(Language, "Empty");
+			MvcTextTemplateCriteria templateCriteria = GetTextTemplateCriteria();
+			return textTemplateRepository.GetMvcViewTextTemplateFileName(templateCriteria);
+		}
+		
+		MvcTextTemplateCriteria GetTextTemplateCriteria()
+		{
+			return new MvcTextTemplateCriteria() {
+				TemplateLanguage = TemplateLanguage,
+				TemplateName = "Empty",
+				TemplateType = TemplateType
+			};
 		}
 	}
 }

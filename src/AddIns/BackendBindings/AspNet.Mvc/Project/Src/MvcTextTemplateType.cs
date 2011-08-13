@@ -5,14 +5,9 @@ using System;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public static class MvcTextTemplateLanguageFileNameExtension
+	public enum MvcTextTemplateType
 	{
-		public static string GetFileExtension(MvcTextTemplateLanguage language)
-		{
-			if (language == MvcTextTemplateLanguage.VisualBasic) {
-				return ".vb";
-			}
-			return ".cs";
-		}
+		Aspx,
+		Razor
 	}
 }

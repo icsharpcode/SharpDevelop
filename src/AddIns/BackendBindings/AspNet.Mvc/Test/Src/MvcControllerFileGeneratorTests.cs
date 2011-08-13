@@ -42,13 +42,13 @@ namespace AspNet.Mvc.Tests
 		void ProjectPassedToGeneratorIsCSharpProject()
 		{
 			projectUsedByGenerator.SetLanguage("C#");
-			generator.Language = MvcTextTemplateLanguage.CSharp;
+			generator.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
 		}
 		
 		void ProjectPassedToGeneratorIsVisualBasicProject()
 		{
 			projectUsedByGenerator.SetLanguage("VBNet");
-			generator.Language = MvcTextTemplateLanguage.VisualBasic;
+			generator.TemplateLanguage = MvcTextTemplateLanguage.VisualBasic;
 		}
 		
 		void GenerateFile()

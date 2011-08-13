@@ -9,15 +9,15 @@ namespace ICSharpCode.AspNet.Mvc
 	public class MvcControllerTextTemplateFileName : MvcTextTemplateFileName
 	{
 		public MvcControllerTextTemplateFileName(
-			string textTemplatesRootDirectory,
-			MvcTextTemplateLanguage language,
-			string templateName)
-			: base(textTemplatesRootDirectory, language, templateName)
+			string textTemplatesRootFolder,
+			MvcTextTemplateCriteria templateCriteria)
+			: base(textTemplatesRootFolder, templateCriteria)
 		{
 		}
 		
-		protected override string LanguageSubdirectoryFormatString {
-			get { return "{0}\\CodeTemplates\\AddController"; }
+		protected override string GetCodeTemplatesSubFolder()
+		{
+			return "AddController";
 		}
 	}
 }
