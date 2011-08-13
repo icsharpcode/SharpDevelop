@@ -59,6 +59,9 @@
 		<DisplayBinding id    = "Browser"
 		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.WebBrowser}"
 		                class = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserDisplayBinding"/>
+		<DisplayBinding id    = "AutoDetect"
+		                title = "Auto-detect file type"
+		                class = "ICSharpCode.SharpDevelop.AutoDetectDisplayBinding"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">

@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 using System.Linq;
-
+using System.Runtime.InteropServices;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop
@@ -39,47 +39,5 @@ namespace ICSharpCode.SharpDevelop
 		IViewContent CreateContentForFile(OpenedFile file);
 	}
 	
-	public sealed class AutoDetectDisplayBinding : IDisplayBinding
-	{
-		DisplayBindingDescriptor bestDescriptor;
-		
-		public DisplayBindingDescriptor BestDescriptor {
-			get { return bestDescriptor; }
-		}
-		
-		public bool IsPreferredBindingForFile(string fileName)
-		{
-			return false;
-		}
-		
-		public bool CanCreateContentForFile(string fileName)
-		{
-			return true;
-		}
-		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
-		{
-			double max = double.MinValue;
-			
-//			foreach (var codon in DisplayBindingService.GetCodonsPerFileName(fileName)) {
-//				double value = codon.Binding.AutoDetectFileContent(fileName, fileContent);
-//				if (value > max) {
-//					max = value;
-//					bestDescriptor = codon;
-//				}
-//			}
-//			
-//			fileContent.Close();
-			
-			return max;
-		}
-		
-		public IViewContent CreateContentForFile(OpenedFile file)
-		{
-			if (bestDescriptor == null)
-				throw new InvalidOperationException();
-			
-			return bestDescriptor.Binding.CreateContentForFile(file);
-		}
-	}
+
 }

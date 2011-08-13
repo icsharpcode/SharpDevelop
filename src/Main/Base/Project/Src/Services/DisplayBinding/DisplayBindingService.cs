@@ -108,18 +108,16 @@ namespace ICSharpCode.SharpDevelop
 					}
 				}
 			}
-			
+			DisplayBindingDescriptor autoDetectDescriptor = null;
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (IsPrimaryBindingValidForFileName(binding, filename) && binding.Binding.IsPreferredBindingForFile(filename)) {
-					return binding;
+				if (IsPrimaryBindingValidForFileName(binding, filename)) {
+					if (binding.Binding.IsPreferredBindingForFile(filename))
+						return binding;
+					else if (binding.Binding is AutoDetectDisplayBinding)
+						autoDetectDescriptor = binding;
 				}
 			}
-			
-//			var autoDetect = new AutoDetectDisplayBinding();
-//			if (autoDetect.AutoDetectFileContent(filename, new MemoryStream(File.ReadAllBytes(filename))) > double.NegativeInfinity)
-//				return autoDetect.BestDescriptor;
-			
-			return null;
+			return autoDetectDescriptor;
 		}
 		
 		public static void SetDefaultCodon(string extension, DisplayBindingDescriptor bindingDescriptor)

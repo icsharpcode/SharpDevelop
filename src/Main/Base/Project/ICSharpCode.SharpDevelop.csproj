@@ -14,7 +14,7 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>88080384</BaseAddress>
@@ -321,6 +321,7 @@
     <Compile Include="Src\Services\Debugger\Tooltips\ITreeNode.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\IVisualizerCommand.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\PinBookmark.cs" />
+    <Compile Include="Src\Services\DisplayBinding\AutoDetectDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
