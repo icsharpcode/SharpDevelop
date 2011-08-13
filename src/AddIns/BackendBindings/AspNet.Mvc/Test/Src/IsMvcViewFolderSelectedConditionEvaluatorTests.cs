@@ -28,14 +28,50 @@ namespace AspNet.Mvc.Tests
 		
 		DirectoryNode CreateViewsFolderNode()
 		{
-			var node = new DirectoryNode("Views");
-			return node;
+			string path = @"d:\projects\MyAspNetProject\Views";
+			return new DirectoryNode(path);
+		}
+		
+		DirectoryNode CreateViewsFolderNodeWithUpperCaseName()
+		{
+			string path = @"d:\projects\MyAspNetProject\VIEWS";
+			return new DirectoryNode(path);
 		}
 		
 		ProjectNode CreateProjectNode()
 		{
 			var project = TestableProject.CreateProject();
 			return new ProjectNode(project);
+		}
+		
+		ProjectNode CreateProjectNode(string fileName, string projectName)
+		{
+			var project = TestableProject.CreateProject(fileName, projectName);
+			return new ProjectNode(project);
+		}
+		
+		DirectoryNode CreatePropertiesFolderNode()
+		{
+			string path = @"d:\projects\MyAspNetProject\Properties";
+			return new DirectoryNode(path);
+		}
+		
+		DirectoryNode CreateViewsChildFolderNode()
+		{
+			DirectoryNode viewsNode = CreateViewsFolderNode();
+			
+			string path = @"d:\projects\MyAspNetProject\Views\Child";
+			var childNode = new DirectoryNode(path);
+			childNode.AddTo(viewsNode);
+			return childNode;
+		}
+		
+		DirectoryNode CreatePropertiesFolderNodeWithParentProjectNodeCalledViews()
+		{
+			var projectNode = CreateProjectNode(@"d:\projects\MyProject\Views.csproj", "Views");
+			var propertiesNode = new DirectoryNode(@"d:\projects\MyProject\Properties");
+			propertiesNode.AddTo(projectNode);
+			return propertiesNode;
 		}
 		
 		[Test]
@@ -62,6 +98,42 @@ namespace AspNet.Mvc.Tests
 			bool valid = IsValid(owner);
 			
 			Assert.IsFalse(valid);
+		}
+		
+		[Test]
+		public void IsValid_PropertiesFolderNodePassed_ReturnsFalse()
+		{
+			DirectoryNode owner = CreatePropertiesFolderNode();
+			bool valid = IsValid(owner);
+			
+			Assert.IsFalse(valid);
+		}
+		
+		[Test]
+		public void IsValid_ViewsChildFolderNodePassed_ReturnsTrue()
+		{
+			DirectoryNode owner = CreateViewsChildFolderNode();
+			bool valid = IsValid(owner);
+			
+			Assert.IsTrue(valid);
+		}
+		
+		[Test]
+		public void IsValid_PropertiesFolderNodeWithParentProjectCalledViewsPassed_ReturnsFalse()
+		{
+			DirectoryNode owner = CreatePropertiesFolderNodeWithParentProjectNodeCalledViews();
+			bool valid = IsValid(owner);
+			
+			Assert.IsFalse(valid);
+		}
+		
+		[Test]
+		public void IsValid_ViewsFolderNodeWithUpperCaseNamePassed_ReturnsTrue()
+		{
+			DirectoryNode owner = CreateViewsFolderNodeWithUpperCaseName();
+			bool valid = IsValid(owner);
+			
+			Assert.IsTrue(valid);
 		}
 	}
 }

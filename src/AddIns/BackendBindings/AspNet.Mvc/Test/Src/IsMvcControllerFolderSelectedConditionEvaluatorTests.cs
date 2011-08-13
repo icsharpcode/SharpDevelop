@@ -27,8 +27,14 @@ namespace AspNet.Mvc.Tests
 		
 		DirectoryNode CreateControllersFolderNode()
 		{
-			var node = new DirectoryNode("Controllers");
-			return node;
+			string path = @"d:\projects\MyAspNetProject\Controllers";
+			return new DirectoryNode(path);
+		}
+		
+		DirectoryNode CreateControllersFolderNodeWithUpperCaseName()
+		{
+			string path = @"d:\projects\MyAspNetProject\CONTROLLERS";
+			return new DirectoryNode(path);
 		}
 		
 		ProjectNode CreateProjectNode()
@@ -37,6 +43,36 @@ namespace AspNet.Mvc.Tests
 			return new ProjectNode(project);
 		}
 		
+		ProjectNode CreateProjectNode(string fileName, string projectName)
+		{
+			var project = TestableProject.CreateProject(fileName, projectName);
+			return new ProjectNode(project);
+		}
+		
+		DirectoryNode CreatePropertiesFolderNode()
+		{
+			string path = @"d:\projects\MyAspNetProject\Properties";
+			return new DirectoryNode(path);
+		}
+		
+		DirectoryNode CreateControllersChildFolderNode()
+		{
+			DirectoryNode controllersNode = CreateControllersFolderNode();
+			
+			string path = @"d:\projects\MyAspNetProject\Controllers\Child";
+			var childNode = new DirectoryNode(path);
+			childNode.AddTo(controllersNode);
+			return childNode;
+		}
+		
+		DirectoryNode CreatePropertiesFolderNodeWithParentProjectNodeCalledControllers()
+		{
+			var projectNode = CreateProjectNode(@"d:\projects\MyProject\Controllers.csproj", "Controllers");
+			var propertiesNode = new DirectoryNode(@"d:\projects\MyProject\Properties");
+			propertiesNode.AddTo(projectNode);
+			return propertiesNode;
+		}
+
 		[Test]
 		public void IsValid_NullOwnerIsPassed_ReturnsFalse()
 		{
@@ -61,6 +97,42 @@ namespace AspNet.Mvc.Tests
 			bool valid = IsValid(owner);
 			
 			Assert.IsFalse(valid);
+		}
+		
+		[Test]
+		public void IsValid_PropertiesFolderNodePassed_ReturnsFalse()
+		{
+			DirectoryNode owner = CreatePropertiesFolderNode();
+			bool valid = IsValid(owner);
+			
+			Assert.IsFalse(valid);
+		}
+		
+		[Test]
+		public void IsValid_ControllersChildFolderNodePassed_ReturnsTrue()
+		{
+			DirectoryNode owner = CreateControllersChildFolderNode();
+			bool valid = IsValid(owner);
+			
+			Assert.IsTrue(valid);
+		}
+		
+		[Test]
+		public void IsValid_PropertiesFolderNodeWithParentProjectCalledControllersPassed_ReturnsFalse()
+		{
+			DirectoryNode owner = CreatePropertiesFolderNodeWithParentProjectNodeCalledControllers();
+			bool valid = IsValid(owner);
+			
+			Assert.IsFalse(valid);
+		}
+		
+		[Test]
+		public void IsValid_ControllersFolderNodeWithUpperCaseNamePassed_ReturnsTrue()
+		{
+			DirectoryNode owner = CreateControllersFolderNodeWithUpperCaseName();
+			bool valid = IsValid(owner);
+			
+			Assert.IsTrue(valid);
 		}
 	}
 }

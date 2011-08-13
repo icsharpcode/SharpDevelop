@@ -31,7 +31,6 @@
 			
 			<TextBlock
 				Margin="4"
-				FontWeight="Bold"
 				Text="Controller Name:"/>
 			<TextBox
 				x:Name="ControllerNameTextBox"

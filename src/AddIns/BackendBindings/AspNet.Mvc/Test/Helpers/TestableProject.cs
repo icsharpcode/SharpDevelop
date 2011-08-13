@@ -20,9 +20,15 @@ namespace AspNet.Mvc.Tests.Helpers
 		
 		public static TestableProject CreateProject()
 		{
+			return CreateProject(@"d:\projects\MyProject\MyProject.csproj", "MyProject");
+		}
+		
+		public static TestableProject CreateProject(string fileName, string projectName)
+		{
 			var createInfo = new ProjectCreateInformation();
 			createInfo.Solution = new Solution();
-			createInfo.OutputProjectFileName = @"d:\projects\MyProject\MyProject.csproj";
+			createInfo.ProjectName = projectName;
+			createInfo.OutputProjectFileName = fileName;
 			return new TestableProject(createInfo);
 		}
 		
@@ -44,6 +50,10 @@ namespace AspNet.Mvc.Tests.Helpers
 		public override void Save(string fileName)
 		{
 			IsSaved = true;
+		}
+		
+		public override bool ReadOnly {
+			get { return false; }
 		}
 	}
 }

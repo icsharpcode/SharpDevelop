@@ -7,5 +7,8 @@ namespace ICSharpCode.AspNet.Mvc
 {
 	public class IsMvcViewFolderSelectedConditionEvaluator : IsMvcFolderSelectedConditionEvaluator
 	{
+		protected override string MvcParentFolderName {
+			get { return "Views"; }
+		}
 	}
 }
