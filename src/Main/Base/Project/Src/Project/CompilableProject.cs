@@ -7,8 +7,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Xml.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Util;
@@ -374,7 +374,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			base.OnActiveConfigurationChanged(e);
 			if (!isLoading) {
-				ParserService.Reparse(this, true, true);
+				Reparse(true, true);
 			}
 		}
 		
@@ -382,7 +382,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			base.OnActivePlatformChanged(e);
 			if (!isLoading) {
-				ParserService.Reparse(this, true, true);
+				Reparse(true, true);
 			}
 		}
 		
@@ -393,12 +393,18 @@ namespace ICSharpCode.SharpDevelop.Project
 				CreateItemsListFromMSBuild();
 			if (!isLoading) {
 				if (reparseReferencesSensitiveProperties.Contains(e.PropertyName)) {
-					ParserService.Reparse(this, true, false);
+					Reparse(true, false);
 				}
 				if (reparseCodeSensitiveProperties.Contains(e.PropertyName)) {
-					ParserService.Reparse(this, false, true);
+					Reparse(false, true);
 				}
 			}
+		}
+		
+		void Reparse(bool references, bool code)
+		{
+			#warning Reparse
+			throw new NotImplementedException();
 		}
 		
 		[Browsable(false)]
@@ -491,7 +497,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected virtual void AddOrRemoveExtensions()
 		{
 		}
-		
 		
 		#region IUpgradableProject
 		[Browsable(false)]

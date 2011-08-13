@@ -115,8 +115,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			PrintCache();
 			
 			worker = new BackgroundWorker { WorkerSupportsCancellation = true, WorkerReportsProgress = true };
-			worker.DoWork += searchTask_DoWork;			
-			worker.RunWorkerCompleted += searchTask_RunWorkerCompleted;			
+			worker.DoWork += searchTask_DoWork;
+			worker.RunWorkerCompleted += searchTask_RunWorkerCompleted;
 			worker.ProgressChanged += searchTask_ProgressChanged;
 		}
 		
@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void searchButton_Click(object sender, EventArgs e)
 		{
 			string text;
-			if(!worker.IsBusy) {			
+			if(!worker.IsBusy) {
 				filterTextBox.ReadOnly = true;
 				worker.RunWorkerAsync();
 				text = "Cancel";
@@ -155,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			searchButton.Text = "Search"; this.toolTip.SetToolTip(searchButton, searchButton.Text);
 			filterTextBox.ReadOnly = false;
 			if (resultList != null && resultList.Count > 0) {
-				listView.Items.Clear();				
+				listView.Items.Clear();
 				listView.Items.AddRange(resultList.ToArray());
 			}
 		}
@@ -190,18 +190,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 					resultList.Add(item);
 				else {
 					if (worker.CancellationPending)
-					    return false;
+						return false;
 					
-					// search using Mono.Cecil the class/interface/structs names 
+					// search using Mono.Cecil the class/interface/structs names
 					AssemblyDefinition currentAssembly;
-					if(!assembliesCache.ContainsKey(asm.FullName)) {	
+					if(!assembliesCache.ContainsKey(asm.FullName)) {
 						try {
 							currentAssembly = resolver.Resolve(asm.FullName);
 						}
 						catch {
 							continue;
 						}
-						assembliesCache.Add(asm.FullName, currentAssembly);							
+						assembliesCache.Add(asm.FullName, currentAssembly);
 					}
 					else
 						currentAssembly = assembliesCache[asm.FullName];
@@ -209,50 +209,52 @@ namespace ICSharpCode.SharpDevelop.Gui
 					// search types in modules
 					if (currentAssembly != null) {
 						foreach(var module in currentAssembly.Modules)
-							foreach (var type in module.Types) 
-								if (type.Name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 && 
+							foreach (var type in module.Types)
+								if (type.Name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 &&
 								    !resultList.Contains(item))
-									resultList.Add(item);									
+									resultList.Add(item);
 					}
 					
 					// report
 					worker.ReportProgress((int)(((i * 1.0) / list.Length) * 100));
 				}
 			}
-						
+			
 			return true;
 		}
 		
-		/// <summary>
-		/// Clear all resources used.
-		/// </summary>
-		new void Dispose()
+		protected override void Dispose(bool disposing)
 		{
-			// cancel the worker
-			if (worker != null && worker.IsBusy && !worker.CancellationPending)
-				worker.CancelAsync();			
-			worker = null;
+			if (disposing) {
+				// Clear all resources used.
+				
+				// cancel the worker
+				if (worker != null && worker.IsBusy && !worker.CancellationPending)
+					worker.CancelAsync();
+				worker = null;
+				
+				// clear all cached data
+				if (assembliesCache.Count > 0)
+					assembliesCache.Clear();
+				assembliesCache = null;
+				
+				if (resultList.Count > 0)
+					resultList.Clear();
+				resultList = null;
+				
+				selectDialog = null;
+				resolver = null;
+				
+				if (fullItemList.Length > 0)
+					Array.Clear(fullItemList, 0, fullItemList.Length);
+				fullItemList = null;
+				
+				// force a collection to reclam memory
+				GC.Collect();
+			}
 			
-			// clear all cached data
-			if (assembliesCache.Count > 0)
-				assembliesCache.Clear();
-			assembliesCache = null;
-			
-			if (resultList.Count > 0)
-				resultList.Clear();
-			resultList = null;
-			
-			selectDialog = null;
-			resolver = null;
-			
-			if (fullItemList.Length > 0)
-				Array.Clear(fullItemList, 0, fullItemList.Length);
-			fullItemList = null;
-			
-			// force a collection to reclam memory
-			GC.Collect();
+			base.Dispose(disposing);
 		}
-		
 		#endregion
 		
 		void columnClick(object sender, ColumnClickEventArgs e)
@@ -435,16 +437,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected virtual IList<DomAssemblyName> GetCacheContent()
 		{
-			List<DomAssemblyName> list = GacInterop.GetAssemblyList();
-			list.RemoveAll(name => name.ShortName.EndsWith(".resources", StringComparison.OrdinalIgnoreCase));
-			return list;
-		}
-		
-		protected override void Dispose(bool disposing)
-		{
-			Dispose();
-			
-			base.Dispose(disposing);
+			return GacInterop.GetGacAssemblyFullNames()
+				.Where(name => !name.ShortName.EndsWith(".resources", StringComparison.OrdinalIgnoreCase))
+				.ToList();
 		}
 	}
 }

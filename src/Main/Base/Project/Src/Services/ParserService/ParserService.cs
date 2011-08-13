@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -26,46 +27,74 @@ namespace ICSharpCode.SharpDevelop
 	{
 		static readonly object syncLock = new object();
 		static IList<ParserDescriptor> parserDescriptors;
-		static Dictionary<IProject, IProjectContent> projectContents = new Dictionary<IProject, IProjectContent>();
+		static Dictionary<IProjectContent, IProject> projectContents = new Dictionary<IProjectContent, IProject>();
 		static Dictionary<FileName, FileEntry> fileEntryDict = new Dictionary<FileName, FileEntry>();
 		
 		#region Manage Project Contents
 		/// <summary>
 		/// Gets the project content for the current project.
 		/// </summary>
+		/// <remarks>
+		/// This property is thread-safe; but that the notion of 'current project'
+		/// might not be meaningful on threads other than the main thread.
+		/// </remarks>
 		public static IProjectContent CurrentProjectContent {
 			[DebuggerStepThrough]
 			get {
 				IProject currentProject = ProjectService.CurrentProject;
-				lock (syncLock) {
-					if (currentProject == null || !projectContents.ContainsKey(currentProject)) {
-						return DefaultProjectContent;
-					}
-					return projectContents[currentProject];
-				}
+				if (currentProject != null)
+					return currentProject.ProjectContent;
+				else
+					return DefaultProjectContent;
 			}
 		}
 		
+		/// <summary>
+		/// Gets the type resolve context for the current project.
+		/// </summary>
+		/// <remarks>
+		/// To improve performance and ensure the returned data is consistent, use the following code pattern:
+		/// <code>
+		/// using (var context = ParserService.CurrentTypeResolveContext.Synchronize()) {
+		/// 	...
+		/// }
+		/// </code>
+		/// 
+		/// This property is thread-safe; but the notion of 'current project'
+		/// might not be meaningful on threads other than the main thread.
+		/// </remarks>
 		public static ITypeResolveContext CurrentTypeResolveContext {
 			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public static ITypeResolveContext GetTypeResolveContext(IProject project)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public static IProjectContent GetProjectContent(IProject project)
-		{
-			lock (syncLock) {
-				IProjectContent pc;
-				if (projectContents.TryGetValue(project, out pc)) {
-					return pc;
+				IProject currentProject = ProjectService.CurrentProject;
+				if (currentProject != null) {
+					return currentProject.TypeResolveContext ?? GetDefaultTypeResolveContext();
+				} else {
+					return GetDefaultTypeResolveContext();
 				}
 			}
-			return null;
+		}
+		
+		[Obsolete("Use project.ProjectContent instead")]
+		public static IProjectContent GetProjectContent(IProject project)
+		{
+			return project.ProjectContent;
+		}
+		
+		/// <summary>
+		/// Gets the project that owns the specified project content.
+		/// Returns null for referenced assemblies.
+		/// </summary>
+		public static IProject GetProject(IProjectContent projectContent)
+		{
+			if (projectContent == null)
+				return null;
+			lock (syncLock) {
+				IProject project;
+				if (projectContents.TryGetValue(projectContent, out project))
+					return project;
+				else
+					return null;
+			}
 		}
 		
 		/// <summary>
@@ -74,31 +103,9 @@ namespace ICSharpCode.SharpDevelop
 		public static IEnumerable<IProjectContent> AllProjectContents {
 			get {
 				lock (syncLock) {
-					return projectContents.Values.ToArray();
+					return projectContents.Keys.ToArray();
 				}
 			}
-		}
-		
-		/// <summary>
-		/// Gets the default project content used for files outside of projects.
-		/// </summary>
-		public static IProjectContent DefaultProjectContent {
-			get {
-				lock (syncLock) {
-					if (defaultProjectContent == null) {
-						CreateDefaultProjectContent();
-					}
-					return defaultProjectContent;
-				}
-			}
-		}
-		
-		static void CreateDefaultProjectContent()
-		{
-			LoggingService.Info("Creating default project content");
-			//LoggingService.Debug("Stacktrace is:\n" + Environment.StackTrace);
-			defaultProjectContent = new DefaultProjectContent();
-			defaultProjectContent.AddReferencedContent(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
 		}
 		
 		/// <summary>
@@ -108,18 +115,21 @@ namespace ICSharpCode.SharpDevelop
 		{
 			List<IProjectContent> result = new List<IProjectContent>();
 			List<IProjectContent> linkResults = new List<IProjectContent>();
+			
+			KeyValuePair<IProjectContent, IProject>[] pairs;
 			lock (syncLock) {
-				foreach (KeyValuePair<IProject, IProjectContent> projectContent in projectContents) {
-					FileProjectItem file = projectContent.Key.FindFile(fileName);
-					if (file != null) {
-						// Prefer normal files over linked files.
-						// The order matters because GetParseInformation() will return the ICompilationUnit
-						// for the first result.
-						if (file.IsLink)
-							linkResults.Add(projectContent.Value);
-						else
-							result.Add(projectContent.Value);
-					}
+				pairs = projectContents.ToArray();
+			}
+			foreach (var pair in pairs) {
+				FileProjectItem file = pair.Value.FindFile(fileName);
+				if (file != null) {
+					// Prefer normal files over linked files.
+					// The order matters because GetParseInformation() will return the ICompilationUnit
+					// for the first result.
+					if (file.IsLink)
+						linkResults.Add(pair.Key);
+					else
+						result.Add(pair.Key);
 				}
 			}
 			result.AddRange(linkResults);
@@ -128,11 +138,73 @@ namespace ICSharpCode.SharpDevelop
 			return result;
 		}
 		
+		internal static void RegisterProjectContentForAddedProject(IProject project)
+		{
+			IProjectContent newContent = project.ProjectContent;
+			if (newContent != null) {
+				lock (syncLock) {
+					projectContents[newContent] = project;
+				}
+			}
+		}
+		
 		internal static void RemoveProjectContentForRemovedProject(IProject project)
 		{
 			lock (syncLock) {
-				projectContents.Remove(project);
+				foreach (var pair in projectContents.ToArray()) {
+					if (pair.Value == project)
+						projectContents.Remove(pair.Key);
+				}
 			}
+		}
+		#endregion
+		
+		#region Default Project Content
+		static readonly SimpleProjectContent defaultProjectContent = new SimpleProjectContent();
+		static readonly Lazy<Task<IProjectContent>[]> defaultReferences = new Lazy<Task<IProjectContent>[]>(
+			delegate {
+				string[] assemblies = {
+					"mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+					"System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+					"System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+					"System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+					"System.Xml.Linq, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+					"System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+					"Microsoft.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+				};
+				List<Task<IProjectContent>> tasks = new List<Task<IProjectContent>>();
+				foreach (string assemblyName in assemblies) {
+					DomAssemblyName name = new DomAssemblyName(assemblyName);
+					string fileName = AssemblyParserService.FindReferenceAssembly(name.ShortName);
+					if (fileName == null) {
+						fileName = GacInterop.FindAssemblyInNetGac(name);
+					}
+					if (fileName != null) {
+						tasks.Add(AssemblyParserService.GetAssemblyAsync(FileName.Create(fileName)));
+					}
+				}
+				return tasks.ToArray();
+			});
+		
+		/// <summary>
+		/// Gets the default project content used for files outside of projects.
+		/// </summary>
+		public static IProjectContent DefaultProjectContent {
+			get { return defaultProjectContent; }
+		}
+		
+		/// <summary>
+		/// Gets the type resolve context for the default project content.
+		/// </summary>
+		static ITypeResolveContext GetDefaultTypeResolveContext()
+		{
+			List<ITypeResolveContext> references = new List<ITypeResolveContext>();
+			references.Add(defaultProjectContent);
+			foreach (var task in defaultReferences.Value) {
+				if (task.IsCompleted && !task.IsFaulted)
+					references.Add(task.Result);
+			}
+			return new CompositeTypeResolveContext(references);
 		}
 		#endregion
 		
@@ -141,8 +213,6 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (parserDescriptors == null) {
 				parserDescriptors = AddInTree.BuildItems<ParserDescriptor>("/Workspace/Parser", null, false);
-				AssemblyParserService.Initialize();
-				LoadSolutionProjects.Initialize();
 			}
 		}
 		
@@ -420,14 +490,14 @@ namespace ICSharpCode.SharpDevelop
 						IParsedFile oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == pc);
 						// ensure the new unit is frozen beforewe make it visible to the outside world
 						newUnits[i].Freeze();
-						pc.UpdateCompilationUnit(oldUnit, newUnits[i]);
+						pc.UpdateProjectContent(oldUnit, newUnits[i]);
 						RaiseParseInformationUpdated(new ParseInformationEventArgs(oldUnit, newParseInfo[i], newParseInfo[i] == resultParseInfo));
 					}
 					
 					// remove all old units that don't exist anymore
 					foreach (IParsedFile oldUnit in oldUnits) {
 						if (!newUnits.Any(n => n.ProjectContent == oldUnit.ProjectContent)) {
-							oldUnit.ProjectContent.UpdateCompilationUnit(oldUnit, null);
+							oldUnit.ProjectContent.UpdateProjectContent(oldUnit, null);
 							RaiseParseInformationUpdated(new ParseInformationEventArgs(oldUnit, null, false));
 						}
 					}
@@ -454,7 +524,7 @@ namespace ICSharpCode.SharpDevelop
 					this.mainParsedFile = null;
 				}
 				foreach (IParsedFile oldUnit in oldUnits) {
-					oldUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
+					oldUnit.ProjectContent.UpdateProjectContent(oldUnit, null);
 					bool isPrimary = parseInfo == oldUnit;
 					RaiseParseInformationUpdated(new ParseInformationEventArgs(oldUnit, null, isPrimary));
 				}
@@ -808,13 +878,6 @@ namespace ICSharpCode.SharpDevelop
 		
 		#region LoadSolutionProjects
 		
-		public static void Reparse(IProject project, bool initReferences, bool parseCode)
-		{
-			if (project == null)
-				throw new ArgumentNullException("project");
-			LoadSolutionProjects.Reparse(project, initReferences, parseCode);
-		}
-		
 		/// <summary>
 		/// Gets whether the LoadSolutionProjects thread is currently running.
 		/// </summary>
@@ -834,31 +897,12 @@ namespace ICSharpCode.SharpDevelop
 		
 		internal static void OnSolutionLoaded()
 		{
-			List<ParseProjectContent> createdContents = new List<ParseProjectContent>();
-			foreach (IProject project in ProjectService.OpenSolution.Projects) {
-				try {
-					LoggingService.Debug("Creating project content for " + project.Name);
-					ParseProjectContent newContent = project.CreateProjectContent();
-					if (newContent != null) {
-						lock (syncLock) {
-							projectContents[project] = newContent;
-						}
-						createdContents.Add(newContent);
-					}
-				} catch (Exception e) {
-					MessageService.ShowException(e, "Error while retrieving project contents from " + project);
-				}
-			}
-			LoadSolutionProjects.OnSolutionLoaded(createdContents);
 		}
 		
 		internal static void OnSolutionClosed()
 		{
-			LoadSolutionProjects.OnSolutionClosed();
+			LoadSolutionProjects.CancelAllJobs();
 			lock (syncLock) {
-				foreach (IProjectContent content in projectContents.Values) {
-					content.Dispose();
-				}
 				projectContents.Clear();
 			}
 			ClearAllFileEntries();
@@ -873,19 +917,6 @@ namespace ICSharpCode.SharpDevelop
 			}
 			foreach (FileEntry entry in entries)
 				entry.Clear();
-		}
-		
-		/// <remarks>Can return null.</remarks>
-		internal static IProjectContent CreateProjectContentForAddedProject(IProject project)
-		{
-			IProjectContent newContent = project.CreateProjectContent();
-			if (newContent != null) {
-				lock (syncLock) {
-					projectContents[project] = newContent;
-				}
-				LoadSolutionProjects.InitNewProject(newContent);
-			}
-			return newContent;
 		}
 		#endregion
 	}

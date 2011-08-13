@@ -18,21 +18,14 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	static class LoadSolutionProjects
 	{
-		static JobQueue jobs;
-		
-		internal static void Initialize()
-		{
-			jobs = new JobQueue();
-		}
-		
-		static volatile bool isThreadRunning;
+		static JobQueue jobs = new JobQueue();
 		
 		/// <summary>
 		/// Gets whether the LoadSolutionProjects thread is currently running.
 		/// </summary>
 		public static bool IsThreadRunning {
 			get {
-				return isThreadRunning;
+				return jobs.IsThreadRunningOrWaitingToStart;
 			}
 		}
 		
@@ -43,105 +36,15 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static event EventHandler ThreadEnded = delegate {};
 		
-		static void RaiseThreadEnded(Solution solution)
+		static void RaiseThreadEnded()
 		{
 			Gui.WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
-					// only raise the event if the solution is still open
-					if (solution == ProjectService.OpenSolution) {
-						isThreadRunning = false;
+					// only raise the event if the thread wasn't re-started
+					if (!IsThreadRunning) {
 						ThreadEnded(null, EventArgs.Empty);
 					}
 				});
-		}
-		
-		#region Reparse projects
-		// list of projects waiting to reparse references
-		static List<IProjectContent> reParse1 = new List<ParseProjectContent>();
-		
-		// list of projects waiting to reparse code
-		static List<IProjectContent> reParse2 = new List<ParseProjectContent>();
-		
-		public static void Reparse(IProject project, bool initReferences, bool parseCode)
-		{
-			throw new NotImplementedException();
-			/*
-			if (jobs == null)
-				return; // do nothing if service wasn't initialized (e.g. some unit tests)
-			ParseProjectContent pc = ParserService.GetProjectContent(project) as ParseProjectContent;
-			if (pc != null) {
-				if (initReferences) {
-					lock (reParse1) {
-						if (!reParse1.Contains(pc)) {
-							LoggingService.Debug("Enqueue for reinitializing references: " + project);
-							reParse1.Add(pc);
-							jobs.AddJob(new JobTask(pm => ReInitializeReferences(pc, pm),
-							                        GetLoadReferenceTaskTitle(project.Name),
-							                        10
-							                       ));
-						}
-					}
-				}
-				if (parseCode) {
-					lock (reParse2) {
-						if (!reParse2.Contains(pc)) {
-							LoggingService.Debug("Enqueue for reparsing code: " + project);
-							reParse2.Add(pc);
-							jobs.AddJob(new JobTask(pm => ReparseCode(pc, pm),
-							                        GetParseTaskTitle(project.Name),
-							                        pc.GetInitializationWorkAmount()
-							                       ));
-						}
-					}
-				}
-				jobs.StartRunningIfRequired();
-			}*/
-		}
-		
-		/*
-		static void ReInitializeReferences(ParseProjectContent pc, IProgressMonitor progressMonitor)
-		{
-			lock (reParse1) {
-				reParse1.Remove(pc);
-			}
-			pc.ReInitialize1(progressMonitor);
-		}
-		
-		static void ReparseCode(ParseProjectContent pc, IProgressMonitor progressMonitor)
-		{
-			lock (reParse2) {
-				reParse2.Remove(pc);
-			}
-			pc.ReInitialize2(progressMonitor);
-		}*/
-		#endregion
-		
-		// do not use an event for this because a solution might be loaded before ParserService
-		// is initialized
-		internal static void OnSolutionLoaded(List<IProjectContent> createdContents)
-		{
-			WorkbenchSingleton.DebugAssertMainThread();
-			Debug.Assert(jobs != null);
-			
-			Solution openedSolution = ProjectService.OpenSolution;
-			isThreadRunning = true;
-			
-			WorkbenchSingleton.SafeThreadAsyncCall(ProjectService.ParserServiceCreatedProjectContents);
-			
-			for (int i = 0; i < createdContents.Count; i++) {
-				ParseProjectContent pc = createdContents[i];
-				jobs.AddJob(new JobTask(pc.Initialize1,
-				                        GetLoadReferenceTaskTitle(pc.ProjectName),
-				                        10));
-			}
-			for (int i = 0; i < createdContents.Count; i++) {
-				ParseProjectContent pc = createdContents[i];
-				jobs.AddJob(new JobTask(pc.Initialize2,
-				                        GetParseTaskTitle(pc.ProjectName),
-				                        pc.GetInitializationWorkAmount()));
-			}
-			jobs.AddJob(new JobTask(ct => RaiseThreadEnded(openedSolution), "", 0));
-			jobs.StartRunningIfRequired();
 		}
 		
 		static string GetLoadReferenceTaskTitle(string projectName)
@@ -154,26 +57,30 @@ namespace ICSharpCode.SharpDevelop
 			return StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing} ")  + projectName + "...";
 		}
 		
-		internal static void InitNewProject(IProjectContent pc)
+		/// <summary>
+		/// Adds a new task to the job queue, and starts the LoadSolutionProjects thread (if its not already running).
+		/// </summary>
+		/// <param name="action">The action to run. Parameter: a nested progress monitor for the action.</param>
+		/// <param name="name">Name of the action - shown in the status bar</param>
+		/// <param name="cost">Cost of the action</param>
+		public static void AddJob(Action<IProgressMonitor> action, string name, double cost)
 		{
-			jobs.AddJob(new JobTask(pc.Initialize1,
-			                        GetLoadReferenceTaskTitle(pc.ProjectName),
-			                        10));
-			jobs.AddJob(new JobTask(pc.Initialize2,
-			                        GetParseTaskTitle(pc.ProjectName),
-			                        pc.GetInitializationWorkAmount()));
-			jobs.StartRunningIfRequired();
+			if (action == null)
+				throw new ArgumentNullException("action");
+			if (!(cost > 0))
+				cost = 1; // avoid 0-cost tasks (division by zero)
+			
+			jobs.AddJob(new JobTask(action, name, cost));
+			// Start the thread with a bit delay so that the SD UI gets responsive first,
+			// and so that the total cost is known for showing the progress bar.
+			System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(
+				System.Windows.Threading.DispatcherPriority.Background,
+				new Action(jobs.StartRunningIfRequired));
 		}
 		
-		internal static void OnSolutionClosed()
+		public static void CancelAllJobs()
 		{
 			jobs.Clear();
-			lock (reParse1) {
-				reParse1.Clear();
-			}
-			lock (reParse2) {
-				reParse2.Clear();
-			}
 		}
 		
 		sealed class JobQueue
@@ -193,6 +100,14 @@ namespace ICSharpCode.SharpDevelop
 				lock (lockObj) {
 					this.totalWork += task.cost;
 					this.actions.Enqueue(task);
+				}
+			}
+			
+			public bool IsThreadRunningOrWaitingToStart {
+				get {
+					lock (lockObj) {
+						return this.threadIsRunning || this.actions.Count > 0;
+					}
 				}
 			}
 			
@@ -233,6 +148,7 @@ namespace ICSharpCode.SharpDevelop
 								actions.Dequeue(); // dequeue the null
 								WorkbenchSingleton.SafeThreadAsyncCall(StartRunningIfRequired);
 							}
+							RaiseThreadEnded();
 							return;
 						}
 						task = this.actions.Dequeue();
@@ -244,6 +160,7 @@ namespace ICSharpCode.SharpDevelop
 					progressMonitor.TaskName = task.name;
 					try {
 						using (IProgressMonitor subTask = progressMonitor.CreateSubTask(task.cost / totalWork)) {
+							subTask.CancellationToken.ThrowIfCancellationRequested();
 							task.Run(subTask);
 						}
 						lock (lockObj) {
@@ -283,8 +200,6 @@ namespace ICSharpCode.SharpDevelop
 			
 			public JobTask(Action<IProgressMonitor> action, string name, double cost)
 			{
-				if (action == null)
-					throw new ArgumentNullException("action");
 				this.action = action;
 				this.name = name;
 				this.cost = cost;

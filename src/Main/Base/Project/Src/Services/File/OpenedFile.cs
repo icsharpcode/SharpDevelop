@@ -165,7 +165,7 @@ namespace ICSharpCode.SharpDevelop
 			if (fileData != null) {
 				return new MemoryStream(fileData, false);
 			} else {
-				return new FileStream(FileName, FileMode.Open, FileAccess.Read);
+				return new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 			}
 		}
 		

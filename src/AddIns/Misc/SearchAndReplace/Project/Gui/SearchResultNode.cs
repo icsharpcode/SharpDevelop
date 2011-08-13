@@ -7,9 +7,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using ICSharpCode.AvalonEdit.Document;
+
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
@@ -38,9 +39,9 @@ namespace SearchAndReplace
 			this.anchor = new PermanentAnchor(result.FileName, lineNumber, column);
 			anchor.SurviveDeletion = true;
 			
-			if (lineNumber >= 1 && lineNumber <= document.TotalNumberOfLines) {
-				IDocumentLine matchedLine = document.GetLine(lineNumber);
-				inlineBuilder = new HighlightedInlineBuilder(matchedLine.Text);
+			if (lineNumber >= 1 && lineNumber <= document.LineCount) {
+				IDocumentLine matchedLine = document.GetLineByNumber(lineNumber);
+				inlineBuilder = new HighlightedInlineBuilder(document.GetText(matchedLine));
 				inlineBuilder.SetFontFamily(0, inlineBuilder.Text.Length, resultLineFamily);
 				
 				IHighlighter highlighter = document.GetService(typeof(IHighlighter)) as IHighlighter;

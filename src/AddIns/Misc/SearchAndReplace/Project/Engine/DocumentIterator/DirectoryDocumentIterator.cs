@@ -1,15 +1,16 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop;
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace SearchAndReplace
 {
@@ -62,7 +63,7 @@ namespace SearchAndReplace
 						                                       0);
 					}
 				}
-				ITextBuffer fileContent;
+				ITextSource fileContent;
 				try {
 					fileContent = ParserService.GetParseableFileContent(fileName);
 				} catch (Exception) {

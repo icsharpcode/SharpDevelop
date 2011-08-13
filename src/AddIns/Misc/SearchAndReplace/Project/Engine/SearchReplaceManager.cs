@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
@@ -140,7 +141,7 @@ namespace SearchAndReplace
 					textAreas.Add(textArea);
 				}
 				textArea.Caret.Offset = result.Offset;
-				IDocumentLine segment = textArea.Document.GetLineForOffset(result.Offset);
+				IDocumentLine segment = textArea.Document.GetLineByOffset(result.Offset);
 				
 				int lineNr = segment.LineNumber;
 				
@@ -150,7 +151,7 @@ namespace SearchAndReplace
 						return;
 					}
 				}
-				BookmarkManager.AddMark(new Bookmark(result.FileName, textArea.Document.OffsetToPosition(result.Offset)));
+				BookmarkManager.AddMark(new Bookmark(result.FileName, textArea.Document.GetLocation(result.Offset)));
 			}
 		}
 		

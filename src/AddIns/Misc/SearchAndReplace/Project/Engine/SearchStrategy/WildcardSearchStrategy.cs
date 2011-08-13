@@ -5,6 +5,7 @@ using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.Editor;
 
 namespace SearchAndReplace
 {

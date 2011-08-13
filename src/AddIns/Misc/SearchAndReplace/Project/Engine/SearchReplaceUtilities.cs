@@ -1,13 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace SearchAndReplace

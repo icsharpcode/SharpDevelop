@@ -117,8 +117,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			string newExtension = null;
-			if (project.LanguageProperties.CodeDomProvider != null) {
-				newExtension = project.LanguageProperties.CodeDomProvider.FileExtension;
+			var codeDomProvider = project.CreateCodeDomProvider();
+			if (codeDomProvider != null) {
+				newExtension = codeDomProvider.FileExtension;
 			}
 			if (string.IsNullOrEmpty(newExtension)) {
 				if (string.IsNullOrEmpty(additionalExtension)) {
@@ -187,27 +188,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void WriteCodeDomToFile(FileProjectItem baseItem, string outputFileName, CodeCompileUnit ccu)
 		{
 			WorkbenchSingleton.AssertMainThread();
-			CodeDomProvider provider = project.LanguageProperties.CodeDomProvider;
-			CodeGeneratorOptions options = new CodeDOMGeneratorUtility().CreateCodeGeneratorOptions;
-			
-			if (project.LanguageProperties == LanguageProperties.VBNet) {
-				// the root namespace is implicit in VB
-				foreach (CodeNamespace ns in ccu.Namespaces) {
-					if (string.Equals(ns.Name, project.RootNamespace, StringComparison.OrdinalIgnoreCase)) {
-						ns.Name = string.Empty;
-					} else if (ns.Name.StartsWith(project.RootNamespace + ".", StringComparison.OrdinalIgnoreCase)) {
-						ns.Name = ns.Name.Substring(project.RootNamespace.Length + 1);
-					}
-				}
-			}
 			
 			string codeOutput;
 			using (StringWriter writer = new StringWriter()) {
-				if (provider == null) {
-					writer.WriteLine("No CodeDom provider was found for this language.");
-				} else {
-					provider.GenerateCodeFromCompileUnit(ccu, writer, options);
-				}
+				project.GenerateCodeFromCodeDom(ccu, writer);
 				codeOutput = writer.ToString();
 			}
 			
@@ -469,26 +453,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentNullException("project");
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			
-			if (project.LanguageProperties == Dom.LanguageProperties.VBNet) {
-				return project.RootNamespace;
-			} else {
-				string relPath = FileUtility.GetRelativePath(project.Directory, Path.GetDirectoryName(fileName));
-				string[] subdirs = relPath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-				StringBuilder standardNameSpace = new StringBuilder(project.RootNamespace);
-				foreach(string subdir in subdirs) {
-					if (subdir == "." || subdir == ".." || subdir.Length == 0)
-						continue;
-					if (subdir.Equals("src", StringComparison.OrdinalIgnoreCase))
-						continue;
-					if (subdir.Equals("source", StringComparison.OrdinalIgnoreCase))
-						continue;
-					if (standardNameSpace.Length > 0)
-						standardNameSpace.Append('.');
-					standardNameSpace.Append(NewFileDialog.GenerateValidClassOrNamespaceName(subdir, true));
-				}
-				return standardNameSpace.ToString();
-			}
+		
+			return project.GetDefaultNamespace(fileName);
 		}
 		
 		static void RunCustomTool(CustomToolRun run)

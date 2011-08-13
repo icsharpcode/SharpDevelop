@@ -21,15 +21,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-
-namespace ICSharpCode.NRefactory.CSharp.Analysis
+namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
 	/// Resolve context represents the minimal mscorlib required for evaluating constants.
 	/// </summary>
-	sealed class MinimalResolveContext : AbstractAnnotatable, IProjectContent, ISynchronizedTypeResolveContext
+	public sealed class MinimalResolveContext : AbstractAnnotatable, IProjectContent, ISynchronizedTypeResolveContext
 	{
 		static readonly Lazy<MinimalResolveContext> instance = new Lazy<MinimalResolveContext>(() => new MinimalResolveContext());
 		

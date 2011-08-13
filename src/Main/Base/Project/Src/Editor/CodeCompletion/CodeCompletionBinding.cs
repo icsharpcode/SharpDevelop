@@ -125,6 +125,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		}
 	}
 	
+	/*
 	public class DefaultCodeCompletionBinding : ICodeCompletionBinding
 	{
 		bool enableMethodInsight = true;
@@ -226,5 +227,5 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		{
 			return false;
 		}
-	}
+	}*/
 }

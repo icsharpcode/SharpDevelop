@@ -7,10 +7,12 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.Tasks;
 using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop
@@ -39,17 +41,21 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IProjectContent GetAssembly(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			// We currently do not support cancelling the load operation itself, because another GetAssembly() call
+			// with a different cancellation token might request the same assembly.
 			bool isNewTask;
-			LoadedAssembly asm = GetLoadedAssembly(fileName, cancellationToken, out isNewTask);
+			LoadedAssembly asm = GetLoadedAssembly(fileName, out isNewTask);
 			if (isNewTask)
 				asm.ProjectContent.RunSynchronously();
+			else
+				asm.ProjectContent.Wait(cancellationToken);
 			return asm.ProjectContent.Result;
 		}
 		
 		public static Task<IProjectContent> GetAssemblyAsync(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			bool isNewTask;
-			LoadedAssembly asm = GetLoadedAssembly(fileName, cancellationToken, out isNewTask);
+			LoadedAssembly asm = GetLoadedAssembly(fileName, out isNewTask);
 			if (isNewTask)
 				asm.ProjectContent.Start();
 			return asm.ProjectContent;
@@ -88,7 +94,7 @@ namespace ICSharpCode.SharpDevelop
 				projectContentDictionary.Remove(key);
 		}
 		
-		static LoadedAssembly GetLoadedAssembly(FileName fileName, CancellationToken cancellationToken, out bool isNewTask)
+		static LoadedAssembly GetLoadedAssembly(FileName fileName, out bool isNewTask)
 		{
 			isNewTask = false;
 			LoadedAssembly asm;
@@ -108,8 +114,7 @@ namespace ICSharpCode.SharpDevelop
 				} else {
 					wr = null;
 				}
-				var task = new Task<IProjectContent>(() => LoadAssembly(fileName, cancellationToken), cancellationToken);
-				task.Wait();
+				var task = new Task<IProjectContent>(() => LoadAssembly(fileName, CancellationToken.None));
 				isNewTask = true;
 				asm = new LoadedAssembly(task, lastWriteTime);
 				if (wr != null) {
@@ -207,5 +212,14 @@ namespace ICSharpCode.SharpDevelop
 			return XmlDocumentationProvider.LookupLocalizedXmlDoc(fileName);
 		}
 		#endregion
+		
+		internal static string FindReferenceAssembly(string shortName)
+		{
+			string path = Path.Combine(referenceAssembliesPath, @".NETFramework\v4.0", shortName + ".dll");
+			if (File.Exists(path))
+				return path;
+			else
+				return null;
+		}
 	}
 }

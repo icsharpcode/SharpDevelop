@@ -44,6 +44,7 @@
     <DefineConstants>TRACE;PUBLICINTERPROCESS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build.Tasks.v4.0" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -305,6 +306,7 @@
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
     <Compile Include="Src\Project\Solution\Project_TypeGuids.cs" />
     <Compile Include="Src\Project\TargetFramework.cs" />
+    <Compile Include="Src\Services\AmbienceService\CSharpAmbience.cs" />
     <Compile Include="Src\Services\AmbienceService\IAmbience.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
@@ -333,6 +335,8 @@
     <Compile Include="Src\Services\File\FileEventArgs.cs" />
     <Compile Include="Src\Services\ParserService\AssemblyParserService.cs" />
     <Compile Include="Src\Services\ParserService\DomAssemblyName.cs" />
+    <Compile Include="Src\Services\ParserService\Fusion.cs" />
+    <Compile Include="Src\Services\ParserService\GacInterop.cs" />
     <Compile Include="Src\Services\ParserService\ParseInformation.cs" />
     <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
@@ -385,7 +389,6 @@
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ProjectActiveEvaluator.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceService.cs" />
-    <Compile Include="Src\Services\AmbienceService\CodeDOMGeneratorUtility.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowOpenEvaluator.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectDescriptor.cs" />
     <Compile Include="Src\Internal\Templates\Project\SolutionDescriptor.cs" />

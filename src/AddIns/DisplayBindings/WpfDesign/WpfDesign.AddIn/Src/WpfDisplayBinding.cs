@@ -37,7 +37,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				IEditable editable = content as IEditable;
 				if (editable != null) {
 					try {
-						XmlTextReader r = new XmlTextReader(new StringReader(editable.Text));
+						XmlTextReader r = new XmlTextReader(editable.CreateSnapshot().CreateReader());
 						r.XmlResolver = null;
 						r.WhitespaceHandling = WhitespaceHandling.None;
 						while (r.NodeType != XmlNodeType.Element && r.Read());

@@ -290,6 +290,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// </summary>
 		internal static void HandleToolTipRequest(ToolTipRequestEventArgs e)
 		{
+			/*
 			if (!e.InDocument)
 				return;
 			Location logicPos = e.LogicalPosition;
@@ -309,7 +310,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			var currentLine = doc.GetLineByNumber(logicPos.Y);
 			if (logicPos.X > currentLine.Length)
 				return;
-			/*
+			
 			string textContent = doc.Text;
 			ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, doc.PositionToOffset(logicPos.Line, logicPos.Column));
 			string expression = (expressionResult.Expression ?? "").Trim();

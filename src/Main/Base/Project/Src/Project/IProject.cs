@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -219,16 +220,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		void Start(bool withDebugging);
 		
 		/// <summary>
-		/// Creates a new project content for this project.
-		/// Return null if you don't want to create any project content.
-		/// </summary>
-		/// <remarks>
-		/// This method is called by the SharpDevelop infrastructure.
-		/// If you want to get the PC for a project, use the methods on <see cref="ParserService"/>.
-		/// </remarks>
-		IProjectContent CreateProjectContent();
-		
-		/// <summary>
 		/// Creates a new ProjectItem for the passed MSBuild item.
 		/// </summary>
 		ProjectItem CreateProjectItem(IProjectItemBackendStore item);
@@ -258,6 +249,66 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Saves the project extension content with the specified name.
 		/// </summary>
 		void SaveProjectExtensions(string name, XElement element);
+		
+		/// <summary>
+		/// Gets the project content associated with this project.
+		/// </summary>
+		/// <remarks>
+		/// This property must always return the same value for the same project.
+		/// This property may return null.
+		/// 
+		/// This member is thread-safe.
+		/// </remarks>
+		IProjectContent ProjectContent { get; }
+		
+		/// <summary>
+		/// Gets the type resolve context associated with this project.
+		/// The context should include this project's ProjectContent, as well as any referenced assemblies.
+		/// </summary>
+		/// <remarks>
+		/// This property must not return null.
+		/// If no resolve context is available for this project, it should return a dummy context
+		/// (e.g. <see cref="ICSharpCode.NRefactory.CSharp.Analysis.MinimalResolveContext/">).
+		/// 
+		/// This member is thread-safe.
+		/// The resulting type resolve context is thread-safe, but repeated locking on every access might be inefficient.
+		/// Use the following code pattern instead:
+		/// <code>
+		/// using (var context = ParserService.CurrentTypeResolveContext.Synchronize()) {
+		/// 	...
+		/// }
+		/// </code>
+		/// </remarks>
+		ITypeResolveContext TypeResolveContext { get; }
+		
+		/// <summary>
+		/// Gets the default namespace to use for a file with the specified name.
+		/// </summary>
+		/// <param name="fileName">Full file name for a new file being added to the project.</param>
+		/// <returns>Namespace name to use for the new file</returns>
+		string GetDefaultNamespace(string fileName);
+		
+		/// <summary>
+		/// Creates a CodeDomProvider for this project's language.
+		/// Returns null when no CodeDomProvider is available for the language.
+		/// </summary>
+		System.CodeDom.Compiler.CodeDomProvider CreateCodeDomProvider();
+		
+		/// <summary>
+		/// Generates code for a CodeDom compile unit.
+		/// This method is used by CustomToolContext.WriteCodeDomToFile.
+		/// </summary>
+		void GenerateCodeFromCodeDom(System.CodeDom.CodeCompileUnit compileUnit, TextWriter writer);
+		
+		/// <summary>
+		/// Creates a new ambience for this project.
+		/// </summary>
+		/// <remarks>
+		/// This member is thread-safe.
+		/// As ambiences are not thread-safe, this method always returns a new ambience instance.
+		/// Never returns null.
+		/// </remarks>
+		IAmbience GetAmbience();
 	}
 	
 	/// <summary>

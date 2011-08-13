@@ -54,6 +54,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		protected override void Run(ITextEditor editor, string clipboardText)
 		{
+			#warning Reimplement PasteAsCommentCommand
+			throw new NotImplementedException();
+			/*
 			string indentation = GetIndentation(editor.Document, editor.Caret.Line);
 			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			int maxLineLength = editor.Options.VerticalRulerColumn - VisualIndentationLength(editor, indentation);
@@ -67,9 +70,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 			IDocument document = editor.Document;
 			int insertionPos = document.GetLineByNumber(editor.Caret.Line).Offset + indentation.Length;
-			document.Insert(insertionPos, insertedText.ToString());
+			document.Insert(insertionPos, insertedText.ToString());*/
 		}
 		
+		/*
 		void AppendTextLine(string indentation, IAmbience ambience, int maxLineLength, StringWriter insertedText, string line)
 		{
 			const int minimumLineLength = 10;
@@ -109,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 					length += 1;
 			}
 			return length;
-		}
+		}*/
 	}
 	
 	/// <summary>
@@ -124,6 +128,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		protected override void Run(ITextEditor editor, string clipboardText)
 		{
+			#warning Reimplement PasteAsStringCommand
+			throw new NotImplementedException();
+			/*
 			CodeGenerator codeGenerator = ParserService.CurrentProjectContent.Language.CodeGenerator;
 			if (codeGenerator == null)
 				codeGenerator = LanguageProperties.CSharp.CodeGenerator;
@@ -146,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			if (expression == null)
 				return;
 			string indentation = GetIndentation(editor.Document, editor.Caret.Line);
-			editor.Document.Insert(editor.Caret.Offset, codeGenerator.GenerateCode(expression, indentation).Trim());
+			editor.Document.Insert(editor.Caret.Offset, codeGenerator.GenerateCode(expression, indentation).Trim());*/
 		}
 	}
 }

@@ -7,8 +7,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
+using System.Windows;
 using System.Xml.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -62,8 +63,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region IMementoCapable implementation
-		internal static List<string> filesToOpenAfterSolutionLoad = new List<string>();
-		
 		/// <summary>
 		/// Saves project preferences (currently opened files, bookmarks etc.) to the
 		/// a property container.
@@ -96,9 +95,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (ICSharpCode.SharpDevelop.Bookmarks.SDBookmark mark in memento.Get("bookmarks", new ICSharpCode.SharpDevelop.Bookmarks.SDBookmark[0])) {
 				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.AddMark(mark);
 			}
+			List<string> filesToOpen = new List<string>();
 			foreach (string fileName in memento.Get("files", new string[0])) {
-				filesToOpenAfterSolutionLoad.Add(fileName);
+				if (File.Exists(fileName)) {
+					filesToOpen.Add(fileName);
+				}
 			}
+			System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(
+				System.Windows.Threading.DispatcherPriority.Background,
+				new Action(
+					delegate {
+						foreach (string file in filesToOpen)
+							FileService.OpenFile(file);
+					}));
 			
 			WebProjectsOptions.Instance.SetWebProjectOptions(Name, memento.Get("WebProjectOptions", new WebProjectOptions()) as WebProjectOptions);
 		}
@@ -431,13 +440,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		IProjectContent IProject.CreateProjectContent()
-		{
-			return this.CreateProjectContent();
+		public virtual IProjectContent ProjectContent {
+			get {
+				return null;
+			}
 		}
-		protected virtual IProjectContent CreateProjectContent()
-		{
-			return null;
+		
+		public virtual ITypeResolveContext TypeResolveContext {
+			get {
+				return NRefactory.TypeSystem.Implementation.MinimalResolveContext.Instance;
+			}
 		}
 		
 		/// <summary>
@@ -559,6 +571,50 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void SaveProjectExtensions(string name, XElement element)
 		{
+		}
+		
+		public virtual string GetDefaultNamespace(string fileName)
+		{
+			string relPath = FileUtility.GetRelativePath(this.Directory, Path.GetDirectoryName(fileName));
+			string[] subdirs = relPath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+			StringBuilder standardNameSpace = new StringBuilder(this.RootNamespace);
+			foreach(string subdir in subdirs) {
+				if (subdir == "." || subdir == ".." || subdir.Length == 0)
+					continue;
+				if (subdir.Equals("src", StringComparison.OrdinalIgnoreCase))
+					continue;
+				if (subdir.Equals("source", StringComparison.OrdinalIgnoreCase))
+					continue;
+				if (standardNameSpace.Length > 0)
+					standardNameSpace.Append('.');
+				standardNameSpace.Append(NewFileDialog.GenerateValidClassOrNamespaceName(subdir, true));
+			}
+			return standardNameSpace.ToString();
+		}
+		
+		public virtual System.CodeDom.Compiler.CodeDomProvider CreateCodeDomProvider()
+		{
+			return null;
+		}
+		
+		public virtual void GenerateCodeFromCodeDom(System.CodeDom.CodeCompileUnit compileUnit, TextWriter writer)
+		{
+			var provider = this.CreateCodeDomProvider();
+			if (provider != null) {
+				var options = new System.CodeDom.Compiler.CodeGeneratorOptions();
+				options.BlankLinesBetweenMembers = AmbienceService.CodeGenerationProperties.Get("BlankLinesBetweenMembers", true);
+				options.BracingStyle             = AmbienceService.CodeGenerationProperties.Get("StartBlockOnSameLine", true) ? "Block" : "C";
+				options.ElseOnClosing            = AmbienceService.CodeGenerationProperties.Get("ElseOnClosing", true);
+				options.IndentString = ICSharpCode.SharpDevelop.Editor.EditorControlService.GlobalOptions.IndentationString;
+				provider.GenerateCodeFromCompileUnit(compileUnit, writer, options);
+			} else {
+				writer.WriteLine("No CodeDom provider was found for this language.");
+			}
+		}
+		
+		public virtual IAmbience GetAmbience()
+		{
+			return new CSharpAmbience();
 		}
 	}
 }

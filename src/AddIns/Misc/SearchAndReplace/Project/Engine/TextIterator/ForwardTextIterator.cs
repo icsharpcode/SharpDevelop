@@ -4,8 +4,8 @@
 using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Diagnostics;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.Editor;
 
 namespace SearchAndReplace
 {

@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 
-/*
 namespace ICSharpCode.SharpDevelop
 {
 	public static class AmbienceService
@@ -13,33 +13,10 @@ namespace ICSharpCode.SharpDevelop
 		const string ambienceProperty       = "SharpDevelop.UI.CurrentAmbience";
 		const string codeGenerationProperty = "SharpDevelop.UI.CodeGenerationOptions";
 		
-		static AmbienceService()
-		{
-			PropertyService.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
-		}
-		
 		public static Properties CodeGenerationProperties {
 			get {
 				return PropertyService.Get(codeGenerationProperty, new Properties());
 			}
-		}
-		
-		static List<CodeGenerator> codeGenerators = new List<CodeGenerator>();
-		
-		static void ApplyCodeGenerationProperties(CodeGenerator generator)
-		{
-			CodeGeneratorOptions options = generator.Options;
-			System.CodeDom.Compiler.CodeGeneratorOptions cdo = new CodeDOMGeneratorUtility().CreateCodeGeneratorOptions;
-			
-			options.EmptyLinesBetweenMembers = cdo.BlankLinesBetweenMembers;
-			options.BracesOnSameLine = CodeGenerationProperties.Get("StartBlockOnSameLine", true);;
-			options.IndentString = cdo.IndentString;
-		}
-		
-		internal static void InitializeCodeGeneratorOptions(CodeGenerator generator)
-		{
-			codeGenerators.Add(generator);
-			ApplyCodeGenerationProperties(generator);
 		}
 		
 		public static bool GenerateDocumentComments {
@@ -74,19 +51,17 @@ namespace ICSharpCode.SharpDevelop
 		/// This method is thread-safe.
 		/// </summary>
 		/// <returns>Returns a new ambience object (ambience objects are never reused to ensure their thread-safety).
-		/// Never returns null, in case of errors the <see cref="NetAmbience"/> is used.</returns>
+		/// Never returns null, in case of errors the <see cref="CSharpAmbience"/> is used.</returns>
 		public static IAmbience GetCurrentAmbience()
 		{
-			IAmbience ambience;
 			if (UseProjectAmbienceIfPossible) {
-				ICSharpCode.SharpDevelop.Project.IProject p = ICSharpCode.SharpDevelop.Project.ProjectService.CurrentProject;
+				IProject p = ProjectService.CurrentProject;
 				if (p != null) {
-					ambience = p.GetAmbience();
-					if (ambience != null)
-						return ambience;
+					return p.GetAmbience();
 				}
 			}
 			string language = DefaultAmbienceName;
+			IAmbience ambience;
 			try {
 				ambience = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/" + language, null);
 			} catch (TreePathNotFoundException) {
@@ -95,7 +70,7 @@ namespace ICSharpCode.SharpDevelop
 			if (ambience == null && Gui.WorkbenchSingleton.MainWin32Window != null) {
 				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError}");
 			}
-			return ambience ?? new NetAmbience();
+			return ambience ?? new CSharpAmbience();
 		}
 		
 		public static string DefaultAmbienceName {
@@ -106,25 +81,5 @@ namespace ICSharpCode.SharpDevelop
 				PropertyService.Set(ambienceProperty, value);
 			}
 		}
-		
-		static void PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.Key == ambienceProperty) {
-				OnAmbienceChanged(EventArgs.Empty);
-			}
-			if (e.Key == codeGenerationProperty) {
-				codeGenerators.ForEach(ApplyCodeGenerationProperties);
-			}
-		}
-		
-		static void OnAmbienceChanged(EventArgs e)
-		{
-			if (AmbienceChanged != null) {
-				AmbienceChanged(null, e);
-			}
-		}
-		
-		public static event EventHandler AmbienceChanged;
 	}
 }
-*/

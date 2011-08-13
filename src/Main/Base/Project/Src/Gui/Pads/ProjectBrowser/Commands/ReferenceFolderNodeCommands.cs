@@ -184,7 +184,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			{
 				ReferenceProjectItem item = node.ReferenceProjectItem;
 				if (item != null) {
-					AssemblyParserService.RefreshProjectContentForReference(item);
+					#warning Reimplement RefreshReference
+					throw new NotImplementedException();
+					//AssemblyParserService.RefreshProjectContentForReference(item);
 				}
 			}
 		}

@@ -68,7 +68,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			DisplayBindingService.InitializeService();
 			LayoutConfiguration.LoadLayoutConfiguration();
 			FileService.InitializeService();
-			DomHostCallback.Register(); // must be called after StatusBarService.Initialize()
 			ParserService.InitializeParserService();
 			TaskService.Initialize();
 			Bookmarks.BookmarkManager.Initialize();

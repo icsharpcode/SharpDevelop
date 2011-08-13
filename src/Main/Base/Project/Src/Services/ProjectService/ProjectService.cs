@@ -203,7 +203,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				newProject.IdGuid = Guid.NewGuid().ToString().ToUpperInvariant();
 			}
 			solutionFolderNode.Container.AddFolder(newProject);
-			ParserService.CreateProjectContentForAddedProject(newProject);
+			ParserService.RegisterProjectContentForAddedProject(newProject);
 			solutionFolderNode.Solution.FixSolutionConfiguration(new IProject[] { newProject });
 			OnProjectAdded(new ProjectEventArgs(newProject));
 		}
@@ -274,7 +274,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				MessageService.ShowError(ex.Message);
 				return;
 			}
-			AbstractProject.filesToOpenAfterSolutionLoad.Clear();
 			try {
 				string file = GetPreferenceFileName(openSolution.FileName);
 				Properties properties;
@@ -300,16 +299,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			// preferences must be read before OnSolutionLoad is called to enable
 			// the event listeners to read e.Solution.Preferences.Properties
 			OnSolutionLoaded(new SolutionEventArgs(openSolution));
-		}
-		
-		internal static void ParserServiceCreatedProjectContents()
-		{
-			foreach (string file in AbstractProject.filesToOpenAfterSolutionLoad) {
-				if (File.Exists(file)) {
-					FileService.OpenFile(file);
-				}
-			}
-			AbstractProject.filesToOpenAfterSolutionLoad.Clear();
 		}
 		
 		static void ApplyConfigurationAndReadPreferences()

@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		#endregion
 		
-		public static void Unload()
+		internal static void Unload()
 		{
 			if (recentOpen != null) {
 				PropertyService.Set("RecentOpen", recentOpen.ToProperties());

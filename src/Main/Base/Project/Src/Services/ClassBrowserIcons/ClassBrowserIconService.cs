@@ -276,19 +276,22 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static ClassBrowserImage GetIcon(ITypeDefinition c)
 		{
-			int imageIndex = ClassIndex;
-			switch (c.ClassType) {
-				case ClassType.Delegate:
+			int imageIndex;
+			switch (c.Kind) {
+				case TypeKind.Delegate:
 					imageIndex = DelegateIndex;
 					break;
-				case ClassType.Enum:
+				case TypeKind.Enum:
 					imageIndex = EnumIndex;
 					break;
-				case ClassType.Struct:
+				case TypeKind.Struct:
 					imageIndex = StructIndex;
 					break;
-				case ClassType.Interface:
+				case TypeKind.Interface:
 					imageIndex = InterfaceIndex;
+					break;
+				default:
+					imageIndex = ClassIndex;
 					break;
 			}
 			return entityImages[imageIndex + GetModifierOffset(c.Accessibility)];

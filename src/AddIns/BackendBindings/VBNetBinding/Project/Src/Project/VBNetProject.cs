@@ -2,10 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom;
 using System.ComponentModel;
 using System.Linq;
 using System.IO;
-
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.VBNet;
@@ -178,6 +178,31 @@ namespace ICSharpCode.VBNetBinding
 				return defaultVal;
 			
 			return "On".Equals(val, StringComparison.OrdinalIgnoreCase);
+		}
+		
+		public override string GetDefaultNamespace(string fileName)
+		{
+			// use root namespace everywhere, ignore the folder name
+			return this.RootNamespace;
+		}
+		
+		public override System.CodeDom.Compiler.CodeDomProvider CreateCodeDomProvider()
+		{
+			return new Microsoft.VisualBasic.VBCodeProvider();
+		}
+		
+		public override void GenerateCodeFromCodeDom(CodeCompileUnit compileUnit, TextWriter writer)
+		{
+			// the root namespace is implicit in VB
+			string rootNamespace = this.RootNamespace;
+			foreach (CodeNamespace ns in ccu.Namespaces) {
+				if (string.Equals(ns.Name, rootNamespace, StringComparison.OrdinalIgnoreCase)) {
+					ns.Name = string.Empty;
+				} else if (ns.Name.StartsWith(rootNamespace + ".", StringComparison.OrdinalIgnoreCase)) {
+					ns.Name = ns.Name.Substring(rootNamespace.Length + 1);
+				}
+			}
+			base.GenerateCodeFromCodeDom(compileUnit, writer);
 		}
 	}
 }

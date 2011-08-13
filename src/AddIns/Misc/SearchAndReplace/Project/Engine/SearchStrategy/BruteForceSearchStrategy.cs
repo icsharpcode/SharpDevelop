@@ -4,6 +4,7 @@
 using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.Editor;
 
 namespace SearchAndReplace
 {

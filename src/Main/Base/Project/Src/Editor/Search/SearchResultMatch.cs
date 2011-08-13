@@ -71,12 +71,12 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		
 		public virtual TextLocation GetStartPosition(IDocument document)
 		{
-			return document.OffsetToPosition(Math.Min(Offset, document.TextLength));
+			return document.GetLocation(Math.Min(Offset, document.TextLength));
 		}
 		
 		public virtual TextLocation GetEndPosition(IDocument document)
 		{
-			return document.OffsetToPosition(Math.Min(Offset + Length, document.TextLength));
+			return document.GetLocation(Math.Min(Offset + Length, document.TextLength));
 		}
 		
 		/// <summary>
