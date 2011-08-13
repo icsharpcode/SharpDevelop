@@ -505,7 +505,7 @@ namespace HexEditor
 		{
 			g.Clear(Color.White);
 			TextRenderer.DrawText(g, headertext, Settings.OffsetFont, new Rectangle(1, 1, this.hexView.Width + 5, fontheight),
-			                      Settings.OffsetForeColor, this.BackColor, TextFormatFlags.Left & TextFormatFlags.Top);
+			                      Settings.OffsetForeColor.ToSystemDrawing(), this.BackColor, TextFormatFlags.Left & TextFormatFlags.Top);
 		}
 
 		/// <summary>
@@ -555,7 +555,7 @@ namespace HexEditor
 			builder = null;
 			
 			TextRenderer.DrawText(g, text, Settings.OffsetFont,this.side.ClientRectangle,
-			                      Settings.OffsetForeColor, Color.White, TextFormatFlags.Right);
+			                      Settings.OffsetForeColor.ToSystemDrawing(), Color.White, TextFormatFlags.Right);
 		}
 		
 		/// <summary>
@@ -575,7 +575,7 @@ namespace HexEditor
 				offset = GetOffsetForLine(top + i + 1);
 			}
 
-			TextRenderer.DrawText(g, builder.ToString(), Settings.DataFont, new Rectangle(0, 0, this.hexView.Width, this.hexView.Height), Settings.DataForeColor, Color.White, TextFormatFlags.Left & TextFormatFlags.Top);
+			TextRenderer.DrawText(g, builder.ToString(), Settings.DataFont, new Rectangle(0, 0, this.hexView.Width, this.hexView.Height), Settings.DataForeColor.ToSystemDrawing(), Color.White, TextFormatFlags.Left & TextFormatFlags.Top);
 		}
 		
 		/// <summary>
@@ -595,7 +595,7 @@ namespace HexEditor
 				builder.AppendLine(GetText(buffer.GetBytes(offset, this.BytesPerLine)));
 				offset = GetOffsetForLine(top + i + 1);
 			}
-			TextRenderer.DrawText(g, builder.ToString(), Settings.DataFont, new Point(0, 0), Settings.DataForeColor, Color.White);
+			TextRenderer.DrawText(g, builder.ToString(), Settings.DataFont, new Point(0, 0), Settings.DataForeColor.ToSystemDrawing(), Color.White);
 		}
 		
 		/// <summary>
