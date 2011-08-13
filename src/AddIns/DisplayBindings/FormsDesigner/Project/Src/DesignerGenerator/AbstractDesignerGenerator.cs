@@ -262,7 +262,8 @@ namespace ICSharpCode.FormsDesigner
 			
 			// generate file and get initialize components string
 			StringWriter writer = new StringWriter();
-			CodeDOMGenerator domGenerator = new CodeDOMGenerator(this.CodeDomProvider, tabs + '\t');
+			string indentation = tabs + EditorControlService.GlobalOptions.IndentationString;
+			CodeDOMGenerator domGenerator = new CodeDOMGenerator(this.CodeDomProvider, indentation);
 			domGenerator.ConvertContentDefinition(initializeComponent, writer);
 			
 			string statements = writer.ToString();
