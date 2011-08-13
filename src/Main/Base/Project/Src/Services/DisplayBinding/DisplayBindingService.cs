@@ -110,10 +110,15 @@ namespace ICSharpCode.SharpDevelop
 			}
 			
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (IsPrimaryBindingValidForFileName(binding, filename)) {
+				if (IsPrimaryBindingValidForFileName(binding, filename) && binding.Binding.IsPreferredBindingForFile(filename)) {
 					return binding;
 				}
 			}
+			
+//			var autoDetect = new AutoDetectDisplayBinding();
+//			if (autoDetect.AutoDetectFileContent(filename, new MemoryStream(File.ReadAllBytes(filename))) > double.NegativeInfinity)
+//				return autoDetect.BestDescriptor;
+			
 			return null;
 		}
 		

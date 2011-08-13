@@ -1246,9 +1246,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Saving
 		public override void Save(string fileName)
 		{
-			watcher.Disable();
-			watcher.Rename(fileName);
 			lock (SyncRoot) {
+				watcher.Disable();
+				watcher.Rename(fileName);
 				// we need the global lock - if the file is being renamed,
 				// MSBuild will update the global project collection
 				lock (MSBuildInternals.SolutionProjectCollectionLock) {
@@ -1259,8 +1259,8 @@ namespace ICSharpCode.SharpDevelop.Project
 						userProjectFile.Save(userFile);
 					}
 				}
+				watcher.Enable();
 			}
-			watcher.Enable();
 			FileUtility.RaiseFileSaved(new FileNameEventArgs(fileName));
 		}
 		#endregion
@@ -1381,7 +1381,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (ProjectPropertyGroupElement g in projectFile.PropertyGroups.Concat(userProjectFile.PropertyGroups)) {
 					// Rename the default configuration setting
 					var prop = g.Properties.FirstOrDefault(p => p.Name == "Configuration");
-						if (prop != null && prop.Value == oldName) {
+					if (prop != null && prop.Value == oldName) {
 						prop.Value = newName;
 					}
 					
@@ -1405,7 +1405,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (ProjectPropertyGroupElement g in projectFile.PropertyGroups.Concat(userProjectFile.PropertyGroups)) {
 					// Rename the default platform setting
 					var prop = g.Properties.FirstOrDefault(p => p.Name == "Platform");
-						if (prop != null && prop.Value == oldName) {
+					if (prop != null && prop.Value == oldName) {
 						prop.Value = newName;
 					}
 					

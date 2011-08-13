@@ -706,6 +706,16 @@ namespace ICSharpCode.SharpDevelop
 			{
 				return new SimpleViewContent(errorMessage) { TitleName = Path.GetFileName(file.FileName) };
 			}
+			
+			public bool IsPreferredBindingForFile(string fileName)
+			{
+				return false;
+			}
+			
+			public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+			{
+				return double.NegativeInfinity;
+			}
 		}
 	}
 }

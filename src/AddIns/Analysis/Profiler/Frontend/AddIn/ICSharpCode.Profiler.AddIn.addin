@@ -36,7 +36,7 @@
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id = "ProfilerDisplayBinding"
 		                insertbefore="Text"
-		                fileNamePattern=".sdps"
+		                fileNamePattern="\.(sdps)$"
 		                title = "${res:AddIns.Profiler.ProfilingView.Title}"
 		                class = "ICSharpCode.Profiler.AddIn.Views.ProfilerDisplayBinding"/>
 	</Path>
@@ -78,7 +78,8 @@
 		<FileFilter id = "SharpDevelopProfilingSession"
 		            insertbefore="AllFiles"
 		            name = "${res:AddIns.Profiler.FileExtensionDescription}"
-		            extensions = "*.sdps"/>
+		            extensions = "*.sdps"
+		            mimeType = "application/x-sharpdevelop-profiler"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">

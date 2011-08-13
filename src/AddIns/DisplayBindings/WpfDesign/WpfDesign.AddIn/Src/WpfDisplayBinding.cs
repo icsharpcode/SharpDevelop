@@ -21,6 +21,16 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			return new WpfViewContent(file);
 		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		{
+			throw new NotImplementedException();
+		}
 	}
 	
 	public class WpfSecondaryDisplayBinding : ISecondaryDisplayBinding

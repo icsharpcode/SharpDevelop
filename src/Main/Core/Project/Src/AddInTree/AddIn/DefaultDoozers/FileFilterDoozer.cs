@@ -36,7 +36,8 @@ namespace ICSharpCode.Core
 			Codon codon = args.Codon;
 			return new FileFilterDescriptor {
 				Name = StringParser.Parse(codon.Properties["name"]),
-				Extensions = codon.Properties["extensions"]
+				Extensions = codon.Properties["extensions"],
+				MimeType = codon.Properties["mimeType"]
 			};
 		}
 	}
@@ -45,6 +46,7 @@ namespace ICSharpCode.Core
 	{
 		public string Name { get; set; }
 		public string Extensions { get; set; }
+		public string MimeType { get; set; }
 		
 		/// <summary>
 		/// Gets whether this descriptor matches the specified file extension.

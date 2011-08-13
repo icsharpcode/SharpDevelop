@@ -23,7 +23,7 @@
 		<DisplayBinding id    = "IconEditor"
 		                class = "ICSharpCode.IconEditorAddIn.IconDisplayBinding"
 		                insertbefore    = "Text"
-		                fileNamePattern = "\.ico$"
+		                fileNamePattern = "\.(ico)$"
 		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.IconEditor}"/>
 	</Path>
 </AddIn>
