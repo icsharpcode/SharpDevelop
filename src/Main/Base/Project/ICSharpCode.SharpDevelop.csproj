@@ -189,8 +189,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
-    <Compile Include="Src\Gui\Components\ColorPicker.xaml.cs">
-      <DependentUpon>ColorPicker.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Components\ColorPickerButton.xaml.cs">
+      <DependentUpon>ColorPickerButton.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\StringParserPropertyContainer.cs" />
@@ -881,7 +881,7 @@
       <Private>False</Private>
     </ProjectReference>
     <Page Include="Src\Gui\App.xaml" />
-    <Page Include="Src\Gui\Components\ColorPicker.xaml" />
+    <Page Include="Src\Gui\Components\ColorPickerButton.xaml" />
     <Page Include="Src\Gui\Dialogs\GotoDialog.xaml">
       <DependentUpon>GotoDialog.cs</DependentUpon>
     </Page>

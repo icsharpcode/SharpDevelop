@@ -15,10 +15,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// A user control for choosing a color.
 	/// </summary>
-	public partial class ColorPicker : UserControl
+	public partial class ColorPickerButton : UserControl
 	{
 		public static readonly DependencyProperty ValueProperty =
-			DependencyProperty.Register("Value", typeof(Color), typeof(ColorPicker), new FrameworkPropertyMetadata(new Color(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
+			DependencyProperty.Register("Value", typeof(Color), typeof(ColorPickerButton), new FrameworkPropertyMetadata(new Color(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
 		
 		public Color Value {
 			get { return (Color)GetValue(ValueProperty); }
@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public static readonly DependencyProperty TextProperty =
-			DependencyProperty.Register("Text", typeof(string), typeof(ColorPicker),
+			DependencyProperty.Register("Text", typeof(string), typeof(ColorPickerButton),
 			                            new FrameworkPropertyMetadata(OnValueChanged));
 		
 		public string Text {
@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static void OnValueChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
 		{
-			ColorPicker picker = obj as ColorPicker;
+			ColorPickerButton picker = obj as ColorPickerButton;
 			if (picker != null) {
 				Color color = picker.Value;
 				picker.border.Background = new SolidColorBrush(color);
@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public ColorPicker()
+		public ColorPickerButton()
 		{
 			InitializeComponent();
 		}
