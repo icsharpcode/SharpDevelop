@@ -14,11 +14,13 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
-
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Project;
 using WinForms = System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop
@@ -110,25 +112,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <returns>Iterator that enumerates the tree structure in preorder.</returns>
 		public static IEnumerable<T> Flatten<T>(this IEnumerable<T> input, Func<T, IEnumerable<T>> recursion)
 		{
-			Stack<IEnumerator<T>> stack = new Stack<IEnumerator<T>>();
-			try {
-				stack.Push(input.GetEnumerator());
-				while (stack.Count > 0) {
-					while (stack.Peek().MoveNext()) {
-						T element = stack.Peek().Current;
-						yield return element;
-						IEnumerable<T> children = recursion(element);
-						if (children != null) {
-							stack.Push(children.GetEnumerator());
-						}
-					}
-					stack.Pop().Dispose();
-				}
-			} finally {
-				while (stack.Count > 0) {
-					stack.Pop().Dispose();
-				}
-			}
+			return ICSharpCode.NRefactory.Utils.TreeTraversal.PreOrder(input, recursion);
 		}
 		
 		/// <summary>
@@ -565,6 +549,19 @@ namespace ICSharpCode.SharpDevelop
 		public static void ClearSelection(this ITextEditor editor)
 		{
 			editor.Select(editor.Document.GetOffset(editor.Caret.Location), 0);
+		}
+		
+		/// <summary>
+		/// Gets the ambience for the specified project content.
+		/// Never returns null.
+		/// </summary>
+		public static IAmbience GetAmbience(this IProjectContent pc)
+		{
+			IProject p = ParserService.GetProject(pc);
+			if (p != null)
+				return p.GetAmbience();
+			else
+				return AmbienceService.GetCurrentAmbience();
 		}
 #endregion		
 	}

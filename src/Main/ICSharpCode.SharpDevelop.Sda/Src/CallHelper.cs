@@ -49,7 +49,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 			if (properties.PropertiesName != null) {
 				startup.PropertiesName = properties.PropertiesName;
 			}
-			AssemblyParserService.DomPersistencePath = properties.DomPersistencePath;
+			#warning reimplement DOM persistence, or remove the setting
+			//AssemblyParserService.DomPersistencePath = properties.DomPersistencePath;
 			
 			if (properties.ApplicationRootPath != null) {
 				FileUtility.ApplicationRootPath = properties.ApplicationRootPath;
@@ -92,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			Project.ProjectService.SolutionConfigurationChanged += delegate { this.callback.SolutionConfigurationChanged(); };
 			FileUtility.FileLoaded += delegate(object sender, FileNameEventArgs e) { this.callback.FileLoaded(e.FileName); };
 			FileUtility.FileSaved  += delegate(object sender, FileNameEventArgs e) { this.callback.FileSaved(e.FileName); };
-			
+		
 			LoggingService.Info("InitSharpDevelop finished");
 		}
 		

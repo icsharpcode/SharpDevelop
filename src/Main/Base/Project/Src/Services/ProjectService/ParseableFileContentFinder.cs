@@ -7,6 +7,7 @@ using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project
 {

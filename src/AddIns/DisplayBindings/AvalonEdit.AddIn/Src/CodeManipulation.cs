@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+/*
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
@@ -288,3 +288,4 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 	}
 }
+*/

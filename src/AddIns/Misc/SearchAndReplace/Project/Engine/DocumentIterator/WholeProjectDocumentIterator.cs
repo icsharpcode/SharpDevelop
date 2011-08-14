@@ -4,13 +4,13 @@
 using System;
 using System.Collections;
 using System.IO;
-
 using ICSharpCode.Core;
 using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace SearchAndReplace

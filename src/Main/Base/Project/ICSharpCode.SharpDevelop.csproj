@@ -203,16 +203,9 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
     <None Include="ICSharpCode.SharpDevelop.addin" />
-    <None Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs">
-      <Link>Src\Services\RefactoringService\ExtractInterfaceDialog.cs</Link>
-    </None>
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.Designer.cs">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
     </Compile>
-    <None Include="Src\Gui\Dialogs\ExtractInterfaceDialog.Designer.cs">
-      <Link>Src\Services\RefactoringService\ExtractInterfaceDialog.Designer.cs</Link>
-      <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
-    </None>
     <Compile Include="Src\Gui\Dialogs\GotoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -337,6 +330,7 @@
     <Compile Include="Src\Services\ParserService\DomAssemblyName.cs" />
     <Compile Include="Src\Services\ParserService\Fusion.cs" />
     <Compile Include="Src\Services\ParserService\GacInterop.cs" />
+    <Compile Include="Src\Services\ParserService\IParser.cs" />
     <Compile Include="Src\Services\ParserService\ParseInformation.cs" />
     <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
@@ -762,7 +756,6 @@
     <Compile Include="Src\Project\MSBuildItemDefinitionGroup.cs" />
     <Compile Include="Src\Project\AbstractProject.cs" />
     <Compile Include="Src\Project\BuildOptions.cs" />
-    <Compile Include="Src\Project\IParser.cs" />
     <Compile Include="Src\Project\CompilableProject.cs" />
     <Compile Include="Src\Project\MSBuildInternals.cs" />
     <Compile Include="Src\Util\ScrollUtils.cs" />
@@ -782,10 +775,6 @@
     <EmbeddedResource Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
-      <Link>Src\Services\RefactoringService\ExtractInterfaceDialog.resx</Link>
-      <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
-    </None>
     <EmbeddedResource Include="Src\Gui\Dialogs\NewProjectDialog.resx">
       <DependentUpon>NewProjectDialog.cs</DependentUpon>
     </EmbeddedResource>

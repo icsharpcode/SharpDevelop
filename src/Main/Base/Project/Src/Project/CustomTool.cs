@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using ICSharpCode.Core;
 using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -200,7 +201,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			                         },
 			                         outputFileName, FileErrorPolicy.Inform);
 			EnsureOutputFileIsInProject(baseItem, outputFileName);
-			ParserService.BeginParse(outputFileName, new StringTextSource(codeOutput));
+			ParserService.ParseAsync(outputFileName, new StringTextSource(codeOutput));
 		}
 		
 		public void GenerateCodeDomAsync(FileProjectItem baseItem, string outputFileName, Func<CodeCompileUnit> func)

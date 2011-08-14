@@ -6,9 +6,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project
 {

@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Folding;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -52,10 +52,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			List<NewFolding> newFoldMarkers = new List<NewFolding>();
 			if (parseInfo != null) {
-				foreach (IClass c in parseInfo.CompilationUnit.Classes) {
+				foreach (ITypeDefinition c in parseInfo.ParsedFile.TopLevelTypeDefinitions) {
 					AddClassMembers(c, newFoldMarkers);
 				}
-				foreach (FoldingRegion foldingRegion in parseInfo.CompilationUnit.FoldingRegions) {
+				foreach (FoldingRegion foldingRegion in parseInfo.FoldingRegions) {
 					NewFolding f = new NewFoldingDefinition(GetOffset(foldingRegion.Region.BeginLine, foldingRegion.Region.BeginColumn),
 					                                        GetOffset(foldingRegion.Region.EndLine, foldingRegion.Region.EndColumn));
 					f.DefaultClosed = isFirstUpdate;
@@ -76,9 +76,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			public NewFoldingDefinition(int start, int end) : base(start, end) {}
 		}
 		
-		void AddClassMembers(IClass c, List<NewFolding> newFoldMarkers)
+		void AddClassMembers(ITypeDefinition c, List<NewFolding> newFoldMarkers)
 		{
-			if (c.ClassType == ClassType.Delegate) {
+			if (c.Kind == TypeKind.Delegate) {
 				return;
 			}
 			DomRegion cRegion = c.BodyRegion;
@@ -88,11 +88,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				newFoldMarkers.Add(new NewFolding(GetOffset(cRegion.BeginLine, cRegion.BeginColumn),
 				                                  GetOffset(cRegion.EndLine, cRegion.EndColumn)));
 			}
-			foreach (IClass innerClass in c.InnerClasses) {
+			foreach (ITypeDefinition innerClass in c.NestedTypes) {
 				AddClassMembers(innerClass, newFoldMarkers);
 			}
 			
-			foreach (IMember m in c.AllMembers) {
+			foreach (IMember m in c.Members) {
 				if (m.Region.EndLine < m.BodyRegion.EndLine) {
 					newFoldMarkers.Add(new NewFoldingDefinition(GetOffset(m.Region.EndLine, m.Region.EndColumn),
 					                                            GetOffset(m.BodyRegion.EndLine, m.BodyRegion.EndColumn)));

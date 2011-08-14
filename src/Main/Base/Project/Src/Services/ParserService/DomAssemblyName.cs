@@ -3,7 +3,7 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Parser
 {
 	/// <summary>
 	/// Similar to System.Reflection.AssemblyName, but does not raise an exception

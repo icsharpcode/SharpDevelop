@@ -11,6 +11,8 @@ using System.Text;
 using ICSharpCode.AvalonEdit.AddIn.MyersDiff;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
@@ -20,9 +22,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	public class DefaultChangeWatcher : IChangeWatcher, ILineTracker
 	{
 		CompressingTreeList<LineChangeInfo> changeList;
-		IDocument document;
-		TextDocument textDocument;
-		IDocument baseDocument;
+		TextDocument document;
+		ReadOnlyDocument baseDocument;
 		
 		public event EventHandler ChangeOccurred;
 		
@@ -38,33 +39,31 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return changeList[lineNumber];
 		}
 		
-		public void Initialize(IDocument document)
+		public void Initialize(TextDocument document, FileName fileName)
 		{
 			if (changeList != null && changeList.Any())
 				return;
 			
 			this.document = document;
-			this.textDocument = (TextDocument)document.GetService(typeof(TextDocument));
 			this.changeList = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
 			
-			Stream baseFileStream = GetBaseVersion();
+			Stream baseFileStream = GetBaseVersion(fileName);
 			
 			// TODO : update baseDocument on VCS actions
 			if (baseFileStream != null) {
 				// ReadAll() is taking care of closing the stream
-				baseDocument = DocumentUtilitites.LoadReadOnlyDocumentFromBuffer(new StringTextBuffer(ReadAll(baseFileStream)));
+				baseDocument = new ReadOnlyDocument(ReadAll(baseFileStream));
 			} else {
 				if (baseDocument == null) {
 					// if the file is not under subversion, the document is the opened document
-					var doc = new TextDocument(textDocument.Text);
-					baseDocument = new AvalonEditDocumentAdapter(doc, null);
+					baseDocument = new ReadOnlyDocument(document);
 				}
 			}
 			
 			SetupInitialFileState(false);
 			
-			this.textDocument.LineTrackers.Add(this);
-			this.textDocument.UndoStack.PropertyChanged += UndoStackPropertyChanged;
+			this.document.LineTrackers.Add(this);
+			this.document.UndoStack.PropertyChanged += UndoStackPropertyChanged;
 		}
 		
 		LineChangeInfo TransformLineChangeInfo(LineChangeInfo info)
@@ -81,7 +80,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (update)
 					changeList.Transform(TransformLineChangeInfo);
 				else
-					changeList.InsertRange(0, document.TotalNumberOfLines + 1, LineChangeInfo.Empty);
+					changeList.InsertRange(0, document.LineCount + 1, LineChangeInfo.Empty);
 			} else {
 				changeList.Clear();
 				
@@ -110,7 +109,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					lastEndLine = endLine;
 				}
 				
-				changeList.InsertRange(changeList.Count, textDocument.LineCount - lastEndLine, LineChangeInfo.Empty);
+				changeList.InsertRange(changeList.Count, document.LineCount - lastEndLine, LineChangeInfo.Empty);
 			}
 			
 			OnChangeOccurred(EventArgs.Empty);
@@ -123,10 +122,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		Stream GetBaseVersion()
+		Stream GetBaseVersion(FileName fileName)
 		{
-			string fileName = ((ITextEditor)document.GetService(typeof(ITextEditor))).FileName;
-			
 			foreach (IDocumentVersionProvider provider in VersioningServices.Instance.DocumentVersionProviders) {
 				var result = provider.OpenBaseVersion(fileName);
 				if (result != null)
@@ -136,9 +133,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return null;
 		}
 		
-		void UndoStackPropertyChanged(object sender, PropertyChangedEventArgs e)
+		void UndoStackPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "IsOriginalFile" && textDocument.UndoStack.IsOriginalFile)
+			if (e.PropertyName == "IsOriginalFile" && document.UndoStack.IsOriginalFile)
 				SetupInitialFileState(true);
 		}
 		
@@ -167,7 +164,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void ILineTracker.RebuildDocument()
 		{
 			changeList.Clear();
-			changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.Unsaved, 1, 1, baseDocument.TotalNumberOfLines, document.TotalNumberOfLines));
+			changeList.InsertRange(0, document.LineCount + 1, new LineChangeInfo(ChangeType.Unsaved, 1, 1, baseDocument.LineCount, document.LineCount));
 		}
 		
 		bool disposed = false;
@@ -175,8 +172,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void Dispose()
 		{
 			if (!disposed) {
-				this.textDocument.LineTrackers.Remove(this);
-				this.textDocument.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
+				this.document.LineTrackers.Remove(this);
+				this.document.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
 				disposed = true;
 			}
 		}
@@ -193,8 +190,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (info.Change == ChangeType.Added)
 					return "";
 				
-				var startDocumentLine = baseDocument.GetLine(info.OldStartLineNumber + 1);
-				var endLine = baseDocument.GetLine(info.OldEndLineNumber);
+				var startDocumentLine = baseDocument.GetLineByNumber(info.OldStartLineNumber + 1);
+				var endLine = baseDocument.GetLineByNumber(info.OldEndLineNumber);
 				
 				return baseDocument.GetText(startDocumentLine.Offset, endLine.EndOffset - startDocumentLine.Offset);
 			}
@@ -208,8 +205,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			LineChangeInfo info = changeList[lineNumber];
 			
 			if (info.Change != ChangeType.None && info.Change != ChangeType.Unsaved) {
-				var startLine = document.GetLine(info.NewStartLineNumber + 1);
-				var endLine = document.GetLine(info.NewEndLineNumber);
+				var startLine = document.GetLineByNumber(info.NewStartLineNumber + 1);
+				var endLine = document.GetLineByNumber(info.NewEndLineNumber);
 				
 				offset = startLine.Offset;
 				length = endLine.EndOffset - startLine.Offset;

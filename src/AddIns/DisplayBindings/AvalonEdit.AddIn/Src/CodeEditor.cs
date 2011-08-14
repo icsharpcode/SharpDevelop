@@ -13,7 +13,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
@@ -22,24 +21,16 @@ using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
-	public interface ICodeEditor
-	{
-		TextDocument Document { get; }
-		
-		void Redraw(ISegment segment, DispatcherPriority priority);
-		
-		event EventHandler DocumentChanged;
-	}
-	
 	/// <summary>
 	/// Integrates AvalonEdit with SharpDevelop.
 	/// Also provides support for Split-View (showing two AvalonEdit instances using the same TextDocument)
@@ -93,8 +84,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public event EventHandler DocumentChanged;
 		
+		[Obsolete("Use CodeEditor.Document instead; TextDocument now directly implements IDocument")]
 		public IDocument DocumentAdapter {
-			get { return primaryTextEditorAdapter.Document; }
+			get { return this.Document; }
 		}
 		
 		public ITextEditor PrimaryTextEditorAdapter {
@@ -126,7 +118,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					} else {
 						this.errorPainter.UpdateErrors();
 					}
-					changeWatcher.Initialize(this.DocumentAdapter);
+					changeWatcher.Initialize(this.Document, fileName);
 					
 					FetchParseInformation();
 				}
@@ -375,7 +367,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void HandleCaretPositionChange()
 		{
 			if (quickClassBrowser != null) {
-				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
+				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditor.TextArea.Caret.Location);
 			}
 			
 			CaretPositionChanged.RaiseEvent(this, EventArgs.Empty);
@@ -470,7 +462,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						// Immediately parse on enter.
 						// This ensures we have up-to-date CC info about the method boundary when a user
 						// types near the end of a method.
-						ParserService.BeginParse(this.FileName, this.DocumentAdapter.CreateSnapshot());
+						ParserService.ParseAsync(this.FileName, this.DocumentAdapter.CreateSnapshot());
 					}
 				}
 			}
@@ -526,10 +518,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void FetchParseInformation()
 		{
-			ParseInformation parseInfo = ParserService.GetExistingParseInformation(this.FileName);
+			ParseInformation parseInfo = ParserService.GetExistingParsedFile(this.FileName);
 			if (parseInfo == null) {
 				// if parse info is not yet available, start parsing on background
-				ParserService.BeginParse(this.FileName, primaryTextEditorAdapter.Document);
+				ParserService.ParseAsync(this.FileName, primaryTextEditorAdapter.Document);
 				// we'll receive the result using the ParseInformationUpdated event
 			}
 			ParseInformationUpdated(parseInfo);
@@ -544,7 +536,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.VerifyAccess();
 			// When parse information is updated quickly in succession, only do a single update
 			// to the latest version.
-			updateParseInfoTo = e.NewParsedFile;
+			updateParseInfoTo = e.NewParseInformation;
 			this.Dispatcher.BeginInvoke(
 				DispatcherPriority.Background,
 				new Action(
@@ -561,15 +553,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (parseInfo != null && CodeEditorOptions.Instance.EnableQuickClassBrowser) {
 				// don't create quickClassBrowser for files that don't have any classes
 				// (but do keep the quickClassBrowser when the last class is removed from a file)
-				if (quickClassBrowser != null || parseInfo.CompilationUnit.Classes.Count > 0) {
+				if (quickClassBrowser != null || parseInfo.ParsedFile.TopLevelTypeDefinitions.Count > 0) {
 					if (quickClassBrowser == null) {
 						quickClassBrowser = new QuickClassBrowser();
 						quickClassBrowser.JumpAction = (line, col) => ActiveTextEditor.JumpTo(line, col);
 						SetRow(quickClassBrowser, 0);
 						this.Children.Add(quickClassBrowser);
 					}
-					quickClassBrowser.Update(parseInfo.CompilationUnit);
-					quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
+					quickClassBrowser.Update(parseInfo.ParsedFile);
+					quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditor.TextArea.Caret.Location);
 				}
 			} else {
 				if (quickClassBrowser != null) {
@@ -577,7 +569,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					quickClassBrowser = null;
 				}
 			}
-			iconBarManager.UpdateClassMemberBookmarks(parseInfo);
+			iconBarManager.UpdateClassMemberBookmarks(parseInfo.ParsedFile);
 			primaryTextEditor.UpdateParseInformationForFolding(parseInfo);
 			if (secondaryTextEditor != null)
 				secondaryTextEditor.UpdateParseInformationForFolding(parseInfo);

@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using System.Collections.Generic;
@@ -27,11 +28,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 				if (provider != null) {
 					ITextEditor editor = provider.TextEditor;
 					if (editor.SelectionLength > 0) {
-						int start = editor.Document.GetLineForOffset(editor.SelectionStart).LineNumber;
-						int end = editor.Document.GetLineForOffset(editor.SelectionStart + editor.SelectionLength).LineNumber;
+						int start = editor.Document.GetLineByOffset(editor.SelectionStart).LineNumber;
+						int end = editor.Document.GetLineByOffset(editor.SelectionStart + editor.SelectionLength).LineNumber;
 						SortLines(editor.Document, start, end, comparer, SortOptions.RemoveDuplicates);
 					} else {
-						SortLines(editor.Document, 1, editor.Document.TotalNumberOfLines, comparer, SortOptions.RemoveDuplicates);
+						SortLines(editor.Document, 1, editor.Document.LineCount, comparer, SortOptions.RemoveDuplicates);
 					}
 				}
 			}
@@ -41,7 +42,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 		{
 			List<string> lines = new List<string>();
 			for (int i = startLine; i <= endLine; ++i) {
-				IDocumentLine line = document.GetLine(i);
+				IDocumentLine line = document.GetLineByNumber(i);
 				lines.Add(document.GetText(line.Offset, line.Length));
 			}
 			

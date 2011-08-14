@@ -15,6 +15,7 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
+	/*
 	/// <summary>
 	/// Renders Popup with context actions on the left side of the current line in the editor.
 	/// </summary>
@@ -154,4 +155,5 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				ClosePopup();
 		}
 	}
+	*/
 }

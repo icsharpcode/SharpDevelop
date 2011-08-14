@@ -255,7 +255,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public static ITypeDefinition GetTypeDefinition (this IParsedFile file, int line, int column)
 		{
-			return file.GetTypeDefinition (new AstLocation (line, column));
+			return file.GetInnerMostTypeDefinition (new AstLocation (line, column));
 		}
 		
 		/// <summary>

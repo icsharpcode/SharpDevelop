@@ -8,6 +8,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -226,7 +227,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// Tasks are created by parsing, so the parse information for item.FileName should already be present.
 			// If they aren't, that's because the file might have been deleted/renamed in the meantime.
 			// We use GetExistingParseInformation to avoid trying to parse a file that might have been deleted/renamed.
-			IParsedFile parseInfo = ParserService.GetExistingParseInformation(item.FileName);
+			IParsedFile parseInfo = ParserService.GetExistingParsedFile(item.FileName);
 			if (parseInfo != null) {
 				ITypeDefinition c = parseInfo.GetTypeDefinition(item.Line, item.Column);
 				if (c != null) return c;

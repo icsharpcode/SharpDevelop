@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
-
 using ICSharpCode.AvalonEdit.Snippets;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 {
@@ -185,18 +185,18 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		static string GetValue(ITextEditor editor, string propertyName)
 		{
 			if ("ClassName".Equals(propertyName, StringComparison.OrdinalIgnoreCase)) {
-				IClass c = GetCurrentClass(editor);
+				ITypeDefinition c = GetCurrentClass(editor);
 				if (c != null)
 					return c.Name;
 			}
 			return Core.StringParser.GetValue(propertyName);
 		}
 		
-		static IClass GetCurrentClass(ITextEditor editor)
+		static ITypeDefinition GetCurrentClass(ITextEditor editor)
 		{
-			var parseInfo = ParserService.GetExistingParseInformation(editor.FileName);
+			var parseInfo = ParserService.GetExistingParsedFile(editor.FileName);
 			if (parseInfo != null) {
-				return parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
+				return parseInfo.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
 			}
 			return null;
 		}

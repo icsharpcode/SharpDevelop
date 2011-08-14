@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -455,7 +456,7 @@ namespace ICSharpCode.SharpDevelop
 					// We discarded some information when closing the file,
 					// so we need to re-parse it.
 					if (File.Exists(this.FileName))
-						ParserService.BeginParse(this.FileName);
+						ParserService.ParseAsync(this.FileName);
 					else
 						ParserService.ClearParseInformation(this.FileName);
 				}

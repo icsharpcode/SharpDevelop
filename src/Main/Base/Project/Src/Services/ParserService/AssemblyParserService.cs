@@ -15,7 +15,7 @@ using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Tasks;
 using Mono.Cecil;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Parser
 {
 	/// <summary>
 	/// Portions of parser service that deal with loading external assemblies for code completion.

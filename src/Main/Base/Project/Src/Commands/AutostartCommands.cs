@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			
 			NavigationService.ResumeLogging();
 			
-			ParserService.StartParserThread();
+			Parser.ParserService.StartParserThread();
 			
 			// finally run the workbench window ...
 			app.Run(WorkbenchSingleton.MainWindow);

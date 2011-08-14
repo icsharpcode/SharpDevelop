@@ -7,7 +7,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Parser
 {
 	public class ParseInformationEventArgs : EventArgs
 	{

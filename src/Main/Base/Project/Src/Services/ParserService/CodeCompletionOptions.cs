@@ -6,6 +6,8 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop
 {
+	// TODO: what is this class doing in the ParserService ??
+	
 	/// <summary>
 	/// Class containing static properties for the code completion options.
 	/// </summary>

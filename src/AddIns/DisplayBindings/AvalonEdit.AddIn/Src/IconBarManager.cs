@@ -1,11 +1,11 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Dom;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -40,7 +40,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public event EventHandler RedrawRequested;
 		
-		public void UpdateClassMemberBookmarks(ParseInformation parseInfo)
+		public void UpdateClassMemberBookmarks(IParsedFile parseInfo)
 		{
 			for (int i = bookmarks.Count - 1; i >= 0; i--) {
 				if (IsClassMemberBookmark(bookmarks[i]))
@@ -48,18 +48,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			if (parseInfo == null)
 				return;
-			foreach (IClass c in parseInfo.CompilationUnit.Classes) {
+			foreach (ITypeDefinition c in parseInfo.TopLevelTypeDefinitions) {
 				AddClassMemberBookmarks(c);
 			}
 		}
 		
-		void AddClassMemberBookmarks(IClass c)
+		void AddClassMemberBookmarks(ITypeDefinition c)
 		{
 			if (c.IsSynthetic) return;
 			if (!c.Region.IsEmpty) {
 				bookmarks.Add(new ClassBookmark(c));
 			}
-			foreach (IClass innerClass in c.InnerClasses) {
+			foreach (ITypeDefinition innerClass in c.NestedTypes) {
 				AddClassMemberBookmarks(innerClass);
 			}
 			foreach (IMethod m in c.Methods) {

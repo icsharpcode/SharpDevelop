@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop
@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
-			if (e.NewParsedFile == ParserService.GetExistingParseInformation(e.FileName)) {
+			if (e.NewParsedFile == ParserService.GetExistingParsedFile(e.FileName)) {
 				// Call UpdateCommentTags only for the main parse information (if a file is in multiple projects),
 				// and only if the results haven't already been replaced with a more recent ParseInformation.
 				if (e.NewParseInformation != null) {

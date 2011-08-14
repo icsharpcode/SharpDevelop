@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -44,8 +46,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.IsInSamePart = true;
 				this.entity = entity;
 				this.typeCode = typeCode;
-				IAmbience ambience = entity.ProjectContent.Language.GetAmbience();
-				if (entity is IClass)
+				IAmbience ambience = entity.ProjectContent.GetAmbience();
+				if (entity is ITypeDefinition)
 					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.UseFullyQualifiedMemberNames;
 				else
 					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
@@ -116,7 +118,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// This causes the classes combo box to lose its current selection,
 		/// so the members combo box will be cleared.
 		/// </summary>
-		public void Update(ICompilationUnit compilationUnit)
+		public void Update(IParsedFile compilationUnit)
 		{
 			runUpdateWhenDropDownClosed = true;
 			runUpdateWhenDropDownClosedCU = compilationUnit;
@@ -129,11 +131,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		List<EntityItem> classItems = new List<EntityItem>();
 		List<EntityItem> memberItems = new List<EntityItem>();
 		
-		void DoUpdate(ICompilationUnit compilationUnit)
+		void DoUpdate(IParsedFile compilationUnit)
 		{
 			classItems = new List<EntityItem>();
 			if (compilationUnit != null) {
-				AddClasses(compilationUnit.Classes);
+				AddClasses(compilationUnit.TopLevelTypeDefinitions);
 			}
 			classItems.Sort();
 			classComboBox.ItemsSource = classItems;
@@ -145,9 +147,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		// Delayed execution - avoid changing combo boxes while the user is browsing the dropdown list.
 		bool runUpdateWhenDropDownClosed;
-		ICompilationUnit runUpdateWhenDropDownClosedCU;
+		IParsedFile runUpdateWhenDropDownClosedCU;
 		bool runSelectItemWhenDropDownClosed;
-		Location runSelectItemWhenDropDownClosedLocation;
+		TextLocation runSelectItemWhenDropDownClosedLocation;
 		
 		void ComboBox_DropDownClosed(object sender, EventArgs e)
 		{
@@ -162,18 +164,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		void AddClasses(IEnumerable<IClass> classes)
+		void AddClasses(IEnumerable<ITypeDefinition> classes)
 		{
-			foreach (IClass c in classes) {
+			foreach (ITypeDefinition c in classes) {
 				classItems.Add(new EntityItem(c, TYPE_CLASS));
-				AddClasses(c.InnerClasses);
+				AddClasses(c.NestedTypes);
 			}
 		}
 		
 		/// <summary>
 		/// Selects the class and member closest to the specified location.
 		/// </summary>
-		public void SelectItemAtCaretPosition(Location location)
+		public void SelectItemAtCaretPosition(TextLocation location)
 		{
 			runSelectItemWhenDropDownClosed = true;
 			runSelectItemWhenDropDownClosedLocation = location;
@@ -181,14 +183,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				ComboBox_DropDownClosed(null, null);
 		}
 		
-		void DoSelectItem(Location location)
+		void DoSelectItem(TextLocation location)
 		{
 			EntityItem matchInside = null;
 			EntityItem nearestMatch = null;
 			int nearestMatchDistance = int.MaxValue;
 			foreach (EntityItem item in classItems) {
 				if (item.IsInSamePart) {
-					IClass c = (IClass)item.Entity;
+					ITypeDefinition c = (ITypeDefinition)item.Entity;
 					if (c.Region.IsInside(location.Line, location.Column)) {
 						matchInside = item;
 						// when there are multiple matches inside (nested classes), use the last one
@@ -236,10 +238,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// The selected class was changed.
 			// Update the list of member items to be the list of members of the current class.
 			EntityItem item = classComboBox.SelectedItem as EntityItem;
-			IClass selectedClass = item != null ? item.Entity as IClass : null;
+			ITypeDefinition selectedClass = item != null ? item.Entity as ITypeDefinition : null;
 			memberItems = new List<EntityItem>();
 			if (selectedClass != null) {
-				IClass compoundClass = selectedClass.GetCompoundClass();
+				ITypeDefinition compoundClass = selectedClass.GetDefinition();
 				foreach (var m in compoundClass.Methods) {
 					AddMember(selectedClass, m, m.IsConstructor ? TYPE_CONSTRUCTOR : TYPE_METHOD);
 				}
@@ -261,7 +263,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			membersComboBox.ItemsSource = memberItems;
 		}
 		
-		void AddMember(IClass selectedClass, IMember member, int typeCode)
+		void AddMember(ITypeDefinition selectedClass, IMember member, int typeCode)
 		{
 			bool isInSamePart = (member.DeclaringType == selectedClass);
 			memberItems.Add(new EntityItem(member, typeCode) { IsInSamePart = isInSamePart });
@@ -287,7 +289,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (item.IsInSamePart && jumpAction != null) {
 				jumpAction(region.BeginLine, region.BeginColumn);
 			} else {
-				FileService.JumpToFilePosition(item.Entity.CompilationUnit.FileName, region.BeginLine, region.BeginColumn);
+				FileService.JumpToFilePosition(region.FileName, region.BeginLine, region.BeginColumn);
 			}
 		}
 		

@@ -14,21 +14,18 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.Commands;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Refactoring;
-using Ast = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -42,8 +39,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public ITextEditor Adapter { get; set; }
 		
 		BracketHighlightRenderer bracketRenderer;
-		CaretReferencesRenderer caretReferencesRenderer;
-		ContextActionsRenderer contextActionsRenderer;
+		//CaretReferencesRenderer caretReferencesRenderer;
+		//ContextActionsRenderer contextActionsRenderer;
 		HiddenDefinition.HiddenDefinitionRenderer hiddenDefinitionRenderer;
 		
 		public CodeEditorView()
@@ -51,8 +48,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Help, OnHelpExecuted));
 			
 			this.bracketRenderer = new BracketHighlightRenderer(this.TextArea.TextView);
-			this.caretReferencesRenderer = new CaretReferencesRenderer(this);
-			this.contextActionsRenderer = new ContextActionsRenderer(this);
+			//this.caretReferencesRenderer = new CaretReferencesRenderer(this);
+			//this.contextActionsRenderer = new ContextActionsRenderer(this);
 			this.hiddenDefinitionRenderer = new HiddenDefinition.HiddenDefinitionRenderer(this);
 			
 			UpdateCustomizedHighlighting();
@@ -76,7 +73,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public virtual void Dispose()
 		{
-			contextActionsRenderer.Dispose();
+			//contextActionsRenderer.Dispose();
 			hiddenDefinitionRenderer.Dispose();
 		}
 		
@@ -92,8 +89,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			else if (e.PropertyName == "EnableFolding")
 				UpdateParseInformationForFolding();
 			else if (e.PropertyName == "HighlightSymbol") {
-				if (this.caretReferencesRenderer != null)
-					this.caretReferencesRenderer.ClearHighlight();
+				//if (this.caretReferencesRenderer != null)
+				//	this.caretReferencesRenderer.ClearHighlight();
 			}
 		}
 		
@@ -204,6 +201,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void ShowHelp()
 		{
 			// Resolve expression at cursor and show help
+			#warning Reimplement ShowHelp()
+			/*
 			TextArea textArea = this.TextArea;
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(this.Adapter.FileName);
 			if (expressionFinder == null)
@@ -221,7 +220,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (mrr != null) {
 					HelpProvider.ShowHelp(mrr.ResolvedMember);
 				}
-			}
+			}*/
 		}
 		#endregion
 		
@@ -236,12 +235,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			var pos = GetPositionFromPoint(e.GetPosition(this));
 			args.InDocument = pos.HasValue;
 			if (pos.HasValue) {
-				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
+				args.LogicalPosition = pos.Value;
 			}
 			
 			TextMarkerService textMarkerService = this.Adapter.GetService(typeof(ITextMarkerService)) as TextMarkerService;
 			if (args.InDocument && textMarkerService != null) {
-				var markersAtOffset = textMarkerService.GetMarkersAtOffset(args.Editor.Document.PositionToOffset(args.LogicalPosition.Line, args.LogicalPosition.Column));
+				var markersAtOffset = textMarkerService.GetMarkersAtOffset(args.Editor.Document.GetOffset(args.LogicalPosition));
 				
 				ITextMarker markerWithToolTip = markersAtOffset.FirstOrDefault(marker => marker.ToolTip != null);
 				
@@ -386,16 +385,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#endregion
 		
 		#region Ctrl+Click Go To Definition
-		GoToDefinition goToDefinitionCommand;
-		protected GoToDefinition GotoDefinitionCommand {
-			get
-			{
-				if (goToDefinitionCommand == null)
-					goToDefinitionCommand = new GoToDefinition();
-				return goToDefinitionCommand;
-			}
-		}
-		
 		void TextViewMouseDown(object sender, MouseButtonEventArgs e)
 		{
 			// close existing debugger popup immediately on text editor mouse down
@@ -406,8 +395,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				var position = GetPositionFromPoint(e.GetPosition(this));
 				if (position == null)
 					return;
-				Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
-				this.GotoDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value));
+				throw new NotImplementedException();
+				//Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
+				//var goToDefinitionCommand = new GoToDefinition();
+				//goToDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value));
 				e.Handled = true;
 			}
 		}
@@ -418,6 +409,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			base.OnKeyUp(e);
 			if (e.Handled) return;
+			#warning Reimplement CodeManipulation
+			// TODO put these in some menu so that they are discoverable
+			/*
 			if (e.Key == Key.W && Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
 				CodeManipulation.ExtendSelection(this.Adapter);
 			}
@@ -428,7 +422,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (e.SystemKey == Key.Down && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
 				// Left Alt + Down (probably will have different shortcut)
 				CodeManipulation.MoveStatementDown(this.Adapter);
-			}
+			}*/
 		}
 		#endregion
 		
@@ -456,13 +450,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			CaretHighlightAdorner adorner = new CaretHighlightAdorner(textArea);
 			layer.Add(adorner);
 			
-			WorkbenchSingleton.CallLater(TimeSpan.FromSeconds(1), (Action)(() => layer.Remove(adorner)));
+			WorkbenchSingleton.CallLater(TimeSpan.FromSeconds(1), () => layer.Remove(adorner));
 		}
 		
 		#region UpdateParseInformation - Folding
 		void UpdateParseInformationForFolding()
 		{
-			UpdateParseInformationForFolding(ParserService.GetExistingParseInformation(this.Adapter.FileName));
+			UpdateParseInformationForFolding(ParserService.GetExistingParsedFile(this.Adapter.FileName));
 		}
 		
 		bool disableParseInformationFolding;

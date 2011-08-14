@@ -14,14 +14,29 @@ Commented code, needs to be ported and re-enabled:
 	NamespaceRefactoringsService
 	RefactoringMenuBuilder
 	TaskService.UpdateCommentTags
+	CodeManipulation.cs (btw, I think this doesn't belong into AvalonEdit.AddIn - more a job for a language binding)
 
 Stuff that was renamed/moved:
 	ICSharpCode.SharpDevelop.Dom -> the type system and resolvers now are part of ICSharpCode.NRefactory
 	IDocument, ITextEditor -> moved to ICSharpCode.Editor assembly
 	IClass -> ITypeDefinition
-	ParseInformation -> IParsedFile
 	ICompilationUnit -> IParsedFile
 	ITextBuffer -> ITextSource (in ICSharpCode.Editor assembly)
 	IReturnType -> ITypeReference (unresolved) or IType (resolved)
 	Location -> TextLocation or AstLocation. Use AstLocation only when directly working with the AST, and TextLocation otherwise.
 	TextLocation -> moved to ICSharpCode.Editor assembly
+
+Functionality changes:
+	The result of a parser run (ParseInformation) now may contain a fully parsed AST.
+	The ParserService may cache such full ASTs, but may also drop them from memory at any time.
+	This is implemented by keeping the last N accessed files in the cache.
+	Every parse information also contains an IParsedFile instance with the type system information.
+	The IParsedFile is stored permanently (both in ParserService and in the IProjectContents).
+
+
+Context Actions vs. Member Context Menu:
+	Members context menu should include refactoring options that can be applied from the outside,
+	for example in the classes pad when the code file isn't open.
+	Refactorings that don't make sense without opening the file shouldn't be in the member menu.
+	
+	The context actions menu should show all refactorings (even those that are also in the members context menu).

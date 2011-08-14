@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using ICSharpCode.SharpDevelop.Parser;
 using Mono.Cecil;
 using ICSharpCode.Build.Tasks;
 using ICSharpCode.Core;

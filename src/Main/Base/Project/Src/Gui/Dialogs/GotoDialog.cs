@@ -18,6 +18,7 @@ using ICSharpCode.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -166,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			ITextEditor editor = GetEditor();
 			if (editor != null) {
-				IParsedFile parseInfo = ParserService.GetExistingParseInformation(editor.FileName);
+				IParsedFile parseInfo = ParserService.GetExistingParsedFile(editor.FileName);
 				if (parseInfo != null) {
 					foreach (ITypeDefinition c in parseInfo.TopLevelTypeDefinitions) {
 						AddAllMembersMatchingText(c, text);

@@ -11,11 +11,12 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -175,7 +176,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				
 				codeEditor.FileName = newFileName;
 				
-				ParserService.BeginParse(file.FileName, codeEditor.DocumentAdapter);
+				ParserService.ParseAsync(file.FileName, codeEditor.Document);
 			}
 		}
 		
@@ -277,9 +278,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		#region IEditable
-		public ITextBuffer CreateSnapshot()
+		public ITextSource CreateSnapshot()
 		{
-			return codeEditor.DocumentAdapter.CreateSnapshot();
+			return codeEditor.Document.CreateSnapshot();
 		}
 		
 		/// <summary>

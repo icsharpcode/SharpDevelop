@@ -83,7 +83,7 @@ namespace ICSharpCode.GitAddIn
 			// sleep a tiny bit to give main thread time to add more jobs to the queue
 			Thread.Sleep(100);
 			while (true) {
-				if (ICSharpCode.SharpDevelop.ParserService.LoadSolutionProjectsThreadRunning) {
+				if (ICSharpCode.SharpDevelop.Parser.ParserService.LoadSolutionProjectsThreadRunning) {
 					// Run OverlayIconManager much more slowly while solution is being loaded.
 					// This prevents the disk from seeking too much
 					Thread.Sleep(100);

@@ -7,10 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
 using Mono.Cecil;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Parser
 {
 	/// <summary>
 	/// Interop with the .NET GAC.

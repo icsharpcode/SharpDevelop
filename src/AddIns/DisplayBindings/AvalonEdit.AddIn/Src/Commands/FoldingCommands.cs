@@ -20,8 +20,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 			
 			if (strategy != null) {
 				// look for folding on this line:
-				FoldingSection folding = strategy.FoldingManager.GetNextFolding(editor.Document.PositionToOffset(editor.Caret.Line, 1));
-				if (folding == null || editor.Document.GetLineForOffset(folding.StartOffset).LineNumber != editor.Caret.Line) {
+				FoldingSection folding = strategy.FoldingManager.GetNextFolding(editor.Document.GetOffset(editor.Caret.Line, 1));
+				if (folding == null || editor.Document.GetLineByOffset(folding.StartOffset).LineNumber != editor.Caret.Line) {
 					// no folding found on current line: find innermost folding containing the caret
 					folding = strategy.FoldingManager.GetFoldingsContaining(editor.Caret.Offset).LastOrDefault();
 				}

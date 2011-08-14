@@ -198,7 +198,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						if (added)
 							delimiter = l.DelimiterLength;
 						if (length == 0)
-							oldText += DocumentUtilitites.GetLineTerminator(new AvalonEditDocumentAdapter(Document, null), l.LineNumber);
+							oldText += DocumentUtilitites.GetLineTerminator(this.Document, l.LineNumber);
 						Document.Replace(offset, length + delimiter, oldText);
 						tooltip.IsOpen = false;
 					}

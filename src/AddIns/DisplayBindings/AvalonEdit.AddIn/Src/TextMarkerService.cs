@@ -7,14 +7,26 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
+	/// <summary>
+	/// Interface the text marker service uses to access the code editor.
+	/// </summary>
+	public interface ICodeEditor
+	{
+		TextDocument Document { get; }
+		
+		void Redraw(ISegment segment, DispatcherPriority priority);
+		
+		event EventHandler DocumentChanged;
+	}
+	
 	/// <summary>
 	/// Handles the text markers for a code editor.
 	/// </summary>
