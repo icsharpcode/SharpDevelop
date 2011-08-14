@@ -967,9 +967,6 @@ SharpDevelop kan samle inn denne informasjonen og laste den opp automatisk.</val
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Fil</value>
   </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Linje</value>
-  </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Om</value>
   </data>
@@ -3468,6 +3465,9 @@ Du kan også velge å lagre innstillingen i .user-filen istedet for i prosjektfi
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Start</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Linje</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Oppdater</value>
   </data>
@@ -3743,9 +3743,6 @@ Du kan også velge å lagre innstillingen i .user-filen istedet for i prosjektfi
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Linjeslutt</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Linje</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Finner ikke NCover konsollapplikasjonen. 

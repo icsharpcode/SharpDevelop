@@ -297,6 +297,15 @@
   <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
     <value>Nummering systeem</value>
   </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
+    <value>Decimaal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Hexadecimal" xml:space="preserve">
+    <value>Hexadecimaal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Octal" xml:space="preserve">
+    <value>Octaal</value>
+  </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>De breedte aanpassen aan de aktueel benodigde</value>
   </data>
@@ -965,9 +974,6 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Bestand</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Regel</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Info</value>
@@ -3491,6 +3497,9 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Starten</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Regel</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Bijwerken</value>
   </data>
@@ -3766,9 +3775,6 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Eindregel</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Regel</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Kan de NCover console toepassing niet vinden.
@@ -5531,9 +5537,6 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Taal</value>
-  </data>
-  <data name="MainWindow.Windows.Debug.CallStack.LineString" xml:space="preserve">
-    <value>Regel</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
     <value>Module</value>

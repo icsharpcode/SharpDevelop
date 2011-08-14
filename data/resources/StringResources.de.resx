@@ -977,9 +977,6 @@ Ein Ausführungskommando kann in den Projektoptionen eingestellt werden.</value>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Datei</value>
   </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Zeile</value>
-  </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Info</value>
   </data>
@@ -3481,6 +3478,9 @@ Sie können die Einstellungen auch in einer .user-Datei anstelle der Projektdate
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Start</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Zeile</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Akt&amp;ualisieren</value>
   </data>
@@ -3757,9 +3757,6 @@ Bitte einen anderen Dateinamen wählen.</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Endzeile</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Zeile</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Kann die NCover Konsolenanwendung nicht finden.

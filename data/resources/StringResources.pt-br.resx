@@ -961,9 +961,6 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Arquivo</value>
   </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Linha</value>
-  </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Sobre</value>
   </data>
@@ -3457,6 +3454,9 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Iniciar</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Linha</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>&amp;Atualizar</value>
   </data>
@@ -3732,9 +3732,6 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Linha Final</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Linha</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Se NCover estiver instalado, favor especificar a localização da aplicação nas opções do Code Coverage.</value>

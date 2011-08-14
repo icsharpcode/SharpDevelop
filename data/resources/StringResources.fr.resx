@@ -966,9 +966,6 @@ Sauvegardez ces fichiers avant de déclencher l'opération.</value>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Fichier</value>
   </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Ligne</value>
-  </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>A propos</value>
   </data>
@@ -3488,6 +3485,9 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Démarrer</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Ligne</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Mettre à jo&amp;ur</value>
   </data>
@@ -3763,9 +3763,6 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Fin de ligne</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Ligne</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Impossible de localiser l'application console NCover.
@@ -5527,9 +5524,6 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Langage</value>
-  </data>
-  <data name="MainWindow.Windows.Debug.CallStack.LineString" xml:space="preserve">
-    <value>Ligne</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
     <value>Module</value>

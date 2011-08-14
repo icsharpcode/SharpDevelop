@@ -980,9 +980,6 @@ You can specifiy an execution command in the project options.</value>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>File</value>
   </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Line</value>
-  </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>About</value>
   </data>
@@ -3505,6 +3502,9 @@ You can also choose to store the setting in the .user-file instead of the projec
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Start</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Line</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>&amp;Update</value>
   </data>
@@ -3780,9 +3780,6 @@ You can also choose to store the setting in the .user-file instead of the projec
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>End Line</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Line</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Unable to locate the NCover console application.
@@ -5555,9 +5552,6 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Language</value>
-  </data>
-  <data name="MainWindow.Windows.Debug.CallStack.LineString" xml:space="preserve">
-    <value>Line</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
     <value>Module</value>

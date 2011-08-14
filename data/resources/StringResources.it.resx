@@ -966,9 +966,6 @@ Salva questi file prima di eseguire l'operazione.</value>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>File</value>
   </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Linea</value>
-  </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Informazioni su</value>
   </data>
@@ -3492,6 +3489,9 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Esegui</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Linea</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>&amp;Aggiorna</value>
   </data>
@@ -3767,9 +3767,6 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Fine riga</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Riga</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Impossibile trovare l'applicazione console NCover
@@ -5536,9 +5533,6 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Linguaggio</value>
-  </data>
-  <data name="MainWindow.Windows.Debug.CallStack.LineString" xml:space="preserve">
-    <value>Riga</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
     <value>Modulo</value>

@@ -693,9 +693,6 @@ SharpDevelop bu bilgileri otomatik olarak toplayıp gönderebilir.</value>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Dosya</value>
   </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Satır</value>
-  </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Hakkında</value>
   </data>
@@ -2920,6 +2917,9 @@ Ayrıca bir ayarı proje dosyası yerine .kullanıcı-dosyası(.user-file) için
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Başla</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Satır</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Güncelle</value>
   </data>
@@ -3132,9 +3132,6 @@ Ayrıca bir ayarı proje dosyası yerine .kullanıcı-dosyası(.user-file) için
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Satır Sonu</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Satır</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>NCover konsol uygulaması bulunamadı.
