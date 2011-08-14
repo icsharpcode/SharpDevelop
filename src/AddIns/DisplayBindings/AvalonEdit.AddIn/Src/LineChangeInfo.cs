@@ -35,7 +35,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	
 	public struct LineChangeInfo : IEquatable<LineChangeInfo>
 	{
-		public static readonly LineChangeInfo EMPTY = new LineChangeInfo(ChangeType.None, -1, -1);
+		public static readonly LineChangeInfo EMPTY = new LineChangeInfo(ChangeType.None, 1, 1);
 		
 		ChangeType change;
 		

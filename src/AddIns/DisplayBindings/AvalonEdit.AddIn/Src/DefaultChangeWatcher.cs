@@ -56,8 +56,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			} else {
 				if (baseDocument == null) {
 					// if the file is not under subversion, the document is the opened document
-					var doc = new TextDocument(textDocument.Text);
-					baseDocument = new AvalonEditDocumentAdapter(doc, null);
+					baseDocument = DocumentUtilitites.LoadReadOnlyDocumentFromBuffer(document.CreateSnapshot());
 				}
 			}
 			
@@ -194,7 +193,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				var startDocumentLine = baseDocument.GetLine(info.OldStartLineNumber + 1);
 				var endLine = baseDocument.GetLine(info.OldEndLineNumber);
 				
-				return TextUtilities.NormalizeNewLines(baseDocument.GetText(startDocumentLine.Offset, endLine.EndOffset - startDocumentLine.Offset), DocumentUtilitites.GetLineTerminator(document, newStartLine));
+				return TextUtilities.NormalizeNewLines(baseDocument.GetText(startDocumentLine.Offset, endLine.EndOffset - startDocumentLine.Offset), DocumentUtilitites.GetLineTerminator(document, newStartLine == 0 ? 1 : newStartLine));
 			}
 			
 			newStartLine = 0;

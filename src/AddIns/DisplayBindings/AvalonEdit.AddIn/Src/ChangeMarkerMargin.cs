@@ -54,10 +54,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			TextView textView = this.TextView;
 			
 			if (textView != null && textView.VisualLinesValid) {
+				var zeroLineInfo = changeWatcher.GetChange(0);
+				
+				Debug.Assert(zeroLineInfo.Change == ChangeType.None || zeroLineInfo.Change == ChangeType.Deleted);
+				
 				foreach (VisualLine line in textView.VisualLines) {
 					Rect rect = new Rect(0, line.VisualTop - textView.ScrollOffset.Y, 5, line.Height);
 					
 					LineChangeInfo info = changeWatcher.GetChange(line.FirstDocumentLine.LineNumber);
+					
+					if (zeroLineInfo.Change == ChangeType.Deleted && line.FirstDocumentLine.LineNumber == 1 && info.Change != ChangeType.Unsaved) {
+						info.Change = ChangeType.Modified;
+					}
 					
 					switch (info.Change) {
 						case ChangeType.None:
@@ -142,8 +150,30 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			TextEditor editor = this.TextView.Services.GetService(typeof(TextEditor)) as TextEditor;
 			markerService = this.TextView.Services.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			
+			LineChangeInfo zeroLineInfo = changeWatcher.GetChange(0);
+			
 			int offset, length;
 			bool hasNewVersion = changeWatcher.GetNewVersionFromLine(line, out offset, out length);
+			
+			if (line == 1 && zeroLineInfo.Change == ChangeType.Deleted) {
+				int zeroStartLine; bool zeroAdded;
+				startLine = 1;
+				string deletedText = changeWatcher.GetOldVersionFromLine(0, out zeroStartLine, out zeroAdded);
+				var docLine = editor.Document.GetLineByNumber(line);
+				string newLine = DocumentUtilitites.GetLineTerminator(changeWatcher.CurrentDocument, 1);
+				deletedText += newLine;
+				deletedText += editor.Document.GetText(docLine.Offset, docLine.Length);
+				if (oldText != null)
+					oldText = deletedText + newLine + oldText;
+				else
+					oldText = deletedText;
+				
+				if (!hasNewVersion) {
+					offset = 0;
+					length = docLine.Length;
+					hasNewVersion = true;
+				}
+			}
 			
 			if (hasNewVersion) {
 				if (marker != null)
@@ -158,14 +188,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			
 			if (oldText != null) {
-				// TODO : deletions on line 0 cannot be displayed.
-				
 				LineChangeInfo currLineInfo = changeWatcher.GetChange(startLine);
 				
-				if (currLineInfo.Change == ChangeType.Deleted) {
+				if (currLineInfo.Change == ChangeType.Deleted && !(line == 1 && zeroLineInfo.Change == ChangeType.Deleted)) {
 					var docLine = editor.Document.GetLineByNumber(startLine);
 					if (docLine.DelimiterLength == 0)
-						oldText = DocumentUtilitites.GetLineTerminator(changeWatcher.CurrentDocument, startLine);
+						oldText = DocumentUtilitites.GetLineTerminator(changeWatcher.CurrentDocument, startLine) + oldText;
 					oldText = editor.Document.GetText(docLine.Offset, docLine.TotalLength) + oldText;
 				}
 				
