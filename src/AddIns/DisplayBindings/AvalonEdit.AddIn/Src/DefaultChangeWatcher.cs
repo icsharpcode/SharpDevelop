@@ -6,14 +6,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+
 using ICSharpCode.AvalonEdit.AddIn.MyersDiff;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -23,6 +21,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		IDocument document;
 		TextDocument textDocument;
 		IDocument baseDocument;
+		IDocumentVersionProvider usedProvider;
+		IDisposable watcher;
 		
 		public event EventHandler ChangeOccurred;
 		
@@ -47,23 +47,38 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.textDocument = (TextDocument)document.GetService(typeof(TextDocument));
 			this.changeList = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
 			
-			Stream baseFileStream = GetBaseVersion();
+			InitializeBaseDocument();
 			
-			// TODO : update baseDocument on VCS actions
-			if (baseFileStream != null) {
-				// ReadAll() is taking care of closing the stream
-				baseDocument = DocumentUtilitites.LoadReadOnlyDocumentFromBuffer(new StringTextBuffer(ReadAll(baseFileStream)));
-			} else {
-				if (baseDocument == null) {
-					// if the file is not under subversion, the document is the opened document
-					baseDocument = DocumentUtilitites.LoadReadOnlyDocumentFromBuffer(document.CreateSnapshot());
-				}
+			if (usedProvider != null) {
+				string fileName = ((ITextEditor)document.GetService(typeof(ITextEditor))).FileName;
+				watcher = usedProvider.WatchBaseVersionChanges(fileName, HandleBaseVersionChanges);
 			}
 			
 			SetupInitialFileState(false);
 			
 			this.textDocument.LineTrackers.Add(this);
 			this.textDocument.UndoStack.PropertyChanged += UndoStackPropertyChanged;
+		}
+		
+		void HandleBaseVersionChanges(object sender, EventArgs e)
+		{
+			ICSharpCode.Core.LoggingService.Info("HandleBaseVersionChanges");
+			InitializeBaseDocument();
+			SetupInitialFileState(true);
+		}
+		
+		void InitializeBaseDocument()
+		{
+			Stream baseFileStream = GetBaseVersion();
+			if (baseFileStream != null) {
+				// ReadAll() is taking care of closing the stream
+				baseDocument = DocumentUtilitites.LoadReadOnlyDocumentFromBuffer(new StringTextBuffer(ReadAll(baseFileStream)));
+			} else {
+				// if the file is not under subversion, the document is the opened document
+				if (baseDocument == null) {
+					baseDocument = DocumentUtilitites.LoadReadOnlyDocumentFromBuffer(document.CreateSnapshot());
+				}
+			}
 		}
 		
 		LineChangeInfo TransformLineChangeInfo(LineChangeInfo info)
@@ -115,9 +130,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		string ReadAll(Stream stream)
 		{
-			using (StreamReader reader = new StreamReader(stream)) {
-				return reader.ReadToEnd();
-			}
+			var memory = new MemoryStream();
+			stream.CopyTo(memory);
+			stream.Close();
+			memory.Position = 0;
+			return FileReader.ReadFileContent(memory, ParserService.DefaultFileEncoding);
 		}
 		
 		Stream GetBaseVersion()
@@ -126,10 +143,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			foreach (IDocumentVersionProvider provider in VersioningServices.Instance.DocumentVersionProviders) {
 				var result = provider.OpenBaseVersion(fileName);
-				if (result != null)
+				if (result != null) {
+					usedProvider = provider;
 					return result;
+				}
 			}
-			
+
 			return null;
 		}
 		
@@ -172,6 +191,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void Dispose()
 		{
 			if (!disposed) {
+				if (watcher != null)
+					watcher.Dispose();
 				this.textDocument.LineTrackers.Remove(this);
 				this.textDocument.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
 				disposed = true;
