@@ -242,6 +242,9 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			get { return entity; }
 		}
 		
+		/// <summary>
+		/// The text inserted into the code editor.
+		/// </summary>
 		public string Text { get; set; }
 		
 		public int Overloads { get; set; }
@@ -471,6 +474,9 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		}
 		#endregion
 		
+		/// <summary>
+		/// The content displayed in the list.
+		/// </summary>
 		public object Content { get; set; }
 		
 		object IFancyCompletionItem.Description {

@@ -23,18 +23,21 @@ namespace ICSharpCode.XamlBinding
 				this.Text = entity.Name;
 			else
 				this.Text = prefix + ":" + entity.Name;
+			this.Content = this.Text;
 		}
 		
 		public XamlCodeCompletionItem(IEntity entity)
 			: base(entity)
 		{
 			this.Text = entity.Name;
+			this.Content = this.Text;
 		}
 		
 		public XamlCodeCompletionItem(string text, IEntity entity)
 			: base(entity)
 		{
 			this.Text = text;
+			this.Content = this.Text;
 		}
 		
 		public XamlCodeCompletionItem(IEntity entity, string prefix, string className)
@@ -44,6 +47,7 @@ namespace ICSharpCode.XamlBinding
 				this.Text = className + "." + entity.Name;
 			else
 				this.Text = prefix + ":" + className + "." + entity.Name;
+			this.Content = this.Text;
 		}
 		
 		public override string ToString()
@@ -61,6 +65,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			this.addType = addType;
 			this.Text = text;
+			this.Content = this.Text;
 		}
 		
 		public override void Complete(CompletionContext context)
