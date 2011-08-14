@@ -145,6 +145,11 @@ namespace ICSharpCode.AspNet.Mvc
 			string path = viewFileName.GetPath();
 			fileService.OpenFile(path);
 		}
+		
+		public bool IsPartialView {
+			get { return viewFileName.IsPartialView; }
+			set { viewFileName.IsPartialView = value; }
+		}
 	}
 }
 

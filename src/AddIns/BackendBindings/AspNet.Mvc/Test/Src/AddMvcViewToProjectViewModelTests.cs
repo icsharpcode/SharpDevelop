@@ -344,5 +344,31 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(MvcTextTemplateType.Aspx, templateType);
 		}
+		
+		[Test]
+		public void AddMvcView_CreateAsPartialViewIsSelected_ViewFileIsPartialView()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			viewModel.IsPartialView = true;
+			viewModel.AddMvcView();
+			
+			bool partialView = fakeViewGenerator.FileNamePassedToGenerateFile.IsPartialView;
+			
+			Assert.IsTrue(partialView);
+		}
+		
+		[Test]
+		public void AddMvcView_CreateAsPartialViewIsNotSelected_ViewFileIsNotPartialView()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			viewModel.IsPartialView = false;
+			viewModel.AddMvcView();
+			
+			bool partialView = fakeViewGenerator.FileNamePassedToGenerateFile.IsPartialView;
+			
+			Assert.IsFalse(partialView);
+		}
 	}
 }

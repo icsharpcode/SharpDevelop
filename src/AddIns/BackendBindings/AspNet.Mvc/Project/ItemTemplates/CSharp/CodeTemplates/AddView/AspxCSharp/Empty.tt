@@ -1,8 +1,11 @@
 ﻿<#@ template language="C#" HostSpecific="true" #>
-<#@ output extension=".aspx" #>
 <#
 	MvcTextTemplateHost mvcHost = (MvcTextTemplateHost)Host;
 #>
+<# if (mvcHost.IsPartialView) { #>
+<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
+
+<# } else { #>
 <%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
 
 <!DOCTYPE html>
@@ -16,3 +19,4 @@
 		</div>
 	</body>
 </html>
+<# } #>

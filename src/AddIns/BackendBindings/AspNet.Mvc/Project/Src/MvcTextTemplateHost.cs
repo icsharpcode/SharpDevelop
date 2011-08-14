@@ -62,5 +62,6 @@ namespace ICSharpCode.AspNet.Mvc
 		}
 		
 		public bool AddActionMethods { get; set; }
+		public bool IsPartialView { get; set; }
 	}
 }

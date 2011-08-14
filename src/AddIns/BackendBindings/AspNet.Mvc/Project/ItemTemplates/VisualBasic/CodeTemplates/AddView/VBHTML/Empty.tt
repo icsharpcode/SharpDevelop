@@ -3,6 +3,9 @@
 <#
 	Dim mvcHost As MvcTextTemplateHost = DirectCast(Host, MvcTextTemplateHost)
 #>
+<# If mvcHost.IsPartialView Then #>
+
+<# Else #>
 
 <!DOCTYPE html>
 <html>
@@ -15,3 +18,4 @@
 		</div>
 	</body>
 </html>
+<# End If #>

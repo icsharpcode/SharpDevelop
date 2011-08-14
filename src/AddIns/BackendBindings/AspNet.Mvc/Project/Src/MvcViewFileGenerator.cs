@@ -36,6 +36,7 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			var viewFileName = fileName as MvcViewFileName;
 			host.ViewName = viewFileName.ViewName;
+			host.IsPartialView = viewFileName.IsPartialView;
 		}
 		
 		protected override string GetTextTemplateFileName()

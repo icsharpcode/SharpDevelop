@@ -124,5 +124,21 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(expectedFileName, fileName);
 		}
+		
+		[Test]
+		public void GetPath_CSharpAspxTemplateWithIsPartial_ReturnsCSharpUserControlFileName()
+		{
+			CreateFileName();
+			mvcViewFileName.TemplateType = MvcTextTemplateType.Aspx;
+			mvcViewFileName.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
+			mvcViewFileName.ViewName = "Index";
+			mvcViewFileName.Folder = @"d:\projects\MyAspProject\Views\About";
+			mvcViewFileName.IsPartialView = true;
+			
+			string fileName = mvcViewFileName.GetPath();
+			string expectedFileName = @"d:\projects\MyAspProject\Views\About\Index.ascx";
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
 	}
 }

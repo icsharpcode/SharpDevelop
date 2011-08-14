@@ -17,12 +17,21 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public static string GetViewFileExtension(
 			MvcTextTemplateType type,
-			MvcTextTemplateLanguage language)
+			MvcTextTemplateLanguage language,
+			bool isPartialView)
 		{
 			if (type.IsAspx()) {
-				return ".aspx";
+				return GetAspxFileExtension(isPartialView);
 			}
 			return GetRazorFileExtension(language);
+		}
+		
+		static string GetAspxFileExtension(bool isPartialView)
+		{
+			if (isPartialView) {
+				return ".ascx";
+			}
+			return ".aspx";
 		}
 		
 		public static string GetRazorFileExtension(MvcTextTemplateLanguage language)

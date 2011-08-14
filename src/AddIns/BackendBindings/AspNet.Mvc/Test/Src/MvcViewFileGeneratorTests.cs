@@ -62,10 +62,16 @@ namespace AspNet.Mvc.Tests
 		
 		void GenerateFile(string folder, string name)
 		{
+			MvcViewFileName fileName = CreateMvcViewFileName(folder, name);
+			GenerateFile(fileName);
+		}
+		
+		MvcViewFileName CreateMvcViewFileName(string folder, string name)
+		{
 			var fileName = new MvcViewFileName();
 			fileName.Folder = folder;
 			fileName.ViewName = name;
-			GenerateFile(fileName);
+			return fileName;			
 		}
 		
 		void GenerateFile(MvcViewFileName fileName)
@@ -160,6 +166,54 @@ namespace AspNet.Mvc.Tests
 				@"d:\SharpDev\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.tt";
 			
 			Assert.AreEqual(expectedInputFileName, inputFileName);
+		}
+		
+		[Test]
+		public void GenerateFile_IsPartialViewIsTrue_MvcTextTemplateHostIsPartialViewIsSetToTrue()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			string viewFolder = @"d:\projects\MyProject\Views\Home";
+			string viewName = "Index";
+			MvcViewFileName fileName = CreateMvcViewFileName(viewFolder, viewName);
+			fileName.IsPartialView = true;
+			GenerateFile(fileName);
+			
+			Assert.IsTrue(fakeHost.IsPartialView);
+		}
+		
+		[Test]
+		public void GenerateFile_IsPartialViewIsFalse_MvcTextTemplateHostIsPartialViewIsSetToFalse()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			string viewFolder = @"d:\projects\MyProject\Views\Home";
+			string viewName = "Index";
+			MvcViewFileName fileName = CreateMvcViewFileName(viewFolder, viewName);
+			fileName.IsPartialView = false;
+			GenerateFile(fileName);
+		
+			Assert.IsFalse(fakeHost.IsPartialView);
+		}
+		
+		[Test]
+		public void GenerateFile_CSharpEmptyAspxViewTemplateAndIsPartialViewIsSet_AspxUserControlFileGenerated()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			SelectAspxTemplate();
+			
+			string viewFolder = @"d:\projects\MyProject\Views\Home";
+			string viewName = "Index";
+			MvcViewFileName fileName = CreateMvcViewFileName(viewFolder, viewName);
+			fileName.IsPartialView = true;
+			GenerateFile(fileName);
+			
+			string outputFileGenerated = fakeHost.OutputFilePassedToProcessTemplate;
+			string expectedOutputFileGenerated = 
+				@"d:\projects\MyProject\Views\Home\Index.ascx";
+			
+			Assert.AreEqual(expectedOutputFileGenerated, outputFileGenerated);
 		}
 	}
 }

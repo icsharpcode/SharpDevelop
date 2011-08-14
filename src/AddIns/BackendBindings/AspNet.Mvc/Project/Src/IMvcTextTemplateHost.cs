@@ -9,11 +9,15 @@ namespace ICSharpCode.AspNet.Mvc
 {
 	public interface IMvcTextTemplateHost : IDisposable
 	{
-		string ViewName { get; set; }
-		string ControllerName { get; set; }
-		string ControllerRootName { get; set; }
 		string Namespace { get; set; }
 		
+		// Add View properties.
+		string ViewName { get; set; }
+		bool IsPartialView { get; set; }
+		
+		// Add Controller properties.
+		string ControllerName { get; set; }
+		string ControllerRootName { get; set; }
 		bool AddActionMethods { get; set; }
 		
 		bool ProcessTemplate(string inputFile, string outputFile);

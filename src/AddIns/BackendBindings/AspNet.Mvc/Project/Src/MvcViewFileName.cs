@@ -25,6 +25,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public MvcTextTemplateType TemplateType { get; set; }
 		public MvcTextTemplateLanguage TemplateLanguage { get; set; }
+		public bool IsPartialView { get; set; }
 		
 		public override string GetFileName()
 		{
@@ -43,7 +44,9 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		string GetViewFileExtension()
 		{
-			return MvcTextTemplateFileNameExtension.GetViewFileExtension(TemplateType, TemplateLanguage);
+			return
+				MvcTextTemplateFileNameExtension
+					.GetViewFileExtension(TemplateType, TemplateLanguage, IsPartialView);
 		}
 		
 		public bool HasValidViewName()

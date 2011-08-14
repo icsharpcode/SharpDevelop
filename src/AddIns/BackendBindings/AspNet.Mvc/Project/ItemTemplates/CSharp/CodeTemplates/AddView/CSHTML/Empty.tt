@@ -3,6 +3,9 @@
 <#
 	MvcTextTemplateHost mvcHost = (MvcTextTemplateHost)Host;
 #>
+<# if (mvcHost.IsPartialView) { #>
+
+<# } else { #>
 
 <!DOCTYPE html>
 <html>
@@ -15,3 +18,4 @@
 		</div>
 	</body>
 </html>
+<# } #>
