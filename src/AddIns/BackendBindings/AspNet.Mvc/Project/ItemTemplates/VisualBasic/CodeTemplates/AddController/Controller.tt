@@ -26,7 +26,7 @@ Namespace <#= mvcHost.Namespace #>
 			Return View()
 		End Function
 		
-		<AcceptVerbs(HttpVerbs.Post)> _
+		<HttpPost> _
 		Function Create(ByVal values As FormCollection) As ActionResult
 			Return View()
 		End Function
@@ -35,7 +35,7 @@ Namespace <#= mvcHost.Namespace #>
 			Return View()
 		End Function
 		
-		<AcceptVerbs(HttpVerbs.Post)> _
+		<HttpPost> _
 		Function Edit(ByVal id As Integer, ByVal values As FormCollection) As ActionResult
 			Return View()
 		End Function
