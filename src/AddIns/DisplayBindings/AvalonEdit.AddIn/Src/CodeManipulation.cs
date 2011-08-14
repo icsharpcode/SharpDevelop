@@ -75,7 +75,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (direction == MoveStatementDirection.Up)
 				editor.Caret.Position = upperLocation;
 			else {
-				// look where current statement ended because it is hard to calculate it correctly
+				// look where current statement ended up because it is hard to calculate it correctly
 				int currentMovedOffset = editor.Document.Text.IndexOf(currentNodeText, editor.Document.PositionToOffset(upperLocation));
 				editor.Caret.Offset = currentMovedOffset;
 			}
@@ -101,7 +101,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			SelectText(extendedSelection, editor);
 		}
 		
-		// could work to extend selection to set of adjacent statements - e.g. select 3 lines
+		// could work to extend selection to set of adjacent statements separated by blank lines
 		static Selection ExtendSelection(ITextEditor editor, CompilationUnit parsedCU, IList<ISpecial> commentsBlankLines, out INode selectedResultNode, Type[] interestingNodeTypes)
 		{
 			selectedResultNode = null;
@@ -176,24 +176,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		static Selection ExtendSelectionToComments(IDocument document, Location selectionStart, Location selectionEnd, IList<ISpecial> commentsBlankLines)
 		{
-			var comments = commentsBlankLines.Where(s => s is Comment).Cast<Comment>().ToList();
-			int commentIndex = comments.FindIndex(c => c.EndPosition.Line == selectionStart.Line);
-			if (commentIndex >= 0 && IsWhitespaceBetween(document, comments[commentIndex].EndPosition, selectionStart)) {
-				var extendedSelection = new Selection { Start = selectionStart, End = selectionEnd };
-				while (commentIndex >= 0 && comments[commentIndex].EndPosition.Line == extendedSelection.Start.Line)
-				{
-					var comment = comments[commentIndex];
-					// Move selection start to include comment
-					extendedSelection.Start = comment.StartPosition;
-					if (comment.CommentStartsLine)
-						extendedSelection.Start = new Location(1, extendedSelection.Start.Line);
-					
-					commentIndex--;
-				}
-				return extendedSelection;
-			} else {
+			// take only comments which lie on a separate line (makes no sense to handle "int a = 5  // comment")
+			var comments = commentsBlankLines.Where(s => s is Comment).Cast<Comment>().Where(c => c.CommentStartsLine).ToList();
+			int commentIndex = comments.FindIndex(c => c.EndPosition <= selectionStart && IsWhitespaceBetween(document, c.EndPosition, selectionStart));
+			if (commentIndex < 0) {
 				return null;
 			}
+			var extendedSelection = new Selection { Start = selectionStart, End = selectionEnd };
+			// start at the selection and keep adding comments upwards as long as they are separated only by whitespace
+			while (commentIndex >= 0 && IsWhitespaceBetween(document, comments[commentIndex].EndPosition, extendedSelection.Start)) {
+				var comment = comments[commentIndex];
+				// Move selection start to include comment, and include the "//, /*, ///" since they are not included in Comment.Start
+				extendedSelection.Start = ExtendLeft(comment.StartPosition, document, "///", "/*", "//") ;
+				commentIndex--;
+			}
+			return extendedSelection;
 		}
 		
 		/// <summary>
@@ -225,7 +222,28 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			int startOffset = document.PositionToOffset(startPos);
 			int endOffset = document.PositionToOffset(endPos);
+			if (startOffset > endOffset) {
+				throw new ArgumentException("Invalid range for (startPos, endPos)");
+			}
 			return string.IsNullOrWhiteSpace(document.GetText(startOffset, endOffset - startOffset));
+		}
+		
+		/// <summary>
+		/// If the text at startPos is preceded by any of the prefixes, moves the start backwards to include one prefix 
+		/// (the rightmost one).
+		/// </summary>
+		static Location ExtendLeft(Location startPos, IDocument document, params String[] prefixes)
+		{
+			int startOffset = document.PositionToOffset(startPos);
+			foreach (string prefix in prefixes) {
+				if (startOffset < prefix.Length) continue;
+				string realPrefix = document.GetText(startOffset - prefix.Length, prefix.Length);
+				if (realPrefix == prefix) {
+					return document.OffsetToPosition(startOffset - prefix.Length);
+				}
+			}
+			// no prefixes -> do not extend
+			return startPos;
 		}
 		
 		// could depend just on IDocument
