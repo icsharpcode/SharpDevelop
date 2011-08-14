@@ -75,6 +75,7 @@
     <Compile Include="Src\MvcAddViewTextTemplateFolder.cs" />
     <Compile Include="Src\MvcControllerFileGenerator.cs" />
     <Compile Include="Src\MvcControllerFileName.cs" />
+    <Compile Include="Src\MvcControllerName.cs" />
     <Compile Include="Src\MvcControllerTextTemplateFileName.cs" />
     <Compile Include="Src\MvcFileGenerator.cs" />
     <Compile Include="Src\MvcFileName.cs" />

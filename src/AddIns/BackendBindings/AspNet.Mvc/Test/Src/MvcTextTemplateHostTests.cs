@@ -46,5 +46,45 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(String.Empty, ns);
 		}
+		
+		[Test]
+		public void ControllerRootName_SetToNull_ReturnsEmptyString()
+		{
+			CreateHost();
+			host.ControllerRootName = null;
+			string controllerRootName = host.ControllerRootName;
+			
+			Assert.AreEqual(String.Empty, controllerRootName);
+		}
+		
+		[Test]
+		public void ControllerRootName_ControllerNameSetToAboutController_ControllerRootNameUpdatedToAbout()
+		{
+			CreateHost();
+			host.ControllerName = "AboutController";
+			string controllerRootName = host.ControllerRootName;
+			
+			Assert.AreEqual("About", controllerRootName);
+		}
+		
+		[Test]
+		public void ControllerRootName_ControllerNameSetToHome_ControllerRootNameUpdatedToHome()
+		{
+			CreateHost();
+			host.ControllerName = "Home";
+			string controllerRootName = host.ControllerRootName;
+			
+			Assert.AreEqual("Home", controllerRootName);
+		}
+		
+		[Test]
+		public void ControllerRootName_ControllerNameSetToHomeControllerWithControllerInUpperCase_ControllerRootNameUpdatedToHome()
+		{
+			CreateHost();
+			host.ControllerName = "HomeCONTROLLER";
+			string controllerRootName = host.ControllerRootName;
+			
+			Assert.AreEqual("Home", controllerRootName);
+		}
 	}
 }

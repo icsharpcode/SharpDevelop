@@ -11,6 +11,7 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		string ViewName { get; set; }
 		string ControllerName { get; set; }
+		string ControllerRootName { get; set; }
 		string Namespace { get; set; }
 		
 		bool ProcessTemplate(string inputFile, string outputFile);
