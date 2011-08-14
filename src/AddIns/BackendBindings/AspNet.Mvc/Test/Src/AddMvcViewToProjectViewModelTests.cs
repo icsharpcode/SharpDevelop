@@ -234,7 +234,7 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void ViewTypes_RazorAndAspxViewEngines_RazorViewEngineViewModelHasRazorTemplateType()
+		public void ViewEngines_RazorAndAspxViewEngines_RazorViewEngineViewModelHasRazorTemplateType()
 		{
 			CreateViewModel();
 			

@@ -11,6 +11,7 @@ namespace AspNet.Mvc.Tests.Helpers
 	{
 		public MvcTextTemplateLanguage TemplateLanguage { get; set; }
 		public IProject Project { get; set; }
+		public bool AddActionMethods { get; set; }
 		
 		public bool IsGenerateFileCalled;
 		public MvcControllerFileName FileNamePassedToGenerateController;

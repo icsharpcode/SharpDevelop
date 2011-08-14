@@ -16,5 +16,33 @@ Namespace <#= mvcHost.Namespace #>
 		Function Index() As ActionResult
 			Return View()
 		End Function
+<# If mvcHost.AddActionMethods Then #>
+	
+		Function Details(ByVal id As Integer) As ActionResult
+			Return View()
+		End Function
+		
+		Function Create() As ActionResult
+			Return View()
+		End Function
+		
+		<AcceptVerbs(HttpVerbs.Post)> _
+		Function Create(ByVal values As FormCollection) As ActionResult
+			Return View()
+		End Function
+		
+		Function Edit(ByVal id As Integer) As ActionResult
+			Return View()
+		End Function
+		
+		<AcceptVerbs(HttpVerbs.Post)> _
+		Function Edit(ByVal id As Integer, ByVal values As FormCollection) As ActionResult
+			Return View()
+		End Function
+		
+		Function Delete(ByVal id as Integer) As ActionResult
+			Return View()
+		End Function	
+<# End If #>
 	End Class
 End Namespace

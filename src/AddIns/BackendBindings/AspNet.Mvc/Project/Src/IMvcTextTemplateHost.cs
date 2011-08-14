@@ -14,6 +14,8 @@ namespace ICSharpCode.AspNet.Mvc
 		string ControllerRootName { get; set; }
 		string Namespace { get; set; }
 		
+		bool AddActionMethods { get; set; }
+		
 		bool ProcessTemplate(string inputFile, string outputFile);
 		
 		CompilerErrorCollection Errors { get; }

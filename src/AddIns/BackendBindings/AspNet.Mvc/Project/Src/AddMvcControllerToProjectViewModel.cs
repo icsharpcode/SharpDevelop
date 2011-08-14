@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Input;
+
 using ICSharpCode.AspNet.Mvc;
 
 namespace ICSharpCode.AspNet.Mvc
@@ -14,6 +16,7 @@ namespace ICSharpCode.AspNet.Mvc
 		IMvcFileService fileService;
 		MvcControllerFileName controllerFileName = new MvcControllerFileName();
 		bool closed;
+		List<MvcControllerTemplateViewModel> controllerTemplates;
 		
 		public AddMvcControllerToProjectViewModel(ISelectedMvcFolder selectedControllerFolder)
 			: this(
@@ -36,6 +39,7 @@ namespace ICSharpCode.AspNet.Mvc
 			
 			SetLanguageForFileGeneration();
 			CreateCommands();
+			AddControllerTemplates();
 		}
 		
 		void SetLanguageForFileGeneration()
@@ -70,6 +74,50 @@ namespace ICSharpCode.AspNet.Mvc
 			}
 		}
 		
+		public IEnumerable<MvcControllerTemplateViewModel> ControllerTemplates {
+			get { return controllerTemplates; }
+		}
+		
+		public MvcControllerTemplateViewModel SelectedControllerTemplate { get; set; }
+		
+		void AddControllerTemplates()
+		{
+			controllerTemplates = new List<MvcControllerTemplateViewModel>();
+			AddEmptyControllerTemplate();
+			AddEmptyReadWriteControllerTemplate();
+			SelectEmptyControllerTemplate();
+		}
+		
+		void AddEmptyReadWriteControllerTemplate()
+		{
+			var template = new MvcControllerTemplateViewModel() {
+				Name = "EmptyReadWrite",
+				Description = "Controller with create, read, update and delete actions",
+				AddActionMethods = true
+			};
+			AddControllerTemplate(template);
+		}
+		
+		void AddEmptyControllerTemplate()
+		{
+			var template = new MvcControllerTemplateViewModel() {
+				Name = "Empty", 
+				Description = "Empty controller",
+				AddActionMethods = false
+			};
+			AddControllerTemplate(template);
+		}
+		
+		void AddControllerTemplate(MvcControllerTemplateViewModel template)
+		{
+			controllerTemplates.Add(template);
+		}
+		
+		void SelectEmptyControllerTemplate()
+		{
+			SelectedControllerTemplate = controllerTemplates[0];
+		}
+		
 		public bool CanAddMvcController()
 		{
 			return controllerFileName.HasValidControllerName();
@@ -91,6 +139,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void ConfigureMvcControllerGenerator()
 		{
+			controllerGenerator.AddActionMethods = SelectedControllerTemplate.AddActionMethods;
 			controllerGenerator.Project = selectedControllerFolder.Project;
 		}
 		

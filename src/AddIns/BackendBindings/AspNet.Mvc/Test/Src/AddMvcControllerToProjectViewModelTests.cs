@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
 using ICSharpCode.SharpDevelop.Project;
@@ -52,6 +54,26 @@ namespace AspNet.Mvc.Tests
 		{
 			propertyChangedEvents = new List<string>();
 			viewModel.PropertyChanged += (source, e) => propertyChangedEvents.Add(e.PropertyName);
+		}
+		
+		bool ViewModelHasControllerTemplate(string templateName)
+		{
+			return viewModel.ControllerTemplates.Any(v => v.Name == templateName);
+		}
+		
+		MvcControllerTemplateViewModel GetControllerTemplateFromViewModel(string templateName)
+		{
+			return viewModel.ControllerTemplates.SingleOrDefault(v => v.Name == templateName);
+		}
+		
+		void SelectEmptyControllerTemplate()
+		{
+			viewModel.SelectedControllerTemplate = GetControllerTemplateFromViewModel("Empty");
+		}
+		
+		void SelectEmptyReadWriteControllerTemplate()
+		{
+			viewModel.SelectedControllerTemplate = GetControllerTemplateFromViewModel("EmptyReadWrite");
 		}
 		
 		[Test]
@@ -216,6 +238,58 @@ namespace AspNet.Mvc.Tests
 			string expectedFileNameOpened = @"d:\projects\MyAspMvcProject\Controllers\HomeController.vb";
 			
 			Assert.AreEqual(expectedFileNameOpened, fileNameOpened);
+		}
+		
+		[Test]
+		public void ControllerTemplates_DefaultTemplates_HasEmptyControllerTemplate()
+		{
+			CreateViewModelWithCSharpProject();
+			
+			bool contains = ViewModelHasControllerTemplate("Empty");
+			
+			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void ControllerTemplates_DefaultTemplates_HasEmptyReadWriteControllerTemplate()
+		{
+			CreateViewModelWithCSharpProject();
+			
+			bool contains = ViewModelHasControllerTemplate("EmptyReadWrite");
+			
+			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void SelectedControllerTemplate_DefaultTemplates_EmptyControllerTemplateIsSelectedByDefault()
+		{
+			CreateViewModelWithCSharpProject();
+			
+			MvcControllerTemplateViewModel controllerTemplate = viewModel.SelectedControllerTemplate;
+			
+			Assert.AreEqual("Empty", controllerTemplate.Name);
+		}
+		
+		[Test]
+		public void AddMvcController_EmptyReadWriteTemplateSelected_AddActionMethodsSetToTrueOnFileGenerator()
+		{
+			CreateViewModelWithCSharpProject();
+			SelectEmptyReadWriteControllerTemplate();
+			fakeControllerGenerator.AddActionMethods = false;
+			viewModel.AddMvcController();
+			
+			Assert.IsTrue(fakeControllerGenerator.AddActionMethods);
+		}
+		
+		[Test]
+		public void AddMvcController_EmptyTemplateSelected_AddActionMethodsSetToFalseOnFileGenerator()
+		{
+			CreateViewModelWithCSharpProject();
+			SelectEmptyControllerTemplate();
+			fakeControllerGenerator.AddActionMethods = true;
+			viewModel.AddMvcController();
+			
+			Assert.IsFalse(fakeControllerGenerator.AddActionMethods);
 		}
 	}
 }

@@ -60,5 +60,7 @@ namespace ICSharpCode.AspNet.Mvc
 			get { return @namespace; }
 			set { @namespace = UseEmptyStringIfNull(value); }
 		}
+		
+		public bool AddActionMethods { get; set; }
 	}
 }

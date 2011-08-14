@@ -153,5 +153,33 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(expectedNamespace, fakeHost.Namespace);
 		}
+		
+		[Test]
+		public void GenerateFile_AddActionMethodsIsTrue_MvcTextTemplateHostAddActionMethodsIsTrue()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			generator.AddActionMethods = true;
+			
+			GenerateFile();
+			
+			bool addActionMethods = fakeHost.AddActionMethods;
+			
+			Assert.IsTrue(addActionMethods);
+		}
+		
+		[Test]
+		public void GenerateFile_AddActionMethodsIsFalse_MvcTextTemplateHostAddActionMethodsIsFalse()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			generator.AddActionMethods = false;
+			
+			GenerateFile();
+			
+			bool addActionMethods = fakeHost.AddActionMethods;
+			
+			Assert.IsFalse(addActionMethods);
+		}
 	}
 }

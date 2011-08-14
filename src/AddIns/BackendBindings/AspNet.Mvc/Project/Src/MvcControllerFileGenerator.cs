@@ -25,6 +25,8 @@ namespace ICSharpCode.AspNet.Mvc
 			this.textTemplateRepository = textTemplateRepository;
 		}
 		
+		public bool AddActionMethods { get; set; }
+		
 		public void GenerateFile(MvcControllerFileName fileName)
 		{
 			base.GenerateFile(fileName);
@@ -34,6 +36,7 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			var controllerFileName = fileName as MvcControllerFileName;
 			host.ControllerName = controllerFileName.ControllerName;
+			host.AddActionMethods = AddActionMethods;
 			host.Namespace = GetNamespace();
 		}
 		
