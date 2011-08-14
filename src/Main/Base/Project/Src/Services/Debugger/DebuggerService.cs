@@ -28,6 +28,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				ClearDebugMessages();
 			};
 			
+			ProjectService.BeforeSolutionClosing += OnBeforeSolutionClosing;
+			
 			BookmarkManager.Added   += BookmarkAdded;
 			BookmarkManager.Removed += BookmarkRemoved;
 		}
@@ -219,6 +221,29 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			BreakpointBookmark bb = sender as BreakpointBookmark;
 			if (bb != null) {
 				OnBreakPointChanged(new BreakpointBookmarkEventArgs(bb));
+			}
+		}
+		
+		static void OnBeforeSolutionClosing(object sender, SolutionCancelEventArgs e)
+		{
+			if (currentDebugger == null)
+				return;
+			
+			if (currentDebugger.IsDebugging) {
+				string caption = StringParser.Parse("${res:XML.MainMenu.DebugMenu.Stop}");
+				string message = StringParser.Parse("${res:MainWindow.Windows.Debug.StopDebugging.Message}");
+				string[] buttonLabels = new string[] { StringParser.Parse("${res:Global.Yes}"), StringParser.Parse("${res:Global.No}") };
+				int result = MessageService.ShowCustomDialog(caption,
+				                                             message,
+				                                             0, // yes
+				                                             1, // no
+				                                             buttonLabels);
+				
+				if (result == 0) {
+					currentDebugger.Stop();
+				} else {
+					e.Cancel = true;
+				}
 			}
 		}
 		

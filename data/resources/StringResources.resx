@@ -5862,6 +5862,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Watch.RemoveWatch" xml:space="preserve">
     <value>Remove watch</value>
   </data>
+  <data name="MainWindow.Windows.Debug.StopDebugging.Message" xml:space="preserve">
+    <value>Do you want to stop debugging?</value>
+  </data>
   <data name="MainWindow.Windows.DefinitionViewLabel" xml:space="preserve">
     <value>Definition View</value>
   </data>
