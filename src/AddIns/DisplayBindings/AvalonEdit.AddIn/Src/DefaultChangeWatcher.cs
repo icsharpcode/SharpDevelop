@@ -81,7 +81,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (update)
 					changeList.Transform(TransformLineChangeInfo);
 				else
-					changeList.InsertRange(0, document.TotalNumberOfLines + 1, LineChangeInfo.Empty);
+					changeList.InsertRange(0, document.TotalNumberOfLines + 1, LineChangeInfo.EMPTY);
 			} else {
 				changeList.Clear();
 				
@@ -92,25 +92,23 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					new DocumentSequence(document, hashes)
 				);
 				
-				changeList.Add(LineChangeInfo.Empty);
+				changeList.Add(LineChangeInfo.EMPTY);
 				int lastEndLine = 0;
 				
 				foreach (Edit edit in diff.GetEdits()) {
 					int beginLine = edit.BeginB;
 					int endLine = edit.EndB;
 					
-					changeList.InsertRange(changeList.Count, beginLine - lastEndLine, LineChangeInfo.Empty);
+					changeList.InsertRange(changeList.Count, beginLine - lastEndLine, LineChangeInfo.EMPTY);
 					
-					LineChangeInfo change = new LineChangeInfo(edit.EditType, edit.BeginA, edit.BeginB, edit.EndA, edit.EndB);
 					if (endLine == beginLine)
-						changeList[changeList.Count - 1] = change;
+						changeList[changeList.Count - 1] = new LineChangeInfo(edit.EditType, edit.BeginA, edit.EndA);
 					else
-						changeList.InsertRange(changeList.Count, endLine - beginLine, change);
-					
+						changeList.InsertRange(changeList.Count, endLine - beginLine, new LineChangeInfo(edit.EditType, edit.BeginA, edit.EndA));
 					lastEndLine = endLine;
 				}
 				
-				changeList.InsertRange(changeList.Count, textDocument.LineCount - lastEndLine, LineChangeInfo.Empty);
+				changeList.InsertRange(changeList.Count, textDocument.LineCount - lastEndLine, LineChangeInfo.EMPTY);
 			}
 			
 			OnChangeOccurred(EventArgs.Empty);
@@ -158,7 +156,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void ILineTracker.LineInserted(DocumentLine insertionPos, DocumentLine newLine)
 		{
 			int index = insertionPos.LineNumber;
-			var newLineInfo = new LineChangeInfo(ChangeType.Unsaved, index, index, newLine.LineNumber, newLine.LineNumber);
+			var newLineInfo = new LineChangeInfo(ChangeType.Unsaved, index, index);
 			
 			changeList[index] = newLineInfo;
 			changeList.Insert(index + 1, newLineInfo);
@@ -167,7 +165,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void ILineTracker.RebuildDocument()
 		{
 			changeList.Clear();
-			changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.Unsaved, 1, 1, baseDocument.TotalNumberOfLines, document.TotalNumberOfLines));
+			changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.Unsaved, 1, baseDocument.TotalNumberOfLines));
 		}
 		
 		bool disposed = false;
@@ -188,7 +186,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			added = info.Change == ChangeType.Added;
 			
 			if (info.Change != ChangeType.None && info.Change != ChangeType.Unsaved) {
-				newStartLine = info.NewStartLineNumber + 1;
+				newStartLine = CalculateNewStartLineNumber(lineNumber);
 				
 				if (info.Change == ChangeType.Added)
 					return "";
@@ -196,11 +194,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				var startDocumentLine = baseDocument.GetLine(info.OldStartLineNumber + 1);
 				var endLine = baseDocument.GetLine(info.OldEndLineNumber);
 				
-				return baseDocument.GetText(startDocumentLine.Offset, endLine.EndOffset - startDocumentLine.Offset);
+				return TextUtilities.NormalizeNewLines(baseDocument.GetText(startDocumentLine.Offset, endLine.EndOffset - startDocumentLine.Offset), DocumentUtilitites.GetLineTerminator(document, newStartLine));
 			}
 			
 			newStartLine = 0;
 			return null;
+		}
+		
+		int CalculateNewStartLineNumber(int lineNumber)
+		{
+			return changeList.GetStartOfRun(lineNumber);
+		}
+		
+		int CalculateNewEndLineNumber(int lineNumber)
+		{
+			return changeList.GetEndOfRun(lineNumber) - 1;
 		}
 		
 		public bool GetNewVersionFromLine(int lineNumber, out int offset, out int length)
@@ -208,11 +216,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			LineChangeInfo info = changeList[lineNumber];
 			
 			if (info.Change != ChangeType.None && info.Change != ChangeType.Unsaved) {
-				var startLine = document.GetLine(info.NewStartLineNumber + 1);
-				var endLine = document.GetLine(info.NewEndLineNumber);
+				var startLine = document.GetLine(CalculateNewStartLineNumber(lineNumber));
+				var endLine = document.GetLine(CalculateNewEndLineNumber(lineNumber));
 				
 				offset = startLine.Offset;
 				length = endLine.EndOffset - startLine.Offset;
+				
+				if (info.Change == ChangeType.Added)
+					length += endLine.DelimiterLength;
+				
 				return true;
 			}
 			

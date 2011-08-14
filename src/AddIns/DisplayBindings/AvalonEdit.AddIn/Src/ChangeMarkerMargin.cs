@@ -158,22 +158,23 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			
 			if (oldText != null) {
+				// TODO : deletions on line 0 cannot be displayed.
+				
+				LineChangeInfo currLineInfo = changeWatcher.GetChange(startLine);
+				
+				if (currLineInfo.Change == ChangeType.Deleted) {
+					var docLine = editor.Document.GetLineByNumber(startLine);
+					if (docLine.DelimiterLength == 0)
+						oldText = DocumentUtilitites.GetLineTerminator(changeWatcher.CurrentDocument, startLine);
+					oldText = editor.Document.GetText(docLine.Offset, docLine.TotalLength) + oldText;
+				}
+				
 				DiffControl differ = new DiffControl();
 				differ.editor.SyntaxHighlighting = editor.SyntaxHighlighting;
 				differ.editor.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
 				differ.editor.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
 				differ.editor.Document.Text = oldText;
 				differ.Background = Brushes.White;
-				
-				// TODO : deletions on line 0 cannot be displayed.
-				
-				LineChangeInfo prevLineInfo = changeWatcher.GetChange(startLine - 1);
-				LineChangeInfo lineInfo = changeWatcher.GetChange(startLine);
-				
-				if (prevLineInfo.Change == ChangeType.Deleted) {
-					var docLine = editor.Document.GetLineByNumber(startLine - 1);
-					differ.editor.Document.Insert(0, editor.Document.GetText(docLine.Offset, docLine.TotalLength));
-				}
 				
 				if (oldText == string.Empty) {
 					differ.editor.Visibility = Visibility.Collapsed;
@@ -184,22 +185,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						var mainHighlighter = new DocumentHighlighter(baseDocument, differ.editor.SyntaxHighlighting.MainRuleSet);
 						var popupHighlighter = differ.editor.TextArea.GetService(typeof(IHighlighter)) as DocumentHighlighter;
 						
-						if (prevLineInfo.Change == ChangeType.Deleted)
-							popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(prevLineInfo.OldStartLineNumber);
-						else
-							popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(lineInfo.OldStartLineNumber);
+						popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(currLineInfo.OldStartLineNumber);
 					}
 				}
 				
 				differ.revertButton.Click += delegate {
 					if (hasNewVersion) {
-						int delimiter = 0;
-						DocumentLine l = Document.GetLineByOffset(offset + length);
-						if (added)
-							delimiter = l.DelimiterLength;
-						if (length == 0)
-							oldText += DocumentUtilitites.GetLineTerminator(new AvalonEditDocumentAdapter(Document, null), l.LineNumber);
-						Document.Replace(offset, length + delimiter, oldText);
+						Document.Replace(offset, length, oldText);
 						tooltip.IsOpen = false;
 					}
 				};
