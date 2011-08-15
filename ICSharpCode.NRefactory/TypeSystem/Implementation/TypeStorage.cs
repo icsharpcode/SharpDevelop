@@ -19,8 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading;
-
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -31,7 +31,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <remarks>
 	/// Concurrent read accesses are thread-safe, but a write access concurrent to any other access is not safe.
 	/// </remarks>
-	public sealed class TypeStorage : ITypeResolveContext
+	[Serializable]
+	public sealed class TypeStorage : ITypeResolveContext, ISerializable, IDeserializationCallback
 	{
 		#region FullNameAndTypeParameterCount
 		struct FullNameAndTypeParameterCount
@@ -359,6 +360,36 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					NamespaceEntry ns = GetOrCreateNamespaceEntry(dict, typeDefinition.Namespace);
 					++ns.ClassCount;
 				}
+			}
+		}
+		#endregion
+		
+		#region Serialization
+		/// <summary>
+		/// Creates a new TypeStorage instance.
+		/// </summary>
+		public TypeStorage()
+		{
+		}
+		
+		SerializationInfo serializationInfo;
+		
+		protected TypeStorage(SerializationInfo info, StreamingContext context)
+		{
+			this.serializationInfo = info;
+		}
+		
+		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue("Types", this.GetTypes().ToArray());
+		}
+		
+		void IDeserializationCallback.OnDeserialization(object sender)
+		{
+			if (serializationInfo == null)
+				return;
+			foreach (var typeDef in (ITypeDefinition[])serializationInfo.GetValue("Types", typeof(ITypeDefinition[]))) {
+				UpdateType(typeDef);
 			}
 		}
 		#endregion

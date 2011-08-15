@@ -104,6 +104,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		Dictionary<ISupportsInterning, ISupportsInterning> supportsInternDict = new Dictionary<ISupportsInterning, ISupportsInterning>(new InterningComparer());
 		Dictionary<IEnumerable, IEnumerable> listDict = new Dictionary<IEnumerable, IEnumerable>(new ListComparer());
 		
+		int stackDepth = 0;
+		
 		public T Intern<T>(T obj) where T : class
 		{
 			if (obj == null)
@@ -127,6 +129,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				else
 					byValueDict.Add(obj, obj);
 			}
+			stackDepth--;
 			return obj;
 		}
 		
@@ -138,8 +141,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				T oldItem = list[i];
 				T newItem = Intern(oldItem);
 				if (oldItem != newItem) {
-					if (list.IsReadOnly)
-						list = new T[list.Count];
+					if (list.IsReadOnly) {
+						T[] array = new T[list.Count];
+						list.CopyTo(array, 0);
+						list = array;
+					}
 					list[i] = newItem;
 				}
 			}

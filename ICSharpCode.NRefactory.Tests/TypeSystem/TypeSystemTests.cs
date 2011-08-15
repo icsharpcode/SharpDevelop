@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void DynamicType()
 		{
 			ITypeDefinition testClass = testCasePC.GetTypeDefinition(typeof(DynamicTest));
-			Assert.AreSame(SharedTypes.Dynamic, testClass.Properties.Single().ReturnType.Resolve(ctx));
+			Assert.AreEqual(SharedTypes.Dynamic, testClass.Properties.Single().ReturnType.Resolve(ctx));
 			Assert.AreEqual(0, testClass.Properties.Single().Attributes.Count);
 		}
 		

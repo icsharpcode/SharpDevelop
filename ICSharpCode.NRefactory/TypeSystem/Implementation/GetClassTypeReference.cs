@@ -25,11 +25,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Type Reference used when the fully qualified type name is known.
 	/// </summary>
+	[Serializable]
 	public sealed class GetClassTypeReference : ITypeReference, ISupportsInterning
 	{
 		string nameSpace, name;
 		int typeParameterCount;
-		//volatile CachedResult v_cachedResult;
+		// [NonSerialized] volatile CachedResult v_cachedResult;
 		
 		public GetClassTypeReference(string nameSpace, string name, int typeParameterCount)
 		{

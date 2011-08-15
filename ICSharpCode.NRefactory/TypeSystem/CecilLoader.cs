@@ -84,6 +84,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			if (createCecilReferences)
 				typeSystemTranslationTable = new Dictionary<object, object> ();
+			
+			// Enable interning by default.
+			this.InterningProvider = new SimpleInterningProvider();
 		}
 		
 		#region Load From AssemblyDefinition
@@ -164,6 +167,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region IProjectContent implementation
+		[Serializable]
 		sealed class CecilProjectContent : ProxyTypeResolveContext, IProjectContent, ISynchronizedTypeResolveContext, IDocumentationProvider
 		{
 			readonly string assemblyName;
@@ -840,8 +844,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Type Definition
+		[Serializable]
 		sealed class CecilTypeDefinition : DefaultTypeDefinition
 		{
+			[NonSerialized]
 			internal TypeDefinition typeDefinition;
 			
 			public CecilTypeDefinition(IProjectContent pc, TypeDefinition typeDefinition)

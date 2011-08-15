@@ -336,6 +336,7 @@
     <Compile Include="CSharp\Parser\mcs\support.cs" />
     <Compile Include="CSharp\Parser\mcs\complete.cs" />
     <Compile Include="CSharp\Parser\mcs\literal.cs" />
+    <Compile Include="Utils\7BitEncodedInts.cs" />
     <Compile Include="Utils\BitVector16.cs" />
     <Compile Include="Utils\BusyManager.cs" />
     <Compile Include="Utils\CacheManager.cs" />
@@ -343,6 +344,7 @@
     <Compile Include="Utils\DotNet35Compat.cs" />
     <Compile Include="Utils\EmptyList.cs" />
     <Compile Include="Utils\ExtensionMethods.cs" />
+    <Compile Include="Utils\FastSerializer.cs" />
     <Compile Include="Utils\GraphVizGraph.cs" />
     <Compile Include="Utils\Platform.cs" />
     <Compile Include="Utils\TreeTraversal.cs" />

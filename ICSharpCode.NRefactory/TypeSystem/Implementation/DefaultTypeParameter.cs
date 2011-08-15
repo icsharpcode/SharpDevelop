@@ -27,6 +27,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="ITypeParameter"/>.
 	/// </summary>
+	[Serializable]
 	public sealed class DefaultTypeParameter : AbstractFreezable, ITypeParameter, ISupportsInterning
 	{
 		string name;
@@ -348,8 +349,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{
-			constraints = provider.InternList(constraints);
-			attributes = provider.InternList(attributes);
+			// protect against cyclic constraints
+			using (var busyLock = BusyManager.Enter(this)) {
+				if (busyLock.Success) {
+					constraints = provider.InternList(constraints);
+					attributes = provider.InternList(attributes);
+				}
+			}
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()

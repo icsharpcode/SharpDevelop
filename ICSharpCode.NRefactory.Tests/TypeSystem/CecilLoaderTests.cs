@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IProperty def = c.Properties.Single(p => p.Name == "Default");
 			ParameterizedType pt = (ParameterizedType)def.ReturnType.Resolve(ctx);
 			Assert.AreEqual("System.Collections.Generic.Comparer", pt.FullName);
-			Assert.AreSame(c.TypeParameters[0], pt.TypeArguments[0]);
+			Assert.AreEqual(c.TypeParameters[0], pt.TypeArguments[0]);
 		}
 		
 		[Test]

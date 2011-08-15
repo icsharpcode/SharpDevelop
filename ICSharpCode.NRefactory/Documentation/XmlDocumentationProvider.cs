@@ -33,6 +33,7 @@ namespace ICSharpCode.NRefactory.Documentation
 	/// This class first creates an in-memory index of the .xml file, and then uses that to read only the requested members.
 	/// This way, we avoid keeping all the documentation in memory.
 	/// </remarks>
+	[Serializable]
 	public class XmlDocumentationProvider : IDocumentationProvider
 	{
 		#region Cache
@@ -66,6 +67,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		}
 		#endregion
 		
+		[Serializable]
 		struct IndexEntry : IComparable<IndexEntry>
 		{
 			/// <summary>
@@ -90,7 +92,9 @@ namespace ICSharpCode.NRefactory.Documentation
 			}
 		}
 		
+		[NonSerialized]
 		readonly XmlDocumentationCache cache = new XmlDocumentationCache();
+		
 		readonly string fileName;
 		DateTime lastWriteDate;
 		IndexEntry[] index; // SORTED array of index entries
@@ -265,6 +269,8 @@ namespace ICSharpCode.NRefactory.Documentation
 		#endregion
 		
 		#region Save index / Restore from index
+		// TODO: consider removing this code, we're just using serialization instead
+		
 		// FILE FORMAT FOR BINARY DOCUMENTATION
 		// long  magic = 0x4244636f446c6d58 (identifies file type = 'XmlDocDB')
 		const long magic = 0x4244636f446c6d58;
