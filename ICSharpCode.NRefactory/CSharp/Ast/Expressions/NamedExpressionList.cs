@@ -38,6 +38,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 		
+		public NamedExpressionList (string identifier)
+		{
+			this.Identifier = identifier;
+		}
+		
 		public string Identifier {
 			get {
 				return GetChildByRole (Roles.Identifier).Name;

@@ -575,7 +575,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			OpenBrace(style);
 			bool isFirst = true;
 			foreach (AstNode node in elements) {
-				Console.WriteLine ("expr:"+node.GetType ());
 				if (isFirst) {
 					isFirst = false;
 				} else {

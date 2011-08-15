@@ -210,27 +210,23 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 								Type = new SimpleType("Contact"),
 								Initializer = new ArrayInitializerExpression {
 									Elements = {
-										new AssignmentExpression("Name", new PrimitiveExpression("Chris")),
-										new AssignmentExpression(
-											"PhoneNumbers",
-											new ArrayInitializerExpression {
-												Elements = { new PrimitiveExpression("206-555-0101") }
-											})
+										new NamedExpression("Name", new PrimitiveExpression("Chris")),
+										new NamedExpressionList("PhoneNumbers") {
+											Expressions = { new PrimitiveExpression("206-555-0101") }
+										}
 									}}},
 							new ObjectCreateExpression {
 								Type = new SimpleType("Contact"),
 								Arguments = { new IdentifierExpression("additionalParameter") },
 								Initializer = new ArrayInitializerExpression {
 									Elements = {
-										new AssignmentExpression("Name", new PrimitiveExpression("Bob")),
-										new AssignmentExpression(
-											"PhoneNumbers",
-											new ArrayInitializerExpression {
-												Elements = {
-													new PrimitiveExpression("650-555-0199"),
-													new PrimitiveExpression("425-882-8080")
-												}
-											})
+										new NamedExpression("Name", new PrimitiveExpression("Bob")),
+										new NamedExpressionList("PhoneNumbers") {
+											Expressions = {
+												new PrimitiveExpression("650-555-0199"),
+												new PrimitiveExpression("425-882-8080")
+											}
+										}
 									}}}
 						}}});
 		}
