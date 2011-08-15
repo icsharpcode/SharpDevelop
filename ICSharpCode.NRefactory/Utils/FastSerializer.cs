@@ -633,7 +633,7 @@ namespace ICSharpCode.NRefactory.Utils
 
 		public void Serialize(Stream stream, object instance)
 		{
-			Serialize(new BinaryWriter(stream), instance);
+			Serialize(new BinaryWriterWith7BitEncodedInts(stream), instance);
 		}
 
 		public void Serialize(BinaryWriter writer, object instance)
@@ -717,7 +717,7 @@ namespace ICSharpCode.NRefactory.Utils
 		
 		public object Deserialize(Stream stream)
 		{
-			return Deserialize(new BinaryReader(stream));
+			return Deserialize(new BinaryReaderWith7BitEncodedInts(stream));
 		}
 		
 		public object Deserialize(BinaryReader reader)

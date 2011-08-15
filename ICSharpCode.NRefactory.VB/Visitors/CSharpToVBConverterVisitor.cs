@@ -418,22 +418,22 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 		
 		public AstNode VisitNamedArgumentExpression(CSharp.NamedArgumentExpression namedArgumentExpression, object data)
 		{
-			Expression expr;
-			
-			if (namedArgumentExpression.Parent is CSharp.ArrayInitializerExpression) {
-				expr = new FieldInitializerExpression {
-					IsKey = true,
-					Identifier = namedArgumentExpression.Identifier,
-					Expression = (Expression)namedArgumentExpression.Expression.AcceptVisitor(this, data)
-				};
-			} else {
-				expr = new NamedArgumentExpression {
-					Identifier = namedArgumentExpression.Identifier,
-					Expression = (Expression)namedArgumentExpression.Expression.AcceptVisitor(this, data)
-				};
-			}
+			Expression expr = new NamedArgumentExpression {
+				Identifier = namedArgumentExpression.Identifier,
+				Expression = (Expression)namedArgumentExpression.Expression.AcceptVisitor(this, data)
+			};
 			
 			return EndNode(namedArgumentExpression, expr);
+		}
+		
+		public AstNode VisitNamedExpression(CSharp.NamedExpression namedExpression, object data)
+		{
+			Expression expr = new FieldInitializerExpression {
+				IsKey = true,
+				Identifier = namedExpression.Identifier,
+				Expression = (Expression)namedExpression.Expression.AcceptVisitor(this, data)
+			};
+			return EndNode(namedExpression, expr);
 		}
 		
 		public AstNode VisitNullReferenceExpression(CSharp.NullReferenceExpression nullReferenceExpression, object data)
