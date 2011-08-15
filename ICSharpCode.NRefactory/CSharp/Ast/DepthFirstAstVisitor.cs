@@ -590,11 +590,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (namedExpression, data);
 		}
 		
-		public virtual S VisitNamedExpressionList (NamedExpressionList namedExpressionList, T data)
-		{
-			return VisitChildren (namedExpressionList, data);
-		}
-		
 		public virtual S VisitEmptyExpression (EmptyExpression emptyExpression, T data)
 		{
 			return VisitChildren (emptyExpression, data);

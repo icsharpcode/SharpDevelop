@@ -2333,11 +2333,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (minit == null)
 					return null;
 				var init = new ArrayInitializerExpression ();
+				var braceLocs = LocationsBag.GetLocations (minit);
+				if (braceLocs != null)
+					init.AddChild (new CSharpTokenNode (Convert (braceLocs[0]), 1), ArrayInitializerExpression.Roles.LBrace);
 				AddConvertCollectionOrObjectInitializers (init, minit);
+				if (braceLocs != null)
+					init.AddChild (new CSharpTokenNode (Convert (braceLocs[1]), 1), ArrayInitializerExpression.Roles.RBrace);
 				return init;
 			}
 			
-			void AddConvertCollectionOrObjectInitializers (AstNode init, CollectionOrObjectInitializers minit)
+			void AddConvertCollectionOrObjectInitializers (Expression init, CollectionOrObjectInitializers minit)
 			{
 				var initLoc = LocationsBag.GetLocations (minit);
 				var commaLoc = LocationsBag.GetLocations (minit.Initializers);
@@ -2345,27 +2350,43 @@ namespace ICSharpCode.NRefactory.CSharp
 				foreach (var expr in minit.Initializers) {
 					var collectionInit = expr as CollectionElementInitializer;
 					if (collectionInit != null) {
-						for (int i = 0; i < collectionInit.Arguments.Count; i++) {
-							var arg = collectionInit.Arguments[i] as CollectionElementInitializer.ElementInitializerArgument;
-							if (arg == null)
-								continue;
-							init.AddChild ((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept (this), ArrayInitializerExpression.Roles.Expression);
-							if (curComma >= 0)
-								init.AddChild (new CSharpTokenNode (Convert (commaLoc[curComma--]), 1), ArrayInitializerExpression.Roles.Comma);
+						if (collectionInit.Arguments.Count != 1) {
+							var parent = new ArrayInitializerExpression ();
+							var braceLocs = LocationsBag.GetLocations (expr);
+							if (braceLocs != null)
+								parent.AddChild (new CSharpTokenNode (Convert (braceLocs[0]), 1), ArrayInitializerExpression.Roles.LBrace);
+								for (int i = 0; i < collectionInit.Arguments.Count; i++) {
+									var arg = collectionInit.Arguments[i] as CollectionElementInitializer.ElementInitializerArgument;
+									if (arg == null)
+										continue;
+									parent.AddChild ((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept (this), ArrayInitializerExpression.Roles.Expression);
+									if (curComma >= 0)
+										parent.AddChild (new CSharpTokenNode (Convert (commaLoc[curComma--]), 1), ArrayInitializerExpression.Roles.Comma);
+								}
+							if (braceLocs != null)
+								parent.AddChild (new CSharpTokenNode (Convert (braceLocs[1]), 1), ArrayInitializerExpression.Roles.RBrace);
+							init.AddChild (parent, ArrayInitializerExpression.Roles.Expression);
+						} else {
+							var arg = collectionInit.Arguments[0] as CollectionElementInitializer.ElementInitializerArgument;
+							if (arg != null)
+								init.AddChild ((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept (this), ArrayInitializerExpression.Roles.Expression);
 						}
+							
 						continue;
 					}
 					
 					var eleInit = expr as ElementInitializer;
 					if (eleInit != null) {
-						var nexpr = eleInit.Source is CollectionOrObjectInitializers ? (ICSharpCode.NRefactory.CSharp.Expression)new NamedExpressionList () : new NamedExpression ();
+						var nexpr = new NamedExpression ();
 						nexpr.AddChild (Identifier.Create (eleInit.Name, Convert(eleInit.Location)), NamedArgumentExpression.Roles.Identifier);
 						var assignLoc = LocationsBag.GetLocations (eleInit);
 						if (assignLoc != null)
 							nexpr.AddChild (new CSharpTokenNode (Convert (assignLoc[0]), 1), NamedArgumentExpression.Roles.Assign);
 						if (eleInit.Source != null) {
 							if (eleInit.Source is CollectionOrObjectInitializers) {
-								AddConvertCollectionOrObjectInitializers (nexpr, eleInit.Source as CollectionOrObjectInitializers);
+								var arrInit = new ArrayInitializerExpression ();
+								AddConvertCollectionOrObjectInitializers (arrInit, eleInit.Source as CollectionOrObjectInitializers);
+								nexpr.AddChild (arrInit, NamedArgumentExpression.Roles.Expression);
 							} else {
 								nexpr.AddChild ((Expression)eleInit.Source.Accept (this), NamedArgumentExpression.Roles.Expression);
 							}

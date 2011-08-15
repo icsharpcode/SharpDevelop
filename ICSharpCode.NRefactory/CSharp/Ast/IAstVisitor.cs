@@ -46,7 +46,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, T data);
 		S VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, T data);
 		S VisitNamedExpression(NamedExpression namedExpression, T data);
-		S VisitNamedExpressionList(NamedExpressionList namedExpressionList, T data);
 		S VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression, T data);
 		S VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, T data);
 		S VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, T data);

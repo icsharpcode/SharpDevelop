@@ -5851,7 +5851,6 @@ void case_350()
 {
 		TypeArguments type_args = (TypeArguments) yyVals[-2+yyTop];
 		type_args.Add ((FullNamedExpression) yyVals[0+yyTop]);
-		lbag.AppendTo (type_args, GetLocation (yyVals[-1+yyTop]));
 		yyVal = type_args;
 		locationListStack.Peek ().Add (GetLocation (yyVals[-1+yyTop]));
 	  }

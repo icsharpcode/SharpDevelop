@@ -2763,7 +2763,6 @@ type_arguments
 	  {
 		TypeArguments type_args = (TypeArguments) $1;
 		type_args.Add ((FullNamedExpression) $3);
-		lbag.AppendTo (type_args, GetLocation ($2));
 		$$ = type_args;
 		locationListStack.Peek ().Add (GetLocation ($2));
 	  }

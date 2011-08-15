@@ -410,7 +410,6 @@
     <Compile Include="TypeSystem\IAnnotatable.cs" />
     <Compile Include="CSharp\Ast\ErrorNode.cs" />
     <Compile Include="CSharp\Ast\Expressions\NamedExpression.cs" />
-    <Compile Include="CSharp\Ast\Expressions\NamedExpressionList.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />

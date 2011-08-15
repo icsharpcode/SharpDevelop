@@ -841,17 +841,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode (namedExpression);
 		}
 		
-		public object VisitNamedExpressionList (NamedExpressionList namedExpressionList, object data)
-		{
-			StartNode (namedExpressionList);
-			WriteIdentifier (namedExpressionList.Identifier);
-			Space();
-			WriteToken("=", NamedArgumentExpression.Roles.Assign);
-			Space ();
-			PrintInitializerElements(namedExpressionList.Expressions);
-			return EndNode (namedExpressionList);
-		}
-		
 		public object VisitNullReferenceExpression (NullReferenceExpression nullReferenceExpression, object data)
 		{
 			StartNode (nullReferenceExpression);
