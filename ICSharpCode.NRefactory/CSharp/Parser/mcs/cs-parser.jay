@@ -753,6 +753,7 @@ attribute_list
 	  {
 		var attrs = (List<Attribute>) $1;
 		attrs.Add ((Attribute) $3);
+		lbag.AppendTo (attrs, GetLocation ($2));
 
 		$$ = attrs;
 	  }
@@ -2762,6 +2763,7 @@ type_arguments
 	  {
 		TypeArguments type_args = (TypeArguments) $1;
 		type_args.Add ((FullNamedExpression) $3);
+		lbag.AppendTo (type_args, GetLocation ($2));
 		$$ = type_args;
 		locationListStack.Peek ().Add (GetLocation ($2));
 	  }
@@ -2984,6 +2986,7 @@ type_list
 	  {
 		var types = (List<FullNamedExpression>) $1;
 		types.Add ((FullNamedExpression) $3);
+		lbag.AppendTo (types, GetLocation ($2));
 		$$ = types;
 	  }
 	;
@@ -3208,6 +3211,7 @@ member_initializer_list
 	  {
 	  	var a = (List<Expression>)$1;
 	  	a.Add ((Expression) $3);
+		lbag.AppendTo (a, GetLocation ($2));
 	  	$$ = a;
 	  }
 	| member_initializer_list error {
@@ -3536,6 +3540,8 @@ anonymous_type_parameters
 	  {
 	  	var a = (List<AnonymousTypeParameter>) $1;
 	  	a.Add ((AnonymousTypeParameter) $3);
+	  	lbag.AppendTo (a, GetLocation ($2));
+
 	  	$$ = a;
 	  }
 	;
@@ -4121,6 +4127,8 @@ lambda_parameter_list
 		}
 		
 		pars.Add (p);
+		lbag.AppendTo (pars, GetLocation ($2));
+
 		$$ = pars;
 	  }
 	;

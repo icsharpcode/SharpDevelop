@@ -2262,7 +2262,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					return;
 				
 				var commaLocations = LocationsBag.GetLocations (args);
-				
 				for (int i = 0; i < args.Count; i++) {
 					parent.AddChild (ConvertArgument (args[i]), InvocationExpression.Roles.Argument);
 					if (commaLocations != null && i > 0) {
@@ -2279,7 +2278,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new InvocationExpression ();
 				var location = LocationsBag.GetLocations (invocationExpression);
-				result.AddChild ((Expression)invocationExpression.Expression.Accept (this), InvocationExpression.Roles.TargetExpression);
+				if (invocationExpression.Expression != null)
+					result.AddChild ((Expression)invocationExpression.Expression.Accept (this), InvocationExpression.Roles.TargetExpression);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), InvocationExpression.Roles.LPar);
 				AddArguments (result, location, invocationExpression.Arguments);
@@ -2292,7 +2292,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (New newExpression)
 			{
 				var result = new ObjectCreateExpression ();
-				
 				var location = LocationsBag.GetLocations (newExpression);
 				result.AddChild (new CSharpTokenNode (Convert (newExpression.Location), "new".Length), ObjectCreateExpression.Roles.Keyword);
 				
@@ -2344,6 +2343,33 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddArguments (result, location, newInitializeExpression.Arguments);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ObjectCreateExpression.Roles.RPar);
+				
+				var minit = newInitializeExpression.Initializers;
+				if (minit != null){
+					var init = new ArrayInitializerExpression ();
+					var initLoc = LocationsBag.GetLocations (newInitializeExpression);
+					if (initLoc != null)
+						result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ArrayInitializerExpression.Roles.LBrace);
+					var commaLoc = LocationsBag.GetLocations (minit.Initializers);
+					int curComma = commaLoc != null ?  commaLoc.Count - 1 :  -1;
+					foreach (var expr in minit.Initializers) {
+						var eleInit = expr as CollectionElementInitializer;
+						if (eleInit == null)
+							continue;
+						for (int i = 0; i < eleInit.Arguments.Count; i++) {
+							var arg = eleInit.Arguments[i] as CollectionElementInitializer.ElementInitializerArgument;
+							if (arg == null)
+								continue;
+							init.AddChild ((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept (this), ArrayInitializerExpression.Roles.Expression);
+							if (curComma >= 0)
+								init.AddChild (new CSharpTokenNode (Convert (commaLoc[curComma--]), 1), ArrayInitializerExpression.Roles.Comma);
+						}
+					}
+					if (initLoc != null)
+						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ArrayInitializerExpression.Roles.RBrace);
+					result.AddChild (init, ObjectCreateExpression.InitializerRole);
+				}
+				
 				
 				return result;
 			}
