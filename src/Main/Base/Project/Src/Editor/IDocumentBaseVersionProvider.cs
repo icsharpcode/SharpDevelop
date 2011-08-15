@@ -65,8 +65,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 
 		void MainWindowActivated(object sender, EventArgs e)
 		{
-			alreadyCalled = false;
-			actions();
+			if (alreadyCalled) {
+				alreadyCalled = false;
+				actions();
+			}
 		}
 		
 		bool alreadyCalled;
