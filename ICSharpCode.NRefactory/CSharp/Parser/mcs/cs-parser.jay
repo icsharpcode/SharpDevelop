@@ -3182,13 +3182,13 @@ object_or_collection_initializer
 	  		// TODO: lbag
 	  	} else {
 	  		$$ = new CollectionOrObjectInitializers ((List<Expression>) $2, GetLocation ($1));
-	  		lbag.AddLocation ($$, GetLocation ($3));
+	  		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3));
 	  	}
 	  }
 	| OPEN_BRACE member_initializer_list COMMA CLOSE_BRACE
 	  {
 	  	$$ = new CollectionOrObjectInitializers ((List<Expression>) $2, GetLocation ($1));
-	  	lbag.AddLocation ($$, GetLocation ($3), GetLocation ($4));
+	  	lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3), GetLocation ($4));
 	  }
 	;
 

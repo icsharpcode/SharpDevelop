@@ -575,6 +575,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			OpenBrace(style);
 			bool isFirst = true;
 			foreach (AstNode node in elements) {
+				Console.WriteLine ("expr:"+node.GetType ());
 				if (isFirst) {
 					isFirst = false;
 				} else {
@@ -828,6 +829,28 @@ namespace ICSharpCode.NRefactory.CSharp
 			Space ();
 			namedArgumentExpression.Expression.AcceptVisitor (this, data);
 			return EndNode (namedArgumentExpression);
+		}
+		
+		public object VisitNamedExpression (NamedExpression namedExpression, object data)
+		{
+			StartNode (namedExpression);
+			WriteIdentifier (namedExpression.Identifier);
+			Space();
+			WriteToken("=", NamedArgumentExpression.Roles.Assign);
+			Space ();
+			namedExpression.Expression.AcceptVisitor (this, data);
+			return EndNode (namedExpression);
+		}
+		
+		public object VisitNamedExpressionList (NamedExpressionList namedExpressionList, object data)
+		{
+			StartNode (namedExpressionList);
+			WriteIdentifier (namedExpressionList.Identifier);
+			Space();
+			WriteToken("=", NamedArgumentExpression.Roles.Assign);
+			Space ();
+			PrintInitializerElements(namedExpressionList.Expressions);
+			return EndNode (namedExpressionList);
 		}
 		
 		public object VisitNullReferenceExpression (NullReferenceExpression nullReferenceExpression, object data)

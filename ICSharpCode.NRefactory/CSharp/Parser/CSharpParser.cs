@@ -2328,6 +2328,60 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			
+			ArrayInitializerExpression ConvertCollectionOrObjectInitializers (CollectionOrObjectInitializers minit)
+			{
+				if (minit == null)
+					return null;
+				var init = new ArrayInitializerExpression ();
+				AddConvertCollectionOrObjectInitializers (init, minit);
+				return init;
+			}
+			
+			void AddConvertCollectionOrObjectInitializers (AstNode init, CollectionOrObjectInitializers minit)
+			{
+				var initLoc = LocationsBag.GetLocations (minit);
+				var commaLoc = LocationsBag.GetLocations (minit.Initializers);
+				int curComma = commaLoc != null ?  commaLoc.Count - 1 :  -1;
+				foreach (var expr in minit.Initializers) {
+					var collectionInit = expr as CollectionElementInitializer;
+					if (collectionInit != null) {
+						for (int i = 0; i < collectionInit.Arguments.Count; i++) {
+							var arg = collectionInit.Arguments[i] as CollectionElementInitializer.ElementInitializerArgument;
+							if (arg == null)
+								continue;
+							init.AddChild ((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept (this), ArrayInitializerExpression.Roles.Expression);
+							if (curComma >= 0)
+								init.AddChild (new CSharpTokenNode (Convert (commaLoc[curComma--]), 1), ArrayInitializerExpression.Roles.Comma);
+						}
+						continue;
+					}
+					
+					var eleInit = expr as ElementInitializer;
+					if (eleInit != null) {
+						var nexpr = eleInit.Source is CollectionOrObjectInitializers ? (ICSharpCode.NRefactory.CSharp.Expression)new NamedExpressionList () : new NamedExpression ();
+						nexpr.AddChild (Identifier.Create (eleInit.Name, Convert(eleInit.Location)), NamedArgumentExpression.Roles.Identifier);
+						var assignLoc = LocationsBag.GetLocations (eleInit);
+						if (assignLoc != null)
+							nexpr.AddChild (new CSharpTokenNode (Convert (assignLoc[0]), 1), NamedArgumentExpression.Roles.Assign);
+						if (eleInit.Source != null) {
+							if (eleInit.Source is CollectionOrObjectInitializers) {
+								AddConvertCollectionOrObjectInitializers (nexpr, eleInit.Source as CollectionOrObjectInitializers);
+							} else {
+								nexpr.AddChild ((Expression)eleInit.Source.Accept (this), NamedArgumentExpression.Roles.Expression);
+							}
+						}
+						
+						init.AddChild (nexpr, ArrayInitializerExpression.Roles.Expression);
+					}
+					
+				}
+				if (initLoc != null) {
+					if (initLoc.Count == 3) // optional comma
+						init.AddChild (new CSharpTokenNode (Convert (initLoc[1]), 1), ArrayInitializerExpression.Roles.Comma);
+					init.AddChild (new CSharpTokenNode (Convert (initLoc[initLoc.Count - 1]), 1), ArrayInitializerExpression.Roles.RBrace);
+				}
+			}
+			
 			
 			public override object Visit (NewInitialize newInitializeExpression)
 			{
@@ -2344,32 +2398,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ObjectCreateExpression.Roles.RPar);
 				
-				var minit = newInitializeExpression.Initializers;
-				if (minit != null){
-					var init = new ArrayInitializerExpression ();
-					var initLoc = LocationsBag.GetLocations (newInitializeExpression);
-					if (initLoc != null)
-						result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ArrayInitializerExpression.Roles.LBrace);
-					var commaLoc = LocationsBag.GetLocations (minit.Initializers);
-					int curComma = commaLoc != null ?  commaLoc.Count - 1 :  -1;
-					foreach (var expr in minit.Initializers) {
-						var eleInit = expr as CollectionElementInitializer;
-						if (eleInit == null)
-							continue;
-						for (int i = 0; i < eleInit.Arguments.Count; i++) {
-							var arg = eleInit.Arguments[i] as CollectionElementInitializer.ElementInitializerArgument;
-							if (arg == null)
-								continue;
-							init.AddChild ((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept (this), ArrayInitializerExpression.Roles.Expression);
-							if (curComma >= 0)
-								init.AddChild (new CSharpTokenNode (Convert (commaLoc[curComma--]), 1), ArrayInitializerExpression.Roles.Comma);
-						}
-					}
-					if (initLoc != null)
-						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ArrayInitializerExpression.Roles.RBrace);
+				var init = ConvertCollectionOrObjectInitializers (newInitializeExpression.Initializers);
+				if (init != null)
 					result.AddChild (init, ObjectCreateExpression.InitializerRole);
-				}
-				
 				
 				return result;
 			}

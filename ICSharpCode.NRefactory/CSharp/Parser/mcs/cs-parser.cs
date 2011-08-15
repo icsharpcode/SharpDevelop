@@ -6126,7 +6126,7 @@ void case_448()
 	  		/* TODO: lbag*/
 	  	} else {
 	  		yyVal = new CollectionOrObjectInitializers ((List<Expression>) yyVals[-1+yyTop], GetLocation (yyVals[-2+yyTop]));
-	  		lbag.AddLocation (yyVal, GetLocation (yyVals[0+yyTop]));
+	  		lbag.AddLocation (yyVal, GetLocation (yyVals[-2+yyTop]), GetLocation (yyVals[0+yyTop]));
 	  	}
 	  }
 
@@ -6134,7 +6134,7 @@ void case_449()
 #line 3189 "cs-parser.jay"
 {
 	  	yyVal = new CollectionOrObjectInitializers ((List<Expression>) yyVals[-2+yyTop], GetLocation (yyVals[-3+yyTop]));
-	  	lbag.AddLocation (yyVal, GetLocation (yyVals[-1+yyTop]), GetLocation (yyVals[0+yyTop]));
+	  	lbag.AddLocation (yyVal, GetLocation (yyVals[-3+yyTop]), GetLocation (yyVals[-1+yyTop]), GetLocation (yyVals[0+yyTop]));
 	  }
 
 void case_452()
