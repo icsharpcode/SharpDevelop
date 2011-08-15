@@ -28,6 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// The member lookup performed by the :: operator is handled
 	/// by <see cref="MemberTypeOrNamespaceReference"/>.
 	/// </remarks>
+	[Serializable]
 	public class AliasNamespaceReference : ITypeOrNamespaceReference
 	{
 		readonly UsingScope parentUsingScope;

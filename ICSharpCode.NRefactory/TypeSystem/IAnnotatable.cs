@@ -78,7 +78,6 @@ namespace ICSharpCode.NRefactory
 		void RemoveAnnotations(Type type);
 	}
 	
-	[Serializable]
 	public abstract class AbstractAnnotatable : IAnnotatable
 	{
 		// Annotations: points either null (no annotations), to the single annotation,

@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil;
@@ -233,6 +234,33 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return documentationProvider.GetDocumentation(entity);
 				else
 					return null;
+			}
+			
+			IEnumerable<object> IAnnotatable.Annotations {
+				get { return EmptyList<object>.Instance; }
+			}
+			
+			T IAnnotatable.Annotation<T>()
+			{
+				return null;
+			}
+			
+			object IAnnotatable.Annotation(Type type)
+			{
+				return null;
+			}
+			
+			void IAnnotatable.AddAnnotation(object annotation)
+			{
+				throw new NotSupportedException();
+			}
+			
+			void IAnnotatable.RemoveAnnotations<T>()
+			{
+			}
+			
+			void IAnnotatable.RemoveAnnotations(Type type)
+			{
 			}
 		}
 		#endregion

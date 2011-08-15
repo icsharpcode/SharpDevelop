@@ -374,7 +374,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		SerializationInfo serializationInfo;
 		
-		protected TypeStorage(SerializationInfo info, StreamingContext context)
+		private TypeStorage(SerializationInfo info, StreamingContext context)
 		{
 			this.serializationInfo = info;
 		}
@@ -391,6 +391,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			foreach (var typeDef in (ITypeDefinition[])serializationInfo.GetValue("Types", typeof(ITypeDefinition[]))) {
 				UpdateType(typeDef);
 			}
+			serializationInfo = null;
 		}
 		#endregion
 	}

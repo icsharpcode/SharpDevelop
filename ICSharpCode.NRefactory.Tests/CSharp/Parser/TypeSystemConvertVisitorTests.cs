@@ -51,4 +51,19 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			return testCasePC;
 		}
 	}
+	
+	[TestFixture]
+	public class SerializedTypeSystemConvertVisitorTests : TypeSystemTests
+	{
+		[TestFixtureSetUp]
+		public void FixtureSetUp()
+		{
+			FastSerializer serializer = new FastSerializer();
+			using (MemoryStream ms = new MemoryStream()) {
+				serializer.Serialize(ms, TypeSystemConvertVisitorTests.ParseTestCase());
+				ms.Position = 0;
+				testCasePC = (IProjectContent)serializer.Deserialize(ms);
+			}
+		}
+	}
 }
