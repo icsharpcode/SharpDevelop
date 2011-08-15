@@ -819,12 +819,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			StartNode (namedArgumentExpression);
 			WriteIdentifier (namedArgumentExpression.Identifier);
-			if (namedArgumentExpression.Parent is AnonymousTypeCreateExpression) {
-				Space();
-				WriteToken("=", NamedArgumentExpression.Roles.Assign);
-			} else {
-				WriteToken(":", NamedArgumentExpression.Roles.Colon);
-			}
+			WriteToken(":", NamedArgumentExpression.Roles.Colon);
 			Space ();
 			namedArgumentExpression.Expression.AcceptVisitor (this, data);
 			return EndNode (namedArgumentExpression);

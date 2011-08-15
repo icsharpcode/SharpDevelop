@@ -200,14 +200,13 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					if (attr.NamedArguments != null) { 
 						foreach (NamedArgument na in attr.NamedArguments) {
-							var newArg = new AssignmentExpression ();
-							newArg.Operator = AssignmentOperatorType.Assign;
-							newArg.AddChild (new IdentifierExpression (na.Name, Convert (na.Location)), AssignmentExpression.LeftRole);
+							var newArg = new NamedExpression ();
+							newArg.AddChild (Identifier.Create (na.Name, Convert (na.Location)), NamedExpression.Roles.Identifier);
 							
 							var argLoc = LocationsBag.GetLocations (na);
 							if (argLoc != null)
-								newArg.AddChild (new CSharpTokenNode (Convert (argLoc[0]), 1), AssignmentExpression.Roles.Assign);
-							newArg.AddChild ((Expression)na.Expr.Accept (this), AssignmentExpression.RightRole);
+								newArg.AddChild (new CSharpTokenNode (Convert (argLoc[0]), 1), NamedExpression.Roles.Assign);
+							newArg.AddChild ((Expression)na.Expr.Accept (this), NamedExpression.Roles.Expression);
 							result.AddChild (newArg, Attribute.Roles.Argument);
 						}
 					}
@@ -2318,11 +2317,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (location == null) {
 						result.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
 					} else {
-						var namedArgument = new NamedArgumentExpression ();
-						namedArgument.AddChild (Identifier.Create (par.Name, Convert (par.Location)), AnonymousTypeCreateExpression.Roles.Identifier);
-						namedArgument.AddChild (new CSharpTokenNode (Convert (location[0]), 1), AnonymousTypeCreateExpression.Roles.Assign);
-						namedArgument.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
-						result.AddChild (namedArgument, AnonymousTypeCreateExpression.Roles.Expression);
+						var namedExpression = new NamedExpression ();
+						namedExpression.AddChild (Identifier.Create (par.Name, Convert (par.Location)), AnonymousTypeCreateExpression.Roles.Identifier);
+						namedExpression.AddChild (new CSharpTokenNode (Convert (location[0]), 1), AnonymousTypeCreateExpression.Roles.Assign);
+						namedExpression.AddChild ((Expression)par.Expr.Accept (this), AnonymousTypeCreateExpression.Roles.Expression);
+						result.AddChild (namedExpression, AnonymousTypeCreateExpression.Roles.Expression);
 					}
 				}
 				return result;
