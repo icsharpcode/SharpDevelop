@@ -169,12 +169,13 @@ namespace ICSharpCode.WixBinding
 			IViewContent viewContent = FileService.OpenFile(fileName);
 			
 			// Show the designer.
-			WixDialogDesigner designer = WixDialogDesigner.GetDesigner(viewContent);
-			if (designer != null) {
-				designer.OpenDialog(dialogId);
-			} else {
-				LoggingService.Debug("Could not open Wix dialog designer for: " + fileName);
-			}
+			#warning reimplement this!
+//			WixDialogDesigner designer = WixDialogDesigner.GetDesigner(viewContent);
+//			if (designer != null) {
+//				designer.OpenDialog(dialogId);
+//			} else {
+//				LoggingService.Debug("Could not open Wix dialog designer for: " + fileName);
+//			}
 		}
 		
 		/// <summary>

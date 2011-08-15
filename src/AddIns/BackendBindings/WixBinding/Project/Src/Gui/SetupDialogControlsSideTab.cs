@@ -26,15 +26,17 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public static SetupDialogControlsSideTab CreateSideTab()
 		{
-			ComponentLibraryLoader loader = new ComponentLibraryLoader();
-			loader.LoadToolComponentLibrary(ToolComponentLibraryFileName);
-			
-			// Fix WixBinding assembly hint path.
-			Category category = (Category)loader.Categories[0];
-			foreach (ToolComponent toolComponent in category.ToolComponents) {
-				toolComponent.HintPath = StringParser.Parse(toolComponent.HintPath);
-			}
-			return new SetupDialogControlsSideTab(WixDialogDesigner.SetupDialogControlsToolBox, category, ToolboxProvider.ToolboxService);
+			#warning reimplement this!
+			throw new NotImplementedException();
+//			ComponentLibraryLoader loader = new ComponentLibraryLoader();
+//			loader.LoadToolComponentLibrary(ToolComponentLibraryFileName);
+//			
+//			// Fix WixBinding assembly hint path.
+//			Category category = (Category)loader.Categories[0];
+//			foreach (ToolComponent toolComponent in category.ToolComponents) {
+//				toolComponent.HintPath = StringParser.Parse(toolComponent.HintPath);
+//			}
+//			return new SetupDialogControlsSideTab(WixDialogDesigner.SetupDialogControlsToolBox, category, ToolboxProvider.ToolboxService);
 		}
 		
 		/// <summary>

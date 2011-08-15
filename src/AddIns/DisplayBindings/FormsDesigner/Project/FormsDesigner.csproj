@@ -62,6 +62,7 @@
     <EmbeddedResource Include="Resources\RenameSidebarCategoryDialog.xfrm" />
     <EmbeddedResource Include="Resources\WindowsFormsGridOptions.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="FormsDesignerAppDomainHost.cs" />
     <Compile Include="Src\DesignerAppDomainManager.cs" />
     <Compile Include="Src\DesignerLoader\SharpDevelopDesignerLoader.cs" />
     <Compile Include="Src\DesignerLoader\IDesignerLoader.cs" />

@@ -69,7 +69,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			FormsDesignerViewContent formDesigner = WorkbenchSingleton.Workbench.ActiveContent as FormsDesignerViewContent;
 			
-			if (formDesigner == null || formDesigner.Host == null) {
+			if (formDesigner == null || formDesigner.AppDomainHost.Host == null) {
 				return false;
 			}
 			if (formDesigner.UserContent != null && !((Control)formDesigner.UserContent).ContainsFocus) {
@@ -102,8 +102,8 @@ namespace ICSharpCode.FormsDesigner
 				}
 				LoggingService.Debug("Run menu command: " + commandWrapper.CommandID);
 				
-				IMenuCommandService menuCommandService = (IMenuCommandService)formDesigner.Host.GetService(typeof(IMenuCommandService));
-				ISelectionService   selectionService = (ISelectionService)formDesigner.Host.GetService(typeof(ISelectionService));
+				IMenuCommandService menuCommandService = (IMenuCommandService)formDesigner.AppDomainHost.Host.GetService(typeof(IMenuCommandService));
+				ISelectionService   selectionService = (ISelectionService)formDesigner.AppDomainHost.Host.GetService(typeof(ISelectionService));
 				ICollection components = selectionService.GetSelectedComponents();
 				if (components.Count == 1) {
 					foreach (IComponent component in components) {
@@ -128,7 +128,7 @@ namespace ICSharpCode.FormsDesigner
 			Assembly asm = typeof(WindowsFormsDesignerOptionService).Assembly;
 			// Microsoft made ToolStripKeyboardHandlingService internal, so we need Reflection
 			Type keyboardType = asm.GetType("System.Windows.Forms.Design.ToolStripKeyboardHandlingService");
-			object keyboardService = formDesigner.Host.GetService(keyboardType);
+			object keyboardService = formDesigner.AppDomainHost.Host.GetService(keyboardType);
 			if (keyboardService == null) {
 				LoggingService.Debug("no ToolStripKeyboardHandlingService found");
 				return false; // handle command normally

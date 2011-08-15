@@ -42,8 +42,8 @@ namespace ICSharpCode.FormsDesigner.Commands
 			
 			try {
 				FormsDesignerViewContent formDesigner = FormDesigner;
-				if (formDesigner != null && CanExecuteCommand(formDesigner.Host)) {
-					IMenuCommandService menuCommandService = (IMenuCommandService)formDesigner.Host.GetService(typeof(IMenuCommandService));
+				if (formDesigner != null && CanExecuteCommand(formDesigner.AppDomainHost.Host)) {
+					IMenuCommandService menuCommandService = (IMenuCommandService)formDesigner.AppDomainHost.Host.GetService(typeof(IMenuCommandService));
 					menuCommandService.GlobalInvoke(CommandID);
 				}
 			} catch (Exception e) {
@@ -422,7 +422,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 			get {
 				FormsDesignerViewContent formDesigner = FormDesigner;
 				if (formDesigner != null) {
-					return formDesigner.Host.GetService(typeof(ComponentTray)) as ComponentTray;
+					return formDesigner.AppDomainHost.Host.GetService(typeof(ComponentTray)) as ComponentTray;
 				}
 				return null;
 				
