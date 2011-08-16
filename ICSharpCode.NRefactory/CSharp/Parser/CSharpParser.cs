@@ -2349,28 +2349,25 @@ namespace ICSharpCode.NRefactory.CSharp
 				foreach (var expr in minit.Initializers) {
 					var collectionInit = expr as CollectionElementInitializer;
 					if (collectionInit != null) {
-						if (collectionInit.Arguments.Count != 1) {
-							var parent = new ArrayInitializerExpression ();
-							var braceLocs = LocationsBag.GetLocations (expr);
-							if (braceLocs != null)
-								parent.AddChild (new CSharpTokenNode (Convert (braceLocs[0]), 1), ArrayInitializerExpression.Roles.LBrace);
-								for (int i = 0; i < collectionInit.Arguments.Count; i++) {
-									var arg = collectionInit.Arguments[i] as CollectionElementInitializer.ElementInitializerArgument;
-									if (arg == null)
-										continue;
-									parent.AddChild ((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept (this), ArrayInitializerExpression.Roles.Expression);
-									if (curComma >= 0)
-										parent.AddChild (new CSharpTokenNode (Convert (commaLoc[curComma--]), 1), ArrayInitializerExpression.Roles.Comma);
-								}
-							if (braceLocs != null)
-								parent.AddChild (new CSharpTokenNode (Convert (braceLocs[1]), 1), ArrayInitializerExpression.Roles.RBrace);
-							init.AddChild (parent, ArrayInitializerExpression.Roles.Expression);
-						} else {
-							var arg = collectionInit.Arguments[0] as CollectionElementInitializer.ElementInitializerArgument;
-							if (arg != null)
-								init.AddChild ((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept (this), ArrayInitializerExpression.Roles.Expression);
+						var parent = new ArrayInitializerExpression ();
+						
+						var braceLocs = LocationsBag.GetLocations (expr);
+						if (braceLocs != null)
+							parent.AddChild (new CSharpTokenNode (Convert (braceLocs[0]), 1), ArrayInitializerExpression.Roles.LBrace);
+						
+						for (int i = 0; i < collectionInit.Arguments.Count; i++) {
+							var arg = collectionInit.Arguments[i] as CollectionElementInitializer.ElementInitializerArgument;
+							if (arg == null)
+								continue;
+							parent.AddChild ((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept (this), ArrayInitializerExpression.Roles.Expression);
+							if (curComma >= 0)
+								parent.AddChild (new CSharpTokenNode (Convert (commaLoc[curComma--]), 1), ArrayInitializerExpression.Roles.Comma);
 						}
+						
+						if (braceLocs != null)
+							parent.AddChild (new CSharpTokenNode (Convert (braceLocs[1]), 1), ArrayInitializerExpression.Roles.RBrace);
 							
+						init.AddChild (parent, ArrayInitializerExpression.Roles.Expression);
 						continue;
 					}
 					
