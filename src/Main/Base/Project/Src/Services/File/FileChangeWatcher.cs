@@ -3,13 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -163,7 +160,6 @@ namespace ICSharpCode.SharpDevelop
 					watcher.Changed += OnFileChangedEvent;
 					watcher.Created += OnFileChangedEvent;
 					watcher.Renamed += OnFileChangedEvent;
-					watcher.Deleted += OnFileChangedEvent;
 				}
 				watcher.Path = Path.GetDirectoryName(fileName);
 				watcher.Filter = Path.GetFileName(fileName);
@@ -198,17 +194,6 @@ namespace ICSharpCode.SharpDevelop
 				wasChangedExternally = true;
 				OnFileChanged(EventArgs.Empty);
 				
-				if (System.IO.File.Exists(this.file.FileName)) {
-					// if the file was only made readonly, prevent reloading it from disk
-					bool readOnly = (System.IO.File.GetAttributes(this.file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
-					if (readOnly != isFileReadOnly)
-						wasChangedExternally = false;
-					isFileReadOnly = readOnly;
-				} else {
-					// use to raise the events
-					FileService.RemoveFile(this.file.FileName, false);
-				}
-				
 				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
 					// delay reloading message a bit, prevents showing two messages
 					// when the file changes twice in quick succession; and prevents
@@ -222,11 +207,19 @@ namespace ICSharpCode.SharpDevelop
 		
 		void MainForm_Activated(object sender, EventArgs e)
 		{
+			if (file == null)
+				return;
+			
+			if (System.IO.File.Exists(file.FileName)) {
+				// if the file was only made readonly, prevent reloading it from disk
+				bool readOnly = (System.IO.File.GetAttributes(this.file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
+				if (readOnly != isFileReadOnly)
+					wasChangedExternally = false;
+				isFileReadOnly = readOnly;
+			}
+			
 			if (wasChangedExternally) {
 				wasChangedExternally = false;
-				
-				if (file == null)
-					return;
 				
 				string fileName = file.FileName;
 				if (!System.IO.File.Exists(fileName))
