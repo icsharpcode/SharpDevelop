@@ -9,6 +9,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -162,6 +163,7 @@ namespace ICSharpCode.SharpDevelop
 					watcher.Changed += OnFileChangedEvent;
 					watcher.Created += OnFileChangedEvent;
 					watcher.Renamed += OnFileChangedEvent;
+					watcher.Deleted += OnFileChangedEvent;
 				}
 				watcher.Path = Path.GetDirectoryName(fileName);
 				watcher.Filter = Path.GetFileName(fileName);
@@ -196,11 +198,16 @@ namespace ICSharpCode.SharpDevelop
 				wasChangedExternally = true;
 				OnFileChanged(EventArgs.Empty);
 				
-				// if the file was only made readonly, don't prevent reloading it from disk
-				bool readOnly = (System.IO.File.GetAttributes(this.file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
-				if (readOnly != isFileReadOnly)
-					wasChangedExternally = false;
-				isFileReadOnly = readOnly;
+				if (System.IO.File.Exists(this.file.FileName)) {
+					// if the file was only made readonly, prevent reloading it from disk
+					bool readOnly = (System.IO.File.GetAttributes(this.file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
+					if (readOnly != isFileReadOnly)
+						wasChangedExternally = false;
+					isFileReadOnly = readOnly;
+				} else {
+					// use to raise the events
+					FileService.RemoveFile(this.file.FileName, false);
+				}
 				
 				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
 					// delay reloading message a bit, prevents showing two messages

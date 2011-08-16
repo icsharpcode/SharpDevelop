@@ -60,10 +60,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void OnFileExternallyChanged(object sender, EventArgs e)
 		{
 			// handle readonly
-			bool isExternalReadOnly = (File.GetAttributes(this.PrimaryFileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
-			if (isExternalReadOnly != IsReadOnly) {
-				codeEditor.PrimaryTextEditor.IsReadOnly = isExternalReadOnly;
-				OnIsReadOnlyChanged(EventArgs.Empty);
+			if (this.PrimaryFileName != null && File.Exists(this.PrimaryFileName)) {
+				bool isExternalReadOnly = (File.GetAttributes(this.PrimaryFileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
+				if (isExternalReadOnly != IsReadOnly) {
+					codeEditor.PrimaryTextEditor.IsReadOnly = isExternalReadOnly;
+					OnIsReadOnlyChanged(EventArgs.Empty);
+				}
 			}
 		}
 		
