@@ -3,14 +3,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-
-using ICSharpCode.Core;
+using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop
 {
-	public sealed class FileChangeWatcher : IDisposable
+	internal sealed class FileChangeWatcher : IDisposable
 	{
 		public static bool DetectExternalChangesOption {
 			get {
@@ -35,10 +36,6 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		static HashSet<FileChangeWatcher> activeWatchers = new HashSet<FileChangeWatcher>();
-		
-		public static HashSet<FileChangeWatcher> ActiveWatchers {
-			get { return activeWatchers; }
-		}
 		
 		static int globalDisableCount;
 		
@@ -66,23 +63,9 @@ namespace ICSharpCode.SharpDevelop
 			Project.ProjectChangeWatcher.OnAllChangeWatchersDisabledChanged();
 		}
 		
-		public event EventHandler FileChanged;
-		
-		void OnFileChanged(EventArgs e)
-		{
-			if (FileChanged != null) {
-				FileChanged(this, e);
-			}
-		}
-		
 		FileSystemWatcher watcher;
 		bool wasChangedExternally = false;
 		OpenedFile file;
-		bool isFileReadOnly;
-		
-		public OpenedFile File {
-			get { return file; }
-		}
 		
 		public FileChangeWatcher(OpenedFile file)
 		{
@@ -93,10 +76,6 @@ namespace ICSharpCode.SharpDevelop
 			file.FileNameChanged += file_FileNameChanged;
 			activeWatchers.Add(this);
 			SetWatcher();
-			
-			if (System.IO.File.Exists(this.file.FileName)) {
-				isFileReadOnly = (System.IO.File.GetAttributes(this.file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
-			}
 		}
 
 		void file_FileNameChanged(object sender, EventArgs e)
@@ -164,7 +143,6 @@ namespace ICSharpCode.SharpDevelop
 				watcher.Path = Path.GetDirectoryName(fileName);
 				watcher.Filter = Path.GetFileName(fileName);
 				watcher.EnableRaisingEvents = true;
-				watcher.NotifyFilter |= NotifyFilters.Attributes;
 			} catch (PlatformNotSupportedException) {
 				if (watcher != null) {
 					watcher.Dispose();
@@ -192,8 +170,6 @@ namespace ICSharpCode.SharpDevelop
 			LoggingService.Debug("File " + file.FileName + " was changed externally: " + e.ChangeType);
 			if (!wasChangedExternally) {
 				wasChangedExternally = true;
-				OnFileChanged(EventArgs.Empty);
-				
 				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
 					// delay reloading message a bit, prevents showing two messages
 					// when the file changes twice in quick succession; and prevents
@@ -207,22 +183,14 @@ namespace ICSharpCode.SharpDevelop
 		
 		void MainForm_Activated(object sender, EventArgs e)
 		{
-			if (file == null)
-				return;
-			
-			if (System.IO.File.Exists(file.FileName)) {
-				// if the file was only made readonly, prevent reloading it from disk
-				bool readOnly = (System.IO.File.GetAttributes(this.file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
-				if (readOnly != isFileReadOnly)
-					wasChangedExternally = false;
-				isFileReadOnly = readOnly;
-			}
-			
 			if (wasChangedExternally) {
 				wasChangedExternally = false;
 				
+				if (file == null)
+					return;
+				
 				string fileName = file.FileName;
-				if (!System.IO.File.Exists(fileName))
+				if (!File.Exists(fileName))
 					return;
 				
 				string message = StringParser.Parse(
@@ -232,7 +200,7 @@ namespace ICSharpCode.SharpDevelop
 				if ((AutoLoadExternalChangesOption && file.IsDirty == false)
 				    || MessageService.AskQuestion(message, StringParser.Parse("${res:MainWindow.DialogName}")))
 				{
-					if (System.IO.File.Exists(fileName)) {
+					if (File.Exists(fileName)) {
 						file.ReloadFromDisk();
 					}
 				} else {

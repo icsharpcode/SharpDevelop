@@ -28,7 +28,6 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 		public event EventHandler TabPageTextChanged;
 		public event EventHandler Disposed;
 		public event EventHandler IsDirtyChanged;
-		public event EventHandler IsReadOnlyChanged;
 		
 		public object Control
 		{
@@ -228,13 +227,6 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 		{
 			if (IsDirtyChanged != null) {
 				IsDirtyChanged(this, e);
-			}
-		}
-		
-		protected virtual void OnIsReadOnlyChanged(EventArgs e)
-		{
-			if (IsReadOnlyChanged != null) {
-				IsReadOnlyChanged(this, e);
 			}
 		}
 		

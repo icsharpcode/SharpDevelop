@@ -26,7 +26,6 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public event EventHandler TabPageTextChanged;
 		public event EventHandler Disposed;
 		public event EventHandler IsDirtyChanged;
-		public event EventHandler IsReadOnlyChanged;
 		
 		public string TitleName {
 			get {
@@ -232,13 +231,6 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 			if (IsDirtyChanged != null) {
 				IsDirtyChanged(this, e);
-			}
-		}
-		
-		protected virtual void OnIsReadOnlyChanged(EventArgs e)
-		{
-			if (IsReadOnlyChanged != null) {
-				IsReadOnlyChanged(this, e);
 			}
 		}
 		

@@ -41,7 +41,6 @@ namespace WixBinding.Tests.Utils
 		public event EventHandler IsDirtyChanged;
 		public event EventHandler TitleNameChanged;
 		public event EventHandler InfoTipChanged;
-		public event EventHandler IsReadOnlyChanged;
 		#pragma warning restore 67
 		
 		public IList<OpenedFile> Files {

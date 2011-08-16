@@ -2,10 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel.Design;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.Design;
 using System.IO;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
@@ -392,6 +393,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		#endregion
 
+
 		#region InfoTip
 		public event EventHandler InfoTipChanged;
 
@@ -606,23 +608,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		
-		#region Read only
 		/// <summary>
 		/// Gets if the view content is read-only (can be saved only when choosing another file name).
 		/// </summary>
 		public virtual bool IsReadOnly {
 			get { return false; }
 		}
-		
-		public event EventHandler IsReadOnlyChanged;
-		
-		protected virtual void OnIsReadOnlyChanged(EventArgs e)
-		{
-			if (IsReadOnlyChanged != null) {
-				IsReadOnlyChanged(this, e);
-			}
-		}
-		#endregion
 		
 		/// <summary>
 		/// Gets if the view content is view-only (cannot be saved at all).

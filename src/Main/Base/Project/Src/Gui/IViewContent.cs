@@ -146,11 +146,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		bool IsReadOnly { get; }
 		
 		/// <summary>
-		/// Is called each time the IsReadonly for the content has changed.
-		/// </summary>
-		event EventHandler IsReadOnlyChanged;
-		
-		/// <summary>
 		/// Gets if the view content is view-only (cannot be saved at all).
 		/// </summary>
 		bool IsViewOnly { get; }
