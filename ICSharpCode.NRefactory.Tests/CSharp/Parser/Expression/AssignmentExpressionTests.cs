@@ -105,7 +105,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		{
 			ParseUtilCSharp.AssertExpression(
 				"a = b = c",
-				new AssignmentExpression("a", new AssignmentExpression("b", new IdentifierExpression("c"))));
+				new AssignmentExpression(
+					new IdentifierExpression("a"),
+					new AssignmentExpression(new IdentifierExpression("b"), new IdentifierExpression("c"))));
 		}
 	}
 }

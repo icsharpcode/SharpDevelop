@@ -269,6 +269,48 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region Object Initializer Context
+		sealed class ObjectInitializerContext
+		{
+			internal readonly IType type;
+			internal readonly ObjectInitializerContext prev;
+			
+			public ObjectInitializerContext(IType type, CSharpResolver.ObjectInitializerContext prev)
+			{
+				this.type = type;
+				this.prev = prev;
+			}
+		}
+		
+		ObjectInitializerContext objectInitializerStack;
+		
+		/// <summary>
+		/// Pushes the type of the object that is currently being initialized.
+		/// </summary>
+		public void PushInitializerType(IType type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			objectInitializerStack = new ObjectInitializerContext(type, objectInitializerStack);
+		}
+		
+		public void PopInitializerType()
+		{
+			if (objectInitializerStack == null)
+				throw new InvalidOperationException();
+			objectInitializerStack = objectInitializerStack.prev;
+		}
+		
+		/// <summary>
+		/// Gets the type of the object currently being initialized.
+		/// Returns SharedTypes.Unknown if no object initializer is currently open (or if the object initializer
+		/// has unknown type).
+		/// </summary>
+		public IType CurrentObjectInitializerType {
+			get { return objectInitializerStack != null ? objectInitializerStack.type : SharedTypes.UnknownType; }
+		}
+		#endregion
+		
 		#region Clone
 		/// <summary>
 		/// Creates a copy of this CSharp resolver.
@@ -2073,6 +2115,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region ResolveIdentifierInObjectInitializer
+		public ResolveResult ResolveIdentifierInObjectInitializer(string identifier)
+		{
+			MemberLookup memberLookup = CreateMemberLookup();
+			ResolveResult target = new ResolveResult(this.CurrentObjectInitializerType);
+			return memberLookup.Lookup(target, identifier, EmptyList<IType>.Instance, false);
+		}
+		#endregion
+		
 		#region GetExtensionMethods
 		/// <summary>
 		/// Gets the extension methods that are called 'name'
@@ -2377,6 +2428,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			
+			if (type.Kind == TypeKind.Delegate && arguments.Length == 1) {
+				return Convert(arguments[0], type);
+			}
 			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
 			MemberLookup lookup = CreateMemberLookup();
 			bool allowProtectedAccess = lookup.IsProtectedAccessAllowed(type);

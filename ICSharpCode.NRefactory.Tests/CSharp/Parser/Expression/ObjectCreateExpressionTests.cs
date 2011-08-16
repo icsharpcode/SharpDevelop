@@ -163,9 +163,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 					Type = new SimpleType("List", new PrimitiveType("int")),
 					Initializer = new ArrayInitializerExpression {
 						Elements = {
-							new PrimitiveExpression(0),
-							new PrimitiveExpression(1),
-							new PrimitiveExpression(2)
+							new ArrayInitializerExpression(new PrimitiveExpression(0)),
+							new ArrayInitializerExpression(new PrimitiveExpression(1)),
+							new ArrayInitializerExpression(new PrimitiveExpression(2))
 						}}});
 		}
 		
@@ -204,17 +204,18 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 				}",
 				new ObjectCreateExpression {
 					Type = new SimpleType("List", new SimpleType("Contact")),
-					Initializer = new ArrayInitializerExpression {
-						Elements = {
+					Initializer = new ArrayInitializerExpression(
+						new ArrayInitializerExpression(
 							new ObjectCreateExpression {
 								Type = new SimpleType("Contact"),
 								Initializer = new ArrayInitializerExpression {
 									Elements = {
 										new NamedExpression("Name", new PrimitiveExpression("Chris")),
 										new NamedExpression("PhoneNumbers", new ArrayInitializerExpression () {
-											Elements = { new PrimitiveExpression("206-555-0101") }
+											Elements = { new ArrayInitializerExpression(new PrimitiveExpression("206-555-0101")) }
 										})
-									}}},
+									}}}),
+						new ArrayInitializerExpression(
 							new ObjectCreateExpression {
 								Type = new SimpleType("Contact"),
 								Arguments = { new IdentifierExpression("additionalParameter") },
@@ -223,11 +224,28 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 										new NamedExpression("Name", new PrimitiveExpression("Bob")),
 										new NamedExpression("PhoneNumbers", new ArrayInitializerExpression () {
 											Elements = {
-												new PrimitiveExpression("650-555-0199"),
-												new PrimitiveExpression("425-882-8080")
+												new ArrayInitializerExpression(new PrimitiveExpression("650-555-0199")),
+												new ArrayInitializerExpression(new PrimitiveExpression("425-882-8080"))
 											}
 										})
-									}}}
+									}}})
+						)});
+		}
+		
+		[Test]
+		public void AssignmentInCollectionInitializer()
+		{
+			ParseUtilCSharp.AssertExpression(
+				@"new List<int> { { a = 1 } }",
+				new ObjectCreateExpression {
+					Type = new SimpleType("List", new PrimitiveType("int")),
+					Initializer = new ArrayInitializerExpression {
+						Elements = {
+							new ArrayInitializerExpression {
+								Elements = {
+									new AssignmentExpression(new IdentifierExpression("a"), new PrimitiveExpression(1))
+								}
+							}
 						}}});
 		}
 	}

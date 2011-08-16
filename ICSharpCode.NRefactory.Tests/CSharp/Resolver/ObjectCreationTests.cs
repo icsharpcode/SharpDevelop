@@ -141,5 +141,20 @@ class C : B {
 			mrr = Resolve<InvocationResolveResult>(program, "this(0)");
 			Assert.AreEqual("C..ctor", mrr.Member.FullName);
 		}
+		
+		[Test]
+		public void FieldReferenceInObjectInitializer()
+		{
+			string program = @"class A {
+	public int Property;
+}
+class B {
+	void Method() {
+		var x = new A() { $Property = 0$ };
+	}
+}";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("A.Property", result.Member.FullName);
+		}
 	}
 }

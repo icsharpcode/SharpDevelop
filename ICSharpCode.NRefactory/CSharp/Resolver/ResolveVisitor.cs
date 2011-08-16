@@ -221,6 +221,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		protected override ResolveResult VisitChildren(AstNode node, object data)
 		{
+			Log.WriteLine("ResolveVisitor: unhandled node " + node.GetType().Name);
 			ScanChildren(node);
 			return null;
 		}
@@ -369,7 +370,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					resolver.UsingScope = parsedFile.GetUsingScope(namespaceDeclaration.StartLocation);
 				}
 				ScanChildren(namespaceDeclaration);
-				return new NamespaceResolveResult(resolver.UsingScope.NamespaceName);
+				if (resolver.UsingScope != null)
+					return new NamespaceResolveResult(resolver.UsingScope.NamespaceName);
+				else
+					return null;
 			} finally {
 				resolver.UsingScope = previousUsingScope;
 			}
@@ -751,8 +755,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		static string GetAnonymousTypePropertyName(Expression expr, out Expression resolveExpr)
 		{
-			if (expr is NamedArgumentExpression) {
-				var namedArgExpr = (NamedArgumentExpression)expr;
+			if (expr is NamedExpression) {
+				var namedArgExpr = (NamedExpression)expr;
 				resolveExpr = namedArgExpr.Expression;
 				return namedArgExpr.Identifier;
 			}
@@ -771,29 +775,35 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, object data)
 		{
-			ScanChildren(anonymousTypeCreateExpression);
 			// 7.6.10.6 Anonymous object creation expressions
-			var anonymousType = new DefaultTypeDefinition(resolver.CurrentTypeDefinition, "$Anonymous$");
+			if (resolver.UsingScope == null) {
+				ScanChildren(anonymousTypeCreateExpression);
+				return errorResult;
+			}
+			var anonymousType = new DefaultTypeDefinition(resolver.UsingScope.ProjectContent, string.Empty, "$Anonymous$");
 			anonymousType.IsSynthetic = true;
+			resolver.PushInitializerType(anonymousType);
 			foreach (var expr in anonymousTypeCreateExpression.Initializers) {
 				Expression resolveExpr;
 				var name = GetAnonymousTypePropertyName(expr, out resolveExpr);
-				if (string.IsNullOrEmpty(name))
-					continue;
-				
-				var property = new DefaultProperty(anonymousType, name) {
-					Accessibility = Accessibility.Public,
-					ReturnType = new VarTypeReference(this, resolver.Clone(), resolveExpr, false)
-				};
-				anonymousType.Properties.Add(property);
+				if (!string.IsNullOrEmpty(name)) {
+					var property = new DefaultProperty(anonymousType, name) {
+						Accessibility = Accessibility.Public,
+						ReturnType = new VarTypeReference(this, resolver.Clone(), resolveExpr, false)
+					};
+					anonymousType.Properties.Add(property);
+				}
+				Scan(expr);
 			}
+			ScanChildren(anonymousTypeCreateExpression);
+			resolver.PopInitializerType();
 			return new ResolveResult(anonymousType);
 		}
 		
 		public override ResolveResult VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			ScanChildren(arrayCreateExpression);
 			if (!resolverEnabled) {
+				ScanChildren(arrayCreateExpression);
 				return null;
 			}
 			
@@ -973,15 +983,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 		}
 		
+		// NamedArgumentExpression is "identifier: Expression"
 		public override ResolveResult VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
 		{
-			// Usually, the parent expression takes care of handling NamedArgumentExpressions
+			// The parent expression takes care of handling NamedArgumentExpressions
 			// by calling GetArguments().
-			if (resolverEnabled) {
-				return Resolve(namedArgumentExpression.Expression);
+			// This method gets called only when scanning, or when the named argument is used
+			// in an invalid context.
+			Scan(namedArgumentExpression.Expression);
+			return errorResult;
+		}
+		
+		// NamedExpression is "identifier = Expression" in object initializers and attributes
+		public override ResolveResult VisitNamedExpression(NamedExpression namedExpression, object data)
+		{
+			Expression rhs = namedExpression.Expression;
+			if (rhs is ArrayInitializerExpression) {
+				throw new NotImplementedException();
 			} else {
-				Scan(namedArgumentExpression.Expression);
-				return null;
+				if (resolverEnabled) {
+					ResolveResult result = resolver.ResolveIdentifierInObjectInitializer(namedExpression.Identifier);
+					ResolveAndProcessConversion(rhs, result.Type);
+					return result;
+				} else {
+					ScanChildren(namedExpression);
+					return null;
+				}
 			}
 		}
 		
@@ -996,14 +1023,38 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			if (resolverEnabled) {
+			if (resolverEnabled || !objectCreateExpression.Initializer.IsNull) {
 				IType type = ResolveType(objectCreateExpression.Type);
-				string[] argumentNames;
-				ResolveResult[] arguments = GetArguments(objectCreateExpression.Arguments, out argumentNames);
 				
-				Scan(objectCreateExpression.Initializer); // TODO
+				var initializer = objectCreateExpression.Initializer;
+				if (!initializer.IsNull) {
+					resolver.PushInitializerType(type);
+					foreach (Expression element in initializer.Elements) {
+						if (element is NamedExpression) {
+							// assignment in object initializer
+							Scan(element);
+						} else if (element is ArrayInitializerExpression) {
+							// constructor argument list in collection initializer
+							throw new NotImplementedException();
+						} else {
+							// element in collection initializer
+							throw new NotImplementedException();
+						}
+					}
+					resolver.PopInitializerType();
+				}
 				
-				return resolver.ResolveObjectCreation(type, arguments, argumentNames);
+				if (resolverEnabled) {
+					string[] argumentNames;
+					ResolveResult[] arguments = GetArguments(objectCreateExpression.Arguments, out argumentNames);
+					
+					return resolver.ResolveObjectCreation(type, arguments, argumentNames);
+				} else {
+					foreach (AstNode node in objectCreateExpression.Arguments) {
+						Scan(node);
+					}
+					return null;
+				}
 			} else {
 				ScanChildren(objectCreateExpression);
 				return null;
@@ -2096,6 +2147,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region Other statements
+		public override ResolveResult VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
+		{
+			ScanChildren(expressionStatement);
+			return voidResult;
+		}
+		#endregion
+		
 		#region Local Variable Type Inference
 		/// <summary>
 		/// Creates a type reference for the specified type node.
@@ -2221,23 +2280,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Attributes
 		public override ResolveResult VisitAttribute(Attribute attribute, object data)
 		{
+			var type = ResolveType(attribute.Type);
+			
+			// Separate arguments into ctor arguments and non-ctor arguments:
+			var constructorArguments = attribute.Arguments.Where(a => !(a is NamedExpression));
+			var nonConstructorArguments = attribute.Arguments.Where(a => a is NamedExpression);
+			
+			// Scan the non-constructor arguments
+			resolver.PushInitializerType(type);
+			foreach (var arg in nonConstructorArguments)
+				Scan(arg);
+			resolver.PopInitializerType();
+			
 			if (resolverEnabled) {
-				var type = ResolveType(attribute.Type);
-				
-				// Separate arguments into ctor arguments and non-ctor arguments:
-				var constructorArguments = attribute.Arguments.Where(a => !(a is AssignmentExpression));
-				var nonConstructorArguments = attribute.Arguments.Where(a => a is AssignmentExpression);
-				
-				// Scan the non-constructor arguments
-				foreach (var arg in nonConstructorArguments)
-					Scan(arg); // TODO: handle these like object initializers
-				
 				// Resolve the ctor arguments and find the matching ctor overload
 				string[] argumentNames;
 				ResolveResult[] arguments = GetArguments(constructorArguments, out argumentNames);
 				return resolver.ResolveObjectCreation(type, arguments, argumentNames);
 			} else {
-				ScanChildren(attribute);
+				foreach (var node in constructorArguments)
+					Scan(node);
 				return null;
 			}
 		}
