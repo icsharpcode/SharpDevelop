@@ -238,14 +238,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						DebuggerService.ToggleBreakpointAt(textEditor, line);
 						return;
 					}
-					// create breakpoint for the decompiled content
-					dynamic viewContent = WorkbenchSingleton.Workbench.ActiveContent;
-					if (viewContent is AbstractViewContentWithoutFile) {
-						dynamic codeView = ((AbstractViewContentWithoutFile)viewContent).Control;
-						var editor = codeView.TextEditor as ITextEditor;
-						var memberReference = viewContent.MemberReference as MemberReference;
-						if (editor != null && !string.IsNullOrEmpty(editor.FileName))
-							DebuggerService.ToggleBreakpointAt(memberReference, editor, line);
+					
+					// create breakpoint for the other posible active contents
+					var viewContent = WorkbenchSingleton.Workbench.ActiveContent as AbstractViewContentWithoutFile;
+					if (viewContent != null && viewContent.Tag is MemberReference) {
+						var memberReference = (MemberReference)viewContent.Tag;
+						textEditor = viewContent.Services.GetService(typeof(ITextEditor)) as ITextEditor;
+						if (textEditor != null) {
+							DebuggerService.ToggleBreakpointAt(memberReference, textEditor, line);
+							return;
+						}
 					}
 				}
 			}

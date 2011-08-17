@@ -479,5 +479,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// Gets the local variable index.
 		/// </summary>
 		object GetLocalVariableIndex(int typeToken, int memberToken, string name);
+		
+		/// <summary>
+		/// Gets an implementation of an assembly resolver.
+		/// </summary>
+		/// <param name="assemblyFile">Assembly file path.</param>
+		/// <returns>An <see cref="IAssemblyResolver"/>.</returns>
+		IAssemblyResolver GetAssemblyResolver(string assemblyFile);
 	}
 }
