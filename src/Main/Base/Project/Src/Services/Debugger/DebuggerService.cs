@@ -278,13 +278,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return;
 			Location logicPos = e.LogicalPosition;
 			var doc = e.Editor.Document;
-			string fileName;
-			if (!File.Exists(e.Editor.FileName)) {
-				dynamic viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-				fileName = string.Format("decompiled/{0}.cs", viewContent.FullTypeName);
-			} else {
-				fileName = e.Editor.FileName;
-			}
+			FileName fileName = e.Editor.FileName;
 			
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
 			if (expressionFinder == null)
