@@ -22,6 +22,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets if the workbench window has been disposed.
 		/// </summary>
+		[Obsolete("This property always returns false.")]
 		bool IsDisposed {
 			get;
 		}
