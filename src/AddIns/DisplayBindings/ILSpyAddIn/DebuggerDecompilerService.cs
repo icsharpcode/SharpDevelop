@@ -3,10 +3,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.ILAst;
+using ICSharpCode.ILSpyAddIn.LaunchILSpy;
 using ICSharpCode.SharpDevelop.Debugging;
 using Mono.Cecil;
 
@@ -17,6 +19,8 @@ namespace ICSharpCode.ILSpyAddIn
 	/// </summary>
 	public class DebuggerDecompilerService : IDebuggerDecompilerService
 	{
+		ILSpyAssemblyResolver resolver;
+		
 		static DebuggerDecompilerService()
 		{
 			DebugInformation = new ConcurrentDictionary<int, DecompileInformation>();
@@ -165,6 +169,21 @@ namespace ICSharpCode.ILSpyAddIn
 			}
 			
 			return null;
+		}
+		
+		public IAssemblyResolver GetAssemblyResolver(string assemblyFile)
+		{
+			if (string.IsNullOrEmpty(assemblyFile))
+				throw new ArgumentException("assemblyFile is null or empty");
+			
+			string folderPath = Path.GetDirectoryName(assemblyFile);
+			if (resolver == null)
+				return (resolver = new ILSpyAssemblyResolver(folderPath));
+			
+			if (string.Compare(folderPath, resolver.FolderPath, StringComparison.OrdinalIgnoreCase) != 0)
+				return (resolver = new ILSpyAssemblyResolver(folderPath));
+			
+			return resolver;
 		}
 	}
 }

@@ -105,8 +105,7 @@ namespace Debugger.AddIn.Tooltips
 			if (provider != null) {
 				editor = provider.TextEditor;
 			} else {
-				dynamic codeView = viewContent.Control;
-				editor = codeView.TextEditor as ITextEditor;
+				editor = viewContent.GetService(typeof(ITextEditor)) as ITextEditor;
 			}
 			
 			if (editor != null) {

@@ -22,8 +22,13 @@ namespace ICSharpCode.ILSpyAddIn.LaunchILSpy
 			if (string.IsNullOrEmpty(decompiledAssemblyFolder))
 				throw new ArgumentException("Invalid working folder");
 			
+			FolderPath = decompiledAssemblyFolder;
 			this.directoryInfo = new DirectoryInfo(decompiledAssemblyFolder);
 			this.cache = new Dictionary<string, AssemblyDefinition> ();
+		}
+		
+		public string FolderPath {
+			get; private set;
 		}
 		
 		public AssemblyDefinition Resolve(AssemblyNameReference name)
