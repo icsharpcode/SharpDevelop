@@ -11,8 +11,6 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.ILSpyAddIn.LaunchILSpy;
 using ICSharpCode.ILSpyAddIn.ViewContent;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -40,6 +38,8 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		readonly CodeView codeView;
 		readonly CancellationTokenSource cancellation = new CancellationTokenSource();
+		
+		MemberReference decompiledType;
 		
 		#region Constructor
 		public DecompiledViewContent(string assemblyFile, string fullTypeName, string entityTag)
@@ -84,14 +84,6 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public override bool IsReadOnly {
 			get { return true; }
-		}
-		
-		public MemberReference MemberReference {
-			get; private set;
-		}
-		
-		public override object Tag {
-			get { return MemberReference; }
 		}
 		
 		#endregion
@@ -176,17 +168,13 @@ namespace ICSharpCode.ILSpyAddIn
 			astBuilder.GenerateCode(textOutput);
 			
 			// save decompilation data
-			var nodes = TreeTraversal
-				.PreOrder((AstNode)astBuilder.CompilationUnit, n => n.Children)
-				.Where(n => n is AttributedNode && n.Annotation<Tuple<int, int>>() != null);
-			MemberReference = typeDefinition;
+			decompiledType = typeDefinition;
 			
-			int token = MemberReference.MetadataToken.ToInt32();
+			int token = decompiledType.MetadataToken.ToInt32();
 			var info = new DecompileInformation {
 				CodeMappings = astBuilder.CodeMappings,
 				LocalVariables = astBuilder.LocalVariables,
-				DecompiledMemberReferences = astBuilder.DecompiledMemberReferences,
-				AstNodes = nodes
+				DecompiledMemberReferences = astBuilder.DecompiledMemberReferences
 			};
 			
 			// save the data
@@ -227,10 +215,10 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			if (!DebuggerService.IsDebuggerStarted)
 				return;
-			if (MemberReference == null || MemberReference.MetadataToken == null)
+			if (decompiledType == null || decompiledType.MetadataToken == null)
 				return;
 			
-			int typeToken = MemberReference.MetadataToken.ToInt32();
+			int typeToken = decompiledType.MetadataToken.ToInt32();
 			if (!DebuggerDecompilerService.DebugInformation.ContainsKey(typeToken))
 				return;
 			var decompilerService = DebuggerDecompilerService.Instance;

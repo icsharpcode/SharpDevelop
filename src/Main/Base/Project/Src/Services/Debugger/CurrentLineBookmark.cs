@@ -3,7 +3,6 @@
 
 using System;
 using System.Windows.Media;
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;

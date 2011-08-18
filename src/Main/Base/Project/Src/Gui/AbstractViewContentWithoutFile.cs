@@ -16,13 +16,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public abstract class AbstractViewContentWithoutFile : AbstractViewContent, ICustomizedCommands
 	{
-		/// <summary>
-		/// Gets specific information (from implementations) regarding this view content.
-		/// </summary>
-		public virtual object Tag {
-			get { return null; }
-		}
-		
 		public override bool IsViewOnly {
 			get { return false; }
 		}

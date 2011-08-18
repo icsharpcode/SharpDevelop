@@ -774,8 +774,6 @@ namespace ICSharpCode.SharpDevelop.Services
 					int[] ilRanges;
 					int methodToken;
 					if (debuggerDecompilerService.GetILAndTokenByLineNumber(token, dbb.LineNumber, out ilRanges, out methodToken)) {
-						dbb.ILFrom = ilRanges[0];
-						dbb.ILTo = ilRanges[1];
 						// create BP
 						breakpoint = new ILBreakpoint(
 							debugger,
@@ -783,7 +781,7 @@ namespace ICSharpCode.SharpDevelop.Services
 							dbb.LineNumber,
 							memberReference.MetadataToken.ToInt32(),
 							methodToken,
-							dbb.ILFrom,
+							ilRanges[0],
 							dbb.IsEnabled);
 						
 						debugger.Breakpoints.Add(breakpoint);

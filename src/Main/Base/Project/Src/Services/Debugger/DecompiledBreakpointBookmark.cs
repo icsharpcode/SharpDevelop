@@ -15,19 +15,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		MemberReference memberReference;
 		string assemblyFile;
 		
-		public DecompiledBreakpointBookmark(MemberReference member, int ilFrom, int ilTo, FileName fileName, Location location, BreakpointAction action, string scriptLanguage, string script) : base(fileName, location, action, scriptLanguage, script)
+		public DecompiledBreakpointBookmark(FileName fileName, Location location, BreakpointAction action, string scriptLanguage, string script) 
+			: base(fileName, location, action, scriptLanguage, script)
 		{
-			this.memberReference = member;
-			this.ILFrom = ilFrom;
-			this.ILTo = ILTo;
-		}
-		
-		public int ILFrom {
-			get; set;
-		}
-		
-		public int ILTo {
-			get; set;
+			
 		}
 		
 		public MemberReference MemberReference {
