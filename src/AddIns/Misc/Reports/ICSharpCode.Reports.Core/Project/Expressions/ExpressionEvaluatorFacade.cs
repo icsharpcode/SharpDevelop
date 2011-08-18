@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 using SimpleExpressionEvaluator;
 using SimpleExpressionEvaluator.Evaluation;
@@ -18,13 +19,14 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		private ReportingLanguageCompiler compiler;
 		private ExpressionContext context;
 		private IPageInfo singlePage;
-		 
+		
 		
 		public ExpressionEvaluatorFacade(IPageInfo pageInfo)
 		{
+			Console.WriteLine("Eval-fassade Constr");
 			compiler = new ReportingLanguageCompiler();
 			this.context = new ExpressionContext(null);
-			context.ResolveUnknownVariable += VariableStore;
+			 context.ResolveUnknownVariable += VariableStore;
 			context.ResolveMissingFunction += FunctionStore;
 			SinglePage = pageInfo;
 			compiler.SinglePage = pageInfo;
@@ -34,29 +36,93 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		public string Evaluate (string expression)
 		{
 			try {
-				if (CanEvaluate(expression)) {
-					IExpression compiled = compiler.CompileExpression<string>(expression);
-					this.context.ContextObject = this.SinglePage;
-					if (compiled != null) {
-						return (compiled.Evaluate(context)).ToString();
-					}
-				}
-			} catch (Exception e) {
 				
-//				Console.WriteLine("error");
+				string s = EvaluationHelper.ExtractExpressionPart(expression);
+				if (s.Length > 0) {				    
+					this.context.ContextObject = this.SinglePage ;
+					return EvaluateExpression (s);
+				}
+				
+//				if (EvaluationHelper.CanEvaluate(expression)) {
+//					this.context.ContextObject = this.SinglePage;
+//					return EvaluateExpression(expression);
+//				}
+				
+			} catch (Exception e) {
 				expression = e.Message;
+				WriteLogMessage(e);
 			}
 			
 			return expression;
 		}
-		
-		
-		private static bool CanEvaluate (string expressionn)
+
+		public string Evaluate (string expression, object row)
 		{
-			if ((!String.IsNullOrEmpty(expressionn)) && (expressionn.StartsWith("="))) {
-				return true;
+			try {
+				string s = EvaluationHelper.ExtractExpressionPart(expression);
+				if (s.Length > 0)
+				{
+					this.context.ContextObject = row;
+					return EvaluateExpression (s);
+				}
+			} catch (Exception e) {
+				expression = e.Message;
+				WriteLogMessage(e);
 			}
-			return false;
+			return expression;
+		}
+		
+		/*
+		public string Evaluate (string expression, object row)
+		{
+			try {
+				if (EvaluationHelper.CanEvaluate(expression)) {
+					this.context.ContextObject = row;
+					return EvaluateExpression (expression);
+				}
+			} catch (Exception e) {
+				expression = e.Message;
+				WriteLogMessage(e);
+			}
+			
+			return expression;
+		}
+		*/
+		
+		public void Evaluate (IReportExpression expressionItem)
+		{
+			if (expressionItem == null) {
+				throw new ArgumentException("expressionItem");
+			}
+			string expr = String.Empty;
+			if (!String.IsNullOrEmpty(expressionItem.Expression)) {
+				expr = expressionItem.Expression;
+			} else {
+				expr = expressionItem.Text;
+			}
+			
+			expressionItem.Text = Evaluate(expr);
+		}
+		
+		
+		
+		string EvaluateExpression(string expression)
+		{
+            IExpression compiled = compiler.CompileExpression<string>(expression);
+			if (compiled != null) {
+				return (compiled.Evaluate(context)).ToString();
+			}
+			return expression;
+		}
+
+		
+		static void WriteLogMessage(Exception e)
+		{
+			Console.WriteLine("");
+			Console.WriteLine("ExpressionEvaluatorFacade.Evaluate");
+			Console.WriteLine(e.Message);
+            Console.WriteLine(e.TargetSite);
+			Console.WriteLine("");
 		}
 		
 		
@@ -78,14 +144,25 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		
 		private void VariableStore (object sender,SimpleExpressionEvaluator.Evaluation.UnknownVariableEventArgs e)
 		{
-			
 			PropertyPath path = this.singlePage.ParsePropertyPath(e.VariableName);
 			if (path != null) {
 				e.VariableValue = path.Evaluate(path);
 			}
+			
 			// Look in Parametershash
-			if (singlePage.ParameterHash.ContainsKey(e.VariableName)) {
-				e.VariableValue = singlePage.ParameterHash[e.VariableName].ToString();
+			if (singlePage.ParameterHash.ContainsKey(e.VariableName))
+			{
+				try {
+					e.VariableValue = singlePage.ParameterHash[e.VariableName].ToString();
+				}
+				catch (Exception)
+				{
+					e.VariableValue = String.Empty;
+					Console.WriteLine("");
+					Console.WriteLine("ExpressionEvaluatorFacade.VariableStore");
+					Console.WriteLine("Replace Param <{0}> with String.Empty because no value is set",e.VariableName);
+					Console.WriteLine("");
+				}
 			}
 		}
 		

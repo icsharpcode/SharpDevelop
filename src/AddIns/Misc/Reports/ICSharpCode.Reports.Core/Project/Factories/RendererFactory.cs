@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 
 	/// <summary>

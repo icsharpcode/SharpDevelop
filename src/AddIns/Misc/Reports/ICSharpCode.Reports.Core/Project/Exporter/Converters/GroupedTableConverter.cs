@@ -7,7 +7,9 @@ using System.Drawing;
 using System.Linq;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Exporter
 {
@@ -19,8 +21,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 		private ITableContainer table;
 		
-		public GroupedTableConverter(IDataNavigator dataNavigator,
-		                      ExporterPage singlePage, ILayouter layouter ):base(dataNavigator,singlePage,layouter)
+		public GroupedTableConverter(IReportModel reportModel,IDataNavigator dataNavigator,
+		                      ExporterPage singlePage):base(reportModel,dataNavigator,singlePage)
 			
 		{
 		}
@@ -38,7 +40,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			ExporterCollection mylist = base.Convert(parent,item);
 			this.table = (BaseTableItem)item ;
 			this.table.Parent = parent;
-//			this.table.DataNavigator = base.DataNavigator;
 			return ConvertInternal(mylist);
 		}
 		
@@ -53,7 +54,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			Point dataAreaStart = new Point(table.Items[0].Location.X,table.Items[0].Location.Y + base.CurrentPosition.Y);
 			
 			base.CurrentPosition = new Point(PrintHelper.DrawingAreaRelativeToParent(this.table.Parent,this.table).Location.X,
-			                                 base.SectionBounds.DetailStart.Y);
+			                                 base.SectionBounds.DetailArea.Top);
 
 			base.DefaultLeftPosition = base.CurrentPosition.X;
 			
@@ -86,7 +87,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					do {
 						
 						// GetType child navigator
-						IDataNavigator childNavigator = base.DataNavigator.GetChildNavigator();
+						IDataNavigator childNavigator = base.DataNavigator.GetChildNavigator;
 						
 						base.Evaluator.SinglePage.IDataNavigator = childNavigator;
 						// Convert Grouping Header
@@ -96,23 +97,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 						childNavigator.Reset();
 						childNavigator.MoveNext();
 
-/*
----- GroupTableConverter.cs Zeile 151:
-FillRow(simpleContainer,base.DataNavigator);
-FireRowRendering(simpleContainer,base.DataNavigator);
-base.PrepareContainerForConverting(section,simpleContainer);
-----
-*/	
 						//Convert children
 						if (childNavigator != null) {
 							do
 							{
-								StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
+								StandardPrinter.AdjustBackColor(simpleContainer);
 								simpleContainer = table.Items[2] as ISimpleContainer;
 								containerSize = simpleContainer.Size;
 								
-								FillRow(simpleContainer,childNavigator);
-//								PrepareContainerForConverting(section,simpleContainer);								
+								FillRow(simpleContainer,childNavigator);						
 								FireRowRendering(simpleContainer,childNavigator);
 								PrepareContainerForConverting(section,simpleContainer);		
 								base.CurrentPosition = ConvertStandardRow(exporterCollection,simpleContainer);
@@ -147,7 +140,6 @@ base.PrepareContainerForConverting(section,simpleContainer);
 						CheckForPageBreak(section,simpleContainer,headerRow,exporterCollection);
 						
 						FillRow(simpleContainer,base.DataNavigator);
-//						base.PrepareContainerForConverting(section,simpleContainer);
 						FireRowRendering(simpleContainer,base.DataNavigator);
 						base.PrepareContainerForConverting(section,simpleContainer);
 						
@@ -176,7 +168,6 @@ base.PrepareContainerForConverting(section,simpleContainer);
 			if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds))
 			{
 				base.CurrentPosition = ForcePageBreak(exporterCollection,section);
-				
 				base.CurrentPosition = ConvertStandardRow (exporterCollection,headerRow);
 			}
 
@@ -188,6 +179,7 @@ base.PrepareContainerForConverting(section,simpleContainer);
 			base.ForcePageBreak(exporterCollection, section);
 			return base.SectionBounds.ReportHeaderRectangle.Location;
 		}
+		
 		
 		#endregion
 		
@@ -207,9 +199,9 @@ base.PrepareContainerForConverting(section,simpleContainer);
 				groupCollection = section.Items.ExtractGroupedColumns();
 				base.DataNavigator.Fill(groupCollection);
 				base.FireSectionRendering(section);
-				ExporterCollection list = StandardPrinter.ConvertPlainCollection(groupCollection,offset);
 				
-				StandardPrinter.EvaluateRow(base.Evaluator,list);
+				ExporterCollection list = ExportHelper.ConvertPlainCollection(groupCollection,offset);
+				EvaluationHelper.EvaluateRow(base.Evaluator,list);
 				
 				exportList.AddRange(list);
 				AfterConverting (list);

@@ -2,10 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.Reports.Core;
-using ICSharpCode.Reports.Addin.ReportWizard;
 using System.Xml;
 using System.Xml.Linq;
+
+using ICSharpCode.Reports.Addin.ReportWizard;
+using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin.Test.Wizard
 {

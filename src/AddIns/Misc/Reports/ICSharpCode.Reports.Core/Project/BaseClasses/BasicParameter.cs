@@ -15,8 +15,7 @@ namespace  ICSharpCode.Reports.Core
 	
 	public  class BasicParameter
 	{
-		string parameterName;
-		string parameterValue;
+
 		
 		public BasicParameter ()
 		{
@@ -25,23 +24,15 @@ namespace  ICSharpCode.Reports.Core
 		
 		public BasicParameter(string parameterName,string parameterValue)
 		{
-			this.parameterName = parameterName;
-			this.parameterValue = parameterValue;
+			this.ParameterName = parameterName;
+			this.ParameterValue = parameterValue;
 		}
+		public string ParameterName {get;set;}
 		
-		/// <summary>
-		/// Name of the Parameter
-		/// </summary>
-		/// 
-		public string ParameterName {
-			get {return parameterName;}
-			set {this.parameterName = value;}
-		}
+		public string Type {get;set;}
+		
+		public string ParameterValue {get;set;}
 		
 		
-		public string ParameterValue {
-			get { return parameterValue; }
-			set { parameterValue = value; }
-		}
 	}
 }

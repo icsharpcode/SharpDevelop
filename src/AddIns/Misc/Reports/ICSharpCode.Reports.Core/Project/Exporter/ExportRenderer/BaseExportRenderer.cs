@@ -27,18 +27,8 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 		
 		protected static void DrawItems (Graphics graphics,ExporterCollection items)
 		{
-			
 			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) {
-				
-				if (baseExportColumn != null) {
-					ExportContainer container = baseExportColumn as ExportContainer;
-					if (container == null) {
-						baseExportColumn.DrawItem(graphics);
-					} else {
-						container.DrawItem(graphics);
-						DrawItems(graphics,container.Items);
-					}
-				}
+				baseExportColumn.DrawItem(graphics);
 			}
 		}
 		

@@ -15,13 +15,13 @@ namespace ICSharpCode.Reports.Addin.Designer
 	/// <summary>
 	/// Description of RowItemDesigner.
 	/// </summary>
-	public class RowItemDesigner:ParentControlDesigner
+	public class ContainerItemDesigner:ParentControlDesigner
 	{
 		
 		private ISelectionService selectionService;
 		private IComponentChangeService componentChangeService;
 		
-		public RowItemDesigner()
+		public ContainerItemDesigner()
 		{
 		}
 		

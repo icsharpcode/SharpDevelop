@@ -18,12 +18,8 @@ using ICSharpCode.Reports.Core.Exporter;
 /// </remarks>
 namespace ICSharpCode.Reports.Core
 {
-	public class BaseDataItem : BaseTextItem, IDataRenderer, IExportColumnBuilder, IDataItem
+	public class BaseDataItem : BaseTextItem, IExportColumnBuilder, IDataItem
 	{
-
-		private string columnName;
-		private string dbValue;
-
 
 		#region Constructor
 
@@ -33,35 +29,19 @@ namespace ICSharpCode.Reports.Core
 
 		public BaseDataItem(string columnName) : base()
 		{
-			this.columnName = columnName;
+			this.ColumnName = columnName;
 		}
 
 		#endregion
 
-		#region privates
-
-		private string CheckForNullValue()
-		{
-			if (String.IsNullOrEmpty(this.dbValue)) {
-				if (String.IsNullOrEmpty(this.NullValue)) {
-					return GlobalValues.UnboundName;
-				} else
-					return this.NullValue;
-			}
-			return this.dbValue;
-		}
-
-		#endregion
-
+		
 		#region IExportColumnBuilder  implementation
 
-		public new BaseExportColumn CreateExportColumn()
+		public new IBaseExportColumn CreateExportColumn()
 		{
-			string toPrint = CheckForNullValue();
 			TextStyleDecorator st = base.CreateItemStyle();
-			ExportText item = new ExportText(st, false);
-			item.Text = StandardFormatter.FormatOutput(toPrint, this.FormatString, base.DataType, this.NullValue);
-
+			ExportText item = new ExportText(st);
+			item.Text = StandardFormatter.FormatOutput(DBValue, this.FormatString, base.DataType, this.NullValue);
 			return item;
 		}
 
@@ -69,8 +49,7 @@ namespace ICSharpCode.Reports.Core
 
 		public override void Render(ReportPageEventArgs rpea)
 		{
-			string toPrint = CheckForNullValue();
-			base.Text = StandardFormatter.FormatOutput(toPrint, this.FormatString, base.DataType, this.NullValue);
+			base.Text = StandardFormatter.FormatOutput(DBValue, this.FormatString, base.DataType, this.NullValue);
 			base.Render(rpea);
 		}
 
@@ -83,25 +62,10 @@ namespace ICSharpCode.Reports.Core
 
 		[XmlIgnoreAttribute()]
 		[Browsable(false)]
-		public virtual string DBValue {
-			get { return dbValue; }
-			set { dbValue = value; }
-		}
-
-
-		public virtual string ColumnName {
-			get {
-				if (String.IsNullOrEmpty(columnName)) {
-					this.columnName = GlobalValues.UnboundName;
-				}
-				return columnName;
-			}
-			set {
-				columnName = value;
-				this.Text = this.columnName;
-			}
-		}
-
+		public virtual string DBValue {get;set;}
+			
+		public virtual string ColumnName {get;set;}
+			
 		///<summary>
 		/// Mappingname to Datasource
 		/// </summary>

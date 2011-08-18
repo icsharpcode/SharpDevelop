@@ -23,7 +23,7 @@ namespace SimpleExpressionEvaluator.Utilities
             if (target == null && _rootIsStatic == false)
                 return null;
             
-            Type s = target.GetType();
+//            Type s = target.GetType();
            
             if (target != null && _rootType.IsAssignableFrom(target.GetType()) == false)
                 return null;

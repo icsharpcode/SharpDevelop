@@ -11,8 +11,11 @@ using System;
 /// 	created by - Forstmeier Peter
 /// 	created on - 17.11.2005 22:41:26
 /// </remarks>
-namespace ICSharpCode.Reports.Core {
-	public class ReportParameters : object {
+namespace ICSharpCode.Reports.Core 
+{
+	
+	public class ReportParameters 
+	{
 		
 		private ConnectionObject connectionObject;
 		private ParameterCollection sqlParameters;

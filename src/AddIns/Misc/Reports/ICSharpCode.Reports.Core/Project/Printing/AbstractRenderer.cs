@@ -85,7 +85,7 @@ namespace ICSharpCode.Reports.Core
 			this.reportDocument.RenderPageEnd += new EventHandler<ReportPageEventArgs> (PrintPageFooter);
 			this.reportDocument.RenderReportEnd += new EventHandler<ReportPageEventArgs> (PrintReportFooter);
 			
-			this.Evaluator = StandardPrinter.SetupEvaluator();
+			this.Evaluator = EvaluationHelper.SetupEvaluator();
 		}
 		
 		
@@ -205,7 +205,6 @@ namespace ICSharpCode.Reports.Core
 	
 		protected virtual Point RenderSection (ReportPageEventArgs rpea)
 		{
-			Point currentPosition	= Point.Empty;
 			
 			this.CurrentSection.Render (rpea);
 			

@@ -5,7 +5,7 @@ using System;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core.ReportViewer;
 
-namespace ICSharpCode.Reports.Addin
+namespace ICSharpCode.Reports.Addin.SecondaryViews
 {
 	/// <summary>
 	/// Description of ReportViewerMessages.

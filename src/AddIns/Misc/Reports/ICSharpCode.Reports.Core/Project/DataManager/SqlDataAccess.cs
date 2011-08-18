@@ -14,7 +14,7 @@ namespace ICSharpCode.Reports.Core
 	/// </summary>
 	/// 
 	
-	internal class SqlDataAccessStrategy:IDataAccessStrategy
+	public class SqlDataAccessStrategy:IDataAccessStrategy
 	{
 		private ConnectionObject  connectionObject;
 		private ReportSettings reportSettings;
@@ -86,7 +86,7 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		public static void BuildQueryParameters (IDbCommand cmd,
+		private static void BuildQueryParameters (IDbCommand cmd,
 		                                         ParameterCollection parameterCollection)
 		{
 			if (parameterCollection != null && parameterCollection.Count > 0) {

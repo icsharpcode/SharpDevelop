@@ -29,14 +29,14 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			SDBookmark bookmark;
 			if (item.Mark is BreakpointBookmark) {
 				var bookmarks = DebuggerService.Breakpoints;
-				bookmark = bookmarks.FirstOrDefault(b => b.LineNumber == line && b.FileName == fileName);
+				bookmark = bookmarks.FirstOrDefault(b => b.LineNumber == line && b.FileName.Equals(fileName));
 				if (bookmark == null && bookmarks.Count > 0) {
 					bookmark = bookmarks[0]; // jump around to first bookmark
 				}
 			}
 			else {
 				var bookmarks = BookmarkManager.Bookmarks;
-				bookmark = bookmarks.FirstOrDefault(b => b.LineNumber == line && b.FileName == fileName);
+				bookmark = bookmarks.FirstOrDefault(b => b.LineNumber == line && b.FileName.Equals(fileName));
 				if (bookmark == null && bookmarks.Count > 0) {
 					bookmark = bookmarks[0]; // jump around to first bookmark
 				}

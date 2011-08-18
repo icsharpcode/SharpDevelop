@@ -17,7 +17,6 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 	/// </summary>
 	public class ReportingLanguageCompiler:SimpleExpressionLanguageCompiler
 	{
-//		private IPageInfo singlePage;
 		private ReportingLanguage reportingLanguage;
 		private Compiler compiler;
 		
@@ -35,8 +34,24 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			if (String.IsNullOrEmpty(expression)) {
 				return null;
 			}
+			ParseTree node = this.compiler.Parse(expression);
+			if (node.Root == null) {
+				return null;
+			}
+			return CompileExpression<T>(node.Root);
+		}
+		
+		
+		/*
+		public override IExpression<T> CompileExpression<T>(string expression)
+		{
+			if (String.IsNullOrEmpty(expression)) {
+				return null;
+			}
 			
 			string cleaned = CleanupExpressionString(expression);
+			
+			
 			if (!String.IsNullOrEmpty(cleaned)) {
 				ParseTree node = this.compiler.Parse(cleaned);
 				if (node.Root == null) {
@@ -57,7 +72,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			}
 			return str.TrimStart (delim.ToCharArray());
 		}
-		
+		*/
 		
 		// Dron't call base
 		protected override IExpression<T> CompileExpression<T>(ParseTreeNode root)
@@ -160,6 +175,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				case "IfThen":
 					IExpression condition = CompileExpressionNode(factory,astNode.ChildNodes[1].ChildNodes[0]);
 					IExpression trueExpr = CompileExpressionNode(factory, astNode.ChildNodes[3]);
+//					IExpression falseExpr = CompileExpressionNode(factory, astNode.ChildNodes[3]);
 					IExpression falseExpr = null;
 					if (astNode.ChildNodes.Count == 6)
 						falseExpr = CompileExpressionNode(factory, astNode.ChildNodes[5]);

@@ -8,6 +8,7 @@ using System.Drawing.Drawing2D;
 using System.Xml.Serialization;
 
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Core {
 	/// <summary>
@@ -26,8 +27,9 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		protected IGraphicStyleDecorator CreateItemStyle (BaseShape shape) {
-			GraphicStyleDecorator style = new GraphicStyleDecorator(shape);
+		protected IGraphicStyleDecorator CreateItemStyle (BaseShape shape)
+		{
+			IGraphicStyleDecorator style = new GraphicStyleDecorator(shape);
 			
 			style.Size = this.Size;
 			style.Location = this.Location;

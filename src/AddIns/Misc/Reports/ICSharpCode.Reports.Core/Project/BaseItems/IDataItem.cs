@@ -24,5 +24,7 @@ namespace ICSharpCode.Reports.Core
 		string MappingName { get; }
 		string BaseTableName { get; set; }
 		string DBValue {get;set;}
+		string Name {get;set;}
+		string DataType {get;set;}
 	}
 }

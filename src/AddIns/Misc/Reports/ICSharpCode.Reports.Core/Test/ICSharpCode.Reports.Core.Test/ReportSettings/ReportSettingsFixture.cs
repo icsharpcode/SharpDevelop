@@ -8,6 +8,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Core.Test

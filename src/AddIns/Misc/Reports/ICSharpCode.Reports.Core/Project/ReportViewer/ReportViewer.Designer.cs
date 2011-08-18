@@ -48,6 +48,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.comboZoom = new System.Windows.Forms.ToolStripComboBox();
 			this.printButton = new System.Windows.Forms.ToolStripButton();
 			this.pdfButton = new System.Windows.Forms.ToolStripButton();
+			this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.panel1.SuspendLayout();
 			this.contextMenuStrip1.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
@@ -62,36 +63,38 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.panel1.AutoScrollMargin = new System.Drawing.Size(5, 5);
 			this.panel1.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panel1.Controls.Add(this.drawingPanel);
-			this.panel1.Location = new System.Drawing.Point(5, 33);
+			this.panel1.Location = new System.Drawing.Point(5, 35);
 			this.panel1.Margin = new System.Windows.Forms.Padding(0);
 			this.panel1.Name = "panel1";
 			this.panel1.Padding = new System.Windows.Forms.Padding(5);
-			this.panel1.Size = new System.Drawing.Size(525, 373);
+			this.panel1.Size = new System.Drawing.Size(520, 373);
 			this.panel1.TabIndex = 3;
 			// 
 			// drawingPanel
 			// 
 			this.drawingPanel.BackColor = System.Drawing.SystemColors.Window;
+			this.drawingPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			this.drawingPanel.ContextMenuStrip = this.contextMenuStrip1;
-			this.drawingPanel.Location = new System.Drawing.Point(5, 5);
+			this.drawingPanel.Location = new System.Drawing.Point(3, 5);
 			this.drawingPanel.Name = "drawingPanel";
-			this.drawingPanel.Size = new System.Drawing.Size(496, 500);
+			this.drawingPanel.Size = new System.Drawing.Size(498, 434);
 			this.drawingPanel.TabIndex = 0;
 			this.drawingPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawingPanelPaint);
 			// 
 			// contextMenuStrip1
 			// 
 			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.createPdfMenu});
+									this.createPdfMenu,
+									this.printToolStripMenuItem});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
 			this.contextMenuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-			this.contextMenuStrip1.Size = new System.Drawing.Size(148, 26);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(153, 70);
 			this.contextMenuStrip1.Text = "Create PdfFile";
 			// 
 			// createPdfMenu
 			// 
 			this.createPdfMenu.Name = "createPdfMenu";
-			this.createPdfMenu.Size = new System.Drawing.Size(147, 22);
+			this.createPdfMenu.Size = new System.Drawing.Size(152, 22);
 			this.createPdfMenu.Text = "Create PdfFile";
 			this.createPdfMenu.Click += new System.EventHandler(this.PdfButtonClick);
 			// 
@@ -168,7 +171,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.lastPageButton.Size = new System.Drawing.Size(23, 22);
 			this.lastPageButton.Text = "&&LastPage";
 			this.lastPageButton.Click += new System.EventHandler(this.LastPageButtonClick);
-			
 			// 
 			// toolStripSeparator1
 			// 
@@ -201,6 +203,13 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.pdfButton.Text = "toolStripButton1";
 			this.pdfButton.Click += new System.EventHandler(this.PdfButtonClick);
 			// 
+			// printToolStripMenuItem
+			// 
+			this.printToolStripMenuItem.Name = "printToolStripMenuItem";
+			this.printToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.printToolStripMenuItem.Text = "Print";
+			this.printToolStripMenuItem.Click += new System.EventHandler(this.PrintButton);
+			// 
 			// PreviewControl
 			// 
 			this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -216,6 +225,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.ToolStripMenuItem printToolStripMenuItem;
 		private NumericToolStripTextBox numericToolStripTextBox2;
 		private System.Windows.Forms.ToolStripLabel pageInfoLabel;
 		private System.Windows.Forms.ToolStripButton pdfButton;

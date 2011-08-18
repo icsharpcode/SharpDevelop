@@ -2,12 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using NUnit.Framework;
-using ICSharpCode.Reports.Core;
+using ICSharpCode.Core;
 using ICSharpCode.Reports.Addin;
 using ICSharpCode.Reports.Addin.ReportWizard;
-using ICSharpCode.Core;
+using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
+using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Designer
 {

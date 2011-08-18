@@ -53,7 +53,7 @@ namespace ICSharpCode.Reports.Addin.TypeProviders
 
 			DesignerHelper.AddDefaultProperties(allProperties,props);
 			
-			DesignerHelper.AddTextbasedProperties(allProperties,props);
+			DesignerHelper.AddTextBasedProperties(allProperties,props);
 			
 			PropertyDescriptor prop = prop = props.Find("Text",true);
 			allProperties.Add(prop);

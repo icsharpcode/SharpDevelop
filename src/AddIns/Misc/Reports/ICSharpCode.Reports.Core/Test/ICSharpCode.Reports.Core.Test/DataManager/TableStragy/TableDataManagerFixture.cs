@@ -10,7 +10,7 @@ using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 using NUnit.Framework;
 
-namespace ICSharpCode.Reports.Core.Test.DataManager
+namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 {
 	[TestFixture]
 	public class TableDataManagerFixture
@@ -81,14 +81,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		
 		[Test]
-		public void DataNavigatorSortedEqualsFalse ()
-		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,new ReportSettings());
-			DataNavigator dataNav = dm.GetNavigator;
-			Assert.IsFalse(dataNav.IsSorted);
-			
-		}
-		[Test]
 		public void DataNavigatorCountEqualListCount ()
 		{
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,new ReportSettings());
@@ -108,26 +100,10 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
 			DataNavigator dataNav = dm.GetNavigator;
 		}
-		
-		#region Grouping
-		
-		[Test]
-		public void can_add_GroupColumn ()
-		{
-			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
-			ReportSettings rs = new ReportSettings();
-			
-			rs.GroupColumnsCollection.Add(gc);
-			Assert.AreEqual(1,rs.GroupColumnsCollection.Count);
-		}
-		
-		#endregion
-		
+	
 		
 		#region Sorting
-		//Tests moved to \Strategy
-		
-		
+
 		[Test]
 		public void SortDescendingByDateTime()
 		{
@@ -146,7 +122,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 				Assert.GreaterOrEqual(d1,d2);
 				d1 = d2;
 			}
-			Assert.IsTrue(dataNav.IsSorted);
 		}
 		
 		
@@ -163,39 +138,44 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 				DataRow r = dataNav.Current as DataRow;
 				string actual = r["last"].ToString();
 				Assert.GreaterOrEqual(compareTo,actual);
-//				string ss = String.Format("< {0} > <{1}>",compareTo,actual);
-//				Console.WriteLine(ss);
 				compareTo = actual;
 			}
-			Assert.IsTrue(dataNav.IsSorted);
 		}
 		
 		
 		#endregion
 		
+		#region	Substring
+		
+		[Test]
+		public void Expression_In_Text_Evaluate()
+		{
+			ReportSettings rs = new ReportSettings();
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
+			DataNavigator dataNav = dm.GetNavigator;
+			BaseDataItem bdi = new BaseDataItem(){
+				Name ="MyDataItem",
+				ColumnName = "last",
+				Text ="=Substring(Fields!last,0,3)",
+				Expression ="=Substring(Fields!last,0,3)"	
+			};
+			var ri = new ReportItemCollection();
+			ri.Add(bdi);
+			
+			while (dataNav.MoveNext())
+			{
+				dataNav.Fill(ri);
+				DataRow r = dataNav.Current as DataRow;
+				string actual = r["last"].ToString();
+				Assert.That(actual.Substring(0,3), Is.EqualTo(bdi.DBValue));
+			}
+		}
+		
+		
+		#endregion
 		
 		#region Standart Enumerator
-		/*
-		[Test]
-		public void IEnumerableStartFromBegin ()
-		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,
-			                                                                      new ReportSettings());
-			IDataNavigator dn = dm.GetNavigator;
-			IEnumerable ie = dn as IEnumerable;
-			IEnumerator en = ie.GetEnumerator();
-			int start = 0;
-			en.MoveNext();
-			do {
-				DataRow v = dn.Current as DataRow;
-				start ++;
-			}
-			while (dn.MoveNext());
-			Assert.AreEqual(this.table.Rows.Count,start);
-			Assert.IsFalse(dn.HasMoreData);
-		}
-		*/
-		
+	
 		[Test]
 		public void EnumeratorStartFromBegin ()
 		{
@@ -297,7 +277,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
 			DataNavigator dataNav = dm.GetNavigator;
 			while (dataNav.MoveNext()) {
-				CurrentItemsCollection c = dataNav.GetDataRow();
+				CurrentItemsCollection c = dataNav.GetDataRow;
 				Assert.AreEqual(typeof(string),c[0].DataType);
 				Assert.AreEqual(typeof(string),c[1].DataType);
 				Assert.AreEqual(typeof(string),c[2].DataType);
@@ -315,7 +295,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			DataNavigator dataNav = dm.GetNavigator;
 			int count = 0;
 			while (dataNav.MoveNext()) {
-				CurrentItemsCollection c = dataNav.GetDataRow();
+				CurrentItemsCollection c = dataNav.GetDataRow;
 				if ( c != null) {
 					count ++;
 				}

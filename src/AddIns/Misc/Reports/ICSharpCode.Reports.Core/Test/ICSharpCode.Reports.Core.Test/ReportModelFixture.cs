@@ -2,8 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using NUnit.Framework;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
+using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Core.Test
 {

@@ -4,6 +4,7 @@
 using System;
 using System.Data;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin
 {

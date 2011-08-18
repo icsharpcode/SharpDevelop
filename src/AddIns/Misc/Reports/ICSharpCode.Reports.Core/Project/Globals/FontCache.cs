@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using System.Drawing;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.Globals
 {
 	/// <summary>
 	/// Description of FontCache.

@@ -27,7 +27,7 @@
 // DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.Globals
 {
   /// <summary>
   /// Specifies the unit of measure.

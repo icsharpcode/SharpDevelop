@@ -1,13 +1,15 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.Core.WinForms;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
+
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;

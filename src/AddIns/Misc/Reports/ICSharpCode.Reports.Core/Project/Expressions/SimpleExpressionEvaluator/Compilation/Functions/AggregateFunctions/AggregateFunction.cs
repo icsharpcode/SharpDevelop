@@ -109,16 +109,16 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         
         private List<object> SetupDataSource (object data,IDataNavigator navigator)
         {
-        	navigator.Reset();
+            navigator.Reset();
         	List<object> list = new List<object>();
-        	while ( navigator.MoveNext()) {
-        		CurrentItemsCollection row = navigator.GetDataRow();
+        	while ( navigator.MoveNext())
+            {
+        		CurrentItemsCollection row = navigator.GetDataRow;
         		CurrentItem currentItem = ExtractItemFromDataSet (row,data);
         		
         		if (currentItem != null) {
         			
         			object s1 = Convert.ToString(currentItem.Value.ToString(),CultureInfo.CurrentCulture);
-        			
         			if (IsNumeric(s1)) {
         				list.Add(Convert.ToDouble(s1,System.Globalization.CultureInfo.CurrentCulture));
         			} else {
@@ -126,7 +126,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         			}
         		} 
         		else {
-        			string str = String.Format ("<{0}> not found in AggregateFunction",data.ToString());
+        			string str = String.Format ("<{0}> not found in AggregateFunction.SetupDataSource",data.ToString());
         			throw new FieldNotFoundException(str);
         		}
         	}

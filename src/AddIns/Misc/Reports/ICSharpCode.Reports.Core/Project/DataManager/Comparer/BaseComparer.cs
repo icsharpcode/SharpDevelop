@@ -11,13 +11,13 @@ using System.Collections.ObjectModel;
 /// 	created by - Forstmeier Peter
 /// 	created on - 10.11.2005 23:41:04
 /// </remarks>
-namespace ICSharpCode.Reports.Core {	
+namespace ICSharpCode.Reports.Core 
+{
 	public class BaseComparer : System.IComparable {
 		
 		private int listIndex;
 		private object[] objectArray;
 
-//		Collection<AbstractColumn> columnCollection;
 		ColumnCollection columnCollection;
 		/// <summary>
 		/// Default constructor - initializes all fields to default values
