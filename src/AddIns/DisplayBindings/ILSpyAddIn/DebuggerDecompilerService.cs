@@ -10,6 +10,7 @@ using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.ILAst;
 using ICSharpCode.ILSpyAddIn.LaunchILSpy;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Project;
 using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
@@ -24,6 +25,7 @@ namespace ICSharpCode.ILSpyAddIn
 		static DebuggerDecompilerService()
 		{
 			DebugInformation = new ConcurrentDictionary<int, DecompileInformation>();
+			ProjectService.SolutionClosed += delegate { DebugInformation.Clear(); };
 		}
 		
 		internal static IDebuggerDecompilerService Instance { get; private set; }
