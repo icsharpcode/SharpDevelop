@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
 using ICSharpCode.SharpDevelop.Project;
@@ -13,9 +14,9 @@ namespace AspNet.Mvc.Tests
 	public class SelectedMvcViewFolderTests
 	{
 		TestableSelectedMvcViewFolder selectedFolder;
-		DirectoryNode directoryNode;
-		TestableProject projectForSelectedFolder;
-		ProjectNode projectNode;
+		FakeMvcProject projectForSelectedFolder;
+		FakeMvcFileService fakeFileService;
+		FakeSelectedFolderNodeInProjectsView fakeSelectedFolderNode;
 		
 		void CreateSelectedFolder()
 		{
@@ -24,13 +25,11 @@ namespace AspNet.Mvc.Tests
 		
 		void CreateSelectedFolder(string folder)
 		{
-			projectForSelectedFolder = TestableProject.CreateProject();
-			projectNode = new ProjectNode(projectForSelectedFolder);
-			
-			directoryNode = new DirectoryNode(folder);
-			directoryNode.AddTo(projectNode);
-			
-			selectedFolder = new TestableSelectedMvcViewFolder(directoryNode);
+			selectedFolder = new TestableSelectedMvcViewFolder();
+			fakeSelectedFolderNode = selectedFolder.FakeSelectedFolderNodeInProjectsView;
+			fakeSelectedFolderNode.Folder = folder;
+			projectForSelectedFolder = fakeSelectedFolderNode.FakeMvcProject;
+			fakeFileService = selectedFolder.FakeFileService;
 		}
 		
 		[Test]
@@ -50,7 +49,7 @@ namespace AspNet.Mvc.Tests
 			CreateSelectedFolder(@"d:\projects\MyAspMvcApp\Views\About");
 			selectedFolder.AddFileToProject("Index.aspx");
 			
-			string fileNameAddedToProject = selectedFolder.PathPassedToAddNewFileToDirectoryNode;
+			string fileNameAddedToProject = fakeSelectedFolderNode.PathPassedToAddNewFile;
 			string expectedFileNameAddedToProject =
 				@"d:\projects\MyAspMvcApp\Views\About\Index.aspx";
 			
@@ -63,17 +62,17 @@ namespace AspNet.Mvc.Tests
 			CreateSelectedFolder(@"d:\projects\MyAspMvcApp\Views\About");
 			selectedFolder.AddFileToProject("Index.aspx");
 			
-			bool saved = projectForSelectedFolder.IsSaved;
+			bool saved = fakeSelectedFolderNode.FakeMvcProject.SaveCalled;
 			
 			Assert.IsTrue(saved);
 		}
 		
 		[Test]
-		public void Project_DirectoryNodeHasParentProject_ReturnsProject()
+		public void Project_FolderNodeHasProject_ReturnsProjectFromFolderNode()
 		{
 			CreateSelectedFolder();
 			
-			IProject project = selectedFolder.Project;
+			IMvcProject project = selectedFolder.Project;
 			
 			Assert.AreEqual(projectForSelectedFolder, project);
 		}
@@ -82,7 +81,7 @@ namespace AspNet.Mvc.Tests
 		public void GetTemplateLanguage_ProjectIsVisualBasicProject_ReturnsVisualBasicTemplateLanguage()
 		{
 			CreateSelectedFolder();
-			projectForSelectedFolder.SetLanguage("VBNet");
+			projectForSelectedFolder.SetVisualBasicAsTemplateLanguage();
 			
 			MvcTextTemplateLanguage language = selectedFolder.GetTemplateLanguage();
 			
@@ -93,11 +92,24 @@ namespace AspNet.Mvc.Tests
 		public void GetTemplateLanguage_ProjectIsCSharpProject_ReturnsCSharpTemplateLanguage()
 		{
 			CreateSelectedFolder();
-			projectForSelectedFolder.SetLanguage("C#");
+			projectForSelectedFolder.SetCSharpAsTemplateLanguage();
 			
 			MvcTextTemplateLanguage language = selectedFolder.GetTemplateLanguage();
 			
 			Assert.AreEqual(MvcTextTemplateLanguage.CSharp, language);
+		}
+		
+		[Test]
+		public void AddFileToProject_FileRelativePathPassed_FullPathIncludingViewFolderIsUsedToOpenFile()
+		{
+			CreateSelectedFolder(@"d:\projects\MyAspMvcApp\Views\About");
+			selectedFolder.AddFileToProject("Index.aspx");
+			
+			string fileNameOpened = fakeFileService.FileNamePassedToOpenFile;
+			string expectedFileNameOpened =
+				@"d:\projects\MyAspMvcApp\Views\About\Index.aspx";
+			
+			Assert.AreEqual(expectedFileNameOpened, fileNameOpened);
 		}
 	}
 }

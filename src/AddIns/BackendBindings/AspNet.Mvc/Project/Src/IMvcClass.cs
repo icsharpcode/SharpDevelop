@@ -2,12 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public interface IMvcTextTemplateHostFactory
+	public interface IMvcClass
 	{
-		IMvcTextTemplateHost CreateMvcTextTemplateHost(IMvcProject project);
+		string FullyQualifiedName { get; }
+		string Name { get; }
+		string Namespace { get; }
 	}
 }

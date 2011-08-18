@@ -10,7 +10,7 @@ namespace AspNet.Mvc.Tests.Helpers
 	public class FakeMvcControllerFileGenerator : IMvcControllerFileGenerator
 	{
 		public MvcTextTemplateLanguage TemplateLanguage { get; set; }
-		public IProject Project { get; set; }
+		public IMvcProject Project { get; set; }
 		public bool AddActionMethods { get; set; }
 		
 		public bool IsGenerateFileCalled;

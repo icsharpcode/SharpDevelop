@@ -13,6 +13,13 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 		}
 		
+		public SelectedMvcViewFolder(
+			ISelectedFolderNodeInProjectsView selectedFolderNodeInProjectsView,
+			IMvcFileService fileService)
+			: base(selectedFolderNodeInProjectsView, fileService)
+		{
+		}
+		
 		public SelectedMvcViewFolder()
 			: base()
 		{

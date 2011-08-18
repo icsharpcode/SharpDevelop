@@ -10,11 +10,11 @@ namespace ICSharpCode.AspNet.Mvc
 {
 	public class MvcTextTemplateHostFactory : IMvcTextTemplateHostFactory
 	{
-		public IMvcTextTemplateHost CreateMvcTextTemplateHost(IProject project)
+		public IMvcTextTemplateHost CreateMvcTextTemplateHost(IMvcProject mvcProject)
 		{
 			var appDomainFactory = new TextTemplatingAppDomainFactory();
 			string applicationBase = GetAssemblyBaseLocation();
-			var assemblyResolver = new TextTemplatingAssemblyResolver(project);
+			var assemblyResolver = new TextTemplatingAssemblyResolver(mvcProject.Project);
 			return new MvcTextTemplateHost(appDomainFactory, assemblyResolver, applicationBase);
 		}
 		

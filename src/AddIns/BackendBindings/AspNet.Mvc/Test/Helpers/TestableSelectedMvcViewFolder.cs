@@ -9,16 +9,21 @@ namespace AspNet.Mvc.Tests.Helpers
 {
 	public class TestableSelectedMvcViewFolder : SelectedMvcViewFolder
 	{
-		public TestableSelectedMvcViewFolder(DirectoryNode directoryNode)
-			: base(directoryNode)
+		public FakeMvcFileService FakeFileService;
+		public FakeSelectedFolderNodeInProjectsView FakeSelectedFolderNodeInProjectsView;
+		
+		public TestableSelectedMvcViewFolder()
+			: this(new FakeSelectedFolderNodeInProjectsView(), new FakeMvcFileService())
 		{
 		}
 		
-		public string PathPassedToAddNewFileToDirectoryNode;
-		
-		protected override void AddNewFileToDirectoryNode(string path)
+		public TestableSelectedMvcViewFolder(
+			FakeSelectedFolderNodeInProjectsView selectedFolderNode,
+			FakeMvcFileService fileService)
+			: base(selectedFolderNode, fileService)
 		{
-			PathPassedToAddNewFileToDirectoryNode = path;
+			this.FakeSelectedFolderNodeInProjectsView = selectedFolderNode;
+			this.FakeFileService = fileService;
 		}
 	}
 }

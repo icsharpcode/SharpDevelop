@@ -2,16 +2,19 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public interface IMvcControllerFileGenerator
+	public interface IMvcProject
 	{
-		MvcTextTemplateLanguage TemplateLanguage { get; set; }
-		IMvcProject Project { get; set; }
-		bool AddActionMethods { get; set; }
+		IProject Project { get; }
+		string RootNamespace { get; }
 		
-		void GenerateFile(MvcControllerFileName fileName);
+		void Save();
+		MvcTextTemplateLanguage GetTemplateLanguage();
+		IEnumerable<IMvcClass> GetModelClasses();
 	}
 }

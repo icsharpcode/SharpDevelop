@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Input;
 
@@ -12,32 +13,36 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		IMvcViewFileGenerator viewGenerator;
 		ISelectedMvcFolder selectedViewFolder;
-		IMvcFileService fileService;
 		MvcViewFileName viewFileName = new MvcViewFileName();
 		bool closed;
 		List<MvcViewEngineViewModel> viewEngines;
 		MvcViewEngineViewModel selectedViewEngine;
+		bool stronglyTypedView;
+		MvcModelClassViewModelsForSelectedFolder modelClassesForSelectedFolder;
 		
 		public AddMvcViewToProjectViewModel(ISelectedMvcFolder selectedViewFolder)
 			: this(
 				selectedViewFolder,
-				new MvcViewFileGenerator(),
-				new MvcFileService())
+				new MvcViewFileGenerator())
 		{
 		}
 		
 		public AddMvcViewToProjectViewModel(
 			ISelectedMvcFolder selectedViewFolder,
-			IMvcViewFileGenerator viewGenerator,
-			IMvcFileService fileService)
+			IMvcViewFileGenerator viewGenerator)
 		{
 			this.selectedViewFolder = selectedViewFolder;
 			this.viewGenerator = viewGenerator;
-			this.fileService = fileService;
 			this.viewFileName.Folder = selectedViewFolder.Path;
 			
+			CreateModelClassesForSelectedFolder();
 			CreateCommands();
 			AddViewEngines();
+		}
+		
+		void CreateModelClassesForSelectedFolder()
+		{
+			modelClassesForSelectedFolder = new MvcModelClassViewModelsForSelectedFolder(selectedViewFolder);
 		}
 		
 		void CreateCommands()
@@ -111,7 +116,6 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			GenerateMvcViewFile();
 			AddMvcViewFileToProject();
-			OpenMvcViewFileCreated();
 			IsClosed = true;
 		}
 		
@@ -140,16 +144,28 @@ namespace ICSharpCode.AspNet.Mvc
 			selectedViewFolder.AddFileToProject(fileName);
 		}
 		
-		void OpenMvcViewFileCreated()
-		{
-			string path = viewFileName.GetPath();
-			fileService.OpenFile(path);
-		}
-		
 		public bool IsPartialView {
 			get { return viewFileName.IsPartialView; }
 			set { viewFileName.IsPartialView = value; }
 		}
+		
+		public bool IsStronglyTypedView {
+			get { return stronglyTypedView; }
+			set {
+				stronglyTypedView = value;
+				if (stronglyTypedView) {
+					modelClassesForSelectedFolder.GetModelClasses();
+					OnPropertyChanged(viewModel => viewModel.ModelClasses);
+				}
+				OnPropertyChanged(viewModel => viewModel.IsStronglyTypedView);
+			}
+		}
+		
+		public IEnumerable<MvcModelClassViewModel> ModelClasses {
+			get { return modelClassesForSelectedFolder.ModelClasses; }
+		}
+		
+		public string SelectedModelClass { get; set; }
 	}
 }
 

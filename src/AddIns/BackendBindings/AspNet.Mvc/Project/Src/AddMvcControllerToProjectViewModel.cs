@@ -13,7 +13,6 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		IMvcControllerFileGenerator controllerGenerator;
 		ISelectedMvcFolder selectedControllerFolder;
-		IMvcFileService fileService;
 		MvcControllerFileName controllerFileName = new MvcControllerFileName();
 		bool closed;
 		List<MvcControllerTemplateViewModel> controllerTemplates;
@@ -21,19 +20,16 @@ namespace ICSharpCode.AspNet.Mvc
 		public AddMvcControllerToProjectViewModel(ISelectedMvcFolder selectedControllerFolder)
 			: this(
 				selectedControllerFolder,
-				new MvcControllerFileGenerator(),
-				new MvcFileService())
+				new MvcControllerFileGenerator())
 		{
 		}
 		
 		public AddMvcControllerToProjectViewModel(
 			ISelectedMvcFolder selectedControllerFolder,
-			IMvcControllerFileGenerator controllerGenerator,
-			IMvcFileService fileService)
+			IMvcControllerFileGenerator controllerGenerator)
 		{
 			this.selectedControllerFolder = selectedControllerFolder;
 			this.controllerGenerator = controllerGenerator;
-			this.fileService = fileService;
 			
 			this.controllerFileName.Folder = selectedControllerFolder.Path;
 			
@@ -127,7 +123,6 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			GenerateMvcControllerFile();
 			AddMvcControllerFileToProject();
-			OpenMvcControllerFileCreated();
 			IsClosed = true;
 		}
 		
@@ -147,12 +142,6 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			string fileName = controllerFileName.GetFileName();
 			selectedControllerFolder.AddFileToProject(fileName);
-		}
-		
-		void OpenMvcControllerFileCreated()
-		{
-			string path = controllerFileName.GetPath();
-			fileService.OpenFile(path);
 		}
 	}
 }

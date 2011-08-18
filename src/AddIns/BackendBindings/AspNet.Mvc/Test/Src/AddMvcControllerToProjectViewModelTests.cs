@@ -19,35 +19,30 @@ namespace AspNet.Mvc.Tests
 		FakeMvcControllerFileGenerator fakeControllerGenerator;
 		FakeSelectedMvcFolder fakeSelectedMvcControllerFolder;
 		List<string> propertyChangedEvents;
-		FakeMvcFileService fakeFileService;
 		
 		void CreateViewModelWithCSharpProject()
 		{
 			string path = @"d:\projects\MyAspMvcProject\Controllers";
-			CreateViewModelWithControllerFolderPath(path, MvcTextTemplateLanguage.CSharp, "C#");
+			CreateViewModelWithControllerFolderPath(path, MvcTextTemplateLanguage.CSharp);
 		}
 		
 		void CreateViewModelWithVisualBasicProject()
 		{
 			string path = @"d:\projects\MyAspMvcProject\Controllers";
-			CreateViewModelWithControllerFolderPath(path, MvcTextTemplateLanguage.VisualBasic, "VBNet");			
+			CreateViewModelWithControllerFolderPath(path, MvcTextTemplateLanguage.VisualBasic);			
 		}
 		
 		void CreateViewModelWithControllerFolderPath(
 			string path,
-			MvcTextTemplateLanguage language,
-			string projectLanguage)
+			MvcTextTemplateLanguage language)
 		{
 			fakeSelectedMvcControllerFolder = new FakeSelectedMvcFolder();
 			fakeSelectedMvcControllerFolder.TemplateLanguage = language;
-			fakeSelectedMvcControllerFolder.ProjectLanguage = projectLanguage;
 			fakeSelectedMvcControllerFolder.Path = path;
 			fakeControllerGenerator = new FakeMvcControllerFileGenerator();
-			fakeFileService = new FakeMvcFileService();
 			viewModel = new AddMvcControllerToProjectViewModel(
 				fakeSelectedMvcControllerFolder,
-				fakeControllerGenerator,
-				fakeFileService);
+				fakeControllerGenerator);
 		}
 		
 		void MonitorPropertyChangedEvents()
@@ -93,7 +88,7 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateViewModelWithControllerFolderPath(
 				@"d:\projects\MyProject\Controllers",
-				MvcTextTemplateLanguage.CSharp, "C#");
+				MvcTextTemplateLanguage.CSharp);
 			viewModel.ControllerName = "Home";
 			viewModel.AddMvcController();
 			
@@ -131,11 +126,11 @@ namespace AspNet.Mvc.Tests
 		public void AddMvcController_SelectedControllerFolderIsInVisualBasicProject_VisualBasicProjectIsPassedToMvcControllerGenerator()
 		{
 			CreateViewModelWithCSharpProject();
-			fakeSelectedMvcControllerFolder.ProjectLanguage = "VBNet";
+			fakeSelectedMvcControllerFolder.SetVisualBasicAsTemplateLanguage();
 			viewModel.AddMvcController();
 			
-			IProject project = fakeControllerGenerator.Project;
-			TestableProject expectedProject = fakeSelectedMvcControllerFolder.FakeProject;
+			IMvcProject project = fakeControllerGenerator.Project;
+			FakeMvcProject expectedProject = fakeSelectedMvcControllerFolder.FakeMvcProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -145,8 +140,7 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateViewModelWithCSharpProject();
 			viewModel.ControllerName = "Home";
-			fakeSelectedMvcControllerFolder.ProjectLanguage = "C#";
-			fakeSelectedMvcControllerFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
+			fakeSelectedMvcControllerFolder.SetCSharpAsTemplateLanguage();
 			fakeSelectedMvcControllerFolder.Path = @"d:\projects\MyAspMvcProject\Controllers\Home";
 			viewModel.AddMvcController();
 			
@@ -189,22 +183,6 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void AddMvcController_FileIsGenerated_FileIsOpened()
-		{
-			CreateViewModelWithCSharpProject();
-			viewModel.ControllerName = "HomeController";
-			fakeSelectedMvcControllerFolder.ProjectLanguage = "C#";
-			fakeSelectedMvcControllerFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
-			fakeSelectedMvcControllerFolder.Path = @"d:\projects\MyAspMvcProject\Controllers";
-			viewModel.AddMvcController();
-			
-			string fileNameOpened = fakeFileService.FileNamePassedToOpenFile;
-			string expectedFileNameOpened = @"d:\projects\MyAspMvcProject\Controllers\HomeController.cs";
-			
-			Assert.AreEqual(expectedFileNameOpened, fileNameOpened);
-		}
-		
-		[Test]
 		public void AddMvcControllerCommand_ControllerNameIsEmptyString_CommandIsDisabled()
 		{
 			CreateViewModelWithCSharpProject();
@@ -234,10 +212,10 @@ namespace AspNet.Mvc.Tests
 			fakeSelectedMvcControllerFolder.Path = @"d:\projects\MyAspMvcProject\Controllers";
 			viewModel.AddMvcController();
 			
-			string fileNameOpened = fakeFileService.FileNamePassedToOpenFile;
-			string expectedFileNameOpened = @"d:\projects\MyAspMvcProject\Controllers\HomeController.vb";
+			string fileNameGenerated = fakeControllerGenerator.FileNamePassedToGenerateController.GetPath();
+			string expectedFileNameGenerated = @"d:\projects\MyAspMvcProject\Controllers\HomeController.vb";
 			
-			Assert.AreEqual(expectedFileNameOpened, fileNameOpened);
+			Assert.AreEqual(expectedFileNameGenerated, fileNameGenerated);
 		}
 		
 		[Test]

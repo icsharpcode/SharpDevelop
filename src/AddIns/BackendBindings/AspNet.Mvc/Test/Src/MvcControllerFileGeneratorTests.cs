@@ -13,7 +13,7 @@ namespace AspNet.Mvc.Tests
 	public class MvcControllerFileGeneratorTests
 	{
 		MvcControllerFileGenerator generator;
-		TestableProject projectUsedByGenerator;
+		FakeMvcProject projectUsedByGenerator;
 		MvcTextTemplateRepository templateRepository;
 		FakeMvcTextTemplateHostFactory fakeHostFactory;
 		FakeMvcTextTemplateHost fakeHost;
@@ -34,20 +34,20 @@ namespace AspNet.Mvc.Tests
 			fakeHostFactory = new FakeMvcTextTemplateHostFactory();
 			fakeHost = fakeHostFactory.FakeMvcTextTemplateHost;
 			generator = new MvcControllerFileGenerator(fakeHostFactory, templateRepository);
-			projectUsedByGenerator = TestableProject.CreateProject();
+			projectUsedByGenerator = new FakeMvcProject();
 			generator.Project = projectUsedByGenerator;
 			ProjectPassedToGeneratorIsCSharpProject();
 		}
 		
 		void ProjectPassedToGeneratorIsCSharpProject()
 		{
-			projectUsedByGenerator.SetLanguage("C#");
+			projectUsedByGenerator.SetCSharpAsTemplateLanguage();
 			generator.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
 		}
 		
 		void ProjectPassedToGeneratorIsVisualBasicProject()
 		{
-			projectUsedByGenerator.SetLanguage("VBNet");
+			projectUsedByGenerator.SetVisualBasicAsTemplateLanguage();
 			generator.TemplateLanguage = MvcTextTemplateLanguage.VisualBasic;
 		}
 		
@@ -75,7 +75,7 @@ namespace AspNet.Mvc.Tests
 			CreateGenerator();
 			ProjectPassedToGeneratorIsCSharpProject();
 			GenerateFile();
-			IProject project = fakeHostFactory.ProjectPassedToCreateMvcTextTemplateHost;
+			IMvcProject project = fakeHostFactory.ProjectPassedToCreateMvcTextTemplateHost;
 			
 			Assert.AreEqual(projectUsedByGenerator, project);
 		}

@@ -10,7 +10,7 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		MvcTextTemplateLanguage TemplateLanguage { get; set; }
 		MvcTextTemplateType TemplateType { get; set; }
-		IProject Project { get; set; }
+		IMvcProject Project { get; set; }
 		
 		void GenerateFile(MvcViewFileName fileName);
 	}

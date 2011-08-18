@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
@@ -18,7 +19,7 @@ namespace AspNet.Mvc.Tests
 		FakeMvcViewFileGenerator fakeViewGenerator;
 		FakeSelectedMvcFolder fakeSelectedMvcViewFolder;
 		List<string> propertyChangedEvents;
-		FakeMvcFileService fakeFileService;
+		FakeMvcProject fakeProject;
 		
 		void CreateViewModel()
 		{
@@ -30,14 +31,12 @@ namespace AspNet.Mvc.Tests
 		{
 			fakeSelectedMvcViewFolder = new FakeSelectedMvcFolder();
 			fakeSelectedMvcViewFolder.Path = path;
-			fakeSelectedMvcViewFolder.ProjectLanguage = "C#";
-			fakeSelectedMvcViewFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
+			fakeSelectedMvcViewFolder.SetCSharpAsTemplateLanguage();
+			fakeProject = fakeSelectedMvcViewFolder.FakeMvcProject;
 			fakeViewGenerator = new FakeMvcViewFileGenerator();
-			fakeFileService = new FakeMvcFileService();
 			viewModel = new AddMvcViewToProjectViewModel(
 				fakeSelectedMvcViewFolder,
-				fakeViewGenerator,
-				fakeFileService);
+				fakeViewGenerator);
 		}
 		
 		void MonitorPropertyChangedEvents()
@@ -74,6 +73,11 @@ namespace AspNet.Mvc.Tests
 		void SelectRazorViewEngine()
 		{
 			viewModel.SelectedViewEngine = GetViewEngineFromViewModel("Razor");
+		}
+		
+		void AddModelClassToProject(string ns, string name)
+		{
+			fakeProject.AddModelClassToProject(ns, name);
 		}
 		
 		[Test]
@@ -130,11 +134,11 @@ namespace AspNet.Mvc.Tests
 		public void AddMvcView_SelectedViewFolderIsInVisualBasicProject_VisualBasicProjectIsPassedToMvcViewGenerator()
 		{
 			CreateViewModel();
-			fakeSelectedMvcViewFolder.ProjectLanguage = "VBNet";
+			fakeSelectedMvcViewFolder.SetVisualBasicAsTemplateLanguage();
 			viewModel.AddMvcView();
 			
-			IProject project = fakeViewGenerator.Project;
-			TestableProject expectedProject = fakeSelectedMvcViewFolder.FakeProject;
+			IMvcProject project = fakeViewGenerator.Project;
+			FakeMvcProject expectedProject = fakeSelectedMvcViewFolder.FakeMvcProject;
 			
 			Assert.AreEqual(expectedProject, project);
 		}
@@ -144,7 +148,7 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateViewModel();
 			viewModel.ViewName = "Index";
-			fakeSelectedMvcViewFolder.ProjectLanguage = "C#";
+			fakeSelectedMvcViewFolder.SetCSharpAsTemplateLanguage();
 			fakeSelectedMvcViewFolder.Path = @"d:\projects\MyAspMvcProject\Views\Home";
 			viewModel.AddMvcView();
 			
@@ -184,21 +188,6 @@ namespace AspNet.Mvc.Tests
 			bool fired = propertyChangedEvents.Contains("IsClosed");
 			
 			Assert.IsTrue(fired);
-		}
-		
-		[Test]
-		public void AddMvcView_FileIsGenerated_FileIsOpened()
-		{
-			CreateViewModel();
-			viewModel.ViewName = "Index";
-			fakeSelectedMvcViewFolder.ProjectLanguage = "C#";
-			fakeSelectedMvcViewFolder.Path = @"d:\projects\MyAspMvcProject\Views\Home";
-			viewModel.AddMvcView();
-			
-			string fileNameOpened = fakeFileService.FileNamePassedToOpenFile;
-			string expectedFileNameOpened = @"d:\projects\MyAspMvcProject\Views\Home\Index.aspx";
-			
-			Assert.AreEqual(expectedFileNameOpened, fileNameOpened);
 		}
 		
 		[Test]
@@ -369,6 +358,82 @@ namespace AspNet.Mvc.Tests
 			bool partialView = fakeViewGenerator.FileNamePassedToGenerateFile.IsPartialView;
 			
 			Assert.IsFalse(partialView);
+		}
+		
+		[Test]
+		public void ModelClasses_OneAvailableModelClassIsStronglyTypedViewSetToTrue_ReturnsOneModelClass()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject", "MyModel");
+			viewModel.IsStronglyTypedView = true;
+			
+			IEnumerable<MvcModelClassViewModel> models = viewModel.ModelClasses;
+			MvcModelClassViewModel model = models.First();
+			
+			Assert.AreEqual(1, models.Count());
+			Assert.AreEqual("MyModel (ICSharpCode.MyProject)", model.Name);
+		}
+		
+		[Test]
+		public void ModelClasses_OneAvailableModelClassAndIsStronglyTypedViewIsFalse_ReturnsNoModelClasses()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject", "MyModel");
+			
+			IEnumerable<MvcModelClassViewModel> models = viewModel.ModelClasses;
+			int count = models.Count();
+			
+			Assert.AreEqual(0, count);
+		}
+		
+		[Test]
+		public void ModelClasses_IsStronglyTypedViewChangedToTrueTwice_ModelClassesReadOnlyOnce()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject", "MyModel");
+			viewModel.IsStronglyTypedView = true;
+			IEnumerable<MvcModelClassViewModel> models = viewModel.ModelClasses;
+			
+			viewModel.IsStronglyTypedView = false;
+			models = viewModel.ModelClasses;
+			
+			viewModel.IsStronglyTypedView = true;
+			models = viewModel.ModelClasses;
+			
+			int callCount = fakeProject.GetModelClassesCallCount;
+			
+			Assert.AreEqual(1, callCount);
+		}
+		
+		[Test]
+		public void ModelClasses_OneAvailableModelClassIsStronglyTypedViewSetToTrue_PropertyChangedEventIsFiredForModelClasses()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject", "MyModel");
+			
+			MonitorPropertyChangedEvents();
+			viewModel.IsStronglyTypedView = true;
+			
+			bool contains = propertyChangedEvents.Contains("ModelClasses");
+			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void ModelClasses_OneAvailableModelClassIsStronglyTypedViewSetToTrue_PropertyChangedEventIsFiredForIsStronglyTypedView()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject", "MyModel");
+			
+			MonitorPropertyChangedEvents();
+			viewModel.IsStronglyTypedView = true;
+			
+			bool contains = propertyChangedEvents.Contains("IsStronglyTypedView");
+			Assert.IsTrue(contains);
 		}
 	}
 }

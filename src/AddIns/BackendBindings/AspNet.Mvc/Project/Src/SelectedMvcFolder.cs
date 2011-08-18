@@ -2,17 +2,29 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
 	public class SelectedMvcFolder : ISelectedMvcFolder
 	{
-		DirectoryNode directoryNode;
+		IMvcFileService fileService;
+		ISelectedFolderNodeInProjectsView selectedFolderNode;
+		
+		public SelectedMvcFolder(
+			ISelectedFolderNodeInProjectsView selectedFolderNode,
+			IMvcFileService fileService)
+		{
+			this.selectedFolderNode = selectedFolderNode;
+			this.fileService = fileService;
+		}
 		
 		public SelectedMvcFolder(DirectoryNode directoryNode)
+			: this(
+				new SelectedFolderNodeInProjectsView(directoryNode),
+				new MvcFileService())
 		{
-			this.directoryNode = directoryNode;
 		}
 		
 		public SelectedMvcFolder()
@@ -21,34 +33,44 @@ namespace ICSharpCode.AspNet.Mvc
 		}
 		
 		public string Path {
-			get { return directoryNode.Directory; }
+			get { return selectedFolderNode.Folder; }
 		}
 		
-		public IProject Project {
-			get { return directoryNode.Project; }
+		public IMvcProject Project {
+			get { return selectedFolderNode.Project; }
 		}
 		
 		public void AddFileToProject(string fileName)
 		{
-			string fullPath = System.IO.Path.Combine(Path, fileName);
-			AddNewFileToDirectoryNode(fullPath);
+			string fullPath = GetFullPathToFile(fileName);
+			AddNewFileToFolderNode(fullPath);
 			SaveProject();
+			OpenFile(fullPath);
 		}
 		
-		protected virtual void AddNewFileToDirectoryNode(string path)
+		string GetFullPathToFile(string fileName)
 		{
-			directoryNode.AddNewFile(path);
+			return System.IO.Path.Combine(Path, fileName);
+		}
+		
+		void AddNewFileToFolderNode(string path)
+		{
+			selectedFolderNode.AddNewFile(path);
 		}
 		
 		void SaveProject()
 		{
-			directoryNode.Project.Save();
+			selectedFolderNode.Project.Save();
+		}
+		
+		void OpenFile(string fullPath)
+		{
+			fileService.OpenFile(fullPath);
 		}
 		
 		public MvcTextTemplateLanguage GetTemplateLanguage()
 		{
-			string language = Project.Language;
-			return MvcTextTemplateLanguageConverter.Convert(language);
+			return Project.GetTemplateLanguage();
 		}
 	}
 }

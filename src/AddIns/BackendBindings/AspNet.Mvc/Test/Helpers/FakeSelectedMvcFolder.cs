@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.AspNet.Mvc;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -11,15 +12,10 @@ namespace AspNet.Mvc.Tests.Helpers
 	{
 		public string Path { get; set; }
 		
-		public string ProjectLanguage {
-			get { return FakeProject.Language; }
-			set { FakeProject.SetLanguage(value); }
-		}
+		public FakeMvcProject FakeMvcProject = new FakeMvcProject();
 		
-		public TestableProject FakeProject = TestableProject.CreateProject();
-		
-		public IProject Project {
-			get { return FakeProject; }
+		public IMvcProject Project {
+			get { return FakeMvcProject; }
 		}
 		
 		public string FileNamePassedToAddFile;
@@ -34,6 +30,16 @@ namespace AspNet.Mvc.Tests.Helpers
 		public MvcTextTemplateLanguage GetTemplateLanguage()
 		{
 			return TemplateLanguage;
+		}
+		
+		public void SetCSharpAsTemplateLanguage()
+		{
+			TemplateLanguage = MvcTextTemplateLanguage.CSharp;
+		}
+		
+		public void SetVisualBasicAsTemplateLanguage()
+		{
+			TemplateLanguage = MvcTextTemplateLanguage.VisualBasic;
 		}
 	}
 }
