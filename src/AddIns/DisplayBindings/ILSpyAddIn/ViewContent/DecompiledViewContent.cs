@@ -95,6 +95,9 @@ namespace ICSharpCode.ILSpyAddIn
 			codeView.Dispose();
 			BookmarkManager.Added -= BookmarkManager_Added;
 			BookmarkManager.Removed -= BookmarkManager_Removed;
+			DecompileInformation data;
+			DebuggerDecompilerService.DebugInformation.TryRemove(decompiledType.MetadataToken.ToInt32(), out data);
+			data = null;
 			base.Dispose();
 		}
 		#endregion
