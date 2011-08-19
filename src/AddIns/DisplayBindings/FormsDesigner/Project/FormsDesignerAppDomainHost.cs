@@ -29,6 +29,12 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		public bool HasDesignerHost {
+			get {
+				return Host != null;
+			}
+		}
+		
 		public IDesignerHost Host {
 			get {
 				if (designSurface == null)
@@ -116,12 +122,111 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		public event ComponentChangedEventHandler ComponentChanged;
+		
+		protected virtual void OnComponentChanged(ComponentChangedEventArgs e)
+		{
+			if (ComponentChanged != null) {
+				ComponentChanged(this, e);
+			}
+		}
+		
+		public event ComponentEventHandler ComponentAdded;
+		
+		protected virtual void OnComponentAdded(ComponentEventArgs e)
+		{
+			if (ComponentAdded != null) {
+				ComponentAdded(this, e);
+			}
+		}
+		
+		public event ComponentEventHandler ComponentRemoved;
+		
+		protected virtual void OnComponentRemoved(ComponentEventArgs e)
+		{
+			if (ComponentRemoved != null) {
+				ComponentRemoved(this, e);
+			}
+		}
+		
+		public event ComponentRenameEventHandler ComponentRename;
+		
+		protected virtual void OnComponentRename(ComponentRenameEventArgs e)
+		{
+			if (ComponentRename != null) {
+				ComponentRename(this, e);
+			}
+		}
+		
+		public event DesignerTransactionCloseEventHandler HostTransactionClosed;
+		
+		protected virtual void OnHostTransactionClosed(DesignerTransactionCloseEventArgs e)
+		{
+			if (HostTransactionClosed != null) {
+				HostTransactionClosed(this, e);
+			}
+		}
+		
+		public event EventHandler SelectionChanged;
+		
+		protected virtual void OnSelectionChanged(EventArgs e)
+		{
+			if (SelectionChanged != null) {
+				SelectionChanged(this, e);
+			}
+		}
+		
 		void InitializeEvents()
 		{
 			designSurface.Loading += designSurface_Loading;
 			designSurface.Loaded += designSurface_Loaded;
 			designSurface.Flushed += designSurface_Flushed;
 			designSurface.Unloading += designSurface_Unloading;
+			
+			IComponentChangeService componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
+			if (componentChangeService != null) {
+				componentChangeService.ComponentChanged += componentChangeService_ComponentChanged;
+				componentChangeService.ComponentAdded   += componentChangeService_ComponentAdded;
+				componentChangeService.ComponentRemoved += componentChangeService_ComponentRemoved;
+				componentChangeService.ComponentRename  += componentChangeService_ComponentRename;
+			}
+			
+			ISelectionService selectionService = GetService(typeof(ISelectionService)) as ISelectionService;
+			if (selectionService != null) {
+				selectionService.SelectionChanged += selectionService_SelectionChanged;
+			}
+			
+			Host.TransactionClosed += Host_TransactionClosed;
+		}
+
+		void selectionService_SelectionChanged(object sender, EventArgs e)
+		{
+			OnSelectionChanged(e);
+		}
+
+		void Host_TransactionClosed(object sender, DesignerTransactionCloseEventArgs e)
+		{
+			OnHostTransactionClosed(e);
+		}
+
+		void componentChangeService_ComponentRename(object sender, ComponentRenameEventArgs e)
+		{
+			OnComponentRename(e);
+		}
+
+		void componentChangeService_ComponentRemoved(object sender, ComponentEventArgs e)
+		{
+			OnComponentRemoved(e);
+		}
+
+		void componentChangeService_ComponentAdded(object sender, ComponentEventArgs e)
+		{
+			OnComponentAdded(e);
+		}
+
+		void componentChangeService_ComponentChanged(object sender, ComponentChangedEventArgs e)
+		{
+			OnComponentChanged(e);
 		}
 
 		void designSurface_Unloading(object sender, EventArgs e)
@@ -227,6 +332,11 @@ namespace ICSharpCode.FormsDesigner
 			get {
 				return GetService(typeof(IFormsDesignerLoggingService)) as IFormsDesignerLoggingService;
 			}
+		}
+		
+		public void AddService(Type type, object service)
+		{
+			Services.AddService(type, service);
 		}
 	}
 }

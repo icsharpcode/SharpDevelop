@@ -315,26 +315,26 @@ namespace ICSharpCode.FormsDesigner
 			
 			options = LoadOptions();
 			
-			appDomainHost.Services.AddService(typeof(IMessageService), new FormsMessageService());
-			appDomainHost.Services.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService(this));
-			appDomainHost.Services.AddService(typeof(System.Drawing.Design.IToolboxService), toolbox.ToolboxService);
+			appDomainHost.AddService(typeof(IMessageService), new FormsMessageService());
+			appDomainHost.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService(this));
+			appDomainHost.AddService(typeof(System.Drawing.Design.IToolboxService), toolbox.ToolboxService);
 			
-			appDomainHost.Services.AddService(typeof(IHelpService), new HelpService());
-			appDomainHost.Services.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
+			appDomainHost.AddService(typeof(IHelpService), new HelpService());
+			appDomainHost.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
 			
-			appDomainHost.Services.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(this.resourceStore));
+			appDomainHost.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(this.resourceStore));
 			AmbientProperties ambientProperties = new AmbientProperties();
-			appDomainHost.Services.AddService(typeof(AmbientProperties), ambientProperties);
-			appDomainHost.Services.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService(options));
-			appDomainHost.Services.AddService(typeof(IProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
-			appDomainHost.Services.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
+			appDomainHost.AddService(typeof(AmbientProperties), ambientProperties);
+			appDomainHost.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService(options));
+			appDomainHost.AddService(typeof(IProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
+			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
 			
 			// Provide the ImageResourceEditor for all Image and Icon properties
 			this.addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
 			this.addedTypeDescriptionProviders.Add(typeof(Icon), TypeDescriptor.AddAttributes(typeof(Icon), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
 			
 			if (generator.CodeDomProvider != null) {
-				appDomainHost.Services.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), generator.CodeDomProvider);
+				appDomainHost.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), generator.CodeDomProvider);
 			}
 			
 			appDomainHost.DesignSurfaceLoading += new EventHandlerProxy(DesignerLoading);
@@ -352,15 +352,13 @@ namespace ICSharpCode.FormsDesigner
 			undoEngine = new FormsDesignerUndoEngine(appDomainHost);
 			appDomainHost.Services.AddService(typeof(UndoEngine), undoEngine);
 			
-			IComponentChangeService componentChangeService = (IComponentChangeService)appDomainHost.GetService(typeof(IComponentChangeService));
-			componentChangeService.ComponentChanged += ComponentChanged;
-			componentChangeService.ComponentAdded   += ComponentListChanged;
-			componentChangeService.ComponentRemoved += ComponentListChanged;
-			componentChangeService.ComponentRename  += ComponentListChanged;
-			appDomainHost.Host.TransactionClosed += new DesignerTransactionCloseEventHandlerProxy(TransactionClose);
+			appDomainHost.ComponentChanged += new ComponentChangedEventHandlerProxy(ComponentChanged);
+			appDomainHost.ComponentAdded   += new ComponentEventHandlerProxy(ComponentListChanged);
+			appDomainHost.ComponentRemoved += new ComponentEventHandlerProxy(ComponentListChanged);
+			appDomainHost.ComponentRename  += new ComponentRenameEventHandlerProxy(ComponentListChanged);
+			appDomainHost.HostTransactionClosed += new DesignerTransactionCloseEventHandlerProxy(TransactionClose);
 			
-			ISelectionService selectionService = (ISelectionService)appDomainHost.GetService(typeof(ISelectionService));
-			selectionService.SelectionChanged  += SelectionChangedHandler;
+			appDomainHost.SelectionChanged += new EventHandlerProxy(SelectionChangedHandler);
 			
 			if (IsTabOrderMode) { // fixes SD2-1015
 				tabOrderMode = false; // let ShowTabOrder call the designer command again
@@ -470,31 +468,24 @@ namespace ICSharpCode.FormsDesigner
 				appDomainHost.DesignSurfaceFlushed -= new EventHandlerProxy(DesignerFlushed);
 				appDomainHost.DesignSurfaceUnloading -= new EventHandlerProxy(DesignerUnloading);
 				
-				IComponentChangeService componentChangeService = appDomainHost.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
-				if (componentChangeService != null) {
-					componentChangeService.ComponentChanged -= ComponentChanged;
-					componentChangeService.ComponentAdded   -= ComponentListChanged;
-					componentChangeService.ComponentRemoved -= ComponentListChanged;
-					componentChangeService.ComponentRename  -= ComponentListChanged;
-				}
-				if (appDomainHost.Host != null) {
-					appDomainHost.Host.TransactionClosed -= new DesignerTransactionCloseEventHandlerProxy(TransactionClose);
+				appDomainHost.ComponentChanged -= new ComponentChangedEventHandlerProxy(ComponentChanged);
+				appDomainHost.ComponentAdded   -= new ComponentEventHandlerProxy(ComponentListChanged);
+				appDomainHost.ComponentRemoved -= new ComponentEventHandlerProxy(ComponentListChanged);
+				appDomainHost.ComponentRename  -= new ComponentRenameEventHandlerProxy(ComponentListChanged);
+				
+				if (appDomainHost.HasDesignerHost) {
+					appDomainHost.HostTransactionClosed -= new DesignerTransactionCloseEventHandlerProxy(TransactionClose);
 				}
 				
-				ISelectionService selectionService = appDomainHost.GetService(typeof(ISelectionService)) as ISelectionService;
-				if (selectionService != null) {
-					selectionService.SelectionChanged -= SelectionChangedHandler;
-				}
+				appDomainHost.SelectionChanged -= new EventHandlerProxy(SelectionChangedHandler);
 				
 				if (disposing) {
 					appDomainHost.DisposeDesignSurface();
 				} else {
 					WorkbenchSingleton.SafeThreadAsyncCall(appDomainHost.DisposeDesignSurface);
 				}
-//				host.DesignSurface = null;
 			}
 			
-//			this.typeResolutionService = null;
 			this.loader = null;
 			
 			foreach (KeyValuePair<Type, TypeDescriptionProvider> entry in this.addedTypeDescriptionProviders) {
@@ -740,7 +731,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected void UpdatePropertyPad()
 		{
-			if (appDomainHost.Host != null) {
+			if (appDomainHost.HasDesignerHost) {
 				propertyContainer.Host = appDomainHost.Host;
 				propertyContainer.SelectableObjects = appDomainHost.Host.Container.Components;
 				ISelectionService selectionService = (ISelectionService)appDomainHost.GetService(typeof(ISelectionService));

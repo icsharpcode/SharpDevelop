@@ -70,4 +70,70 @@ namespace ICSharpCode.FormsDesigner
 			return proxy.proxyHandler;
 		}
 	}
+	
+	public class ComponentEventHandlerProxy : MarshalByRefObject
+	{
+		ComponentEventHandler underlyingHandler;
+		ComponentEventHandler proxyHandler;
+
+		public ComponentEventHandlerProxy(ComponentEventHandler underlyingHandler)
+		{
+			this.underlyingHandler = underlyingHandler;
+			this.proxyHandler = OnEvent;
+		}
+		
+		void OnEvent(object sender, ComponentEventArgs e)
+		{
+			underlyingHandler(sender, e);
+		}
+
+		public static implicit operator ComponentEventHandler(ComponentEventHandlerProxy proxy)
+		{
+			return proxy.proxyHandler;
+		}
+	}
+	
+	public class ComponentRenameEventHandlerProxy : MarshalByRefObject
+	{
+		ComponentRenameEventHandler underlyingHandler;
+		ComponentRenameEventHandler proxyHandler;
+
+		public ComponentRenameEventHandlerProxy(ComponentRenameEventHandler underlyingHandler)
+		{
+			this.underlyingHandler = underlyingHandler;
+			this.proxyHandler = OnEvent;
+		}
+		
+		void OnEvent(object sender, ComponentRenameEventArgs e)
+		{
+			underlyingHandler(sender, e);
+		}
+
+		public static implicit operator ComponentRenameEventHandler(ComponentRenameEventHandlerProxy proxy)
+		{
+			return proxy.proxyHandler;
+		}
+	}
+	
+	public class ComponentChangedEventHandlerProxy : MarshalByRefObject
+	{
+		ComponentChangedEventHandler underlyingHandler;
+		ComponentChangedEventHandler proxyHandler;
+
+		public ComponentChangedEventHandlerProxy(ComponentChangedEventHandler underlyingHandler)
+		{
+			this.underlyingHandler = underlyingHandler;
+			this.proxyHandler = OnEvent;
+		}
+		
+		void OnEvent(object sender, ComponentChangedEventArgs e)
+		{
+			underlyingHandler(sender, e);
+		}
+
+		public static implicit operator ComponentChangedEventHandler(ComponentChangedEventHandlerProxy proxy)
+		{
+			return proxy.proxyHandler;
+		}
+	}
 }
