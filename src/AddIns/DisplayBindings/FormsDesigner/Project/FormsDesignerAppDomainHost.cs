@@ -75,6 +75,7 @@ namespace ICSharpCode.FormsDesigner
 			container.AddService(typeof(ITypeResolutionService), new TypeResolutionService(fileName, container, typeLocator));
 			container.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService(gacWrapper, container));
 			container.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService(container));
+			container.AddService(typeof(AmbientProperties), new AmbientProperties());
 			
 			this.designSurface = designSurfaceManager.CreateDesignSurface(container);
 			

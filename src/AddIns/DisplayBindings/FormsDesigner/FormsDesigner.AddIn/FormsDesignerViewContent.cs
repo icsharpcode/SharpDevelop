@@ -322,8 +322,6 @@ namespace ICSharpCode.FormsDesigner
 			appDomainHost.AddService(typeof(IHelpService), new HelpService());
 			
 			appDomainHost.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(this.resourceStore));
-			AmbientProperties ambientProperties = new AmbientProperties();
-			appDomainHost.AddService(typeof(AmbientProperties), ambientProperties);
 			appDomainHost.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService(options));
 			appDomainHost.AddService(typeof(IProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
 			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
