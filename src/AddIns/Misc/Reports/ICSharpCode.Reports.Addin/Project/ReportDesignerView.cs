@@ -19,6 +19,7 @@ using ICSharpCode.Reports.Addin.SecondaryViews;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
+using ICSharpCode.Reports.Core.Factories;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;

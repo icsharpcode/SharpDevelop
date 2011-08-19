@@ -87,7 +87,9 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				RunFormSheet(reportModel);
 			} else {
 				var dataManager = DataManagerFactory.CreateDataManager(reportModel, parameters);
+				ReportEngine.CheckForParameters(reportModel, parameters);
 				RunReport(reportModel,dataManager);
+				
 			}
 		}
 

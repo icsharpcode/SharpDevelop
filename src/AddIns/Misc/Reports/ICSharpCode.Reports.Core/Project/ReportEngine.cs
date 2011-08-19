@@ -9,8 +9,8 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 
-using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Factories;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 
@@ -58,7 +58,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 			
 			if (!String.IsNullOrEmpty(settings.ConnectionString)) {
-				conObj = ConnectionObjectFactory.BuildConnectionObject(settings.ConnectionString);
+				conObj = ConnectionObjectFactory.BuildConnectionObject(settings);
 			}
 			return conObj;
 		}
@@ -102,15 +102,15 @@ namespace ICSharpCode.Reports.Core {
 					model.ReportSettings.SortColumnsCollection.AddRange(reportParameters.SortColumnCollection);
 				}
 				
-				if (reportParameters.SqlParameters.Count > 0) {
-					foreach (BasicParameter bp in reportParameters.SqlParameters) {
+				if (reportParameters.Parameters.Count > 0) {
+					foreach (BasicParameter bp in reportParameters.Parameters) {
 						BasicParameter p = model.ReportSettings.ParameterCollection.Find(bp.ParameterName);
+						Console.WriteLine("CheckForParameters {0} - {1}",p.ParameterName,p.ParameterValue);
 						if (p != null) {
 							p.ParameterValue = bp.ParameterValue;
 						}
 					}
 				}
-				
 			}
 		}
 		
@@ -237,9 +237,7 @@ namespace ICSharpCode.Reports.Core {
 			try {
 				model = LoadReportModel (fileName);
 				ReportParameters pars = new ReportParameters();
-				pars.ConnectionObject = null;
-				
-				pars.SqlParameters.AddRange (model.ReportSettings.ParameterCollection);
+				pars.Parameters.AddRange (model.ReportSettings.ParameterCollection);
 				return pars;
 			} catch (Exception) {
 				throw;

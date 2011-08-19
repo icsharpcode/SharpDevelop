@@ -110,8 +110,8 @@ namespace SharpReportSamples
 				
 				ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
 				
-				if ((parameters != null)&& (parameters.SqlParameters.Count > 0)){
-					parameters.SqlParameters[0].ParameterValue = "I'm the Parameter";
+				if ((parameters != null)&& (parameters.Parameters.Count > 0)){
+					parameters.Parameters[0].ParameterValue = "I'm the Parameter";
 				}
 				this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
 				{
@@ -127,11 +127,13 @@ namespace SharpReportSamples
 		{
 			string conOleDbString = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\SharpReport_TestReports\TestReports\Nordwind.mdb;Persist Security Info=False";
 			ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
+			
 			ConnectionObject con = ConnectionObject.CreateInstance(conOleDbString,
 			                                                       System.Data.Common.DbProviderFactories.GetFactory("System.Data.OleDb") );
 			
 			parameters.ConnectionObject = con;
-			parameters.SqlParameters[0].ParameterValue = "Provider Independent";
+			
+			parameters.Parameters[0].ParameterValue = "Provider Independent";
 			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
 			{
 				this.RunProviderIndependent(reportName);
@@ -185,7 +187,7 @@ namespace SharpReportSamples
 			
 			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
 			
-			BasicParameter p1 = parameters.SqlParameters[0];
+			BasicParameter p1 = parameters.Parameters[0];
 			p1.ParameterValue ="Value of Parameter";
 			
 			
@@ -207,7 +209,7 @@ namespace SharpReportSamples
 			var model = ReportEngine.LoadReportModel(fileName);
 			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
 			
-			BasicParameter p1 = parameters.SqlParameters[0];
+			BasicParameter p1 = parameters.Parameters[0];
 			p1.ParameterValue ="Value of Parameter";
 			
 			
@@ -227,7 +229,7 @@ namespace SharpReportSamples
 			var model = ReportEngine.LoadReportModel(fileName);
 			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
 			
-			BasicParameter p1 = parameters.SqlParameters[0];
+			BasicParameter p1 = parameters.Parameters[0];
 			p1.ParameterValue ="Value of Parameter";
 			
 			

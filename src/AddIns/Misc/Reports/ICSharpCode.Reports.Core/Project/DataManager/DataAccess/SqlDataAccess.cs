@@ -5,9 +5,10 @@ using System;
 using System.Data;
 using System.Globalization;
 
+using ICSharpCode.Reports.Core.Factories;
 using ICSharpCode.Reports.Core.Project.Interfaces;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.DataAccess
 {
 	/// <summary>
 	/// Description of DataAccess.
@@ -26,7 +27,7 @@ namespace ICSharpCode.Reports.Core
 			}
 			this.reportSettings = reportSettings;
 			if (connectionObject == null) {
-				this.connectionObject = ConnectionObjectFactory.BuildConnectionObject(reportSettings.ConnectionString);
+				this.connectionObject = ConnectionObjectFactory.BuildConnectionObject(reportSettings);
 			} else {
 				this.connectionObject = connectionObject;
 			}
@@ -40,7 +41,6 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		
 		private void CheckConnection()
 		{
 			if (this.connectionObject.Connection.State == ConnectionState.Open) {
@@ -48,7 +48,6 @@ namespace ICSharpCode.Reports.Core
 			}
 			this.connectionObject.Connection.Open();
 		}
-		
 		
 		
 		public DataSet ReadData()
@@ -70,8 +69,7 @@ namespace ICSharpCode.Reports.Core
 				// We have to check if there are parameters for this Query, if so
 				// add them to the command
 				
-				BuildQueryParameters(command,reportSettings.ParameterCollection);
-				
+				BuildQueryParameters(command,reportSettings.SqlParameters);
 				IDbDataAdapter adapter = connectionObject.CreateDataAdapter(command);
 				DataSet ds = new DataSet();
 				ds.Locale = CultureInfo.CurrentCulture;
@@ -87,17 +85,17 @@ namespace ICSharpCode.Reports.Core
 		
 		
 		private static void BuildQueryParameters (IDbCommand cmd,
-		                                         ParameterCollection parameterCollection)
+		                                         SqlParameterCollection parameterCollection)
 		{
 			if (parameterCollection != null && parameterCollection.Count > 0) {
 				
 				IDbDataParameter cmdPar = null;
-				System.Collections.Generic.List<SqlParameter> sq = parameterCollection.ExtractSqlParameters();
-			
-				foreach (SqlParameter par in  sq) {
+
+				foreach (SqlParameter par in  parameterCollection) {
 					cmdPar = cmd.CreateParameter();
 					cmdPar.ParameterName = par.ParameterName;
-					
+					Console.WriteLine("");
+					Console.WriteLine("BuildQueryParameters {0} - {1}",par.ParameterName,par.ParameterValue);
 					if (par.DataType != System.Data.DbType.Binary) {
 						cmdPar.DbType = par.DataType;
 						cmdPar.Value = par.ParameterValue;

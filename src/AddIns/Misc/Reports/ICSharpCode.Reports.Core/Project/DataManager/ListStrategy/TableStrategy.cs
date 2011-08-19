@@ -7,7 +7,7 @@ using System.Data;
 
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.ListStrategy
 {
 	/// <summary>
 	/// Description of TableStrategy.

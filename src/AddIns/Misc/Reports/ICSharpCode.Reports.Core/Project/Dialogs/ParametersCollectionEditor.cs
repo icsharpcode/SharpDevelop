@@ -29,6 +29,12 @@ namespace ICSharpCode.Reports.Core.Dialogs
 			if (itemType == typeof(SqlParameter)) {
 				return new SqlParameter();
 			}
+			
+			if (itemType == typeof(BasicParameter)) {
+				return new BasicParameter();
+			}
+			
+			
 			return base.CreateInstance(itemType);
 		}
 

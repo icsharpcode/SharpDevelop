@@ -308,6 +308,34 @@ namespace ICSharpCode.Reports.Core{
 	}
 	
 
+	public class SqlParameterCollection : Collection<SqlParameter>
+	{
+		public SqlParameterCollection()
+		{
+		}
+		
+		public SqlParameter Find (string parameterName)
+		{
+			if (String.IsNullOrEmpty(parameterName)) {
+				throw new ArgumentNullException("parameterName");
+			}
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,true,CultureInfo.InvariantCulture));
+		}
+		
+		
+		public void AddRange (IEnumerable<SqlParameter> items)
+		{
+			foreach (SqlParameter item in items){
+				this.Add(item);
+			}
+		}
+		
+		public static CultureInfo Culture
+		{
+			get { return System.Globalization.CultureInfo.CurrentCulture; }
+		}
+		
+	}
 	
 	public class ParameterCollection: Collection<BasicParameter>{
 		
@@ -321,7 +349,6 @@ namespace ICSharpCode.Reports.Core{
 			if (String.IsNullOrEmpty(parameterName)) {
 				throw new ArgumentNullException("parameterName");
 			}
-			
 			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,true,CultureInfo.InvariantCulture));
 		}
 		
@@ -334,15 +361,6 @@ namespace ICSharpCode.Reports.Core{
 			}
 			return ht;
 		}
-		
-		
-		public System.Collections.Generic.List<SqlParameter> ExtractSqlParameters ()
-		{
-			System.Collections.Generic.List<SqlParameter> sql = new List<SqlParameter>();
-			sql = (from t in this where t is SqlParameter select (SqlParameter)t).ToList<SqlParameter>();
-			return sql;
-		}
-		
 		
 		public static CultureInfo Culture
 		{

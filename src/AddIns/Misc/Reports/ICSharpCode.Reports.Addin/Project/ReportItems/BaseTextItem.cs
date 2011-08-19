@@ -9,6 +9,7 @@ using ICSharpCode.Reports.Addin.Dialogs;
 using ICSharpCode.Reports.Addin.TypeProviders;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Dialogs;
 using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin
