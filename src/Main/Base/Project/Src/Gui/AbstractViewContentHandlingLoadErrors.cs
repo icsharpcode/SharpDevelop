@@ -82,9 +82,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected void ShowError(Exception ex)
 		{
 			if (errorTextBox == null) {
-				errorTextBox = new TextBox();
-				errorTextBox.IsReadOnly = true;
-				errorTextBox.Background = SystemColors.WindowBrush;
+				errorTextBox = new TextBox {
+					HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+					VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+					IsReadOnly = true,
+					Background = SystemColors.WindowBrush
+				};
 			}
 			errorTextBox.Text = String.Concat(this.LoadErrorHeaderText, ex.ToString());
 			contentControl.SetContent(errorTextBox, this);
