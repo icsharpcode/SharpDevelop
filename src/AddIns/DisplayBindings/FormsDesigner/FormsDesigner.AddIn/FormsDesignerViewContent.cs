@@ -40,7 +40,6 @@ namespace ICSharpCode.FormsDesigner
 		readonly ResourceStore resourceStore;
 		FormsDesignerUndoEngine undoEngine;
 		FormsDesignerAppDomainHost appDomainHost;
-		EventHandlers eventHandlers;
 		ToolboxProvider toolbox;
 		
 		public FormsDesignerAppDomainHost AppDomainHost {
@@ -140,7 +139,6 @@ namespace ICSharpCode.FormsDesigner
 			this.generator = generator;
 			this.sourceProvider = sourceProvider;
 			this.sourceProvider.Attach(this);
-			this.eventHandlers = new FormsDesignerViewContent.EventHandlers(this);
 			
 			this.Files.Add(this.primaryViewContent.PrimaryFile);
 		}
@@ -268,41 +266,6 @@ namespace ICSharpCode.FormsDesigner
 		}
 		
 		#region Proxies
-		class EventHandlers : MarshalByRefObject
-		{
-			object vc;
-			
-			public EventHandlers(object vc)
-			{
-				this.vc = vc;
-			}
-			
-			internal void DesignerLoading(object sender, EventArgs e)
-			{
-//				vc.DesignerLoading(sender, e);
-			}
-			
-			internal void DesignerLoaded(object sender, LoadedEventArgs e)
-			{
-//				vc.DesignerLoaded(sender, e);
-			}
-			
-			internal void DesignerUnloading(object sender, EventArgs e)
-			{
-//				vc.DesignerUnloading(sender, e);
-			}
-			
-			internal void DesignerFlushed(object sender, EventArgs e)
-			{
-//				vc.DesignerFlushed(sender, e);
-			}
-			
-			internal void TransactionClose(object sender, DesignerTransactionCloseEventArgs e)
-			{
-//				vc.TransactionClose(sender, e);
-			}
-		}
-		
 		class ViewContentIFormsDesignerProxy : MarshalByRefObject, IFormsDesigner
 		{
 			FormsDesignerViewContent vc;
@@ -374,10 +337,10 @@ namespace ICSharpCode.FormsDesigner
 				appDomainHost.Services.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), generator.CodeDomProvider);
 			}
 			
-			appDomainHost.DesignSurfaceLoading += eventHandlers.DesignerLoading;
-			appDomainHost.DesignSurfaceLoaded += eventHandlers.DesignerLoaded;
-			appDomainHost.DesignSurfaceFlushed += eventHandlers.DesignerFlushed;
-			appDomainHost.DesignSurfaceUnloading += eventHandlers.DesignerUnloading;
+			appDomainHost.DesignSurfaceLoading += new EventHandlerProxy(DesignerLoading);
+			appDomainHost.DesignSurfaceLoaded += new LoadedEventHandlerProxy(DesignerLoaded);
+			appDomainHost.DesignSurfaceFlushed += new EventHandlerProxy(DesignerFlushed);
+			appDomainHost.DesignSurfaceUnloading += new EventHandlerProxy(DesignerUnloading);
 
 			this.loader = new SharpDevelopDesignerLoader(appDomainHost, generator, loaderProvider.CreateLoader(generator));
 			appDomainHost.BeginDesignSurfaceLoad(this.loader);
@@ -394,7 +357,7 @@ namespace ICSharpCode.FormsDesigner
 			componentChangeService.ComponentAdded   += ComponentListChanged;
 			componentChangeService.ComponentRemoved += ComponentListChanged;
 			componentChangeService.ComponentRename  += ComponentListChanged;
-			appDomainHost.Host.TransactionClosed += eventHandlers.TransactionClose;
+			appDomainHost.Host.TransactionClosed += new DesignerTransactionCloseEventHandlerProxy(TransactionClose);
 			
 			ISelectionService selectionService = (ISelectionService)appDomainHost.GetService(typeof(ISelectionService));
 			selectionService.SelectionChanged  += SelectionChangedHandler;
@@ -502,10 +465,10 @@ namespace ICSharpCode.FormsDesigner
 			// at design time" is thrown.
 			// This is solved by calling dispose after the double-click event has been processed.
 			if (appDomainHost.DesignSurfaceName != null) {
-				appDomainHost.DesignSurfaceLoading -= eventHandlers.DesignerLoading;
-				appDomainHost.DesignSurfaceLoaded -= eventHandlers.DesignerLoaded;
-				appDomainHost.DesignSurfaceFlushed -= eventHandlers.DesignerFlushed;
-				appDomainHost.DesignSurfaceUnloading -= eventHandlers.DesignerUnloading;
+				appDomainHost.DesignSurfaceLoading -= new EventHandlerProxy(DesignerLoading);
+				appDomainHost.DesignSurfaceLoaded -= new LoadedEventHandlerProxy(DesignerLoaded);
+				appDomainHost.DesignSurfaceFlushed -= new EventHandlerProxy(DesignerFlushed);
+				appDomainHost.DesignSurfaceUnloading -= new EventHandlerProxy(DesignerUnloading);
 				
 				IComponentChangeService componentChangeService = appDomainHost.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
 				if (componentChangeService != null) {
@@ -515,7 +478,7 @@ namespace ICSharpCode.FormsDesigner
 					componentChangeService.ComponentRename  -= ComponentListChanged;
 				}
 				if (appDomainHost.Host != null) {
-					appDomainHost.Host.TransactionClosed -= eventHandlers.TransactionClose;
+					appDomainHost.Host.TransactionClosed -= new DesignerTransactionCloseEventHandlerProxy(TransactionClose);
 				}
 				
 				ISelectionService selectionService = appDomainHost.GetService(typeof(ISelectionService)) as ISelectionService;

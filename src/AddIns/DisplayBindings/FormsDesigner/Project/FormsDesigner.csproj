@@ -86,6 +86,7 @@
     <Compile Include="Src\DesignerAppDomainManager.cs" />
     <Compile Include="Src\DesignerLoader\SharpDevelopDesignerLoader.cs" />
     <Compile Include="Src\DesignerLoader\IDesignerLoader.cs" />
+    <Compile Include="Src\EventHandlerProxy.cs" />
     <Compile Include="Src\Gui\ComponentLibraryLoader.cs" />
     <Compile Include="Src\Gui\CustomComponentToolBoxItem.cs" />
     <Compile Include="Src\IDesignerGenerator.cs" />
