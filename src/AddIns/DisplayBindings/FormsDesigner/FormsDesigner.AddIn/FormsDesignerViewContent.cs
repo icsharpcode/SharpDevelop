@@ -33,8 +33,7 @@ namespace ICSharpCode.FormsDesigner
 		bool disposing;
 		
 		readonly IViewContent primaryViewContent;
-		readonly IDesignerLoaderProvider loaderProvider;
-		DesignerLoader loader;
+		readonly IDesignerLoaderProviderWithViewContent loaderProvider;
 		readonly IDesignerGenerator generator;
 		readonly IDesignerSourceProvider sourceProvider;
 		readonly ResourceStore resourceStore;
@@ -121,12 +120,24 @@ namespace ICSharpCode.FormsDesigner
 			FileService.FileRemoving += this.FileServiceFileRemoving;
 			ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting += this.DebugStarting;
 			
+			options = LoadOptions();
+			
+			var creationProperties = new FormsDesignerAppDomainCreationProperties {
+				 FileName = PrimaryFileName,
+				 TypeLocator = new DomTypeLocator(PrimaryFileName),
+				 GacWrapper = new DomGacWrapper(),
+				 Commands = new SharpDevelopCommandProvider(this),
+				 FormsDesignerProxy = new ViewContentIFormsDesignerProxy(this),
+				 Logger = new FormsDesignerLoggingServiceImpl(),
+				 Options = options
+			};
+			
 			appDomain = null;
-			appDomainHost = FormsDesignerAppDomainHost.CreateFormsDesignerInAppDomain(ref appDomain, PrimaryFileName, new DomTypeLocator(PrimaryFileName), new DomGacWrapper(), new SharpDevelopCommandProvider(this), new ViewContentIFormsDesignerProxy(this), new FormsDesignerLoggingServiceImpl());
+			appDomainHost = FormsDesignerAppDomainHost.CreateFormsDesignerInAppDomain(ref appDomain, creationProperties);
 			toolbox = new ToolboxProvider(appDomainHost);
 		}
 		
-		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator, IDesignerSourceProvider sourceProvider)
+		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProviderWithViewContent loaderProvider, IDesignerGenerator generator, IDesignerSourceProvider sourceProvider)
 			: this(primaryViewContent)
 		{
 			if (loaderProvider == null)
@@ -175,7 +186,7 @@ namespace ICSharpCode.FormsDesigner
 				
 			} else if (file == this.PrimaryFile || this.sourceCodeStorage.ContainsFile(file)) {
 				
-				if (this.loader != null && this.loader.Loading) {
+				if (appDomainHost.IsLoaderLoading) {
 					throw new InvalidOperationException("Designer loading a source code file while DesignerLoader is loading and the view is not in a master load operation. This must not happen.");
 				}
 				
@@ -225,7 +236,7 @@ namespace ICSharpCode.FormsDesigner
 				// Loading a resource file
 				
 				bool mustReload;
-				if (this.loader != null && !this.loader.Loading) {
+				if (appDomainHost.IsLoaderLoading) {
 					LoggingService.Debug("Forms designer: Reloading designer because of LoadInternal on resource file");
 					this.UnloadDesigner();
 					mustReload = true;
@@ -313,8 +324,6 @@ namespace ICSharpCode.FormsDesigner
 		{
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
 			
-			options = LoadOptions();
-			
 			appDomainHost.AddService(typeof(IMessageService), new FormsMessageService());
 			appDomainHost.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService(this));
 			appDomainHost.AddService(typeof(System.Drawing.Design.IToolboxService), toolbox.ToolboxService);
@@ -322,7 +331,6 @@ namespace ICSharpCode.FormsDesigner
 			appDomainHost.AddService(typeof(IHelpService), new HelpService());
 			
 			appDomainHost.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(this.resourceStore));
-			appDomainHost.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService(options));
 			appDomainHost.AddService(typeof(IProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
 			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
 			
@@ -339,8 +347,7 @@ namespace ICSharpCode.FormsDesigner
 			appDomainHost.DesignSurfaceFlushed += new EventHandlerProxy(DesignerFlushed);
 			appDomainHost.DesignSurfaceUnloading += new EventHandlerProxy(DesignerUnloading);
 
-			this.loader = new SharpDevelopDesignerLoader(appDomainHost, generator, loaderProvider.CreateLoader(generator));
-			appDomainHost.BeginDesignSurfaceLoad(this.loader);
+			appDomainHost.BeginDesignSurfaceLoad(generator, loaderProvider);
 
 			if (!appDomainHost.IsDesignSurfaceLoaded) {
 				throw new FormsDesignerLoadException(appDomainHost.LoadErrors);
@@ -414,7 +421,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		void ComponentChanged(object sender, ComponentChangedEventArgs e)
 		{
-			bool loading = this.loader != null && this.loader.Loading;
+			bool loading = appDomainHost.IsLoaderLoading;
 			LoggingService.Debug("Forms designer: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + this.unloading);
 			if (!loading && !unloading) {
 				try {
@@ -434,7 +441,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		void ComponentListChanged(object sender, EventArgs e)
 		{
-			bool loading = this.loader != null && this.loader.Loading;
+			bool loading = appDomainHost.IsLoaderLoading;
 			LoggingService.Debug("Forms designer: Component added/removed/renamed, Loading=" + loading + ", Unloading=" + this.unloading);
 			if (!loading && !unloading) {
 				shouldUpdateSelectableObjects = true;
@@ -482,8 +489,6 @@ namespace ICSharpCode.FormsDesigner
 					WorkbenchSingleton.SafeThreadAsyncCall(appDomainHost.DisposeDesignSurface);
 				}
 			}
-			
-			this.loader = null;
 			
 			foreach (KeyValuePair<Type, TypeDescriptionProvider> entry in this.addedTypeDescriptionProviders) {
 				TypeDescriptor.RemoveProvider(entry.Value, entry.Key);

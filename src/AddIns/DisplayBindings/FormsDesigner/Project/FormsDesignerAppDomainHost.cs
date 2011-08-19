@@ -22,6 +22,7 @@ namespace ICSharpCode.FormsDesigner
 	{
 		DesignSurface designSurface;
 		ServiceContainer container;
+		DesignerLoader loader;
 		
 		public string DesignSurfaceName {
 			get {
@@ -32,6 +33,12 @@ namespace ICSharpCode.FormsDesigner
 		public bool HasDesignerHost {
 			get {
 				return Host != null;
+			}
+		}
+		
+		public bool IsLoaderLoading {
+			get {
+				return this.loader != null && this.loader.Loading;
 			}
 		}
 		
@@ -49,7 +56,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		static readonly DesignSurfaceManager designSurfaceManager = new DesignSurfaceManager();
 		
-		public static FormsDesignerAppDomainHost CreateFormsDesignerInAppDomain(ref AppDomain appDomain, string fileName, ITypeLocator typeLocator, IGacWrapper gacWrapper, ICommandProvider commands, IFormsDesigner formsDesignerProxy, IFormsDesignerLoggingService logger)
+		public static FormsDesignerAppDomainHost CreateFormsDesignerInAppDomain(ref AppDomain appDomain, FormsDesignerAppDomainCreationProperties properties)
 		{
 			if (appDomain == null) {
 				// Construct and initialize settings for a second AppDomain.
@@ -63,24 +70,25 @@ namespace ICSharpCode.FormsDesigner
 				appDomain = AppDomain.CreateDomain("FormsDesigner AD", null, formsDesignerAppDomainSetup);
 			}
 			var host = (FormsDesignerAppDomainHost)appDomain.CreateInstanceAndUnwrap(typeof(FormsDesignerAppDomainHost).Assembly.FullName, typeof(FormsDesignerAppDomainHost).FullName);
-			host.Initialize(fileName, typeLocator, gacWrapper, commands, formsDesignerProxy, logger);
+			host.Initialize(properties);
 			return host;
 		}
 		
-		void Initialize(string fileName, ITypeLocator typeLocator, IGacWrapper gacWrapper, ICommandProvider commands, IFormsDesigner formsDesignerProxy, IFormsDesignerLoggingService logger)
+		void Initialize(FormsDesignerAppDomainCreationProperties properties)
 		{
 			this.container = new DefaultServiceContainer();
-			container.AddService(typeof(IFormsDesignerLoggingService), logger);
+			container.AddService(typeof(IFormsDesignerLoggingService), properties.Logger);
 			container.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
-			container.AddService(typeof(ITypeResolutionService), new TypeResolutionService(fileName, container, typeLocator));
-			container.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService(gacWrapper, container));
+			container.AddService(typeof(ITypeResolutionService), new TypeResolutionService(properties.FileName, container, properties.TypeLocator));
+			container.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService(properties.GacWrapper, container));
 			container.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService(container));
 			container.AddService(typeof(AmbientProperties), new AmbientProperties());
+			container.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService(properties.Options));
 			
 			this.designSurface = designSurfaceManager.CreateDesignSurface(container);
 			
-			container.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(commands, designSurface).Proxy);
-			Services.EventBindingService eventBindingService = new Services.EventBindingService(formsDesignerProxy, designSurface);
+			container.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(properties.Commands, designSurface).Proxy);
+			Services.EventBindingService eventBindingService = new Services.EventBindingService(properties.FormsDesignerProxy, designSurface);
 			container.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
 			InitializeEvents();
@@ -270,8 +278,9 @@ namespace ICSharpCode.FormsDesigner
 			return designSurface.GetService(serviceType);
 		}
 		
-		public void BeginDesignSurfaceLoad(DesignerLoader loader)
+		public void BeginDesignSurfaceLoad(IDesignerGenerator generator, IDesignerLoaderProvider loaderProvider)
 		{
+			this.loader = new SharpDevelopDesignerLoader(this, generator, loaderProvider.CreateLoader(generator));
 			designSurface.BeginLoad(loader);
 		}
 		
@@ -294,7 +303,10 @@ namespace ICSharpCode.FormsDesigner
 		}
 		
 		public bool ReferencedAssemblyChanged {
-			get { return ((TypeResolutionService)GetService(typeof(ITypeResolutionService))).ReferencedAssemblyChanged; }
+			get {
+				var typeResolutionService = (TypeResolutionService)GetService(typeof(ITypeResolutionService));
+				return typeResolutionService != null && typeResolutionService.ReferencedAssemblyChanged;
+			}
 		}
 		
 		public void FlushDesignSurface()
@@ -339,5 +351,16 @@ namespace ICSharpCode.FormsDesigner
 		{
 			Services.AddService(type, service);
 		}
+	}
+	
+	public class FormsDesignerAppDomainCreationProperties : MarshalByRefObject
+	{
+		public string FileName { get; set; }
+		public ITypeLocator TypeLocator { get; set; }
+		public IGacWrapper GacWrapper { get; set; }
+		public ICommandProvider Commands { get; set; }
+		public IFormsDesigner FormsDesignerProxy { get; set; }
+		public IFormsDesignerLoggingService Logger { get; set; }
+		public SharpDevelopDesignerOptions Options { get; set; }
 	}
 }

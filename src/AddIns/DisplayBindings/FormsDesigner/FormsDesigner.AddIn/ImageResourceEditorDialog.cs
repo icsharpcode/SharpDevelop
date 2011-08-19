@@ -577,7 +577,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		#endregion
 	}
 	
-	public class ImageResourceEditorDialogWrapper : IImageResourceEditorDialogWrapper
+	public class ImageResourceEditorDialogWrapper : MarshalByRefObject, IImageResourceEditorDialogWrapper
 	{
 		IProject project;
 		

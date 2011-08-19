@@ -113,7 +113,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
 			
-			IDesignerLoaderProvider loader;
+			IDesignerLoaderProviderWithViewContent loader;
 			IDesignerGenerator generator;
 			IDesignerSourceProvider sourceProvider;
 			

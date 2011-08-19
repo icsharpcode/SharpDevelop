@@ -15,4 +15,10 @@ namespace ICSharpCode.FormsDesigner
 		void DebugFormatted(string format, params object[] args);
 		void WarnFormatted(string format, params object[] args);
 	}
+	
+	public interface IDesignerLoaderProvider
+	{
+		IDesignerLoader CreateLoader(IDesignerGenerator generator);
+	}
+	
 }

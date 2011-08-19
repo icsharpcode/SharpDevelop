@@ -19,7 +19,7 @@ namespace ICSharpCode.FormsDesigner.Services
 	/// <summary>
 	/// Supports project-level resources in the Windows.Forms designer.
 	/// </summary>
-	public sealed class ProjectResourceService : IProjectResourceService
+	public sealed class ProjectResourceService : MarshalByRefObject, IProjectResourceService
 	{
 		IProjectContent projectContent;
 		string stringLiteralDelimiter;

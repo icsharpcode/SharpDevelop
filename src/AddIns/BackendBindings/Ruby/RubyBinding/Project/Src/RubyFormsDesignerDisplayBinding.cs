@@ -54,7 +54,7 @@ namespace ICSharpCode.RubyBinding
 				}
 			}
 			
-			IDesignerLoaderProvider loader = new RubyDesignerLoaderProvider();
+			IDesignerLoaderProviderWithViewContent loader = new RubyDesignerLoaderProvider();
 			IDesignerGenerator generator = new RubyDesignerGenerator(textEditorOptions);
 			IDesignerSourceProvider sourceProvider = (IDesignerSourceProvider)generator;
 			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator, sourceProvider) };

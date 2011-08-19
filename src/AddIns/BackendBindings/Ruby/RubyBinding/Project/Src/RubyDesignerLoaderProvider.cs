@@ -8,13 +8,13 @@ using ICSharpCode.Scripting;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyDesignerLoaderProvider : IDesignerLoaderProvider
+	public class RubyDesignerLoaderProvider : IDesignerLoaderProviderWithViewContent
 	{
 		public RubyDesignerLoaderProvider()
 		{
 		}
 		
-		public DesignerLoader CreateLoader(IDesignerGenerator generator)
+		public IDesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
 			return new RubyDesignerLoader(generator as IScriptingDesignerGenerator);
 		}	
@@ -26,11 +26,6 @@ namespace ICSharpCode.RubyBinding
 			set {
 				throw new NotImplementedException();
 			}
-		}
-		
-		IDesignerLoader IDesignerLoaderProvider.CreateLoader(IDesignerGenerator generator)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

@@ -8,13 +8,13 @@ using ICSharpCode.Scripting;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonDesignerLoaderProvider : IDesignerLoaderProvider
+	public class PythonDesignerLoaderProvider : IDesignerLoaderProviderWithViewContent
 	{
 		public PythonDesignerLoaderProvider()
 		{
 		}
 		
-		public DesignerLoader CreateLoader(IDesignerGenerator generator)
+		public IDesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
 			return new PythonDesignerLoader(generator as IScriptingDesignerGenerator);
 		}	
@@ -26,11 +26,6 @@ namespace ICSharpCode.PythonBinding
 			set {
 				throw new NotImplementedException();
 			}
-		}
-		
-		IDesignerLoader IDesignerLoaderProvider.CreateLoader(IDesignerGenerator generator)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

@@ -9,7 +9,7 @@ namespace ICSharpCode.FormsDesigner
 	/// <summary>
 	/// Description of AbstractCodeDomDesignerLoader.
 	/// </summary>
-	public abstract class AbstractCodeDomDesignerLoader : IDesignerLoader
+	public abstract class AbstractCodeDomDesignerLoader : MarshalByRefObject, IDesignerLoader
 	{
 		protected AbstractCodeDomDesignerLoader(IDesignerGenerator generator)
 		{

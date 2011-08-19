@@ -8,13 +8,12 @@ using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public interface IDesignerLoaderProvider
+	public interface IDesignerLoaderProviderWithViewContent : IDesignerLoaderProvider
 	{
-		IDesignerLoader CreateLoader(IDesignerGenerator generator);
 		FormsDesignerViewContent ViewContent { get; set; }
 	}
 	
-	public class NRefactoryDesignerLoaderProvider : IDesignerLoaderProvider
+	public class NRefactoryDesignerLoaderProvider : MarshalByRefObject, IDesignerLoaderProviderWithViewContent
 	{
 		readonly SupportedLanguage language;
 		FormsDesignerViewContent viewContent;

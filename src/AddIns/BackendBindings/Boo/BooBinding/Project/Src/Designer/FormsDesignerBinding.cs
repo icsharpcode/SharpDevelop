@@ -48,14 +48,14 @@ namespace Grunwald.BooBinding.Designer
 				return new IViewContent[0];
 			}
 			
-			IDesignerLoaderProvider loader = new BooDesignerLoaderProvider();
+			IDesignerLoaderProviderWithViewContent loader = new BooDesignerLoaderProvider();
 			IDesignerGenerator generator = new BooDesignerGenerator();
 			IDesignerSourceProvider sourceProvider = (IDesignerSourceProvider)generator;
 			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator, sourceProvider) };
 		}
 	}
 	
-	public class BooDesignerLoaderProvider : IDesignerLoaderProvider
+	public class BooDesignerLoaderProvider : IDesignerLoaderProviderWithViewContent
 	{
 		public BooDesignerLoaderProvider()
 		{

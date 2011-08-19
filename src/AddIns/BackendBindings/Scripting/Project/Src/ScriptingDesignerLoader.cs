@@ -10,7 +10,7 @@ using System.ComponentModel.Design.Serialization;
 using System.Globalization;
 using System.Resources;
 using System.Security.Permissions;
-
+using ICSharpCode.FormsDesigner;
 using ICSharpCode.FormsDesigner.Services;
 
 namespace ICSharpCode.Scripting
@@ -21,7 +21,7 @@ namespace ICSharpCode.Scripting
 	/// </summary>
 	[PermissionSet(SecurityAction.InheritanceDemand, Name="FullTrust")]
 	[PermissionSet(SecurityAction.LinkDemand, Name="FullTrust")]
-	public class ScriptingDesignerLoader : BasicDesignerLoader, IComponentCreator
+	public class ScriptingDesignerLoader : BasicDesignerLoader, IComponentCreator, IDesignerLoader
 	{
 		IScriptingDesignerGenerator generator;
 		IDesignerSerializationManager serializationManager;
@@ -153,6 +153,26 @@ namespace ICSharpCode.Scripting
 		protected virtual IComponentWalker CreateComponentWalker(IComponentCreator componentCreator)
 		{
 			return null;
+		}
+		
+		public System.CodeDom.CodeCompileUnit Parse()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void Write(System.CodeDom.CodeCompileUnit unit)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public CodeDomLocalizationModel GetLocalizationModel()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public bool IsReloadNeeded(bool value)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
