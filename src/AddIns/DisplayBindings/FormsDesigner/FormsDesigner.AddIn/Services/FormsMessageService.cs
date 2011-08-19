@@ -13,7 +13,7 @@ namespace ICSharpCode.FormsDesigner.Services
 	/// <summary>
 	/// Description of MessageService.
 	/// </summary>
-	public class FormsMessageService : IMessageService
+	public class FormsMessageService : MarshalByRefObject, IMessageService
 	{
 		public void ShowOutputPad()
 		{

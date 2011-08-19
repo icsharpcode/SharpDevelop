@@ -320,7 +320,6 @@ namespace ICSharpCode.FormsDesigner
 			appDomainHost.AddService(typeof(System.Drawing.Design.IToolboxService), toolbox.ToolboxService);
 			
 			appDomainHost.AddService(typeof(IHelpService), new HelpService());
-			appDomainHost.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
 			
 			appDomainHost.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(this.resourceStore));
 			AmbientProperties ambientProperties = new AmbientProperties();

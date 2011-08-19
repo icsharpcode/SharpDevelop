@@ -7,7 +7,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
-	sealed class DesignerResourceService : System.ComponentModel.Design.IResourceService
+	sealed class DesignerResourceService : MarshalByRefObject, System.ComponentModel.Design.IResourceService
 	{
 		readonly ResourceStore store;
 		

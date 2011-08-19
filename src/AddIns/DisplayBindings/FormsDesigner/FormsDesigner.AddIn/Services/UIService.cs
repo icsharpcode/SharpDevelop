@@ -11,7 +11,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
-	public class UIService : IUIService
+	public class UIService : MarshalByRefObject, IUIService
 	{
 		IFormsDesigner designer;
 		IDictionary styles = new Hashtable();

@@ -16,7 +16,7 @@ namespace ICSharpCode.FormsDesigner.Services
 	/// 	created by - Niv
 	/// 	created on - 10/10/2002 11:44:46
 	/// </remarks>
-	public class HelpService : IHelpService
+	public class HelpService : MarshalByRefObject, IHelpService
 	{
 		string f1Keyword      = null;
 		string generalKeyword = null;

@@ -50,7 +50,7 @@ namespace ICSharpCode.FormsDesigner.Services
 	/// Provides designers with the ability to configure what tools
 	/// are available on the toolbox.
 	/// </remarks>
-	public class ToolboxService : IToolboxService
+	public class ToolboxService : MarshalByRefObject, IToolboxService
 	{
 		static readonly string ALL_HOSTS      = "_all_hosts_";
 		static readonly string ALL_CATEGORIES = "_all_categories_";
