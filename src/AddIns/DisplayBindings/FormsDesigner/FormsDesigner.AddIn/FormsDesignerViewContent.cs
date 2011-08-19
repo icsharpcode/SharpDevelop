@@ -2,16 +2,19 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.AddIn.Pipeline;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Gui;
 using ICSharpCode.FormsDesigner.Gui.OptionPanels;
@@ -37,6 +40,8 @@ namespace ICSharpCode.FormsDesigner
 		readonly ResourceStore resourceStore;
 		FormsDesignerUndoEngine undoEngine;
 		FormsDesignerAppDomainHost appDomainHost;
+		EventHandlers eventHandlers;
+		ToolboxProvider toolbox;
 		
 		public FormsDesignerAppDomainHost AppDomainHost {
 			get { return appDomainHost; }
@@ -116,6 +121,10 @@ namespace ICSharpCode.FormsDesigner
 			
 			FileService.FileRemoving += this.FileServiceFileRemoving;
 			ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting += this.DebugStarting;
+			
+			appDomain = null;
+			appDomainHost = FormsDesignerAppDomainHost.CreateFormsDesignerInAppDomain(ref appDomain, PrimaryFileName, new DomTypeLocator(PrimaryFileName), new DomGacWrapper(), new SharpDevelopCommandProvider(this), new ViewContentIFormsDesignerProxy(this), new FormsDesignerLoggingServiceImpl());
+			toolbox = new ToolboxProvider(appDomainHost);
 		}
 		
 		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator, IDesignerSourceProvider sourceProvider)
@@ -131,6 +140,7 @@ namespace ICSharpCode.FormsDesigner
 			this.generator = generator;
 			this.sourceProvider = sourceProvider;
 			this.sourceProvider.Attach(this);
+			this.eventHandlers = new FormsDesignerViewContent.EventHandlers(this);
 			
 			this.Files.Add(this.primaryViewContent.PrimaryFile);
 		}
@@ -151,8 +161,9 @@ namespace ICSharpCode.FormsDesigner
 		protected override void LoadInternal(OpenedFile file, System.IO.Stream stream)
 		{
 			LoggingService.Debug("Forms designer: Load " + file.FileName + "; inMasterLoadOperation=" + this.inMasterLoadOperation);
-			appDomain = null;
-			appDomainHost = FormsDesignerAppDomainHost.CreateFormsDesignerInAppDomain(ref appDomain, new DomTypeLocator(PrimaryFileName), new DomGacWrapper());
+			
+			propertyContainer.PropertyGridReplacementContent = FrameworkElementAdapters.ContractToViewAdapter(appDomainHost.CreatePropertyGrid());
+			// TODO : init PropertyGrid
 			
 			if (inMasterLoadOperation) {
 				
@@ -170,7 +181,7 @@ namespace ICSharpCode.FormsDesigner
 					throw new InvalidOperationException("Designer loading a source code file while DesignerLoader is loading and the view is not in a master load operation. This must not happen.");
 				}
 				
-				if (appDomainHost.DesignSurface != null) {
+				if (appDomainHost.DesignSurfaceName != null) {
 					this.UnloadDesigner();
 				}
 				
@@ -256,6 +267,85 @@ namespace ICSharpCode.FormsDesigner
 			this.Files.Add(file);
 		}
 		
+		#region Proxies
+		class EventHandlers : MarshalByRefObject
+		{
+			object vc;
+			
+			public EventHandlers(object vc)
+			{
+				this.vc = vc;
+			}
+			
+			internal void DesignerLoading(object sender, EventArgs e)
+			{
+//				vc.DesignerLoading(sender, e);
+			}
+			
+			internal void DesignerLoaded(object sender, LoadedEventArgs e)
+			{
+//				vc.DesignerLoaded(sender, e);
+			}
+			
+			internal void DesignerUnloading(object sender, EventArgs e)
+			{
+//				vc.DesignerUnloading(sender, e);
+			}
+			
+			internal void DesignerFlushed(object sender, EventArgs e)
+			{
+//				vc.DesignerFlushed(sender, e);
+			}
+			
+			internal void TransactionClose(object sender, DesignerTransactionCloseEventArgs e)
+			{
+//				vc.TransactionClose(sender, e);
+			}
+		}
+		
+		class ViewContentIFormsDesignerProxy : MarshalByRefObject, IFormsDesigner
+		{
+			FormsDesignerViewContent vc;
+			
+			public ViewContentIFormsDesignerProxy(FormsDesignerViewContent vc)
+			{
+				this.vc = vc;
+			}
+			
+			public IDesignerGenerator Generator {
+				get {
+					return vc.generator;
+				}
+			}
+			
+			public SharpDevelopDesignerOptions DesignerOptions {
+				get {
+					return vc.DesignerOptions;
+				}
+			}
+			
+			public IntPtr GetDialogOwnerWindowHandle()
+			{
+				return vc.GetDialogOwnerWindowHandle();
+			}
+			
+			public void ShowSourceCode()
+			{
+				vc.ShowSourceCode();
+			}
+			
+			public void ShowSourceCode(int lineNumber)
+			{
+				vc.ShowSourceCode(lineNumber);
+			}
+			
+			public void ShowSourceCode(IComponent component, EventDescriptor edesc, string methodName)
+			{
+				vc.ShowSourceCode(component, edesc, methodName);
+			}
+		}
+		#endregion
+		
 		void LoadDesigner()
 		{
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
@@ -264,7 +354,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			appDomainHost.Services.AddService(typeof(IMessageService), new FormsMessageService());
 			appDomainHost.Services.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService(this));
-			appDomainHost.Services.AddService(typeof(System.Drawing.Design.IToolboxService), ToolboxProvider.ToolboxService);
+			appDomainHost.Services.AddService(typeof(System.Drawing.Design.IToolboxService), toolbox.ToolboxService);
 			
 			appDomainHost.Services.AddService(typeof(IHelpService), new HelpService());
 			appDomainHost.Services.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
@@ -284,33 +374,29 @@ namespace ICSharpCode.FormsDesigner
 				appDomainHost.Services.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), generator.CodeDomProvider);
 			}
 			
-			appDomainHost.DesignSurface.Loading += this.DesignerLoading;
-			appDomainHost.DesignSurface.Loaded += this.DesignerLoaded;
-			appDomainHost.DesignSurface.Flushed += this.DesignerFlushed;
-			appDomainHost.DesignSurface.Unloading += this.DesignerUnloading;
-			
-			appDomainHost.Services.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(new SharpDevelopCommandProvider(this), appDomainHost.DesignSurface));
-			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(this, appDomainHost.DesignSurface);
-			appDomainHost.Services.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
-			
-			this.loader = new SharpDevelopDesignerLoader(generator, loaderProvider.CreateLoader(generator));
-			appDomainHost.DesignSurface.BeginLoad(this.loader);
-			
-			if (!appDomainHost.DesignSurface.IsLoaded) {
-				throw new FormsDesignerLoadException(FormatLoadErrors(appDomainHost.DesignSurface));
+			appDomainHost.DesignSurfaceLoading += eventHandlers.DesignerLoading;
+			appDomainHost.DesignSurfaceLoaded += eventHandlers.DesignerLoaded;
+			appDomainHost.DesignSurfaceFlushed += eventHandlers.DesignerFlushed;
+			appDomainHost.DesignSurfaceUnloading += eventHandlers.DesignerUnloading;
+
+			this.loader = new SharpDevelopDesignerLoader(appDomainHost, generator, loaderProvider.CreateLoader(generator));
+			appDomainHost.BeginDesignSurfaceLoad(this.loader);
+
+			if (!appDomainHost.IsDesignSurfaceLoaded) {
+				throw new FormsDesignerLoadException(appDomainHost.LoadErrors);
 			}
 			
-			undoEngine = new FormsDesignerUndoEngine(appDomainHost.Host);
+			undoEngine = new FormsDesignerUndoEngine(appDomainHost);
 			appDomainHost.Services.AddService(typeof(UndoEngine), undoEngine);
 			
-			IComponentChangeService componentChangeService = (IComponentChangeService)appDomainHost.DesignSurface.GetService(typeof(IComponentChangeService));
+			IComponentChangeService componentChangeService = (IComponentChangeService)appDomainHost.GetService(typeof(IComponentChangeService));
 			componentChangeService.ComponentChanged += ComponentChanged;
 			componentChangeService.ComponentAdded   += ComponentListChanged;
 			componentChangeService.ComponentRemoved += ComponentListChanged;
 			componentChangeService.ComponentRename  += ComponentListChanged;
-			appDomainHost.Host.TransactionClosed += TransactionClose;
+			appDomainHost.Host.TransactionClosed += eventHandlers.TransactionClose;
 			
-			ISelectionService selectionService = (ISelectionService)appDomainHost.DesignSurface.GetService(typeof(ISelectionService));
+			ISelectionService selectionService = (ISelectionService)appDomainHost.GetService(typeof(ISelectionService));
 			selectionService.SelectionChanged  += SelectionChangedHandler;
 			
 			if (IsTabOrderMode) { // fixes SD2-1015
@@ -415,13 +501,13 @@ namespace ICSharpCode.FormsDesigner
 			// in the PropertyPad, "InvalidOperationException: The container cannot be disposed
 			// at design time" is thrown.
 			// This is solved by calling dispose after the double-click event has been processed.
-			if (appDomainHost.DesignSurface != null) {
-				appDomainHost.DesignSurface.Loading -= this.DesignerLoading;
-				appDomainHost.DesignSurface.Loaded -= this.DesignerLoaded;
-				appDomainHost.DesignSurface.Flushed -= this.DesignerFlushed;
-				appDomainHost.DesignSurface.Unloading -= this.DesignerUnloading;
+			if (appDomainHost.DesignSurfaceName != null) {
+				appDomainHost.DesignSurfaceLoading -= eventHandlers.DesignerLoading;
+				appDomainHost.DesignSurfaceLoaded -= eventHandlers.DesignerLoaded;
+				appDomainHost.DesignSurfaceFlushed -= eventHandlers.DesignerFlushed;
+				appDomainHost.DesignSurfaceUnloading -= eventHandlers.DesignerUnloading;
 				
-				IComponentChangeService componentChangeService = appDomainHost.DesignSurface.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
+				IComponentChangeService componentChangeService = appDomainHost.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
 				if (componentChangeService != null) {
 					componentChangeService.ComponentChanged -= ComponentChanged;
 					componentChangeService.ComponentAdded   -= ComponentListChanged;
@@ -429,18 +515,18 @@ namespace ICSharpCode.FormsDesigner
 					componentChangeService.ComponentRename  -= ComponentListChanged;
 				}
 				if (appDomainHost.Host != null) {
-					appDomainHost.Host.TransactionClosed -= TransactionClose;
+					appDomainHost.Host.TransactionClosed -= eventHandlers.TransactionClose;
 				}
 				
-				ISelectionService selectionService = appDomainHost.DesignSurface.GetService(typeof(ISelectionService)) as ISelectionService;
+				ISelectionService selectionService = appDomainHost.GetService(typeof(ISelectionService)) as ISelectionService;
 				if (selectionService != null) {
 					selectionService.SelectionChanged -= SelectionChangedHandler;
 				}
 				
 				if (disposing) {
-					appDomainHost.DesignSurface.Dispose();
+					appDomainHost.DisposeDesignSurface();
 				} else {
-					WorkbenchSingleton.SafeThreadAsyncCall(appDomainHost.DesignSurface.Dispose);
+					WorkbenchSingleton.SafeThreadAsyncCall(appDomainHost.DisposeDesignSurface);
 				}
 //				host.DesignSurface = null;
 			}
@@ -464,11 +550,11 @@ namespace ICSharpCode.FormsDesigner
 		
 		public void ShowHelp()
 		{
-			if (appDomainHost.Host == null) {
+			if (appDomainHost == null) {
 				return;
 			}
 			
-			ISelectionService selectionService = (ISelectionService)appDomainHost.Host.GetService(typeof(ISelectionService));
+			ISelectionService selectionService = (ISelectionService)appDomainHost.GetService(typeof(ISelectionService));
 			if (selectionService != null) {
 				Control ctl = selectionService.PrimarySelection as Control;
 				if (ctl != null) {
@@ -489,8 +575,8 @@ namespace ICSharpCode.FormsDesigner
 					throw new FormsDesignerLoadException(e.InnerException.Message, e);
 				} else if (e is FormsDesignerLoadException) {
 					throw;
-				} else if (appDomainHost.DesignSurface != null && !appDomainHost.DesignSurface.IsLoaded && appDomainHost.DesignSurface.LoadErrors != null) {
-					throw new FormsDesignerLoadException(FormatLoadErrors(appDomainHost.DesignSurface), e);
+				} else if (appDomainHost.DesignSurfaceName != null && !appDomainHost.IsDesignSurfaceLoaded && appDomainHost.LoadErrors != null) {
+					throw new FormsDesignerLoadException(appDomainHost.LoadErrors, e);
 				} else {
 					throw;
 				}
@@ -498,8 +584,8 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		internal new Control UserContent {
-			get { return base.UserContent as Control; }
+		internal new object UserContent {
+			get { return base.UserContent; }
 			set { base.UserContent = value; }
 		}
 		
@@ -535,16 +621,16 @@ namespace ICSharpCode.FormsDesigner
 			if (e.HasSucceeded) {
 				// Display the designer on the view content
 				bool savedIsDirty = this.DesignerCodeFile.IsDirty;
-				Control designView = (Control)appDomainHost.DesignSurface.View;
+				System.Windows.FrameworkElement designView = FrameworkElementAdapters.ContractToViewAdapter(appDomainHost.DesignSurfaceView);
 				
-				designView.BackColor = Color.White;
-				designView.RightToLeft = RightToLeft.No;
+//				designView.BackColor = Color.White;
+//				designView.RightToLeft = RightToLeft.No;
 				// Make sure auto-scaling is based on the correct font.
 				// This is required on Vista, I don't know why it works correctly in XP
-				designView.Font = System.Windows.Forms.Control.DefaultFont;
+//				designView.Font = System.Windows.Forms.Control.DefaultFont;
 				
 				this.UserContent = designView;
-				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + appDomainHost.DesignSurface.ToString());
+				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + appDomainHost.DesignSurfaceName);
 				appDomainHost.ActivateDesignSurface();
 				this.DesignerCodeFile.IsDirty = savedIsDirty;
 				this.UpdatePropertyPad();
@@ -555,9 +641,7 @@ namespace ICSharpCode.FormsDesigner
 				// When a load error occurs there, we are not somewhere
 				// below the Load method which handles load errors.
 				// That is why we create an error text box here anyway.
-				TextBox errorTextBox = new TextBox() { Multiline=true, ScrollBars=ScrollBars.Both, ReadOnly=true, BackColor=SystemColors.Window, Dock=DockStyle.Fill };
-				errorTextBox.Text = String.Concat(this.LoadErrorHeaderText, FormatLoadErrors(appDomainHost.DesignSurface));
-				this.UserContent = errorTextBox;
+				ShowError(new Exception(appDomainHost.LoadErrors));
 			}
 		}
 		
@@ -567,19 +651,9 @@ namespace ICSharpCode.FormsDesigner
 			this.hasUnmergedChanges = false;
 		}
 		
-		static string FormatLoadErrors(DesignSurface designSurface)
-		{
-			StringBuilder sb = new StringBuilder();
-			foreach(Exception le in designSurface.LoadErrors) {
-				sb.AppendLine(le.ToString());
-				sb.AppendLine();
-			}
-			return sb.ToString();
-		}
-		
 		public virtual void MergeFormChanges()
 		{
-			if (this.HasLoadError || appDomainHost.DesignSurface == null) {
+			if (this.HasLoadError || appDomainHost.DesignSurfaceName == null) {
 				LoggingService.Debug("Forms designer: Cannot merge form changes because the designer is not loaded successfully or not loaded at all");
 				return;
 			} else if (this.DesignerCodeFile == null) {
@@ -587,7 +661,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			bool isDirty = this.DesignerCodeFile.IsDirty;
 			LoggingService.Info("Merging form changes...");
-			appDomainHost.DesignSurface.Flush();
+			appDomainHost.FlushDesignSurface();
 			this.resourceStore.CommitAllResourceChanges();
 			LoggingService.Info("Finished merging form changes");
 			hasUnmergedChanges = false;
@@ -624,31 +698,31 @@ namespace ICSharpCode.FormsDesigner
 		
 		void IsActiveViewContentChangedHandler(object sender, EventArgs e)
 		{
-			if (this.IsActiveViewContent) {
+			if (this.IsActiveViewContent && appDomainHost != null) {
 				
-				LoggingService.Debug("FormsDesigner view content activated, setting ActiveDesignSurface to " + ((appDomainHost.DesignSurface == null) ? "null" : appDomainHost.DesignSurface.ToString()));
+				LoggingService.Debug("FormsDesigner view content activated, setting ActiveDesignSurface to " + appDomainHost.DesignSurfaceName);
 				appDomainHost.ActivateDesignSurface();
 				
-				if (appDomainHost.DesignSurface != null && appDomainHost.Host != null) {
+				if (appDomainHost.DesignSurfaceName != null) {
 					// Reload designer when a referenced assembly has changed
 					// (the default Load/Save logic using OpenedFile cannot catch this case)
-//					if (this.typeResolutionService.ReferencedAssemblyChanged) {
-//						IDesignerLoaderService loaderService = this.DesignSurface.GetService(typeof(IDesignerLoaderService)) as IDesignerLoaderService;
-//						if (loaderService != null) {
-//							if (!this.Host.Loading) {
-//								LoggingService.Info("Forms designer reloading due to change in referenced assembly");
-//								this.reloadPending = true;
-//								if (!loaderService.Reload()) {
-//									this.reloadPending = false;
-//									MessageService.ShowMessage("The designer has detected that a referenced assembly has been changed, but the designer loader did not accept the reload command. Please reload the designer manually by closing and reopening this file.");
-//								}
-//							} else {
-//								LoggingService.Debug("Forms designer detected change in referenced assembly, but is in load operation");
-//							}
-//						} else {
-//							MessageService.ShowMessage("The designer has detected that a referenced assembly has been changed, but it cannot reload itself because IDesignerLoaderService is unavailable. Please reload the designer manually by closing and reopening this file.");
-//						}
-//					}
+					if (appDomainHost.ReferencedAssemblyChanged) {
+						IDesignerLoaderService loaderService = appDomainHost.GetService(typeof(IDesignerLoaderService)) as IDesignerLoaderService;
+						if (loaderService != null) {
+							if (!appDomainHost.Host.Loading) {
+								LoggingService.Info("Forms designer reloading due to change in referenced assembly");
+								this.reloadPending = true;
+								if (!loaderService.Reload()) {
+									this.reloadPending = false;
+									MessageService.ShowMessage("The designer has detected that a referenced assembly has been changed, but the designer loader did not accept the reload command. Please reload the designer manually by closing and reopening this file.");
+								}
+							} else {
+								LoggingService.Debug("Forms designer detected change in referenced assembly, but is in load operation");
+							}
+						} else {
+							MessageService.ShowMessage("The designer has detected that a referenced assembly has been changed, but it cannot reload itself because IDesignerLoaderService is unavailable. Please reload the designer manually by closing and reopening this file.");
+						}
+					}
 				}
 				
 			} else {
@@ -706,7 +780,7 @@ namespace ICSharpCode.FormsDesigner
 			if (appDomainHost.Host != null) {
 				propertyContainer.Host = appDomainHost.Host;
 				propertyContainer.SelectableObjects = appDomainHost.Host.Container.Components;
-				ISelectionService selectionService = (ISelectionService)appDomainHost.Host.GetService(typeof(ISelectionService));
+				ISelectionService selectionService = (ISelectionService)appDomainHost.GetService(typeof(ISelectionService));
 				if (selectionService != null) {
 					UpdatePropertyPadSelection(selectionService);
 				}
@@ -748,11 +822,11 @@ namespace ICSharpCode.FormsDesigner
 		#region IClipboardHandler implementation
 		bool IsMenuCommandEnabled(CommandID commandID)
 		{
-			if (appDomainHost.DesignSurface == null) {
+			if (appDomainHost.DesignSurfaceName == null) {
 				return false;
 			}
 			
-			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.DesignSurface.GetService(typeof(IMenuCommandService));
+			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
 			if (menuCommandService == null) {
 				return false;
 			}
@@ -793,37 +867,37 @@ namespace ICSharpCode.FormsDesigner
 		
 		public bool EnableSelectAll {
 			get {
-				return appDomainHost.DesignSurface != null;
+				return appDomainHost.DesignSurfaceName != null;
 			}
 		}
 		
 		public void Cut()
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.DesignSurface.GetService(typeof(IMenuCommandService));
+			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
 			menuCommandService.GlobalInvoke(StandardCommands.Cut);
 		}
 		
 		public void Copy()
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.DesignSurface.GetService(typeof(IMenuCommandService));
+			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
 			menuCommandService.GlobalInvoke(StandardCommands.Copy);
 		}
 		
 		public void Paste()
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.DesignSurface.GetService(typeof(IMenuCommandService));
+			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
 			menuCommandService.GlobalInvoke(StandardCommands.Paste);
 		}
 		
 		public void Delete()
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.DesignSurface.GetService(typeof(IMenuCommandService));
+			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
 			menuCommandService.GlobalInvoke(StandardCommands.Delete);
 		}
 		
 		public void SelectAll()
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.DesignSurface.GetService(typeof(IMenuCommandService));
+			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
 			menuCommandService.GlobalInvoke(StandardCommands.SelectAll);
 		}
 		#endregion
@@ -839,7 +913,7 @@ namespace ICSharpCode.FormsDesigner
 		public virtual void ShowTabOrder()
 		{
 			if (!IsTabOrderMode) {
-				IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.DesignSurface.GetService(typeof(IMenuCommandService));
+				IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
 				menuCommandService.GlobalInvoke(StandardCommands.TabOrder);
 				tabOrderMode = true;
 			}
@@ -848,7 +922,7 @@ namespace ICSharpCode.FormsDesigner
 		public virtual void HideTabOrder()
 		{
 			if (IsTabOrderMode) {
-				IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.DesignSurface.GetService(typeof(IMenuCommandService));
+				IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
 				menuCommandService.GlobalInvoke(StandardCommands.TabOrder);
 				tabOrderMode = false;
 			}
@@ -874,7 +948,7 @@ namespace ICSharpCode.FormsDesigner
 		}
 		
 		public virtual object ToolsContent {
-			get { return ToolboxProvider.FormsDesignerSideBar; }
+			get { return toolbox.FormsDesignerSideBar; }
 		}
 		
 		void FileServiceFileRemoving(object sender, FileCancelEventArgs e)

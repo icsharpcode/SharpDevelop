@@ -9,7 +9,7 @@ using System.ComponentModel.Design;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-
+using System.Windows.Forms.Integration;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -69,7 +69,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			FormsDesignerViewContent formDesigner = WorkbenchSingleton.Workbench.ActiveContent as FormsDesignerViewContent;
 			
-			if (formDesigner == null || formDesigner.AppDomainHost.Host == null) {
+			if (formDesigner == null || formDesigner.AppDomainHost == null) {
 				return false;
 			}
 			if (formDesigner.UserContent != null && !((Control)formDesigner.UserContent).ContainsFocus) {
@@ -77,7 +77,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			Control originControl = Control.FromChildHandle(m.HWnd);
-			if (originControl != null && formDesigner.UserContent != null && !(formDesigner.UserContent == originControl || formDesigner.UserContent.Contains(originControl))) {
+			if (originControl != null && formDesigner.UserContent != null && !(formDesigner.UserContent == originControl || ((WindowsFormsHost)formDesigner.UserContent).Child.Contains(originControl))) {
 				// Ignore if message origin not in forms designer
 				// (e.g. navigating the main menu)
 				return false;
@@ -102,8 +102,8 @@ namespace ICSharpCode.FormsDesigner
 				}
 				LoggingService.Debug("Run menu command: " + commandWrapper.CommandID);
 				
-				IMenuCommandService menuCommandService = (IMenuCommandService)formDesigner.AppDomainHost.Host.GetService(typeof(IMenuCommandService));
-				ISelectionService   selectionService = (ISelectionService)formDesigner.AppDomainHost.Host.GetService(typeof(ISelectionService));
+				IMenuCommandService menuCommandService = (IMenuCommandService)formDesigner.AppDomainHost.GetService(typeof(IMenuCommandService));
+				ISelectionService   selectionService = (ISelectionService)formDesigner.AppDomainHost.GetService(typeof(ISelectionService));
 				ICollection components = selectionService.GetSelectedComponents();
 				if (components.Count == 1) {
 					foreach (IComponent component in components) {
@@ -128,7 +128,7 @@ namespace ICSharpCode.FormsDesigner
 			Assembly asm = typeof(WindowsFormsDesignerOptionService).Assembly;
 			// Microsoft made ToolStripKeyboardHandlingService internal, so we need Reflection
 			Type keyboardType = asm.GetType("System.Windows.Forms.Design.ToolStripKeyboardHandlingService");
-			object keyboardService = formDesigner.AppDomainHost.Host.GetService(keyboardType);
+			object keyboardService = formDesigner.AppDomainHost.GetService(keyboardType);
 			if (keyboardService == null) {
 				LoggingService.Debug("no ToolStripKeyboardHandlingService found");
 				return false; // handle command normally

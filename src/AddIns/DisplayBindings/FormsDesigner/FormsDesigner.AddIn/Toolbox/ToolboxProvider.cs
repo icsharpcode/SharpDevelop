@@ -20,49 +20,53 @@ namespace ICSharpCode.FormsDesigner
 {
 	public class ToolboxProvider
 	{
-		static ICSharpCode.FormsDesigner.Services.ToolboxService toolboxService = null;
+		ICSharpCode.FormsDesigner.Services.ToolboxService toolboxService = null;
+		SharpDevelopSideBar sideBar;
+		CustomComponentsSideTab customTab;
+		ComponentLibraryLoader componentLibraryLoader;
+		IServiceProvider services;
 		
-		static SharpDevelopSideBar sideBar;
-		
-		static CustomComponentsSideTab customTab;
-		
-		static ComponentLibraryLoader componentLibraryLoader = new ComponentLibraryLoader();
+		public ToolboxProvider(IServiceProvider services)
+		{
+			this.services = services;
+			componentLibraryLoader = new ComponentLibraryLoader(services);
+		}
 
-		public static ComponentLibraryLoader ComponentLibraryLoader {
+		public ComponentLibraryLoader ComponentLibraryLoader {
 			get {
 				return componentLibraryLoader;
 			}
 		}
-		public static ICSharpCode.FormsDesigner.Services.ToolboxService ToolboxService {
+		public ICSharpCode.FormsDesigner.Services.ToolboxService ToolboxService {
 			get {
 				CreateToolboxService();
 				return toolboxService;
 			}
 		}
 		
-		public static SharpDevelopSideBar FormsDesignerSideBar {
+		public SharpDevelopSideBar FormsDesignerSideBar {
 			get {
 				CreateToolboxService();
 				return sideBar;
 			}
 		}
 		
-		static void CreateToolboxService()
+		void CreateToolboxService()
 		{
 			Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
 			if (toolboxService == null) {
 				sideBar = new SharpDevelopSideBar();
 				LoadToolbox();
-				toolboxService = new ICSharpCode.FormsDesigner.Services.ToolboxService();
+				toolboxService = new ICSharpCode.FormsDesigner.Services.ToolboxService(services);
 				ReloadSideTabs(false);
 				toolboxService.SelectedItemUsed += new EventHandler(SelectedToolUsedHandler);
 				sideBar.SideTabDeleted += SideTabDeleted;
 			}
 		}
 		
-		static string componentLibraryFile = "SharpDevelopControlLibrary.sdcl";
+		string componentLibraryFile = "SharpDevelopControlLibrary.sdcl";
 		
-		static string GlobalConfigFile {
+		string GlobalConfigFile {
 			get {
 				return PropertyService.DataDirectory + Path.DirectorySeparatorChar +
 					"options" + Path.DirectorySeparatorChar +
@@ -70,18 +74,18 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		static string UserConfigFile {
+		string UserConfigFile {
 			get {
 				return Path.Combine(PropertyService.ConfigDirectory, componentLibraryFile);
 			}
 		}
 		
-		public static void SaveToolbox()
+		public void SaveToolbox()
 		{
 			componentLibraryLoader.SaveToolComponentLibrary(UserConfigFile);
 		}
 		
-		public static void LoadToolbox()
+		public void LoadToolbox()
 		{
 			if (!componentLibraryLoader.LoadToolComponentLibrary(UserConfigFile)) {
 				if (!componentLibraryLoader.LoadToolComponentLibrary(GlobalConfigFile)) {
@@ -91,7 +95,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		public static void ReloadSideTabs(bool doInsert)
+		public void ReloadSideTabs(bool doInsert)
 		{
 			CreateToolboxService();
 			
@@ -99,7 +103,7 @@ namespace ICSharpCode.FormsDesigner
 			foreach (Category category in componentLibraryLoader.Categories) {
 				if (category.IsEnabled) {
 					try {
-						SideTabDesigner newTab = new SideTabDesigner(sideBar, category, toolboxService);
+						SideTabDesigner newTab = new SideTabDesigner(this, sideBar, category, toolboxService);
 						newTab.ItemRemoved += SideTabItemRemoved;
 						newTab.ItemsExchanged += SideTabItemsExchanged;
 						sideBar.Tabs.Add(newTab);
@@ -111,7 +115,7 @@ namespace ICSharpCode.FormsDesigner
 			if (customTab != null) {
 				customTab.Dispose();
 			}
-			customTab = new CustomComponentsSideTab(sideBar, ResourceService.GetString("ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CustomComponents"), toolboxService);
+			customTab = new CustomComponentsSideTab(this, sideBar, ResourceService.GetString("ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CustomComponents"), toolboxService);
 			customTab.ItemRemoved += SideTabItemRemoved;
 			customTab.ItemsExchanged += SideTabItemsExchanged;
 			sideBar.Tabs.Add(customTab);
@@ -121,7 +125,7 @@ namespace ICSharpCode.FormsDesigner
 			toolboxService.SetSelectedToolboxItem(null);
 		}
 		
-		static void SelectedToolUsedHandler(object sender, EventArgs e)
+		void SelectedToolUsedHandler(object sender, EventArgs e)
 		{
 			LoggingService.Debug("SelectedToolUsedHandler");
 			SideTab tab = sideBar.ActiveTab;
@@ -163,7 +167,7 @@ namespace ICSharpCode.FormsDesigner
 			sideBar.Refresh();
 		}
 		
-		static bool ProjectContainsReference(IProject project, AssemblyName referenceName)
+		bool ProjectContainsReference(IProject project, AssemblyName referenceName)
 		{
 			LoggingService.Debug("Checking project has reference: " + referenceName.FullName);
 			bool isAlreadyInRefFolder = false;
@@ -194,11 +198,11 @@ namespace ICSharpCode.FormsDesigner
 			return isAlreadyInRefFolder;
 		}
 		
-		static void AddReferenceToProject(IProject project, AssemblyName referenceName)
+		void AddReferenceToProject(IProject project, AssemblyName referenceName)
 		{
 			LoggingService.Warn("Adding reference to project: " + referenceName.FullName);
 			ReferenceProjectItem reference = new ReferenceProjectItem(project, "Reference");
-			ToolComponent toolComponent = ToolboxProvider.ComponentLibraryLoader.GetToolComponent(referenceName.FullName);
+			ToolComponent toolComponent = ComponentLibraryLoader.GetToolComponent(referenceName.FullName);
 			if (toolComponent == null || toolComponent.HintPath == null) {
 				reference.Include = referenceName.FullName;
 				LoggingService.Debug("Added GAC reference to project: " + reference.Include);
@@ -232,7 +236,7 @@ namespace ICSharpCode.FormsDesigner
 			return null;
 		}
 
-		static void AddProjectReferenceToProject(IProject project, IProject referenceTo)
+		void AddProjectReferenceToProject(IProject project, IProject referenceTo)
 		{
 			LoggingService.Warn("Adding project reference to project.");
 			ProjectReferenceProjectItem reference = new ProjectReferenceProjectItem(project, referenceTo);
@@ -240,13 +244,13 @@ namespace ICSharpCode.FormsDesigner
 			project.Save();
 		}
 		
-		static void SideTabDeleted(object source, SideTabEventArgs e)
+		void SideTabDeleted(object source, SideTabEventArgs e)
 		{
 			componentLibraryLoader.RemoveCategory(e.SideTab.Name);
 			SaveToolbox();
 		}
 		
-		static void SideTabItemRemoved(object source, SideTabItemEventArgs e)
+		void SideTabItemRemoved(object source, SideTabItemEventArgs e)
 		{
 			SideTabDesigner tab = source as SideTabDesigner;
 			ToolboxItem toolboxItem = e.Item.Tag as ToolboxItem;
@@ -256,7 +260,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		static void SideTabItemsExchanged(object source, SideTabItemExchangeEventArgs e)
+		void SideTabItemsExchanged(object source, SideTabItemExchangeEventArgs e)
 		{
 			SideTabDesigner tab = source as SideTabDesigner;
 			ToolboxItem toolboxItem1 = e.Item1.Tag as ToolboxItem;

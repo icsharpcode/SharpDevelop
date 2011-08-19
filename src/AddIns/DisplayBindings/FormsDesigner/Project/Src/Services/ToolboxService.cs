@@ -65,14 +65,20 @@ namespace ICSharpCode.FormsDesigner.Services
 		string selectedCategory  = null;
 		ToolboxItem selectedItem = null;
 		
+		IServiceProvider provider;
+		IFormsDesignerLoggingService logger;
+		
 		// Constructor
-		public ToolboxService()
+		public ToolboxService(IServiceProvider provider)
 		{
 			IList list = new ArrayList();
 			toolboxByCategory.Add(ALL_CATEGORIES, list);
 			
 			list = new ArrayList();
 			toolboxByHost.Add(ALL_HOSTS, list);
+			
+			this.provider = provider;
+			logger = (IFormsDesignerLoggingService)provider.GetService(typeof(IFormsDesignerLoggingService));
 		}
 		
 		// Properties
@@ -178,7 +184,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		/// </remarks>
 		public void AddCreator(ToolboxItemCreatorCallback creator, string format, IDesignerHost host)
 		{
-			FormsDesignerLoggingService.DebugFormatted("\tDefaultToolboxService:AddCreator({0}, {1}, {2})", creator, format, host);
+			logger.DebugFormatted("\tDefaultToolboxService:AddCreator({0}, {1}, {2})", creator, format, host);
 			if (host == null) {
 				creators.Add(format, creator);
 			} else {
@@ -249,7 +255,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		public ToolboxItem DeserializeToolboxItem(object serializedObject, IDesignerHost host)
 		{
-			FormsDesignerLoggingService.DebugFormatted("DeserializeToolboxItem {0} host {1}", serializedObject, host);
+			logger.DebugFormatted("DeserializeToolboxItem {0} host {1}", serializedObject, host);
 			if (serializedObject is System.Windows.Forms.IDataObject) {
 				if (((System.Windows.Forms.IDataObject)serializedObject).GetDataPresent(typeof(ToolboxItem))) {
 					ToolboxItem item = (ToolboxItem) ((System.Windows.Forms.IDataObject)serializedObject).GetData(typeof(ToolboxItem));
@@ -258,7 +264,7 @@ namespace ICSharpCode.FormsDesigner.Services
 					if (host != null) {
 						list = (ArrayList)toolboxByHost[host];
 						if (list != null && list.Contains(item)) {
-							FormsDesignerLoggingService.Warn(item.TypeName);
+							logger.Warn(item.TypeName);
 							return item;
 						}
 					}
@@ -268,7 +274,7 @@ namespace ICSharpCode.FormsDesigner.Services
 					}
 				}
 			}
-			FormsDesignerLoggingService.WarnFormatted("DeserializeToolboxItem {0} host {1} return null", serializedObject, host);
+			logger.WarnFormatted("DeserializeToolboxItem {0} host {1} return null", serializedObject, host);
 			return null;
 		}
 		
@@ -293,7 +299,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		public ToolboxItemCollection GetToolboxItems()
 		{
-			FormsDesignerLoggingService.Debug("ToolboxService: GetToolboxItems");
+			logger.Debug("ToolboxService: GetToolboxItems");
 			ToolboxItem[] items = new ToolboxItem[toolboxItems.Count];
 			toolboxItems.CopyTo(items);
 			return new ToolboxItemCollection(items);
@@ -301,7 +307,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		public ToolboxItemCollection GetToolboxItems(string category)
 		{
-			FormsDesignerLoggingService.Debug("ToolboxService: GetToolboxItems category " + category);
+			logger.Debug("ToolboxService: GetToolboxItems category " + category);
 			if (category == null) {
 				category = ALL_CATEGORIES;
 			}
@@ -315,7 +321,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		public ToolboxItemCollection GetToolboxItems(string category, IDesignerHost host)
 		{
-			FormsDesignerLoggingService.DebugFormatted("ToolboxService: GetToolboxItems category {0} host {1}", category, host);
+			logger.DebugFormatted("ToolboxService: GetToolboxItems category {0} host {1}", category, host);
 			if (category == null) {
 				category = ALL_CATEGORIES;
 			}

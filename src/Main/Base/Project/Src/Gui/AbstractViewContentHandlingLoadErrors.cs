@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		TextBox errorTextBox;
 		
-		void ShowError(Exception ex)
+		protected void ShowError(Exception ex)
 		{
 			if (errorTextBox == null) {
 				errorTextBox = new TextBox();

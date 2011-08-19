@@ -14,7 +14,7 @@ namespace ICSharpCode.FormsDesigner
 		/// Gets whether this is a designer domain (and not the SharpDevelop domain)
 		/// </summary>
 		public static bool IsDesignerDomain {
-			get { throw new NotImplementedException(); }
+			get { return AppDomain.CurrentDomain.FriendlyName == "FormsDesigner AD"; }
 		}
 	}
 }

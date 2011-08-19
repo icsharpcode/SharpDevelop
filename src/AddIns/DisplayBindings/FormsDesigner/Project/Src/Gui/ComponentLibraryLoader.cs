@@ -223,6 +223,15 @@ namespace ICSharpCode.FormsDesigner.Gui
 		ArrayList assemblies = new ArrayList();
 		ArrayList categories = new ArrayList();
 		
+		IServiceProvider provider;
+		IFormsDesignerLoggingService logger;
+		
+		public ComponentLibraryLoader(IServiceProvider provider)
+		{
+			this.provider = provider;
+			logger = (IFormsDesignerLoggingService)provider.GetService(typeof(IFormsDesignerLoggingService));
+		}
+		
 		public ArrayList Categories {
 			get {
 				return categories;
@@ -326,15 +335,15 @@ namespace ICSharpCode.FormsDesigner.Gui
 						Category newCategory = new Category(name);
 						foreach (XmlNode componentNode in node.ChildNodes) {
 							ToolComponent newToolComponent = new ToolComponent(componentNode.Attributes["class"].InnerText,
-								(ComponentAssembly)assemblies[Int32.Parse(componentNode.Attributes["assembly"].InnerText)],
-								IsEnabled(componentNode.Attributes["enabled"]));
+							                                                   (ComponentAssembly)assemblies[Int32.Parse(componentNode.Attributes["assembly"].InnerText)],
+							                                                   IsEnabled(componentNode.Attributes["enabled"]));
 							newCategory.ToolComponents.Add(newToolComponent);
 						}
 						categories.Add(newCategory);
 					}
 				}
 			} catch (Exception e) {
-				FormsDesignerLoggingService.Warn("ComponentLibraryLoader.LoadToolComponentLibrary: " + e.Message);
+				logger.Warn("ComponentLibraryLoader.LoadToolComponentLibrary: " + e.Message);
 				return false;
 			}
 			return true;
@@ -364,7 +373,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 						b.MakeTransparent();
 					}
 				} catch (Exception e) {
-					FormsDesignerLoggingService.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);
+					logger.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);
 				}
 			}
 			

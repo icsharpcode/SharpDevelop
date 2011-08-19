@@ -9,7 +9,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
-	public class DomTypeLocator : ITypeLocator
+	public class DomTypeLocator : MarshalByRefObject, ITypeLocator
 	{
 		string formSourceFileName;
 		IProjectContent callingProject;
@@ -117,7 +117,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		}
 	}
 	
-	public class DomGacWrapper : IGacWrapper
+	public class DomGacWrapper : MarshalByRefObject, IGacWrapper
 	{
 		public bool IsGacAssembly(string path)
 		{

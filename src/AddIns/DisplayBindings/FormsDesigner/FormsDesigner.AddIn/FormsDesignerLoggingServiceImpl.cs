@@ -10,7 +10,7 @@ namespace ICSharpCode.FormsDesigner
 	/// <summary>
 	/// Description of FormsDesignerLoggingServiceImpl.
 	/// </summary>
-	public class FormsDesignerLoggingServiceImpl : IFormsDesignerLoggingService
+	public class FormsDesignerLoggingServiceImpl : MarshalByRefObject, IFormsDesignerLoggingService
 	{
 		public void Debug(string message)
 		{

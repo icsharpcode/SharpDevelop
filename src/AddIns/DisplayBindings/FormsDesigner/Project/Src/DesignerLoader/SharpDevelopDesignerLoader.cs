@@ -23,6 +23,7 @@ namespace ICSharpCode.FormsDesigner
 		ITypeResolutionService typeResolutionService = null;
 		readonly IDesignerLoader loader;
 		readonly IDesignerGenerator generator;
+		readonly IFormsDesignerLoggingService logger;
 		
 		public override bool Loading {
 			get { return base.Loading || loading; }
@@ -44,7 +45,7 @@ namespace ICSharpCode.FormsDesigner
 			get { return this.generator; }
 		}
 		
-		public SharpDevelopDesignerLoader(IDesignerGenerator generator, IDesignerLoader loader)
+		public SharpDevelopDesignerLoader(IServiceProvider services, IDesignerGenerator generator, IDesignerLoader loader)
 		{
 			if (generator == null) {
 				throw new ArgumentNullException("generator", "Generator cannot be null");
@@ -54,6 +55,7 @@ namespace ICSharpCode.FormsDesigner
 
 			this.generator = generator;
 			this.loader = loader;
+			this.logger = (IFormsDesignerLoggingService)services.GetService(typeof(IFormsDesignerLoggingService));
 		}
 		
 		public override void Dispose()
@@ -61,10 +63,10 @@ namespace ICSharpCode.FormsDesigner
 			try {
 				IComponentChangeService componentChangeService = (IComponentChangeService)this.GetService(typeof(IComponentChangeService));
 				if (componentChangeService != null) {
-					FormsDesignerLoggingService.Debug("Forms designer: Removing ComponentAdded handler for nested container setup");
+					logger.Debug("Forms designer: Removing ComponentAdded handler for nested container setup");
 					componentChangeService.ComponentAdded -= ComponentContainerSetUp;
 				} else {
-					FormsDesignerLoggingService.Info("Forms designer: Could not remove ComponentAdding handler because IComponentChangeService is no longer available");
+					logger.Info("Forms designer: Could not remove ComponentAdding handler because IComponentChangeService is no longer available");
 				}
 			} finally {
 				base.Dispose();
@@ -80,7 +82,7 @@ namespace ICSharpCode.FormsDesigner
 			base.BeginLoad(host);
 		}
 		
-		static void ComponentContainerSetUp(object sender, ComponentEventArgs e)
+		void ComponentContainerSetUp(object sender, ComponentEventArgs e)
 		{
 			// HACK: This reflection mess fixes SD2-1374 and SD2-1375. However I am not sure why it is needed in the first place.
 			// There seems to be a problem with the nested container class used
@@ -98,7 +100,7 @@ namespace ICSharpCode.FormsDesigner
 			if (nestedContainer != null) {
 				MethodInfo getServiceMethod = nestedContainer.GetType().GetMethod("GetService", BindingFlags.Instance | BindingFlags.NonPublic, null, new [] {typeof(Type)}, null);
 				if (getServiceMethod != null) {
-					FormsDesignerLoggingService.Debug("Forms designer: Initializing nested service container of " + e.Component.ToString() + " using Reflection");
+					logger.Debug("Forms designer: Initializing nested service container of " + e.Component.ToString() + " using Reflection");
 					getServiceMethod.Invoke(nestedContainer, BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.NonPublic, null, new [] {typeof(IServiceContainer)}, null);
 				}
 			}
@@ -110,16 +112,16 @@ namespace ICSharpCode.FormsDesigner
 			
 			CodeDomLocalizationProvider localizationProvider = new CodeDomLocalizationProvider(designerLoaderHost, model);
 			IDesignerSerializationManager manager = (IDesignerSerializationManager)designerLoaderHost.GetService(typeof(IDesignerSerializationManager));
-			manager.AddSerializationProvider(new SharpDevelopSerializationProvider());
+			manager.AddSerializationProvider(new SharpDevelopSerializationProvider(designerLoaderHost));
 			manager.AddSerializationProvider(localizationProvider);
 			base.Initialize();
 			
 			IComponentChangeService componentChangeService = (IComponentChangeService)this.GetService(typeof(IComponentChangeService));
 			if (componentChangeService != null) {
-				FormsDesignerLoggingService.Debug("Forms designer: Adding ComponentAdded handler for nested container setup");
+				logger.Debug("Forms designer: Adding ComponentAdded handler for nested container setup");
 				componentChangeService.ComponentAdded += ComponentContainerSetUp;
 			} else {
-				FormsDesignerLoggingService.Warn("Forms designer: Cannot add ComponentAdded handler for nested container setup because IComponentChangeService is unavailable");
+				logger.Warn("Forms designer: Cannot add ComponentAdded handler for nested container setup because IComponentChangeService is unavailable");
 			}
 		}
 		
@@ -132,13 +134,13 @@ namespace ICSharpCode.FormsDesigner
 			try {
 				base.OnEndLoad(successful, errors);
 			} catch(ExceptionCollection e) {
-				FormsDesignerLoggingService.Error("DesignerLoader.OnEndLoad error " + e.Message, e);
+				logger.Error("DesignerLoader.OnEndLoad error " + e.Message, e);
 				foreach(Exception ine in e.Exceptions) {
-					FormsDesignerLoggingService.Error("DesignerLoader.OnEndLoad error " + ine.Message, ine);
+					logger.Error("DesignerLoader.OnEndLoad error " + ine.Message, ine);
 				}
 				throw;
 			} catch(Exception e) {
-				FormsDesignerLoggingService.Error("DesignerLoader.OnEndLoad error " + e.Message, e);
+				logger.Error("DesignerLoader.OnEndLoad error " + e.Message, e);
 				throw;
 			}
 		}

@@ -20,12 +20,16 @@ namespace ICSharpCode.FormsDesigner.Services
 	internal sealed class ProjectResourcesMemberCodeDomSerializer : MemberCodeDomSerializer
 	{
 		readonly MemberCodeDomSerializer baseSerializer;
+		readonly IServiceProvider provider;
+		IFormsDesignerLoggingService logger;
 		
-		public ProjectResourcesMemberCodeDomSerializer(MemberCodeDomSerializer baseSerializer)
+		public ProjectResourcesMemberCodeDomSerializer(IServiceProvider provider, MemberCodeDomSerializer baseSerializer)
 		{
 			if (baseSerializer == null)
 				throw new ArgumentNullException("baseSerializer");
 			this.baseSerializer = baseSerializer;
+			this.provider = provider;
+			logger = (IFormsDesignerLoggingService)provider.GetService(typeof(IFormsDesignerLoggingService));
 		}
 		
 		public override void Serialize(IDesignerSerializationManager manager, object value, MemberDescriptor descriptor, CodeStatementCollection statements)
@@ -52,7 +56,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			var prs = manager.GetService(typeof(IProjectResourceService)) as IProjectResourceService;
 			if (prs == null) {
-				FormsDesignerLoggingService.Warn("ProjectResourceService not found");
+				logger.Warn("ProjectResourceService not found");
 				return false;
 			}
 			
@@ -60,7 +64,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			if (resourceInfo == null) return false;
 			
 			if (!Object.ReferenceEquals(resourceInfo.OriginalValue, propDesc.GetValue(value))) {
-				FormsDesignerLoggingService.Info("Value of property '" + propDesc.Name + "' on component '" + value.ToString() + "' is not equal to stored project resource value. Ignoring this resource.");
+				logger.Info("Value of property '" + propDesc.Name + "' on component '" + value.ToString() + "' is not equal to stored project resource value. Ignoring this resource.");
 				return false;
 			}
 			
@@ -72,16 +76,16 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			// Now do the actual serialization.
 			
-			FormsDesignerLoggingService.Debug("Serializing project resource: Component '" + component.ToString() + "', Property: '" + propDesc.Name + "', Resource class: '" + resourceClassFullyQualifiedName + "', Resource property: '" + resourcePropertyName + "'");
+			logger.Debug("Serializing project resource: Component '" + component.ToString() + "', Property: '" + propDesc.Name + "', Resource class: '" + resourceClassFullyQualifiedName + "', Resource property: '" + resourcePropertyName + "'");
 			
 			var targetObjectExpr = base.SerializeToExpression(manager, value);
 			if (targetObjectExpr == null) {
-				FormsDesignerLoggingService.Info("Target object could not be serialized: " + value.ToString());
+				logger.Info("Target object could not be serialized: " + value.ToString());
 				return false;
 			}
 			
 			if (propDesc.SerializationVisibility == DesignerSerializationVisibility.Content) {
-				FormsDesignerLoggingService.Debug("-> is a content property, ignoring this.");
+				logger.Debug("-> is a content property, ignoring this.");
 				return false;
 			}
 			

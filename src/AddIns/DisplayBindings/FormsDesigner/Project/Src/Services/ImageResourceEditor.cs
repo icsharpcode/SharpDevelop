@@ -49,9 +49,11 @@ namespace ICSharpCode.FormsDesigner.Services
 				return value;
 			}
 			
+			IFormsDesignerLoggingService logger = provider.GetService(typeof(IFormsDesignerLoggingService)) as IFormsDesignerLoggingService;
+			
 			IComponent component = context.Instance as IComponent;
 			if (component == null || component.Site == null) {
-				FormsDesignerLoggingService.Info("Editing of image properties on objects not implementing IComponent and components without Site is not supported by the ImageResourceEditor.");
+				logger.Info("Editing of image properties on objects not implementing IComponent and components without Site is not supported by the ImageResourceEditor.");
 				if (typeof(Icon).IsAssignableFrom(context.PropertyDescriptor.PropertyType)) {
 					return new IconEditor().EditValue(context, provider, value);
 				} else {

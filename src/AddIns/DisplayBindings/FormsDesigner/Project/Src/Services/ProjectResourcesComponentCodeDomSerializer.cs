@@ -17,12 +17,16 @@ namespace ICSharpCode.FormsDesigner.Services
 	internal sealed class ProjectResourcesComponentCodeDomSerializer : CodeDomSerializer
 	{
 		readonly CodeDomSerializer baseSerializer;
+		readonly IServiceProvider provider;
+		IFormsDesignerLoggingService logger;
 		
-		internal ProjectResourcesComponentCodeDomSerializer(CodeDomSerializer baseSerializer)
+		internal ProjectResourcesComponentCodeDomSerializer(IServiceProvider provider, CodeDomSerializer baseSerializer)
 		{
 			if (baseSerializer == null)
 				throw new ArgumentNullException("baseSerializer");
 			this.baseSerializer = baseSerializer;
+			this.provider = provider;
+			logger = (IFormsDesignerLoggingService)provider.GetService(typeof(IFormsDesignerLoggingService));
 		}
 		
 		public override object Deserialize(IDesignerSerializationManager manager, object codeObject)
@@ -94,16 +98,16 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			IMessageService messenger = manager.GetService(typeof(IMessageService)) as IMessageService;
 			
-			FormsDesignerLoggingService.Debug("Forms designer: deserializing a property assignment:");
-			FormsDesignerLoggingService.Debug("-> " + messenger.CodeStatementToString(assignStatement));
+			logger.Debug("Forms designer: deserializing a property assignment:");
+			logger.Debug("-> " + messenger.CodeStatementToString(assignStatement));
 			
 			IComponent component = this.baseSerializer.Deserialize(manager, propRefTarget.TargetObject) as IComponent;
 			if (component == null) {
-				FormsDesignerLoggingService.Info("Forms designer: ProjectResourcesComponentCodeDomSerializer could not deserialze the target object to IComponent");
+				logger.Info("Forms designer: ProjectResourcesComponentCodeDomSerializer could not deserialze the target object to IComponent");
 				return false;
 			}
 			if (component.Site == null) {
-				FormsDesignerLoggingService.Info("Forms designer: ProjectResourcesComponentCodeDomSerializer: The deserialized component '" + component.ToString() + "' does not have a Site.");
+				logger.Info("Forms designer: ProjectResourcesComponentCodeDomSerializer: The deserialized component '" + component.ToString() + "' does not have a Site.");
 				return false;
 			}
 			
@@ -147,8 +151,8 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			IMessageService messenger = manager.GetService(typeof(IMessageService)) as IMessageService;
 			
-			FormsDesignerLoggingService.Debug("Forms designer: deserializing a method invocation:");
-			FormsDesignerLoggingService.Debug("-> " + messenger.CodeStatementToString(new CodeExpressionStatement(invokeExpression)));
+			logger.Debug("Forms designer: deserializing a method invocation:");
+			logger.Debug("-> " + messenger.CodeStatementToString(new CodeExpressionStatement(invokeExpression)));
 			
 			object extenderProvider = this.baseSerializer.Deserialize(manager, invokeExpression.Method.TargetObject);
 			if (extenderProvider == null) {
@@ -157,11 +161,11 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			IComponent targetComponent = this.baseSerializer.Deserialize(manager, invokeExpression.Parameters[0]) as IComponent;
 			if (targetComponent == null) {
-				FormsDesignerLoggingService.Info("Forms designer: ProjectResourcesComponentCodeDomSerializer could not deserialze the target object to IComponent");
+				logger.Info("Forms designer: ProjectResourcesComponentCodeDomSerializer could not deserialze the target object to IComponent");
 				return false;
 			}
 			if (targetComponent.Site == null) {
-				FormsDesignerLoggingService.Info("Forms designer: ProjectResourcesComponentCodeDomSerializer: The deserialized component '" + targetComponent.ToString() + "' does not have a Site.");
+				logger.Info("Forms designer: ProjectResourcesComponentCodeDomSerializer: The deserialized component '" + targetComponent.ToString() + "' does not have a Site.");
 				return false;
 			}
 			

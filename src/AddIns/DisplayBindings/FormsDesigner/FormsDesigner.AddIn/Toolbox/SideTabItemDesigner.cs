@@ -28,17 +28,21 @@ namespace ICSharpCode.FormsDesigner.Gui
 {
 	public class SideTabItemDesigner : SharpDevelopSideTabItem
 	{
+		ToolboxProvider provider;
+		
 		///<summary>create a tabitem from a toolboxitem. It init Icon and name from the tag</summary>
-		public SideTabItemDesigner(ToolboxItem tag) : base(tag.DisplayName, tag)
+		public SideTabItemDesigner(ToolboxProvider provider, ToolboxItem tag) : base(tag.DisplayName, tag)
 		{
+			this.provider = provider;
 			CanBeRenamed = false;
 			this.Icon = tag.Bitmap;
 			ReloadToolBox();
 		}
 		
 		///<summary>create a tabitem from a toolboxitem. It init Icon from the tag</summary>
-		public SideTabItemDesigner(string name, ToolboxItem tag) : base(name, tag)
+		public SideTabItemDesigner(ToolboxProvider provider, string name, ToolboxItem tag) : base(name, tag)
 		{
+			this.provider = provider;
 			CanBeRenamed = false;
 			this.Icon = tag.Bitmap;
 			ReloadToolBox();
@@ -62,7 +66,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		public void ReloadToolBox()
 		{
 			if (this.Name != "Pointer") {
-				ToolboxProvider.ToolboxService.AddToolboxItem(this.Tag as ToolboxItem);
+				provider.ToolboxService.AddToolboxItem(this.Tag as ToolboxItem);
 			}
 		}
 	}

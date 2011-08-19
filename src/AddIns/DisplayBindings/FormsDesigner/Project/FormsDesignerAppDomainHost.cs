@@ -1,9 +1,16 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.AddIn.Contract;
+using System.AddIn.Pipeline;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
-
+using System.IO;
+using System.Reflection;
+using System.Runtime.Remoting.Lifetime;
+using System.Text;
+using System.Windows.Forms;
+using System.Windows.Forms.Integration;
 using ICSharpCode.FormsDesigner.Services;
 
 namespace ICSharpCode.FormsDesigner
@@ -11,15 +18,14 @@ namespace ICSharpCode.FormsDesigner
 	/// <summary>
 	/// Description of FormsDesignerAppDomainHost.
 	/// </summary>
-	public class FormsDesignerAppDomainHost : MarshalByRefObject
+	public class FormsDesignerAppDomainHost : MarshalByRefObject, IServiceProvider
 	{
 		DesignSurface designSurface;
 		ServiceContainer container;
-		string fileName;
 		
-		public DesignSurface DesignSurface {
+		public string DesignSurfaceName {
 			get {
-				return designSurface;
+				return (designSurface == null) ? null : designSurface.ToString();
 			}
 		}
 		
@@ -37,12 +43,12 @@ namespace ICSharpCode.FormsDesigner
 		
 		static readonly DesignSurfaceManager designSurfaceManager = new DesignSurfaceManager();
 		
-		public static FormsDesignerAppDomainHost CreateFormsDesignerInAppDomain(ref AppDomain appDomain, ITypeLocator typeLocator, IGacWrapper gacWrapper)
+		public static FormsDesignerAppDomainHost CreateFormsDesignerInAppDomain(ref AppDomain appDomain, string fileName, ITypeLocator typeLocator, IGacWrapper gacWrapper, ICommandProvider commands, IFormsDesigner formsDesignerProxy, IFormsDesignerLoggingService logger)
 		{
 			if (appDomain == null) {
 				// Construct and initialize settings for a second AppDomain.
 				AppDomainSetup formsDesignerAppDomainSetup = new AppDomainSetup();
-				// bamlDecompilerAppDomainSetup.ApplicationBase = "file:///" + Path.GetDirectoryName(assemblyFileName);
+				formsDesignerAppDomainSetup.ApplicationBase = Path.GetDirectoryName(typeof(FormsDesignerAppDomainHost).Assembly.Location);
 				formsDesignerAppDomainSetup.DisallowBindingRedirects = false;
 				formsDesignerAppDomainSetup.DisallowCodeDownload = true;
 				formsDesignerAppDomainSetup.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
@@ -51,24 +57,93 @@ namespace ICSharpCode.FormsDesigner
 				appDomain = AppDomain.CreateDomain("FormsDesigner AD", null, formsDesignerAppDomainSetup);
 			}
 			var host = (FormsDesignerAppDomainHost)appDomain.CreateInstanceAndUnwrap(typeof(FormsDesignerAppDomainHost).Assembly.FullName, typeof(FormsDesignerAppDomainHost).FullName);
-			
-			ServiceContainer container = host.InitServices(typeLocator, gacWrapper);
-			host.designSurface = designSurfaceManager.CreateDesignSurface(container);
-			
+			host.Initialize(fileName, typeLocator, gacWrapper, commands, formsDesignerProxy, logger);
 			return host;
 		}
 		
-		ServiceContainer InitServices(ITypeLocator typeLocator, IGacWrapper gacWrapper)
+		void Initialize(string fileName, ITypeLocator typeLocator, IGacWrapper gacWrapper, ICommandProvider commands, IFormsDesigner formsDesignerProxy, IFormsDesignerLoggingService logger)
 		{
 			this.container = new DefaultServiceContainer();
-			
+			container.AddService(typeof(IFormsDesignerLoggingService), logger);
 			container.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
 			container.AddService(typeof(ITypeResolutionService), new TypeResolutionService(fileName, container, typeLocator));
-			container.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService(gacWrapper));
-			container.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
+			container.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService(gacWrapper, container));
+			container.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService(container));
 			
-			return container;
+			this.designSurface = designSurfaceManager.CreateDesignSurface(container);
+			
+			container.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(commands, designSurface).Proxy);
+			Services.EventBindingService eventBindingService = new Services.EventBindingService(formsDesignerProxy, designSurface);
+			container.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
+			
+			InitializeEvents();
 		}
+		
+		#region Events
+		public event EventHandler DesignSurfaceLoading;
+		
+		protected virtual void OnDesignSurfaceLoading(EventArgs e)
+		{
+			if (DesignSurfaceLoading != null) {
+				DesignSurfaceLoading(this, e);
+			}
+		}
+		
+		public event LoadedEventHandler DesignSurfaceLoaded;
+		
+		protected virtual void OnDesignSurfaceLoaded(LoadedEventArgs e)
+		{
+			if (DesignSurfaceLoaded != null) {
+				DesignSurfaceLoaded(this, e);
+			}
+		}
+		
+		public event EventHandler DesignSurfaceFlushed;
+		
+		protected virtual void OnDesignSurfaceFlushed(EventArgs e)
+		{
+			if (DesignSurfaceFlushed != null) {
+				DesignSurfaceFlushed(this, e);
+			}
+		}
+
+		public event EventHandler DesignSurfaceUnloading;
+		
+		protected virtual void OnDesignSurfaceUnloading(EventArgs e)
+		{
+			if (DesignSurfaceUnloading != null) {
+				DesignSurfaceUnloading(this, e);
+			}
+		}
+		
+		void InitializeEvents()
+		{
+			designSurface.Loading += designSurface_Loading;
+			designSurface.Loaded += designSurface_Loaded;
+			designSurface.Flushed += designSurface_Flushed;
+			designSurface.Unloading += designSurface_Unloading;
+		}
+
+		void designSurface_Unloading(object sender, EventArgs e)
+		{
+			OnDesignSurfaceUnloading(e);
+		}
+
+		void designSurface_Flushed(object sender, EventArgs e)
+		{
+			OnDesignSurfaceFlushed(e);
+		}
+
+		void designSurface_Loaded(object sender, LoadedEventArgs e)
+		{
+			OnDesignSurfaceLoaded(e);
+		}
+
+		void designSurface_Loading(object sender, EventArgs e)
+		{
+			OnDesignSurfaceLoading(e);
+		}
+		#endregion
 		
 		public void ActivateDesignSurface()
 		{
@@ -82,6 +157,76 @@ namespace ICSharpCode.FormsDesigner
 		
 		public bool IsActiveDesignSurface {
 			get { return designSurfaceManager.ActiveDesignSurface == this.designSurface; }
+		}
+		
+		public object GetService(Type serviceType)
+		{
+			return designSurface.GetService(serviceType);
+		}
+		
+		public void BeginDesignSurfaceLoad(DesignerLoader loader)
+		{
+			designSurface.BeginLoad(loader);
+		}
+		
+		static string FormatLoadErrors(DesignSurface designSurface)
+		{
+			StringBuilder sb = new StringBuilder();
+			foreach(Exception le in designSurface.LoadErrors) {
+				sb.AppendLine(le.ToString());
+				sb.AppendLine();
+			}
+			return sb.ToString();
+		}
+		
+		public string LoadErrors {
+			get { return FormatLoadErrors(designSurface); }
+		}
+		
+		public bool IsDesignSurfaceLoaded {
+			get { return designSurface.IsLoaded; }
+		}
+		
+		public bool ReferencedAssemblyChanged {
+			get { return ((TypeResolutionService)GetService(typeof(ITypeResolutionService))).ReferencedAssemblyChanged; }
+		}
+		
+		public void FlushDesignSurface()
+		{
+			designSurface.Flush();
+		}
+		
+		WindowsFormsHost host;
+		
+		public INativeHandleContract DesignSurfaceView {
+			get {
+				if (host == null) {
+					host = new WindowsFormsHost();
+					host.Child = (Control)designSurface.View;
+				}
+				
+				return FrameworkElementAdapters.ViewToContractAdapter(host);
+			}
+		}
+		
+		public void DisposeDesignSurface()
+		{
+			designSurface.Dispose();
+		}
+		
+		public INativeHandleContract CreatePropertyGrid()
+		{
+			var grid = new PropertyGrid() { Dock = DockStyle.Fill };
+			var host = new WindowsFormsHost();
+			host.Child = grid;
+			
+			return FrameworkElementAdapters.ViewToContractAdapter(host);
+		}
+		
+		public IFormsDesignerLoggingService LoggingService {
+			get {
+				return GetService(typeof(IFormsDesignerLoggingService)) as IFormsDesignerLoggingService;
+			}
 		}
 	}
 }

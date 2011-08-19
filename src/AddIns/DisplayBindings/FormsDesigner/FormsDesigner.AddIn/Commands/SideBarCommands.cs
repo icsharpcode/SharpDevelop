@@ -10,11 +10,15 @@ namespace ICSharpCode.FormsDesigner
 {
 	public class CustomizeSideBar : AbstractMenuCommand
 	{
-		public override void Run()		
+		public override void Run()
 		{
-			using (ConfigureSideBarDialog configureSideBarDialog = new ConfigureSideBarDialog()) {
-				if (configureSideBarDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					ToolboxProvider.ReloadSideTabs(true);
+			#warning test this!
+			var sidebar = Owner as SideTabDesigner;
+			if (sidebar != null) {
+				using (ConfigureSideBarDialog configureSideBarDialog = new ConfigureSideBarDialog(sidebar.Toolbox)) {
+					if (configureSideBarDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+						sidebar.Toolbox.ReloadSideTabs(true);
+					}
 				}
 			}
 		}

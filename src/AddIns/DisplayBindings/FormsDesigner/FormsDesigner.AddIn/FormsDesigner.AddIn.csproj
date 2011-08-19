@@ -39,6 +39,10 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.AddIn" />
+    <Reference Include="System.AddIn.Contract">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -50,12 +54,18 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Presentation">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="FormsDesigner.addin">
@@ -104,9 +114,13 @@
     <Compile Include="Toolbox\ConfigureSideBarDialog.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Toolbox\ConfigureSideBarDialog.Designer.cs">
+      <DependentUpon>ConfigureSideBarDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Toolbox\CustomComponentsSideTab.cs" />
-    <Compile Include="Toolbox\RenameCategoryDialog.cs">
-      <SubType>Form</SubType>
+    <Compile Include="Toolbox\RenameCategoryDialog.cs" />
+    <Compile Include="Toolbox\RenameCategoryDialog.Designer.cs">
+      <DependentUpon>RenameCategoryDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Toolbox\SideTabDesigner.cs" />
     <Compile Include="Toolbox\SideTabItemDesigner.cs" />
@@ -167,6 +181,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="OptionPanels\LocalizationModelOptionsPanel.resx">
       <DependentUpon>LocalizationModelOptionsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Toolbox\ConfigureSideBarDialog.resx">
+      <DependentUpon>ConfigureSideBarDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Toolbox\RenameCategoryDialog.resx">
+      <DependentUpon>RenameCategoryDialog.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

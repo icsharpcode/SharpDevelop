@@ -32,19 +32,27 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.Items.Add(new SideTabItemDesigner());
 		}
 		
+		ToolboxProvider toolbox;
+		
+		public ToolboxProvider Toolbox {
+			get { return toolbox; }
+		}
+		
 		///<summary>Load an assembly's controls</summary>
-		public SideTabDesigner(SideBarControl sideBar, Category category, IToolboxService toolboxService) : this(sideBar, category.Name, toolboxService)
+		public SideTabDesigner(ToolboxProvider toolbox, SideBarControl sideBar, Category category, IToolboxService toolboxService)
+			: this(sideBar, category.Name, toolboxService)
 		{
+			this.toolbox = toolbox;
 			foreach (ToolComponent component in category.ToolComponents) {
 				if (component.IsEnabled) {
 					ToolboxItem toolboxItem = new ToolboxItem();
 					toolboxItem.TypeName    = component.FullName;
-					toolboxItem.Bitmap      = ToolboxProvider.ComponentLibraryLoader.GetIcon(component);
+					toolboxItem.Bitmap      = toolbox.ComponentLibraryLoader.GetIcon(component);
 					toolboxItem.DisplayName = component.Name;
 					Assembly asm = component.LoadAssembly();
 					toolboxItem.AssemblyName = asm.GetName();
 					
-					this.Items.Add(new SideTabItemDesigner(toolboxItem));
+					this.Items.Add(new SideTabItemDesigner(toolbox, toolboxItem));
 				}
 			}
 		}

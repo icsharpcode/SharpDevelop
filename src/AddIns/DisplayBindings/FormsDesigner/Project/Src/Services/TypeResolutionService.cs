@@ -70,6 +70,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		string formSourceFileName;
 		ServiceContainer serviceContainer;
 		ITypeLocator typeLocator;
+		static IFormsDesignerLoggingService logger;
 		
 		/// <summary>
 		/// Dictionary of file name -> hash of loaded assemblies for the currently designed document.
@@ -86,6 +87,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			this.formSourceFileName = formSourceFileName;
 			this.serviceContainer = serviceContainer;
 			this.typeLocator = typeLocator;
+			logger = (IFormsDesignerLoggingService)serviceContainer.GetService(typeof(IFormsDesignerLoggingService));
 		}
 		
 		static string GetHash(string fileName)
@@ -99,10 +101,10 @@ namespace ICSharpCode.FormsDesigner.Services
 			try {
 				return new Uri(asm.CodeBase, UriKind.Absolute).LocalPath;
 			} catch (UriFormatException ex) {
-				FormsDesignerLoggingService.Warn("Could not determine path for assembly '" + asm.ToString() + "', CodeBase='" + asm.CodeBase + "': " + ex.Message);
+				logger.Warn("Could not determine path for assembly '" + asm.ToString() + "', CodeBase='" + asm.CodeBase + "': " + ex.Message);
 				return asm.Location;
 			} catch (InvalidOperationException ex) {
-				FormsDesignerLoggingService.Warn("Could not determine path for assembly '" + asm.ToString() + "', CodeBase='" + asm.CodeBase + "': " + ex.Message);
+				logger.Warn("Could not determine path for assembly '" + asm.ToString() + "', CodeBase='" + asm.CodeBase + "': " + ex.Message);
 				return asm.Location;
 			}
 		}
@@ -134,12 +136,12 @@ namespace ICSharpCode.FormsDesigner.Services
 				Assembly asm;
 				if (assemblyDict.TryGetValue(hash, out asm))
 					return asm;
-				FormsDesignerLoggingService.Debug("Loading assembly " + fileName + " (hash " + hash + ")");
+				logger.Debug("Loading assembly " + fileName + " (hash " + hash + ")");
 				try {
 					asm = Assembly.Load(File.ReadAllBytes(fileName));
 				} catch (BadImageFormatException e) {
 					if (e.Message.Contains("HRESULT: 0x8013141D")) {
-						FormsDesignerLoggingService.Debug("Get HRESULt 0x8013141D, loading netmodule");
+						logger.Debug("Get HRESULt 0x8013141D, loading netmodule");
 						//netmodule
 						string tempPath = Path.GetTempFileName();
 						File.Delete(tempPath);
@@ -171,14 +173,14 @@ namespace ICSharpCode.FormsDesigner.Services
 						// but do not prevent the designer from loading.
 						// The error might be caused by an assembly that is
 						// not even needed for the designer to load.
-						FormsDesignerLoggingService.Error("Error loading assembly " + fileName, e);
+						logger.Error("Error loading assembly " + fileName, e);
 						messenger.ShowOutputPad();
 						messenger.AppendTextToBuildMessages("${res:FileUtilityService.ErrorWhileLoading}\r\n" + fileName + "\r\n" + e.Message + "\r\n");
 						return null;
 					}
 				} catch (FileLoadException e) {
 					if (e.Message.Contains("HRESULT: 0x80131402")) {
-						FormsDesignerLoggingService.Debug("Get HRESULt 0x80131402, loading mixed modes asm from disk");
+						logger.Debug("Get HRESULt 0x80131402, loading mixed modes asm from disk");
 						//this is C++/CLI Mixed assembly which can only be loaded from disk, not in-memory
 						string tempPath = Path.GetTempFileName();
 						File.Delete(tempPath);
@@ -285,7 +287,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			#if DEBUG
 			if (!name.StartsWith("System.")) {
-				FormsDesignerLoggingService.Debug("TypeResolutionService: Looking for " + name);
+				logger.Debug("TypeResolutionService: Looking for " + name);
 			}
 			#endif
 			try {
@@ -323,7 +325,7 @@ namespace ICSharpCode.FormsDesigner.Services
 						try {
 							assembly = Assembly.Load(assemblyName);
 						} catch (Exception e) {
-							FormsDesignerLoggingService.Error(e);
+							logger.Error(e);
 						}
 						if (assembly != null) {
 							string fileName = GetOriginalAssemblyFullPath(assembly);
@@ -365,14 +367,14 @@ namespace ICSharpCode.FormsDesigner.Services
 				
 				return type;
 			} catch (Exception e) {
-				FormsDesignerLoggingService.Error(e);
+				logger.Error(e);
 			}
 			return null;
 		}
 		
 		public void ReferenceAssembly(AssemblyName name)
 		{
-			FormsDesignerLoggingService.Warn("TODO: Add Assembly reference : " + name);
+			logger.Warn("TODO: Add Assembly reference : " + name);
 		}
 		
 		/// <summary>
@@ -442,7 +444,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		static Assembly AssemblyResolveEventHandler(object sender, ResolveEventArgs args)
 		{
-			FormsDesignerLoggingService.Debug("TypeResolutionService: AssemblyResolveEventHandler: " + args.Name);
+			logger.Debug("TypeResolutionService: AssemblyResolveEventHandler: " + args.Name);
 			
 			Assembly lastAssembly = null;
 			
@@ -459,7 +461,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			if (lastAssembly != null) {
 				TypeResolutionService.DesignerAssemblies.Add(lastAssembly);
-				FormsDesignerLoggingService.Info("ICSharpAssemblyResolver found..." + args.Name);
+				logger.Info("ICSharpAssemblyResolver found..." + args.Name);
 			}
 			return lastAssembly;
 		}

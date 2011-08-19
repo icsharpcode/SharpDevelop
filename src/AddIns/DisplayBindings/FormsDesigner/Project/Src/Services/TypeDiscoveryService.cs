@@ -13,10 +13,14 @@ namespace ICSharpCode.FormsDesigner.Services
 	public class TypeDiscoveryService : ITypeDiscoveryService
 	{
 		IGacWrapper gacWrapper;
+		IServiceProvider services;
+		IFormsDesignerLoggingService logger;
 		
-		public TypeDiscoveryService(IGacWrapper gacWrapper)
+		public TypeDiscoveryService(IGacWrapper gacWrapper, IServiceProvider services)
 		{
 			this.gacWrapper = gacWrapper;
+			this.services = services;
+			this.logger = ((IFormsDesignerLoggingService)services.GetService(typeof(IFormsDesignerLoggingService)));
 		}
 		
 		/// <summary>
@@ -33,7 +37,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				baseType = typeof(object);
 			}
 			
-			FormsDesignerLoggingService.Debug("TypeDiscoveryService.GetTypes for " + baseType.FullName
+			logger.Debug("TypeDiscoveryService.GetTypes for " + baseType.FullName
 			                     + "excludeGlobalTypes=" + excludeGlobalTypes.ToString());
 			//seek in all assemblies
 			//allow to work designers like columns editor in datagridview
@@ -50,7 +54,7 @@ namespace ICSharpCode.FormsDesigner.Services
 					// ignore assembly load errors
 				}
 			}
-			FormsDesignerLoggingService.Debug("TypeDiscoveryService returns " + types.Count + " types");
+			logger.Debug("TypeDiscoveryService returns " + types.Count + " types");
 			
 			// TODO - Don't look in all assemblies.
 			// Should use the current project and its referenced assemblies

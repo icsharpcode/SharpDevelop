@@ -12,8 +12,11 @@ namespace ICSharpCode.FormsDesigner.Services
 	/// </summary>
 	internal sealed class SharpDevelopSerializationProvider : IDesignerSerializationProvider
 	{
-		internal SharpDevelopSerializationProvider()
+		IServiceProvider provider;
+		
+		internal SharpDevelopSerializationProvider(IServiceProvider provider)
 		{
+			this.provider = provider;
 		}
 		
 		object IDesignerSerializationProvider.GetSerializer(IDesignerSerializationManager manager, object currentSerializer, Type objectType, Type serializerType)
@@ -23,17 +26,16 @@ namespace ICSharpCode.FormsDesigner.Services
 				return null;
 			}
 			
-			
 			if (serializerType == typeof(MemberCodeDomSerializer)) {
 				
 				if (typeof(PropertyDescriptor).IsAssignableFrom(objectType) && !(currentSerializer is ProjectResourcesMemberCodeDomSerializer)) {
-					return new ProjectResourcesMemberCodeDomSerializer((MemberCodeDomSerializer)currentSerializer);
+					return new ProjectResourcesMemberCodeDomSerializer(provider, (MemberCodeDomSerializer)currentSerializer);
 				}
 				
 			} else if (serializerType == typeof(CodeDomSerializer)) {
 				
 				if (typeof(IComponent).IsAssignableFrom(objectType) && !(currentSerializer is ProjectResourcesComponentCodeDomSerializer)) {
-					return new ProjectResourcesComponentCodeDomSerializer((CodeDomSerializer)currentSerializer);
+					return new ProjectResourcesComponentCodeDomSerializer(provider, (CodeDomSerializer)currentSerializer);
 				}
 				
 			}

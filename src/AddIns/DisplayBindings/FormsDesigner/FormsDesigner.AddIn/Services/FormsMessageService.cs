@@ -38,5 +38,10 @@ namespace ICSharpCode.FormsDesigner.Services
 				return sw.ToString().TrimEnd();
 			}
 		}
+		
+		public void ShowPropertiesPad()
+		{
+			WorkbenchSingleton.Workbench.GetPad(typeof(PropertyPad)).BringPadToFront();
+		}
 	}
 }

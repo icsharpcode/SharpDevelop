@@ -17,7 +17,7 @@ namespace ICSharpCode.WixBinding
 	public sealed class SetupDialogControlsSideTab : SideTabDesigner
 	{
 		SetupDialogControlsSideTab(SideBarControl sideBar, Category category, IToolboxService toolboxService)
-			: base(sideBar, category, toolboxService)
+			: base(null/*TODO!!!!!!!!!!!!!!!!!!!!!!!!!*/, sideBar, category, toolboxService)
 		{
 		}
 		

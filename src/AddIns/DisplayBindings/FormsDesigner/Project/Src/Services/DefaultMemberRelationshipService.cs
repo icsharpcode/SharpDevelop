@@ -10,14 +10,17 @@ namespace ICSharpCode.FormsDesigner.Services
 {
 	public class DefaultMemberRelationshipService : MemberRelationshipService
 	{
-		public DefaultMemberRelationshipService()
+		IServiceProvider services;
+		
+		public DefaultMemberRelationshipService(IServiceProvider services)
 		{
+			this.services = services;
 		}
 		
 		public override bool SupportsRelationship(MemberRelationship source, MemberRelationship relationship)
 		{
 			#if WFDESIGN_LOG_MEMBERRELATIONSHIPSERVICE
-			FormsDesignerLoggingService.Debug("MemberRelationshipService: SupportsRelationship called, source=" + ToString(source) + ", relationship=" + ToString(relationship));
+			((IFormsDesignerLoggingService)services.GetService(typeof(IFormsDesignerLoggingService))).Debug("MemberRelationshipService: SupportsRelationship called, source=" + ToString(source) + ", relationship=" + ToString(relationship));
 			#endif
 			return true;
 		}
@@ -25,9 +28,9 @@ namespace ICSharpCode.FormsDesigner.Services
 		#if WFDESIGN_LOG_MEMBERRELATIONSHIPSERVICE
 		protected override MemberRelationship GetRelationship(MemberRelationship source)
 		{
-			FormsDesignerLoggingService.Debug("MemberRelationshipService: GetRelationship called, source=" + ToString(source));
+			((IFormsDesignerLoggingService)services.GetService(typeof(IFormsDesignerLoggingService))).Debug("MemberRelationshipService: GetRelationship called, source=" + ToString(source));
 			var mrs = base.GetRelationship(source);
-			FormsDesignerLoggingService.Debug("MemberRelationshipService: -> returning " + ToString(mrs));
+			((IFormsDesignerLoggingService)services.GetService(typeof(IFormsDesignerLoggingService))).Debug("MemberRelationshipService: -> returning " + ToString(mrs));
 			return mrs;
 		}
 		
