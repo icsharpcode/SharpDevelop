@@ -146,7 +146,7 @@ namespace ICSharpCode.ILSpyAddIn
 				AnalyticsMonitorService.TrackException(ex);
 				
 				StringWriter writer = new StringWriter();
-				writer.WriteLine("Exception while decompiling " + fullTypeName);
+				writer.WriteLine(string.Format("Exception while decompiling {0} ({1})", fullTypeName, assemblyFile));
 				writer.WriteLine();
 				writer.WriteLine(ex.ToString());
 				WorkbenchSingleton.SafeThreadAsyncCall(OnDecompilationFinished, writer);

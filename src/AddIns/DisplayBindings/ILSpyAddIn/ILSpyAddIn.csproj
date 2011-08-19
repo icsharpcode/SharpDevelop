@@ -64,7 +64,6 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DebuggerDecompilerService.cs" />
-    <Compile Include="LaunchILSpy\Fusion.cs" />
     <Compile Include="LaunchILSpy\ILSpyAssemblyResolver.cs" />
     <Compile Include="NavigateToDecompiledEntityService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
