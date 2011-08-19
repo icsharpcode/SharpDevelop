@@ -22,11 +22,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 	public class CustomComponentsSideTab : SideTabDesigner, IDisposable
 	{
 		bool disposed;
+		ToolboxProvider provider;
 		
 		///<summary>Load an assembly's controls</summary>
-		public CustomComponentsSideTab(SideBarControl sideTab, string name, IToolboxService toolboxService)
+		public CustomComponentsSideTab(ToolboxProvider provider, SideBarControl sideTab, string name, IToolboxService toolboxService)
 			: base(sideTab, name, toolboxService)
 		{
+			this.provider = provider;
 			this.DisplayName = StringParser.Parse(this.Name);
 			ScanProjectAssemblies();
 			ProjectService.BuildFinished    += RescanProjectAssemblies;
@@ -49,7 +51,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			Items.Clear();
 			AddDefaultItem();
 			ScanProjectAssemblies();
-			ToolboxProvider.FormsDesignerSideBar.Refresh();
+			provider.FormsDesignerSideBar.Refresh();
 		}
 		
 		void ProjectItemAdded(object sender, ProjectItemEventArgs e)
@@ -113,7 +115,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 					// is not a design component
 					continue;
 				isDesignComponent:
-					this.Items.Add(new SideTabItemDesigner(c.Name, new CustomComponentToolBoxItem(c.CompilationUnit.FileName, c.FullyQualifiedName)));
+					this.Items.Add(new SideTabItemDesigner(provider, c.Name, new CustomComponentToolBoxItem(c.CompilationUnit.FileName, c.FullyQualifiedName)));
 				}
 			}
 		}

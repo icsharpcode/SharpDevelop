@@ -45,28 +45,47 @@
     <DefineConstants>DEBUG, FORMSDESIGNER_DLL</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.AddIn" />
+    <Reference Include="System.AddIn.Contract">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Presentation">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.XML" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsFormsIntegration">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\Src\EasyCodeDom.cs">
       <Link>EasyCodeDom.cs</Link>
     </Compile>
     <EmbeddedResource Include="Resources\AddSidebarComponentsDialog.xfrm" />
-    <EmbeddedResource Include="Resources\ConfigureSidebarDialog.xfrm" />
-    <EmbeddedResource Include="Resources\RenameSidebarCategoryDialog.xfrm" />
     <EmbeddedResource Include="Resources\WindowsFormsGridOptions.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="FormsDesignerAppDomainHost.cs" />
     <Compile Include="Src\DesignerAppDomainManager.cs" />
     <Compile Include="Src\DesignerLoader\SharpDevelopDesignerLoader.cs" />
     <Compile Include="Src\DesignerLoader\IDesignerLoader.cs" />
-    <Compile Include="Src\FormsDesignerLoggingService.cs" />
     <Compile Include="Src\Gui\ComponentLibraryLoader.cs" />
     <Compile Include="Src\Gui\CustomComponentToolBoxItem.cs" />
     <Compile Include="Src\IDesignerGenerator.cs" />

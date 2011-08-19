@@ -1,17 +1,15 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-// created on 08.08.2003 at 13:02
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
-	public class RenameCategoryDialog : BaseSharpDevelopForm
+	public partial class RenameCategoryDialog : Form
 	{
 		string categoryName = String.Empty;
 		
@@ -21,50 +19,49 @@ namespace ICSharpCode.FormsDesigner.Gui
 			}
 		}
 		
-		public RenameCategoryDialog(string categoryName, Form owner)
+		ToolboxProvider toolbox;
+		
+		public RenameCategoryDialog(ToolboxProvider toolbox, string categoryName, Form owner)
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormsDesigner.Resources.RenameSidebarCategoryDialog.xfrm"));
-			
+			this.toolbox = toolbox;
+			InitializeComponent();
 			this.Owner = owner;
 			
-			
 			if (categoryName == null) {
-				ControlDictionary["categoryNameTextBox"].Text = "New Category";
+				categoryNameTextBox.Text = "New Category";
 				Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.RenameCategoryDialog.NewCategoryDialogName}");
 			} else {
 				this.categoryName = categoryName;
-				ControlDictionary["categoryNameTextBox"].Text = categoryName;
+				categoryNameTextBox.Text = categoryName;
 				Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.RenameCategoryDialog.RenameCategoryDialogName}");
 			}
-			ControlDictionary["okButton"].Click += new EventHandler(okButtonClick);
 		}
 		
 		void ShowDuplicateErrorMessage()
 		{
-			
 			MessageService.ShowError("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.RenameCategoryDialog.DuplicateNameError}");
 		}
 		
-		void okButtonClick(object sender, System.EventArgs e)
+		void OkButtonClick(object sender, System.EventArgs e)
 		{
-			if (categoryName != ControlDictionary["categoryNameTextBox"].Text) {
-				foreach (Category cat in ToolboxProvider.ComponentLibraryLoader.Categories) {
-					if (cat.Name == ControlDictionary["categoryNameTextBox"].Text) {
+			if (categoryName != categoryNameTextBox.Text) {
+				foreach (Category cat in toolbox.ComponentLibraryLoader.Categories) {
+					if (cat.Name == categoryNameTextBox.Text) {
 						ShowDuplicateErrorMessage();
 						return;
 					}
 				}
 				
-				foreach (SideTab tab in ToolboxProvider.FormsDesignerSideBar.Tabs) {
+				foreach (SideTab tab in toolbox.FormsDesignerSideBar.Tabs) {
 					if (!(tab is SideTabDesigner) && !(tab is CustomComponentsSideTab)) {
-						if (tab.Name == ControlDictionary["categoryNameTextBox"].Text) {
+						if (tab.Name == categoryNameTextBox.Text) {
 							ShowDuplicateErrorMessage();
 							return;
 						}
 					}
 				}
 				
-				categoryName = ControlDictionary["categoryNameTextBox"].Text;
+				categoryName = categoryNameTextBox.Text;
 			}
 			DialogResult = System.Windows.Forms.DialogResult.OK;
 		}
