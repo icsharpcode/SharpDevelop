@@ -17,10 +17,6 @@
 		<String id="SourceAnalysis" text = "${AddInPath:MattEverson.SourceAnalysis}/SharpDevelop.SourceAnalysis.targets"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalProperties">
-		<String id="StyleCopDir" text = "${property:SourceAnalysis.StyleCopPath}"/>
-	</Path>
-	
 	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
 		<OptionPanel id          = "SourceAnalysis"
 		             label       = "${res:AddIns.SourceAnalysis.Title}"
