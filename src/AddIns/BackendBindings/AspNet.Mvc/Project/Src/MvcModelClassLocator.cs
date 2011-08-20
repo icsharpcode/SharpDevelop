@@ -44,8 +44,15 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			if (IsBaseClassMvcController(c)) {
 				return false;
+			} else if (IsHttpApplication(c)) {
+				return false;
 			}
 			return true;
+		}
+		
+		bool IsHttpApplication(IMvcClass c)
+		{
+			return c.BaseClassFullName == "System.Web.HttpApplication";
 		}
 		
 		bool IsBaseClassMvcController(IMvcClass c)

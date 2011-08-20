@@ -88,5 +88,16 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(0, count);
 		}
+		
+		[Test]
+		public void GetModelClasses_HttpApplicationDerivedClassInProject_ClassNotReturnedInModelClasses()
+		{
+			CreateLocator();
+			AddModelClassWithBaseClass("System.Web.HttpApplication", "ICSharpCode.MvcApplication");
+			GetModelClasses();
+			int count = GetModelClassCount();
+			
+			Assert.AreEqual(0, count);
+		}
 	}
 }
