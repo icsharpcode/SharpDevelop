@@ -25,7 +25,10 @@ namespace ICSharpCode.ILSpyAddIn
 		static DebuggerDecompilerService()
 		{
 			DebugInformation = new ConcurrentDictionary<int, DecompileInformation>();
-			ProjectService.SolutionClosed += delegate { DebugInformation.Clear(); };
+			ProjectService.SolutionClosed += delegate {
+				DebugInformation.Clear();
+				GC.Collect();
+			};
 		}
 		
 		internal static IDebuggerDecompilerService Instance { get; private set; }
