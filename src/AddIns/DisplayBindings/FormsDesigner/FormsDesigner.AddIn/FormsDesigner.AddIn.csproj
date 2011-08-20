@@ -120,8 +120,8 @@
     <Compile Include="Toolbox\RenameCategoryDialog.Designer.cs">
       <DependentUpon>RenameCategoryDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Toolbox\SideTabDesigner.cs" />
-    <Compile Include="Toolbox\SideTabItemDesigner.cs" />
+    <Compile Include="Toolbox\DesignerSideTab.cs" />
+    <Compile Include="Toolbox\DesignerSideTabItem.cs" />
     <Compile Include="Toolbox\ToolboxProvider.cs" />
   </ItemGroup>
   <ItemGroup>

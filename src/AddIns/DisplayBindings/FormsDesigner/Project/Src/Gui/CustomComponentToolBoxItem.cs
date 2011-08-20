@@ -1,27 +1,50 @@
-﻿using System;
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
+using System.Runtime.Serialization;
 
 using ICSharpCode.FormsDesigner.Services;
 
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-
 namespace ICSharpCode.FormsDesigner.Gui
 {
-	public class CustomComponentToolBoxItem : ToolboxItem
+	[Serializable]
+	public class CustomComponentToolboxItem : ToolboxItem
 	{
 		string sourceFileName;
 		string className;
 		bool initialized;
 		
-		public CustomComponentToolBoxItem(string sourceFileName, string className)
+		public CustomComponentToolboxItem(string sourceFileName, string className)
 		{
 			this.sourceFileName = sourceFileName;
 			this.className = className;
 			this.Bitmap = new ToolboxItem(typeof(Component)).Bitmap;
 			this.IsTransient = true;
+		}
+		
+		protected CustomComponentToolboxItem(SerializationInfo info, StreamingContext context)
+		{
+			Deserialize(info, context);
+		}
+		
+		protected override void Deserialize(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+		{
+			base.Deserialize(info, context);
+			sourceFileName = info.GetString("sourceFileName");
+			className = info.GetString("className");
+			initialized = info.GetBoolean("initialized");
+		}
+		
+		protected override void Serialize(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+		{
+			base.Serialize(info, context);
+			info.AddValue("sourceFileName", sourceFileName);
+			info.AddValue("className", className);
+			info.AddValue("initialized", initialized);
 		}
 		
 		void Init(IDesignerHost host)

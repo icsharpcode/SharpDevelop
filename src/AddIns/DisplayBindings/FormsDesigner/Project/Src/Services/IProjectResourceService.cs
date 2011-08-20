@@ -23,6 +23,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		void ShowOutputPad();
 		void ShowPropertiesPad();
 		void AppendTextToBuildMessages(string text);
+		void ShowError(string message);
 		void ShowException(Exception ex, string message);
 		string CodeStatementToString(CodeStatement statement);
 	}

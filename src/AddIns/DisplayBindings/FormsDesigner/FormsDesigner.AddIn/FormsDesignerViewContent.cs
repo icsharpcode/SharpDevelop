@@ -325,8 +325,7 @@ namespace ICSharpCode.FormsDesigner
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
 			
 			appDomainHost.AddService(typeof(IMessageService), new FormsMessageService());
-			appDomainHost.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService(this));
-			appDomainHost.AddService(typeof(System.Drawing.Design.IToolboxService), toolbox.ToolboxService);
+			appDomainHost.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService(this, this));
 			
 			appDomainHost.AddService(typeof(IHelpService), new HelpService());
 			
@@ -337,10 +336,6 @@ namespace ICSharpCode.FormsDesigner
 			// Provide the ImageResourceEditor for all Image and Icon properties
 			this.addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
 			this.addedTypeDescriptionProviders.Add(typeof(Icon), TypeDescriptor.AddAttributes(typeof(Icon), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
-			
-			if (generator.CodeDomProvider != null) {
-				appDomainHost.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), generator.CodeDomProvider);
-			}
 			
 			appDomainHost.DesignSurfaceLoading += new EventHandlerProxy(DesignerLoading);
 			appDomainHost.DesignSurfaceLoaded += new LoadedEventHandlerProxy(DesignerLoaded);
@@ -989,6 +984,12 @@ namespace ICSharpCode.FormsDesigner
 		public IntPtr GetDialogOwnerWindowHandle()
 		{
 			return WorkbenchSingleton.MainWin32Window.Handle;
+		}
+		
+		public IDesignerGenerator Generator {
+			get {
+				return generator;
+			}
 		}
 	}
 }

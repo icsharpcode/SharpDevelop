@@ -1,22 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-/*
- * Module : FormDesigner
- * 
- * Project : FormDesigner Loading Library Control.
- * 
- * Source code altering : A1
- * 
- * Description : création of the Tab item displayed into the AXSideTabDesigner control.
- * 				 the control's creator initialize the toolboxitem of the tab item
- * 
- * Denis ERCHOFF						22/01/2003
- */
-
-
-//		Denis ERCHOFF		22/01/2003		BEGIN		A1
-
 using System;
 using System.Drawing;
 using System.Drawing.Design;
@@ -26,12 +10,12 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
-	public class SideTabItemDesigner : SharpDevelopSideTabItem
+	public class DesignerSideTabItem : SharpDevelopSideTabItem
 	{
 		ToolboxProvider provider;
 		
 		///<summary>create a tabitem from a toolboxitem. It init Icon and name from the tag</summary>
-		public SideTabItemDesigner(ToolboxProvider provider, ToolboxItem tag) : base(tag.DisplayName, tag)
+		public DesignerSideTabItem(ToolboxProvider provider, ToolboxItem tag) : base(tag.DisplayName, tag)
 		{
 			this.provider = provider;
 			CanBeRenamed = false;
@@ -40,7 +24,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		}
 		
 		///<summary>create a tabitem from a toolboxitem. It init Icon from the tag</summary>
-		public SideTabItemDesigner(ToolboxProvider provider, string name, ToolboxItem tag) : base(name, tag)
+		public DesignerSideTabItem(ToolboxProvider provider, string name, ToolboxItem tag) : base(name, tag)
 		{
 			this.provider = provider;
 			CanBeRenamed = false;
@@ -49,7 +33,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		}
 		
 		///<summary>create a default tabitem : a pointer icon with an empty toolboxitem</summary>
-		public SideTabItemDesigner() : base("Pointer")
+		public DesignerSideTabItem() : base("Pointer")
 		{
 			CanBeRenamed = false;
 			CanBeDeleted = false;

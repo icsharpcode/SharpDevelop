@@ -17,9 +17,9 @@ namespace ICSharpCode.FormsDesigner
 			return new DomRegion(GetCursorLine(document, method), 1, method.BodyRegion.EndLine, 1);
 		}
 		
-		protected override System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider()
+		protected override Type GetCodeProviderType()
 		{
-			return new Microsoft.CSharp.CSharpCodeProvider();
+			return typeof(Microsoft.CSharp.CSharpCodeProvider);
 		}
 		
 		protected override string CreateEventHandler(Type eventType, string eventMethodName, string body, string indentation)

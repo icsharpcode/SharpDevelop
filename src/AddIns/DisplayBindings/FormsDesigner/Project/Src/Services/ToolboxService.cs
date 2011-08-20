@@ -50,7 +50,7 @@ namespace ICSharpCode.FormsDesigner.Services
 	/// Provides designers with the ability to configure what tools
 	/// are available on the toolbox.
 	/// </remarks>
-	public class ToolboxService : MarshalByRefObject, IToolboxService
+	public class SharpDevelopToolboxService : MarshalByRefObject, IToolboxService
 	{
 		static readonly string ALL_HOSTS      = "_all_hosts_";
 		static readonly string ALL_CATEGORIES = "_all_categories_";
@@ -69,7 +69,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		IFormsDesignerLoggingService logger;
 		
 		// Constructor
-		public ToolboxService(IServiceProvider provider)
+		public SharpDevelopToolboxService(IServiceProvider provider)
 		{
 			IList list = new ArrayList();
 			toolboxByCategory.Add(ALL_CATEGORIES, list);
@@ -154,7 +154,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		/// Adds a new toolbox item creator.
 		/// </summary>
 		/// <param name="creator">
-		/// A <see cref="System.Drawing.Design.ToolboxItemCreatorCallback">
+		/// A <see cref="System.Drawing.Design.ToolboxItemCreatorCallback" />
 		/// that can create a component when the toolbox item
 		/// is invoked. </param>
 		/// <param name="format">

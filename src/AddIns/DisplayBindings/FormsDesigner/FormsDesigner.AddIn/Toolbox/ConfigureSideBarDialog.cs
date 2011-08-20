@@ -7,7 +7,6 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {

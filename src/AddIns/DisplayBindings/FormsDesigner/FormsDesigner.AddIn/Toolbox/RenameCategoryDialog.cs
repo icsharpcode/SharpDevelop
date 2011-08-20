@@ -53,7 +53,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 				}
 				
 				foreach (SideTab tab in toolbox.FormsDesignerSideBar.Tabs) {
-					if (!(tab is SideTabDesigner) && !(tab is CustomComponentsSideTab)) {
+					if (!(tab is DesignerSideTab) && !(tab is CustomComponentsSideTab)) {
 						if (tab.Name == categoryNameTextBox.Text) {
 							ShowDuplicateErrorMessage();
 							return;

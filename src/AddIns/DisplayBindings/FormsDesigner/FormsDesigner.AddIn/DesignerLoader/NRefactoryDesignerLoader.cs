@@ -174,7 +174,7 @@ namespace ICSharpCode.FormsDesigner
 			if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
 				CodeDomVerboseOutputGenerator outputGenerator = new CodeDomVerboseOutputGenerator();
 				outputGenerator.GenerateCodeFromMember(visitor.codeCompileUnit.Namespaces[0].Types[0], Console.Out, null);
-				this.Generator.CodeDomProvider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
+				this.Generator.CreateCodeDomProvider().GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
 			}
 			#endif
 			
@@ -270,7 +270,7 @@ namespace ICSharpCode.FormsDesigner
 			// output generated CodeDOM to the console :
 			#if DEBUG
 			if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
-				this.Generator.CodeDomProvider.GenerateCodeFromCompileUnit(unit, Console.Out, null);
+				this.Generator.CreateCodeDomProvider().GenerateCodeFromCompileUnit(unit, Console.Out, null);
 			}
 			#endif
 			try {

@@ -37,8 +37,19 @@ namespace ICSharpCode.FormsDesigner
 			get { return this.designerLoaderHost; }
 		}
 		
+		internal CodeDomProvider GetCodeDomProviderInstance()
+		{
+			if (instance == null)
+				instance = (CodeDomProvider)this.generator.CodeDomProviderType.Assembly.CreateInstance(this.generator.CodeDomProviderType.FullName);
+			return instance;
+		}
+		
+		CodeDomProvider instance;
+		
 		protected override CodeDomProvider CodeDomProvider {
-			get { return this.generator.CodeDomProvider; }
+			get {
+				return GetCodeDomProviderInstance();
+			}
 		}
 		
 		protected IDesignerGenerator Generator {

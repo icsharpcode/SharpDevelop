@@ -19,7 +19,7 @@ using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
-	public class CustomComponentsSideTab : SideTabDesigner, IDisposable
+	public class CustomComponentsSideTab : DesignerSideTab, IDisposable
 	{
 		bool disposed;
 		ToolboxProvider provider;
@@ -115,7 +115,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 					// is not a design component
 					continue;
 				isDesignComponent:
-					this.Items.Add(new SideTabItemDesigner(provider, c.Name, new CustomComponentToolBoxItem(c.CompilationUnit.FileName, c.FullyQualifiedName)));
+					this.Items.Add(new DesignerSideTabItem(provider, c.Name, new CustomComponentToolboxItem(c.CompilationUnit.FileName, c.FullyQualifiedName)));
 				}
 			}
 		}

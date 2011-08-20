@@ -79,7 +79,6 @@
     <Compile Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\Src\EasyCodeDom.cs">
       <Link>EasyCodeDom.cs</Link>
     </Compile>
-    <EmbeddedResource Include="Resources\AddSidebarComponentsDialog.xfrm" />
     <EmbeddedResource Include="Resources\WindowsFormsGridOptions.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="FormsDesignerAppDomainHost.cs" />
@@ -107,6 +106,7 @@
     <Compile Include="Src\Services\SharpDevelopSerializationProvider.cs" />
     <Compile Include="Src\Services\ToolboxService.cs" />
     <Compile Include="Src\Services\TypeResolutionService.cs" />
+    <Compile Include="Src\Services\UIService.cs" />
     <Compile Include="Src\Services\XmlDesignerNameCreationService.cs" />
     <Compile Include="Src\DesignerLoader\FormsDesignerLoadException.cs" />
     <Compile Include="Src\Services\TypeDiscoveryService.cs" />

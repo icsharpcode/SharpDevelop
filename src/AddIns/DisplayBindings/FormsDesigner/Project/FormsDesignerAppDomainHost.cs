@@ -6,6 +6,7 @@ using System.AddIn.Pipeline;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
+using System.Drawing.Design;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Remoting.Lifetime;
@@ -89,12 +90,13 @@ namespace ICSharpCode.FormsDesigner
 			container.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService(container));
 			container.AddService(typeof(AmbientProperties), new AmbientProperties());
 			container.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService(properties.Options));
-			
+
 			this.designSurface = designSurfaceManager.CreateDesignSurface(container);
 			
 			container.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(properties.Commands, designSurface).Proxy);
 			Services.EventBindingService eventBindingService = new Services.EventBindingService(properties.FormsDesignerProxy, designSurface);
 			container.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
+			container.AddService(typeof(IToolboxService), new SharpDevelopToolboxService(this));
 			
 			InitializeEvents();
 		}
@@ -286,7 +288,13 @@ namespace ICSharpCode.FormsDesigner
 		
 		public void BeginDesignSurfaceLoad(IDesignerGenerator generator, IDesignerLoaderProvider loaderProvider)
 		{
-			this.loader = new SharpDevelopDesignerLoader(this, generator, loaderProvider.CreateLoader(generator));
+			var loader = new SharpDevelopDesignerLoader(this, generator, loaderProvider.CreateLoader(generator));
+			var provider = loader.GetCodeDomProviderInstance();
+			if (provider != null) {
+				AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), provider);
+			}
+			this.loader = loader;
+			
 			designSurface.BeginLoad(loader);
 		}
 		

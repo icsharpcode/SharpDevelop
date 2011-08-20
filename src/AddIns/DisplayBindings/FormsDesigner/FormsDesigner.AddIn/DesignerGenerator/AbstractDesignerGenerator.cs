@@ -31,15 +31,20 @@ namespace ICSharpCode.FormsDesigner
 		IMethod initializeComponents;
 		
 		FormsDesignerViewContent viewContent;
-		CodeDomProvider provider;
+		Type providerType;
 		
-		public CodeDomProvider CodeDomProvider {
+		public Type CodeDomProviderType {
 			get {
-				if (this.provider == null) {
-					this.provider = this.CreateCodeProvider();
+				if (this.providerType == null) {
+					this.providerType = this.GetCodeProviderType();
 				}
-				return this.provider;
+				return this.providerType;
 			}
+		}
+		
+		public CodeDomProvider CreateCodeDomProvider()
+		{
+			return (CodeDomProvider)CodeDomProviderType.Assembly.CreateInstance(CodeDomProviderType.FullName);
 		}
 		
 		public FormsDesignerViewContent ViewContent {
@@ -168,7 +173,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		protected abstract System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider();
+		protected abstract Type GetCodeProviderType();
 		
 		protected abstract DomRegion GetReplaceRegion(IDocument document, IMethod method);
 		
@@ -249,7 +254,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			// generate file and get initialize components string
 			StringWriter writer = new StringWriter();
-			CodeDOMGenerator domGenerator = new CodeDOMGenerator(this.CodeDomProvider, tabs + '\t');
+			CodeDOMGenerator domGenerator = new CodeDOMGenerator(CreateCodeDomProvider(), tabs + '\t');
 			domGenerator.ConvertContentDefinition(initializeComponent, writer);
 			
 			string statements = writer.ToString();

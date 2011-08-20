@@ -11,12 +11,12 @@ using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
-	public class SideTabDesigner : SideTab
+	public class DesignerSideTab : SideTab
 	{
 		protected bool loadImages = true;
 		IToolboxService toolboxService;
 		
-		protected SideTabDesigner(SideBarControl sideBar, string name, IToolboxService toolboxService)
+		protected DesignerSideTab(SideBarControl sideBar, string name, IToolboxService toolboxService)
 			: base(sideBar, name)
 		{
 			this.DisplayName = StringParser.Parse(name);
@@ -29,7 +29,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		protected void AddDefaultItem()
 		{
-			this.Items.Add(new SideTabItemDesigner());
+			this.Items.Add(new DesignerSideTabItem());
 		}
 		
 		ToolboxProvider toolbox;
@@ -39,7 +39,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		}
 		
 		///<summary>Load an assembly's controls</summary>
-		public SideTabDesigner(ToolboxProvider toolbox, SideBarControl sideBar, Category category, IToolboxService toolboxService)
+		public DesignerSideTab(ToolboxProvider toolbox, SideBarControl sideBar, Category category, IToolboxService toolboxService)
 			: this(sideBar, category.Name, toolboxService)
 		{
 			this.toolbox = toolbox;
@@ -51,7 +51,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 					toolboxItem.DisplayName = component.Name;
 					toolboxItem.AssemblyName = toolbox.ComponentLibraryLoader.GetAssemblyName(component);
 					
-					this.Items.Add(new SideTabItemDesigner(toolbox, toolboxItem));
+					this.Items.Add(new DesignerSideTabItem(toolbox, toolboxItem));
 				}
 			}
 		}

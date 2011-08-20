@@ -43,5 +43,10 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(PropertyPad)).BringPadToFront();
 		}
+		
+		public void ShowError(string message)
+		{
+			MessageService.ShowError(message);
+		}
 	}
 }

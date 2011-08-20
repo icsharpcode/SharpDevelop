@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.WixBinding
 {
-	public sealed class SetupDialogControlsSideTab : SideTabDesigner
+	public sealed class SetupDialogControlsSideTab : DesignerSideTab
 	{
 		SetupDialogControlsSideTab(SideBarControl sideBar, Category category, IToolboxService toolboxService)
 			: base(null/*TODO!!!!!!!!!!!!!!!!!!!!!!!!!*/, sideBar, category, toolboxService)

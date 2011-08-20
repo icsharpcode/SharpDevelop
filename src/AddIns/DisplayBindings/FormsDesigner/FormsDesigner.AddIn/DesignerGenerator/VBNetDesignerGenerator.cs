@@ -12,9 +12,9 @@ namespace ICSharpCode.FormsDesigner
 {
 	public class VBNetDesignerGenerator : AbstractDesignerGenerator
 	{
-		protected override System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider()
+		protected override Type GetCodeProviderType()
 		{
-			return new Microsoft.VisualBasic.VBCodeProvider();
+			return typeof(Microsoft.VisualBasic.VBCodeProvider);
 		}
 		
 		protected override DomRegion GetReplaceRegion(IDocument document, IMethod method)

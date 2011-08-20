@@ -22,9 +22,9 @@ namespace Grunwald.BooBinding.Designer
 			return "private " + field.Name + " as " + field.Type.BaseType;
 		}
 		
-		protected override System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider()
+		protected override Type GetCodeProviderType()
 		{
-			return new Boo.Lang.CodeDom.BooCodeProvider();
+			return typeof(Boo.Lang.CodeDom.BooCodeProvider);
 		}
 		
 		protected override void FixGeneratedCode(IClass formClass, CodeMemberMethod code)

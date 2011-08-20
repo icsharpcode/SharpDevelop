@@ -32,7 +32,7 @@ namespace ICSharpCode.Scripting
 			this.textEditorOptions = textEditorOptions;
 		}
 		
-		public CodeDomProvider CodeDomProvider {
+		public Type CodeDomProviderType {
 			get { return null; }
 		}
 		
@@ -286,5 +286,10 @@ namespace ICSharpCode.Scripting
 		{
 			return 0;
 		}		
+		
+		public CodeDomProvider CreateCodeDomProvider()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

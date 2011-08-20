@@ -40,9 +40,14 @@ namespace ICSharpCode.WixBinding
 		FormsDesignerViewContent view;
 		ITextEditor textEditor;
 		
-		public CodeDomProvider CodeDomProvider {
-			get { return new CSharpCodeProvider(); }
+		public Type CodeDomProviderType {
+			get { return typeof(CSharpCodeProvider); }
 		}
+		
+		public CodeDomProvider CreateCodeDomProvider()
+		{
+			throw new NotImplementedException();
+		}		
 		
 		public FormsDesignerViewContent ViewContent {
 			get { return view; }
