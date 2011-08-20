@@ -119,22 +119,6 @@ namespace ICSharpCode.FormsDesigner
 			
 			FileService.FileRemoving += this.FileServiceFileRemoving;
 			ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting += this.DebugStarting;
-			
-			options = LoadOptions();
-			
-			var creationProperties = new FormsDesignerAppDomainCreationProperties {
-				 FileName = PrimaryFileName,
-				 TypeLocator = new DomTypeLocator(PrimaryFileName),
-				 GacWrapper = new DomGacWrapper(),
-				 Commands = new SharpDevelopCommandProvider(this),
-				 FormsDesignerProxy = new ViewContentIFormsDesignerProxy(this),
-				 Logger = new FormsDesignerLoggingServiceImpl(),
-				 Options = options
-			};
-			
-			appDomain = null;
-			appDomainHost = FormsDesignerAppDomainHost.CreateFormsDesignerInAppDomain(ref appDomain, creationProperties);
-			toolbox = new ToolboxProvider(appDomainHost);
 		}
 		
 		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProviderWithViewContent loaderProvider, IDesignerGenerator generator, IDesignerSourceProvider sourceProvider)
@@ -165,11 +149,32 @@ namespace ICSharpCode.FormsDesigner
 			this.Files.Add(primaryViewContent.PrimaryFile);
 		}
 		
+		void LoadAppDomain()
+		{
+			options = LoadOptions();
+			
+			var creationProperties = new FormsDesignerAppDomainCreationProperties {
+				FileName = PrimaryFileName,
+				TypeLocator = new DomTypeLocator(PrimaryFileName),
+				GacWrapper = new DomGacWrapper(),
+				Commands = new SharpDevelopCommandProvider(this),
+				FormsDesignerProxy = new ViewContentIFormsDesignerProxy(this),
+				Logger = new FormsDesignerLoggingServiceImpl(),
+				Options = options
+			};
+			
+			appDomain = null;
+			appDomainHost = FormsDesignerAppDomainHost.CreateFormsDesignerInAppDomain(ref appDomain, creationProperties);
+			toolbox = new ToolboxProvider(appDomainHost);
+		}
+		
 		bool inMasterLoadOperation;
 		
 		protected override void LoadInternal(OpenedFile file, System.IO.Stream stream)
 		{
 			LoggingService.Debug("Forms designer: Load " + file.FileName + "; inMasterLoadOperation=" + this.inMasterLoadOperation);
+			
+			LoadAppDomain();
 			
 			propertyContainer.PropertyGridReplacementContent = FrameworkElementAdapters.ContractToViewAdapter(appDomainHost.CreatePropertyGrid());
 			// TODO : init PropertyGrid

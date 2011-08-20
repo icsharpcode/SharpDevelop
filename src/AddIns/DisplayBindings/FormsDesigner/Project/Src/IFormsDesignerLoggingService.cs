@@ -16,6 +16,51 @@ namespace ICSharpCode.FormsDesigner
 		void WarnFormatted(string format, params object[] args);
 	}
 	
+	public class FormsDesignerLoggingServiceProxy : MarshalByRefObject, IFormsDesignerLoggingService
+	{
+		IFormsDesignerLoggingService service;
+		
+		public FormsDesignerLoggingServiceProxy(IFormsDesignerLoggingService service)
+		{
+			this.service = service;
+		}
+		
+		public void Debug(string message)
+		{
+			service.Debug(message);
+		}
+		
+		public void Info(string message)
+		{
+			service.Info(message);
+		}
+		
+		public void Warn(string message)
+		{
+			service.Warn(message);
+		}
+		
+		public void Error(Exception error)
+		{
+			service.Error(error);
+		}
+		
+		public void Error(string message, Exception error)
+		{
+			service.Error(message, error);
+		}
+		
+		public void DebugFormatted(string format, params object[] args)
+		{
+			service.Debug(string.Format(format, args));
+		}
+		
+		public void WarnFormatted(string format, params object[] args)
+		{
+			service.Warn(string.Format(format, args));
+		}
+	}
+	
 	public interface IDesignerLoaderProvider
 	{
 		IDesignerLoader CreateLoader(IDesignerGenerator generator);

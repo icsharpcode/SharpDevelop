@@ -35,6 +35,8 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		public DomTypeLocator(string formSourceFileName)
 		{
+			if (formSourceFileName == null)
+				throw new ArgumentNullException("formSourceFileName");
 			this.formSourceFileName = formSourceFileName;
 		}
 		

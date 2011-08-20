@@ -83,7 +83,7 @@ namespace ICSharpCode.FormsDesigner
 		{
 			this.container = new DefaultServiceContainer();
 			container.AddService(typeof(FormsDesignerAppDomainHost), this);
-			container.AddService(typeof(IFormsDesignerLoggingService), logger = properties.Logger);
+			container.AddService(typeof(IFormsDesignerLoggingService), logger = new FormsDesignerLoggingServiceProxy(properties.Logger));
 			container.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
 			container.AddService(typeof(ITypeResolutionService), new TypeResolutionService(properties.FileName, container, properties.TypeLocator));
 			container.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService(properties.GacWrapper, container));
