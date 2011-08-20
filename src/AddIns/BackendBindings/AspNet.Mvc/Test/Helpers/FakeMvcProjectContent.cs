@@ -16,10 +16,19 @@ namespace AspNet.Mvc.Tests.Helpers
 			return FakeClasses;
 		}
 		
-		public void AddFakeClass(string fullyQualifiedClassName)
+		public FakeMvcClass AddFakeClass(string fullyQualifiedClassName)
 		{
 			var fakeClass = new FakeMvcClass(fullyQualifiedClassName);
 			FakeClasses.Add(fakeClass);
+			return fakeClass;
+		}
+		
+		public FakeMvcClass AddFakeClassWithBaseClass(string baseClassName, string className)
+		{
+			var fakeClass = new FakeMvcClass(className);
+			fakeClass.BaseClassFullName = baseClassName;
+			FakeClasses.Add(fakeClass);
+			return fakeClass;
 		}
 	}
 }

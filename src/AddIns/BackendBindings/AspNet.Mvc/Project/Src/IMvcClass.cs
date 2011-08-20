@@ -7,8 +7,9 @@ namespace ICSharpCode.AspNet.Mvc
 {
 	public interface IMvcClass
 	{
-		string FullyQualifiedName { get; }
+		string FullName { get; }
 		string Name { get; }
 		string Namespace { get; }
+		string BaseClassFullName { get; }
 	}
 }

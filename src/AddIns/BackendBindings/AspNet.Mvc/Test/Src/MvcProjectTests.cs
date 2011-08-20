@@ -86,7 +86,7 @@ namespace AspNet.Mvc.Tests
 			
 			string[] modelClasses = project
 				.GetModelClasses()
-				.Select(m => m.FullyQualifiedName)
+				.Select(m => m.FullName)
 				.ToArray();
 			
 			string[] expectedModelClasses = new string[] {

@@ -50,6 +50,7 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\FakeAddMvcItemToProjectView.cs" />
+    <Compile Include="Helpers\FakeClass.cs" />
     <Compile Include="Helpers\FakeMvcModelClassLocator.cs" />
     <Compile Include="Helpers\FakeMvcClass.cs" />
     <Compile Include="Helpers\FakeMvcControllerFileGenerator.cs" />
@@ -73,7 +74,8 @@
     <Compile Include="Src\IsMvcControllerFolderSelectedConditionEvaluatorTests.cs" />
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluatorTests.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\ModelClassLocatorTests.cs" />
+    <Compile Include="Src\MvcClassTests.cs" />
+    <Compile Include="Src\MvcModelClassLocatorTests.cs" />
     <Compile Include="Src\MvcControllerFileGeneratorTests.cs" />
     <Compile Include="Src\MvcControllerFileNameTests.cs" />
     <Compile Include="Src\MvcModelClassViewModelTests.cs" />

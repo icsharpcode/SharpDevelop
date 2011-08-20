@@ -8,9 +8,9 @@ namespace AspNet.Mvc.Tests.Helpers
 {
 	public class FakeMvcClass : IMvcClass
 	{
-		public FakeMvcClass(string fullyQualifiedName)
+		public FakeMvcClass(string fullName)
 		{
-			this.FullyQualifiedName = fullyQualifiedName;
+			this.FullName = fullName;
 		}
 		
 		public FakeMvcClass(string @namespace, string name)
@@ -19,8 +19,9 @@ namespace AspNet.Mvc.Tests.Helpers
 			this.Name = name;
 		}
 		
-		public string FullyQualifiedName { get; set; }
+		public string FullName { get; set; }
 		public string Name { get; set; }
 		public string Namespace { get; set; }
+		public string BaseClassFullName { get; set; }
 	}
 }

@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class ModelClassLocatorTests
+	public class MvcModelClassLocatorTests
 	{
 		MvcModelClassLocator locator;
 		FakeMvcProject fakeProject;
@@ -29,14 +29,24 @@ namespace AspNet.Mvc.Tests
 			return locator.GetModelClasses(fakeProject).ToList();
 		}
 		
-		void AddModelClass(string fullyQualifiedClassName)
+		FakeMvcClass AddModelClass(string className)
 		{
-			fakeParserService.AddModelClassToProjectContent(fullyQualifiedClassName);
+			return fakeParserService.AddModelClassToProjectContent(className);
+		}
+		
+		FakeMvcClass AddModelClassWithBaseClass(string baseClassName, string className)
+		{
+			return fakeParserService.AddModelClassWithBaseClassToProjectContent(baseClassName, className);
 		}
 		
 		string GetFirstModelClassName()
 		{
-			return GetModelClasses().First().FullyQualifiedName;
+			return GetModelClasses().First().FullName;
+		}
+		
+		int GetModelClassCount()
+		{
+			return GetModelClasses().Count;
 		}
 		
 		[Test]
@@ -54,7 +64,7 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateLocator();
 			AddModelClass("MyNamespace.MyClass");
-			int count = GetModelClasses().Count;
+			int count = GetModelClassCount();
 				
 			Assert.AreEqual(1, count);
 		}
@@ -66,6 +76,17 @@ namespace AspNet.Mvc.Tests
 			GetModelClasses();
 			
 			Assert.AreEqual(fakeProject, fakeParserService.ProjectPassedToGetProjectContent);
+		}
+		
+		[Test]
+		public void GetModelClasses_ControllerClassInProject_ControllerClassNotReturnedInModelClasses()
+		{
+			CreateLocator();
+			AddModelClassWithBaseClass("System.Web.Mvc.Controller", "ICSharpCode.FooController");
+			GetModelClasses();
+			int count = GetModelClassCount();
+			
+			Assert.AreEqual(0, count);
 		}
 	}
 }

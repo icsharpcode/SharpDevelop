@@ -22,12 +22,14 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public IEnumerable<IMvcClass> GetModelClasses(IMvcProject project)
 		{
-			foreach (IMvcClass c in GetClasses(project)) {
-				yield return c;
+			foreach (IMvcClass c in GetAllClassesInProject(project)) {
+				if (IsModelClass(c)) {
+					yield return c;
+				}
 			}
 		}
 		
-		IEnumerable<IMvcClass> GetClasses(IMvcProject project)
+		IEnumerable<IMvcClass> GetAllClassesInProject(IMvcProject project)
 		{
 			IMvcProjectContent projectContent = GetProjectContent(project);
 			return projectContent.GetClasses();
@@ -36,6 +38,19 @@ namespace ICSharpCode.AspNet.Mvc
 		IMvcProjectContent GetProjectContent(IMvcProject project)
 		{
 			return parserService.GetProjectContent(project);
+		}
+		
+		bool IsModelClass(IMvcClass c)
+		{
+			if (IsBaseClassMvcController(c)) {
+				return false;
+			}
+			return true;
+		}
+		
+		bool IsBaseClassMvcController(IMvcClass c)
+		{
+			return c.BaseClassFullName == "System.Web.Mvc.Controller";
 		}
 	}
 }

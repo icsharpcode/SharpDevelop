@@ -139,7 +139,7 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			if (IsStronglyTypedView) {
 				if (SelectedModelClass != null) {
-					return SelectedModelClass.FullyQualifiedName;
+					return SelectedModelClass.FullName;
 				}
 				return ModelClassName.Trim();
 			}

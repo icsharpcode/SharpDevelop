@@ -31,8 +31,8 @@ namespace ICSharpCode.AspNet.Mvc
 			return Name;
 		}
 		
-		public string FullyQualifiedName {
-			get { return mvcClass.FullyQualifiedName; }
+		public string FullName {
+			get { return mvcClass.FullName; }
 		}
 	}
 }

@@ -45,10 +45,10 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void FullyQualifiedName_ClassHasNamespaceAndName_ReturnsFullyQualifiedClassName()
+		public void FullName_ClassHasNamespaceAndName_ReturnsFullyQualifiedClassName()
 		{
 			CreateViewModel("ICSharpCode.Tests.MyClass");
-			string name = viewModel.FullyQualifiedName;
+			string name = viewModel.FullName;
 			
 			Assert.AreEqual("ICSharpCode.Tests.MyClass", name);
 		}

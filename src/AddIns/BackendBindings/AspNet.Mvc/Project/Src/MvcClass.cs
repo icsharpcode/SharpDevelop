@@ -15,7 +15,7 @@ namespace ICSharpCode.AspNet.Mvc
 			this.c = c;
 		}
 		
-		public string FullyQualifiedName {
+		public string FullName {
 			get { return c.FullyQualifiedName; }
 		}
 		
@@ -25,6 +25,19 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public string Namespace {
 			get { return c.Namespace; }
+		}
+		
+		public string BaseClassFullName {
+			get { return GetBaseClassFullName(); }
+		}
+		
+		string GetBaseClassFullName()
+		{
+			IClass baseClass = c.BaseClass;
+			if (baseClass != null) {
+				return baseClass.FullyQualifiedName;
+			}
+			return String.Empty;
 		}
 	}
 }

@@ -17,9 +17,14 @@ namespace AspNet.Mvc.Tests.Helpers
 			return FakeMvcProjectContent;
 		}
 		
-		public void AddModelClassToProjectContent(string fullyQualifiedClassName)
+		public FakeMvcClass AddModelClassToProjectContent(string fullyQualifiedClassName)
 		{
-			FakeMvcProjectContent.AddFakeClass(fullyQualifiedClassName);
+			return FakeMvcProjectContent.AddFakeClass(fullyQualifiedClassName);
+		}
+		
+		public FakeMvcClass AddModelClassWithBaseClassToProjectContent(string baseClassName, string className)
+		{
+			return FakeMvcProjectContent.AddFakeClassWithBaseClass(baseClassName, className);
 		}
 	}
 }
