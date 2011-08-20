@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.ComponentModel.Design;
+using System.Runtime.InteropServices;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -27,23 +28,29 @@ namespace ICSharpCode.FormsDesigner
 		}
 	}
 	
+	[Serializable]
+	public class LoadedEventArgsProxy : EventArgs
+	{
+		public bool HasSucceeded { get; set; }
+	}
+	
 	public class LoadedEventHandlerProxy : MarshalByRefObject
 	{
-		LoadedEventHandler underlyingHandler;
-		LoadedEventHandler proxyHandler;
+		EventHandler<LoadedEventArgsProxy> underlyingHandler;
+		EventHandler<LoadedEventArgsProxy> proxyHandler;
 
-		public LoadedEventHandlerProxy(LoadedEventHandler underlyingHandler)
+		public LoadedEventHandlerProxy(EventHandler<LoadedEventArgsProxy> underlyingHandler)
 		{
 			this.underlyingHandler = underlyingHandler;
 			this.proxyHandler = OnEvent;
 		}
 		
-		void OnEvent(object sender, LoadedEventArgs e)
+		void OnEvent(object sender, LoadedEventArgsProxy e)
 		{
 			underlyingHandler(sender, e);
 		}
 
-		public static implicit operator LoadedEventHandler(LoadedEventHandlerProxy proxy)
+		public static implicit operator EventHandler<LoadedEventArgsProxy>(LoadedEventHandlerProxy proxy)
 		{
 			return proxy.proxyHandler;
 		}

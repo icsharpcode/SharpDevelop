@@ -5,6 +5,7 @@ using System;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
+	[Serializable]
 	public struct AssemblyInfo : IEquatable<AssemblyInfo>
 	{
 		public static readonly AssemblyInfo Empty = new AssemblyInfo("", "", false);

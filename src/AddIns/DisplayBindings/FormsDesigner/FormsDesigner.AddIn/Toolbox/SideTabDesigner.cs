@@ -49,8 +49,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 					toolboxItem.TypeName    = component.FullName;
 					toolboxItem.Bitmap      = toolbox.ComponentLibraryLoader.GetIcon(component);
 					toolboxItem.DisplayName = component.Name;
-					Assembly asm = component.LoadAssembly();
-					toolboxItem.AssemblyName = asm.GetName();
+					toolboxItem.AssemblyName = toolbox.ComponentLibraryLoader.GetAssemblyName(component);
 					
 					this.Items.Add(new SideTabItemDesigner(toolbox, toolboxItem));
 				}

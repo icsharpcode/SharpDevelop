@@ -5,12 +5,14 @@ using System.AddIn.Contract;
 using System.AddIn.Pipeline;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
+using ICSharpCode.FormsDesigner.Gui;
 using ICSharpCode.FormsDesigner.Services;
 
 namespace ICSharpCode.FormsDesigner
@@ -23,6 +25,8 @@ namespace ICSharpCode.FormsDesigner
 		DesignSurface designSurface;
 		ServiceContainer container;
 		DesignerLoader loader;
+		
+		IFormsDesignerLoggingService logger;
 		
 		public string DesignSurfaceName {
 			get {
@@ -77,7 +81,8 @@ namespace ICSharpCode.FormsDesigner
 		void Initialize(FormsDesignerAppDomainCreationProperties properties)
 		{
 			this.container = new DefaultServiceContainer();
-			container.AddService(typeof(IFormsDesignerLoggingService), properties.Logger);
+			container.AddService(typeof(FormsDesignerAppDomainHost), this);
+			container.AddService(typeof(IFormsDesignerLoggingService), logger = properties.Logger);
 			container.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
 			container.AddService(typeof(ITypeResolutionService), new TypeResolutionService(properties.FileName, container, properties.TypeLocator));
 			container.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService(properties.GacWrapper, container));
@@ -104,14 +109,15 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		public event LoadedEventHandler DesignSurfaceLoaded;
+		public event EventHandler<LoadedEventArgsProxy> DesignSurfaceLoaded;
 		
 		protected virtual void OnDesignSurfaceLoaded(LoadedEventArgs e)
 		{
 			if (DesignSurfaceLoaded != null) {
-				DesignSurfaceLoaded(this, e);
+				DesignSurfaceLoaded(this, new LoadedEventArgsProxy { HasSucceeded = e.HasSucceeded });
 			}
 		}
+		
 		
 		public event EventHandler DesignSurfaceFlushed;
 		
@@ -350,6 +356,43 @@ namespace ICSharpCode.FormsDesigner
 		public void AddService(Type type, object service)
 		{
 			Services.AddService(type, service);
+		}
+		
+		public Bitmap LoadComponentIcon(ToolComponent component)
+		{
+			Assembly asm = component.LoadAssembly();
+			Type type = asm.GetType(component.FullName);
+			Bitmap b = null;
+			if (type != null) {
+				object[] attributes = type.GetCustomAttributes(false);
+				foreach (object attr in attributes) {
+					if (attr is ToolboxBitmapAttribute) {
+						ToolboxBitmapAttribute toolboxBitmapAttribute = (ToolboxBitmapAttribute)attr;
+						b = new Bitmap(toolboxBitmapAttribute.GetImage(type));
+						b.MakeTransparent();
+						break;
+					}
+				}
+			}
+			if (b == null) {
+				try {
+					Stream imageStream = asm.GetManifestResourceStream(component.FullName + ".bmp");
+					if (imageStream != null) {
+						b = new Bitmap(Image.FromStream(imageStream));
+						b.MakeTransparent();
+					}
+				} catch (Exception e) {
+					logger.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);
+				}
+			}
+			
+			// TODO: Maybe default icon needed ??!?!
+			return b;
+		}
+		
+		public AssemblyName GetAssemblyName(ToolComponent component)
+		{
+			return component.LoadAssembly().GetName();
 		}
 	}
 	

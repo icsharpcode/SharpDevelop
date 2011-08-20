@@ -225,11 +225,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		IServiceProvider provider;
 		IFormsDesignerLoggingService logger;
+		FormsDesignerAppDomainHost appDomainHost;
 		
 		public ComponentLibraryLoader(IServiceProvider provider)
 		{
 			this.provider = provider;
 			logger = (IFormsDesignerLoggingService)provider.GetService(typeof(IFormsDesignerLoggingService));
+			appDomainHost = (FormsDesignerAppDomainHost)provider.GetService(typeof(FormsDesignerAppDomainHost));
 		}
 		
 		public ArrayList Categories {
@@ -351,34 +353,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		public Bitmap GetIcon(ToolComponent component)
 		{
-			Assembly asm = component.LoadAssembly();
-			Type type = asm.GetType(component.FullName);
-			Bitmap b = null;
-			if (type != null) {
-				object[] attributes = type.GetCustomAttributes(false);
-				foreach (object attr in attributes) {
-					if (attr is ToolboxBitmapAttribute) {
-						ToolboxBitmapAttribute toolboxBitmapAttribute = (ToolboxBitmapAttribute)attr;
-						b = new Bitmap(toolboxBitmapAttribute.GetImage(type));
-						b.MakeTransparent();
-						break;
-					}
-				}
-			}
-			if (b == null) {
-				try {
-					Stream imageStream = asm.GetManifestResourceStream(component.FullName + ".bmp");
-					if (imageStream != null) {
-						b = new Bitmap(Image.FromStream(imageStream));
-						b.MakeTransparent();
-					}
-				} catch (Exception e) {
-					logger.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);
-				}
-			}
-			
-			// TODO: Maybe default icon needed ??!?!
-			return b;
+			return appDomainHost.LoadComponentIcon(component);
 		}
 		
 		public ToolComponent GetToolComponent(string assemblyName)
@@ -454,6 +429,11 @@ namespace ICSharpCode.FormsDesigner.Gui
 				}
 			}
 			return true;
+		}
+		
+		public AssemblyName GetAssemblyName(ToolComponent component)
+		{
+			return appDomainHost.GetAssemblyName(component);
 		}
 	}
 }

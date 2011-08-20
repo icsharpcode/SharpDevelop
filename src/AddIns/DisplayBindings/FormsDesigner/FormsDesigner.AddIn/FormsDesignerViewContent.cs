@@ -190,9 +190,9 @@ namespace ICSharpCode.FormsDesigner
 					throw new InvalidOperationException("Designer loading a source code file while DesignerLoader is loading and the view is not in a master load operation. This must not happen.");
 				}
 				
-				if (appDomainHost.DesignSurfaceName != null) {
-					this.UnloadDesigner();
-				}
+//				if (appDomainHost.DesignSurfaceName != null) {
+//					this.UnloadDesigner();
+//				}
 				
 				this.inMasterLoadOperation = true;
 				
@@ -567,7 +567,7 @@ namespace ICSharpCode.FormsDesigner
 		bool reloadPending;
 		bool unloading;
 		
-		void DesignerLoaded(object sender, LoadedEventArgs e)
+		void DesignerLoaded(object sender, LoadedEventArgsProxy e)
 		{
 			// This method is called when the designer has loaded.
 			LoggingService.Debug("Forms designer: DesignerLoader loaded, HasSucceeded=" + e.HasSucceeded.ToString());
@@ -977,12 +977,6 @@ namespace ICSharpCode.FormsDesigner
 		}
 		
 		#endregion
-		
-		public IDesignerGenerator Generator {
-			get {
-				return generator;
-			}
-		}
 		
 		SharpDevelopDesignerOptions options;
 		
