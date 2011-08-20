@@ -49,6 +49,16 @@ namespace AspNet.Mvc.Tests
 			return GetModelClasses().Count;
 		}
 		
+		void UseVisualBasicProject()
+		{
+			fakeProject.SetVisualBasicAsTemplateLanguage();
+		}
+		
+		void UseCSharpProject()
+		{
+			fakeProject.SetCSharpAsTemplateLanguage();
+		}
+		
 		[Test]
 		public void GetModelClasses_OneModelClassInProject_ReturnModelClassWithExpectedName()
 		{
@@ -98,6 +108,39 @@ namespace AspNet.Mvc.Tests
 			int count = GetModelClassCount();
 			
 			Assert.AreEqual(0, count);
+		}
+		
+		[Test]
+		public void GetModelClasses_VisualBasicProjectAndMyApplicationClassInProject_ClassNotReturnedInModelClasses()
+		{
+			CreateLocator();
+			UseVisualBasicProject();
+			AddModelClass("VbApp.My.MyApplication");
+			int count = GetModelClassCount();
+			
+			Assert.AreEqual(0, count);	
+		}
+		
+		[Test]
+		public void GetModelClasses_VisualBasicProjectAndMySettingsClassInProject_ClassNotReturnedInModelClasses()
+		{
+			CreateLocator();
+			UseVisualBasicProject();
+			AddModelClass("TestVisualBasicApp.My.MySettings");
+			int count = GetModelClassCount();
+			
+			Assert.AreEqual(0, count);	
+		}
+		
+		[Test]
+		public void GetModelClasses_CSharpProjectAndMyApplicationClassInProject_ClassIsReturnedInModelClasses()
+		{
+			CreateLocator();
+			UseCSharpProject();
+			AddModelClass("TestApp.My.MySettings");
+			string modelClassName = GetFirstModelClassName();
+				
+			Assert.AreEqual("TestApp.My.MySettings", modelClassName);
 		}
 	}
 }

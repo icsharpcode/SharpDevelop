@@ -23,7 +23,7 @@ namespace ICSharpCode.AspNet.Mvc
 		public IEnumerable<IMvcClass> GetModelClasses(IMvcProject project)
 		{
 			foreach (IMvcClass c in GetAllClassesInProject(project)) {
-				if (IsModelClass(c)) {
+				if (IsModelClass(c, project)) {
 					yield return c;
 				}
 			}
@@ -40,11 +40,13 @@ namespace ICSharpCode.AspNet.Mvc
 			return parserService.GetProjectContent(project);
 		}
 		
-		bool IsModelClass(IMvcClass c)
+		bool IsModelClass(IMvcClass c, IMvcProject project)
 		{
 			if (IsBaseClassMvcController(c)) {
 				return false;
 			} else if (IsHttpApplication(c)) {
+				return false;
+			} else if (IsVisualBasicClassFromMyNamespace(c, project)) {
 				return false;
 			}
 			return true;
@@ -58,6 +60,14 @@ namespace ICSharpCode.AspNet.Mvc
 		bool IsBaseClassMvcController(IMvcClass c)
 		{
 			return c.BaseClassFullName == "System.Web.Mvc.Controller";
+		}
+		
+		bool IsVisualBasicClassFromMyNamespace(IMvcClass c, IMvcProject project)
+		{
+			if (project.GetTemplateLanguage().IsVisualBasic()) {
+				return c.FullName.Contains(".My.");
+			}
+			return false;
 		}
 	}
 }
