@@ -18,10 +18,6 @@
 		<DataTemplate x:Key="ViewEngineTemplate">
     		<TextBlock Text="{Binding Name}"/>
     	</DataTemplate>
-		
-		<DataTemplate x:Key="ModelClassTemplate">
-    		<TextBlock Text="{Binding Name}"/>
-    	</DataTemplate>
 	</Window.Resources>
 	
 	<Grid>
@@ -90,7 +86,7 @@
 			IsEditable="True"
 			IsEnabled="{Binding Path=IsStronglyTypedView}"
 			ItemsSource="{Binding Path=ModelClasses}"
-			ItemTemplate="{StaticResource ModelClassTemplate}"
+			Text="{Binding Path=ModelClassName, UpdateSourceTrigger=PropertyChanged}"
 			SelectedItem="{Binding Path=SelectedModelClass}"/>
 		
 		<StackPanel

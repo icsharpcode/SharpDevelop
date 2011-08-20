@@ -20,6 +20,12 @@ namespace AspNet.Mvc.Tests
 			viewModel = new MvcModelClassViewModel(fakeClass);
 		}
 		
+		void CreateViewModel(string fullyQualifiedClassName)
+		{
+			fakeClass = new FakeMvcClass(fullyQualifiedClassName);
+			viewModel = new MvcModelClassViewModel(fakeClass);	
+		}
+		
 		[Test]
 		public void Name_ClassHasNamespaceAndName_ReturnsClassNameFollowedByNamespace()
 		{
@@ -36,6 +42,15 @@ namespace AspNet.Mvc.Tests
 			string text = viewModel.ToString();
 			
 			Assert.AreEqual("MyClass (ICSharpCode.Tests)", text);
+		}
+		
+		[Test]
+		public void FullyQualifiedName_ClassHasNamespaceAndName_ReturnsFullyQualifiedClassName()
+		{
+			CreateViewModel("ICSharpCode.Tests.MyClass");
+			string name = viewModel.FullyQualifiedName;
+			
+			Assert.AreEqual("ICSharpCode.Tests.MyClass", name);
 		}
 	}
 }

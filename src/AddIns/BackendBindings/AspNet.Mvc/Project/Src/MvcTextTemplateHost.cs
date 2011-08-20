@@ -9,8 +9,9 @@ namespace ICSharpCode.AspNet.Mvc
 	public class MvcTextTemplateHost : TextTemplatingHost, IMvcTextTemplateHost
 	{
 		string viewName = String.Empty;
-		MvcControllerName controllerName = new MvcControllerName();
+		string viewDataTypeName = String.Empty;
 		string @namespace = String.Empty;
+		MvcControllerName controllerName = new MvcControllerName();
 		
 		public MvcTextTemplateHost(
 			ITextTemplatingAppDomainFactory appDomainFactory,
@@ -44,6 +45,11 @@ namespace ICSharpCode.AspNet.Mvc
 				return value;
 			}
 			return String.Empty;
+		}
+		
+		public string ViewDataTypeName {
+			get { return viewDataTypeName; }
+			set { viewDataTypeName = UseEmptyStringIfNull(value); }
 		}
 		
 		public string ControllerName {

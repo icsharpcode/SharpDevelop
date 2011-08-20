@@ -11,6 +11,7 @@ namespace ICSharpCode.AspNet.Mvc
 		MvcTextTemplateLanguage TemplateLanguage { get; set; }
 		MvcTextTemplateType TemplateType { get; set; }
 		IMvcProject Project { get; set; }
+		string ModelClassName { get; set; }
 		
 		void GenerateFile(MvcViewFileName fileName);
 	}

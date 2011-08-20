@@ -38,6 +38,7 @@ namespace AspNet.Mvc.Tests.Helpers
 		public string Namespace { get; set; }
 		public bool AddActionMethods { get; set; }
 		public bool IsPartialView { get; set; }
+		public string ViewDataTypeName { get; set; }
 		
 		public CompilerErrorCollection Errors { get; set; }
 	}

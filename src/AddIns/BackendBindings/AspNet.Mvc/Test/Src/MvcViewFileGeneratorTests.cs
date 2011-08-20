@@ -215,5 +215,28 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(expectedOutputFileGenerated, outputFileGenerated);
 		}
+		
+		[Test]
+		public void GenerateFile_ModelClassNameIsSet_MvcTextTemplateHostHasViewDataTypeNameIsSetToModelClassName()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			SelectAspxTemplate();
+			generator.ModelClassName = "MyNamespace.MyModel";
+			GenerateFile();
+			
+			string viewDataTypeName = fakeHost.ViewDataTypeName;
+			
+			Assert.AreEqual("MyNamespace.MyModel", viewDataTypeName);
+		}
+		
+		[Test]
+		public void ModelClassName_DefaultValue_ReturnsEmptyString()
+		{
+			CreateGenerator();
+			string modelClassName = generator.ModelClassName;
+			
+			Assert.AreEqual(String.Empty, modelClassName);
+		}
 	}
 }

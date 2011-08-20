@@ -1,11 +1,12 @@
 ﻿<#@ template language="C#" HostSpecific="true" #>
 <#@ output extension=".cshtml" #>
 <#
-	MvcTextTemplateHost mvcHost = (MvcTextTemplateHost)Host;
+	mvcHost = (MvcTextTemplateHost)Host;
 #>
 <# if (mvcHost.IsPartialView) { #>
 
 <# } else { #>
+<#= GetModelDirective() #>
 
 <!DOCTYPE html>
 <html>
@@ -19,3 +20,15 @@
 	</body>
 </html>
 <# } #>
+<#+
+	MvcTextTemplateHost mvcHost;
+	
+	string GetModelDirective()
+	{
+		string viewDataTypeName = mvcHost.ViewDataTypeName;
+		if (!String.IsNullOrEmpty(viewDataTypeName)) {
+			return String.Format("@model {0}", viewDataTypeName);
+		}
+		return String.Empty;
+	}
+#>

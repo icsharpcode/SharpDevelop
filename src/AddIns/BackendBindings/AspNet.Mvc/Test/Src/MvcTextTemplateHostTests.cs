@@ -86,5 +86,15 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual("Home", controllerRootName);
 		}
+		
+		[Test]
+		public void ViewDataTypeName_SetToNull_ReturnsEmptyString()
+		{
+			CreateHost();
+			host.ViewDataTypeName = null;
+			string typeName = host.ViewDataTypeName;
+			
+			Assert.AreEqual(String.Empty, typeName);
+		}
 	}
 }

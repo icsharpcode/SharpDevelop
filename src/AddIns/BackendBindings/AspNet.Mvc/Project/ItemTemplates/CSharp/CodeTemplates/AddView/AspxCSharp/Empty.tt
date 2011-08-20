@@ -1,12 +1,12 @@
 ﻿<#@ template language="C#" HostSpecific="true" #>
 <#
-	MvcTextTemplateHost mvcHost = (MvcTextTemplateHost)Host;
+	mvcHost = (MvcTextTemplateHost)Host;
 #>
 <# if (mvcHost.IsPartialView) { #>
 <%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
 
 <# } else { #>
-<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
+<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
 
 <!DOCTYPE html>
 <html>
@@ -20,3 +20,15 @@
 	</body>
 </html>
 <# } #>
+<#+
+	MvcTextTemplateHost mvcHost;
+	
+	string GetViewPageType()
+	{
+		string viewDataTypeName = mvcHost.ViewDataTypeName;
+		if (!String.IsNullOrEmpty(viewDataTypeName)) {
+			return String.Format("<{0}>", viewDataTypeName);
+		}
+		return String.Empty;
+	}
+#>

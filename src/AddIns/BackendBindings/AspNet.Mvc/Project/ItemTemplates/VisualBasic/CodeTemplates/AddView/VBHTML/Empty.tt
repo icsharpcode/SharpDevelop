@@ -1,11 +1,12 @@
 ﻿<#@ template language="VB" HostSpecific="true" #>
 <#@ output extension=".vbhtml" #>
 <#
-	Dim mvcHost As MvcTextTemplateHost = DirectCast(Host, MvcTextTemplateHost)
+	mvcHost = DirectCast(Host, MvcTextTemplateHost)
 #>
 <# If mvcHost.IsPartialView Then #>
 
 <# Else #>
+<#= GetModelDirective() #>
 
 <!DOCTYPE html>
 <html>
@@ -19,3 +20,14 @@
 	</body>
 </html>
 <# End If #>
+<#+
+	Private mvcHost As MvcTextTemplateHost
+	
+	Function GetModelDirective() As String
+		Dim viewDataTypeName As String = mvcHost.ViewDataTypeName
+		If Not String.IsNullOrEmpty(viewDataTypeName) Then
+			Return String.Format("@ModelType {0}", viewDataTypeName)
+		End If
+		Return String.Empty
+	End Function
+#>

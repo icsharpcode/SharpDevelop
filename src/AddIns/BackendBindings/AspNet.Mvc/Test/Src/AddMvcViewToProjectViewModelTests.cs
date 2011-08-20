@@ -80,6 +80,11 @@ namespace AspNet.Mvc.Tests
 			fakeProject.AddModelClassToProject(ns, name);
 		}
 		
+		void AddModelClassToProject(string fullyQualifiedClassName)
+		{
+			fakeProject.AddModelClassToProject(fullyQualifiedClassName);
+		}
+		
 		[Test]
 		public void AddMvcViewCommand_ExecutedWhenViewNameSpecified_MvcViewIsGenerated()
 		{
@@ -434,6 +439,79 @@ namespace AspNet.Mvc.Tests
 			
 			bool contains = propertyChangedEvents.Contains("IsStronglyTypedView");
 			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void AddMvcView_ModelClassSelected_ModelClassNameSetInGenerator()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject.MyModel");
+			viewModel.IsStronglyTypedView = true;
+			viewModel.SelectedModelClass = viewModel.ModelClasses.First();
+			viewModel.AddMvcView();
+			
+			string modelClassName = fakeViewGenerator.ModelClassName;
+			
+			Assert.AreEqual("ICSharpCode.MyProject.MyModel", modelClassName);
+		}
+		
+		[Test]
+		public void AddMvcView_ModelClassSelectedThenIsStronglyTypedIsSetToFalse_ModelClassNameIsInGeneratorIsEmptyString()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject.MyModel");
+			viewModel.IsStronglyTypedView = true;
+			viewModel.SelectedModelClass = viewModel.ModelClasses.First();
+			viewModel.IsStronglyTypedView = false;
+			viewModel.AddMvcView();
+			
+			string modelClassName = fakeViewGenerator.ModelClassName;
+			
+			Assert.AreEqual(String.Empty, modelClassName);
+		}
+		
+		[Test]
+		public void AddMvcView_ModelClassNameTypedInByUser_ModelClassNameIsUsedInGenerator()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject.MyModel");
+			viewModel.IsStronglyTypedView = true;
+			viewModel.SelectedModelClass = null;
+			viewModel.ModelClassName = "MyNamespace.MyClass";
+			viewModel.AddMvcView();
+			
+			string modelClassName = fakeViewGenerator.ModelClassName;
+			
+			Assert.AreEqual("MyNamespace.MyClass", modelClassName);
+		}
+		
+		[Test]
+		public void ModelClassName_NewViewModelInstanceCreated_ReturnsEmptyStringByDefault()
+		{
+			CreateViewModel();
+			
+			string modelClassName = viewModel.ModelClassName;
+			
+			Assert.AreEqual(String.Empty, modelClassName);
+		}
+		
+		[Test]
+		public void AddMvcView_ModelClassNameTypedInByUserHasSpacesAtStartAndEnd_ModelClassNameWithoutSpacesIsUsedInGenerator()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject.MyModel");
+			viewModel.IsStronglyTypedView = true;
+			viewModel.SelectedModelClass = null;
+			viewModel.ModelClassName = "   MyNamespace.MyClass     ";
+			viewModel.AddMvcView();
+			
+			string modelClassName = fakeViewGenerator.ModelClassName;
+			
+			Assert.AreEqual("MyNamespace.MyClass", modelClassName);
 		}
 	}
 }

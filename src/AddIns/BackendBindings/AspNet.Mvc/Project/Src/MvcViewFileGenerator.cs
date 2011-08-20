@@ -23,9 +23,11 @@ namespace ICSharpCode.AspNet.Mvc
 			: base(hostFactory)
 		{
 			this.textTemplateRepository = textTemplateRepository;
+			ModelClassName = String.Empty;
 		}
 		
 		public MvcTextTemplateType TemplateType { get; set; }
+		public string ModelClassName { get; set; }
 		
 		public void GenerateFile(MvcViewFileName fileName)
 		{
@@ -35,8 +37,9 @@ namespace ICSharpCode.AspNet.Mvc
 		protected override void ConfigureHost(IMvcTextTemplateHost host, MvcFileName fileName)
 		{
 			var viewFileName = fileName as MvcViewFileName;
-			host.ViewName = viewFileName.ViewName;
 			host.IsPartialView = viewFileName.IsPartialView;
+			host.ViewDataTypeName = ModelClassName;
+			host.ViewName = viewFileName.ViewName;
 		}
 		
 		protected override string GetTextTemplateFileName()

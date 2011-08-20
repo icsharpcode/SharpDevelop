@@ -50,6 +50,12 @@ namespace AspNet.Mvc.Tests.Helpers
 			ModelClasses.Add(fakeClass);
 		}
 		
+		public void AddModelClassToProject(string fullyQualifiedName)
+		{
+			var fakeClass = new FakeMvcClass(fullyQualifiedName);
+			ModelClasses.Add(fakeClass);
+		}
+		
 		public int GetModelClassesCallCount;
 		
 		public IEnumerable<IMvcClass> GetModelClasses()

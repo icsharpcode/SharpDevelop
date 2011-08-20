@@ -34,6 +34,7 @@ namespace ICSharpCode.AspNet.Mvc
 			this.selectedViewFolder = selectedViewFolder;
 			this.viewGenerator = viewGenerator;
 			this.viewFileName.Folder = selectedViewFolder.Path;
+			this.ModelClassName = String.Empty;
 			
 			CreateModelClassesForSelectedFolder();
 			CreateCommands();
@@ -128,9 +129,21 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void ConfigureMvcViewGenerator()
 		{
+			viewGenerator.ModelClassName = GetModelClassName();
 			viewGenerator.Project = selectedViewFolder.Project;
 			viewGenerator.TemplateLanguage = GetTemplateLanguage();
 			viewGenerator.TemplateType = selectedViewEngine.TemplateType;
+		}
+		
+		string GetModelClassName()
+		{
+			if (IsStronglyTypedView) {
+				if (SelectedModelClass != null) {
+					return SelectedModelClass.FullyQualifiedName;
+				}
+				return ModelClassName.Trim();
+			}
+			return String.Empty;
 		}
 		
 		MvcTextTemplateLanguage GetTemplateLanguage()
@@ -165,7 +178,8 @@ namespace ICSharpCode.AspNet.Mvc
 			get { return modelClassesForSelectedFolder.ModelClasses; }
 		}
 		
-		public string SelectedModelClass { get; set; }
+		public MvcModelClassViewModel SelectedModelClass { get; set; }
+		public string ModelClassName { get; set; }
 	}
 }
 

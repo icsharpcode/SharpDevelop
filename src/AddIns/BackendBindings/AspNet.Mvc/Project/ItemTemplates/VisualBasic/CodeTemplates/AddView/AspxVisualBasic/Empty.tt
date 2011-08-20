@@ -1,12 +1,12 @@
 ﻿<#@ template language="VB" HostSpecific="true" #>
 <#
-	Dim mvcHost As MvcTextTemplateHost = DirectCast(Host, MvcTextTemplateHost)
+	mvcHost = DirectCast(Host, MvcTextTemplateHost)
 #>
 <# If mvcHost.IsPartialView Then #>
 <%@ Control Language="VB" Inherits="System.Web.Mvc.ViewUserControl" %>
 
 <# Else #>
-<%@ Page Language="VB" Inherits="System.Web.Mvc.ViewPage" %>
+<%@ Page Language="VB" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
 
 <!DOCTYPE html>
 <html>
@@ -20,3 +20,14 @@
 	</body>
 </html>
 <# End If #>
+<#+
+	Private mvcHost As MvcTextTemplateHost
+	
+	Function GetViewPageType() As String
+		Dim viewDataTypeName As String = mvcHost.ViewDataTypeName
+		If Not String.IsNullOrEmpty(viewDataTypeName) Then
+			Return String.Format("(Of {0})", viewDataTypeName)
+		End If
+		Return String.Empty
+	End Function
+#>
