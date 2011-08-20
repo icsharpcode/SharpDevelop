@@ -107,13 +107,11 @@
     <Compile Include="Services\ProjectResourceInfo.cs" />
     <Compile Include="Services\ProjectResourceService.cs" />
     <Compile Include="Services\ResourceStore.cs" />
-    <Compile Include="Services\UIService.cs" />
-    <Compile Include="Toolbox\AddComponentsDialog.cs">
-      <SubType>Form</SubType>
+    <Compile Include="Toolbox\AddComponentsDialog.cs" />
+    <Compile Include="Toolbox\AddComponentsDialog.Designer.cs">
+      <DependentUpon>AddComponentsDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Toolbox\ConfigureSideBarDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Toolbox\ConfigureSideBarDialog.cs" />
     <Compile Include="Toolbox\ConfigureSideBarDialog.Designer.cs">
       <DependentUpon>ConfigureSideBarDialog.cs</DependentUpon>
     </Compile>
@@ -181,6 +179,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="OptionPanels\LocalizationModelOptionsPanel.resx">
       <DependentUpon>LocalizationModelOptionsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Toolbox\AddComponentsDialog.resx">
+      <DependentUpon>AddComponentsDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Toolbox\ConfigureSideBarDialog.resx">
       <DependentUpon>ConfigureSideBarDialog.cs</DependentUpon>

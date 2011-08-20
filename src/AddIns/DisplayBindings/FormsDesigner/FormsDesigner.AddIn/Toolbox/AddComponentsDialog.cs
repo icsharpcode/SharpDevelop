@@ -13,14 +13,12 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
-	public class AddComponentsDialog : BaseSharpDevelopForm
+	public partial class AddComponentsDialog : Form
 	{
 		ArrayList selectedComponents;
-		ListView componentListView;
 		
 		public ArrayList SelectedComponents {
 			get {
@@ -30,18 +28,10 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		public AddComponentsDialog()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormsDesigner.Resources.AddSidebarComponentsDialog.xfrm"));
-			
-			componentListView = (ListView)ControlDictionary["componentListView"];
+			InitializeComponent();
 			
 			Icon = null;
 			PrintGACCache();
-			
-			ControlDictionary["browseButton"].Click += new System.EventHandler(this.browseButtonClick);
-			((ListView)ControlDictionary["gacListView"]).SelectedIndexChanged += new System.EventHandler(this.gacListViewSelectedIndexChanged);
-//			((TextBox)ControlDictionary["fileNameTextBox"]).TextChanged += new System.EventHandler(this.fileNameTextBoxTextChanged);
-			ControlDictionary["okButton"].Click += new System.EventHandler(this.buttonClick);
-			ControlDictionary["loadButton"].Click += new System.EventHandler(this.loadButtonClick);
 		}
 		
 		void PrintGACCache()
@@ -49,7 +39,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			foreach (DomAssemblyName asm in GacInterop.GetAssemblyList()) {
 				ListViewItem item = new ListViewItem(new string[] {asm.ShortName, asm.Version});
 				item.Tag = asm.FullName;
-				((ListView)ControlDictionary["gacListView"]).Items.Add(item);
+				gacListView.Items.Add(item);
 			}
 		}
 		
@@ -143,8 +133,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void gacListViewSelectedIndexChanged(object sender, System.EventArgs e)
 		{
-			if (((ListView)ControlDictionary["gacListView"]).SelectedItems != null && ((ListView)ControlDictionary["gacListView"]).SelectedItems.Count == 1) {
-				string assemblyName = ((ListView)ControlDictionary["gacListView"]).SelectedItems[0].Tag.ToString();
+			if (gacListView.SelectedItems != null && gacListView.SelectedItems.Count == 1) {
+				string assemblyName = gacListView.SelectedItems[0].Tag.ToString();
 				try {
 					Assembly asm = Assembly.Load(assemblyName);
 					BeginFillComponentsList();
@@ -176,7 +166,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		{
 			BeginFillComponentsList();
 			try {
-				string assemblyFileNames = ControlDictionary["fileNameTextBox"].Text;
+				string assemblyFileNames = fileNameTextBox.Text;
 				Assembly lastAssembly = null;
 				foreach (string assemblyFileName in assemblyFileNames.Split(';')) {
 					if (!System.IO.File.Exists(assemblyFileName)) {
@@ -218,7 +208,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 				fdiag.CheckFileExists = true;
 				
 				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					ControlDictionary["fileNameTextBox"].Text = string.Join(";", fdiag.FileNames);
+					fileNameTextBox.Text = string.Join(";", fdiag.FileNames);
 				}
 			}
 		}

@@ -7,13 +7,13 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-using ICSharpCode.Core;
-
 namespace ICSharpCode.FormsDesigner.Services
 {
 	public class UIService : MarshalByRefObject, IUIService
 	{
 		IFormsDesigner designer;
+		IServiceProvider provider;
+		IMessageService messenger;
 		IDictionary styles = new Hashtable();
 		
 		public IDictionary Styles {
@@ -22,9 +22,11 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 		}
 		
-		public UIService(IFormsDesigner designer)
+		public UIService(IFormsDesigner designer, IServiceProvider provider)
 		{
 			this.designer = designer;
+			this.provider = provider;
+			messenger = (IMessageService)provider.GetService(typeof(IMessageService));
 			styles["DialogFont"]     = Control.DefaultFont;
 			styles["HighlightColor"] = Color.LightYellow;
 		}
@@ -52,6 +54,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			return new Win32Window { Handle = designer.GetDialogOwnerWindowHandle() };
 		}
 		
+		[Serializable]
 		sealed class Win32Window : IWin32Window
 		{
 			public IntPtr Handle { get; set; }
@@ -66,17 +69,17 @@ namespace ICSharpCode.FormsDesigner.Services
 		#region Show error functions
 		public void ShowError(Exception ex)
 		{
-			MessageService.ShowError(ex.ToString());
+			messenger.ShowError(ex.ToString());
 		}
 		
 		public void ShowError(string message)
 		{
-			MessageService.ShowError(message);
+			messenger.ShowError(message);
 		}
 		
 		public void ShowError(Exception ex, string message)
 		{
-			MessageService.ShowError(message + Environment.NewLine + ex.ToString());
+			messenger.ShowError(message + Environment.NewLine + ex.ToString());
 		}
 		#endregion
 		
