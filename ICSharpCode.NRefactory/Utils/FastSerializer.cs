@@ -157,6 +157,7 @@ namespace ICSharpCode.NRefactory.Utils
 					string assemblyName = null;
 					string typeName = null;
 					if (type.HasElementType) {
+						Debug.Assert(type.IsArray);
 						MarkType(type.GetElementType());
 					} else if (type.IsGenericType && !type.IsGenericTypeDefinition) {
 						MarkType(type.GetGenericTypeDefinition());
@@ -200,6 +201,8 @@ namespace ICSharpCode.NRefactory.Utils
 				for (int i = 0; i < types.Count; i++) {
 					Type type = types[i].Type;
 					if (type.IsGenericTypeDefinition || type.HasElementType)
+						continue;
+					if (typeof(ISerializable).IsAssignableFrom(type))
 						continue;
 					foreach (FieldInfo field in GetSerializableFields(type)) {
 						MarkType(field.FieldType);

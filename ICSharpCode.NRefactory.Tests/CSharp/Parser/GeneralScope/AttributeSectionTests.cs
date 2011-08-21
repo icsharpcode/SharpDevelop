@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 	public class AttributeSectionTests
 	{
 		[Test]
-		public void GlobalAttributeCSharp()
+		public void AttributesUsingNamespaceAlias()
 		{
 			string program = @"[global::Microsoft.VisualBasic.CompilerServices.DesignerGenerated()]
 [someprefix::DesignerGenerated()]
@@ -45,7 +45,7 @@ public class Form1 {
 		}
 		
 		[Test]
-		public void AssemblyAttributeCSharp()
+		public void AssemblyAttribute()
 		{
 			string program = @"[assembly: System.Attribute()]";
 			AttributeSection decl = ParseUtilCSharp.ParseGlobal<AttributeSection>(program);
@@ -53,30 +53,8 @@ public class Form1 {
 			Assert.AreEqual("assembly", decl.AttributeTarget);
 		}
 		
-		[Test, Ignore("assembly/module attributes are broken")]
-		public void AssemblyAttributeCSharpWithNamedArguments()
-		{
-			string program = @"[assembly: Foo(1, namedArg: 2, prop = 3)]";
-			AttributeSection decl = ParseUtilCSharp.ParseGlobal<AttributeSection>(program);
-			Assert.AreEqual("assembly", decl.AttributeTarget);
-			var a = decl.Attributes.Single();
-			Assert.AreEqual("Foo", a.Type);
-			Assert.AreEqual(3, a.Arguments.Count());
-			
-			Assert.IsTrue(a.Arguments.ElementAt(0).IsMatch(new PrimitiveExpression(1)));
-			Assert.IsTrue(a.Arguments.ElementAt(1).IsMatch(new NamedArgumentExpression {
-			                                               	Identifier = "namedArg",
-			                                               	Expression = new PrimitiveExpression(2)
-			                                               }));
-			Assert.IsTrue(a.Arguments.ElementAt(2).IsMatch(new AssignmentExpression {
-			                                               	Left = new IdentifierExpression("prop"),
-			                                               	Operator = AssignmentOperatorType.Assign,
-			                                               	Right = new PrimitiveExpression(3)
-			                                               }));
-		}
-		
-		[Test, Ignore("assembly/module attributes are broken")]
-		public void ModuleAttributeCSharp()
+		[Test]
+		public void ModuleAttribute()
 		{
 			string program = @"[module: System.Attribute()]";
 			AttributeSection decl = ParseUtilCSharp.ParseGlobal<AttributeSection>(program);
@@ -85,13 +63,29 @@ public class Form1 {
 		}
 		
 		[Test]
-		public void TypeAttributeCSharp()
+		public void TypeAttribute()
 		{
 			string program = @"[type: System.Attribute()] class Test {}";
 			TypeDeclaration type = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
 			AttributeSection decl = type.Attributes.Single();
 			Assert.AreEqual(new AstLocation(1, 1), decl.StartLocation);
 			Assert.AreEqual("type", decl.AttributeTarget);
+		}
+		
+		[Test]
+		public void TwoAttributesInSameSection()
+		{
+			ParseUtilCSharp.AssertGlobal(
+				@"[A, B] class Test {}",
+				new TypeDeclaration {
+					Name = "Test",
+					Attributes = {
+						new AttributeSection {
+							Attributes = {
+								new Attribute { Type = new SimpleType("A") },
+								new Attribute { Type = new SimpleType("B") }
+							}
+						}}});
 		}
 		
 		[Test, Ignore("Parser doesn't support attributes on type parameters")]
