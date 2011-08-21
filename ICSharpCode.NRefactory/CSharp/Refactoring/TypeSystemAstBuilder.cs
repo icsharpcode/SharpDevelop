@@ -8,6 +8,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -17,6 +18,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	public class TypeSystemAstBuilder
 	{
 		readonly CSharpResolver resolver;
+		readonly ITypeResolveContext context;
 		
 		/// <summary>
 		/// Creates a new TypeSystemAstBuilder.
@@ -24,11 +26,73 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <param name="resolver">
 		/// A resolver initialized for the position where the type will be inserted.
 		/// </param>
-		public TypeSystemAstBuilder(CSharpResolver resolver = null)
+		public TypeSystemAstBuilder(CSharpResolver resolver)
 		{
+			if (resolver == null)
+				throw new ArgumentNullException("resolver");
 			this.resolver = resolver;
+			this.context = resolver.Context;
+			InitProperties();
 		}
 		
+		public TypeSystemAstBuilder(ITypeResolveContext context)
+		{
+			if (context == null)
+				throw new ArgumentNullException("context");
+			this.context = context;
+			InitProperties();
+		}
+		
+		#region Properties
+		void InitProperties()
+		{
+			this.ShowAccessibility = true;
+			this.ShowModifiers = true;
+			this.ShowBaseTypes = true;
+			this.ShowTypeParameters = true;
+			this.ShowTypeParameterConstraints = true;
+			this.ShowParameterNames = true;
+			this.ShowConstantValues = true;
+		}
+		
+		/// <summary>
+		/// Controls the accessibility modifiers are shown.
+		/// </summary>
+		public bool ShowAccessibility { get; set; }
+		
+		/// <summary>
+		/// Controls the non-accessibility modifiers are shown.
+		/// </summary>
+		public bool ShowModifiers { get; set; }
+		
+		/// <summary>
+		/// Controls whether base type references are shown.
+		/// </summary>
+		public bool ShowBaseTypes { get; set; }
+		
+		/// <summary>
+		/// Controls whether type parameter declarations are shown.
+		/// </summary>
+		public bool ShowTypeParameters { get; set; }
+		
+		/// <summary>
+		/// Controls whether contraints on type parameter declarations are shown.
+		/// Has no effect if ShowTypeParameters is false.
+		/// </summary>
+		public bool ShowTypeParameterConstraints { get; set; }
+		
+		/// <summary>
+		/// Controls whether the names of parameters are shown.
+		/// </summary>
+		public bool ShowParameterNames { get; set; }
+		
+		/// <summary>
+		/// Controls whether to show default values of optional parameters, and the values of constant fields.
+		/// </summary>
+		public bool ShowConstantValues { get; set; }
+		#endregion
+		
+		#region Convert Type
 		public AstType ConvertType(IType type)
 		{
 			if (type == null)
@@ -49,7 +113,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (pt.Name == "Nullable" && pt.Namespace == "System" && pt.TypeParameterCount == 1) {
 					return ConvertType(pt.TypeArguments[0]).MakeNullableType();
 				}
-				return ConvertTypeDefinition(pt.GetDefinition(), pt.TypeArguments);
+				return ConvertTypeHelper(pt.GetDefinition(), pt.TypeArguments);
 			}
 			ITypeDefinition typeDef = type as ITypeDefinition;
 			if (typeDef != null) {
@@ -59,15 +123,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					for (int i = 0; i < typeArguments.Length; i++) {
 						typeArguments[i] = SharedTypes.UnboundTypeArgument;
 					}
-					return ConvertTypeDefinition(typeDef, typeArguments);
+					return ConvertTypeHelper(typeDef, typeArguments);
 				} else {
-					return ConvertTypeDefinition(typeDef, EmptyList<IType>.Instance);
+					return ConvertTypeHelper(typeDef, EmptyList<IType>.Instance);
 				}
 			}
 			return new SimpleType(type.Name);
 		}
 		
-		AstType ConvertTypeDefinition(ITypeDefinition typeDef, IList<IType> typeArguments)
+		AstType ConvertTypeHelper(ITypeDefinition typeDef, IList<IType> typeArguments)
 		{
 			Debug.Assert(typeArguments.Count >= typeDef.TypeParameterCount);
 			switch (ReflectionHelper.GetTypeCode(typeDef)) {
@@ -144,7 +208,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			MemberType result = new MemberType();
 			if (typeDef.DeclaringTypeDefinition != null) {
 				// Handle nested types
-				result.Target = ConvertTypeDefinition(typeDef.DeclaringTypeDefinition, typeArguments);
+				result.Target = ConvertTypeHelper(typeDef.DeclaringTypeDefinition, typeArguments);
 			} else {
 				// Handle top-level types
 				if (string.IsNullOrEmpty(typeDef.Namespace)) {
@@ -238,5 +302,374 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			NamespaceResolveResult nrr = resolver.ResolveSimpleName(firstNamespacePart, EmptyList<IType>.Instance) as NamespaceResolveResult;
 			return nrr != null && !nrr.IsError && nrr.NamespaceName == firstNamespacePart;
 		}
+		#endregion
+		
+		#region Convert Constant Value
+		public Expression ConvertConstantValue(IConstantValue constantValue)
+		{
+			if (constantValue == null)
+				throw new ArgumentNullException("constantValue");
+			IType type = constantValue.GetValueType(context);
+			object val = constantValue.GetValue(context);
+			if (val == null) {
+				if (type.IsReferenceType(context) == true)
+					return new NullReferenceExpression();
+				else
+					return new DefaultValueExpression(ConvertType(type));
+			} else if (type.Kind == TypeKind.Enum) {
+				throw new NotImplementedException();
+			} else {
+				return new PrimitiveExpression(val);
+			}
+		}
+		#endregion
+		
+		#region Convert Parameter
+		public ParameterDeclaration ConvertParameter(IParameter parameter)
+		{
+			if (parameter == null)
+				throw new ArgumentNullException("parameter");
+			ParameterDeclaration decl = new ParameterDeclaration();
+			if (parameter.IsRef) {
+				decl.ParameterModifier = ParameterModifier.Ref;
+			} else if (parameter.IsOut) {
+				decl.ParameterModifier = ParameterModifier.Out;
+			} else if (parameter.IsParams) {
+				decl.ParameterModifier = ParameterModifier.Params;
+			}
+			decl.Type = ConvertType(parameter.Type.Resolve(context));
+			if (this.ShowParameterNames) {
+				decl.Name = parameter.Name;
+			}
+			if (parameter.IsOptional && this.ShowConstantValues) {
+				decl.DefaultExpression = ConvertConstantValue(parameter.DefaultValue);
+			}
+			return decl;
+		}
+		#endregion
+		
+		#region Convert Entity
+		public AstNode ConvertEntity(IEntity entity)
+		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			switch (entity.EntityType) {
+				case EntityType.TypeDefinition:
+					return ConvertTypeDefinition((ITypeDefinition)entity);
+				case EntityType.Field:
+					return ConvertField((IField)entity);
+				case EntityType.Property:
+					return ConvertProperty((IProperty)entity);
+				case EntityType.Indexer:
+					return ConvertIndexer((IProperty)entity);
+				case EntityType.Event:
+					return ConvertEvent((IEvent)entity);
+				case EntityType.Method:
+					return ConvertMethod((IMethod)entity);
+				case EntityType.Operator:
+					return ConvertOperator((IMethod)entity);
+				case EntityType.Constructor:
+					return ConvertConstructor((IMethod)entity);
+				case EntityType.Destructor:
+					return ConvertDestructor((IMethod)entity);
+				default:
+					throw new ArgumentException("Invalid value for EntityType: " + entity.EntityType);
+			}
+		}
+		
+		AttributedNode ConvertTypeDefinition(ITypeDefinition typeDefinition)
+		{
+			Modifiers modifiers = ModifierFromAccessibility(typeDefinition.Accessibility);
+			if (this.ShowModifiers) {
+				if (typeDefinition.IsStatic) {
+					modifiers |= Modifiers.Static;
+				} else if (typeDefinition.IsAbstract) {
+					modifiers |= Modifiers.Abstract;
+				} else if (typeDefinition.IsSealed) {
+					modifiers |= Modifiers.Sealed;
+				}
+				if (typeDefinition.IsShadowing) {
+					modifiers |= Modifiers.New;
+				}
+			}
+			
+			ClassType classType;
+			switch (typeDefinition.Kind) {
+				case TypeKind.Struct:
+					classType = ClassType.Struct;
+					break;
+				case TypeKind.Enum:
+					classType = ClassType.Enum;
+					break;
+				case TypeKind.Interface:
+					classType = ClassType.Interface;
+					break;
+				case TypeKind.Delegate:
+					IMethod invoke = typeDefinition.GetDelegateInvokeMethod();
+					if (invoke != null)
+						return ConvertDelegate(invoke, modifiers);
+					else
+						goto default;
+				default:
+					classType = ClassType.Class;
+					break;
+			}
+			
+			TypeDeclaration decl = new TypeDeclaration();
+			decl.Modifiers = modifiers;
+			decl.ClassType = classType;
+			decl.Name = typeDefinition.Name;
+			
+			if (this.ShowTypeParameters) {
+				foreach (ITypeParameter tp in typeDefinition.TypeParameters) {
+					decl.TypeParameters.Add(ConvertTypeParameter(tp));
+				}
+			}
+			
+			if (this.ShowBaseTypes) {
+				foreach (ITypeReference baseType in typeDefinition.BaseTypes) {
+					decl.BaseTypes.Add(ConvertType(baseType.Resolve(context)));
+				}
+			}
+			
+			if (this.ShowTypeParameters && this.ShowTypeParameterConstraints) {
+				foreach (ITypeParameter tp in typeDefinition.TypeParameters) {
+					var constraint = ConvertTypeParameterConstraint(tp);
+					if (constraint != null)
+						decl.Constraints.Add(constraint);
+				}
+			}
+			return decl;
+		}
+		
+		DelegateDeclaration ConvertDelegate(IMethod invokeMethod, Modifiers modifiers)
+		{
+			ITypeDefinition d = invokeMethod.DeclaringTypeDefinition;
+			
+			DelegateDeclaration decl = new DelegateDeclaration();
+			decl.Modifiers = modifiers;
+			decl.ReturnType = ConvertType(invokeMethod.ReturnType.Resolve(context));
+			decl.Name = d.Name;
+			
+			if (this.ShowTypeParameters) {
+				foreach (ITypeParameter tp in d.TypeParameters) {
+					decl.TypeParameters.Add(ConvertTypeParameter(tp));
+				}
+			}
+			
+			foreach (IParameter p in invokeMethod.Parameters) {
+				decl.Parameters.Add(ConvertParameter(p));
+			}
+			
+			if (this.ShowTypeParameters && this.ShowTypeParameterConstraints) {
+				foreach (ITypeParameter tp in d.TypeParameters) {
+					var constraint = ConvertTypeParameterConstraint(tp);
+					if (constraint != null)
+						decl.Constraints.Add(constraint);
+				}
+			}
+			return decl;
+		}
+		
+		AstNode ConvertField(IField field)
+		{
+			FieldDeclaration decl = new FieldDeclaration();
+			Modifiers m = GetMemberModifiers(field);
+			if (field.IsConst) {
+				m &= ~Modifiers.Static;
+				m |= Modifiers.Const;
+			} else if (field.IsReadOnly) {
+				m |= Modifiers.Readonly;
+			} else if (field.IsVolatile) {
+				m |= Modifiers.Volatile;
+			}
+			decl.Modifiers = m;
+			decl.ReturnType = ConvertType(field.ReturnType.Resolve(context));
+			Expression initializer = null;
+			if (field.IsConst && this.ShowConstantValues)
+				initializer = ConvertConstantValue(field.ConstantValue);
+			decl.Variables.Add(new VariableInitializer(field.Name, initializer));
+			return decl;
+		}
+		
+		Accessor ConvertAccessor(IAccessor accessor)
+		{
+			if (accessor == null)
+				return Accessor.Null;
+			Accessor decl = new Accessor();
+			decl.Modifiers = ModifierFromAccessibility(accessor.Accessibility);
+			return decl;
+		}
+		
+		PropertyDeclaration ConvertProperty(IProperty property)
+		{
+			PropertyDeclaration decl = new PropertyDeclaration();
+			decl.Modifiers = GetMemberModifiers(property);
+			decl.ReturnType = ConvertType(property.ReturnType.Resolve(context));
+			decl.Name = property.Name;
+			decl.Getter = ConvertAccessor(property.Getter);
+			decl.Setter = ConvertAccessor(property.Setter);
+			return decl;
+		}
+		
+		IndexerDeclaration ConvertIndexer(IProperty indexer)
+		{
+			IndexerDeclaration decl = new IndexerDeclaration();
+			decl.Modifiers = GetMemberModifiers(indexer);
+			decl.ReturnType = ConvertType(indexer.ReturnType.Resolve(context));
+			foreach (IParameter p in indexer.Parameters) {
+				decl.Parameters.Add(ConvertParameter(p));
+			}
+			decl.Getter = ConvertAccessor(indexer.Getter);
+			decl.Setter = ConvertAccessor(indexer.Setter);
+			return decl;
+		}
+		
+		EventDeclaration ConvertEvent(IEvent ev)
+		{
+			EventDeclaration decl = new EventDeclaration();
+			decl.Modifiers = GetMemberModifiers(ev);
+			decl.ReturnType = ConvertType(ev.ReturnType.Resolve(context));
+			decl.Variables.Add(new VariableInitializer(ev.Name));
+			return decl;
+		}
+		
+		MethodDeclaration ConvertMethod(IMethod method)
+		{
+			MethodDeclaration decl = new MethodDeclaration();
+			decl.Modifiers = GetMemberModifiers(method);
+			decl.ReturnType = ConvertType(method.ReturnType.Resolve(context));
+			decl.Name = method.Name;
+			
+			if (this.ShowTypeParameters) {
+				foreach (ITypeParameter tp in method.TypeParameters) {
+					decl.TypeParameters.Add(ConvertTypeParameter(tp));
+				}
+			}
+			
+			foreach (IParameter p in method.Parameters) {
+				decl.Parameters.Add(ConvertParameter(p));
+			}
+			
+			if (this.ShowTypeParameters && this.ShowTypeParameterConstraints) {
+				foreach (ITypeParameter tp in method.TypeParameters) {
+					var constraint = ConvertTypeParameterConstraint(tp);
+					if (constraint != null)
+						decl.Constraints.Add(constraint);
+				}
+			}
+			return decl;
+		}
+		
+		AstNode ConvertOperator(IMethod op)
+		{
+			OperatorType? opType = OperatorDeclaration.GetOperatorType(op.Name);
+			if (opType == null)
+				return ConvertMethod(op);
+			
+			OperatorDeclaration decl = new OperatorDeclaration();
+			decl.Modifiers = GetMemberModifiers(op);
+			decl.OperatorType = opType.Value;
+			decl.ReturnType = ConvertType(op.ReturnType.Resolve(context));
+			foreach (IParameter p in op.Parameters) {
+				decl.Parameters.Add(ConvertParameter(p));
+			}
+			return decl;
+		}
+		
+		ConstructorDeclaration ConvertConstructor(IMethod ctor)
+		{
+			ConstructorDeclaration decl = new ConstructorDeclaration();
+			decl.Modifiers = GetMemberModifiers(ctor);
+			decl.Name = ctor.DeclaringTypeDefinition.Name;
+			foreach (IParameter p in ctor.Parameters) {
+				decl.Parameters.Add(ConvertParameter(p));
+			}
+			return decl;
+		}
+		
+		DestructorDeclaration ConvertDestructor(IMethod dtor)
+		{
+			DestructorDeclaration decl = new DestructorDeclaration();
+			decl.Name = dtor.DeclaringTypeDefinition.Name;
+			return decl;
+		}
+		#endregion
+		
+		#region Convert Modifiers
+		Modifiers ModifierFromAccessibility(Accessibility accessibility)
+		{
+			if (!this.ShowAccessibility)
+				return Modifiers.None;
+			switch (accessibility) {
+				case Accessibility.Private:
+					return Modifiers.Private;
+				case Accessibility.Public:
+					return Modifiers.Public;
+				case Accessibility.Protected:
+					return Modifiers.Protected;
+				case Accessibility.Internal:
+					return Modifiers.Internal;
+				case Accessibility.ProtectedOrInternal:
+				case Accessibility.ProtectedAndInternal:
+					return Modifiers.Protected | Modifiers.Internal;
+				default:
+					return Modifiers.None;
+			}
+		}
+		
+		Modifiers GetMemberModifiers(IMember member)
+		{
+			Modifiers m = ModifierFromAccessibility(member.Accessibility);
+			if (this.ShowModifiers) {
+				if (member.IsStatic) {
+					m |= Modifiers.Static;
+				} else {
+					if (member.IsAbstract)
+						m |= Modifiers.Abstract;
+					if (member.IsOverride)
+						m |= Modifiers.Override;
+					if (member.IsVirtual && !member.IsAbstract && !member.IsOverride)
+						m |= Modifiers.Virtual;
+					if (member.IsSealed)
+						m |= Modifiers.Sealed;
+				}
+				if (member.IsShadowing)
+					m |= Modifiers.New;
+			}
+			return m;
+		}
+		#endregion
+		
+		#region Convert Type Parameter
+		TypeParameterDeclaration ConvertTypeParameter(ITypeParameter tp)
+		{
+			TypeParameterDeclaration decl = new TypeParameterDeclaration();
+			decl.Variance = tp.Variance;
+			decl.Name = tp.Name;
+			return decl;
+		}
+		
+		Constraint ConvertTypeParameterConstraint(ITypeParameter tp)
+		{
+			if (tp.Constraints.Count == 0 && !tp.HasDefaultConstructorConstraint && !tp.HasReferenceTypeConstraint && !tp.HasValueTypeConstraint) {
+				return null;
+			}
+			Constraint c = new Constraint();
+			c.TypeParameter = tp.Name;
+			if (tp.HasReferenceTypeConstraint) {
+				c.BaseTypes.Add(new PrimitiveType("class"));
+			} else if (tp.HasValueTypeConstraint) {
+				c.BaseTypes.Add(new PrimitiveType("struct"));
+			}
+			foreach (ITypeReference tr in tp.Constraints) {
+				c.BaseTypes.Add(ConvertType(tr.Resolve(context)));
+			}
+			if (tp.HasDefaultConstructorConstraint) {
+				c.BaseTypes.Add(new PrimitiveType("new"));
+			}
+			return c;
+		}
+		#endregion
 	}
 }
