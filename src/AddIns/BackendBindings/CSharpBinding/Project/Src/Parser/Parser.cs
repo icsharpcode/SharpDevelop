@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
@@ -66,7 +67,14 @@ namespace CSharpBinding.Parser
 		public ParseInformation Parse(IProjectContent projectContent, FileName fileName, ITextSource fileContent,
 		                              bool fullParseInformationRequested)
 		{
-			throw new NotImplementedException();
+			CSharpParser parser = new CSharpParser();
+			parser.GenerateTypeSystemMode = true;
+			CompilationUnit cu = parser.Parse(fileContent.CreateReader());
+			
+			TypeSystemConvertVisitor cv = new TypeSystemConvertVisitor(projectContent, fileName);
+			ParsedFile file = cv.Convert(cu);
+			
+			return new ParseInformation(file, true);
 		}
 		
 		/*void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)

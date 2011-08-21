@@ -82,14 +82,9 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		string ConvertEntity(IEntity e);
-		string ConvertParameter(IVariable v);
 		string ConvertType(IType type);
-		
-		string ConvertAccessibility(Accessibility accessibility);
 		
 		string WrapAttribute(string attribute);
 		string WrapComment(string comment);
-		
-		string GetIntrinsicTypeName(string dotNetTypeName);
 	}
 }

@@ -39,7 +39,7 @@
 			<Doozer name="Pad" class="ICSharpCode.SharpDevelop.PadDoozer"/>
 			<Doozer name="ProjectBinding" class="ICSharpCode.SharpDevelop.ProjectBindingDoozer"/>
 			<Doozer name="LanguageBinding" class="ICSharpCode.SharpDevelop.LanguageBindingDoozer"/>
-			<Doozer name="Parser" class="ICSharpCode.SharpDevelop.ParserDoozer"/>
+			<Doozer name="Parser" class="ICSharpCode.SharpDevelop.Parser.ParserDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
 			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionBindingDoozer"/>
 			<Doozer name="Debugger" class="ICSharpCode.SharpDevelop.Debugging.DebuggerDoozer"/>

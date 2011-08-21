@@ -97,7 +97,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		string ITextSource.GetText(ICSharpCode.Editor.ISegment segment)
 		{
-			throw new NotImplementedException();
+			return rope.ToString(segment.Offset, segment.Length);
 		}
 	}
 }

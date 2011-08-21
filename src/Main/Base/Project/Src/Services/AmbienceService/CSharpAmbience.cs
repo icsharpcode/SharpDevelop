@@ -2,7 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.IO;
+using System.Text;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -15,37 +20,36 @@ namespace ICSharpCode.SharpDevelop
 		
 		public string ConvertEntity(IEntity e)
 		{
-			throw new NotImplementedException();
-		}
-		
-		public string ConvertParameter(IVariable v)
-		{
-			throw new NotImplementedException();
+			using (var ctx = ParserService.CurrentTypeResolveContext.Synchronize()) {
+				TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
+				var astNode = astBuilder.ConvertEntity(e);
+				CSharpFormattingOptions formatting = new CSharpFormattingOptions();
+				StringWriter writer = new StringWriter();
+				astNode.AcceptVisitor(new OutputVisitor(writer, formatting), null);
+				return writer.ToString().TrimEnd();
+			}
 		}
 		
 		public string ConvertType(IType type)
 		{
-			throw new NotImplementedException();
-		}
-		
-		public string ConvertAccessibility(Accessibility accessibility)
-		{
-			throw new NotImplementedException();
+			using (var ctx = ParserService.CurrentTypeResolveContext.Synchronize()) {
+				TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
+				AstType astType = astBuilder.ConvertType(type);
+				CSharpFormattingOptions formatting = new CSharpFormattingOptions();
+				StringWriter writer = new StringWriter();
+				astType.AcceptVisitor(new OutputVisitor(writer, formatting), null);
+				return writer.ToString();
+			}
 		}
 		
 		public string WrapAttribute(string attribute)
 		{
-			throw new NotImplementedException();
+			return "[" + attribute + "]";
 		}
 		
 		public string WrapComment(string comment)
 		{
-			throw new NotImplementedException();
-		}
-		
-		public string GetIntrinsicTypeName(string dotNetTypeName)
-		{
-			throw new NotImplementedException();
+			return "// " + comment;
 		}
 	}
 }
