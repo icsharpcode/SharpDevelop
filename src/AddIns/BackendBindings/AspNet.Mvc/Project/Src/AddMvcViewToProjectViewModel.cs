@@ -37,6 +37,7 @@ namespace ICSharpCode.AspNet.Mvc
 			this.viewGenerator = viewGenerator;
 			this.viewFileName.Folder = selectedViewFolder.Path;
 			this.ModelClassName = String.Empty;
+			this.PrimaryContentPlaceHolderId = "Main";
 			
 			CreateModelClassesForSelectedFolder();
 			CreateCommands();
@@ -168,6 +169,7 @@ namespace ICSharpCode.AspNet.Mvc
 			viewGenerator.IsContentPage	= IsContentPage;
 			viewGenerator.MasterPageFile = GetMasterPageFile();
 			viewGenerator.ModelClassName = GetModelClassName();
+			viewGenerator.PrimaryContentPlaceHolderId = GetPrimaryContentPlaceHolderId();
 			viewGenerator.Project = selectedViewFolder.Project;
 			viewGenerator.TemplateLanguage = GetTemplateLanguage();
 			viewGenerator.TemplateType = selectedViewEngine.TemplateType;
@@ -188,6 +190,14 @@ namespace ICSharpCode.AspNet.Mvc
 					return SelectedModelClass.FullName;
 				}
 				return ModelClassName.Trim();
+			}
+			return String.Empty;
+		}
+		
+		string GetPrimaryContentPlaceHolderId()
+		{
+			if (IsContentPage) {
+				return PrimaryContentPlaceHolderId;
 			}
 			return String.Empty;
 		}
@@ -227,6 +237,7 @@ namespace ICSharpCode.AspNet.Mvc
 		public MvcModelClassViewModel SelectedModelClass { get; set; }
 		public string ModelClassName { get; set; }
 		public string MasterPageFile { get; set; }
+		public string PrimaryContentPlaceHolderId { get; set; }
 	}
 }
 

@@ -12,10 +12,9 @@
 <#= mvcHost.ViewName #>
 </asp:Content>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="Main" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="<#= mvcHost.PrimaryContentPlaceHolderID #>" runat="server">
 	
 </asp:Content>
-
 <# Else #>
 <%@ Page Language="VB" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
 

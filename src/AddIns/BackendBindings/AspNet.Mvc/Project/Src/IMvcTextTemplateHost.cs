@@ -17,6 +17,7 @@ namespace ICSharpCode.AspNet.Mvc
 		string ViewDataTypeName { get; set; }
 		bool IsContentPage { get; set; }
 		string MasterPageFile { get; set; }
+		string PrimaryContentPlaceHolderID { get; set; }
 		
 		// Add Controller properties.
 		string ControllerName { get; set; }

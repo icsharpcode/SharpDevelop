@@ -272,5 +272,27 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual("~/Views/Shared/Site.Master", masterPage);
 		}
+		
+		[Test]
+		public void PrimaryContentPlaceHolderId_DefaultValue_ReturnsEmptyString()
+		{
+			CreateGenerator();
+			string id = generator.PrimaryContentPlaceHolderId;
+			
+			Assert.AreEqual(String.Empty, id);
+		}
+		
+		[Test]
+		public void GenerateFile_PrimaryContentPlaceHolderIdIsSet_PrimaryContentPlaceHolderIdIsSetOnMvcTextTemplateHost()
+		{
+			CreateGenerator();
+			generator.IsContentPage = true;
+			generator.PrimaryContentPlaceHolderId = "MainContent";
+			GenerateFile();
+			
+			string id = fakeHost.PrimaryContentPlaceHolderID;
+			
+			Assert.AreEqual("MainContent", id);
+		}
 	}
 }

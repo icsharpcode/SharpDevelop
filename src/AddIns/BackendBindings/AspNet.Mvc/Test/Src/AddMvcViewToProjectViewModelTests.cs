@@ -695,5 +695,40 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.IsTrue(fired);
 		}
+		
+		[Test]
+		public void PrimaryContentPlaceHolderId_DefaultValue_ReturnsMain()
+		{
+			CreateViewModel();
+			string id = viewModel.PrimaryContentPlaceHolderId;
+			
+			Assert.AreEqual("Main", id);
+		}
+		
+		[Test]
+		public void AddMvcView_PrimaryContentPlaceHolderIdIsDefined_PrimaryContentPlaceHolderIdIsSetOnViewGenerator()
+		{
+			CreateViewModel();
+			viewModel.IsContentPage = true;
+			viewModel.PrimaryContentPlaceHolderId = "Test";
+			viewModel.AddMvcView();
+			
+			string id = fakeViewGenerator.PrimaryContentPlaceHolderId;
+			
+			Assert.AreEqual("Test", id);
+		}
+		
+		[Test]
+		public void AddMvcView_PrimaryContentPlaceHolderIdIsDefinedAndIsContentPageIsFalse_PrimaryContentPlaceHolderIdIsEmptyStringOnViewGenerator()
+		{
+			CreateViewModel();
+			viewModel.IsContentPage = false;
+			viewModel.PrimaryContentPlaceHolderId = "Test";
+			viewModel.AddMvcView();
+			
+			string id = fakeViewGenerator.PrimaryContentPlaceHolderId;
+			
+			Assert.AreEqual(String.Empty, id);
+		}
 	}
 }

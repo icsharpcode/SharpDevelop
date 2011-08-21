@@ -15,6 +15,7 @@ namespace AspNet.Mvc.Tests.Helpers
 		public string ModelClassName { get; set; }
 		public bool IsContentPage { get; set; }
 		public string MasterPageFile { get; set; }
+		public string PrimaryContentPlaceHolderId { get; set; }
 		
 		public bool IsGenerateFileCalled;
 		public MvcViewFileName FileNamePassedToGenerateFile;

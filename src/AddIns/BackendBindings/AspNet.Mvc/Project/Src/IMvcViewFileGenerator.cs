@@ -14,6 +14,7 @@ namespace ICSharpCode.AspNet.Mvc
 		string ModelClassName { get; set; }
 		bool IsContentPage { get; set; }
 		string MasterPageFile { get; set; }
+		string PrimaryContentPlaceHolderId { get; set; }
 		
 		void GenerateFile(MvcViewFileName fileName);
 	}

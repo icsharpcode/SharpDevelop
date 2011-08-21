@@ -41,6 +41,7 @@ namespace AspNet.Mvc.Tests.Helpers
 		public string ViewDataTypeName { get; set; }
 		public bool IsContentPage { get; set; }
 		public string MasterPageFile { get; set; }
+		public string PrimaryContentPlaceHolderID { get; set; }
 		
 		public CompilerErrorCollection Errors { get; set; }
 	}

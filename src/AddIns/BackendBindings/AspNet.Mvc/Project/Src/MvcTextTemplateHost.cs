@@ -12,6 +12,7 @@ namespace ICSharpCode.AspNet.Mvc
 		string viewDataTypeName = String.Empty;
 		string @namespace = String.Empty;
 		string masterPageFile = String.Empty;
+		string primaryContentPlaceHolderID = String.Empty;
 		MvcControllerName controllerName = new MvcControllerName();
 		
 		public MvcTextTemplateHost(
@@ -75,6 +76,11 @@ namespace ICSharpCode.AspNet.Mvc
 		public string MasterPageFile {
 			get { return masterPageFile; }
 			set { masterPageFile = UseEmptyStringIfNull(value); }
+		}
+		
+		public string PrimaryContentPlaceHolderID {
+			get { return primaryContentPlaceHolderID; }
+			set { primaryContentPlaceHolderID = UseEmptyStringIfNull(value); }
 		}
 	}
 }

@@ -106,5 +106,15 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(String.Empty, masterPage);
 		}
+		
+		[Test]
+		public void PrimaryContentPlaceHolderID_SetToNull_ReturnsEmptyString()
+		{
+			CreateHost();
+			host.PrimaryContentPlaceHolderID = null;
+			string id = host.PrimaryContentPlaceHolderID;
+			
+			Assert.AreEqual(String.Empty, id);
+		}
 	}
 }
