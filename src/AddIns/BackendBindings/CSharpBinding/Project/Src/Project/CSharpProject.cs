@@ -8,8 +8,6 @@ using System.IO;
 using System.Linq;
 
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
@@ -28,10 +26,6 @@ namespace CSharpBinding
 		
 		public override string Language {
 			get { return CSharpProjectBinding.LanguageName; }
-		}
-		
-		public override LanguageProperties LanguageProperties {
-			get { return LanguageProperties.CSharp; }
 		}
 		
 		void Init()

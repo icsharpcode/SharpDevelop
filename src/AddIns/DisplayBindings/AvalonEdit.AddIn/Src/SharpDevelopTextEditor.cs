@@ -56,8 +56,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			options.BindToTextEditor(this);
 		}
 		
-		protected virtual string FileName {
-			get { return "untitled"; }
+		protected virtual ICSharpCode.Core.FileName FileName {
+			get { return ICSharpCode.Core.FileName.Create("untitled"); }
 		}
 		
 		SharpDevelopCompletionWindow completionWindow;

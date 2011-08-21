@@ -55,13 +55,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				foreach (ITypeDefinition c in parseInfo.ParsedFile.TopLevelTypeDefinitions) {
 					AddClassMembers(c, newFoldMarkers);
 				}
+				#warning Additional folding regions
+				/*
 				foreach (FoldingRegion foldingRegion in parseInfo.FoldingRegions) {
 					NewFolding f = new NewFoldingDefinition(GetOffset(foldingRegion.Region.BeginLine, foldingRegion.Region.BeginColumn),
 					                                        GetOffset(foldingRegion.Region.EndLine, foldingRegion.Region.EndColumn));
 					f.DefaultClosed = isFirstUpdate;
 					f.Name = foldingRegion.Name;
 					newFoldMarkers.Add(f);
-				}
+				}*/
 			}
 			return newFoldMarkers.OrderBy(f => f.StartOffset);
 		}

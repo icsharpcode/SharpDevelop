@@ -518,7 +518,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void FetchParseInformation()
 		{
-			ParseInformation parseInfo = ParserService.GetExistingParsedFile(this.FileName);
+			ParseInformation parseInfo = ParserService.GetCachedParseInformation(this.FileName);
 			if (parseInfo == null) {
 				// if parse info is not yet available, start parsing on background
 				ParserService.ParseAsync(this.FileName, primaryTextEditorAdapter.Document);

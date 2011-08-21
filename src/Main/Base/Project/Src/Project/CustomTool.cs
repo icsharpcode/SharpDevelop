@@ -201,7 +201,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			                         },
 			                         outputFileName, FileErrorPolicy.Inform);
 			EnsureOutputFileIsInProject(baseItem, outputFileName);
-			ParserService.ParseAsync(outputFileName, new StringTextSource(codeOutput));
+			ParserService.ParseAsync(FileName.Create(outputFileName), new StringTextSource(codeOutput));
 		}
 		
 		public void GenerateCodeDomAsync(FileProjectItem baseItem, string outputFileName, Func<CodeCompileUnit> func)

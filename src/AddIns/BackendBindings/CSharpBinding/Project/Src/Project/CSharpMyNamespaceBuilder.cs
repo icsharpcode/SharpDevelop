@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using ICSharpCode.Core;
 using System.IO;
 using System.Text;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace CSharpBinding
@@ -23,10 +23,10 @@ namespace CSharpBinding
 			return typeof(CSharpMyNamespaceBuilder).Assembly.GetManifestResourceStream("Resources.MyNamespaceSupportForCSharp.cs");
 		}
 		
-		internal static IClass FindMyFormsClass(IProjectContent pc, string myNamespace)
+		internal static ITypeDefinition FindMyFormsClass(IProjectContent pc, string myNamespace)
 		{
 			if (pc != null) {
-				return pc.GetClass(myNamespace + ".MyForms", 0);
+				return pc.GetTypeDefinition(myNamespace, "MyForms", 0, StringComparer.Ordinal);
 			}
 			return null;
 		}
@@ -62,11 +62,11 @@ namespace CSharpBinding
 						continue;
 					}
 					if (trimmedLine == "/*LIST OF FORMS*/") {
-						IClass myFormsClass = FindMyFormsClass(ParserService.GetProjectContent(vbProject), ns);
+						ITypeDefinition myFormsClass = FindMyFormsClass(vbProject.ProjectContent, ns);
 						if (myFormsClass != null) {
 							string indentation = line.Substring(0, line.Length - trimmedLine.Length);
 							foreach (IProperty p in myFormsClass.Properties) {
-								string typeName = "global::" + p.ReturnType.FullyQualifiedName;
+								string typeName = "global::" + p.ReturnType.Resolve(vbProject.TypeResolveContext).FullName;
 								output.AppendLine(indentation + typeName + " " + p.Name + "_instance;");
 								output.AppendLine(indentation + "bool " + p.Name + "_isCreating;");
 								output.AppendLine(indentation + "public " + typeName + " " + p.Name + " {");

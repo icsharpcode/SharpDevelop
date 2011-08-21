@@ -62,14 +62,12 @@
     <Compile Include="Src\CSharpBracketSearcher.cs" />
     <Compile Include="Src\CSharpLanguageBinding.cs" />
     <Compile Include="Src\CSharpProjectBinding.cs" />
-    <Compile Include="Src\EventHandlerCompletionItemProvider.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingStrategy.cs" />
     <Compile Include="Src\FormattingStrategy\DocumentAccessor.cs" />
     <Compile Include="Src\OptionPanels\BuildOptions.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Parser\Parser.cs" />
-    <Compile Include="Src\Project\RemoveMembersInRangeVisitor.cs" />
     <Compile Include="Src\Project\VBNetToCSharpConvertVisitorWithMyFormsSupport.cs" />
     <Compile Include="Src\Project\CSharpMyNamespaceBuilder.cs" />
     <Compile Include="Src\Project\CSharpProject.cs" />

@@ -4,7 +4,6 @@
 using System;
 using CSharpBinding.FormattingStrategy;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding
@@ -18,10 +17,10 @@ namespace CSharpBinding
 			get { return new CSharpFormattingStrategy(); }
 		}
 		
-		public override LanguageProperties Properties {
-			get { return LanguageProperties.CSharp; }
-		}
-		
+//		public override LanguageProperties Properties {
+//			get { return LanguageProperties.CSharp; }
+//		}
+//		
 		public override IBracketSearcher BracketSearcher {
 			get { return new CSharpBracketSearcher(); }
 		}

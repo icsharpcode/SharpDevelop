@@ -22,6 +22,12 @@ namespace ICSharpCode.Core
 			this.normalizedFileName = FileUtility.NormalizePath(fileName);
 		}
 		
+		[Obsolete("The input already is a FileName")]
+		public FileName(FileName fileName)
+		{
+			this.normalizedFileName = fileName.normalizedFileName;
+		}
+		
 		/// <summary>
 		/// Creates a FileName instance from the string.
 		/// It is valid to pass null or an empty string to this method (in that case, a null reference will be returned).
@@ -32,6 +38,12 @@ namespace ICSharpCode.Core
 				return null;
 			else
 				return new FileName(fileName);
+		}
+		
+		[Obsolete("The input already is a FileName")]
+		public static FileName Create(FileName fileName)
+		{
+			return fileName;
 		}
 		
 		public static implicit operator string(FileName fileName)

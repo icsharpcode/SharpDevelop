@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding

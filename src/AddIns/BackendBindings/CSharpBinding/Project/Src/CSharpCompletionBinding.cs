@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+/*
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -33,13 +34,7 @@ namespace CSharpBinding
 			int cursor = editor.Caret.Offset;
 			if (ch == '[') {
 				var line = editor.Document.GetLineForOffset(cursor);
-				/* TODO: AVALONEDIT Reimplement this
-				if (TextUtilities.FindPrevWordStart(editor.ActiveTextAreaControl.Document, cursor) <= line.Offset) {
-					// [ is first character on the line
-					// -> Attribute completion
-					editor.ShowCompletionWindow(new AttributesDataProvider(ParserService.CurrentProjectContent), ch);
-					return true;
-				}*/
+				
 			} else if (ch == ',' && CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled) {
 				IInsightWindow insightWindow;
 				if (insightHandler.InsightRefreshOnComma(editor, ch, out insightWindow)) {
@@ -316,3 +311,4 @@ namespace CSharpBinding
 		#endregion
 	}
 }
+*/

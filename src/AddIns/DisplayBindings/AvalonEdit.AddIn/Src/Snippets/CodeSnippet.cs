@@ -196,7 +196,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		{
 			var parseInfo = ParserService.GetExistingParsedFile(editor.FileName);
 			if (parseInfo != null) {
-				return parseInfo.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
+				return parseInfo.GetInnerMostTypeDefinition(editor.Caret.Location);
 			}
 			return null;
 		}
@@ -207,12 +207,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				return s => s.ToLower();
 			if ("toUpper".Equals(name, StringComparison.OrdinalIgnoreCase))
 				return s => s.ToUpper();
+			#warning Reimplement language-specific name conversion functions
+			/*
 			if ("toFieldName".Equals(name, StringComparison.OrdinalIgnoreCase))
 				return s => context.Language.Properties.CodeGenerator.GetFieldName(s);
 			if ("toPropertyName".Equals(name, StringComparison.OrdinalIgnoreCase))
 				return s => context.Language.Properties.CodeGenerator.GetPropertyName(s);
 			if ("toParameterName".Equals(name, StringComparison.OrdinalIgnoreCase))
 				return s => context.Language.Properties.CodeGenerator.GetParameterName(s);
+				*/
 			return null;
 		}
 		

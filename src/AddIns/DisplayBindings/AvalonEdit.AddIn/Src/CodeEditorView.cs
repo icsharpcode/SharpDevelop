@@ -77,7 +77,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			hiddenDefinitionRenderer.Dispose();
 		}
 		
-		protected override string FileName {
+		protected override ICSharpCode.Core.FileName FileName {
 			get { return this.Adapter.FileName; }
 		}
 		
@@ -456,7 +456,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#region UpdateParseInformation - Folding
 		void UpdateParseInformationForFolding()
 		{
-			UpdateParseInformationForFolding(ParserService.GetExistingParsedFile(this.Adapter.FileName));
+			UpdateParseInformationForFolding(null);
 		}
 		
 		bool disableParseInformationFolding;
@@ -473,8 +473,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void UpdateParseInformationForFolding(ParseInformation parseInfo)
 		{
-			if (!CodeEditorOptions.Instance.EnableFolding || disableParseInformationFolding)
+			if (!CodeEditorOptions.Instance.EnableFolding || disableParseInformationFolding) {
 				parseInfo = null;
+			} else {
+				if (parseInfo == null || !parseInfo.IsFullParseInformation)
+					parseInfo = ParserService.Parse(this.FileName, this.Document);
+			}
 			
 			IServiceContainer container = this.Adapter.GetService(typeof(IServiceContainer)) as IServiceContainer;
 			ParserFoldingStrategy folding = container.GetService(typeof(ParserFoldingStrategy)) as ParserFoldingStrategy;

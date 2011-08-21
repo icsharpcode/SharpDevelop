@@ -92,9 +92,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 	{
 		FileName fileName;
 		ITextSource content;
-		IParsedFile parsedFile;
+		ParseInformation parseInformation;
 		
-		public ParserUpdateStepEventArgs(FileName fileName, ITextSource content, IParsedFile parsedFile)
+		public ParserUpdateStepEventArgs(FileName fileName, ITextSource content, ParseInformation parsedFile)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				throw new ArgumentNullException("parsedFile");
 			this.fileName = fileName;
 			this.content = content;
-			this.parsedFile = parsedFile;
+			this.parseInformation = parsedFile;
 		}
 		
 		public FileName FileName {
@@ -121,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		public IParsedFile ParsedFile {
 			get {
-				return parsedFile;
+				return parseInformation.ParsedFile;
 			}
 		}
 	}

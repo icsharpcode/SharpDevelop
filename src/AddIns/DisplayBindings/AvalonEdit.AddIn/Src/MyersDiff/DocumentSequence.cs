@@ -14,12 +14,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 		
 		public DocumentSequence(IDocument document, Dictionary<string, int> hashDict)
 		{
-			this.hashes = new int[document.TotalNumberOfLines];
+			this.hashes = new int[document.LineCount];
 			
 			// Construct a perfect hash for the document lines, and store the 'hash code'
 			// (really just a unique identifier for each line content) in our array.
-			for (int i = 1; i <= document.TotalNumberOfLines; i++) {
-				string text = document.GetLine(i).Text;
+			for (int i = 1; i <= document.LineCount; i++) {
+				string text = document.GetText(document.GetLineByNumber(i));
 				int hash;
 				if (!hashDict.TryGetValue(text, out hash)) {
 					hash = hashDict.Count;

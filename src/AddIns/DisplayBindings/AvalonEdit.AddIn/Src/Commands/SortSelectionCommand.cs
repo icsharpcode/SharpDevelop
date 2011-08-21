@@ -54,13 +54,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 			
 			using (document.OpenUndoGroup()) {
 				for (int i = 0; i < lines.Count; ++i) {
-					IDocumentLine line = document.GetLine(startLine + i);
+					IDocumentLine line = document.GetLineByNumber(startLine + i);
 					document.Replace(line.Offset, line.Length, lines[i]);
 				}
 				
 				// remove removed duplicate lines
 				for (int i = startLine + lines.Count; i <= endLine; ++i) {
-					IDocumentLine line = document.GetLine(startLine + lines.Count);
+					IDocumentLine line = document.GetLineByNumber(startLine + lines.Count);
 					document.Remove(line.Offset, line.TotalLength);
 				}
 			}

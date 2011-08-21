@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.AvalonEdit.Indentation.CSharp;
+using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding.FormattingStrategy
@@ -25,7 +26,7 @@ namespace CSharpBinding.FormattingStrategy
 				throw new ArgumentNullException("document");
 			doc = document;
 			this.minLine = 1;
-			this.maxLine = doc.TotalNumberOfLines;
+			this.maxLine = doc.LineCount;
 		}
 		
 		/// <summary>
@@ -79,8 +80,8 @@ namespace CSharpBinding.FormattingStrategy
 			}
 			++num;
 			if (num > maxLine) return false;
-			line = doc.GetLine(num);
-			text = line.Text;
+			line = doc.GetLineByNumber(num);
+			text = doc.GetText(line);
 			return true;
 		}
 	}

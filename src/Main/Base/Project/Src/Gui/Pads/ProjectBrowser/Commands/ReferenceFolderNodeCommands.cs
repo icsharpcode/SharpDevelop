@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						}
 						
 						// Update code completion.
-						ParserService.ParseFile(webReference.WebProxyFileName);
+						ParserService.ParseFileAsync(FileName.Create(webReference.WebProxyFileName));
 					}
 				} catch (WebException ex) {
 					MessageService.ShowException(ex, String.Format(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ProjectBrowser.RefreshWebReference.ReadServiceDescriptionError}"), url.UpdateFromURL));
@@ -121,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						AddWebReferenceToProjectBrowser(node, refDialog.WebReference);
 						
 						// Add proxy to code completion.
-						ParserService.ParseFile(refDialog.WebReference.WebProxyFileName);
+						ParserService.ParseFileAsync(FileName.Create(refDialog.WebReference.WebProxyFileName));
 
 						node.Project.Save();
 					}

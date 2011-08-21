@@ -1,6 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-
+/*
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -104,7 +104,7 @@ namespace CSharpBinding
 										} else {
 											// remove ifdef including the code
 											compilationUnit.AcceptVisitor(new RemoveMembersInRangeVisitor(
-												DomRegion.FromLocation(specials[i].StartPosition, specials[j].EndPosition)), null);
+												new DomRegion(specials[i].StartPosition, specials[j].EndPosition)), null);
 											specials.RemoveRange(i, j - i + 1);
 										}
 										i--;
@@ -119,3 +119,4 @@ namespace CSharpBinding
 		}
 	}
 }
+*/

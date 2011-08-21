@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Core;
 using ICSharpCode.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
@@ -45,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// SharpDevelop may call IParser.Parse in parallel. This will be done on the same IParser instance
 		/// if there are two parallel parse requests for the same file. Parser implementations must be thread-safe.
 		/// </remarks>
-		ParseInformation Parse(IProjectContent projectContent, string fileName, ITextSource fileContent,
+		ParseInformation Parse(IProjectContent projectContent, FileName fileName, ITextSource fileContent,
 		                       bool fullParseInformationRequested);
 		
 		//IResolver CreateResolver();

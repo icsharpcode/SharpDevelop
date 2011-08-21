@@ -3,10 +3,11 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Core;
+using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.CSharp;
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace CSharpBinding.Parser
@@ -25,27 +26,12 @@ namespace CSharpBinding.Parser
 			}
 		}
 		
-		public LanguageProperties Language {
-			get {
-				return LanguageProperties.CSharp;
-			}
-		}
-		
-		public IExpressionFinder CreateExpressionFinder(string fileName)
-		{
-			return new CSharpExpressionFinder(ParserService.GetParseInformation(fileName));
-		}
-		
 		public bool CanParse(string fileName)
 		{
 			return Path.GetExtension(fileName).Equals(".CS", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public bool CanParse(IProject project)
-		{
-			return project.Language == "C#";
-		}
-		
+		/*
 		void RetrieveRegions(ICompilationUnit cu, ICSharpCode.NRefactory.Parser.SpecialTracker tracker)
 		{
 			for (int i = 0; i < tracker.CurrentSpecials.Count; ++i) {
@@ -75,31 +61,15 @@ namespace CSharpBinding.Parser
 				}
 			}
 		}
+		 */
 		
-		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
+		public ParseInformation Parse(IProjectContent projectContent, FileName fileName, ITextSource fileContent,
+		                              bool fullParseInformationRequested)
 		{
-			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(ICSharpCode.NRefactory.SupportedLanguage.CSharp, fileContent.CreateReader())) {
-				return Parse(p, fileName, projectContent);
-			}
+			throw new NotImplementedException();
 		}
 		
-		ICompilationUnit Parse(ICSharpCode.NRefactory.IParser p, string fileName, IProjectContent projectContent)
-		{
-			p.Lexer.SpecialCommentTags = lexerTags;
-			p.ParseMethodBodies = false;
-			p.Parse();
-			
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent, ICSharpCode.NRefactory.SupportedLanguage.CSharp);
-			visitor.Specials = p.Lexer.SpecialTracker.CurrentSpecials;
-			visitor.VisitCompilationUnit(p.CompilationUnit, null);
-			visitor.Cu.FileName = fileName;
-			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
-			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
-			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
-			return visitor.Cu;
-		}
-		
-		void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
+		/*void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
 		{
 			foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments) {
 				DomRegion tagRegion = new DomRegion(tagComment.StartPosition.Y, tagComment.StartPosition.X);
@@ -107,11 +77,6 @@ namespace CSharpBinding.Parser
 				cu.TagComments.Add(tag);
 			}
 		}
-		
-		public IResolver CreateResolver()
-		{
-			return new NRefactoryResolver(LanguageProperties.CSharp);
-		}
-		///////// IParser Interface END
+		 */
 	}
 }

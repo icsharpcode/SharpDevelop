@@ -260,8 +260,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 				snapshot = GetParseableFileContent(viewContent.PrimaryFileName);
 			
 			lastParseRun = ParseAsync(fileName, snapshot).ContinueWith(
-				delegate(Task<IParsedFile> backgroundTask) {
-					IParsedFile parseInfo = backgroundTask.Result;
+				delegate(Task<ParseInformation> backgroundTask) {
+					ParseInformation parseInfo = backgroundTask.Result;
 					RaiseParserUpdateStepFinished(new ParserUpdateStepEventArgs(fileName, snapshot, parseInfo));
 				});
 		}
@@ -318,17 +318,26 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// This method is thread-safe. This method involves waiting for the main thread, so using it while
 		/// holding a lock can lead to deadlocks.
 		/// </summary>
-		public static ITextSource GetParseableFileContent(string fileName)
+		public static ITextSource GetParseableFileContent(FileName fileName)
 		{
-			return Gui.WorkbenchSingleton.SafeThreadFunction(GetParseableFileContentInternal, fileName);
+			ITextSource fileContent = Gui.WorkbenchSingleton.SafeThreadFunction(GetParseableFileContentForOpenFile, fileName);
+			if (fileContent != null)
+				return fileContent;
+			else
+				return new StringTextSource(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(fileName, DefaultFileEncoding));
 		}
 		
-		static ITextSource GetParseableFileContentInternal(string fileName)
+		public static ITextSource GetParseableFileContent(string fileName)
 		{
-			//ITextBuffer res = project.GetParseableFileContent(fileName);
-			//if (res != null)
-			//	return res;
-			
+			return GetParseableFileContent(FileName.Create(fileName));
+		}
+		
+		/// <summary>
+		/// Gets the file content for a file that is currently open.
+		/// Returns null if the file is not open.
+		/// </summary>
+		static ITextSource GetParseableFileContentForOpenFile(FileName fileName)
+		{
 			OpenedFile file = FileService.GetOpenedFile(fileName);
 			if (file != null) {
 				IFileDocumentProvider p = file.CurrentView as IFileDocumentProvider;
@@ -344,9 +353,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 					return new StringTextSource(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(s, DefaultFileEncoding));
 				}
 			}
-			
-			// load file
-			return new StringTextSource(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(fileName, DefaultFileEncoding));
+			return null;
 		}
 		#endregion
 		
@@ -358,6 +365,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			readonly FileName fileName;
 			internal readonly IParser parser;
 			volatile IParsedFile mainParsedFile;
+			volatile ParseInformation cachedParseInformation;
 			ITextSourceVersion bufferVersion;
 			IParsedFile[] oldUnits = emptyCompilationUnitArray;
 			bool disposed;
@@ -379,16 +387,12 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 			}
 			
-			public IParsedFile GetParseInformation(IProjectContent content)
+			public ParseInformation GetCachedParseInformation()
 			{
-				IParsedFile p = GetExistingParseInformation(content);
-				if (p != null)
-					return p;
-				else
-					return ParseFile(content, null);
+				return cachedParseInformation; // read volatile
 			}
 			
-			public IParsedFile GetExistingParseInformation(IProjectContent content)
+			public IParsedFile GetExistingParsedFile(IProjectContent content)
 			{
 				if (content == null) {
 					return this.mainParsedFile; // read volatile
@@ -407,30 +411,84 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 			}
 			
+			public ParseInformation Parse(ITextSource fileContent)
+			{
+				if (fileContent == null) {
+					fileContent = WorkbenchSingleton.SafeThreadFunction(GetParseableFileContentForOpenFile, fileName);
+				}
+				
+				ParseInformation parseInfo;
+				IParsedFile parsedFile;
+				DoParse(null, fileContent, true, out parseInfo, out parsedFile);
+				return parseInfo;
+			}
+			
 			public IParsedFile ParseFile(IProjectContent parentProjectContent, ITextSource fileContent)
 			{
+				if (fileContent == null) {
+					fileContent = WorkbenchSingleton.SafeThreadFunction(GetParseableFileContentForOpenFile, fileName);
+				}
+				
+				ParseInformation parseInfo;
+				IParsedFile parsedFile;
+				DoParse(parentProjectContent, fileContent, false, out parseInfo, out parsedFile);
+				return parsedFile;
+			}
+			
+			void DoParse(IProjectContent parentProjectContent, ITextSource fileContent,
+			             bool fullParseInformationRequested, out ParseInformation resultParseInfo, out IParsedFile resultUnit)
+			{
+				resultParseInfo = null;
+				resultUnit = null;
+				
 				if (parser == null)
-					return null;
+					return;
 				
 				if (fileContent == null) {
-					// GetParseableFileContent must not be called inside any lock
-					// (otherwise we'd risk deadlocks because GetParseableFileContent must invoke on the main thread)
-					fileContent = GetParseableFileContent(fileName);
+					// No file content was specified. Because the callers of this method already check for currently open files,
+					// we can assume that the file isn't open and simply read it from disk.
+					lock (this) {
+						// Don't bother reading the file if this FileEntry was already disposed.
+						if (this.disposed)
+							return;
+					}
+					string fileAsString;
+					try {
+						fileAsString = ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(fileName, DefaultFileEncoding);
+					} catch (IOException) {
+						return;
+					} catch (UnauthorizedAccessException) {
+						return;
+					}
+					fileContent = new StringTextSource(fileAsString);
 				}
 				
 				ITextSourceVersion fileContentVersion = fileContent.Version;
 				List<IProjectContent> projectContents;
 				lock (this) {
 					if (this.disposed)
-						return null;
+						return;
 					
 					if (fileContentVersion != null && this.bufferVersion != null && this.bufferVersion.BelongsToSameDocumentAs(fileContentVersion)) {
 						if (this.bufferVersion.CompareAge(fileContentVersion) >= 0) {
-							// Special case: (necessary due to parentProjectContent optimization)
+							// Special case: (necessary due to parentProjectContent optimization below)
 							// Detect when a file belongs to multiple projects but the ParserService hasn't realized
 							// that, yet. In this case, do another parse run to detect all parent projects.
 							if (!(parentProjectContent != null && this.oldUnits.Length == 1 && this.oldUnits[0].ProjectContent != parentProjectContent)) {
-								return this.mainParsedFile;
+								// If full parse info is requested, ensure we have full parse info.
+								if (!(fullParseInformationRequested && this.cachedParseInformation == null)) {
+									resultParseInfo = this.cachedParseInformation;
+									resultUnit = this.mainParsedFile;
+									if (parentProjectContent != null) {
+										foreach (var oldUnit in this.oldUnits) {
+											if (oldUnit.ProjectContent == parentProjectContent) {
+												resultUnit = oldUnit;
+												break;
+											}
+										}
+									}
+									return;
+								}
 							}
 						}
 					}
@@ -443,7 +501,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 					} else {
 						projectContents = GetProjectContents(fileName);
 					}
-				}
+				} // exit lock
+				
 				// We now leave the lock to do the actual parsing.
 				// This is done to allow IParser implementations to invoke methods on the main thread without
 				// risking deadlocks.
@@ -451,12 +510,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 				// parse once for each project content that contains the file
 				ParseInformation[] newParseInfo = new ParseInformation[projectContents.Count];
 				IParsedFile[] newUnits = new IParsedFile[projectContents.Count];
-				ParseInformation resultParseInfo = null;
-				IParsedFile resultUnit = null;
 				for (int i = 0; i < projectContents.Count; i++) {
 					IProjectContent pc = projectContents[i];
 					try {
-						newParseInfo[i] = parser.Parse(pc, fileName, fileContent);
+						newParseInfo[i] = parser.Parse(pc, fileName, fileContent, fullParseInformationRequested);
 					} catch (Exception ex) {
 						throw new ApplicationException("Error parsing " + fileName, ex);
 					}
@@ -469,18 +526,34 @@ namespace ICSharpCode.SharpDevelop.Parser
 					}
 				}
 				lock (this) {
-					if (this.disposed)
-						return null;
+					if (this.disposed) {
+						resultParseInfo = null;
+						resultUnit = null;
+						return;
+					}
 					
 					// ensure we never go backwards in time (we need to repeat this check after we've reacquired the lock)
 					if (fileContentVersion != null && this.bufferVersion != null && this.bufferVersion.BelongsToSameDocumentAs(fileContentVersion)) {
 						if (this.bufferVersion.CompareAge(fileContentVersion) >= 0) {
-							if (parentProjectContent != null) {
-								IParsedFile oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == parentProjectContent);
-								if (oldUnit != null)
-									return oldUnit;
+							if (fullParseInformationRequested && this.cachedParseInformation == null) {
+								// We must not go backwards in time, but the newer version that we have parsed
+								// does not have full parse information.
+								// Thus, we return the parse information that we found above,
+								// but we won't register it.
+								return;
+							} else {
+								resultParseInfo = this.cachedParseInformation;
+								resultUnit = this.mainParsedFile;
+								if (parentProjectContent != null) {
+									foreach (var oldUnit in this.oldUnits) {
+										if (oldUnit.ProjectContent == parentProjectContent) {
+											resultUnit = oldUnit;
+											break;
+										}
+									}
+								}
+								return;
 							}
-							return this.mainParsedFile;
 						}
 					}
 					
@@ -505,8 +578,13 @@ namespace ICSharpCode.SharpDevelop.Parser
 					this.bufferVersion = fileContentVersion;
 					this.oldUnits = newUnits;
 					this.mainParsedFile = resultUnit;
-					return resultUnit;
-				}
+					// Cached the new parse information around if it was requested, or if we had already cached parse information previously.
+					if (resultParseInfo.IsFullParseInformation && (fullParseInformationRequested || this.cachedParseInformation != null)) {
+						this.cachedParseInformation = resultParseInfo;
+					} else {
+						this.cachedParseInformation = null;
+					}
+				} // exit lock
 			}
 			
 			public void Clear()
@@ -530,13 +608,67 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 			}
 			
-			public Task<IParsedFile> BeginParse(ITextSource fileContent)
+			void SnapshotFileContentForAsyncOperation(ref ITextSource fileContent, out bool lookupOpenFileOnTargetThread)
 			{
+				if (fileContent != null) {
+					lookupOpenFileOnTargetThread = false;
+					// File content was explicitly specified:
+					// Let's make a snapshot in case the text source is mutable.
+					fileContent = fileContent.CreateSnapshot();
+				} else if (WorkbenchSingleton.InvokeRequired) {
+					// fileContent == null && not on the main thread:
+					// Don't fetch the file content right now; if we need to SafeThreadCall() anyways,
+					// it's better to do so from the background task.
+					lookupOpenFileOnTargetThread = true;
+				} else {
+					// fileContent == null && we are on the main thread:
+					// Let's look up the file in the list of open files right now
+					// so that we don't need to SafeThreadCall() later on.
+					lookupOpenFileOnTargetThread = false;
+					fileContent = GetParseableFileContentForOpenFile(fileName);
+				}
+			}
+			
+			public Task<ParseInformation> ParseAsync(ITextSource fileContent)
+			{
+				bool lookupOpenFileOnTargetThread;
+				SnapshotFileContentForAsyncOperation(ref fileContent, out lookupOpenFileOnTargetThread);
+				
 				// TODO: don't use background task if fileContent was specified and up-to-date parse info is available
 				return System.Threading.Tasks.Task.Factory.StartNew(
 					delegate {
 						try {
-							return ParseFile(null, fileContent);
+							if (lookupOpenFileOnTargetThread) {
+								fileContent = WorkbenchSingleton.SafeThreadFunction(GetParseableFileContentForOpenFile, fileName);
+							}
+							ParseInformation parseInfo;
+							IParsedFile parsedFile;
+							DoParse(null, fileContent, true, out parseInfo, out parsedFile);
+							return parseInfo;
+						} catch (Exception ex) {
+							MessageService.ShowException(ex, "Error during async parse");
+							return null;
+						}
+					}
+				);
+			}
+			
+			public Task<IParsedFile> ParseFileAsync(IProjectContent parentProjectContent, ITextSource fileContent)
+			{
+				bool lookupOpenFileOnTargetThread;
+				SnapshotFileContentForAsyncOperation(ref fileContent, out lookupOpenFileOnTargetThread);
+				
+				// TODO: don't use background task if fileContent was specified and up-to-date parse info is available
+				return System.Threading.Tasks.Task.Factory.StartNew(
+					delegate {
+						try {
+							if (lookupOpenFileOnTargetThread) {
+								fileContent = WorkbenchSingleton.SafeThreadFunction(GetParseableFileContentForOpenFile, fileName);
+							}
+							ParseInformation parseInfo;
+							IParsedFile parsedFile;
+							DoParse(parentProjectContent, fileContent, false, out parseInfo, out parsedFile);
+							return parsedFile;
 						} catch (Exception ex) {
 							MessageService.ShowException(ex, "Error during async parse");
 							return null;
@@ -593,7 +725,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			if (string.IsNullOrEmpty(fileName))
 				return null;
-			return ParseFile(FileName.Create(fileName));
+			return Parse(FileName.Create(fileName));
 		}
 		
 		/// <summary>
@@ -618,7 +750,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				return null;
 			FileEntry entry = GetFileEntry(fileName, false);
 			if (entry != null)
-				return entry.GetCachedParseInformation(null);
+				return entry.GetCachedParseInformation();
 			else
 				return null;
 		}
@@ -686,7 +818,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </remarks>
 		public static ParseInformation Parse(FileName fileName, ITextSource fileContent = null)
 		{
-			return GetFileEntry(fileName, true).Parse(null, fileContent);
+			return GetFileEntry(fileName, true).Parse(fileContent);
 		}
 		
 		/// <summary>
@@ -703,20 +835,38 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </returns>
 		/// <remarks>
 		/// This method is thread-safe. This parser being used may involve locking or waiting for the main thread,
-		/// so using this method while holding a lock can lead to deadlocks.
+		/// so waiting for the task can cause deadlocks.
 		/// </remarks>
 		public static Task<ParseInformation> ParseAsync(FileName fileName, ITextSource fileContent = null)
 		{
-			if (fileContent == null)
-				throw new ArgumentNullException("fileContent");
-			// create snapshot (in case someone passes a mutable document to BeginParse)
-			return GetFileEntry(fileName, true).BeginParse(fileContent.CreateSnapshot());
+			return GetFileEntry(fileName, true).ParseAsync(fileContent);
 		}
-		
 		
 		/// <summary>
 		/// Parses the specified file.
-		/// This method does not request full parse information 
+		/// This method does not request full parse information
+		/// </summary>
+		/// <param name="fileName">Name of the file to parse</param>
+		/// <param name="fileContent">Optional: Content of the file to parse.
+		/// The fileContent is taken as a hint - if a newer version than it is already available, that will be used instead.
+		/// </param>
+		/// <returns>
+		/// Returns the IParsedFile for the specified file, or null if the file cannot be parsed.
+		/// For files currently open in an editor, this method does not necessary reparse, but may return
+		/// the existing IParsedFile (but only if it's still up-to-date).
+		/// </returns>
+		/// <remarks>
+		/// This method is thread-safe. This parser being used may involve locking or waiting for the main thread,
+		/// so using this method while holding a lock can lead to deadlocks.
+		/// </remarks>
+		public static IParsedFile ParseFile(FileName fileName, ITextSource fileContent = null)
+		{
+			return GetFileEntry(fileName, true).ParseFile(null, fileContent);
+		}
+		
+		/// <summary>
+		/// Parses the specified file.
+		/// This method does not request full parse information
 		/// </summary>
 		/// <param name="parentProjectContent">
 		/// Project content to use as a parent project for the parse run.
@@ -727,9 +877,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// The fileContent is taken as a hint - if a newer version than it is already available, that will be used instead.
 		/// </param>
 		/// <returns>
-		/// Returns the ParseInformation for the specified file, or null if the file cannot be parsed.
+		/// Returns the IParsedFile for the specified file, or null if the file cannot be parsed.
 		/// For files currently open in an editor, this method does not necessary reparse, but may return
-		/// an existing cached parse information (but only if it's still up-to-date).
+		/// the existing IParsedFile (but only if it's still up-to-date).
 		/// </returns>
 		/// <remarks>
 		/// This method is thread-safe. This parser being used may involve locking or waiting for the main thread,
@@ -737,7 +887,23 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </remarks>
 		public static IParsedFile ParseFile(IProjectContent parentProjectContent, FileName fileName, ITextSource fileContent = null)
 		{
-			return GetFileEntry(fileName, true).Parse(parentProjectContent, fileContent);
+			return GetFileEntry(fileName, true).ParseFile(parentProjectContent, fileContent);
+		}
+		
+		/// <summary>
+		/// Async version of ParseFile().
+		/// </summary>
+		public static Task<IParsedFile> ParseFileAsync(FileName fileName, ITextSource fileContent = null)
+		{
+			return GetFileEntry(fileName, true).ParseFileAsync(null, fileContent);
+		}
+		
+		/// <summary>
+		/// Async version of ParseFile().
+		/// </summary>
+		public static Task<IParsedFile> ParseFileAsync(IProjectContent parentProjectContent, FileName fileName, ITextSource fileContent = null)
+		{
+			return GetFileEntry(fileName, true).ParseFileAsync(parentProjectContent, fileContent);
 		}
 		
 		/// <summary>
@@ -767,9 +933,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 				return null;
 			IEditable editable = viewContent as IEditable;
 			if (editable != null)
-				return ParseFile(viewContent.PrimaryFileName, editable.CreateSnapshot());
+				return Parse(viewContent.PrimaryFileName, editable.CreateSnapshot());
 			else
-				return ParseFile(viewContent.PrimaryFileName);
+				return Parse(viewContent.PrimaryFileName);
 		}
 		
 		/// <summary>
@@ -777,7 +943,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// Will create a new IParser instance on demand.
 		/// This method is thread-safe.
 		/// </summary>
-		public static IParser GetParser(string fileName)
+		public static IParser GetParser(FileName fileName)
 		{
 			return GetFileEntry(fileName, true).parser;
 		}
@@ -788,7 +954,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </summary>
 		public static void RegisterParseInformation(string fileName, IParsedFile cu)
 		{
-			FileEntry entry = GetFileEntry(fileName, true);
+			FileEntry entry = GetFileEntry(FileName.Create(fileName), true);
 			entry.RegisterParseInformation(cu);
 		}
 		

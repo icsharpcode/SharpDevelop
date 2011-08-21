@@ -51,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.UseFullyQualifiedMemberNames;
 				else
 					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
-				text = ambience.Convert(entity);
+				text = ambience.ConvertEntity(entity);
 				image = ClassBrowserIconService.GetIcon(entity);
 			}
 			
