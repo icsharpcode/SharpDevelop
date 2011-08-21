@@ -17,7 +17,9 @@ namespace ICSharpCode.AspNet.Mvc
 		bool closed;
 		List<MvcViewEngineViewModel> viewEngines;
 		MvcViewEngineViewModel selectedViewEngine;
-		bool stronglyTypedView;
+		bool isStronglyTypedView;
+		bool isContentPage;
+		
 		MvcModelClassViewModelsForSelectedFolder modelClassesForSelectedFolder;
 		
 		public AddMvcViewToProjectViewModel(ISelectedMvcFolder selectedViewFolder)
@@ -105,6 +107,27 @@ namespace ICSharpCode.AspNet.Mvc
 			set {
 				selectedViewEngine = value;
 				viewFileName.TemplateType = selectedViewEngine.TemplateType;
+				UpdateSelectedViewEngineFlags();
+			}
+		}
+		
+		void UpdateSelectedViewEngineFlags()
+		{
+			IsAspxViewEngineSelected = selectedViewEngine.TemplateType.IsAspx();
+			IsRazorViewEngineSelected = selectedViewEngine.TemplateType.IsRazor();
+			
+			OnPropertyChanged(viewModel => viewModel.IsAspxViewEngineSelected);
+			OnPropertyChanged(viewModel => viewModel.IsRazorViewEngineSelected);
+		}
+		
+		public bool IsRazorViewEngineSelected { get; private set; }
+		public bool IsAspxViewEngineSelected { get; private set; }
+		
+		public bool IsContentPage {
+			get { return isContentPage; }
+			set {
+				isContentPage = value;
+				OnPropertyChanged(viewModel => viewModel.IsContentPage);
 			}
 		}
 		
@@ -163,10 +186,10 @@ namespace ICSharpCode.AspNet.Mvc
 		}
 		
 		public bool IsStronglyTypedView {
-			get { return stronglyTypedView; }
+			get { return isStronglyTypedView; }
 			set {
-				stronglyTypedView = value;
-				if (stronglyTypedView) {
+				isStronglyTypedView = value;
+				if (isStronglyTypedView) {
 					modelClassesForSelectedFolder.GetModelClasses();
 					OnPropertyChanged(viewModel => viewModel.ModelClasses);
 				}
@@ -180,6 +203,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public MvcModelClassViewModel SelectedModelClass { get; set; }
 		public string ModelClassName { get; set; }
+		public string ContentPage { get; set; }
 	}
 }
 

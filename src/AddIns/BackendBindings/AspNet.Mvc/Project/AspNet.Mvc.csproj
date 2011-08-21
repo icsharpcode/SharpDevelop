@@ -59,6 +59,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\AddMvcViewToProjectViewModel.cs" />
+    <Compile Include="Src\BooleanToVisibilityConverter.cs" />
     <Compile Include="Src\CloseDialogBehaviour.cs" />
     <Compile Include="Src\DelegateCommand.cs" />
     <Compile Include="Src\IAddMvcItemToProjectView.cs" />

@@ -513,5 +513,106 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual("MyNamespace.MyClass", modelClassName);
 		}
+		
+		[Test]
+		public void IsRazorViewEngineSelected_RazorViewEngineSelected_ReturnsTrue()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			SelectRazorViewEngine();
+			
+			bool selected = viewModel.IsRazorViewEngineSelected;
+			
+			Assert.IsTrue(selected);
+		}
+		
+		[Test]
+		public void IsAspxViewEngineSelected_RazorViewEngineSelected_ReturnsFalse()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			SelectRazorViewEngine();
+			
+			bool selected = viewModel.IsAspxViewEngineSelected;
+			
+			Assert.IsFalse(selected);
+		}
+		
+		[Test]
+		public void IsAspxViewEngineSelected_AspxViewEngineSelected_ReturnsTrue()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			SelectAspxViewEngine();
+			
+			bool selected = viewModel.IsAspxViewEngineSelected;
+			
+			Assert.IsTrue(selected);
+		}
+		
+		[Test]
+		public void IsRazorViewEngineSelected_AspxViewEngineSelected_ReturnsFalse()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			SelectAspxViewEngine();
+			
+			bool selected = viewModel.IsRazorViewEngineSelected;
+			
+			Assert.IsFalse(selected);
+		}
+		
+		[Test]
+		public void IsAspxViewEngineSelected_NewViewModelCreatedAndUserHasNotMadeSelection_ReturnsTrue()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			
+			bool selected = viewModel.IsAspxViewEngineSelected;
+			
+			Assert.IsTrue(selected);
+		}
+		
+		[Test]
+		public void SelectedViewEngine_ChangedToAspxViewEngineFromRazorViewEngine_PropertyChangedEventsFiredForIsAspxViewEngineSelected()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			SelectRazorViewEngine();
+			MonitorPropertyChangedEvents();
+			SelectAspxViewEngine();
+			
+			bool fired = propertyChangedEvents.Contains("IsAspxViewEngineSelected");
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void SelectedViewEngine_ChangedToRazorViewEngineFromAspxViewEngine_PropertyChangedEventsFiredForIsRazorViewEngineSelected()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			SelectAspxViewEngine();
+			MonitorPropertyChangedEvents();
+			SelectRazorViewEngine();
+			
+			bool fired = propertyChangedEvents.Contains("IsRazorViewEngineSelected");
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void IsContentPage_ChangedFromFalseToTrue_PropertyChangedEventFiresForIsContentPage()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			viewModel.IsContentPage = false;
+			MonitorPropertyChangedEvents();
+			viewModel.IsContentPage = true;
+			
+			bool fired = propertyChangedEvents.Contains("IsContentPage");
+			
+			Assert.IsTrue(fired);
+		}
 	}
 }

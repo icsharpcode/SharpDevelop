@@ -38,6 +38,9 @@
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -71,6 +74,7 @@
     <Compile Include="Src\AddMvcControllerToProjectViewModelTests.cs" />
     <Compile Include="Src\AddMvcViewToProjectCommandTests.cs" />
     <Compile Include="Src\AddMvcViewToProjectViewModelTests.cs" />
+    <Compile Include="Src\BooleanToVisibilityConverterTests.cs" />
     <Compile Include="Src\IsMvcControllerFolderSelectedConditionEvaluatorTests.cs" />
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluatorTests.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
