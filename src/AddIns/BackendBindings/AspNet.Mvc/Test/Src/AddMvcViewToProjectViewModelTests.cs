@@ -652,5 +652,48 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(String.Empty, masterPage);
 		}
+		
+		[Test]
+		public void MasterPageFile_DefaultValue_ReturnsSharedSiteMasterPageFile()
+		{
+			CreateViewModel();
+			string masterPage = viewModel.MasterPageFile;
+			
+			Assert.AreEqual("~/Views/Shared/Site.Master", masterPage);
+		}
+		
+		[Test]
+		public void MasterPageFile_ViewEngineChangedToRazor_ReturnsEmptyString()
+		{
+			CreateViewModel();
+			SelectRazorViewEngine();
+			string masterPage = viewModel.MasterPageFile;
+			
+			Assert.AreEqual(String.Empty, masterPage);
+		}
+		
+		[Test]
+		public void MasterPageFile_ViewEngineChangedToRazorAndThenBackToAspx_ReturnsSharedSiteMasterPageFile()
+		{
+			CreateViewModel();
+			SelectRazorViewEngine();
+			viewModel.MasterPageFile = "Test";
+			SelectAspxViewEngine();
+			
+			string masterPage = viewModel.MasterPageFile;
+			
+			Assert.AreEqual("~/Views/Shared/Site.Master", masterPage);
+		}
+		
+		[Test]
+		public void MasterPageFile_ViewEngineChangedToRazor_PropertyChangedEventFiredForMasterPageFile()
+		{
+			CreateViewModel();
+			MonitorPropertyChangedEvents();
+			SelectRazorViewEngine();
+			bool fired = propertyChangedEvents.Contains("MasterPageFile");
+			
+			Assert.IsTrue(fired);
+		}
 	}
 }

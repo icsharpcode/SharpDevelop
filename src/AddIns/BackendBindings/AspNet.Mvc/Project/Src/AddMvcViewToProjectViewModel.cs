@@ -41,6 +41,7 @@ namespace ICSharpCode.AspNet.Mvc
 			CreateModelClassesForSelectedFolder();
 			CreateCommands();
 			AddViewEngines();
+			SetDefaultMasterPage();
 		}
 		
 		void CreateModelClassesForSelectedFolder()
@@ -98,6 +99,15 @@ namespace ICSharpCode.AspNet.Mvc
 			SelectedViewEngine = viewEngines[0];
 		}
 		
+		void SetDefaultMasterPage()
+		{
+			if (IsAspxViewEngineSelected) {
+				MasterPageFile = "~/Views/Shared/Site.Master";
+			} else {
+				MasterPageFile = String.Empty;
+			}
+		}
+		
 		public IEnumerable<MvcViewEngineViewModel> ViewEngines {
 			get { return viewEngines; }
 		}
@@ -107,17 +117,20 @@ namespace ICSharpCode.AspNet.Mvc
 			set {
 				selectedViewEngine = value;
 				viewFileName.TemplateType = selectedViewEngine.TemplateType;
-				UpdateSelectedViewEngineFlags();
+				OnSelectedViewEngineChanged();
 			}
 		}
 		
-		void UpdateSelectedViewEngineFlags()
+		void OnSelectedViewEngineChanged()
 		{
 			IsAspxViewEngineSelected = selectedViewEngine.TemplateType.IsAspx();
 			IsRazorViewEngineSelected = selectedViewEngine.TemplateType.IsRazor();
 			
+			SetDefaultMasterPage();
+			
 			OnPropertyChanged(viewModel => viewModel.IsAspxViewEngineSelected);
 			OnPropertyChanged(viewModel => viewModel.IsRazorViewEngineSelected);
+			OnPropertyChanged(viewModel => viewModel.MasterPageFile);
 		}
 		
 		public bool IsRazorViewEngineSelected { get; private set; }
