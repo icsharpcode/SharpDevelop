@@ -5,6 +5,14 @@
 #>
 <# if (mvcHost.IsPartialView) { #>
 
+<# } else if (mvcHost.IsContentPage) { #>
+@{
+	ViewBag.Title = "<#= mvcHost.ViewName #>";
+	Layout = "<#= mvcHost.MasterPageFile #>";
+}
+
+<h2><#= mvcHost.ViewName #></h2>
+
 <# } else { #>
 <#= GetModelDirective() #>
 

@@ -238,5 +238,39 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(String.Empty, modelClassName);
 		}
+		
+		[Test]
+		public void GenerateFile_IsContentPageIsTrue_IsContentPageIsSetOnMvcTextTemplateHost()
+		{
+			CreateGenerator();
+			generator.IsContentPage = true;
+			GenerateFile();
+			
+			bool contentPage = fakeHost.IsContentPage;
+			
+			Assert.IsTrue(contentPage);
+		}
+		
+		[Test]
+		public void MasterPageFile_DefaultValue_ReturnsEmptyString()
+		{
+			CreateGenerator();
+			string masterPage = generator.MasterPageFile;
+			
+			Assert.AreEqual(String.Empty, masterPage);
+		}
+		
+		[Test]
+		public void GenerateFile_MasterPageFileIsSet_MasterPageFileIsSetOnMvcTextTemplateHost()
+		{
+			CreateGenerator();
+			generator.IsContentPage = true;
+			generator.MasterPageFile = "~/Views/Shared/Site.Master";
+			GenerateFile();
+			
+			string masterPage = fakeHost.MasterPageFile;
+			
+			Assert.AreEqual("~/Views/Shared/Site.Master", masterPage);
+		}
 	}
 }

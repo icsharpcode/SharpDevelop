@@ -96,5 +96,15 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(String.Empty, typeName);
 		}
+		
+		[Test]
+		public void MasterPageFile_SetToNull_ReturnsEmptyString()
+		{
+			CreateHost();
+			host.MasterPageFile = null;
+			string masterPage = host.MasterPageFile;
+			
+			Assert.AreEqual(String.Empty, masterPage);
+		}
 	}
 }

@@ -5,6 +5,14 @@
 #>
 <# If mvcHost.IsPartialView Then #>
 
+<# ElseIf mvcHost.IsContentPage Then #>
+@Code
+	ViewData("Title") = "<#= mvcHost.ViewName #>"
+	Layout = "<#= mvcHost.MasterPageFile #>"
+End Code
+
+<h2><#= mvcHost.ViewName #></h2>
+
 <# Else #>
 <#= GetModelDirective() #>
 

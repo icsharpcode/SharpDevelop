@@ -5,6 +5,17 @@
 <# if (mvcHost.IsPartialView) { #>
 <%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
 
+<# } else if(mvcHost.IsContentPage) { #>
+<%@ Page Language="C#" MasterPageFile="<#= mvcHost.MasterPageFile #>" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="Title" runat="server">
+<#= mvcHost.ViewName #>
+</asp:Content>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="Main" runat="server">
+	
+</asp:Content>
+
 <# } else { #>
 <%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
 

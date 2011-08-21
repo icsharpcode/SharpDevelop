@@ -15,6 +15,8 @@ namespace ICSharpCode.AspNet.Mvc
 		string ViewName { get; set; }
 		bool IsPartialView { get; set; }
 		string ViewDataTypeName { get; set; }
+		bool IsContentPage { get; set; }
+		string MasterPageFile { get; set; }
 		
 		// Add Controller properties.
 		string ControllerName { get; set; }

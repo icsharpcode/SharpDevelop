@@ -11,6 +11,7 @@ namespace ICSharpCode.AspNet.Mvc
 		string viewName = String.Empty;
 		string viewDataTypeName = String.Empty;
 		string @namespace = String.Empty;
+		string masterPageFile = String.Empty;
 		MvcControllerName controllerName = new MvcControllerName();
 		
 		public MvcTextTemplateHost(
@@ -69,5 +70,11 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public bool AddActionMethods { get; set; }
 		public bool IsPartialView { get; set; }
+		public bool IsContentPage { get; set; }
+		
+		public string MasterPageFile {
+			get { return masterPageFile; }
+			set { masterPageFile = UseEmptyStringIfNull(value); }
+		}
 	}
 }

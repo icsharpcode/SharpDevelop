@@ -152,10 +152,20 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void ConfigureMvcViewGenerator()
 		{
+			viewGenerator.IsContentPage	= IsContentPage;
+			viewGenerator.MasterPageFile = GetMasterPageFile();
 			viewGenerator.ModelClassName = GetModelClassName();
 			viewGenerator.Project = selectedViewFolder.Project;
 			viewGenerator.TemplateLanguage = GetTemplateLanguage();
 			viewGenerator.TemplateType = selectedViewEngine.TemplateType;
+		}
+		
+		string GetMasterPageFile()
+		{
+			if (IsContentPage) {
+				return MasterPageFile;
+			}
+			return String.Empty;
 		}
 		
 		string GetModelClassName()
@@ -203,7 +213,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public MvcModelClassViewModel SelectedModelClass { get; set; }
 		public string ModelClassName { get; set; }
-		public string ContentPage { get; set; }
+		public string MasterPageFile { get; set; }
 	}
 }
 

@@ -614,5 +614,43 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.IsTrue(fired);
 		}
+		
+		[Test]
+		public void AddMvcView_IsContentPageIsTrue_IsContentPageIsSetToTrueOnViewGenerator()
+		{
+			CreateViewModel();
+			viewModel.IsContentPage = true;
+			viewModel.AddMvcView();
+			
+			bool contentPage = fakeViewGenerator.IsContentPage;
+			
+			Assert.IsTrue(contentPage);
+		}
+		
+		[Test]
+		public void AddMvcView_ContentPageIsDefinedAndIsContentPageIsTrue_ContentPageIsConfiguredOnViewGenerator()
+		{
+			CreateViewModel();
+			viewModel.IsContentPage = true;
+			viewModel.MasterPageFile = "~/Views/Shared/Site.Master";
+			viewModel.AddMvcView();
+			
+			string masterPage = fakeViewGenerator.MasterPageFile;
+			
+			Assert.AreEqual("~/Views/Shared/Site.Master", masterPage);
+		}
+		
+		[Test]
+		public void AddMvcView_ContentPageIsDefinedAndIsContentPageIsFalse_ContentPageIsEmptyStringOnViewGenerator()
+		{
+			CreateViewModel();
+			viewModel.IsContentPage = false;
+			viewModel.MasterPageFile = "~/Views/Shared/Site.Master";
+			viewModel.AddMvcView();
+			
+			string masterPage = fakeViewGenerator.MasterPageFile;
+			
+			Assert.AreEqual(String.Empty, masterPage);
+		}
 	}
 }

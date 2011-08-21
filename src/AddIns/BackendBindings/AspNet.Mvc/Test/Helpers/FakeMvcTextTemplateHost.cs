@@ -39,6 +39,8 @@ namespace AspNet.Mvc.Tests.Helpers
 		public bool AddActionMethods { get; set; }
 		public bool IsPartialView { get; set; }
 		public string ViewDataTypeName { get; set; }
+		public bool IsContentPage { get; set; }
+		public string MasterPageFile { get; set; }
 		
 		public CompilerErrorCollection Errors { get; set; }
 	}

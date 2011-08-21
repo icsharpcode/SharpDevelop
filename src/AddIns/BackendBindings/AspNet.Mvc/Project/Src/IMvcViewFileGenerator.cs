@@ -12,6 +12,8 @@ namespace ICSharpCode.AspNet.Mvc
 		MvcTextTemplateType TemplateType { get; set; }
 		IMvcProject Project { get; set; }
 		string ModelClassName { get; set; }
+		bool IsContentPage { get; set; }
+		string MasterPageFile { get; set; }
 		
 		void GenerateFile(MvcViewFileName fileName);
 	}

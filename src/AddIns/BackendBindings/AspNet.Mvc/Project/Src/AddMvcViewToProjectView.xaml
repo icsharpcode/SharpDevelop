@@ -124,7 +124,7 @@
 			Grid.Row="7"
 			Grid.Column="1"
 			IsEnabled="{Binding Path=IsContentPage}"
-			Text="{Binding Path=ContentPage}"/>
+			Text="{Binding Path=MasterPageFile}"/>
 		
 		<StackPanel
 			Orientation="Horizontal"
