@@ -2109,7 +2109,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return ErrorResult;
 		}
 		
-		MemberLookup CreateMemberLookup()
+		/// <summary>
+		/// Creates a MemberLookup instance using this resolver's settings.
+		/// </summary>
+		public MemberLookup CreateMemberLookup()
 		{
 			return new MemberLookup(context, this.CurrentTypeDefinition, this.UsingScope != null ? this.UsingScope.ProjectContent : null);
 		}

@@ -999,7 +999,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			Expression rhs = namedExpression.Expression;
 			if (rhs is ArrayInitializerExpression) {
-				throw new NotImplementedException();
+				ResolveResult result = resolver.ResolveIdentifierInObjectInitializer(namedExpression.Identifier);
+				HandleObjectInitializer(result.Type, (ArrayInitializerExpression)rhs);
+				return result;
 			} else {
 				if (resolverEnabled) {
 					ResolveResult result = resolver.ResolveIdentifierInObjectInitializer(namedExpression.Identifier);
@@ -1028,20 +1030,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				var initializer = objectCreateExpression.Initializer;
 				if (!initializer.IsNull) {
-					resolver.PushInitializerType(type);
-					foreach (Expression element in initializer.Elements) {
-						if (element is NamedExpression) {
-							// assignment in object initializer
-							Scan(element);
-						} else if (element is ArrayInitializerExpression) {
-							// constructor argument list in collection initializer
-							throw new NotImplementedException();
-						} else {
-							// element in collection initializer
-							throw new NotImplementedException();
-						}
-					}
-					resolver.PopInitializerType();
+					HandleObjectInitializer(type, initializer);
 				}
 				
 				if (resolverEnabled) {
@@ -1059,6 +1048,44 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ScanChildren(objectCreateExpression);
 				return null;
 			}
+		}
+		
+		void HandleObjectInitializer(IType type, ArrayInitializerExpression initializer)
+		{
+			resolver.PushInitializerType(type);
+			foreach (Expression element in initializer.Elements) {
+				ArrayInitializerExpression aie = element as ArrayInitializerExpression;
+				if (aie != null) {
+					if (resolveResultCache.ContainsKey(aie)) {
+						// Don't resolve the add call again if we already did so
+						continue;
+					}
+					StoreState(aie, resolver.Clone());
+					// constructor argument list in collection initializer
+					ResolveResult[] addArguments = new ResolveResult[aie.Elements.Count];
+					int i = 0;
+					foreach (var addArgument in aie.Elements) {
+						addArguments[i++] = Resolve(addArgument);
+					}
+					MemberLookup memberLookup = resolver.CreateMemberLookup();
+					ResolveResult targetResult = new ResolveResult(type);
+					var addRR = memberLookup.Lookup(targetResult, "Add", EmptyList<IType>.Instance, true);
+					var mgrr = addRR as MethodGroupResolveResult;
+					if (mgrr != null) {
+						OverloadResolution or = mgrr.PerformOverloadResolution(resolver.Context, addArguments, null, false, false);
+						var invocationRR = new InvocationResolveResult(targetResult, or, resolver.Context);
+						StoreResult(aie, invocationRR);
+						ProcessConversionsInResult(invocationRR);
+					} else {
+						StoreResult(aie, addRR);
+					}
+				} else {
+					// assignment in object initializer (NamedExpression),
+					// or some unknown kind of expression
+					Scan(element);
+				}
+			}
+			resolver.PopInitializerType();
 		}
 		
 		public override ResolveResult VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
