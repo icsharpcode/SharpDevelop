@@ -97,6 +97,7 @@ namespace ICSharpCode.FormsDesigner
 			Services.EventBindingService eventBindingService = new Services.EventBindingService(properties.FormsDesignerProxy, designSurface);
 			container.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			container.AddService(typeof(IToolboxService), new SharpDevelopToolboxService(this));
+			container.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(properties.ResourceStore, this));
 			
 			InitializeEvents();
 		}
@@ -361,6 +362,12 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		public IMessageService MessageService {
+			get {
+				return GetService(typeof(IMessageService)) as IMessageService;
+			}
+		}
+		
 		public void AddService(Type type, object service)
 		{
 			Services.AddService(type, service);
@@ -413,5 +420,6 @@ namespace ICSharpCode.FormsDesigner
 		public IFormsDesigner FormsDesignerProxy { get; set; }
 		public IFormsDesignerLoggingService Logger { get; set; }
 		public SharpDevelopDesignerOptions Options { get; set; }
+		public IResourceStore ResourceStore { get; set; }
 	}
 }

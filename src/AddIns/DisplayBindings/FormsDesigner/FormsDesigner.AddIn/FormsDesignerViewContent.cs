@@ -160,7 +160,8 @@ namespace ICSharpCode.FormsDesigner
 				Commands = new SharpDevelopCommandProvider(this),
 				FormsDesignerProxy = new ViewContentIFormsDesignerProxy(this),
 				Logger = new FormsDesignerLoggingServiceImpl(),
-				Options = options
+				Options = options,
+				ResourceStore = resourceStore
 			};
 			
 			appDomain = null;
@@ -334,7 +335,6 @@ namespace ICSharpCode.FormsDesigner
 			
 			appDomainHost.AddService(typeof(IHelpService), new HelpService());
 			
-			appDomainHost.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(this.resourceStore));
 			appDomainHost.AddService(typeof(IProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
 			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
 			

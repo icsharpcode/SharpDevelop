@@ -95,6 +95,7 @@
     <Compile Include="Src\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="Src\Services\DefaultServiceContainer.cs" />
     <Compile Include="Src\Services\DesignerOptionService.cs" />
+    <Compile Include="Src\Services\DesignerResourceService.cs" />
     <Compile Include="Src\Services\EventBindingService.cs" />
     <Compile Include="Src\Services\ImageResourceEditor.cs" />
     <Compile Include="Src\Services\IProjectResourceService.cs" />

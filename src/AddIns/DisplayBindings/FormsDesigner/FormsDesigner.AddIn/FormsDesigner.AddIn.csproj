@@ -99,7 +99,6 @@
     <Compile Include="OptionPanels\GridOptions.cs" />
     <Compile Include="OptionPanels\LocalizationModelOptionsPanel.cs" />
     <Compile Include="SecondaryDisplayBinding.cs" />
-    <Compile Include="Services\DesignerResourceService.cs" />
     <Compile Include="Services\SharpDevelopCommandProvider.cs" />
     <Compile Include="Services\DomTypeLocator.cs" />
     <Compile Include="Services\HelpService.cs" />

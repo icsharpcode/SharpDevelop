@@ -7,8 +7,8 @@ using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
 using System.Reflection;
-
 using ICSharpCode.FormsDesigner.Services;
 
 namespace ICSharpCode.FormsDesigner
@@ -58,6 +58,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		public SharpDevelopDesignerLoader(IServiceProvider services, IDesignerGenerator generator, IDesignerLoader loader)
 		{
+			Debug.Assert(DesignerAppDomainManager.IsDesignerDomain, "not in Designer AppDomain!");
 			if (generator == null) {
 				throw new ArgumentNullException("generator", "Generator cannot be null");
 			}

@@ -3,11 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Resources;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -18,7 +18,7 @@ namespace ICSharpCode.FormsDesigner.Services
 	/// <summary>
 	/// Manages the resource files that belong to an open forms designer view.
 	/// </summary>
-	internal sealed class ResourceStore : IDisposable
+	internal sealed class ResourceStore : MarshalByRefObject, IResourceStore, IDisposable
 	{
 		readonly FormsDesignerViewContent viewContent;
 		
@@ -42,16 +42,6 @@ namespace ICSharpCode.FormsDesigner.Services
 				CreateOpenedFileForStorage(storage, fileName, File.Exists(fileName));
 			}
 			return storage;
-		}
-		
-		public IResourceReader GetReader(CultureInfo info)
-		{
-			return this.GetResourceStorage(info).GetReader();
-		}
-		
-		public IResourceWriter GetWriter(CultureInfo info)
-		{
-			return this.GetResourceStorage(info).GetWriter();
 		}
 		
 		void CreateOpenedFileForStorage(ResourceStorage storage, string fileName, bool isExistingFile)
@@ -116,6 +106,10 @@ namespace ICSharpCode.FormsDesigner.Services
 				this.cultureName = cultureName;
 			}
 			
+			public ResourceType Type {
+				get { return GetResourceType(OpenedFile.FileName); }
+			}
+			
 			public void Dispose()
 			{
 				if (this.stream != null) {
@@ -159,17 +153,16 @@ namespace ICSharpCode.FormsDesigner.Services
 			/// Returns a new resource reader for this resource based on the most recent
 			/// version available (either in memory or on disk).
 			/// </summary>
-			public IResourceReader GetReader()
+			public Stream GetReadingStream()
 			{
 				if (this.buffer == null) {
 					if (OpenedFile != null) {
-						return CreateResourceReader(OpenFileContentAsMemoryStream(OpenedFile), GetResourceType(OpenedFile.FileName));
+						return OpenFileContentAsMemoryStream(OpenedFile);
 					} else {
 						return null;
 					}
 				} else {
-					ResourceType type = (OpenedFile != null) ? GetResourceType(OpenedFile.FileName) : ResourceType.Resx;
-					return CreateResourceReader(new MemoryStream(this.buffer, false), type);
+					return new MemoryStream(this.buffer, false);
 				}
 			}
 			
@@ -201,11 +194,10 @@ namespace ICSharpCode.FormsDesigner.Services
 			/// a new writer needs to be returned every time one is requested, discarding any
 			/// data written by previously returned writers.
 			/// </summary>
-			public IResourceWriter GetWriter()
+			public Stream GetWritingStream()
 			{
 				this.stream = new MemoryStream();
-				this.writer = CreateResourceWriter(this.stream, GetResourceType(OpenedFile.FileName));
-				return this.writer;
+				return this.stream;
 			}
 			
 			public void Save(Stream stream, ResourceStore resourceStore)
@@ -237,11 +229,6 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 		}
 		#endregion
-		
-		internal enum ResourceType {
-			Resx = 0,
-			Resources = 1
-		};
 		
 		static IProject GetProject(string formFileName)
 		{
@@ -349,6 +336,20 @@ namespace ICSharpCode.FormsDesigner.Services
 				return ResourceType.Resx;
 			}
 			return ResourceType.Resources;
+		}
+		
+		public Stream GetResourceAsStreamForReading(CultureInfo info, out ResourceType type)
+		{
+			ResourceStorage storage = GetResourceStorage(info);
+			type = storage.Type;
+			return storage.GetReadingStream();
+		}
+		
+		public Stream GetResourceAsStreamForWriting(CultureInfo info, out ResourceType type)
+		{
+			ResourceStorage storage = GetResourceStorage(info);
+			type = storage.Type;
+			return storage.GetWritingStream();
 		}
 	}
 }

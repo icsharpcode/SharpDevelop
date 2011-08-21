@@ -3,6 +3,11 @@
 
 using System;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
+using System.Resources;
+using System.Security.AccessControl;
+
 using ICSharpCode.FormsDesigner.Services;
 
 namespace ICSharpCode.FormsDesigner
@@ -21,5 +26,17 @@ namespace ICSharpCode.FormsDesigner
 		void ShowSourceCode(IComponent component, EventDescriptor edesc, string methodName);
 		
 		SharpDevelopDesignerOptions DesignerOptions { get; }
+	}
+	
+	public enum ResourceType
+	{
+		Resx = 0,
+		Resources = 1
+	}
+	
+	public interface IResourceStore
+	{
+		Stream GetResourceAsStreamForReading(CultureInfo info, out ResourceType type);
+		Stream GetResourceAsStreamForWriting(CultureInfo info, out ResourceType type);
 	}
 }
