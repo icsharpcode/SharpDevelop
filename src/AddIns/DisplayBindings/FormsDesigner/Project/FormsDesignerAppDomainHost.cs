@@ -13,8 +13,10 @@ using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
+
 using ICSharpCode.FormsDesigner.Gui;
 using ICSharpCode.FormsDesigner.Services;
+using ICSharpCode.FormsDesigner.UndoRedo;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -26,7 +28,6 @@ namespace ICSharpCode.FormsDesigner
 		DesignSurface designSurface;
 		ServiceContainer container;
 		DesignerLoader loader;
-		
 		IFormsDesignerLoggingService logger;
 		
 		public string DesignSurfaceName {
@@ -90,14 +91,14 @@ namespace ICSharpCode.FormsDesigner
 			container.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService(container));
 			container.AddService(typeof(AmbientProperties), new AmbientProperties());
 			container.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService(properties.Options));
-
+			
 			this.designSurface = designSurfaceManager.CreateDesignSurface(container);
 			
 			container.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(properties.Commands, designSurface).Proxy);
 			Services.EventBindingService eventBindingService = new Services.EventBindingService(properties.FormsDesignerProxy, designSurface);
 			container.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			container.AddService(typeof(IToolboxService), new SharpDevelopToolboxService(this));
-			container.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(properties.ResourceStore, this));
+//			container.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(properties.ResourceStore, this));
 			
 			InitializeEvents();
 		}
@@ -408,6 +409,13 @@ namespace ICSharpCode.FormsDesigner
 		public AssemblyName GetAssemblyName(ToolComponent component)
 		{
 			return component.LoadAssembly().GetName();
+		}
+		
+		public void InitializeUndoEngine()
+		{
+			var undoEngine = new FormsDesignerUndoEngine(this);
+			container.AddService(typeof(UndoEngine), undoEngine);
+			container.AddService(typeof(IFormsDesignerUndoEngine), new FormsDesignerUndoEngineProxy(undoEngine));
 		}
 	}
 	

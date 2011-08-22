@@ -111,7 +111,8 @@
     <Compile Include="Src\Services\XmlDesignerNameCreationService.cs" />
     <Compile Include="Src\DesignerLoader\FormsDesignerLoadException.cs" />
     <Compile Include="Src\Services\TypeDiscoveryService.cs" />
-    <Compile Include="Src\UndoRedo\UndoEngine.cs" />
+    <Compile Include="Src\UndoRedo\IFormsDesignerUndoEngine.cs" />
+    <Compile Include="Src\UndoRedo\FormsDesignerUndoEngine.cs" />
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>

@@ -37,7 +37,7 @@ namespace ICSharpCode.FormsDesigner
 		readonly IDesignerGenerator generator;
 		readonly IDesignerSourceProvider sourceProvider;
 		readonly ResourceStore resourceStore;
-		FormsDesignerUndoEngine undoEngine;
+		IFormsDesignerUndoEngine undoEngine;
 		FormsDesignerAppDomainHost appDomainHost;
 		ToolboxProvider toolbox;
 		
@@ -335,12 +335,12 @@ namespace ICSharpCode.FormsDesigner
 			
 			appDomainHost.AddService(typeof(IHelpService), new HelpService());
 			
-			appDomainHost.AddService(typeof(IProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
-			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
+//			appDomainHost.AddService(typeof(IProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
+//			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
 			
 			// Provide the ImageResourceEditor for all Image and Icon properties
-			this.addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
-			this.addedTypeDescriptionProviders.Add(typeof(Icon), TypeDescriptor.AddAttributes(typeof(Icon), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
+//			this.addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
+//			this.addedTypeDescriptionProviders.Add(typeof(Icon), TypeDescriptor.AddAttributes(typeof(Icon), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
 			
 			appDomainHost.DesignSurfaceLoading += new EventHandlerProxy(DesignerLoading);
 			appDomainHost.DesignSurfaceLoaded += new LoadedEventHandlerProxy(DesignerLoaded);
@@ -353,8 +353,9 @@ namespace ICSharpCode.FormsDesigner
 				throw new FormsDesignerLoadException(appDomainHost.LoadErrors);
 			}
 			
-			undoEngine = new FormsDesignerUndoEngine(appDomainHost);
-			appDomainHost.Services.AddService(typeof(UndoEngine), undoEngine);
+			appDomainHost.InitializeUndoEngine();
+			
+			undoEngine = (IFormsDesignerUndoEngine)appDomainHost.GetService(typeof(IFormsDesignerUndoEngine));
 			
 			appDomainHost.ComponentChanged += new ComponentChangedEventHandlerProxy(ComponentChanged);
 			appDomainHost.ComponentAdded   += new ComponentEventHandlerProxy(ComponentListChanged);
@@ -466,7 +467,7 @@ namespace ICSharpCode.FormsDesigner
 			// in the PropertyPad, "InvalidOperationException: The container cannot be disposed
 			// at design time" is thrown.
 			// This is solved by calling dispose after the double-click event has been processed.
-			if (appDomainHost.DesignSurfaceName != null) {
+			if (appDomainHost != null && appDomainHost.DesignSurfaceName != null) {
 				appDomainHost.DesignSurfaceLoading -= new EventHandlerProxy(DesignerLoading);
 				appDomainHost.DesignSurfaceLoaded -= new LoadedEventHandlerProxy(DesignerLoaded);
 				appDomainHost.DesignSurfaceFlushed -= new EventHandlerProxy(DesignerFlushed);
@@ -734,12 +735,12 @@ namespace ICSharpCode.FormsDesigner
 		protected void UpdatePropertyPad()
 		{
 			if (appDomainHost.HasDesignerHost) {
-				propertyContainer.Host = appDomainHost.Host;
-				propertyContainer.SelectableObjects = appDomainHost.Host.Container.Components;
-				ISelectionService selectionService = (ISelectionService)appDomainHost.GetService(typeof(ISelectionService));
-				if (selectionService != null) {
-					UpdatePropertyPadSelection(selectionService);
-				}
+//				propertyContainer.Host = appDomainHost.Host;
+//				propertyContainer.SelectableObjects = appDomainHost.Host.Container.Components;
+//				ISelectionService selectionService = (ISelectionService)appDomainHost.GetService(typeof(ISelectionService));
+//				if (selectionService != null) {
+//					UpdatePropertyPadSelection(selectionService);
+//				}
 			}
 		}
 		
