@@ -153,5 +153,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			throw new NotSupportedException();
 		}
+		
+		public string AssemblyName {
+			get { return "MinimalResolveContext"; }
+		}
 	}
 }

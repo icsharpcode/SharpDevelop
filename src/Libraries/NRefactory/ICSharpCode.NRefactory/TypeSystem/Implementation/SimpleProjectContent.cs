@@ -40,6 +40,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
 		readonly Dictionary<string, IParsedFile> fileDict = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
 		
+		public virtual string AssemblyName {
+			get { return string.Empty; }
+		}
+		
 		#region AssemblyAttributes
 		readonly List<IAttribute> assemblyAttributes = new List<IAttribute>(); // mutable assembly attribute storage
 		readonly List<IAttribute> moduleAttributes = new List<IAttribute>();
