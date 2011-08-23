@@ -28,6 +28,7 @@ namespace SharpReportSamples
 		private TreeNode iListNode;
 		private TreeNode providerIndependent;
 		private TreeNode customized;
+		private TreeNode storedProcedure;
 		private ImageList imageList;
 		
 		public MainForm()
@@ -59,12 +60,15 @@ namespace SharpReportSamples
 			this.iListNode = this.treeView1.Nodes[0].Nodes[2];
 			this.providerIndependent = this.treeView1.Nodes[0].Nodes[3];
 			this.customized = this.treeView1.Nodes[0].Nodes[4];
+			this.storedProcedure = this.treeView1.Nodes[0].Nodes[5];
+			
 			
 			AddNodesToTree (this.formNode,startPath + @"FormSheet\" );
 			AddNodesToTree (this.pullNode,startPath + @"PullModel\" );
 			AddNodesToTree (this.iListNode,startPath + @"IList\" );
 			AddNodesToTree (this.providerIndependent,startPath + @"ProviderIndependent\" );
 			AddNodesToTree (this.customized,startPath + @"Customized\" );
+			AddNodesToTree (this.storedProcedure,startPath + @"StoredProcedure\" );
 		}
 		
 		
@@ -100,7 +104,12 @@ namespace SharpReportSamples
 			else if (s == "ContributorsListWithParameters"){
 				this.RunContributorsWithParameters(reportName);
 			}
-			         
+			
+			else if (s == "SalesByYear_2Params") {
+				{
+					StoredProcedureWithParam(reportName);
+				}
+			}
 			else if (s == "NoConnectionReport") {
 				this.RunProviderIndependent(reportName);
 			} else if (s =="EventLog")
@@ -301,8 +310,24 @@ namespace SharpReportSamples
 		}
 		
 		
+		void StoredProcedureWithParam(string fileName)
+		{
+			var model = ReportEngine.LoadReportModel(fileName);
+			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
+			
+			parameters.SqlParameters[0].ParameterValue = new System.DateTime(1997,11,01).ToString();
+			parameters.SqlParameters[1].ParameterValue = new System.DateTime(1997,12,31).ToString();
+
+			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
+			{
+				this.previewControl1.RunReport(fileName,parameters);
+			};
+			this.previewControl1.RunReport(fileName,parameters);
+		}
+		
+		
 		//Handles  SectionRenderEvent
-		int hour = 0;
+//		int hour = 0;
 		
 		private void PushPrinting (object sender, SectionRenderEventArgs e )
 		{
@@ -407,32 +432,5 @@ namespace SharpReportSamples
 				RunStandardReport(selectedNode.Tag.ToString());
 			}
 		}
-		
-		/*
-		void Button2Click(object sender, EventArgs e)
-		{
-			// get Filename to save *.pdf
-			string saveTo = this.SelectFilename();
-			
-			// Create connectionobject
-			parameters =  ReportEngine.LoadParameters(reportName);
-			ConnectionObject con = ConnectionObject.CreateInstance(this.conOleDbString,
-			                                                       System.Data.Common.DbProviderFactories.GetFactory("System.Data.OleDb") );
-			
-			parameters.ConnectionObject = con;
-			
-			
-			// create a Pagebuilder
-			pageBuilder = ReportEngine.CreatePageBuilder(reportName,parameters);
-			pageBuilder.BuildExportList();
-		
-			using (PdfRenderer pdfRenderer = PdfRenderer.CreateInstance(pageBuilder,saveTo,true)){
-				pdfRenderer.Start();
-				pdfRenderer.RenderOutput();
-				pdfRenderer.End();
-			}
-		}
-		
-		 */
 	}
 }

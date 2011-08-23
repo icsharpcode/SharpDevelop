@@ -8,7 +8,7 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
-
+using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Factories;
 using ICSharpCode.Reports.Core.Globals;
@@ -43,7 +43,7 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		#region create Connection handle Sql Parameter's
-		
+		/*
 		public static ConnectionObject PrepareConnectionFromParameters (ReportSettings settings,
 		                                                                ReportParameters reportParameters)
 		{
@@ -62,7 +62,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 			return conObj;
 		}
-	
+	*/
 		#endregion
 		
 		
@@ -102,19 +102,38 @@ namespace ICSharpCode.Reports.Core {
 					model.ReportSettings.SortColumnsCollection.AddRange(reportParameters.SortColumnCollection);
 				}
 				
-				if (reportParameters.Parameters.Count > 0) {
-					foreach (BasicParameter bp in reportParameters.Parameters) {
-						BasicParameter p = model.ReportSettings.ParameterCollection.Find(bp.ParameterName);
-						Console.WriteLine("CheckForParameters {0} - {1}",p.ParameterName,p.ParameterValue);
-						if (p != null) {
-							p.ParameterValue = bp.ParameterValue;
-						}
-					}
+				if (reportParameters.Parameters.Count > 0)
+				{
+					reportParameters.Parameters.ForEach(item => SetReportParam(model,item));
+				}
+				
+				if (reportParameters.SqlParameters.Count > 0)
+				{
+					reportParameters.SqlParameters.ForEach(item => SetSqlParam(model,item));
 				}
 			}
 		}
+	
 		
+		private static void SetReportParam (IReportModel model,BasicParameter param)
+		{
+			var p = model.ReportSettings.ParameterCollection.Find(param.ParameterName);
+			if (p != null) {
+				p.ParameterValue = param.ParameterValue;
+			}
+		}
+			
 		
+		private static void SetSqlParam (IReportModel model,SqlParameter param)
+		{
+			var p = model.ReportSettings.SqlParameters.Find(param.ParameterName);
+			if (p != null) {
+				p.ParameterValue = param.ParameterValue;
+			}
+		}
+		
+
+		/*
 		protected static ColumnCollection CollectFieldsFromModel(ReportModel model){
 			if (model == null) {
 				throw new ArgumentNullException("model");
@@ -132,7 +151,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 			return col;
 		}
-		
+		*/
 		
 		/// <summary>
 		/// Creates an <see cref="AbstractRenderer"></see>
@@ -238,6 +257,7 @@ namespace ICSharpCode.Reports.Core {
 				model = LoadReportModel (fileName);
 				ReportParameters pars = new ReportParameters();
 				pars.Parameters.AddRange (model.ReportSettings.ParameterCollection);
+				pars.SqlParameters.AddRange(model.ReportSettings.SqlParameters);
 				return pars;
 			} catch (Exception) {
 				throw;
@@ -282,24 +302,6 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		#region Preview to Windows PreviewDialog
-		///<summary>
-		/// Opens the PreviewDialog as standalone, so, no need for Designer
-		/// </summary>
-		///<param name="fileName">Report's Filenema</param>
-		/// <param name="/// <summary>
-		/// send report to printer
-		/// </summary>
-		/// <param name="fileName">Path to ReportFile</param>
-		
-		[Obsolete ("use public void PreviewStandardReport (string fileName,null)")]
-		public void PreviewStandardReport (string fileName) 
-		{
-			if (String.IsNullOrEmpty(fileName)) {
-				throw new ArgumentNullException("fileName");
-			}
-			PreviewStandardReport (fileName,null);
-		}
-		
 		
 		public void PreviewStandardReport (string fileName,ReportParameters reportParameters)
 		{
@@ -319,25 +321,6 @@ namespace ICSharpCode.Reports.Core {
 				throw;
 			}
 		}
-		
-		
-		/// <summary>
-		/// Preview a "PushModel - Report"
-		/// </summary>
-		/// <param name="fileName">Filename to the location of the ReportFile</param>
-		/// <param name="dataTable">a Datatable, containing the data</param>
-		
-		[Obsolete("use public void PreviewPushDataReport (string fileName,DataTable dataTable,null)")]
-//		public void PreviewPushDataReport (string fileName,DataTable dataTable)
-//		{
-//			if (String.IsNullOrEmpty(fileName)) {
-//				throw new ArgumentNullException("fileName");
-//			}
-//			if (dataTable == null) {
-//				throw new ArgumentNullException("dataTable");
-//			}
-//			this.PreviewPushDataReport(fileName,dataTable,null);
-//		}
 		
 
 		public void PreviewPushDataReport (string fileName,DataTable dataTable,ReportParameters reportParameters)
@@ -360,19 +343,6 @@ namespace ICSharpCode.Reports.Core {
 				throw;
 			}
 		}
-		
-		
-		[Obsolete ("use public void PreviewPushDataReport (string fileName,IList list,null)")]
-//		public void PreviewPushDataReport (string fileName,IList list)
-//		{
-//			if (String.IsNullOrEmpty(fileName)) {
-//				throw new ArgumentNullException("fileName");
-//			}
-//			if (list == null) {
-//				throw new ArgumentNullException("list");
-//			}
-//			this.PreviewPushDataReport(fileName,list,null);
-//		}
 		
 	
 		public void PreviewPushDataReport (string fileName,IList list,ReportParameters reportParameters)
@@ -433,7 +403,7 @@ namespace ICSharpCode.Reports.Core {
 		/// </summary>
 		/// <param name="reportModel"></param>
 		/// <returns></returns>
-		
+		/*
 		internal static IReportCreator CreatePageBuilder (IReportModel reportModel) 
 		{
 			if (reportModel == null) {
@@ -443,7 +413,7 @@ namespace ICSharpCode.Reports.Core {
 			IReportCreator builder = DataPageBuilder.CreateInstance(reportModel, dataMan);
 			return builder;
 		}
-		
+		*/
 
 		/// <summary>
 		/// 
@@ -558,15 +528,15 @@ namespace ICSharpCode.Reports.Core {
 		/// </summary>
 		/// <param name="fileName">Path to ReportFile</param>
 		/// <param name="renderTo">Type of renderer currently only "ToText" is implemented</param>
-		[Obsolete("use PrintStandardReport (fileName,null)")]
-		public void PrintStandardReport (string fileName) {
-			if (String.IsNullOrEmpty(fileName)) {
-				throw new ArgumentNullException("fileName");
-			}
-			PrintStandardReport (fileName,null);
-			
-		}
-		
+//		[Obsolete("use PrintStandardReport (fileName,null)")]
+//		public void PrintStandardReport (string fileName) {
+//			if (String.IsNullOrEmpty(fileName)) {
+//				throw new ArgumentNullException("fileName");
+//			}
+//			PrintStandardReport (fileName,null);
+//			
+//		}
+//		
 		
 		public void PrintStandardReport (string fileName,ReportParameters reportParameters) {
 			if (String.IsNullOrEmpty(fileName)) {
