@@ -298,7 +298,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		public ITextSource CreateSnapshot()
 		{
 			lock (lockObject) {
-				return new RopeTextSource(rope.Clone());
+				if (currentCheckpoint == null)
+					currentCheckpoint = new ChangeTrackingCheckpoint(lockObject);
+				return new RopeTextSource(rope, currentCheckpoint);
 			}
 		}
 		
@@ -325,7 +327,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				if (currentCheckpoint == null)
 					currentCheckpoint = new ChangeTrackingCheckpoint(lockObject);
 				checkpoint = currentCheckpoint;
-				return new RopeTextSource(rope.Clone());
+				return new RopeTextSource(rope, currentCheckpoint);
 			}
 		}
 		
@@ -927,6 +929,7 @@ namespace ICSharpCode.AvalonEdit.Document
 					var container = new ServiceContainer();
 					container.AddService(typeof(IDocument), this);
 					container.AddService(typeof(TextDocument), this);
+					serviceProvider = container;
 				}
 				return serviceProvider;
 			}

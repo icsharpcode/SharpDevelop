@@ -14,6 +14,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	public sealed class RopeTextSource : ITextSource
 	{
 		readonly Rope<char> rope;
+		readonly ITextSourceVersion version;
 		
 		/// <summary>
 		/// Creates a new RopeTextSource.
@@ -22,7 +23,18 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			if (rope == null)
 				throw new ArgumentNullException("rope");
-			this.rope = rope;
+			this.rope = rope.Clone();
+		}
+		
+		/// <summary>
+		/// Creates a new RopeTextSource.
+		/// </summary>
+		public RopeTextSource(Rope<char> rope, ITextSourceVersion version)
+		{
+			if (rope == null)
+				throw new ArgumentNullException("rope");
+			this.rope = rope.Clone();
+			this.version = version;
 		}
 		
 		/// <summary>
@@ -30,7 +42,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		/// <remarks>
 		/// RopeTextSource only publishes a copy of the contained rope to ensure that the underlying rope cannot be modified.
-		/// Unless the creator of the RopeTextSource still has a reference on the rope, RopeTextSource is immutable.
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification="Not a property because it creates a clone")]
 		public Rope<char> GetRope()
@@ -75,8 +86,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <inheritdoc/>
 		public ITextSource CreateSnapshot()
 		{
-			// we clone the underlying rope because the creator of the RopeTextSource might be modifying it
-			return new RopeTextSource(rope.Clone());
+			return this;
 		}
 		
 		/// <inheritdoc/>
@@ -91,8 +101,9 @@ namespace ICSharpCode.AvalonEdit.Document
 			return rope.IndexOfAny(anyOf, startIndex, count);
 		}
 		
-		ITextSourceVersion ITextSource.Version {
-			get { return null; }
+		/// <inheritdoc/>
+		public ITextSourceVersion Version {
+			get { return version; }
 		}
 		
 		string ITextSource.GetText(ICSharpCode.Editor.ISegment segment)

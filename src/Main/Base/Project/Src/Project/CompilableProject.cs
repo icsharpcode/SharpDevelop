@@ -10,6 +10,9 @@ using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Xml.Linq;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Util;
 
@@ -403,6 +406,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void Reparse(bool references, bool code)
 		{
+			lock (SyncRoot) {
+				if (parseProjectContent == null)
+					return; // parsing hasn't started yet; no need to re-parse
+			}
 			#warning Reparse
 			throw new NotImplementedException();
 		}
@@ -640,6 +647,29 @@ namespace ICSharpCode.SharpDevelop.Project
 					supportedRuntime.SetAttributeValue("version", newFramework.SupportedRuntimeVersion);
 					supportedRuntime.SetAttributeValue("sku", newFramework.SupportedSku);
 				}
+			}
+		}
+		#endregion
+		
+		#region Type System
+		volatile ParseProjectContent parseProjectContent;
+		
+		public override IProjectContent ProjectContent {
+			get {
+				if (parseProjectContent == null) {
+					lock (SyncRoot) {
+						if (parseProjectContent == null) {
+							parseProjectContent = new ParseProjectContent(this);
+						}
+					}
+				}
+				return parseProjectContent;
+			}
+		}
+		
+		public override ITypeResolveContext TypeResolveContext {
+			get {
+				return new CompositeTypeResolveContext(new ITypeResolveContext[] { this.ProjectContent, MinimalResolveContext.Instance });
 			}
 		}
 		#endregion

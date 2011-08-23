@@ -1033,6 +1033,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		internal static void OnSolutionLoaded()
 		{
+			foreach (IProject project in ProjectService.OpenSolution.Projects) {
+				RegisterProjectContentForAddedProject(project);
+			}
 		}
 		
 		internal static void OnSolutionClosed()
