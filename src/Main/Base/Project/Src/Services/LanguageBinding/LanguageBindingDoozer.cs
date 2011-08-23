@@ -29,12 +29,12 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, System.Collections.ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			ITextEditor editor = (ITextEditor)caller;
-			string[] extensions = codon.Properties["extensions"].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+			ITextEditor editor = (ITextEditor)args.Caller;
+			string[] extensions = args.Codon["extensions"].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 			if (CanAttach(extensions, editor.FileName)) {
-				return codon.AddIn.CreateObject(codon.Properties["class"]);
+				return args.AddIn.CreateObject(args.Codon["class"]);
 			} else {
 				return null;
 			}

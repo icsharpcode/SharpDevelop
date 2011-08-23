@@ -3,6 +3,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.Globals;
 
 /// <summary>
 /// This Class drwas a Border around an ReportItem

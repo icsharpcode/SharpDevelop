@@ -20,6 +20,16 @@ namespace ICSharpCode.AddInManager
 			ManagerForm.Instance.ShowInstallableAddIns(new string[] { file.FileName });
 			return null;
 		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return true;
+		}
+		
+		public double AutoDetectFileContent(string fileName, System.IO.Stream fileContent, string detectedMimeType)
+		{
+			return 1;
+		}
 	}
 	#endif
 }

@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 
 /// <summary>

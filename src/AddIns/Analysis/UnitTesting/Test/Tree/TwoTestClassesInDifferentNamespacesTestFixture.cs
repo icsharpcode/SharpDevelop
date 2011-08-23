@@ -37,7 +37,7 @@ namespace UnitTesting.Tests.Tree
 		[SetUp]
 		public void SetUp()
 		{
-			solution = new Solution();
+			solution = new Solution(new MockProjectChangeWatcher());
 			
 			// Create a project to display in the test tree view.
 			project = new MockCSharpProject(solution, "TestProject");

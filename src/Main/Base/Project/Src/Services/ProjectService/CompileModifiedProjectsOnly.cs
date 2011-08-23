@@ -263,7 +263,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (lastCompilationPass != null) {
 						feedbackSink.ReportMessage(
 							StringParser.Parse("${res:MainWindow.CompilerMessages.SkipProjectNoChanges}",
-							                   new string[,] {{ "Name", p.Name }})
+							                   new StringTagPair("Name", p.Name))
 						);
 						feedbackSink.Done(true);
 					} else {

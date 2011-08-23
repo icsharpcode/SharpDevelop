@@ -65,7 +65,8 @@
 		            insertafter="C#"
 		            insertbefore="Resources"
 		            name="C++ files (*.cpp, *.h)"
-		            extensions="*.cpp;*.c;*.hpp;*.h"/>
+		            extensions="*.cpp;*.c;*.hpp;*.h"
+		            mimeType = "text/plain"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/ProjectBindings">

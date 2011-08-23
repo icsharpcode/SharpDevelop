@@ -23,9 +23,9 @@ namespace ICSharpCode.Reports.Core
 		
 		#region test
 		
-		public CurrentItemsCollection GetDataRow()
+		public CurrentItemsCollection GetDataRow
 		{
-			return this.store.FillDataRow();
+			get {return this.store.FillDataRow();}
 		}
 		
 		#endregion
@@ -62,12 +62,6 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
-		
-		public bool IsSorted {get {return this.store.IsSorted;}}
-		
-		
-		public bool IsGrouped {get {return this.store.IsGrouped;}}
-	
 		
 		public int CurrentRow  {
 			get {return this.store.CurrentPosition;}
@@ -125,13 +119,15 @@ namespace ICSharpCode.Reports.Core
 		
 		#region Try make recursive with ChildNavigavtor
 		
-		public IDataNavigator GetChildNavigator()
+		public IDataNavigator GetChildNavigator
 		{
-			var i = BuildChildList();
-			if ((i == null) || (i.Count == 0)) {
-				return null;
-			} 
-			return new ChildNavigator(this.store,i);
+			get {
+				var i = BuildChildList();
+				if ((i == null) || (i.Count == 0)) {
+					return null;
+				}
+				return new ChildNavigator(this.store,i);
+			}
 		}
 		
 		#endregion

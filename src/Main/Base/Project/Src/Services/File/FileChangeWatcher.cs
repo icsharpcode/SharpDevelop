@@ -39,12 +39,17 @@ namespace ICSharpCode.SharpDevelop
 		
 		static int globalDisableCount;
 		
+		public static bool AllChangeWatchersDisabled {
+			get { return globalDisableCount > 0; }
+		}
+		
 		public static void DisableAllChangeWatchers()
 		{
 			WorkbenchSingleton.AssertMainThread();
 			globalDisableCount++;
 			foreach (FileChangeWatcher w in activeWatchers)
 				w.SetWatcher();
+			Project.ProjectChangeWatcher.OnAllChangeWatchersDisabledChanged();
 		}
 		
 		public static void EnableAllChangeWatchers()
@@ -55,6 +60,7 @@ namespace ICSharpCode.SharpDevelop
 			globalDisableCount--;
 			foreach (FileChangeWatcher w in activeWatchers)
 				w.SetWatcher();
+			Project.ProjectChangeWatcher.OnAllChangeWatchersDisabledChanged();
 		}
 		
 		FileSystemWatcher watcher;
@@ -187,7 +193,10 @@ namespace ICSharpCode.SharpDevelop
 				if (!File.Exists(fileName))
 					return;
 				
-				string message = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}", new string[,] {{"File", Path.GetFullPath(fileName)}});
+				string message = StringParser.Parse(
+					"${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}",
+					new StringTagPair("File", Path.GetFullPath(fileName))
+				);
 				if ((AutoLoadExternalChangesOption && file.IsDirty == false)
 				    || MessageService.AskQuestion(message, StringParser.Parse("${res:MainWindow.DialogName}")))
 				{

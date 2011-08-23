@@ -4,6 +4,7 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
@@ -124,7 +125,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			ReportItemCollection itemCol = new ReportItemCollection();
 			ICSharpCode.Reports.Core.BaseTextItem rItem;
 			int i = 1;
-			foreach (IDataRenderer dataRenderer in reportItemCollection) {
+			foreach (IDataItem dataRenderer in reportItemCollection) {
+//			foreach (IDataRenderer dataRenderer in reportItemCollection) {
 				rItem = WizardHelper.CreateTextItem(dataRenderer.ColumnName);
 				rItem.Name = rItem.Text + i.ToString(System.Globalization.CultureInfo.InvariantCulture);
 				itemCol.Add(rItem);

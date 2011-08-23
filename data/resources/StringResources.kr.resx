@@ -508,9 +508,6 @@
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>파일</value>
   </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>줄</value>
-  </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>정보</value>
   </data>
@@ -2945,6 +2942,9 @@ ${CurrentProjectName} 프로젝트에 이 새 파일을 더하겠습니까?</val
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>시작</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>줄</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>새로 고침(&amp;U)</value>
   </data>
@@ -3211,9 +3211,6 @@ ${CurrentProjectName} 프로젝트에 이 새 파일을 더하겠습니까?</val
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>마지막 줄</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>줄</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>NCover 콘솔 응용 프로그램을 찾을 수 없습니다.

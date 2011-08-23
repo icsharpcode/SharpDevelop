@@ -51,9 +51,9 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return new PadDescriptor(codon);
+			return new PadDescriptor(args.Codon);
 		}
 	}
 }

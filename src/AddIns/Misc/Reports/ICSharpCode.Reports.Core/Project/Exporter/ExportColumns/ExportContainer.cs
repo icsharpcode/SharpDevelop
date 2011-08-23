@@ -16,20 +16,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 		ExporterCollection items;
 
 		#region Constructor
-
-		public ExportContainer() : base()
-		{
-			base.IsContainer = true;
-		}
-
-		public ExportContainer(BaseStyleDecorator itemStyle) : base(itemStyle, true)
+	
+		public ExportContainer(BaseStyleDecorator itemStyle) : base(itemStyle)
 		{
 		}
 
 		#endregion
 
 		#region overrides
-
 
 		public override void DrawItem(Graphics graphics)
 		{
@@ -38,14 +32,27 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 			base.DrawItem(graphics);
 			base.Decorate(graphics);
+			
+			items.ForEach(item =>item.DrawItem(graphics));
+//			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) 
+//			{
+//				baseExportColumn.DrawItem(graphics);
+//			}
 		}
 
+		
+		
 		public override void DrawItem(PdfWriter pdfWriter, ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
 		{
 			base.DrawItem(pdfWriter, converter);
 			base.Decorate();
+			items.ForEach(item =>item.DrawItem(pdfWriter,converter));
+			
+//			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in this.Items)
+//			{
+//				baseExportColumn.DrawItem(pdfWriter,converter);
+//			}
 		}
-
 
 		#endregion
 

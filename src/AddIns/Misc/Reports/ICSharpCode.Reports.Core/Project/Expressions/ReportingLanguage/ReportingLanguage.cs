@@ -133,7 +133,9 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			LUnOp.Rule = Symbol("-")
                               | "!";
 			   
-			FunctionExpression.Rule = QualifiedName + LCb + ExprList.Q() + RCb;
+			FunctionExpression.Rule = QualifiedName + LCb + ExprList.Q() + RCb
+				| QualifiedName + LCb + BinExpr + RCb;
+			
 			
 			QualifiedName.Rule = identifier
 				| QualifiedName + dot + identifier 

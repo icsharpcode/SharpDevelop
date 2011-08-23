@@ -40,14 +40,9 @@ namespace ICSharpCode.XamlBinding
 			return false; //nodes.All(node => node.Parent != null);
 		}
 		
-		public override DropEffect CanDrop(IDataObject data, DropEffect requestedEffect)
+		public override bool CanDrop(DragEventArgs e, int index)
 		{
-			return  DropEffect.None; //DropEffect.Move;
-		}
-		
-		public override bool CanCopy(SharpTreeNode[] nodes)
-		{
-			return true;
+			return false;
 		}
 		
 		public string GetMarkupText()
@@ -67,64 +62,47 @@ namespace ICSharpCode.XamlBinding
 			return dataObject;
 		}
 		
-		public override bool CanDelete(SharpTreeNode[] nodes)
+		public override bool CanDelete()
 		{
-			return nodes.All(node => node.Parent != null);
+			return Parent != null;
 		}
 		
-		public override void Drop(IDataObject data, int index, DropEffect finalEffect)
+//		public override void Drop(IDataObject data, int index, DropEffect finalEffect)
+//		{
+//			try {
+//				string insertText = (data.GetData(typeof(string[])) as string[])
+//					.Aggregate((text, part) => text += part);
+//				ITextAnchor marker;
+//				int length = 0;
+//				if (index == this.Children.Count) {
+//					if (index == 0)
+//						marker = null;
+//					else
+//						marker = (this.Children[index - 1] as XamlOutlineNode).EndMarker;
+//					if (marker == null) {
+//						marker = this.EndMarker;
+//						length = -1; // move backwards
+//					} else {
+//						length = 2 + (this.Children[index - 1] as XamlOutlineNode).elementName.Length;
+//					}
+//				} else
+//					marker = (this.Children[index] as XamlOutlineNode).Marker;
+//
+//				int offset = marker.Offset + length;
+//				Editor.Document.Insert(offset, insertText);
+//			} catch (Exception ex) {
+//				throw ex;
+//			}
+//		}
+		
+		public override void Delete()
 		{
-			try {
-				string insertText = (data.GetData(typeof(string[])) as string[])
-					.Aggregate((text, part) => text += part);
-				ITextAnchor marker;
-				int length = 0;
-				if (index == this.Children.Count) {
-					if (index == 0)
-						marker = null;
-					else
-						marker = (this.Children[index - 1] as XamlOutlineNode).EndMarker;
-					if (marker == null) {
-						marker = this.EndMarker;
-						length = -1; // move backwards
-					} else {
-						length = 2 + (this.Children[index - 1] as XamlOutlineNode).elementName.Length;
-					}
-				} else
-					marker = (this.Children[index] as XamlOutlineNode).Marker;
-				
-				int offset = marker.Offset + length;
-				Editor.Document.Insert(offset, insertText);
-			} catch (Exception ex) {
-				throw ex;
-			}
+			DeleteCore();
 		}
 		
-		public override void Delete(SharpTreeNode[] nodes)
+		public override void DeleteCore()
 		{
-			DeleteCore(nodes);
-		}
-		
-		public override void DeleteCore(SharpTreeNode[] nodes)
-		{
-			foreach (XamlOutlineNode node in nodes.OfType<XamlOutlineNode>()) {
-				node.Editor.Document.Remove(node.Marker.Offset, node.EndMarker.Offset - node.Marker.Offset);
-			}
-		}
-		
-		ContextMenu menu;
-	
-		public override ContextMenu GetContextMenu()
-		{
-			if (menu == null) {
-				menu = new ContextMenu();
-				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Cut });
-				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Copy });
-				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Paste });
-				menu.Items.Add(new Separator());
-				menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Delete });
-			}
-			return menu;
+			Editor.Document.Remove(Marker.Offset, EndMarker.Offset - Marker.Offset);
 		}
 		
 		public override object Text {

@@ -2,13 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Linq;
-
 using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Events;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
@@ -21,18 +19,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 	public class BaseConverter:IBaseConverter
 	{
-		
 		private Size saveSize;
 		
-	
 		public event EventHandler <NewPageEventArgs> PageFull;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
 		public event EventHandler<GroupHeaderEventArgs> GroupHeaderRendering;
 		public event EventHandler<GroupFooterEventArgs> GroupFooterRendering;
 		public event EventHandler<RowRenderEventArgs> RowRendering;
 
-		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage,
-		                     ILayouter layouter)
+		
+		public BaseConverter(IReportModel reportModel,IDataNavigator dataNavigator,ExporterPage singlePage)
 		{
 			if (dataNavigator == null) {
 				throw new ArgumentNullException("dataNavigator");
@@ -40,35 +36,34 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (singlePage == null) {
 				throw new ArgumentNullException("singlePage");
 			}
+			this.ReportModel = reportModel;
 
-			if (layouter == null) {
-				throw new ArgumentNullException("layouter");
-			}
 			this.SinglePage = singlePage;
 			this.DataNavigator = dataNavigator;
-			SectionBounds = this.SinglePage.SectionBounds;
-			this.Layouter = layouter;
-			this.Evaluator = StandardPrinter.CreateEvaluator(this.SinglePage,this.DataNavigator);
+			this.Layouter =  (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
+			this.Evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.DataNavigator);
 		}
 		
 		
 		#region PageBreak
 		
 		protected void BuildNewPage(ExporterCollection myList,BaseSection section)
-		{
+		{			
 			FirePageFull(myList);
-			section.SectionOffset = SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
+			section.SectionOffset = SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;		
 			myList.Clear();
 		}
 		
 		
 		protected void FirePageFull (ExporterCollection items)
 		{
-			EventHelper.Raise<NewPageEventArgs>(PageFull,this,new NewPageEventArgs(items));
+			var newPage = new NewPageEventArgs (items,SinglePage.SectionBounds);
+			EventHelper.Raise<NewPageEventArgs>(PageFull,this,newPage);
+			SinglePage.SectionBounds = newPage.SectionBounds;
 		}
 		
-		
 		#endregion
+		
 		
 		#region Events
 		
@@ -78,7 +73,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (row == null) {
 				throw new ArgumentException("row");
 			}
-//			Console.WriteLine("\tFireRowRendering");
 			RowRenderEventArgs rrea = new RowRenderEventArgs(row,currentNavigator.Current);
 			EventHelper.Raise<RowRenderEventArgs>(RowRendering,this,rrea);
 		}
@@ -86,7 +80,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void FireGroupHeaderRendering (GroupHeader groupHeader)
 		{
-//			Console.WriteLine("\tFireGroupHeaderRendering");
 			GroupHeaderEventArgs ghea = new GroupHeaderEventArgs(groupHeader);
 			EventHelper.Raise<GroupHeaderEventArgs>(GroupHeaderRendering,this,ghea);
 		}
@@ -94,7 +87,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void FireGroupFooterRendering (GroupFooter groupFooter)
 		{
-//			Console.WriteLine("\tFireGroupFooterRendering");
 			GroupFooterEventArgs gfea = new GroupFooterEventArgs(groupFooter);
 			EventHelper.Raise<GroupFooterEventArgs>(GroupFooterRendering,this,gfea);
 		}
@@ -118,29 +110,29 @@ namespace ICSharpCode.Reports.Core.Exporter
 			IExportColumnBuilder exportLineBuilder = row as IExportColumnBuilder;
 
 			if (exportLineBuilder != null) {
-
-				ExportContainer lineItem = StandardPrinter.ConvertToContainer(row,offset);
-				
-				StandardPrinter.AdjustBackColor(row);
-				ExporterCollection list = StandardPrinter.ConvertPlainCollection(row.Items,offset);
-					
-				lineItem.Items.AddRange(list);
-				
+				ExportContainer exportContainer = ExportHelper.ConvertToContainer(row,offset);
+				ExporterCollection list = ExportHelper.ConvertPlainCollection(row.Items,exportContainer.StyleDecorator.Location);
+				exportContainer.Items.AddRange(list);
 				ExporterCollection containerList = new ExporterCollection();
-				containerList.Add (lineItem);
+				containerList.Add (exportContainer);
 				return containerList;
 			}
 			return null;
 		}
 		
+		protected void DebugShowSections ()
+		{
+			Console.WriteLine("\treportheader {0}",SectionBounds.ReportHeaderRectangle);
+			Console.WriteLine("\tpageheader {0}",SectionBounds.PageHeaderRectangle);
+			Console.WriteLine("\tdetail {0}",SectionBounds.DetailArea);
+		}
 	
 		#region Grouping
 		
 		protected void ConvertGroupFooter (ISimpleContainer container,ExporterCollection exporterCollection)
 		{
-			var footers = BaseConverter.FindGroupFooter(container);
-			if (footers.Count > 0) {
-				
+            var footers = container.Items.FindGroupFooter();
+			if (footers.Count > 0) {				
 				Size rowSize = footers[0].Size;
 				CurrentPosition = ConvertStandardRow(exporterCollection,(ISimpleContainer)footers[0]);
 				FireGroupFooterRendering(footers[0]);
@@ -151,7 +143,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void PageBreakAfterGroupChange(BaseSection section,ExporterCollection exporterCollection)
 		{
-			
 			if (CheckPageBreakAfterGroupChange(section) ) {
 				
 				if (DataNavigator.HasMoreData)
@@ -164,24 +155,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private static bool CheckPageBreakAfterGroupChange(ISimpleContainer container)
 		{
-			var groupedRows  = BaseConverter.FindGroupHeader(container);
+            var groupedRows = container.Items.FindGroupHeader();
 			if (groupedRows.Count > 0) {
 				var groupedRow = groupedRows[0];
 				return groupedRow.PageBreakOnGroupChange;
 			}
 			return false;
-		}
-		
-		
-		protected static Collection<GroupHeader> FindGroupHeader (ISimpleContainer container)
-		{
-			return new Collection<GroupHeader>(container.Items.OfType<GroupHeader>().ToList());
-		}
-		
-		
-		protected static Collection<GroupFooter> FindGroupFooter (ISimpleContainer container)
-		{
-			return new Collection<GroupFooter>(container.Items.OfType<GroupFooter>().ToList());
 		}
 		
 		
@@ -201,68 +180,72 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return new ExporterCollection();;
 		}
 		
-		public Point CurrentPosition {get;set;}
+		
 		
 		#endregion
+		
+		public Point CurrentPosition {get;set;}
 		
 		public Rectangle ParentRectangle {get;private set;}
 			
 		public ISinglePage SinglePage {get;private set;}
 		
-		public SectionBounds SectionBounds {get; private set;}
-		
-		
+		public SectionBounds SectionBounds
+		{
+			get 
+			{
+				return SinglePage.SectionBounds;
+			}
+		}
+			
 		public IDataNavigator DataNavigator {get;private set;}
 			
-		
 		public ILayouter Layouter {get; private set;}
-		
 		
 		public Graphics Graphics {get;set;}
 		
-		
 		protected IExpressionEvaluatorFacade Evaluator{get;private set;}
 		
-		protected int DefaultLeftPosition {get;set;}
+		protected IReportModel ReportModel {get; private set;}
 		
+		protected int DefaultLeftPosition {get;set;}
 		
 		protected void  SaveSectionSize(Size size)
 		{
 			this.saveSize = size;
 		}
 		
-		
 		protected Size RestoreSectionSize
 		{
 			get {return this.saveSize;}
 		}
 		
-		
 		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
-			Console.WriteLine("\tPrepareContainerForConverting");
-			
 			FireSectionRendering(section);
-			LayoutRow(simpleContainer);
+			LayoutHelper.SetLayoutForRow(Graphics,Layouter,simpleContainer);
 		}
 		
-		
-		protected  Point ConvertStandardRow(ExporterCollection mylist,  ISimpleContainer simpleContainer)
+		protected  Point ConvertStandardRow(ExporterCollection mylist,ISimpleContainer simpleContainer)
 		{
 			var rowSize = simpleContainer.Size;
-Console.WriteLine("ConvertStandardRow");
-			Point curPos = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
-			AfterConverting (mylist);
+			
+			Point curPos = new Point(DefaultLeftPosition, CurrentPosition.Y);
+			ExporterCollection ml = BaseConverter.ConvertItems (simpleContainer, curPos);
+			EvaluationHelper.EvaluateRow(Evaluator,ml);
+			
+			mylist.AddRange(ml);
+		
+			curPos = new Point (DefaultLeftPosition,CurrentPosition.Y + simpleContainer.Size.Height + 2 * GlobalValues.GapBetweenContainer);
 			simpleContainer.Size = rowSize;
-			Console.WriteLine("");
 			return curPos;
 			
 		}
-		
+
 		
 		protected void AfterConverting (ExporterCollection convertedList)
 		{
-			StandardPrinter.EvaluateRow(Evaluator,convertedList);
+			EvaluationHelper.EvaluateRow(Evaluator,convertedList);
 		}
 		
 		
@@ -276,14 +259,8 @@ Console.WriteLine("ConvertStandardRow");
 		
 		protected static  void FillRow (ISimpleContainer row,IDataNavigator currentNavigator)
 		{
-			Console.WriteLine("\tFillrow");
 			currentNavigator.Fill(row.Items);
 		}
 		
-		
-		private void LayoutRow (ISimpleContainer row)
-		{
-			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
-		}
 	}
 }

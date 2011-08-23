@@ -21,7 +21,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		
 		public bool CanCreateContentForFile(string fileName)
 		{
-			return Path.GetExtension(fileName) == ".sdps";
+			return true; // definition in .addin does extension-based filtering
 		}
 		
 		public ICSharpCode.SharpDevelop.Gui.IViewContent CreateContentForFile(OpenedFile file)
@@ -44,6 +44,16 @@ namespace ICSharpCode.Profiler.AddIn.Views
 				}
 			}
 			return new WpfViewer(file, provider);
+		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return true;
+		}
+		
+		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		{
+			return 1;
 		}
 	}
 }

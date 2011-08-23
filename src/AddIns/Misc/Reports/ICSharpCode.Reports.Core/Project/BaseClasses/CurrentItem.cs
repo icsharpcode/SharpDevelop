@@ -8,7 +8,11 @@ namespace ICSharpCode.Reports.Core
 {
 	public class CurrentItem : AbstractColumn
 	{
-		
+		public CurrentItem (string name,Type dataType):base(name,dataType)
+		{
+		    
+		}
+
 		public object Value{get;set;}
 	}
 }

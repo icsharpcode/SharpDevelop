@@ -33,13 +33,13 @@ namespace ICSharpCode.Reports.Addin.Designer
 			base.Initialize(component);
 			GetService ();
 		}
+	
 		
-		/*
-		public override bool CanBeParentedTo(System.ComponentModel.Design.IDesigner parentDesigner)
+		protected override void PostFilterProperties(System.Collections.IDictionary properties)
 		{
-			return false;
+			DesignerHelper.RemoveProperties(properties);
+			base.PostFilterProperties(properties);
 		}
-		*/
 		
 		
 		public override bool CanParent(Control control)

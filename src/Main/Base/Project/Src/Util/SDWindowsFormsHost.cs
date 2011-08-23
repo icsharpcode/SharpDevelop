@@ -5,16 +5,16 @@ using System;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
-
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Util;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
 	/// WindowsFormsHost used in SharpDevelop.
 	/// </summary>
-	public class SDWindowsFormsHost : WindowsFormsHost
+	public class SDWindowsFormsHost : CustomWindowsFormsHost
 	{
 		/// <summary>
 		/// Creates a new SDWindowsFormsHost instance.

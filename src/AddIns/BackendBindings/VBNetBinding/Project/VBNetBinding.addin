@@ -23,7 +23,8 @@
 		<FileFilter id = "VBNet"
 		            insertbefore="AllFiles"
 		            name = "${res:SharpDevelop.FileFilter.VBNetFiles}"
-		            extensions = "*.vb"/>
+		            extensions = "*.vb"
+		            mimeType = "text/plain"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">

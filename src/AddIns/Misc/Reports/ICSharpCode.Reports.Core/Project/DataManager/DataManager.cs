@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Globalization;
 
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Project.Interfaces;
 
 /// <summary>
@@ -228,15 +229,6 @@ namespace ICSharpCode.Reports.Core {
 				return this.dataSource;
 			}
 		}
-		
-		
-		public bool IsSorted
-		{
-			get {
-				return this.dataViewStrategy.IsSorted;
-			}
-		}
-		
 	
 		#endregion
 		

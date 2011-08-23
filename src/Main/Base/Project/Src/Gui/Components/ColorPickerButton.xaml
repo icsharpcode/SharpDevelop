@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+	x:Class="ICSharpCode.SharpDevelop.Gui.ColorPickerButton"
+	x:Name="colorPicker" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui">
+	<Button
+		Name="button"
+		Click="ButtonClick"
+		Padding="2"
+		HorizontalContentAlignment="Stretch"
+		VerticalContentAlignment="Stretch">
+		<Border
+			BorderBrush="Black"
+			BorderThickness="1"
+			Padding="1"
+			Name="border">
+			<TextBlock
+				Name="textBlock"
+				TextAlignment="Center" />
+		</Border>
+	</Button>
+</UserControl>
