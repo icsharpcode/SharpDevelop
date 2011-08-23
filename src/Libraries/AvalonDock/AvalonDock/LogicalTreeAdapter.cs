@@ -42,6 +42,9 @@ namespace AvalonDock
         {
             foreach (var child in adapter.Children())
             {
+                if (child.Item is DockingManager)
+                    continue;
+
                 yield return child;
 
                 foreach (var grandChild in child.Descendants())

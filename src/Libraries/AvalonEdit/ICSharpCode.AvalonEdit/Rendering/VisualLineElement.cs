@@ -60,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <see cref="VisualLineElementTextRunProperties"/> will affect only this
 		/// <see cref="VisualLineElement"/>.
 		/// </summary>
-		public VisualLineElementTextRunProperties TextRunProperties { get; set; }
+		public VisualLineElementTextRunProperties TextRunProperties { get; private set; }
 		
 		internal void SetTextRunProperties(VisualLineElementTextRunProperties p)
 		{
@@ -198,6 +198,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					return stop2;
 			}
 			return -1;
+		}
+		
+		/// <summary>
+		/// Gets whether the specified offset in this element is considered whitespace.
+		/// </summary>
+		public virtual bool IsWhitespace(int visualColumn)
+		{
+			return false;
 		}
 		
 		/// <summary>

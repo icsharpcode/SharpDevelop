@@ -117,23 +117,22 @@
 			<xs:element ref="CustomProperty" />
 			<xs:element ref="CustomTool" />
 			<xs:element ref="Debugger" />
-			<xs:element ref="DialogPanel" />
 			<xs:element ref="Directory" />
 			<xs:element ref="DisplayBinding" />
-			<xs:element ref="EditAction" />
 			<xs:element ref="FileFilter" />
 			<xs:element ref="Icon" />
 			<xs:element ref="Include" />
-			<xs:element ref="ProjectBinding" />
 			<xs:element ref="LanguageBinding" />
 			<xs:element ref="MenuItem" />
+			<xs:element ref="OptionPanel" />
 			<xs:element ref="Pad" />
 			<xs:element ref="Parser" />
+			<xs:element ref="ProjectBinding" />
 			<xs:element ref="ProjectContentRegistry" />
 			<xs:element ref="SchemeExtension" />
 			<xs:element ref="String" />
-			<xs:element ref="SyntaxMode" />
 			<xs:element ref="TaskBoundAdditionalLogger" />
+			<xs:element ref="TaskBoundLoggerFilter" />
 			<xs:element ref="ToolbarItem" />
 		</xs:choice>
 		<xs:attribute name="name" type="xs:string" use="required" />
@@ -188,23 +187,22 @@
 			<xs:element ref="CustomProperty" />
 			<xs:element ref="CustomTool" />
 			<xs:element ref="Debugger" />
-			<xs:element ref="DialogPanel" />
 			<xs:element ref="Directory" />
 			<xs:element ref="DisplayBinding" />
-			<xs:element ref="EditAction" />
 			<xs:element ref="FileFilter" />
 			<xs:element ref="Icon" />
 			<xs:element ref="Include" />
-			<xs:element ref="ProjectBinding" />
 			<xs:element ref="LanguageBinding" />
 			<xs:element ref="MenuItem" />
+			<xs:element ref="OptionPanel" />
 			<xs:element ref="Pad" />
 			<xs:element ref="Parser" />
+			<xs:element ref="ProjectBinding" />
 			<xs:element ref="ProjectContentRegistry" />
 			<xs:element ref="SchemeExtension" />
 			<xs:element ref="String" />
-			<xs:element ref="SyntaxMode" />
 			<xs:element ref="TaskBoundAdditionalLogger" />
+			<xs:element ref="TaskBoundLoggerFilter" />
 			<xs:element ref="ToolbarItem" />
 		</xs:choice>
 		<xs:attribute name="action" use="optional">
@@ -266,8 +264,8 @@
 				<xs:attribute name="class" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						The fully qualified type name of the class to create an instace of.
-						</xs:documentation>
+			The fully qualified type name of the class to create an instace of.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -287,16 +285,16 @@
 				<xs:attribute name="class" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Name of the ICodeCompletionBinding class (normally deriving from DefaultCodeCompletionBinding).
-						</xs:documentation>
+			Name of the ICodeCompletionBinding class (normally deriving from DefaultCodeCompletionBinding).
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="extensions" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						List of semicolon-separated entries of the file extensions handled by the binding.
-						If no extensions attribute is specified, the binding is activated in all files.
-						</xs:documentation>
+			List of semicolon-separated entries of the file extensions handled by the binding.
+			If no extensions attribute is specified, the binding is activated in all files.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -315,30 +313,30 @@
 				<xs:attribute name="name" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						The name of the MSBuild meta data.
-						</xs:documentation>
+			The name of the MSBuild meta data.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="displayName" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						The display name of the property.
-						</xs:documentation>
+			The display name of the property.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="description" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						The description text for the property.
-						</xs:documentation>
+			The description text for the property.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="runCustomTool" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Boolean property specifying whether the custom tool should be run when the property value is changed
-						by the user. Default: false.
-						</xs:documentation>
+			Boolean property specifying whether the custom tool should be run when the property value is changed
+			by the user. Default: false.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -357,23 +355,23 @@
 				<xs:attribute name="id" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						ID used to identify the custom tool.
-						</xs:documentation>
+			ID used to identify the custom tool.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="class" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Name of the ICustomTool class.
-						</xs:documentation>
+			Name of the ICustomTool class.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="fileNamePattern" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Regular expression that specifies the file names for which the custom tool
-						can be used. Example: "\.res(x|ources)$"
-						</xs:documentation>
+			Regular expression that specifies the file names for which the custom tool
+			can be used. Example: "\.res(x|ources)$"
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -392,43 +390,43 @@
 				<xs:attribute name="class" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Name of the IDebugger class.
-						</xs:documentation>
+			Name of the IDebugger class.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="supportsStart" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Specifies if the debugger supports the 'Start' command. Default: true
-						</xs:documentation>
+			Specifies if the debugger supports the 'Start' command. Default: true
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="supportsStartWithoutDebugger" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Specifies if the debugger supports the 'StartWithoutDebugger' command. Default: true
-						</xs:documentation>
+			Specifies if the debugger supports the 'StartWithoutDebugger' command. Default: true
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="supportsStop" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Specifies if the debugger supports the 'Stop' (kill running process) command. Default: true
-						</xs:documentation>
+			Specifies if the debugger supports the 'Stop' (kill running process) command. Default: true
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="supportsStepping" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Specifies if the debugger supports stepping. Default: false
-						</xs:documentation>
+			Specifies if the debugger supports stepping. Default: false
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="supportsExecutionControl" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Specifies if the debugger supports execution control (break, resume). Default: false
-						</xs:documentation>
+			Specifies if the debugger supports execution control (break, resume). Default: false
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -441,47 +439,14 @@
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:complexType name="DialogPanel">
-		<xs:complexContent>
-			<xs:extension base="AbstractCodon">
-				<xs:choice minOccurs="0" maxOccurs="unbounded">
-					<xs:element ref="ComplexCondition" />
-					<xs:element ref="Condition" />
-					<xs:element ref="DialogPanel" />
-					<xs:element ref="Include" />
-				</xs:choice>
-				<xs:attribute name="class" use="optional" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						Name of the IDialogPanel class. Optional if the page has subpages.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="label" use="required" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						Caption of the dialog panel.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:element name="DialogPanel" type="DialogPanel">
-		<xs:annotation>
-			<xs:documentation>
-			Creates DefaultDialogPanelDescriptor objects that are used in option dialogs.
-			</xs:documentation>
-		</xs:annotation>
-	</xs:element>
 	<xs:complexType name="Directory">
 		<xs:complexContent>
 			<xs:extension base="AbstractCodon">
 				<xs:attribute name="path" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Path relative to the directory which contains the .addin file defining the codon.
-						</xs:documentation>
+			Path relative to the directory which contains the .addin file defining the codon.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -500,22 +465,22 @@
 				<xs:attribute name="class" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Name of the IDisplayBinding or ISecondaryDisplayBinding class.
-						</xs:documentation>
+			Name of the IDisplayBinding or ISecondaryDisplayBinding class.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="title" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Title of the display binding to use in the "Open With" dialog.
-						</xs:documentation>
+			Title of the display binding to use in the "Open With" dialog.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="type" use="optional">
 					<xs:annotation>
 						<xs:documentation>
-						Type of the display binding (either "Primary" or "Secondary"). Default: "Primary".
-						</xs:documentation>
+			Type of the display binding (either "Primary" or "Secondary"). Default: "Primary".
+			</xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
@@ -527,9 +492,9 @@
 				<xs:attribute name="fileNamePattern" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Regular expression that specifies the file names for which the display binding
-						will be used. Example: "\.res(x|ources)$"
-						</xs:documentation>
+			Regular expression that specifies the file names for which the display binding
+			will be used. Example: "\.res(x|ources)$"
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -545,49 +510,21 @@
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:complexType name="EditAction">
-		<xs:complexContent>
-			<xs:extension base="AbstractCodon">
-				<xs:attribute name="keys" use="required" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						Comma-separated list of keyboard shortcuts that activate the edit action.
-						E.g. "Control|C,Control|Insert"
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="class" use="required" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						Name of the IEditAction class.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:element name="EditAction" type="EditAction">
-		<xs:annotation>
-			<xs:documentation>
-			Creates IEditAction objects for the text editor.
-			</xs:documentation>
-		</xs:annotation>
-	</xs:element>
 	<xs:complexType name="FileFilter">
 		<xs:complexContent>
 			<xs:extension base="AbstractCodon">
 				<xs:attribute name="name" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						The name of the file filter entry.
-						</xs:documentation>
+			The name of the file filter entry.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="extensions" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						The extensions associated with this file filter entry.
-						</xs:documentation>
+			The extensions associated with this file filter entry.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -606,24 +543,24 @@
 				<xs:attribute name="resource" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						The name of a bitmap resource in the resource service.
-						</xs:documentation>
+			The name of a bitmap resource in the resource service.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="language" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						This attribute is specified when a project icon association should be created.
-						It specifies the language of the project types that use the icon.
-						</xs:documentation>
+			This attribute is specified when a project icon association should be created.
+			It specifies the language of the project types that use the icon.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="extensions" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						This attribute is specified when a file icon association should be created.
-						It specifies the semicolon-separated list of file types that use the icon.
-						</xs:documentation>
+			This attribute is specified when a file icon association should be created.
+			It specifies the semicolon-separated list of file types that use the icon.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -643,18 +580,18 @@
 				<xs:attribute name="item" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						When this attribute is used, the include doozer builds the item that is at the
-						addin tree location specified by this attribute.
-						</xs:documentation>
+			When this attribute is used, the include doozer builds the item that is at the
+			addin tree location specified by this attribute.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="path" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						When this attribute is used, the include doozer builds all items inside the
-						path addin tree location specified by this attribute and returns an
-						IBuildItemsModifier which includes all items in the output list.
-						</xs:documentation>
+			When this attribute is used, the include doozer builds all items inside the
+			path addin tree location specified by this attribute and returns an
+			IBuildItemsModifier which includes all items in the output list.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -669,62 +606,21 @@
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:complexType name="ProjectBinding">
-		<xs:complexContent>
-			<xs:extension base="AbstractCodon">
-				<xs:attribute name="guid" use="required" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						Project type GUID of the project used by MsBuild.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="supportedextensions" use="required" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						Semicolon-separated list of file extensions that are compilable files in the project. (e.g. ".boo")
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="projectfileextension" use="required" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						File extension of project files. (e.g. ".booproj")
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="class" use="required" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						Name of the IProjectBinding class.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:element name="ProjectBinding" type="ProjectBinding">
-		<xs:annotation>
-			<xs:documentation>
-			Creates ProjectBindingDescriptor objects for the project service.
-			</xs:documentation>
-		</xs:annotation>
-	</xs:element>
 	<xs:complexType name="LanguageBinding">
 		<xs:complexContent>
 			<xs:extension base="AbstractCodon">
 				<xs:attribute name="extensions" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Semicolon-separated list of file extensions that are handled by the language binding (e.g. .xaml)
-						</xs:documentation>
+			Semicolon-separated list of file extensions that are handled by the language binding (e.g. .xaml)
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="class" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Name of the ILanguageBinding class.
-						</xs:documentation>
+			Name of the ILanguageBinding class.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -733,7 +629,7 @@
 	<xs:element name="LanguageBinding" type="LanguageBinding">
 		<xs:annotation>
 			<xs:documentation>
-			Creates LanguageBindingDescriptor objects for the language service.
+			Creates LanguageBindingDescriptor objects for the language binding service.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -749,18 +645,18 @@
 				<xs:attribute name="label" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Label of the menu item.
-						</xs:documentation>
+			Label of the menu item.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="type" use="optional">
 					<xs:annotation>
 						<xs:documentation>
-						This attribute must be one of these values:
-						Separator, CheckBox, Item=Command, Menu (=with subitems),
-						Builder (=class implementing ISubmenuBuilder).
-						Default: Command.
-						</xs:documentation>
+			This attribute must be one of these values:
+			Separator, CheckBox, Item=Command, Menu (=with subitems),
+			Builder (=class implementing ISubmenuBuilder).
+			Default: Command.
+			</xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
@@ -776,39 +672,48 @@
 				<xs:attribute name="loadclasslazy" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Only for the type "Item"/"Command".
-						When set to false, the command class is loaded
-						immediately instead of the usual lazy-loading.
-						</xs:documentation>
+			Only for the type "Item"/"Command".
+			When set to false, the command class is loaded
+			immediately instead of the usual lazy-loading.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="icon" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Icon of the menu item.
-						</xs:documentation>
+			Icon of the menu item.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="class" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Command class that is run when item is clicked.
-						</xs:documentation>
+			Command class that is run when item is clicked.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="command" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			A WPF routed command that is executed when item is clicked.
+			Currently, this property is supported only for WPF Menus.
+			Only one of the "class" and "command" attributes can be used on a menu entry.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="link" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Only for the type "Item"/"Command". Opens a webpage instead of running a command when
-						clicking the item.
-						</xs:documentation>
+			Only for the type "Item"/"Command". Opens a webpage instead of running a command when
+			clicking the item.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="shortcut" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Shortcut that activates the command (e.g. "Control|S").
-						</xs:documentation>
+			Shortcut that activates the command (e.g. "Control|S").
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -821,49 +726,89 @@
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:complexType name="OptionPanel">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="ComplexCondition" />
+					<xs:element ref="Condition" />
+					<xs:element ref="OptionPanel" />
+					<xs:element ref="Include" />
+				</xs:choice>
+				<xs:attribute name="class" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Name of the IOptionPanel class. Optional if the page has subpages.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="label" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Caption of the dialog panel.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="OptionPanel" type="OptionPanel">
+		<xs:annotation>
+			<xs:documentation>
+			Creates DefaultOptionPanelDescriptor objects that are used in option dialogs.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:complexType name="Pad">
 		<xs:complexContent>
 			<xs:extension base="AbstractCodon">
 				<xs:attribute name="class" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						IPadContent class that is loaded when the pad content is shown for the first time.
-						</xs:documentation>
+			IPadContent class that is loaded when the pad content is shown for the first time.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="title" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Title of the pad that is shown in the user interface.
-						Should be a resource string, e.g. "${res:AddIns.HtmlHelp2.Contents}"
-						</xs:documentation>
+			Title of the pad that is shown in the user interface.
+			Should be a resource string, e.g. "${res:AddIns.HtmlHelp2.Contents}"
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="icon" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Specifies the name of the icon resource used for the pad.
-						Pad icon resources must be registered with the ResourceService before the
-						workbench is loaded!
-						</xs:documentation>
+			Specifies the name of the icon resource used for the pad.
+			Pad icon resources must be registered with the ResourceService before the
+			workbench is loaded!
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="category" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Category of the pad. It is possible to create menu items that automatically
-						contain show commands for all pads in a certain category.
-						Pads in the category "Main" will show up in the "View" menu, the category
-						"Tools" in the "View -&gt; Tools" menu, the category "Debugger" in the
-						"View -&gt; Debugger" menu.
-						</xs:documentation>
+			Category of the pad. It is possible to create menu items that automatically
+			contain show commands for all pads in a certain category.
+			Pads in the category "Main" will show up in the "View" menu, the category
+			"Tools" in the "View -&gt; Tools" menu, the category "Debugger" in the
+			"View -&gt; Debugger" menu.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="shortcut" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Shortcut that activates the 'Show pad' command (e.g. "Control|Alt|T").
-						</xs:documentation>
+			Shortcut that activates the 'Show pad' command (e.g. "Control|Alt|T").
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="defaultPosition" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Default position of the pad, as a ICSharpCode.SharpDevelop.DefaultPadPositions enum value (e.g. "Bottom, Hidden").
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -882,22 +827,15 @@
 				<xs:attribute name="supportedextensions" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Semicolon-separated list of file extensions for which the parser is used. (e.g. ".boo")
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="projectfileextension" use="optional" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						File extension of project files. (e.g. ".booproj")
-						</xs:documentation>
+			Semicolon-separated list of file extensions for which the parser is used. (e.g. ".boo")
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="class" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Name of the IParser class.
-						</xs:documentation>
+			Name of the IParser class.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -910,14 +848,55 @@
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:complexType name="ProjectBinding">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:attribute name="guid" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Project type GUID of the project used by MSBuild.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="supportedextensions" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Semicolon-separated list of file extensions that are compilable files in the project. (e.g. ".boo")
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="projectfileextension" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			File extension of project files. (e.g. ".booproj")
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="class" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Name of the IProjectBinding class.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ProjectBinding" type="ProjectBinding">
+		<xs:annotation>
+			<xs:documentation>
+			Creates ProjectBindingDescriptor objects for the project service.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:complexType name="ProjectContentRegistry">
 		<xs:complexContent>
 			<xs:extension base="AbstractCodon">
 				<xs:attribute name="class" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Name of the ProjectContentRegistry class.
-						</xs:documentation>
+			Name of the ProjectContentRegistry class.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -936,15 +915,15 @@
 				<xs:attribute name="scheme" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Specifies the name of the protocol the extension handles. (e.g. 'ms-help' or 'startpage')
-						</xs:documentation>
+			Specifies the name of the protocol the extension handles. (e.g. 'ms-help' or 'startpage')
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="class" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Name of the ISchemeExtension class (normally deriving from DefaultSchemeExtension).
-						</xs:documentation>
+			Name of the ISchemeExtension class (normally deriving from DefaultSchemeExtension).
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -963,8 +942,8 @@
 				<xs:attribute name="text" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						The string to return.
-						</xs:documentation>
+			The string to return.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -977,57 +956,22 @@
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:complexType name="SyntaxMode">
-		<xs:complexContent>
-			<xs:extension base="AbstractCodon">
-				<xs:attribute name="name" use="required" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						Name of the language for which the syntax mode is used.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="extensions" use="required" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						Semicolon-separated list of file extensions for which the syntax mode is used.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="resource" use="required" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						Fully qualified name of the resource file.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:element name="SyntaxMode" type="SyntaxMode">
-		<xs:annotation>
-			<xs:documentation>
-			Creates AddInTreeSyntaxMode objects that wrap a .xshd syntax mode stored as resource in the
-			addin assembly.
-			</xs:documentation>
-		</xs:annotation>
-	</xs:element>
 	<xs:complexType name="TaskBoundAdditionalLogger">
 		<xs:complexContent>
 			<xs:extension base="AbstractCodon">
 				<xs:attribute name="class" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Name of the IMSBuildAdditionalLogger class.
-						</xs:documentation>
+			Name of the IMSBuildAdditionalLogger class.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="taskname" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Specifies the name of the MSBuild task that must be running for
-						this logger to be active.
-						</xs:documentation>
+			Specifies the name of the MSBuild task that must be running for
+			this logger to be active.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -1037,6 +981,35 @@
 		<xs:annotation>
 			<xs:documentation>
 			Creates IMSBuildAdditionalLogger objects that are only
+			activated when a specific MSBuild task is running.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="TaskBoundLoggerFilter">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:attribute name="class" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Name of the IMSBuildLoggerFilter class.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="taskname" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Specifies the name of the MSBuild task that must be running for
+			this logger to be active.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="TaskBoundLoggerFilter" type="TaskBoundLoggerFilter">
+		<xs:annotation>
+			<xs:documentation>
+			Creates IMSBuildLoggerFilter objects that are only
 			activated when a specific MSBuild task is running.
 			</xs:documentation>
 		</xs:annotation>
@@ -1053,23 +1026,23 @@
 				<xs:attribute name="label" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Label of the tool bar item.
-						</xs:documentation>
+			Label of the tool bar item.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="icon" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Icon of the tool bar item.
-						</xs:documentation>
+			Icon of the tool bar item.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="type" use="optional">
 					<xs:annotation>
 						<xs:documentation>
-						This attribute must be one of these values:
-						Separator, CheckBox, Item, ComboBox, DropDownButton
-						</xs:documentation>
+			This attribute must be one of these values:
+			Separator, CheckBox, Item, ComboBox, DropDownButton
+			</xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
@@ -1084,24 +1057,24 @@
 				<xs:attribute name="loadclasslazy" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Only for the type "Item". When set to false, the command class is loaded
-						immediately instead of the usual lazy-loading.
-						</xs:documentation>
+			Only for the type "Item". When set to false, the command class is loaded
+			immediately instead of the usual lazy-loading.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="tooltip" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Tooltip of the tool bar item.
-						</xs:documentation>
+			Tooltip of the tool bar item.
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="class" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Command class that is run when item is clicked; or class that manages
-						the ComboBox/DropDownButton. Required for everything except "Separator".
-						</xs:documentation>
+			Command class that is run when item is clicked; or class that manages
+			the ComboBox/DropDownButton. Required for everything except "Separator".
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>

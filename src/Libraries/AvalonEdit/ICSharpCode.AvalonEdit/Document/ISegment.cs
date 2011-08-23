@@ -208,7 +208,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			this.start.MovementType = AnchorMovementType.AfterInsertion;
 			this.end = document.CreateAnchor(offset + length);
 			this.end.SurviveDeletion = true;
-			this.start.MovementType = AnchorMovementType.BeforeInsertion;
+			this.end.MovementType = AnchorMovementType.BeforeInsertion;
 		}
 		
 		/// <inheritdoc/>

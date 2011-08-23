@@ -106,7 +106,7 @@ namespace ICSharpCode.WixBinding
 		{
 		}
 		
-		public void NotifyFormRenamed(string newName)
+		public void NotifyComponentRenamed(object component, string newName, string oldName)
 		{
 		}
 		

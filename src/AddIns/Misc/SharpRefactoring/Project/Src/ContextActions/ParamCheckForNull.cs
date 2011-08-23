@@ -19,7 +19,8 @@ namespace SharpRefactoring.ContextActions
 		public override bool IsAvailable(IReturnType parameterType)
 		{
 			var parameterTypeClass = parameterType.GetUnderlyingClass();
-			return (parameterTypeClass == null || parameterTypeClass.ClassType != ClassType.Enum && parameterTypeClass.ClassType != ClassType.Struct);
+			return (parameterTypeClass == null || 
+			        (parameterTypeClass.ClassType != ClassType.Enum && parameterTypeClass.ClassType != ClassType.Struct));
 		}
 		
 		public override string GetCodeToInsert(string parameterName)

@@ -17,7 +17,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 		{
 			SendTextToConsole("test");
 			
-			string text = base.FakeConsoleTextEditor.TextPassedToWrite;
+			string text = base.FakeConsoleTextEditor.TextPassedToAppend;
 			string expectedText = "test";
 			Assert.AreEqual(expectedText, text);
 		}
@@ -30,31 +30,11 @@ namespace ICSharpCode.Scripting.Tests.Console
 		}
 		
 		[Test]
-		public void SendText_TextEditorHasTextAfterPrompt_CursorMovedToEndOfLastLineBeforeTextWritten()
-		{
-			base.CreateConsole();
-			WritePrompt();
-			FakeConsoleTextEditor.Text =  ">>> first";
-			
-			FakeConsoleTextEditor.Line = -1;
-			FakeConsoleTextEditor.Column = -1;
-			TestableScriptingConsole.SendText("test");
-			
-			int expectedLine = 0;
-			int expectedColumn = 9;
-			Location expectedLocation = new Location(expectedColumn, expectedLine);
-			
-			Location location = FakeConsoleTextEditor.CursorLocationWhenWriteTextCalled;
-			
-			Assert.AreEqual(expectedLocation, location);			
-		}
-		
-		[Test]
 		public void SendText_FirstPromptNotYetWrittenToConsole_NoTextWrittenToConsoleTextEditor()
 		{
 			base.CreateConsole();
 			TestableScriptingConsole.SendText("test");
-			string text = FakeConsoleTextEditor.TextPassedToWrite;
+			string text = FakeConsoleTextEditor.TextPassedToAppend;
 			
 			Assert.IsNull(text);
 		}
@@ -66,7 +46,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 			TestableScriptingConsole.SendText("test");
 			
 			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
-			string text = FakeConsoleTextEditor.TextPassedToWrite;
+			string text = FakeConsoleTextEditor.TextPassedToAppend;
 			
 			string expectedText = "test";
 			Assert.AreEqual(expectedText, text);
@@ -84,7 +64,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
 			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
 			
-			string textPassedToWrite = FakeConsoleTextEditor.TextPassedToWrite;
+			string textPassedToWrite = FakeConsoleTextEditor.TextPassedToAppend;
 			string expectedText =  "second";
 			
 			Assert.AreEqual(expectedText, textPassedToWrite);
@@ -99,7 +79,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 			
 			SendTextToConsole(selectedText);
 			
-			string text = base.FakeConsoleTextEditor.TextPassedToWrite;
+			string text = base.FakeConsoleTextEditor.TextPassedToAppend;
 			string expectedText = "first\r\n";
 			Assert.AreEqual(expectedText, text);
 		}
@@ -114,7 +94,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 			SendTextToConsole(selectedText);
 			WritePrompt();
 			
-			string text = base.FakeConsoleTextEditor.TextPassedToWrite;
+			string text = base.FakeConsoleTextEditor.TextPassedToAppend;
 			string expectedText = "second";
 			Assert.AreEqual(expectedText, text);
 		}

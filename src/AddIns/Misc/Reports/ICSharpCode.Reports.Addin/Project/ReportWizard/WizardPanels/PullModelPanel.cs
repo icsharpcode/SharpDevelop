@@ -28,21 +28,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private System.Windows.Forms.Label label3;
 		private bool firstDrag;
 		private string connectionString;
-		private CommandType commandType;
 		private ReportStructure reportStructure;
 		private Properties customizer;		
 		private IDatabaseObjectBase currentNode;
         private ElementHost databasesTreeHost;
         private DatabasesTreeView databasesTree;
 		
-		private enum NodeType {
-			
-//			DataBaseRoot,
-//			dataBaseConnctionClose,
-//			dataBaseConnection,
-//			tablesRoot,
-//			viewsRoot,
-//			proceduresRoot,
+		private enum NodeType
+		{
 			TableImage,
 			ViewImage,
 			ProcedureImage,
@@ -60,7 +53,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			base.EnableCancel = true;
 			this.firstDrag = true;
 			base.IsLastPanel = false;
-			commandType = CommandType.Text;
 			this.txtSqlString.Enabled = false;
 
             this.databasesTreeHost = new ElementHost() { Dock = DockStyle.Fill };
@@ -90,12 +82,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 			
 			if (message == DialogMessage.Next) {
-				
-				
-				commandType = CommandType.Text;
-				
 				customizer.Set("SqlString", this.txtSqlString.Text.Trim());
-				reportStructure.CommandType = commandType;
 				reportStructure.SqlString = this.txtSqlString.Text.Trim();
 				reportStructure.ConnectionString = connectionString;
 				base.EnableFinish = true;
@@ -123,6 +110,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
             if (e.Data.GetFormats().Length > 0)
             {
                 string draggedFormat = e.Data.GetFormats()[0];
+                
+                String str = String.Format("drag {0}",draggedFormat);
+                System.Diagnostics.Trace.WriteLine(str);
 
                 Type draggedType = null;
 
@@ -151,77 +141,79 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				firstDrag = false;
 			}
 
-            // Drag and drop isn't working via e.Data.GetData, so I'm using reflection here - took me a lot of time to figure out how this works... 
-            // Still don't know why they implemented dnd so buggy and uncomfortable...
-            string draggedFormat = e.Data.GetFormats()[0];
-            IDatabaseObjectBase draggedObject = null;
+			// Drag and drop isn't working via e.Data.GetData, so I'm using reflection here - took me a lot of time to figure out how this works...
+			// Still don't know why they implemented dnd so buggy and uncomfortable...
+			string draggedFormat = e.Data.GetFormats()[0];
+			IDatabaseObjectBase draggedObject = null;
 
-            if (e.Data.GetDataPresent(draggedFormat))
-            {
-                object tempDraggedObject = null;
-                FieldInfo info;
-                info = e.Data.GetType().GetField("innerData", BindingFlags.NonPublic | BindingFlags.Instance);
-                tempDraggedObject = info.GetValue(e.Data);
-                info = tempDraggedObject.GetType().GetField("innerData", BindingFlags.NonPublic | BindingFlags.Instance);
-                System.Windows.DataObject dataObject = info.GetValue(tempDraggedObject) as System.Windows.DataObject;
-                draggedObject = dataObject.GetData(draggedFormat) as IDatabaseObjectBase;
-            }
+			if (e.Data.GetDataPresent(draggedFormat))
+			{
+				object tempDraggedObject = null;
+				FieldInfo info;
+				info = e.Data.GetType().GetField("innerData", BindingFlags.NonPublic | BindingFlags.Instance);
+				tempDraggedObject = info.GetValue(e.Data);
+				info = tempDraggedObject.GetType().GetField("innerData", BindingFlags.NonPublic | BindingFlags.Instance);
+				System.Windows.DataObject dataObject = info.GetValue(tempDraggedObject) as System.Windows.DataObject;
+				draggedObject = dataObject.GetData(draggedFormat) as IDatabaseObjectBase;
+			}
 
-            switch (CheckCurrentNode(draggedObject))
-            {
-                case NodeType.TableImage:
-                    // we insert Select * from.... otherwise we have to scan
-                    //the whole string for incorrect columnNames
-                    this.txtSqlString.Clear();
-                    //					AbstractSharpQuerySchemaClass tbl = (AbstractSharpQuerySchemaClass)this.currentNode.SchemaClass;
-                    this.txtSqlString.Text = "SELECT * FROM " + (draggedObject as ICSharpCode.Data.Core.Interfaces.ITable).Name;
+			switch (CheckCurrentNode(draggedObject))
+			{
+				case NodeType.TableImage:
+					// we insert Select * from.... otherwise we have to scan
+					//the whole string for incorrect columnNames
+					this.txtSqlString.Clear();
+					ITable table = draggedObject as ITable;
+					this.txtSqlString.Text = "SELECT * FROM " + table.Name;
+					reportStructure.CommandType = CommandType.Text;
+					reportStructure.IDatabaseObjectBase = table;
+					break;
 
-                    break;
+				case NodeType.ColumnImage:
+					IColumn column = draggedObject as IColumn;
+					string colName = column.Name;
+					
+					if (this.txtSqlString.Text.Length == 0)
+					{
+						this.txtSqlString.AppendText("SELECT ");
+						this.txtSqlString.AppendText(colName);
+					}
+					
+					else if (this.txtSqlString.Text.ToUpper(CultureInfo.InvariantCulture).IndexOf("where", StringComparison.OrdinalIgnoreCase) > 0)
+					{
+						this.txtSqlString.AppendText(colName + " = ?");
+					}
+					else
+					{
+						this.txtSqlString.AppendText(", ");
+						this.txtSqlString.AppendText(colName);
+					}
+					reportStructure.CommandType = CommandType.Text;
+					if (reportStructure.IDatabaseObjectBase == null)
+					{
+						reportStructure.IDatabaseObjectBase = column;
+					}
+					break;
 
-                case NodeType.ColumnImage:
-                    string colName = (draggedObject as IColumn).Name;
-                    if (this.txtSqlString.Text.Length == 0)
-                    {
-                        this.txtSqlString.AppendText("SELECT ");
-                        this.txtSqlString.AppendText(colName);
+				case NodeType.ProcedureImage:
+					this.txtSqlString.Clear();
 
-                    }
-                    //FxCop : http://msdn.microsoft.com/library/bb386042(VS.100).aspx
-                    else if (this.txtSqlString.Text.ToUpper(CultureInfo.InvariantCulture).IndexOf("where", StringComparison.OrdinalIgnoreCase) > 0)
-                    {
-                        this.txtSqlString.AppendText(colName + " = ?");
-                    }
-                    else
-                    {
-                        this.txtSqlString.AppendText(", ");
-                        this.txtSqlString.AppendText(colName);
-                    }
-                    break;
-
-                case NodeType.ProcedureImage:
-                    this.txtSqlString.Clear();
-
-                    // we can't use the dragobject because it returns an string like 'EXECUTE ProcName'
-                    IProcedure procedure = draggedObject as IProcedure;
-                    this.txtSqlString.Text = "EXECUTE " + procedure.Name;
-
-//                    reportStructure.SharpQueryProcedure = new SharpQueryProcedure(new SharpQuery.Connection.OLEDBConnectionWrapper(this.connectionString), procedure.Parent.Name, procedure.SchemaName, string.Empty, procedure.Name);
-                    break;
-
-                case NodeType.ViewImage:
-                    this.txtSqlString.Text = String.Empty;
-                    this.txtSqlString.Text = "No idea how to handle views";
-                    break;
-                default:
-                    break;
-            }
-            base.EnableNext = true;
+					// we can't use the dragobject because it returns an string like 'EXECUTE ProcName'
+					IProcedure procedure = draggedObject as IProcedure;
+					this.txtSqlString.Text = "[" + procedure.Name + "]";
+					reportStructure.CommandType = CommandType.StoredProcedure;
+					reportStructure.IDatabaseObjectBase = procedure;
+					break;
+				default:
+					break;
+			}
+			base.EnableNext = true;
 		}
 
 
         private void databasesTree_SelectedItemChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
         {
-            if (e.NewValue is IDatabaseObjectBase)
+        	if (e.NewValue is IDatabaseObjectBase)
             {
                 IDatabase parentDatabase = e.NewValue as IDatabase;
 
@@ -249,11 +241,16 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 
                 if (this.currentNode is IDatabase)
                 {
-                    this.connectionString = "Provider=" + parentDatabase.Datasource.DatabaseDriver.ODBCProviderName + ";" + parentDatabase.ConnectionString;
-                    this.txtSqlString.Enabled = true;
+                	if (parentDatabase != null)
+                	{
+                		this.connectionString = "Provider=" + parentDatabase.Datasource.DatabaseDriver.ODBCProviderName + ";" + parentDatabase.ConnectionString;
+                		this.txtSqlString.Enabled = true;
 
-                    if (this.firstDrag)
-                        this.txtSqlString.Text = string.Empty;
+                		if (this.firstDrag)
+                			this.txtSqlString.Text = string.Empty;
+                		
+                		firstDrag = false;
+                	}
                 }
                 else
                 {
@@ -262,35 +259,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
             }
         }
 		
-		///<summary>
-		/// We check if a ColumnName includes an "-" Character,
-		/// if so, suround it with []</summary>
-		///<param name="SharpQueryNodeColumn">a ColumnNode</param>
-		/// <returns>a valid ColumnName</returns>
-	/*
-		private static string InferColumnName(string node) {
-			string colName;
-			if (node != null) {
-				if (node.IndexOf("-",StringComparison.Ordinal) > -1 ){
-//					colName = node.Replace(".",".[") + "]";
-					colName = "[" + node + "]";
-				} else {
-					colName = node;
-				}
-			} else {
-				colName = String.Empty;
-			}
-			return colName;
-		}
-		*/
-		
-		
 		// check witch type of node we dragg
 		private static NodeType CheckCurrentNode (IDatabaseObjectBase node) {
 			NodeType enm;
 			if (node is IColumn) {
 				enm = NodeType.ColumnImage;
-			} else if (node is ICSharpCode.Data.Core.Interfaces.ITable) {
+			} else if (node is ITable) {
 				enm = NodeType.TableImage;
 			} else if (node is IProcedure) {
 				enm = NodeType.ProcedureImage;

@@ -26,6 +26,8 @@ namespace ICSharpCode.StartPage
 			
 			var aca = (AssemblyCopyrightAttribute)typeof(CommonAboutDialog).Assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0];
 			copyrightText.Text = aca.Copyright;
+			
+			versionTextBlock.Text = "SharpDevelop " + RevisionClass.FullVersion;
 		}
 		
 		sealed class BoxEntry

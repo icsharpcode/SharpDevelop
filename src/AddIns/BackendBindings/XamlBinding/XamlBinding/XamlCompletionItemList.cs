@@ -194,10 +194,22 @@ namespace ICSharpCode.XamlBinding
 					IFileDocumentProvider document = viewContent as IFileDocumentProvider;
 					
 					if (viewContent != null && document != null) {
-						if (lastMember != null)
+						DomRegion domRegion;
+						
+						if (lastMember != null) {
 							unit.ProjectContent.Language.CodeGenerator.InsertCodeAfter(lastMember, new RefactoringDocumentAdapter(document.GetDocumentForFile(viewContent.PrimaryFile)), node);
-						else
+							domRegion = lastMember.BodyRegion;
+						}
+						else {
 							unit.ProjectContent.Language.CodeGenerator.InsertCodeAtEnd(part.Region, new RefactoringDocumentAdapter(document.GetDocumentForFile(viewContent.PrimaryFile)), node);
+							domRegion = part.Region;
+						}
+						
+						// move caret to generated code
+						ITextEditorProvider provider = viewContent as ITextEditorProvider;
+						if (provider != null) {
+							provider.TextEditor.JumpTo(domRegion.EndLine + 2, domRegion.EndColumn - 1);
+						}
 					}
 					return true;
 				}

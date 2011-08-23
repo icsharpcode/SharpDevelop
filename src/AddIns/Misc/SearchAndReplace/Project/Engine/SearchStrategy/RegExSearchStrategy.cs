@@ -58,7 +58,10 @@ namespace SearchAndReplace
 		{
 			string document = textIterator.Document.GetText(0, textIterator.Document.TextLength);
 			
-			while (textIterator.MoveAhead(1) && TextSelection.IsInsideRange(textIterator.Position, offset, length)) {
+			while (textIterator.MoveAhead(1)) {
+				if (textIterator.Position >= offset + length) {
+					textIterator.Position = offset;
+				}
 				Match m = regex.Match(document, textIterator.Position);
 				if (m == null || !m.Success) {
 					while (textIterator.Position < document.Length - 1) {

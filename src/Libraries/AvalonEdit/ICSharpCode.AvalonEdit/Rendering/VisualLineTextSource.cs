@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Windows.Media.TextFormatting;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Rendering
 {
@@ -42,7 +43,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 						InlineObjectRun inlineRun = run as InlineObjectRun;
 						if (inlineRun != null) {
 							inlineRun.VisualLine = VisualLine;
-							TextView.textLayer.AddInlineObject(inlineRun);
+							VisualLine.hasInlineObjects = true;
+							TextView.AddInlineObject(inlineRun);
 						}
 						return run;
 					}
@@ -81,6 +83,20 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public override int GetTextEffectCharacterIndexFromTextSourceCharacterIndex(int textSourceCharacterIndex)
 		{
 			throw new NotSupportedException();
+		}
+		
+		string cachedString;
+		int cachedStringOffset;
+		
+		public StringSegment GetText(int offset, int length)
+		{
+			if (cachedString != null) {
+				if (offset >= cachedStringOffset && offset + length <= cachedStringOffset + cachedString.Length) {
+					return new StringSegment(cachedString, offset - cachedStringOffset, length);
+				}
+			}
+			cachedStringOffset = offset;
+			return new StringSegment(cachedString = this.Document.GetText(offset, length));
 		}
 	}
 }

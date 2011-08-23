@@ -6,6 +6,7 @@ using System.Xml;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
+using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Tree
 {
@@ -16,7 +17,7 @@ namespace XmlEditor.Tests.Tree
 	public class PasteInTreeControlTestFixture
 	{
 		XmlDocument doc;
-		XmlTreeViewContainerControl treeViewContainerControl; 
+		DerivedXmlTreeViewContainerControl treeViewContainerControl; 
 		XmlTreeViewControl treeView;
 		IClipboardHandler clipboardHandler;
 		XmlElementTreeNode htmlTreeNode;
@@ -33,9 +34,9 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void SetUp()
 		{
-			treeViewContainerControl = new XmlTreeViewContainerControl();
+			treeViewContainerControl = new DerivedXmlTreeViewContainerControl();
 			treeView = treeViewContainerControl.TreeView;
-			treeViewContainerControl.LoadXml(GetXml(), new XmlSchemaCompletionCollection(), null);
+			treeViewContainerControl.LoadXml(GetXml());
 			doc = treeViewContainerControl.Document;
 			
 			clipboardHandler = treeViewContainerControl as IClipboardHandler;

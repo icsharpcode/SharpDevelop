@@ -146,9 +146,14 @@ namespace ICSharpCode.SharpDevelop
 			
 			if (openedFileDict[oldName] != file)
 				throw new ArgumentException("file must be registered as oldName");
-			if (openedFileDict.ContainsKey(newName))
-				throw new ArgumentException("there already is a file with the newName");
-			
+			if (openedFileDict.ContainsKey(newName)) {
+				OpenedFile oldFile = openedFileDict[newName];
+				if (oldFile.CurrentView != null) {
+					oldFile.CurrentView.WorkbenchWindow.CloseWindow(true);
+				} else {
+					throw new ArgumentException("there already is a file with the newName");
+				}
+			}
 			openedFileDict.Remove(oldName);
 			openedFileDict[newName] = file;
 		}
@@ -172,7 +177,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (FileUtility.IsValidPath(path))
 				return true;
-			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", path}}));
+			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new StringTagPair("FileName", path)));
 			return false;
 		}
 		
@@ -184,7 +189,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (FileUtility.IsValidDirectoryEntryName(name))
 				return true;
-			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", name}}));
+			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new StringTagPair("FileName", name)));
 			return false;
 		}
 		
@@ -407,8 +412,7 @@ namespace ICSharpCode.SharpDevelop
 								Directory.Delete(fileName, true);
 						}
 					} catch (Exception e) {
-						MessageService.ShowException(e, "Can't remove directory " + fileName);
-//					return;
+						MessageService.ShowHandledException(e, "Can't remove directory " + fileName);
 					}
 				} else {
 					try {
@@ -419,8 +423,7 @@ namespace ICSharpCode.SharpDevelop
 								File.Delete(fileName);
 						}
 					} catch (Exception e) {
-						MessageService.ShowException(e, "Can't remove file " + fileName);
-//					return;
+						MessageService.ShowHandledException(e, "Can't remove file " + fileName);
 					}
 				}
 			}
@@ -459,9 +462,9 @@ namespace ICSharpCode.SharpDevelop
 						}
 					} catch (Exception e) {
 						if (isDirectory) {
-							MessageService.ShowException(e, "Can't rename directory " + oldName);
+							MessageService.ShowHandledException(e, "Can't rename directory " + oldName);
 						} else {
-							MessageService.ShowException(e, "Can't rename file " + oldName);
+							MessageService.ShowHandledException(e, "Can't rename file " + oldName);
 						}
 						return false;
 					}
@@ -503,9 +506,9 @@ namespace ICSharpCode.SharpDevelop
 					}
 				} catch (Exception e) {
 					if (isDirectory) {
-						MessageService.ShowException(e, "Can't copy directory " + oldName);
+						MessageService.ShowHandledException(e, "Can't copy directory " + oldName);
 					} else {
-						MessageService.ShowException(e, "Can't copy file " + oldName);
+						MessageService.ShowHandledException(e, "Can't copy file " + oldName);
 					}
 					return false;
 				}
@@ -530,6 +533,14 @@ namespace ICSharpCode.SharpDevelop
 			bool loggingResumed = false;
 			
 			try {
+				// jump to decompiled type from filename
+				if (fileName.Contains(",")) {
+					int index = fileName.IndexOf(",");
+					string assemblyName = fileName.Substring(0, index);
+					string typeName = fileName.Substring(index + 1, fileName.Length - index - 1);
+					NavigationService.NavigateTo(assemblyName, typeName, string.Empty, line);
+					return null;
+				}
 				
 				IViewContent content = OpenFile(fileName);
 				if (content is IPositionable) {
@@ -544,11 +555,11 @@ namespace ICSharpCode.SharpDevelop
 					NavigationService.Log(content);
 				}
 				
-				LoggingService.InfoFormatted("FileService\n\tJumped to File Position:  [{0} : {1}x{2}]", fileName, line, column);
-				
 				return content;
 				
 			} finally {
+				LoggingService.InfoFormatted("FileService\n\tJumped to File Position:  [{0} : {1}x{2}]", fileName, line, column);
+				
 				if (!loggingResumed) {
 					NavigationService.ResumeLogging();
 				}
@@ -702,6 +713,16 @@ namespace ICSharpCode.SharpDevelop
 			public IViewContent CreateContentForFile(OpenedFile file)
 			{
 				return new SimpleViewContent(errorMessage) { TitleName = Path.GetFileName(file.FileName) };
+			}
+			
+			public bool IsPreferredBindingForFile(string fileName)
+			{
+				return false;
+			}
+			
+			public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+			{
+				return double.NegativeInfinity;
 			}
 		}
 	}

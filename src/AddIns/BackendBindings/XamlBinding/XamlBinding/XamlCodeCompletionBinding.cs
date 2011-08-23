@@ -220,9 +220,9 @@ namespace ICSharpCode.XamlBinding
 											start = "";
 										completionList.PreselectionLength = start.Length;
 									} else if (mrr.ResolvedType.FullyQualifiedName == "System.Windows.Media.FontFamily") {
-										string text = context.ValueStartOffset > -1 ? context.RawAttributeValue.Substring(0, Math.Min(context.ValueStartOffset + 1, context.RawAttributeValue.Length)) : "";
+										string text = context.ValueStartOffset > -1 ? context.RawAttributeValue.Substring(0, Math.Min(context.ValueStartOffset, context.RawAttributeValue.Length)) : "";
 										int lastComma = text.LastIndexOf(',');
-										completionList.PreselectionLength = lastComma == -1 ? context.ValueStartOffset + 1 : context.ValueStartOffset - lastComma;
+										completionList.PreselectionLength = lastComma == -1 ? context.ValueStartOffset : context.ValueStartOffset - lastComma - 1;
 									}
 								}
 							}
@@ -387,9 +387,9 @@ namespace ICSharpCode.XamlBinding
 				string word = context.Editor.GetWordBeforeCaretExtended();
 				if (context.PressedKey != '.' && context.PressedKey != '=' && !word.EndsWith(".") && completionList.PreselectionLength == 0)
 					completionList.PreselectionLength = word.Length;
-				context.Editor.ShowCompletionWindow(completionList);
 				var insightList = CompletionDataHelper.CreateMarkupExtensionInsight(context);
 				context.Editor.ShowInsightWindow(insightList);
+				context.Editor.ShowCompletionWindow(completionList);
 				return completionList.Items.Any() || insightList.Any();
 			}
 			

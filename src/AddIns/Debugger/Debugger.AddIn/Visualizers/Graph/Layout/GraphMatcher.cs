@@ -8,92 +8,76 @@ using Debugger.AddIn.Visualizers.Utils;
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
-	/// Calculates diff of 2 <see cref="PositionedGraph"/>s.
+	/// Calculates diff between 2 <see cref="PositionedGraph"/>s.
 	/// </summary>
 	public class GraphMatcher
 	{
-		public GraphMatcher()
-		{
-		}
-		
+		/// <summary>
+		/// Calculates diff between 2 <see cref="PositionedGraph"/>s. 
+		/// The <see cref="GraphDiff"/> describes a matching between nodes in the graphs, added and removed nodes.
+		/// </summary>
 		public GraphDiff MatchGraphs(PositionedGraph oldGraph, PositionedGraph newGraph)
 		{
-			if (oldGraph == null)
-			{
-				if (newGraph == null)
-				{
+			if (oldGraph == null) {
+				if (newGraph == null) {
 					return new GraphDiff();
-				}
-				else
-				{
+				} else {
 					GraphDiff addAllDiff = new GraphDiff();
-					foreach	(PositionedGraphNode newNode in newGraph.Nodes)
+					foreach	(PositionedNode newNode in newGraph.Nodes)
 						addAllDiff.SetAdded(newNode);
 					return addAllDiff;
 				}
-			}
-			else if (newGraph == null)
-			{
+			} else if (newGraph == null) {
 				GraphDiff removeAllDiff = new GraphDiff();
-				foreach	(PositionedGraphNode oldNode in oldGraph.Nodes)
+				foreach	(PositionedNode oldNode in oldGraph.Nodes)
 					removeAllDiff.SetRemoved(oldNode);
 				return removeAllDiff;
 			}
-			
 			// none of the graphs is null
+			
 			GraphDiff diff = new GraphDiff();
 			
-			Dictionary<int, PositionedGraphNode> newNodeForHashCode = buildHashToNodeMap(newGraph);
-			Dictionary<PositionedGraphNode, bool> newNodeMatched = new Dictionary<PositionedGraphNode, bool>();
+			Dictionary<int, PositionedNode> newNodeForHashCode = BuildHashToNodeMap(newGraph);
+			Dictionary<PositionedNode, bool> newNodeMatched = new Dictionary<PositionedNode, bool>();
 			
-			foreach	(PositionedGraphNode oldNode in oldGraph.Nodes)
-			{
-				PositionedGraphNode matchingNode = matchNode(oldNode, newNodeForHashCode);
-				if (matchingNode != null)
-				{
+			foreach	(PositionedNode oldNode in oldGraph.Nodes) {
+				PositionedNode matchingNode = MatchNode(oldNode, newNodeForHashCode);
+				
+				if (matchingNode != null) {
 					diff.SetMatching(oldNode, matchingNode);
 					newNodeMatched[matchingNode] = true;
-				}
-				else
-				{
+				} else {
 					diff.SetRemoved(oldNode);
 				}
 			}
-			foreach	(PositionedGraphNode newNode in newGraph.Nodes)
-			{
-				if (!newNodeMatched.ContainsKey(newNode))
-				{
+			foreach	(PositionedNode newNode in newGraph.Nodes) {
+				if (!newNodeMatched.ContainsKey(newNode)) {
 					diff.SetAdded(newNode);
 				}
 			}
-			
 			return diff;
 		}
 		
-		private Dictionary<int, PositionedGraphNode> buildHashToNodeMap(PositionedGraph graph)
+		Dictionary<int, PositionedNode> BuildHashToNodeMap(PositionedGraph graph)
 		{
-			var hashToNodeMap = new Dictionary<int, PositionedGraphNode>();
-			foreach (PositionedGraphNode node in graph.Nodes)
-			{
+			var hashToNodeMap = new Dictionary<int, PositionedNode>();
+			foreach (PositionedNode node in graph.Nodes) {
 				hashToNodeMap[node.ObjectNode.HashCode] = node;
 			}
 			return hashToNodeMap;
 		}
 		
-		private PositionedGraphNode matchNode(PositionedGraphNode oldNode, Dictionary<int, PositionedGraphNode> newNodeMap)
+		PositionedNode MatchNode(PositionedNode oldNode, Dictionary<int, PositionedNode> newNodeMap)
 		{
-			PositionedGraphNode newNodeFound = newNodeMap.GetValue(oldNode.ObjectNode.HashCode);
-			if ((newNodeFound != null) && isSameAddress(oldNode, newNodeFound))
-			{
+			PositionedNode newNodeFound = newNodeMap.GetValue(oldNode.ObjectNode.HashCode);
+			if ((newNodeFound != null) && IsSameAddress(oldNode, newNodeFound))	{
 				return newNodeFound;
-			}
-			else
-			{
+			} else {
 				return null;
 			}
 		}
 		
-		private bool isSameAddress(PositionedGraphNode node1, PositionedGraphNode node2)
+		bool IsSameAddress(PositionedNode node1, PositionedNode node2)
 		{
 			return node1.ObjectNode.PermanentReference.GetObjectAddress() == node2.ObjectNode.PermanentReference.GetObjectAddress();
 		}

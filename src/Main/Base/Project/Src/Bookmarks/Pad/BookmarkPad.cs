@@ -3,10 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Controls;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
@@ -24,18 +27,27 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
+		protected override ToolBar CreateToolBar()
+		{
+			ToolBar toolbar = ToolBarService.CreateToolBar(myPanel, this, "/SharpDevelop/Pads/BookmarkPad/Toolbar");
+			toolbar.SetValue(Grid.RowProperty, 0);
+			return toolbar;
+		}
+		
+		protected override void CreateColumns() { }
+		
 		public BookmarkPad()
 		{
-			instance = this;
+			instance = this;			
+			myPanel.Children.Add(CreateToolBar());
+			listView.HideColumns(2, 0);
 		}
 	}
 	
 	public abstract class BookmarkPadBase : AbstractPadContent
 	{
-		Panel       myPanel          = new Panel();
-		ExtTreeView bookmarkTreeView = new ExtTreeView();
-		
-		Dictionary<FileName, BookmarkFolderNode> fileNodes = new Dictionary<FileName, BookmarkFolderNode>();
+		protected Grid  myPanel  = new Grid();
+		protected ListViewPad listView = new ListViewPad();
 		
 		public override object Control {
 			get {
@@ -43,88 +55,84 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public TreeNode CurrentNode {
+		public ListViewPadItemModel CurrentItem {
 			get {
-				return bookmarkTreeView.SelectedNode as TreeNode;
+				return listView.CurrentItem;
 			}
 		}
 		
-		protected virtual ToolStrip CreateToolStrip()
-		{
-			ToolStrip toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/BookmarkPad/Toolbar");
-			toolStrip.Stretch   = true;
-			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			return toolStrip;
-		}
+		protected abstract ToolBar CreateToolBar();
+		
+		protected abstract void CreateColumns();
 		
 		protected BookmarkPadBase()
 		{
-			bookmarkTreeView.Dock = DockStyle.Fill;
-			bookmarkTreeView.CheckBoxes = true;
-			bookmarkTreeView.HideSelection = false;
-			bookmarkTreeView.Font = ExtTreeNode.RegularBigFont;
-			bookmarkTreeView.IsSorted = false;
+			myPanel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+			myPanel.RowDefinitions.Add(new RowDefinition());
+			listView.SetValue(Grid.RowProperty, 1);
+			myPanel.Children.Add(listView);
 			
-			myPanel.Controls.AddRange(new Control[] { bookmarkTreeView, CreateToolStrip()} );
 			BookmarkManager.Added   += new BookmarkEventHandler(BookmarkManagerAdded);
 			BookmarkManager.Removed += new BookmarkEventHandler(BookmarkManagerRemoved);
 			
 			foreach (SDBookmark mark in BookmarkManager.Bookmarks) {
 				AddMark(mark);
 			}
+			
+			listView.ItemActivated += new EventHandler(listView_ItemActivated);
 		}
 		
-		public IEnumerable<TreeNode> AllNodes {
+		public IEnumerable<ListViewPadItemModel> AllItems {
 			get {
-				Stack<TreeNode> treeNodes = new Stack<TreeNode>();
-				foreach (TreeNode node in bookmarkTreeView.Nodes) {
-					treeNodes.Push(node);
+				foreach (var item in listView.ItemCollection) {
+					yield return item;
 				}
-				
-				while (treeNodes.Count > 0) {
-					TreeNode node = treeNodes.Pop();
-					foreach (TreeNode childNode in node.Nodes) {
-						treeNodes.Push(childNode);
-					}
-					yield return node;
-				}
+			}
+		}
+		
+		public ListViewPadItemModel NextItem {
+			get {
+				return this.listView.NextItem;
+			}
+		}
+		
+		public ListViewPadItemModel PreviousItem {
+			get {
+				return this.listView.PreviousItem;
 			}
 		}
 		
 		public void EnableDisableAll()
 		{
 			bool isOneChecked = false;
-			foreach (TreeNode node in AllNodes) {
-				if (node is BookmarkNode) {
-					if (((BookmarkNode)node).Checked) {
-						isOneChecked = true;
-						break;
-					}
+			foreach (var node in AllItems) {
+				if (node.IsChecked) {
+					isOneChecked = true;
+					break;
 				}
 			}
-			foreach (TreeNode node in AllNodes) {
-				if (node is BookmarkNode) {
-					((BookmarkNode)node).Checked = !isOneChecked;
-				}
-			}
+			foreach (var node in AllItems)
+				node.IsChecked = !isOneChecked;
+		}
+		
+		public void SelectItem(ListViewPadItemModel model)
+		{
+			listView.CurrentItem = model;
 		}
 		
 		void AddMark(SDBookmark mark)
 		{
 			if (!ShowBookmarkInThisPad(mark))
 				return;
-			if (!fileNodes.ContainsKey(mark.FileName)) {
-				BookmarkFolderNode folderNode = new BookmarkFolderNode(mark.FileName);
-				fileNodes.Add(mark.FileName, folderNode);
-				bookmarkTreeView.Nodes.Add(folderNode);
-			}
-			fileNodes[mark.FileName].AddMark(mark);
-			fileNodes[mark.FileName].Expand();
+			
+			var model = new ListViewPadItemModel(mark);
+			model.PropertyChanged += OnModelPropertyChanged;
+			listView.Add(model);
 		}
 		
 		protected virtual bool ShowBookmarkInThisPad(SDBookmark mark)
 		{
-			return mark.IsVisibleInBookmarkPad;
+			return mark.IsVisibleInBookmarkPad && !(mark is BreakpointBookmark);
 		}
 		
 		void BookmarkManagerAdded(object sender, BookmarkEventArgs e)
@@ -134,25 +142,37 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		void BookmarkManagerRemoved(object sender, BookmarkEventArgs e)
 		{
-			if (fileNodes.ContainsKey(e.Bookmark.FileName)) {
-				fileNodes[e.Bookmark.FileName].RemoveMark(e.Bookmark);
-				if (fileNodes[e.Bookmark.FileName].Marks.Count == 0) {
-					bookmarkTreeView.Nodes.Remove(fileNodes[e.Bookmark.FileName]);
-					fileNodes.Remove(e.Bookmark.FileName);
-				}
+			if (ShowBookmarkInThisPad(e.Bookmark)) {
+				var model = listView.Remove(e.Bookmark);
+				model.PropertyChanged -= OnModelPropertyChanged;
 			}
 		}
 		
-		void TreeViewDoubleClick(object sender, EventArgs e)
+		void listView_ItemActivated(object sender, EventArgs e)
 		{
-			TreeNode node = bookmarkTreeView.SelectedNode;
+			var node = CurrentItem;
 			if (node != null) {
-				SDBookmark mark = node.Tag as SDBookmark;
+				SDBookmark mark = node.Mark as SDBookmark;
 				if (mark != null) {
 					FileService.JumpToFilePosition(mark.FileName, mark.LineNumber, 1);
 				}
-			}
+			}	
 		}
 		
+		void OnModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			var model = sender as ListViewPadItemModel;
+			if (e.PropertyName == "IsChecked") {
+				if (model.Mark is BreakpointBookmark) {
+					var bpm = model.Mark as BreakpointBookmark;
+					bpm.IsEnabled = model.IsChecked;
+					if (model.IsChecked) {
+						model.Image = string.IsNullOrEmpty(model.Condition) ? BreakpointBookmark.BreakpointImage.ImageSource : BreakpointBookmark.BreakpointConditionalImage.ImageSource;
+					} else {
+						model.Image = BreakpointBookmark.DisabledBreakpointImage.ImageSource;
+	}
+}
+			}
+		}
 	}
 }

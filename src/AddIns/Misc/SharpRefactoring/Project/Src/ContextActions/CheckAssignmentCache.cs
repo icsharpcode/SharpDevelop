@@ -17,15 +17,19 @@ namespace SharpRefactoring.ContextActions
 	{
 		public void Initialize(EditorContext context)
 		{
+			this.context = context;
 			this.VariableName = GetVariableName(context);
 			this.CodeGenerator = GetCodeGenerator(context);
-			this.ElementRegion = GetStatementRegion(context);
+			this.Element = GetElement(context);
+			this.ElementRegion = (Element == null) ? DomRegion.Empty : DomRegion.FromLocation(Element.StartLocation, Element.EndLocation);
 		}
+		
+		EditorContext context;
 		
 		public bool IsActionAvailable
 		{
 			get {
-				return !string.IsNullOrEmpty(this.VariableName) && (this.CodeGenerator != null);
+				return !string.IsNullOrEmpty(this.VariableName) && (this.CodeGenerator != null) && (this.context.CurrentLine.Text.Contains(";"));
 			}
 		}
 		
@@ -33,13 +37,17 @@ namespace SharpRefactoring.ContextActions
 		
 		public CodeGenerator CodeGenerator { get; private set; }
 		
+		/// <summary>
+		/// Either AssignmentExpression or LocalVariableDeclaration.
+		/// </summary>
+		public AbstractNode Element { get; private set; }
+		
 		public DomRegion ElementRegion { get; private set; }
 		
 		protected string GetVariableName(EditorContext context)
 		{
 			// a = Foo()      : AssignmentExpression.Left == IdentifierExpression(*identifier*)
 			// var a = Foo()  : VariableDeclaration(*name*).Initializer != empty
-			
 			var variableName = GetVariableNameFromAssignment(context.GetContainingElement<AssignmentExpression>());
 			if (variableName != null)
 				return variableName;
@@ -50,19 +58,18 @@ namespace SharpRefactoring.ContextActions
 			return null;
 		}
 		
-		protected DomRegion GetStatementRegion(EditorContext context)
+		protected AbstractNode GetElement(EditorContext context)
 		{
 			// a = Foo()      : AssignmentExpression.Left == IdentifierExpression(*identifier*)
 			// var a = Foo()  : VariableDeclaration(*name*).Initializer != empty
-			
 			var assignment = context.GetContainingElement<AssignmentExpression>();
 			if (assignment != null)
-				return DomRegion.FromLocation(assignment.StartLocation, assignment.EndLocation);
+				return assignment;
 			var declaration = context.GetContainingElement<LocalVariableDeclaration>();
 			if (declaration != null)
-				return DomRegion.FromLocation(declaration.StartLocation, declaration.EndLocation);
+				return declaration;
 			
-			return DomRegion.Empty;
+			return null;
 		}
 		
 		string GetVariableNameFromAssignment(AssignmentExpression assignment)
@@ -72,8 +79,8 @@ namespace SharpRefactoring.ContextActions
 			var identifier = assignment.Left as IdentifierExpression;
 			if (identifier == null)
 				return null;
-			if (assignment.Right is ObjectCreateExpression)
-				// // don't offer action for "a = new Foo()"
+			if ((!ExpressionCanBeNull(assignment.Right)) || ExpressionIsValueType(assignment.Right))
+				// don't offer action where it makes no sense
 				return null;
 			return identifier.Identifier;
 		}
@@ -85,11 +92,29 @@ namespace SharpRefactoring.ContextActions
 			if (declaration.Variables.Count != 1)
 				return null;
 			VariableDeclaration varDecl = declaration.Variables[0];
-			if (!varDecl.Initializer.IsNull &&
-			    // don't offer action for "var a = new Foo()"
-			    !(varDecl.Initializer is ObjectCreateExpression))
-				return varDecl.Name;
-			return null;
+			if (!ExpressionCanBeNull(varDecl.Initializer) || ExpressionIsValueType(varDecl.Initializer))
+				// don't offer action where it makes no sense
+				return null;
+			return varDecl.Name;
+		}
+		
+		bool ExpressionIsValueType(Expression expr)
+		{
+			ResolveResult rr = this.context.ResolveExpression(expr);
+			if (rr == null) return false;	// when cannot resolve the assignment right, still offer the action
+			return (rr.ResolvedType != null && rr.ResolvedType.IsReferenceType == false);
+		}
+		
+		bool ExpressionCanBeNull(Expression expr)
+		{
+			if (expr == null) return false;
+			if (expr.IsNull) return false;
+			if (expr is PrimitiveExpression) return false;
+			if (expr is IdentifierExpression) return true;
+			if (expr is MemberReferenceExpression) return true;
+			if (expr is InvocationExpression) return true;
+			if (expr is CastExpression && ((CastExpression)expr).CastType == CastType.TryCast) return true;
+			return false;
 		}
 		
 		CodeGenerator GetCodeGenerator(EditorContext context)

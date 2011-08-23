@@ -1,0 +1,32 @@
+NuGet Project
+ASP.NET Open Source Gallery at Outercurve Foundation
+Copyright 2010 Outercurve Foundation
+
+This product includes software developed at
+The Outercurve Foundation (http://www.outercurve.org/).
+
+NuGet includes works distributed under the licenses listed below. The full text for most of the licenses listed below can be found in the LICENSE.txt file accompanying each work. The original copyright notices have been preserved within the respective files and or packages. Please refer to the specific files and/or packages for more detailed information about the authors, copyright notices, and licenses.
+
+ProvideBindingPathAttribute (Visual Studio SDK)
+----- 
+Website:      http://msdn.microsoft.com/en-us/library/bb166441(VS.80).aspx 
+Copyright:    Copyright (c) 2010 Microsoft
+License:      Apache 2.0
+
+Elmah 1.1
+----- 
+Website:      http://code.google.com/p/elmah/ 
+Copyright:    Copyright (c) 2010 Atif Azis
+License:      Apache 2.0
+
+Moq 3.1.4
+----- 
+Website:      http://code.google.com/p/moq/
+Copyright:    Copyright (c) 2010 Clarius Consulting, Manas Technology Solutions, InSTEDD
+License:      BSD
+
+Ninject 2.1
+----- 
+Website:      http://ninject.org/
+Copyright:    Copyright (c) 2010 Nate Kohari
+License:      Apache 2.0

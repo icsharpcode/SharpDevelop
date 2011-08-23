@@ -25,6 +25,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			{
 				return null;
 			}
+			
+			public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
+			{
+				return null;
+			}
+			
+			public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters)
+			{
+				return null;
+			}
 		}
 		
 		public static ReflectionProjectContent LoadAssembly(string fileName, ProjectContentRegistry registry)
@@ -56,7 +66,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 						a.PositionalArguments.Add(GetValue(pc, member, argument));
 					}
 					foreach (CustomAttributeNamedArgument entry in att.Properties) {
-						a.NamedArguments.Add(entry.Name, GetValue(pc, member, entry.Argument));
+						// some obfuscated assemblies may contain duplicate named arguments; we'll have to ignore those
+						if (!a.NamedArguments.ContainsKey(entry.Name))
+							a.NamedArguments.Add(entry.Name, GetValue(pc, member, entry.Argument));
 					}
 				} catch (InvalidOperationException) {
 					// Workaround for Cecil bug. (some types cannot be resolved)
@@ -163,7 +175,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (typeParameterCount == 0 && name == "System.Object" && HasDynamicAttribute(attributeProvider, typeIndex))
 					return new DynamicReturnType(pc);
 				
-				IClass c = pc.GetClass(name, typeParameterCount);
+				IClass c = pc.GetClass(name, typeParameterCount, LanguageProperties.CSharp, GetClassOptions.Default | GetClassOptions.ExactMatch);
 				if (c != null) {
 					return c.DefaultReturnType;
 				} else {
@@ -503,7 +515,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 					} else if (method.Overrides.Count > 0) {
 						m |= ModifierEnum.Override;
 					} else if (method.IsVirtual) {
-						m |= ModifierEnum.Virtual;
+						if (method.IsNewSlot)
+							m |= ModifierEnum.Virtual;
+						else
+							m |= ModifierEnum.Override;
 					}
 				}
 				

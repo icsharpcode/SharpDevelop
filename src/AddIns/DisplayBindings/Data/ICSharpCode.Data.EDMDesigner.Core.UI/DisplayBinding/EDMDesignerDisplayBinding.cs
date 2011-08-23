@@ -15,16 +15,32 @@ using System.IO;
 
 namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 {
-    public class EDMDesignerDisplayBinding : IDisplayBinding
-    {
-        public bool CanCreateContentForFile(string fileName)
-        {
-            return Path.GetExtension(fileName).Equals(".edmx", StringComparison.OrdinalIgnoreCase);
-        }
+	public class EDMDesignerDisplayBinding : IDisplayBinding
+	{
+		public bool CanCreateContentForFile(string fileName)
+		{
+			return true; // .addin file filters for *.edmx
+		}
 
-        public IViewContent CreateContentForFile(OpenedFile file)
-        {
-            return new EDMDesignerViewContent(file);
-        }
-    }
+		public IViewContent CreateContentForFile(OpenedFile file)
+		{
+			try {
+				return new EDMDesignerViewContent(file);
+			} catch (WizardCancelledException) {
+				return null;
+			}
+		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return true;
+		}
+		
+		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		{
+			return 1;
+		}
+	}
+	
+	public class WizardCancelledException : Exception {}
 }

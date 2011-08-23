@@ -637,6 +637,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DomRegion bodyRegion = GetRegion(operatorDeclaration.EndLocation, operatorDeclaration.Body != null ? operatorDeclaration.Body.EndLocation : RefParser.Location.Empty);
 			
 			DefaultMethod method = new DefaultMethod(operatorDeclaration.Name, CreateReturnType(operatorDeclaration.TypeReference), ConvertModifier(operatorDeclaration.Modifier), region, bodyRegion, c);
+			method.Documentation = GetDocumentation(region.BeginLine, operatorDeclaration.Attributes);
 			ConvertAttributes(operatorDeclaration, method);
 			if(operatorDeclaration.Parameters != null)
 			{

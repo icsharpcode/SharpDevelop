@@ -229,6 +229,78 @@ Faça o download de um AddIn através da Internet, depois pressione 'Instalar Ad
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Formato de ficheiro desconhecido:</value>
   </data>
+  <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
+    <value>Ver Diagrama de Classes</value>
+  </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>Necessita instalar o TortoiseGit para executar esta acção</value>
+  </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Conteúdo</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Mostrar Conteúdo</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Procurar</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Biblioteca de Ajuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Mode de Ajuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Catálogos de Ajuda instalados.</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Visualizador de Ajuda da Microsoft</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>Prentende utilizar uma funcionalidade Local no modo de Ajuda Na Internet. Deve mudar o modo para utilizar esta funcionalidade.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Procurar</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Procurar por:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Procurar</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Mostrar Ajuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Utilizar ajuda externa</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Eu quero usar ajuda local</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Eu quero usar ajuda na internet</value>
+  </data>
+  <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
+    <value>Numéro de bytes por linha</value>
+  </data>
+  <data name="AddIns.HexEditor.Display" xml:space="preserve">
+    <value>Ver</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements" xml:space="preserve">
+    <value>Elementos</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements.Data" xml:space="preserve">
+    <value>Dados</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements.Offset" xml:space="preserve">
+    <value>Deslocamento</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
+    <value>Sistema numérico</value>
+  </data>
+  <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
+    <value>Escalar para caber na largura actual</value>
+  </data>
   <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
     <value>Adicionar para favoritos de Ajuda</value>
   </data>
@@ -395,6 +467,45 @@ Precisa de instalar o .NET Framework SDK para utilizar o sistema de ajuda.</valu
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Utilizar a linguagem de projecto actual</value>
   </data>
+  <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
+    <value>Resultado</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.SetAsRoot.TabTitle" xml:space="preserve">
+    <value>Nós Juntos</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
+    <value>Todas as funções para {0}</value>
+  </data>
+  <data name="AddIns.Profiler.DatabaseTooNewError" xml:space="preserve">
+    <value>O perfil de sessão SharpDevelop seleccionado foi criado por uma versão mais recente de SharpDevelop e assim não pode ser aberto.</value>
+  </data>
+  <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
+    <value>Sessão de Profiling SharpDevelop</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
+    <value>Este projecto não pode ser iniciado porque o ficheiro executável não foi encontrado, assegure-se, por favor,de que o projecto e todas as suas dependências são construídas correctamente!</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
+    <value>Nenhum projecto iniciável foi encontrado. Abortar...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectWantToProfileStartupProject" xml:space="preserve">
+    <value>Este projecto não pode ser iniciado. Deseja obter perfil da solução do projecto StartUp em seu lugar?</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.PreparingForAnalysis" xml:space="preserve">
+    <value>A preparar a análise ...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.RegisterFailed" xml:space="preserve">
+    <value>Não foi registado o perfilador no COM Registry. Não é possível começar a obter perfil!</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CpuCyclesText" xml:space="preserve">
+    <value>Ciclos CPU:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExecuteQueryText" xml:space="preserve">
+    <value>Executar inquérito</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.NameColumnText" xml:space="preserve">
+    <value>Nome</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extrair method</value>
   </data>
@@ -499,9 +610,6 @@ Precisa de instalar o .NET Framework SDK para utilizar o sistema de ajuda.</valu
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Ficheiro</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Linha</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Acerca</value>
@@ -2781,6 +2889,9 @@ Pode também escolher guardar o parâmetro num ficheiro .user-file em vez de no 
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Iniciar</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Linha</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>&amp;Actualizar</value>
   </data>
@@ -3005,9 +3116,6 @@ Pode também escolher guardar o parâmetro num ficheiro .user-file em vez de no 
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Fim de Linha</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Linha</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Impossível localizar o executável de consola NCover.
@@ -5245,18 +5353,6 @@ Vá a 'Opções -&gt; Estilo Visual' e altere o ambiente de linguagem actual.</v
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Todos os formatos conhecidos de projecto</value>
   </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Encontrado projecto Visual Studio.NET. Devo converter o mesmo numa Solução Formato 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Encontrado Projecto Visual Studio.NET 2003. Devo converter o mesmo numa Solução Formato 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Deve o combine SharpDevelop 1.x ser convertido numa solução SharpDevelop 2.x?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Deve o projecto SharpDevelop 1.x ser convertido num projecto SharpDevelop 2.x?</value>
-  </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Havia ficheiros de recursos no projecto.
 SharpDevelop 2 compila os recursos de forma diferente: o nome do recurso não é só o nome do ficheiro, mas é prefixado à raiz do espaço de nomeação e ao nome da pasta.
@@ -6253,7 +6349,7 @@ Os ficheiros de recursos foram renomeados/movidos em conformidade.</value>
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Abrir um novo buffer</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Solução…</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

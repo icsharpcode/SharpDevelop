@@ -26,26 +26,38 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public override Assembly LoadAssembly(string name)
 		{
-			#warning reimplement this!
-			throw new NotImplementedException();
-//			if (string.IsNullOrEmpty(name)) {
-//				IProjectContent pc = GetProjectContent(file);
-//				if (pc != null) {
-//					return this.typeResolutionService.LoadAssembly(pc);
-//				}
-//				return null;
-//			} else {
-//				// Load any other assembly from the solution.
-//				foreach(var project in ProjectService.OpenSolution.Projects) {
-//					if(project.AssemblyName==name) {
-//						var pc = ParserService.GetProjectContent(project);
-//						if (pc != null)
-//							return this.typeResolutionService.LoadAssembly(pc);
-//					}
-//
-//				}
-//				return base.LoadAssembly(name);
-//			}
+			if (string.IsNullOrEmpty(name)) {
+				IProjectContent pc = GetProjectContent(file);
+				if (pc != null) {
+					return this.typeResolutionService.LoadAssembly(pc);
+				}
+				return null;
+			} else {
+				Assembly assembly = FindAssemblyInProjectReferences(name);
+				if (assembly != null) {
+					return assembly;
+				}
+				return base.LoadAssembly(name);
+			}
+		}
+		
+		Assembly FindAssemblyInProjectReferences(string name)
+		{
+			IProjectContent pc = GetProjectContent(file);
+			if (pc != null) {
+				return FindAssemblyInProjectReferences(pc, name);
+			}
+			return null;
+		}
+		
+		Assembly FindAssemblyInProjectReferences(IProjectContent pc, string name)
+		{
+			foreach (IProjectContent referencedProjectContent in pc.ReferencedContents) {
+				if (name == referencedProjectContent.AssemblyName) {
+					return this.typeResolutionService.LoadAssembly(referencedProjectContent);
+				}
+			}
+			return null;
 		}
 		
 		public override XamlTypeFinder Clone()

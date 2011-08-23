@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
@@ -76,22 +77,19 @@ namespace ICSharpCode.Reports.Core
 				if (row != null)
 				{
 					rs = row.Size;
-					PrintHelper.AdjustParent(tableContainer as BaseReportItem,tableContainer.Items);
+					PrintHelper.AdjustParent(tableContainer,tableContainer.Items);
 					
 					if (PrintHelper.IsTextOnlyRow(row) )
 					{
 						
-						PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,row);
+						LayoutHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,row);
 						
 						Rectangle r =  StandardPrinter.RenderContainer(row,Evaluator,currentPosition,rpea);
 						
 						
-						currentPosition =PrintHelper.ConvertRectangleToCurentPosition (r);
-						
-//						currentPosition = new Point(parent.Location.X + row.Location.X,currentPosition.Y);
+						currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
 					
 						tableContainer.Location = saveLocation;
-						Console.WriteLine("----");
 					}
 					else {
 						int adjust = row.Location.Y - saveLocation.Y;
@@ -107,7 +105,7 @@ namespace ICSharpCode.Reports.Core
 							
 							this.dataNavigator.Fill(row.Items);
 							
-							PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,row);
+							LayoutHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,row);
 							
 							Rectangle r =  StandardPrinter.RenderContainer(row,Evaluator,currentPosition,rpea);
 							
@@ -155,7 +153,8 @@ namespace ICSharpCode.Reports.Core
 			
 			Point currentPosition	= new Point(section.Location.X + container.Location.X,offset.Y);
 			
-			if (section.Visible){
+			if (section.VisibleInReport)
+			{
 				
 				//Always set section.size to it's original value
 				
@@ -163,7 +162,7 @@ namespace ICSharpCode.Reports.Core
 				
 				Size containerSize = new Size (section.Items[0].Size.Width,section.Items[0].Size.Height);
 				
-				PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,container);
+				LayoutHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,container);
 				
 				section.Render (rpea);
 				

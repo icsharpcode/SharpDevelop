@@ -5,8 +5,8 @@
 	<Languages name="Brazilian Portuguese"          code="pt-br"    icon="brazil.png" />
 	<!--<Languages name="Bulgarian"                     code="bg"       icon="bulgaria.png" />-->
 	<!--<Languages name="Catalan"                       code="ca"       icon="catalonia.png" />-->
-	<!--<Languages name="Chinese (BIG5)"                code="cn-big"   icon="chinalg.png" />-->
-	<!--<Languages name="Chinese (GB)"                  code="cn-gb"    icon="chinalg.png" />-->
+	<!--<Languages name="Chinese (Traditional)"                code="cn-big"   icon="chinalg.png" />-->
+	<Languages name="Chinese"                  code="zh"    icon="chinalg.png" />
 	<Languages name="Czech"                         code="cz"       icon="czech.png" />
 	<!--<Languages name="Danish"                        code="dk"       icon="denmark.png" />-->
 	<Languages name="Dutch"                         code="nl"       icon="netherlands.png" />
@@ -15,7 +15,7 @@
 	<Languages name="German"                        code="de"       icon="germany.png" />
 	<!--<Languages name="Greek"                         code="el"       icon="notyetdone.png" />-->
 	<!--<Languages name="Hungarian"                     code="hu"       icon="hungary.png" />-->
-	<!--<Languages name="Italian"                       code="it"       icon="italy.png" />-->
+	<Languages name="Italian"                       code="it"       icon="italy.png" />
 	<!--<Languages name="Japanese"                      code="jp"       icon="japan.png" />-->
 	<Languages name="Korean"                        code="kr"       icon="south_korea.png" />
 	<!--<Languages name="Lithuanian"                    code="lt"       icon="lithuania.png" />-->
@@ -23,7 +23,7 @@
 	<Languages name="Polish"                        code="pl"       icon="poland.png" />
 	<Languages name="Portuguese"                    code="pt"       icon="portugal.png" />
 	<!--<Languages name="Romanian"                      code="ro"       icon="romania.png" />-->
-	<!--<Languages name="Russian"                       code="ru"       icon="russia.png" />-->
+	<Languages name="Russian"                       code="ru"       icon="russia.png" />
 	<!--<Languages name="Serbian"                       code="sr"       icon="serbia.png" />-->
 	<!--<Languages name="Slovenian"                     code="sl"       icon="slovenia.png" />-->
 	<Languages name="Spanish"                       code="es"       icon="spain.png" />

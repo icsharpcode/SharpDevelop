@@ -2,51 +2,32 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
-using System.Threading;
-using System.Windows.Forms;
+using System.Dynamic;
+using System.Windows;
+using System.Windows.Data;
+
 using Debugger;
+using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
-using Exception=System.Exception;
-using Thread=Debugger.Thread;
+using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Services;
+using Exception = System.Exception;
+using Thread = Debugger.Thread;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public partial class RunningThreadsPad : DebuggerPad
 	{
-		ListView  runningThreadsList;
+		SimpleListViewControl  runningThreadsList;
 		Process debuggedProcess;
 		
-		ColumnHeader id          = new ColumnHeader();
-		ColumnHeader name        = new ColumnHeader();
-		ColumnHeader location    = new ColumnHeader();
-		ColumnHeader priority    = new ColumnHeader();
-		ColumnHeader breaked     = new ColumnHeader();
-		
-		public override object Control {
-			get {
-				return runningThreadsList;
-			}
-		}
-			
 		protected override void InitializeComponents()
 		{
-			runningThreadsList = new ListView();
-			runningThreadsList.FullRowSelect = true;
-			runningThreadsList.AutoArrange = true;
-			runningThreadsList.Alignment   = ListViewAlignment.Left;
-			runningThreadsList.View = View.Details;
-			runningThreadsList.Dock = DockStyle.Fill;
-			runningThreadsList.GridLines  = false;
-			runningThreadsList.Activation = ItemActivation.OneClick;
-			runningThreadsList.Columns.AddRange(new ColumnHeader[] {id, name, location, priority, breaked} );
-			runningThreadsList.ContextMenuStrip = CreateContextMenuStrip();
-			runningThreadsList.ItemActivate += new EventHandler(RunningThreadsListItemActivate);
-			id.Width = 100;
-			name.Width = 300;
-			location.Width = 250;
-			priority.Width = 120;
-			breaked.Width = 80;
+			runningThreadsList = new SimpleListViewControl();
+			runningThreadsList.ContextMenu = CreateContextMenuStrip();
+			runningThreadsList.ItemActivated += RunningThreadsListItemActivate;
+			panel.Children.Add(runningThreadsList);
 			
 			RedrawContent();
 			ResourceService.LanguageChanged += delegate { RedrawContent(); };
@@ -54,13 +35,23 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public void RedrawContent()
 		{
-			id.Text       = ResourceService.GetString("Global.ID");
-			name.Text     = ResourceService.GetString("Global.Name");
-			location.Text = ResourceService.GetString("AddIns.HtmlHelp2.Location");
-			priority.Text = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority");
-			breaked.Text  = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Frozen");
+			runningThreadsList.ClearColumns();
+			runningThreadsList.AddColumn(ResourceService.GetString("Global.ID"),
+			                             new Binding { Path = new PropertyPath("ID") },
+			                             100);
+			runningThreadsList.AddColumn(ResourceService.GetString("Global.Name"),
+			                             new Binding { Path = new PropertyPath("Name") },
+			                             300);
+			runningThreadsList.AddColumn(ResourceService.GetString("AddIns.HtmlHelp2.Location"),
+			                             new Binding { Path = new PropertyPath("Location") },
+			                             250);
+			runningThreadsList.AddColumn(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority"),
+			                             new Binding { Path = new PropertyPath("Priority") },
+			                             120);
+			runningThreadsList.AddColumn(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Frozen"),
+			                             new Binding { Path = new PropertyPath("Frozen") },
+			                             80);
 		}
-		
 
 		protected override void SelectProcess(Process process)
 		{
@@ -73,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				debuggedProcess.Paused               += debuggedProcess_Paused;
 				debuggedProcess.Threads.Added        += debuggedProcess_ThreadStarted;
 			}
-			runningThreadsList.Items.Clear();
+			runningThreadsList.ItemCollection.Clear();
 			RefreshPad();
 		}
 		
@@ -90,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public override void RefreshPad()
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning) {
-				runningThreadsList.Items.Clear();
+				runningThreadsList.ItemCollection.Clear();
 				return;
 			}
 			
@@ -100,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						if (debuggedProcess.IsPaused) {
 							Utils.DoEvents(debuggedProcess);
 						}
-						RefreshThread(t);
+						AddThread(t);
 					}
 				} catch(AbortedBecauseDebuggeeResumedException) {
 				} catch(Exception) {
@@ -117,84 +108,87 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			if (debuggedProcess.IsPaused) {
 				if (debuggedProcess != null) {
-					debuggedProcess.SelectedThread = (Thread)(runningThreadsList.SelectedItems[0].Tag);
-					debuggedProcess.OnPaused(); // Force refresh of pads
+					dynamic obj = runningThreadsList.SelectedItems[0];
+					Thread thread = (Thread)(obj.Tag);
+					debuggedProcess.SelectedThread = thread;
+					debuggedProcess.OnPaused();
 				}
 			} else {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
 			}
-		}		
+		}
 		
 		void AddThread(Thread thread)
 		{
-			runningThreadsList.Items.Add(new ListViewItem(thread.ID.ToString()));
-			RefreshThread(thread);
+			if (thread == null) return;
+			
+			// remove the object if exists
+			RemoveThread(thread);
+			
+			dynamic obj = new ExpandoObject();
+			obj.Tag = thread;
+			RefreshItem(obj);
+			runningThreadsList.ItemCollection.Add(obj);
 			thread.NameChanged += delegate {
-				RefreshThread(thread);
+				RefreshItem(obj);
 			};
-			thread.Exited += delegate {
-				RemoveThread(thread);
-			};
+			thread.Exited += (s, e) => RemoveThread(e.Thread);
 		}
 		
-		ListViewItem FindItem(Thread thread)
+		void RefreshItem(ExpandoObject obj)
 		{
-			foreach (ListViewItem item in runningThreadsList.Items) {
-				if (item.Text == thread.ID.ToString()) {
-					return item;
-				}
-			}
-			return null;
-		}
-		
-		void RefreshThread(Thread thread)
-		{
-			ListViewItem item = FindItem(thread);
-			if (item == null) {
-				AddThread(thread);
+			dynamic item = obj;
+			
+			if (item == null) return;			
+			var thread = item.Tag as Thread;
+			
+			if (thread == null)
 				return;
-			}
-			item.SubItems.Clear();
-			item.Text = thread.ID.ToString();
+			
+			item.ID = thread.ID;
 			item.Tag = thread;
-			item.SubItems.Add(thread.Name);
 			StackFrame location = null;
 			if (thread.Process.IsPaused) {
 				location = thread.MostRecentStackFrame;
 			}
 			if (location != null) {
-				item.SubItems.Add(location.MethodInfo.Name);
+				item.Location = location.MethodInfo.Name;
 			} else {
-				item.SubItems.Add(ResourceService.GetString("Global.NA"));
+				item.Location = ResourceService.GetString("Global.NA");
 			}
+			
 			switch (thread.Priority) {
-				case ThreadPriority.Highest:
-					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Highest"));
+				case System.Threading.ThreadPriority.Highest:
+					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Highest");
 					break;
-				case ThreadPriority.AboveNormal:
-					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.AboveNormal"));
+				case System.Threading.ThreadPriority.AboveNormal:
+					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.AboveNormal");
 					break;
-				case ThreadPriority.Normal:
-					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Normal"));
+				case System.Threading.ThreadPriority.Normal:
+					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Normal");
 					break;
-				case ThreadPriority.BelowNormal:
-					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.BelowNormal"));
+				case System.Threading.ThreadPriority.BelowNormal:
+					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.BelowNormal");
 					break;
-				case ThreadPriority.Lowest:
-					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Lowest"));
+				case System.Threading.ThreadPriority.Lowest:
+					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Lowest");
 					break;
 				default:
-					item.SubItems.Add(thread.Priority.ToString());
+					item.Priority = thread.Priority.ToString();
 					break;
 			}
-			item.SubItems.Add(ResourceService.GetString(thread.Suspended ? "Global.Yes" : "Global.No"));
+			item.Frozen = ResourceService.GetString(thread.Suspended ? "Global.Yes" : "Global.No");
 		}
 		
 		void RemoveThread(Thread thread)
 		{
-			foreach (ListViewItem item in runningThreadsList.Items) {
-				if (thread.ID.ToString() == item.Text) {
-					item.Remove();
+			if (thread == null)
+				return;
+			
+			foreach (dynamic item in runningThreadsList.ItemCollection) {
+				if (thread.ID == item.ID) {
+					runningThreadsList.ItemCollection.Remove(item);
+					break;
 				}
 			}
 		}

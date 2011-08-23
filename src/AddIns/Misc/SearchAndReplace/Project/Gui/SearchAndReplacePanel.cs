@@ -426,12 +426,16 @@ namespace SearchAndReplace
 			
 			try {
 				ignoreSelectionChanges = true;
-				if (action == 0)
+				if (action == 0) {
 					SearchInFilesManager.FindAll(startOffset, endOffset - startOffset, monitor);
-				else if (action == 1)
+				} else if (action == 1) {
 					SearchReplaceManager.MarkAll(startOffset, endOffset - startOffset, monitor);
-				else if (action == 2)
+				} else if (action == 2) {
+					// use anchor for endOffset because the replacement might change the text length
+					var anchor = textEditor.Document.CreateAnchor(endOffset);
 					SearchReplaceManager.ReplaceAll(startOffset, endOffset - startOffset, monitor);
+					endOffset = anchor.Offset;
+				}
 				textEditor.Select(startOffset, endOffset - startOffset);
 			} finally {
 				ignoreSelectionChanges = false;

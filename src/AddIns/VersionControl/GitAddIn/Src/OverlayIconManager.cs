@@ -103,11 +103,7 @@ namespace ICSharpCode.GitAddIn
 				try {
 					RunStep(node);
 				} catch (Exception ex) {
-					#if SD4
 					MessageService.ShowException(ex);
-					#else
-					MessageService.ShowError(ex);
-					#endif
 				}
 			}
 		}
@@ -136,7 +132,13 @@ namespace ICSharpCode.GitAddIn
 			
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
-					node.Overlay = GetImage(status);
+					Image image = GetImage(status);
+					if (image != null) {
+						node.Overlay = image;
+					} else if (node.Overlay != null && (node.Overlay.Tag as Type) == typeof(GitAddIn.OverlayIconManager)) {
+						// reset overlay to null only if the old overlay belongs to the OverlayIconManager
+						node.Overlay = null;
+					}
 				});
 		}
 		
@@ -196,6 +198,7 @@ namespace ICSharpCode.GitAddIn
 					g.DrawImage(statusImages, destRect, srcRect, GraphicsUnit.Pixel);
 					//g.DrawLine(Pens.Black, 0, 0, 7, 10);
 				}
+				smallImage.Tag = typeof(GitAddIn.OverlayIconManager);
 				statusIcons[index] = smallImage;
 			}
 			return statusIcons[index];

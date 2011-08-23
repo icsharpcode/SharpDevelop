@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows.Media;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
@@ -13,6 +14,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 {
 	public class CurrentLineBookmark : SDMarkerBookmark
 	{
+		static object syncObject = new object();
 		static CurrentLineBookmark instance;
 		
 		static int startLine;
@@ -20,23 +22,37 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		static int endLine;
 		static int endColumn;
 		
-		public static void SetPosition(IViewContent viewContent,  int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
+		public static void SetPosition(IViewContent viewContent,  int markerStartLine, int markerStartColumn, int markerEndLine, int markerEndColumn)
 		{
 			ITextEditorProvider tecp = viewContent as ITextEditorProvider;
-			if (tecp != null)
-				SetPosition(tecp.TextEditor.FileName, tecp.TextEditor.Document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
-			else
-				Remove();
+			if (tecp != null) {
+				SetPosition(tecp.TextEditor.FileName, tecp.TextEditor.Document, markerStartLine, markerStartColumn, markerEndLine, markerEndColumn);
+			} else {
+				lock (syncObject) {
+					// get the decompiled view if exists
+					if (viewContent != null && viewContent.Control != null) {
+						dynamic codeView = viewContent.Control;
+						var document = codeView.TextEditor.Document as IDocument;
+						SetPosition(codeView.Adapter.FileName, document, markerStartLine, markerStartColumn, markerEndLine, markerEndColumn);
+						codeView.IconBarManager.Bookmarks.Add(CurrentLineBookmark.instance);
+						codeView.UnfoldAndScroll(markerStartLine);
+						if (document != null)
+							CurrentLineBookmark.instance.Document = document;
+					}
+				}
+			}
 		}
 		
-		public static void SetPosition(FileName fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
+		public static void SetPosition(FileName fileName, IDocument document, int markerStartLine, int markerStartColumn, int markerEndLine, int markerEndColumn)
 		{
+			if (document == null)
+				return;
 			Remove();
 			
-			startLine   = makerStartLine;
-			startColumn = makerStartColumn;
-			endLine     = makerEndLine;
-			endColumn   = makerEndColumn;
+			startLine   = markerStartLine;
+			startColumn = markerStartColumn;
+			endLine     = markerEndLine;
+			endColumn   = markerEndColumn;
 			
 			if (startLine < 1 || startLine > document.TotalNumberOfLines)
 				return;

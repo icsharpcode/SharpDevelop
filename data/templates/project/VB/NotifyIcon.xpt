@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<Template originator   = "Siegfried Pammer"
+          created      = "14/11/2010"
+          lastModified = "14/11/2010">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.SysTrayIcon.Name}</Name>
+		<Category>VB</Category>
+		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
+		<Icon>VBNet.Project.Form</Icon>
+		<Description>${res:Templates.Project.SysTrayIcon.Description}</Description>
+		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "NotificationIcon.vb"/>
+	</Actions>
+	
+	<Project language="VBNet">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
+		
+		<ProjectItems>
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Drawing" />
+			<Import Include="System.Diagnostics" />
+			<Import Include="System.Windows.Forms" />
+		</ProjectItems>
+		
+		<PropertyGroup>
+			<OutputType>WinExe</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<MyType>WindowsFormsWithCustomSubMain</MyType>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="NotificationIcon.vb"><![CDATA[${StandardHeader.VBNET}
+Imports System.Threading
+
+Public NotInheritable Class NotificationIcon
+	Private notifyIcon As NotifyIcon
+	Private notificationMenu As ContextMenu
+
+	#Region "Initialize icon and menu"
+	Public Sub New()
+		notifyIcon = New NotifyIcon()
+		notificationMenu = New ContextMenu(InitializeMenu())
+
+		AddHandler notifyIcon.DoubleClick, AddressOf IconDoubleClick
+		Dim resources As New System.ComponentModel.ComponentResourceManager(GetType(NotificationIcon))
+		notifyIcon.Icon = DirectCast(resources.GetObject("$this.Icon"), Icon)
+		notifyIcon.ContextMenu = notificationMenu
+	End Sub
+
+	Private Function InitializeMenu() As MenuItem()
+		Dim menu As MenuItem() = New MenuItem() {New MenuItem("About", AddressOf menuAboutClick), New MenuItem("Exit", AddressOf menuExitClick)}
+		Return menu
+	End Function
+	#End Region
+
+	#Region "Main - Program entry point"
+	''' <summary>Program entry point.</summary>
+	''' <param name="args">Command Line Arguments</param>
+	<STAThread> _
+	Public Shared Sub Main(args As String())
+		Application.EnableVisualStyles()
+		Application.SetCompatibleTextRenderingDefault(False)
+
+		Dim isFirstInstance As Boolean
+		' Please use a unique name for the mutex to prevent conflicts with other programs
+		Using mtx As New Mutex(True, "${StandardNamespace}", isFirstInstance)
+			If isFirstInstance Then
+				Dim notificationIcon As New NotificationIcon()
+				notificationIcon.notifyIcon.Visible = True
+				Application.Run()
+				notificationIcon.notifyIcon.Dispose()
+				' The application is already running
+				' TODO: Display message box or change focus to existing application instance
+			Else
+			End If
+		End Using
+		' releases the Mutex
+	End Sub
+	#End Region
+
+	#Region "Event Handlers"
+	Private Sub menuAboutClick(sender As Object, e As EventArgs)
+		MessageBox.Show("About This Application")
+	End Sub
+
+	Private Sub menuExitClick(sender As Object, e As EventArgs)
+		Application.[Exit]()
+	End Sub
+
+	Private Sub IconDoubleClick(sender As Object, e As EventArgs)
+		MessageBox.Show("The icon was double clicked")
+	End Sub
+	#End Region
+End Class
+]]>
+			</File>
+			<File name="NotificationIcon.resx" src="NotifyIconResources.resx" buildAction="EmbeddedResource" DependentUpon="NotificationIcon.vb" />
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb" />
+		</Files>
+	</Project>
+</Template>

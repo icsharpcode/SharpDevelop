@@ -264,9 +264,9 @@ namespace Debugger.Tests {
 			ObjectDump("TypesIdentitcal", object.ReferenceEquals(locType, valType));
 			ObjectDump("TypesEqual", locType == valType);
 			
-			ObjectDump("WorkerThreadMoved", process.SelectedStackFrame.GetThisValue().GetMemberValue("WorkerThreadMoved").AsString);
+			ObjectDump("WorkerThreadMoved", process.SelectedStackFrame.GetThisValue().GetMemberValue("WorkerThreadMoved").AsString());
 			process.Continue();
-			ObjectDump("WorkerThreadMoved", process.SelectedStackFrame.GetThisValue().GetMemberValue("WorkerThreadMoved").AsString);
+			ObjectDump("WorkerThreadMoved", process.SelectedStackFrame.GetThisValue().GetMemberValue("WorkerThreadMoved").AsString());
 			
 			EndTest();
 		}

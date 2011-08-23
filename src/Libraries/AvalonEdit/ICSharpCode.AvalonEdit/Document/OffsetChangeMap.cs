@@ -52,7 +52,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// causes anchors to always survive irrespective of their <see cref="TextAnchor.SurviveDeletion"/> setting.
 		/// If the text keeps its old size, this is implemented as OffsetChangeMap.Empty.
 		/// </remarks>
-		CharacterReplace
+		CharacterReplace,
+		/// <summary>
+		/// Like 'Normal', but anchors with <see cref="TextAnchor.MovementType"/> = Default will stay in front of the
+		/// insertion instead of being moved behind it.
+		/// </summary>
+		KeepAnchorBeforeInsertion
 	}
 	
 	/// <summary>
@@ -105,8 +110,10 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public int GetNewOffset(int offset, AnchorMovementType movementType)
 		{
-			foreach (OffsetChangeMapEntry entry in this) {
-				offset = entry.GetNewOffset(offset, movementType);
+			IList<OffsetChangeMapEntry> items = this.Items;
+			int count = items.Count;
+			for (int i = 0; i < count; i++) {
+				offset = items[i].GetNewOffset(offset, movementType);
 			}
 			return offset;
 		}
@@ -201,7 +208,9 @@ namespace ICSharpCode.AvalonEdit.Document
 	public struct OffsetChangeMapEntry : IEquatable<OffsetChangeMapEntry>
 	{
 		readonly int offset;
-		readonly int insertionLength;
+		
+		// MSB: DefaultAnchorMovementIsBeforeInsertion
+		readonly uint insertionLengthWithMovementFlag;
 		
 		// MSB: RemovalNeverCausesAnchorDeletion; other 31 bits: RemovalLength
 		readonly uint removalLengthWithDeletionFlag;
@@ -218,7 +227,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Returns 0 if this entry represents a removal.
 		/// </summary>
 		public int InsertionLength {
-			get { return insertionLength; }
+			get { return (int)(insertionLengthWithMovementFlag & 0x7fffffff); }
 		}
 		
 		/// <summary>
@@ -237,10 +246,18 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
+		/// Gets whether default anchor movement causes the anchor to stay in front of the caret.
+		/// </summary>
+		public bool DefaultAnchorMovementIsBeforeInsertion {
+			get { return (insertionLengthWithMovementFlag & 0x80000000) != 0; }
+		}
+		
+		/// <summary>
 		/// Gets the new offset where the specified offset moves after this document change.
 		/// </summary>
 		public int GetNewOffset(int oldOffset, AnchorMovementType movementType)
 		{
+			int insertionLength = this.InsertionLength;
 			int removalLength = this.RemovalLength;
 			if (!(removalLength == 0 && oldOffset == offset)) {
 				// we're getting trouble (both if statements in here would apply)
@@ -259,8 +276,10 @@ namespace ICSharpCode.AvalonEdit.Document
 			// b) there was no removal and we insert at the caret position
 			if (movementType == AnchorMovementType.AfterInsertion)
 				return offset + insertionLength;
-			else
+			else if (movementType == AnchorMovementType.BeforeInsertion)
 				return offset;
+			else
+				return this.DefaultAnchorMovementIsBeforeInsertion ? offset : offset + insertionLength;
 		}
 		
 		/// <summary>
@@ -274,24 +293,26 @@ namespace ICSharpCode.AvalonEdit.Document
 			
 			this.offset = offset;
 			this.removalLengthWithDeletionFlag = (uint)removalLength;
-			this.insertionLength = insertionLength;
+			this.insertionLengthWithMovementFlag = (uint)insertionLength;
 		}
 		
 		/// <summary>
 		/// Creates a new OffsetChangeMapEntry instance.
 		/// </summary>
-		public OffsetChangeMapEntry(int offset, int removalLength, int insertionLength, bool removalNeverCausesAnchorDeletion)
+		public OffsetChangeMapEntry(int offset, int removalLength, int insertionLength, bool removalNeverCausesAnchorDeletion, bool defaultAnchorMovementIsBeforeInsertion)
 			: this(offset, removalLength, insertionLength)
 		{
 			if (removalNeverCausesAnchorDeletion)
 				this.removalLengthWithDeletionFlag |= 0x80000000;
+			if (defaultAnchorMovementIsBeforeInsertion)
+				this.insertionLengthWithMovementFlag |= 0x80000000;
 		}
 		
 		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
 			unchecked {
-				return offset + 3559 * insertionLength + 3571 * (int)removalLengthWithDeletionFlag;
+				return offset + 3559 * (int)insertionLengthWithMovementFlag + 3571 * (int)removalLengthWithDeletionFlag;
 			}
 		}
 		
@@ -304,7 +325,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <inheritdoc/>
 		public bool Equals(OffsetChangeMapEntry other)
 		{
-			return offset == other.offset && insertionLength == other.insertionLength && removalLengthWithDeletionFlag == other.removalLengthWithDeletionFlag;
+			return offset == other.offset && insertionLengthWithMovementFlag == other.insertionLengthWithMovementFlag && removalLengthWithDeletionFlag == other.removalLengthWithDeletionFlag;
 		}
 		
 		/// <summary>

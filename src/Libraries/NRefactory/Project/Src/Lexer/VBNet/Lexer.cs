@@ -436,8 +436,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			
 			// 6th rule
 			// after a greater-than (>) in a non-file-level attribute context
-			// HACK cannot detect if token was end of attribute, just allow all GreaterThan tokens
-			if (prevTokenKind == Tokens.GreaterThan)
+			if (ef.WasNormalAttribute && prevTokenKind == Tokens.GreaterThan)
 				return true;
 			
 			// 7th rule

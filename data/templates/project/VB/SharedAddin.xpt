@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<Template originator = "Mathias Simmack" created = "17/06/06" lastModified = "17/06/06">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<!--
+
+			Template.Project.SharedAddin.Name	 = Shared Add-in
+			Template.Project.SharedAddin.Description = Creates a shared add-in for COM applications
+		-->
+
+		<Name>${res:Templates.Project.SharedAddin.Name}</Name>
+		<Category>VB</Category>
+		<Icon>VBNet.Project.Library</Icon>
+		<Description>${res:Templates.Project.SharedAddin.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Connect.vb"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language = "VBNet">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Xml" />
+			<Reference Include="System.Data" />
+			<Reference Include="Extensibility" />
+		</ProjectItems>
+		
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<RegisterForComInterop>true</RegisterForComInterop>
+			<OptionInfer>On</OptionInfer>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="Connect.vb"><![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports System.Runtime.InteropServices
+Imports Extensibility
+
+<GuidAttribute("${GUID}"), ProgId("${ProjectName}.Connect")> _
+Public Class Connect
+	Implements Extensibility.IDTExtensibility2
+
+	#Region "Creating an Add-in for Office ..."
+
+	'		First of all, make sure the "Register for COM Interop" flag in your project
+	'		options is enabled. Create and add a reference to the Office core
+	'				tlbimp %CommonProgramFiles%\Microsoft Shared\Office12\mso.dll
+	'					/out:Microsoft.Office.Interop.dll
+	'
+	'		Then add some code, compile the assembly and register it with
+	'				regasm ${StandardNamespace}.dll
+	'
+	'
+	'		Now create a new Registry key for the Office application, you want to
+	'		connect to
+	'				HKLM\Software\Microsoft\Visio\Addins\${StandardNamespace}.Connect
+	'				HKLM\Software\Microsoft\Office\Word\Addins\${StandardNamespace}.Connect
+	'				HKLM\Software\Microsoft\Office\Excel\Addins\${StandardNamespace}.Connect
+	'				HKLM\Software\Microsoft\Office\Outlook\Addins\${StandardNamespace}.Connect
+	'				HKLM\Software\Microsoft\Office\Publisher\Addins\${StandardNamespace}.Connect
+	'				HKLM\Software\Microsoft\Office\Access\Addins\${StandardNamespace}.Connect
+	'				HKLM\Software\Microsoft\Office\PowerPoint\Addins\${StandardNamespace}.Connect
+	'				HKLM\Software\Microsoft\Office\FrontPage\Addins\${StandardNamespace}.Connect
+	'				HKLM\Software\Microsoft\Office\MS Project\Addins\${StandardNamespace}.Connect
+	'
+	'		Now create this 3 values
+	'				LoadBehavior (DWORD)	= 3
+	'				Description  (String)	= a descriptive string for your add-in
+	'				FriendlyName (String)	= a name
+	'
+	'		If you don't want to use your add-in anymore, remove those Registry entries and
+	'		unregister the assembly with
+	'				regasm ${StandardNamespace}.dll /u
+	'
+	'
+	'		The best way, doing these registration steps, is a Setup project.
+
+	#End Region
+	
+	Public Sub New()
+	End Sub
+	
+	Public Sub OnConnection(ByVal Application As Object, ByVal ConnectMode As ext_ConnectMode, ByVal AddInInst As Object, ByRef [custom] As Array) Implements IDTExtensibility2.OnConnection
+		Me.ApplicationObject = Application
+		Me.AddInInstance = AddInInst		
+	End Sub
+	
+	Public Sub OnDisconnection(ByVal RemoveMode As ext_DisconnectMode, ByRef [custom] As Array) Implements IDTExtensibility2.OnDisconnection
+	End Sub
+	
+	Public Sub OnAddInsUpdate(ByRef [custom] As Array) Implements IDTExtensibility2.OnAddInsUpdate
+	End Sub
+	
+	Public Sub OnStartupComplete(ByRef [custom] As Array) Implements IDTExtensibility2.OnStartupComplete
+	End Sub
+	
+	Public Sub OnBeginShutdown(ByRef [custom] As Array) Implements IDTExtensibility2.OnBeginShutdown
+	End Sub
+
+	Private ApplicationObject As Object
+	Private AddInInstance As Object
+End Class]]></File>
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+		</Files>
+	</Project>
+</Template>

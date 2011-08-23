@@ -34,5 +34,11 @@ namespace Grunwald.BooBinding
 				return BooLanguageProperties.Instance;
 			}
 		}
+		
+		public bool HandlingMissingProject {
+			get { 
+				return false; 
+			}
+		}
 	}
 }

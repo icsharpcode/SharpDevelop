@@ -15,16 +15,15 @@ namespace ICSharpCode.Scripting.Tests.Utils
 	public class FakeConsoleTextEditor : IScriptingConsoleTextEditor
 	{
 		public bool IsDisposed;
-		public bool IsWriteCalled;
+		public bool IsAppendCalled;
 		
 		public bool IsShowCompletionWindowCalled;
 		public bool IsMakeCurrentContentReadOnlyCalled;
 		public ScriptingConsoleCompletionDataProvider CompletionProviderPassedToShowCompletionWindow;
-		public string TextPassedToWrite;
+		public string TextPassedToAppend;
 		public string TextPassedToReplace;
 		public int LengthPassedToReplace = -1;
 		public int IndexPassedToReplace = -1;
-		public Location CursorLocationWhenWriteTextCalled;
 		public bool IsColumnChangedBeforeTextWritten;
 		
 		public StringBuilder PreviousLines = new StringBuilder();
@@ -42,11 +41,10 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			IsDisposed = true;
 		}
 		
-		public void Write(string text)
+		public void Append(string text)
 		{
-			TextPassedToWrite = text;
-			CursorLocationWhenWriteTextCalled = new Location(Column, Line);
-			IsWriteCalled = true;
+			TextPassedToAppend = text;
+			IsAppendCalled = true;
 			LineBuilder.Append(text);
 			Column += text.Length;
 		}
@@ -194,6 +192,27 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			} else {
 				LineBuilder.Remove(SelectionStart, SelectionLength);
 			}
+		}
+		
+		public bool IsScrollToEndCalled;
+		
+		public void ScrollToEnd()
+		{
+			IsScrollToEndCalled = true;
+		}
+		
+		public int MaximumVisibleColumns;
+	
+		public int GetMaximumVisibleColumns()
+		{
+			return MaximumVisibleColumns;
+		}
+		
+		public bool IsClearCalled;
+		
+		public void Clear()
+		{
+			IsClearCalled = true;
 		}
 	}
 }

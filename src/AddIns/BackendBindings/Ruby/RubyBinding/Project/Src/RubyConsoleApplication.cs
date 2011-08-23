@@ -31,6 +31,7 @@ namespace ICSharpCode.RubyBinding
 		
 		protected override void AddArguments(ScriptingCommandLineBuilder commandLine)
 		{
+			commandLine.AppendOption("--disable-gems");
 			commandLine.AppendBooleanOptionIfTrue("-D", Debug);
 			AppendLoadPaths(commandLine);
 			commandLine.AppendQuotedStringIfNotEmpty(ScriptFileName);

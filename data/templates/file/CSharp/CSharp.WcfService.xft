@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<Template 
+	author="Eusebiu Marcu"
+	created="03/08/2011"
+	lastModified="03/08/2011"
+	version="1.0">
+	
+	<Config
+		name="WCF Service"
+		icon="C#.File.NewClass"
+		category="C#"
+		subcategory="WCF"
+		defaultname="Service${Number}.svc"
+		language="C#"/>
+	 
+	<Description>WCF Service</Description>
+	
+	<Files>
+		<File name="${FullName}">
+<![CDATA[
+<%@ServiceHost language="C#" Debug="true" Service="${StandardNamespace}.${ClassName}"%>
+]]>
+		</File>
+		<File name="${FullName}.cs" language="C#" DependentUpon="${FullName}">
+<![CDATA[${StandardHeader.C#}
+using System;
+using System.ServiceModel;
+
+namespace ${StandardNamespace}
+{
+	[ServiceContract]
+	public interface I${ClassName}
+	{
+		[OperationContract]
+		void MyOperation();
+	}
+
+	/// <summary>
+	/// Description of ${ClassName}.
+	/// </summary>
+	public class ${ClassName} : I${ClassName}
+	{
+		public void MyOperation()
+		{
+			// implement the operation
+		}
+	}
+}
+]]>
+		</File>
+	</Files>
+</Template>

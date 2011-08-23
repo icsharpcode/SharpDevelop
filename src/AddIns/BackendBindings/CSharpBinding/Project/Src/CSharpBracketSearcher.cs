@@ -26,12 +26,14 @@ namespace CSharpBinding
 				int otherOffset = -1;
 				if (index > -1)
 					otherOffset = SearchBracketForward(document, offset, openingBrackets[index], closingBrackets[index]);
+				
 				index = closingBrackets.IndexOf(c);
 				if (index > -1)
 					otherOffset = SearchBracketBackward(document, offset - 2, openingBrackets[index], closingBrackets[index]);
 				
 				if (otherOffset > -1)
-					return new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1, Math.Max(offset - 1, otherOffset), 1);
+					return new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1,
+					                               Math.Max(offset - 1, otherOffset), 1);
 			}
 			
 			return null;
@@ -59,12 +61,13 @@ namespace CSharpBinding
 			bool inString = false;
 			bool inChar = false;
 			bool verbatim = false;
+			int result = 0;
 			for(int i = linestart; i < offset; i++) {
 				switch (document.GetCharAt(i)) {
 					case '/':
 						if (!inString && !inChar && i + 1 < document.TextLength) {
 							if (document.GetCharAt(i + 1) == '/') {
-								return 1;
+								result = 1;
 							}
 						}
 						break;
@@ -92,7 +95,8 @@ namespace CSharpBinding
 						break;
 				}
 			}
-			return (inString || inChar) ? 2 : 0;
+			
+			return (inString || inChar) ? 2 : result;
 		}
 		#endregion
 		
@@ -112,8 +116,8 @@ namespace CSharpBinding
 			// we need to know where offset is - in a string/comment or in normal code?
 			// ignore cases where offset is in a block comment
 			int starttype = GetStartType(document, linestart, offset + 1);
-			if (starttype != 0) {
-				return -1; // start position is in a comment/string
+			if (starttype == 1) {
+				return -1; // start position is in a comment
 			}
 			
 			// I don't see any possibility to parse a C# document backwards...

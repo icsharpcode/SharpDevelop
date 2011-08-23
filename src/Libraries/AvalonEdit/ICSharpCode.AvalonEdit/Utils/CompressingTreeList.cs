@@ -344,14 +344,63 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		
 		/// <summary>
+		/// Gets the the first index so that all values from the result index to <paramref name="index"/>
+		/// are equal.
+		/// </summary>
+		public int GetStartOfRun(int index)
+		{
+			if (index < 0 || index >= this.Count)
+				throw new ArgumentOutOfRangeException("index", index, "Value must be between 0 and " + (this.Count - 1));
+			int indexInRun = index;
+			GetNode(ref indexInRun);
+			return index - indexInRun;
+		}
+
+		/// <summary>
+		/// Gets the first index after <paramref name="index"/> so that the value at the result index is not
+		/// equal to the value at <paramref name="index"/>.
+		/// That is, this method returns the exclusive end index of the run of equal values.
+		/// </summary>
+		public int GetEndOfRun(int index)
+		{
+			if (index < 0 || index >= this.Count)
+				throw new ArgumentOutOfRangeException("index", index, "Value must be between 0 and " + (this.Count - 1));
+			int indexInRun = index;
+			int runLength = GetNode(ref indexInRun).count;
+			return index - indexInRun + runLength;
+		}
+
+		/// <summary>
 		/// Gets the number of elements after <paramref name="index"/> that have the same value as each other.
 		/// </summary>
+		[Obsolete("This method may be confusing as it returns only the remaining run length after index. " +
+		          "Use GetStartOfRun/GetEndOfRun instead.")]
 		public int GetRunLength(int index)
 		{
 			if (index < 0 || index >= this.Count)
 				throw new ArgumentOutOfRangeException("index", index, "Value must be between 0 and " + (this.Count - 1));
 			return GetNode(ref index).count - index;
 		}
+		
+		/// <summary>
+		/// Applies the conversion function to all elements in this CompressingTreeList.
+		/// </summary>
+		public void Transform(Func<T, T> converter)
+		{
+			if (root == null)
+				return;
+			Node prevNode = null;
+			for (Node n = root.LeftMost; n != null; n = n.Successor) {
+				n.value = converter(n.value);
+				if (prevNode != null && comparisonFunc(prevNode.value, n.value)) {
+					n.count += prevNode.count;
+					UpdateAugmentedData(n);
+					RemoveNode(prevNode);
+				}
+				prevNode = n;
+			}
+		}
+
 		
 		/// <summary>
 		/// Inserts the specified <paramref name="item"/> at <paramref name="index"/>

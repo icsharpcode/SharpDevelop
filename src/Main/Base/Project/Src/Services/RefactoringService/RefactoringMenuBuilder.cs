@@ -128,6 +128,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					foreach (object subItem in item.Items) {
 						resultItems.Add(subItem);
 					}
+					item.Items.Clear(); // detach resultItems from old parent
 				}
 			}
 		}

@@ -7,7 +7,7 @@ using ICSharpCode.AvalonEdit.Folding;
 
 namespace ICSharpCode.XmlEditor
 {
-	public interface IFoldingManager
+	public interface IFoldingManager : IDisposable
 	{
 		void UpdateFoldings(IEnumerable<NewFolding> newFoldings, int firstErrorOffset);
 	}

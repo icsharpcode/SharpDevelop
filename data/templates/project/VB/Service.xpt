@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<Template originator   = "Markus Palme"
+          created      = "24/11/2002"
+          lastModified = "07/20/2005">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.WindowsService.Name}</Name>
+		<Category>VB</Category>
+		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
+		<Icon>VBNet.Project.ServiceProject</Icon>
+		<Description>${res:Templates.Project.WindowsService.Description}</Description>
+		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "${ProjectName}.vb"/>
+	</Actions>
+	
+	<Project language="VBNet">
+		<PropertyGroup>
+			<OutputType>Exe</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<OptionInfer>On</OptionInfer>
+		</PropertyGroup>
+		
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Configuration.Install" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.ServiceProcess" />
+			<Reference Include="System.Xml" />
+			
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Data" />
+			<Import Include="System.Diagnostics" />
+		</ProjectItems>
+			
+
+		<Files>
+			<File name="${ProjectName}.vb"><![CDATA[${StandardHeader.VBNET}
+Imports System.ServiceProcess
+
+Public Class ${ProjectName}
+	Inherits ServiceBase
+	
+	Public Const MyServiceName As String = "${ProjectName}"
+	
+	' The main entry point for the process
+	<MTAThread()> _
+	Shared Sub Main()
+		' To run more than one service you have to add them here
+		ServiceBase.Run(New ServiceBase() {New ${ProjectName}})
+	End Sub
+	
+	Public Sub New()
+		Me.ServiceName = MyServiceName
+	End Sub
+	
+	Protected Overrides Sub OnStart(ByVal args() As String)
+		' TODO: Add start code here to start your service.
+	End Sub
+	
+	Protected Overrides Sub OnStop()
+		' TODO: Add tear-down code here (if required) to stop your service.
+	End Sub
+End Class
+
+]]></File>
+				<File name="ProjectInstaller.vb"><![CDATA[${StandardHeader.VBNET}
+Imports System.ComponentModel
+Imports System.Configuration.Install
+Imports System.ServiceProcess
+
+<RunInstaller(True)> _
+Public Class ProjectInstaller
+	Inherits Installer
+	
+	Private serviceProcessInstaller As New ServiceProcessInstaller
+	Private serviceInstaller As New ServiceInstaller
+	
+	Public Sub New()
+		' Here you can set properties on serviceProcessInstaller or register event handlers
+		serviceProcessInstaller.Account = ServiceAccount.LocalService
+		
+		serviceInstaller.ServiceName = ${ProjectName}.MyServiceName
+		Me.Installers.AddRange(New Installer() { serviceProcessInstaller, serviceInstaller })
+	End Sub
+End Class
+
+]]></File>
+		<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+		</Files>
+	</Project>
+</Template>
+

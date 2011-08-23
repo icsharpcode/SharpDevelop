@@ -122,7 +122,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void ActivateItem()
 		{
-			FileService.OpenFile(FileName);
+			var viewContent = FileService.OpenFile(FileName);
+			if (fileNodeStatus == FileNodeStatus.Missing && viewContent != null) {
+				fileNodeStatus = FileNodeStatus.InProject;
+				SetIcon();
+			}
 		}
 		
 //		protected override void Initialize()
@@ -329,6 +333,22 @@ namespace ICSharpCode.SharpDevelop.Project
 				fileNode.DeleteChildNodes(); // delete recursively
 				FileService.RemoveFile(fileNode.FileName, false);
 			}
+		}
+
+		public override AbstractProjectBrowserTreeNode GetNodeByRelativePath(string relativePath)
+		{
+			if (relativePath == Text)
+				return this;
+
+			foreach (AbstractProjectBrowserTreeNode node in Nodes)
+			{
+				AbstractProjectBrowserTreeNode returnedNode = node.GetNodeByRelativePath(relativePath);
+				if (returnedNode != null)
+					return returnedNode;
+			}
+
+			return this;
+
 		}
 	}
 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace ICSharpCode.AvalonEdit.Utils
@@ -54,6 +55,12 @@ namespace ICSharpCode.AvalonEdit.Utils
 		{
 			if (IsEmpty)
 				throw new InvalidOperationException("Operation not valid on empty stack.");
+			return value;
+		}
+		
+		internal T UnsafePeek()
+		{
+			Debug.Assert(!IsEmpty);
 			return value;
 		}
 		

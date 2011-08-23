@@ -216,6 +216,7 @@
 		Outputs="@(IntermediateAssembly)"
 		DependsOnTargets="$(CoreCompileDependsOn)"
 	>
+		<Warning Text="This version of Boo does not support compiling for .NET $(TargetFrameworkVersion); the project will be compiled for .NET 4.0 instead." Condition=" '$(TargetFrameworkVersion)' != 'v4.0' "/>
 		
 		<Booc
 			AllowUnsafeBlocks="$(AllowUnsafeBlocks)"

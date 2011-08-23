@@ -18,7 +18,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// <summary>
 	/// Renders Popup with context actions on the left side of the current line in the editor.
 	/// </summary>
-	public class ContextActionsRenderer
+	public sealed class ContextActionsRenderer : IDisposable
 	{
 		readonly CodeEditorView editorView;
 		ITextEditor Editor { get { return this.editorView.Adapter; } }
@@ -31,17 +31,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// Delays the available actions resolution so that it does not get called too often when user holds an arrow.
 		/// </summary>
 		DispatcherTimer delayMoveTimer;
-		const int delayMoveMilliseconds = 100;
+		const int delayMoveMilliseconds = 500;
 		
 		public bool IsEnabled
 		{
 			get {
-				try {
-					string fileName = this.Editor.FileName;
-					return fileName.EndsWith(".cs") || fileName.EndsWith(".vb");
-				} catch {
+				string fileName = this.Editor.FileName;
+				if (String.IsNullOrEmpty(fileName))
 					return false;
-				}
+				return fileName.EndsWith(".cs", StringComparison.OrdinalIgnoreCase)
+					|| fileName.EndsWith(".vb", StringComparison.OrdinalIgnoreCase);
 			}
 		}
 		
@@ -59,10 +58,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.delayMoveTimer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(delayMoveMilliseconds) };
 			this.delayMoveTimer.Stop();
 			this.delayMoveTimer.Tick += TimerMoveTick;
-			WorkbenchSingleton.Workbench.ViewClosed += WorkbenchSingleton_Workbench_ViewClosed;
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchSingleton_Workbench_ActiveViewContentChanged;
 		}
-
+		
+		public void Dispose()
+		{
+			ClosePopup();
+			WorkbenchSingleton.Workbench.ActiveViewContentChanged -= WorkbenchSingleton_Workbench_ActiveViewContentChanged;
+			delayMoveTimer.Stop();
+		}
+		
 		void ContextActionsRenderer_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (this.popup == null)
@@ -107,10 +112,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.popup.ViewModel = popupVM;
 			this.popup.OpenAtLineStart(this.Editor);
 		}
+		
+		EditorActionsProvider lastActions;
 
 		ContextActionsBulbViewModel BuildPopupViewModel(ITextEditor editor)
 		{
 			var actionsProvider = ContextActionsService.Instance.GetAvailableActions(editor);
+			this.lastActions = actionsProvider;
 			return new ContextActionsBulbViewModel(actionsProvider);
 		}
 
@@ -130,27 +138,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.popup.IsDropdownOpen = false;
 			this.popup.IsHiddenActionsExpanded = false;
 			this.popup.ViewModel = null;
+			if (this.lastActions != null) {
+				// Clear the context to prevent memory leaks in case some users kept long-lived references to EditorContext
+				this.lastActions.EditorContext.Clear();
+				this.lastActions = null;
+			}
 		}
-		
-		void WorkbenchSingleton_Workbench_ViewClosed(object sender, ViewContentEventArgs e)
-		{
-			try {
-				// prevent memory leaks
-				if (e.Content.PrimaryFileName == this.Editor.FileName) {
-					WorkbenchSingleton.Workbench.ViewClosed -= WorkbenchSingleton_Workbench_ViewClosed;
-					WorkbenchSingleton.Workbench.ActiveViewContentChanged -= WorkbenchSingleton_Workbench_ActiveViewContentChanged;
-				}
-			} catch {}
-		}
-
 		void WorkbenchSingleton_Workbench_ActiveViewContentChanged(object sender, EventArgs e)
 		{
-			ClosePopup();
-			try {
-				// open the popup again if in current file
-				if (((IViewContent)WorkbenchSingleton.Workbench.ActiveContent).PrimaryFileName == this.Editor.FileName)
-					CaretPositionChanged(this, EventArgs.Empty);
-			} catch {}
+			// open the popup again if in current file
+			IViewContent activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (activeViewContent != null && activeViewContent.PrimaryFileName == this.Editor.FileName)
+				CaretPositionChanged(this, EventArgs.Empty);
+			else // otherwise close popup
+				ClosePopup();
 		}
 	}
 }

@@ -23,6 +23,9 @@
 				<CheckBox 
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.ShowLineNumbers}" 
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.LineNumberCheckBox}" />
+				<CheckBox 
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.ShowHiddenDefinitions}" 
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox}" />
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 	</StackPanel>

@@ -294,8 +294,8 @@ namespace AvalonDock
 
             if (ActiveDocument == null)
             {
-                var docToActivate = Documents.OrderBy(d => d.LastActivation).FirstOrDefault();
-                if (docToActivate != null)
+                var docToActivate = Documents.OrderBy(d => d.LastActivation).LastOrDefault();
+                if (docToActivate != null && docToActivate.LastActivation != DateTime.MinValue)
                     docToActivate.Activate();
             }
         }
@@ -993,33 +993,6 @@ namespace AvalonDock
         }
         #endregion
      
-        //#region Commands
-
-        //private static object syncRoot = new object();
-
-
-        //private static RoutedUICommand showNavigatorCommand = null;
-        
-        ///// <summary>
-        ///// Get the command to show navigator window
-        ///// </summary>
-        //public static RoutedUICommand ShowNavigatorWindowCommand
-        //{
-        //    get
-        //    {
-        //        lock (syncRoot)
-        //        {
-        //            if (null == showNavigatorCommand)
-        //            {
-        //                showNavigatorCommand = new RoutedUICommand("S_how navigator window", "Navigator", typeof(DockingManager));
-        //                showNavigatorCommand.InputGestures.Add(new KeyGesture(Key.Tab, ModifierKeys.Control));
-        //            }
-
-        //        }
-        //        return showNavigatorCommand;
-        //    }
-        //}
-
         NavigatorWindow navigatorWindow = null;
 
         void ShowNavigatorWindow()
@@ -1054,7 +1027,8 @@ namespace AvalonDock
         
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            bool isCtrlDown = Keyboard.Modifiers == ModifierKeys.Control;
+            // accept Control or Control+Shift
+            bool isCtrlDown = (Keyboard.Modifiers & ~ModifierKeys.Shift) == ModifierKeys.Control;
             bool _navigatorWindowIsVisible = navigatorWindow != null ? navigatorWindow.IsVisible : false;
             Debug.WriteLine(string.Format("OnKeyDn {0} CtrlDn={1}", e.Key, isCtrlDown));
 
@@ -1078,7 +1052,8 @@ namespace AvalonDock
 
         protected override void OnKeyUp(KeyEventArgs e)
         {
-            bool isCtrlDown = Keyboard.Modifiers == ModifierKeys.Control;
+            // accept Control or Control+Shift
+            bool isCtrlDown = (Keyboard.Modifiers & ~ModifierKeys.Shift) == ModifierKeys.Control;
             bool _navigatorWindowIsVisible = navigatorWindow != null ? navigatorWindow.IsVisible : false;
             Debug.WriteLine(string.Format("OnKeyUp {0} CtrlDn={1}", e.Key, isCtrlDown));
 
@@ -1087,10 +1062,11 @@ namespace AvalonDock
                 if (!_navigatorWindowIsVisible && e.Key == Key.Tab)
                 {
                     ShowNavigatorWindow();
+                    _navigatorWindowIsVisible = true;
                 }
 
                 if (_navigatorWindowIsVisible)
-                    navigatorWindow.HandleKey(e.Key); 
+                    e.Handled = navigatorWindow.HandleKey(e.Key); 
             }
             else
             {
@@ -1939,7 +1915,8 @@ namespace AvalonDock
             //refresh arrangements traversing bottom-up visual tree
             FrameworkElement parentElement = pane.Parent as FrameworkElement;
 
-            while (parentElement != null)
+            // Daniel Grunwald 2010/12/19: stop at 'this' to fix SD-1786
+            while (parentElement != null && parentElement != this)
             {
                 parentElement.InvalidateMeasure();
                 parentElement = parentElement.Parent as FrameworkElement;
@@ -1951,42 +1928,6 @@ namespace AvalonDock
         #endregion
         
         #region Hide/Show contents
-
-
-//        #region HiddenContents
-
-//        /// <summary>
-//        /// HiddenContents Read-Only Dependency Property
-//        /// </summary>
-//        private static readonly DependencyPropertyKey HiddenContentsPropertyKey
-//            = DependencyProperty.RegisterReadOnly("HiddenContents", typeof(ManagedContentCollection<DockableContent>), typeof(DockingManager),
-//                new FrameworkPropertyMetadata((ManagedContentCollection<DockableContent>)null));
-
-//        public static readonly DependencyProperty HiddenContentsProperty
-//            = HiddenContentsPropertyKey.DependencyProperty;
-
-//        /// <summary>
-//        /// Gets the HiddenContents property.  This dependency property 
-//        /// returns the list of <see cref="DockableContent"/> object that are in hidden state.
-//        /// </summary>
-//        public ManagedContentCollection<DockableContent> HiddenContents
-//        {
-//            get { return (ManagedContentCollection<DockableContent>)GetValue(HiddenContentsProperty); }
-//            protected set { SetValue(HiddenContentsPropertyKey, value); }
-//        }
-
-//        #endregion
-
-//#if DEBUG
-//        internal void CheckHiddenState(DockableContent contentToCheck)
-//        {
-//            if (contentToCheck.State == DockableContentState.Hidden)
-//                Debug.Assert(HiddenContents.Contains(contentToCheck));
-//            else
-//                Debug.Assert(!HiddenContents.Contains(contentToCheck));
-//        }
-//#endif
-
         /// <summary>
         /// Hide a dockable content removing it from its container <see cref="Pane"/>
         /// </summary>
@@ -2536,10 +2477,6 @@ namespace AvalonDock
             }
 
            #endregion          
-
-//#if DEBUG
-//            CheckHiddenState(content);
-//#endif
         }
         #endregion
 
@@ -3838,7 +3775,8 @@ namespace AvalonDock
                 pane.ToggleAutoHide();
 
             DockableContent[] actualContents = DockableContents.ToArray();
-            DocumentContent[] actualDocuments = Documents.ToArray();
+            // preserve the order of the documents
+            DocumentContent[] actualDocuments = Documents.OrderBy(d => d.ContainerPane != null ? d.ContainerPane.Items.IndexOf(d) : -1).ToArray();
 
 
             //first detach all my actual contents
@@ -3955,16 +3893,8 @@ namespace AvalonDock
             ClearEmptyPanes();
             RefreshContents();
 
-            if (ActiveDocument != null &&
-               (ActiveDocument.ContainerPane == null ||
-               ActiveDocument.ContainerPane.GetManager() != this))
-            {
-                if (Documents.Count > 0)
-                    ActiveDocument = Documents[0];
-                else
-                    ActiveDocument = null;
-            }
-
+            // by setting ActiveDocument to null, we activate the previously activated document (as per LastActivation)
+            ActiveDocument = null;
             ActiveContent = ActiveDocument;
         } 
         #endregion

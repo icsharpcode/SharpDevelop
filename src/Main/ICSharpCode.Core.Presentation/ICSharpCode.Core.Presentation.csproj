@@ -80,7 +80,9 @@
     <Compile Include="GetBitmapExtension.cs" />
     <Compile Include="IOptionBindingContainer.cs" />
     <Compile Include="IStatusUpdate.cs" />
-    <Compile Include="LanguageChangeWeakEventManager.cs" />
+    <Compile Include="LanguageChangeWeakEventManager.cs">
+      <DependentUpon>IStatusUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="LocalizeExtension.cs" />
     <Compile Include="Menu\IMenuItemBuilder.cs" />
     <Compile Include="Menu\MenuCommand.cs" />
@@ -99,6 +101,7 @@
     <Compile Include="ToolBar\ToolBarService.cs" />
     <Compile Include="ToolBar\ToolBarSplitButton.cs" />
     <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
+    <Compile Include="WpfTreeNavigation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Project\ICSharpCode.Core.csproj">

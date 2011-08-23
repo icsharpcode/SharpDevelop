@@ -225,5 +225,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			new Project.Commands.AddNewItemsToProject().Run();
 			return;
 		}
+
+		public override AbstractProjectBrowserTreeNode GetNodeByRelativePath(string relativePath)
+		{
+			foreach (AbstractProjectBrowserTreeNode node in Nodes)
+			{
+				if (node != null) {
+					AbstractProjectBrowserTreeNode returnedNode = node.GetNodeByRelativePath(relativePath);
+					if (returnedNode != null)
+						return returnedNode;
+				}
+			}
+
+			return this;
+		}
 	}
 }

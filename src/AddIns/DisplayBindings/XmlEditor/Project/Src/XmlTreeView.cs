@@ -32,7 +32,7 @@ namespace ICSharpCode.XmlEditor
 			this.defaultSchema = defaultSchema;
 			
 			this.TabPageText = "${res:ICSharpCode.XmlEditor.XmlTreeView.Title}";
-			this.treeViewContainer = new XmlTreeViewContainerControl();
+			this.treeViewContainer = new XmlTreeViewContainerControl(schemas, defaultSchema);
 			this.treeViewContainer.DirtyChanged += TreeViewContainerDirtyChanged;
 			treeViewContainer.AttributesGrid.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu");
 			treeViewContainer.TreeView.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/ContextMenu");
@@ -133,7 +133,8 @@ namespace ICSharpCode.XmlEditor
 		protected override void LoadFromPrimary()
 		{
 			IFileDocumentProvider provider = this.PrimaryViewContent as IFileDocumentProvider;
-			treeViewContainer.LoadXml(provider.GetDocumentForFile(this.PrimaryFile).Text, schemas, defaultSchema);
+			IDocument document = provider.GetDocumentForFile(this.PrimaryFile);
+			treeViewContainer.LoadXml(document.Text);
 			XmlView view = XmlView.ForFile(this.PrimaryFile);
 			if (view != null) {
 				XmlView.CheckIsWellFormed(view.TextEditor);

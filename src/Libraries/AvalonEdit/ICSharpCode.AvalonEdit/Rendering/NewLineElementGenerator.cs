@@ -54,7 +54,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			} else {
 				return null;
 			}
-			return new NewLineTextElement(CurrentContext.TextView.cachedElements.GetSimpleLightGrayText(newlineText, CurrentContext));
+			return new NewLineTextElement(CurrentContext.TextView.cachedElements.GetTextForNonPrintableCharacter(newlineText, CurrentContext));
 		}
 		
 		sealed class NewLineTextElement : FormattedTextElement
@@ -75,6 +75,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				} else {
 					return -1;
 				}
+			}
+			
+			public override bool IsWhitespace(int visualColumn)
+			{
+				return true;
 			}
 			
 			public override bool HandlesLineBorders {

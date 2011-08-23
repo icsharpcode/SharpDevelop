@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -274,7 +275,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void DoStartBuild(object state)
 			{
-				project.StartBuild(options, this);
+				string name = string.Empty;
+				try {
+					name = project.Name;
+					project.StartBuild(options, this);
+				} catch (ObjectDisposedException) {
+					// Handle ObjectDisposedException that occurs when trying to build a project that was unloaded.
+					ReportError(new BuildError(null, "The project '" + name + "' was unloaded."));
+					Done(false);
+				}
 			}
 			
 			public void ReportError(BuildError error)
@@ -630,6 +639,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			if (messagesToReport != null) {
+				// we can report these messages outside the lock:
+				// while they swap order with messages currently coming in (ReportMessage),
+				// this shouldn't be a problem as nodes should not report messages after they finish building.
 				messagesToReport.ForEach(ReportMessageInternal);
 			}
 			if (newNodeWithOutputLockAlreadyFinishedBuilding) {

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Resources;
@@ -17,21 +18,21 @@ namespace ICSharpCode.Core
 		static List<AddIn>   addIns   = new List<AddIn>();
 		static AddInTreeNode rootNode = new AddInTreeNode();
 		
-		static Dictionary<string, IDoozer> doozers = new Dictionary<string, IDoozer>();
-		static Dictionary<string, IConditionEvaluator> conditionEvaluators = new Dictionary<string, IConditionEvaluator>();
+		static ConcurrentDictionary<string, IDoozer> doozers = new ConcurrentDictionary<string, IDoozer>();
+		static ConcurrentDictionary<string, IConditionEvaluator> conditionEvaluators = new ConcurrentDictionary<string, IConditionEvaluator>();
 		
 		static AddInTree()
 		{
-			doozers.Add("Class", new ClassDoozer());
-			doozers.Add("FileFilter", new FileFilterDoozer());
-			doozers.Add("String", new StringDoozer());
-			doozers.Add("Icon", new IconDoozer());
-			doozers.Add("MenuItem", new MenuItemDoozer());
-			doozers.Add("ToolbarItem", new ToolbarItemDoozer());
-			doozers.Add("Include", new IncludeDoozer());
+			doozers.TryAdd("Class", new ClassDoozer());
+			doozers.TryAdd("FileFilter", new FileFilterDoozer());
+			doozers.TryAdd("String", new StringDoozer());
+			doozers.TryAdd("Icon", new IconDoozer());
+			doozers.TryAdd("MenuItem", new MenuItemDoozer());
+			doozers.TryAdd("ToolbarItem", new ToolbarItemDoozer());
+			doozers.TryAdd("Include", new IncludeDoozer());
 			
-			conditionEvaluators.Add("Compare", new CompareConditionEvaluator());
-			conditionEvaluators.Add("Ownerstate", new OwnerStateConditionEvaluator());
+			conditionEvaluators.TryAdd("Compare", new CompareConditionEvaluator());
+			conditionEvaluators.TryAdd("Ownerstate", new OwnerStateConditionEvaluator());
 			
 			ApplicationStateInfoService.RegisterStateGetter("Installed 3rd party AddIns", GetInstalledThirdPartyAddInsListAsString);
 		}
@@ -76,7 +77,7 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Gets a dictionary of registered doozers.
 		/// </summary>
-		public static Dictionary<string, IDoozer> Doozers {
+		public static ConcurrentDictionary<string, IDoozer> Doozers {
 			get {
 				return doozers;
 			}
@@ -85,7 +86,7 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Gets a dictionary of registered condition evaluators.
 		/// </summary>
-		public static Dictionary<string, IConditionEvaluator> ConditionEvaluators {
+		public static ConcurrentDictionary<string, IConditionEvaluator> ConditionEvaluators {
 			get {
 				return conditionEvaluators;
 			}
@@ -96,21 +97,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static bool ExistsTreeNode(string path)
 		{
-			if (path == null || path.Length == 0) {
-				return true;
-			}
-			
-			string[] splittedPath = path.Split('/');
-			AddInTreeNode curPath = rootNode;
-			int i = 0;
-			while (i < splittedPath.Length) {
-				// curPath = curPath.ChildNodes[splittedPath[i]] - check if child path exists
-				if (!curPath.ChildNodes.TryGetValue(splittedPath[i], out curPath)) {
-					return false;
-				}
-				++i;
-			}
-			return true;
+			return GetTreeNode(path, false) != null;
 		}
 		
 		/// <summary>
@@ -139,16 +126,13 @@ namespace ICSharpCode.Core
 			}
 			string[] splittedPath = path.Split('/');
 			AddInTreeNode curPath = rootNode;
-			int i = 0;
-			while (i < splittedPath.Length) {
+			for (int i = 0; i < splittedPath.Length; i++) {
 				if (!curPath.ChildNodes.TryGetValue(splittedPath[i], out curPath)) {
 					if (throwOnNotFound)
 						throw new TreePathNotFoundException(path);
 					else
 						return null;
 				}
-				// curPath = curPath.ChildNodes[splittedPath[i]]; already done by TryGetValue
-				++i;
 			}
 			return curPath;
 		}
@@ -162,11 +146,16 @@ namespace ICSharpCode.Core
 		/// exist or does not point to an item.</exception>
 		public static object BuildItem(string path, object caller)
 		{
+			return BuildItem(path, caller, null);
+		}
+		
+		public static object BuildItem(string path, object caller, IEnumerable<ICondition> additionalConditions)
+		{
 			int pos = path.LastIndexOf('/');
 			string parent = path.Substring(0, pos);
 			string child = path.Substring(pos + 1);
 			AddInTreeNode node = GetTreeNode(parent);
-			return node.BuildChildItem(child, caller, new ArrayList(BuildItems<object>(path, caller, false)));
+			return node.BuildChildItem(child, caller, additionalConditions);
 		}
 		
 		/// <summary>
@@ -239,16 +228,12 @@ namespace ICSharpCode.Core
 				foreach (Runtime runtime in addIn.Runtimes) {
 					if (runtime.IsActive) {
 						foreach (LazyLoadDoozer doozer in runtime.DefinedDoozers) {
-							if (AddInTree.Doozers.ContainsKey(doozer.Name)) {
+							if (!doozers.TryAdd(doozer.Name, doozer))
 								throw new AddInLoadException("Duplicate doozer: " + doozer.Name);
-							}
-							AddInTree.Doozers.Add(doozer.Name, doozer);
 						}
 						foreach (LazyConditionEvaluator condition in runtime.DefinedConditionEvaluators) {
-							if (AddInTree.ConditionEvaluators.ContainsKey(condition.Name)) {
+							if (!conditionEvaluators.TryAdd(condition.Name, condition))
 								throw new AddInLoadException("Duplicate condition evaluator: " + condition.Name);
-							}
-							AddInTree.ConditionEvaluators.Add(condition.Name, condition);
 						}
 					}
 				}
@@ -347,10 +332,11 @@ namespace ICSharpCode.Core
 			List<AddIn> list = new List<AddIn>();
 			Dictionary<string, Version> dict = new Dictionary<string, Version>();
 			Dictionary<string, AddIn> addInDict = new Dictionary<string, AddIn>();
+			var nameTable = new System.Xml.NameTable();
 			foreach (string fileName in addInFiles) {
 				AddIn addIn;
 				try {
-					addIn = AddIn.Load(fileName);
+					addIn = AddIn.Load(fileName, nameTable);
 				} catch (AddInLoadException ex) {
 					LoggingService.Error(ex);
 					if (ex.InnerException != null) {

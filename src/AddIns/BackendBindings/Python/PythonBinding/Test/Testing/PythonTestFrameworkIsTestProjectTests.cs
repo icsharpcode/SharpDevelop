@@ -39,7 +39,7 @@ namespace PythonBinding.Tests.Testing
 		public void IsTestProjectReturnsTrueForPythonProject()
 		{
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();
-			createInfo.Solution = new Solution();
+			createInfo.Solution = new Solution(new MockProjectChangeWatcher());
 			createInfo.OutputProjectFileName = @"C:\projects\test.pyproj";
 			PythonProject project = new PythonProject(createInfo);
 			

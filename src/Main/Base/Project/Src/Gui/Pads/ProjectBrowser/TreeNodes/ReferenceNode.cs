@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -21,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.referenceProjectItem = referenceProjectItem;
 			Tag = referenceProjectItem;
-
+			
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceNode";
 			SetIcon("Icons.16x16.Reference");
 			Text = referenceProjectItem.ShortName;

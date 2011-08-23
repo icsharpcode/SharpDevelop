@@ -1,0 +1,73 @@
+﻿<UserControl
+	x:Class="ICSharpCode.PackageManagement.PagedResultsView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:pm="clr-namespace:ICSharpCode.PackageManagement"
+	xmlns:pmd="clr-namespace:ICSharpCode.PackageManagement.Design"
+	mc:Ignorable="d">
+	
+	<UserControl.Resources>
+		<BitmapImage x:Key="PreviousPageIcon"
+			UriSource="pack://application:,,,/PackageManagement;component/Resources/resultset_previous.png"/>
+		<BitmapImage x:Key="NextPageIcon"
+			UriSource="pack://application:,,,/PackageManagement;component/Resources/resultset_next.png"/>
+		<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+		<pm:BooleanToFontWeightConverter x:Key="BoolToFontWeight"/>
+		
+		<DataTemplate x:Key="PagedListTemplate">
+			<Button
+				Background="Transparent"
+				BorderBrush="Transparent"
+				Padding="4,0,4,0"
+				MinWidth="0"
+				Content="{Binding Path=Number}"
+				Command="{Binding Path=DataContext.ShowPageCommand, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
+				CommandParameter="{Binding Path=Number}"
+				FontWeight="{Binding Path=IsSelected, Converter={StaticResource BoolToFontWeight}}"/>
+		</DataTemplate>
+	</UserControl.Resources>
+	
+	<StackPanel
+		d:DataContext="{d:DesignInstance pmd:DesignTimePackagesViewModel, IsDesignTimeCreatable=True}"
+		Orientation="Horizontal">
+			<Button 
+				Visibility="{Binding Path=HasPreviousPage, Converter={StaticResource BoolToVisibility}}"
+				Command="{Binding Path=ShowPreviousPageCommand}"
+				Background="Transparent"
+				BorderBrush="Transparent"
+				MinWidth="0"
+				Padding="0,2"
+				VerticalAlignment="Top">
+				<Image Source="{StaticResource PreviousPageIcon}"
+					   Height="16"
+					   Width="16"/>
+			</Button>
+			<ListBox
+				VerticalAlignment="Top"
+				HorizontalAlignment="Center"
+				BorderBrush="Transparent"
+				ItemTemplate="{StaticResource PagedListTemplate}"
+				ItemsSource="{Binding Path=Pages}">
+				<ListBox.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Horizontal"/>
+					</ItemsPanelTemplate>
+				</ListBox.ItemsPanel>
+			</ListBox>
+			<Button 
+				Visibility="{Binding Path=HasNextPage, Converter={StaticResource BoolToVisibility}}"
+				Command="{Binding Path=ShowNextPageCommand}"
+				Background="Transparent"
+				BorderBrush="Transparent"
+				MinWidth="0"
+				Padding="0,2"
+				VerticalAlignment="Top">
+				<Image
+					Source="{StaticResource NextPageIcon}"
+					Height="16"
+					Width="16"/>
+			</Button>	
+	</StackPanel>
+</UserControl>

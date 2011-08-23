@@ -87,6 +87,15 @@ namespace ICSharpCode.AvalonEdit.Editing
 		}
 		
 		/// <summary>
+		/// Gets the caret position without validating it.
+		/// </summary>
+		internal TextViewPosition NonValidatedPosition {
+			get {
+				return position;
+			}
+		}
+		
+		/// <summary>
 		/// Gets/Sets the location of the caret.
 		/// The getter of this property is faster than <see cref="Position"/> because it doesn't have
 		/// to validate the visual column.
@@ -145,7 +154,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			InvalidateVisualColumn();
 			if (storedCaretOffset >= 0) {
-				int newCaretOffset = e.GetNewOffset(storedCaretOffset, AnchorMovementType.AfterInsertion);
+				int newCaretOffset = e.GetNewOffset(storedCaretOffset, AnchorMovementType.Default);
 				TextDocument document = textArea.Document;
 				if (document != null) {
 					// keep visual column

@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<Template originator   = "Markus Palme"
+          created      = "23/01/2006"
+          lastModified = "23/01/2006">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.SharpDevelopMacro.Name}</Name>
+		<Category>VB</Category>
+		<Subcategory>SharpDevelop</Subcategory>
+		<Icon>VBNet.Project.ControlLibrary</Icon>
+		<Description>${res:Templates.Project.SharpDevelopMacro.Description}</Description>
+		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "${ProjectName}.addin"/>
+		<Open filename = "AddInWritingHelp.txt"/>
+	</Actions>
+	
+	<Project language="VBNet">
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+			<OptionInfer>On</OptionInfer>
+		</PropertyGroup>
+
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+			<Import Include="System" />
+			<Import Include="System.Text" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Windows.Forms" />
+		</ProjectItems>
+		
+		<Files>
+			<File name="${ProjectName}.addin" CopyToOutputDirectory="Always"><![CDATA[<AddIn name        = "${ProjectName}"
+       author      = "${USER}"
+       url         = ""
+       description = "TODO: Put description here">
+	
+	<Runtime>
+		<Import assembly = "${ProjectName}.dll"/>
+	</Runtime>
+	
+	<Path name = "/Workspace/Tools">
+		<MenuItem id = "${ProjectName}Command1"
+		          label = "${ProjectName}"
+		          class = "${StandardNamespace}.ToolCommand1"/>
+	</Path>
+</AddIn>
+]]></File>
+		<File name="Src/Command.vb">
+			<![CDATA[${StandardHeader.VBNET}
+Imports ICSharpCode.Core
+Imports ICSharpCode.SharpDevelop
+Imports ICSharpCode.SharpDevelop.Gui
+Imports ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
+Imports ICSharpCode.TextEditor
+
+Public Class ToolCommand1
+Inherits AbstractMenuCommand
+	Public Overrides Sub Run()
+		'' Here an example that shows how to access the current text document:
+		
+		Dim tecp As ITextEditorControlProvider = CType(WorkbenchSingleton.Workbench.ActiveContent, ITextEditorControlProvider)
+		If tecp Is Nothing Then
+			' active content is not a text editor control
+			Return
+		End If
+		' Get the active text area from the control:
+		Dim textArea As TextArea = tecp.TextEditorControl.ActiveTextAreaControl.TextArea
+		If Not textArea.SelectionManager.HasSomethingSelected Then
+			Return
+		End If
+		' get the selected text:
+		Dim text As String = textArea.SelectionManager.SelectedText
+		' reverse the text:
+		Dim b As StringBuilder = new StringBuilder(text.Length)
+		For i As Integer = text.Length - 1 To 0
+			b.Append(text(i))
+		Next
+		Dim newText As String = b.ToString()
+		' ensure caret is at start of selection
+		textArea.Caret.Position = textArea.SelectionManager.SelectionCollection(0).StartPosition
+		' deselect text
+		textArea.SelectionManager.ClearSelection()
+		' replace the selected text with the new text:
+		' Replace() takes the arguments: start offset to replace, length of the text to remove, new text
+		textArea.Document.Replace(textArea.Caret.Offset, text.Length, newText)
+		' Redraw:
+		textArea.Refresh()
+	End Sub
+End Class
+]]></File>
+		<File name="Configuration/AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+        <File name="AddInWritingHelp.txt" src="..\AddInWritingHelp.txt"/>
+		</Files>
+	</Project>
+</Template>

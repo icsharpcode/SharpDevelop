@@ -1,0 +1,54 @@
+﻿<AddIn
+	name="Text Templating"
+	author="Matt Ward"
+	copyright="prj:///doc/copyright.txt"
+	description="Adds support for T4 templates."
+	addInManagerHidden="preinstalled">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.TextTemplating"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="TextTemplating.dll"/>
+	</Runtime>
+	
+	<Path name="/SharpDevelop/Workbench/FileFilter">
+		<FileFilter
+			id="TextTemplating"
+			insertbefore="AllFiles"
+			name="Text Template Files (*.tt;*.t4)"
+			extensions="*.tt;*.t4"
+			mimeType = "text/plain"/>
+	</Path>
+	
+	<Path name="/Workspace/Icons">
+		<Icon
+			id="TextTemplateFileIcon"
+			extensions=".tt;.t4"
+			resource="TextTemplate.ProjectBrowser.File"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/CustomTools">
+		<CustomTool
+			id="TextTemplatingFileGenerator"
+			class="ICSharpCode.TextTemplating.TextTemplatingFileGeneratorCustomTool"
+			fileNamePattern="\.t(t|4)$"/>
+		<CustomTool
+			id="TextTemplatingFilePreprocessor"
+			class="ICSharpCode.TextTemplating.TextTemplatingFilePreprocessorCustomTool"
+			fileNamePattern="\.t(t|4)$"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
+		<SyntaxMode
+			id="TextTemplating.SyntaxMode"
+			extensions=".tt;.t4"
+			name="TextTemplating"
+			resource="ICSharpCode.TextTemplating.Resources.TextTemplating.xshd"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/BackendBindings/Templates">
+		<Directory id="TextTemplating" path="./Templates"/>
+	</Path>
+</AddIn>

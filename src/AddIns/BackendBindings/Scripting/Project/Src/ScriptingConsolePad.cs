@@ -3,9 +3,7 @@
 
 using System;
 using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using AvalonEdit = ICSharpCode.AvalonEdit;
 
 namespace ICSharpCode.Scripting
 {
@@ -17,17 +15,10 @@ namespace ICSharpCode.Scripting
 		
 		public ScriptingConsolePad()
 		{
-			textEditor = CreateTextEditor();
+			textEditor = TextEditorFactory.CreateTextEditor();
 			textEditor.SyntaxHighlighting = GetSyntaxHighlighting();
 			CreateConsoleHost();
 			host.Run();	
-		}
-		
-		AvalonEdit.TextEditor CreateTextEditor()
-		{
-			object textEditor;
-			EditorControlService.CreateEditor(out textEditor);
-			return (AvalonEdit.TextEditor)textEditor;
 		}
 		
 		IHighlightingDefinition GetSyntaxHighlighting()

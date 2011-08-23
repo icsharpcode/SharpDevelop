@@ -57,9 +57,7 @@ namespace SharpRefactoring
 			this.currentProjectContent = ParserService.GetProjectContent(ProjectService.CurrentProject);
 			
 			MethodDeclaration newMethod = new MethodDeclaration();
-			
 			List<VariableDeclaration> possibleReturnValues = new List<VariableDeclaration>();
-			
 			List<VariableDeclaration> otherReturnValues = new List<VariableDeclaration>();
 			
 			// Initialise new method
@@ -188,7 +186,7 @@ namespace SharpRefactoring
 			Dom.IReturnType type = currentProjectContent.SystemTypes.Object;
 			Dom.ClassFinder finder = new Dom.ClassFinder(currentClass, textEditor.Caret.Line, textEditor.Caret.Column);
 			
-			if (result != null)
+			if (result != null && result.ResolvedType != null)
 				type = result.ResolvedType;
 			
 			if (variable.Type.Type == "var")

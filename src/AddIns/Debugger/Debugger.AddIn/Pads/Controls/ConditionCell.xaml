@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="Debugger.AddIn.Pads.Controls.ConditionCell"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+   	xmlns:SDGui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+	xmlns:local="clr-namespace:Debugger.AddIn.Pads.Controls">
+	<UserControl.Resources>
+		<DataTemplate x:Key="ConditionCellTemplate">
+			<Grid HorizontalAlignment="Stretch">
+				<local:ConditionCell
+					CommandText="{Binding Path=Condition, UpdateSourceTrigger=LostFocus}"
+					Tag="{Binding Path=Tag, Mode=TwoWay}"/>
+			</Grid>
+		</DataTemplate>
+	</UserControl.Resources>
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto" MinWidth="200"/>
+		</Grid.ColumnDefinitions>
+		<ContentPresenter
+			Name="ConsolePanel" />
+	</Grid>	
+</UserControl>

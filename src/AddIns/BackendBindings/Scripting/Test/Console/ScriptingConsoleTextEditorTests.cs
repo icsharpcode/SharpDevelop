@@ -38,7 +38,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 		public void MakeCurrentContentReadOnly_OneLineOfTextInTextEditor_ExtendsReadOnlyRegionToEntireDocument()
 		{
 			avalonEditTextEditor.Text = String.Empty;
-			consoleTextEditor.Write("abc" + Environment.NewLine);
+			consoleTextEditor.Append("abc" + Environment.NewLine);
 			consoleTextEditor.MakeCurrentContentReadOnly();
 			
 			IReadOnlySectionProvider readOnlySection = avalonEditTextEditor.TextArea.ReadOnlySectionProvider;
@@ -47,13 +47,26 @@ namespace ICSharpCode.Scripting.Tests.Console
 		}
 		
 		[Test]
-		public void Write_TextEditorHasNoText_UpdatesTextEditor()
+		public void Append_TextEditorHasNoText_UpdatesTextEditor()
 		{
 			avalonEditTextEditor.Text = String.Empty;
-			consoleTextEditor.Write("abc");
+			consoleTextEditor.Append("abc");
 			
 			string text = avalonEditTextEditor.Text;
 			string expectedText = "abc";
+			
+			Assert.AreEqual(expectedText, text);
+		}
+		
+		[Test]
+		public void Append_CursorNotAtEndOfText_TextIsWrittenAtEnd()
+		{
+			avalonEditTextEditor.Text = "abc";
+			avalonEditTextEditor.CaretOffset = 0;
+			consoleTextEditor.Append("d");
+			
+			string text = avalonEditTextEditor.Text;
+			string expectedText = "abcd";
 			
 			Assert.AreEqual(expectedText, text);
 		}
@@ -172,6 +185,18 @@ namespace ICSharpCode.Scripting.Tests.Console
 			string expectedText = 
 				"abc\r\n" +
 				"dtestf";
+			
+			Assert.AreEqual(expectedText, text);
+		}
+		
+		[Test]
+		public void Clear_TextEditorHasText_RemovesAllTextFromTextEditor()
+		{
+			avalonEditTextEditor.Text = "abc";
+			consoleTextEditor.Clear();
+			
+			string text = avalonEditTextEditor.Text;
+			string expectedText = String.Empty;
 			
 			Assert.AreEqual(expectedText, text);
 		}

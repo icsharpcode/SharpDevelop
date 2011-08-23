@@ -25,11 +25,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		bool isLoading;
 		string fileName = String.Empty;
+		IProjectChangeWatcher changeWatcher;
 		
-		public Solution()
+		public Solution(IProjectChangeWatcher changeWatcher)
 		{
 			preferences = new SolutionPreferences(this);
 			this.MSBuildProjectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
+			this.changeWatcher = changeWatcher;
 		}
 		
 		public Microsoft.Build.Evaluation.ProjectCollection MSBuildProjectCollection { get; private set; }
@@ -37,17 +39,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Enumerate projects/folders
 		public IProject FindProjectContainingFile(string fileName)
 		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			
 			IProject currentProject = ProjectService.CurrentProject;
 			if (currentProject != null && currentProject.IsFileInProject(fileName))
 				return currentProject;
 			
 			// Try all project's in the solution.
+			IProject linkedProject = null;
 			foreach (IProject project in Projects) {
-				if (project.IsFileInProject(fileName)) {
-					return project;
+				FileProjectItem file = project.FindFile(fileName);
+				if (file != null) {
+					if (file.IsLink)
+						linkedProject = project;
+					else
+						return project; // prefer projects with non-links over projects with links
 				}
 			}
-			return null;
+			return linkedProject;
 		}
 		
 		[Browsable(false)]
@@ -175,7 +185,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				return fileName;
 			}
 			set {
+				changeWatcher.Disable();
 				fileName = value;
+				changeWatcher.Rename(fileName);
+				changeWatcher.Enable();
 			}
 		}
 		
@@ -280,8 +293,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void Save()
 		{
 			try {
+				changeWatcher.Disable();
 				Save(fileName);
-				return;
+				changeWatcher.Enable();
 			} catch (IOException ex) {
 				MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.CannotSave.IOException}", fileName, ex.Message);
 			} catch (UnauthorizedAccessException ex) {
@@ -299,6 +313,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void Save(string fileName)
 		{
+			changeWatcher.Disable();
+			changeWatcher.Rename(fileName);
 			this.fileName = fileName;
 			string outputDirectory = Path.GetDirectoryName(fileName);
 			if (!System.IO.Directory.Exists(outputDirectory)) {
@@ -407,6 +423,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				sw.WriteLine("EndGlobal");
 			}
+			changeWatcher.Enable();
 		}
 		
 		static void SaveProjectSections(IEnumerable<ProjectSection> sections, StringBuilder projectSection)
@@ -447,8 +464,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			ProjectSection nestedProjectsSection = null;
 			
-			bool needsConversion = false;
-			
 			// read solution files using system encoding, but detect UTF8 if BOM is present
 			using (StreamReader sr = new StreamReader(newSolution.FileName, Encoding.Default, true)) {
 				string line = GetFirstNonCommentLine(sr);
@@ -460,17 +475,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				switch (match.Result("${Version}")) {
 					case "7.00":
-						needsConversion = true;
-						if (!MessageService.AskQuestion("${res:SharpDevelop.Solution.ConvertSolutionVersion7}")) {
-							return false;
-						}
-						break;
 					case "8.00":
-						needsConversion = true;
-						if (!MessageService.AskQuestion("${res:SharpDevelop.Solution.ConvertSolutionVersion8}")) {
-							return false;
-						}
-						break;
+						MessageService.ShowError("${res:SharpDevelop.Solution.CannotLoadOldSolution}");
+						return false;
 					case "9.00":
 					case "10.00":
 					case "11.00":
@@ -498,7 +505,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			
-			if (!newSolution.ReadOnly && (newSolution.FixSolutionConfiguration(newSolution.Projects) || needsConversion)) {
+			if (!newSolution.ReadOnly && (newSolution.FixSolutionConfiguration(newSolution.Projects))) {
 				// save in new format
 				newSolution.Save();
 			}
@@ -566,6 +573,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			for(int i=0; i<projectsToLoad.Count; i++) {
 				ProjectLoadInformation loadInfo = projectsToLoad[i];
 				IList<ProjectSection> projectSections = readProjectSections[i];
+				loadInfo.ProjectSections = projectSections;
 				
 				// set the target platform
 				SolutionItem projectConfig = newSolution.GetProjectConfiguration(loadInfo.Guid);
@@ -1160,7 +1168,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static Solution Load(string fileName)
 		{
-			Solution newSolution = new Solution();
+			Solution newSolution = new Solution(new ProjectChangeWatcher(fileName));
 			solutionBeingLoaded = newSolution;
 			newSolution.Name     = Path.GetFileNameWithoutExtension(fileName);
 			

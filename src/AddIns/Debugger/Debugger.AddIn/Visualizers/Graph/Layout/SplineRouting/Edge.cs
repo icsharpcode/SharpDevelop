@@ -8,7 +8,8 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
-	/// Description of Edge.
+	/// Simple implementation of <see cref="IEdge" />.
+	/// Edge betweeen two <see cref="IRect" /> with given Start and End point on the borders of the rects.
 	/// </summary>
 	public class Edge : IEdge
 	{

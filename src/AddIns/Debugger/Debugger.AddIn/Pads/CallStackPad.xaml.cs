@@ -28,10 +28,30 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			InitializeComponent();
 			
 			view.ContextMenu = CreateMenu();
+			
+			((GridView)view.View).Columns[0].Width = DebuggingOptions.Instance.ShowModuleNames ? 100d : 0d;
+			((GridView)view.View).Columns[2].Width = DebuggingOptions.Instance.ShowLineNumbers ? 50d : 0d;
 		}
 		
 		ContextMenu CreateMenu()
 		{
+			MenuItem extMethodsItem = new MenuItem();
+			extMethodsItem.Header = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowExternalMethods");
+			extMethodsItem.IsChecked = DebuggingOptions.Instance.ShowExternalMethods;
+			extMethodsItem.Click += delegate {
+				extMethodsItem.IsChecked = DebuggingOptions.Instance.ShowExternalMethods = !DebuggingOptions.Instance.ShowExternalMethods;
+				RefreshPad();
+			};
+			
+			MenuItem moduleItem = new MenuItem();
+			moduleItem.Header = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowModuleNames");
+			moduleItem.IsChecked = DebuggingOptions.Instance.ShowModuleNames;
+			moduleItem.Click += delegate {
+				moduleItem.IsChecked = DebuggingOptions.Instance.ShowModuleNames = !DebuggingOptions.Instance.ShowModuleNames;
+				((GridView)view.View).Columns[0].Width = DebuggingOptions.Instance.ShowModuleNames ? 100d : 0d;
+				RefreshPad();
+			};
+			
 			MenuItem argNamesItem = new MenuItem();
 			argNamesItem.Header = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowArgumentNames");
 			argNamesItem.IsChecked = DebuggingOptions.Instance.ShowArgumentNames;
@@ -48,19 +68,23 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				RefreshPad();
 			};
 			
-			MenuItem extMethodsItem = new MenuItem();
-			extMethodsItem.Header = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowExternalMethods");
-			extMethodsItem.IsChecked = DebuggingOptions.Instance.ShowExternalMethods;
-			extMethodsItem.Click += delegate {
-				extMethodsItem.IsChecked = DebuggingOptions.Instance.ShowExternalMethods = !DebuggingOptions.Instance.ShowExternalMethods;
+			MenuItem lineItem = new MenuItem();
+			lineItem.Header = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowLineNumber");
+			lineItem.IsChecked = DebuggingOptions.Instance.ShowLineNumbers;
+			lineItem.Click += delegate {
+				lineItem.IsChecked = DebuggingOptions.Instance.ShowLineNumbers = !DebuggingOptions.Instance.ShowLineNumbers;
+				((GridView)view.View).Columns[2].Width = DebuggingOptions.Instance.ShowLineNumbers ? 50d : 0d;
 				RefreshPad();
 			};
 			
 			return new ContextMenu() {
 				Items = {
+					extMethodsItem,
+					new Separator(),
+					moduleItem,
 					argNamesItem,
 					argValuesItem,
-					extMethodsItem
+					lineItem
 				}
 			};
 		}
@@ -147,14 +171,34 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			foreach (StackFrame frame in debuggedProcess.SelectedThread.GetCallstack(100)) {
 				CallStackItem item;
+				
+				// line number
+				string lineNumber = string.Empty;
+				if (DebuggingOptions.Instance.ShowLineNumbers) {
+					if (frame.NextStatement != null)
+						lineNumber = frame.NextStatement.StartLine.ToString();
+				}
+				
+				// show modules names
+				string moduleName = string.Empty;
+				if (DebuggingOptions.Instance.ShowModuleNames) {
+					moduleName = frame.MethodInfo.DebugModule.ToString();
+				}
+				
 				if (frame.HasSymbols || showExternalMethods) {
 					// Show the method in the list
-					item = new CallStackItem() { Name = GetFullName(frame), Language = "" };
+					
+					item = new CallStackItem() {
+						Name = GetFullName(frame), Language = "", Line = lineNumber, ModuleName = moduleName
+					};
 					lastItemIsExternalMethod = false;
 				} else {
 					// Show [External methods] in the list
 					if (lastItemIsExternalMethod) continue;
-					item = new CallStackItem() { Name = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"), Language = "" };
+					item = new CallStackItem() {
+						Name = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"),
+						Language = ""
+					};
 					lastItemIsExternalMethod = true;
 				}
 				item.Frame = frame;
@@ -164,13 +208,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		string GetFullName(StackFrame frame)
+		internal static string GetFullName(StackFrame frame)
 		{
 			bool showArgumentNames = DebuggingOptions.Instance.ShowArgumentNames;
 			bool showArgumentValues = DebuggingOptions.Instance.ShowArgumentValues;
+			bool showLineNumber = DebuggingOptions.Instance.ShowLineNumbers;
+			bool showModuleNames = DebuggingOptions.Instance.ShowModuleNames;
 			
 			StringBuilder name = new StringBuilder();
-			name.Append(frame.MethodInfo.DeclaringType.Name);
+			name.Append(frame.MethodInfo.DeclaringType.FullName);
 			name.Append('.');
 			name.Append(frame.MethodInfo.Name);
 			if (showArgumentNames || showArgumentValues) {
@@ -186,7 +232,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					}
 					if (showArgumentValues) {
 						try {
-							argValue = frame.GetArgumentValue(i).AsString;
+							argValue = frame.GetArgumentValue(i).AsString(100);
 						} catch { }
 					}
 					if (parameterName != null && argValue != null) {
@@ -209,6 +255,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}
 				name.Append(")");
 			}
+			
 			return name.ToString();
 		}
 	}
@@ -218,6 +265,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public string Name { get; set; }
 		public string Language { get; set; }
 		public StackFrame Frame { get; set; }
+		public string Line { get; set; }
+		public string ModuleName { get; set; }
 		
 		public Brush FontColor {
 			get { return Frame == null || Frame.HasSymbols ? Brushes.Black : Brushes.Gray; }

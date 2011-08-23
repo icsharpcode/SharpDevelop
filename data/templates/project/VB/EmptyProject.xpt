@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<Template originator   = "Mike Krueger"
+          created      = "03/10/2001"
+          lastModified = "07/20/2005">
+          
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.EmptyProject.Name}</Name>
+		<Category>VB</Category>
+		<Icon>VBNet.Project.EmptyProject</Icon>
+		<Description>${res:Templates.Project.EmptyProject.Description}</Description>
+		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<Project language = "VBNet">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+			
+			<Import Include="System" />
+			<Import Include="Microsoft.VisualBasic" />
+		</ProjectItems>
+		<PropertyGroup>
+			<OptionInfer>On</OptionInfer>
+		</PropertyGroup>
+	</Project>
+</Template>

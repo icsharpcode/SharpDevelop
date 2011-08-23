@@ -1,19 +1,24 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.Core.WinForms;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
+
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.Reports.Addin
 {
+	
+	//http://developer.sharpdevelop.net/corsavy/translation/default.asp
+	
 	
 	internal sealed class ReportingSideTabProvider
 	{
@@ -61,37 +66,41 @@ namespace ICSharpCode.Reports.Addin
 			tb.Bitmap = WinFormsResourceService.GetIcon("Icons.16.16.SharpReport.Textbox").ToBitmap();
 			sideTab.Items.Add(new SideTabItemDesigner(tb));	
 			
+		
+			
+		
+			//GroupHeader
+			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.GroupHeader));
+			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.NameSpace");
+			tb.DisplayName = ResourceService.GetString("SharpReport.Toolbar.GroupHeader");
+			sideTab.Items.Add(new SideTabItemDesigner(tb));
+			
+			
+			//GroupFooter
+			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.GroupFooter));
+			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.NameSpace");
+			tb.DisplayName = ResourceService.GetString("SharpReport.Toolbar.GroupFooter");
+			sideTab.Items.Add(new SideTabItemDesigner(tb));
+			
 			// Row
 			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.BaseRowItem));
 			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Table");
 			tb.DisplayName = ResourceService.GetString("SharpReport.Toolbar.DataRow");
 			sideTab.Items.Add(new SideTabItemDesigner(tb));
 			
-			/*
-			//Group
-			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.BaseGroupItem));
-			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Table");
-			tb.DisplayName = "SimpleGroupItem";
-			sideTab.Items.Add(new SideTabItemDesigner(tb));
-			*/
-			//GroupHeader
-			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.BaseGroupedRow));
-			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Table");
-			tb.DisplayName = "GroupHeaderRow";
-			sideTab.Items.Add(new SideTabItemDesigner(tb));
-			
 			//BaseTable
+//			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Table");
 			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Table");
 			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.BaseTableItem));
-			tb.DisplayName ="Table";
+			tb.DisplayName = ResourceService.GetString("SharpReport.Toolbar.Table");
 			sideTab.Items.Add(new SideTabItemDesigner(tb));	
 			
 			
-			
-			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Table");
 			//BaseDataItem
 			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.BaseDataItem));
 			tb.DisplayName = ResourceService.GetString("SharpReport.Toolbar.DataField");
+//				tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Column");
+			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Column");
 			sideTab.Items.Add(new SideTabItemDesigner(tb));	
 			
 			//Grahics

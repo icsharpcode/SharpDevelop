@@ -297,6 +297,15 @@
   <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
     <value>Nummering systeem</value>
   </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
+    <value>Decimaal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Hexadecimal" xml:space="preserve">
+    <value>Hexadecimaal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Octal" xml:space="preserve">
+    <value>Octaal</value>
+  </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>De breedte aanpassen aan de aktueel benodigde</value>
   </data>
@@ -780,9 +789,6 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' is verwijderd uit de negeer lijst.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>De oude oplossing open houden.</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Vergrendel</value>
   </data>
@@ -809,12 +815,6 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Geef gesc&amp;hiedenis tab weer voor versie-controle bestanden</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Oplossing opnieuw laden</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop heeft ontdekt dat de versiecontrole project bestanden gewijzigd heeft. U dient de oplossing opnieuw te laden.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Verplaatsen</value>
@@ -974,9 +974,6 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Bestand</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Regel</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Info</value>
@@ -2419,6 +2416,12 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Foutopsporing</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Uitzonderingen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Wachten na afhandeling van uitzonderingen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Stapsgewijs</value>
   </data>
@@ -2617,6 +2620,15 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Vormgeving</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
+    <value>Project referenties uitbreiden (referenties weergeven)</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
+    <value>SharpDevelop UI opties</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
+    <value>SharpDevelop UI opties</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Commentaar labels</value>
   </data>
@@ -2740,6 +2752,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.CaretCheckBox" xml:space="preserve">
     <value>Toon cursor regel</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EnableAnimationsCheckBox" xml:space="preserve">
+    <value>Animatie mogelijk maken</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>&amp;EOL markeringen weergeven</value>
   </data>
@@ -2772,6 +2787,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
     <value>Markeringen en Linealen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
+    <value>Toon &amp;verborgen definities(alleen haakjes)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.SpacesCheckBox" xml:space="preserve">
     <value>Toon &amp;spaties</value>
@@ -2966,7 +2984,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Intel 64-bit Itanium processor</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
-    <value>AMD 64-bit processor</value>
+    <value>AMD / Intel 64-bit processor</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
     <value>32 bit Intel-compatibele processor</value>
@@ -3471,13 +3489,16 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
     <value>Opnieuw</value>
   </data>
   <data name="Global.SelectAllButtonText" xml:space="preserve">
-    <value>Alles selecteren</value>
+    <value>&amp;Alles selecteren</value>
   </data>
   <data name="Global.SmallIconToolTip" xml:space="preserve">
     <value>Kleine pictogrammen</value>
   </data>
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Starten</value>
+  </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Regel</value>
   </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Bijwerken</value>
@@ -3755,9 +3776,6 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Eindregel</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Regel</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Kan de NCover console toepassing niet vinden.
 
@@ -3987,6 +4005,9 @@ Configureer a.u.b. in SharpDevelop opties de locatie van NAnt's uitvoerend besta
   <data name="ICSharpCode.NAntAddIn.StopNAntMenuLabel" xml:space="preserve">
     <value>&amp;Stop NAnt</value>
   </data>
+  <data name="ICSharpCode.NoStartupProject" xml:space="preserve">
+    <value>Er is geen startproject voor foutopsporing.</value>
+  </data>
   <data name="ICSharpCode.NUnitPad.NUnitPadContent.PadName" xml:space="preserve">
     <value>Unittesten</value>
   </data>
@@ -4046,6 +4067,9 @@ Configureer a.u.b. in SharpDevelop opties de locatie van NAnt's uitvoerend besta
   </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Kan type {0} niet vinden. Ontbreekt er een assembly referentie?</value>
+  </data>
+  <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
+    <value>Het geselecteerd element is geen klasse of overschrijfbaar lid, waardoor geen afgeleide symbolen kunnen worden weergegeven.</value>
   </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Stuur regel naar Ruby console</value>
@@ -4268,7 +4292,7 @@ Noot: Dit beïnvloed eigen aangepaste opmaak niet.</value>
     <value>${CurrentMethodNumber} van ${NumberOfTotalMethods}</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage" xml:space="preserve">
-    <value>Bestand ${File} is extern gewijzigd. Wilt u deze opnieuw laden?</value>
+    <value>Bestand ${File} is extern gewijzigd. Wilt u het herladen?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ForwardsSearchStatusBarMessage" xml:space="preserve">
     <value>Aanvullend zoeken:</value>
@@ -4786,6 +4810,42 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Laden van ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>De oude oplossing open houden.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Oplossing opnieuw laden</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
+    <value>De oplossing is extern gewijzigd.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
+    <value>Converteer geselecteerde &amp;projecten naar</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeTargetFrameworkLabel" xml:space="preserve">
+    <value>Wijzig doel framework</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeVersionGroupBoxHeader" xml:space="preserve">
+    <value>Versie van geselecteerde projecten wijzigen</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.CompilerVersion" xml:space="preserve">
+    <value>Compiler versie</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ConvertButton" xml:space="preserve">
+    <value>&amp;Converteren</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange" xml:space="preserve">
+    <value>&lt;niet wijzigen&gt;</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.TargetFramework" xml:space="preserve">
+    <value>Doel framework</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
+    <value>Project opwaarderen</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
+    <value>Deze oplossing werd met een vorige versie van SharpDevelop gemaakt. Door te upgraden kan gebruik gemaakt worden van nieuwe taal of framework mogelijkheden.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Momentele ambience niet gevonden.
 Ga naar 'Opties-&gt;Vormgeving' en wijzig de momentele taal ambience.</value>
@@ -4843,6 +4903,48 @@ Ga naar 'Opties-&gt;Vormgeving' en wijzig de momentele taal ambience.</value>
   </data>
   <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
     <value>Unittesten kunnen niet uitgevoerd omdat het bestand '{0}' niet gevonden wordt.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel" xml:space="preserve">
+    <value>Web</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.ApplicationExists" xml:space="preserve">
+    <value>Applicatie bestaat reeds.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.CreateVirtualDir" xml:space="preserve">
+    <value>Maak applicatie/virtuele directory</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.DisableWebServerButton" xml:space="preserve">
+    <value>Schakel Web server opties uit.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.IISNotFound" xml:space="preserve">
+    <value>Plaatselijke IIS of IIS Express niet gevonden.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.NoIISWP" xml:space="preserve">
+    <value>ASP.NET/IIS (Express) werker proces ({0}) werd niet gevonden.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
+    <value>Geen project URL of extern programma opgegeven. Controleer de Web server op project eigenschappen -&amp;gt; Foutzoeken tab.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
+    <value>Server poort:</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.ProjectUrl" xml:space="preserve">
+    <value>Project URL:</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Server" xml:space="preserve">
+    <value>Web Server</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UnableToAttach" xml:space="preserve">
+    <value>Debugger kon het proces niet binden.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UseIISExpress" xml:space="preserve">
+    <value>Gebruik IIS Express Web server</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UseLocalIIS" xml:space="preserve">
+    <value>Gebruik plaatselijke IIS Web server</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.VirtualDirCreated" xml:space="preserve">
+    <value>Applicatie/virtuele directory is gemaakt.</value>
   </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
     <value>Extensies toevoegen</value>
@@ -5250,6 +5352,24 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="ICSharpCode.XmlEditor.XslOutputView.Title" xml:space="preserve">
     <value>XSLT uitvoer</value>
   </data>
+  <data name="ILSpyAddIn.ILSpyDoesNotExist" xml:space="preserve">
+    <value>ILSpy niet gevonden op aangegeven locatie, of SharpDevelo beschikt niet over voldoende rechten om het te kunnen benaderen.</value>
+  </data>
+  <data name="ILSpyAddIn.ILSpyPathNotSet" xml:space="preserve">
+    <value>Het pad naar ILSpy is nog niet ingesteld.</value>
+  </data>
+  <data name="ILSpyAddIn.OpenILSpyCommand" xml:space="preserve">
+    <value>ILSpy openen</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.ILSpyInfo" xml:space="preserve">
+    <value>Deze functie benodigt ILSpy. Als u nog niet hierover beschikt, kunt u het hier vrij downloaden.</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.PathToILSpyExe" xml:space="preserve">
+    <value>Volledig pad naar ILSpy.exe</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialogTitle" xml:space="preserve">
+    <value>Stel het pad naar ILSpy in</value>
+  </data>
   <data name="Internal.ExternalTool.CantLoadToolConfigWarining" xml:space="preserve">
     <value>Laden van configuratiebestand externe toepassing mislukt</value>
   </data>
@@ -5334,6 +5454,12 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip" xml:space="preserve">
     <value>Ga naar vorige bladwijzer</value>
   </data>
+  <data name="MainWindow.Windows.BookmarkPad.LineText" xml:space="preserve">
+    <value>{0} @regel {1}</value>
+  </data>
+  <data name="MainWindow.Windows.BookmarkPad.LocationText" xml:space="preserve">
+    <value>Locatie</value>
+  </data>
   <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
     <value>Bladwijzers</value>
   </data>
@@ -5412,6 +5538,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Taal</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
+    <value>Module</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
     <value>Argumentnamen weergeven</value>
   </data>
@@ -5420,6 +5549,12 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
     <value>Toon externe methodes</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowLineNumber" xml:space="preserve">
+    <value>Regelnummer weergeven</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>Modulenaam weergeven</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
     <value>Vraag</value>
@@ -5441,6 +5576,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Condition" xml:space="preserve">
     <value>Voorwaardelijk</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.ConditionalColumnHeader" xml:space="preserve">
+    <value>Voorwaarde</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Continue" xml:space="preserve">
     <value>Vervolgen</value>
@@ -5517,6 +5655,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.ExceptionHistory.Time" xml:space="preserve">
     <value>Tijd</value>
   </data>
+  <data name="MainWindow.Windows.Debug.HideZoomControl" xml:space="preserve">
+    <value>Toon/verberg zoom control</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Local" xml:space="preserve">
     <value>Locaal</value>
   </data>
@@ -5562,6 +5703,39 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>Statische leden</value>
   </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
+    <value>Geheugen</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.AddressNotFound" xml:space="preserve">
+    <value>Adres {0} werd niet gevonden!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ByteSize" xml:space="preserve">
+    <value>Omvang in bytes tonen:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.JumpTo" xml:space="preserve">
+    <value>Spring naar adres:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NextAddress" xml:space="preserve">
+    <value>Volgende virtuele adressen:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NoMappings" xml:space="preserve">
+    <value>Geen toewijzingen voor geheugenadressen!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NotDebuggingOrProcessRunning" xml:space="preserve">
+    <value>Geen foutopsporing of proces is draaiende.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.PreviousAddress" xml:space="preserve">
+    <value>Voorgaande virtuele adressen</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ReadingFromFormat" xml:space="preserve">
+    <value>Lezen van {0} tot {1} -- grootte {2}.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.Refresh" xml:space="preserve">
+    <value>Ververs momentele adressen</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.UnableToReadFormat" xml:space="preserve">
+    <value>Lezen van adres {0} met grootte {1} niet mogelijk.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules" xml:space="preserve">
     <value>Geladen modules</value>
   </data>
@@ -5591,6 +5765,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.Debug.ObjectGraph" xml:space="preserve">
     <value>Object Graph</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ParallelStack" xml:space="preserve">
+    <value>Parallelle stapels</value>
   </data>
   <data name="MainWindow.Windows.Debug.RunToCursor" xml:space="preserve">
     <value>Uitvoeren tot de cursor</value>
@@ -5639,6 +5816,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.Debug.Threads.ThreadSwitch" xml:space="preserve">
     <value>Thread wissel</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ToggleMethodView" xml:space="preserve">
+    <value>Wissel methode weergave</value>
   </data>
   <data name="MainWindow.Windows.Debug.Watch" xml:space="preserve">
     <value>Observeren</value>
@@ -5884,7 +6064,10 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Kopieer bestandspad/-naam</value>
   </data>
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
-    <value>Open de map met document in de Explorer</value>
+    <value>Open de document bevattende map in de Explorer</value>
+  </data>
+  <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
+    <value>Alle knooppunten invouwen</value>
   </data>
   <data name="ProjectComponent.ContextMenu.AddExistingFiles" xml:space="preserve">
     <value>Toevoegen bestaande bestanden</value>
@@ -6026,27 +6209,6 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Verwijder alle web referenties</value>
-  </data>
-  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
-    <value>Open .NET Reflector</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
-    <value>Reflector werd niet gevonden op aangegeven locatie, of SharpDevelop heeft onvoldoende toegangsrechten.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
-    <value>Het pad naar Reflector is nog niet ingesteld.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorRemotingFailed" xml:space="preserve">
-    <value>Verbinden met Reflector mislukt.</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.PathToReflectorExe" xml:space="preserve">
-    <value>Volledig pad naar Reflector.exe</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.ReflectorInfo" xml:space="preserve">
-    <value>Deze optie vereistde Red Gate .NET Reflector.  Indien u er nog niet over beschikt, kunt u deze vrij downloaden bij:</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialogTitle" xml:space="preserve">
-    <value>Pad naar Reflector instellen.</value>
   </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>Assemblies (*.dll)|*.dll</value>
@@ -6453,6 +6615,10 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Alle bekende Project formaten</value>
   </data>
+  <data name="SharpDevelop.Solution.CannotLoadOldSolution" xml:space="preserve">
+    <value>Deze versie van SharpDevelop kan projecten die gemaakt zijn met Visual Studio .NET 2003 (of ouder) niet laden.
+Probeer te converteren met SharpDevelop 3.2 of maak een nieuw project en voeg de bestaande broncode bestanden hier aan toe.</value>
+  </data>
   <data name="SharpDevelop.Solution.CannotSave.IOException" xml:space="preserve">
     <value>Kan {0} niet opslaan:\n{1}</value>
   </data>
@@ -6461,18 +6627,6 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="SharpDevelop.Solution.CannotSave.UnauthorizedAccessException" xml:space="preserve">
     <value>Kan {0} niet opslaan:\n{1}\n\nVerzeker u er van dat het bestand schrijfbaar is.</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Vond Visual Studio.NET Project. Wilt u dit overzetten naar Oplossing Formaat 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Vond Visual Studio.NET 2003 project. Wilt u dit overzetten naar Oplossing Formaat 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Dient de  SharDevelop 1.x combine te worden overgezet naar een SharpDevelop 2.x  Oplossing?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Dient het SharpDevelop 1.x project te worden overgezet naar een SharpDevelop 2.x project?</value>
   </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Het project bevatte hulpbron bestanden.
@@ -6720,6 +6874,12 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="SharpReport.Toolbar.Functions.TodaysDate" xml:space="preserve">
     <value>Vandaag</value>
   </data>
+  <data name="SharpReport.Toolbar.GroupFooter" xml:space="preserve">
+    <value>Groep voettekst</value>
+  </data>
+  <data name="SharpReport.Toolbar.GroupHeader" xml:space="preserve">
+    <value>Groep koptekst</value>
+  </data>
   <data name="SharpReport.Toolbar.Image" xml:space="preserve">
     <value>Afbeelding</value>
   </data>
@@ -6731,6 +6891,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="SharpReport.Toolbar.Rectangle" xml:space="preserve">
     <value>Rechthoek</value>
+  </data>
+  <data name="SharpReport.Toolbar.Table" xml:space="preserve">
+    <value>Tabel</value>
   </data>
   <data name="SharpReport.Toolbar.TextBox" xml:space="preserve">
     <value>Label</value>
@@ -6767,6 +6930,21 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportType" xml:space="preserve">
     <value>Rapport type</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.Column" xml:space="preserve">
+    <value>Selecteer de groepkolom</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.Grouping" xml:space="preserve">
+    <value>Groeperen</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.ListLayout" xml:space="preserve">
+    <value>Lijst indeling</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.ReportLayout" xml:space="preserve">
+    <value>Rapport indeling</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.TableLayout" xml:space="preserve">
+    <value>Tabel indeling</value>
   </data>
   <data name="SharpReport.Wizard.PullModel" xml:space="preserve">
     <value>Pull Data model</value>
@@ -7399,6 +7577,12 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="XML.MainMenu.DebugMenu.Error.ProcessRunning" xml:space="preserve">
     <value>Kan actie niet uitvoeren omdat proces loopt.</value>
   </data>
+  <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
+    <value>Verwijder alle breekpunten</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RunLastBuild" xml:space="preserve">
+    <value>Voer laatste bouw uit.</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Uitvoeren &amp;zonder foutopsporing</value>
   </data>
@@ -7568,6 +7752,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
     <value>Nieuwe buffer openen</value>
   </data>
   <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+    <value>&amp;Project...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Oplossing...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

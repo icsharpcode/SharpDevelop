@@ -139,7 +139,7 @@ namespace ICSharpCode.AddInManager
 			AddInTreeNode dummyNode = new AddInTreeNode();
 			foreach (KeyValuePair<string, ExtensionPath> pair in addIn.Paths) {
 				if (pair.Key.StartsWith("/SharpDevelop/Dialogs/OptionsDialog")) {
-					dummyNode.Codons.AddRange(pair.Value.Codons);
+					dummyNode.AddCodons(pair.Value.Codons);
 				}
 			}
 			ICSharpCode.SharpDevelop.Commands.OptionsCommand.ShowTabbedOptions(addIn.Name + " " + ResourceService.GetString("AddInManager.Options"),

@@ -779,9 +779,6 @@ En option, vous pouvez spécifer un répertoire de travail et des arguments en l
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' a été supprimé de la liste d'ignorés.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Laisser la solution précédente ouverte</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Poser un verrou</value>
   </data>
@@ -808,12 +805,6 @@ En option, vous pouvez spécifer un répertoire de travail et des arguments en l
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Afficher l'&amp;historique des fichiers sous contrôle de version</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Recharger la solution</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop a detecté que l'opération de contrôle de version a changée des fichiers du projet. Rechargez la solution.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Relocaliser</value>
@@ -974,9 +965,6 @@ Sauvegardez ces fichiers avant de déclencher l'opération.</value>
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Fichier</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Ligne</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>A propos</value>
@@ -2412,6 +2400,12 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Déboguage en cours</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Exceptions</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Pause lors des exceptions gérées</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Pas-à-pas en cours</value>
   </data>
@@ -2610,6 +2604,15 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Style visuel</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
+    <value>Développer les références du projet</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
+    <value>Options de l'interface de SharpDevelop</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
+    <value>Options de l'interface de SharpDevelop</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Balises de Commentaires</value>
   </data>
@@ -2733,6 +2736,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.CaretCheckBox" xml:space="preserve">
     <value>Afficher le curseur</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EnableAnimationsCheckBox" xml:space="preserve">
+    <value>Activer les animations</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Affich&amp;er les marqueurs de fin de ligne</value>
   </data>
@@ -2765,6 +2771,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
     <value>Marqueurs et Règles</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
+    <value>Montrer les définitions cachées (crochets uniquement)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.SpacesCheckBox" xml:space="preserve">
     <value>Afficher les e&amp;spaces</value>
@@ -2961,7 +2970,7 @@ Un changement des arrangements est visible lors du prochain relancement de #Deve
     <value>Processeur Itanium 64bits</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
-    <value>Processeur AMD 64bits</value>
+    <value>Processeur 64 bits (x64)</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
     <value>Processeur 32bits compatible Intel</value>
@@ -3476,6 +3485,9 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Démarrer</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Ligne</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Mettre à jo&amp;ur</value>
   </data>
@@ -3752,9 +3764,6 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Fin de ligne</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Ligne</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Impossible de localiser l'application console NCover.
 
@@ -3984,6 +3993,9 @@ Configurez le chemin vers NAnt dans les options de SharpDevelop.</value>
   <data name="ICSharpCode.NAntAddIn.StopNAntMenuLabel" xml:space="preserve">
     <value>&amp;Stopper NAnt</value>
   </data>
+  <data name="ICSharpCode.NoStartupProject" xml:space="preserve">
+    <value>Aucun projet de démarrage à débogguer.</value>
+  </data>
   <data name="ICSharpCode.NUnitPad.NUnitPadContent.PadName" xml:space="preserve">
     <value>Tests unitaires</value>
   </data>
@@ -4043,6 +4055,9 @@ Configurez le chemin vers NAnt dans les options de SharpDevelop.</value>
   </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Impossible de trouver le type '{0}'. Manque-t-il uUne référence d'assembly ?</value>
+  </data>
+  <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
+    <value>L'élément sélectionné n'est ni une classe ni un membre surchargeable: aucun symbole dérivé n'est disponible.</value>
   </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Envoyer cette ligne vers la console Ruby</value>
@@ -4368,7 +4383,7 @@ Toutes les modifications seront perdues.</value>
     <value>Catégories</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.DialogName" xml:space="preserve">
-    <value>Configure la Sidebar</value>
+    <value>Configurer l'encadré (sidebar)</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Namespace" xml:space="preserve">
     <value>Espace de noms</value>
@@ -4785,6 +4800,40 @@ Utilisez seulement des lettres, chiffres, espace, '.' ou '_'.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Chargement de ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Laisser la solution précédente ouverte</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Recharger la solution</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
+    <value>Convertir les projets sélectionnés vers:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeTargetFrameworkLabel" xml:space="preserve">
+    <value>Changer le framework cible:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeVersionGroupBoxHeader" xml:space="preserve">
+    <value>Changer la version des projets sélectionnés</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.CompilerVersion" xml:space="preserve">
+    <value>Version du compilateur</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ConvertButton" xml:space="preserve">
+    <value>&amp;Convertir</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange" xml:space="preserve">
+    <value>&lt;ne pas changer&gt;</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.TargetFramework" xml:space="preserve">
+    <value>Framework cible</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
+    <value>Mettre à jour le projet</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
+    <value>Cette solution a été créée par une précédente version de SharpDevelop.
+La mettre à jour vous permet d'utiliser de nouveaux languages, ou les évolutions du framework.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Ambiance actuelle introuvable.
 Allez dans 'Outils/Options-&gt;Style Visuel pour changer l'ambiance actuelle.</value>
@@ -4842,6 +4891,48 @@ Allez dans 'Outils/Options-&gt;Style Visuel pour changer l'ambiance actuelle.</v
   </data>
   <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
     <value>Impossible de lancer les tests unitaires, fichier {0} introuvable.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel" xml:space="preserve">
+    <value>Web</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.ApplicationExists" xml:space="preserve">
+    <value>L'application existe déjà.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.CreateVirtualDir" xml:space="preserve">
+    <value>Créer Application/répertoire virtuel</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.DisableWebServerButton" xml:space="preserve">
+    <value>Options de désactivation du serveur web</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.IISNotFound" xml:space="preserve">
+    <value>IIS local ou IIS Express introuvable.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.NoIISWP" xml:space="preserve">
+    <value>Processus de travail {0} ASP.NET/IIS(Express) introuvable.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
+    <value>Pas d'URL du projet spécifiée ou de programme externe. Vérifier le serveur web dans Propriétés du projet -&gt; Onglet debug.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
+    <value>Port:</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.ProjectUrl" xml:space="preserve">
+    <value>URL du projet:</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Server" xml:space="preserve">
+    <value>Serveur Web</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UnableToAttach" xml:space="preserve">
+    <value>Le déboggueur ne peut pas lier au processus.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UseIISExpress" xml:space="preserve">
+    <value>Utiliser le serveur Web IIS Express</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UseLocalIIS" xml:space="preserve">
+    <value>Utiliser le serveur web IIS local</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.VirtualDirCreated" xml:space="preserve">
+    <value>Application/répertoire virtuel est maintenant créé.</value>
   </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
     <value>Ajouter des extensions</value>
@@ -5248,6 +5339,24 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="ICSharpCode.XmlEditor.XslOutputView.Title" xml:space="preserve">
     <value>Sortie XSLT</value>
   </data>
+  <data name="ILSpyAddIn.ILSpyDoesNotExist" xml:space="preserve">
+    <value>ILSpy introuvable à l'emplacement renseigné, or SharpDevelop n'a pas les droits d'accès suffisants.</value>
+  </data>
+  <data name="ILSpyAddIn.ILSpyPathNotSet" xml:space="preserve">
+    <value>L'emplacement de ILSpy n'a pas été renseigné.</value>
+  </data>
+  <data name="ILSpyAddIn.OpenILSpyCommand" xml:space="preserve">
+    <value>Ouvrir ILSpy</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.ILSpyInfo" xml:space="preserve">
+    <value>Cette fonctionnalité nécessite ILSpy. Vous pouvez le télécharger gratuitement ici:</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.PathToILSpyExe" xml:space="preserve">
+    <value>Chemin complet vers ILSpy.exe</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialogTitle" xml:space="preserve">
+    <value>Définir le chemin vers ILSpy</value>
+  </data>
   <data name="Internal.ExternalTool.CantLoadToolConfigWarining" xml:space="preserve">
     <value>Impossible de charger la configuration des outils externes</value>
   </data>
@@ -5332,6 +5441,12 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip" xml:space="preserve">
     <value>Aller au marque-page précédent</value>
   </data>
+  <data name="MainWindow.Windows.BookmarkPad.LineText" xml:space="preserve">
+    <value>{0} @ligne {1}</value>
+  </data>
+  <data name="MainWindow.Windows.BookmarkPad.LocationText" xml:space="preserve">
+    <value>Emplacement</value>
+  </data>
   <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
     <value>Marque-pages</value>
   </data>
@@ -5410,6 +5525,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Langage</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
+    <value>Module</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
     <value>Afficher le nom des arguments</value>
   </data>
@@ -5418,6 +5536,12 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
     <value>Afficher les méthodes externes</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowLineNumber" xml:space="preserve">
+    <value>Afficher les numéros de ligne</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>Afficher les noms des modules</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
     <value>Demander</value>
@@ -5439,6 +5563,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Condition" xml:space="preserve">
     <value>Conditionnel</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.ConditionalColumnHeader" xml:space="preserve">
+    <value>Condition</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Continue" xml:space="preserve">
     <value>Continuer</value>
@@ -5516,6 +5643,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.Debug.ExceptionHistory.Time" xml:space="preserve">
     <value>Heure</value>
   </data>
+  <data name="MainWindow.Windows.Debug.HideZoomControl" xml:space="preserve">
+    <value>Afficher/Cacher le zoom</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Local" xml:space="preserve">
     <value>Local</value>
   </data>
@@ -5561,6 +5691,39 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>Membres statiques</value>
   </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
+    <value>Mémoire</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.AddressNotFound" xml:space="preserve">
+    <value>Adresse {0} introuvable!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ByteSize" xml:space="preserve">
+    <value>Taille des octets affichés:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.JumpTo" xml:space="preserve">
+    <value>Aller à l'adresse:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NextAddress" xml:space="preserve">
+    <value>Adresses virtuelles suivantes</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NoMappings" xml:space="preserve">
+    <value>Pas de mapping pour les adresses mémoire!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NotDebuggingOrProcessRunning" xml:space="preserve">
+    <value>Vous n'êtes pas en mode Debug ou le processus n'est pas lancé!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.PreviousAddress" xml:space="preserve">
+    <value>Adresses virtuelles précédentes</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ReadingFromFormat" xml:space="preserve">
+    <value>Lecture de {0} à {1} - taille {2}</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.Refresh" xml:space="preserve">
+    <value>Actualiser les adresses</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.UnableToReadFormat" xml:space="preserve">
+    <value>Impossible de lire l'adresse {0} - taille {1}.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules" xml:space="preserve">
     <value>Modules chargés</value>
   </data>
@@ -5590,6 +5753,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="MainWindow.Windows.Debug.ObjectGraph" xml:space="preserve">
     <value>Graphe d'objet</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ParallelStack" xml:space="preserve">
+    <value>Visualiser les processus</value>
   </data>
   <data name="MainWindow.Windows.Debug.RunToCursor" xml:space="preserve">
     <value>Exécuter jusqu'au curseur</value>
@@ -5638,6 +5804,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="MainWindow.Windows.Debug.Threads.ThreadSwitch" xml:space="preserve">
     <value>Changement de thread</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ToggleMethodView" xml:space="preserve">
+    <value>Basculer vers la vue "par méthodes"</value>
   </data>
   <data name="MainWindow.Windows.Debug.Watch" xml:space="preserve">
     <value>Espions</value>
@@ -5885,6 +6054,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
     <value>Ouvrir le répertoire dans l'explorateur</value>
   </data>
+  <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
+    <value>Réduire tous les noeuds</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.AddExistingFiles" xml:space="preserve">
     <value>Ajouter fichiers existants</value>
   </data>
@@ -6025,27 +6197,6 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Supprimer toutes les références web</value>
-  </data>
-  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
-    <value>Ouvrir Reflector .NET</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
-    <value>Reflector est introuvable à l'emplacement spécifié, or SharpDevelop n'a pas les droits nécessaires pour y accéder.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
-    <value>Le chemin d'accèd de Reflector n'a pas encore été spécifié.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorRemotingFailed" xml:space="preserve">
-    <value>Impossible de se connecter à Reflector.</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.PathToReflectorExe" xml:space="preserve">
-    <value>Chemin complet vers Reflector.exe</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.ReflectorInfo" xml:space="preserve">
-    <value>Ce fonctionnalité nécessite Reflector .NET de Red Gate. Si vous ne l'avez pas installé, vous pouvez le télécharger gratuitement ici:</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialogTitle" xml:space="preserve">
-    <value>Configurer le chemin vers Reflector</value>
   </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>Assemblies (*.dll)|*.dll</value>
@@ -6452,6 +6603,10 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Formats de projet connus</value>
   </data>
+  <data name="SharpDevelop.Solution.CannotLoadOldSolution" xml:space="preserve">
+    <value>Cette version de SharpDevelop ne peut pas charger des projets créés avec Visual Studio 2003.
+Essayez SD3.2 pour une conversion; ou créez un nouveau projet et ajoutez les fichiers existant.</value>
+  </data>
   <data name="SharpDevelop.Solution.CannotSave.IOException" xml:space="preserve">
     <value>Impossible de sauvegarder {0}:\n{1}</value>
   </data>
@@ -6460,18 +6615,6 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="SharpDevelop.Solution.CannotSave.UnauthorizedAccessException" xml:space="preserve">
     <value>Impossible de sauvegarder {0}:\n{1}\n\nAssurez vous que le fichier est accessible en écriture.</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Un projet VS.NET trouvé. Doit-il être converti en solution VS.NET 2005 (format de solution 9.00)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Un projet VS.NET 2003 trouvé. Doit-il être converti en solution VS.NET 2005 (format de solution 9.00)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Cette solution SharpDevelop 1.x doit-elle être convertie en solution SharpDevelop 2.x?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Ce projet SharpDevelop 1.x doit-il être converti en projet SharpDevelop 2.x?</value>
   </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Il y avait des fichiers de resources dans le projet.
@@ -6719,6 +6862,12 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   <data name="SharpReport.Toolbar.Functions.TodaysDate" xml:space="preserve">
     <value>Aujourd'hui</value>
   </data>
+  <data name="SharpReport.Toolbar.GroupFooter" xml:space="preserve">
+    <value>Bas de page de groupe</value>
+  </data>
+  <data name="SharpReport.Toolbar.GroupHeader" xml:space="preserve">
+    <value>Entête de groupe</value>
+  </data>
   <data name="SharpReport.Toolbar.Image" xml:space="preserve">
     <value>Image</value>
   </data>
@@ -6730,6 +6879,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="SharpReport.Toolbar.Rectangle" xml:space="preserve">
     <value>Rectangle</value>
+  </data>
+  <data name="SharpReport.Toolbar.Table" xml:space="preserve">
+    <value>Table</value>
   </data>
   <data name="SharpReport.Toolbar.TextBox" xml:space="preserve">
     <value>Etiquette</value>
@@ -6766,6 +6918,21 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportType" xml:space="preserve">
     <value>Type de rapport</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.Column" xml:space="preserve">
+    <value>Selectionner la colonne de groupe</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.Grouping" xml:space="preserve">
+    <value>Regroupement</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.ListLayout" xml:space="preserve">
+    <value>Structure de liste</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.ReportLayout" xml:space="preserve">
+    <value>Structure de rapport</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.TableLayout" xml:space="preserve">
+    <value>Structure de table</value>
   </data>
   <data name="SharpReport.Wizard.PullModel" xml:space="preserve">
     <value>Modèle de données: extraire</value>
@@ -7302,7 +7469,7 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>Créer un nouveau rapport avec le Report Wizard</value>
   </data>
   <data name="XML.FormsDesigner.SideBar.CustomizeSidebar" xml:space="preserve">
-    <value>Configure la Sidebar...</value>
+    <value>Configurer l'encadré (sidebar)...</value>
   </data>
   <data name="XML.MainMenu.Analysis" xml:space="preserve">
     <value>&amp;Analyses</value>
@@ -7396,6 +7563,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.ProcessRunning" xml:space="preserve">
     <value>Impossible de réaliser l'action car une tâche est en cours.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
+    <value>Supprimer tous les points d'arrêt</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Exécuter &amp;sans débogueur</value>
@@ -7521,7 +7691,7 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>Refaire la dernière action annulée</value>
   </data>
   <data name="XML.MainMenu.EditMenu.SelectAll" xml:space="preserve">
-    <value>Sélectionner &amp;tout</value>
+    <value>Sélectionner tout</value>
   </data>
   <data name="XML.MainMenu.EditMenu.Undo" xml:space="preserve">
     <value>&amp;Défaire</value>
@@ -7566,6 +7736,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>Ouvrir un nouveau buffer</value>
   </data>
   <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+    <value>&amp;Projet...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Solution...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

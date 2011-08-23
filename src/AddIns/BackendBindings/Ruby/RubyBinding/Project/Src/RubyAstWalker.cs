@@ -17,6 +17,11 @@ namespace ICSharpCode.RubyBinding
 {
 	public class RubyAstWalker : Walker
 	{
+		/// <summary>
+		/// Length of "def".
+		/// </summary>
+		const int MethodDefinitionLength = 3;
+
 		DefaultCompilationUnit compilationUnit;
 		DefaultClass currentClass;
 		DefaultClass globalClass;
@@ -146,12 +151,34 @@ namespace ICSharpCode.RubyBinding
 		/// </summary>
 		DomRegion GetMethodRegion(MethodDefinition methodDef)
 		{
-			SourceLocation parametersEndLocation = methodDef.Parameters.Location.End;
-			if (ParametersEndLocationNeedsCorrecting(parametersEndLocation)) {
-				parametersEndLocation = CorrectParametersEndLocation(parametersEndLocation);
-			}
+			SourceLocation parametersEndLocation = GetParametersEndLocation(methodDef);
 			return CreateRegion(methodDef.Location.Start, parametersEndLocation);
 		}
+		
+		SourceLocation GetParametersEndLocation(MethodDefinition methodDef)
+		{
+ 			SourceLocation parametersEndLocation = methodDef.Parameters.Location.End;
+			if (parametersEndLocation.IsValid) {
+				if (ParametersEndLocationNeedsCorrecting(parametersEndLocation)) {
+					parametersEndLocation = CorrectParametersEndLocation(parametersEndLocation);
+				}
+			} else {
+				return GetParametersEndLocationBasedOnMethodNameEnd(methodDef);
+ 			}
+			return parametersEndLocation;
+		}
+			
+		SourceLocation GetParametersEndLocationBasedOnMethodNameEnd(MethodDefinition methodDef)
+		{
+			const int methodParenthesesLength = 2;
+			const int spaceLength = 1;
+			int methodDefinitionLength = methodDef.Name.Length + MethodDefinitionLength + methodParenthesesLength + spaceLength;
+			SourceLocation methodStartLocation = methodDef.Location.Start;
+			int index = methodStartLocation.Index + methodDefinitionLength;
+			int column = methodStartLocation.Column + methodDefinitionLength;
+			int line = methodStartLocation.Line;
+			return new SourceLocation(index, line, column);
+ 		}
 		
 		/// <summary>
 		/// Returns true if the IronRuby parser has not found the closing bracket for a method

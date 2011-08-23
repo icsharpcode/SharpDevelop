@@ -12,6 +12,18 @@
 		<Import assembly = "SettingsEditor.dll"/>
 	</Runtime>
 	
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<Directory id = "settings" path = "." />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "Settings"
+		            insertbefore="AllFiles"
+		            name = "Settings (*.settings)"
+		            extensions = "*.settings"
+		            mimeType = "text/xml"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id = "SettingsEditor"
 		                insertbefore = "Text"

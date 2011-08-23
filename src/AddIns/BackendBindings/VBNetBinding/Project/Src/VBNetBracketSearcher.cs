@@ -26,12 +26,14 @@ namespace ICSharpCode.VBNetBinding
 				int otherOffset = -1;
 				if (index > -1)
 					otherOffset = SearchBracketForward(document, offset, openingBrackets[index], closingBrackets[index]);
+				
 				index = closingBrackets.IndexOf(c);
 				if (index > -1)
 					otherOffset = SearchBracketBackward(document, offset - 2, openingBrackets[index], closingBrackets[index]);
 				
 				if (otherOffset > -1)
-					return new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1, Math.Max(offset - 1, otherOffset), 1);
+					return new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1,
+					                               Math.Max(offset - 1, otherOffset), 1);
 				
 				int length;
 				VBStatement statement;
@@ -49,7 +51,8 @@ namespace ICSharpCode.VBNetBinding
 				}
 				
 				if (startIndex > -1 && endIndex > -1)
-					return new BracketSearchResult(startIndex, length, endIndex, statement.EndStatement.Length);
+					return new BracketSearchResult(startIndex, length, endIndex,
+					                               statement.EndStatement.Length);
 			}
 			
 			return null;
@@ -145,7 +148,7 @@ namespace ICSharpCode.VBNetBinding
 		{
 			IDocumentLine line = document.GetLineForOffset(offset);
 			
-			string interestingText = VBNetFormattingStrategy.TrimLine(line.Text).Trim(' ', '\t');
+			string interestingText = line.Text.TrimLine().Trim(' ', '\t');
 			
 			//LoggingService.Debug("text: '" + interestingText + "'");
 			

@@ -106,6 +106,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Columns.Add(file);
 			this.Columns.Add(path);
 			
+			this.HideSelection = false;
 			this.FullRowSelect = true;
 			this.AutoArrange = true;
 			this.Alignment   = ListViewAlignment.Left;
@@ -146,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void RefreshColumnNames()
 		{
 			type.Text        = "!";
-			line.Text        = ResourceService.GetString("CompilerResultView.LineText");
+			line.Text        = ResourceService.GetString("Global.TextLine");
 			description.Text = ResourceService.GetString("CompilerResultView.DescriptionText");
 			file.Text        = ResourceService.GetString("CompilerResultView.FileText");
 			path.Text        = ResourceService.GetString("Global.Path");

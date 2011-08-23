@@ -37,7 +37,7 @@ namespace UnitTesting.Tests.Tree
 			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
 			projectContent = new MockProjectContent();
 			pad.ProjectContent = projectContent;
-			solution = new Solution();
+			solution = new Solution(new MockProjectChangeWatcher());
 			project = new MockCSharpProject();
 			projectContent.Project = project;
 			projectContent.Language = LanguageProperties.None;

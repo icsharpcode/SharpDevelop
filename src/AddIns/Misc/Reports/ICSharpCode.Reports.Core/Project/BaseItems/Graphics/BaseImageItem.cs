@@ -14,10 +14,11 @@ using System.Globalization;
 using System.IO;
 
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Core {
 	
-	public class BaseImageItem : BaseGraphicItem,IDataItem,IDataRenderer,IExportColumnBuilder{
+	public class BaseImageItem : BaseGraphicItem,IDataItem,IExportColumnBuilder{
 		
 		/// <summary>
 		/// Default constructor 
@@ -25,19 +26,15 @@ namespace ICSharpCode.Reports.Core {
 		
 		private string imageFileName;
 		private Image image;
-		private bool scaleImageToSize;
 		private GlobalEnums.ImageSource imageSource;
 		private string columnName;
-		private string baseTableName;
-		private string reportFileName;
-		private string relativeFileName;
 		
 		public BaseImageItem():base() {
 		}
 		
 		#region IExportColumnBuilder  implementation
 		
-		public BaseExportColumn CreateExportColumn()
+		public IBaseExportColumn CreateExportColumn()
 		{
 			BaseStyleDecorator st = this.CreateItemStyle();
 			ExportImage item = new ExportImage(st);
@@ -48,7 +45,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 			
 			item.Image = this.Image;
-			item.ScaleImageToSize = this.scaleImageToSize;
+			item.ScaleImageToSize = this.ScaleImageToSize;
 			return item;
 		}
 		
@@ -125,7 +122,7 @@ namespace ICSharpCode.Reports.Core {
 				                                   base.DisplayRectangle.Height) );
 			}
 			
-			if (this.scaleImageToSize) {
+			if (this.ScaleImageToSize) {
 				g.DrawImageUnscaled(this.Image,this.Location.X,this.Location.Y);
 				rpea.LocationAfterDraw = new Point (this.Location.X + this.Image.Width,
 				                                    this.Location.Y + this.Image.Height);
@@ -153,31 +150,20 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		public string BaseTableName 
-		{
-			get { return baseTableName; }
-			set {
-				baseTableName = value;
-				this.imageSource = GlobalEnums.ImageSource.Database;
-			}
-		}
+		public string BaseTableName {get;set;}
 
 		
 		public string MappingName
 		{
 			get {
-				return baseTableName + "." + columnName;
+				return BaseTableName + "." + columnName;
 			} 
 		}
 		
 		
-		public string DBValue {
-			get{throw new NotImplementedException();}
-			set{throw new NotImplementedException();}
-		}
+		public string DBValue {get;set;}
 		
-		
-		
+	
 		public virtual string ImageFileName 
 		{
 			get {
@@ -195,20 +181,20 @@ namespace ICSharpCode.Reports.Core {
 		public string AbsoluteFileName
 		{
 			get {
-				if (!string.IsNullOrEmpty(relativeFileName)) {
-					string testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
+				if (!string.IsNullOrEmpty(RelativeFileName)) {
+					string testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.ReportFileName),this.RelativeFileName));
 						
 					if (File.Exists(testFileName)){
 						Console.WriteLine("Image found with Relative Filename");
-						Console.WriteLine("Report Filename {0}",this.reportFileName);
-						Console.WriteLine("Relative Filename {0}",this.relativeFileName);
+						Console.WriteLine("Report Filename {0}",this.ReportFileName);
+						Console.WriteLine("Relative Filename {0}",this.RelativeFileName);
 						Console.WriteLine("Image Filename {0}",this.ImageFileName);
 						return testFileName;
 					
 					} else {
 						Console.WriteLine("AbsoluteFileName can't load image");
-						Console.WriteLine("Report Filename {0}",this.reportFileName);
-						Console.WriteLine("Relative Filename {0}",this.relativeFileName);
+						Console.WriteLine("Report Filename {0}",this.ReportFileName);
+						Console.WriteLine("Relative Filename {0}",this.RelativeFileName);
 						Console.WriteLine("Image Filename {0}",this.ImageFileName);
 					}
 				}
@@ -218,21 +204,10 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		public string RelativeFileName 
-		{
-			get { return relativeFileName; }
-			set { relativeFileName = value; }
-		}
+		public string RelativeFileName {get;set;}
 		
 		
-
-		public string ReportFileName 
-		{
-			get { return reportFileName; }
-			set { 
-				reportFileName = value; 
-			}
-		}
+		public string ReportFileName {get;set;}
 		
 		
 		/// <summary>
@@ -273,15 +248,7 @@ namespace ICSharpCode.Reports.Core {
 		///<summary>
 		/// enlarge / Shrink the Controls Size
 		/// </summary>
-		public bool ScaleImageToSize
-		{
-			get {
-				return scaleImageToSize;
-			}
-			set {
-				scaleImageToSize = value;
-			}
-		}
+		public bool ScaleImageToSize{get;set;}
 		
 		
 		public override Color BackColor {
@@ -312,6 +279,8 @@ namespace ICSharpCode.Reports.Core {
 			get { return base.Thickness; }
 			set { base.Thickness = value; }
 		}
+		
+		public string DataType {get;set;}
 		
 		#endregion
 		

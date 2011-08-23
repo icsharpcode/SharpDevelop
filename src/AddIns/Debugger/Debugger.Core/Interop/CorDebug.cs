@@ -62,6 +62,14 @@ namespace Debugger.Interop.CorDebug
         CHAIN_SECURITY = 4,
         CHAIN_THREAD_START = 0x40
     }
+    
+    [Flags]
+    public enum CorDebugJITCompilerFlags
+    {
+        CORDEBUG_JIT_DEFAULT = 0x1,
+        CORDEBUG_JIT_DISABLE_OPTIMIZATION = 0x3,
+        CORDEBUG_JIT_ENABLE_ENC = 0x7
+    }
 
     [ComImport, TypeLibType((short) 2), Guid("6FEF44D0-39E7-4C77-BE8E-C9F8CF988630"), ClassInterface((short) 0)]
     public class CorDebugClass : ICorDebug, CorDebug

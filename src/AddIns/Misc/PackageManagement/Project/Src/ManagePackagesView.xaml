@@ -1,0 +1,79 @@
+﻿<Window
+	x:Class="ICSharpCode.PackageManagement.ManagePackagesView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:pm="clr-namespace:ICSharpCode.PackageManagement"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Height="480"
+	Width="640"
+	MinHeight="380"
+	MinWidth="440"
+	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
+	WindowStartupLocation="CenterOwner">
+	
+	<Window.Resources>
+		<Style TargetType="Button" BasedOn="{x:Static core:GlobalStyles.ButtonStyle}"/>
+		<pm:PackageManagementViewModels x:Key="ViewModels"/>
+		<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+		
+		<BitmapImage x:Key="ErrorIcon"
+			UriSource="pack://application:,,,/PackageManagement;component/Resources/exclamation.png"/>
+	</Window.Resources>
+	
+	<Window.DataContext>
+		<Binding Source="{StaticResource ViewModels}" Path="ManagePackagesViewModel"/>	
+	</Window.DataContext>
+	
+	<Window.Title>
+		<Binding Path="Title"/>
+	</Window.Title>
+	
+	<DockPanel x:Name="MainPanel">
+		<Grid
+			DockPanel.Dock="Bottom"
+			Margin="4, 4">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+			</Grid.ColumnDefinitions>
+			<StackPanel>
+				<Image
+					Margin="4, 4"
+					Visibility="{Binding Path=HasError, Converter={StaticResource BoolToVisibility}}"
+					Source="{StaticResource ErrorIcon}"/>
+			</StackPanel>
+			<TextBlock
+				Grid.Column="1"
+				Margin="4, 4"
+				TextTrimming="CharacterEllipsis"
+				Text="{Binding Path=Message}"/>
+			<Button
+				Grid.Column="2"
+				Content="{core:Localize Global.CloseButtonText}"
+				IsCancel="True"/>
+		</Grid>
+		<TabControl>
+			<TabItem Header="Available">
+				<pm:PackagesView
+					x:Name="AvailablePackagesView"
+					DataContext="{Binding Path=AvailablePackagesViewModel}"/>
+			</TabItem>
+			<TabItem Header="Installed">
+				<pm:PackagesView
+					x:Name="InstalledPackagesView"
+					DataContext="{Binding Path=InstalledPackagesViewModel}"/>
+			</TabItem>
+			<TabItem Header="Updates">
+				<pm:PackagesView
+					x:Name="PackageUpdatesView"
+					DataContext="{Binding Path=UpdatedPackagesViewModel}"/>
+			</TabItem>
+			<TabItem Header="Recent">
+				<pm:PackagesView
+					x:Name="RecentPackagesView"
+					DataContext="{Binding Path=RecentPackagesViewModel}"/>
+			</TabItem>
+		</TabControl>
+	</DockPanel>
+</Window>

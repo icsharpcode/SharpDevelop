@@ -2,9 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
 using System.IO;
-
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
@@ -70,13 +68,13 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			string ext = codon.Properties["extensions"];
+			string ext = args.Codon["extensions"];
 			if (ext != null && ext.Length > 0)
-				return new LazyCodeCompletionBinding(codon, ext.Split(';'));
+				return new LazyCodeCompletionBinding(args.Codon, ext.Split(';'));
 			else
-				return codon.AddIn.CreateObject(codon.Properties["class"]);
+				return args.AddIn.CreateObject(args.Codon["class"]);
 		}
 	}
 	
@@ -99,6 +97,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				if (ext.Equals(extension, StringComparison.OrdinalIgnoreCase)) {
 					if (binding == null) {
 						binding = (ICodeCompletionBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
+						if (binding == null)
+							break;
 					}
 					return binding.HandleKeyPress(editor, ch);
 				}
@@ -113,6 +113,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				if (ext.Equals(extension, StringComparison.OrdinalIgnoreCase)) {
 					if (binding == null) {
 						binding = (ICodeCompletionBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
+						if (binding == null)
+							break;
 					}
 					return binding.CtrlSpace(editor);
 				}
@@ -173,7 +175,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 						IInsightWindow insightWindow = editor.ShowInsightWindow(new MethodInsightProvider().ProvideInsight(editor));
 						if (insightWindow != null && insightHandler != null) {
 							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
-							insightHandler.HighlightParameter(insightWindow, -1); // disable highlighting
+							insightHandler.HighlightParameter(insightWindow, 0);
 						}
 						return CodeCompletionKeyPressResult.Completed;
 					}

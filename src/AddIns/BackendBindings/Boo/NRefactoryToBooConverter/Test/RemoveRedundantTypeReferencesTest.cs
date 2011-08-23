@@ -31,7 +31,7 @@ namespace NRefactoryToBooConverter.Tests
 		[Test]
 		public void Cast()
 		{
-			TestStatement("MyClass m = (MyClass)variable;", "m = cast(MyClass, variable)");
+			TestStatement("MyClass m = (MyClass)variable;", "m = (variable cast MyClass)");
 			TestStatement("MyClass m = variable as MyClass;", "m = (variable as MyClass)");
 		}
 		

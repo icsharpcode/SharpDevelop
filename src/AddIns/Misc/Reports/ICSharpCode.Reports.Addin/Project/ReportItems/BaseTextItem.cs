@@ -2,14 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 
-using ICSharpCode.Reports.Addin.Designer;
+using ICSharpCode.Reports.Addin.Dialogs;
+using ICSharpCode.Reports.Addin.TypeProviders;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
-using ICSharpCode.Reports.Addin.Dialogs;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -47,7 +47,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		public override void Draw(Graphics graphics)
 		{
-			StringTrimming designTrimmimg = StringTrimming.EllipsisCharacter;
+			
 			
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
@@ -56,22 +56,31 @@ namespace ICSharpCode.Reports.Addin
 				graphics.FillRectangle(b, base.DrawingRectangle);
 			}
 			
+			StringTrimming designTrimmimg = StringTrimming.EllipsisCharacter;
+			
 			if (this.stringTrimming != StringTrimming.None) {
 				designTrimmimg = stringTrimming;
 			}
+			
+			StringFormat stringFormat = TextDrawer.BuildStringFormat(designTrimmimg,contentAlignment);
+			
+			if (this.RightToLeft == System.Windows.Forms.RightToLeft.Yes) {
+				stringFormat.FormatFlags = stringFormat.FormatFlags | StringFormatFlags.DirectionRightToLeft;
+			}
+			
+			
 			TextDrawer.DrawString(graphics,this.Text,this.Font,
 			                      new SolidBrush(this.ForeColor),
 			                      this.ClientRectangle,
-			                      designTrimmimg,
-			                      this.contentAlignment);
+			                      stringFormat);
 			
 			base.DrawControl(graphics,base.DrawingRectangle);
 		}
 		
 		
 		
-		[EditorAttribute(typeof(DefaultTextEditor), 
-		                  typeof(System.Drawing.Design.UITypeEditor) )]
+		[EditorAttribute(typeof(DefaultTextEditor),
+		                 typeof(System.Drawing.Design.UITypeEditor) )]
 		public override string Text {
 			get { return base.Text; }
 			set { base.Text = value;
@@ -85,10 +94,8 @@ namespace ICSharpCode.Reports.Addin
 		[Browsable(true),
 		 Category("Appearance"),
 		 Description("String to format Number's Date's etc")]
-		
 		[DefaultValue("entry1")]
-
-[TypeConverter(typeof(FormatStringConverter))]
+		[TypeConverter(typeof(FormatStringConverter))]
 
 		public string FormatString {
 			get { return formatString; }
@@ -118,9 +125,11 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
+		
+		
 		[Category("Appearance")]
-		[EditorAttribute(typeof(System.Drawing.Design.ContentAlignmentEditor), 
-		                  typeof(System.Drawing.Design.UITypeEditor) )]
+		[EditorAttribute(typeof(System.Drawing.Design.ContentAlignmentEditor),
+		                 typeof(System.Drawing.Design.UITypeEditor) )]
 		public ContentAlignment ContentAlignment {
 			get { return contentAlignment; }
 			set {
@@ -129,16 +138,21 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
+		
+		[Category("Appearance")]
+		public override System.Windows.Forms.RightToLeft RightToLeft {
+			get { return base.RightToLeft; }
+			set { base.RightToLeft = value; }
+		}
+		
+		
 		#endregion
 		
-				
+		
 		[Browsable(true),
 		 Category("Databinding"),
 		 Description("Datatype of the underlying Column")]
-		
-		
 		[DefaultValue("System.String")]
-		
 		[TypeConverter(typeof(DataTypeStringConverter))]
 
 		public string DataType {get;set;}
@@ -149,7 +163,8 @@ namespace ICSharpCode.Reports.Addin
 		[Browsable(true),
 		 Category("Expression"),
 		 Description("Enter a valid Expression")]
-		
+		[EditorAttribute(typeof(DefaultTextEditor),
+		                 typeof(System.Drawing.Design.UITypeEditor) )]
 		public string Expression {get;set;}
 		
 		#endregion
@@ -157,76 +172,10 @@ namespace ICSharpCode.Reports.Addin
 		#region CanGrow/CanShrink
 		
 		public bool CanGrow {get;set;}
-			
+		
 		public bool CanShrink {get;set;}
-			
+		
 		#endregion
 	}
-	
-	#region TypeProvider
-	
-	internal class TextItemTypeProvider : TypeDescriptionProvider
-	{
-		public TextItemTypeProvider() :  base(TypeDescriptor.GetProvider(typeof(AbstractItem)))
-		{
-		}
-		
-	
-		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
-		{
-			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new TextItemTypeDescriptor(td, instance);
-		}
-	}
-	
-	
-	internal class TextItemTypeDescriptor : CustomTypeDescriptor
-	{
-//		private BaseTextItem instance;
-		
-		public TextItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
-			: base(parent)
-		{
-//			instance = instance as BaseTextItem;
-		}
-
-		
-		public override PropertyDescriptorCollection GetProperties()
-		{
-			return GetProperties(null);
-		}
-
-		
-		public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
-		{
-			PropertyDescriptorCollection props = base.GetProperties(attributes);
-			List<PropertyDescriptor> allProperties = new List<PropertyDescriptor>();
-
-			DesignerHelper.AddDefaultProperties(allProperties,props);
-			
-			DesignerHelper.AddTextbasedProperties(allProperties,props);
-			
-			PropertyDescriptor prop = prop = props.Find("Text",true);
-			allProperties.Add(prop);
-		
-			prop = props.Find("DrawBorder",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("FrameColor",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("ForeColor",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("Visible",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("Expression",true);
-			allProperties.Add(prop);
-			
-			return new PropertyDescriptorCollection(allProperties.ToArray());
-		}
-	}
-	#endregion
 	
 }

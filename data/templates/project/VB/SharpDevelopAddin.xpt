@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<Template originator   = "Markus Palme"
+          created      = "23/01/2006"
+          lastModified = "23/01/2006">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.SharpDevelopAddin.Name}</Name>
+		<Category>VB</Category>
+		<Subcategory>SharpDevelop</Subcategory>
+		<Icon>VBNet.Project.ControlLibrary</Icon>
+		<Description>${res:Templates.Project.SharpDevelopAddin.Description}</Description>
+		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "${ProjectName}.addin"/>
+		<Open filename = "AddInWritingHelp.txt"/>
+	</Actions>
+	
+	<Project language="VBNet">
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+			<OptionInfer>On</OptionInfer>
+		</PropertyGroup>
+		
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Windows.Forms" />
+		</ProjectItems>
+		<Files>
+			<File name="${ProjectName}.addin" CopyToOutputDirectory="Always"><![CDATA[<AddIn name        = "${ProjectName}"
+       author      = "${USER}"
+       url         = ""
+       description = "TODO: Put description here">
+	
+	<Runtime>
+		<Import assembly = "${ProjectName}.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "${ProjectName}Pad"
+		     category = "Main"
+		     title    = "${ProjectName}Pad"
+		     icon     = "PadIcons.Output"
+		     shortcut = "Control|Alt|T"
+		     class    = "${ProjectName}.TestPad"/>
+	</Path>
+</AddIn>
+]]></File>
+		<File name="Resources/MyUserControl.xfrm" buildAction="EmbeddedResource">
+			<![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="MyUserControl" />
+    <ClientSize value="{Width=230, Height=160}" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="testButton" />
+        <Location value="{X=63,Y=97}" />
+        <Text value="A button" />
+        <Size value="{Width=75, Height=23}" />
+        <Anchor value="None" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <TabIndex value="1" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Label>
+        <Name value="label1" />
+        <Location value="{X=38,Y=19}" />
+        <Text value="Hello, World!" />
+        <Size value="{Width=100, Height=23}" />
+        <TabIndex value="0" />
+      </System.Windows.Forms.Label>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>
+]]></File>
+		<File name="Src/MyUserControl.vb">
+			<![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports System.Windows.Forms
+Imports ICSharpCode.SharpDevelop.Gui.XmlForms
+
+Public Class MyUserControl
+	Inherits BaseSharpDevelopUserControl
+	Public Sub New
+		SetupFromXmlStream(Me.GetType().Assembly.GetManifestResourceStream("${ProjectName}.Resources.MyUserControl.xfrm"))
+		AddHandler (Me.Get(Of Button)("test")).Click, AddressOf ButtonClick
+	End Sub
+	
+	Sub ButtonClick(sender As Object, e As EventArgs)
+		System.Windows.Forms.MessageBox.Show("The button was clicked!")
+	End Sub
+End Class
+]]>
+		</File>
+		<File name="Src/TestPad.vb">
+			<![CDATA[${StandardHeader.VBNET}
+Imports ICSharpCode.Core
+Imports ICSharpCode.SharpDevelop.Gui
+
+''' <summary>
+''' Description of the pad content
+''' </summary>
+Public Class TestPad
+	Inherits AbstractPadContent
+	Private ctl As MyUserControl
+	
+	''' <summary>
+	''' Creates a new TestPad object
+	''' </summary>
+	Public Sub New
+		ctl = new MyUserControl()
+	End Sub
+	
+	''' <summary>
+	''' The <see cref="System.Windows.Forms.Control"/> representing the pad
+	''' </summary>
+	Public Overrides ReadOnly Property Control As Control
+		Get
+			return ctl
+		End Get
+	End Property
+	
+	''' <summary>
+	''' Refreshes the pad
+	''' </summary>
+	Public Overrides Sub RedrawContent()
+		' TODO: Refresh the whole pad control here, renew all resource strings whatever
+		'       Note that you do not need to recreate the control.
+	End Sub
+	
+	''' <summary>
+	''' Cleans up all used resources
+	''' </summary>
+	Public Overrides Sub Dispose()
+		ctl.Dispose()
+	End Sub
+End Class
+]]></File>
+		<File name="Configuration/AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+		<File name="AddInWritingHelp.txt" src="..\AddInWritingHelp.txt"/>
+		</Files>
+	</Project>
+</Template>

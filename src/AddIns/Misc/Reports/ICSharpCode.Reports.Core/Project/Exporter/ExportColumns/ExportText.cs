@@ -4,6 +4,7 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Globals;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
@@ -11,15 +12,12 @@ namespace ICSharpCode.Reports.Core.Exporter {
 	/// <summary>
 	/// Description of LineItem.
 	/// </summary>
-	public class ExportText :BaseExportColumn{
-		
-		private string text;
+	public class ExportText :BaseExportColumn,IReportExpression
+	{
 		
 		#region Constructors
 		
-
-		
-		public ExportText (BaseStyleDecorator itemStyle,bool isContainer):base(itemStyle,isContainer)
+		public ExportText (BaseStyleDecorator itemStyle):base(itemStyle)
 		{
 		}
 		
@@ -38,47 +36,60 @@ namespace ICSharpCode.Reports.Core.Exporter {
 				throw new ArgumentNullException("converter");
 			}
 			base.DrawItem(pdfWriter,converter);
-			
-			iTextSharp.text.Font font = null;
-			
-			if (this.StyleDecorator.Font.Unit == GraphicsUnit.Point) {
-				
-				font = FontFactory.GetFont(this.StyleDecorator.Font.FontFamily.Name,
-				                           BaseFont.IDENTITY_H,
-				                           this.StyleDecorator.Font.Size,
-				                           (int)this.StyleDecorator.Font.Style,
-				                           this.StyleDecorator.PdfForeColor);
-				
-			} else {
-				
-				font = FontFactory.GetFont(this.StyleDecorator.Font.FontFamily.Name,
-				                           BaseFont.IDENTITY_H,
-				                           UnitConverter.FromPixel(this.StyleDecorator.Font.Size).Point,
-				                           (int)this.StyleDecorator.Font.Style,
-				                           this.StyleDecorator.PdfForeColor);
-			}
 
 			base.Decorate();
+	
 			PdfContentByte contentByte = base.PdfWriter.DirectContent;
-		
+			
+			iTextSharp.text.Font font = CreateFontFromFactory(this.StyleDecorator);
 			CalculatePdfFormat pdfFormat = new CalculatePdfFormat(this.StyleDecorator,font);
 			
 			ColumnText columnText = new ColumnText(contentByte);
+			
+			if (StyleDecorator.RightToLeft.ToString() == "Yes") {
+				columnText.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+			}
+			
 			iTextSharp.text.Rectangle r = base.ConvertToPdfRectangle();
 			columnText.SetSimpleColumn(r.Left, r.Top , r.Left + r.Width,r.Top - r.Height,pdfFormat.Leading,pdfFormat.Alignment);
 		
-			string formatedText = this.text;
+			string formatedText = this.Text;
 			
 			if (!String.IsNullOrEmpty(StyleDecorator.FormatString)) {
-				formatedText = StandardFormatter.FormatOutput(this.text,this.StyleDecorator.FormatString,
+				formatedText = StandardFormatter.FormatOutput(this.Text,this.StyleDecorator.FormatString,
 				                                                 this.StyleDecorator.DataType,String.Empty);
 			}
 			
 			Chunk chunk = new Chunk(formatedText,font);
+
 			columnText.AddText(chunk);
 			
 			columnText.Go();
 		}
+		
+	
+		private static iTextSharp.text.Font CreateFontFromFactory(TextStyleDecorator styleDecorator)
+		{
+			iTextSharp.text.Font font = null;
+			if (styleDecorator.Font.Unit == GraphicsUnit.Point) {
+				
+				font = FontFactory.GetFont(styleDecorator.Font.FontFamily.Name,
+				                           BaseFont.IDENTITY_H,
+				                           styleDecorator.Font.Size,
+				                           (int)styleDecorator.Font.Style,
+				                           styleDecorator.PdfForeColor);
+				
+			} else {
+				
+				font = FontFactory.GetFont(styleDecorator.Font.FontFamily.Name,
+				                           BaseFont.IDENTITY_H,
+				                           UnitConverter.FromPixel(styleDecorator.Font.Size).Point,
+				                           (int)styleDecorator.Font.Style,
+				                           styleDecorator.PdfForeColor);
+			}
+			return font;
+		}
+
 		
 		
 		public override void DrawItem(Graphics graphics)
@@ -86,22 +97,15 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			
 			base.DrawItem(graphics);
 			base.Decorate(graphics);
-			TextDrawer.DrawString(graphics, this.text,this.StyleDecorator);
+			TextDrawer.DrawString(graphics, this.Text,this.StyleDecorator);
 		}
 		
 		#endregion
 		
 		
-		public string Text
-		{
-			get {
-				return text;
-			}
-			set {
-				text = value;
-			}
-		}
+		public string Text {get;set;}
 		
+		public string Expression {get;set;}
 		
 		public new TextStyleDecorator StyleDecorator
 		{
@@ -116,7 +120,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 		
 		public override string ToString()
 		{
-			return this.text;
+			return this.Text;
 		}
 		
 	}

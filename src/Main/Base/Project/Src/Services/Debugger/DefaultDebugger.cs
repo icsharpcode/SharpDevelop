@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -22,6 +23,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			get {
 				return IsDebugging;
 			}
+		}
+		
+		/// <inheritdoc/>
+		public bool BreakAtBeginning {
+			get; set; 
 		}
 		
 		public bool CanDebug(IProject project)
@@ -126,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// Gets the tooltip control that shows the value of given variable.
 		/// Return null if no tooltip is available.
 		/// </summary>
-		public object GetTooltipControl(string variable)
+		public object GetTooltipControl(Location logicalPosition, string variable)
 		{
 			return null;
 		}

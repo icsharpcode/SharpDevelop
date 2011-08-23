@@ -26,6 +26,15 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
+		public event EventHandler InfoTipChanged;
+		
+		protected virtual void OnInfoTipChanged(EventArgs e)
+		{
+			if (InfoTipChanged != null) {
+				InfoTipChanged(this, e);
+			}
+		}
+		
 		public event EventHandler Disposed;
 		
 		protected virtual void OnDisposed(EventArgs e)
@@ -77,6 +86,12 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
+		public string InfoTip {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public System.Collections.Generic.IList<ICSharpCode.SharpDevelop.OpenedFile> Files {
 			get {
 				throw new NotImplementedException();
@@ -111,6 +126,10 @@ namespace XmlEditor.Tests.Utils
 			get {
 				throw new NotImplementedException();
 			}
+		}
+		
+		public bool CloseWithSolution {
+			get { throw new NotImplementedException(); }
 		}
 		
 		public System.Collections.Generic.ICollection<IViewContent> SecondaryViewContents {

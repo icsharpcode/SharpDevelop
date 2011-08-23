@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<Template originator   = "Markus Palme"
+          created      = "24/11/2002"
+          lastModified = "07/20/2005">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.ClassLibrary.Name}</Name>
+		<Category>VB</Category>
+		<Icon>VBNet.Project.Library</Icon>
+		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
+		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "NewClass.vb"/>
+	</Actions>
+
+	<Project language="VBNet">
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<OptionInfer>On</OptionInfer>
+		</PropertyGroup>
+		
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+			
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Data" />
+			<Import Include="System.Diagnostics" />
+		</ProjectItems>
+		
+		<Files>
+			<File name="NewClass.vb"><![CDATA[${StandardHeader.VBNET}
+Public Class NewClass
+	
+End Class
+]]></File>
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+		</Files>
+	</Project>
+</Template>
+

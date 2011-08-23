@@ -4,8 +4,10 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using NUnit.Framework;
+using System.Threading;
+
 using ICSharpCode.SharpDevelop.Util;
+using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {
@@ -13,6 +15,28 @@ namespace ICSharpCode.SharpDevelop.Tests
 	//[Ignore("Ignoring since need to run ConsoleApp.exe")]
 	public class CancelLongRunningAppTestFixture : ConsoleAppTestFixtureBase
 	{
+		Mutex mutex;
+		
+		[TestFixtureSetUp]
+		public void FixtureSetUp()
+		{
+			// Avoid test failure on build server when unit tests for several branches are run concurrently.
+			bool createdNew;
+			mutex = new Mutex(true, "CancelLongRunningAppTestFixture", out createdNew);
+			if (!createdNew) {
+				if (!mutex.WaitOne(10000)) {
+					throw new Exception("Could not acquire mutex");
+				}
+			}
+		}
+		
+		[TestFixtureTearDown]
+		public void FixtureTearDown()
+		{
+			mutex.ReleaseMutex();
+			mutex.Dispose();
+		}
+		
 		ProcessRunner runner;
 		
 		[SetUp]

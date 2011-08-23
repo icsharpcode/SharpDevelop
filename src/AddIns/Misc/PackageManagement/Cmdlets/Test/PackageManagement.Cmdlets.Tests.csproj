@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{11115C83-3DB1-431F-8B98-59040359238D}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>PackageManagement.Cmdlets.Tests</RootNamespace>
+    <AssemblyName>PackageManagement.Cmdlets.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NuGet.Core">
+      <HintPath>..\..\RequiredLibraries\NuGet.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Management.Automation" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Helpers\FakeCmdletTerminatingError.cs" />
+    <Compile Include="Helpers\FakeCmdletTerminatingErrorException.cs" />
+    <Compile Include="Helpers\FakeCommandRuntime.cs" />
+    <Compile Include="Helpers\FakeTerminatingCmdlet.cs" />
+    <Compile Include="Helpers\TestableGetPackageCmdlet.cs" />
+    <Compile Include="Helpers\TestableGetProjectCmdlet.cs" />
+    <Compile Include="Helpers\TestableInstallPackageCmdlet.cs" />
+    <Compile Include="Helpers\TestableInvokeInitializePackagesCmdlet.cs" />
+    <Compile Include="Helpers\TestableInvokeProcessPackageActionsCmdlet.cs" />
+    <Compile Include="Helpers\TestableInvokeUpdateWorkingDirectoryCmdlet.cs" />
+    <Compile Include="Helpers\TestablePackageManagementCmdlet.cs" />
+    <Compile Include="Helpers\TestableUninstallPackageCmdlet.cs" />
+    <Compile Include="Helpers\TestableUpdatePackageCmdlet.cs" />
+    <Compile Include="Src\CmdletTerminatorErrorTests.cs" />
+    <Compile Include="Src\GetPackageCmdletTests.cs" />
+    <Compile Include="Src\GetProjectCmdletTests.cs" />
+    <Compile Include="Src\InvokeInitializePackagesCmdletTests.cs" />
+    <Compile Include="Src\InstallPackageCmdletTests.cs" />
+    <Compile Include="Src\CmdletTestsBase.cs" />
+    <Compile Include="Src\InvokeProcessPackageActionsCmdletTests.cs" />
+    <Compile Include="Src\InvokeUpdateWorkingDirectoryCmdletTests.cs" />
+    <Compile Include="Src\PackageManagementCmdletTests.cs" />
+    <Compile Include="Src\UninstallPackageCmdletTests.cs" />
+    <Compile Include="Src\UpdatePackageCmdletTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Project\PackageManagement.csproj">
+      <Project>{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}</Project>
+      <Name>PackageManagement</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Test\PackageManagement.Tests.csproj">
+      <Project>{56E98A01-8398-4A08-9578-C7337711A52B}</Project>
+      <Name>PackageManagement.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Project\PackageManagement.Cmdlets.csproj">
+      <Project>{E0A5E80A-003B-4335-A9DC-A76E2E46D38D}</Project>
+      <Name>PackageManagement.Cmdlets</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helpers" />
+    <Folder Include="Src" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

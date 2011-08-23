@@ -4,35 +4,43 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<!--
 		Windows Installer only recognises 3 digits for the product version (Major.Minor.Build) 
-		so the third digit must be the Subversion revision. 
+		so the third digit must be the revision number. 
 	-->
 
+	<!-- PRODUCTMAJORVERSION is major.minor (e.g. 4.1), retrieved from GlobalAssemblyInfo.template -->
+	<!-- PRODUCTBUILDVERSION is the revision number (e.g. 6963), calculated from git -->
+	<!-- PRODUCTDISPLAYVERSION is a string like "4.1 Beta 1" (version name retrieved from GlobalAssemblyInfo.template) -->
+	
 	<Product Id="*" 
-		Name="SharpDevelop 4.0 Beta 3"
+		Name="SharpDevelop $(var.PRODUCTDISPLAYVERSION)"
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
-		UpgradeCode="D6355909-87E1-4CC7-81EF-3057D540A103"
-		Version="4.0.$(var.PRODUCTBUILDVERSION)">
+		UpgradeCode="BEA7A5F1-423F-47AD-9286-6A803A844AC5"
+		Version="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)">
+		
+		<!-- When a new major SharpDevelop version should be allowed to be installed in parallel to old versions,
+			 we need a new upgrade code (2 occurrences!), and the "Minimum Version" for upgrades needs to be adjusted.
+		-->
 
-		<Package Description="SharpDevelop 4.0.0.$(var.PRODUCTBUILDVERSION)"
+		<Package Description="SharpDevelop $(var.PRODUCTDISPLAYVERSION)"
 			InstallerVersion="300"
 			Compressed="yes"/>
 		
 		<!-- Upgrade information -->
-		<Upgrade Id="D6355909-87E1-4CC7-81EF-3057D540A103">
+		<Upgrade Id="BEA7A5F1-423F-47AD-9286-6A803A844AC5">
 			<!-- The UpgradeCode must be changed to allow two versions of SharpDevelop to be installed side-by-side -->
 			
 			<!-- Checks for older versions -->
-			<UpgradeVersion Minimum="4.0.0"
+			<UpgradeVersion Minimum="4.2.0"
 				IncludeMinimum="yes"
-				Maximum="4.0.$(var.PRODUCTBUILDVERSION)"
+				Maximum="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)"
 				IncludeMaximum="no" 
 				Property="PREVIOUSVERSIONFOUND"/>
 			<!-- Checks for newer versions -->
 			<UpgradeVersion OnlyDetect="yes"
 				Property="NEWERVERSIONFOUND"
-        		Minimum="4.0.$(var.PRODUCTBUILDVERSION)"
+				Minimum="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)"
 				IncludeMinimum="no"/>
 		</Upgrade>
 		
@@ -145,7 +153,7 @@
 			each be a feature if the user wants to heavily customise the installation.
 		-->
 		<Feature Id="Complete"
-		         Title="SharpDevelop 4.0"
+		         Title="SharpDevelop $(var.PRODUCTMAJORVERSION)"
 		         Description="Installs SharpDevelop and registers file associations"
 		         Level="1"
 		         ConfigurableDirectory="INSTALLDIR"
@@ -187,8 +195,13 @@
 				<ComponentRef Id="ICSharpCodeTreeViewDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker35Exe"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker40Exe"/>
-				<ComponentRef Id="AgaControlsDll"/>
 				<ComponentRef Id="log4netDll"/>
+				<ComponentRef Id="GraphSharpDll"/>
+				<ComponentRef Id="GraphSharpControlsDll"/>
+				<ComponentRef Id="QuickGraphDll"/>
+				<ComponentRef Id="GraphSharpContractsDll"/>
+				<ComponentRef Id="MicrosoftContractsDll"/>
+				<ComponentRef Id="WPFExtensionsDll"/>
 				<ComponentRef Id="MonoCecilDll"/>
 				<ComponentRef Id="AvalonDockDll"/>
 				<ComponentRef Id="ICSharpCodeCorePresentationDll"/>
@@ -198,6 +211,14 @@
 				
 				<ComponentRef Id="DariceCub"/>
 				<ComponentRef Id="HeatExe"/>
+				<ComponentRef Id="InsigniaExe"/>
+				<ComponentRef Id="InsigniaExeConfig"/>
+				<ComponentRef Id="NitExe"/>
+				<ComponentRef Id="NitExeConfig"/>
+				<ComponentRef Id="LuxExe"/>
+				<ComponentRef Id="LuxExeConfig"/>
+				<ComponentRef Id="LuxTargets"/>
+				<ComponentRef Id="LuxTasksDll"/>
 				<ComponentRef Id="MeltExe"/>
 				<ComponentRef Id="MergeModCub"/>
 				<ComponentRef Id="MSPatchCDll"/>
@@ -208,8 +229,7 @@
 				<ComponentRef Id="WuiDll"/>
 				<ComponentRef Id="WixDifxAppExtensionDll"/>
 				<ComponentRef Id="WixIIsExtensionDll"/>
-				<ComponentRef Id="WixIsolatedAppExtensionDll"/>
-				<ComponentRef Id="WixOfficeExtensionDll"/>
+				<ComponentRef Id="WixLuxExtensionDll"/>
 				<ComponentRef Id="WixPSExtensionDll"/>
 				<ComponentRef Id="WixSqlExtensionDll"/>
 				<ComponentRef Id="WixUIExtensionDll"/>
@@ -219,7 +239,6 @@
 				<ComponentRef Id="WixDirectXExtensionDll"/>
 				<ComponentRef Id="WixFirewallExtensionDll"/>
 				<ComponentRef Id="WixGamingExtensionDll"/>
-				<ComponentRef Id="WixComPlusSchema"/>
 				<ComponentRef Id="WixDIfxAppSchema"/>
 				<ComponentRef Id="WixIisSchema"/>
 				<ComponentRef Id="WixMSMQSchema"/>
@@ -233,22 +252,26 @@
 				<ComponentRef Id="WixLicenseFiles"/>
 				<ComponentRef Id="WixBitmapFiles"/>
 				<ComponentRef Id="WixVSExtension"/>
+				<ComponentRef Id="Difxapp_ia64Wixlib"/>
 				<ComponentRef Id="Difxapp_x64Wixlib"/>
 				<ComponentRef Id="Difxapp_x86Wixlib"/>
-				<ComponentRef Id="EmptyWixFileTemplate"/>				
-				<ComponentRef Id="WixDefaultLicenseRtf"/>				
-				<ComponentRef Id="EmptyWixProjectTemplate"/>				
-				<ComponentRef Id="EmptyWixDialogTemplate"/>				
-				<ComponentRef Id="WixDialogTemplate"/>				
+				<ComponentRef Id="EmptyWixFileTemplate"/>
+				<ComponentRef Id="WixDefaultLicenseRtf"/>
+				<ComponentRef Id="EmptyWixProjectTemplate"/>
+				<ComponentRef Id="EmptyWixDialogTemplate"/>
+				<ComponentRef Id="WixDialogTemplate"/>
 
 				<ComponentRef Id="CandleExe"/>
 				<ComponentRef Id="DarkExe"/>
 				<ComponentRef Id="LightExe"/>
 				<ComponentRef Id="LitExe"/>
 				<ComponentRef Id="MergeModDll"/>
+				<ComponentRef Id="MicrosoftDeploymentWindowsInstallerDll"/>
 				<ComponentRef Id="MicrosoftToolsWindowsInstallerXmlNAntTasksDll"/>
 				<ComponentRef Id="WInteropDll"/>
 				<ComponentRef Id="WixDll"/>
+				<ComponentRef Id="Wix200xTargets"/>
+				<ComponentRef Id="Wix2010Targets"/>
 				<ComponentRef Id="WixCopExe"/>
 				<ComponentRef Id="WixNetFxExtensionDll"/>
 				<ComponentRef Id="WixTasksDll"/>
@@ -273,29 +296,28 @@
 				<ComponentRef Id="CSharpFileTemplates"/>
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
-				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>				
-				<ComponentRef Id="VBNetTemplatesFileCategorySortOrderXml"/>
-				<ComponentRef Id="VBNetExceptionFileTemplate"/>
-				<ComponentRef Id="VBNetEmptyFileTemplate"/>
-				<ComponentRef Id="VBNetEmptyClassFileTemplate"/>
-				<ComponentRef Id="VBNetFormFileTemplate"/>
-				<ComponentRef Id="VBNetUserControlFileTemplate"/>
-				<ComponentRef Id="VBNetInterfaceFileTemplate"/>
-				<ComponentRef Id="VBNetModuleFileTemplate"/>
-				<ComponentRef Id="VBNetMyExtensionClassFileTemplate"/>
-				<ComponentRef Id="VBNetPatternsSingletonFileTemplate"/>
-				<ComponentRef Id="VBNetUnitTestFileTemplate"/>				
-				<ComponentRef Id="VBNetStructureFileTemplate"/>
-				<ComponentRef Id="VBNetWebControlFileTemplate"/>
-				<ComponentRef Id="VBNetWebFormFileTemplate"/>
-				<ComponentRef Id="VBNetWebHandlerFileTemplate"/>
-				<ComponentRef Id="VBNetWebServiceFileTemplate"/>
-				<ComponentRef Id="VBNetWPFFlowDocumentFileTemplate"/>
-				<ComponentRef Id="VBNetWPFPageFileTemplate"/>
-				<ComponentRef Id="VBNetWPFPageFunctionFileTemplate"/>
-				<ComponentRef Id="VBNetWPFResourceDictionaryFileTemplate"/>
-				<ComponentRef Id="VBNetWPFUserControlFileTemplate"/>
-				<ComponentRef Id="VBNetWPFWindowFileTemplate"/>
+				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>
+				<ComponentRef Id="EmptyCSharpMvcWebProjectTemplate"/>
+				<ComponentRef Id="CSharpMvcWebProjectTemplate"/>
+				<ComponentRef Id="VBFileTemplates"/>
+				<ComponentRef Id="EmptyVBMvcWebProjectTemplate"/>
+				<ComponentRef Id="VBMvcWebProjectTemplate"/>
+				<ComponentRef Id="CSharpMvcControllerFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewContentPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewMasterPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewUserControlFileTemplate"/>
+				<ComponentRef Id="VBMvcControllerFileTemplate"/>
+				<ComponentRef Id="VBMvcViewPageFileTemplate"/>
+				<ComponentRef Id="VBMvcViewContentPageFileTemplate"/>
+				<ComponentRef Id="VBMvcViewMasterPageFileTemplate"/>
+				<ComponentRef Id="VBMvcViewUserControlFileTemplate"/>
+				
+				<ComponentRef Id="CSharpWcfServiceProjectTemplate"/>
+				<ComponentRef Id="CSharpWcfServiceFileTemplate"/>
+				<ComponentRef Id="VBWcfServiceProjectTemplate"/>
+				<ComponentRef Id="VBWcfServiceFileTemplate"/>
+				
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>
@@ -308,7 +330,7 @@
 				<ComponentRef Id="CSharpStructTemplate"/>
 				<ComponentRef Id="CSharpConfigurationFileTemplates"/>
 				<ComponentRef Id="MiscProjectTemplates"/>
-				<ComponentRef Id="VBNetProjectTemplates"/>
+				<ComponentRef Id="VBProjectTemplates"/>
 				<ComponentRef Id="ExampleProjectTemplate"/>
 				<ComponentRef Id="ICSharpCode.SharpDevelop.addin"/>
 				<ComponentRef Id="BooBindingAddin"/>
@@ -345,6 +367,7 @@
 				<ComponentRef Id="IconEditorAddInFiles"/>
 				<ComponentRef Id="IconEditorExe"/>
 				<ComponentRef Id="ResourceEditorFiles"/>
+				<ComponentRef Id="SettingsEditorFiles"/>
 				<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
 				<ComponentRef Id="ClassCanvasDll"/>
@@ -370,6 +393,7 @@
 				<ComponentRef Id="RegExToolkitFiles"/>
 				<ComponentRef Id="ResourceToolkitFiles"/>
 				<ComponentRef Id="SearchAndReplaceFiles"/>
+				<ComponentRef Id="ILSpyAddInFiles"/>
 
 				<ComponentRef Id="StartPageAddInFiles"/>
 				<ComponentRef Id="SubversionAddInDll"/>
@@ -403,25 +427,26 @@
 				<ComponentRef Id="IpyExe"/>	
 				<ComponentRef Id="IronPythonModulesDll"/>	
 				<ComponentRef Id="IronPythonModulesXml"/>	
-				<ComponentRef Id="IronPythonDll"/>	
-				<ComponentRef Id="IronPythonXml"/>	
+				<ComponentRef Id="IronPythonDll"/>
+				<ComponentRef Id="IronPythonXml"/>
+				<ComponentRef Id="IronPythonWpfDll"/>
+				<ComponentRef Id="IronPythonLicenseRtf"/>
 				<ComponentRef Id="PythonChironExe"/>
 				<ComponentRef Id="PythonChironExeConfig"/>
 				<ComponentRef Id="MicrosoftDynamicDll"/>
 				<ComponentRef Id="MicrosoftScriptingDll"/>	
-				<ComponentRef Id="MicrosoftScriptingDebuggingDll"/>	
+				<ComponentRef Id="MicrosoftScriptingMetadataDll"/>	
 				<ComponentRef Id="PythonBuildTasksDll"/>	
 				<ComponentRef Id="PythonBindingAddin"/>	
 				<ComponentRef Id="PythonBindingDll"/>
 				<ComponentRef Id="PythonBindingLibRunpyPy"/>
 				<ComponentRef Id="PythonBindingLibSitePy"/>
 				<ComponentRef Id="PythonBindingLibFuturePy"/>
-				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>		
+				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>
 				<ComponentRef Id="PythonBindingSdTestPy"/>
 				<ComponentRef Id="PythonBindingSdTestRunnerPy"/>
 				
 				<ComponentRef Id="IrExe"/>
-				<ComponentRef Id="IrExeConfig"/>
 				<ComponentRef Id="IronRubyDll"/>
 				<ComponentRef Id="IronRubyLibrariesDll"/>
 				<ComponentRef Id="IronRubyLicenseApacheHtml"/>
@@ -453,8 +478,6 @@
 				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	
 				<ComponentRef Id="FSharpEmptyClassTemplate"/>
 				
-				<ComponentRef Id="ReflectorAddInDll"/>
-			
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>
 				<ComponentRef Id="SourceAnalysisAddin"/>
 				<ComponentRef Id="SourceAnalysisDll"/>
@@ -505,6 +528,25 @@
 				<ComponentRef Id="ICSharpCodeReportsCoreDll"/>
 				<ComponentRef Id="IronyDll"/>
 				<ComponentRef Id="ITextSharpDll"/>
+			
+				<ComponentRef Id="AboutNuGetCmdletsHelpTxt"/>
+				<ComponentRef Id="NuGetCoreDll"/>
+				<ComponentRef Id="NuGetNuspecSchema"/>
+				<ComponentRef Id="NuGetLicenseTxt"/>
+				<ComponentRef Id="PackageFormatPs1Xml"/>
+				<ComponentRef Id="PackageManagementAddin"/>
+				<ComponentRef Id="PackageManagementCmdletsDll"/>
+				<ComponentRef Id="PackageManagementCmdletsDllHelpXml"/>
+				<ComponentRef Id="PackageManagementDll"/>
+				<ComponentRef Id="PackageManagementPowerShellDll"/>
+				<ComponentRef Id="JQuery161NuGetPackage"/>
+				<ComponentRef Id="Modernizr17NuGetPackage"/>
+			
+				<ComponentRef Id="MonoTextTemplatingDll"/>
+				<ComponentRef Id="TextTemplatingAddin"/>
+				<ComponentRef Id="TextTemplatingDll"/>
+				<ComponentRef Id="CSharpTextTemplateFileTemplate"/>
+				<ComponentRef Id="VBTextTemplateFileTemplate"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
@@ -622,8 +664,7 @@
 		<UIRef Id="WixUI_FeatureTree"/>
 		
 		<!--
-			If a newer version of SharpDevelop 4.0 is installed show an
-			error message.
+			If a newer version of SharpDevelop is installed, show an error message.
 	
 			This message is not displayed immediately, the FindRelatedProducts 
 			action occurs well into the installation after the user has
@@ -636,13 +677,16 @@
 			<!--
 				Display an error message if a newer version found.
 				
-				Since the installer completely removes the existing SharpDevelop 4.0
+				Since the installer completely removes the existing SharpDevelop installation,
 				downgrades would work without any problems, but for now we 
 				inform the user that a newer version already exists.
+				-> Actually, there's trouble with downgrades because Windows Installer first determines
+					the existing components before removing the old installation; so all versioned
+					libraries will get removed instead of downgraded.
  			-->
 			<Custom Action="NoDowngrade" After="FindRelatedProducts">NEWERVERSIONFOUND</Custom>
 			<!--
-				Removes the older version of SharpDevelop 4.0, if we are upgrading,
+				Removes the older version of SharpDevelop, if we are upgrading,
 				before installing the new version.
 
 				Unfortunately the user is not informed of this upgrade. I think

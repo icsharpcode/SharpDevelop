@@ -16,18 +16,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Constructure
 		
-		public static FormPageBuilder CreateInstance(IReportModel reportModel,ILayouter layouter)
+		public static FormPageBuilder CreateInstance(IReportModel reportModel)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
-			
-			FormPageBuilder instance = new FormPageBuilder(reportModel,layouter);
+			FormPageBuilder instance = new FormPageBuilder(reportModel);
 			return instance;
 		}
 		
 		
-		private FormPageBuilder(IReportModel reportModel,ILayouter layouter):base(reportModel,layouter)
+		private FormPageBuilder(IReportModel reportModel):base(reportModel)
 		{
 		}
 		
@@ -45,25 +44,31 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected override void BuildReportHeader()
 		{
-			if (base.Pages.Count == 0) {
-				this.ReportModel.ReportHeader.SectionOffset = base.SinglePage.SectionBounds.ReportHeaderRectangle.Top;
+			if (base.Pages.Count == 0)
+			{	
+				SectionBounds.Offset = new Point(base.SectionBounds.MarginBounds.Left,base.SectionBounds.MarginBounds.Top);
 				ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.ReportHeader,0);
 				base.SinglePage.Items.AddRange(convertedList);
 			}
 		}
 		
+		
 		protected override void BuildPageHeader()
 		{
-			this.ReportModel.PageHeader.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Top;
+			if (SectionBounds.Offset.Y < base.ReportModel.PageHeader.SectionOffset) {
+				SectionBounds.Offset = new Point(SectionBounds.Offset.X,base.ReportModel.PageHeader.SectionOffset);
+			}
 			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,0);
-			base.SinglePage.Items.AddRange(convertedList);	                      
+			base.SinglePage.Items.AddRange(convertedList);
+			base.SectionBounds.CalculatePageBounds(base.ReportModel);
 		}
+		
 		
 		protected override void BuildDetailInternal(BaseSection section)
 		{
 			base.BuildDetailInternal(section);
-			section.SectionOffset = base.SinglePage.SectionBounds.DetailStart.Y;
-			ExporterCollection convertedList = convertedList = base.ConvertSection (base.ReportModel.DetailSection,0);
+			SectionBounds.Offset = new Point(SectionBounds.Offset.X,base.ReportModel.DetailSection.Location.Y);
+			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.DetailSection,0);
 			base.SinglePage.Items.AddRange(convertedList);	   
 		}
 
@@ -108,6 +113,5 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.BuildExportList();
 			WritePages ();
 		}
-		
 	}
 }

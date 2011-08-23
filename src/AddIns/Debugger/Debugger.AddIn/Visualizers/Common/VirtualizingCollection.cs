@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Debugger.AddIn.Visualizers.Common
+namespace Debugger.AddIn.Visualizers
 {
 	/// <summary>
 	/// IList&lt;T&gt; with data vitualization - the indexer is lazy, uses IListValuesProvider to obtain values when needed.

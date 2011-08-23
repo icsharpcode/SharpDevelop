@@ -5,17 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger.AddIn.TreeModel
 {
 	public partial class Utils
 	{
-		public static IEnumerable<TreeNode> LazyGetChildNodesOfArray(Expression expression, ArrayDimensions dimensions)
+		public static IEnumerable<TreeNode> LazyGetChildNodesOfArray(TreeNode parent, Expression expression, ArrayDimensions dimensions)
 		{
 			if (dimensions.TotalElementCount == 0)
-				return new TreeNode[] { new TreeNode(null, "(empty)", null, null, null) };
+				return new TreeNode[] { new TreeNode(null, "(empty)", null, null, parent, null) };
 			
-			return new ArrayRangeNode(expression, dimensions, dimensions).ChildNodes;
+			return new ArrayRangeNode(parent, expression, dimensions, dimensions).ChildNodes;
 		}
 	}
 	
@@ -28,14 +29,19 @@ namespace Debugger.AddIn.TreeModel
 		ArrayDimensions bounds;
 		ArrayDimensions originalBounds;
 		
-		public ArrayRangeNode(Expression arrayTarget, ArrayDimensions bounds, ArrayDimensions originalBounds)
+		public ArrayRangeNode(TreeNode parent, Expression arrayTarget, ArrayDimensions bounds, ArrayDimensions originalBounds)
+			: base(parent)
 		{
 			this.arrayTarget = arrayTarget;
 			this.bounds = bounds;
 			this.originalBounds = originalBounds;
 			
 			this.Name = GetName();
-			this.ChildNodes = LazyGetChildren();
+			this.childNodes = LazyGetChildren();
+		}
+		
+		public override IEnumerable<TreeNode> ChildNodes {
+			get { return base.ChildNodes; }
 		}
 		
 		string GetName()
@@ -84,7 +90,11 @@ namespace Debugger.AddIn.TreeModel
 			// The whole array is small - just add all elements as childs
 			if (bounds.TotalElementCount <= MaxElementCount) {
 				foreach(int[] indices in bounds.Indices) {
-					yield return new ExpressionNode(ExpressionNode.GetImageForArrayIndexer(), GetName(indices), arrayTarget.AppendIndexer(indices));
+					string imageName;
+					var image = ExpressionNode.GetImageForArrayIndexer(out imageName);
+					var expression = new ExpressionNode(this, image, GetName(indices), arrayTarget.AppendIndexer(indices));
+					expression.ImageName = imageName;
+					yield return expression;
 				}
 				yield break;
 			}
@@ -107,7 +117,7 @@ namespace Debugger.AddIn.TreeModel
 			for(int i = splitDim.LowerBound; i <= splitDim.UpperBound; i += elementsPerSegment) {
 				List<ArrayDimension> newDims = new List<ArrayDimension>(bounds);
 				newDims[splitDimensionIndex] = new ArrayDimension(i, Math.Min(i + elementsPerSegment - 1, splitDim.UpperBound));
-				yield return new ArrayRangeNode(arrayTarget, new ArrayDimensions(newDims), originalBounds);
+				yield return new ArrayRangeNode(this, arrayTarget, new ArrayDimensions(newDims), originalBounds);
 			}
 			yield break;
 		}

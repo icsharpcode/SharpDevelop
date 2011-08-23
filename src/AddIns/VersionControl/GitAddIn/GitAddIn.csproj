@@ -13,7 +13,6 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.0</TargetFrameworkVersion>
-    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0' ">SD4</DefineConstants>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
@@ -21,7 +20,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <Optimize>False</Optimize>
     <StartAction>Program</StartAction>
     <StartProgram>..\..\..\..\bin\SharpDevelop.exe</StartProgram>
@@ -30,7 +29,7 @@
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -57,12 +56,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Commands.cs" />
     <Compile Include="Src\Git.cs" />
     <Compile Include="Src\GitGuiWrapper.cs" />
     <Compile Include="Src\GitMessageView.cs" />
     <Compile Include="Src\GitStatusCache.cs" />
+    <Compile Include="Src\GitVersionProvider.cs" />
     <Compile Include="Src\IsUnderGitControlCondition.cs" />
     <Compile Include="Src\OverlayIconManager.cs" />
     <Compile Include="Src\RegisterEventsCommand.cs" />

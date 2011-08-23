@@ -59,6 +59,9 @@
 		<DisplayBinding id    = "Browser"
 		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.WebBrowser}"
 		                class = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserDisplayBinding"/>
+		<DisplayBinding id    = "AutoDetect"
+		                title = "Auto-detect file type"
+		                class = "ICSharpCode.SharpDevelop.AutoDetectDisplayBinding"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
@@ -139,12 +142,12 @@
 		     class    = "ICSharpCode.SharpDevelop.Editor.Search.SearchResultsPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
-		<!--<Pad id       = "Bookmarks"
+		<Pad id       = "Bookmarks"
 		     category = "Tools"
 		     title    = "${res:MainWindow.Windows.BookmarksLabel}"
 		     icon     = "PadIcons.Bookmarks"
 		     class    = "ICSharpCode.SharpDevelop.Bookmarks.BookmarkPad"
-		     defaultPosition = "Bottom, Hidden" />-->
+		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id       = "DefinitionView"
 		     category = "Tools"
@@ -182,6 +185,11 @@
 			             icon    = "ProjectBrowser.Toolbar.Refresh"
 			             tooltip = "${res:AddIns.HtmlHelp2.Refresh}"
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
+			<ToolbarItem id = "PropertySeparator" type = "Separator"/>
+			<ToolbarItem id      = "Collapse"
+			             icon    = "Icons.16x16.Assembly"
+			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
+			             class   = "ICSharpCode.SharpDevelop.Project.Commands.CollapseAllProjectBrowser"/>
 		</Condition>
 	</Path>
 	
@@ -417,15 +425,20 @@
 				<Or>
 					<Condition name = "Ownerstate" ownerstate = "InProject"/>
 					<Condition name = "Ownerstate" ownerstate = "None"/>
+					<Condition name = "Ownerstate" ownerstate = "BehindFile"/>
 				</Or>
-				<Condition name = "Ownerstate" ownerstate = "InProject">
+				<ComplexCondition>
+					<Or>
+						<Condition name = "Ownerstate" ownerstate = "InProject"/>
+						<Condition name = "Ownerstate" ownerstate = "BehindFile"/>
+					</Or>
 					<MenuItem id    = "ExcludeFile"
 					          label = "${res:ProjectComponent.ContextMenu.ExcludeFileFromProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
 					<MenuItem id     = "ExecuteCustomTool"
 					          label  = "${res:ProjectComponent.ContextMenu.ExecuteCustomTool}"
 					          class  = "ICSharpCode.SharpDevelop.Project.ExecuteCustomToolCommand"/>
-				</Condition>
+				</ComplexCondition>
 				
 				<Condition name = "Ownerstate" ownerstate = "None">
 					<MenuItem id    = "IncludeFile"
@@ -768,6 +781,11 @@
 			          label = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowOtherMembers.Label}"
 			          class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ShowOtherMembers"/>
 		</ToolbarItem>
+		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
+		<ToolbarItem id      = "Collapse"
+		             icon    = "Icons.16x16.Assembly"
+		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserCollapseAll"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/Searchbar">
@@ -918,9 +936,9 @@
 			</ComplexCondition>
 		</Condition>
 		
-		<Condition name="IsProcessRunning" isdebugging = "True">
-			<Condition name="DebuggerSupports" debuggersupports = "Stepping">
-				<Condition name="IsProcessRunning" isprocessrunning = "False" action = "Disable">
+		<Condition name="DebuggerSupports" debuggersupports = "Stepping">
+			<Condition name = "SolutionOpen" action = "Disable">
+				<Condition name="DebuggerSupports" debuggersupports = "Start">
 					<ToolbarItem id = "SteppingSeparator" type = "Separator"  />
 					<ToolbarItem id      = "Step over"
 					             icon    = "Icons.16x16.Debug.StepOver"
@@ -930,10 +948,12 @@
 					             icon    = "Icons.16x16.Debug.StepInto"
 					             tooltip = "${res:XML.MainMenu.DebugMenu.StepInto.Description}"
 					             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
-					<ToolbarItem id      = "Step out"
-					             icon    = "Icons.16x16.Debug.StepOut"
-					             tooltip = "${res:XML.MainMenu.DebugMenu.StepOut.Description}"
-					             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
+					<Condition name="IsProcessRunning" isdebugging = "True">
+						<ToolbarItem id      = "Step out"
+						             icon    = "Icons.16x16.Debug.StepOut"
+						             tooltip = "${res:XML.MainMenu.DebugMenu.StepOut.Description}"
+						             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
+					</Condition>
 				</Condition>
 			</Condition>
 		</Condition>
@@ -967,6 +987,32 @@
 			             class="ICSharpCode.SharpDevelop.Commands.NavigateForward"/>
 		</Condition>
 	</Path>
+	
+	<Path name="/SharpDevelop/Pads/BreakpointPad/Toolbar">
+		<ToolbarItem id      = "GotoPrev"
+		             icon    = "Bookmarks.PrevBreakpoint"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmarkPadCommand"/>
+		<ToolbarItem id      = "GotoNext"
+		             icon    = "Bookmarks.NextBreakpoint"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoNext.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmarkPadCommand"/>
+		<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
+		<ToolbarItem id      = "DisableAllBreakpoints"
+		             icon    = "Bookmarks.DisableAllBreakpoints"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.EnableDisableAll.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>
+		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
+		<ToolbarItem id      = "DeleteMark"
+		             icon    = "Icons.16x16.DeleteIcon"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteMark.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.DeleteBreakpointCommand"/>
+		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
+		<ToolbarItem id      = "DeleteAllBreakpoints"
+		             icon    = "Bookmarks.DeleteAllBreakpoints"
+		             tooltip = "${res:XML.MainMenu.DebugMenu.RemoveAllBreakpoints}"
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.RemoveAllBreakpointsCommand"/>
+	</Path>
 	<!-- end toolbars -->
 	
 	<Path name = "/SharpDevelop/Workbench/OpenFileTab/ContextMenu">
@@ -999,16 +1045,10 @@
 		<MenuItem id = "SaveAs"
 		          label = "${res:OpenFileTabEventHandler.ContextMenu.SaveAs}"
 		          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.SaveFileAsTab"/>
-		<Condition name = "OpenWindowState" openwindowstate="Dirty" action="Disable">
-			<MenuItem id = "SaveAll"
-			          icon = "Icons.16x16.SaveAllIcon"
-			          label = "${res:XML.MainMenu.FileMenu.SaveAll.Description}"
-			          class = "ICSharpCode.SharpDevelop.Commands.SaveAllFiles"/>
-		</Condition>
 		<MenuItem id = "SaveSeparator" type = "Separator" />
 		<ComplexCondition action="Disable">
 			<Not>
-				<Condition name = "Ownerstate" ownerstate="FileUntitled" />
+				<Condition name = "Ownerstate" ownerstate="FileUntitled,ViewContentWithoutFile" />
 			</Not>
 			<MenuItem id = "CopyPathName"
 			          label = "${res:OpenFileTabEventHandler.CopyPathName}"
@@ -1145,9 +1185,16 @@
 				          shortcut     = "Control|N"
 				          class        = "ICSharpCode.SharpDevelop.Commands.CreateNewFile"/>
 				
-				<MenuItem id          = "Project"
-				          label       = "${res:XML.MainMenu.FileMenu.New.Project}"
-				          icon        = "Icons.16x16.NewProjectIcon"
+				<Condition name="SolutionOpen" action="Disable">
+					<MenuItem id          = "Project"
+					          label       = "${res:XML.MainMenu.FileMenu.New.Project}"
+					          icon        = "Icons.16x16.NewProjectIcon"
+					          class       = "ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution"/>
+				</Condition>
+				
+				<MenuItem id          = "Solution"
+				          label       = "${res:XML.MainMenu.FileMenu.New.Solution}"
+				          icon        = "Icons.16x16.SolutionIcon"
 				          shortcut    = "Control|Shift|N"
 				          class       = "ICSharpCode.SharpDevelop.Project.Commands.CreateNewSolution"/>
 			</MenuItem>
@@ -1461,6 +1508,15 @@
 				</Condition>
 			</Condition>
 			
+			<Condition name = "SolutionOpen" action="Disable">
+				<Condition name="IsProcessRunning" isdebugging="False" action="Disable">
+					<MenuItem id       = "RunWithoutBuild"
+					          label    = "${res:XML.MainMenu.DebugMenu.RunLastBuild}"
+					          shortcut = "Control|Shift|F5"
+					          class    = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteLastBuild"/>
+				</Condition>
+			</Condition>
+			
 			<Condition name="DebuggerSupports" debuggersupports = "Stop">
 				<Condition name="IsProcessRunning" isdebugging="True" action="Disable">
 					<MenuItem id    = "Stop"
@@ -1505,23 +1561,27 @@
 			</Condition>
 			
 			<Condition name="DebuggerSupports" debuggersupports = "Stepping">
-				<Condition name="IsProcessRunning"  isprocessrunning = "False" isdebugging = "True" action = "Disable">
-					<MenuItem id = "BeforeSteppingSeparator" type = "Separator" />
-					<MenuItem id       = "Step over"
-					          label    = "${res:XML.MainMenu.DebugMenu.StepOver}"
-					          icon     = "Icons.16x16.Debug.StepOver"
-					          shortcut = "F10"
-					          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand"/>
-					<MenuItem id       = "Step into"
-					          label    = "${res:XML.MainMenu.DebugMenu.StepInto}"
-					          icon     = "Icons.16x16.Debug.StepInto"
-					          shortcut = "F11"
-					          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
-					<MenuItem id       = "Step out"
-					          label    = "${res:XML.MainMenu.DebugMenu.StepOut}"
-					          icon     = "Icons.16x16.Debug.StepOut"
-					          shortcut = "Shift|F11"
-					          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
+				<Condition name = "SolutionOpen" action = "Disable">
+					<Condition name="DebuggerSupports" debuggersupports = "Start">
+						<MenuItem id = "BeforeSteppingSeparator" type = "Separator" />
+						<MenuItem id       = "Step over"
+						          label    = "${res:XML.MainMenu.DebugMenu.StepOver}"
+						          icon     = "Icons.16x16.Debug.StepOver"
+						          shortcut = "F10"
+						          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand"/>
+						<MenuItem id       = "Step into"
+						          label    = "${res:XML.MainMenu.DebugMenu.StepInto}"
+						          icon     = "Icons.16x16.Debug.StepInto"
+						          shortcut = "F11"
+						          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
+						<Condition name="IsProcessRunning" isdebugging = "True">
+							<MenuItem id       = "Step out"
+							          label    = "${res:XML.MainMenu.DebugMenu.StepOut}"
+							          icon     = "Icons.16x16.Debug.StepOut"
+							          shortcut = "Shift|F11"
+							          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
+						</Condition>
+					</Condition>
 				</Condition>
 			</Condition>
 			
@@ -1624,12 +1684,6 @@
 				</MenuItem>
 			</Condition>
 			
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
-				<MenuItem id = "ShowQuickHelp"
-				          label = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}"
-				          shortcut = "Control|Q"
-				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.QuickDocumentation"/>
-			</Condition>
 			<Condition name = "SolutionOpen" action="Disable">
 				<MenuItem id = "Upgrade"
 				          label = "${res:ICSharpCode.SharpDevelop.Project.UpgradeView.Title}"
@@ -1922,22 +1976,21 @@
 		<ToolbarItem id      = "GotoPrev"
 		             icon    = "Bookmarks.GotoPrev"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.GotoPrev"/>
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmarkPadCommand"/>
 		<ToolbarItem id      = "GotoNext"
 		             icon    = "Bookmarks.GotoNext"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoNext.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.GotoNext"/>
-		<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmarkPadCommand"/>
+		<!--<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
 		<ToolbarItem id      = "EnableDisableAll"
 		             icon    = "Bookmarks.EnableDisableAll"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.EnableDisableAll.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>-->
 		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
 		<ToolbarItem id      = "DeleteMark"
 		             icon    = "Bookmarks.DeleteMark"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteMark.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteMark"/>
-		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
 		<ToolbarItem id      = "DeleteAllMarks"
 		             icon    = "Bookmarks.DeleteAllMarks"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteAllMarks.ToolTip}"
@@ -2092,7 +2145,7 @@
 		          label = "${res:XML.MainMenu.EditMenu.Copy}"
 		          type = "Item"
 		          icon = "Icons.16x16.CopyIcon"
-		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
+		          command = "Copy"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/CommonConsole/ToolBar">

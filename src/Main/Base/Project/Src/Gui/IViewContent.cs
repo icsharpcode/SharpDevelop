@@ -84,6 +84,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		event EventHandler TitleNameChanged;
 		
 		/// <summary>
+		/// The tooltip that will be shown when you hover the mouse over the title
+		/// </summary>
+		string InfoTip {
+			get;
+		}
+
+		/// <summary>
+		/// Is called each time the info tip for the content has changed.
+		/// </summary>
+		event EventHandler InfoTipChanged;
+
+		/// <summary>
 		/// Saves the content to the location <code>fileName</code>
 		/// </summary>
 		/// <remarks>
@@ -137,6 +149,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Gets if the view content is view-only (cannot be saved at all).
 		/// </summary>
 		bool IsViewOnly { get; }
+		
+		/// <summary>
+		/// Gets whether this view content should be closed when the solution is closed.
+		/// </summary>
+		bool CloseWithSolution { get; }
 		
 		#region Secondary view content support
 		/// <summary>

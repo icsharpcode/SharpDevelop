@@ -67,6 +67,11 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			throw new NotImplementedException();			
 		}
 		
+		public void Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
+		{
+			throw new NotImplementedException();
+		}
+		
 		public void Remove(int offset, int length)
 		{
 			throw new NotImplementedException();

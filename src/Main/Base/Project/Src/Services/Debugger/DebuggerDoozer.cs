@@ -44,9 +44,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return new DebuggerDescriptor(codon);
+			return new DebuggerDescriptor(args.Codon);
 		}
 	}
 	

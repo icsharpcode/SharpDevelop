@@ -62,7 +62,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		internal static void CheckHeights(TextDocument document, HeightTree heightTree)
 		{
-			double[] heights = document.Lines.Select(l => heightTree.GetIsCollapsed(l) ? 0 : heightTree.GetHeight(l)).ToArray();
+			double[] heights = document.Lines.Select(l => heightTree.GetIsCollapsed(l.LineNumber) ? 0 : heightTree.GetHeight(l)).ToArray();
 			double[] visualPositions = new double[document.LineCount+1];
 			for (int i = 0; i < heights.Length; i++) {
 				visualPositions[i+1]=visualPositions[i]+heights[i];

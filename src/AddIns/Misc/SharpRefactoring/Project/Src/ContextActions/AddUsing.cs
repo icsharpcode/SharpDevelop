@@ -118,7 +118,7 @@ namespace SharpRefactoring.ContextActions
 			if (baseClass == null)
 				baseClass = pc.GetClass("System.Attribute", 0);
 			foreach (IClass c in pc.Classes) {
-				if (c.IsTypeInInheritanceTree(baseClass) && (c.Name == name || c.Name == name + "Attribute"))
+				if ((c.Name == name || c.Name == name + "Attribute") && c.IsTypeInInheritanceTree(baseClass))
 					results.Add(c);
 			}
 		}

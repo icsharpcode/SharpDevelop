@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.ChildControl.ActionExecuted += delegate { this.Close(); };
 		}
 		
-		private new ContextActionsBulbControl ChildControl
+		private ContextActionsBulbControl ChildControl
 		{
 			get { return (ContextActionsBulbControl)this.Child; }
 			set { this.Child = value; }

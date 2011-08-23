@@ -28,7 +28,7 @@
 			<Reference Include="System.Xml" />
 		</ProjectItems>
 		
-		<PropertyGroup>
+		<PropertyGroup escapeValue="False">
 			<OutputType>Library</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
 			<ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -88,7 +88,7 @@ namespace ${StandardNamespace}
 	}
 }
 ]]></File>
-<File name="Default.asmx" language="XML"><![CDATA[<%@ WebService Language="C#"  Class="${StandardNamespace}.Soap,Soap" %>]]></File>
+<File name="Default.asmx" language="XML"><![CDATA[<%@ WebService Language="C#"  Class="${StandardNamespace}.Soap" %>]]></File>
 <!--*************************************************************************-->
 		<File name="Web.config" language="XML"><![CDATA[<?xml version="1.0"?>
 <configuration>

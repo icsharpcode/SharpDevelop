@@ -3,6 +3,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.Globals;
 
 /// <summary>
 /// This Class drwas a Border around an ReportItem
@@ -53,6 +54,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 
 			contentByte.SetColorStroke(style.PdfFrameColor);
+			contentByte.SetColorFill(style.PdfBackColor);
 			contentByte.SetLineWidth(UnitConverter.FromPixel(baseline.Thickness).Point);
 			
 			contentByte.MoveTo(rectangle.Left ,rectangle.Top );

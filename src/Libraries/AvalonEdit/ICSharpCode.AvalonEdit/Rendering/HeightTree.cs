@@ -17,8 +17,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	sealed class HeightTree : ILineTracker, IDisposable
 	{
 		// TODO: Optimize this. This tree takes alot of memory.
-		// (56 bytes for HeightTreeNode + ca. 25 bytes per node for the dictionary)
-		// We should try to get rid of the dictionary and find height nodes per index.
+		// (56 bytes for HeightTreeNode
+		// We should try to get rid of the dictionary and find height nodes per index. (DONE!)
 		// And we might do much better by compressing lines with the same height into a single node.
 		// That would also improve load times because we would always start with just a single node.
 		
@@ -39,7 +39,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		#region Constructor
 		readonly TextDocument document;
-		Dictionary<DocumentLine, HeightTreeNode> dict;
 		HeightTreeNode root;
 		WeakLineTracker weakLineTracker;
 		
@@ -55,16 +54,32 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			if (weakLineTracker != null)
 				weakLineTracker.Deregister();
-			this.dict = null;
 			this.root = null;
 			this.weakLineTracker = null;
 		}
 		
-		public double DefaultLineHeight { get; set; }
+		double defaultLineHeight;
+		
+		public double DefaultLineHeight {
+			get { return defaultLineHeight; }
+			set {
+				double oldValue = defaultLineHeight;
+				if (oldValue == value)
+					return;
+				defaultLineHeight = value;
+				// update the stored value in all nodes:
+				foreach (var node in AllNodes) {
+					if (node.lineNode.height == oldValue) {
+						node.lineNode.height = value;
+						UpdateAugmentedData(node, UpdateAfterChildrenChangeRecursionMode.IfRequired);
+					}
+				}
+			}
+		}
 		
 		HeightTreeNode GetNode(DocumentLine ls)
 		{
-			return dict[ls];
+			return GetNodeByIndex(ls.LineNumber - 1);
 		}
 		#endregion
 		
@@ -83,13 +98,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				s.End = null;
 			}
 			
-			dict = new Dictionary<DocumentLine, HeightTreeNode>((int)(document.LineCount / 0.7));
 			HeightTreeNode[] nodes = new HeightTreeNode[document.LineCount];
 			int lineNumber = 0;
 			foreach (DocumentLine ls in document.Lines) {
-				HeightTreeNode node = new HeightTreeNode(ls, DefaultLineHeight);
-				dict.Add(ls, node);
-				nodes[lineNumber++] = node;
+				nodes[lineNumber++] = new HeightTreeNode(ls, defaultLineHeight);
 			}
 			Debug.Assert(nodes.Length > 0);
 			// now build the corresponding balanced tree
@@ -135,11 +147,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 						cs.End = null;
 					} else if (cs.Start == line) {
 						Uncollapse(cs);
-						cs.Start = GetLineByNumber(line.LineNumber + 1);
+						cs.Start = line.NextLine;
 						AddCollapsedSection(cs, cs.End.LineNumber - cs.Start.LineNumber + 1);
 					} else if (cs.End == line) {
 						Uncollapse(cs);
-						cs.End = GetLineByNumber(line.LineNumber - 1);
+						cs.End = line.PreviousLine;
 						AddCollapsedSection(cs, cs.End.LineNumber - cs.Start.LineNumber + 1);
 					}
 				}
@@ -149,7 +161,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			// clear collapsedSections from removed line: prevent damage if removed line is in "nodesToCheckForMerging"
 			node.lineNode.collapsedSections = null;
 			EndRemoval();
-			dict.Remove(line);
 		}
 		
 //		void ILineTracker.AfterRemoveLine(DocumentLine line)
@@ -167,8 +178,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		HeightTreeNode InsertAfter(HeightTreeNode node, DocumentLine newLine)
 		{
-			HeightTreeNode newNode = new HeightTreeNode(newLine, DefaultLineHeight);
-			dict.Add(newLine, newNode);
+			HeightTreeNode newNode = new HeightTreeNode(newLine, defaultLineHeight);
 			if (node.right == null) {
 				if (node.lineNode.collapsedSections != null) {
 					// we are inserting directly after node - so copy all collapsedSections
@@ -485,9 +495,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			UpdateAfterChildrenChange(node);
 		}
 		
-		public bool GetIsCollapsed(DocumentLine line)
+		public bool GetIsCollapsed(int lineNumber)
 		{
-			var node = GetNode(line);
+			var node = GetNodeByIndex(lineNumber - 1);
 			return node.lineNode.IsDirectlyCollapsed || GetIsCollapedFromNode(node);
 		}
 		

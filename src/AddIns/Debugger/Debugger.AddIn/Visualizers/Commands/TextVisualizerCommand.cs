@@ -26,18 +26,11 @@ namespace Debugger.AddIn.Visualizers
 		}
 	}
 	
-	/// <summary>
-	/// Description of TextVisualizerCommand.
-	/// </summary>
 	public class TextVisualizerCommand : ExpressionVisualizerCommand
 	{
 		public TextVisualizerCommand(Expression expression)
 			:base(expression)
 		{
-		}
-		
-		public override bool CanExecute { 
-			get { return true; }
 		}
 		
 		public override string ToString()
@@ -47,13 +40,11 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
-			if (this.Expression != null)
-			{
-				var textVisualizerWindow = new TextVisualizerWindow(
-					this.Expression.PrettyPrint(), this.Expression.Evaluate(WindowsDebugger.CurrentProcess).InvokeToString());
-				textVisualizerWindow.Mode = TextVisualizerMode.PlainText;
-				textVisualizerWindow.ShowDialog();
-			}
+			if (this.Expression == null)
+				return;
+			string expressionValue = this.Expression.Evaluate(WindowsDebugger.CurrentProcess).AsString();
+			var textVisualizerWindow = new TextVisualizerWindow(this.Expression.PrettyPrint(), expressionValue);
+			textVisualizerWindow.ShowDialog();
 		}
 	}
 }

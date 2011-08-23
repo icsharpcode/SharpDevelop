@@ -150,7 +150,7 @@ namespace SearchAndReplace
 						return;
 					}
 				}
-				BookmarkManager.AddMark(new SDBookmark(result.FileName, textArea.Document.OffsetToPosition(result.Offset)));
+				BookmarkManager.AddMark(new Bookmark(result.FileName, textArea.Document.OffsetToPosition(result.Offset)));
 			}
 		}
 		
@@ -160,7 +160,7 @@ namespace SearchAndReplace
 				ShowNotFoundMessage(monitor);
 			} else {
 				if (monitor != null) monitor.ShowingDialog = true;
-				MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.MarkAllDone}", new string[,]{{ "Count", count.ToString() }}),
+				MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.MarkAllDone}",new StringTagPair("Count", count.ToString())),
 				                           "${res:Global.FinishedCaptionText}");
 				if (monitor != null) monitor.ShowingDialog = false;
 			}
@@ -172,8 +172,10 @@ namespace SearchAndReplace
 				ShowNotFoundMessage(monitor);
 			} else {
 				if (monitor != null) monitor.ShowingDialog = true;
-				MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone}", new string[,]{{ "Count", count.ToString() }}),
-				                           "${res:Global.FinishedCaptionText}");
+				MessageService.ShowMessage(
+					StringParser.Parse("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone}",
+					                   new StringTagPair("Count", count.ToString())),
+					"${res:Global.FinishedCaptionText}");
 				if (monitor != null) monitor.ShowingDialog = false;
 			}
 		}
@@ -215,7 +217,7 @@ namespace SearchAndReplace
 					if (textArea != null) {
 						string transformedPattern = result.TransformReplacePattern(SearchOptions.ReplacePattern);
 						find.Replace(result.Offset, result.Length, transformedPattern);
-						if (!find.CurrentDocumentInformation.IsDocumentCreated) {
+						if (find.CurrentDocumentInformation.IsDocumentCreatedFromTextBuffer) {
 							textArea.Document.Replace(result.Offset, result.Length, transformedPattern);
 						}
 					} else {

@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-
 using Debugger.AddIn.Visualizers.Utils;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.NRefactory.Ast;
 
@@ -14,7 +14,8 @@ namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
 	/// ObjectProperty used in ObjectGraph. Has TargetNode.
-	/// Support on-demand evaluation of Value property.
+	/// Holds an Expression which is evaluated on demand. 
+	/// Evaluating fills properties like Value and IsAtomic, which are empty until evaluation.
 	/// </summary>
 	public class ObjectGraphProperty : ObjectProperty, IEvaluate
 	{
@@ -23,46 +24,33 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		public ObjectGraphNode TargetNode { get; set; }
 		
-		//private Expressions.Expression containingObjectExpression;
-		
-		/*public ObjectGraphProperty(Expressions.Expression containingObjectExpression)
-		{
-			if (containingObjectExpression == null)
-				throw new ArgumentNullException("containingObjectExpression");
-			this.containingObjectExpression = containingObjectExpression;
-		}*/
-		
 		/// <summary>
         /// MemberInfo used for obtaining value of this property
         /// </summary>
-        public MemberInfo PropInfo { get; set; }
+        public MemberInfo MemberInfo { get; set; }
         
-		
-		bool evaluateCalled = false;
-		public bool IsEvaluated
-		{
-			get { return this.evaluateCalled; }
-		}
+        /// <summary>
+        /// Has this property been evaluated? (Has Evaluate been called?)
+        /// </summary>
+		public bool IsEvaluated { get; private set; }
 		
 		public void Evaluate()
 		{
-			/*if (this.PropInfo == null)
-			{
-				throw new DebuggerVisualizerException("Cannot evaluate property with missing MemberInfo");
+			if (this.Expression == null) throw new DebuggerVisualizerException("Cannot evaluate property with missing Expression");
+			Value debuggerVal;
+			try {
+				debuggerVal = this.Expression.Evaluate(WindowsDebugger.CurrentProcess);
+			} catch (System.Exception ex) {
+				this.Value = "Exception: " + ex.Message;
+				this.IsEvaluated = true;
+				return;
 			}
-			Value debuggerVal = this.containingObjectExpression.Evaluate(WindowsDebugger.CurrentProcess).GetMemberValue(this.PropInfo);*/
-			
-			if (this.Expression == null)
-			{
-				throw new DebuggerVisualizerException("Cannot evaluate property with missing Expression");
-			}
-			Value debuggerVal = this.Expression.Evaluate(WindowsDebugger.CurrentProcess);
 			
 			this.IsAtomic = debuggerVal.Type.IsAtomic();
 			this.IsNull = debuggerVal.IsNull;
 			// null and complex properties will show empty string
 			this.Value = debuggerVal.IsNull || (!this.IsAtomic) ? string.Empty : debuggerVal.InvokeToString();
-			this.evaluateCalled = true;
+			this.IsEvaluated = true;
 		}
 	}
 }

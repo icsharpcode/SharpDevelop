@@ -12,31 +12,42 @@ namespace SharpRefactoring.ContextActions
 	/// </summary>
 	public abstract class ParamCheck : ContextAction
 	{
-		public LocalResolveResult GetParameterAtCaret(ResolveResult symbol)
-		{
-			LocalResolveResult param = symbol as LocalResolveResult;
-			if (param == null || param.CallingClass == null || param.ResolvedType == null)
-				return null;
-			if (param.CallingClass.ProjectContent.Language != LanguageProperties.CSharp)
-				return null;
-			if (!param.IsParameter)
-				return null;
-			return param;
-		}
-		
 		public override bool IsAvailable(EditorContext context)
 		{
-			var paramAtCaret = GetParameterAtCaret(context.CurrentSymbol);
+			var paramAtCaret = GetParameterAtCaret(context);
 			if (paramAtCaret == null)
 				return false;
 			
 			return IsAvailable(paramAtCaret.ResolvedType);
 		}
-			
+		
+		public LocalResolveResult GetParameterAtCaret(EditorContext context)
+		{
+			LocalResolveResult paramAtCaret = context.CurrentSymbol as LocalResolveResult;
+			if (paramAtCaret == null || paramAtCaret.CallingClass == null || paramAtCaret.ResolvedType == null)
+				return null;
+			// only for C#
+			if (paramAtCaret.CallingClass.ProjectContent.Language != LanguageProperties.CSharp)
+				return null;
+			if (!paramAtCaret.IsParameter)
+				return null;
+			// must be definition
+			if (!paramAtCaret.VariableDefinitionRegion.IsInside(context.CurrentExpression.Region.BeginLine, context.CurrentExpression.Region.BeginColumn))
+				return null;
+			// must be not abstract/interface method
+			if (paramAtCaret.CallingMember == null || paramAtCaret.CallingMember.IsAbstract || 
+			    paramAtCaret.CallingMember.DeclaringType.ClassType == ClassType.Interface)
+				return null;
+			return paramAtCaret;
+		}
+		
 		public override void Execute(EditorContext context)
 		{
-			var paramAtCaret = GetParameterAtCaret(context.CurrentSymbol);
-			Extensions.AddCodeToMethodStart(paramAtCaret.CallingMember, context.Editor, GetCodeToInsert(paramAtCaret.VariableName));
+			var paramAtCaret = GetParameterAtCaret(context);
+			if (paramAtCaret != null)
+			{
+				Extensions.AddCodeToMethodStart(paramAtCaret.CallingMember, context.Editor, GetCodeToInsert(paramAtCaret.VariableName));
+			}
 		}
 		
 		public abstract bool IsAvailable(IReturnType parameterType);

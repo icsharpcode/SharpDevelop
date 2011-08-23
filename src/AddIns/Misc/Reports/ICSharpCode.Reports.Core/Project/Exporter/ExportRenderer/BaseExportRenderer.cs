@@ -11,6 +11,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 	/// </summary>
 	/// 
 	public class BaseExportRenderer{
+		
 		PagesCollection pages;
 		
 		public BaseExportRenderer ()
@@ -26,18 +27,8 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 		
 		protected static void DrawItems (Graphics graphics,ExporterCollection items)
 		{
-			
 			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) {
-				
-				if (baseExportColumn != null) {
-					ExportContainer container = baseExportColumn as ExportContainer;
-					if (container == null) {
-						baseExportColumn.DrawItem(graphics);
-					} else {
-						container.DrawItem(graphics);
-						DrawItems(graphics,container.Items);
-					}
-				}
+				baseExportColumn.DrawItem(graphics);
 			}
 		}
 		
@@ -46,6 +37,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 		{
 		}
 		
+		
 		public virtual void RenderOutput ()
 		{
 		}
@@ -53,6 +45,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 		public virtual void End ()
 		{
 		}
+		
 		
 		public PagesCollection Pages 
 		{

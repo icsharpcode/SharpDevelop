@@ -28,7 +28,7 @@ namespace ICSharpCode.Svn.Commands
 			ProjectService.SolutionCreated += SolutionCreated;
 			ProjectService.ProjectCreated += ProjectCreated;
 			
-			FileUtility.FileSaved += new FileNameEventHandler(FileSaved);
+			FileUtility.FileSaved += FileSaved;
 			AbstractProjectBrowserTreeNode.OnNewNode += TreeNodeCreated;
 		}
 		
@@ -235,7 +235,8 @@ namespace ICSharpCode.Svn.Commands
 								    || ex.IsKnownError(KnownError.CannotDeleteFileNotUnderVersionControl))
 								{
 									if (MessageService.ShowCustomDialog("${res:AddIns.Subversion.DeleteDirectory}",
-									                                    StringParser.Parse("${res:AddIns.Subversion.ErrorDelete}:\n", new string[,] { { "File", fullName } }) +
+									                                    StringParser.Parse("${res:AddIns.Subversion.ErrorDelete}:\n",
+									                                                       new StringTagPair("File", fullName)) +
 									                                    ex.Message, 0, 1,
 									                                    "${res:AddIns.Subversion.ForceDelete}", "${res:Global.CancelButtonText}")
 									    == 0)
@@ -314,6 +315,8 @@ namespace ICSharpCode.Svn.Commands
 			if (!AddInOptions.AutomaticallyRenameFiles) return;
 			string fullSource = Path.GetFullPath(e.SourceFile);
 			if (!CanBeVersionControlledFile(fullSource)) return;
+			string fullTarget = Path.GetFullPath(e.TargetFile);
+			if (!CanBeVersionControlledFile(fullTarget)) return;
 			try {
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
 					SvnMessageView.HandleNotifications(client);
@@ -335,9 +338,7 @@ namespace ICSharpCode.Svn.Commands
 							return;
 					}
 					e.OperationAlreadyDone = true;
-					client.Copy(fullSource,
-					            Path.GetFullPath(e.TargetFile)
-					           );
+					client.Copy(fullSource, fullTarget);
 				}
 			} catch (Exception ex) {
 				MessageService.ShowError("File renamed exception: " + ex);

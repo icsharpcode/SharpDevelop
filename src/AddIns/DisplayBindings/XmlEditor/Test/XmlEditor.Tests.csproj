@@ -211,7 +211,7 @@
     <Compile Include="Tree\TextBoxTextChangedBeforeEditorLoadedTestFixture.cs" />
     <Compile Include="Tree\XmlCommentTreeNodeTests.cs" />
     <Compile Include="Tree\XmlTreeViewClipboardHandlerTestFixture.cs" />
-    <Compile Include="Tree\XmlTreeViewContainerTestFixture.cs" />
+    <Compile Include="Tree\XmlTreeViewContainerTests.cs" />
     <Compile Include="Schema\XhtmlStrictSchemaTestFixture.cs" />
     <Compile Include="Schema\XsdSchemaTestFixture.cs" />
     <Compile Include="Schema\GroupRefCompositorTestFixture.cs" />

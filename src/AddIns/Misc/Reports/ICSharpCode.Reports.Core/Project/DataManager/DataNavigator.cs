@@ -23,9 +23,9 @@ namespace ICSharpCode.Reports.Core
 		
 		#region test
 		
-		public CurrentItemsCollection GetDataRow()
+		public CurrentItemsCollection GetDataRow
 		{
-			return this.store.FillDataRow();
+			get {return this.store.FillDataRow();}
 		}
 		
 		#endregion
@@ -43,9 +43,10 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		public bool HasMoreData {
+		public bool HasMoreData
+		{
 			get {
-				if (this.CurrentRow < this.Count -1 ){
+				if (this.CurrentRow < store.IndexList.Count -1 ){
 					return true;
 				} else {
 					return false;
@@ -61,11 +62,6 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
-		
-		public bool IsSorted {get {return this.store.IsSorted;}}
-		
-		public bool IsGrouped {get {return this.store.IsGrouped;}}
-	
 		
 		public int CurrentRow  {
 			get {return this.store.CurrentPosition;}
@@ -105,34 +101,7 @@ namespace ICSharpCode.Reports.Core
 				return ((ind != null) && (ind.Count > 0));
 			}
 		}
-		
 	
-		/*
-		public int ChildListCount
-		{
-			get {
-				return BuildChildList().Count;
-			}
-		}
-		*/
-		
-		
-		// at the moment only tables are working
-		/*
-		public void FillChild (ReportItemCollection collection)
-		{
-			TableStrategy tableStrategy = store as TableStrategy;
-			foreach (var item in collection) {
-				IDataItem dataItem = item as IDataItem;
-				if (dataItem != null) {
-					CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(ce.Current.ListIndex);
-					CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == dataItem.ColumnName);
-					dataItem.DBValue = s.Value.ToString();
-				}
-				
-			}
-		}
-		*/
 		
 		private IndexList BuildChildList()
 		{
@@ -147,15 +116,18 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 	
+		
 		#region Try make recursive with ChildNavigavtor
 		
-		public IDataNavigator GetChildNavigator()
+		public IDataNavigator GetChildNavigator
 		{
-			var i = BuildChildList();
-			if ((i == null) || (i.Count == 0)) {
-				return null;
-			} 
-			return new ChildNavigator(this.store,i);
+			get {
+				var i = BuildChildList();
+				if ((i == null) || (i.Count == 0)) {
+					return null;
+				}
+				return new ChildNavigator(this.store,i);
+			}
 		}
 		
 		#endregion

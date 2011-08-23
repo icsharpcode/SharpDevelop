@@ -2,15 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Windows.Forms;
-using ICSharpCode.Core; 
-using ICSharpCode.Reports.Core;
+using ICSharpCode.Core;
 using ICSharpCode.Reports.Addin.Commands;
-using ICSharpCode.Reports.Core.ReportViewer;
+using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop.Gui;
 
-
-namespace ICSharpCode.Reports.Addin
+namespace ICSharpCode.Reports.Addin.SecondaryViews
 {
 	/// <summary>
 	/// Description of ReportViewerSecondaryView.
@@ -20,7 +18,6 @@ namespace ICSharpCode.Reports.Addin
 		ReportDesignerLoader designerLoader;
 		ICSharpCode.Reports.Core.ReportViewer.PreviewControl control;
 
-		
 		public ReportViewerSecondaryView(ReportDesignerLoader designerLoader,IViewContent content):base(content)
 		{
 			if (designerLoader == null) {
@@ -48,17 +45,18 @@ namespace ICSharpCode.Reports.Addin
 		{
 			ReportModel model = designerLoader.CreateRenderableModel();
 			AbstractPreviewCommand cmd = null;
+		
 			switch (model.DataModel) {
 					case GlobalEnums.PushPullModel.FormSheet : {
-						cmd = new AsyncFormsSheetPreviewCommand (model,control);
+						cmd = new FormSheetToReportViewerCommand (model,control);
 						break;
 					}
 					case GlobalEnums.PushPullModel.PullData:{
-						cmd = new AsyncPullModelPreviewCommand(model,control);					
+						cmd = new PullModelToReportViewerCommand(model,control);					
 						break;
 					}
 					case GlobalEnums.PushPullModel.PushData:{
-						cmd = new AsyncPushModelPreviewCommand(model,control);						
+						cmd = new PushModelToReportViewerCommand(model,control);						
 						break;
 					}
 				default:

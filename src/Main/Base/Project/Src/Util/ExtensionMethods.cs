@@ -5,15 +5,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Documents;
 using System.Windows.Forms;
+using System.Windows.Media;
+using System.Xml;
+using System.Xml.Linq;
+
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -320,7 +325,7 @@ namespace ICSharpCode.SharpDevelop
 		/// Removes <param name="stringToRemove" /> from the start of this string.
 		/// Throws ArgumentException if this string does not start with <param name="stringToRemove" />.
 		/// </summary>
-		public static string RemoveStart(this string s, string stringToRemove)
+		public static string RemoveFromStart(this string s, string stringToRemove)
 		{
 			if (s == null)
 				return null;
@@ -332,13 +337,12 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Removes <param name="stringToRemove" /> from the end of this string.
-		/// Throws ArgumentException if this string does not end with <param name="stringToRemove" />.
+		/// Removes <paramref name="stringToRemove" /> from the end of this string.
+		/// Throws ArgumentException if this string does not end with <paramref name="stringToRemove" />.
 		/// </summary>
-		public static string RemoveEnd(this string s, string stringToRemove)
+		public static string RemoveFromEnd(this string s, string stringToRemove)
 		{
-			if (s == null)
-				return null;
+			if (s == null) return null;
 			if (string.IsNullOrEmpty(stringToRemove))
 				return s;
 			if (!s.EndsWith(stringToRemove))
@@ -347,7 +351,22 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Takes at most <param name="length" /> first characters from string. 
+		/// Trims the string from the first occurence of <paramref name="cutoffStart" /> to the end, including <paramref name="cutoffStart" />.
+		/// If the string does not contain <paramref name="cutoffStart" />, just returns the original string.
+		/// </summary>
+		public static string CutoffEnd(this string s, string cutoffStart)
+		{
+			if (s == null) return null;
+			int pos = s.IndexOf(cutoffStart);
+			if (pos != -1) {
+				return s.Substring(0, pos);
+			} else {
+				return s;
+			}
+		}
+		
+		/// <summary>
+		/// Takes at most <param name="length" /> first characters from string.
 		/// String can be null.
 		/// </summary>
 		public static string TakeStart(this string s, int length)
@@ -358,7 +377,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 
 		/// <summary>
-		/// Takes at most <param name="length" /> first characters from string, and appends '...' if string is longer. 
+		/// Takes at most <param name="length" /> first characters from string, and appends '...' if string is longer.
 		/// String can be null.
 		/// </summary>
 		public static string TakeStartEllipsis(this string s, int length)
@@ -498,5 +517,109 @@ namespace ICSharpCode.SharpDevelop
 		{
 			return expr.Region.IsEmpty;
 		}
+		
+		public static void WriteTo(this Stream sourceStream, Stream targetStream)
+		{
+			byte[] buffer = new byte[4096];
+			int bytes;
+			while ((bytes = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
+				targetStream.Write(buffer, 0, bytes);
+		}
+		
+		public static XElement FormatXml(this XElement element, int indentationLevel)
+		{
+			StringWriter sw = new StringWriter();
+			using (XmlTextWriter xmlW = new XmlTextWriter(sw)) {
+				if (EditorControlService.GlobalOptions.ConvertTabsToSpaces) {
+					xmlW.IndentChar = ' ';
+					xmlW.Indentation = EditorControlService.GlobalOptions.IndentationSize;
+				} else {
+					xmlW.Indentation = 1;
+					xmlW.IndentChar = '\t';
+				}
+				xmlW.Formatting = Formatting.Indented;
+				element.WriteTo(xmlW);
+			}
+			string xmlText = sw.ToString();
+			xmlText = xmlText.Replace(sw.NewLine, sw.NewLine + GetIndentation(indentationLevel));
+			return XElement.Parse(xmlText, LoadOptions.PreserveWhitespace);
+		}
+		
+		static string GetIndentation(int level)
+		{
+			StringBuilder indentation = new StringBuilder();
+			for (int i = 0; i < level; i++) {
+				indentation.Append(EditorControlService.GlobalOptions.IndentationString);
+			}
+			return indentation.ToString();
+		}
+		
+		public static XElement AddWithIndentation(this XElement element, XElement newContent)
+		{
+			int indentationLevel = 0;
+			XElement tmp = element;
+			while (tmp != null) {
+				tmp = tmp.Parent;
+				indentationLevel++;
+			}
+			if (!element.Nodes().Any()) {
+				element.Add(new XText(Environment.NewLine + GetIndentation(indentationLevel - 1)));
+			}
+			XText whitespace = element.Nodes().Last() as XText;
+			if (whitespace != null && string.IsNullOrWhiteSpace(whitespace.Value)) {
+				whitespace.AddBeforeSelf(new XText(Environment.NewLine + GetIndentation(indentationLevel)));
+				whitespace.AddBeforeSelf(newContent = FormatXml(newContent, indentationLevel));
+			} else {
+				element.Add(new XText(Environment.NewLine + GetIndentation(indentationLevel)));
+				element.Add(newContent = FormatXml(newContent, indentationLevel));
+			}
+			return newContent;
+		}
+		
+		public static XElement AddFirstWithIndentation(this XElement element, XElement newContent)
+		{
+			int indentationLevel = 0;
+			StringBuilder indentation = new StringBuilder();
+			XElement tmp = element;
+			while (tmp != null) {
+				tmp = tmp.Parent;
+				indentationLevel++;
+				indentation.Append(EditorControlService.GlobalOptions.IndentationString);
+			}
+			if (!element.Nodes().Any()) {
+				element.Add(new XText(Environment.NewLine + GetIndentation(indentationLevel - 1)));
+			}
+			element.AddFirst(newContent = FormatXml(newContent, indentationLevel));
+			element.AddFirst(new XText(Environment.NewLine + indentation.ToString()));
+			return newContent;
+		}
+		
+#region Dom, AST, Editor, Document		
+		public static Location GetStart(this DomRegion region)
+		{
+			return new Location(region.BeginColumn, region.BeginLine);
+		}
+		
+		public static Location GetEnd(this DomRegion region)
+		{
+			return new Location(region.EndColumn, region.EndLine);
+		}
+		
+		public static int PositionToOffset(this IDocument document, Location location)
+		{
+			return document.PositionToOffset(location.Line, location.Column);
+		}
+		
+		public static string GetText(this IDocument document, Location startPos, Location endPos)
+		{
+			int startOffset = document.PositionToOffset(startPos);
+			return document.GetText(startOffset, document.PositionToOffset(endPos) - startOffset);
+		}
+		
+		public static void ClearSelection(this ITextEditor editor)
+		{
+			editor.Select(editor.Document.PositionToOffset(editor.Caret.Position), 0);
+		}
+#endregion		
 	}
 }

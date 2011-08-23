@@ -524,21 +524,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static void RunFindReferences(IMember member)
 		{
 			string memberName = member.DeclaringType.Name + "." + member.Name;
-			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
-			{
-				FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-				                                                                     new string[,] {{ "Name", memberName }}),
-				                                                  RefactoringService.FindReferences(member, monitor));
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}", true)) {
+				FindReferencesAndRenameHelper.ShowAsSearchResults(
+					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
+					                   new StringTagPair("Name", memberName)),
+					RefactoringService.FindReferences(member, monitor));
 			}
 		}
 		
 		public static void RunFindReferences(IClass c)
 		{
-			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
-			{
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}", true)) {
 				FindReferencesAndRenameHelper.ShowAsSearchResults(
 					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-					                   new string[,] {{ "Name", c.Name }}),
+					                   new StringTagPair("Name", c.Name)),
 					RefactoringService.FindReferences(c, monitor)
 				);
 			}
@@ -548,7 +547,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			FindReferencesAndRenameHelper.ShowAsSearchResults(
 				StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-				                   new string[,] {{ "Name", local.VariableName }}),
+				                   new StringTagPair("Name", local.VariableName)),
 				RefactoringService.FindReferences(local, null)
 			);
 		}

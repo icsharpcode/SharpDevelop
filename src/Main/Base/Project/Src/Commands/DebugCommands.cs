@@ -2,7 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -30,6 +36,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			build.Run();
 		}
 	}
+	
 	public class ExecuteWithoutDebugger : Execute
 	{
 		public override void Run()
@@ -76,7 +83,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			LoggingService.Info("Debugger Command: StepOver");
-			DebuggerService.CurrentDebugger.StepOver();
+			if (!DebuggerService.CurrentDebugger.IsDebugging) {
+				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
+				new Execute().Run();
+			} else {
+				DebuggerService.CurrentDebugger.StepOver();
+			}
 		}
 	}
 	
@@ -85,7 +97,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			LoggingService.Info("Debugger Command: StepInto");
-			DebuggerService.CurrentDebugger.StepInto();
+			if (!DebuggerService.CurrentDebugger.IsDebugging) {
+				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
+				new Execute().Run();
+			} else {
+				DebuggerService.CurrentDebugger.StepInto();
+			}
 		}
 	}
 	
@@ -102,13 +119,46 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
+			var viewContent = WorkbenchSingleton.Workbench.ActiveContent;
+			ITextEditorProvider provider = viewContent as ITextEditorProvider;
 			
 			if (provider != null) {
 				ITextEditor editor = provider.TextEditor;
 				if (!string.IsNullOrEmpty(editor.FileName)) {
 					DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line);
 				}
+			} else {
+				if (viewContent is AbstractViewContentWithoutFile) {
+					dynamic codeView = ((AbstractViewContentWithoutFile)viewContent).Control;
+					var editor = codeView.TextEditor as ITextEditor;
+					if (editor != null && !string.IsNullOrEmpty(editor.FileName))
+						DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line);
+				}
+			}
+		}
+	}
+	
+	public class RemoveAllBreakpointsCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			BookmarkManager.RemoveAll(b => b is BreakpointBookmark);
+		}
+	}
+	
+	public class DeleteBreakpointCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			if (Owner == null || !(Owner is BookmarkPadBase)) return;
+			
+			var bookmarkBase = (BookmarkPadBase)Owner;
+			var item = bookmarkBase.CurrentItem;
+			
+			if (item == null) return;
+			
+			if (item.Mark is BreakpointBookmark) {
+				BookmarkManager.RemoveMark(item.Mark);
 			}
 		}
 	}
@@ -126,6 +176,20 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			DebuggerService.CurrentDebugger.Detach();
+		}
+	}
+	
+	public class ExecuteLastBuild : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			if (ProjectService.OpenSolution == null)
+				return;
+			
+			if (ProjectService.OpenSolution.StartupProject == null)
+				return;
+			
+			ProjectService.OpenSolution.StartupProject.Start(false);
 		}
 	}
 }

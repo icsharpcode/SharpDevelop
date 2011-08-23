@@ -284,11 +284,18 @@ namespace ICSharpCode.SharpDevelop
 				inLoadOperation = true;
 				Properties memento = GetMemento(newView);
 				using (Stream sourceStream = OpenRead()) {
-					currentView = newView;
-					// don't reset fileData if the file is untitled, because OpenRead() wouldn't be able to read it otherwise
-					if (this.IsUntitled == false)
-						fileData = null;
-					newView.Load(this, sourceStream);
+					IViewContent oldView = currentView;
+					try {
+						currentView = newView;
+						// don't reset fileData if the file is untitled, because OpenRead() wouldn't be able to read it otherwise
+						if (this.IsUntitled == false)
+							fileData = null;
+						newView.Load(this, sourceStream);
+					} catch {
+						// stay with old view in case of exceptions
+						currentView = oldView;
+						throw;
+					}
 				}
 				RestoreMemento(newView, memento);
 			} finally {
@@ -434,6 +441,7 @@ namespace ICSharpCode.SharpDevelop
 		public override void CloseIfAllViewsClosed()
 		{
 			if (registeredViews.Count == 0) {
+				bool wasDirty = this.IsDirty;
 				FileService.OpenedFileClosed(this);
 				
 				FileClosed.RaiseEvent(this, EventArgs.Empty);
@@ -441,6 +449,15 @@ namespace ICSharpCode.SharpDevelop
 				if (fileChangeWatcher != null) {
 					fileChangeWatcher.Dispose();
 					fileChangeWatcher = null;
+				}
+				
+				if (wasDirty) {
+					// We discarded some information when closing the file,
+					// so we need to re-parse it.
+					if (File.Exists(this.FileName))
+						ParserService.BeginParse(this.FileName);
+					else
+						ParserService.ClearParseInformation(this.FileName);
 				}
 			}
 		}

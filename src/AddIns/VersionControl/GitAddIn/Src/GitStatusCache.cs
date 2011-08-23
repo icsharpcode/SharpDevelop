@@ -63,6 +63,10 @@ namespace ICSharpCode.GitAddIn
 		
 		static void GitGetFiles(string wcRoot, GitStatusSet statusSet)
 		{
+			string git = Git.FindGit();
+			if (git == null)
+				return;
+			
 			ProcessRunner runner = new ProcessRunner();
 			runner.WorkingDirectory = wcRoot;
 			runner.LogStandardOutputAndError = false;
@@ -72,41 +76,41 @@ namespace ICSharpCode.GitAddIn
 				}
 			};
 			
-			string command = "git ls-files";
+			string command = "ls-files";
 			bool hasErrors = false;
 			runner.ErrorLineReceived += delegate(object sender, LineReceivedEventArgs e) {
 				if (!hasErrors) {
 					hasErrors = true;
-					GitMessageView.AppendLine(runner.WorkingDirectory + "> " + command);
+					GitMessageView.AppendLine(runner.WorkingDirectory + "> git " + command);
 				}
 				GitMessageView.AppendLine(e.Line);
 			};
-			runner.Start("cmd", "/c " + command);
+			runner.Start(git, command);
 			runner.WaitForExit();
 		}
 		
 		static void GitGetStatus(string wcRoot, GitStatusSet statusSet)
 		{
-			string command = "git status --porcelain --untracked-files=no";
+			string git = Git.FindGit();
+			if (git == null)
+				return;
+			
+			string command = "status --porcelain --untracked-files=no";
 			bool hasErrors = false;
 			
 			ProcessRunner runner = new ProcessRunner();
 			runner.WorkingDirectory = wcRoot;
 			runner.LogStandardOutputAndError = false;
-			string commandPrompt = wcRoot + ">@"; // C:\work\SD>@git.exe %*
 			runner.OutputLineReceived += delegate(object sender, LineReceivedEventArgs e) {
 				if (!string.IsNullOrEmpty(e.Line)) {
 					Match m = statusParseRegex.Match(e.Line);
 					if (m.Success) {
 						statusSet.AddEntry(m.Groups[2].Value, StatusFromText(m.Groups[1].Value));
-					} else if (!e.Line.StartsWith(commandPrompt, StringComparison.Ordinal)) {
-						// Suppress "unknown output" produced by git.cmd when git is installed
-						// in the PATH but the git unix tools aren't
-						
+					} else {
 						if (!hasErrors) {
 							// in front of first output line, print the command line we invoked
 							hasErrors = true;
-							GitMessageView.AppendLine(runner.WorkingDirectory + "> " + command);
+							GitMessageView.AppendLine(runner.WorkingDirectory + "> git " + command);
 						}
 						GitMessageView.AppendLine("unknown output: " + e.Line);
 					}
@@ -115,11 +119,11 @@ namespace ICSharpCode.GitAddIn
 			runner.ErrorLineReceived += delegate(object sender, LineReceivedEventArgs e) {
 				if (!hasErrors) {
 					hasErrors = true;
-					GitMessageView.AppendLine(runner.WorkingDirectory + "> " + command);
+					GitMessageView.AppendLine(runner.WorkingDirectory + "> git " + command);
 				}
 				GitMessageView.AppendLine(e.Line);
 			};
-			runner.Start("cmd", "/c " + command);
+			runner.Start(git, command);
 			runner.WaitForExit();
 		}
 		

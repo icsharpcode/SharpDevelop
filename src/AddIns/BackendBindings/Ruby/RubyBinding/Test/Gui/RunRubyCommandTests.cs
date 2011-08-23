@@ -62,7 +62,7 @@ namespace RubyBinding.Tests.Gui
 		public void Run_RubyFileOpen_ProcessInfoArgsContainsFileNameActiveInTextEditor()
 		{
 			string arguments = debugger.ProcessStartInfo.Arguments;
-			string expectedArguments = "/c \"\"C:\\IronRuby\\ir.exe\" \"test.rb\"\" & pause";
+			string expectedArguments = "/c \"\"C:\\IronRuby\\ir.exe\" --disable-gems \"test.rb\"\" & pause";
 			
 			Assert.AreEqual(expectedArguments, arguments);
 		}

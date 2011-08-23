@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<Template author="Daniel Grunwald" version="1.0">
+	
+	<Config
+		  name        = "Settings"
+		  icon        = "Icons.32x32.ResourceFileIcon"
+		  category    = "${res:Templates.File.Categories.Misc}"
+		  defaultname = "Settings${Number}.settings"
+		  language    = "SettingsFiles"/>
+	 
+	<Description>${res:Templates.File.Resource.EmptyResourceFile.Description}</Description>
+
+	<Files>
+		<File name="${FullName}" language="ResourceFiles" Generator="SettingsSingleFileGenerator"><![CDATA[<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="${StandardNamespace}" GeneratedClassName="${ClassName}">
+	<Profiles />
+	<Settings />
+</SettingsFile>
+]]>		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+

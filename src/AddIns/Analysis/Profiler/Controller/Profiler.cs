@@ -559,7 +559,12 @@ namespace ICSharpCode.Profiler.Controller
 
 		bool AllThreadsWait32()
 		{
-			this.threadListMutex.WaitOne();
+			try {
+				this.threadListMutex.WaitOne();
+			} catch (AbandonedMutexException) {
+				// profilee crashed while holding the thread list mutex
+				return true;
+			}
 
 			bool isWaiting = true;
 

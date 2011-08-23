@@ -76,11 +76,10 @@ namespace NUnit.ConsoleRunner
                     ? package.Settings["RuntimeFramework"]
                     : "Default");
 
-            TestRunner testRunner = new DefaultTestRunnerFactory().MakeTestRunner(package);
+			using (TestRunner testRunner = new DefaultTestRunnerFactory().MakeTestRunner(package))
+			{
             testRunner.Load(package);
 
-            try
-			{
 				if (testRunner.Test == null)
 				{
 					testRunner.Unload();
@@ -94,7 +93,7 @@ namespace NUnit.ConsoleRunner
 				if ( options.run != null && options.run != string.Empty )
 				{
 					Console.WriteLine( "Selected test(s): " + options.run );
-					testFilter = new SimpleNameFilter( options.run );
+					testFilter = new SimpleNameFilter( TestNameParser.Parse(options.run) );
 				}
 
 				if ( options.include != null && options.include != string.Empty )
@@ -164,7 +163,7 @@ namespace NUnit.ConsoleRunner
                     else
                     {
                         WriteSummaryReport(summary);
-                        if (summary.ErrorsAndFailures > 0)
+                        if (summary.ErrorsAndFailures > 0 || result.IsError || result.IsFailure)
                             WriteErrorsAndFailuresReport(result);
                         if (summary.TestsNotRun > 0)
                             WriteNotRunReport(result);
@@ -192,10 +191,6 @@ namespace NUnit.ConsoleRunner
             
 				return returnCode;
 			}
-			finally
-			{
-				testRunner.Unload();
-			}
 		}
 
 		#region Helper Methods
@@ -207,10 +202,14 @@ namespace NUnit.ConsoleRunner
             ProcessModel processModel = ProcessModel.Default;
             RuntimeFramework framework = null;
 
+            string[] parameters = new string[options.ParameterCount];
+            for (int i = 0; i < options.ParameterCount; i++)
+                parameters[i] = Path.GetFullPath((string)options.Parameters[i]);
+                
 			if (options.IsTestProject)
 			{
 				NUnitProject project = 
-					Services.ProjectService.LoadProject((string)options.Parameters[0]);
+					Services.ProjectService.LoadProject(parameters[0]);
 
 				string configName = options.config;
 				if (configName != null)
@@ -221,15 +220,15 @@ namespace NUnit.ConsoleRunner
                 domainUsage = project.DomainUsage;
                 framework = project.ActiveConfig.RuntimeFramework;
 			}
-			else if (options.Parameters.Count == 1)
+			else if (parameters.Length == 1)
 			{
-				package = new TestPackage((string)options.Parameters[0]);
+				package = new TestPackage(parameters[0]);
 				domainUsage = DomainUsage.Single;
 			}
 			else
 			{
 				// TODO: Figure out a better way to handle "anonymous" packages
-				package = new TestPackage(null, options.Parameters);
+				package = new TestPackage(null, parameters);
 				package.AutoBinPath = true;
 				domainUsage = DomainUsage.Multiple;
 			}
@@ -298,8 +297,9 @@ namespace NUnit.ConsoleRunner
             {
                 if (result.HasResults)
                 {
-                    if ( (result.IsFailure || result.IsError) && result.FailureSite == FailureSite.SetUp)
-                        WriteSingleResult(result);
+                    if (result.IsFailure || result.IsError)
+                        if (result.FailureSite == FailureSite.SetUp || result.FailureSite == FailureSite.TearDown)
+                            WriteSingleResult(result);
 
                     foreach (TestResult childResult in result.Results)
                         WriteErrorsAndFailures(childResult);

@@ -2,7 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
@@ -17,18 +20,12 @@ namespace ICSharpCode.VBNetBinding
 		string[] lexerTags;
 		
 		public string[] LexerTags {
-			get {
-				return lexerTags;
-			}
-			set {
-				lexerTags = value;
-			}
+			get { return lexerTags; }
+			set { lexerTags = value; }
 		}
 		
 		public LanguageProperties Language {
-			get {
-				return LanguageProperties.VBNet;
-			}
+			get { return LanguageProperties.VBNet; }
 		}
 		
 		public IExpressionFinder CreateExpressionFinder(string fileName)
@@ -48,38 +45,18 @@ namespace ICSharpCode.VBNetBinding
 		
 		static void RetrieveRegions(ICompilationUnit cu, ICSharpCode.NRefactory.Parser.SpecialTracker tracker)
 		{
-			for (int i = 0; i < tracker.CurrentSpecials.Count; ++i)
-			{
-				ICSharpCode.NRefactory.PreprocessingDirective directive = tracker.CurrentSpecials[i] as ICSharpCode.NRefactory.PreprocessingDirective;
-				if (directive != null)
-				{
-					if (directive.Cmd.Equals("#region", StringComparison.OrdinalIgnoreCase))
-					{
-						int deep = 1;
-						for (int j = i + 1; j < tracker.CurrentSpecials.Count; ++j)
-						{
-							ICSharpCode.NRefactory.PreprocessingDirective nextDirective = tracker.CurrentSpecials[j] as ICSharpCode.NRefactory.PreprocessingDirective;
-							if (nextDirective != null)
-							{
-								switch (nextDirective.Cmd.ToUpperInvariant())
-								{
-									case "#REGION":
-										++deep;
-										break;
-									case "#END":
-										if (nextDirective.Arg.Equals("region", StringComparison.OrdinalIgnoreCase)) {
-											--deep;
-											if (deep == 0) {
-												cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim('"'), DomRegion.FromLocation(directive.StartPosition, nextDirective.EndPosition)));
-												goto end;
-											}
-										}
-										break;
-								}
-							}
-						}
-						end: ;
-					}
+			Stack<ICSharpCode.NRefactory.PreprocessingDirective> regionStartDirectives = new Stack<ICSharpCode.NRefactory.PreprocessingDirective>();
+			
+			foreach (ICSharpCode.NRefactory.PreprocessingDirective directive in tracker.CurrentSpecials.OfType<ICSharpCode.NRefactory.PreprocessingDirective>()) {
+				if (directive.Cmd.Equals("#region", StringComparison.OrdinalIgnoreCase))
+					regionStartDirectives.Push(directive);
+				if (directive.Cmd.Equals("#end", StringComparison.OrdinalIgnoreCase)
+				    // using StartsWith allows comments at end of line
+				    // fixes http://community.sharpdevelop.net/forums/t/12252.aspx
+				    && directive.Arg.StartsWith("region", StringComparison.OrdinalIgnoreCase)
+				    && regionStartDirectives.Any()) {
+					ICSharpCode.NRefactory.PreprocessingDirective start = regionStartDirectives.Pop();
+					cu.FoldingRegions.Add(new FoldingRegion(start.Arg.TrimComments().Trim().Trim('"'), DomRegion.FromLocation(start.StartPosition, directive.EndPosition)));
 				}
 			}
 		}

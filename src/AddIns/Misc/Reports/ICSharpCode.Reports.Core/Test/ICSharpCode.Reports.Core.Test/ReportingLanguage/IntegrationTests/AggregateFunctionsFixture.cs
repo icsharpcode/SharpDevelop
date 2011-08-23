@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 {
 	[TestFixture]
 
-	[SetCulture("de-DE")]
+//	[SetCulture("de-DE")]
 	public class AggregateFunctionsFromTableFixture
 	{
 		
@@ -71,19 +71,12 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
         {
            
            const string expression = "=count(intvalue,current > 2)";
-           Assert.That(this.evaluator.Evaluate(expression),
-                       Is.EqualTo("2"));
+           Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo("2"));           
         }
 		
-		[Test]
-		[ExpectedException(typeof(FieldNotFoundException))]
-		public void Throw_On_Unknown_Field ()
-		{
-			const string expression = "=count(unknown)";
-			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo(this.testTable.Rows.Count.ToString()));
-		}
 		
 		#endregion
+		
 		
 		#region sum()
 		
@@ -112,6 +105,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		public void Can_Look_For_MaxValue()
 		{
 			const string expression = "=max(amount)";
+			//var s = this.evaluator.Evaluate(expression);
 			Assert.That(this.evaluator.Evaluate(expression),
 			            Is.EqualTo("400,5"));
 		}
@@ -127,11 +121,11 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		
 		
 		[Test]
-		[ExpectedException(typeof(FieldNotFoundException))]
-		public void Throw_On_UnknownField ()
+		public void UnknownField_ErrorMessage ()
 		{
 			const string expression = "=max(Unknown)";
-			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo(this.testTable.Rows.Count.ToString()));
+			string s  = this.evaluator.Evaluate(expression);
+			Assert.That(s.Contains("not found"));
 		}
 		
 		#endregion

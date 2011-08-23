@@ -7,10 +7,12 @@ using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -98,10 +100,22 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public string GetOutputFileName(FileProjectItem baseItem, string additionalExtension)
 		{
+			return GetOutputFileName(baseItem, additionalExtension, true);
+		}
+		
+		public string GetOutputFileName(FileProjectItem baseItem, string additionalExtension, bool isPrimaryOutput)
+		{
 			if (baseItem == null)
 				throw new ArgumentNullException("baseItem");
 			if (baseItem.Project != project)
 				throw new ArgumentException("baseItem is not from project this CustomToolContext belongs to");
+			
+			if (isPrimaryOutput) {
+				string lastGenOutput = baseItem.GetEvaluatedMetadata("LastGenOutput");
+				if (!string.IsNullOrEmpty(lastGenOutput)) {
+					return Path.Combine(Path.GetDirectoryName(baseItem.FileName), lastGenOutput);
+				}
+			}
 			
 			string newExtension = null;
 			if (project.LanguageProperties.CodeDomProvider != null) {
@@ -119,22 +133,55 @@ namespace ICSharpCode.SharpDevelop.Project
 				newExtension = "." + newExtension;
 			}
 			
-			return Path.ChangeExtension(baseItem.FileName, additionalExtension + newExtension);
+			string newFileName = Path.ChangeExtension(baseItem.FileName, additionalExtension + newExtension);
+			int retryIndex = 0;
+			while (true) {
+				FileProjectItem item = project.FindFile(newFileName);
+				// If the file does not exist in the project, we can use that name.
+				if (item == null)
+					return newFileName;
+				// If the file already exists in the project, use it only if it belongs to our base item
+				if (string.Equals(item.DependentUpon, Path.GetFileName(baseItem.FileName), StringComparison.OrdinalIgnoreCase))
+					return newFileName;
+				// Otherwise, find another free file name
+				retryIndex++;
+				newFileName = Path.ChangeExtension(baseItem.FileName, additionalExtension + retryIndex + newExtension);
+			}
 		}
 		
 		public FileProjectItem EnsureOutputFileIsInProject(FileProjectItem baseItem, string outputFileName)
 		{
+			return EnsureOutputFileIsInProject(baseItem, outputFileName, true);
+		}
+		
+		public FileProjectItem EnsureOutputFileIsInProject(FileProjectItem baseItem, string outputFileName, bool isPrimaryOutput)
+		{
+			if (baseItem == null)
+				throw new ArgumentNullException("baseItem");
+			if (baseItem.Project != project)
+				throw new ArgumentException("baseItem is not from project this CustomToolContext belongs to");
+			
 			WorkbenchSingleton.AssertMainThread();
+			bool saveProject = false;
+			if (isPrimaryOutput) {
+				if (baseItem.GetEvaluatedMetadata("LastGenOutput") != Path.GetFileName(outputFileName)) {
+					saveProject = true;
+					baseItem.SetEvaluatedMetadata("LastGenOutput", Path.GetFileName(outputFileName));
+				}
+			}
 			FileProjectItem outputItem = project.FindFile(outputFileName);
 			if (outputItem == null) {
 				outputItem = new FileProjectItem(project, ItemType.Compile);
 				outputItem.FileName = outputFileName;
 				outputItem.DependentUpon = Path.GetFileName(baseItem.FileName);
+				outputItem.SetEvaluatedMetadata("AutoGen", "True");
 				ProjectService.AddProjectItem(project, outputItem);
 				FileService.FireFileCreated(outputFileName, false);
-				project.Save();
+				saveProject = true;
 				ProjectBrowserPad.RefreshViewAsync();
 			}
+			if (saveProject)
+				project.Save();
 			return outputItem;
 		}
 		
@@ -143,6 +190,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			WorkbenchSingleton.AssertMainThread();
 			CodeDomProvider provider = project.LanguageProperties.CodeDomProvider;
 			CodeGeneratorOptions options = new CodeDOMGeneratorUtility().CreateCodeGeneratorOptions;
+			
+			if (project.LanguageProperties == LanguageProperties.VBNet) {
+				// the root namespace is implicit in VB
+				foreach (CodeNamespace ns in ccu.Namespaces) {
+					if (string.Equals(ns.Name, project.RootNamespace, StringComparison.OrdinalIgnoreCase)) {
+						ns.Name = string.Empty;
+					} else if (ns.Name.StartsWith(project.RootNamespace + ".", StringComparison.OrdinalIgnoreCase)) {
+						ns.Name = ns.Name.Substring(project.RootNamespace.Length + 1);
+					}
+				}
+			}
 			
 			string codeOutput;
 			using (StringWriter writer = new StringWriter()) {
@@ -264,8 +322,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Creates an item with the specified sub items. And the current
 		/// Condition status for this item.
 		/// </summary>
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
+			Codon codon = args.Codon;
 			return new CustomToolDescriptor(codon.Id, codon.Properties["fileNamePattern"],
 			                                codon.Properties["class"], codon.AddIn);
 		}
@@ -293,7 +352,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		static bool initialized;
-		static List<CustomToolRun> toolRuns = new List<CustomToolRun>();
+		static Queue<CustomToolRun> toolRuns = new Queue<CustomToolRun>();
 		static Dictionary<string, CustomToolDescriptor> toolDict;
 		static List<CustomToolDescriptor> customToolList;
 		static CustomToolRun activeToolRun;
@@ -390,9 +449,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			WorkbenchSingleton.AssertMainThread();
 			
 			string fileName = baseItem.FileName;
-			if (toolRuns.Exists(delegate(CustomToolRun run) {
-			                    	return FileUtility.IsEqualFileName(run.file, fileName);
-			                    }))
+			if (toolRuns.Any(run => FileUtility.IsEqualFileName(run.file, fileName)))
 			{
 				// file already in queue, do not enqueue it again
 				return;
@@ -439,7 +496,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		static void RunCustomTool(CustomToolRun run)
 		{
 			if (activeToolRun != null) {
-				toolRuns.Add(run);
+				toolRuns.Enqueue(run);
 			} else {
 				try {
 					run.customTool.GenerateCode(run.baseItem, run.context);
@@ -462,9 +519,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					activeToolRun = null;
-					CustomToolRun nextRun = toolRuns[0];
-					toolRuns.RemoveAt(0);
-					RunCustomTool(nextRun);
+					if(toolRuns.Count > 0) {
+						CustomToolRun nextRun = toolRuns.Dequeue();
+						if(nextRun != null) {
+							RunCustomTool(nextRun);
+						}
+					}
 				});
 		}
 	}

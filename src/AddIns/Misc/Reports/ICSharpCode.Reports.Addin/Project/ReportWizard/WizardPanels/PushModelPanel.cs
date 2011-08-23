@@ -8,8 +8,8 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
@@ -27,7 +27,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private ReportStructure reportStructure;
 		private Properties customizer;
 		private DataSet resultDataSet;
-		private AvailableFieldsCollection abstractColumns;
 		
 		public PushModelPanel()
 		{
@@ -36,14 +35,15 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			base.EnableCancel = true;
 			base.EnableNext = false;
 			Localize ();
-			
 		}
 		
-		void Localize () 
+		
+		void Localize ()
 		{
 			this.label1.Text = ResourceService.GetString("SharpReport.Wizard.PushModel.Path");
 			this.label2.Text = ResourceService.GetString("SharpReport.Wizard.PushModel.AvailableFields");
 		}
+		
 		
 		void BtnPathClick(object sender, System.EventArgs e)
 		{
@@ -52,27 +52,15 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				fdiag.DefaultExt = GlobalValues.XsdExtension;
 				fdiag.Filter = GlobalValues.XsdFileFilter;
 				fdiag.Multiselect = false;
-				if (fdiag.ShowDialog() == DialogResult.OK) {
+				if (fdiag.ShowDialog() == DialogResult.OK)
+				{
 					string	fileName = fdiag.FileName;
 					this.txtPath.Text = fileName;
 					FillDataGrid(fileName);
+					base.EnableNext = true;
+					base.EnableFinish= true;
 				}
 			}
-			base.EnableNext = true;
-			base.EnableFinish= true;
-		}
-		
-		
-		private AvailableFieldsCollection AvailableFieldsCollectionFromTable (DataTable table) 
-		{
-			AvailableFieldsCollection av = new AvailableFieldsCollection();
-			AbstractColumn ac = null;
-			foreach (DataColumn dc in resultDataSet.Tables[0].Columns) {
-				Console.WriteLine("{0} - {1}",dc.ColumnName,dc.DataType);
-				ac = new AbstractColumn(dc.ColumnName,dc.DataType);
-				av.Add(ac);
-			}
-			return av;
 		}
 		
 		
@@ -82,40 +70,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		{
 			this.resultDataSet = new DataSet();
 			this.resultDataSet.Locale = CultureInfo.CurrentCulture;
-			
 			resultDataSet.ReadXml (fileName);
 			this.grdQuery.DataSource = resultDataSet.Tables[0];
-			this.abstractColumns = WizardHelper.AvailableFieldsCollection(this.resultDataSet);
-			foreach (DataGridViewColumn dd in this.grdQuery.Columns) {
-				DataGridViewColumnHeaderCheckBoxCell cb = new DataGridViewColumnHeaderCheckBoxCell();
-				cb.CheckBoxAlignment = HorizontalAlignment.Left;
-				cb.Checked = true;
-				dd.HeaderCell = cb;
-			}
+			WizardHelper.SetupGridView(this.grdQuery);
+			grdQuery.AllowUserToOrderColumns = true;
 			base.EnableFinish = true;
 		}
-		
+
 		#endregion
-		
-		// only checked columns are use in the report
-		
-		private ReportItemCollection CreateItemsCollection (DataGridViewColumn[] displayCols)
-		{
-			ReportItemCollection items = new ReportItemCollection();
-			foreach (DataGridViewColumn cc in displayCols) {
-				DataGridViewColumnHeaderCheckBoxCell hc= (DataGridViewColumnHeaderCheckBoxCell)cc.HeaderCell;
-				if (hc.Checked) {
-					AbstractColumn ac = this.abstractColumns.Find(cc.HeaderText);
-					ICSharpCode.Reports.Core.BaseDataItem br = new ICSharpCode.Reports.Core.BaseDataItem();
-					br.Name = ac.ColumnName;
-					br.ColumnName = ac.ColumnName;
-					br.DataType = ac.DataTypeName;
-					br.DBValue = ac.ColumnName;
-					items.Add(br);
-				}
-			}
-			return items;
-		}
 		
 		
 		#region overrides
@@ -147,6 +109,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
+		
 		private void WriteResult ()
 		{
 			if (this.resultDataSet != null) {
@@ -163,14 +126,18 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				}
 				
 				reportStructure.ReportItemCollection.Clear();
-				reportStructure.ReportItemCollection.AddRange(CreateItemsCollection (displayCols));
-				if (this.abstractColumns != null) {
+				var items = WizardHelper.CreateItemsCollection(this.resultDataSet,displayCols);
+				reportStructure.ReportItemCollection.AddRange(items);
+				
+				var abstractColumns = WizardHelper.AvailableFieldsCollection(this.resultDataSet);
+				if (abstractColumns != null) {
 					reportStructure.AvailableFieldsCollection.Clear();
 					reportStructure.AvailableFieldsCollection.AddRange(abstractColumns);
 				}
 			}
 		}
-			
+		
+		
 		#endregion
 		
 		#region Windows Forms Designer generated code
@@ -191,8 +158,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			// 
 			// txtPath
 			// 
-			this.txtPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			                                                            | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtPath.Location = new System.Drawing.Point(16, 63);
 			this.txtPath.Name = "txtPath";
 			this.txtPath.Size = new System.Drawing.Size(338, 20);
@@ -208,8 +175,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			// 
 			// btnPath
 			// 
-			this.btnPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.btnPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			                                                            | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnPath.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnPath.Location = new System.Drawing.Point(383, 58);
@@ -238,9 +205,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			// dataGridView1
 			// 
 			this.grdQuery.AllowUserToOrderColumns = true;
-			this.grdQuery.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.grdQuery.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			                                                              | System.Windows.Forms.AnchorStyles.Left)
+			                                                             | System.Windows.Forms.AnchorStyles.Right)));
 			this.grdQuery.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.grdQuery.Location = new System.Drawing.Point(16, 120);
 			this.grdQuery.Name = "dataGridView1";

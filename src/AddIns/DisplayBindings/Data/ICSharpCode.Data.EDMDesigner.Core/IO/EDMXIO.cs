@@ -170,6 +170,9 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
         public static XDocument WriteXDocument(EDMView edmView)
         {
+            if (edmView.EDM.IsEmpty) {
+                return WriteXDocument(null, null, null, null);
+            }
             XElement ssdlElement = SSDLIO.WriteXElement(edmView.EDM.SSDLContainer);
             XElement csdlElement = CSDLIO.Write(edmView.EDM.CSDLContainer);
             XElement mslElement = MSLIO.Write(edmView.EDM);

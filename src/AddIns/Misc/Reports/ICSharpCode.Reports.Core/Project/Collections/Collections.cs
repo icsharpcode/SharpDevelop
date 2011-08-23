@@ -33,21 +33,21 @@ namespace ICSharpCode.Reports.Core{
 	/// (Line by Line)
 	/// </summary>
 	internal class LocationSorter : IComparer<BaseReportItem>  {
-		public int Compare(BaseReportItem x, BaseReportItem y){
-			if (x == null){
-				if (y == null){
+		public int Compare(BaseReportItem lhs, BaseReportItem rhs){
+			if (lhs == null){
+				if (rhs == null){
 					return 0;
 				}
 				return -1;
 			}
-			if (y == null){
+			if (rhs == null){
 				return 1;
 			}
 			
-			if (x.Location.Y == y.Location.Y){
-				return x.Location.X - y.Location.X;
+			if (lhs.Location.Y == rhs.Location.Y){
+				return lhs.Location.X - rhs.Location.X;
 			}
-			return x.Location.Y - y.Location.Y;
+			return lhs.Location.Y - rhs.Location.Y;
 		}
 	}
 	
@@ -65,7 +65,7 @@ namespace ICSharpCode.Reports.Core{
 			get { return (List<BaseReportItem>)base.Items; }
 		}
 		
-		public void Sort(IComparer<BaseReportItem> comparer)
+		private void Sort(IComparer<BaseReportItem> comparer)
 		{
 			InnerList.Sort(comparer);
 		}
@@ -143,21 +143,23 @@ namespace ICSharpCode.Reports.Core{
 		
 		protected override void RemoveItem(int index)
 		{
-			BaseReportItem item = this[index];
 			base.RemoveItem(index);
 		}
 	
 		#region Grouphandling
-		
-		public bool IsGrouped
-		{
-			get {
-				return (this[0] is BaseGroupedRow)|| (this[0] is BaseGroupItem) ;
-				//return CreateGroupedList().Count > 0;
-			}
-		}
-		
-		
+
+        public  Collection<GroupHeader> FindGroupHeader()
+        {
+            return new Collection<GroupHeader>(this.Items.OfType<GroupHeader>().ToList());
+        }
+
+
+        public  Collection<GroupFooter> FindGroupFooter()
+        {
+            return new Collection<GroupFooter>(this.Items.OfType<GroupFooter>().ToList());
+        }
+
+      
 		private Collection<BaseDataItem> CreateGroupedList ()
 		{
 			Collection<BaseDataItem> inheritedReportItems = null;
@@ -175,28 +177,9 @@ namespace ICSharpCode.Reports.Core{
 		}
 		
 		
-		private Collection<BaseGroupItem> old_CreateGroupedList ()
-		{
-			Collection<BaseGroupItem> inheritedReportItems = null;
-			foreach (BaseReportItem element in this) {
-				ISimpleContainer container = element as ISimpleContainer;
-				if (container == null) {
-					inheritedReportItems = new Collection<BaseGroupItem>(this.OfType<BaseGroupItem>().ToList());
-					break;
-				} else {
-					inheritedReportItems = new Collection<BaseGroupItem>(container.Items.OfType<BaseGroupItem>().ToList());
-					break;
-					
-				}
-			}
-			return inheritedReportItems;
-		}
-		
-		
 		public ReportItemCollection ExtractGroupedColumns ()
 		{
 			Collection<BaseDataItem> inheritedReportItems = CreateGroupedList();
-//			Collection<BaseGroupItem> inheritedReportItems = CreateGroupedList();
 			ReportItemCollection r = new ReportItemCollection();
 			r.AddRange(inheritedReportItems);
 			return r;
@@ -376,15 +359,12 @@ namespace ICSharpCode.Reports.Core{
 	}
 	
 	#region ExporterCollection
+	
 	public class ExporterCollection : Collection<BaseExportColumn>
 	{
 		
 		public void AddRange (IEnumerable <BaseExportColumn> items){
 			foreach (var item in items) {
-				IExportContainer container = item as IExportContainer;
-				if (container != null) {
-					AddRange(container.Items);
-				}
 				this.Add (item);
 			}
 		}

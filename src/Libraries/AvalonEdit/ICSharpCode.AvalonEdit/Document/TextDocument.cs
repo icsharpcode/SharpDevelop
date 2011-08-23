@@ -4,11 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Threading;
-
 using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Document
@@ -21,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// <inheritdoc cref="VerifyAccess"/>
 	/// <para>However, there is a single method that is thread-safe: <see cref="CreateSnapshot()"/> (and its overloads).</para>
 	/// </remarks>
-	public sealed class TextDocument : ITextSource
+	public sealed class TextDocument : ITextSource, INotifyPropertyChanged
 	{
 		#region Thread ownership
 		readonly object lockObject = new object();
@@ -98,7 +99,6 @@ namespace ICSharpCode.AvalonEdit.Document
 			
 			anchorTree = new TextAnchorTree(this);
 			undoStack = new UndoStack();
-			undoStack.AttachToDocument(this);
 			FireChangeEvents();
 		}
 		
@@ -156,6 +156,12 @@ namespace ICSharpCode.AvalonEdit.Document
 			return GetText(segment.Offset, segment.Length);
 		}
 		
+		int ITextSource.IndexOfAny(char[] anyOf, int startIndex, int count)
+		{
+			DebugVerifyAccess(); // frequently called (NewLineFinder), so must be fast in release builds
+			return rope.IndexOfAny(anyOf, startIndex, count);
+		}
+		
 		/// <inheritdoc/>
 		public char GetCharAt(int offset)
 		{
@@ -202,7 +208,15 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Is raised when the TextLength property changes.
 		/// </summary>
 		/// <remarks><inheritdoc cref="Changing"/></remarks>
+		[Obsolete("This event will be removed in a future version; use the PropertyChanged event instead")]
 		public event EventHandler TextLengthChanged;
+		
+		/// <summary>
+		/// Is raised when one of the properties <see cref="Text"/>, <see cref="TextLength"/>, <see cref="LineCount"/>,
+		/// <see cref="UndoStack"/> changes.
+		/// </summary>
+		/// <remarks><inheritdoc cref="Changing"/></remarks>
+		public event PropertyChangedEventHandler PropertyChanged;
 		
 		/// <summary>
 		/// Is raised before the document changes.
@@ -226,8 +240,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <item><description><b><see cref="EndUpdate">EndUpdate()</see></b></description>
 		///   <list type="bullet">
 		///   <item><description><see cref="TextChanged"/> event is raised</description></item>
-		///   <item><description><see cref="TextLengthChanged"/> event is raised</description></item>
-		///   <item><description><see cref="LineCountChanged"/> event is raised</description></item>
+		///   <item><description><see cref="PropertyChanged"/> event is raised (for the Text, TextLength, LineCount properties, in that order)</description></item>
 		///   <item><description>End of change group (on undo stack)</description></item>
 		///   <item><description><see cref="UpdateFinished"/> event is raised</description></item>
 		///   </list></item>
@@ -354,6 +367,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				throw new InvalidOperationException("Cannot change document within another document change.");
 			beginUpdateCount++;
 			if (beginUpdateCount == 1) {
+				undoStack.StartUndoGroup();
 				if (UpdateStarted != null)
 					UpdateStarted(this, EventArgs.Empty);
 			}
@@ -374,6 +388,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				// fire change events inside the change group - event handlers might add additional
 				// document changes to the change group
 				FireChangeEvents();
+				undoStack.EndUndoGroup();
 				beginUpdateCount = 0;
 				if (UpdateFinished != null)
 					UpdateFinished(this, EventArgs.Empty);
@@ -411,20 +426,29 @@ namespace ICSharpCode.AvalonEdit.Document
 				fireTextChanged = false;
 				if (TextChanged != null)
 					TextChanged(this, EventArgs.Empty);
+				OnPropertyChanged("Text");
 				
 				int textLength = rope.Length;
 				if (textLength != oldTextLength) {
 					oldTextLength = textLength;
 					if (TextLengthChanged != null)
 						TextLengthChanged(this, EventArgs.Empty);
+					OnPropertyChanged("TextLength");
 				}
 				int lineCount = lineTree.LineCount;
 				if (lineCount != oldLineCount) {
 					oldLineCount = lineCount;
 					if (LineCountChanged != null)
 						LineCountChanged(this, EventArgs.Empty);
+					OnPropertyChanged("LineCount");
 				}
 			}
+		}
+		
+		void OnPropertyChanged(string propertyName)
+		{
+			if (PropertyChanged != null)
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 		}
 		#endregion
 		
@@ -490,6 +514,10 @@ namespace ICSharpCode.AvalonEdit.Document
 				case OffsetChangeMappingType.Normal:
 					Replace(offset, length, text, null);
 					break;
+				case OffsetChangeMappingType.KeepAnchorBeforeInsertion:
+					Replace(offset, length, text, OffsetChangeMap.FromSingleElement(
+						new OffsetChangeMapEntry(offset, length, text.Length, false, true)));
+					break;
 				case OffsetChangeMappingType.RemoveAndInsert:
 					if (length == 0 || text.Length == 0) {
 						// only insertion or only removal?
@@ -514,7 +542,7 @@ namespace ICSharpCode.AvalonEdit.Document
 						OffsetChangeMapEntry entry = new OffsetChangeMapEntry(offset + length - 1, 1, 1 + text.Length - length);
 						Replace(offset, length, text, OffsetChangeMap.FromSingleElement(entry));
 					} else if (text.Length < length) {
-						OffsetChangeMapEntry entry = new OffsetChangeMapEntry(offset + text.Length, length - text.Length, 0, true);
+						OffsetChangeMapEntry entry = new OffsetChangeMapEntry(offset + text.Length, length - text.Length, 0, true, false);
 						Replace(offset, length, text, OffsetChangeMap.FromSingleElement(entry));
 					} else {
 						Replace(offset, length, text, OffsetChangeMap.Empty);
@@ -585,6 +613,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			// fire DocumentChanging event
 			if (Changing != null)
 				Changing(this, args);
+			
+			undoStack.Push(this, args);
 			
 			cachedText = null; // reset cache of complete document text
 			fireTextChanged = true;
@@ -715,13 +745,24 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
-		readonly UndoStack undoStack;
+		UndoStack undoStack;
 		
 		/// <summary>
 		/// Gets the <see cref="UndoStack"/> of the document.
 		/// </summary>
+		/// <remarks>This property can also be used to set the undo stack, e.g. for sharing a common undo stack between multiple documents.</remarks>
 		public UndoStack UndoStack {
 			get { return undoStack; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException();
+				if (value != undoStack) {
+					undoStack.ClearAll(); // first clear old undo stack, so that it can't be used to perform unexpected changes on this document
+					// ClearAll() will also throw an exception when it's not safe to replace the undo stack (e.g. update is currently in progress)
+					undoStack = value;
+					OnPropertyChanged("UndoStack");
+				}
+			}
 		}
 		
 		/// <summary>
@@ -752,6 +793,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Is raised when the LineCount property changes.
 		/// </summary>
+		[Obsolete("This event will be removed in a future version; use the PropertyChanged event instead")]
 		public event EventHandler LineCountChanged;
 		#endregion
 		

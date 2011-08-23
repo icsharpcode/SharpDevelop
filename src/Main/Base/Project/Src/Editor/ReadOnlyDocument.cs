@@ -18,6 +18,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 		
 		public ReadOnlyDocument(ITextBuffer textBuffer)
 		{
+			if (textBuffer == null)
+				throw new ArgumentNullException("textBuffer");
 			// ensure that underlying buffer is immutable
 			this.textBuffer = textBuffer.CreateSnapshot();
 			List<int> lines = new List<int>();
@@ -43,40 +45,37 @@ namespace ICSharpCode.SharpDevelop.Editor
 		{
 			readonly ReadOnlyDocument doc;
 			readonly int lineNumber;
+			readonly int offset, endOffset;
 			
 			public ReadOnlyDocumentLine(ReadOnlyDocument doc, int lineNumber)
 			{
 				this.doc = doc;
 				this.lineNumber = lineNumber;
+				this.offset = doc.GetStartOffset(lineNumber);
+				this.endOffset = doc.GetEndOffset(lineNumber);
 			}
 			
 			public int Offset {
-				get {
-					return doc.GetStartOffset(lineNumber);
-				}
+				get { return offset; }
 			}
 			
 			public int Length {
-				get {
-					return doc.GetEndOffset(lineNumber) - doc.GetStartOffset(lineNumber);
-				}
+				get { return endOffset - offset; }
 			}
 			
 			public int EndOffset {
-				get {
-					return doc.GetEndOffset(lineNumber);
-				}
+				get { return endOffset; }
 			}
 			
 			public int TotalLength {
 				get {
-					return doc.GetTotalEndOffset(lineNumber) - doc.GetStartOffset(lineNumber);
+					return doc.GetTotalEndOffset(lineNumber) - offset;
 				}
 			}
 			
 			public int DelimiterLength {
 				get {
-					return doc.GetTotalEndOffset(lineNumber) - doc.GetEndOffset(lineNumber);
+					return doc.GetTotalEndOffset(lineNumber) - endOffset;
 				}
 			}
 			
@@ -168,17 +167,22 @@ namespace ICSharpCode.SharpDevelop.Editor
 			get { return textBuffer.TextLength; }
 		}
 		
-		public void Insert(int offset, string text)
+		void IDocument.Insert(int offset, string text)
 		{
 			throw new NotSupportedException();
 		}
 		
-		public void Remove(int offset, int length)
+		void IDocument.Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
 		{
 			throw new NotSupportedException();
 		}
 		
-		public void Replace(int offset, int length, string newText)
+		void IDocument.Remove(int offset, int length)
+		{
+			throw new NotSupportedException();
+		}
+		
+		void IDocument.Replace(int offset, int length, string newText)
 		{
 			throw new NotSupportedException();
 		}
@@ -241,7 +245,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		
 		public ITextBuffer CreateSnapshot()
 		{
-			return this; // ReadOnlyDocument is immutable
+			return textBuffer; // textBuffer is immutable
 		}
 		
 		public ITextBuffer CreateSnapshot(int offset, int length)

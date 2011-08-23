@@ -103,7 +103,6 @@ namespace Debugger.Tests {
     </LocalVariables>
     <array.Length>
       <Value
-        AsString="4"
         PrimitiveValue="4"
         Type="System.Int32" />
     </array.Length>
@@ -112,7 +111,6 @@ namespace Debugger.Tests {
         ArrayDimensions="{2, 2}"
         ArrayLength="4"
         ArrayRank="2"
-        AsString="{System.Int32[,]}"
         GetArrayElements="{0, 1, 2, 3}"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -123,7 +121,6 @@ namespace Debugger.Tests {
         ArrayDimensions="{10..11, 20..21}"
         ArrayLength="4"
         ArrayRank="2"
-        AsString="{System.Char[,]}"
         GetArrayElements="{a, b, c, d}"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -131,7 +128,6 @@ namespace Debugger.Tests {
     </lbArray>
     <lbArray-10-20>
       <Value
-        AsString="a"
         PrimitiveValue="a"
         Type="System.Char" />
     </lbArray-10-20>

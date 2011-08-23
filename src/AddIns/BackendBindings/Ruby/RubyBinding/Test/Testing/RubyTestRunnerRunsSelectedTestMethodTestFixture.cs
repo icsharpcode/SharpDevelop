@@ -96,6 +96,7 @@ namespace RubyBinding.Tests.Testing
 			RunTestsOnSelectedTestMethod();
 			
 			string expectedCommandLine =
+				"--disable-gems " +
 				"\"-Ic:\\sharpdevelop\\addins\\rubybinding\\TestRunner\" " +
 				"\"c:\\sharpdevelop\\addins\\rubybinding\\TestRunner\\sdtest.rb\" " +
 				"--name=MyTestMethod " +

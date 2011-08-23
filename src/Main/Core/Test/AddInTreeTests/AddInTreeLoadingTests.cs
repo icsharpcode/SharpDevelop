@@ -193,6 +193,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(1, codons2.Count);
 			Assert.AreEqual("Codon2", codons2[0].Name);
 			Assert.AreEqual("Sub2", codons2[0].Id);
+			// condition is not inherited lexically
 			Assert.AreEqual(0, codons2[0].Conditions.Length);
 		}
 		

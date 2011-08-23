@@ -8,6 +8,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
+
 /// <summary>
 /// BaseClass for all Datahandling Strategies
 /// </summary>
@@ -18,8 +20,8 @@ using System.Linq;
 
 namespace ICSharpCode.Reports.Core {	
 	
-	
-	public static class SortExtension
+
+	internal static class SortExtension
 	{
 		
 		public static IOrderedQueryable<BaseComparer> AscendingOrder(this IQueryable<BaseComparer> source )
@@ -34,11 +36,11 @@ namespace ICSharpCode.Reports.Core {
 			return source.OrderByDescending(x => x.ObjectArray[0]);
 		}
 	}
-		
 	
-	internal  abstract class BaseListStrategy :IDataViewStrategy,IEnumerator {
+	
+	internal  abstract class BaseListStrategy :IDataViewStrategy,IEnumerator
+	{
 
-		private IndexList indexList;
 		private AvailableFieldsCollection availableFields;
 		
 
@@ -50,25 +52,11 @@ namespace ICSharpCode.Reports.Core {
 				throw new ArgumentNullException("reportSettings");
 			}
 			this.ReportSettings = reportSettings;
-			this.indexList = new IndexList("IndexList");
+			this.IndexList = new IndexList("IndexList");
+			ExpressionEvaluator = new ExpressionEvaluatorFacade (null);
 		}
 		
 		#endregion
-		
-		
-		public IndexList IndexList
-		{
-			get {
-				return indexList;
-			}
-			set {
-				this.indexList = value;
-			}
-		}
-		
-		
-		protected ReportSettings ReportSettings {get;private set;}
-	
 		
 		#region Sorting delegates
 		
@@ -99,18 +87,28 @@ namespace ICSharpCode.Reports.Core {
 			IndexList childList = null;
 			foreach (BaseComparer element in list)
 			{
-				string v = element.ObjectArray[0].ToString();
-				if (compVal != v) {
+				string groupValue = ExtractValue (element);
+				
+				if (compVal != groupValue) {
 					childList = new IndexList();
 					GroupComparer gc = CreateGroupHeader(element);
 					gc.IndexList = childList;
-					CreateGroupeChildren(childList,element);
-				} else {
-					CreateGroupeChildren(childList,element);
 				}
-				compVal = v;
+				CreateGroupedChildren(childList,element);
+				compVal = groupValue;
 			}
-			ShowIndexList(IndexList);
+//			ShowIndexList(IndexList);
+		}
+		
+		
+		static string ExtractValue(BaseComparer element)
+		{
+			string val = String.Empty;
+			GroupColumn gc = element.ColumnCollection[0] as GroupColumn;
+			if (gc !=  null) {
+				val = element.ObjectArray[0].ToString();
+			}
+			return val;
 		}
 		
 		
@@ -122,7 +120,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		protected static void CreateGroupeChildren(IndexList list,BaseComparer sc)
+		protected static void CreateGroupedChildren(IndexList list,BaseComparer sc)
 		{
 			list.Add(sc);
 		}
@@ -133,14 +131,13 @@ namespace ICSharpCode.Reports.Core {
 		
 		protected  static void ShowIndexList (IndexList list)
 		{
+			
 			foreach (BaseComparer element in list) {
 				string s = String.Format("{0} ",element.ObjectArray[0]);
 				GroupComparer gc = element as GroupComparer;
-				
 				if ( gc != null) {
 					s = s + "GroupHeader";
 					if (gc.IndexList != null) {
-						
 						s = s + String.Format(" <{0}> Childs",gc.IndexList.Count);
 					}
 					System.Console.WriteLine(s);
@@ -151,11 +148,12 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
+		
 		#endregion
 		
 		public  virtual void Reset()
 		{
-			this.indexList.CurrentPosition = -1;
+			this.IndexList.CurrentPosition = -1;
 		}
 		
 		
@@ -169,8 +167,8 @@ namespace ICSharpCode.Reports.Core {
 		
 		public virtual bool MoveNext()
 		{
-			this.indexList.CurrentPosition ++;
-			return this.indexList.CurrentPosition<this.indexList.Count;
+			this.IndexList.CurrentPosition ++;
+			return this.IndexList.CurrentPosition<this.IndexList.Count;
 		}
 		
 		#region test
@@ -179,7 +177,19 @@ namespace ICSharpCode.Reports.Core {
 		{
 			return new CurrentItemsCollection();
 		}
+
 		
+		public virtual object CurrentFromPosition (int pos)
+		{
+			throw new NotImplementedException();
+		}
+		
+
+        public virtual CurrentItemsCollection FillDataRow(int pos)
+        {
+            return FillDataRow();
+        }
+        
 		#endregion
 		
 		#region SharpReportCore.IDataViewStrategy interface implementation
@@ -206,69 +216,25 @@ namespace ICSharpCode.Reports.Core {
 		public virtual int CurrentPosition
 		{
 			get {
-				return this.indexList.CurrentPosition;
+				return this.IndexList.CurrentPosition;
 			}
 			set {
-				if ((value > -1)|| (value > this.indexList.Count)){
-					this.indexList.CurrentPosition = value;
+				if ((value > -1)|| (value > this.IndexList.Count)){
+					this.IndexList.CurrentPosition = value;
 				}
 			}
 		}
 		
 		
-		public bool HasMoreData
-		{
-			get {
-				return true;
-			}
-		}
-		
-		
-		public virtual bool IsSorted {get;set;}
-		
-		
-		
-		public bool IsGrouped {get;set;}
-		
-		/*
-		public bool IsFiltered
-		{
-			get {
-				return this.isFiltered;
-			} set {
-				this.isFiltered = value;
-			}
-		}
-		*/
-		
-		
-		
-		
-		/*
-		protected virtual void Group() 
-		{
-			if (this.indexList != null) {
-				this.isGrouped = true;
-				this.isSorted = true;
-			} else {
-				throw new ReportException ("BaseListStrategy:Group Sorry, no IndexList");
-			}
-		
-		}
-		*/
-		
-		
 		public virtual void Sort() 
 		{
-			this.indexList.Clear();
+			this.IndexList.Clear();
 		}
 		
 		
 		public virtual void Group()
 		{
-			this.indexList.Clear();
-			this.IsGrouped = true;
-			
+			this.IndexList.Clear();
 		}
 		
 		public virtual void Bind() 
@@ -277,28 +243,26 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
+		public virtual  void Fill(int position,ReportItemCollection collection)
+		{
+			throw new NotImplementedException();
+		}
+		
+		
 		public  virtual void Fill(IDataItem item)
 		{
 		}
 		
 		
-		/*
-		public IndexList ChildRows 
-		{
-			get {
-				if (this.IsGrouped == true) {
-					GroupSeparator gs = (GroupSeparator)this.indexList[this.CurrentRow] as GroupSeparator;
-					if (gs != null) {
-						return (gs.GetChildren);
-					} else {
-						return null;
-					}
-				} else {
-					return null;
-				}
-			}
-		}
-		*/
+		protected ReportSettings ReportSettings {get;set;}
+		
+		public IndexList IndexList {get; set;}
+		
+		public IExpressionEvaluatorFacade ExpressionEvaluator {get;private set;}
+		
+		#endregion
+		
+		#region IDisposeable
 		
 		public virtual void Dispose()
 		{
@@ -314,9 +278,9 @@ namespace ICSharpCode.Reports.Core {
 		{
 			if (disposing) {
 				// Free other state (managed objects).
-				if (this.indexList != null) {
-					this.indexList.Clear();
-					this.indexList = null;
+				if (this.IndexList != null) {
+					this.IndexList.Clear();
+					this.IndexList = null;
 				}
 			}
 			
@@ -324,7 +288,8 @@ namespace ICSharpCode.Reports.Core {
 			// Set large fields to null.
 			// Call Dispose on your base class.
 		}
-		#endregion
 		
+		#endregion
+	
 	}
 }

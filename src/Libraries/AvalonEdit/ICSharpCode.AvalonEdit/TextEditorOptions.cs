@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Reflection;
 using System.Text;
 
 namespace ICSharpCode.AvalonEdit
@@ -13,6 +14,31 @@ namespace ICSharpCode.AvalonEdit
 	[Serializable]
 	public class TextEditorOptions : INotifyPropertyChanged
 	{
+		#region ctor
+		/// <summary>
+		/// Initializes an empty instance of TextEditorOptions.
+		/// </summary>
+		public TextEditorOptions()
+		{
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of TextEditorOptions by copying all values
+		/// from <paramref name="options"/> to the new instance.
+		/// </summary>
+		public TextEditorOptions(TextEditorOptions options)
+		{
+			// get all the fields in the class
+			FieldInfo[] fields = typeof(TextEditorOptions).GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+			
+			// copy each value over to 'this'
+			foreach(FieldInfo fi in fields) {
+				if (!fi.IsNotSerialized)
+					fi.SetValue(this, fi.GetValue(options));
+			}
+		}
+		#endregion
+		
 		#region PropertyChanged handling
 		/// <inheritdoc/>
 		[field: NonSerialized]
@@ -264,6 +290,75 @@ namespace ICSharpCode.AvalonEdit
 				if (allowScrollBelowDocument != value) {
 					allowScrollBelowDocument = value;
 					OnPropertyChanged("AllowScrollBelowDocument");
+				}
+			}
+		}
+		
+		double wordWrapIndentation = 0;
+		
+		/// <summary>
+		/// Gets/Sets the indentation used for all lines except the first when word-wrapping.
+		/// The default value is 0.
+		/// </summary>
+		[DefaultValue(0.0)]
+		public virtual double WordWrapIndentation {
+			get { return wordWrapIndentation; }
+			set {
+				if (double.IsNaN(value) || double.IsInfinity(value))
+					throw new ArgumentOutOfRangeException("value", value, "value must not be NaN/infinity");
+				if (value != wordWrapIndentation) {
+					wordWrapIndentation = value;
+					OnPropertyChanged("WordWrapIndentation");
+				}
+			}
+		}
+		
+		bool inheritWordWrapIndentation = true;
+		
+		/// <summary>
+		/// Gets/Sets whether the indentation is inherited from the first line when word-wrapping.
+		/// The default value is true.
+		/// </summary>
+		/// <remarks>When combined with <see cref="WordWrapIndentation"/>, the inherited indentation is added to the word wrap indentation.</remarks>
+		[DefaultValue(true)]
+		public virtual bool InheritWordWrapIndentation {
+			get { return inheritWordWrapIndentation; }
+			set {
+				if (value != inheritWordWrapIndentation) {
+					inheritWordWrapIndentation = value;
+					OnPropertyChanged("InheritWordWrapIndentation");
+				}
+			}
+		}
+		
+		bool enableRectangularSelection = true;
+		
+		/// <summary>
+		/// Enables rectangular selection (press ALT and select a rectangle)
+		/// </summary>
+		[DefaultValue(true)]
+		public bool EnableRectangularSelection {
+			get { return enableRectangularSelection; }
+			set {
+				if (enableRectangularSelection != value) {
+					enableRectangularSelection = value;
+					OnPropertyChanged("AllowRectangularSelection");
+				}
+			}
+		}
+		
+		bool enableTextDragDrop = true;
+		
+		/// <summary>
+		/// Enable dragging text within the text area.
+		/// </summary>
+		[DefaultValue(true)]
+		public bool EnableTextDragDrop {
+			get { return enableTextDragDrop; }
+			set {
+				if (enableTextDragDrop != value) {
+					enableTextDragDrop = value;
+					OnPropertyChanged("EnableTextDrag");
 				}
 			}
 		}

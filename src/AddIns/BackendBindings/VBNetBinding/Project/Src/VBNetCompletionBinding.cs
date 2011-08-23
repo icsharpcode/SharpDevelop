@@ -38,6 +38,11 @@ namespace ICSharpCode.VBNetBinding
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
+			if (LanguageUtils.IsInsideDocumentationComment(editor) && ch == '<') {
+				new CommentCompletionItemProvider().ShowCompletion(editor);
+				return CodeCompletionKeyPressResult.Completed;
+			}
+			
 			if (IsInComment(editor) || IsInString(editor))
 				return CodeCompletionKeyPressResult.None;
 			
@@ -62,7 +67,6 @@ namespace ICSharpCode.VBNetBinding
 						if (insightWindow != null) {
 							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
 							insightHandler.HighlightParameter(insightWindow, 0);
-							insightWindow.CaretPositionChanged += delegate { Run(insightWindow, editor); };
 						}
 						return CodeCompletionKeyPressResult.Completed;
 					}
@@ -70,14 +74,8 @@ namespace ICSharpCode.VBNetBinding
 				case ',':
 					if (CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled) {
 						IInsightWindow insightWindow;
-						editor.Document.Insert(editor.Caret.Offset, ",");
-						if (insightHandler.InsightRefreshOnComma(editor, ch, out insightWindow)) {
-							if (insightWindow != null) {
-								insightHandler.HighlightParameter(insightWindow, GetArgumentIndex(editor) + 1);
-								insightWindow.CaretPositionChanged += delegate { Run(insightWindow, editor); };;
-							}
-						}
-						return CodeCompletionKeyPressResult.EatKey;
+						if (insightHandler.InsightRefreshOnComma(editor, ch, out insightWindow))
+							return CodeCompletionKeyPressResult.Completed;
 					}
 					break;
 				case '\n':
@@ -93,8 +91,10 @@ namespace ICSharpCode.VBNetBinding
 					
 					result = ef.FindExpression(editor.Document.Text, index);
 					LoggingService.Debug("CC: After dot, result=" + result + ", context=" + result.Context);
-					ShowCompletion(result, editor, ch);
-					return CodeCompletionKeyPressResult.Completed;
+					if (ShowCompletion(result, editor, ch))
+						return CodeCompletionKeyPressResult.Completed;
+					else
+						return CodeCompletionKeyPressResult.None;
 				case '@':
 					if (editor.Caret.Offset > 0 && editor.Document.GetCharAt(editor.Caret.Offset - 1) == '.')
 						return CodeCompletionKeyPressResult.None;
@@ -123,6 +123,10 @@ namespace ICSharpCode.VBNetBinding
 								return CodeCompletionKeyPressResult.None;
 							if (IsTypeCharacter(ch, prevChar))
 								return CodeCompletionKeyPressResult.None;
+							if (prevChar == '_') {
+								result.Expression = '_' + result.Expression;
+								result.Region = new DomRegion(result.Region.BeginLine, result.Region.BeginColumn - 1, result.Region.EndLine, result.Region.EndColumn);
+							}
 							LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
 							ShowCompletion(result, editor, ch);
 							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
@@ -132,26 +136,6 @@ namespace ICSharpCode.VBNetBinding
 			}
 			
 			return CodeCompletionKeyPressResult.None;
-		}
-		
-		void Run(IInsightWindow insightWindow, ITextEditor editor)
-		{
-			insightHandler.HighlightParameter(insightWindow, GetArgumentIndex(editor));
-		}
-		
-		static int GetArgumentIndex(ITextEditor editor)
-		{
-			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, editor.Document.CreateReader());
-			ExpressionFinder ef = new ExpressionFinder();
-			
-			Token t = lexer.NextToken();
-			
-			while (t.Kind != Tokens.EOF && t.Location < editor.Caret.Position) {
-				ef.InformToken(t);
-				t = lexer.NextToken();
-			}
-			
-			return ef.ActiveArgument;
 		}
 		
 		static bool IsTypeCharacter(char ch, char prevChar)
@@ -172,11 +156,12 @@ namespace ICSharpCode.VBNetBinding
 			return false;
 		}
 
-		static void ShowCompletion(ExpressionResult result, ITextEditor editor, char ch)
+		static bool ShowCompletion(ExpressionResult result, ITextEditor editor, char ch)
 		{
 			VBNetCompletionItemList list = CompletionDataHelper.GenerateCompletionData(result, editor, ch);
 			list.Editor = editor;
 			list.Window = editor.ShowCompletionWindow(list);
+			return list.Items.Any();
 		}
 		
 		#region Helpers

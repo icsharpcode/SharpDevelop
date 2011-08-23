@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<Template author="Siegfried Pammer" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.WinFXPageFunction.Name}"
+		  icon        = "Icons.32x32.XMLFileIcon"
+		  category    = "VB"
+		  subcategory = "WPF"
+		  defaultname = "PageFunction${Number}.xaml"
+		  language    = "XML"/>
+	 
+	<Description>${res:Templates.File.WinFXPageFunction.Name}</Description>
+	
+	<References>
+		<Reference include="PresentationCore">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+		<Reference include="PresentationFramework">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+		<Reference include="WindowsBase">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+	</References>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".vb"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<PageFunction
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+    x:Class="${FileNameWithoutExtension}"
+    x:TypeArguments="sys:String"
+    Title="${FileNameWithoutExtension}">
+  <Grid>
+
+  </Grid>
+</PageFunction>]]></File>
+		<File name="${FullName}.vb" language="VBNET" DependentUpon="${FileName}" SubType="Code"><![CDATA[${StandardHeader.VBNET}
+Imports System.Collections.Generic
+Imports System.Text
+Imports System.Windows
+Imports System.Windows.Controls
+Imports System.Windows.Data
+Imports System.Windows.Documents
+Imports System.Windows.Input
+Imports System.Windows.Media
+Imports System.Windows.Media.Imaging
+Imports System.Windows.Navigation
+Imports System.Windows.Shapes
+
+''' <summary>
+''' Interaction logic for ${FileName}
+''' </summary>
+
+Public Partial Class ${FileNameWithoutExtension}
+	Inherits PageFunction(Of String)
+
+	Public Sub New()
+		InitializeComponent()
+	End Sub
+
+	' The OnLoaded handler can be run automatically when the class is loaded. To use it, add Loaded="OnLoaded" to the attributes of the root element of the .xaml file and uncomment the following line.
+	' Private Sub OnLoaded(sender As Object, e As RoutedEventArgs)
+	' End Sub
+	'
+	' Sample Finish Handler
+	' Private Sub OnClickDone(sender As Object, e As RoutedEventArgs)
+	'     OnFinish(New ReturnEventArgs(Of String)("The return value"))
+	' End Sub
+
+	' To launch this page function, put this code in the launching page.
+	' Dim pageFunction As New ${FileNameWithoutExtension}()
+	' pageFunction.[Return] += New ReturnEventHandler(Of String)(OnFileNameWithoutExtensionReturned)
+	' _NavWin.Navigate(pageFunction)
+	'
+	' This handler goes in the launching page.
+	' Public Sub On${FileNameWithoutExtension}Returned(sender As Object, e As ReturnEventArgs(Of String))
+	'     Console.WriteLine("${FileNameWithoutExtension} returned: " & e.Result)
+	' End Sub
+	
+End Class]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+

@@ -83,16 +83,16 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 
         #region Constructor
 
-        public EDMDesignerViewContent(OpenedFile primaryFile)
-            : base(primaryFile)
-		{           
-            if (primaryFile == null)
+		public EDMDesignerViewContent(OpenedFile primaryFile)
+			: base(primaryFile)
+		{
+			if (primaryFile == null)
 				throw new ArgumentNullException("primaryFile");
 			
 			primaryFile.ForceInitializeView(this); // call Load()
 
-            EDMDesignerChangeWatcher.AddEDMDesignerViewContent(this);
-        }
+			EDMDesignerChangeWatcher.AddEDMDesignerViewContent(this);
+		}
 
         #endregion
 
@@ -118,7 +118,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
                 if (wizard.DialogResult == true)
                     _edmView = new EDMView(wizard.EDMXDocument, readMoreAction);
                 else
-                    return;
+                    throw new WizardCancelledException();
             }
 
             // Load or generate DesignerView and EntityTypeDesigners

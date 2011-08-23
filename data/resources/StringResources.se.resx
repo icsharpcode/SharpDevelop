@@ -4206,18 +4206,6 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   <data name="SharpDevelop.Solution.CannotSave.IOException" xml:space="preserve">
     <value>Kunde inte spara {0}:\n{1}</value>
   </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Hittade Visual Studio.NET projekt. Skall jag konvertera det till Solution Format 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Hittade Visual Studio.NET 2003 projekt. Skall jag konvertera det till Solution Format 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Skall SharpDevelop 1.x samlingen konverteras till en SharpDevelop 2.x samling?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Skall SharpDevelop 1.x projektet konverteras till ett SharpDevelop 2.x projekt?</value>
-  </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Det finns resursfiler i projektet.
 SharpDevelop 2 kompilerar resurser lite annorlunda: resursnamnet består inte enbart av filnamnet utan börjar med rot namespace följt av mappnamnet.
@@ -5079,7 +5067,7 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Öppna ny buffert</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Samling...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

@@ -7,10 +7,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -50,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public virtual void Dispose()
 		{
 			WorkbenchSingleton.AssertMainThread();
-			
+			watcher.Dispose();
 			isDisposed = true;
 			if (Disposed != null) {
 				Disposed(this, EventArgs.Empty);
@@ -69,6 +72,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			WorkbenchSingleton.AssertMainThread();
 			
+			// breakpoints and files
 			Properties properties = new Properties();
 			properties.Set("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(this).ToArray());
 			List<string> files = new List<string>();
@@ -78,6 +82,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			properties.Set("files", files.ToArray());
+			
+			// web project properties
+			var webOptions = WebProjectsOptions.Instance.GetWebProjectOptions(Name);
+			if (webOptions != null)
+				properties.Set("WebProjectOptions", webOptions);
+			
+			// other project data
+			properties.Set("projectSavedData", ProjectSpecificProperties ?? new Properties());
+			
 			return properties;
 		}
 		
@@ -91,12 +104,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (string fileName in memento.Get("files", new string[0])) {
 				filesToOpenAfterSolutionLoad.Add(fileName);
 			}
+			
+			// web project properties
+			WebProjectsOptions.Instance.SetWebProjectOptions(Name, memento.Get("WebProjectOptions", new WebProjectOptions()) as WebProjectOptions);
+			
+			// other project data
+			ProjectSpecificProperties = memento.Get("projectSavedData", new Properties());
 		}
 		#endregion
 		
 		#region Filename / Directory
 		volatile string fileName;
 		string cachedDirectoryName;
+		protected IProjectChangeWatcher watcher;
 		
 		/// <summary>
 		/// Gets the name of the project file.
@@ -114,6 +134,18 @@ namespace ICSharpCode.SharpDevelop.Project
 					throw new ArgumentNullException();
 				WorkbenchSingleton.AssertMainThread();
 				Debug.Assert(FileUtility.IsUrl(value) || Path.IsPathRooted(value));
+				
+				if (WorkbenchSingleton.Workbench == null)
+					watcher = new MockProjectChangeWatcher();
+				
+				if (watcher == null) {
+					watcher = new ProjectChangeWatcher(value);
+					watcher.Enable();
+				} else {
+					watcher.Disable();
+					watcher.Rename(value);
+					watcher.Enable();
+				}
 				
 				lock (SyncRoot) { // locking still required for Directory
 					fileName = value;
@@ -358,6 +390,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
+		public virtual bool IsWebProject {
+			get {
+				return false;
+			}
+		}
+		
 		public virtual void Start(bool withDebugging)
 		{
 			ProcessStartInfo psi;
@@ -367,7 +406,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				MessageService.ShowError(ex.Message);
 				return;
 			}
-			if (withDebugging && !FileUtility.IsUrl(psi.FileName)) {
+			if (withDebugging) {
 				DebuggerService.CurrentDebugger.Start(psi);
 			} else {
 				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
@@ -547,6 +586,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void ProjectCreationComplete()
 		{
+		}
+		
+		public virtual XElement LoadProjectExtensions(string name)
+		{
+			return new XElement(name);
+		}
+		
+		public virtual void SaveProjectExtensions(string name, XElement element)
+		{
+		}
+		
+		public Properties ProjectSpecificProperties {
+			get; protected set;
 		}
 	}
 }

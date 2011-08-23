@@ -443,6 +443,34 @@ namespace ICSharpCode.Svn
 			}
 		}
 		
+		public Stream OpenBaseVersion(string fileName)
+		{
+			MemoryStream stream = new MemoryStream();
+			if (!this.client.Write(fileName, stream, new SvnWriteArgs() { Revision = SvnRevision.Base, ThrowOnError = false }))
+				return null;
+			stream.Seek(0, SeekOrigin.Begin);
+			return stream;
+		}
+		
+		public Stream OpenCurrentVersion(string fileName)
+		{
+			MemoryStream stream = new MemoryStream();
+			if (!this.client.Write(fileName, stream, new SvnWriteArgs() { Revision = SvnRevision.Working }))
+				return null;
+			stream.Seek(0, SeekOrigin.Begin);
+			return stream;
+		}
+		
+		public static bool IsInSourceControl(string fileName)
+		{
+			if (Commands.RegisterEventsCommand.CanBeVersionControlledFile(fileName)) {
+				StatusKind status = OverlayIconManager.GetStatus(fileName);
+				return status != StatusKind.None && status != StatusKind.Unversioned && status != StatusKind.Ignored;
+			} else {
+				return false;
+			}
+		}
+		
 		static StatusKind ToStatusKind(SvnStatus kind)
 		{
 			switch (kind) {

@@ -158,6 +158,8 @@ namespace ICSharpCode.Reports.Core
 			}
 			return ExtendedTypeDescriptor.GetProperties(elementType);
 		}
+		
+		
 		public string GetListName(PropertyDescriptor[] listAccessors){
 			return elementType.Name;
 		}

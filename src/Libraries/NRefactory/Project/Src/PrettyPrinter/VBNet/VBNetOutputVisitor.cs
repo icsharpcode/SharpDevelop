@@ -2512,7 +2512,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			OutputAnonymousMethodWithStatementBody(anonymousMethodExpression.Parameters, anonymousMethodExpression.Body);
+			UnsupportedNode(anonymousMethodExpression);
 			return null;
 		}
 		
@@ -2986,30 +2986,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				
 				return null;
 			}
-		}
-		
-		void OutputAnonymousMethodWithStatementBody(List<ParameterDeclarationExpression> parameters, Statement body)
-		{
-			Error("VB does not support anonymous methods/lambda expressions with a statement body", body.StartLocation);
-			
-			outputFormatter.PrintToken(Tokens.Function);
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(parameters);
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.Do);
-			outputFormatter.NewLine();
-			
-			++outputFormatter.IndentationLevel;
-			exitTokenStack.Push(Tokens.Function);
-			body.AcceptVisitor(this, null);
-			exitTokenStack.Pop();
-			--outputFormatter.IndentationLevel;
-			
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.End);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.Function);
 		}
 		
 		public override object TrackedVisitQueryExpressionVB(QueryExpressionVB queryExpression, object data)

@@ -202,6 +202,19 @@ End Class", "Test2", ExpressionContext.Default);
 	End Sub
 End Class", "Double", ExpressionContext.MethodBody);
 		}
+		
+		[Test]
+		public void FindExpressionAfterWordBegin()
+		{
+			Find(@"Class MainClass
+	Dim test As Integer
+	Sub Main()
+		If Me.test i| Then
+		
+		End If
+	End Sub
+End Class", "i", ExpressionContext.Default);
+		}
 		#endregion
 		
 		#region Context Tests
@@ -620,6 +633,36 @@ End Module", "FileReader()", ExpressionContext.ObjectCreation);
 		End Using
 	End Sub
 End Module", "FileReader()", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void FunctionLambda()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		Dim f = Fun|ction(x, y) x + y
+	End Sub
+End Module", "Function(x, y) x + y", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void SubLambda()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		Dim f = Su|b(x, y) Console.WriteLine(x + y)
+	End Sub
+End Module", "Sub(x, y) Console.WriteLine(x + y)", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void NewExpression()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		Dim list = N|ew List(Of Integer)
+	End Sub
+End Module", "New List(Of Integer)", ExpressionContext.Default);
 		}
 		
 		#region Old Tests

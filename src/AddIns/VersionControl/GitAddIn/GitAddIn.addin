@@ -18,6 +18,11 @@
 		       class = "ICSharpCode.GitAddIn.RegisterEventsCommand"/>
 	</Path>
 	
+	<Path name="/Workspace/DocumentVersionProviders">
+		<Class id="git"
+		       class="ICSharpCode.GitAddIn.GitVersionProvider" />
+	</Path>
+	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem">
 		<Condition name = "IsUnderGitControl">
 			<MenuItem id = "GitSeparator" type = "Separator"/>

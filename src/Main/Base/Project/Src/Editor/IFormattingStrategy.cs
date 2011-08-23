@@ -76,20 +76,23 @@ namespace ICSharpCode.SharpDevelop.Editor
 				Location startPosition = editor.Document.OffsetToPosition(editor.SelectionStart);
 				Location endPosition = editor.Document.OffsetToPosition(editor.SelectionStart + editor.SelectionLength);
 				
+				// endLine is one above endPosition if no characters are selected on the last line (e.g. line selection from the margin)
+				int endLine = (endPosition.Column == 1 && endPosition.Line > startPosition.Line) ? endPosition.Line - 1 : endPosition.Line;
+				
 				List<IDocumentLine> lines = new List<IDocumentLine>();
 				bool removeComment = true;
 				
-				for (int i = startPosition.Line; i <= endPosition.Line; i++) {
+				for (int i = startPosition.Line; i <= endLine; i++) {
 					lines.Add(editor.Document.GetLine(i));
-					if (!lines[i - startPosition.Line].Text.Trim().StartsWith(comment))
+					if (!lines[i - startPosition.Line].Text.Trim().StartsWith(comment, StringComparison.Ordinal))
 						removeComment = false;
 				}
 				
 				foreach (IDocumentLine line in lines) {
 					if (removeComment) {
-						editor.Document.Remove(line.Offset + line.Text.IndexOf(comment), comment.Length);
+						editor.Document.Remove(line.Offset + line.Text.IndexOf(comment, StringComparison.Ordinal), comment.Length);
 					} else {
-						editor.Document.Insert(line.Offset, comment);
+						editor.Document.Insert(line.Offset, comment, AnchorMovementType.BeforeInsertion);
 					}
 				}
 			}

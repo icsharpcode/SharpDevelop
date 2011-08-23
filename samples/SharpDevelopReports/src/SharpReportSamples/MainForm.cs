@@ -13,7 +13,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Reports.Core;
-using ICSharpCode.Reports.Core.old_Exporter.ExportRenderer;
+using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
 
 namespace SharpReportSamples
 {
@@ -98,9 +98,7 @@ namespace SharpReportSamples
 				this.RunContributors(reportName);
 			}
 			else if (s == "ContributorsListWithParameters"){
-				//this.V1_RunContributorsWithParameters(reportName);
-//				this.V2_RunContributorsWithParameters(string fileName)
-				this.V3_RunContributorsWithParameters(reportName);
+				this.RunContributorsWithParameters(reportName);
 			}
 			         
 			else if (s == "NoConnectionReport") {
@@ -155,6 +153,9 @@ namespace SharpReportSamples
 		private void RunContributors (string fileName)
 		{
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
+//			Console.WriteLine(model.ReportSettings.PageSize);
+//			model.ReportSettings.PageSize = new Size(model.ReportSettings.PageSize.Width,400);
+//			Console.WriteLine(model.ReportSettings.PageSize);
 			
 			// sorting is done here, but, be carefull, misspelled fieldnames will cause an exception
 			
@@ -221,7 +222,7 @@ namespace SharpReportSamples
 		}
 		
 		
-		private void V3_RunContributorsWithParameters(string fileName)
+		private void RunContributorsWithParameters(string fileName)
 		{
 			var model = ReportEngine.LoadReportModel(fileName);
 			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
@@ -231,10 +232,6 @@ namespace SharpReportSamples
 			
 			
 			List<Contributor> list = ContributorsReportData.CreateContributorsList();
-//			IDataManager dataManager = DataManager.CreateInstance(list,model.ReportSettings);
-			
-		
-			//IReportCreator creator = ReportEngine.CreatePageBuilder(model,eventLogger.EventLog,null);
 			
 			IReportCreator creator = ReportEngine.CreatePageBuilder(model,list,parameters);
 			
@@ -291,7 +288,7 @@ namespace SharpReportSamples
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
 			IDataManager dataManager = DataManager.CreateInstance(eLog.EventLog,model.ReportSettings);
 			
-			this.previewControl1.SectionRendering += PushPrinting;
+//			this.previewControl1.SectionRendering += PushPrinting;
 			
 			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
 		
@@ -308,7 +305,7 @@ namespace SharpReportSamples
 		private void PushPrinting (object sender, SectionRenderEventArgs e )
 		{
 			string sectionName = e.Section.Name;
-			
+			/*
 			if (sectionName == ReportSectionNames.ReportHeader) {
 				Console.WriteLine("PushPrinting  :" + ReportSectionNames.ReportHeader);
 			} 
@@ -378,6 +375,7 @@ namespace SharpReportSamples
 			else{
 				throw new WrongSectionException(sectionName);
 			}
+			*/
 		}
 		
 		

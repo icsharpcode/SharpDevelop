@@ -5,24 +5,27 @@ using System;
 
 namespace ICSharpCode.Core
 {
-	public delegate void FileNameEventHandler(object sender, FileNameEventArgs e);
-	
 	/// <summary>
-	/// Description of FileEventHandler.
+	/// EventArgs with a file name.
 	/// </summary>
 	public class FileNameEventArgs : System.EventArgs
 	{
-		string fileName;
+		FileName fileName;
 		
-		public string FileName {
+		public FileName FileName {
 			get {
 				return fileName;
 			}
 		}
 		
-		public FileNameEventArgs(string fileName)
+		public FileNameEventArgs(FileName fileName)
 		{
 			this.fileName = fileName;
+		}
+		
+		public FileNameEventArgs(string fileName)
+		{
+			this.fileName = FileName.Create(fileName);
 		}
 	}
 }

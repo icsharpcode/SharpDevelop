@@ -1,9 +1,10 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.Core;
 using System;
 using System.Windows.Media;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -72,7 +73,7 @@ namespace ICSharpCode.SharpDevelop
 		void UpdateEnabled()
 		{
 			bool newEnabled = textEditor.Options.UnderlineErrors;
-			if (DebuggerService.IsDebuggerLoaded && DebuggerService.CurrentDebugger.IsDebugging)
+			if (DebuggerService.IsDebuggerStarted)
 				newEnabled = false;
 			
 			if (isEnabled != newEnabled) {
@@ -132,7 +133,9 @@ namespace ICSharpCode.SharpDevelop
 			if (task.Line >= 1 && task.Line <= textEditor.Document.TotalNumberOfLines) {
 				LoggingService.Debug(task.ToString());
 				int offset = textEditor.Document.PositionToOffset(task.Line, task.Column);
-				int length = textEditor.Document.GetWordAt(offset).Length;
+				int endOffset = TextUtilities.GetNextCaretPosition(DocumentUtilitites.GetTextSource(textEditor.Document), offset, System.Windows.Documents.LogicalDirection.Forward, CaretPositioningMode.WordBorderOrSymbol);
+				if (endOffset < 0) endOffset = textEditor.Document.TextLength;
+				int length = endOffset - offset;
 				
 				if (length < 2) {
 					// marker should be at least 2 characters long, but take care that we don't make

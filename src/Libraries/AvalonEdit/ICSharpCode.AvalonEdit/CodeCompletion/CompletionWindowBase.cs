@@ -5,9 +5,9 @@ using System;
 using System.Linq;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
@@ -159,7 +159,18 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		void TextViewScrollOffsetChanged(object sender, EventArgs e)
 		{
-			UpdatePosition();
+			// Workaround for crash #1580 (reproduction steps unknown):
+			// NullReferenceException in System.Windows.Window.CreateSourceWindow()
+			if (!sourceIsInitialized)
+				return;
+			
+			IScrollInfo scrollInfo = this.TextArea.TextView;
+			Rect visibleRect = new Rect(scrollInfo.HorizontalOffset, scrollInfo.VerticalOffset, scrollInfo.ViewportWidth, scrollInfo.ViewportHeight);
+			// close completion window when the user scrolls so far that the anchor position is leaving the visible area
+			if (visibleRect.Contains(visualLocation) || visibleRect.Contains(visualLocationTop))
+				UpdatePosition();
+			else
+				Close();
 		}
 		
 		void TextAreaDocumentChanged(object sender, EventArgs e)
@@ -251,6 +262,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			}
 		}
 		
+		bool sourceIsInitialized;
+		
 		/// <inheritdoc/>
 		protected override void OnSourceInitialized(EventArgs e)
 		{
@@ -261,6 +274,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			} else {
 				SetPosition(this.TextArea.Caret.Position);
 			}
+			sourceIsInitialized = true;
 		}
 		
 		/// <inheritdoc/>

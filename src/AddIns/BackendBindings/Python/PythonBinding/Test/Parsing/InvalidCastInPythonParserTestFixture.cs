@@ -34,9 +34,10 @@ namespace PythonBinding.Tests.Parsing
 	[TestFixture]
 	public class InvalidCastInPythonParserTestFixture
 	{
-		string code = "class Project(id): \r\n" +
-					  "    def __init__ Project_ID(): \r\n" +
-					  "        #i\r\n";
+		string code =
+			"class Project(id): \r\n" +
+			"    def __init__ Project_ID(): \r\n" +
+			"        #i\r\n";
 		
 		/// <summary>
 		/// Check that IronPython bug has been fixed exists.

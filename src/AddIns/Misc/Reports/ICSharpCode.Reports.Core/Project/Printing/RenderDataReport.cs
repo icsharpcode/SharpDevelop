@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 
 /// <summary>
@@ -132,7 +133,7 @@ namespace ICSharpCode.Reports.Core {
 				this.ReportDocument.ReportHasData = false;
 				PrintNoDataMessage(rpea.PrintPageEventArgs);
 			}	
-			base.CurrentSection.SectionOffset = (int)base.SectionBounds.DetailStart.Y + GlobalValues.GapBetweenContainer;
+			base.CurrentSection.SectionOffset = base.SectionBounds.DetailArea.Top + GlobalValues.GapBetweenContainer;
 		}
 		
 		
@@ -155,12 +156,19 @@ namespace ICSharpCode.Reports.Core {
 				rpea.PrintPageEventArgs.HasMorePages = false;
 				return;
 			}
-			
+		
 			ITableContainer tableContainer = base.CurrentSection.Items[0] as ITableContainer;
+			
+			IBaseRenderer r = PrintRendererFactory.CreateRenderer(base.CurrentSection.Items[0],nav,base.SinglePage,base.Layout,CurrentSection);
+			if ( r != null) {
+//				r.Render(tableContainer,rpea,Evaluator);
+			}
+			
 			
 			// branch to render table's etc
 			if (tableContainer != null)
 			{
+				
 				tableContainer.DataNavigator = nav;
 				tableContainer.Parent = base.CurrentSection;
 				if (rpea.SinglePage.PageNumber == 1) {
@@ -175,7 +183,8 @@ namespace ICSharpCode.Reports.Core {
 				this.ReportDocument.DetailsDone = true;
 			}
 			
-			else {
+			else
+			{
 				
 				// first element
 				if (base.SinglePage.PageNumber ==1) {
@@ -211,13 +220,6 @@ namespace ICSharpCode.Reports.Core {
 							return;
 						}
 					}
-
-					
-					
-//					if (this.dataNavigator.CurrentRow % 2 == 0) {
-//					PrintHelper.DebugRectangle(rpea.PrintPageEventArgs.Graphics,r);
-//					}
-					
 
 					base.CurrentSection.SectionOffset = currentPosition.Y;
 					

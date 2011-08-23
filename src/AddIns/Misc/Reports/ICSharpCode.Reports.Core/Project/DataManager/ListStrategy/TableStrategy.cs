@@ -2,17 +2,18 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
+
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core
 {
 	/// <summary>
 	/// Description of TableStrategy.
 	/// </summary>
-	internal class TableStrategy: BaseListStrategy,IEnumerable<BaseComparer> 
+
+	internal class TableStrategy: BaseListStrategy
 	{
 		private DataTable table;
 		
@@ -22,6 +23,7 @@ namespace ICSharpCode.Reports.Core
 				throw new ArgumentNullException("table");
 			}
 			this.table = table;
+			
 		}
 		
 		#region Methods
@@ -29,7 +31,6 @@ namespace ICSharpCode.Reports.Core
 		public override void Bind()
 		{
 			base.Bind();
-			
 			if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
 				this.Group();
 			} else {
@@ -39,10 +40,32 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
+		public override void Fill(int position,ReportItemCollection collection)
+		{
+			DataRow row = this.table.Rows[position];
+			foreach (var item in collection) {
+				IDataItem dataItem = item as IDataItem;
+				if (dataItem != null) {
+					FillInternal (row,dataItem);
+				}
+			}
+		}
+		
+		
 		public override void Fill(IDataItem item)
 		{
 			DataRow row = this.Current as DataRow;
-			if (row != null) {
+			if (row != null)
+			{
+				this.FillInternal (row,item);
+			}
+		}
+		
+		
+		void FillInternal (DataRow row,IDataItem item)
+		{
+			if (item != null)
+			{
 				BaseImageItem bi = item as BaseImageItem;
 				if (bi != null) {
 					using (System.IO.MemoryStream memStream = new System.IO.MemoryStream()){
@@ -57,13 +80,57 @@ namespace ICSharpCode.Reports.Core
 							bi.Image = image;
 						}
 					}
-				} else {
-					if (item != null) {
-					item.DBValue = row[item.ColumnName].ToString();
+				}
+				else
+				{
+					var dataItem = item as BaseDataItem;
+					if (dataItem != null) {
+						dataItem.DBValue = ExtractDBValue(row,dataItem).ToString();
+					}
 					return;
 				}
+			}
+		}
+		
+		
+		object ExtractDBValue(DataRow row,BaseDataItem item)
+		{
+			if (EvaluationHelper.CanEvaluate(item.Expression)) {
+				return ExtractFromExpression(item.Expression, row);
+			}
+			else
+			{
+				return DBValueFromRow(row, item.ColumnName);
+			}
+		}
+		
+		
+		public override CurrentItemsCollection FillDataRow(int pos)
+		{
+			DataRow row = (DataRow) CurrentFromPosition(pos);
+			return FillCurrentRow(row);
+		}
+		
+		
+		public override CurrentItemsCollection FillDataRow()
+		{
+			DataRow row =this.Current as DataRow;
+			return FillCurrentRow(row);
+		}
+		
+		
+		CurrentItemsCollection FillCurrentRow( DataRow row)
+		{
+			CurrentItemsCollection ci = new CurrentItemsCollection();
+			if (row != null) {
+				CurrentItem c = null;
+				foreach (DataColumn dc in table.Columns) {
+					c = new CurrentItem(dc.ColumnName,dc.DataType);
+					c.Value = row[dc.ColumnName];
+					ci.Add(c);
 				}
 			}
+			return ci;
 		}
 		
 		
@@ -79,31 +146,38 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		
 		public override void Sort()
 		{
 			base.Sort();
 			if ((base.ReportSettings.SortColumnsCollection != null)) {
 				if (base.ReportSettings.SortColumnsCollection.Count > 0) {
 					base.IndexList = this.BuildSortIndex (ReportSettings.SortColumnsCollection);
-					base.IsSorted = true;
 				} else {
 					// if we have no sorting, we build the indexlist as well
 					base.IndexList = this.IndexBuilder(ReportSettings.SortColumnsCollection);
-					base.IsSorted = false;
 				}
 			}
+		}
+		
+		
+		private IndexList IndexBuilder(SortColumnCollection col)
+		{
+			IndexList arrayList = new IndexList();
+			for (int rowIndex = 0; rowIndex < this.table.Rows.Count; rowIndex++){
+				object[] values = new object[1];
+				arrayList.Add(new SortComparer(col, rowIndex, values));
+			}
+			return arrayList;
 		}
 		
 		
 		public override void Group ()
 		{
 			base.Group();
-			IndexList gl = new IndexList("group");
-			gl = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
-			ShowIndexList(gl);
-			BuildGroup(gl);
-			
+			IndexList groupedIndexList = new IndexList("group");
+			groupedIndexList = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
+//			ShowIndexList(sortedIndexList);
+			BuildGroup(groupedIndexList);
 		}
 		
 		#endregion
@@ -116,20 +190,18 @@ namespace ICSharpCode.Reports.Core
 			for (int rowIndex = 0; rowIndex < this.table.Rows.Count; rowIndex++){
 				DataRow rowItem = this.table.Rows[rowIndex];
 				object[] values = new object[col.Count];
-				for (int criteriaIndex = 0; criteriaIndex < col.Count; criteriaIndex++){
-					AbstractColumn c = (AbstractColumn)col[criteriaIndex];
-					object value = rowItem[c.ColumnName];
-
-					if (value != null && value != DBNull.Value){
-						if (!(value is IComparable)){
-							throw new InvalidOperationException(value.ToString());
-						}
-						
+				for (int criteriaIndex = 0; criteriaIndex < col.Count; criteriaIndex++)
+				{
+					object value = ExtractColumnValue(rowItem,col,criteriaIndex);
+					
+					if (value != null && value != DBNull.Value)
+					{
 						values[criteriaIndex] = value;
 					}   else {
 						values[criteriaIndex] = DBNull.Value;
 					}
 				}
+				
 				arrayList.Add(new SortComparer(col, rowIndex, values));
 			}
 			
@@ -145,97 +217,65 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		private IndexList IndexBuilder(SortColumnCollection col)
+		object  ExtractColumnValue(DataRow row,ColumnCollection col, int criteriaIndex)
 		{
-			IndexList arrayList = new IndexList();
-			for (int rowIndex = 0; rowIndex < this.table.Rows.Count; rowIndex++){
-				object[] values = new object[1];
-				arrayList.Add(new SortComparer(col, rowIndex, values));
-			}
-			return arrayList;
-		}
-		
-		
-		private void BuildAvailableFields ()
-		{
+			AbstractColumn c = (AbstractColumn)col[criteriaIndex];
+			object val = null;
+			val =  DBValueFromRow(row,c.ColumnName);
 			
-			base.AvailableFields.Clear();
-			for (int i = 0;i < table.Columns.Count ;i ++ ) {
-				DataColumn col = this.table.Columns[i];
-				base.AvailableFields.Add (new AbstractColumn(col.ColumnName,col.DataType));
-			}
-		
+//			if (!(val is IComparable)){
+//				throw new InvalidOperationException(val.ToString());
+//			}
+			return val;
 		}
 		
-		#region Test
 		
-		public override CurrentItemsCollection FillDataRow()
+		static string  CleanupColumnName(string colName)
 		{
-			CurrentItemsCollection ci = base.FillDataRow();
-			DataRow row = this.Current as DataRow;
-			
-			if (row != null) {
-				CurrentItem c = null;
-				foreach (DataColumn dc in table.Columns)
-				{
-					c = new CurrentItem();
-					c.ColumnName = dc.ColumnName;
-					c.DataType = dc.DataType;
-					c.Value = row[dc.ColumnName];
-					ci.Add(c);
-				}
+			if (colName.StartsWith("=[",StringComparison.InvariantCulture)) {
+				return colName.Substring(2, colName.Length - 3);
 			}
-			return ci;
+			return colName;
 		}
 		
 		
-		public object myCurrent (int pos)
+		object DBValueFromRow(DataRow row, string colName)
+		{
+			int pos  =  colName.IndexOf("!",StringComparison.InvariantCultureIgnoreCase);
+			if (pos > 0)
+			{
+				return ExtractFromExpression(colName,row);
+					
+			} else {
+				var expression = CleanupColumnName(colName);
+				return row[expression];
+			}
+		}
+		
+		
+		object ExtractFromExpression(string expression, DataRow row)
+		{
+			var v = base.ExpressionEvaluator.Evaluate(expression, row);
+			return v;
+		}
+		
+
+		public override object CurrentFromPosition (int pos)
 		{
 			return this.table.Rows[pos];
 		}
 		
-		
-		public  CurrentItemsCollection FillDataRow(int pos)
-		{
-			CurrentItemsCollection ci = new CurrentItemsCollection();
-			DataRow row = this.table.Rows[pos] as DataRow;
-			
-			if (row != null) {
-				CurrentItem c = null;
-				foreach (DataColumn dc in table.Columns)
-				{
-					c = new CurrentItem();
-					c.ColumnName = dc.ColumnName;
-					c.DataType = dc.DataType;
-					c.Value = row[dc.ColumnName];
-					ci.Add(c);
-				}
-			}
-			return ci;
-		}
-		#endregion
-		
-		
-		#region IEnumerable<BaseComparer>
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return((IEnumerable<BaseComparer>)this).GetEnumerator();
-		}
-		
-		IEnumerator<BaseComparer> IEnumerable<BaseComparer>.GetEnumerator()
-		{
-			IEnumerable<BaseComparer> e = (IEnumerable<BaseComparer>)base.IndexList;
-			return e.GetEnumerator();
-		}
-		#endregion
 		
 		
 		#region Propertys
 		
 		public override AvailableFieldsCollection AvailableFields {
 			get {
-				BuildAvailableFields();
+				base.AvailableFields.Clear();
+				for (int i = 0;i < table.Columns.Count ;i ++ ) {
+					DataColumn col = this.table.Columns[i];
+					base.AvailableFields.Add (new AbstractColumn(col.ColumnName,col.DataType));
+				}
 				return base.AvailableFields;
 			}
 		}
@@ -246,7 +286,8 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		public override object Current {
+		public override object Current
+		{
 			get {
 				try {
 					int cr = base.CurrentPosition;
@@ -258,23 +299,6 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
-		
-		public override int CurrentPosition {
-			get { return base.CurrentPosition; }
-			set { base.CurrentPosition = value; }
-		}
-		
-		public override bool IsSorted {
-			get { return base.IsSorted; }
-			set { base.IsSorted = value; }
-		}
-		
 		#endregion
-		
-		
-		public DataRow Readrandowm (int pos)
-		{
-			return this.table.Rows[pos];
-		}
 	}
 }

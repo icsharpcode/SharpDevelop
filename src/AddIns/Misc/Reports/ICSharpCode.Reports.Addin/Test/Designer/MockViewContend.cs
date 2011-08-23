@@ -23,11 +23,12 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 		{
 		}
 		
-		public event EventHandler TitleNameChanged;		
-		public event EventHandler TabPageTextChanged;				
-		public event EventHandler Disposed;		
+		public event EventHandler InfoTipChanged;
+		public event EventHandler TitleNameChanged;
+		public event EventHandler TabPageTextChanged;
+		public event EventHandler Disposed;
 		public event EventHandler IsDirtyChanged;
-			
+		
 		public object Control
 		{
 			get {return null;}
@@ -37,11 +38,14 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			get {
 				throw new NotImplementedException();
 			}
-			set {
+		}
+		
+		public string InfoTip {
+			get {
 				throw new NotImplementedException();
 			}
 		}
-				
+		
 		public bool IsReadOnly {
 			get {
 				throw new NotImplementedException();
@@ -52,6 +56,10 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			get {
 				throw new NotImplementedException();
 			}
+		}
+		
+		public bool CloseWithSolution {
+			get { throw new NotImplementedException(); }
 		}
 		
 		public ICollection<IViewContent> SecondaryViewContents {
@@ -156,7 +164,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 				throw new NotImplementedException();
 			}
 		}
-				
+		
 		public void Save(OpenedFile file, System.IO.Stream stream)
 		{
 			throw new NotImplementedException();
@@ -186,11 +194,18 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 		{
 			throw new NotImplementedException();
 		}
-								
+		
 		protected virtual void OnTitleNameChanged(EventArgs e)
 		{
 			if (TitleNameChanged != null) {
 				TitleNameChanged(this, e);
+			}
+		}
+		
+		protected virtual void OnInfoTipChanged(EventArgs e)
+		{
+			if (InfoTipChanged != null) {
+				InfoTipChanged(this, e);
 			}
 		}
 		
@@ -213,7 +228,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			if (IsDirtyChanged != null) {
 				IsDirtyChanged(this, e);
 			}
-		}		
+		}
 		
 		public object InitiallyFocusedControl {
 			get {

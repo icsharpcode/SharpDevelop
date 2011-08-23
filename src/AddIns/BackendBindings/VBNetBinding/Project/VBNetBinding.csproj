@@ -63,11 +63,8 @@
       <LogicalName>Resources.BuildOptions.xfrm</LogicalName>
     </EmbeddedResource>
     <Compile Include="Src\Extensions.cs" />
-    <Compile Include="Src\FormattingStrategy\Parser.cs">
-      <DependentUpon>VBIndentationStrategy.atg</DependentUpon>
-    </Compile>
-    <Compile Include="Src\FormattingStrategy\VBIndentationStrategy.cs" />
     <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
+    <Compile Include="Src\LanguageUtils.cs" />
     <Compile Include="Src\OptionPanels\ProjectImportsOptions.xaml.cs">
       <DependentUpon>ProjectImportsOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -87,13 +84,6 @@
     </Compile>
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Project\VBNetProject.cs" />
-    <None Include="Src\FormattingStrategy\PushParser.frame">
-      <DependentUpon>VBIndentationStrategy.atg</DependentUpon>
-    </None>
-    <None Include="Src\FormattingStrategy\VBIndentationStrategy.atg">
-      <Generator>CocoParserGenerator</Generator>
-      <CustomToolNamespace>ICSharpCode.VBNetBinding</CustomToolNamespace>
-    </None>
     <None Include="VBNetBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

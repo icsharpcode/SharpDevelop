@@ -80,6 +80,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			#if DEBUG
 			if (e.KeyData == (Keys.Control | Keys.Shift | Keys.E)) {
 				throw new ClownFishException();
+			} else if (e.KeyData == (Keys.Control | Keys.Shift | Keys.G)) {
+				GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+				GC.WaitForPendingFinalizers();
+				GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+				versionInfoTextBox.Text = GetVersionInformationString();
 			}
 			#endif
 		}
@@ -90,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static string LicenseSentence {
 			get {
 				return StringParser.Parse("${res:Dialog.About.License}",
-				                          new string[,] {{"License", "GNU Lesser General Public License"}});
+				                          new StringTagPair("License", "GNU Lesser General Public License"));
 			}
 		}
 		
@@ -121,6 +126,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				string PROCESSOR_ARCHITEW6432 = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432");
 				if (!string.IsNullOrEmpty(PROCESSOR_ARCHITEW6432)) {
+					if (PROCESSOR_ARCHITEW6432 == "AMD64")
+						PROCESSOR_ARCHITEW6432 = "x86-64";
 					str += "Running under WOW6432, processor architecture: " + PROCESSOR_ARCHITEW6432 + Environment.NewLine;
 				}
 			} catch {}

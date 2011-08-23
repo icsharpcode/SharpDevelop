@@ -151,7 +151,11 @@ namespace ICSharpCode.Core
 			if (reader.HasAttributes) {
 				for (int i = 0; i < reader.AttributeCount; i++) {
 					reader.MoveToAttribute(i);
-					properties[reader.Name] = reader.Value;
+					// some values are frequently repeated (e.g. type="MenuItem"),
+					// so we also use the NameTable for attribute values
+					// (XmlReader itself only uses it for attribute names)
+					string val = reader.NameTable.Add(reader.Value);
+					properties[reader.Name] = val;
 				}
 				reader.MoveToElement(); //Moves the reader back to the element node.
 			}
@@ -266,8 +270,14 @@ namespace ICSharpCode.Core
 		
 		public void Save(string fileName)
 		{
-			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
-				writer.Formatting = Formatting.Indented;
+			XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8);
+			writer.Formatting = Formatting.Indented;
+			Save(writer);
+		}
+		
+		public void Save(XmlWriter writer)
+		{	
+			using (writer) {
 				writer.WriteStartElement("Properties");
 				WriteProperties(writer);
 				writer.WriteEndElement();
@@ -288,7 +298,13 @@ namespace ICSharpCode.Core
 			if (!File.Exists(fileName)) {
 				return null;
 			}
-			using (XmlTextReader reader = new XmlTextReader(fileName)) {
+			XmlTextReader reader = new XmlTextReader(fileName);
+			return Load(reader);
+		}
+		
+		public static Properties Load(XmlReader reader)
+		{
+			using (reader) {
 				while (reader.Read()){
 					if (reader.IsStartElement()) {
 						switch (reader.LocalName) {

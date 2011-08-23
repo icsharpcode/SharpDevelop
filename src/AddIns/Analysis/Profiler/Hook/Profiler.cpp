@@ -378,7 +378,7 @@ HRESULT CProfiler::SetEventMask() {
 		COR_PRF_MONITOR_FUNCTION_UNLOADS | COR_PRF_MONITOR_CLR_EXCEPTIONS |
 		COR_PRF_MONITOR_EXCEPTIONS;
 	if (sharedMemoryHeader->trackEvents)
-		eventMask = eventMask | COR_PRF_MONITOR_MODULE_LOADS/* | COR_PRF_MONITOR_JIT_COMPILATION*/;
+		eventMask = eventMask | COR_PRF_MONITOR_MODULE_LOADS | COR_PRF_MONITOR_JIT_COMPILATION;
 	return pICorProfilerInfo->SetEventMask(eventMask);
 }
 

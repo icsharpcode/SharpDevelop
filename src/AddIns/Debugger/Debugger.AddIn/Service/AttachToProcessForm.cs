@@ -5,7 +5,9 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
@@ -23,7 +25,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			{
 				this.process = process;
 				try {
-					managed = debugger.IsManaged(process.Id);
+					var modules = process.Modules.Cast<ProcessModule>().Where(
+						m => m.ModuleName.StartsWith("mscor", StringComparison.InvariantCultureIgnoreCase));
+
+					managed = modules.Count() > 0;
 				} catch { }
 				
 				string fileName = Path.GetFileName(process.MainModule.FileName);
@@ -54,9 +59,10 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			listView.Items.Clear();
 			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			Process currentProcess = Process.GetCurrentProcess();			
+			Process currentProcess = Process.GetCurrentProcess();
 			foreach (Process process in Process.GetProcesses()) {
 				try {
+					if (process.HasExited) continue;
 					// Prevent attaching to our own process.
 					if (currentProcess.Id != process.Id) {
 						ProcessListViewItem item = new ProcessListViewItem(process, debugger);
@@ -68,8 +74,8 @@ namespace ICSharpCode.SharpDevelop.Services
 				} catch (Win32Exception) {
 					// Do nothing.
 				}
-			}			
+			}
 			listView.Sort();
-		}		
+		}
 	}
 }

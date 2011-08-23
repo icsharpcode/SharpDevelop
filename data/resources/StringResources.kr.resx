@@ -508,9 +508,6 @@
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>파일</value>
   </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>줄</value>
-  </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>정보</value>
   </data>
@@ -2945,6 +2942,9 @@ ${CurrentProjectName} 프로젝트에 이 새 파일을 더하겠습니까?</val
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>시작</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>줄</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>새로 고침(&amp;U)</value>
   </data>
@@ -3211,9 +3211,6 @@ ${CurrentProjectName} 프로젝트에 이 새 파일을 더하겠습니까?</val
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>마지막 줄</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>줄</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>NCover 콘솔 응용 프로그램을 찾을 수 없습니다.
@@ -5328,27 +5325,6 @@ Windows Forms 구성 요소가 아무 것도 사용가능하지 않습니다. �
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>모든 웹 참조 지우기</value>
   </data>
-  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
-    <value>.NET Reflector 열기</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
-    <value>지정된 위치에 .NET Reflector가 없거나, SharpDevelop가 그 위치에 접근할 수 있는 충분한 권한을 가지고 있지 않습니다.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
-    <value>.NET Reflector의 경로가 아직 지정되어 있지 않습니다.</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorRemotingFailed" xml:space="preserve">
-    <value>.NET Reflector에 연결할 수 없습니다.</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.PathToReflectorExe" xml:space="preserve">
-    <value>Reflector.exe의 전체 경로</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialog.ReflectorInfo" xml:space="preserve">
-    <value>이 기능은 Red Gate사의 .NET Reflector를 필요로 합니다. 만약 .NET Reflector를 아직 가지고 있지 않다면, 다음 웹 사이트에서 무료로 다운로드할 수 있습니다:</value>
-  </data>
-  <data name="ReflectorAddIn.SetReflectorPathDialogTitle" xml:space="preserve">
-    <value>.NET Reflector의 경로 설정</value>
-  </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>어셈블리 (*.dll)|*.dll</value>
   </data>
@@ -5744,18 +5720,6 @@ Windows Forms 구성 요소가 아무 것도 사용가능하지 않습니다. �
   </data>
   <data name="SharpDevelop.Solution.CannotSave.UnauthorizedAccessException" xml:space="preserve">
     <value>{0}을(를) 저장할 수 없습니다:\n{1}\n\n이 파일에 쓰기가 가능한지 확인하십시오.</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Visual Studio.NET 프로젝트가 발견되었습니다. 솔루션 형식 9.00 (Visual Studio 2005)으로 변환하겠습니까?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Visual Studio.NET 2003 프로젝트가 발견되었습니다. 솔루션 형식 9.00 (Visual Studio 2005)으로 변환하겠습니까?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>ShaprDevelop 1.x 컴바인을 SharpDevelop 2.x 솔루션으로 변환하겠습니까?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>SharpProject 1.x 프로젝트 파일을 SharpProject 2.x 프로젝트로 변환하겠습니까?</value>
   </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>이 프로젝트에 리소스 파일이 있었습니다.
@@ -6804,7 +6768,7 @@ SharpDevelop 2는 리소스를 다른 방법으로 컴파일합니다: 리소스
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>새 버퍼를 엽니다.</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>솔루션(&amp;S)...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

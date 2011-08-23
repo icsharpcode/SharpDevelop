@@ -23,6 +23,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		public void Undo(UndoStack stack)
 		{
 			Debug.Assert(stack.state == UndoStack.StatePlayback);
+			stack.RegisterAffectedDocument(document);
 			stack.state = UndoStack.StatePlaybackModifyDocument;
 			this.Undo();
 			stack.state = UndoStack.StatePlayback;
@@ -31,6 +32,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		public void Redo(UndoStack stack)
 		{
 			Debug.Assert(stack.state == UndoStack.StatePlayback);
+			stack.RegisterAffectedDocument(document);
 			stack.state = UndoStack.StatePlaybackModifyDocument;
 			this.Redo();
 			stack.state = UndoStack.StatePlayback;

@@ -107,5 +107,11 @@ namespace ICSharpCode.SharpDevelop
 				return false;
 			return Regex.IsMatch(fileName, fileNameRegex, RegexOptions.IgnoreCase);
 		}
+		
+		public override string ToString()
+		{
+			return string.Format("[DisplayBindingDescriptor Id={1} Binding={0}]", binding, Id);
+		}
+
 	}
 }

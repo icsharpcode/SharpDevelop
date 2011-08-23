@@ -37,11 +37,19 @@ ProjectBrowser.WebReferenceFolder.Closed = ProjectBrowserIcons\WebReferenceFolde
 ProjectBrowser.WebReferenceFolder.Open   = ProjectBrowserIcons\WebReferenceFolder.Open.png
 ProjectBrowser.WebReference              = ProjectBrowserIcons\WebReference.png
 
+#Parallel Stacks pad
+ParallelStacks.MethodView   		     = PadIcons\MethodView.png
+ParallelStacks.ZoomControl  		     = PadIcons\ZoomControl.png
+
 #Output pad
 
 OutputPad.Toolbar.ClearOutputWindow = OutputPadIcons\ClearOutputWindow.png
 OutputPad.Toolbar.ToggleWordWrap    = OutputPadIcons\ToggleWordWrap.png
 
+#Memory pad
+MemoryPad.Icon  		    		 			= PadIcons\memory.png
+MemoryPad.NextMemoryIcon  		     			= PadIcons\nextmemory.png
+MemoryPad.PreviousMemoryIcon	     			= PadIcons\previousmemory.png
 
 Icons.16x16.OpenFolderBitmap                      = ProjectBrowserIcons\Folder.Open.png
 Icons.16x16.ClosedFolderBitmap                    = ProjectBrowserIcons\Folder.Closed.png
@@ -226,6 +234,10 @@ Icons.16x16.OpenFileIcon                          = BitmapResources-data\Icons.1
 Icons.16x16.HtmlElements.FieldSetElement          = BitmapResources-data\Icons.16x16.HtmlElements.FieldSetElement.png
 Icons.16x16.SplitWindow                           = BitmapResources-data\Icons.16x16.SplitWindow.png
 Icons.16x16.DeleteHistory                         = BitmapResources-data\Icons.16x16.DeleteHistory.png
+Icons.48x48.CurrentFrame 						  = BitmapResources-data\Icons.48x48.CurrentFrame.png
+Icons.16x16.Refresh                         	  = BitmapResources-data\Icons.16x16.Refresh.png
+Icons.Magnifier									  = BitmapResources-data\magnifier.png
+ILSpy = BitmapResources-data\ILSpy.png
 
 #pad icons
 PadIcons.ErrorList                                = PadIcons\ErrorList.png
@@ -247,6 +259,7 @@ PadIcons.LocalVariables							  = PadIcons\LocalVariables.png
 PadIcons.Threads								  = PadIcons\Threads.png
 PadIcons.Exceptions								  = PadIcons\Exceptions.png
 PadIcons.XPathQuery								  = PadIcons\XPathQuery.png
+PadIcons.Parallel								  = PadIcons\Parallel.png
 
 #SharpQuery icons
 Icons.16x16.SharpQuery.DataBaseRoot             = SharpQueryIcons\Icons.16x16.SharpQuery.Database.png
@@ -342,6 +355,12 @@ Bookmarks.DisabledBreakpoint                      = Bookmarks\DisabledBreakpoint
 Bookmarks.UnhealthyBreakpoint                     = Bookmarks\UnhealthyBreakpoint.png
 Bookmarks.UnhealthyBreakpointConditional          = Bookmarks\UnhealthyBreakpointConditional.png
 Bookmarks.CurrentLine                             = Bookmarks\CurrentLine.png
+Bookmarks.DeleteAllBreakpoints                    = Bookmarks\DeleteAllBreakpoints.png
+Bookmarks.DisableAllBreakpoints                   = Bookmarks\DisableAllBreakpoints.png
+Bookmarks.NextBreakpoint                   		  = Bookmarks\NextBreakpoint.png
+Bookmarks.PrevBreakpoint		                  = Bookmarks\PrevBreakpoint.png
+
+Bookmarks.Pin									  = Bookmarks\Pin.png
 
 #backend icons
 C#.ProjectIcon                                    = backendicons\CSharp\SmallProject.png
@@ -477,6 +496,9 @@ Icons.16x16.XSLIcon = backendicons\miscFiles\XSL_16.png
 Icons.32x32.XSLIcon = backendicons\miscFiles\XSL_32.png
 Icons.16x16.ASPFileIcon = backendicons\miscFiles\ASP_16.png
 Icons.32x32.ASPFileIcon = backendicons\miscFiles\ASP_32.png
+
+TextTemplate.File = backendicons\miscFiles\TextTemplate.File.png
+TextTemplate.ProjectBrowser.File = backendicons\miscFiles\TextTemplate.ProjectBrowser.File.png
 
 HtmlHelp2.16x16.DynamicHelp   = PadIcons\HtmlHelp2.16x16.DynamicHelp.png
 HtmlHelp2.16x16.Favorites     = PadIcons\HtmlHelp2.16x16.Favorites.png

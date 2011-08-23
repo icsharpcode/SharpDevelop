@@ -4,9 +4,11 @@
 using System;
 using System.Windows.Forms;
 using System.Xml;
+
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
+using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Tree
 {
@@ -14,7 +16,7 @@ namespace XmlEditor.Tests.Tree
 	public class RemoveTextNodesFromTreeControlTestFixture
 	{
 		XmlDocument doc;
-		XmlTreeViewContainerControl treeViewContainerControl; 
+		DerivedXmlTreeViewContainerControl treeViewContainerControl; 
 		XmlTreeViewControl treeView;
 		XmlElementTreeNode topElementTreeNode;
 		XmlElementTreeNode childElementTreeNode;
@@ -23,10 +25,10 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void SetUp()
 		{
-			treeViewContainerControl = new XmlTreeViewContainerControl();
+			treeViewContainerControl = new DerivedXmlTreeViewContainerControl();
 			treeView = treeViewContainerControl.TreeView;
 			string xml = "<root><top>text</top><bottom><child>text</child></bottom></root>";
-			treeViewContainerControl.LoadXml(xml, new XmlSchemaCompletionCollection(), null);
+			treeViewContainerControl.LoadXml(xml);
 			doc = treeViewContainerControl.Document;
 			
 			ExtTreeNode rootNode = (ExtTreeNode)treeView.Nodes[0];

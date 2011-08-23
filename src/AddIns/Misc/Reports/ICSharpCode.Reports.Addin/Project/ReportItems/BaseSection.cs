@@ -2,12 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 
-using ICSharpCode.Reports.Addin.Designer;
-using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Addin.TypeProviders;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -19,11 +17,6 @@ namespace ICSharpCode.Reports.Addin
 	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.SectionDesigner))]
 	public class BaseSection:AbstractItem
 	{
-		private int  sectionOffset;
-		private int sectionMargin;
-		private bool pageBreakAfter;
-		private bool  canGrow ;
-		private bool canShrink ;
 
 		public BaseSection():base()
 		{
@@ -48,96 +41,20 @@ namespace ICSharpCode.Reports.Addin
 		
 		#region Propertys
 		
-		public int SectionOffset {
-			get { return sectionOffset; }
-			set { sectionOffset = value; }
-		}
+		[Browsable(false)]
+		public int SectionOffset {get;set;}
 		
-		public int SectionMargin {
-			get { return sectionMargin; }
-			set { sectionMargin = value; }
-		}
-		
-		public bool PageBreakAfter {
-			get { return pageBreakAfter; }
-			set { pageBreakAfter = value; }
-		}
-		
-		public bool CanGrow {
-			get { return canGrow; }
-			set { canGrow = value; }
-		}
-		
-		public bool CanShrink {
-			get { return canShrink; }
-			set { canShrink = value; }
-		}
-		
+		[Browsable(false)]	
+		public int SectionMargin {get;set;}
+			
+		public bool PageBreakAfter {get;set;}
+			
+		public bool CanGrow {get;set;}
+			
+		public bool CanShrink {get;set;}
+			
 		#endregion
 	}
 	
-	internal class SectionItemTypeProvider : TypeDescriptionProvider
-	{
-		public SectionItemTypeProvider() :  base(TypeDescriptor.GetProvider(typeof(AbstractItem)))
-		{
-		}
-		
-//		public SectionItemTypeProvider(TypeDescriptionProvider parent): base(parent)
-//		{
-//		}
-
 	
-		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
-		{
-			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new SectionItemDescriptor(td, instance);
-		}
-	}
-	
-	
-	internal class SectionItemDescriptor : CustomTypeDescriptor
-	{
-//		private BaseTextItem instance;
-		
-		public SectionItemDescriptor(ICustomTypeDescriptor parent, object instance)
-			: base(parent)
-		{
-//			instance = instance as BaseTextItem;
-		}
-
-		
-		public override PropertyDescriptorCollection GetProperties()
-		{
-			return GetProperties(null);
-		}
-
-		
-		public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
-		{
-			PropertyDescriptorCollection props = base.GetProperties(attributes);
-			List<PropertyDescriptor> allProperties = new List<PropertyDescriptor>();
-			
-			DesignerHelper.AddDefaultProperties(allProperties,props);
-			PropertyDescriptor prop = null;
-			
-			prop = props.Find("SectionOffset",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("SectionMargin",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("DrawBorder",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("PageBreakAfter",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("Controls",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("FrameColor",true);
-			allProperties.Add(prop);
-			return new PropertyDescriptorCollection(allProperties.ToArray());
-		}
-	}
 }

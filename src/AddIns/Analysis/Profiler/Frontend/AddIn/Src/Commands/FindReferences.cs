@@ -19,18 +19,25 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 		{
 			var selectedItem = GetSelectedItems().FirstOrDefault();
 
-			if (selectedItem != null) {
-				IClass c = GetClassFromName(selectedItem.FullyQualifiedClassName);
-				if (c != null) {
-					IMember member = GetMemberFromName(c, selectedItem.MethodName, selectedItem.Parameters);
-					string memberName = member.DeclaringType.Name + "." + member.Name;
-					using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
-					{
-						FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-						                                                                     new string[,] {{ "Name", memberName }}),
-						                                                  RefactoringService.FindReferences(member, monitor));
-					}
-				}
+			if (selectedItem == null)
+				return;
+			
+			IClass c = GetClassFromName(selectedItem.FullyQualifiedClassName);
+			
+			if (c == null)
+				return;
+			
+			IMember member = GetMemberFromName(c, selectedItem.MethodName, selectedItem.Parameters);
+			
+			if (member == null)
+				return;
+			
+			string memberName = member.DeclaringType.Name + "." + member.Name;
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
+			{
+				FindReferencesAndRenameHelper.ShowAsSearchResults(
+					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}", new StringTagPair("Name", memberName)),
+					RefactoringService.FindReferences(member, monitor));
 			}
 		}
 	}

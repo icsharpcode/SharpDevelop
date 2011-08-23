@@ -228,6 +228,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			return member.IsStatic == showStatic;
 		}
+		
+		public virtual bool ShowMemberInOverrideCompletion(IMember member)
+		{
+			return true;
+		}
 		#endregion
 		
 		/// <summary>
@@ -241,6 +246,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override string ToString()
 		{
 			return "[" + base.ToString() + "]";
+		}
+		
+		public static LanguageProperties GetLanguage(string language)
+		{
+			switch(language)
+			{
+				case "VBNet":
+				case "VB":
+					return LanguageProperties.VBNet;
+				default:
+					return LanguageProperties.CSharp;
+			}
 		}
 		
 		#region CSharpProperties
@@ -320,6 +337,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				return true;
 			}
+			
+			public override bool ShowMemberInOverrideCompletion(IMember member)
+			{
+				IMethod method = member as IMethod;
+				
+				if (method != null) {
+					if (method.Name == "Finalize" && method.Parameters.Count == 0)
+						return false;
+				}
+				
+				return base.ShowMemberInOverrideCompletion(member);
+			}
 		}
 		#endregion
 		
@@ -356,6 +385,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 				get {
 					return true;
 				}
+			}
+			
+			public override bool SupportsExtensionMethods {
+				get { return true; }
+			}
+			
+			public override bool SearchExtensionsInClasses {
+				get { return true; }
 			}
 			
 			public override bool IsClassWithImplicitlyStaticMembers(IClass c)
@@ -507,11 +544,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			public override TextFinderMatch Find(string inputText, int startPosition)
 			{
 				int pos = inputText.IndexOf(searchText, startPosition);
-				if (pos >= 0) {
+				if (pos > 0) {
 					return new TextFinderMatch(pos, searchText.Length, pos - 1);
-				} else {
-					return TextFinderMatch.Empty;
 				}
+				return TextFinderMatch.Empty;
 			}
 		}
 		#endregion

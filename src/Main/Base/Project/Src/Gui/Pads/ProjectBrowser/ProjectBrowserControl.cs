@@ -292,7 +292,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 
 			string relativePath = String.Empty;
-			TreeNode targetNode = FindProjectNode(project);
+			AbstractProjectBrowserTreeNode targetNode = FindProjectNode(project);
 
 			if (targetNode == null) {
 				
@@ -304,7 +304,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return null;
 					
 				} else {
-					targetNode = treeView.Nodes[0];
+					targetNode = treeView.Nodes[0] as AbstractProjectBrowserTreeNode;
 					if (fileName.StartsWith(solution.Directory)) {
 						relativePath = fileName.Replace(solution.Directory, "");
 					}
@@ -337,39 +337,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 			}
 			
-			if (!targetNode.IsExpanded) {
-				// the targetNode is not expanded so it's as deep as we can go
-				//LoggingService.DebugFormatted("target node '{0};{1}' is not expanded.", targetNode, targetNode.Text);
-				return targetNode;
-			}
-
-			//LoggingService.Debug("entering depth loop...");
-			//LoggingService.DebugFormatted(@"\- looking for '{0}'", relativePath);
-			//LoggingService.DebugFormatted(@"\- starting at '{0}'", targetNode != null ? targetNode.Text : "null");
-			
-			string[] targets = relativePath.Trim('/','\\').Split('/', '\\');
-			TreeNode nextNode = null;
-			foreach (string target in targets) {
-				//LoggingService.Debug("-- looking for: "+target);
-				nextNode = null;
-				foreach (TreeNode node in targetNode.Nodes) {
-					if (node == null) {
-						// can happen when the node is currently expanding
-						continue;
-					}
-					if (node.Text == target) {
-						nextNode = node;
-						break;
-					}
-				}
-				if (nextNode == null) {
-					// targetNode is as deep as we can find
-					break;
-				} else {
-					targetNode = nextNode;
-				}
-			}
-			return targetNode;
+			return targetNode.GetNodeByRelativePath(relativePath);
 		}
 
 		ProjectNode FindProjectNode(IProject project)
@@ -517,5 +485,20 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.ResumeLayout(false);
 		}
 		#endregion
+		
+		public void ExpandOrCollapseAll(bool expand)
+		{
+			if (this.treeView == null) return;
+			if (this.treeView.Nodes == null || this.treeView.Nodes.Count == 0) return;
+			
+			if (expand) {
+				this.treeView.ExpandAll();
+			}
+			else {
+				this.treeView.CollapseAll();
+			}
+			
+			this.treeView.Nodes[0].Expand();
+		}
 	}
 }

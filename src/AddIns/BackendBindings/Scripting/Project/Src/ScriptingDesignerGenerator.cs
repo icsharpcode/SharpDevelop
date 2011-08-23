@@ -120,7 +120,7 @@ namespace ICSharpCode.Scripting
 			return method.Parameters.Count == 2;
 		}
 
-		public void NotifyFormRenamed(string newName)
+		public void NotifyComponentRenamed(object component, string newName, string oldName)
 		{
 		}
 		
@@ -285,7 +285,7 @@ namespace ICSharpCode.Scripting
 		public virtual int InsertEventHandler(IDocument document, string eventHandler)
 		{
 			return 0;
-		}		
+		}
 		
 		public CodeDomProvider CreateCodeDomProvider()
 		{

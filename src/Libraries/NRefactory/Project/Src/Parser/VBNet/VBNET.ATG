@@ -2127,6 +2127,7 @@ ObjectCreateExpression<out Expression oce>
 	List<Expression> arguments = null;
 	ArrayList dimensions = null;
 	oce = null;
+	Location startLocation = la.Location;
 	bool canBeNormal; bool canBeReDim;
 .) =
 	"New" 
@@ -2198,6 +2199,12 @@ ObjectCreateExpression<out Expression oce>
 			.)
 		)
 	]
+	(.
+		if (oce != null) {
+			oce.StartLocation = startLocation;
+			oce.EndLocation = t.EndLocation;
+		}
+	.)
 .
 
 LambdaExpr<out Expression expr>
@@ -2225,12 +2232,14 @@ SubLambdaExpression<out LambdaExpression lambda>
 			(.
 				lambda.ExpressionBody = inner;
 				lambda.EndLocation = t.EndLocation; // la.Location?
+				lambda.ExtendedEndLocation = la.Location;
 			.)
 		|
 			EmbeddedStatement<out statement>
 			(.
 				lambda.StatementBody = statement;
 				lambda.EndLocation = t.EndLocation;
+				lambda.ExtendedEndLocation = la.Location;
 			.)
 		)
 	|
@@ -2240,6 +2249,7 @@ SubLambdaExpression<out LambdaExpression lambda>
 		(.
 			lambda.StatementBody = statement;
 			lambda.EndLocation = t.EndLocation;
+			lambda.ExtendedEndLocation = la.Location;
 		.)
 	)
 .
@@ -2260,13 +2270,15 @@ FunctionLambdaExpression<out LambdaExpression lambda>
 			Expr<out inner>
 			(.
 				lambda.ExpressionBody = inner;
-				lambda.EndLocation = t.EndLocation; // la.Location?
+				lambda.EndLocation = t.EndLocation;
+				lambda.ExtendedEndLocation = la.Location;
 			.)
 		|
 			EmbeddedStatement<out statement>
 			(.
 				lambda.StatementBody = statement;
 				lambda.EndLocation = t.EndLocation;
+				lambda.ExtendedEndLocation = la.Location;
 			.)
 		)
 	|
@@ -2276,6 +2288,7 @@ FunctionLambdaExpression<out LambdaExpression lambda>
 		(.
 			lambda.StatementBody = statement;
 			lambda.EndLocation = t.EndLocation;
+			lambda.ExtendedEndLocation = la.Location;
 		.)
 	)
 .

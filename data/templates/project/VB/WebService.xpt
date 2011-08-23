@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<Template originator   = "Siegfried Pammer">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.WebService.Name}</Name>
+		<Category>VB</Category>
+		<Subcategory>ASP.NET</Subcategory>
+		<Icon>VBNet.Project.Form</Icon>
+		<Description>${res:Templates.Project.WebService.Description}</Description>
+	</TemplateConfiguration>
+
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Default.asmx" />
+		<Open filename = "Soap.vb" />
+	</Actions>
+
+	<Project language = "VBNet">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Web" />
+			<Reference Include="System.Web.Services" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
+		
+		<PropertyGroup escapeValue="False">
+			<OutputType>Library</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Debug">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Release">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+
+	<Files>
+		<File name="Soap.vb" DependentUpon="Default.asmx"><![CDATA[${StandardHeader.VBNET}
+Imports System.Data
+Imports System.Web
+Imports System.Web.Services
+Imports System.Web.Services.Protocols
+
+<WebService> _
+Public Class Soap
+	Inherits System.Web.Services.WebService
+	''' <summary>
+	''' Logs into the web service
+	''' </summary>
+	''' <param name="userName">The User Name to login in as</param>
+	''' <param name="password">User's password</param>
+	''' <returns>True on successful login.</returns>
+	<WebMethod(EnableSession := True)> _
+	Public Function Login(userName As String, password As String) As Boolean
+		'NOTE: There are better ways of doing authentication. This is just illustrates Session usage.
+		Me.UserName = userName
+		Return True
+	End Function
+
+	''' <summary>
+	''' Logs out of the Session.
+	''' </summary>
+	<WebMethod(EnableSession := True)> _
+	Public Sub Logout()
+		Context.Session.Abandon()
+	End Sub
+
+	''' <summary>
+	''' UserName of the logged in user.
+	''' </summary>
+	Private Property UserName() As String
+		Get
+			Return DirectCast(Context.Session("User"), String)
+		End Get
+		Set
+			Context.Session("User") = value
+		End Set
+	End Property
+End Class
+]]></File>
+<File name="Default.asmx" language="XML">
+	<![CDATA[<%@ WebService Language="VB"  Class="${StandardNamespace}.Soap" %>]]>
+	</File>
+<!--*************************************************************************-->
+		<File name="Web.config" language="XML"><![CDATA[<?xml version="1.0"?>
+<configuration>
+	<appSettings/>
+	<connectionStrings/>
+	<system.web>
+		<!--
+			Set compilation debug="true" to insert debugging
+			symbols into the compiled page. Because this
+			affects performance, set this value to true only
+			during development.
+		-->
+		<compilation debug="true"/>
+		<!--
+			The <authentication> section enables configuration
+			of the security authentication mode used by
+			ASP.NET to identify an incoming user.
+		-->
+		<authentication mode="Windows"/>
+		<!--
+			The <customErrors> section enables configuration
+			of what to do if/when an unhandled error occurs
+			during the execution of a request. Specifically,
+			it enables developers to configure html error pages
+			to be displayed in place of a error stack trace.
+		
+		<customErrors mode="RemoteOnly" defaultRedirect="GenericErrorPage.htm ">
+			<error statusCode="403" redirect="NoAccess.htm" />
+			<error statusCode="404" redirect="FileNotFound.htm" />
+		</customErrors>
+		-->
+	</system.web>
+</configuration>]]></File>
+				<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb" />
+	   </Files>
+	</Project>
+</Template>

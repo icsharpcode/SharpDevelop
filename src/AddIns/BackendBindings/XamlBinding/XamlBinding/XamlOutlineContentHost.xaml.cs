@@ -33,6 +33,8 @@ namespace ICSharpCode.XamlBinding
 		{
 			if (this.editor == null || !FileUtility.IsEqualFileName(this.editor.FileName, e.FileName))
 				return;
+			if (!e.IsPrimaryParseInfoForFile)
+				return;
 			
 			var cu = e.NewCompilationUnit as XamlCompilationUnit;
 			
@@ -77,7 +79,6 @@ namespace ICSharpCode.XamlBinding
 			XamlOutlineNode node = new XamlOutlineNode() {
 				Name = item.Name,
 				ElementName = item.ElementName,
-				ShowIcon = false,
 				Marker = editor.Document.CreateAnchor(Utils.MinMax(item.StartOffset, 0, editor.Document.TextLength - 1)),
 				EndMarker = editor.Document.CreateAnchor(Utils.MinMax(item.EndOffset, 0, editor.Document.TextLength - 1)),
 				Editor = editor

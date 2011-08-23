@@ -36,24 +36,10 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 				throw new ArgumentNullException("reportModel");
 			}
 
-			sectionBounds.MeasureReportHeader(reportModel.ReportHeader);
-
-			//PageHeader
-			this.sectionBounds.MeasurePageHeader(reportModel.PageHeader);
-
-			//PageFooter
-			this.sectionBounds.MeasurePageFooter(reportModel.PageFooter);
-
-			//ReportFooter
-
-			this.sectionBounds.MeasureReportFooter(reportModel.ReportFooter);
-
-			this.sectionBounds.MeasureDetailArea();
-			
-			this.sectionBounds.DetailSectionRectangle = new System.Drawing.Rectangle(reportModel.DetailSection.Location.X,sectionBounds.DetailStart.Y,
+			sectionBounds.CalculatePageBounds(reportModel);
+			this.sectionBounds.DetailSectionRectangle = new System.Drawing.Rectangle(reportModel.DetailSection.Location.X,sectionBounds.DetailArea.Top,
 			                                                                         reportModel.DetailSection.Size.Width,
 			                                                                         reportModel.DetailSection.Size.Height);
-
 		}
 
 		

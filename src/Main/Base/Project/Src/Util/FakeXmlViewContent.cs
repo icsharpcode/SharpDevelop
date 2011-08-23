@@ -89,6 +89,11 @@ namespace ICSharpCode.SharpDevelop.Util
 			add { }
 			remove { }
 		}
+
+		event EventHandler IViewContent.InfoTipChanged {
+			add { }
+			remove { }
+		}
 		
 		public event EventHandler Disposed;
 		
@@ -149,6 +154,18 @@ namespace ICSharpCode.SharpDevelop.Util
 		}
 		
 		bool IViewContent.IsViewOnly {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+
+		string IViewContent.InfoTip {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		bool IViewContent.CloseWithSolution {
 			get {
 				throw new NotImplementedException();
 			}

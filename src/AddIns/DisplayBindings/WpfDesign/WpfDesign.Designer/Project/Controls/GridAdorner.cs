@@ -433,33 +433,36 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		public void SetGridLengthUnit(GridUnitType unit)
 		{
 			DesignItem item = unitSelector.SelectedItem;
-			GridLength value;
-			
 			grid.UpdateLayout();
 			
 			Debug.Assert(item != null);
 			
 			if (orientation == Orientation.Vertical) {
-				value = (GridLength)item.Properties[RowDefinition.HeightProperty].ValueOnInstance;
-
-				if (unit == GridUnitType.Auto)
-					value = GridLength.Auto;
-				else
-					value = new GridLength(value.Value, unit);
-
-				item.Properties[RowDefinition.HeightProperty].SetValue(value);
+				SetGridLengthUnit(unit, item, RowDefinition.HeightProperty);
 			} else {
-				value = (GridLength)item.Properties[ColumnDefinition.WidthProperty].ValueOnInstance;
-
-				if (unit == GridUnitType.Auto)
-					value = GridLength.Auto;
-				else
-					value = new GridLength(value.Value, unit);
-
-				item.Properties[ColumnDefinition.WidthProperty].SetValue(value);
+				SetGridLengthUnit(unit, item, ColumnDefinition.WidthProperty);
 			}
 			grid.UpdateLayout();
 			InvalidateVisual();
+		}
+		
+		void SetGridLengthUnit(GridUnitType unit, DesignItem item, DependencyProperty property)
+		{
+			DesignItemProperty itemProperty = item.Properties[property];
+			GridLength oldValue = (GridLength)itemProperty.ValueOnInstance;
+			GridLength value = GetNewGridLength(unit, oldValue);
+			
+			if (value != oldValue) {
+				itemProperty.SetValue(value);
+			}
+		}
+		
+		GridLength GetNewGridLength(GridUnitType unit, GridLength oldValue)
+		{
+			if (unit == GridUnitType.Auto) {
+				return GridLength.Auto;
+			}
+			return new GridLength(oldValue.Value, unit);
 		}
 	}
 	

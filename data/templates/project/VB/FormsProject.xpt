@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<Template originator   = "Markus Palme"
+          created      = "15/04/2002"
+          lastModified = "07/20/2005">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.WindowsApplication.Name}</Name>
+		<Category>VB</Category>
+		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
+		<Icon>VBNet.Project.Form</Icon>
+		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
+		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MainForm.vb"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language="VBNet">
+		<PropertyGroup>
+			<OutputType>WinExe</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<OptionInfer>On</OptionInfer>
+		</PropertyGroup>
+		
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Windows.Forms" />
+			<Reference Include="System.Xml" />
+			
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Drawing" />
+			<Import Include="System.Diagnostics" />
+			<Import Include="System.Windows.Forms" />
+		</ProjectItems>
+		
+		<Files>
+			<File name="MainForm.vb">
+			<![CDATA[${StandardHeader.VBNET}
+Public Partial Class MainForm
+	Public Sub New()
+		' The Me.InitializeComponent call is required for Windows Forms designer support.
+		Me.InitializeComponent()
+		
+		'
+		' TODO : Add constructor code after InitializeComponents
+		'
+	End Sub
+End Class
+]]></File>
+				<File name="MainForm.Designer.vb" DependentUpon="MainForm.vb">
+			<![CDATA[${StandardHeader.VBNET}
+Partial Class MainForm
+	Inherits System.Windows.Forms.Form
+	
+	''' <summary>
+	''' Designer variable used to keep track of non-visual components.
+	''' </summary>
+	Private components As System.ComponentModel.IContainer
+	
+	''' <summary>
+	''' Disposes resources used by the form.
+	''' </summary>
+	''' <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+	Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+		If disposing Then
+			If components IsNot Nothing Then
+				components.Dispose()
+			End If
+		End If
+		MyBase.Dispose(disposing)
+	End Sub
+	
+	''' <summary>
+	''' This method is required for Windows Forms designer support.
+	''' Do not change the method contents inside the source code editor. The Forms designer might
+	''' not be able to load this method if it was changed manually.
+	''' </summary>
+	Private Sub InitializeComponent()
+		'
+		'MainForm
+		'
+		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+		Me.Name = "MainForm"
+		Me.Text = "${ProjectName}"
+	End Sub
+End Class
+]]></File>
+<File name="Program.vb">
+			<![CDATA[${StandardHeader.VBNET}
+Imports Microsoft.VisualBasic.ApplicationServices
+
+Namespace My
+	' This file controls the behaviour of the application.
+	Partial Class MyApplication
+		Public Sub New()
+			MyBase.New(AuthenticationMode.Windows)
+			Me.IsSingleInstance = False
+			Me.EnableVisualStyles = True
+			Me.SaveMySettingsOnExit = True
+			Me.ShutDownStyle = ShutdownMode.AfterMainFormCloses
+		End Sub
+		
+		Protected Overrides Sub OnCreateMainForm()
+			Me.MainForm = My.Forms.MainForm
+		End Sub
+	End Class
+End Namespace
+]]></File>
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+			<File name="Properties\Settings.settings" src="MySettings.settings" Generator="SettingsSingleFileGenerator"/>
+		</Files>
+	</Project>
+</Template>

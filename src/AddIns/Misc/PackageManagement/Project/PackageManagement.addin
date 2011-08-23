@@ -1,0 +1,105 @@
+﻿<AddIn 
+	name="Package Management"
+	author="Matt Ward"
+	copyright="prj:///doc/copyright.txt"
+	url="http://sharpdevelop.com"
+	description="NuGet Package Management"
+	addInManagerHidden="preinstalled">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.PackageManagement"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly=":ICSharpCode.SharpDevelop"/>
+		<Import assembly="PackageManagement.dll"/>
+	</Runtime>
+	
+	<!-- Projects window context menu - project selected -->
+	<Path path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
+		<Condition name="WriteableProject" action="Disable">
+			<MenuItem
+				id="ManagePackages"
+				label="Manage Packages..."
+				insertafter="AddWebReference"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>		
+		</Condition>
+	</Path>
+	
+	<!-- Projects window context menu - References selected -->
+	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceFolderNode">
+		<Condition name="WriteableProject" action="Disable">
+			<MenuItem
+				id="ManagePackages"
+				label="Manage Packages..."
+				insertafter="AddWebReference"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
+		</Condition>
+	</Path>
+	
+	<!-- Project main menu -->
+	<Path name="/SharpDevelop/Workbench/MainMenu/Project">
+		<Condition name="WriteableProject" action="Disable">
+			<MenuItem
+				id="ManagePackages"
+				label="Manage Packages..."
+				insertafter="AddWebReference"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>				
+		</Condition>
+	</Path>
+	
+	<!-- Projects window context menu - solution selected -->
+	<Path path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode">
+		<Condition name="WriteableSolution" action="Disable">
+			<MenuItem
+				id="ManagePackagesForSolution"
+				label="Manage Packages..."
+				insertafter="CombineAddMenu"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
+		</Condition>
+	</Path>
+
+	<!-- Tools options -->
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog">
+		<OptionPanel
+			id="PackageManagement"
+			label="Package Management"
+			insertafter="Debugging"
+			insertbefore="TextEditorOptions">
+			<OptionPanel
+				id="PackageManagementOptions"
+				label="General"
+				class="ICSharpCode.PackageManagement.PackageManagementOptionsView"/>
+			<OptionPanel
+				id="PackageSources"
+				label="Package Sources"
+				class="ICSharpCode.PackageManagement.RegisteredPackageSourcesView"/>
+			<OptionPanel
+				id="ProjectTemplatePackageSources"
+				label="Template Package Sources"
+				class="ICSharpCode.PackageManagement.RegisteredProjectTemplatePackageSourcesView"/>
+		</OptionPanel>
+	</Path>
+	
+	<!-- Package Management Console Pad -->
+	<Path name="/SharpDevelop/Workbench/Pads">
+		<Pad
+			id="PackageManagementConsole"
+			category="Tools"
+			title="Package Management Console"
+			icon="PadIcons.Output"
+			defaultPosition="Bottom, Hidden"
+			class="ICSharpCode.PackageManagement.Scripting.PackageManagementConsolePad"/>
+	</Path>
+
+	<!-- Project template command -->
+	<Path name="/AddIns/PackageManagement/TemplateCommands">
+		<Class
+			id="InstallPackages"
+			class="ICSharpCode.PackageManagement.InstallProjectTemplatePackagesCommand"/>
+	</Path>
+</AddIn>

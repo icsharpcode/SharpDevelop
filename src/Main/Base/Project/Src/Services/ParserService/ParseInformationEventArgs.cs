@@ -48,7 +48,11 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public ParseInformationEventArgs(FileName fileName, IProjectContent projectContent, ICompilationUnit oldCompilationUnit, ParseInformation newParseInformation)
+		public bool IsPrimaryParseInfoForFile {
+			get; private set;
+		}
+		
+		public ParseInformationEventArgs(FileName fileName, IProjectContent projectContent, ICompilationUnit oldCompilationUnit, ParseInformation newParseInformation, bool isPrimaryParseInfoForFile)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -58,6 +62,7 @@ namespace ICSharpCode.SharpDevelop
 			this.projectContent = projectContent;
 			this.oldCompilationUnit = oldCompilationUnit;
 			this.newParseInformation = newParseInformation;
+			this.IsPrimaryParseInfoForFile = isPrimaryParseInfoForFile;
 		}
 	}
 	

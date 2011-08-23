@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		static void OnAdded(BookmarkEventArgs e)
 		{
 			if (Added != null) {
-				Added(null, e);
+				 Added(null, e);
 			}
 		}
 		
@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			List<SDBookmark> projectBookmarks = new List<SDBookmark>();
 			foreach (SDBookmark mark in bookmarks) {
-				if (mark.IsSaved && mark.FileName != null && project.IsFileInProject(mark.FileName)) {
+				if (mark.IsSaved && mark.FileName != null) {
 					projectBookmarks.Add(mark);
 				}
 			}
@@ -119,6 +119,20 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			int lineStartOffset = editor.Document.GetLine(line).Offset;
 			int column = 1 + DocumentUtilitites.GetWhitespaceAfter(editor.Document, lineStartOffset).Length;
 			BookmarkManager.AddMark(bookmarkFactory(new Location(column, line)));
+		}
+		
+		public static void RemoveAll(Predicate<SDBookmark> match)
+		{
+			if (match == null)
+				throw new ArgumentNullException("Predicate is null!");
+			
+			for(int index = bookmarks.Count - 1; index >= 0; --index){
+				SDBookmark bookmark = bookmarks[index];
+				if(match(bookmark)) {
+				   bookmarks.RemoveAt(index);
+				   OnRemoved(new BookmarkEventArgs(bookmark));
+				}
+			}
 		}
 		
 		public static event BookmarkEventHandler Removed;

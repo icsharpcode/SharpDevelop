@@ -1,0 +1,353 @@
+﻿<UserControl
+	x:Class="ICSharpCode.PackageManagement.PackagesView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:pm="clr-namespace:ICSharpCode.PackageManagement"
+	xmlns:pmd="clr-namespace:ICSharpCode.PackageManagement.Design"
+	mc:Ignorable="d"
+	d:DesignHeight="250"
+	d:DesignWidth="500">
+	
+	<UserControl.Resources>
+		<Style TargetType="Button" BasedOn="{x:Static core:GlobalStyles.ButtonStyle}"/>
+		<pm:OpenHyperlinkCommand x:Key="OpenHyperlinkCommand"/>
+		<BitmapImage x:Key="DefaultPackageIcon"
+			UriSource="pack://application:,,,/PackageManagement;component/Resources/packageicon.png"/>
+		<BitmapImage x:Key="PackageAddedIcon"
+			UriSource="pack://application:,,,/PackageManagement;component/Resources/accept.png"/>
+		<BitmapImage x:Key="SearchIcon"
+			UriSource="pack://application:,,,/PackageManagement;component/Resources/magnifier.png"/>
+		<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+		
+		<DataTemplate x:Key="PackageSourceComboBoxItemTemplate">
+			<TextBlock Text="{Binding Path=Name}"/>
+		</DataTemplate>
+		
+		<DataTemplate x:Key="PackageListBoxItemTemplate">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="60"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				
+				<Grid.RowDefinitions>
+					<RowDefinition Height="60"/>
+				</Grid.RowDefinitions>
+				
+				<Image
+					Grid.Column="0"
+					Height="32"
+					Source="{Binding Path=IconUrl, TargetNullValue={StaticResource DefaultPackageIcon}}"/>
+				<StackPanel
+					Grid.Column="1"
+					Margin="4, 0">
+					<TextBlock
+						Text="{Binding Path=Id}"
+						FontWeight="Bold"/>
+					<TextBlock
+						Text="{Binding Path=Summary}"
+						TextWrapping="Wrap"
+						TextTrimming="CharacterEllipsis"
+						MaxHeight="40"/>
+				</StackPanel>
+				<Image
+					Grid.Column="2"
+					VerticalAlignment="Top"
+					HorizontalAlignment="Right"
+					Height="16"
+					Width="16"
+					Source="{StaticResource PackageAddedIcon}"
+					Visibility="{Binding Path=IsAdded, Converter={StaticResource BoolToVisibility}}"/>
+				<Button
+					x:Name="addPackageButton"
+					Grid.Column="2"
+					Content="Add"
+					IsDefault="True"
+					Visibility="Collapsed"
+					Command="{Binding Path=AddPackageCommand}"
+					VerticalAlignment="Top"/>
+				<Button
+					x:Name="removePackageButton"
+					Grid.Column="2"
+					Content="Remove"
+					IsDefault="True"
+					Visibility="Collapsed"
+					Command="{Binding Path=RemovePackageCommand}"
+					VerticalAlignment="Bottom"/>
+				<Button
+					x:Name="managePackageButton"
+					Grid.Column="2"
+					Content="Manage"
+					IsDefault="True"
+					Visibility="Collapsed"
+					Command="{Binding Path=ManagePackageCommand}"
+					VerticalAlignment="Bottom"/>
+			</Grid>
+			
+			<DataTemplate.Triggers>
+				<MultiDataTrigger>
+					<MultiDataTrigger.Conditions>
+						<Condition 
+							Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
+							Value="True"/>
+						<Condition
+							Binding="{Binding Path=IsAdded}"
+							Value="False"/>
+						<Condition
+							Binding="{Binding Path=IsManaged}"
+							Value="False"/>
+					</MultiDataTrigger.Conditions>
+					<Setter
+						TargetName="addPackageButton"
+						Property="Visibility"
+						Value="Visible"/>
+				</MultiDataTrigger>
+				<MultiDataTrigger>
+					<MultiDataTrigger.Conditions>
+						<Condition 
+							Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
+							Value="True"/>
+						<Condition
+							Binding="{Binding Path=IsAdded}"
+							Value="True"/>
+						<Condition
+							Binding="{Binding Path=IsManaged}"
+							Value="False"/>
+					</MultiDataTrigger.Conditions>
+					<Setter
+						TargetName="removePackageButton"
+						Property="Visibility"
+						Value="Visible"/>
+				</MultiDataTrigger>
+				<MultiDataTrigger>
+					<MultiDataTrigger.Conditions>
+						<Condition 
+							Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
+							Value="True"/>
+						<Condition
+							Binding="{Binding Path=IsManaged}"
+							Value="True"/>
+					</MultiDataTrigger.Conditions>
+					<Setter
+						TargetName="managePackageButton"
+						Property="Visibility"
+						Value="Visible"/>
+				</MultiDataTrigger>
+			</DataTemplate.Triggers>
+		</DataTemplate>
+		
+		<DataTemplate x:Key="PackageTemplate">
+			<ScrollViewer
+				VerticalScrollBarVisibility="Auto">
+				<StackPanel Margin="8, 4">
+					<StackPanel
+						Orientation="Horizontal"
+						Margin="0, 4">
+						<TextBlock
+							Text="Created by:"
+							FontWeight="Bold"/>
+						<ItemsControl
+							Margin="4, 0"
+							ItemsSource="{Binding Path=Authors}"/>
+					</StackPanel>
+					<StackPanel
+						Orientation="Horizontal"
+						Margin="0, 4">
+						<TextBlock
+							Text="Version:"
+							FontWeight="Bold"
+							Margin="0, 0, 4, 0"/>
+						<TextBlock Text="{Binding Path=Version}"/>
+					</StackPanel>
+					<StackPanel
+						Orientation="Horizontal"
+						Visibility="{Binding Path=HasLastUpdated, Converter={StaticResource BoolToVisibility}}"
+						Margin="0, 4">
+						<TextBlock
+							Margin="0, 0, 4, 0"
+							Text="Last Updated:"
+							FontWeight="Bold"/>
+						<TextBlock Text="{Binding Path=LastUpdated, StringFormat=d}"/>
+					</StackPanel>
+					<StackPanel
+						Orientation="Horizontal"
+						Visibility="{Binding Path=HasDownloadCount, Converter={StaticResource BoolToVisibility}}"
+						Margin="0, 4">
+						<TextBlock
+							Margin="0, 0, 4, 0"
+							Text="Downloads:"
+							FontWeight="Bold"/>
+						<TextBlock Text="{Binding Path=DownloadCount}"/>
+					</StackPanel>
+					<StackPanel
+						Visibility="Collapsed"
+						Orientation="Horizontal"
+						Margin="0, 4">
+						<TextBlock
+							Margin="0, 0, 4, 0"
+							Text="Rating:"
+							FontWeight="Bold"/>
+						<TextBlock Text="{Binding Path=Rating}"/>
+					</StackPanel>
+					<TextBlock
+						Visibility="{Binding Path=HasLicenseUrl, Converter={StaticResource BoolToVisibility}}">
+						<Hyperlink
+							Command="{StaticResource OpenHyperlinkCommand}"
+							CommandParameter="{Binding Path=LicenseUrl}">
+							<TextBlock Text="View License Terms"/>
+						</Hyperlink>
+					</TextBlock>
+					<TextBlock
+						Visibility="{Binding Path=HasProjectUrl, Converter={StaticResource BoolToVisibility}}">
+						<Hyperlink
+							Command="{StaticResource OpenHyperlinkCommand}"
+							CommandParameter="{Binding Path=ProjectUrl}">
+							<TextBlock Text="More Information"/>
+						</Hyperlink>
+					</TextBlock>
+					<TextBlock
+						Visibility="{Binding Path=HasReportAbuseUrl, Converter={StaticResource BoolToVisibility}}">
+						<Hyperlink
+							Command="{StaticResource OpenHyperlinkCommand}"
+							CommandParameter="{Binding Path=ReportAbuseUrl}">
+							<TextBlock Text="Report Abuse"/>
+						</Hyperlink>
+					</TextBlock>
+					<TextBlock
+						Margin="0, 4"
+						TextWrapping="Wrap"
+						Text="{Binding Path=Description}"/>
+					<StackPanel Margin="0, 4">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock
+								Text="Dependencies:"
+								Margin="0, 0, 4, 0"
+								FontWeight="Bold"/>
+							<TextBlock
+								Text="None"
+								Visibility="{Binding Path=HasNoDependencies, Converter={StaticResource BoolToVisibility}}"/>
+						</StackPanel>
+						<ItemsControl 
+							Margin="4, 4"
+							ItemsSource="{Binding Path=Dependencies}"/>
+					</StackPanel>
+				</StackPanel>
+			</ScrollViewer>
+			
+			<DataTemplate.Triggers>
+				<DataTrigger
+					Binding="{Binding}"
+					Value="{x:Null}">
+					<Setter
+						Property="StackPanel.Visibility"
+						Value="Hidden"/>
+				</DataTrigger>
+			</DataTemplate.Triggers>
+		</DataTemplate>
+	</UserControl.Resources>
+	
+	<Grid d:DataContext="{d:DesignInstance pmd:DesignTimePackagesViewModel, IsDesignTimeCreatable=True}">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition MinWidth="100"/>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition MinWidth="100"/>
+		</Grid.ColumnDefinitions>
+		
+		<Grid Grid.Column="0">
+			<Grid.RowDefinitions>
+				<RowDefinition />
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+			<ListBox
+				x:Name="allPackagesListBox"
+				Grid.Row="0"
+				SelectedIndex="0"
+				ItemTemplate="{StaticResource PackageListBoxItemTemplate}"
+				ItemsSource="{Binding Path=PackageViewModels}"
+				HorizontalContentAlignment="Stretch"
+				ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+			<ProgressBar
+				Grid.Row="0"
+				Height="20"
+				Width="100"
+				IsIndeterminate="True"
+				Visibility="{Binding Path=IsReadingPackages, Converter={StaticResource BoolToVisibility}}"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"/>
+			<TextBlock
+				x:Name="ErrorMessageText"
+				Grid.Row="0"
+				Visibility="{Binding Path=HasError, Converter={StaticResource BoolToVisibility}}"
+				Text="{Binding Path=ErrorMessage}"
+				TextWrapping="Wrap"/>
+			<pm:PagedResultsView
+				x:Name="pagedResultsView"
+				Grid.Row="1"
+				HorizontalAlignment="Center"
+				Visibility="{Binding Path=IsPaged, Converter={StaticResource BoolToVisibility}}"
+				DataContext="{Binding}"/>
+		</Grid>
+		<GridSplitter
+			Grid.Column="1"
+			Width="5"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"/>
+		<Grid
+			Grid.Column="2">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition />
+			</Grid.RowDefinitions>
+			<Grid
+				Visibility="{Binding Path=IsSearchable, Converter={StaticResource BoolToVisibility}}">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition />
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+				<ComboBox 
+					Grid.Row="0"
+					Grid.ColumnSpan="2"
+					Margin="0, 0, 0, 2"
+					SelectedItem="{Binding Path=SelectedPackageSource}"
+					ItemsSource="{Binding Path=PackageSources}"
+					ItemTemplate="{StaticResource PackageSourceComboBoxItemTemplate}"
+					Visibility="{Binding Path=ShowPackageSources, Converter={StaticResource BoolToVisibility}}"/>
+				<TextBox
+					Grid.Row="1"
+					Grid.Column="0"
+					Text="{Binding Path=SearchTerms, UpdateSourceTrigger=PropertyChanged}">
+					<TextBox.InputBindings>
+						<KeyBinding
+							Key="Enter"
+							Command="{Binding Path=SearchCommand}"/>
+					</TextBox.InputBindings>
+				</TextBox>
+				<TextBlock 
+					Grid.Row="1"
+					Grid.Column="1"
+					Margin="4">
+					<Hyperlink 
+						TextDecorations="{x:Null}"
+						Command="{Binding Path=SearchCommand}">
+						<Image
+							Source="{StaticResource SearchIcon}"
+							Height="16"
+							Width="16"/>
+					</Hyperlink>
+				</TextBlock>
+			</Grid>
+			<ContentControl
+				Grid.Row="1"
+				ContentTemplate="{StaticResource PackageTemplate}"
+				Content="{Binding ElementName=allPackagesListBox, Path=SelectedItem}"/>
+		</Grid>
+	</Grid>
+</UserControl>

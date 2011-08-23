@@ -362,7 +362,9 @@ namespace ICSharpCode.XamlBinding
 		
 		public static Brush ToBrush(this Color color)
 		{
-			return new SolidColorBrush(color);
+			var b = new SolidColorBrush(color);
+			b.Freeze();
+			return b;
 		}
 	}
 }

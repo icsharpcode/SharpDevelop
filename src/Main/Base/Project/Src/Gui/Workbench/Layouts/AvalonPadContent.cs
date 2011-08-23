@@ -43,10 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (!(IsActiveContent && !IsKeyboardFocusWithin))
 				return;
 			IInputElement activeChild = CustomFocusManager.GetFocusedChild(this);
-			if (activeChild == null && padInstance != null) {
-				activeChild = padInstance.InitiallyFocusedControl as IInputElement;
-			}
-			AvalonWorkbenchWindow.SetFocus(this, activeChild);
+			AvalonWorkbenchWindow.SetFocus(this, () => activeChild ?? (padInstance != null ? padInstance.InitiallyFocusedControl as IInputElement : null));
 		}
 		
 		public void ShowInDefaultPosition()

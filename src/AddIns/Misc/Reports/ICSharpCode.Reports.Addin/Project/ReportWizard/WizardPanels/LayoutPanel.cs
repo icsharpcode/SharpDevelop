@@ -5,7 +5,7 @@ using System;
 using System.Drawing;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
-
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
@@ -20,14 +20,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public LayoutPanel()
 		{
-		base.EnableFinish = true;
+			base.EnableFinish = true;
 			base.EnableCancel = true;
 			base.EnableNext = true;
 			base.Refresh();
 			layoutControl = new LayoutPanelControl();
 			layoutControl.Location = new Point (20,20);
 			this.Controls.Add(layoutControl);
-		
+			
 		}
 		
 		

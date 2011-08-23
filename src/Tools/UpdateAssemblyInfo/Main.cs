@@ -1,9 +1,6 @@
-/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 21.07.2005
- * Time: 12:00
- */
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -95,7 +92,8 @@ namespace UpdateAssemblyInfo
 							new XElement("version", fullVersionNumber),
 							new XElement("revision", revisionNumber),
 							new XElement("commitHash", gitCommitHash),
-							new XElement("branchName", gitBranchName)
+							new XElement("branchName", gitBranchName),
+							new XElement("versionName", versionName)
 						));
 						doc.Save("REVISION");
 					}
@@ -115,6 +113,7 @@ namespace UpdateAssemblyInfo
 					content = r.ReadToEnd();
 				}
 				content = content.Replace("$INSERTVERSION$", fullVersionNumber);
+				content = content.Replace("$INSERTMAJORVERSION$", majorVersionNumber);
 				content = content.Replace("$INSERTREVISION$", revisionNumber);
 				content = content.Replace("$INSERTCOMMITHASH$", gitCommitHash);
 				content = content.Replace("$INSERTSHORTCOMMITHASH$", gitCommitHash.Substring(0, 8));
@@ -123,6 +122,10 @@ namespace UpdateAssemblyInfo
 				content = content.Replace("$INSERTBRANCHNAME$", gitBranchName);
 				bool isDefaultBranch = string.IsNullOrEmpty(gitBranchName) || gitBranchName == "master" || char.IsDigit(gitBranchName, 0);
 				content = content.Replace("$INSERTBRANCHPOSTFIX$", isDefaultBranch ? "" : ("-" + gitBranchName));
+				
+				content = content.Replace("$INSERTVERSIONNAME$", versionName ?? "");
+				content = content.Replace("$INSERTVERSIONNAMEPOSTFIX$", string.IsNullOrEmpty(versionName) ? "" : "-" + versionName);
+				
 				if (File.Exists(file.Output)) {
 					using (StreamReader r = new StreamReader(file.Output)) {
 						if (r.ReadToEnd() == content) {
@@ -138,9 +141,11 @@ namespace UpdateAssemblyInfo
 			}
 		}
 		
-		static string GetMajorVersion()
+		static void GetMajorVersion()
 		{
-			string version = "?";
+			majorVersionNumber = "?";
+			fullVersionNumber = "?";
+			versionName = null;
 			// Get main version from startup
 			using (StreamReader r = new StreamReader(globalAssemblyInfoTemplateFile)) {
 				string line;
@@ -149,23 +154,28 @@ namespace UpdateAssemblyInfo
 					int pos = line.IndexOf(search);
 					if (pos >= 0) {
 						int e = line.IndexOf('"', pos + search.Length + 1);
-						version = line.Substring(pos + search.Length, e - pos - search.Length);
+						majorVersionNumber = line.Substring(pos + search.Length, e - pos - search.Length);
 					}
 					search = "string Minor = \"";
 					pos = line.IndexOf(search);
 					if (pos >= 0) {
 						int e = line.IndexOf('"', pos + search.Length + 1);
-						version = version + "." + line.Substring(pos + search.Length, e - pos - search.Length);
+						majorVersionNumber = majorVersionNumber + "." + line.Substring(pos + search.Length, e - pos - search.Length);
 					}
 					search = "string Build = \"";
 					pos = line.IndexOf(search);
 					if (pos >= 0) {
 						int e = line.IndexOf('"', pos + search.Length + 1);
-						version = version + "." + line.Substring(pos + search.Length, e - pos - search.Length);
+						fullVersionNumber = majorVersionNumber + "." + line.Substring(pos + search.Length, e - pos - search.Length) + "." + revisionNumber;
+					}
+					search = "string VersionName = \"";
+					pos = line.IndexOf(search);
+					if (pos >= 0) {
+						int e = line.IndexOf('"', pos + search.Length + 1);
+						versionName = line.Substring(pos + search.Length, e - pos - search.Length);
 					}
 				}
 			}
-			return version;
 		}
 		
 		static void SetVersionInfo(string fileName, Regex regex, string replacement)
@@ -184,7 +194,12 @@ namespace UpdateAssemblyInfo
 		
 		#region Retrieve Revision Number
 		static string revisionNumber;
+		static string majorVersionNumber;
 		static string fullVersionNumber;
+		/// <summary>
+		/// Descriptive version name, e.g. 'Beta 3'
+		/// </summary>
+		static string versionName;
 		static string gitCommitHash;
 		static string gitBranchName;
 		
@@ -202,7 +217,7 @@ namespace UpdateAssemblyInfo
 			if (revisionNumber == null) {
 				ReadRevisionFromFile();
 			}
-			fullVersionNumber = GetMajorVersion() + "." + revisionNumber;
+			GetMajorVersion();
 		}
 		
 		static void ReadRevisionNumberFromGit()
@@ -267,7 +282,7 @@ namespace UpdateAssemblyInfo
 				Console.WriteLine("Build continues with revision number '0'...");
 				
 				revisionNumber = "0";
-				gitCommitHash = null;
+				gitCommitHash = "0000000000000000000000000000000000000000";
 			}
 			if (revisionNumber == null || revisionNumber.Length == 0) {
 				revisionNumber = "0";

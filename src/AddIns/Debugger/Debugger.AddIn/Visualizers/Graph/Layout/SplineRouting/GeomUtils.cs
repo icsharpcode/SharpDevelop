@@ -38,23 +38,23 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 			double right = rect.Left + rect.Width;
 			double bottom = rect.Top + rect.Height;
 			
-			var isectTop = isectHoriz(lineStart, vx, vy, rect.Top, rect.Left, right);
+			var isectTop = IsectHoriz(lineStart, vx, vy, rect.Top, rect.Left, right);
 			if (isectTop != null)
 				return isectTop;
-			var isectBottom = isectHoriz(lineStart, vx, vy, bottom, rect.Left, right);
+			var isectBottom = IsectHoriz(lineStart, vx, vy, bottom, rect.Left, right);
 			if (isectBottom != null)
 				return isectBottom;
-			var isectLeft = isectVert(lineStart, vx, vy, rect.Left, rect.Top, bottom);
+			var isectLeft = IsectVert(lineStart, vx, vy, rect.Left, rect.Top, bottom);
 			if (isectLeft != null)
 				return isectLeft;
-			var isectRight = isectVert(lineStart, vx, vy, right, rect.Top, bottom);
+			var isectRight = IsectVert(lineStart, vx, vy, right, rect.Top, bottom);
 			if (isectRight != null)
 				return isectRight;
 			
 			return null;
 		}
 		
-		static Point2D? isectHoriz(IPoint lineStart, double vx, double vy, double yBound, double left, double right)
+		static Point2D? IsectHoriz(IPoint lineStart, double vx, double vy, double yBound, double left, double right)
 		{
 			if (Math.Abs(vy) < eps)
 				return null;
@@ -68,7 +68,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 			return null;
 		}
 		
-		static Point2D? isectVert(IPoint lineStart, double vx, double vy, double xBound, double top, double bottom)
+		static Point2D? IsectVert(IPoint lineStart, double vx, double vy, double xBound, double top, double bottom)
 		{
 			if (Math.Abs(vx) < eps)
 				return null;

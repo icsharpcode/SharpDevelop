@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			FileLineReference result = null;
 			
 			if (lineText != null) {
-				Match match = Regex.Match(lineText, @"\sin\s(.*?):line\s(\d+)?\r?$", regexOptions);
+				Match match = Regex.Match(lineText, "\\sin\\s([^<>|\"]*?):line\\s(\\d+)?\\r?$", regexOptions);
 				while (match.Success) {
 					try	{
 						int line = Convert.ToInt32(match.Groups[2].Value);

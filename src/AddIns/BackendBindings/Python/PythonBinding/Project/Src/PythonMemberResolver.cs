@@ -119,8 +119,12 @@ namespace ICSharpCode.PythonBinding
 		
 		IMember FindMemberInParent(IMember parentMember, string memberName)
 		{
-			IClass parentMemberClass = parentMember.ReturnType.GetUnderlyingClass();
-			return FindMemberInClass(parentMemberClass, memberName);
+			IReturnType returnType = parentMember.ReturnType;
+			if (returnType != null) {
+				IClass parentMemberClass = returnType.GetUnderlyingClass();
+				return FindMemberInClass(parentMemberClass, memberName);
+			}
+			return null;
 		}
 	}
 }

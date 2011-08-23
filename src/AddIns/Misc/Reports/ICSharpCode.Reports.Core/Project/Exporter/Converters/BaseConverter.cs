@@ -6,6 +6,7 @@ using System.Drawing;
 using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Events;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
@@ -18,22 +19,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 	public class BaseConverter:IBaseConverter
 	{
-		
-		private IDataNavigator dataNavigator;
-		private ExporterPage singlePage;
-		private SectionBounds sectionBounds;
-		private Rectangle parentRectangle;
-		private ILayouter layouter;
 		private Size saveSize;
-		private IExpressionEvaluatorFacade evaluator;
-	
+		
 		public event EventHandler <NewPageEventArgs> PageFull;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
-		
-		
+		public event EventHandler<GroupHeaderEventArgs> GroupHeaderRendering;
+		public event EventHandler<GroupFooterEventArgs> GroupFooterRendering;
+		public event EventHandler<RowRenderEventArgs> RowRendering;
 
-		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage,
-		                     ILayouter layouter)
+		
+		public BaseConverter(IReportModel reportModel,IDataNavigator dataNavigator,ExporterPage singlePage)
 		{
 			if (dataNavigator == null) {
 				throw new ArgumentNullException("dataNavigator");
@@ -41,46 +36,72 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (singlePage == null) {
 				throw new ArgumentNullException("singlePage");
 			}
+			this.ReportModel = reportModel;
 
-			if (layouter == null) {
-				throw new ArgumentNullException("layouter");
-			}
-			this.singlePage = singlePage;
-			this.dataNavigator = dataNavigator;
-			this.sectionBounds = this.singlePage.SectionBounds;
-			this.layouter = layouter;
-			this.evaluator = StandardPrinter.CreateEvaluator(this.singlePage,this.dataNavigator);
+			this.SinglePage = singlePage;
+			this.DataNavigator = dataNavigator;
+			this.Layouter =  (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
+			this.Evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.DataNavigator);
 		}
-		
 		
 		
 		#region PageBreak
 		
 		protected void BuildNewPage(ExporterCollection myList,BaseSection section)
-		{
+		{			
 			FirePageFull(myList);
-			section.SectionOffset = SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
+			section.SectionOffset = SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;		
 			myList.Clear();
 		}
 		
 		
 		protected void FirePageFull (ExporterCollection items)
 		{
-			EventHelper.Raise<NewPageEventArgs>(PageFull,this,new NewPageEventArgs(items));
+			var newPage = new NewPageEventArgs (items,SinglePage.SectionBounds);
+			EventHelper.Raise<NewPageEventArgs>(PageFull,this,newPage);
+			SinglePage.SectionBounds = newPage.SectionBounds;
 		}
 		
 		#endregion
+		
+		
+		#region Events
+		
+		protected void FireRowRendering (ISimpleContainer detailRow,IDataNavigator currentNavigator)
+		{
+			BaseRowItem row = detailRow as BaseRowItem;
+			if (row == null) {
+				throw new ArgumentException("row");
+			}
+			RowRenderEventArgs rrea = new RowRenderEventArgs(row,currentNavigator.Current);
+			EventHelper.Raise<RowRenderEventArgs>(RowRendering,this,rrea);
+		}
+		
+		
+		protected void FireGroupHeaderRendering (GroupHeader groupHeader)
+		{
+			GroupHeaderEventArgs ghea = new GroupHeaderEventArgs(groupHeader);
+			EventHelper.Raise<GroupHeaderEventArgs>(GroupHeaderRendering,this,ghea);
+		}
+			
+		
+		protected void FireGroupFooterRendering (GroupFooter groupFooter)
+		{
+			GroupFooterEventArgs gfea = new GroupFooterEventArgs(groupFooter);
+			EventHelper.Raise<GroupFooterEventArgs>(GroupFooterRendering,this,gfea);
+		}
 		
 		
 		protected void FireSectionRendering (BaseSection section)
 		{
 			SectionRenderEventArgs srea = new SectionRenderEventArgs(section,
 			                                                         this.SinglePage.PageNumber,
-			                                                         this.dataNavigator.CurrentRow,
+			                                                         this.DataNavigator.CurrentRow,
 			                                                         section);
 			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,srea);
 		}
 		
+		#endregion
 		
 		
 		protected  static ExporterCollection ConvertItems (ISimpleContainer row,Point offset)		                                          
@@ -89,102 +110,157 @@ namespace ICSharpCode.Reports.Core.Exporter
 			IExportColumnBuilder exportLineBuilder = row as IExportColumnBuilder;
 
 			if (exportLineBuilder != null) {
-
-				ExportContainer lineItem = StandardPrinter.ConvertToContainer(row,offset);
-				
-				StandardPrinter.AdjustBackColor(row);
-				ExporterCollection list = StandardPrinter.ConvertPlainCollection(row.Items,offset);
-					
-				lineItem.Items.AddRange(list);
-				
+				ExportContainer exportContainer = ExportHelper.ConvertToContainer(row,offset);
+				ExporterCollection list = ExportHelper.ConvertPlainCollection(row.Items,exportContainer.StyleDecorator.Location);
+				exportContainer.Items.AddRange(list);
 				ExporterCollection containerList = new ExporterCollection();
-				containerList.Add (lineItem);
+				containerList.Add (exportContainer);
 				return containerList;
 			}
 			return null;
 		}
 		
+		protected void DebugShowSections ()
+		{
+			Console.WriteLine("\treportheader {0}",SectionBounds.ReportHeaderRectangle);
+			Console.WriteLine("\tpageheader {0}",SectionBounds.PageHeaderRectangle);
+			Console.WriteLine("\tdetail {0}",SectionBounds.DetailArea);
+		}
 	
+		#region Grouping
+		
+		protected void ConvertGroupFooter (ISimpleContainer container,ExporterCollection exporterCollection)
+		{
+            var footers = container.Items.FindGroupFooter();
+			if (footers.Count > 0) {				
+				Size rowSize = footers[0].Size;
+				CurrentPosition = ConvertStandardRow(exporterCollection,(ISimpleContainer)footers[0]);
+				FireGroupFooterRendering(footers[0]);
+				footers[0].Size = rowSize;
+			}
+		}
+		
+		
+		protected void PageBreakAfterGroupChange(BaseSection section,ExporterCollection exporterCollection)
+		{
+			if (CheckPageBreakAfterGroupChange(section) ) {
+				
+				if (DataNavigator.HasMoreData)
+				{
+					CurrentPosition = ForcePageBreak (exporterCollection,section);
+				}
+			}
+		}
+		
+		
+		private static bool CheckPageBreakAfterGroupChange(ISimpleContainer container)
+		{
+            var groupedRows = container.Items.FindGroupHeader();
+			if (groupedRows.Count > 0) {
+				var groupedRow = groupedRows[0];
+				return groupedRow.PageBreakOnGroupChange;
+			}
+			return false;
+		}
+		
+		
+		protected virtual Point ForcePageBreak(ExporterCollection exporterCollection, BaseSection section)
+		{
+			BuildNewPage(exporterCollection,section);
+			return Point.Empty;
+		}
+		
+		#endregion
 		
 		#region IBaseConverter
 		
 		public virtual ExporterCollection Convert(BaseReportItem parent, BaseReportItem item)
 		{
-			this.parentRectangle = new Rectangle(parent.Location,parent.Size);
+			this.ParentRectangle = new Rectangle(parent.Location,parent.Size);
 			return new ExporterCollection();;
 		}
 		
 		
-		public Rectangle ParentRectangle {
-			get { return parentRectangle; }
-		}
 		
-		
-		public ExporterPage SinglePage {
-			get { return singlePage; }
-		}
-		
-		public SectionBounds SectionBounds {
-			get { return sectionBounds; }
-		}
-		
-		public IDataNavigator DataNavigator {
-			get { return dataNavigator; }
-		}
-		
-		
-		public ILayouter Layouter {
-			get { return layouter; }
-		}
-		
-		public Graphics Graphics {get;set;}
 		#endregion
 		
-		protected void  SaveSize(Size size)
+		public Point CurrentPosition {get;set;}
+		
+		public Rectangle ParentRectangle {get;private set;}
+			
+		public ISinglePage SinglePage {get;private set;}
+		
+		public SectionBounds SectionBounds
+		{
+			get 
+			{
+				return SinglePage.SectionBounds;
+			}
+		}
+			
+		public IDataNavigator DataNavigator {get;private set;}
+			
+		public ILayouter Layouter {get; private set;}
+		
+		public Graphics Graphics {get;set;}
+		
+		protected IExpressionEvaluatorFacade Evaluator{get;private set;}
+		
+		protected IReportModel ReportModel {get; private set;}
+		
+		protected int DefaultLeftPosition {get;set;}
+		
+		protected void  SaveSectionSize(Size size)
 		{
 			this.saveSize = size;
 		}
 		
-		
-		protected Size RestoreSize
+		protected Size RestoreSectionSize
 		{
 			get {return this.saveSize;}
 		}
 		
-		
-		protected IExpressionEvaluatorFacade Evaluator
-		{
-			get {return this.evaluator;}
-		}
-		
-		
-		protected void FillRow (ISimpleContainer row)
-		{
-			DataNavigator.Fill(row.Items);
-		}
-		
-		
-		
 		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
-			if (section != null) {
-				FireSectionRendering(section);
-			}
-			LayoutRow(simpleContainer);
+			FireSectionRendering(section);
+			LayoutHelper.SetLayoutForRow(Graphics,Layouter,simpleContainer);
 		}
 		
-		
-		private void LayoutRow (ISimpleContainer row)
+		protected  Point ConvertStandardRow(ExporterCollection mylist,ISimpleContainer simpleContainer)
 		{
-			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
+			var rowSize = simpleContainer.Size;
+			
+			Point curPos = new Point(DefaultLeftPosition, CurrentPosition.Y);
+			ExporterCollection ml = BaseConverter.ConvertItems (simpleContainer, curPos);
+			EvaluationHelper.EvaluateRow(Evaluator,ml);
+			
+			mylist.AddRange(ml);
+		
+			curPos = new Point (DefaultLeftPosition,CurrentPosition.Y + simpleContainer.Size.Height + 2 * GlobalValues.GapBetweenContainer);
+			simpleContainer.Size = rowSize;
+			return curPos;
+			
+		}
+
+		
+		protected void AfterConverting (ExporterCollection convertedList)
+		{
+			EvaluationHelper.EvaluateRow(Evaluator,convertedList);
 		}
 		
-	
-		protected static Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
+		
+		public static Point ConvertContainer(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
 		{
 			ExporterCollection ml = BaseConverter.ConvertItems (container, curPos);		
 			myList.AddRange(ml);
-			return new Point (leftPos,curPos.Y + container.Size.Height + (3 *GlobalValues.GapBetweenContainer));
+			return new Point (leftPos,curPos.Y + container.Size.Height);
 		}
+		
+		
+		protected static  void FillRow (ISimpleContainer row,IDataNavigator currentNavigator)
+		{
+			currentNavigator.Fill(row.Items);
+		}
+		
 	}
 }

@@ -5,6 +5,7 @@
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 >
 	<Style TargetType="{x:Type local:SharpDevelopTextEditor}">
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
 		<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
 		<Setter Property="Template">
 			<Setter.Value>
@@ -14,8 +15,8 @@
 						Name="PART_ScrollViewer"
 						MouseWheelZoom="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Options.MouseWheelZoom}"
 						CanContentScroll="True"
-						VerticalScrollBarVisibility="Visible"
-						HorizontalScrollBarVisibility="Visible"
+						VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}"
+						HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
 						Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextArea}"
 						VerticalContentAlignment="Top"
 						HorizontalContentAlignment="Left"

@@ -8,7 +8,7 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
-	/// Description of EdgeRouter.
+	/// Entry point to the edge routing algorithm.
 	/// </summary>
 	public class EdgeRouter
 	{
@@ -16,24 +16,29 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		{
 		}
 		
-		public List<RoutedEdge> RouteEdges(IEnumerable<IRect> nodes, IEnumerable<IEdge> edges)
+		/// <summary>
+		/// Calculates routes for edges in a graph, so that they avoid nodes.
+		/// </summary>
+		public Dictionary<TEdge, RoutedEdge> RouteEdges<TEdge>(IEnumerable<IRect> nodes, IEnumerable<TEdge> edges)
+			where TEdge : class, IEdge
 		{
-			var routeGraph = RouteGraph.InitializeVertices(nodes, edges);
-			List<RoutedEdge> routedEdges = new List<RoutedEdge>();
-			var occludedEdges = new List<IEdge>();
-			foreach (IEdge edge in edges)	{
+			var routeGraph = RouteGraph.InitializeVertices(nodes, edges, 0, 0);
+			var routedEdges = new Dictionary<TEdge, RoutedEdge>();
+			var occludedEdges = new List<TEdge>();
+			foreach (var edge in edges) {
 				var straightEdge = routeGraph.TryRouteEdgeStraight(edge);
-				if (straightEdge != null)
-					routedEdges.Add(straightEdge);
-				else
+				if (straightEdge != null) {
+					routedEdges[edge] = straightEdge;
+				} else {
 					occludedEdges.Add(edge);
+				}
 			}
 			if (occludedEdges.Count > 0)	{
 				// there are some edges that couldn't be routed as straight lines
 				routeGraph.ComputeVisibilityGraph();
-				foreach (IEdge edge in occludedEdges) {
+				foreach (var edge in occludedEdges) {
 					RoutedEdge routedEdge = routeGraph.RouteEdge(edge);
-					routedEdges.Add(routedEdge);
+					routedEdges[edge] = routedEdge;
 				}
 			}
 			return routedEdges;

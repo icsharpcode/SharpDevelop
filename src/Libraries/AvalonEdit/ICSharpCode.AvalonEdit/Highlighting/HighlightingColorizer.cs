@@ -68,7 +68,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		protected virtual IHighlighter CreateHighlighter(TextView textView, TextDocument document)
 		{
-			return new TextViewDocumentHighlighter(textView, document, ruleSet);
+			return new TextViewDocumentHighlighter(this, textView, document, ruleSet);
 		}
 		
 		/// <inheritdoc/>
@@ -98,7 +98,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				// This is necessary in case the document gets modified above the FirstLineInView so that the highlighting state changes.
 				// We need to detect this case and issue a redraw (through TextViewDocumentHighligher.OnHighlightStateChanged)
 				// before the visual line construction reuses existing lines that were built using the invalid highlighting state.
-				highlighter.GetSpanStack(e.FirstLineInView.LineNumber - 1);
+				lineNumberBeingColorized = e.FirstLineInView.LineNumber - 1;
+				highlighter.GetSpanStack(lineNumberBeingColorized);
+				lineNumberBeingColorized = 0;
 			}
 		}
 		
@@ -116,18 +118,24 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					// (e.g. when the line ends with a fold marker).
 					// But even if we didn't highlight it, we'll have to update the highlighting state for it so that the
 					// proof inside TextViewDocumentHighlighter.OnHighlightStateChanged holds.
-					highlighter.GetSpanStack(context.VisualLine.LastDocumentLine.LineNumber);
+					lineNumberBeingColorized = context.VisualLine.LastDocumentLine.LineNumber;
+					highlighter.GetSpanStack(lineNumberBeingColorized);
+					lineNumberBeingColorized = 0;
 				}
 			}
 			this.lastColorizedLine = null;
 		}
+		
+		int lineNumberBeingColorized;
 		
 		/// <inheritdoc/>
 		protected override void ColorizeLine(DocumentLine line)
 		{
 			IHighlighter highlighter = CurrentContext.TextView.Services.GetService(typeof(IHighlighter)) as IHighlighter;
 			if (highlighter != null) {
-				HighlightedLine hl = highlighter.HighlightLine(line.LineNumber);
+				lineNumberBeingColorized = line.LineNumber;
+				HighlightedLine hl = highlighter.HighlightLine(lineNumberBeingColorized);
+				lineNumberBeingColorized = 0;
 				foreach (HighlightedSection section in hl.Sections) {
 					ChangeLinePart(section.Offset, section.Offset + section.Length,
 					               visualLineElement => ApplyColorToElement(visualLineElement, section.Color));
@@ -145,6 +153,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				Brush b = color.Foreground.GetBrush(CurrentContext);
 				if (b != null)
 					element.TextRunProperties.SetForegroundBrush(b);
+			}
+			if (color.Background != null) {
+				Brush b = color.Background.GetBrush(CurrentContext);
+				if (b != null)
+					element.TextRunProperties.SetBackgroundBrush(b);
 			}
 			if (color.FontStyle != null || color.FontWeight != null) {
 				Typeface tf = element.TextRunProperties.Typeface;
@@ -167,18 +180,27 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </remarks>
 		sealed class TextViewDocumentHighlighter : DocumentHighlighter
 		{
+			readonly HighlightingColorizer colorizer;
 			readonly TextView textView;
 			
-			public TextViewDocumentHighlighter(TextView textView, TextDocument document, HighlightingRuleSet baseRuleSet)
+			public TextViewDocumentHighlighter(HighlightingColorizer colorizer, TextView textView, TextDocument document, HighlightingRuleSet baseRuleSet)
 				: base(document, baseRuleSet)
 			{
+				Debug.Assert(colorizer != null);
 				Debug.Assert(textView != null);
+				this.colorizer = colorizer;
 				this.textView = textView;
 			}
 			
 			protected override void OnHighlightStateChanged(DocumentLine line, int lineNumber)
 			{
 				base.OnHighlightStateChanged(line, lineNumber);
+				if (colorizer.lineNumberBeingColorized != lineNumber) {
+					// Ignore notifications for any line except the one we're interested in.
+					// This improves the performance as Redraw() can take quite some time when called repeatedly
+					// while scanning the document (above the visible area) for highlighting changes.
+					return;
+				}
 				if (textView.Document != this.Document) {
 					// May happen if document on text view was changed but some user code is still using the
 					// existing IHighlighter instance.

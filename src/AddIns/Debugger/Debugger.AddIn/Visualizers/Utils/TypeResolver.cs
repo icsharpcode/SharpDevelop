@@ -12,7 +12,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 	/// <summary>
 	/// Helper for obtaining information about DebugType.
 	/// </summary>
-	public static class TypeResolverExtension
+	public static class TypeResolver
 	{
 		/// <summary>
 		/// Gets generic interface this type implements.

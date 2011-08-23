@@ -55,6 +55,9 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -72,6 +75,7 @@
     <Compile Include="Highlighting\SyntaxDoozerAddsHighlightingToHighlightingManagerTestFixture.cs" />
     <Compile Include="NRefactoryResolverTests.cs" />
     <Compile Include="CollectionClassOverridesTestFixture.cs" />
+    <Compile Include="OutputTextLineParserTests.cs" />
     <Compile Include="OverridableMethodsTestFixture.cs" />
     <Compile Include="OverridablePropertiesTestFixture.cs" />
     <Compile Include="PropertyPadSortingTests.cs" />
@@ -122,7 +126,6 @@
     <Compile Include="Templates\CategorySortOrderTests.cs" />
     <Compile Include="Templates\FileTemplateCategoryComparerTests.cs" />
     <Compile Include="WebReferences\HttpAuthenticationHeaderTests.cs" />
-    <Compile Include="OutputTextLineParserTestFixture.cs" />
     <Compile Include="StandardOutputFromProcessTestFixture.cs" />
     <Compile Include="CancelLongRunningAppTestFixture.cs" />
     <Compile Include="ExitCodeTestFixture.cs" />

@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<Template originator   = "Shinsaku Nakagawa"
+          created      = "11/28/2002"
+          lastModified = "07/20/2005">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.ConsoleProject.Name}</Name>
+		<Category>VB</Category>
+		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
+		<Icon>VBNet.Project.DOSProject</Icon>
+		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
+		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Program.vb"/>
+	</Actions>
+	
+
+	<!-- Template Content -->
+	<Project language = "VBNet">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+			
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Data" />
+			<Import Include="System.Diagnostics" />
+		</ProjectItems>
+		
+		<PropertyGroup>
+			<OutputType>Exe</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<OptionInfer>On</OptionInfer>
+		</PropertyGroup>
+		
+		<Files>
+	<File name="Program.vb">
+			<![CDATA[${StandardHeader.VBNET}
+Module Program
+	Sub Main()
+		Console.WriteLine("Hello World!")
+		
+		' TODO: Implement Functionality Here
+		
+		Console.Write("Press any key to continue . . . ")
+		Console.ReadKey(True)
+	End Sub
+End Module
+]]></File>
+		<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+		</Files>
+	</Project>
+</Template>

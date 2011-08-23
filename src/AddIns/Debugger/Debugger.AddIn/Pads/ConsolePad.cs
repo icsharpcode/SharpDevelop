@@ -2,16 +2,13 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
-using System.Collections;
 using System.Windows.Controls;
 using System.Windows.Input;
+
 using Debugger;
-using Debugger.AddIn;
-using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
@@ -55,7 +52,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return "The process is running";
 			}
 			try {
-				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, process.SelectedStackFrame);
+				var context = !process.IsInExternalCode ? process.SelectedStackFrame : process.SelectedThread.MostRecentStackFrame;
+				var debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+				object data = debugger.debuggerDecompilerService.GetLocalVariableIndex(context.MethodInfo.DeclaringType.MetadataToken, 
+				                                                                       context.MethodInfo.MetadataToken, 
+				                                                                       code);
+				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, context, data);
 				return ExpressionEvaluator.FormatValue(val);
 			} catch (GetValueException e) {
 				return e.Message;
@@ -110,7 +112,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (this.process == null || this.process.IsRunning)
 				return;
 			
-			if (this.process.SelectedStackFrame == null || this.process.SelectedStackFrame.NextStatement == null)
+			var context = !process.IsInExternalCode ? process.SelectedStackFrame : process.SelectedThread.MostRecentStackFrame;
+			if (context == null)
 				return;
 			
 			foreach (char ch in e.Text) {
@@ -122,7 +125,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void ShowDotCompletion(string currentText)
 		{
-			var seg = process.SelectedStackFrame.NextStatement;
+			var context = !process.IsInExternalCode ? process.SelectedStackFrame : process.SelectedThread.MostRecentStackFrame;
+			if (context == null)
+				return;
+			
+			var seg = context.NextStatement;
 			
 			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
 			var info = ParserService.GetParseInformation(seg.Filename);
@@ -144,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override ToolBar BuildToolBar()
 		{
-			return ToolBarService.CreateToolBar(this, debuggerConsoleToolBarTreePath);
+			return ToolBarService.CreateToolBar(console, this, debuggerConsoleToolBarTreePath);
 		}
 	}
 }

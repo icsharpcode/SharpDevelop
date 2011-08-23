@@ -40,6 +40,7 @@ namespace WixBinding.Tests.Utils
 		public event EventHandler Disposed;
 		public event EventHandler IsDirtyChanged;
 		public event EventHandler TitleNameChanged;
+		public event EventHandler InfoTipChanged;
 		#pragma warning restore 67
 		
 		public IList<OpenedFile> Files {
@@ -129,6 +130,12 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
+		public string InfoTip {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public bool IsReadOnly {
 			get {
 				throw new NotImplementedException();
@@ -139,6 +146,10 @@ namespace WixBinding.Tests.Utils
 			get {
 				throw new NotImplementedException();
 			}
+		}
+		
+		public bool CloseWithSolution {
+			get { throw new NotImplementedException(); }
 		}
 		
 		public bool IsDirty {

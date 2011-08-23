@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
@@ -48,21 +48,6 @@ namespace SharpRefactoring.ContextActions
 			}
 		}
 		
-		public static Location GetStart(this DomRegion region)
-		{
-			return new Location(region.BeginColumn, region.BeginLine);
-		}
-		
-		public static Location GetEnd(this DomRegion region)
-		{
-			return new Location(region.EndColumn, region.EndLine);
-		}
-		
-		public static int PositionToOffset(this IDocument document, Location location)
-		{
-			return document.PositionToOffset(location.Line, location.Column);
-		}
-		
 		/// <summary>
 		/// Gets offset for the start of line at which given location is.
 		/// </summary>
@@ -77,11 +62,61 @@ namespace SharpRefactoring.ContextActions
 			return line.Offset + line.TotalLength;
 		}
 		
+		public static int GetPreviousLineEndOffset(this IDocument document, Location location)
+		{
+			var line = document.GetLineForOffset(document.PositionToOffset(location));
+			if (line.LineNumber == 1)
+				return -1;
+			var previousLine = document.GetLine(line.LineNumber - 1);
+			return previousLine.Offset + previousLine.TotalLength;
+		}
+		
 		public static void RemoveRestOfLine(this IDocument document, int offset)
 		{
 			var line = document.GetLineForOffset(offset);
 			int lineEndOffset = line.Offset + line.Length;
 			document.Remove(offset, lineEndOffset - offset);
+		}
+		
+		public static DomRegion DomRegion(this INode node)
+		{
+			return new DomRegion(node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column);
+		}
+		
+		/// <summary>
+		/// Inserts code at the next line after target AST node.
+		/// </summary>
+		public static void InsertCodeAfter(this ITextEditor editor, AbstractNode target, AbstractNode insert, bool updateCaretPos = false)
+		{
+			InsertCode(editor, target, insert, editor.Document.GetLineEndOffset(target.EndLocation), updateCaretPos);
+		}
+		
+		/// <summary>
+		/// Inserts code at the line before target AST node.
+		/// </summary>
+		public static void InsertCodeBefore(this ITextEditor editor, AbstractNode target, AbstractNode insert)
+		{
+			InsertCode(editor, target, insert, editor.Document.GetPreviousLineEndOffset(target.StartLocation), false);
+		}
+		
+		public static void InsertCode(this ITextEditor editor, AbstractNode target, AbstractNode insert, int insertOffset, bool updateCaretPos)
+		{
+			if (insertOffset < 0)
+				return;
+			
+			var regionCorrectVisitor = new SetRegionInclusionVisitor();
+			insert.AcceptVisitor(regionCorrectVisitor, null);
+			
+			var doc = editor.Document;
+			var codeGen = editor.Language.Properties.CodeGenerator;
+			
+			string indent = DocumentUtilitites.GetWhitespaceAfter(doc, doc.GetLineStartOffset(target.StartLocation));
+			string code = codeGen.GenerateCode(insert, indent);
+			
+			doc.Insert(insertOffset, code);
+			if (updateCaretPos) {
+				editor.Caret.Offset = insertOffset + code.Length - 1;
+			}
 		}
 		
 		/// <summary>

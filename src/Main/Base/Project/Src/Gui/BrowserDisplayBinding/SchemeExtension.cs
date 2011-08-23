@@ -91,9 +91,9 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return new SchemeExtensionDescriptor(codon);
+			return new SchemeExtensionDescriptor(args.Codon);
 		}
 	}
 }

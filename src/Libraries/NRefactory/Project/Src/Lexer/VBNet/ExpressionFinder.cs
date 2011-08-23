@@ -59,6 +59,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				case SnippetType.Expression:
 					currentState = startOfExpression;
 					break;
+				case SnippetType.Statements:
+					currentState = startOfBlock;
+					break;
 			}
 			
 			Advance();
@@ -123,6 +126,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		public bool IsMissingModifier {
 			get { return isMissingModifier; }
+		}
+		
+		public bool WasNormalAttribute {
+			get { return wasNormalAttribute; }
 		}
 		
 		public int ActiveArgument {

@@ -71,6 +71,35 @@ namespace ICSharpCode.UsageDataCollector
 			SharpDevelop.Gui.WorkbenchSingleton.WorkbenchUnloaded += delegate { CloseSession(); };
 		}
 		
+		static Guid FindUserId()
+		{
+			// Ensure we assign only 1 ID to each user; even when he has multiple UDC databases because there
+			// are multiple SharpDevelop versions installed. We do this by reading out the userID GUID from
+			// the existing databases in any neighbor config directory.
+			string[] otherSharpDevelopVersions;
+			try {
+				otherSharpDevelopVersions = Directory.GetDirectories(Path.Combine(PropertyService.ConfigDirectory, ".."));
+			} catch (IOException) {
+				otherSharpDevelopVersions = new string[0];
+			} catch (UnauthorizedAccessException) {
+				otherSharpDevelopVersions = new string[0];
+			}
+			LoggingService.Debug("Looking for existing UDC database in " + otherSharpDevelopVersions.Length + " directories");
+			foreach (string path in otherSharpDevelopVersions) {
+				string dbFileName = Path.Combine(path, "usageData.dat");
+				if (File.Exists(dbFileName)) {
+					LoggingService.Info("Found existing UDC database: " + dbFileName);
+					Guid? guid = UsageDataSessionWriter.RetrieveUserId(dbFileName);
+					if (guid.HasValue) {
+						LoggingService.Info("Found GUID in existing UDC database: " + guid.Value);
+						return guid.Value;
+					}
+				}
+			}
+			LoggingService.Info("Did not find existing UDC database; creating new GUID.");
+			return Guid.NewGuid();
+		}
+		
 		/// <summary>
 		/// Opens the database connection, updates the database if required.
 		/// Will start an upload to the server, if required.
@@ -82,16 +111,17 @@ namespace ICSharpCode.UsageDataCollector
 			lock (lockObj) {
 				if (session == null) {
 					try {
-						session = new UsageDataSessionWriter(dbFileName);
+						session = new UsageDataSessionWriter(dbFileName, FindUserId);
 					} catch (IncompatibleDatabaseException ex) {
 						if (ex.ActualVersion < ex.ExpectedVersion) {
 							LoggingService.Info("AnalyticsMonitor: " + ex.Message + ", removing old database");
+							Guid? oldUserId = UsageDataSessionWriter.RetrieveUserId(dbFileName);
 							// upgrade database by deleting the old one
 							TryDeleteDatabase();
 							try {
-								session = new UsageDataSessionWriter(dbFileName);
+								session = new UsageDataSessionWriter(dbFileName, () => (oldUserId ?? FindUserId()));
 							} catch (IncompatibleDatabaseException ex2) {
-								LoggingService.Warn("AnalyticsMonitor: Could upgrade database: " + ex2.Message);
+								LoggingService.Warn("AnalyticsMonitor: Could not upgrade database: " + ex2.Message);
 							}
 						} else {
 							LoggingService.Warn("AnalyticsMonitor: " + ex.Message);

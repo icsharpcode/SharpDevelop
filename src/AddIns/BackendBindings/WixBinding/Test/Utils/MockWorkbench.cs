@@ -196,5 +196,10 @@ namespace WixBinding.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public bool CloseAllSolutionViews()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

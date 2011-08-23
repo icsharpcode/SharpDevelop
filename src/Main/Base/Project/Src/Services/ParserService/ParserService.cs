@@ -97,13 +97,22 @@ namespace ICSharpCode.SharpDevelop
 		static List<IProjectContent> GetProjectContents(string fileName)
 		{
 			List<IProjectContent> result = new List<IProjectContent>();
+			List<IProjectContent> linkResults = new List<IProjectContent>();
 			lock (projectContents) {
 				foreach (KeyValuePair<IProject, IProjectContent> projectContent in projectContents) {
-					if (projectContent.Key.IsFileInProject(fileName)) {
-						result.Add(projectContent.Value);
+					FileProjectItem file = projectContent.Key.FindFile(fileName);
+					if (file != null) {
+						// Prefer normal files over linked files.
+						// The order matters because GetParseInformation() will return the ICompilationUnit
+						// for the first result.
+						if (file.IsLink)
+							linkResults.Add(projectContent.Value);
+						else
+							result.Add(projectContent.Value);
 					}
 				}
 			}
+			result.AddRange(linkResults);
 			if (result.Count == 0)
 				result.Add(DefaultProjectContent);
 			return result;
@@ -267,6 +276,12 @@ namespace ICSharpCode.SharpDevelop
 				return null;
 		}
 
+		public static ResolveResult Resolve(int offset, IDocument document, string fileName)
+		{
+			var position = document.OffsetToPosition(offset);
+			return Resolve(position.Line, position.Column, document, fileName);
+		}
+		
 		public static ExpressionResult FindFullExpression(int caretLine, int caretColumn, IDocument document, string fileName)
 		{
 			IExpressionFinder expressionFinder = GetExpressionFinder(fileName);
@@ -275,12 +290,6 @@ namespace ICSharpCode.SharpDevelop
 			if (caretColumn > document.GetLine(caretLine).Length)
 				return ExpressionResult.Empty;
 			return expressionFinder.FindFullExpression(document.Text, document.PositionToOffset(caretLine, caretColumn));
-		}
-		
-		public static ResolveResult Resolve(int offset, IDocument document, string fileName)
-		{
-			var position = document.OffsetToPosition(offset);
-			return Resolve(position.Line, position.Column, document, fileName);
 		}
 		#endregion
 		
@@ -397,7 +406,20 @@ namespace ICSharpCode.SharpDevelop
 				if (fileContent == null) {
 					// GetParseableFileContent must not be called inside any lock
 					// (otherwise we'd risk deadlocks because GetParseableFileContent must invoke on the main thread)
-					fileContent = GetParseableFileContent(fileName);
+					try {
+						fileContent = GetParseableFileContent(fileName);
+					} catch (System.Reflection.TargetInvocationException ex) {
+						// It is possible that the file gets deleted/becomes inaccessible while a background parse
+						// operation is enqueued, so we have to handle IO exceptions.
+						if (ex.InnerException is IOException || ex.InnerException is UnauthorizedAccessException)
+							return null;
+						else
+							throw;
+					} catch (IOException) {
+						return null;
+					} catch (UnauthorizedAccessException) {
+						return null;
+					}
 				}
 				
 				ITextBufferVersion fileContentVersion = fileContent.Version;
@@ -467,14 +489,14 @@ namespace ICSharpCode.SharpDevelop
 						ICompilationUnit oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == pc);
 						pc.UpdateCompilationUnit(oldUnit, newUnits[i], fileName);
 						ParseInformation newUnitParseInfo = (newUnits[i] == resultUnit) ? newParseInfo : new ParseInformation(newUnits[i]);
-						RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, pc, oldUnit, newUnitParseInfo));
+						RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, pc, oldUnit, newUnitParseInfo, newUnits[i] == resultUnit));
 					}
 					
 					// remove all old units that don't exist anymore
 					foreach (ICompilationUnit oldUnit in oldUnits) {
 						if (!newUnits.Any(n => n.ProjectContent == oldUnit.ProjectContent)) {
 							oldUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
-							RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, oldUnit.ProjectContent, oldUnit, null));
+							RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, oldUnit.ProjectContent, oldUnit, null, false));
 						}
 					}
 					
@@ -487,18 +509,22 @@ namespace ICSharpCode.SharpDevelop
 			
 			public void Clear()
 			{
+				ParseInformation parseInfo;
 				ICompilationUnit[] oldUnits;
 				lock (this) {
 					// by setting the disposed flag, we'll cause all running ParseFile() calls to return null and not
 					// call into the parser anymore, so we can do the remainder of the clean-up work outside the lock
 					this.disposed = true;
+					parseInfo = this.parseInfo;
 					oldUnits = this.oldUnits;
 					this.oldUnits = null;
 					this.bufferVersion = null;
+					this.parseInfo = null;
 				}
 				foreach (ICompilationUnit oldUnit in oldUnits) {
 					oldUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
-					RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, oldUnit.ProjectContent, oldUnit, null));
+					bool isPrimary = parseInfo != null && parseInfo.CompilationUnit == oldUnit;
+					RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, oldUnit.ProjectContent, oldUnit, null, isPrimary));
 				}
 			}
 			

@@ -121,7 +121,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 			return node.StoreElements(0, arr, index, length);
 		}
 		
-		static RopeNode<T> CreateNodes(int totalLength)
+		internal static RopeNode<T> CreateNodes(int totalLength)
 		{
 			int leafCount = (totalLength + NodeSize - 1) / NodeSize;
 			return CreateNodes(leafCount, totalLength);

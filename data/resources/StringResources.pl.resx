@@ -232,6 +232,39 @@ Pobierz Dodatek z Internetu, potem kliknij "Instaluj  Dodatek" i wskaż pobrany 
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Pokaż Diagram Klas</value>
   </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>W celu wykonania tej komendy musisz mieć zainstalowane TortoiseGit.</value>
+  </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Zawartość</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Wyświetl Zawartość</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Znajdź</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Biblioteka Pomocy</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Tryb Pomocy</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Zainstalowane Katalogi Pomocy</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Znajdź</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Znajdź</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Wyświetl Pomoc</value>
+  </data>
+  <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
+    <value>Liczba bajtów na linię</value>
+  </data>
   <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
     <value>Dodaj do Ulubionych Pomocy</value>
   </data>
@@ -473,6 +506,15 @@ Musisz zainstalować .NET Framework SDK aby otrzymać system pomocy.</value>
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Aktualizuj do rewizji</value>
   </data>
+  <data name="AddIns.XamlBinding.Menu.RemoveMargin" xml:space="preserve">
+    <value>Usuń margines</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.RemoveUnnecessaryAttributes" xml:space="preserve">
+    <value>Usuń zbędne atrybuty</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.Title" xml:space="preserve">
+    <value>XAML</value>
+  </data>
   <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
     <value>Projekt jest skonfigurowany jako dll i nie jest określone polecenie uruchamiające. Możesz określić polecenie uruchamiające w opcjach projektu.</value>
   </data>
@@ -484,9 +526,6 @@ Musisz zainstalować .NET Framework SDK aby otrzymać system pomocy.</value>
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Plik</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Wiersz</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>O...</value>
@@ -694,6 +733,12 @@ Aby zacząć logować zdarzenia, należy wybrać jakiś obiekt lub zdarzenie w p
   <data name="ComponentInspector.FindDialog.NoItemsFoundMessage" xml:space="preserve">
     <value>Nic nie znaleziono</value>
   </data>
+  <data name="ComponentInspector.FindDialog.NoTreeNodeSelectedDialogTitle" xml:space="preserve">
+    <value>Wybierz Węzeł Drzewa</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.NoTreeNodeSelectedMessage" xml:space="preserve">
+    <value>Musisz wybrać węzeł w którymś z drzew. Przeszukiwanie rozpocznie się od wybranego węzła.</value>
+  </data>
   <data name="ComponentInspector.FindDialog.ObjectTreeNameCheckBox" xml:space="preserve">
     <value>Nazwa</value>
   </data>
@@ -739,6 +784,18 @@ Aby zacząć logować zdarzenia, należy wybrać jakiś obiekt lub zdarzenie w p
   <data name="ComponentInspector.GeneralOptionsPanel.ShowGacPanelCheckBox" xml:space="preserve">
     <value>Pokaż Panel GAC</value>
   </data>
+  <data name="ComponentInspector.GettingStartedDialog.Information" xml:space="preserve">
+    <value>Inspektor pozwala przeglądać i manipulować obiektami ActiveX/COM.
+
+Przeglądaj działające obiekty COM przy użyciu drzewa po lewej.
+Kliknij prawym klawiszem na elemencie drzewa w celu wywołania metody.
+
+Przegladaj zainstalowane komponenty COM w zakładce ActiveX/COM.
+
+Otwieraj biblioteki klas i pliki kontrolne używając menu Otwórz.
+
+W celu utworzenia lub manipulowania obiektem ActiveX/COM, przeciągnij klasę z TypeLib/Control do drzewa obiektów lub na powierzchnię projektową.</value>
+  </data>
   <data name="ComponentInspector.GettingStartedDialog.ShowThisDialogCheckBox" xml:space="preserve">
     <value>Pokaż ten Dialog</value>
   </data>
@@ -765,6 +822,9 @@ Aby zacząć logować zdarzenia, należy wybrać jakiś obiekt lub zdarzenie w p
   </data>
   <data name="ComponentInspector.ObjectBrowser.ObjectsTreePanel" xml:space="preserve">
     <value>Obiekty</value>
+  </data>
+  <data name="ComponentInspector.ObjectBrowser.OutputTab" xml:space="preserve">
+    <value>Wyjście</value>
   </data>
   <data name="ComponentInspector.ObjectBrowser.ParametersPanel" xml:space="preserve">
     <value>Parametry</value>
@@ -1507,6 +1567,12 @@ Czy chcesz dodać nowy plik do projektu ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CodeTemplate.Description" xml:space="preserve">
     <value>Opis</value>
   </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupDialog.Text" xml:space="preserve">
+    <value>Wprowadź listę rozszerzeń plików jako ciąg oddzielany myślnikami (Przykład: .h;.c;.cpp)</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupLabel" xml:space="preserve">
+    <value>&amp;Edytuj rozszerzenia</value>
+  </data>
   <data name="Dialog.Options.CodeTemplate.EditTemplateDialog.DescriptionLabel" xml:space="preserve">
     <value>&amp;Opis</value>
   </data>
@@ -1857,6 +1923,9 @@ Czy chcesz dodać nowy plik do projektu ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.OutputPanel.WordWrap" xml:space="preserve">
     <value>Zawijanie wierszy</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Profiling" xml:space="preserve">
+    <value>Profiler</value>
   </data>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.BuildAndRunGroupBox" xml:space="preserve">
     <value>Opcje Budowania i Uruchamiania</value>
@@ -2546,6 +2615,9 @@ Możesz również wybrać przechowywanie ustawienia w pliku użytkownika zamiast
   <data name="FileUtilityService.ErrorWhileSaving" xml:space="preserve">
     <value>Błąd podczas zapisywania</value>
   </data>
+  <data name="FileUtilityService.FileSizeTooBig" xml:space="preserve">
+    <value>Plik jest zbyt duży żeby go otworzyć.</value>
+  </data>
   <data name="FormsDesigner.DesignErrorPanel.ErrorText" xml:space="preserve">
     <value>Proszę poprawić wszystkie błędy kodu źródłowego przed projektowaniem</value>
   </data>
@@ -2677,6 +2749,9 @@ Możesz również wybrać przechowywanie ustawienia w pliku użytkownika zamiast
   </data>
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Start</value>
+  </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Wiersz</value>
   </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Akt&amp;ualizuj</value>
@@ -2894,9 +2969,6 @@ Możesz również wybrać przechowywanie ustawienia w pliku użytkownika zamiast
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Końcowy Wiersz</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Wiersz</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Jeżeli NCover jest zainstalowane, proszę wskazać lokalizację aplikacji w opcjach Pokrywania Kodu.</value>
   </data>
@@ -2929,6 +3001,12 @@ Możesz również wybrać przechowywanie ustawienia w pliku użytkownika zamiast
   </data>
   <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.ExcludeAttributes" xml:space="preserve">
     <value>Wyłączone Atrybuty</value>
+  </data>
+  <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.ExcludeListLabel" xml:space="preserve">
+    <value>Wyklucz</value>
+  </data>
+  <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.IncludeListLabel" xml:space="preserve">
+    <value>Dołącz</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.RunningCodeCoverage" xml:space="preserve">
     <value>Uruchamianie pokrywania kodu...</value>
@@ -3750,11 +3828,39 @@ Można użyć tylko liter, cyfr, spacji, '.' lub '_'.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>Plik projektu ${projectLocation} już istnieje, czy chcesz nadpisać istniejący plik?</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
+    <value>Plik(i) ${fileNames} istnieje, czy chcesz nadpisać istniejący plik(i)?</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>Plik już istnieje</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Ładuję ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
+    <value>Konwertuj zaznaczone &amp;projekty do:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeVersionGroupBoxHeader" xml:space="preserve">
+    <value>Zmień wersję zaznaczonych projektów</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.CompilerVersion" xml:space="preserve">
+    <value>Wersja Kompilatora</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ConvertButton" xml:space="preserve">
+    <value>Konwertuj</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange" xml:space="preserve">
+    <value>&lt;nie zmieniaj&gt;</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.TargetFramework" xml:space="preserve">
+    <value>Docelowa wersja .NET Framework</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
+    <value>Ulepszanie Projektu</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
+    <value>To rozwiązanie zostało utworzone przy pomocy poprzedniej wersji SharpDevelop.
+Możesz chcieć je ulepszyć w celu wykorzystania nowego języka lub możliwości środowiska .NET Framework.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Bieżąca atmosfera nie została znaleziona.
@@ -3781,8 +3887,14 @@ Idź do 'Opcje-&gt;Styl wizualny' i zmień atmosferę bieżącego języka.</valu
   <data name="ICSharpCode.UnitTesting.OptionsPanel.Thread" xml:space="preserve">
     <value>Uruchom testy w osobnym wątku</value>
   </data>
+  <data name="ICSharpCode.UnitTesting.RunAllWithCoverage" xml:space="preserve">
+    <value>Uruchom wszystkie testy z pokryciem kodu</value>
+  </data>
   <data name="ICSharpCode.UnitTesting.RunInTestPad" xml:space="preserve">
     <value>Uruchom w oknie jednostki testującej</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.RunProjectTests" xml:space="preserve">
+    <value>Uruchom testy aktualnego projektu</value>
   </data>
   <data name="ICSharpCode.UnitTesting.RunWithCoverage" xml:space="preserve">
     <value>Uruchom z pokrywaniem kodu</value>
@@ -4210,11 +4322,17 @@ Idź do 'Opcje-&gt;Styl wizualny' i zmień atmosferę bieżącego języka.</valu
   <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
     <value>Pokaż metody zewnętrzne</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Console" xml:space="preserve">
+    <value>Konsola</value>
+  </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Break" xml:space="preserve">
     <value>Przerwij</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Continue" xml:space="preserve">
     <value>Kontynuuj</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.LineFormat.EndOfInnerException" xml:space="preserve">
+    <value>--- Koniec śladu wewnętrznego stosu wyjątku ---</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Message" xml:space="preserve">
     <value>Wyjątek {0} został wywołany w debugowanym:</value>
@@ -4224,6 +4342,12 @@ Idź do 'Opcje-&gt;Styl wizualny' i zmień atmosferę bieżącego języka.</valu
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Title" xml:space="preserve">
     <value>Wyjątek</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.Title.Handled" xml:space="preserve">
+    <value>Obsłużony wyjątek</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.Title.Unhandled" xml:space="preserve">
+    <value>Nieobsłużony wyjątek</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionHistory" xml:space="preserve">
     <value>Historia wyjątków</value>
@@ -4269,6 +4393,12 @@ Idź do 'Opcje-&gt;Styl wizualny' i zmień atmosferę bieżącego języka.</valu
   </data>
   <data name="MainWindow.Windows.Debug.Modules.AddressColumn" xml:space="preserve">
     <value>Adres</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Modules.HasNoSymbols" xml:space="preserve">
+    <value>Nie załadowano symboli.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Modules.HasSymbols" xml:space="preserve">
+    <value>Załadowano symbole.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.OrderColumn" xml:space="preserve">
     <value>Kolejność</value>
@@ -4537,6 +4667,9 @@ Idź do 'Opcje-&gt;Styl wizualny' i zmień atmosferę bieżącego języka.</valu
   <data name="OpenFileTabEventHandler.CopyPathName" xml:space="preserve">
     <value>Kopiuj ścieżkę/nazwę pliku</value>
   </data>
+  <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
+    <value>Otwórz Folder Zawierający W Explorerze</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.AddExistingFiles" xml:space="preserve">
     <value>Dodaj istniejące pliki</value>
   </data>
@@ -4629,6 +4762,9 @@ Idź do 'Opcje-&gt;Styl wizualny' i zmień atmosferę bieżącego języka.</valu
   </data>
   <data name="ProjectComponent.ContextMenu.Open" xml:space="preserve">
     <value>Otwórz</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.OpenProjectOutputFolder" xml:space="preserve">
+    <value>Otwórz Folder Docelowy</value>
   </data>
   <data name="ProjectComponent.ContextMenu.Rebuild" xml:space="preserve">
     <value>Prz&amp;ebuduj</value>
@@ -4900,6 +5036,12 @@ Idź do 'Opcje-&gt;Styl wizualny' i zmień atmosferę bieżącego języka.</valu
   <data name="SharpDevelop.Gui.Dialogs.WizardDialog.StepsLabel" xml:space="preserve">
     <value>Kroki</value>
   </data>
+  <data name="SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors" xml:space="preserve">
+    <value>Ta operacja nie może być wykonana, ponieważ kod źródłowy zawiera błędy:</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ClassesDerivingFrom" xml:space="preserve">
+    <value>Klasy dziedziczące z ${Name}</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CreateChangedEvent" xml:space="preserve">
     <value>Utwórz zdarzenie Changed</value>
   </data>
@@ -4960,6 +5102,15 @@ Idź do 'Opcje-&gt;Styl wizualny' i zmień atmosferę bieżącego języka.</valu
   <data name="SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning" xml:space="preserve">
     <value>Szukanie referencji nie może być uruchomione dopóki wszystkie pliki nie zostały przetworzone.</value>
   </data>
+  <data name="SharpDevelop.Refactoring.MoveClassToFile" xml:space="preserve">
+    <value>Przenieś klasę do pliku '${FileName}'</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ReferencesTo" xml:space="preserve">
+    <value>Odniesienia do ${Name}</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.RemoveUnusedImports" xml:space="preserve">
+    <value>Usuń nie&amp;używane deklaracje importu</value>
+  </data>
   <data name="SharpDevelop.Refactoring.Rename" xml:space="preserve">
     <value>Zmień nazwę</value>
   </data>
@@ -4998,18 +5149,6 @@ Idź do 'Opcje-&gt;Styl wizualny' i zmień atmosferę bieżącego języka.</valu
   </data>
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Wszystkie znane formaty projektów</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Znaleziono Projekt Visual Studio.NET. Czy przekonwertować go do Solution Format 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Znaleziono Projekt Visual Studio.NET 2003. Czy przekonwertować go do Solution Format 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Czy zestaw SharpDevelop 1.x ma zostać przekonwertowany do rozwiązania SharpDevelop 2.x?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Czy projekt SharpDevelop 1.x ma zostać przekonwertowany do projektu SharpDevelop 2.x?</value>
   </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Projekt zawierał pliki zasobów.
@@ -5431,11 +5570,20 @@ Pliki zasobów zostały odpowiednio nazwane/przeniesione.</value>
   <data name="Templates.File.Categories.WindowsApplications" xml:space="preserve">
     <value>Aplikacje Windows</value>
   </data>
+  <data name="Templates.File.ConfigurationElement.Description" xml:space="preserve">
+    <value>Klasy implementujące ConfigurationElement.</value>
+  </data>
   <data name="Templates.File.ConfigurationElement.Name" xml:space="preserve">
     <value>Element Konfiguracji</value>
   </data>
+  <data name="Templates.File.ConfigurationElementCollection.Description" xml:space="preserve">
+    <value>Klasy dziedziczące z ConfigurationElementCollection.</value>
+  </data>
   <data name="Templates.File.ConfigurationElementCollection.Name" xml:space="preserve">
     <value>Kolekcja Elementów Konfiguracji</value>
+  </data>
+  <data name="Templates.File.ConfigurationSection.Description" xml:space="preserve">
+    <value>Klasy implementujące ConfigurationSection.</value>
   </data>
   <data name="Templates.File.ConfigurationSection.Name" xml:space="preserve">
     <value>Sekcja Konfiguracji</value>
@@ -5779,6 +5927,15 @@ Pliki zasobów zostały odpowiednio nazwane/przeniesione.</value>
   <data name="XML.MainMenu.DebugMenu.Continue.Description" xml:space="preserve">
     <value>Kontynuuje wykonywanie procesu.</value>
   </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotStartProcess" xml:space="preserve">
+    <value>Nie można uruchomić procesu.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.ProcessPaused" xml:space="preserve">
+    <value>Nie można wykonać akcji ponieważ proces jest wstrzymany.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.ProcessRunning" xml:space="preserve">
+    <value>Nie można wykonać akcji ponieważ proces jest aktywny.</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Uruchom &amp;bez debuggera</value>
   </data>
@@ -5887,6 +6044,12 @@ Pliki zasobów zostały odpowiednio nazwane/przeniesione.</value>
   <data name="XML.MainMenu.EditMenu.Paste" xml:space="preserve">
     <value>&amp;Wklej</value>
   </data>
+  <data name="XML.MainMenu.EditMenu.Paste.AsComment" xml:space="preserve">
+    <value>Wklej jako komentarz</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Paste.AsString" xml:space="preserve">
+    <value>Wklej jako łańcuch znaków</value>
+  </data>
   <data name="XML.MainMenu.EditMenu.Paste.Description" xml:space="preserve">
     <value>Wklej tekst ze schowka</value>
   </data>
@@ -5941,7 +6104,7 @@ Pliki zasobów zostały odpowiednio nazwane/przeniesione.</value>
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Otwórz nowy bufor</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Rozwiązanie...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

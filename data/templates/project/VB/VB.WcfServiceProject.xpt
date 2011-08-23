@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<Template
+	author="Eusebiu Marcu"
+	created="03/08/2011"
+	lastModified="03/08/2011"
+	version="1.0">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>WCF Service</Name>
+		<Category>VB</Category>
+		<Subcategory>WCF</Subcategory>
+		<Icon>VBNet.Project.Form</Icon>
+		<Description>WCF Service</Description>
+		<SupportedTargetFrameworks>v3.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+
+	<!-- Actions -->
+	<Actions>
+		<Open filename="ServiceCalculator.svc.vb"/>
+	</Actions>
+
+	<Project language="VBNet">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.ServiceModel" />
+		</ProjectItems>
+		
+		<PropertyGroup escapeValue="False">
+			<OutputType>Library</OutputType>
+			<ProjectTypeGuids>{3D9AD99F-2412-4246-B90B-4EAA41C64699};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Debug">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Release">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb" />
+			<File name="ServiceCalculator.svc">
+<![CDATA[
+<%@ServiceHost language="VB" Debug="true" Service="${StandardNamespace}.ServiceCalculator"%>
+]]>
+			</File>
+			<File name="ServiceCalculator.svc.vb" DependentUpon="ServiceCalculator.svc">
+<![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports System.ServiceModel
+
+<ServiceContract> _
+Public Interface ICalculator
+	<OperationContract> _
+	Function Add(n1 As Double, n2 As Double) As Double
+	<OperationContract> _
+	Function Subtract(n1 As Double, n2 As Double) As Double
+	<OperationContract> _
+	Function Multiply(n1 As Double, n2 As Double) As Double
+	<OperationContract> _
+	Function Divide(n1 As Double, n2 As Double) As Double
+End Interface
+
+Public Class ServiceCalculator
+	Implements ICalculator
+	Public Function Add(n1 As Double, n2 As Double) As Double Implements ICalculator.Add
+		Return n1 + n2
+	End Function
+	Public Function Subtract(n1 As Double, n2 As Double) As Double Implements ICalculator.Subtract
+		Return n1 - n2
+	End Function
+	Public Function Multiply(n1 As Double, n2 As Double) As Double Implements ICalculator.Multiply
+		Return n1 * n2
+	End Function
+	Public Function Divide(n1 As Double, n2 As Double) As Double Implements ICalculator.Divide
+		Return n1 / n2
+	End Function
+End Class
+]]>
+			</File>
+			<File name="web.config">
+<![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <system.serviceModel>
+    <services>
+      <!-- This section is optional with the default configuration model introduced in .NET Framework 4 -->
+      <service name="${StandardNamespace}.ServiceCalculator">
+        <!-- This endpoint is exposed at the base address provided by host: http://localhost/${ProjectName}/ServiceCalculator.svc  -->
+        <endpoint address=""
+                  binding="wsHttpBinding"
+                  contract="${StandardNamespace}.ICalculator" />
+      </service>
+    </services>
+  </system.serviceModel>
+
+</configuration>
+]]>
+			</File>
+		</Files>
+	</Project>
+</Template>

@@ -25,9 +25,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		protected static List<SDBookmark> GetBookmarks(IBookmarkMargin bookmarkMargin)
+		protected static List<Bookmark> GetBookmarks(IBookmarkMargin bookmarkMargin)
 		{
-			return (from b in bookmarkMargin.Bookmarks.OfType<SDBookmark>()
+			return (from b in bookmarkMargin.Bookmarks.OfType<Bookmark>()
 			        where b.CanToggle
 			        orderby b.LineNumber
 			        select b).ToList();
@@ -40,12 +40,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	{
 		protected override void Run(ITextEditor editor, IBookmarkMargin bookmarkMargin)
 		{
-			BookmarkManager.ToggleBookmark(editor, editor.Caret.Line, 
-			                               b => b.CanToggle,
-			                               location => new SDBookmark(editor.FileName, location));
+			BookmarkManager.ToggleBookmark(editor, editor.Caret.Line,
+			                               b => b.CanToggle && b.GetType() == typeof(SDBookmark),
+			                               location => new Bookmark(editor.FileName, location));
 		}
 	}
-	
 	public class PrevBookmark : BookmarkMenuCommand
 	{
 		protected override void Run(ITextEditor editor, IBookmarkMargin bookmarkMargin)
@@ -82,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	{
 		protected override void Run(ITextEditor editor, IBookmarkMargin bookmarkMargin)
 		{
-			var bookmarks = (from b in bookmarkMargin.Bookmarks.OfType<SDBookmark>()
+			var bookmarks = (from b in bookmarkMargin.Bookmarks.OfType<Bookmark>()
 			                 where b.CanToggle
 			                 select b).ToList();
 			foreach (SDBookmark b in bookmarks)

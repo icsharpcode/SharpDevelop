@@ -21,7 +21,8 @@ namespace StringResourceTool
 	{
 		// map of languages with different name in the database
 		static readonly Dictionary<string, string> codeMap = new Dictionary<string, string> {
-			{ "br", "pt-br" }
+			{ "br", "pt-br" },
+			{ "cn-gb", "zh" }
 		};
 		
 		public static void Build(ResourceDatabase db, string resourceDir, Action<string> debugOutput)

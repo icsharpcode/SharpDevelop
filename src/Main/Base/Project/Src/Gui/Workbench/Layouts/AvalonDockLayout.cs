@@ -42,7 +42,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#if DEBUG
 		internal void WriteState(TextWriter output)
 		{
-			
+			output.WriteLine("AvalonDock: ActiveContent = " + WpfWorkbench.GetElementName(dockingManager.ActiveContent));
+			output.WriteLine("AvalonDock: ActiveDocument = " + WpfWorkbench.GetElementName(dockingManager.ActiveDocument));
 		}
 		#endif
 		
@@ -57,10 +58,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void dockingManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == "ActiveContent") {
+				WpfWorkbench.FocusDebug("AvalonDock: ActiveContent changed to {0}", WpfWorkbench.GetElementName(dockingManager.ActiveContent));
 				if (ActiveContentChanged != null)
 					ActiveContentChanged(this, e);
 				CommandManager.InvalidateRequerySuggested();
 			} else if (e.PropertyName == "ActiveDocument") {
+				WpfWorkbench.FocusDebug("AvalonDock: ActiveDocument changed to {0}", WpfWorkbench.GetElementName(dockingManager.ActiveDocument));
+				
 				if (ActiveWorkbenchWindowChanged != null)
 					ActiveWorkbenchWindowChanged(this, e);
 				CommandManager.InvalidateRequerySuggested();

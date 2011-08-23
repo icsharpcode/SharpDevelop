@@ -16,7 +16,7 @@ namespace XmlEditor.Tests.Tree
 	[TestFixture]
 	public class OwnerStatusTestFixture
 	{
-		XmlTreeViewContainerControl treeViewContainer;
+		DerivedXmlTreeViewContainerControl treeViewContainer;
 		XmlTreeViewControl treeView;
 		XmlDocument doc;
 		XmlElementTreeNode htmlTreeNode;
@@ -28,12 +28,8 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void Init()
 		{
-			treeViewContainer = new XmlTreeViewContainerControl();
-							
-			XmlSchemaCompletion xhtmlSchema = new XmlSchemaCompletion(ResourceManager.ReadXhtmlStrictSchema());
-			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
-			
-			treeViewContainer.LoadXml("<!-- comment --><html><body class='a'><p>Text</p></body></html>", schemas, null);
+			treeViewContainer = new DerivedXmlTreeViewContainerControl();
+			treeViewContainer.LoadXml("<!-- comment --><html><body class='a'><p>Text</p></body></html>");
 			doc = treeViewContainer.Document;
 			treeView = treeViewContainer.TreeView;
 			

@@ -3,49 +3,43 @@
 
 using System;
 using System.Drawing;
-using iTextSharp.text.pdf;
+using System.Globalization;
+
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Globals;
+using iTextSharp.text.pdf;
 
 namespace ICSharpCode.Reports.Core.Exporter
 {
 	/// <summary>
 	/// Description of BaseLineItem.
 	/// </summary>
-	public class BaseExportColumn
+	public class BaseExportColumn : IBaseExportColumn
 	{
-		
-		private IBaseStyleDecorator styleDecorator;
-		private bool isContainer;
-		private ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter;
-		private PdfWriter pdfWriter;
-		
+
 		#region Constructors
-		
+
 		public BaseExportColumn()
 		{
-			this.styleDecorator = new BaseStyleDecorator(System.Drawing.Color.White,
-			                                             System.Drawing.Color.Black);
+			this.StyleDecorator = new BaseStyleDecorator(System.Drawing.Color.White, System.Drawing.Color.Black);
 		}
-		
-		
-		public BaseExportColumn(IBaseStyleDecorator itemStyle, bool isContainer)
+
+
+		public BaseExportColumn(IBaseStyleDecorator styleDecorator)
 		{
-			this.styleDecorator = itemStyle;
-			this.isContainer = isContainer;
+			this.StyleDecorator = styleDecorator;
 		}
-		
+
 		#endregion
-		
-		
+
 		#region draw item
-		
-		public virtual void DrawItem (Graphics graphics) 
+
+		public virtual void DrawItem(Graphics graphics)
 		{
 		}
-		
-		
-		public virtual void DrawItem (PdfWriter pdfWriter,
-		                              ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
+
+
+		public virtual void DrawItem(PdfWriter pdfWriter, ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
 		{
 			if (pdfWriter == null) {
 				throw new ArgumentNullException("pdfWriter");
@@ -53,52 +47,49 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (converter == null) {
 				throw new ArgumentNullException("converter");
 			}
-			this.pdfWriter = pdfWriter;
-			this.converter = converter;
+			this.PdfWriter = pdfWriter;
+			this.PdfUnitConverter = converter;
 		}
 		#endregion
-		
-		
+
+
 		#region Decorate
-		
+
 		/// <summary>
 		/// Fill the Background and draw a (Rectangle)Frame around the Control
 		/// </summary>
 		/// <param name="graphics"></param>
-		
-		protected virtual void Decorate (Graphics graphics)
+
+		protected virtual void Decorate(Graphics graphics)
 		{
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
 			}
-			RectangleShape shape = new RectangleShape();
-			this.FillShape(graphics,shape);
-			StandardPrinter.DrawBorder(graphics,this.StyleDecorator as BaseStyleDecorator);
+			var shape = new RectangleShape();
+			this.FillShape(graphics, shape);
+			StandardPrinter.DrawBorder(graphics, this.StyleDecorator as BaseStyleDecorator);
 		}
-		
-		
-		protected virtual void Decorate ()
+
+
+		protected virtual void Decorate()
 		{
-			RectangleShape shape = new RectangleShape();
-			shape.DrawShape(this.pdfWriter.DirectContent,
-			            null,
-			            this.styleDecorator,
-			            ConvertToPdfRectangle());
+			var shape = new RectangleShape();
+			shape.DrawShape(this.PdfWriter.DirectContent, null, this.StyleDecorator, ConvertToPdfRectangle());
 			this.DrawFrame();
 		}
-		
+
 		#endregion
-		
-		
+
+
 		#region FillShape
-		
+
 		/// <summary>
 		/// Draw the Backround <see cref="BaseStyleDecorator"></see>
 		/// </summary>
 		/// <param name="graphics">a valid graphics object</param>
 		/// <param name="shape">the shape to fill</param>
 		/// 
-		protected virtual void FillShape (Graphics graphics,BaseShape shape)
+		protected virtual void FillShape(Graphics graphics, BaseShape shape)
 		{
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
@@ -106,83 +97,49 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (shape == null) {
 				throw new ArgumentNullException("shape");
 			}
-			
-			shape.FillShape(graphics,
-			                new SolidFillPattern(this.styleDecorator.BackColor),
-			                this.styleDecorator.DisplayRectangle);
-			
+			shape.FillShape(graphics, new SolidFillPattern(this.StyleDecorator.BackColor), this.StyleDecorator.DisplayRectangle);
 		}
-		
+
 		#endregion
-		
-		
-		protected iTextSharp.text.Rectangle ConvertToPdfRectangle ()
+
+
+		protected iTextSharp.text.Rectangle ConvertToPdfRectangle()
 		{
-			ScreenRectToPdfRectConverter rectangleConverter = new ScreenRectToPdfRectConverter(this.converter);
-			
-			iTextSharp.text.Rectangle r = (iTextSharp.text.Rectangle)rectangleConverter.ConvertTo(null,System.Globalization.CultureInfo.InvariantCulture,
-			                                                                                      this.styleDecorator.DisplayRectangle,
-			                                                                                      typeof(iTextSharp.text.Rectangle));
-			
-			iTextSharp.text.Rectangle rr = new iTextSharp.text.Rectangle(r.Left,r.Bottom -2,
-			                                                             r.Left + r.Width,r.Bottom  + r.Height);
-			
+			ScreenRectToPdfRectConverter rectangleConverter = new ScreenRectToPdfRectConverter(this.PdfUnitConverter);
+			iTextSharp.text.Rectangle r = (iTextSharp.text.Rectangle)rectangleConverter.
+				ConvertTo(null, CultureInfo.InvariantCulture, 
+				          this.StyleDecorator.DisplayRectangle, typeof(iTextSharp.text.Rectangle));
+
+			iTextSharp.text.Rectangle rr = new iTextSharp.text.Rectangle(r.Left, r.Bottom - 2, r.Left + r.Width, r.Bottom + r.Height);
 			return rr;
 		}
-		
-		
+
+
 		#region DrawFrame
-		
-		
+
+
 		private Border CreateDefaultBorder()
 		{
-			return new Border(new BaseLine (this.styleDecorator.FrameColor,
-			                                    System.Drawing.Drawing2D.DashStyle.Solid,1));
+			return new Border(new BaseLine(this.StyleDecorator.FrameColor, System.Drawing.Drawing2D.DashStyle.Solid, 1));
 		}
-		
-		
-		
-		
-		private  void DrawFrame ()
+
+
+		private void DrawFrame()
 		{
-			if (this.styleDecorator.DrawBorder) {
+			if (this.StyleDecorator.DrawBorder) {
 				Border b = this.CreateDefaultBorder();
-				b.DrawBorder(this.pdfWriter.DirectContent,
-				             ConvertToPdfRectangle(),
-				             this.styleDecorator);
+				b.DrawBorder(this.PdfWriter.DirectContent, ConvertToPdfRectangle(), this.StyleDecorator);
 			}
 		}
 
-		
-		
+
 		#endregion
-		
 
-		public virtual IBaseStyleDecorator StyleDecorator {
-			get {
-				return styleDecorator;
-			}
-			set {
-				this.styleDecorator = value;
-			}
-		}
-		
-		public bool IsContainer {
-			get {
-				return isContainer;
-			}
-			set {
-				isContainer = value;
-			}
-		}
-		
-		public ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter PdfUnitConverter {
-			get { return converter; }
-		}
-		
-		public PdfWriter PdfWriter {
-			get { return pdfWriter; }
-		}
-		
+		public virtual IBaseStyleDecorator StyleDecorator { get; set; }
+
+		protected ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter PdfUnitConverter { get; set; }
+
+		protected PdfWriter PdfWriter { get; set; }
+
 	}
 }

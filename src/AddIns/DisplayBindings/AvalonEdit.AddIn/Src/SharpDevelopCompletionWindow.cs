@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -128,16 +129,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 	}
 	
-	/// <summary>
-	/// Completion item that supports complex content and description.
-	/// </summary>
-	public interface IFancyCompletionItem : ICompletionItem
-	{
-		object Content { get; }
-		new object Description { get; }
-	}
-	
-	sealed class CodeCompletionDataAdapter : ICompletionData
+	sealed class CodeCompletionDataAdapter : ICompletionData, INotifyPropertyChanged
 	{
 		readonly SharpDevelopCompletionWindow window;
 		readonly ICompletionItem item;
@@ -201,6 +193,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			window.ItemList.Complete(context, item);
 			if (context.CompletionCharHandled && txea != null)
 				txea.Handled = true;
+		}
+		
+		// This is required to work around http://support.microsoft.com/kb/938416/en-us
+		event System.ComponentModel.PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
+			add { }
+			remove { }
 		}
 	}
 }

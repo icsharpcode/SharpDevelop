@@ -309,9 +309,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			IClass encoding = mscorlib.GetClass("System.Text.UnicodeEncoding", 0);
 			Assert.AreEqual(ModifierEnum.Public, encoding.Modifiers);
 			IMethod getDecoder = encoding.Methods.Single(p => p.Name == "GetDecoder");
-			// Should be override, but actually is 'virtual'. We cannot do better because 'override' is not encoded in the metadata
-			// (the .override directive is unrelated; it's meant for explicit interface implementations)
-			Assert.AreEqual(ModifierEnum.Public | ModifierEnum.Virtual, getDecoder.Modifiers);
+			Assert.AreEqual(ModifierEnum.Public | ModifierEnum.Override, getDecoder.Modifiers);
 		}
 		
 		[Test]
@@ -320,9 +318,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			IClass encoding = mscorlib.GetClass("System.Text.UTF32Encoding", 0);
 			Assert.AreEqual(ModifierEnum.Public | ModifierEnum.Sealed, encoding.Modifiers);
 			IMethod getDecoder = encoding.Methods.Single(p => p.Name == "GetDecoder");
-			// Should be override, but actually is 'virtual'. We cannot do better because 'override' is not encoded in the metadata
-			// (the .override directive is unrelated; it's meant for explicit interface implementations)
-			Assert.AreEqual(ModifierEnum.Public | ModifierEnum.Virtual, getDecoder.Modifiers);
+			Assert.AreEqual(ModifierEnum.Public | ModifierEnum.Override, getDecoder.Modifiers);
 		}
 		
 		public class TestClass<A, B> where A : B {

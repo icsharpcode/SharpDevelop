@@ -3,7 +3,9 @@
 
 using System;
 using System.Reflection;
+using Boo.Lang.Compiler;
 using Boo.Lang.Interpreter;
+using Boo.Lang.Interpreter.Builtins;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace Grunwald.BooBinding
@@ -59,20 +61,25 @@ namespace Grunwald.BooBinding
 			if (interpreter == null) {
 				interpreter = new InteractiveInterpreter();
 				interpreter.RememberLastValue = true;
-				interpreter.Print = PrintLine;
+				//interpreter.Print = PrintLine; TODO reimplement print
 				interpreter.SetValue("cls", new Action(Clear));
 				
 				AddReference(typeof(WorkbenchSingleton).Assembly);
 				
-				interpreter.LoopEval("import System\n" +
-				                     "import System.Collections.Generic\n" +
-				                     "import System.IO\n" +
-				                     "import System.Text\n" +
-				                     "import System.Linq.Enumerable");
+				interpreter.Eval("import System\n" +
+				                 "import System.Collections.Generic\n" +
+				                 "import System.IO\n" +
+				                 "import System.Text\n" +
+				                 "import System.Linq.Enumerable");
 			}
 			processing = true;
 			try {
-				interpreter.LoopEval(command);
+				CompilerContext results = interpreter.Eval(command);
+				if (results.Errors.Count > 0) {
+					PrintLine("ERROR: " + results.Errors[0].Message);
+				} else if (interpreter.LastValue != null) {
+					PrintLine(ReprModule.repr(interpreter.LastValue));
+				}
 			} catch (System.Reflection.TargetInvocationException ex) {
 				PrintLine(ex.InnerException);
 			}

@@ -41,7 +41,8 @@
 		<FileFilter id = "F#"
 		            insertbefore="AllFiles"
 		            name = "F# (*.fs)"
-		            extensions = "*.fs"/>
+		            extensions = "*.fs"
+		            mimeType = "text/plain"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
@@ -105,7 +106,7 @@
 		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
 		<Condition name = "ProjectActive" activeproject="F#">
 			<MenuItem id = "SendToFSharpInteractive"
 				  label = "Send To F# Interactive"

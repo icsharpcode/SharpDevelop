@@ -38,6 +38,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		Location OffsetToPosition(int offset);
 		
 		void Insert(int offset, string text);
+		void Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType);
 		void Remove(int offset, int length);
 		void Replace(int offset, int length, string newText);
 		

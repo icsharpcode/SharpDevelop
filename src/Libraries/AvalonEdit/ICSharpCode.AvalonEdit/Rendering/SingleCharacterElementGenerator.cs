@@ -60,10 +60,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public override int GetFirstInterestedOffset(int startOffset)
 		{
 			DocumentLine endLine = CurrentContext.VisualLine.LastDocumentLine;
-			string relevantText = CurrentContext.Document.GetText(startOffset, endLine.EndOffset - startOffset);
+			StringSegment relevantText = CurrentContext.GetText(startOffset, endLine.EndOffset - startOffset);
 			
-			for (int i = 0; i < relevantText.Length; i++) {
-				char c = relevantText[i];
+			for (int i = 0; i < relevantText.Count; i++) {
+				char c = relevantText.Text[relevantText.Offset + i];
 				switch (c) {
 					case ' ':
 						if (ShowSpaces)
@@ -88,9 +88,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			char c = CurrentContext.Document.GetCharAt(offset);
 			if (ShowSpaces && c == ' ') {
-				return new SpaceTextElement(CurrentContext.TextView.cachedElements.GetSimpleLightGrayText("\u00B7", CurrentContext));
+				return new SpaceTextElement(CurrentContext.TextView.cachedElements.GetTextForNonPrintableCharacter("\u00B7", CurrentContext));
 			} else if (ShowTabs && c == '\t') {
-				return new TabTextElement(CurrentContext.TextView.cachedElements.GetSimpleLightGrayText("\u00BB", CurrentContext));
+				return new TabTextElement(CurrentContext.TextView.cachedElements.GetTextForNonPrintableCharacter("\u00BB", CurrentContext));
 			} else if (ShowBoxForControlCharacters && char.IsControl(c)) {
 				var p = new VisualLineElementTextRunProperties(CurrentContext.GlobalTextRunProperties);
 				p.SetForegroundBrush(Brushes.White);
@@ -117,6 +117,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					return base.GetNextCaretPosition(visualColumn, direction, mode);
 				else
 					return -1;
+			}
+			
+			public override bool IsWhitespace(int visualColumn)
+			{
+				return true;
 			}
 		}
 		
@@ -147,6 +152,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					return base.GetNextCaretPosition(visualColumn, direction, mode);
 				else
 					return -1;
+			}
+			
+			public override bool IsWhitespace(int visualColumn)
+			{
+				return true;
 			}
 		}
 		
@@ -220,6 +230,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		sealed class SpecialCharacterTextRun : FormattedTextRun
 		{
+			static readonly SolidColorBrush darkGrayBrush;
+			
+			static SpecialCharacterTextRun()
+			{
+				darkGrayBrush = new SolidColorBrush(Color.FromArgb(200, 128, 128, 128));
+				darkGrayBrush.Freeze();
+			}
+			
 			public SpecialCharacterTextRun(FormattedTextElement element, TextRunProperties properties)
 				: base(element, properties)
 			{
@@ -227,10 +245,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			
 			public override void Draw(DrawingContext drawingContext, Point origin, bool rightToLeft, bool sideways)
 			{
-				Point newOrigin = new Point(origin.X + 1, origin.Y);
-				var metrics = Format(double.PositiveInfinity);
-				Rect r = new Rect(newOrigin.X + 1, newOrigin.Y - metrics.Baseline, metrics.Width + 1, metrics.Height);
-				drawingContext.DrawRoundedRectangle(Brushes.DarkGray, null, r, 2.5, 2.5);
+				Point newOrigin = new Point(origin.X + 1.5, origin.Y);
+				var metrics = base.Format(double.PositiveInfinity);
+				Rect r = new Rect(newOrigin.X - 0.5, newOrigin.Y - metrics.Baseline, metrics.Width + 2, metrics.Height);
+				drawingContext.DrawRoundedRectangle(darkGrayBrush, null, r, 2.5, 2.5);
 				base.Draw(drawingContext, newOrigin, rightToLeft, sideways);
 			}
 			

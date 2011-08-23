@@ -37,7 +37,7 @@ namespace AvalonDock
     {
         static FloatingDockablePane()
         {
-            //DefaultStyleKeyProperty.OverrideMetadata(typeof(FloatingDockablePane), new FrameworkPropertyMetadata(typeof(FloatingDockablePane)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(FloatingDockablePane), new FrameworkPropertyMetadata(typeof(FloatingDockablePane)));
             //by design avoid style change
 
             Pane.ShowHeaderProperty.OverrideMetadata(typeof(FloatingDockablePane), new FrameworkPropertyMetadata(false));

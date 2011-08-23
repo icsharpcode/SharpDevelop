@@ -30,5 +30,13 @@ namespace ICSharpCode.XmlEditor
 				foldingManager.UpdateFoldings(newFoldings, firstErrorOffset);
 			}
 		}
+		
+		public void Dispose()
+		{
+			if (foldingManager != null) {
+				FoldingManager.Uninstall(foldingManager);
+				foldingManager = null;
+			}
+		}
 	}
 }

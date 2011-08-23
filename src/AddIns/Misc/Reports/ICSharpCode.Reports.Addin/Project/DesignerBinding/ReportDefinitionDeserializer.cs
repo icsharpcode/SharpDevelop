@@ -107,7 +107,7 @@ namespace ICSharpCode.Reports.Addin
 						Console.WriteLine("Absolut2RelativePath");
 						Console.WriteLine("Image Filename {0}",fileName);
 						Console.WriteLine("Image Filename {0}",baseImageItem.ImageFileName);
-						string d = ICSharpCode.Reports.Core.FileUtility.GetRelativePath(
+						string d = ICSharpCode.Reports.Core.Globals.FileUtility.GetRelativePath(
 							Path.GetDirectoryName(fileName),
 							Path.GetDirectoryName(baseImageItem.ImageFileName));
 

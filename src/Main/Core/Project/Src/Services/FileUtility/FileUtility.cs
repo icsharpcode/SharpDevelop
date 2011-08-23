@@ -231,6 +231,9 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static string GetRelativePath(string baseDirectoryPath, string absPath)
 		{
+			if (string.IsNullOrEmpty(baseDirectoryPath)) {
+				return absPath;
+			}
 			if (IsUrl(absPath) || IsUrl(baseDirectoryPath)){
 				return absPath;
 			}
@@ -682,7 +685,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static event FileNameEventHandler FileLoaded;
-		public static event FileNameEventHandler FileSaved;
+		public static event EventHandler<FileNameEventArgs> FileLoaded;
+		public static event EventHandler<FileNameEventArgs> FileSaved;
 	}
 }
