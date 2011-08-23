@@ -9,6 +9,7 @@ using System.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.ILSpyAddIn.LaunchILSpy;
 using ICSharpCode.ILSpyAddIn.ViewContent;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Utils;
@@ -151,7 +152,7 @@ namespace ICSharpCode.ILSpyAddIn
 			ReaderParameters readerParameters = new ReaderParameters();
 			// Use new assembly resolver instance so that the AssemblyDefinitions can be garbage-collected
 			// once the code is decompiled.
-			readerParameters.AssemblyResolver = new DefaultAssemblyResolver();
+			readerParameters.AssemblyResolver = new ILSpyAssemblyResolver(Path.GetDirectoryName(assemblyFile));
 			
 			ModuleDefinition module = ModuleDefinition.ReadModule(assemblyFile, readerParameters);
 			TypeDefinition typeDefinition = module.GetType(fullTypeName);
@@ -168,22 +169,17 @@ namespace ICSharpCode.ILSpyAddIn
 				.PreOrder((AstNode)astBuilder.CompilationUnit, n => n.Children)
 				.Where(n => n is AttributedNode && n.Annotation<Tuple<int, int>>() != null);
 			MemberReference = typeDefinition;
+			
 			int token = MemberReference.MetadataToken.ToInt32();
-			if (!DebuggerService.ExternalDebugInformation.ContainsKey(token)) {
-				DebuggerService.ExternalDebugInformation.Add(token, new DecompileInformation {
-				                                             	CodeMappings = astBuilder.CodeMappings,
-				                                             	LocalVariables = astBuilder.LocalVariables,
-				                                             	DecompiledMemberReferences = astBuilder.DecompiledMemberReferences,
-				                                             	AstNodes = nodes
-				                                             });
-			} else {
-				DebuggerService.ExternalDebugInformation[token] = new DecompileInformation {
-				                                             	CodeMappings = astBuilder.CodeMappings,
-				                                             	LocalVariables = astBuilder.LocalVariables,
-				                                             	DecompiledMemberReferences = astBuilder.DecompiledMemberReferences,
-				                                             	AstNodes = nodes
-				                                             };
-			}
+			var info = new DecompileInformation {
+				CodeMappings = astBuilder.CodeMappings,
+				LocalVariables = astBuilder.LocalVariables,
+				DecompiledMemberReferences = astBuilder.DecompiledMemberReferences,
+				AstNodes = nodes
+			};
+			
+			// save the data
+			DebuggerDecompilerService.DebugInformation.AddOrUpdate(token, info, (k, v) => info);
 		}
 		
 		void OnDecompilationFinished(StringWriter output)
@@ -221,38 +217,44 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			if (!DebuggerService.IsDebuggerStarted)
 				return;
+			if (MemberReference == null || MemberReference.MetadataToken == null)
+				return;
 			
-			if (DebuggerService.DebugStepInformation != null) {
-				// get debugging information
-				DecompileInformation debugInformation = (DecompileInformation)DebuggerService.ExternalDebugInformation[MemberReference.MetadataToken.ToInt32()];
-				int token = DebuggerService.DebugStepInformation.Item1;
-				int ilOffset = DebuggerService.DebugStepInformation.Item2;
-				int line;
-				MemberReference member;
-				if (debugInformation.CodeMappings == null || !debugInformation.CodeMappings.ContainsKey(token))
-					return;
-				
-				debugInformation.CodeMappings[token].GetInstructionByTokenAndOffset(token, ilOffset, out member, out line);
-				
-				// HACK : if the codemappings are not built
-				if (line == 0) {
-					DebuggerService.CurrentDebugger.StepOver();
-					return;
-				}
-				// update bookmark & marker
-				codeView.UnfoldAndScroll(line);
-				CurrentLineBookmark.SetPosition(this, line, 0, line, 0);
+			int typeToken = MemberReference.MetadataToken.ToInt32();			
+			if (!DebuggerDecompilerService.DebugInformation.ContainsKey(typeToken))
+				return;
+			if (DebuggerDecompilerService.Instance == null || DebuggerDecompilerService.Instance.DebugStepInformation == null)
+				return;
+			
+			// get debugging information
+			DecompileInformation debugInformation = (DecompileInformation)DebuggerDecompilerService.DebugInformation[typeToken];
+			int token = DebuggerDecompilerService.Instance.DebugStepInformation.Item1;
+			int ilOffset = DebuggerDecompilerService.Instance.DebugStepInformation.Item2;
+			int line;
+			MemberReference member;
+			if (debugInformation.CodeMappings == null || !debugInformation.CodeMappings.ContainsKey(token))
+				return;
+			
+			debugInformation.CodeMappings[token].GetInstructionByTokenAndOffset(token, ilOffset, out member, out line);
+			
+			// HACK : if the codemappings are not built
+			if (line <= 0) {
+				DebuggerService.CurrentDebugger.StepOver();
+				return;
 			}
+			// update bookmark & marker
+			codeView.UnfoldAndScroll(line);
+			CurrentLineBookmark.SetPosition(this, line, 0, line, 0);
 		}
 		
 		public void JumpTo(int lineNumber)
-		{
-			if (lineNumber <= 0)
-				return;
-			
+		{			
 			if (codeView == null)
 				return;
 			
+			if (lineNumber <= 0 || lineNumber > codeView.Document.LineCount)
+				return;
+
 			codeView.UnfoldAndScroll(lineNumber);
 		}
 		#endregion

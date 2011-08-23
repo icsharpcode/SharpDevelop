@@ -574,25 +574,30 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return;
 				}
 				
-				Project.ProjectService.SaveSolutionPreferences();
-				
-				while (WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count > 0) {
-					IWorkbenchWindow window = WorkbenchSingleton.Workbench.WorkbenchWindowCollection[0];
-					if (!window.CloseWindow(false)) {
-						e.Cancel = true;
-						return;
+				if (!Project.ProjectService.IsClosingCanceled()) {
+					// save preferences
+					Project.ProjectService.SaveSolutionPreferences();
+					
+					while (WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count > 0) {
+						IWorkbenchWindow window = WorkbenchSingleton.Workbench.WorkbenchWindowCollection[0];
+						if (!window.CloseWindow(false)) {
+							e.Cancel = true;
+							return;
+						}
 					}
-				}
-				
-				Project.ProjectService.CloseSolution();
-				ParserService.StopParserThread();
-				
-				restoreBoundsBeforeClosing = this.RestoreBounds;
-				
-				this.WorkbenchLayout = null;
-				
-				foreach (PadDescriptor padDescriptor in this.PadContentCollection) {
-					padDescriptor.Dispose();
+					
+					Project.ProjectService.CloseSolution();
+					ParserService.StopParserThread();
+					
+					restoreBoundsBeforeClosing = this.RestoreBounds;
+					
+					this.WorkbenchLayout = null;
+					
+					foreach (PadDescriptor padDescriptor in this.PadContentCollection) {
+						padDescriptor.Dispose();
+					}
+				} else {
+					e.Cancel = true;
 				}
 			}
 		}

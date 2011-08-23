@@ -136,7 +136,7 @@ namespace PackageManagement.Tests.Scripting
 		Solution CreateViewModelWithEmptySolutionOpen()
 		{
 			CreateConsoleHost();
-			var solution = new Solution();
+			var solution = new Solution(new MockProjectChangeWatcher());
 			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
 			CreateViewModel(consoleHost, projectService);
@@ -299,7 +299,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateConsoleHost();
 			projectService = new FakePackageManagementProjectService();
-			var solution = new Solution();
+			var solution = new Solution(new MockProjectChangeWatcher());
 			projectService.OpenSolution = solution;
 
 			Assert.DoesNotThrow(() => CreateViewModel(consoleHost, projectService));

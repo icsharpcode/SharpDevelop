@@ -118,7 +118,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					} else {
 						this.errorPainter.UpdateErrors();
 					}
-					changeWatcher.Initialize(this.Document, fileName);
+					changeWatcher.Initialize(this.Document);
 					
 					FetchParseInformation();
 				}

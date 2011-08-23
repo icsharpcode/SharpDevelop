@@ -479,11 +479,23 @@ Precisa de instalar o .NET Framework SDK para utilizar o sistema de ajuda.</valu
   <data name="AddIns.Profiler.DatabaseTooNewError" xml:space="preserve">
     <value>O perfil de sessão SharpDevelop seleccionado foi criado por uma versão mais recente de SharpDevelop e assim não pode ser aberto.</value>
   </data>
+  <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
+    <value>Sessão de Profiling SharpDevelop</value>
+  </data>
   <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
     <value>Este projecto não pode ser iniciado porque o ficheiro executável não foi encontrado, assegure-se, por favor,de que o projecto e todas as suas dependências são construídas correctamente!</value>
   </data>
   <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
     <value>Nenhum projecto iniciável foi encontrado. Abortar...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectWantToProfileStartupProject" xml:space="preserve">
+    <value>Este projecto não pode ser iniciado. Deseja obter perfil da solução do projecto StartUp em seu lugar?</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.PreparingForAnalysis" xml:space="preserve">
+    <value>A preparar a análise ...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.RegisterFailed" xml:space="preserve">
+    <value>Não foi registado o perfilador no COM Registry. Não é possível começar a obter perfil!</value>
   </data>
   <data name="AddIns.Profiler.ProfilingView.CpuCyclesText" xml:space="preserve">
     <value>Ciclos CPU:</value>
@@ -598,9 +610,6 @@ Precisa de instalar o .NET Framework SDK para utilizar o sistema de ajuda.</valu
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Ficheiro</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Linha</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Acerca</value>
@@ -2880,6 +2889,9 @@ Pode também escolher guardar o parâmetro num ficheiro .user-file em vez de no 
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Iniciar</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Linha</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>&amp;Actualizar</value>
   </data>
@@ -3104,9 +3116,6 @@ Pode também escolher guardar o parâmetro num ficheiro .user-file em vez de no 
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Fim de Linha</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Linha</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Impossível localizar o executável de consola NCover.

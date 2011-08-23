@@ -26,11 +26,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 			delegate {
 				// fetch IEditorControlService that's normally implemented in AvalonEdit.AddIn
 				var node = Core.AddInTree.GetTreeNode("/SharpDevelop/ViewContent/TextEditor/EditorControlService", false);
+				IEditorControlService ecs = null;
 				if (node != null && node.Codons.Count > 0) {
-					return (IEditorControlService)node.Codons[0].BuildItem(null, null);
-				} else {
-					return new DummyService();
+					ecs = (IEditorControlService)node.BuildChildItem(node.Codons[0], null);
 				}
+				return ecs ?? new DummyService();
 			}
 		);
 		

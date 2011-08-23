@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Util;
 using Microsoft.Win32.SafeHandles;
@@ -85,7 +86,7 @@ namespace ICSharpCode.GitAddIn
 			return OpenOutput(git, fileName, GetBlobHash(git, fileName));
 		}
 		
-		string GetBlobHash(string gitExe, string fileName)
+		internal static string GetBlobHash(string gitExe, string fileName)
 		{
 			ProcessRunner runner = new ProcessRunner();
 			runner.WorkingDirectory = Path.GetDirectoryName(fileName);
@@ -136,5 +137,54 @@ namespace ICSharpCode.GitAddIn
 			
 			return pipe;
 		}
+		
+		public IDisposable WatchBaseVersionChanges(string fileName, EventHandler callback)
+		{
+			if (!Git.IsInWorkingCopy(fileName))
+				return null;
+			
+			string git = Git.FindGit();
+			if (git == null)
+				return null;
+			
+			return new BaseVersionChangeWatcher(fileName, GetBlobHash(git, fileName), callback);
+		}
 	}
+	
+	class BaseVersionChangeWatcher : IDisposable
+	{
+		EventHandler callback;
+		string fileName, hash;
+		RepoChangeWatcher watcher;
+		
+		public BaseVersionChangeWatcher(string fileName, string hash, EventHandler callback)
+		{
+			string root = Git.FindWorkingCopyRoot(fileName);
+			if (root == null)
+				throw new InvalidOperationException(fileName + " must be under version control!");
+			
+			this.callback = callback;
+			this.fileName = fileName;
+			this.hash = hash;
+			
+			watcher = RepoChangeWatcher.AddWatch(Path.Combine(root, ".git"), HandleChanges);
+		}
+		
+		void HandleChanges()
+		{
+			string newHash = GitVersionProvider.GetBlobHash(Git.FindGit(), fileName);
+			if (newHash != hash) {
+				LoggingService.Info(fileName + " was changed!");
+				callback(this, EventArgs.Empty);
+			}
+			this.hash = newHash;
+		}
+		
+		public void Dispose()
+		{
+			watcher.ReleaseWatch(HandleChanges);
+		}
+	}
+	
+
 }

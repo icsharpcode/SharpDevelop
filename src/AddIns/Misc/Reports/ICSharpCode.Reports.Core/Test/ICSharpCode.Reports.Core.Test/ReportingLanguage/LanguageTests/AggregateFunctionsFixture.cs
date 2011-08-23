@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.LanguageTests
 	{
 		
 		[Test]
-        public void Test_Sum()
+        public void Array_Sum()
         {
             var data = new[] {1, 2, 4, 8, 16, 32, 64, 128};
             var eStr = "sum()";
@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.LanguageTests
         }
         
         [Test]
-        public void Average_Test()
+        public void Array_Average()
         {
             var data = new[] {2, 4, 6};
             var eStr = "avg()";
@@ -36,7 +36,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.LanguageTests
 		
         
         [Test]
-        public void Average_Handles_Divide_By_Zero()
+        public void Array_Handles_Divide_By_Zero()
         {
             var data = new int[]{};
             var eStr = "average()";
@@ -119,7 +119,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.LanguageTests
         
         
         [Test]
-        public void Min_Test()
+        public void Array_Min()
         {
             var data = new[] { 10, 7, 3, 9 };
             var eStr = "min()";
@@ -129,7 +129,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.LanguageTests
         }
 
         [Test]
-        public void Max_Test()
+        public void Array_Max()
         {
             var data = new[] { 10, 7, 3, 9 };
             var eStr = "max(current,current * 2)";

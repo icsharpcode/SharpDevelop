@@ -21,7 +21,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.LanguageTests
             Assert.That(expr.Evaluate(null), Is.EqualTo(1));
         }
         
-        
+       
          [Test]
         public void Can_Parse_Basic_Conditional_False_Result()
         {
@@ -30,8 +30,9 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.LanguageTests
             IExpression expr = compiler.CompileExpression<int>(expression);
             Assert.That(expr.Evaluate(null), Is.EqualTo(0));
         }
-        
-          [Test]
+       
+       
+        [Test]
         public void Can_Parse_If_Then_Else()
         {
             const string expression = "if (false) then 1 else 2";

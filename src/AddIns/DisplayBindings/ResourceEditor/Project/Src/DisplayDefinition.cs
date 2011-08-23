@@ -18,13 +18,22 @@ namespace ResourceEditor
 		// IDisplayBinding interface
 		public bool CanCreateContentForFile(string fileName)
 		{
-			return Path.GetExtension(fileName).Equals(".RESOURCES", StringComparison.OrdinalIgnoreCase) ||
-				Path.GetExtension(fileName).Equals(".RESX", StringComparison.OrdinalIgnoreCase);
+			return true; // definition in .addin does extension-based filtering
 		}
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
 			return new ResourceEditWrapper(file);
+		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return true;
+		}
+		
+		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		{
+			return 1;
 		}
 	}
 	

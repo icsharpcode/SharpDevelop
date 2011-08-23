@@ -217,6 +217,9 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static string GetRelativePath(string baseDirectoryPath, string absPath)
 		{
+			if (string.IsNullOrEmpty(baseDirectoryPath)) {
+				return absPath;
+			}
 			if (IsUrl(absPath) || IsUrl(baseDirectoryPath)){
 				return absPath;
 			}

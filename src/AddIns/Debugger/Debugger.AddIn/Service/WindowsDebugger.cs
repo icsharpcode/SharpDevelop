@@ -19,8 +19,6 @@ using Debugger.Interop.CorPublish;
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
-using ICSharpCode.Decompiler;
-using ICSharpCode.Decompiler.ILAst;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
@@ -51,6 +49,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		Process debuggedProcess;
 		ProcessMonitor monitor;
+		
+		internal IDebuggerDecompilerService debuggerDecompilerService;
 		
 		//DynamicTreeDebuggerRow currentTooltipRow;
 		//Expression             currentTooltipExpression;
@@ -157,12 +157,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (FileUtility.IsUrl(processStartInfo.FileName)) {
 				if (!CheckWebProjectStartInfo())
 					return;
-				
-				var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
-				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
-				System.Diagnostics.Process defaultAppProcess = null;
-				
-				if (options.Data.WebServer != WebServer.None) {
+				// we deal with a WebProject
+				try {
+					var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
+					var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
+					System.Diagnostics.Process defaultAppProcess = null;
+					
 					string processName = WebProjectService.WorkerProcessName;
 					
 					// try find the worker process directly or using the process monitor callback
@@ -185,28 +185,50 @@ namespace ICSharpCode.SharpDevelop.Services
 					
 					if (options.Data.WebServer == WebServer.IISExpress) {
 						// start IIS express and attach to it
-						if (WebProjectService.IISVersion == IISVersion.IISExpress)
+						if (WebProjectService.IISVersion == IISVersion.IISExpress) {
 							System.Diagnostics.Process.Start(WebProjectService.IISExpressProcessLocation);
-						else {
+						} else {
 							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 							return;
 						}
 					}
-				}
-				
-				// start default application(e.g. browser)
-				if (project.StartAction == StartAction.StartURL)
-					defaultAppProcess = System.Diagnostics.Process.Start(project.StartUrl);
-				else {
-					if (!string.IsNullOrEmpty(options.Data.ProjectUrl) && options.Data.WebServer == WebServer.IIS)
-						defaultAppProcess = System.Diagnostics.Process.Start(options.Data.ProjectUrl);
-					else {
-						if (options.Data.WebServer == WebServer.IISExpress)
-							defaultAppProcess = System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+					
+					// start default application(e.g. browser) or the one specified
+					switch (project.StartAction) {
+						case StartAction.Project:
+							if (FileUtility.IsUrl(options.Data.ProjectUrl)) {
+								defaultAppProcess = System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+							} else {
+								MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+								return;
+							}
+							break;
+						case StartAction.Program:
+							defaultAppProcess = System.Diagnostics.Process.Start(project.StartProgram);
+							break;
+						case StartAction.StartURL:
+							if (FileUtility.IsUrl(project.StartUrl))
+								defaultAppProcess = System.Diagnostics.Process.Start(project.StartUrl);
+							else {
+								string url = string.Concat(options.Data.ProjectUrl, project.StartUrl);
+								if (FileUtility.IsUrl(url)) {
+									defaultAppProcess = System.Diagnostics.Process.Start(url);
+								} else {
+									MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+									return;
+								}
+							}
+							break;
+						default:
+							throw new System.Exception("Invalid value for StartAction");
 					}
+				} catch (System.Exception ex) {
+					string err = "Error: " + ex.Message;
+					MessageService.ShowError(err);
+					LoggingService.Error(err);
+					return;
 				}
-			}
-			else {
+			} else {
 				string version = debugger.GetProgramVersion(processStartInfo.FileName);
 				
 				if (version.StartsWith("v1.0")) {
@@ -319,11 +341,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (FileUtility.IsUrl(processStartInfo.FileName)) {
 				if (!CheckWebProjectStartInfo())
 					return;
-				
-				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
-				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
-				
-				if (options.Data.WebServer != WebServer.None) {
+				// we deal with a WebProject
+				try {
+					var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
+					var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
+					
 					string processName = WebProjectService.WorkerProcessName;
 					
 					if (options.Data.WebServer == WebServer.IISExpress) {
@@ -335,23 +357,43 @@ namespace ICSharpCode.SharpDevelop.Services
 							return;
 						}
 					}
-				}
-				
-				// start default application(e.g. browser)
-				if (project.StartAction == StartAction.StartURL)
-					System.Diagnostics.Process.Start(project.StartUrl);
-				else {
-					if (!string.IsNullOrEmpty(options.Data.ProjectUrl) && options.Data.WebServer == WebServer.IIS)
-						System.Diagnostics.Process.Start(options.Data.ProjectUrl);
-					else {
-						if (!string.IsNullOrEmpty(options.Data.ProjectUrl) && options.Data.WebServer == WebServer.IISExpress)
-							System.Diagnostics.Process.Start(options.Data.ProjectUrl);
-						else
-							System.Diagnostics.Process.Start(processStartInfo.FileName);
+					
+					// start default application(e.g. browser) or the one specified
+					switch (project.StartAction) {
+						case StartAction.Project:
+							if (FileUtility.IsUrl(options.Data.ProjectUrl)) {
+								System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+							} else {
+								MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+								return;
+							}
+							break;
+						case StartAction.Program:
+							System.Diagnostics.Process.Start(project.StartProgram);
+							break;
+						case StartAction.StartURL:
+							if (FileUtility.IsUrl(project.StartUrl))
+								System.Diagnostics.Process.Start(project.StartUrl);
+							else {
+								string url = string.Concat(options.Data.ProjectUrl, project.StartUrl);
+								if (FileUtility.IsUrl(url)) {
+									System.Diagnostics.Process.Start(url);
+								} else {
+									MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+									return;
+								}
+							}
+							break;
+						default:
+							throw new System.Exception("Invalid value for StartAction");
 					}
+				} catch (System.Exception ex) {
+					string err = "Error: " + ex.Message;
+					MessageService.ShowError(err);
+					LoggingService.Error(err);
+					return;
 				}
-			}
-			else
+			} else
 				System.Diagnostics.Process.Start(processStartInfo);
 		}
 		
@@ -461,38 +503,23 @@ namespace ICSharpCode.SharpDevelop.Services
 		}
 		
 		// Stepping:
-		
-		SourceCodeMapping GetCurrentCodeMapping(out bool isMatch)
+		Debugger.StackFrame GetStackFrame()
 		{
+			bool isMatch = false;
+			int line = -1;
+			int[] ilRange = null;
+			
 			var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 			int typeToken = frame.MethodInfo.DeclaringType.MetadataToken;
 			int methodToken = frame.MethodInfo.MetadataToken;
 			
-			DecompileInformation debugInformation = (DecompileInformation)DebuggerService.ExternalDebugInformation[typeToken];
-			isMatch = false;
-			
-			if (debugInformation == null)
-				return null;
-			
-			
 			// get the mapped instruction from the current line marker or the next one
-			if (!debugInformation.CodeMappings.ContainsKey(methodToken))
-				return null;
-			var mappings = (List<MemberMapping>)debugInformation.CodeMappings[methodToken];
-			return mappings.GetInstructionByTokenAndOffset(methodToken, frame.IP, out isMatch);
-		}
-		
-		Debugger.StackFrame GetStackFrame()
-		{
-			bool isMatch;
-			Debugger.StackFrame frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
-			var map = GetCurrentCodeMapping(out isMatch);
-			if (map == null) {
-				frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
+			if (!debuggerDecompilerService.GetILAndLineNumber(typeToken, methodToken, frame.IP, out ilRange, out line, out isMatch)){
+				frame.SourceCodeLine = 0;
 				frame.ILRanges = new [] { 0, 1 };
 			} else {
-				frame.SourceCodeLine = map.SourceCodeLine;
-				frame.ILRanges = map.ToArray(isMatch);
+				frame.SourceCodeLine = line;
+				frame.ILRanges = ilRange;
 			}
 			
 			return frame;
@@ -597,10 +624,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			
 			var stackFrame = !debuggedProcess.IsInExternalCode ? debuggedProcess.SelectedStackFrame : debuggedProcess.SelectedThread.MostRecentStackFrame;
-
 			try {
-				object data = GetLocalVariableIndex(stackFrame, variableName);
-				
+				object data = debuggerDecompilerService.GetLocalVariableIndex(stackFrame.MethodInfo.DeclaringType.MetadataToken, 
+				                                                              stackFrame.MethodInfo.MetadataToken,
+				                                                              variableName);
 				// evaluate expression
 				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, stackFrame, data);
 			} catch {
@@ -665,7 +692,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				var tooltipExpression = GetExpression(variableName);
 				string imageName;
 				var image = ExpressionNode.GetImageForLocalVariable(out imageName);
-				ExpressionNode expressionNode = new ExpressionNode(image, variableName, tooltipExpression);
+				ExpressionNode expressionNode = new ExpressionNode(null, image, variableName, tooltipExpression);
 				expressionNode.ImageName = imageName;
 				return new DebuggerTooltipControl(logicalPosition, expressionNode) { ShowPins = !IsInExternalCode };
 			} catch (GetValueException) {
@@ -686,7 +713,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					image = new ResourceServiceImage(currentImageName);
 					imageName = currentImageName;
 				}
-				ExpressionNode expressionNode = new ExpressionNode(image, variable, expression);
+				ExpressionNode expressionNode = new ExpressionNode(null, image, variable, expression);
 				expressionNode.ImageName = imageName;
 				return expressionNode;
 			} catch (GetValueException) {
@@ -731,10 +758,14 @@ namespace ICSharpCode.SharpDevelop.Services
 				new RemotingConfigurationHelpper(path).Configure();
 			}
 			
+			// get decompiler service
+			var items = AddInTree.BuildItems<IDebuggerDecompilerService>("/SharpDevelop/Services/DebuggerDecompilerService", null, false);
+			if (items.Count > 0)
+				debuggerDecompilerService = items[0];
+			
+			// init NDebugger
 			debugger = new NDebugger();
-			
-			debugger.Options = DebuggingOptions.Instance;
-			
+			debugger.Options = DebuggingOptions.Instance;			
 			debugger.DebuggerTraceMessage    += debugger_TraceMessage;
 			debugger.Processes.Added         += debugger_ProcessStarted;
 			debugger.Processes.Removed       += debugger_ProcessExited;
@@ -768,37 +799,35 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (bookmark is DecompiledBreakpointBookmark) {
 				var dbb = (DecompiledBreakpointBookmark)bookmark;
 				var memberReference = dbb.MemberReference;
-				if (!DebuggerService.ExternalDebugInformation.ContainsKey(memberReference.MetadataToken.ToInt32()))
-					return;
+				int token = memberReference.MetadataToken.ToInt32();
 				
-				// check if the codemappings exists for bookmark line
-				DecompileInformation data = (DecompileInformation)DebuggerService.ExternalDebugInformation[memberReference.MetadataToken.ToInt32()];
-				var storage = data.CodeMappings;
-				int token = 0;
-				foreach (var key in storage.Keys) {
-					var instruction = storage[key].GetInstructionByLineNumber(dbb.LineNumber, out token);
-					
-					if (instruction == null) {
-						continue;
-					}
-					
-					dbb.ILFrom = instruction.ILInstructionOffset.From;
-					dbb.ILTo = instruction.ILInstructionOffset.To;
-					
+				if (!debuggerDecompilerService.CheckMappings(token))
+					debuggerDecompilerService.DecompileOnDemand(memberReference as TypeDefinition);
+				
+				int[] ilRanges;
+				int methodToken;
+				if (debuggerDecompilerService.GetILAndTokenByLineNumber(token, dbb.LineNumber, out ilRanges, out methodToken)) {
+					dbb.ILFrom = ilRanges[0];
+					dbb.ILTo = ilRanges[1];
+					// create BP
 					breakpoint = new ILBreakpoint(
 						debugger,
 						dbb.MemberReference.FullName,
 						dbb.LineNumber,
 						memberReference.MetadataToken.ToInt32(),
-						instruction.MemberMapping.MetadataToken,
+						methodToken,
 						dbb.ILFrom,
 						dbb.IsEnabled);
 					
 					debugger.Breakpoints.Add(breakpoint);
-					break;
 				}
 			} else {
 				breakpoint = debugger.Breakpoints.Add(bookmark.FileName, null, bookmark.LineNumber, 0, bookmark.IsEnabled);
+			}
+			
+			if (breakpoint == null) {
+				LoggingService.Warn(string.Format("unable to create breakpoint: {0}", bookmark.ToString()));
+				return;
 			}
 			
 			MethodInvoker setBookmarkColor = delegate {
@@ -969,8 +998,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			var currentModuleTypes = e.Module.GetNamesOfDefinedTypes();
 			foreach (var bookmark in DebuggerService.Breakpoints.OfType<DecompiledBreakpointBookmark>()) {
 				var breakpoint = debugger.Breakpoints.FirstOrDefault(
-						b => b is ILBreakpoint && b.Line == bookmark.LineNumber && 
-						((ILBreakpoint)b).MetadataToken == bookmark.MemberReference.MetadataToken.ToInt32());
+					b => b is ILBreakpoint && b.Line == bookmark.LineNumber &&
+					((ILBreakpoint)b).MetadataToken == bookmark.MemberReference.MetadataToken.ToInt32());
 				if (breakpoint == null)
 					continue;
 				// set the breakpoint only if the module contains the type
@@ -1051,6 +1080,10 @@ namespace ICSharpCode.SharpDevelop.Services
 					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 				}
 			} else {
+				if (debuggerDecompilerService == null) {
+					LoggingService.Warn("No IDebuggerDecompilerService found!");
+					return;
+				}
 				// use most recent stack frame because we don't have the symbols
 				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 				if (frame == null)
@@ -1058,39 +1091,36 @@ namespace ICSharpCode.SharpDevelop.Services
 				int typeToken = frame.MethodInfo.DeclaringType.MetadataToken;
 				
 				// get external data
-				object data = null;
-				DebuggerService.ExternalDebugInformation.TryGetValue(typeToken, out data);
-				DecompileInformation externalData = data as DecompileInformation;
-				int token = frame.MethodInfo.MetadataToken;
+				int methodToken = frame.MethodInfo.MetadataToken;
 				int ilOffset = frame.IP;
-				int line;
-				MemberReference memberReference;
 				
-				if (externalData != null && externalData.CodeMappings.ContainsKey(token)) {
-					var mappings = externalData.CodeMappings[token];
-					if (mappings.GetInstructionByTokenAndOffset(token, ilOffset, out memberReference, out line)) {
-						DebuggerService.DebugStepInformation = null; // we do not need to step into/out
+				int[] ilRanges = null;
+				int line = -1;
+				bool isMatch = false;
+				if (debuggerDecompilerService.GetILAndLineNumber(typeToken, methodToken, ilOffset, out ilRanges, out line, out isMatch)) {
+					debuggerDecompilerService.DebugStepInformation = null; // we do not need to step into/out
 
-						// update marker
-						var debugType = (DebugType)frame.MethodInfo.DeclaringType;
-						string fullTypeName = debugType.FullNameWithoutGenericArguments;
-						string shortTypeName = fullTypeName.Substring(fullTypeName.LastIndexOf('.') + 1);
-						string title = "[" + shortTypeName + "]";
-						foreach (var vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<AbstractViewContentWithoutFile>()) {
-							if (string.Equals(vc.TitleName, title, StringComparison.OrdinalIgnoreCase)) {
-								CurrentLineBookmark.SetPosition(vc, line, 0, line, 0);
-								vc.WorkbenchWindow.SelectWindow();
-								return;
-							}
+					// update marker
+					var debugType = (DebugType)frame.MethodInfo.DeclaringType;
+					
+					foreach (dynamic vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<AbstractViewContentWithoutFile>()) {
+						if (vc == null || vc.MemberReference == null)
+							continue;
+						
+						if (vc.MemberReference.MetadataToken.ToInt32() == debugType.MetadataToken) {
+							CurrentLineBookmark.SetPosition(vc, line, 0, line, 0);
+							var wbw = vc.WorkbenchWindow as IWorkbenchWindow;
+							if (wbw != null)
+								wbw.SelectWindow();
+							return;
 						}
-						// the decompiled content was closed so we have to recreate it
-						StepIntoUnknownFrame(frame, token, ilOffset);
-					} else {
-						StepIntoUnknownFrame(frame, token, ilOffset);
 					}
+					// the decompiled content was closed so we have to recreate it
+					StepIntoUnknownFrame(frame, methodToken, ilOffset);
 				} else {
-					StepIntoUnknownFrame(frame, token, ilOffset);
+					StepIntoUnknownFrame(frame, methodToken, ilOffset);
 				}
+				
 			}
 		}
 
@@ -1098,7 +1128,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			var debugType = (DebugType)frame.MethodInfo.DeclaringType;
 			string fullName = debugType.FullNameWithoutGenericArguments;
-			DebuggerService.DebugStepInformation = Tuple.Create(token, ilOffset);
+			debuggerDecompilerService.DebugStepInformation = Tuple.Create(token, ilOffset);
 			NavigationService.NavigateTo(debugType.DebugModule.FullPath, debugType.FullNameWithoutGenericArguments, string.Empty);
 		}
 		
@@ -1118,33 +1148,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			ProjectService.OpenSolution.Projects
 				.Where(p => e.Item.Name.IndexOf(p.Name) >= 0)
 				.ForEach(p => e.Item.LoadSymbolsFromDisk(new []{ Path.GetDirectoryName(p.OutputAssemblyFullPath) }));
-		}
-		
-		public static object GetLocalVariableIndex(Debugger.StackFrame stackFrame, string variableName)
-		{
-			// get the target name
-			int typeToken = stackFrame.MethodInfo.DeclaringType.MetadataToken;
-			int methodToken = stackFrame.MethodInfo.MetadataToken;
-			int index = variableName.IndexOf('.');
-			string targetName = variableName;
-			if (index != -1) {
-				targetName = variableName.Substring(0, index);
-			}
-			
-			// get local variable index and store it in UserData property - used in evaluator
-			object data = null;
-			IEnumerable<ILVariable> list;
-			if (DebuggerService.ExternalDebugInformation == null || !DebuggerService.ExternalDebugInformation.ContainsKey(typeToken))
-				return null;
-			
-			DecompileInformation externalData = (DecompileInformation)DebuggerService.ExternalDebugInformation[typeToken];
-			if (externalData.LocalVariables.TryGetValue(methodToken, out list)) {
-				var variable = list.FirstOrDefault(v => v.Name == targetName);
-				if (variable != null && variable.OriginalVariable != null) {
-					data = new[] { variable.OriginalVariable.Index };
-				}
-			}
-			return data;
 		}
 	}
 }

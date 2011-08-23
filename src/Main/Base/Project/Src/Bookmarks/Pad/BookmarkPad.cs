@@ -125,7 +125,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			if (!ShowBookmarkInThisPad(mark))
 				return;
 			
-			listView.Add(new ListViewPadItemModel(mark));
+			var model = new ListViewPadItemModel(mark);
+			model.PropertyChanged += OnModelPropertyChanged;
+			listView.Add(model);
 		}
 		
 		protected virtual bool ShowBookmarkInThisPad(SDBookmark mark)
@@ -140,8 +142,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		void BookmarkManagerRemoved(object sender, BookmarkEventArgs e)
 		{
-			if (ShowBookmarkInThisPad(e.Bookmark))
-				listView.Remove(new ListViewPadItemModel(e.Bookmark));
+			if (ShowBookmarkInThisPad(e.Bookmark)) {
+				var model = listView.Remove(e.Bookmark);
+				model.PropertyChanged -= OnModelPropertyChanged;
+			}
 		}
 		
 		void listView_ItemActivated(object sender, EventArgs e)
@@ -153,6 +157,22 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					FileService.JumpToFilePosition(mark.FileName, mark.LineNumber, 1);
 				}
 			}	
+		}
+		
+		void OnModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			var model = sender as ListViewPadItemModel;
+			if (e.PropertyName == "IsChecked") {
+				if (model.Mark is BreakpointBookmark) {
+					var bpm = model.Mark as BreakpointBookmark;
+					bpm.IsEnabled = model.IsChecked;
+					if (model.IsChecked) {
+						model.Image = string.IsNullOrEmpty(model.Condition) ? BreakpointBookmark.BreakpointImage.ImageSource : BreakpointBookmark.BreakpointConditionalImage.ImageSource;
+					} else {
+						model.Image = BreakpointBookmark.DisabledBreakpointImage.ImageSource;
+	}
+}
+			}
 		}
 	}
 }

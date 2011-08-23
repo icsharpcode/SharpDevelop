@@ -41,10 +41,10 @@ namespace ICSharpCode.Reports.Core
 		
 		#region IExportColumnBuilder  implementation
 		
-		public override BaseExportColumn CreateExportColumn(){
+		public override IBaseExportColumn CreateExportColumn(){
 			this.SetErrorLayout();
 			TextStyleDecorator st = base.CreateItemStyle();
-			ExportText item = new ExportText(st,false);
+			ExportText item = new ExportText(st);
 			item.Text = this.errMess;
 			return item;
 		}

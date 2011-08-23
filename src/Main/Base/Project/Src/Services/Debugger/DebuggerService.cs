@@ -31,10 +31,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				ClearDebugMessages();
 			};
 			
+			ProjectService.BeforeSolutionClosing += OnBeforeSolutionClosing;
+			
 			BookmarkManager.Added   += BookmarkAdded;
 			BookmarkManager.Removed += BookmarkRemoved;
-			
-			ExternalDebugInformation = new Dictionary<int, object>();
 		}
 		
 		static void GetDescriptors()
@@ -102,21 +102,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public static bool IsDebuggerStarted {
 			get { return debuggerStarted; }
 		}
-		
-		#region Debug third party code
-		
-		/// <summary>
-		/// Gets or sets the external debug information.
-		/// <summary>This constains the code mappings and local variables.</summary>
-		/// </summary>
-		public static Dictionary<int, object> ExternalDebugInformation { get; set; }
-		
-		/// <summary>
-		/// Gets or sets the current token and IL offset. Used for step in/out.
-		/// </summary>
-		public static Tuple<int, int> DebugStepInformation { get; set; }
-		
-		#endregion
 		
 		public static event EventHandler DebugStarting;
 		public static event EventHandler DebugStarted;
@@ -242,6 +227,29 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		static void OnBeforeSolutionClosing(object sender, SolutionCancelEventArgs e)
+		{
+			if (currentDebugger == null)
+				return;
+			
+			if (currentDebugger.IsDebugging) {
+				string caption = StringParser.Parse("${res:XML.MainMenu.DebugMenu.Stop}");
+				string message = StringParser.Parse("${res:MainWindow.Windows.Debug.StopDebugging.Message}");
+				string[] buttonLabels = new string[] { StringParser.Parse("${res:Global.Yes}"), StringParser.Parse("${res:Global.No}") };
+				int result = MessageService.ShowCustomDialog(caption,
+				                                             message,
+				                                             0, // yes
+				                                             1, // no
+				                                             buttonLabels);
+				
+				if (result == 0) {
+					currentDebugger.Stop();
+				} else {
+					e.Cancel = true;
+				}
+			}
+		}
+		
 		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber)
 		{
 			BookmarkManager.ToggleBookmark(
@@ -295,13 +303,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return;
 			Location logicPos = e.LogicalPosition;
 			var doc = e.Editor.Document;
-			string fileName;
-			if (!File.Exists(e.Editor.FileName)) {
-				dynamic viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-				fileName = string.Format("decompiled/{0}.cs", viewContent.FullTypeName);
-			} else {
-				fileName = e.Editor.FileName;
-			}
+			FileName fileName = e.Editor.FileName;
 			
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
 			if (expressionFinder == null)
@@ -463,5 +465,46 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			DebuggerService.HandleToolTipRequest(e);
 		}
+	}
+	
+	/// <summary>
+	/// Interface for common debugger-decompiler mapping operations.
+	/// </summary>
+	public interface IDebuggerDecompilerService
+	{
+		/// <summary>
+		/// Gets or sets the current method token and IL offset. Used for step in/out.
+		/// </summary>
+		Tuple<int, int> DebugStepInformation { get; set; }
+		
+		/// <summary>
+		/// Checks the code mappings.
+		/// </summary>
+		bool CheckMappings(int typeToken);
+		
+		/// <summary>
+		/// Decompiles on demand a type.
+		/// </summary>
+		void DecompileOnDemand(TypeDefinition type);
+		
+		/// <summary>
+		/// Gets the IL from and IL to.
+		/// </summary>
+		bool GetILAndTokenByLineNumber(int typeToken, int lineNumber, out int[] ilRanges, out int memberToken);
+		
+		/// <summary>
+		/// Gets the ILRange and source code line number.
+		/// </summary>
+		bool GetILAndLineNumber(int typeToken, int memberToken, int ilOffset, out int[] ilRange, out int line, out bool isMatch);
+		
+		/// <summary>
+		/// Gets the local variables of a type and a member.
+		/// </summary>
+		IEnumerable<string> GetLocalVariables(int typeToken, int memberToken);
+		
+		/// <summary>
+		/// Gets the local variable index.
+		/// </summary>
+		object GetLocalVariableIndex(int typeToken, int memberToken, string name);
 	}
 }

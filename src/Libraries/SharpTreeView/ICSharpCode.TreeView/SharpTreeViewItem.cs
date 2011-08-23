@@ -18,9 +18,7 @@ namespace ICSharpCode.TreeView
 		static SharpTreeViewItem()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(SharpTreeViewItem),
-				new FrameworkPropertyMetadata(typeof(SharpTreeViewItem)));
-
-			RegisterCommands();
+			                                         new FrameworkPropertyMetadata(typeof(SharpTreeViewItem)));
 		}
 
 		public SharpTreeNode Node
@@ -29,42 +27,28 @@ namespace ICSharpCode.TreeView
 		}
 
 		public SharpTreeNodeView NodeView { get; internal set; }
-		public SharpTreeView ParentTreeView { get; internal set; }		
+		public SharpTreeView ParentTreeView { get; internal set; }
 
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			switch (e.Key) {
 				case Key.F2:
-					if (SharpTreeNode.ActiveNodes.Count == 1 && Node.IsEditable) {
-						Node.IsEditing = true;
-					}
+//					if (SharpTreeNode.ActiveNodes.Count == 1 && Node.IsEditable) {
+//						Node.IsEditing = true;
+//						e.Handled = true;
+//					}
 					break;
 				case Key.Escape:
 					Node.IsEditing = false;
 					break;
-				case Key.Left:
-					Node.IsExpanded = false;
-					break;
-				case Key.Right:
-					Node.IsExpanded = true;
-					break;
 			}
-		}
-
-		protected override void OnContextMenuOpening(ContextMenuEventArgs e)
-		{
-			ContextMenu = Node.GetContextMenu();
-		}
-
-		protected override void OnContextMenuClosing(ContextMenuEventArgs e)
-		{
-			ClearValue(ContextMenuProperty);
 		}
 
 		#region Mouse
 
 		Point startPoint;
 		bool wasSelected;
+		bool wasDoubleClick;
 
 		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
 		{
@@ -78,9 +62,7 @@ namespace ICSharpCode.TreeView
 				CaptureMouse();
 
 				if (e.ClickCount == 2) {
-					if (!Node.IsRoot || ParentTreeView.ShowRootExpander) {
-						Node.IsExpanded = !Node.IsExpanded;
-					}
+					wasDoubleClick = true;
 				}
 			}
 		}
@@ -90,10 +72,11 @@ namespace ICSharpCode.TreeView
 			if (IsMouseCaptured) {
 				var currentPoint = e.GetPosition(null);
 				if (Math.Abs(currentPoint.X - startPoint.X) >= SystemParameters.MinimumHorizontalDragDistance ||
-					Math.Abs(currentPoint.Y - startPoint.Y) >= SystemParameters.MinimumVerticalDragDistance) {
+				    Math.Abs(currentPoint.Y - startPoint.Y) >= SystemParameters.MinimumVerticalDragDistance) {
 
-					if (Node.InternalCanDrag()) {
-						Node.InternalDrag(this);
+					var selection = ParentTreeView.GetTopLevelSelection().ToArray();
+					if (Node.CanDrag(selection)) {
+						Node.StartDrag(this, selection);
 					}
 				}
 			}
@@ -101,6 +84,16 @@ namespace ICSharpCode.TreeView
 
 		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
 		{
+			if (wasDoubleClick) {
+				wasDoubleClick = false;
+				Node.ActivateItem(e);
+				if (!e.Handled) {
+					if (!Node.IsRoot || ParentTreeView.ShowRootExpander) {
+						Node.IsExpanded = !Node.IsExpanded;
+					}
+				}
+			}
+			
 			ReleaseMouseCapture();
 			if (wasSelected) {
 				base.OnMouseLeftButtonDown(e);
@@ -108,7 +101,7 @@ namespace ICSharpCode.TreeView
 		}
 
 		#endregion
-
+		
 		#region Drag and Drop
 
 		protected override void OnDragEnter(DragEventArgs e)
@@ -129,65 +122,6 @@ namespace ICSharpCode.TreeView
 		protected override void OnDragLeave(DragEventArgs e)
 		{
 			ParentTreeView.HandleDragLeave(this, e);
-		}
-
-		#endregion
-
-		#region Cut / Copy / Paste / Delete Commands
-
-		static void RegisterCommands()
-		{
-			CommandManager.RegisterClassCommandBinding(typeof(SharpTreeViewItem),
-				new CommandBinding(ApplicationCommands.Cut, HandleExecuted_Cut, HandleCanExecute_Cut));
-
-			CommandManager.RegisterClassCommandBinding(typeof(SharpTreeViewItem),
-				new CommandBinding(ApplicationCommands.Copy, HandleExecuted_Copy, HandleCanExecute_Copy));
-
-			CommandManager.RegisterClassCommandBinding(typeof(SharpTreeViewItem),
-				new CommandBinding(ApplicationCommands.Paste, HandleExecuted_Paste, HandleCanExecute_Paste));
-
-			CommandManager.RegisterClassCommandBinding(typeof(SharpTreeViewItem),
-				new CommandBinding(ApplicationCommands.Delete, HandleExecuted_Delete, HandleCanExecute_Delete));
-		}
-
-		static void HandleExecuted_Cut(object sender, ExecutedRoutedEventArgs e)
-		{
-			(sender as SharpTreeViewItem).Node.InternalCut();
-		}
-
-		static void HandleCanExecute_Cut(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = (sender as SharpTreeViewItem).Node.InternalCanCut();
-		}
-
-		static void HandleExecuted_Copy(object sender, ExecutedRoutedEventArgs e)
-		{
-			(sender as SharpTreeViewItem).Node.InternalCopy();
-		}
-
-		static void HandleCanExecute_Copy(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = (sender as SharpTreeViewItem).Node.InternalCanCopy();
-		}
-
-		static void HandleExecuted_Paste(object sender, ExecutedRoutedEventArgs e)
-		{
-			(sender as SharpTreeViewItem).Node.InternalPaste();
-		}
-
-		static void HandleCanExecute_Paste(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = (sender as SharpTreeViewItem).Node.InternalCanPaste();
-		}
-
-		static void HandleExecuted_Delete(object sender, ExecutedRoutedEventArgs e)
-		{
-			(sender as SharpTreeViewItem).Node.InternalDelete();
-		}
-
-		static void HandleCanExecute_Delete(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = (sender as SharpTreeViewItem).Node.InternalCanDelete();
 		}
 
 		#endregion

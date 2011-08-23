@@ -3,8 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Xml.Serialization;
 
 using Debugger;
 using Debugger.AddIn;
@@ -13,9 +16,9 @@ using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Project;
 using Exception = System.Exception;
-using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -58,11 +61,71 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			watchList.Drop += watchList_Drop;
 			watchList.MouseDoubleClick += watchList_DoubleClick;
 			watchList.KeyUp += watchList_KeyUp;
+			watchList.WatchItems.CollectionChanged += OnWatchItemsCollectionChanged;
 			
 			panel.Children.Add(watchList);
 			panel.KeyUp += new KeyEventHandler(panel_KeyUp);
+			
+			// wire events that influence the items
+			LoadSavedNodes();
+			ProjectService.SolutionClosed += delegate { watchList.WatchItems.Clear(); };
+			ProjectService.ProjectAdded += delegate { LoadSavedNodes(); };
+			ProjectService.SolutionLoaded += delegate { LoadSavedNodes(); };
 		}
 
+		#region Saved nodes
+		
+		void LoadSavedNodes()
+		{
+			var props = GetSavedVariablesProperties();
+			if (props == null)
+				return;
+			
+			foreach (var element in props.Elements) {
+				watchList.WatchItems.Add(new TextNode(null, element, (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), props[element])));
+			}
+		}
+
+		void OnWatchItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.Action == NotifyCollectionChangedAction.Add) {
+				// add to saved data
+				var data = e.NewItems[0] as TextNode;
+				if (data != null) {
+					var props = GetSavedVariablesProperties(); 
+					if (props == null) return;
+					props.Set(data.FullName, data.Language.ToString());
+				}
+			}
+			
+			if (e.Action == NotifyCollectionChangedAction.Remove) {
+				// remove from saved data
+				var data = e.OldItems[0] as TextNode;
+				if (data != null) {
+					var props = GetSavedVariablesProperties();
+					if (props == null) return;
+					props.Remove(data.FullName);
+				}
+			}
+		}
+		
+		Properties GetSavedVariablesProperties()
+		{
+			if (ProjectService.CurrentProject == null)
+				return null;
+			if (ProjectService.CurrentProject.ProjectSpecificProperties == null)
+				return null;
+			
+			var props = ProjectService.CurrentProject.ProjectSpecificProperties.Get("watchVars") as Properties;
+			if (props == null) {
+				ProjectService.CurrentProject.ProjectSpecificProperties.Set("watchVars", new Properties());
+			}
+			
+			return ProjectService.CurrentProject.ProjectSpecificProperties.Get("watchVars") as Properties;
+		}
+
+		#endregion
+		
 		void panel_KeyUp(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Insert) {
@@ -89,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			string language = ProjectService.CurrentProject.Language;
 			
 			// FIXME languages
-			TextNode text = new TextNode(e.Data.GetData(DataFormats.StringFormat).ToString(),
+			TextNode text = new TextNode(null, e.Data.GetData(DataFormats.StringFormat).ToString(),
 			                             language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp);
 
 			if (!watchList.WatchItems.Contains(text))
@@ -133,7 +196,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			// rebuild list
 			var nodes = new List<TreeNode>();
 			foreach (var nod in watchList.WatchItems)
-				nodes.Add(new TextNode(nod.Name,
+				nodes.Add(new TextNode(null, nod.Name,
 				                       language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp));
 			
 			watchList.WatchItems.Clear();
@@ -162,7 +225,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RefreshPad()
 		{
-			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null)
+			if (debuggedProcess == null || debuggedProcess.IsRunning)
 				return;
 			
 			using(new PrintTimes("Watch Pad refresh")) {
@@ -175,7 +238,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(node.Name) ? "is null or empty!" : node.Name));
 							var nodExpression = debugger.GetExpression(node.Name);
 							//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
-							ExpressionNode valNode = new ExpressionNode(null, node.Name, nodExpression);
+							ExpressionNode valNode = new ExpressionNode(null, null, node.Name, nodExpression);
 							nodes.Add(valNode);
 						}
 						catch (GetValueException) {

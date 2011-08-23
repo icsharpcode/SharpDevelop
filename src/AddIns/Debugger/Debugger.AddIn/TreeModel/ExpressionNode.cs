@@ -14,8 +14,6 @@ using System.Windows.Forms;
 using Debugger.AddIn.Visualizers;
 using Debugger.MetaData;
 using ICSharpCode.Core;
-using ICSharpCode.Decompiler;
-using ICSharpCode.Decompiler.ILAst;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -145,7 +143,8 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 
-		public ExpressionNode(IImage image, string name, Expression expression)
+		public ExpressionNode(TreeNode parent, IImage image, string name, Expression expression)
+			: base(parent)
 		{
 			this.IconImage = image;
 			this.Name = name;
@@ -160,16 +159,19 @@ namespace Debugger.AddIn.TreeModel
 			try {
 				var process = WindowsDebugger.DebuggedProcess;
 				var context = !process.IsInExternalCode ? process.SelectedStackFrame : process.SelectedThread.MostRecentStackFrame;
-				object data = WindowsDebugger.GetLocalVariableIndex(WindowsDebugger.DebuggedProcess.SelectedThread.MostRecentStackFrame, Name);
+				var debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+				object data = debugger.debuggerDecompilerService.GetLocalVariableIndex(context.MethodInfo.DeclaringType.MetadataToken, 
+				                                                                       context.MethodInfo.MetadataToken, 
+				                                                                       Name);
+				
 				if (expression is MemberReferenceExpression) {
 					var memberExpression = (MemberReferenceExpression)expression;
 					memberExpression.TargetObject.UserData = data;
 				} else {
 					expression.UserData = data;
 				}
-				
 				// evaluate expression
-				val = expression.Evaluate(WindowsDebugger.DebuggedProcess);
+				val = expression.Evaluate(process);
 			} catch (GetValueException e) {
 				error = e;
 				this.Text = e.Message;
@@ -187,24 +189,24 @@ namespace Debugger.AddIn.TreeModel
 			} else if (val.Type.IsPrimitive || val.Type.FullName == typeof(string).FullName) { // Must be before IsClass
 			} else if (val.Type.IsArray) { // Must be before IsClass
 				if (val.ArrayLength > 0)
-					this.ChildNodes = Utils.LazyGetChildNodesOfArray(this.Expression, val.ArrayDimensions);
+					this.childNodes = Utils.LazyGetChildNodesOfArray(this, this.Expression, val.ArrayDimensions);
 			} else if (val.Type.IsClass || val.Type.IsValueType) {
 				if (val.Type.FullNameWithoutGenericArguments == typeof(List<>).FullName) {
 					if ((int)val.GetMemberValue("_size").PrimitiveValue > 0)
-						this.ChildNodes = Utils.LazyGetItemsOfIList(this.expression);
+						this.childNodes = Utils.LazyGetItemsOfIList(this, this.expression);
 				} else {
-					this.ChildNodes = Utils.LazyGetChildNodesOfObject(this.Expression, val.Type);
+					this.childNodes = Utils.LazyGetChildNodesOfObject(this, this.Expression, val.Type);
 				}
 			} else if (val.Type.IsPointer) {
 				Value deRef = val.Dereference();
 				if (deRef != null) {
-					this.ChildNodes = new ExpressionNode [] { new ExpressionNode(this.IconImage, "*" + this.Name, this.Expression.AppendDereference()) };
+					this.childNodes = new ExpressionNode [] { new ExpressionNode(this, this.IconImage, "*" + this.Name, this.Expression.AppendDereference()) };
 				}
 			}
 			
 			if (DebuggingOptions.Instance.ICorDebugVisualizerEnabled) {
 				TreeNode info = ICorDebug.GetDebugInfoRoot(val.AppDomain, val.CorValue);
-				this.ChildNodes = Utils.PrependNode(info, this.ChildNodes);
+				this.childNodes = Utils.PrependNode(info, this.ChildNodes);
 			}
 			
 			// Do last since it may expire the object

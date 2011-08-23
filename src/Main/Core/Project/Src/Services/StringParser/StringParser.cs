@@ -121,6 +121,7 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// For new code, please use the overload taking StringTagPair[]!
 		/// </summary>
+		[Obsolete("Please use the overload taking StringTagPair[]!")]
 		public static string Parse(string input, string[,] customTags)
 		{
 			if (customTags == null)

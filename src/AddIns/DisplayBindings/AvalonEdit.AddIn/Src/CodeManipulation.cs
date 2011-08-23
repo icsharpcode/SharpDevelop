@@ -75,7 +75,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (direction == MoveStatementDirection.Up)
 				editor.Caret.Position = upperLocation;
 			else {
-				// look where current statement ended because it is hard to calculate it correctly
+				// look where current statement ended up because it is hard to calculate it correctly
 				int currentMovedOffset = editor.Document.Text.IndexOf(currentNodeText, editor.Document.PositionToOffset(upperLocation));
 				editor.Caret.Offset = currentMovedOffset;
 			}
@@ -101,7 +101,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			SelectText(extendedSelection, editor);
 		}
 		
-		// could work to extend selection to set of adjacent statements - e.g. select 3 lines
+		// could work to extend selection to set of adjacent statements separated by blank lines
 		static Selection ExtendSelection(ITextEditor editor, CompilationUnit parsedCU, IList<ISpecial> commentsBlankLines, out INode selectedResultNode, Type[] interestingNodeTypes)
 		{
 			selectedResultNode = null;
@@ -122,14 +122,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// whole node already selected -> expand selection
 			if (currentNode.StartLocation == selectionStart && currentNode.EndLocation == selectionEnd) {
 				
-				// selected node stays the same
-				var selectionExtendedToComments = ExtendSelectionToComments(editor.Document, selectionStart, selectionEnd, commentsBlankLines);
-				if (selectionExtendedToComments != null) {
-					// Can be extended to comments -> extend
-					selectionStart = selectionExtendedToComments.Start;
-					selectionEnd = selectionExtendedToComments.End;
+				bool extendToComments = false;
+				if (IsNodeTypeInteresting(currentNode, interestingNodeTypes)) {
+					// if interesting node already selected, we can try to also add comments
+					var selectionExtendedToComments = ExtendSelectionToComments(editor.Document, selectionStart, selectionEnd, commentsBlankLines);
+					if (selectionExtendedToComments != null) {
+						// Can be extended to comments -> extend
+						selectionStart = selectionExtendedToComments.Start;
+						selectionEnd = selectionExtendedToComments.End;
+						extendToComments = true;
+					}
 				}
-				else {
+				if (!extendToComments) {
 					var parent = GetInterestingParent(currentNode, interestingNodeTypes);
 					// it can happen that parent region exactly matches child region - in this case we need to advance even to the next parent
 					// bc otherwise the selection would never move
@@ -148,7 +152,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					//   if the selection contains blank lines or comments on both sides, dont do this
 					var blankLines = commentsBlankLines.Where(s => s is BlankLine).Cast<BlankLine>().ToList();
 					//if (SelectionContainsBlankLines(extendedSelectionStart, extendedLocationEnd, blankLines)) {
-					if (false) { // implement later
+					if (false) { // blank line separators - implement later
 						
 					} else {
 						selectionStart = extendedSelectionStart;
@@ -176,24 +180,55 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		static Selection ExtendSelectionToComments(IDocument document, Location selectionStart, Location selectionEnd, IList<ISpecial> commentsBlankLines)
 		{
-			var comments = commentsBlankLines.Where(s => s is Comment).Cast<Comment>().ToList();
-			int commentIndex = comments.FindIndex(c => c.EndPosition.Line == selectionStart.Line);
-			if (commentIndex >= 0 && IsWhitespaceBetween(document, comments[commentIndex].EndPosition, selectionStart)) {
-				var extendedSelection = new Selection { Start = selectionStart, End = selectionEnd };
-				while (commentIndex >= 0 && comments[commentIndex].EndPosition.Line == extendedSelection.Start.Line)
-				{
-					var comment = comments[commentIndex];
-					// Move selection start to include comment
-					extendedSelection.Start = comment.StartPosition;
-					if (comment.CommentStartsLine)
-						extendedSelection.Start = new Location(1, extendedSelection.Start.Line);
-					
-					commentIndex--;
-				}
+			var comments = commentsBlankLines.Where(s => s is Comment).Cast<Comment>();
+			// add "var i = 5; // comments" comments
+			Selection extendedSelection = ExtendSelectionToEndOfLineComments(document, selectionStart, selectionEnd, comments);
+			if (extendedSelection != null) {
 				return extendedSelection;
 			} else {
+				// if end-line comments already included, add comments on separate lines preceding selection
+				return ExtendSelectionToSeparateComments(document, selectionStart, selectionEnd, comments);
+			}
+		}
+		
+		/// <summary>
+		/// If there is a comment block behind selection on the same line ("var i = 5; // comment"), add it to selection.
+		/// </summary>
+		static Selection ExtendSelectionToEndOfLineComments(IDocument document, Location selectionStart, Location selectionEnd, IEnumerable<Comment> commentsBlankLines)
+		{
+			var lineComment = commentsBlankLines.Where(c => c.StartPosition.Line == selectionEnd.Line && c.StartPosition >= selectionEnd).FirstOrDefault();
+			if (lineComment == null) {
 				return null;
 			}
+			bool isWholeLineSelected = IsWhitespaceBetween(document, new Location(1, selectionStart.Line), selectionStart);
+			if (!isWholeLineSelected) {
+				// whole line must be selected before we add the comment
+				return null;
+			}
+			// fix the end of comment set to next line incorrectly by the parser
+			int fixEndPos = document.PositionToOffset(lineComment.EndPosition) - 1;
+			return new Selection { Start = selectionStart, End = document.OffsetToPosition(fixEndPos) };
+		}
+		
+		/// <summary>
+		/// If there is a comment block immediately before selection, add it to selection.
+		/// </summary>
+		static Selection ExtendSelectionToSeparateComments(IDocument document, Location selectionStart, Location selectionEnd, IEnumerable<Comment> commentsBlankLines)
+		{
+			var comments = commentsBlankLines.Where(c => c.CommentStartsLine).ToList();
+			int commentIndex = comments.FindIndex(c => c.EndPosition <= selectionStart && IsWhitespaceBetween(document, c.EndPosition, selectionStart));
+			if (commentIndex < 0) {
+				return null;
+			}
+			var extendedSelection = new Selection { Start = selectionStart, End = selectionEnd };
+			// start at the selection and keep adding comments upwards as long as they are separated only by whitespace
+			while (commentIndex >= 0 && IsWhitespaceBetween(document, comments[commentIndex].EndPosition, extendedSelection.Start)) {
+				var comment = comments[commentIndex];
+				// Include the "//, /*, ///" since they are not included by the parser
+				extendedSelection.Start = ExtendLeft(comment.StartPosition, document, "///", "/*", "//") ;
+				commentIndex--;
+			}
+			return extendedSelection;
 		}
 		
 		/// <summary>
@@ -225,7 +260,28 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			int startOffset = document.PositionToOffset(startPos);
 			int endOffset = document.PositionToOffset(endPos);
+			if (startOffset > endOffset) {
+				throw new ArgumentException("Invalid range for (startPos, endPos)");
+			}
 			return string.IsNullOrWhiteSpace(document.GetText(startOffset, endOffset - startOffset));
+		}
+		
+		/// <summary>
+		/// If the text at startPos is preceded by any of the prefixes, moves the start backwards to include one prefix
+		/// (the rightmost one).
+		/// </summary>
+		static Location ExtendLeft(Location startPos, IDocument document, params String[] prefixes)
+		{
+			int startOffset = document.PositionToOffset(startPos);
+			foreach (string prefix in prefixes) {
+				if (startOffset < prefix.Length) continue;
+				string realPrefix = document.GetText(startOffset - prefix.Length, prefix.Length);
+				if (realPrefix == prefix) {
+					return document.OffsetToPosition(startOffset - prefix.Length);
+				}
+			}
+			// no prefixes -> do not extend
+			return startPos;
 		}
 		
 		// could depend just on IDocument

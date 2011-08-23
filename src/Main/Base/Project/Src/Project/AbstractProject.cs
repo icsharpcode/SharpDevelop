@@ -7,8 +7,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
-using System.Windows;
 using System.Xml.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public virtual void Dispose()
 		{
 			WorkbenchSingleton.AssertMainThread();
-			
+			watcher.Dispose();
 			isDisposed = true;
 			if (Disposed != null) {
 				Disposed(this, EventArgs.Empty);
@@ -71,6 +71,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			WorkbenchSingleton.AssertMainThread();
 			
+			// breakpoints and files
 			Properties properties = new Properties();
 			properties.Set("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(this).ToArray());
 			List<string> files = new List<string>();
@@ -81,9 +82,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			properties.Set("files", files.ToArray());
 			
+			// web project properties
 			var webOptions = WebProjectsOptions.Instance.GetWebProjectOptions(Name);
 			if (webOptions != null)
 				properties.Set("WebProjectOptions", webOptions);
+			
+			// other project data
+			properties.Set("projectSavedData", ProjectSpecificProperties ?? new Properties());
 			
 			return properties;
 		}
@@ -109,13 +114,18 @@ namespace ICSharpCode.SharpDevelop.Project
 							FileService.OpenFile(file);
 					}));
 			
+			// web project properties
 			WebProjectsOptions.Instance.SetWebProjectOptions(Name, memento.Get("WebProjectOptions", new WebProjectOptions()) as WebProjectOptions);
+			
+			// other project data
+			ProjectSpecificProperties = memento.Get("projectSavedData", new Properties());
 		}
 		#endregion
 		
 		#region Filename / Directory
 		volatile string fileName;
 		string cachedDirectoryName;
+		protected IProjectChangeWatcher watcher;
 		
 		/// <summary>
 		/// Gets the name of the project file.
@@ -133,6 +143,18 @@ namespace ICSharpCode.SharpDevelop.Project
 					throw new ArgumentNullException();
 				WorkbenchSingleton.AssertMainThread();
 				Debug.Assert(FileUtility.IsUrl(value) || Path.IsPathRooted(value));
+				
+				if (WorkbenchSingleton.Workbench == null)
+					watcher = new MockProjectChangeWatcher();
+				
+				if (watcher == null) {
+					watcher = new ProjectChangeWatcher(value);
+					watcher.Enable();
+				} else {
+					watcher.Disable();
+					watcher.Rename(value);
+					watcher.Enable();
+				}
 				
 				lock (SyncRoot) { // locking still required for Directory
 					fileName = value;
@@ -572,6 +594,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public virtual void SaveProjectExtensions(string name, XElement element)
 		{
 		}
+		
+		public Properties ProjectSpecificProperties { get; protected set; }
 		
 		public virtual string GetDefaultNamespace(string fileName)
 		{

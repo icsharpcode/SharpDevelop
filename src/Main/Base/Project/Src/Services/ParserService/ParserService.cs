@@ -445,17 +445,34 @@ namespace ICSharpCode.SharpDevelop.Parser
 					return;
 				
 				if (fileContent == null) {
+					// GetParseableFileContent must not be called inside any lock
+					// (otherwise we'd risk deadlocks because GetParseableFileContent must invoke on the main thread)
+					fileContent = GetParseableFileContent(fileName);
+
 					// No file content was specified. Because the callers of this method already check for currently open files,
 					// we can assume that the file isn't open and simply read it from disk.
 					lock (this) {
 						// Don't bother reading the file if this FileEntry was already disposed.
 						if (this.disposed)
 							return;
+
+
+
+
+
+
+
+
+
+
+
 					}
 					string fileAsString;
 					try {
 						fileAsString = ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(fileName, DefaultFileEncoding);
 					} catch (IOException) {
+						// It is possible that the file gets deleted/becomes inaccessible while a background parse
+						// operation is enqueued, so we have to handle IO exceptions.
 						return;
 					} catch (UnauthorizedAccessException) {
 						return;

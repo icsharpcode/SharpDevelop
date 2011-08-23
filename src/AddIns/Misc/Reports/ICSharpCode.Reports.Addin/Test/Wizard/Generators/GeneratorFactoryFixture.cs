@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators

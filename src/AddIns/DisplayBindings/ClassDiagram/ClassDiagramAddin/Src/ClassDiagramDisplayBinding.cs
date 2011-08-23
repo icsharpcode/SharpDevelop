@@ -19,12 +19,22 @@ namespace ClassDiagramAddin
 		
 		public bool CanCreateContentForFile(string fileName)
 		{
-			return true;
+			return true; // .addin file filters for *.cd
 		}
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
 			return new ClassDiagramViewContent(file);
+		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return true;
+		}
+		
+		public double AutoDetectFileContent(string fileName, System.IO.Stream fileContent, string detectedMimeType)
+		{
+			return 1;
 		}
 	}
 }

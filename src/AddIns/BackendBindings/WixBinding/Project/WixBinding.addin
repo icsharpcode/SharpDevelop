@@ -28,7 +28,8 @@
 		<FileFilter id = "Wix"
 		            insertbefore="AllFiles"
 		            name = "${res:ICSharpCode.WixBinding.WixFileFilterName} (*.wxs;*.wxi)"
-		            extensions = "*.wxs;*.wxi"/>
+		            extensions = "*.wxs;*.wxi"
+		            mimeType = "text/xml"/>
 	</Path>
 
 	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">

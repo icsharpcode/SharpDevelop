@@ -59,15 +59,24 @@
     <Reference Include="itextsharp">
       <HintPath>..\Libraries\itextsharp.dll</HintPath>
     </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing.Design" />
-    <Reference Include="System.Xaml" />
+    <Reference Include="System.Printing">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -96,7 +105,7 @@
     <Compile Include="Project\Designer\GroupeHeaderDesigner.cs" />
     <Compile Include="Project\Designer\ImageDesigner.cs" />
     <Compile Include="Project\Designer\LineDesigner.cs" />
-    <Compile Include="Project\Designer\RowItemDesigner.cs" />
+    <Compile Include="Project\Designer\ContainerItemDesigner.cs" />
     <Compile Include="Project\Designer\Ruler.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -145,7 +154,6 @@
     <Compile Include="Project\ReportItems\BaseDataItem.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Project\ReportItems\CircleItemTypeProvider.cs" />
     <Compile Include="Project\ReportItems\GroupFooter.cs" />
     <Compile Include="Project\ReportItems\BaseImageItem.cs">
       <SubType>Component</SubType>
@@ -173,6 +181,7 @@
     </Compile>
     <Compile Include="Project\ReportItems\GroupHeader.cs" />
     <Compile Include="Project\ReportItems\TypeProviders\AbstractItemTypeProvider.cs" />
+    <Compile Include="Project\ReportItems\TypeProviders\CircleItemTypeProvider.cs" />
     <Compile Include="Project\ReportItems\TypeProviders\DataItemTypeProvider.cs" />
     <Compile Include="Project\ReportItems\TypeProviders\GroupedRowTypeProvider.cs" />
     <Compile Include="Project\ReportItems\TypeProviders\ImageItemTypeProvider.cs" />
@@ -242,6 +251,7 @@
     <Compile Include="Project\SecondaryViews\ReportPreview.cs" />
     <Compile Include="Project\SecondaryViews\ReportViewerMessages.cs" />
     <Compile Include="Project\SecondaryViews\ReportViewerSecondaryView.cs" />
+    <Compile Include="Project\SecondaryViews\WPFReportPreview.cs" />
     <Compile Include="Project\SecondaryViews\XmlView.cs" />
     <Compile Include="Project\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="Project\Services\DefaultServiceContainer.cs" />

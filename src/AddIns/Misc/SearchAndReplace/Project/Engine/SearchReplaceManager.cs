@@ -161,7 +161,7 @@ namespace SearchAndReplace
 				ShowNotFoundMessage(monitor);
 			} else {
 				if (monitor != null) monitor.ShowingDialog = true;
-				MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.MarkAllDone}", new string[,]{{ "Count", count.ToString() }}),
+				MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.MarkAllDone}",new StringTagPair("Count", count.ToString())),
 				                           "${res:Global.FinishedCaptionText}");
 				if (monitor != null) monitor.ShowingDialog = false;
 			}
@@ -173,8 +173,10 @@ namespace SearchAndReplace
 				ShowNotFoundMessage(monitor);
 			} else {
 				if (monitor != null) monitor.ShowingDialog = true;
-				MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone}", new string[,]{{ "Count", count.ToString() }}),
-				                           "${res:Global.FinishedCaptionText}");
+				MessageService.ShowMessage(
+					StringParser.Parse("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone}",
+					                   new StringTagPair("Count", count.ToString())),
+					"${res:Global.FinishedCaptionText}");
 				if (monitor != null) monitor.ShowingDialog = false;
 			}
 		}

@@ -4,10 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using UnitTesting.Tests.Utils;
 
 namespace ICSharpCode.Scripting.Tests.Utils
 {
@@ -169,7 +171,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		}
 		
 		public Solution ParentSolution {
-			get { return new Solution(); }
+			get { return new Solution(new MockProjectChangeWatcher()); }
 		}
 		
 		public string TypeGuid {
@@ -210,6 +212,12 @@ namespace ICSharpCode.Scripting.Tests.Utils
 				throw new NotImplementedException();
 			}
 			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public Properties ProjectSpecificProperties {
+			get {
 				throw new NotImplementedException();
 			}
 		}
@@ -310,6 +318,5 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		#endregion
-
 	}
 }

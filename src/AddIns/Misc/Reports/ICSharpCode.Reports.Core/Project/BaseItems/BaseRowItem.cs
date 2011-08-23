@@ -24,16 +24,15 @@ namespace ICSharpCode.Reports.Core{
 		
 		public BaseRowItem():base()
 		{
-			base.Visible = true;
+//			base.Visible = true;
 		}
 		
 		#region IExportColumnBuilder  implementation
 		
-		public BaseExportColumn CreateExportColumn()
+		public IBaseExportColumn CreateExportColumn()
 		{
 			BaseStyleDecorator st = this.CreateItemStyle();
-			ExportContainer item = new ExportContainer(st);
-			return item;
+			return  new ExportContainer(st);
 		}
 
 		protected BaseStyleDecorator CreateItemStyle () 

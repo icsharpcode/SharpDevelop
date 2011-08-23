@@ -159,7 +159,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (visualLines.Count == 0)
 				return;
 			int viewStart = visualLines.First().FirstDocumentLine.Offset;
-			int viewEnd = visualLines.Last().LastDocumentLine.Offset + visualLines.Last().LastDocumentLine.Length;
+			int viewEnd = visualLines.Last().LastDocumentLine.EndOffset;
 			foreach (TextMarker marker in markers.FindOverlappingSegments(viewStart, viewEnd - viewStart)) {
 				if (marker.BackgroundColor != null) {
 					BackgroundGeometryBuilder geoBuilder = new BackgroundGeometryBuilder();

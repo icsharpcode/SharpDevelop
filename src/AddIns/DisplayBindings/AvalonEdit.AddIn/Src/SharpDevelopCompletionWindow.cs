@@ -130,15 +130,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 	}
 	
-	/// <summary>
-	/// Completion item that supports complex content and description.
-	/// </summary>
-	public interface IFancyCompletionItem : ICompletionItem
-	{
-		object Content { get; }
-		new object Description { get; }
-	}
-	
 	sealed class CodeCompletionDataAdapter : ICompletionData, INotifyPropertyChanged
 	{
 		readonly SharpDevelopCompletionWindow window;

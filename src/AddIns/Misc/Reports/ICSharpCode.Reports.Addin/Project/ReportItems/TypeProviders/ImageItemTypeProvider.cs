@@ -80,6 +80,12 @@ namespace ICSharpCode.Reports.Addin.TypeProviders
 			prop = props.Find("BaseTableName",true);
 			allProperties.Add(prop);
 			
+			prop = props.Find("Name",true);
+			allProperties.Add(prop);
+			
+			prop = props.Find("DataType",true);
+			allProperties.Add(prop);
+			
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}
 	}

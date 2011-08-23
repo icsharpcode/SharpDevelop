@@ -14,7 +14,7 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>88080384</BaseAddress>
@@ -182,8 +182,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
-    <Compile Include="Src\Gui\Components\ColorPicker.xaml.cs">
-      <DependentUpon>ColorPicker.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Components\ColorPickerButton.xaml.cs">
+      <DependentUpon>ColorPickerButton.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\StringParserPropertyContainer.cs" />
@@ -283,6 +283,7 @@
     </Compile>
     <Compile Include="Src\Project\Converter\UpgradeViewContent.cs" />
     <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
+    <Compile Include="Src\Project\IProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\IProjectItemBackendStore.cs" />
     <Compile Include="Src\Project\MSBuildEngine\MSBuildAdditionalLogger.cs" />
     <Compile Include="Src\Project\MSBuildEngine\MSBuildLoggerFilter.cs" />
@@ -293,6 +294,7 @@
     <Compile Include="Src\Project\MSBuildEngine\WorkerProcess.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
     <Compile Include="Src\Project\MSBuildItemWrapper.cs" />
+    <Compile Include="Src\Project\ProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\ProjectLoadInformation.cs" />
     <Compile Include="Src\Project\ProjectStartException.cs" />
     <Compile Include="Src\Project\ProjectLoadException.cs" />
@@ -308,6 +310,7 @@
     <Compile Include="Src\Services\Debugger\Tooltips\ITreeNode.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\IVisualizerCommand.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\PinBookmark.cs" />
+    <Compile Include="Src\Services\DisplayBinding\AutoDetectDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
@@ -844,7 +847,7 @@
       <Private>False</Private>
     </ProjectReference>
     <Page Include="Src\Gui\App.xaml" />
-    <Page Include="Src\Gui\Components\ColorPicker.xaml" />
+    <Page Include="Src\Gui\Components\ColorPickerButton.xaml" />
     <Page Include="Src\Gui\Dialogs\GotoDialog.xaml">
       <DependentUpon>GotoDialog.cs</DependentUpon>
     </Page>
