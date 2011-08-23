@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 
@@ -78,67 +79,90 @@ namespace ICSharpCode.FormsDesigner
 		}
 	}
 	
+	[Serializable]
+	public class ComponentEventArgsProxy : EventArgs
+	{
+		public IComponent Component { get; set; }
+	}
+	
 	public class ComponentEventHandlerProxy : MarshalByRefObject
 	{
-		ComponentEventHandler underlyingHandler;
-		ComponentEventHandler proxyHandler;
+		EventHandler<ComponentEventArgsProxy> underlyingHandler;
+		EventHandler<ComponentEventArgsProxy> proxyHandler;
 
-		public ComponentEventHandlerProxy(ComponentEventHandler underlyingHandler)
+		public ComponentEventHandlerProxy(EventHandler<ComponentEventArgsProxy> underlyingHandler)
 		{
 			this.underlyingHandler = underlyingHandler;
 			this.proxyHandler = OnEvent;
 		}
 		
-		void OnEvent(object sender, ComponentEventArgs e)
+		void OnEvent(object sender, ComponentEventArgsProxy e)
 		{
 			underlyingHandler(sender, e);
 		}
 
-		public static implicit operator ComponentEventHandler(ComponentEventHandlerProxy proxy)
+		public static implicit operator EventHandler<ComponentEventArgsProxy>(ComponentEventHandlerProxy proxy)
 		{
 			return proxy.proxyHandler;
 		}
+	}
+	
+	[Serializable]
+	public class ComponentRenameEventArgsProxy : EventArgs
+	{
+		public object Component { get; set; }
+		public string OldName { get; set; }
+		public string NewName { get; set; }
 	}
 	
 	public class ComponentRenameEventHandlerProxy : MarshalByRefObject
 	{
-		ComponentRenameEventHandler underlyingHandler;
-		ComponentRenameEventHandler proxyHandler;
+		EventHandler<ComponentRenameEventArgsProxy> underlyingHandler;
+		EventHandler<ComponentRenameEventArgsProxy> proxyHandler;
 
-		public ComponentRenameEventHandlerProxy(ComponentRenameEventHandler underlyingHandler)
+		public ComponentRenameEventHandlerProxy(EventHandler<ComponentRenameEventArgsProxy> underlyingHandler)
 		{
 			this.underlyingHandler = underlyingHandler;
 			this.proxyHandler = OnEvent;
 		}
 		
-		void OnEvent(object sender, ComponentRenameEventArgs e)
+		void OnEvent(object sender, ComponentRenameEventArgsProxy e)
 		{
 			underlyingHandler(sender, e);
 		}
 
-		public static implicit operator ComponentRenameEventHandler(ComponentRenameEventHandlerProxy proxy)
+		public static implicit operator EventHandler<ComponentRenameEventArgsProxy>(ComponentRenameEventHandlerProxy proxy)
 		{
 			return proxy.proxyHandler;
 		}
 	}
 	
+	[Serializable]
+	public class ComponentChangedEventArgsProxy : EventArgs
+	{
+		public object Component { get; set; }
+		public MemberDescriptor Member { get; set; }
+		public object OldValue { get; set; }
+		public object NewValue { get; set; }
+	}
+	
 	public class ComponentChangedEventHandlerProxy : MarshalByRefObject
 	{
-		ComponentChangedEventHandler underlyingHandler;
-		ComponentChangedEventHandler proxyHandler;
+		EventHandler<ComponentChangedEventArgsProxy> underlyingHandler;
+		EventHandler<ComponentChangedEventArgsProxy> proxyHandler;
 
-		public ComponentChangedEventHandlerProxy(ComponentChangedEventHandler underlyingHandler)
+		public ComponentChangedEventHandlerProxy(EventHandler<ComponentChangedEventArgsProxy> underlyingHandler)
 		{
 			this.underlyingHandler = underlyingHandler;
 			this.proxyHandler = OnEvent;
 		}
 		
-		void OnEvent(object sender, ComponentChangedEventArgs e)
+		void OnEvent(object sender, ComponentChangedEventArgsProxy e)
 		{
 			underlyingHandler(sender, e);
 		}
 
-		public static implicit operator ComponentChangedEventHandler(ComponentChangedEventHandlerProxy proxy)
+		public static implicit operator EventHandler<ComponentChangedEventArgsProxy>(ComponentChangedEventHandlerProxy proxy)
 		{
 			return proxy.proxyHandler;
 		}

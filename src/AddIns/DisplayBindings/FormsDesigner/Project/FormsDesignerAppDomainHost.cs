@@ -141,36 +141,36 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		public event ComponentChangedEventHandler ComponentChanged;
+		public event EventHandler<ComponentChangedEventArgsProxy> ComponentChanged;
 		
-		protected virtual void OnComponentChanged(ComponentChangedEventArgs e)
+		protected virtual void OnComponentChanged(ComponentChangedEventArgsProxy e)
 		{
 			if (ComponentChanged != null) {
 				ComponentChanged(this, e);
 			}
 		}
 		
-		public event ComponentEventHandler ComponentAdded;
+		public event EventHandler<ComponentEventArgsProxy> ComponentAdded;
 		
-		protected virtual void OnComponentAdded(ComponentEventArgs e)
+		protected virtual void OnComponentAdded(ComponentEventArgsProxy e)
 		{
 			if (ComponentAdded != null) {
 				ComponentAdded(this, e);
 			}
 		}
 		
-		public event ComponentEventHandler ComponentRemoved;
+		public event EventHandler<ComponentEventArgsProxy> ComponentRemoved;
 		
-		protected virtual void OnComponentRemoved(ComponentEventArgs e)
+		protected virtual void OnComponentRemoved(ComponentEventArgsProxy e)
 		{
 			if (ComponentRemoved != null) {
 				ComponentRemoved(this, e);
 			}
 		}
 		
-		public event ComponentRenameEventHandler ComponentRename;
+		public event EventHandler<ComponentRenameEventArgsProxy> ComponentRename;
 		
-		protected virtual void OnComponentRename(ComponentRenameEventArgs e)
+		protected virtual void OnComponentRename(ComponentRenameEventArgsProxy e)
 		{
 			if (ComponentRename != null) {
 				ComponentRename(this, e);
@@ -230,22 +230,22 @@ namespace ICSharpCode.FormsDesigner
 
 		void componentChangeService_ComponentRename(object sender, ComponentRenameEventArgs e)
 		{
-			OnComponentRename(e);
+			OnComponentRename(new ComponentRenameEventArgsProxy { Component = e.Component, NewName = e.NewName, OldName = e.OldName });
 		}
 
 		void componentChangeService_ComponentRemoved(object sender, ComponentEventArgs e)
 		{
-			OnComponentRemoved(e);
+			OnComponentRemoved(new ComponentEventArgsProxy { Component = e.Component });
 		}
 
 		void componentChangeService_ComponentAdded(object sender, ComponentEventArgs e)
 		{
-			OnComponentAdded(e);
+			OnComponentAdded(new ComponentEventArgsProxy { Component = e.Component });
 		}
 
 		void componentChangeService_ComponentChanged(object sender, ComponentChangedEventArgs e)
 		{
-			OnComponentChanged(e);
+			OnComponentChanged(new ComponentChangedEventArgsProxy { Component = e.Component, Member = e.Member, NewValue = e.NewValue, OldValue = e.OldValue });
 		}
 
 		void designSurface_Unloading(object sender, EventArgs e)

@@ -331,7 +331,7 @@ namespace ICSharpCode.FormsDesigner
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
 			
 			appDomainHost.AddService(typeof(IMessageService), new FormsMessageService());
-			appDomainHost.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService(this, this));
+			appDomainHost.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService(this, appDomainHost));
 			
 			appDomainHost.AddService(typeof(IHelpService), new HelpService());
 			
@@ -420,7 +420,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		void ComponentChanged(object sender, ComponentChangedEventArgs e)
+		void ComponentChanged(object sender, ComponentChangedEventArgsProxy e)
 		{
 			bool loading = appDomainHost.IsLoaderLoading;
 			LoggingService.Debug("Forms designer: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + this.unloading);
