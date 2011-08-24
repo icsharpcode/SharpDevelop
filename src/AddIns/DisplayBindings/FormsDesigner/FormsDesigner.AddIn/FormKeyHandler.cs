@@ -72,16 +72,16 @@ namespace ICSharpCode.FormsDesigner
 			if (formDesigner == null || formDesigner.AppDomainHost == null) {
 				return false;
 			}
-			if (formDesigner.UserContent != null && !((Control)formDesigner.UserContent).ContainsFocus) {
-				return false;
-			}
-			
-			Control originControl = Control.FromChildHandle(m.HWnd);
-			if (originControl != null && formDesigner.UserContent != null && !(formDesigner.UserContent == originControl || ((WindowsFormsHost)formDesigner.UserContent).Child.Contains(originControl))) {
-				// Ignore if message origin not in forms designer
-				// (e.g. navigating the main menu)
-				return false;
-			}
+//			if (formDesigner.UserContent != null && !((Control)formDesigner.UserContent).ContainsFocus) {
+//				return false;
+//			}
+//			
+//			Control originControl = Control.FromChildHandle(m.HWnd);
+//			if (originControl != null && formDesigner.UserContent != null && !(formDesigner.UserContent == originControl || ((WindowsFormsHost)formDesigner.UserContent).Child.Contains(originControl))) {
+//				// Ignore if message origin not in forms designer
+//				// (e.g. navigating the main menu)
+//				return false;
+//			}
 			
 			Keys keyPressed = (Keys)m.WParam.ToInt32() | Control.ModifierKeys;
 			

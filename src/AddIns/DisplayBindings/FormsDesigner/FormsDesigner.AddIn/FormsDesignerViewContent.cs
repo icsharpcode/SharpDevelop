@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
@@ -21,6 +22,7 @@ using ICSharpCode.FormsDesigner.Gui.OptionPanels;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.FormsDesigner.UndoRedo;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -29,7 +31,7 @@ namespace ICSharpCode.FormsDesigner
 {
 	public class FormsDesignerViewContent : AbstractViewContentHandlingLoadErrors, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost, IFileDocumentProvider, IFormsDesigner
 	{
-		readonly Control pleaseWaitLabel = new Label() {Text=StringParser.Parse("${res:Global.PleaseWait}"), TextAlign=ContentAlignment.MiddleCenter};
+		readonly Control pleaseWaitLabel = new Label() { Text = StringParser.Parse("${res:Global.PleaseWait}"), TextAlign=ContentAlignment.MiddleCenter };
 		bool disposing;
 		
 		readonly IViewContent primaryViewContent;
@@ -335,7 +337,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			appDomainHost.AddService(typeof(IHelpService), new HelpService());
 			
-//			appDomainHost.AddService(typeof(IProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
+//			appDomainHost.AddService(typeof(IProjectResourceService), CreateProjectResourceService());
 //			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
 			
 			// Provide the ImageResourceEditor for all Image and Icon properties
@@ -377,6 +379,22 @@ namespace ICSharpCode.FormsDesigner
 			LoggingService.Info("Form Designer: END INITIALIZE");
 		}
 		
+		ProjectResourceService CreateProjectResourceService()
+		{
+			IProjectContent projectContent = GetProjectContentForFile();
+			return new ProjectResourceService(projectContent);
+		}
+		
+		IProjectContent GetProjectContentForFile()
+		{
+			ParseInformation parseInfo = ParserService.GetParseInformation(this.DesignerCodeFile.FileName);
+			if (parseInfo != null) {
+				return parseInfo.CompilationUnit.ProjectContent;
+			}
+			return DefaultProjectContent.DummyProjectContent;
+		}
+
+		
 		SharpDevelopDesignerOptions LoadOptions()
 		{
 			int w = PropertyService.Get("FormsDesigner.DesignerOptions.GridSizeWidth",  8);
@@ -406,6 +424,7 @@ namespace ICSharpCode.FormsDesigner
 			hasUnmergedChanges = true;
 			this.DesignerCodeFile.MakeDirty();
 			this.resourceStore.MarkResourceFilesAsDirty();
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
 		
 		bool shouldUpdateSelectableObjects = false;
@@ -427,13 +446,11 @@ namespace ICSharpCode.FormsDesigner
 			if (!loading && !unloading) {
 				try {
 					this.MakeDirty();
-					if (e.Component != null && e.Component == appDomainHost.Host.RootComponent
-					    && e.Member != null && e.Member.Name == "Name" && e.NewValue is string
-					    && !object.Equals(e.OldValue, e.NewValue))
-					{
-						// changing the name of the form
-						generator.NotifyFormRenamed((string)e.NewValue);
-					}
+					if (e.Component != null && e.Member != null && e.Member.Name == "Name" &&
+					    e.NewValue is string && !object.Equals(e.OldValue, e.NewValue)) {
+						// changing the name of the component
+						generator.NotifyComponentRenamed(e.Component, (string)e.NewValue, (string)e.OldValue);
+ 					}
 				} catch (Exception ex) {
 					MessageService.ShowException(ex);
 				}
@@ -457,16 +474,10 @@ namespace ICSharpCode.FormsDesigner
 			
 			bool savedIsDirty = (this.DesignerCodeFile == null) ? false : this.DesignerCodeFile.IsDirty;
 			this.UserContent = this.pleaseWaitLabel;
-			Application.DoEvents();
 			if (this.DesignerCodeFile != null) {
 				this.DesignerCodeFile.IsDirty = savedIsDirty;
 			}
 			
-			// We cannot dispose the design surface now because of SD2-451:
-			// When the switch to the source view was triggered by a double-click on an event
-			// in the PropertyPad, "InvalidOperationException: The container cannot be disposed
-			// at design time" is thrown.
-			// This is solved by calling dispose after the double-click event has been processed.
 			if (appDomainHost != null && appDomainHost.DesignSurfaceName != null) {
 				appDomainHost.DesignSurfaceLoading -= new EventHandlerProxy(DesignerLoading);
 				appDomainHost.DesignSurfaceLoaded -= new LoadedEventHandlerProxy(DesignerLoaded);
@@ -484,10 +495,43 @@ namespace ICSharpCode.FormsDesigner
 				
 				appDomainHost.SelectionChanged -= new EventHandlerProxy(SelectionChangedHandler);
 				
-				if (disposing) {
+				appDomainHost.DesignSurfaceUnloaded += delegate {
+					ServiceContainer serviceContainer = appDomainHost.GetService(typeof(ServiceContainer)) as ServiceContainer;
+					if (serviceContainer != null) {
+						// Workaround for .NET bug: .NET unregisters the designer host only if no component throws an exception,
+						// but then in a finally block assumes that the designer host is already unloaded.
+						// Thus we would get the confusing "InvalidOperationException: The container cannot be disposed at design time"
+						// when any component throws an exception.
+						
+						// See http://community.sharpdevelop.net/forums/p/10928/35288.aspx
+						// Reproducible with a custom control that has a designer that crashes on unloading
+						// e.g. http://www.codeproject.com/KB/toolbars/WinFormsRibbon.aspx
+						
+						// We work around this problem by unregistering the designer host manually.
+						try {
+							var services = (Dictionary<Type, object>)typeof(ServiceContainer).InvokeMember(
+								"Services",
+								BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.NonPublic,
+								null, serviceContainer, null);
+							foreach (var pair in services.ToArray()) {
+								if (pair.Value is IDesignerHost) {
+									serviceContainer.GetType().InvokeMember(
+										"RemoveFixedService",
+										BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.NonPublic,
+										null, serviceContainer, new object[] { pair.Key });
+								}
+							}
+						} catch (Exception ex) {
+							LoggingService.Error(ex);
+						}
+					}
+				};
+				try {
 					appDomainHost.DisposeDesignSurface();
-				} else {
-					WorkbenchSingleton.SafeThreadAsyncCall(appDomainHost.DisposeDesignSurface);
+				} catch (ExceptionCollection exceptions) {
+					foreach (Exception ex in exceptions.Exceptions) {
+						LoggingService.Error(ex);
+					}
 				}
 			}
 			
@@ -541,18 +585,12 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		internal new object UserContent {
-			get { return base.UserContent; }
-			set { base.UserContent = value; }
-		}
-		
 		void DesignerLoading(object sender, EventArgs e)
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader loading...");
 			this.reloadPending = false;
 			this.unloading = false;
 			this.UserContent = this.pleaseWaitLabel;
-			Application.DoEvents();
 		}
 		
 		void DesignerUnloading(object sender, EventArgs e)
@@ -561,7 +599,6 @@ namespace ICSharpCode.FormsDesigner
 			this.unloading = true;
 			if (!this.disposing) {
 				this.UserContent = this.pleaseWaitLabel;
-				Application.DoEvents();
 			}
 		}
 		
@@ -730,6 +767,7 @@ namespace ICSharpCode.FormsDesigner
 			object[] selArray = new object[selection.Count];
 			selection.CopyTo(selArray, 0);
 			propertyContainer.SelectedObjects = selArray;
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
 		
 		protected void UpdatePropertyPad()
@@ -966,12 +1004,10 @@ namespace ICSharpCode.FormsDesigner
 			// the reload can interrupt the starting of the debugger.
 			// To prevent this, we explicitly raise the Idle event here.
 			LoggingService.Debug("Forms designer: DebugStarting raises the Idle event to force pending reload now");
-			Application.DoEvents();
 			Cursor oldCursor = Cursor.Current;
 			Cursor.Current = Cursors.WaitCursor;
 			try {
 				Application.RaiseIdle(EventArgs.Empty);
-				Application.DoEvents();
 			} finally {
 				Cursor.Current = oldCursor;
 			}

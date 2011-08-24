@@ -35,7 +35,8 @@ namespace ICSharpCode.FormsDesigner
 					body = "// TODO: Implement " + eventMethodName;
 				}
 			}
-			b.AppendLine(indentation + "\t" + body);
+			string singleIndent = EditorControlService.GlobalOptions.IndentationString;
+			b.AppendLine(indentation + singleIndent + body);
 			b.AppendLine(indentation + "}");
 			return b.ToString();
 		}
@@ -94,6 +95,10 @@ namespace ICSharpCode.FormsDesigner
 			
 			gen.CurrentClassPart = c;
 			int line = gen.GetEventHandlerInsertionLine(c);
+			if (line > document.TotalNumberOfLines) {
+				lineNumber = document.TotalNumberOfLines;
+				return;
+			}
 			
 			int offset = document.GetLine(line).Offset;
 			

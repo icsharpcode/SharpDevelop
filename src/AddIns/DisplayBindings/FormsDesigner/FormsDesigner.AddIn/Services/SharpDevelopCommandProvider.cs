@@ -40,12 +40,12 @@ namespace ICSharpCode.FormsDesigner.Services
 				throw new Exception();
 			}
 			
-			Control panel = ((WindowsFormsHost)vc.UserContent).Child;
-			if (panel != null) {
-				Point p = panel.PointToClient(new Point(x, y));
-				
-				MenuService.ShowContextMenu(this, contextMenuPath, panel, p.X, p.Y);
-			}
+//			Control panel = ((WindowsFormsHost)vc.UserContent).Child;
+//			if (panel != null) {
+//				Point p = panel.PointToClient(new Point(x, y));
+//				
+//				MenuService.ShowContextMenu(this, contextMenuPath, panel, p.X, p.Y);
+//			}
 		}
 	}
 }

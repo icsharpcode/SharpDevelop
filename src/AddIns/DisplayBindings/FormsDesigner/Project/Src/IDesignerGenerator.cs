@@ -15,7 +15,7 @@ namespace ICSharpCode.FormsDesigner
 		void MergeFormChanges(CodeCompileUnit unit);
 		bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position);
 		ICollection GetCompatibleMethods(EventDescriptor edesc);
-		void NotifyFormRenamed(string newName);
+		void NotifyComponentRenamed(object component, string newName, string oldName);
 		Type CodeDomProviderType { get; }
 		CodeDomProvider CreateCodeDomProvider();
 	}

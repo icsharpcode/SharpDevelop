@@ -211,14 +211,26 @@ namespace ICSharpCode.FormsDesigner
 		{
 		}
 		
-		public virtual void NotifyFormRenamed(string newName)
+		public virtual void NotifyComponentRenamed(object component, string newName, string oldName)
 		{
 			Reparse();
-			LoggingService.Info("Renaming form to " + newName);
+			LoggingService.Info(string.Format("Renaming form '{0}' to '{1}'.", oldName, newName));
 			if (this.formClass == null) {
 				LoggingService.Warn("Cannot rename, formClass not found");
 			} else {
-				ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, newName);
+//				if (viewContent.Host == null || viewContent.Host.Container == null ||
+//				    viewContent.Host.Container.Components == null || viewContent.Host.Container.Components.Count == 0)
+//					return;
+//				
+//				// verify if we should rename the class
+//				if (viewContent.Host.Container.Components[0] == component) {	ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, newName);
+//				} else {
+//					// rename a member - if exists
+//					IField field = GetField(this.formClass, oldName);
+//					if (field != null) {
+//						ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameMember(field, newName);
+//					}
+//				}
 				Reparse();
 			}
 		}
@@ -254,7 +266,8 @@ namespace ICSharpCode.FormsDesigner
 			
 			// generate file and get initialize components string
 			StringWriter writer = new StringWriter();
-			CodeDOMGenerator domGenerator = new CodeDOMGenerator(CreateCodeDomProvider(), tabs + '\t');
+			string indentation = tabs + EditorControlService.GlobalOptions.IndentationString;
+			CodeDOMGenerator domGenerator = new CodeDOMGenerator(CreateCodeDomProvider(), indentation);
 			domGenerator.ConvertContentDefinition(initializeComponent, writer);
 			
 			string statements = writer.ToString();
@@ -479,7 +492,7 @@ namespace ICSharpCode.FormsDesigner
 			LoggingService.Debug("Forms designer: AbstractDesignerGenerator.InsertComponentEvent: eventMethodName=" + eventMethodName);
 			
 			foreach (IMethod method in completeClass.Methods) {
-				if (method.Name == eventMethodName) {
+				if (CompareMethodNames(method.Name, eventMethodName)) {
 					file = method.DeclaringType.CompilationUnit.FileName;
 					OpenedFile openedFile = FileService.GetOpenedFile(file);
 					IDocument doc;
@@ -516,6 +529,11 @@ namespace ICSharpCode.FormsDesigner
 			this.viewContent.PrimaryFile.MakeDirty();
 			
 			return true;
+		}
+		
+		protected virtual bool CompareMethodNames(string strA, string strB)
+		{
+			return strA == strB;
 		}
 		
 		/// <summary>
@@ -587,8 +605,4 @@ namespace ICSharpCode.FormsDesigner
 			return null;
 		}
 	}
-	
-		
-		
-
 }

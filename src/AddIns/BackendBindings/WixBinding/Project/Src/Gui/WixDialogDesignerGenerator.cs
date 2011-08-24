@@ -126,5 +126,10 @@ namespace ICSharpCode.WixBinding
 		{
 			return new ArrayList();
 		}
+		
+		public void NotifyComponentRenamed(object component, string newName, string oldName)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -53,7 +53,8 @@ namespace ICSharpCode.FormsDesigner
 					body = "' TODO: Implement " + eventMethodName;
 				}
 			}
-			b.AppendLine(indentation + "\t" + body);
+			string singleIndent = EditorControlService.GlobalOptions.IndentationString;
+			b.AppendLine(indentation + singleIndent + body);
 			b.AppendLine(indentation + "End Sub");
 			return b.ToString();
 		}
@@ -66,6 +67,11 @@ namespace ICSharpCode.FormsDesigner
 				v.AppendCommaSeparatedList(md.Parameters);
 			}
 			return v.Text;
+		}
+		
+		protected override bool CompareMethodNames(string strA, string strB)
+		{
+			return String.Compare(strA, strB, StringComparison.InvariantCultureIgnoreCase) == 0;
 		}
 	}
 }

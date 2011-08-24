@@ -141,6 +141,15 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		public event EventHandler DesignSurfaceUnloaded;
+		
+		protected virtual void OnDesignSurfaceUnloaded(EventArgs e)
+		{
+			if (DesignSurfaceUnloaded != null) {
+				DesignSurfaceUnloaded(this, e);
+			}
+		}
+		
 		public event EventHandler<ComponentChangedEventArgsProxy> ComponentChanged;
 		
 		protected virtual void OnComponentChanged(ComponentChangedEventArgsProxy e)
@@ -201,6 +210,7 @@ namespace ICSharpCode.FormsDesigner
 			designSurface.Loaded += designSurface_Loaded;
 			designSurface.Flushed += designSurface_Flushed;
 			designSurface.Unloading += designSurface_Unloading;
+			designSurface.Unloaded += designSurface_Unloading;
 			
 			IComponentChangeService componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
 			if (componentChangeService != null) {
@@ -246,6 +256,11 @@ namespace ICSharpCode.FormsDesigner
 		void componentChangeService_ComponentChanged(object sender, ComponentChangedEventArgs e)
 		{
 			OnComponentChanged(new ComponentChangedEventArgsProxy { Component = e.Component, Member = e.Member, NewValue = e.NewValue, OldValue = e.OldValue });
+		}
+		
+		void designSurface_Unloaded(object sender, EventArgs e)
+		{
+			OnDesignSurfaceUnloaded(e);
 		}
 
 		void designSurface_Unloading(object sender, EventArgs e)
