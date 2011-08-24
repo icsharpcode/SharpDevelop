@@ -375,7 +375,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				});
 			
-			MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray());
+			string mscorlibPath;
+			MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray(), out mscorlibPath);
 			
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
@@ -419,7 +420,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 						}
 					});
 				
-				MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray());
+				string mscorlibPath;
+				MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray(), out mscorlibPath);
 				foreach (ReferenceProjectItem rpi in referenceItems) {
 					if (string.IsNullOrEmpty(rpi.Redist)) continue;
 					if (!redistNameToRequiredFramework.ContainsKey(rpi.Redist)) {

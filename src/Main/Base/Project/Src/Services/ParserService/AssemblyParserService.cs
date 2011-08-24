@@ -133,6 +133,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#region Load Assembly + XML documentation
 		static IProjectContent LoadAssembly(string fileName, CancellationToken cancellationToken)
 		{
+			LoggingService.Debug("Loading " + fileName);
 			var param = new ReaderParameters();
 			param.AssemblyResolver = new DummyAssemblyResolver();
 			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);

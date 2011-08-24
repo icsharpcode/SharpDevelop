@@ -137,9 +137,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		volatile string mscorlibPath;
+		
+		/// <summary>
+		/// Gets the path to mscorlib.
+		/// This property is set only after ResolveAssemblyReferences() is called.
+		/// </summary>
+		public string MscorlibPath {
+			get { return mscorlibPath; }
+		}
+		
 		public override void ResolveAssemblyReferences()
 		{
-			MSBuildInternals.ResolveAssemblyReferences(this, null);
+			string mscorlib;
+			MSBuildInternals.ResolveAssemblyReferences(this, null, out mscorlib);
+			this.mscorlibPath = mscorlib;
 		}
 		
 		#region CreateProjectItem

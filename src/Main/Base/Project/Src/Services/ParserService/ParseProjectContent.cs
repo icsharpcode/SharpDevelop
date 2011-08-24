@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -17,16 +18,18 @@ namespace ICSharpCode.SharpDevelop.Parser
 {
 	public class ParseProjectContent : SimpleProjectContent, IDisposable
 	{
-		readonly IProject project;
+		readonly MSBuildBasedProject project;
 		readonly object lockObj = new object();
+		volatile ITypeResolveContext typeResolveContext;
 		bool initializing;
 		bool disposed;
 		
-		public ParseProjectContent(IProject project)
+		public ParseProjectContent(MSBuildBasedProject project)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
 			this.project = project;
+			this.typeResolveContext = MinimalResolveContext.Instance;
 			
 			this.initializing = true;
 			LoadSolutionProjects.AddJob(Initialize, "Loading " + project.Name + "...", GetInitializationWorkAmount());
@@ -40,6 +43,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 				disposed = true;
 			}
 			initializing = false;
+		}
+		
+		public ITypeResolveContext TypeResolveContext {
+			get { return typeResolveContext; }
 		}
 		
 		public override string AssemblyName {
@@ -75,6 +82,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				
 				resolveReferencesTask.Wait();
 			}
+			initializing = false;
 		}
 		
 		void ParseFiles(ICollection<ProjectItem> projectItems, IProgressMonitor progressMonitor)
@@ -114,6 +122,20 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return System.Threading.Tasks.Task.Factory.StartNew(
 				delegate {
 					project.ResolveAssemblyReferences();
+					List<ITypeResolveContext> contexts = new List<ITypeResolveContext>();
+					string mscorlib = project.MscorlibPath;
+					if (mscorlib != null && File.Exists(mscorlib)) {
+						var pc = AssemblyParserService.GetAssembly(FileName.Create(mscorlib), progressMonitor.CancellationToken);
+						contexts.Add(pc);
+					}
+					contexts.Add(this);
+					foreach (ReferenceProjectItem reference in projectItems.OfType<ReferenceProjectItem>()) {
+						if (File.Exists(reference.FileName)) {
+							var pc = AssemblyParserService.GetAssembly(FileName.Create(reference.FileName), progressMonitor.CancellationToken);
+							contexts.Add(pc);
+						}
+					}
+					this.typeResolveContext = new CompositeTypeResolveContext(contexts);
 				}, progressMonitor.CancellationToken);
 		}
 		

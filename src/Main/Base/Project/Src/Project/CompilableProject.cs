@@ -654,22 +654,32 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Type System
 		volatile ParseProjectContent parseProjectContent;
 		
-		public override IProjectContent ProjectContent {
-			get {
-				if (parseProjectContent == null) {
-					lock (SyncRoot) {
-						if (parseProjectContent == null) {
-							parseProjectContent = new ParseProjectContent(this);
-						}
+		protected virtual ParseProjectContent CreateParseProjectContent()
+		{
+			return new ParseProjectContent(this);
+		}
+		
+		ParseProjectContent GetParseProjectContent()
+		{
+			if (parseProjectContent == null) {
+				lock (SyncRoot) {
+					if (parseProjectContent == null) {
+						parseProjectContent = CreateParseProjectContent();
 					}
 				}
-				return parseProjectContent;
+			}
+			return parseProjectContent;
+		}
+		
+		public override IProjectContent ProjectContent {
+			get {
+				return GetParseProjectContent();
 			}
 		}
 		
 		public override ITypeResolveContext TypeResolveContext {
 			get {
-				return new CompositeTypeResolveContext(new ITypeResolveContext[] { this.ProjectContent, MinimalResolveContext.Instance });
+				return GetParseProjectContent().TypeResolveContext;
 			}
 		}
 		#endregion

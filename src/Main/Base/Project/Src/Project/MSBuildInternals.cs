@@ -162,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <param name="baseProject">The base project.</param>
 		/// <param name="referenceReplacements">A different set of references to use instead of those in the project.
 		/// Used by the GacReferencePanel.</param>
-		internal static void ResolveAssemblyReferences(MSBuildBasedProject baseProject, ReferenceProjectItem[] referenceReplacements)
+		internal static void ResolveAssemblyReferences(MSBuildBasedProject baseProject, ReferenceProjectItem[] referenceReplacements, out string mscorlibPath)
 		{
 			ProjectInstance project = baseProject.CreateProjectInstance();
 			project.SetProperty("BuildingProject", "false");
@@ -215,18 +215,22 @@ namespace ICSharpCode.SharpDevelop.Project
 				referenceDict[item.Include] = item;
 			}
 			
-			
+			mscorlibPath = null;
 			foreach (ProjectItemInstance item in project.GetItems("_ResolveAssemblyReferenceResolvedFiles")) {
+				DomAssemblyName assemblyName = new DomAssemblyName(item.GetMetadataValue("FusionName"));
+				string fullPath = FileUtility.GetAbsolutePath(baseProject.Directory, item.GetMetadataValue("Identity"));
+				
 				string originalInclude = item.GetMetadataValue("OriginalItemSpec");
 				ReferenceProjectItem reference;
 				if (referenceDict.TryGetValue(originalInclude, out reference)) {
 					reference.AssemblyName = new DomAssemblyName(item.GetMetadataValue("FusionName"));
-					//string fullPath = item.GetEvaluatedMetadata("FullPath"); is incorrect for relative paths
-					string fullPath = FileUtility.GetAbsolutePath(baseProject.Directory, item.GetMetadataValue("Identity"));
 					reference.FileName = fullPath;
 					reference.Redist = item.GetMetadataValue("Redist");
 					LoggingService.Debug("Got information about " + originalInclude + "; fullpath=" + fullPath);
 					reference.DefaultCopyLocalValue = bool.Parse(item.GetMetadataValue("CopyLocal"));
+				} else if (string.Equals(assemblyName.ShortName, "mscorlib", StringComparison.OrdinalIgnoreCase)) {
+					LoggingService.Debug("Got information for mscorlib: " + fullPath);
+					mscorlibPath = fullPath;
 				} else {
 					LoggingService.Warn("Unknown item " + originalInclude);
 				}
