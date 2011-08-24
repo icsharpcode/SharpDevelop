@@ -78,25 +78,11 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public static Value Evaluate(INode code, Process context)
 		{
-			StackFrame stackFrame = null;
 			if (context.SelectedStackFrame == null && context.SelectedThread.MostRecentStackFrame == null)
 				// This can happen when needed 'dll' is missing.  This causes an exception dialog to be shown even before the applicaiton starts
 				throw new GetValueException("Can not evaluate because the process has no managed stack frames");
 			
-			if (context.SelectedStackFrame != null) {
-				if (context.SelectedThread.MostRecentStackFrame != null) {
-					if (context.SelectedStackFrame.HasSymbols && context.SelectedThread.MostRecentStackFrame.HasSymbols) 
-						stackFrame = context.SelectedStackFrame;
-					else 
-						stackFrame = context.SelectedThread.MostRecentStackFrame;
-				} else {
-					stackFrame = context.SelectedThread.MostRecentStackFrame;
-				}
-			} else {
-				stackFrame = context.SelectedThread.MostRecentStackFrame;
-			}
-			
-			return Evaluate(code, stackFrame);
+			return Evaluate(code, context.GetCurrentExecutingFrame());
 		}
 		
 		public static Value Evaluate(INode code, StackFrame context, object data = null)

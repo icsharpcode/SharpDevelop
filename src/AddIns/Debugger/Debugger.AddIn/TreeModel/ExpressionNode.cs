@@ -158,10 +158,11 @@ namespace Debugger.AddIn.TreeModel
 			Value val;
 			try {
 				var process = WindowsDebugger.DebuggedProcess;
-				var context = !process.IsInExternalCode ? process.SelectedStackFrame : process.SelectedThread.MostRecentStackFrame;
+				StackFrame frame = process.GetCurrentExecutingFrame();
+				if (frame == null) return;
 				var debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-				object data = debugger.debuggerDecompilerService.GetLocalVariableIndex(context.MethodInfo.DeclaringType.MetadataToken, 
-				                                                                       context.MethodInfo.MetadataToken, 
+				object data = debugger.debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
+				                                                                       frame.MethodInfo.MetadataToken,
 				                                                                       Name);
 				
 				if (expression is MemberReferenceExpression) {

@@ -110,8 +110,23 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				if (debuggedProcess != null) {
 					dynamic obj = runningThreadsList.SelectedItems[0];
 					Thread thread = (Thread)(obj.Tag);
+					
+					// check for options - if these options are enabled, selecting the frame should not continue
+					if ((thread.MostRecentStackFrame == null || !thread.MostRecentStackFrame.HasSymbols) &&
+					    (debuggedProcess.Options.EnableJustMyCode || debuggedProcess.Options.StepOverNoSymbols)) {
+						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions}",
+						                           "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
+						return;
+					}
+					
 					debuggedProcess.SelectedThread = thread;
-					debuggedProcess.OnPaused();
+					debuggedProcess.SelectedThread.SelectedStackFrame = debuggedProcess.SelectedThread.MostRecentStackFrame;
+					if (debuggedProcess.SelectedThread.SelectedStackFrame != null) {
+						debuggedProcess.PauseSession.PausedReason = PausedReason.CurrentThreadChanged;
+						debuggedProcess.OnPaused(); // Force refresh of pads - artificial pause
+					} else {
+						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
+					}
 				}
 			} else {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
@@ -139,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			dynamic item = obj;
 			
-			if (item == null) return;			
+			if (item == null) return;
 			var thread = item.Tag as Thread;
 			
 			if (thread == null)

@@ -134,21 +134,6 @@ namespace Debugger
 		
 		public static DebugModeFlag DebugMode { get; set; }
 		
-		public bool IsInExternalCode {
-			get {
-				if (SelectedStackFrame == null && SelectedThread.MostRecentStackFrame == null)
-					return true;
-				
-				if (SelectedStackFrame == null && SelectedThread.MostRecentStackFrame != null)
-					return true;
-				
-				if (SelectedThread.MostRecentStackFrame == null)
-					return true;
-				
-				return !(SelectedStackFrame.HasSymbols && SelectedThread.MostRecentStackFrame.HasSymbols);
-			}
-		}
-		
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string workingDirectory)
 		{
 			this.debugger = debugger;
@@ -720,5 +705,32 @@ namespace Debugger
 		#endregion
 		
 		public event EventHandler<ModuleEventArgs> ModulesAdded;
+		
+		public StackFrame GetCurrentExecutingFrame()
+		{
+			if (IsSelectedFrameForced()) {
+				return SelectedStackFrame; // selected from callstack or threads pads
+			}
+			
+			if (SelectedStackFrame != null) {
+				if (SelectedThread.MostRecentStackFrame != null) {
+					if (SelectedStackFrame.HasSymbols && SelectedThread.MostRecentStackFrame.HasSymbols)
+						return SelectedStackFrame;
+					else
+						return SelectedThread.MostRecentStackFrame;
+				} else {
+					return SelectedThread.MostRecentStackFrame;
+				}
+			} else {
+				return SelectedThread.MostRecentStackFrame;
+			}
+		}
+		
+		public bool IsSelectedFrameForced()
+		{
+			return pauseSession.PausedReason == PausedReason.CurrentFunctionChanged ||
+				pauseSession.PausedReason == PausedReason.CurrentThreadChanged ||
+				pauseSession.PausedReason == PausedReason.EvalComplete;
+		}
 	}
 }

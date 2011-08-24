@@ -115,14 +115,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				
 				if (item == null)
 					return;
-				
-				if (item.Frame.HasSymbols) {
-					if (debuggedProcess.SelectedThread != null) {
-						debuggedProcess.SelectedThread.SelectedStackFrame = item.Frame;
-						debuggedProcess.OnPaused(); // Force refresh of pads
+
+				if (item.Frame != null && debuggedProcess.SelectedThread != null) {
+					// check for options - if these options are enabled, selecting the frame should not continue
+					if (!item.Frame.HasSymbols && (debuggedProcess.Options.EnableJustMyCode || debuggedProcess.Options.StepOverNoSymbols)) {
+						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions}",
+						                           "${res:MainWindow.Windows.Debug.CallStack.FunctionSwitch}");
+						return;
 					}
-				} else {
-					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols}", "${res:MainWindow.Windows.Debug.CallStack.FunctionSwitch}");
+					debuggedProcess.SelectedThread.SelectedStackFrame = item.Frame;
+					debuggedProcess.PauseSession.PausedReason = PausedReason.CurrentFunctionChanged;
+					debuggedProcess.OnPaused(); // Force refresh of pads - artificial pause
 				}
 			} else {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.CallStack.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.CallStack.FunctionSwitch}");
@@ -145,12 +148,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			
 			List<CallStackItem> items = null;
-			StackFrame activeFrame = null;
 			using(new PrintTimes("Callstack refresh")) {
 				try {
 					Utils.DoEvents(debuggedProcess);
 					items = CreateItems().ToList();
-					activeFrame = debuggedProcess.SelectedThread.SelectedStackFrame;
 				} catch(AbortedBecauseDebuggeeResumedException) {
 				} catch(System.Exception) {
 					if (debuggedProcess == null || debuggedProcess.HasExited) {
@@ -161,7 +162,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}
 			}
 			view.ItemsSource = items;
-			view.SelectedItem = items != null ? items.FirstOrDefault(item => object.Equals(activeFrame, item.Frame)) : null;
 		}
 		
 		IEnumerable<CallStackItem> CreateItems()
@@ -192,6 +192,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						Name = GetFullName(frame), Language = "", Line = lineNumber, ModuleName = moduleName
 					};
 					lastItemIsExternalMethod = false;
+					item.Frame = frame;
 				} else {
 					// Show [External methods] in the list
 					if (lastItemIsExternalMethod) continue;
@@ -201,7 +202,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					};
 					lastItemIsExternalMethod = true;
 				}
-				item.Frame = frame;
+				
 				yield return item;
 				
 				Utils.DoEvents(debuggedProcess);
