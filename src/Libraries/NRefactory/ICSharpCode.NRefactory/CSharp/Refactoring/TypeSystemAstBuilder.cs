@@ -671,5 +671,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return c;
 		}
 		#endregion
+		
+		#region Convert Variable
+		public VariableDeclarationStatement ConvertVariable(IVariable v)
+		{
+			VariableDeclarationStatement decl = new VariableDeclarationStatement();
+			decl.Modifiers = v.IsConst ? Modifiers.Const : Modifiers.None;
+			decl.Type = ConvertType(v.Type.Resolve(context));
+			Expression initializer = null;
+			if (v.IsConst)
+				initializer = ConvertConstantValue(v.ConstantValue);
+			decl.Variables.Add(new VariableInitializer(v.Name, initializer));
+			return decl;
+		}
+		#endregion
 	}
 }

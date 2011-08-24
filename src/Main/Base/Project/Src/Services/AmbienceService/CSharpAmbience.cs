@@ -30,6 +30,18 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		public string ConvertVariable(IVariable v)
+		{
+			using (var ctx = ParserService.CurrentTypeResolveContext.Synchronize()) {
+				TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
+				AstNode astNode = astBuilder.ConvertVariable(v);
+				CSharpFormattingOptions formatting = new CSharpFormattingOptions();
+				StringWriter writer = new StringWriter();
+				astNode.AcceptVisitor(new OutputVisitor(writer, formatting), null);
+				return writer.ToString();
+			}
+		}
+		
 		public string ConvertType(IType type)
 		{
 			using (var ctx = ParserService.CurrentTypeResolveContext.Synchronize()) {

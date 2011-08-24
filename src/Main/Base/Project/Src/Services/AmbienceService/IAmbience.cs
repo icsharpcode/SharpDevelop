@@ -83,8 +83,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		string ConvertEntity(IEntity e);
 		string ConvertType(IType type);
+		string ConvertVariable(IVariable variable);
 		
 		string WrapAttribute(string attribute);
 		string WrapComment(string comment);
+		
 	}
 }

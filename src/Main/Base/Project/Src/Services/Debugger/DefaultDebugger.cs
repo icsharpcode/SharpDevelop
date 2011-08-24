@@ -3,8 +3,8 @@
 
 using System;
 using System.Diagnostics;
-using ICSharpCode.Editor;
-using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -124,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// <summary>
 		/// Gets the current value of the variable as string that can be displayed in tooltips.
 		/// </summary>
-		public string GetValueAsString(string variable)
+		public string GetValueAsString(ToolTipRequestEventArgs e, ResolveResult expression)
 		{
 			return null;
 		}
@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// Gets the tooltip control that shows the value of given variable.
 		/// Return null if no tooltip is available.
 		/// </summary>
-		public object GetTooltipControl(TextLocation logicalPosition, string variable)
+		public object GetTooltipControl(ToolTipRequestEventArgs e, ResolveResult expression)
 		{
 			return null;
 		}

@@ -1,8 +1,10 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using System;
@@ -49,6 +51,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		ParseInformation Parse(IProjectContent projectContent, FileName fileName, ITextSource fileContent,
 		                       bool fullParseInformationRequested);
 		
-		//IResolver CreateResolver();
+		ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ITypeResolveContext context, CancellationToken cancellationToken);
 	}
 }

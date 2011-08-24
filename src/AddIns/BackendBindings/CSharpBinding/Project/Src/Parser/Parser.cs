@@ -3,9 +3,11 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.Editor;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
@@ -68,13 +70,16 @@ namespace CSharpBinding.Parser
 		                              bool fullParseInformationRequested)
 		{
 			CSharpParser parser = new CSharpParser();
-			parser.GenerateTypeSystemMode = true;
+			parser.GenerateTypeSystemMode = !fullParseInformationRequested;
 			CompilationUnit cu = parser.Parse(fileContent.CreateReader());
 			
 			TypeSystemConvertVisitor cv = new TypeSystemConvertVisitor(projectContent, fileName);
 			ParsedFile file = cv.Convert(cu);
 			
-			return new ParseInformation(file, true);
+			ParseInformation info = new ParseInformation(file, fullParseInformationRequested);
+			if (fullParseInformationRequested)
+				info.AddAnnotation(cu);
+			return info;
 		}
 		
 		/*void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
@@ -86,5 +91,28 @@ namespace CSharpBinding.Parser
 			}
 		}
 		 */
+		
+		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ITypeResolveContext context, CancellationToken cancellationToken)
+		{
+			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
+			if (cu == null)
+				throw new ArgumentException("Parse info does not have CompilationUnit");
+			ParsedFile parsedFile = parseInfo.ParsedFile as ParsedFile;
+			if (parsedFile == null)
+				throw new ArgumentException("Parse info does not have a C# ParsedFile");
+			
+			AstNode node = cu.GetResolveableNodeAt(location);
+			if (node == null) {
+				LoggingService.Debug("Could not find resolvable node at " + location);
+				return null;
+			}
+			LoggingService.DebugFormatted("Resolving '{0}' at {1}", node, location);
+			var navigator = new NodeListResolveVisitorNavigator(new[] { node });
+			var resolver = new CSharpResolver(context, cancellationToken);
+			ResolveVisitor visitor = new ResolveVisitor(resolver, parsedFile, navigator);
+			visitor.Scan(cu);
+			
+			return visitor.GetResolveResult(node);
+		}
 	}
 }

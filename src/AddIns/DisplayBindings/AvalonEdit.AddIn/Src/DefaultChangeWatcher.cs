@@ -9,6 +9,7 @@ using System.Linq;
 using ICSharpCode.AvalonEdit.AddIn.MyersDiff;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.Core;
 using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
@@ -24,6 +25,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		IDocument baseDocument;
 		IDocumentVersionProvider usedProvider;
 		IDisposable watcher;
+		FileName fileName;
 		
 		public event EventHandler ChangeOccurred;
 		
@@ -39,19 +41,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return changeList[lineNumber];
 		}
 		
-		public void Initialize(IDocument document)
+		public void Initialize(IDocument document, FileName fileName)
 		{
 			if (changeList != null && changeList.Any())
 				return;
 			
 			this.document = document;
+			this.fileName = fileName;
 			this.textDocument = (TextDocument)document.GetService(typeof(TextDocument));
 			this.changeList = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
 			
 			InitializeBaseDocument();
 			
 			if (usedProvider != null) {
-				string fileName = ((ITextEditor)document.GetService(typeof(ITextEditor))).FileName;
 				watcher = usedProvider.WatchBaseVersionChanges(fileName, HandleBaseVersionChanges);
 			}
 			
@@ -140,8 +142,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		Stream GetBaseVersion()
 		{
-			string fileName = ((ITextEditor)document.GetService(typeof(ITextEditor))).FileName;
-			
 			foreach (IDocumentVersionProvider provider in VersioningServices.Instance.DocumentVersionProviders) {
 				var result = provider.OpenBaseVersion(fileName);
 				if (result != null) {
@@ -153,7 +153,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return null;
 		}
 		
-		void UndoStackPropertyChanged(object sender, PropertyChangedEventArgs e)
+		void UndoStackPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == "IsOriginalFile" && textDocument.UndoStack.IsOriginalFile)
 				SetupInitialFileState(true);

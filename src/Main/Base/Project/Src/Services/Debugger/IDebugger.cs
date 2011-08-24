@@ -5,6 +5,8 @@ using System;
 using System.Diagnostics;
 using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Debugging
@@ -76,13 +78,13 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// <summary>
 		/// Gets the current value of the variable as string that can be displayed in tooltips.
 		/// </summary>
-		string GetValueAsString(string variable);
+		string GetValueAsString(ToolTipRequestEventArgs e, ResolveResult expression);
 		
 		/// <summary>
 		/// Gets the tooltip control that shows the value of given variable.
 		/// Return null if no tooltip is available.
 		/// </summary>
-		object GetTooltipControl(TextLocation logicalPosition, string variable);
+		object GetTooltipControl(ToolTipRequestEventArgs e, ResolveResult expression);
 		
 		/// <summary>
 		/// Queries the debugger whether it is possible to set the instruction pointer to a given position.

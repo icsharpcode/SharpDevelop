@@ -2,16 +2,17 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Threading;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Editor;
@@ -455,17 +456,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 						// Don't bother reading the file if this FileEntry was already disposed.
 						if (this.disposed)
 							return;
-
-
-
-
-
-
-
-
-
-
-
 					}
 					string fileAsString;
 					try {
@@ -536,6 +526,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 					}
 					if (newParseInfo[i] == null)
 						throw new NullReferenceException(parser.GetType().Name + ".Parse() returned null");
+					if (fullParseInformationRequested && !newParseInfo[i].IsFullParseInformation)
+						throw new InvalidOperationException(parser.GetType().Name + ".Parse() did not return full parse info as requested.");
+					
 					newUnits[i] = newParseInfo[i].ParsedFile;
 					if (i == 0 || pc == parentProjectContent) {
 						resultParseInfo = newParseInfo[i];
@@ -1075,5 +1068,24 @@ namespace ICSharpCode.SharpDevelop.Parser
 				entry.Clear();
 		}
 		#endregion
+		
+		public static ResolveResult Resolve(FileName fileName, TextLocation location, ITextSource fileContent = null,
+		                                    CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var entry = GetFileEntry(fileName, true);
+			if (entry.parser == null)
+				return null;
+			var parseInfo = entry.Parse(fileContent);
+			if (parseInfo == null)
+				return null;
+			IProject project = GetProject(parseInfo.ProjectContent);
+			var context = project != null ? project.TypeResolveContext : GetDefaultTypeResolveContext();
+			ResolveResult rr;
+			using (var ctx = context.Synchronize()) {
+				rr = entry.parser.Resolve(parseInfo, location, ctx, cancellationToken);
+			}
+			LoggingService.Debug("Resolved " + location + " to " + rr);
+			return rr;
+		}
 	}
 }
