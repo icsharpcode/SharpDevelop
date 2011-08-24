@@ -25,6 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents an array type.
 	/// </summary>
+	[Serializable]
 	public sealed class ArrayType : TypeWithElementType
 	{
 		readonly int dimensions;
@@ -135,6 +136,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 	}
 	
+	[Serializable]
 	public sealed class ArrayTypeReference : ITypeReference, ISupportsInterning
 	{
 		ITypeReference elementType;

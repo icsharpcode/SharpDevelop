@@ -27,6 +27,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Represents a file that was parsed and converted for the type system.
 	/// </summary>
+	[Serializable]
 	public sealed class ParsedFile : AbstractFreezable, IParsedFile
 	{
 		readonly string fileName;

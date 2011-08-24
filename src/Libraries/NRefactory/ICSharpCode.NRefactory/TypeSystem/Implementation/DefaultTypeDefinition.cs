@@ -25,6 +25,7 @@ using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
+	[Serializable]
 	public class DefaultTypeDefinition : AbstractFreezable, ITypeDefinition
 	{
 		readonly IProjectContent projectContent;

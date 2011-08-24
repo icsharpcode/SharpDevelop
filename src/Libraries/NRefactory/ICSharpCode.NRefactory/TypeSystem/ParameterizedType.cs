@@ -36,6 +36,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// type parameters in the signatures of the members are replaced with
 	/// the type arguments.
 	/// </remarks>
+	[Serializable]
 	public sealed class ParameterizedType : Immutable, IType
 	{
 		readonly ITypeDefinition genericType;
@@ -327,6 +328,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// ParameterizedTypeReference is a reference to generic class that specifies the type parameters.
 	/// Example: List&lt;string&gt;
 	/// </summary>
+	[Serializable]
 	public sealed class ParameterizedTypeReference : ITypeReference, ISupportsInterning
 	{
 		public static ITypeReference Create(ITypeReference genericType, IEnumerable<ITypeReference> typeArguments)

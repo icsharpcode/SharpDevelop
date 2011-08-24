@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil;
@@ -84,6 +85,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			if (createCecilReferences)
 				typeSystemTranslationTable = new Dictionary<object, object> ();
+			
+			// Enable interning by default.
+			this.InterningProvider = new SimpleInterningProvider();
 		}
 		
 		#region Load From AssemblyDefinition
@@ -164,6 +168,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region IProjectContent implementation
+		[Serializable]
 		sealed class CecilProjectContent : ProxyTypeResolveContext, IProjectContent, ISynchronizedTypeResolveContext, IDocumentationProvider
 		{
 			readonly string assemblyName;
@@ -233,6 +238,33 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return documentationProvider.GetDocumentation(entity);
 				else
 					return null;
+			}
+			
+			IEnumerable<object> IAnnotatable.Annotations {
+				get { return EmptyList<object>.Instance; }
+			}
+			
+			T IAnnotatable.Annotation<T>()
+			{
+				return null;
+			}
+			
+			object IAnnotatable.Annotation(Type type)
+			{
+				return null;
+			}
+			
+			void IAnnotatable.AddAnnotation(object annotation)
+			{
+				throw new NotSupportedException();
+			}
+			
+			void IAnnotatable.RemoveAnnotations<T>()
+			{
+			}
+			
+			void IAnnotatable.RemoveAnnotations(Type type)
+			{
 			}
 		}
 		#endregion
@@ -844,8 +876,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Type Definition
+		[Serializable]
 		sealed class CecilTypeDefinition : DefaultTypeDefinition
 		{
+			[NonSerialized]
 			internal TypeDefinition typeDefinition;
 			
 			public CecilTypeDefinition(IProjectContent pc, TypeDefinition typeDefinition)

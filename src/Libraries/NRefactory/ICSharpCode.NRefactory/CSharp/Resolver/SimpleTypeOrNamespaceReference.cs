@@ -25,6 +25,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// <summary>
 	/// Represents a simple C# name. (a single non-qualified identifier with an optional list of type arguments)
 	/// </summary>
+	[Serializable]
 	public sealed class SimpleTypeOrNamespaceReference : ITypeOrNamespaceReference
 	{
 		readonly ITypeDefinition parentTypeDefinition;

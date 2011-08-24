@@ -21,6 +21,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
+	[Serializable]
 	public sealed class ByReferenceType : TypeWithElementType
 	{
 		public ByReferenceType(IType elementType) : base(elementType)
@@ -68,6 +69,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 	}
 	
+	[Serializable]
 	public class ByReferenceTypeReference : ITypeReference
 	{
 		readonly ITypeReference elementType;

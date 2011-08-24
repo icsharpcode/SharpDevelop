@@ -20,6 +20,7 @@ using System;
 using System.IO;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser
@@ -27,10 +28,13 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 	[TestFixture]
 	public class TypeSystemConvertVisitorTests : TypeSystemTests
 	{
-		ITypeResolveContext ctx = CecilLoaderTests.Mscorlib;
-		
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
+		{
+			testCasePC = ParseTestCase();
+		}
+		
+		internal static IProjectContent ParseTestCase()
 		{
 			const string fileName = "TypeSystemTests.TestCase.cs";
 			
@@ -40,10 +44,26 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				cu = parser.Parse(s);
 			}
 			
-			testCasePC = new SimpleProjectContent();
+			var testCasePC = new SimpleProjectContent();
 			ParsedFile parsedFile = new TypeSystemConvertVisitor(testCasePC, fileName).Convert(cu);
 			parsedFile.Freeze();
 			testCasePC.UpdateProjectContent(null, parsedFile);
+			return testCasePC;
+		}
+	}
+	
+	[TestFixture]
+	public class SerializedTypeSystemConvertVisitorTests : TypeSystemTests
+	{
+		[TestFixtureSetUp]
+		public void FixtureSetUp()
+		{
+			FastSerializer serializer = new FastSerializer();
+			using (MemoryStream ms = new MemoryStream()) {
+				serializer.Serialize(ms, TypeSystemConvertVisitorTests.ParseTestCase());
+				ms.Position = 0;
+				testCasePC = (IProjectContent)serializer.Deserialize(ms);
+			}
 		}
 	}
 }

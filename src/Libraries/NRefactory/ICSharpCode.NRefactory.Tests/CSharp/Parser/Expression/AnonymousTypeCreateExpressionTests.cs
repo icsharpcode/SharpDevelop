@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 				"new { Name = \"Test\", Price, Something.Property }",
 				new AnonymousTypeCreateExpression {
 					Initializers = {
-						new NamedArgumentExpression("Name", new PrimitiveExpression("Test")),
+						new NamedExpression("Name", new PrimitiveExpression("Test")),
 						new IdentifierExpression("Price"),
 						new IdentifierExpression("Something").Member("Property")
 					}});

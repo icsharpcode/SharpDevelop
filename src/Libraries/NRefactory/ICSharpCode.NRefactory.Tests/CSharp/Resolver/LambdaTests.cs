@@ -159,7 +159,7 @@ class TestClass {
 		#endregion
 		
 		#region Lambda In Collection Initializer
-		[Test, Ignore("Parser doesn't support collection initializers yet")]
+		[Test]
 		public void LambdaInCollectionInitializer1()
 		{
 			string program = @"using System; using System.Collections.Generic;
@@ -174,7 +174,7 @@ class TestClass {
 			Assert.AreEqual("System.Int32", lrr.Type.ReflectionName);
 		}
 		
-		[Test, Ignore("Parser doesn't support collection initializers yet")]
+		[Test]
 		public void LambdaInCollectionInitializer2()
 		{
 			string program = @"using System; using System.Collections.Generic;
@@ -189,8 +189,7 @@ class TestClass {
 			Assert.AreEqual("System.Char", lrr.Type.ReflectionName);
 		}
 		
-		
-		[Test, Ignore("Parser doesn't support collection initializers yet")]
+		[Test]
 		public void LambdaInCollectionInitializer3()
 		{
 			string program = @"using System; using System.Collections.Generic;
@@ -206,7 +205,7 @@ class TestClass {
 		}
 		#endregion
 		
-		[Test, Ignore("Parser doesn't support object initializers yet")]
+		[Test]
 		public void LambdaInObjectInitializerTest()
 		{
 			string program = @"using System;
@@ -231,6 +230,20 @@ class Helper {
 static class TestClass {
 	static void Main(string[] args) {
 		var f = (Func<int, string>) ( i => $i$ );
+	}
+	public delegate R Func<T, R>(T arg);
+}";
+			var lrr = Resolve<LocalResolveResult>(program);
+			Assert.AreEqual("System.Int32", lrr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void LambdaExpressionInDelegateCreateExpression()
+		{
+			string program = @"using System;
+static class TestClass {
+	static void Main(string[] args) {
+		var f = new Func<int, string>( i => $i$ );
 	}
 	public delegate R Func<T, R>(T arg);
 }";

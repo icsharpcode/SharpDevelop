@@ -25,6 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Base class for <see cref="IMember"/> implementations.
 	/// </summary>
+	[Serializable]
 	public abstract class AbstractMember : AbstractFreezable, IMember
 	{
 		// possible optimizations to reduce the memory usage of AbstractMember:

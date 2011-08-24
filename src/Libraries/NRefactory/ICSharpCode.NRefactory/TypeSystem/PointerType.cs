@@ -22,6 +22,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
+	[Serializable]
 	public sealed class PointerType : TypeWithElementType
 	{
 		public PointerType(IType elementType) : base(elementType)
@@ -69,6 +70,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 	}
 	
+	[Serializable]
 	public class PointerTypeReference : ITypeReference
 	{
 		readonly ITypeReference elementType;

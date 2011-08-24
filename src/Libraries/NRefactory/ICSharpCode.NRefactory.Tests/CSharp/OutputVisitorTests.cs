@@ -17,45 +17,37 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.IO;
+using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.TypeSystem.Implementation
+namespace ICSharpCode.NRefactory.CSharp
 {
-	[Serializable]
-	public abstract class TypeWithElementType : AbstractType
+	[TestFixture]
+	public class OutputVisitorTests
 	{
-		protected readonly IType elementType;
-		
-		protected TypeWithElementType(IType elementType)
+		void AssertOutput(string expected, Expression expr, CSharpFormattingOptions policy = null)
 		{
-			if (elementType == null)
-				throw new ArgumentNullException("elementType");
-			this.elementType = elementType;
+			if (policy == null)
+				policy = new CSharpFormattingOptions();;
+			StringWriter w = new StringWriter();
+			w.NewLine = "\n";
+			expr.AcceptVisitor(new OutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "\t" }, policy), null);
+			Assert.AreEqual(expected.Replace("\r", ""), w.ToString());
 		}
 		
-		public override string Name {
-			get { return elementType.Name + NameSuffix; }
+		[Test, Ignore("Incorrect whitespace")]
+		public void AssignmentInCollectionInitialize()
+		{
+			Expression expr = new ObjectCreateExpression {
+				Type = new SimpleType("List"),
+				Initializer = new ArrayInitializerExpression(
+					new ArrayInitializerExpression(
+						new AssignmentExpression(new IdentifierExpression("a"), new PrimitiveExpression(1))
+					)
+				)
+			};
+			
+			AssertOutput("new List {\n  {\n    a = 1\n  }\n}", expr);
 		}
-		
-		public override string Namespace {
-			get { return elementType.Namespace; }
-		}
-		
-		public override string FullName {
-			get { return elementType.FullName + NameSuffix; }
-		}
-		
-		public override string ReflectionName {
-			get { return elementType.ReflectionName + NameSuffix; }
-		}
-		
-		public abstract string NameSuffix { get; }
-		
-		public IType ElementType {
-			get { return elementType; }
-		}
-		
-		// Force concrete implementations to override VisitChildren - the base implementation
-		// in AbstractType assumes there are no children, but we know there is (at least) 1.
-		public abstract override IType VisitChildren(TypeVisitor visitor);
 	}
 }

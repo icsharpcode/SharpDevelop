@@ -26,6 +26,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation for IType interface.
 	/// </summary>
+	[Serializable]
 	public abstract class AbstractType : IType
 	{
 		public virtual string FullName {

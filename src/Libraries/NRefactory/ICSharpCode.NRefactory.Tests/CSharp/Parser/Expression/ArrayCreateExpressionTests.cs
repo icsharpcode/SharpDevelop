@@ -121,5 +121,18 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 						}
 					}});
 		}
+		
+		[Test]
+		public void AssignmentInArrayInitializer()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"new [] { a = 10 }",
+				new ArrayCreateExpression {
+					Initializer = new ArrayInitializerExpression {
+						Elements = {
+							new AssignmentExpression(new IdentifierExpression("a"), new PrimitiveExpression(10))
+						}
+					}});
+		}
 	}
 }

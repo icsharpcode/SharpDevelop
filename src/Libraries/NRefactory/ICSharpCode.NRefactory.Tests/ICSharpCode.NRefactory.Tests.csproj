@@ -57,12 +57,14 @@
     <Compile Include="CSharp\Analysis\DefiniteAssignmentTests.cs" />
     <Compile Include="CSharp\AstStructureTests.cs" />
     <Compile Include="CSharp\InsertParenthesesVisitorTests.cs" />
+    <Compile Include="CSharp\OutputVisitorTests.cs" />
     <Compile Include="CSharp\Parser\Expression\AnonymousTypeCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\ObjectCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\DelegateDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\NamespaceDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\TypeDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\UsingDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\ParseSelfTests.cs" />
     <Compile Include="CSharp\Parser\Statements\BlockStatementTests.cs" />
     <Compile Include="CSharp\Parser\Statements\CheckedStatementTests.cs" />
     <Compile Include="CSharp\Parser\Statements\EmptyStatementTests.cs" />
@@ -148,6 +150,7 @@
     <Compile Include="TypeSystem\GetAllBaseTypesTest.cs" />
     <Compile Include="TypeSystem\GetMembersTests.cs" />
     <Compile Include="TypeSystem\ReflectionHelperTests.cs" />
+    <Compile Include="TypeSystem\SerializedCecilLoaderTests.cs" />
     <Compile Include="TypeSystem\StructureTests.cs" />
     <Compile Include="TypeSystem\TestInterningProvider.cs" />
     <Compile Include="TypeSystem\TypeSystemTests.cs" />
@@ -159,6 +162,10 @@
     <Compile Include="FormattingTests\TestBlankLineFormatting.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ICSharpCode.Editor\ICSharpCode.Editor.csproj">
+      <Project>{F054A788-B591-4561-A8BA-AE745BBEB817}</Project>
+      <Name>ICSharpCode.Editor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>

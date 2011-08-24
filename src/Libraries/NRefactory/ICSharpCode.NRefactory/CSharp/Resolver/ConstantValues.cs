@@ -29,6 +29,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	// Contains representations for constant C# expressions.
 	// We use these instead of storing the full AST to reduce the memory usage.
 	
+	[Serializable]
 	public sealed class CSharpConstantValue : Immutable, IConstantValue, ISupportsInterning
 	{
 		ConstantExpression expression;
@@ -125,6 +126,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	/// <summary>
 	/// Increments an integer <see cref="IConstantValue"/> by a fixed amount without changing the type.
 	/// </summary>
+	[Serializable]
 	public sealed class IncrementConstantValue : Immutable, IConstantValue, ISupportsInterning
 	{
 		IConstantValue baseValue;
@@ -178,6 +180,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public abstract class ConstantExpression
 	{
 		public abstract ResolveResult Resolve(CSharpResolver resolver);
@@ -186,6 +189,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	/// <summary>
 	/// C#'s equivalent to the SimpleConstantValue.
 	/// </summary>
+	[Serializable]
 	public sealed class PrimitiveConstantExpression : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference type;
@@ -233,6 +237,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantCast : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference targetType;
@@ -274,6 +279,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantIdentifierReference : ConstantExpression, ISupportsInterning
 	{
 		string identifier;
@@ -327,6 +333,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantMemberReference : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference targetType;
@@ -398,6 +405,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantCheckedExpression : ConstantExpression, ISupportsInterning
 	{
 		bool checkForOverflow;
@@ -441,6 +449,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantDefaultValue : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference type;
@@ -474,6 +483,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantUnaryOperator : ConstantExpression, ISupportsInterning
 	{
 		UnaryOperatorType operatorType;
@@ -513,6 +523,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 
+	[Serializable]
 	public sealed class ConstantBinaryOperator : ConstantExpression, ISupportsInterning
 	{
 		ConstantExpression left;
@@ -559,6 +570,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 		}
 	}
 	
+	[Serializable]
 	public sealed class ConstantConditionalOperator : ConstantExpression, ISupportsInterning
 	{
 		ConstantExpression condition, trueExpr, falseExpr;
@@ -614,6 +626,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 	/// <summary>
 	/// Represents an array creation (as used within an attribute argument)
 	/// </summary>
+	[Serializable]
 	public sealed class ConstantArrayCreation : ConstantExpression, ISupportsInterning
 	{
 		// type may be null when the element is being inferred

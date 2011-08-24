@@ -141,5 +141,60 @@ class C : B {
 			mrr = Resolve<InvocationResolveResult>(program, "this(0)");
 			Assert.AreEqual("C..ctor", mrr.Member.FullName);
 		}
+		
+		[Test]
+		public void FieldReferenceInObjectInitializer()
+		{
+			string program = @"class A {
+	public int Property;
+}
+class B {
+	void Method() {
+		var x = new A() { $Property = 0$ };
+	}
+}";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("A.Property", result.Member.FullName);
+		}
+		
+		[Test]
+		public void FieldReferenceInNestedObjectInitializer()
+		{
+			string program = @"class Point { public float X, Y; }
+class Rect { public Point TopLeft, BottomRight; }
+class B {
+	void Method() {
+		var x = new Rect() { TopLeft = { $X = 1$ } };
+	}
+}";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("Point.X", result.Member.FullName);
+		}
+		
+		[Test, Ignore("Parser returns incorrect positions")]
+		public void CollectionInitializerTest()
+		{
+			string program = @"using System.Collections.Generic;
+class B {
+	void Method() {
+		var x = new List<int>() { ${ 0 }$ };
+	}
+}";
+			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
+			Assert.AreEqual("System.Collections.Generic.List.Add", result.Member.FullName);
+		}
+		
+		[Test, Ignore("Parser returns incorrect positions")]
+		public void DictionaryInitializerTest()
+		{
+			string program = @"using System.Collections.Generic;
+class B {
+	void Method() {
+		var x = new Dictionary<char, int>() { ${ 'a', 0 }$ };
+	}
+}";
+			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
+			Assert.AreEqual("System.Collections.Generic.Dictionary.Add", result.Member.FullName);
+		}
 	}
 }

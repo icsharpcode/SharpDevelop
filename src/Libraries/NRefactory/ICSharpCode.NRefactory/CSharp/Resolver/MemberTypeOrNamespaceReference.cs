@@ -25,6 +25,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// <summary>
 	/// Reference to a qualified type or namespace name.
 	/// </summary>
+	[Serializable]
 	public sealed class MemberTypeOrNamespaceReference : ITypeOrNamespaceReference
 	{
 		readonly ITypeOrNamespaceReference target;
