@@ -153,6 +153,33 @@ namespace SharpReportSamples
 		
 		#endregion
 		
+		
+		#region StoredProcedure
+		
+		void StoredProcedureWithParam(string fileName)
+		{
+			var model = ReportEngine.LoadReportModel(fileName);
+			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
+			
+			// The report has no sorting, so we can add it by code
+			
+			parameters.SortColumnCollection.Add (new SortColumn("ShippedDate",
+			                                                    System.ComponentModel.ListSortDirection.Ascending));
+			
+			
+			parameters.SqlParameters[0].ParameterValue = new System.DateTime(1997,11,01).ToString();
+			parameters.SqlParameters[1].ParameterValue = new System.DateTime(1997,12,31).ToString();
+
+			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
+			{
+				this.previewControl1.RunReport(fileName,parameters);
+			};
+			this.previewControl1.RunReport(fileName,parameters);
+		}
+		
+		
+		#endregion
+		
 		#region Contributors
 		//
 		/// <summary>
@@ -310,22 +337,6 @@ namespace SharpReportSamples
 		}
 		
 		
-		void StoredProcedureWithParam(string fileName)
-		{
-			var model = ReportEngine.LoadReportModel(fileName);
-			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
-			
-			parameters.SqlParameters[0].ParameterValue = new System.DateTime(1997,11,01).ToString();
-			parameters.SqlParameters[1].ParameterValue = new System.DateTime(1997,12,31).ToString();
-
-			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
-			{
-				this.previewControl1.RunReport(fileName,parameters);
-			};
-			this.previewControl1.RunReport(fileName,parameters);
-		}
-		
-		
 		//Handles  SectionRenderEvent
 //		int hour = 0;
 		
@@ -422,8 +433,6 @@ namespace SharpReportSamples
 		}
 		
 		#endregion
-		
-
 		
 		void TreeView1MouseDoubleClick(object sender, MouseEventArgs e)
 		{
