@@ -69,8 +69,7 @@ namespace ICSharpCode.UnitTesting
 		
 		static string GetTestResultMessageFromResource(TestResult result, string stringResource)
 		{
-			string [,] customTags = new string[,] {{"TestCase", result.Name}};
-			return StringParser.Parse(stringResource, customTags);
+			return StringParser.Parse(stringResource, new StringTagPair("TestCase", result.Name));
 		}
 		
 		/// <summary>

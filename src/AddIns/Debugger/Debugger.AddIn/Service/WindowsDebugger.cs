@@ -157,12 +157,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (FileUtility.IsUrl(processStartInfo.FileName)) {
 				if (!CheckWebProjectStartInfo())
 					return;
-				
-				var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
-				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
-				System.Diagnostics.Process defaultAppProcess = null;
-				
-				if (options.Data.WebServer != WebServer.None) {
+				// we deal with a WebProject
+				try {
+					var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
+					var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
+					System.Diagnostics.Process defaultAppProcess = null;
+					
 					string processName = WebProjectService.WorkerProcessName;
 					
 					// try find the worker process directly or using the process monitor callback
@@ -185,28 +185,50 @@ namespace ICSharpCode.SharpDevelop.Services
 					
 					if (options.Data.WebServer == WebServer.IISExpress) {
 						// start IIS express and attach to it
-						if (WebProjectService.IISVersion == IISVersion.IISExpress)
+						if (WebProjectService.IISVersion == IISVersion.IISExpress) {
 							System.Diagnostics.Process.Start(WebProjectService.IISExpressProcessLocation);
-						else {
+						} else {
 							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 							return;
 						}
 					}
-				}
-				
-				// start default application(e.g. browser)
-				if (project.StartAction == StartAction.StartURL)
-					defaultAppProcess = System.Diagnostics.Process.Start(project.StartUrl);
-				else {
-					if (!string.IsNullOrEmpty(options.Data.ProjectUrl) && options.Data.WebServer == WebServer.IIS)
-						defaultAppProcess = System.Diagnostics.Process.Start(options.Data.ProjectUrl);
-					else {
-						if (options.Data.WebServer == WebServer.IISExpress)
-							defaultAppProcess = System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+					
+					// start default application(e.g. browser) or the one specified
+					switch (project.StartAction) {
+						case StartAction.Project:
+							if (FileUtility.IsUrl(options.Data.ProjectUrl)) {
+								defaultAppProcess = System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+							} else {
+								MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+								return;
+							}
+							break;
+						case StartAction.Program:
+							defaultAppProcess = System.Diagnostics.Process.Start(project.StartProgram);
+							break;
+						case StartAction.StartURL:
+							if (FileUtility.IsUrl(project.StartUrl))
+								defaultAppProcess = System.Diagnostics.Process.Start(project.StartUrl);
+							else {
+								string url = string.Concat(options.Data.ProjectUrl, project.StartUrl);
+								if (FileUtility.IsUrl(url)) {
+									defaultAppProcess = System.Diagnostics.Process.Start(url);
+								} else {
+									MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+									return;
+								}
+							}
+							break;
+						default:
+							throw new System.Exception("Invalid value for StartAction");
 					}
+				} catch (System.Exception ex) {
+					string err = "Error: " + ex.Message;
+					MessageService.ShowError(err);
+					LoggingService.Error(err);
+					return;
 				}
-			}
-			else {
+			} else {
 				string version = debugger.GetProgramVersion(processStartInfo.FileName);
 				
 				if (version.StartsWith("v1.0")) {
@@ -319,11 +341,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (FileUtility.IsUrl(processStartInfo.FileName)) {
 				if (!CheckWebProjectStartInfo())
 					return;
-				
-				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
-				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
-				
-				if (options.Data.WebServer != WebServer.None) {
+				// we deal with a WebProject
+				try {
+					var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
+					var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
+					
 					string processName = WebProjectService.WorkerProcessName;
 					
 					if (options.Data.WebServer == WebServer.IISExpress) {
@@ -335,23 +357,43 @@ namespace ICSharpCode.SharpDevelop.Services
 							return;
 						}
 					}
-				}
-				
-				// start default application(e.g. browser)
-				if (project.StartAction == StartAction.StartURL)
-					System.Diagnostics.Process.Start(project.StartUrl);
-				else {
-					if (!string.IsNullOrEmpty(options.Data.ProjectUrl) && options.Data.WebServer == WebServer.IIS)
-						System.Diagnostics.Process.Start(options.Data.ProjectUrl);
-					else {
-						if (!string.IsNullOrEmpty(options.Data.ProjectUrl) && options.Data.WebServer == WebServer.IISExpress)
-							System.Diagnostics.Process.Start(options.Data.ProjectUrl);
-						else
-							System.Diagnostics.Process.Start(processStartInfo.FileName);
+					
+					// start default application(e.g. browser) or the one specified
+					switch (project.StartAction) {
+						case StartAction.Project:
+							if (FileUtility.IsUrl(options.Data.ProjectUrl)) {
+								System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+							} else {
+								MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+								return;
+							}
+							break;
+						case StartAction.Program:
+							System.Diagnostics.Process.Start(project.StartProgram);
+							break;
+						case StartAction.StartURL:
+							if (FileUtility.IsUrl(project.StartUrl))
+								System.Diagnostics.Process.Start(project.StartUrl);
+							else {
+								string url = string.Concat(options.Data.ProjectUrl, project.StartUrl);
+								if (FileUtility.IsUrl(url)) {
+									System.Diagnostics.Process.Start(url);
+								} else {
+									MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+									return;
+								}
+							}
+							break;
+						default:
+							throw new System.Exception("Invalid value for StartAction");
 					}
+				} catch (System.Exception ex) {
+					string err = "Error: " + ex.Message;
+					MessageService.ShowError(err);
+					LoggingService.Error(err);
+					return;
 				}
-			}
-			else
+			} else
 				System.Diagnostics.Process.Start(processStartInfo);
 		}
 		
@@ -650,7 +692,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				var tooltipExpression = GetExpression(variableName);
 				string imageName;
 				var image = ExpressionNode.GetImageForLocalVariable(out imageName);
-				ExpressionNode expressionNode = new ExpressionNode(image, variableName, tooltipExpression);
+				ExpressionNode expressionNode = new ExpressionNode(null, image, variableName, tooltipExpression);
 				expressionNode.ImageName = imageName;
 				return new DebuggerTooltipControl(logicalPosition, expressionNode) { ShowPins = !IsInExternalCode };
 			} catch (GetValueException) {
@@ -671,7 +713,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					image = new ResourceServiceImage(currentImageName);
 					imageName = currentImageName;
 				}
-				ExpressionNode expressionNode = new ExpressionNode(image, variable, expression);
+				ExpressionNode expressionNode = new ExpressionNode(null, image, variable, expression);
 				expressionNode.ImageName = imageName;
 				return expressionNode;
 			} catch (GetValueException) {

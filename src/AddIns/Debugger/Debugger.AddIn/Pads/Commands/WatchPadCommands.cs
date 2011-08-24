@@ -3,12 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Controls;
 using System.Windows.Forms;
 
-using Aga.Controls.Tree;
 using Debugger.AddIn.Pads;
-using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
@@ -17,7 +14,6 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger.AddIn
 {
@@ -43,7 +39,7 @@ namespace Debugger.AddIn
 					
 					string language = ProjectService.CurrentProject.Language;
 					
-					TextNode text = new TextNode(input,
+					TextNode text = new TextNode(null, input,
 					                             language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp);
 					var list = pad.WatchList;
 					
@@ -120,21 +116,22 @@ namespace Debugger.AddIn
 			if (owner is WatchPad) {
 				WatchPad pad = (WatchPad)owner;
 
-				TreeViewVarNode node = ((TreeViewAdv)pad.Control).SelectedNode as TreeViewVarNode;
+				var node = pad.WatchList.SelectedNode;
 				
 				if (node == null)
 					return items.ToArray();
 				
-				while (node.Parent != ((TreeViewAdv)pad.Control).Root)
+				
+				while (node.Parent != null && node.Parent.Parent != null)
 				{
-					node = node.Parent as TreeViewVarNode;
+					node = node.Parent;
 				}
 				
-				if (!(node.Content is TextNode))
+				if (!(node is TextNode))
 					return items.ToArray();
 				
 				foreach (string item in SupportedLanguage.GetNames(typeof(SupportedLanguage))) {
-					items.Add(MakeItem(item, item, node.Content as TextNode, (sender, e) => HandleItem(sender)));
+					items.Add(MakeItem(item, item, node as TextNode, (sender, e) => HandleItem(sender)));
 				}
 			}
 			

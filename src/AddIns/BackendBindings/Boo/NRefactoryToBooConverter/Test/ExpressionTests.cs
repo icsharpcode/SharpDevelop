@@ -204,7 +204,7 @@ namespace NRefactoryToBooConverter.Tests
 		[Test]
 		public void CreateMultidimensionalArray()
 		{
-			TestExpr("new int[2, 3]", "matrix(System.Int32, (2, 3))");
+			TestExpr("new int[2, 3]", "matrix(System.Int32, 2, 3)");
 		}
 		
 		[Test]

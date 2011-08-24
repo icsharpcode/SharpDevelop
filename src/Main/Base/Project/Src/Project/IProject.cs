@@ -226,6 +226,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		bool IsStartable { get; }
 		
 		/// <summary>
+		/// Gets project specific properties.
+		/// </summary>
+		Properties ProjectSpecificProperties { get; }
+		
+		/// <summary>
 		/// Starts the project.
 		/// </summary>
 		/// <param name="withDebugging">True, if a debugger should be used for the project.</param>

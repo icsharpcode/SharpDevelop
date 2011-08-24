@@ -5,9 +5,9 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>ASP.NET MVC Application</Name>
+		<Name>MVC Application</Name>
 		<Category>VB</Category>
-		<Subcategory>ASP.NET</Subcategory>
+		<Subcategory>ASP.NET MVC</Subcategory>
 		<Icon>VBNet.Project.Form</Icon>
 		<Description>ASP.NET MVC Application</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>

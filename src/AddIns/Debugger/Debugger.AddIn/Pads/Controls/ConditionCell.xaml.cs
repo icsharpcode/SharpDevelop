@@ -121,17 +121,21 @@ namespace Debugger.AddIn.Pads.Controls
 					
 			if (!string.IsNullOrEmpty(console.CommandText)) {
 				Breakpoint.Action = BreakpointAction.Condition;
-				Model.Image = PresentationResourceService.GetImage("Bookmarks.BreakpointConditional").Source;
+				if (Breakpoint.IsEnabled)
+					Model.Image = BreakpointBookmark.BreakpointConditionalImage.ImageSource;
 			}
 			else {
 				Breakpoint.Action = BreakpointAction.Break;
-				Model.Image = PresentationResourceService.GetImage("Bookmarks.Breakpoint").Source;
+				if (Breakpoint.IsEnabled)
+					Model.Image = BreakpointBookmark.BreakpointImage.ImageSource;
 			}
 		}
 		
 		private bool CheckSyntax()
 		{
 			string command = CommandText;
+			if (string.IsNullOrEmpty(command))
+				return true;
 			
 			// FIXME workaround the NRefactory issue that needs a ; at the end
 			if (language == "C#") {

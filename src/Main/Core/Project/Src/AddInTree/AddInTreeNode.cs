@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace ICSharpCode.Core
 {
@@ -60,39 +61,17 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-//
-//		public void BinarySerialize(BinaryWriter writer)
-//		{
-//			if (!isSorted) {
-//				(new SortCodons(this)).Execute();
-//				isSorted = true;
-//			}
-//			writer.Write((ushort)codons.Count);
-//			foreach (Codon codon in codons) {
-//				codon.BinarySerialize(writer);
-//			}
-//
-//			writer.Write((ushort)childNodes.Count);
-//			foreach (KeyValuePair<string, AddInTreeNode> child in childNodes) {
-//				writer.Write(AddInTree.GetNameOffset(child.Key));
-//				child.Value.BinarySerialize(writer);
-//			}
-//		}
-		
 		/// <summary>
 		/// Builds the child items in this path. Ensures that all items have the type T.
 		/// </summary>
 		/// <param name="caller">The owner used to create the objects.</param>
-		public List<T> BuildChildItems<T>(object caller)
+		/// <param name="additionalConditions">Additional conditions applied to the node.</param>
+		public List<T> BuildChildItems<T>(object caller, IEnumerable<ICondition> additionalConditions = null)
 		{
 			var codons = this.Codons;
 			List<T> items = new List<T>(codons.Count);
 			foreach (Codon codon in codons) {
-				ArrayList subItems = null;
-				if (childNodes.ContainsKey(codon.Id)) {
-					subItems = childNodes[codon.Id].BuildChildItems(caller);
-				}
-				object result = codon.BuildItem(caller, subItems);
+				object result = BuildChildItem(codon, caller, additionalConditions);
 				if (result == null)
 					continue;
 				IBuildItemsModifier mod = result as IBuildItemsModifier;
@@ -109,30 +88,33 @@ namespace ICSharpCode.Core
 			return items;
 		}
 		
+		public object BuildChildItem(Codon codon, object caller, IEnumerable<ICondition> additionalConditions = null)
+		{
+			if (codon == null)
+				throw new ArgumentNullException("codon");
+			
+			AddInTreeNode subItemNode;
+			childNodes.TryGetValue(codon.Id, out subItemNode);
+			
+			IEnumerable<ICondition> conditions;
+			if (additionalConditions == null)
+				conditions = codon.Conditions;
+			else if (codon.Conditions.Length == 0)
+				conditions = additionalConditions;
+			else
+				conditions = additionalConditions.Concat(codon.Conditions);
+			
+			return codon.BuildItem(new BuildItemArgs(caller, codon, conditions, subItemNode));
+		}
+		
 		/// <summary>
 		/// Builds the child items in this path.
 		/// </summary>
 		/// <param name="caller">The owner used to create the objects.</param>
+		[Obsolete("Use the generic BuildChildItems version instead")]
 		public ArrayList BuildChildItems(object caller)
 		{
-			var codons = this.Codons;
-			ArrayList items = new ArrayList(codons.Count);
-			foreach (Codon codon in codons) {
-				ArrayList subItems = null;
-				if (childNodes.ContainsKey(codon.Id)) {
-					subItems = childNodes[codon.Id].BuildChildItems(caller);
-				}
-				object result = codon.BuildItem(caller, subItems);
-				if (result == null)
-					continue;
-				IBuildItemsModifier mod = result as IBuildItemsModifier;
-				if (mod != null) {
-					mod.Apply(items);
-				} else {
-					items.Add(result);
-				}
-			}
-			return items;
+			return new ArrayList(this.BuildChildItems<object>(caller));
 		}
 		
 		/// <summary>
@@ -142,15 +124,15 @@ namespace ICSharpCode.Core
 		/// The ID of the child item to build.
 		/// </param>
 		/// <param name="caller">The owner used to create the objects.</param>
-		/// <param name="subItems">The subitems to pass to the doozer</param>
+		/// <param name="additionalConditions">Additional conditions applied to the created object</param>
 		/// <exception cref="TreePathNotFoundException">
 		/// Occurs when <paramref name="childItemID"/> does not exist in this path.
 		/// </exception>
-		public object BuildChildItem(string childItemID, object caller, ArrayList subItems)
+		public object BuildChildItem(string childItemID, object caller, IEnumerable<ICondition> additionalConditions = null)
 		{
 			foreach (Codon codon in this.Codons) {
 				if (codon.Id == childItemID) {
-					return codon.BuildItem(caller, subItems);
+					return BuildChildItem(codon, caller, additionalConditions);
 				}
 			}
 			throw new TreePathNotFoundException(childItemID);

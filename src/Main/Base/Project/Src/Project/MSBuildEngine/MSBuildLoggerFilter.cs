@@ -55,9 +55,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, System.Collections.ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return new TaskBoundLoggerFilterDescriptor(codon);
+			return new TaskBoundLoggerFilterDescriptor(args.Codon);
 		}
 		
 		sealed class TaskBoundLoggerFilterDescriptor : IMSBuildLoggerFilter

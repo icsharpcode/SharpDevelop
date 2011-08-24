@@ -100,8 +100,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return false; }
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
+			Codon codon = args.Codon;
 			string   highlightingName = codon.Properties["name"];
 			string[] extensions       = codon.Properties["extensions"].Split(';');
 			string   resource         = codon.Properties["resource"];

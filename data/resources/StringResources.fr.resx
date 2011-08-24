@@ -779,9 +779,6 @@ En option, vous pouvez spécifer un répertoire de travail et des arguments en l
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' a été supprimé de la liste d'ignorés.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Laisser la solution précédente ouverte</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Poser un verrou</value>
   </data>
@@ -808,12 +805,6 @@ En option, vous pouvez spécifer un répertoire de travail et des arguments en l
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Afficher l'&amp;historique des fichiers sous contrôle de version</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Recharger la solution</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop a detecté que l'opération de contrôle de version a changée des fichiers du projet. Rechargez la solution.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Relocaliser</value>
@@ -974,9 +965,6 @@ Sauvegardez ces fichiers avant de déclencher l'opération.</value>
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Fichier</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Ligne</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>A propos</value>
@@ -2412,6 +2400,12 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Déboguage en cours</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Exceptions</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Pause lors des exceptions gérées</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Pas-à-pas en cours</value>
   </data>
@@ -2976,7 +2970,7 @@ Un changement des arrangements est visible lors du prochain relancement de #Deve
     <value>Processeur Itanium 64bits</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
-    <value>Processeur AMD 64bits</value>
+    <value>Processeur 64 bits (x64)</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
     <value>Processeur 32bits compatible Intel</value>
@@ -3491,6 +3485,9 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Démarrer</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Ligne</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Mettre à jo&amp;ur</value>
   </data>
@@ -3766,9 +3763,6 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Fin de ligne</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Ligne</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Impossible de localiser l'application console NCover.
@@ -4806,6 +4800,12 @@ Utilisez seulement des lettres, chiffres, espace, '.' ou '_'.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Chargement de ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Laisser la solution précédente ouverte</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Recharger la solution</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Convertir les projets sélectionnés vers:</value>
   </data>
@@ -5524,9 +5524,6 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Langage</value>
-  </data>
-  <data name="MainWindow.Windows.Debug.CallStack.LineString" xml:space="preserve">
-    <value>Ligne</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
     <value>Module</value>

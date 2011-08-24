@@ -13,7 +13,7 @@ namespace UnitTesting.Tests.Utils
 		bool saved;
 		
 		public MockCSharpProject()
-			: this(new Solution(), "MyTests")
+			: this(new Solution(new MockProjectChangeWatcher()), "MyTests")
 		{
 		}
 		

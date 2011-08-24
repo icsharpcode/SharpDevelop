@@ -31,7 +31,8 @@ namespace ICSharpCode.SettingsEditor
 				propertyContainer.SelectedObjects = view.GetSelectedEntriesForPropertyGrid().ToArray();
 			};
 			view.SettingsChanged += delegate {
-				this.PrimaryFile.MakeDirty();
+				if (this.PrimaryFile != null)
+					this.PrimaryFile.MakeDirty();
 				if (appConfigFile != null)
 					appConfigFile.MakeDirty();
 			};

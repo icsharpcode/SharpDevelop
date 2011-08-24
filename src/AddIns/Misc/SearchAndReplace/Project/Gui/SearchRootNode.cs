@@ -65,7 +65,8 @@ namespace SearchAndReplace
 			if (count == 1) {
 				return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OneOccurrence}");
 			} else {
-				return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesCount}", new string[,] {{"Count", count.ToString()}});
+				return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesCount}",
+				                          new StringTagPair("Count", count.ToString()));
 			}
 		}
 		
@@ -74,7 +75,8 @@ namespace SearchAndReplace
 			if (count == 1) {
 				return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OneFile}");
 			} else {
-				return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.FileCount}", new string[,] {{"Count", count.ToString()}});
+				return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.FileCount}",
+				                          new StringTagPair("Count", count.ToString()));
 			}
 		}
 	}

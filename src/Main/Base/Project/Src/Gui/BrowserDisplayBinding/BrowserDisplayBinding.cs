@@ -28,5 +28,15 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			}
 			return browserPane;
 		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return CanCreateContentForFile(fileName);
+		}
+		
+		public double AutoDetectFileContent(string fileName, System.IO.Stream fileContent, string detectedMimeType)
+		{
+			return 1;
+		}
 	}
 }

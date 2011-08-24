@@ -39,87 +39,42 @@
 			Margin="12,12,0,0"
 			Text="Existing images"
 			Height="24" />
-		<Rectangle
-			Fill="White"
-			Margin="12,36,12,120" />
 		<ListBox
-			Margin="12,36,12,120"
-			Name="Display"
-			ItemsSource="{Binding}">
-			<ItemsControl.GroupStyle>
-				<GroupStyle />
-			</ItemsControl.GroupStyle>
-			<ItemsControl.ItemTemplate>
+			MouseDoubleClick="ImageDisplayDoubleClick"
+			Name="imgDisplay"
+			Margin="12,37,12,120">
+			<ListBox.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel />
+				</ItemsPanelTemplate>
+			</ListBox.ItemsPanel>
+			<ListBox.ItemTemplate>
 				<DataTemplate>
-					<Grid>
-						<!-- Set animation for the underlying listbox which displays the images -->
-						<Grid.Triggers>
-							<EventTrigger
-								SourceName="expander"
-								RoutedEvent="Expander.Expanded">
-								<EventTrigger.Actions>
-									<BeginStoryboard>
-										<Storyboard>
-											<DoubleAnimation
-												From="0"
-												To="1"
-												Duration="0:0:0.1"
-												Storyboard.TargetName="imgDisplay"
-												Storyboard.TargetProperty="(FrameworkElement.LayoutTransform).(ScaleTransform.ScaleY)" />
-											<DoubleAnimation
-												From="0"
-												To="1"
-												Duration="0:0:0.1"
-												Storyboard.TargetName="imgDisplay"
-												Storyboard.TargetProperty="(FrameworkElement.LayoutTransform).(ScaleTransform.ScaleX)" />
-										</Storyboard>
-									</BeginStoryboard>
-								</EventTrigger.Actions>
-							</EventTrigger>
-						</Grid.Triggers>
-						<Expander
-							Header="{Binding Header}"
-							HorizontalAlignment="Stretch"
-							Name="expander"
-							Margin="2,3,0,3"
-							BorderThickness="0">
-							<ListBox
-								ItemsSource="{Binding Images}"
-								Name="imgDisplay"
-								SelectionChanged="imgDisplaySelectionChanged"
-								Loaded="imgDisplayLoaded"
-								BorderThickness="0">
-								<ListBox.ItemTemplate>
-									<DataTemplate>
-										<Grid
-											Margin="10">
-											<Border
-												BorderThickness="1"
-												BorderBrush="#FF717171"
-												Background="White">
-												<Border.Effect>
-													<DropShadowEffect
-														Color="#FFA1A1A1" />
-												</Border.Effect>
-												<Image
-													Source="{Binding}"
-													Height="100"
-													Width="100"
-													Margin="2,5,2,5" />
-											</Border>
-										</Grid>
-									</DataTemplate>
-								</ListBox.ItemTemplate>
-								<ListBox.LayoutTransform>
-									<ScaleTransform
-										ScaleX="0"
-										ScaleY="0" />
-								</ListBox.LayoutTransform>
-							</ListBox>
-						</Expander>
-					</Grid>
+					<StackPanel
+						Margin="10,10,10,6">
+						<Border
+							BorderThickness="1"
+							BorderBrush="#FF717171"
+							Background="White">
+							<Border.Effect>
+								<DropShadowEffect
+									Color="#FFA1A1A1" />
+							</Border.Effect>
+							<Image
+								Source="{Binding FullName}"
+								Height="100"
+								Width="100"
+								Margin="2,5,2,5" />
+						</Border>
+						<TextBlock
+							Text="{Binding Name, Mode=OneWay}"
+							TextAlignment="Center"
+							TextTrimming="CharacterEllipsis"
+							MaxWidth="100"
+							Margin="0,0,0,4" />
+					</StackPanel>
 				</DataTemplate>
-			</ItemsControl.ItemTemplate>
+			</ListBox.ItemTemplate>
 		</ListBox>
 		<Button
 			Height="23"
@@ -130,7 +85,7 @@
 			Content="Add"
 			Click="AddClick" />
 		<TextBlock
-			Text="URL :"
+			Text="URL:"
 			VerticalAlignment="Bottom"
 			HorizontalAlignment="Left"
 			Margin="12,0,0,53"
@@ -140,15 +95,18 @@
 			VerticalAlignment="Bottom"
 			Margin="50,0,12,56"
 			Height="24"
+			IsReadOnly="True"
+			Text="{Binding Path=SelectedItem.FullName, ElementName=imgDisplay, Mode=OneWay}"
 			Name="txURL" />
 		<Button
-			x:Name="uxOk"			
+			x:Name="uxOk"
 			Content="OK"
 			Height="23"
 			Margin="0,0,93,12"
 			VerticalAlignment="Bottom"
 			HorizontalAlignment="Right"
 			Width="75"
+			IsDefault="True"
 			Click="OkClick" />
 		<Button
 			Content="Cancel"

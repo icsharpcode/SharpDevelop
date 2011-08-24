@@ -37,9 +37,9 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return new IconDescriptor(codon);
+			return new IconDescriptor(args.Codon);
 		}
 	}
 }

@@ -61,6 +61,8 @@ namespace ICSharpCode.SharpDevelop.Widgets
 			else {
 				h = 60 * (r - g) / (max - min) + 240;
 			}
+			
+			if (h < 0) h += 360; // C# '%' can return negative values, use real modulus instead
 
 			if (max == 0) {
 				s = 0;
@@ -76,6 +78,7 @@ namespace ICSharpCode.SharpDevelop.Widgets
 		public static void RgbFromHsv(double h, double s, double v, out double r, out double g, out double b)
 		{
 			h = h % 360;
+			if (h < 0) h += 360; // C# '%' can return negative values, use real modulus instead
 			int hi = (int)(h / 60) % 6;
 			var f = h / 60 - (int)(h / 60);
 			var p = v * (1 - s);

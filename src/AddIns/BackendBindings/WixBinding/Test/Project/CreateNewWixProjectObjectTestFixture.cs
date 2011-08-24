@@ -29,7 +29,7 @@ namespace WixBinding.Tests.Project
 			WixBindingTestsHelper.InitMSBuildEngine();
 			
 			info = new ProjectCreateInformation();
-			info.Solution = new Solution();
+			info.Solution = new Solution(new MockProjectChangeWatcher());
 			info.ProjectName = "Test";
 			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
 			info.RootNamespace = "Test";

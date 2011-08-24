@@ -19,5 +19,15 @@ namespace ICSharpCode.SettingsEditor
 		{
 			return new SettingsViewContent(file);
 		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return true;
+		}
+		
+		public double AutoDetectFileContent(string fileName, System.IO.Stream fileContent, string detectedMimeType)
+		{
+			return 1;
+		}
 	}
 }

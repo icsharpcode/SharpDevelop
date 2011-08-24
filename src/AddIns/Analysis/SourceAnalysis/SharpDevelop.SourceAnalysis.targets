@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<UsingTask TaskName="StyleCopTask"
-	           AssemblyFile="$(StyleCopDir)\Microsoft.StyleCop.dll"/>
+	<UsingTask Condition="'$(StyleCopFile)' != ''"
+	           TaskName="StyleCopTask"
+	           AssemblyFile="$(StyleCopFile)"/>
 	
 	<PropertyGroup>
 		<BuildDependsOn>$(BuildDependsOn);SourceAnalysis</BuildDependsOn>

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 using Microsoft.Win32;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.Globals
 {
 	/// <summary>
 	/// A utility class related to file utilities.

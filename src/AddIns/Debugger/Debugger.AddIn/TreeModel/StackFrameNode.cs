@@ -20,11 +20,12 @@ namespace Debugger.AddIn.TreeModel
 		}
 		
 		public StackFrameNode(StackFrame stackFrame)
+			: base(null)
 		{
 			this.stackFrame = stackFrame;
 			
 			this.Name = stackFrame.MethodInfo.Name;
-			this.ChildNodes = LazyGetChildNodes();
+			this.childNodes = LazyGetChildNodes();
 		}
 		
 		IEnumerable<TreeNode> LazyGetChildNodes()
@@ -32,7 +33,7 @@ namespace Debugger.AddIn.TreeModel
 			foreach(DebugParameterInfo par in stackFrame.MethodInfo.GetParameters()) {
 				string imageName;
 				var image = ExpressionNode.GetImageForParameter(out imageName);
-				var expression = new ExpressionNode(image, par.Name, par.GetExpression());
+				var expression = new ExpressionNode(this, image, par.Name, par.GetExpression());
 				expression.ImageName = imageName;
 				yield return expression;
 			}
@@ -40,7 +41,7 @@ namespace Debugger.AddIn.TreeModel
 				foreach(DebugLocalVariableInfo locVar in stackFrame.MethodInfo.GetLocalVariables(this.StackFrame.IP)) {
 					string imageName;
 					var image = ExpressionNode.GetImageForLocalVariable(out imageName);
-					var expression = new ExpressionNode(image, locVar.Name, locVar.GetExpression());
+					var expression = new ExpressionNode(this, image, locVar.Name, locVar.GetExpression());
 					expression.ImageName = imageName;
 					yield return expression;
 				}
@@ -52,14 +53,14 @@ namespace Debugger.AddIn.TreeModel
 					foreach (var localVar in debugger.debuggerDecompilerService.GetLocalVariables(typeToken, methodToken)) {
 						string imageName;
 						var image = ExpressionNode.GetImageForLocalVariable(out imageName);
-						var expression = new ExpressionNode(image, localVar, ExpressionEvaluator.ParseExpression(localVar, SupportedLanguage.CSharp));
+						var expression = new ExpressionNode(this, image, localVar, ExpressionEvaluator.ParseExpression(localVar, SupportedLanguage.CSharp));
 						expression.ImageName = imageName;
 						yield return expression;
 					}
 				}
 			}
 			if (stackFrame.Thread.CurrentException != null) {
-				yield return new ExpressionNode(null, "__exception", new IdentifierExpression("__exception"));
+				yield return new ExpressionNode(this, null, "__exception", new IdentifierExpression("__exception"));
 			}
 		}
 	}

@@ -41,8 +41,8 @@
 				Padding="0,2"
 				VerticalAlignment="Top">
 				<Image Source="{StaticResource PreviousPageIcon}"
-				       Height="16"
-				       Width="16"/>
+					   Height="16"
+					   Width="16"/>
 			</Button>
 			<ListBox
 				VerticalAlignment="Top"

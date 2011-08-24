@@ -48,41 +48,77 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		
 		
 		[Test]
-		public void Calculate_Page_If_Firstpage ()
+		public void Calculate_ReportHeader ()
 		{
-			Size defSize = new Size (727,60);
+			
 			IReportModel model = ReportModel.Create();
-			model.ReportHeader.Size = defSize;
+			ISinglePage singlePage = CreateSinglePage(model,0);
+			singlePage.CalculatePageBounds(model);
+
+			Point expectedLocation = new Point(model.ReportSettings.LeftMargin,model.ReportSettings.TopMargin);
+			Assert.That(singlePage.SectionBounds.ReportHeaderRectangle.Location,Is.EqualTo(expectedLocation));
+		}
+		
+		
+		[Test]
+		public void Calculate_PageHeader ()
+		{
+			
+			IReportModel model = ReportModel.Create();
+			ISinglePage singlePage = CreateSinglePage(model,0);
+			singlePage.CalculatePageBounds(model);
+
+			Point expectedLocation = new Point(model.ReportSettings.LeftMargin,model.ReportSettings.TopMargin + singlePage.SectionBounds.ReportHeaderRectangle.Size.Height + 1);
+			Assert.That(singlePage.SectionBounds.PageHeaderRectangle.Location,Is.EqualTo(expectedLocation));
+		}
+		
+		
+		[Test]
+		public void Calculate_PageFooter ()
+		{
+			
+			IReportModel model = ReportModel.Create();
+			ISinglePage singlePage = CreateSinglePage(model,0);
+			singlePage.CalculatePageBounds(model);
+
+			
+			Point expectedLocation = new Point(model.ReportSettings.LeftMargin,
+			                                    model.ReportSettings.PageSize.Height - model.ReportSettings.BottomMargin - singlePage.SectionBounds.PageFooterRectangle.Height);
+			Assert.That(singlePage.SectionBounds.PageFooterRectangle.Location,Is.EqualTo(expectedLocation));
+		}
+		
+		
+		IReportModel CreateModel ()
+		{
+			Size defaultSectionSize = new Size (727,60);
+			IReportModel model = ReportModel.Create();
+			model.ReportHeader.Size = defaultSectionSize;
 			model.ReportHeader.Location = new Point(50,50);
 			
 			
-			model.PageHeader.Size = defSize;
+			model.PageHeader.Size = defaultSectionSize;
 			model.PageHeader.Location = new Point(50,125);
 			
-			model.DetailSection.Size = defSize;
+			model.DetailSection.Size = defaultSectionSize;
 			model.DetailSection.Location = new Point(50,200);
 			
-			model.PageFooter.Size = defSize;
+			model.PageFooter.Size = defaultSectionSize;
 			model.ReportFooter.Location = new Point(50,275);
 			
-			model.ReportFooter.Size = defSize;
+			model.ReportFooter.Size = defaultSectionSize;
 			model.ReportFooter.Location = new Point(50,350);
+			return model;
+		}
+		
+		
+		ISinglePage CreateSinglePage(IReportModel model,int pageNumber)
+		{
+			Size defaultSectionSize = new Size (727,60);
+			var  s = new SectionBounds(model.ReportSettings,true);
 			
-			var  s = new SectionBounds(new ReportSettings(),true);
 			SinglePage sp = new SinglePage(s,0);
-			
 			sp.CalculatePageBounds(model);
-			Console.WriteLine();
-			Console.WriteLine("ReportHeader {0} - {1}",sp.SectionBounds.ReportHeaderRectangle,sp.SectionBounds.ReportHeaderRectangle.Location.Y + sp.SectionBounds.ReportHeaderRectangle.Height);
-			Console.WriteLine("PageHeader {0} - {1}",sp.SectionBounds.PageHeaderRectangle,sp.SectionBounds.PageHeaderRectangle.Location.Y +sp.SectionBounds.PageHeaderRectangle.Height );
-			Console.WriteLine("DetailSection {0} - {1} ",sp.SectionBounds.DetailSectionRectangle,sp.SectionBounds.DetailSectionRectangle.Location.Y + sp.SectionBounds.DetailSectionRectangle.Height);
-			
-			Console.WriteLine("\tDetailStart {0} ",sp.SectionBounds.DetailStart);
-			Console.WriteLine("\tDetailEnd {0} ",sp.SectionBounds.DetailEnds);
-			Console.WriteLine("\tDetailArea {0} ",sp.SectionBounds.DetailArea);
-			Console.WriteLine("PageFooter {0} - {1} ",sp.SectionBounds.PageFooterRectangle,sp.SectionBounds.PageFooterRectangle.Location.Y + sp.SectionBounds.PageFooterRectangle.Height);
-			Console.WriteLine("ReportFooter {0} - {1}",sp.SectionBounds.ReportFooterRectangle,sp.SectionBounds.ReportFooterRectangle.Location.Y + sp.SectionBounds.ReportFooterRectangle.Height);
-	Console.WriteLine();
+			return sp;
 		}
 		
 		#region Setup/Teardown

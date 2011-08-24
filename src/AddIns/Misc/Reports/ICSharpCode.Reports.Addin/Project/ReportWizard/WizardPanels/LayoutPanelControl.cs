@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {

@@ -20,7 +20,8 @@
 		<FileFilter id = "Settings"
 		            insertbefore="AllFiles"
 		            name = "Settings (*.settings)"
-		            extensions = "*.settings"/>
+		            extensions = "*.settings"
+		            mimeType = "text/xml"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">

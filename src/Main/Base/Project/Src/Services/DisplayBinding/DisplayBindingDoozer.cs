@@ -65,12 +65,9 @@ namespace ICSharpCode.SharpDevelop
 		/// Creates an item with the specified sub items. And the current
 		/// Condition status for this item.
 		/// </summary>
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-//			if (subItems == null || subItems.Count > 0) {
-//				throw new ApplicationException("Tried to buil a command with sub commands, please check the XML definition.");
-//			}
-			return new DisplayBindingDescriptor(codon);
+			return new DisplayBindingDescriptor(args.Codon);
 		}
 	}
 }

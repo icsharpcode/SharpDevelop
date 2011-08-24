@@ -25,7 +25,7 @@ namespace PackageManagement.Tests
 		
 		void CreateSolution(string fileName)
 		{
-			solution = new Solution();
+			solution = new Solution(new MockProjectChangeWatcher());
 			solution.FileName = fileName;
 		}
 		
@@ -54,7 +54,7 @@ namespace PackageManagement.Tests
 		
 		void CreateRepository()
 		{
-			solution = new Solution();
+			solution = new Solution(new MockProjectChangeWatcher());
 			solution.FileName = @"d:\projects\test\myproject\myproject.sln";
 			CreateRepository(solution);
 		}

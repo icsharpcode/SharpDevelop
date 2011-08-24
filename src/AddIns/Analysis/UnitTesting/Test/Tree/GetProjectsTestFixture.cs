@@ -27,7 +27,7 @@ namespace UnitTesting.Tests.Tree
 		[SetUp]
 		public void Init()
 		{
-			solution = new Solution();
+			solution = new Solution(new MockProjectChangeWatcher());
 			project1 = new MockCSharpProject(solution, "A");
 			ReferenceProjectItem refProjectItem = new ReferenceProjectItem(project1);
 			refProjectItem.Include = "NUnit.Framework";

@@ -41,7 +41,8 @@
 		<FileFilter id = "F#"
 		            insertbefore="AllFiles"
 		            name = "F# (*.fs)"
-		            extensions = "*.fs"/>
+		            extensions = "*.fs"
+		            mimeType = "text/plain"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">

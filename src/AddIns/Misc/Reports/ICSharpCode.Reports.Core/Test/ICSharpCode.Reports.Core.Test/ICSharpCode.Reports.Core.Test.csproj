@@ -40,6 +40,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="Irony">
+      <HintPath>..\..\..\Libraries\Irony.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
     </Reference>
@@ -70,13 +73,14 @@
     <Compile Include="Collections\ColumnCollectionFixture.cs" />
     <Compile Include="Collections\ParametersCollectionFixture.cs" />
     <Compile Include="Collections\ReportItemCollectionFixture.cs" />
-    <Compile Include="DataManager\GroupListFixture.cs" />
-    <Compile Include="DataManager\GroupTableFixture.cs" />
     <Compile Include="DataManager\IConnectionDataManagerFixture.cs" />
-    <Compile Include="DataManager\IListDataManagerFixture.cs" />
+    <Compile Include="DataManager\ListStrategy\GroupListFixture.cs" />
+    <Compile Include="DataManager\ListStrategy\IListDataManagerFixture.cs" />
     <Compile Include="DataManager\MockDataAccess.cs" />
-    <Compile Include="DataManager\Strategy\TableStrategyFixture.cs" />
-    <Compile Include="DataManager\TableDataManagerFixture.cs" />
+    <Compile Include="DataManager\TableStragy\GroupTableFixture.cs" />
+    <Compile Include="DataManager\TableStragy\TableDataManagerFixture.cs" />
+    <Compile Include="DataManager\TableStragy\TableStrategyFixture.cs" />
+    <Compile Include="Globals\ServiceContainerFixture.cs" />
     <Compile Include="Printing\SectionBoundFixture.cs" />
     <Compile Include="Printing\Shapes\BaseLineFixture.cs" />
     <Compile Include="Printing\Shapes\EllipseShapeFixture.cs" />
@@ -89,9 +93,9 @@
     <Compile Include="ReportingLanguage\IntegrationTests\AggregateFunctionsFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\AggregateFunctionsFromIListFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\ConcatFieldsFixture.cs" />
-    <Compile Include="ReportingLanguage\IntegrationTests\FieldReferenceFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\GlobalFunctions.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\SimpleCompilerFixture.cs" />
+    <Compile Include="ReportingLanguage\IntegrationTests\SubstringFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\UserFunctionsFixture.cs" />
     <Compile Include="ReportingLanguage\LanguageTests\AggregateFunctionsFixture.cs" />
     <Compile Include="ReportingLanguage\LanguageTests\ConditionalFixture.cs" />
@@ -108,19 +112,17 @@
     <EmbeddedResource Include="Resources\ArtikelSchema_Data.xsd" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Irony\Irony.csproj">
-      <Project>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</Project>
-      <Name>Irony</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\ICSharpCode.Reports.Core.csproj">
       <Project>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</Project>
       <Name>ICSharpCode.Reports.Core</Name>
     </ProjectReference>
     <Folder Include="BaseItems" />
-    <Folder Include="DataManager\Strategy" />
+    <Folder Include="DataManager\ListStrategy" />
+    <Folder Include="DataManager\TableStragy" />
     <Folder Include="DataManager" />
     <Folder Include="Collections" />
     <Folder Include="BaseClasses" />
+    <Folder Include="Globals" />
     <Folder Include="Printing\Shapes" />
     <Folder Include="TestHelpers" />
     <Folder Include="Printing" />

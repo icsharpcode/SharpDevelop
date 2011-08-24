@@ -45,9 +45,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 		{
 			this.PrintDocument = new PrintDocument();
 			this.PrintDocument.PrinterSettings = new PrinterSettings();
-			
-			
-//			doc.QueryPageSettings += new QueryPageSettingsEventHandler(OnQueryPage);
+
 			this.PrintDocument.BeginPrint += new PrintEventHandler(OnBeginPrint);
 			this.PrintDocument.EndPrint += new PrintEventHandler(OnEndPrint);
 			this.PrintDocument.PrintPage += new PrintPageEventHandler(OnPrintPage);
@@ -91,7 +89,9 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 			base.RenderOutput();
 			if (this.printerSettings != null) {
 				this.PrintDocument.PrinterSettings = this.printerSettings;
+				
 			}
+			this.PrintDocument.Print();
 		}
 		
 		

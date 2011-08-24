@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
@@ -13,8 +15,10 @@ using System.Xml;
 
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.OutlineView;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid;
@@ -164,11 +168,35 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			propertyGridView = new PropertyGridView();
 			propertyContainer.PropertyGridReplacementContent = propertyGridView;
+			propertyGridView.PropertyGrid.PropertyChanged += OnPropertyGridPropertyChanged;
 		}
 		
 		void OnSelectionChanged(object sender, DesignItemCollectionEventArgs e)
 		{
 			propertyGridView.PropertyGrid.SelectedItems = DesignContext.Services.Selection.SelectedItems;
+		}
+
+		void OnPropertyGridPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "Name") {
+				if (!propertyGridView.PropertyGrid.IsNameCorrect) return;
+				
+				// get the XAML file
+				var fileName = this.Files.Where(f => f.FileName.ToString().EndsWith(".xaml")).FirstOrDefault();
+				if (fileName == null)return;
+				
+				// parse the XAML file
+				var info = ParserService.ParseFile(fileName.FileName.ToString());
+				if (info == null || info.CompilationUnit == null) return;
+				if (info.CompilationUnit.Classes.Count != 1) return;
+				
+				// rename the member
+				IMember member = info.CompilationUnit.Classes[0].AllMembers
+					.Where(m => m.Name == propertyGridView.PropertyGrid.OldName).FirstOrDefault();
+				if (member != null) {
+					FindReferencesAndRenameHelper.RenameMember(member, propertyGridView.PropertyGrid.Name);
+				}
+			}
 		}
 		
 		static bool IsCollectionWithSameElements(ICollection<DesignItem> a, ICollection<DesignItem> b)

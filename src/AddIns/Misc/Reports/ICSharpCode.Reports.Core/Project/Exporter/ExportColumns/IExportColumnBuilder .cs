@@ -11,7 +11,7 @@ namespace ICSharpCode.Reports.Core
 	/// Description of Interface1.
 	/// </summary>
 	public interface IExportColumnBuilder{
-		BaseExportColumn CreateExportColumn ();
+		IBaseExportColumn CreateExportColumn ();
 	}
 
 }

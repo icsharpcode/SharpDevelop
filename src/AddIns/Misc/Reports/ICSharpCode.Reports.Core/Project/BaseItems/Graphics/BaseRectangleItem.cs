@@ -7,7 +7,7 @@ using System.Drawing.Drawing2D;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Exporter;
-
+using ICSharpCode.Reports.Core.Interfaces;
 
 /// <summary>
 /// This class draws a Rectangle
@@ -16,16 +16,18 @@ using ICSharpCode.Reports.Core.Exporter;
 /// 	created by - Forstmeier Peter
 /// 	created on - 29.09.2005 11:57:30
 /// </remarks>
-namespace ICSharpCode.Reports.Core {	
+namespace ICSharpCode.Reports.Core
+{
 	
-	public class BaseRectangleItem : BaseGraphicItem,IExportColumnBuilder
+	public class BaseRectangleItem : BaseGraphicItem,IExportColumnBuilder,ISimpleContainer
 	{
-		
-		RectangleShape shape = new RectangleShape();
+		private ReportItemCollection items;
+		private RectangleShape shape = new RectangleShape();
 		
 		#region Constructor
 		
-		public BaseRectangleItem() {
+		public BaseRectangleItem()
+		{
 		}
 		
 		#endregion
@@ -33,11 +35,10 @@ namespace ICSharpCode.Reports.Core {
 		
 		#region IExportColumnBuilder
 		
-		public BaseExportColumn CreateExportColumn(){
+		public IBaseExportColumn CreateExportColumn(){
 			shape.CornerRadius = CornerRadius;
 			IGraphicStyleDecorator style = base.CreateItemStyle(this.shape);
-			ExportGraphic item = new ExportGraphic(style,false);
-			return item as ExportGraphic;
+			return  new ExportGraphicContainer(style);
 		}
 		
 		
@@ -74,5 +75,14 @@ namespace ICSharpCode.Reports.Core {
 			return "BaseRectangleItem";
 		}
 		
+		
+		public ReportItemCollection Items {
+			get {
+				if (this.items == null) {
+					this.items = new ReportItemCollection();
+				}
+				return this.items;
+			}
+		}
 	}
 }

@@ -149,9 +149,9 @@ namespace ICSharpCode.Svn.Commands
 					// if at least one project was changed:
 					if (MessageService.ShowCustomDialog(
 						MessageService.DefaultMessageBoxTitle,
-						"${res:AddIns.Subversion.ReloadSolutionAfterProjectChanges}",
+						"${res:ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage}",
 						0, 1,
-						"${res:AddIns.Subversion.ReloadSolution}", "${res:AddIns.Subversion.KeepOldSolution}")
+						"${res:ICSharpCode.SharpDevelop.Project.ReloadSolution}", "${res:ICSharpCode.SharpDevelop.Project.KeepOldSolution}")
 					    == 0)
 					{
 						ProjectService.LoadSolution(solution.FileName);

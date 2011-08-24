@@ -1,10 +1,12 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.Core;
 using System;
 using System.Drawing;
+using WPF = System.Windows.Media;
 using System.Xml;
+
+using ICSharpCode.Core;
 
 namespace HexEditor.Util
 {
@@ -27,24 +29,23 @@ namespace HexEditor.Util
 			
 			Settings.BytesPerLine = 16;
 			Settings.FitToWidth = false;
-			Settings.FileTypes = new string[] {".exe", ".dll"};
 			Settings.ViewMode = ViewMode.Hexadecimal;
 			
-			Settings.DataForeColor = Color.Black;
-			Settings.OffsetForeColor = Color.Blue;
+			Settings.DataForeColor = WPF.Colors.Black;
+			Settings.OffsetForeColor = WPF.Colors.Blue;
 			
 			Settings.OffsetFont = Settings.DataFont = new Font("Courier New", 9.5f, FontStyle.Regular);
 			
 			return settings;
 		}
 		
-		public static Color OffsetForeColor {
-			get { return properties.Get("OffsetForeColor", Color.Blue); }
+		public static WPF.Color OffsetForeColor {
+			get { return properties.Get("OffsetForeColor", WPF.Colors.Blue); }
 			set { properties.Set("OffsetForeColor", value); }
 		}
 		
-		public static Color DataForeColor {
-			get { return properties.Get("DataForeColor", Color.Black); }
+		public static WPF.Color DataForeColor {
+			get { return properties.Get("DataForeColor", WPF.Colors.Black); }
 			set { properties.Set("DataForeColor", value); }
 		}
 
@@ -71,14 +72,6 @@ namespace HexEditor.Util
 		public static ViewMode ViewMode {
 			get { return properties.Get("ViewMode", ViewMode.Hexadecimal); }
 			set { properties.Set("ViewMode", value); }
-		}
-		
-		public static string[] FileTypes {
-			get { return properties.Get("FileTypes", new string[] {".exe", ".dll"}); }
-			set {
-				properties.Set("FileTypes", value);
-				properties.Set("FileTypesAsRegexString", "(" + string.Join("|", value) + ")$");
-			}
 		}
 	}
 }

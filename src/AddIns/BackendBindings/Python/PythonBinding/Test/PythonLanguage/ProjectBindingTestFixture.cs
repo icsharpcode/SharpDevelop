@@ -3,9 +3,10 @@
 
 using System;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
+using UnitTesting.Tests.Utils;
 
 namespace PythonBinding.Tests.PythonLanguage
 {
@@ -25,7 +26,7 @@ namespace PythonBinding.Tests.PythonLanguage
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();
 			createInfo.ProjectName = "Python";
 			createInfo.OutputProjectFileName = @"C:\Projects\Python.pyproj";
-			createInfo.Solution = new Solution();
+			createInfo.Solution = new Solution(new MockProjectChangeWatcher());
 			project = projectBinding.CreateProject(createInfo) as PythonProject;
 		}
 		

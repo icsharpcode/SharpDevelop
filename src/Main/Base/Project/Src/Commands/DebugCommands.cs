@@ -178,4 +178,18 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			DebuggerService.CurrentDebugger.Detach();
 		}
 	}
+	
+	public class ExecuteLastBuild : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			if (ProjectService.OpenSolution == null)
+				return;
+			
+			if (ProjectService.OpenSolution.StartupProject == null)
+				return;
+			
+			ProjectService.OpenSolution.StartupProject.Start(false);
+		}
+	}
 }

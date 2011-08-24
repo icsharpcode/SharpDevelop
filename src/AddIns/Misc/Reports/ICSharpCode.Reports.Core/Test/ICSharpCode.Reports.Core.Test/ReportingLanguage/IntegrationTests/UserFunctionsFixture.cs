@@ -18,7 +18,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		public void UserNameFunction ()
 		{
 			BaseTextItem bti = new BaseTextItem();
-			bti.Text = "=User!UserID";			
+			bti.Text = "User!UserID";			
 			IExpression compiled = this.compiler.CompileExpression<object>(bti.Text);
 			Assert.That(compiled.Evaluate(null), Is.EqualTo(Environment.UserName));
 		}
@@ -28,7 +28,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		public void UserLanguageFunction ()
 		{
 			BaseTextItem bti = new BaseTextItem();
-			bti.Text = "=User!Language";
+			bti.Text = "User!Language";
 			IExpression compiled = this.compiler.CompileExpression<object>(bti.Text);
 			Assert.That(compiled.Evaluate(null), Is.EqualTo(System.Globalization.CultureInfo.CurrentCulture.ThreeLetterISOLanguageName));
 		}

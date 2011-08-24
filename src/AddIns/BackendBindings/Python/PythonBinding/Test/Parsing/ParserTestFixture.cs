@@ -11,6 +11,7 @@ using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PythonBinding.Tests;
 using PythonBinding.Tests.Utils;
+using UnitTesting.Tests.Utils;
 
 namespace PythonBinding.Tests.Parsing
 {
@@ -87,7 +88,7 @@ namespace PythonBinding.Tests.Parsing
 		public void CanParsePythonProject()
 		{
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();
-			createInfo.Solution = new Solution();
+			createInfo.Solution = new Solution(new MockProjectChangeWatcher());
 			createInfo.OutputProjectFileName = @"C:\projects\test.pyproj";
 			PythonProject project = new PythonProject(createInfo);
 			Assert.IsTrue(parser.CanParse(project));

@@ -15,9 +15,8 @@
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id = "HexEditor"
-		                insertbefore = "Text"
+		                insertafter = "Text"
 		                supportedformats = "Binaries"
-		                fileNamePattern="${property:HexEditorOptions/FileTypesAsRegexString??\.(dll|exe)$}"
 		                title = "Hex editor"
 		                class = "HexEditor.View.HexEditDisplayBinding"/>
 	</Path>

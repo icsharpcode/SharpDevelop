@@ -158,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		protected string GetQuestionText(string question)
 		{
-			return StringParser.Parse(question, new string[,] {{"FileName", Text}});
+			return StringParser.Parse(question, new StringTagPair("FileName", Text));
 		}
 
 		public virtual AbstractProjectBrowserTreeNode GetNodeByRelativePath(string relativePath)

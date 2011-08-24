@@ -3,9 +3,10 @@
 
 using System;
 using ICSharpCode.RubyBinding;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
+using UnitTesting.Tests.Utils;
 
 namespace RubyBinding.Tests.RubyLanguage
 {
@@ -25,7 +26,7 @@ namespace RubyBinding.Tests.RubyLanguage
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();
 			createInfo.ProjectName = "Ruby";
 			createInfo.OutputProjectFileName = @"C:\Projects\Ruby.rbproj";
-			createInfo.Solution = new Solution();
+			createInfo.Solution = new Solution(new MockProjectChangeWatcher());
 			project = projectBinding.CreateProject(createInfo) as RubyProject;
 		}
 		

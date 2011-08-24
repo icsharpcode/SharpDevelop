@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.FormsDesigner.UndoRedo;
@@ -20,12 +21,13 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.FormsDesigner
 {
 	public class FormsDesignerViewContent : AbstractViewContentHandlingLoadErrors, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost, IFileDocumentProvider
 	{
-		readonly Control pleaseWaitLabel = new Label() {Text=StringParser.Parse("${res:Global.PleaseWait}"), TextAlign=ContentAlignment.MiddleCenter};
+		readonly Control pleaseWaitLabel = new Label() { Text = StringParser.Parse("${res:Global.PleaseWait}"), TextAlign=ContentAlignment.MiddleCenter };
 		DesignSurface designSurface;
 		bool disposing;
 		
@@ -124,7 +126,7 @@ namespace ICSharpCode.FormsDesigner
 			FileService.FileRemoving += this.FileServiceFileRemoving;
 			ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting += this.DebugStarting;
 		}
-		
+
 		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator)
 			: this(primaryViewContent)
 		{
@@ -374,19 +376,17 @@ namespace ICSharpCode.FormsDesigner
 			if (!loading && !unloading) {
 				try {
 					this.MakeDirty();
-					if (e.Component != null && e.Component == Host.RootComponent
-					    && e.Member != null && e.Member.Name == "Name" && e.NewValue is string
-					    && !object.Equals(e.OldValue, e.NewValue))
-					{
-						// changing the name of the form
-						generator.NotifyFormRenamed((string)e.NewValue);
+					if (e.Component != null && e.Member != null && e.Member.Name == "Name" &&
+					    e.NewValue is string && !object.Equals(e.OldValue, e.NewValue)) {
+						// changing the name of the component
+						generator.NotifyComponentRenamed(e.Component, (string)e.NewValue, (string)e.OldValue);
 					}
 				} catch (Exception ex) {
 					MessageService.ShowException(ex);
 				}
 			}
 		}
-		
+
 		void ComponentListChanged(object sender, EventArgs e)
 		{
 			bool loading = this.loader != null && this.loader.Loading;
@@ -396,7 +396,7 @@ namespace ICSharpCode.FormsDesigner
 				this.MakeDirty();
 			}
 		}
-		
+
 		void UnloadDesigner()
 		{
 			LoggingService.Debug("FormsDesigner unloading, setting ActiveDesignSurface to null");
@@ -480,15 +480,15 @@ namespace ICSharpCode.FormsDesigner
 			}
 			this.addedTypeDescriptionProviders.Clear();
 		}
-		
+
 		readonly PropertyContainer propertyContainer = new PropertyContainer();
-		
+
 		public PropertyContainer PropertyContainer {
 			get {
 				return propertyContainer;
 			}
 		}
-		
+
 		public void ShowHelp()
 		{
 			if (Host == null) {
@@ -503,7 +503,7 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 		}
-		
+
 		void LoadAndDisplayDesigner()
 		{
 			try {
@@ -524,7 +524,7 @@ namespace ICSharpCode.FormsDesigner
 				
 			}
 		}
-		
+
 		internal new Control UserContent {
 			get {
 				SDWindowsFormsHost host = base.UserContent as SDWindowsFormsHost;
@@ -554,7 +554,7 @@ namespace ICSharpCode.FormsDesigner
 				base.UserContent = host;
 			}
 		}
-		
+
 		void DesignerLoading(object sender, EventArgs e)
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader loading...");
@@ -562,7 +562,7 @@ namespace ICSharpCode.FormsDesigner
 			this.unloading = false;
 			this.UserContent = this.pleaseWaitLabel;
 		}
-		
+
 		void DesignerUnloading(object sender, EventArgs e)
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader unloading...");
@@ -571,10 +571,10 @@ namespace ICSharpCode.FormsDesigner
 				this.UserContent = this.pleaseWaitLabel;
 			}
 		}
-		
+
 		bool reloadPending;
 		bool unloading;
-		
+
 		void DesignerLoaded(object sender, LoadedEventArgs e)
 		{
 			// This method is called when the designer has loaded.
@@ -610,13 +610,13 @@ namespace ICSharpCode.FormsDesigner
 				this.UserContent = errorTextBox;
 			}
 		}
-		
+
 		void DesignerFlushed(object sender, EventArgs e)
 		{
 			this.resourceStore.CommitAllResourceChanges();
 			this.hasUnmergedChanges = false;
 		}
-		
+
 		static string FormatLoadErrors(DesignSurface designSurface)
 		{
 			StringBuilder sb = new StringBuilder();
@@ -626,7 +626,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			return sb.ToString();
 		}
-		
+
 		public virtual void MergeFormChanges()
 		{
 			if (this.HasLoadError || this.designSurface == null) {
@@ -643,12 +643,12 @@ namespace ICSharpCode.FormsDesigner
 			hasUnmergedChanges = false;
 			this.DesignerCodeFile.IsDirty = isDirty;
 		}
-		
+
 		public void ShowSourceCode()
 		{
 			this.WorkbenchWindow.ActiveViewContent = this.PrimaryViewContent;
 		}
-		
+
 		public void ShowSourceCode(int lineNumber)
 		{
 			ShowSourceCode();
@@ -657,7 +657,7 @@ namespace ICSharpCode.FormsDesigner
 				tecp.TextEditor.JumpTo(lineNumber, 1);
 			}
 		}
-		
+
 		public void ShowSourceCode(IComponent component, EventDescriptor edesc, string eventMethodName)
 		{
 			int position;
@@ -671,12 +671,12 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 		}
-		
+
 		public ICollection GetCompatibleMethods(EventDescriptor edesc)
 		{
 			return generator.GetCompatibleMethods(edesc);
 		}
-		
+
 		void IsActiveViewContentChangedHandler(object sender, EventArgs e)
 		{
 			if (this.IsActiveViewContent) {
@@ -711,7 +711,7 @@ namespace ICSharpCode.FormsDesigner
 				designSurfaceManager.ActiveDesignSurface = null;
 			}
 		}
-		
+
 		public override void Dispose()
 		{
 			disposing = true;
@@ -720,7 +720,6 @@ namespace ICSharpCode.FormsDesigner
 				// to SaveInternal which requires the designer to be loaded.
 				base.Dispose();
 			} finally {
-				
 				ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting -= this.DebugStarting;
 				FileService.FileRemoving -= this.FileServiceFileRemoving;
 				
@@ -739,15 +738,14 @@ namespace ICSharpCode.FormsDesigner
 				
 				this.UserContent = null;
 				this.pleaseWaitLabel.Dispose();
-				
 			}
 		}
-		
+
 		void SelectionChangedHandler(object sender, EventArgs args)
 		{
 			UpdatePropertyPadSelection((ISelectionService)sender);
 		}
-		
+
 		void UpdatePropertyPadSelection(ISelectionService selectionService)
 		{
 			ICollection selection = selectionService.GetSelectedComponents();
@@ -756,7 +754,7 @@ namespace ICSharpCode.FormsDesigner
 			propertyContainer.SelectedObjects = selArray;
 			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
-		
+
 		protected void UpdatePropertyPad()
 		{
 			if (Host != null) {
@@ -768,7 +766,7 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 		}
-		
+
 		#region IUndoHandler implementation
 		public bool EnableUndo {
 			get {
@@ -792,7 +790,7 @@ namespace ICSharpCode.FormsDesigner
 				undoEngine.Undo();
 			}
 		}
-		
+
 		public virtual void Redo()
 		{
 			if (undoEngine != null) {
@@ -800,7 +798,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		#endregion
-		
+
 		#region IClipboardHandler implementation
 		bool IsMenuCommandEnabled(CommandID commandID)
 		{
@@ -821,69 +819,69 @@ namespace ICSharpCode.FormsDesigner
 			//int status = menuCommand.OleStatus;
 			return menuCommand.Enabled;
 		}
-		
+
 		public bool EnableCut {
 			get {
 				return IsMenuCommandEnabled(StandardCommands.Cut);
 			}
 		}
-		
+
 		public bool EnableCopy {
 			get {
 				return IsMenuCommandEnabled(StandardCommands.Copy);
 			}
 		}
-		
+
 		const string ComponentClipboardFormat = "CF_DESIGNERCOMPONENTS";
 		public bool EnablePaste {
 			get {
 				return IsMenuCommandEnabled(StandardCommands.Paste);
 			}
 		}
-		
+
 		public bool EnableDelete {
 			get {
 				return IsMenuCommandEnabled(StandardCommands.Delete);
 			}
 		}
-		
+
 		public bool EnableSelectAll {
 			get {
 				return designSurface != null;
 			}
 		}
-		
+
 		public void Cut()
 		{
 			IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
 			menuCommandService.GlobalInvoke(StandardCommands.Cut);
 		}
-		
+
 		public void Copy()
 		{
 			IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
 			menuCommandService.GlobalInvoke(StandardCommands.Copy);
 		}
-		
+
 		public void Paste()
 		{
 			IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
 			menuCommandService.GlobalInvoke(StandardCommands.Paste);
 		}
-		
+
 		public void Delete()
 		{
 			IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
 			menuCommandService.GlobalInvoke(StandardCommands.Delete);
 		}
-		
+
 		public void SelectAll()
 		{
 			IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
 			menuCommandService.GlobalInvoke(StandardCommands.SelectAll);
 		}
 		#endregion
-		
+
 		#region Tab Order Handling
 		bool tabOrderMode = false;
 		public virtual bool IsTabOrderMode {
@@ -891,7 +889,7 @@ namespace ICSharpCode.FormsDesigner
 				return tabOrderMode;
 			}
 		}
-		
+
 		public virtual void ShowTabOrder()
 		{
 			if (!IsTabOrderMode) {
@@ -900,7 +898,7 @@ namespace ICSharpCode.FormsDesigner
 				tabOrderMode = true;
 			}
 		}
-		
+
 		public virtual void HideTabOrder()
 		{
 			if (IsTabOrderMode) {
@@ -910,7 +908,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		#endregion
-		
+
 		protected void MergeAndUnloadDesigner()
 		{
 			propertyContainer.Clear();
@@ -919,7 +917,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			UnloadDesigner();
 		}
-		
+
 		protected void ReloadDesignerFromMemory()
 		{
 			using(MemoryStream ms = new MemoryStream(this.sourceCodeStorage.GetFileEncoding(this.DesignerCodeFile).GetBytes(this.DesignerCodeFileContent), false)) {
@@ -928,11 +926,11 @@ namespace ICSharpCode.FormsDesigner
 			
 			UpdatePropertyPad();
 		}
-		
+
 		public virtual object ToolsContent {
 			get { return ToolboxProvider.FormsDesignerSideBar; }
 		}
-		
+
 		void FileServiceFileRemoving(object sender, FileCancelEventArgs e)
 		{
 			if (!e.Cancel) {
@@ -943,7 +941,7 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 		}
-		
+
 		void CheckForDesignerCodeFileDeletion(FileCancelEventArgs e)
 		{
 			OpenedFile file;
@@ -974,20 +972,20 @@ namespace ICSharpCode.FormsDesigner
 			this.Files.Remove(file);
 			this.sourceCodeStorage.RemoveFile(file);
 		}
-		
+
 		#region Design surface manager (static)
-		
+
 		static readonly DesignSurfaceManager designSurfaceManager = new DesignSurfaceManager();
-		
+
 		public static DesignSurface CreateDesignSurface(IServiceProvider serviceProvider)
 		{
 			return designSurfaceManager.CreateDesignSurface(serviceProvider);
 		}
-		
+
 		#endregion
-		
+
 		#region Debugger event handling (to prevent designer reload while debugger is starting)
-		
+
 		void DebugStarting(object sender, EventArgs e)
 		{
 			if (designSurfaceManager.ActiveDesignSurface != this.DesignSurface ||
@@ -1010,7 +1008,7 @@ namespace ICSharpCode.FormsDesigner
 				Cursor.Current = oldCursor;
 			}
 		}
-		
+
 		#endregion
 	}
 }

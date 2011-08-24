@@ -29,7 +29,8 @@
 		<FileFilter id = "Xaml"
 		            insertbefore="AllFiles"
 		            name = "Xaml files (*.xaml)"
-		            extensions = "*.xaml"/>
+		            extensions = "*.xaml"
+		            mimeType = "text/xml"/>
 	</Path>
 	
 	<Path name = "/Workspace/Parser">

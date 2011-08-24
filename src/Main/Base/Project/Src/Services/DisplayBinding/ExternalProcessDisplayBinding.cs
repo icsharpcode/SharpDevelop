@@ -61,6 +61,16 @@ namespace ICSharpCode.SharpDevelop
 			info.WorkingDirectory = workingDir;
 			Process.Start(info);
 		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return false;
+		}
+		
+		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		{
+			return double.NegativeInfinity;
+		}
 	}
 	
 	sealed class ExternalProcessDisplayBindingConverter : TypeConverter

@@ -37,8 +37,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static ContextActionsPopup MakePopupWithOverrides(IMember member)
 		{
 			var derivedClassesTree = RefactoringService.FindDerivedClassesTree(member.DeclaringType);
-			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
-				"${res:SharpDevelop.Refactoring.OverridesOf}", new string[,] {{ "Name", member.FullyQualifiedName }}))};
+			var popupViewModel = new ContextActionsViewModel {
+				Title = MenuService.ConvertLabel(StringParser.Parse(
+					"${res:SharpDevelop.Refactoring.OverridesOf}",
+					new StringTagPair("Name", member.FullyQualifiedName))
+			)};
 			popupViewModel.Actions = new OverridesPopupTreeViewModelBuilder(member).BuildTreeViewModel(derivedClassesTree);
 			return new ContextActionsPopup { Actions = popupViewModel, Symbol = member };
 		}

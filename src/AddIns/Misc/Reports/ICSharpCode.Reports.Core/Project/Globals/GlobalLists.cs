@@ -9,12 +9,12 @@ using System.Collections;
 /// Use this code to have the same functionnames as SLQReportingServer
 /// See <see cref="http://www.fyireporting.com/"></see>
 /// </summary>
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.Globals
 {
 	/// <summary>
 	/// Description of GlobalLists.
 	/// </summary>
-	public class GlobalLists
+	public static class GlobalLists
 	{
 		
 		public enum FunctionTypes {
@@ -105,8 +105,7 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 		
-		/// </summary>
-		/// 
+		
 		#region Zoom
 		
 		public static string[] ZoomValues ()
@@ -128,7 +127,6 @@ namespace ICSharpCode.Reports.Core
 									"50%",
 									"25%"};
 		
-		
 		#endregion
 		
 		 
@@ -140,9 +138,19 @@ namespace ICSharpCode.Reports.Core
 		}
         
         private static readonly string[] FormatList = new string[] { "",
-            "#,##0", "#,##0.00", "0", "0.00", "", "MM/dd/yyyy",
-            "dddd, MMMM dd, yyyy", "dddd, MMMM dd, yyyy HH:mm",
-            "dddd, MMMM dd, yyyy HH:mm:ss", "MM/dd/yyyy HH:mm",
+            "#,##0",
+            "#,##0.00",
+            "0",
+            "0.00",
+            "",
+            "dd/MM/yy",
+            "dd/MM/yyyy",
+            "MM/dd/yyyy",
+            "dddd, MMMM dd, yyyy",
+            "dddd, MMMM dd, yyyy HH:mm",
+            "dddd, MMMM dd, yyyy HH:mm:ss",
+            "MM/dd/yyyy HH:mm",
+           
             "MM/dd/yyyy HH:mm:ss", "MMMM dd",
             "Ddd, dd MMM yyyy HH\':\'mm\'\"ss \'GMT\'",
             "yyyy-MM-dd HH:mm:ss",

@@ -77,8 +77,9 @@ namespace ICSharpCode.FiletypeRegisterer
 		/// Creates an item with the specified sub items. And the current
 		/// Condition status for this item.
 		/// </summary>
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
+			Codon codon = args.Codon;
 			return new FiletypeAssociation(codon.Id,
 			                               StringParser.Parse(codon.Properties["icon"]),
 			                               StringParser.Parse(codon.Properties["text"]));

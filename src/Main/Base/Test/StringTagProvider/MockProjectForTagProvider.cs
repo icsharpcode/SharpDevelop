@@ -292,5 +292,11 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 		{
 			throw new NotImplementedException();
 		}
+		
+		public Properties ProjectSpecificProperties {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

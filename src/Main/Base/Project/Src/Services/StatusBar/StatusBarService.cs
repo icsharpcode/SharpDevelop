@@ -72,11 +72,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			statusBar.CursorStatusBarPanel.Content = StringParser.Parse(
 				"${res:StatusBarService.CursorStatusBarPanelText}",
-				new string[,] {
-					{"Line", String.Format("{0,-10}", y)},
-					{"Column", String.Format("{0,-5}", x)},
-					{"Character", String.Format("{0,-5}", charOffset)}
-				});
+				new StringTagPair("Line", String.Format("{0,-10}", y)),
+				new StringTagPair("Column", String.Format("{0,-5}", x)),
+				new StringTagPair("Character", String.Format("{0,-5}", charOffset))
+			);
 		}
 		
 		public void SetInsertMode(bool insertMode)

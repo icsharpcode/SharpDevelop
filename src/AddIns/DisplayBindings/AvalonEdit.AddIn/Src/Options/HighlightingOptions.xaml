@@ -16,17 +16,17 @@
 				<Label Grid.Column="0" Grid.Row="0"
 				       Content="{core:StringParse ${res:Dialog.HighlightingEditor.ColorDlg.Foreground}:}"
 				       Visibility="{Binding CanSetBackground, Converter={StaticResource boolToVisibility}}" />
-				<gui:ColorPicker Value="{Binding Foreground}"
-				                 Text="{Binding UseDefaultForeground, Converter={x:Static local:BooleanToDefaultStringConverter.Instance}}"
-				                 Grid.Column="1" Grid.Row="0"
-				                 Visibility="{Binding CanSetForeground, Converter={StaticResource boolToVisibility}}" />
+				<gui:ColorPickerButton Value="{Binding Foreground}"
+					Text="{Binding UseDefaultForeground, Converter={x:Static local:BooleanToDefaultStringConverter.Instance}}"
+					Grid.Column="1" Grid.Row="0"
+					Visibility="{Binding CanSetForeground, Converter={StaticResource boolToVisibility}}" />
 				<Label Grid.Column="0" Grid.Row="1"
 				       Content="{core:StringParse ${res:Dialog.HighlightingEditor.ColorDlg.Background}:}"
 				       Visibility="{Binding CanSetBackground, Converter={StaticResource boolToVisibility}}" />
-				<gui:ColorPicker Value="{Binding Background}"
-				                 Text="{Binding UseDefaultBackground, Converter={x:Static local:BooleanToDefaultStringConverter.Instance}}"
-				                 Grid.Column="1" Grid.Row="1"
-				                 Visibility="{Binding CanSetBackground, Converter={StaticResource boolToVisibility}}" />
+				<gui:ColorPickerButton Value="{Binding Background}"
+					Text="{Binding UseDefaultBackground, Converter={x:Static local:BooleanToDefaultStringConverter.Instance}}"
+					Grid.Column="1" Grid.Row="1"
+					Visibility="{Binding CanSetBackground, Converter={StaticResource boolToVisibility}}" />
 			</Grid>
 			<CheckBox IsEnabled="{Binding CanSetFont}" IsChecked="{Binding Bold}"
 			          Content="{core:Localize Dialog.HighlightingEditor.ColorDlg.Bold}"/>

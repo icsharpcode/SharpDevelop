@@ -33,6 +33,15 @@ namespace HexEditor.View
 		public HexEditContainer()
 		{
 			InitializeComponent();
+		}
+		
+		bool loaded = false;
+		
+		void Init(object sender, EventArgs e)
+		{
+			if (loaded)
+				return;
+			loaded = true;
 			
 			tbSizeToFit.Text = StringParser.Parse(tbSizeToFit.Text);
 			
@@ -42,14 +51,13 @@ namespace HexEditor.View
 			ToolStripControlHost viewMode = new ToolStripControlHost(tCBViewMode);
 			this.toolStrip1.Items.Insert(3, viewMode);
 			
+			hexEditControl.BytesPerLine = Settings.BytesPerLine;
 			tSTBCharsPerLine.Text = hexEditControl.BytesPerLine.ToString();
 			this.hexEditControl.ContextMenuStrip = MenuService.CreateContextMenu(this.hexEditControl, "/AddIns/HexEditor/Editor/ContextMenu");
 			tCBViewMode.SelectedIndex = 0;
 			
-			tSTBCharsPerLine.Value = Settings.BytesPerLine;
 			tCBViewMode.SelectedItem = Settings.ViewMode.ToString();
 			hexEditControl.ViewMode = Settings.ViewMode;
-			hexEditControl.BytesPerLine = Settings.BytesPerLine;
 			tbSizeToFit.Checked = hexEditControl.FitToWindowWidth = Settings.FitToWidth;
 			tSTBCharsPerLine.Enabled = !Settings.FitToWidth;
 			
@@ -144,6 +152,7 @@ namespace HexEditor.View
 
 		void HexEditContainer_Resize(object sender, EventArgs e)
 		{
+			Init(sender, e);
 			if (this.tbSizeToFit.Checked) tSTBCharsPerLine.Text = hexEditControl.BytesPerLine.ToString();
 		}
 	}

@@ -29,7 +29,8 @@
 		<FileFilter id = "Boo"
 		            insertbefore="AllFiles"
 		            name = "${res:SharpDevelop.FileFilter.Boo} (*.boo)"
-		            extensions = "*.boo"/>
+		            extensions = "*.boo"
+		            mimeType = "text/plain"/>
 	</Path>
 	
 	<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' whenever an MSBuild task named 'booc' is started -->

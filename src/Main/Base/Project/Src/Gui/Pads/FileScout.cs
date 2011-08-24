@@ -228,8 +228,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				fileName = fileItem.FullName;
 				break;
 			}
-			if (MessageService.AskQuestion(StringParser.Parse("${res:ProjectComponent.ContextMenu.Delete.Question}", new string[,] {{"FileName", fileName}}),
-			                               "${Global.Delete}")) {
+			if (MessageService.AskQuestion(
+				StringParser.Parse("${res:ProjectComponent.ContextMenu.Delete.Question}",
+				                   new StringTagPair("FileName", fileName)),
+				"${Global.Delete}")) {
 				foreach(FileListItem fileItem in SelectedItems)
 				{
 					try {

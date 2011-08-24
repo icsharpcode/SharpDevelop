@@ -10,7 +10,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 	/// <summary>
 	/// Description of GroupedRowDesigner.
 	/// </summary>
-	public class GroupedRowDesigner:RowItemDesigner
+	public class GroupedRowDesigner:ContainerItemDesigner
 	{
 		private ISelectionService selectionService;
 		private IComponentChangeService componentChangeService;
@@ -25,6 +25,14 @@ namespace ICSharpCode.Reports.Addin.Designer
 			base.Initialize(component);
 			GetService();
 		}
+		
+		
+		protected override void PostFilterProperties(System.Collections.IDictionary properties)
+		{
+			DesignerHelper.RemoveProperties(properties);
+			base.PostFilterProperties(properties);
+		}
+		
 		
 		private void GetService ()
 		{

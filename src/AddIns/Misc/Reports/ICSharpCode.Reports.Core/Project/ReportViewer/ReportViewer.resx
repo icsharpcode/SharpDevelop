@@ -112,18 +112,18 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="contextMenuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="contextMenuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>116, 17</value>
   </metadata>
-  <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="firstPageButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -176,7 +176,7 @@
   <data name="lastPageButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKMSURBVDhPfZNrSNNRGIfta30Ikj70ISsK1Ip0Yihq3i9Z
+        YQUAAAAJcEhZcwAADsAAAA7AAWrWiQkAAAKMSURBVDhPfZNrSNNRGIfta30Ikj70ISsK1Ip0Yihq3i9Z
         SliKitIFQxMhTSgSicD6IH3QCJdixiopL2laeVlq3vKKZSPN2GJWtjbnnNO2NC/19HfC5I/aDw68nPOe
         5/zOed9jhyDflBr6h3TL4YZyjKtgU3g52+Jr2Rwss+XZLUf2oTJ2xFQyojZuCNh9uh67vHFcO//gmNEk
         BjjEVuHy3MTexCq63/1YF7IvqYEtt0bxqDPhlCYXA/bEVrNVqsWl2oBbupyKBtUaiHNKE9ulGkJbzLhm
@@ -188,24 +188,6 @@
         JSp61GZRGQNLRkkamqdQYEY8WHG1LKsDiXSU7M+L9P0Ev3tq+r/+WtNIIaUaLioXeDgluCtb7VYrIKZG
         h+I3+JeOMaIXgnUUWqklVbXEfQFwsnpc7CBYKJ9vhQ6teWndzcuT0Q2TdMzDhBAnyFc/ndXBGeH1FXph
         9T+KbjRyrnWa5HYTh58abJn/ACAoUCkuveSxAAAAAElFTkSuQmCC
-</value>
-  </data>
-  <data name="cancelButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALMSURBVDhPlZJbSFRRFIanJCkMk5JKo5LShGy8ZJiOheYl
-        nRobZ9TEvHTxknlDM7KMskG0tEwrTSGM6iHsJVTwkjbO6ENJ1kMQVDromfuZuyOOCGP8nXMG5vTqhg2b
-        tdb/rX/tvTnfvxFQKlfAWeeiNbSWQx+WZYMwt9XBKCkFWZcHfU0WdJXp0JWdhbZMAG1JCtSX46EuOAFV
-        1lH8Tg3E/MtWtrH5yS3YP/TC9voxzB31MLXUwNBYDkNDCQx3C0HeLoD+RjYFFUJTmIC5jHCM8fxZ18am
-        CtjetMHSLYHpYTUW+7qxtmh1F6xZDLD2tjBidX4sFJkR+BS3nwWQ9RdhfnqH6bw09I5JLEsHYGymnVRg
-        WdrPxBb7uqCkxLQDaWIgC9BXZ8LYVAn7+24maHkugbY0DZoriVDnxVJzR8DUXMnkzK21UIhDMfE/gL4w
-        8l4R/tptcEyNULOKoSnhuzuoMrhQCYPhkPXDqSOgEIVAlnCAdaAtPg3yZq6re5eEAogoByxAc54LjSgI
-        5sZipmZeeAiy+H0sQHMpHvQYbkAVBbjGAnQ5XOgyAmF9UMLULKQFQH7SjwWocqIogQBrNhMcn8ehqxJC
-        V37GXUDmh4LMDsLql2E41XMg+H6YitnBApRiyiJ1YdZXj5igtaeR+kQp0F89BbIoGoYCLuydta6XaKuA
-        MskHk8e2soAF/kGoc2OgKUrC0uBbJrEyPQ5rey1s7dVY/Trmig30wMDfBmXcFkyGebKA+QR/KEVcqC9E
-        Q1ucDEtnA5ykyl3g1Chgf3YdBoEvyCQvELxNmDjiwQJ+xmzHn+QAzJ4Lwaw4HHPiMGpzqfc+jIX0IBCC
-        vSBSd4JI9AYR64lfkRsxFLzBBVASDiheNGEowgejx3dhlLcHI9Qe5/nhI283pNG+kEd5Qx7phYnwzZBz
-        PTBMiX903Aet5cxMK1yHdS5aMzM9h3/8fvEPYJVcPgAAAABJRU5ErkJggg==
 </value>
   </data>
   <data name="printButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

@@ -49,11 +49,7 @@ namespace ICSharpCode.SettingsEditor
 		
 		public SettingsView()
 		{
-			//
-			// The InitializeComponent() call is required for Windows Forms designer support.
-			//
 			InitializeComponent();
-			
 			
 			ambience = AmbienceService.GetCurrentAmbience();
 			foreach (Type type in defaultAvailableTypes) {
@@ -77,9 +73,7 @@ namespace ICSharpCode.SettingsEditor
 			bindingSource.ListChanged += delegate(object sender, ListChangedEventArgs e) {
 				if (e.NewIndex >= 0 && e.NewIndex < bindingSource.Count) {
 					if (((SettingsEntry)bindingSource[e.NewIndex]).Name != null) {
-						if (SettingsChanged != null) {
-							SettingsChanged(this, e);
-						}
+						OnSettingsChanged(e);
 					}
 				}
 			};
@@ -162,6 +156,20 @@ namespace ICSharpCode.SettingsEditor
 					return types[i];
 			}
 			return null;
+		}
+		
+		void GridUserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+		{
+			if (e.Row != null && !e.Cancel) {
+				OnSettingsChanged(EventArgs.Empty);
+			}
+		}
+		
+		protected virtual void OnSettingsChanged(EventArgs e)
+		{
+			if (SettingsChanged != null) {
+				SettingsChanged(this, e);
+			}
 		}
 	}
 }

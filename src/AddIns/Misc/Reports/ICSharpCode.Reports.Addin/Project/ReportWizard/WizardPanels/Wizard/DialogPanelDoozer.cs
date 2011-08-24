@@ -41,24 +41,21 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		/// Creates an item with the specified sub items. And the current
 		/// Condition status for this item.
 		/// </summary>
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			string label = codon.Properties["label"];
+			string label = args.Codon["label"];
+			string id = args.Codon.Id;
 			
-			if (subItems == null || subItems.Count == 0) {
-				if (codon.Properties.Contains("class")) {
-					return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label), codon.AddIn, codon.Properties["class"]);
+			var subItems = args.BuildSubItems<IDialogPanelDescriptor>();
+			if (subItems.Count == 0) {
+				if (args.Codon.Properties.Contains("class")) {
+					return new DefaultDialogPanelDescriptor(id, StringParser.Parse(label), args.AddIn, args.Codon["class"]);
 				} else {
-					return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label));
+					return new DefaultDialogPanelDescriptor(id, StringParser.Parse(label));
 				}
 			}
 			
-			List<IDialogPanelDescriptor> newList = new List<IDialogPanelDescriptor>();
-			foreach (IDialogPanelDescriptor d in subItems) {
-				newList.Add(d);
-			}
-			
-			return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label), newList);
+			return new DefaultDialogPanelDescriptor(id, StringParser.Parse(label), subItems);
 		}
 	}
 }

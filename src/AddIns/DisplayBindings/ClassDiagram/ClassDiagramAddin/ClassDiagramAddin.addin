@@ -132,6 +132,7 @@
 		<FileFilter id   = "ClassDiagramFileFilter"
 		            name = "Class Diagrams (*.cd)"
 		            extensions   = "*.cd"
+		            mimeType="text/xml"
 		            insertbefore = "Boo"/>
 	</Path>
 	

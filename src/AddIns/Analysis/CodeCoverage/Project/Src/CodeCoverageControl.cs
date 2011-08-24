@@ -368,7 +368,7 @@ namespace ICSharpCode.CodeCoverage
 			visitCountColumnHeader.Width = 80;
 			
 			startLineColumnHeader = new ColumnHeader();
-			startLineColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.Line}");
+			startLineColumnHeader.Text = StringParser.Parse("${res:Global.TextLine}");
 			startLineColumnHeader.Width = 80;
 				
 			startColumnColumnHeader = new ColumnHeader();

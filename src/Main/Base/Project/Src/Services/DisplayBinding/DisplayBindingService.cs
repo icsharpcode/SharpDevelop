@@ -108,13 +108,16 @@ namespace ICSharpCode.SharpDevelop
 					}
 				}
 			}
-			
+			DisplayBindingDescriptor autoDetectDescriptor = null;
 			foreach (DisplayBindingDescriptor binding in bindings) {
 				if (IsPrimaryBindingValidForFileName(binding, filename)) {
-					return binding;
+					if (binding.Binding.IsPreferredBindingForFile(filename))
+						return binding;
+					else if (binding.Binding is AutoDetectDisplayBinding)
+						autoDetectDescriptor = binding;
 				}
 			}
-			return null;
+			return autoDetectDescriptor;
 		}
 		
 		public static void SetDefaultCodon(string extension, DisplayBindingDescriptor bindingDescriptor)

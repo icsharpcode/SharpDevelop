@@ -2,9 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Text;
+
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -12,6 +13,7 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
+using UnitTesting.Tests.Utils;
 
 namespace PythonBinding.Tests.PythonLanguage
 {
@@ -30,7 +32,7 @@ namespace PythonBinding.Tests.PythonLanguage
 			PythonMSBuildEngineHelper.InitMSBuildEngine();
 			
 			info = new ProjectCreateInformation();
-			info.Solution = new Solution();
+			info.Solution = new Solution(new MockProjectChangeWatcher());
 			info.ProjectName = "Test";
 			info.OutputProjectFileName = @"C:\Projects\Test\Test.pyproj";
 			info.RootNamespace = "Test";

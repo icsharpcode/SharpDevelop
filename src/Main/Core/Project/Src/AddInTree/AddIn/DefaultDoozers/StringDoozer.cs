@@ -27,9 +27,9 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return StringParser.Parse(codon.Properties["text"]);
+			return StringParser.Parse(args.Codon.Properties["text"]);
 		}
 	}
 }

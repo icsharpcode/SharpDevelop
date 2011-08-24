@@ -89,22 +89,22 @@ namespace ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls
 			ItemCollection.Add(item);
 		}
 		
-		public void Remove(ListViewPadItemModel item)
+		public ListViewPadItemModel Remove(SDBookmark bookmark)
 		{
-			SDBookmark bookmark1 = item.Mark as SDBookmark;
+			if (bookmark is CurrentLineBookmark)
+				return null;
 			
-			if (bookmark1 is CurrentLineBookmark)
-				return;
-			
-			foreach (var line in itemCollection) {
-				SDBookmark bookmark2 = line.Mark as SDBookmark;
+			foreach (var model in itemCollection) {
+				SDBookmark currentBookmark = model.Mark as SDBookmark;
 				
-				if (bookmark1.FileName == bookmark2.FileName &&
-				    bookmark1.LineNumber == bookmark2.LineNumber) {
-					ItemCollection.Remove(line);
-					break;
+				if (bookmark.FileName == currentBookmark.FileName &&
+				    bookmark.LineNumber == currentBookmark.LineNumber) {
+					ItemCollection.Remove(model);
+					return model;
 				}
 			}
+			
+			return null;
 		}
 		
 		public void AddColumn(string header, DataTemplate cellTemplate)
@@ -233,14 +233,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls
 		
 		private void NotifyPropertyChanged(string property)
 		{
-			if (property == "IsChecked")
-			{
-				if (Mark is BreakpointBookmark)
-					(Mark as BreakpointBookmark).IsEnabled = isChecked;
-			}
-			
-			if (PropertyChanged != null)
-			{
+			if (PropertyChanged != null) {
 				PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(property));
 			}
 		}

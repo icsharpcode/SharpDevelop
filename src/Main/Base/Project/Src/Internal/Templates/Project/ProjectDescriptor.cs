@@ -329,7 +329,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				StringBuilder existingFileNames = new StringBuilder();
 				foreach (FileDescriptionTemplate file in files)
 				{
-					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new string[,] { { "ProjectName", projectCreateInformation.ProjectName } }));
+					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new StringTagPair("ProjectName", projectCreateInformation.ProjectName)));
 					
 					if (File.Exists(fileName))
 					{
@@ -356,7 +356,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				#region Copy files to target directory
 				foreach (FileDescriptionTemplate file in files)
 				{
-					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new string[,] { { "ProjectName", projectCreateInformation.ProjectName } }));
+					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new StringTagPair("ProjectName", projectCreateInformation.ProjectName)));
 					if (File.Exists(fileName) && !overwriteFiles)
 					{
 						continue;
@@ -373,7 +373,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						} else {
 							// Textual content
 							StreamWriter sr = new StreamWriter(File.Create(fileName), ParserService.DefaultFileEncoding);
-							string fileContent = StringParser.Parse(file.Content, new string[,] { { "ProjectName", projectCreateInformation.ProjectName }, { "FileName", fileName } });
+							string fileContent = StringParser.Parse(file.Content, new StringTagPair("ProjectName", projectCreateInformation.ProjectName), new StringTagPair("FileName", fileName));
 							fileContent = StringParser.Parse(fileContent);
 							if (EditorControlService.GlobalOptions.IndentationString != "\t") {
 								fileContent = fileContent.Replace("\t", EditorControlService.GlobalOptions.IndentationString);
@@ -470,7 +470,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				if (project is IProjectItemListProvider) {
 					
 					foreach (FileDescriptionTemplate file in files) {
-						string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new string[,] { { "ProjectName", projectCreateInformation.ProjectName } }));
+						string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new StringTagPair("ProjectName", projectCreateInformation.ProjectName)));
 						FileProjectItem projectFile = new FileProjectItem(project, project.GetDefaultItemType(fileName));
 						
 						projectFile.Include = FileUtility.GetRelativePath(project.Directory, fileName);

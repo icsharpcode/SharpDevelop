@@ -468,13 +468,7 @@ namespace NRefactoryToBooConverter
 				newRank[i] = elementType.RankSpecifier[i + 1];
 			elementType.RankSpecifier = newRank;
 			mie.Arguments.Add(MakeReferenceExpression(elementType));
-			if (arrayCreateExpression.Arguments.Count == 1) {
-				mie.Arguments.Add(ConvertExpression(arrayCreateExpression.Arguments[0]));
-			} else {
-				B.ArrayLiteralExpression dims = new B.ArrayLiteralExpression(GetLexicalInfo(arrayCreateExpression));
-				ConvertExpressions(arrayCreateExpression.Arguments, dims.Items);
-				mie.Arguments.Add(dims);
-			}
+			ConvertExpressions(arrayCreateExpression.Arguments, mie.Arguments);
 			return mie;
 		}
 		

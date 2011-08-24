@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.RubyBinding;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -11,6 +12,7 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Construction;
 using NUnit.Framework;
+using UnitTesting.Tests.Utils;
 
 namespace RubyBinding.Tests.RubyLanguage
 {
@@ -27,7 +29,7 @@ namespace RubyBinding.Tests.RubyLanguage
 		public void SetUpFixture()
 		{
 			info = new ProjectCreateInformation();
-			info.Solution = new Solution();
+			info.Solution = new Solution(new MockProjectChangeWatcher());
 			info.ProjectName = "Test";
 			info.OutputProjectFileName = @"C:\Projects\Test\Test.rbproj";
 			info.RootNamespace = "Test";

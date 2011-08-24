@@ -109,9 +109,7 @@ namespace ICSharpCode.SharpDevelop
 			extensionHashtable[".CMBX"] = "Icons.16x16.CombineIcon";
 			extensionHashtable[".SLN"]  = "Icons.16x16.CombineIcon";
 			
-			IconDescriptor[] icons = (IconDescriptor[])treeNode.BuildChildItems(null).ToArray(typeof(IconDescriptor));
-			for (int i = 0; i < icons.Length; ++i) {
-				IconDescriptor iconCodon = icons[i];
+			foreach (IconDescriptor iconCodon in treeNode.BuildChildItems<IconDescriptor>(null)) {
 				string imageName = iconCodon.Resource != null ? iconCodon.Resource : iconCodon.Id;
 				
 				if (iconCodon.Extensions != null) {

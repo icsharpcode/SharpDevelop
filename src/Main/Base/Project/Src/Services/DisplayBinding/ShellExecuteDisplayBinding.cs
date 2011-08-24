@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public bool CanCreateContentForFile(string fileName)
 		{
-			return !FileUtility.IsUrl(fileName);
+			return true;
 		}
 		
 		public ICSharpCode.SharpDevelop.Gui.IViewContent CreateContentForFile(OpenedFile file)
@@ -31,6 +31,16 @@ namespace ICSharpCode.SharpDevelop
 				MessageService.ShowError(ex.Message);
 			}
 			return null;
+		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return false;
+		}
+		
+		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		{
+			return double.NegativeInfinity;
 		}
 	}
 }

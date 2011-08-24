@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -879,9 +880,9 @@ namespace AvalonDock
                 storeWriter.WriteAttributeString(
                     "ChildIndex", SavedStateAndPosition.ChildIndex.ToString());
                 storeWriter.WriteAttributeString(
-                    "Width", SavedStateAndPosition.Width.ToString());
+                    "Width", SavedStateAndPosition.Width.ToString(NumberFormatInfo.InvariantInfo));
                 storeWriter.WriteAttributeString(
-                    "Height", SavedStateAndPosition.Height.ToString());
+                    "Height", SavedStateAndPosition.Height.ToString(NumberFormatInfo.InvariantInfo));
                 storeWriter.WriteAttributeString(
                     "Anchor", SavedStateAndPosition.Anchor.ToString());
                 storeWriter.WriteAttributeString(
@@ -938,8 +939,8 @@ namespace AvalonDock
                     _savedStateAndPosition = new DockableContentStateAndPosition(
                         paneRef,
                         int.Parse(contentElement.GetAttribute("ChildIndex")),
-                        double.Parse(contentElement.GetAttribute("Width")),
-                        double.Parse(contentElement.GetAttribute("Height")),
+                        double.Parse(contentElement.GetAttribute("Width"), NumberFormatInfo.InvariantInfo),
+                        double.Parse(contentElement.GetAttribute("Height"), NumberFormatInfo.InvariantInfo),
                         (AnchorStyle)Enum.Parse(typeof(AnchorStyle), contentElement.GetAttribute("Anchor")),
                         (DockableContentState)Enum.Parse(typeof(DockableContentState), contentElement.GetAttribute("State")));
                 }
@@ -948,8 +949,8 @@ namespace AvalonDock
                     _savedStateAndPosition = new DockableContentStateAndPosition(
                        containerPaneGuid,
                        int.Parse(contentElement.GetAttribute("ChildIndex")),
-                       double.Parse(contentElement.GetAttribute("Width")),
-                       double.Parse(contentElement.GetAttribute("Height")),
+                       double.Parse(contentElement.GetAttribute("Width"), NumberFormatInfo.InvariantInfo),
+                       double.Parse(contentElement.GetAttribute("Height"), NumberFormatInfo.InvariantInfo),
                        (AnchorStyle)Enum.Parse(typeof(AnchorStyle), contentElement.GetAttribute("Anchor")),
                        (DockableContentState)Enum.Parse(typeof(DockableContentState), contentElement.GetAttribute("State")));
                 }

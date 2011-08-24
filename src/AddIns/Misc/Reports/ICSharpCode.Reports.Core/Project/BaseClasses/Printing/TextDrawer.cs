@@ -22,21 +22,21 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		{
 		}
 		
+		
 		public static void DrawString(Graphics graphics,string text,
-		                       Font font,Brush brush,
-		                       RectangleF rectangle,
-		                       StringTrimming stringTrimming,
-		                       ContentAlignment alignment) 
+		                              Font font,Brush brush,
+		                              RectangleF rectangle,
+		                              StringFormat format)
 		{
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
 			}
-			StringFormat stringFormat = BuildStringFormat(stringTrimming,alignment);
+			
 			graphics.DrawString(text,
 			                    font,
 			                    brush,
 			                    rectangle,
-			                    stringFormat);
+			                    format);
 		}
 		
 		
@@ -49,14 +49,17 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			if (decorator == null) {
 				throw new ArgumentNullException("decorator");
 			}
+			
 			StringFormat stringFormat = BuildStringFormat(decorator.StringTrimming,decorator.ContentAlignment);
 			
-			string formattedString = text;
-
-			if (! String.IsNullOrEmpty(decorator.FormatString)) {
-				formattedString = StandardFormatter.FormatOutput(text,decorator.FormatString,decorator.DataType,"yyy");
+			if (decorator.RightToLeft ==System.Windows.Forms.RightToLeft.Yes) {
+				stringFormat.FormatFlags = stringFormat.FormatFlags | StringFormatFlags.DirectionRightToLeft;
 			}
 			
+			var formattedString = text;
+			if (! String.IsNullOrEmpty(decorator.FormatString)) {
+				formattedString = StandardFormatter.FormatOutput(text,decorator.FormatString,decorator.DataType,String.Empty);
+			}
 			
 			graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
 			

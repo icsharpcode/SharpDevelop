@@ -18,9 +18,8 @@ namespace ICSharpCode.Reports.Addin
 		
 		public bool CanCreateContentForFile(string fileName)
 		{
-			return System.IO.Path.GetExtension(fileName).Equals(".srd",StringComparison.OrdinalIgnoreCase) ;
+			return true; // definition in .addin does extension-based filtering
 		}
-		
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
@@ -34,6 +33,16 @@ namespace ICSharpCode.Reports.Addin
 			}
 			ReportDesignerView view = ICSharpCode.Reports.Addin.Commands.StartViewCommand.SetupDesigner(file);
 			return view;
+		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return true;
+		}
+		
+		public double AutoDetectFileContent(string fileName, System.IO.Stream fileContent, string detectedMimeType)
+		{
+			return 1;
 		}
 	}
 }

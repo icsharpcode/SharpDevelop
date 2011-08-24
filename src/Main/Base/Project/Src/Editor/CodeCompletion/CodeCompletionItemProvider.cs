@@ -210,7 +210,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		}
 	}
 	
-	public class CodeCompletionItem : ICompletionItem
+	public class CodeCompletionItem : ICompletionItem, IFancyCompletionItem
 	{
 		public double Priority { get; set; }
 		
@@ -224,7 +224,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			
 			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = entity is IClass ? ConversionFlags.ShowTypeParameterList : ConversionFlags.None;
-			this.Text = ambience.Convert(entity);
+			this.Text = entity.Name;
+			this.Content = ambience.Convert(entity);
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			if (entity is IClass) {
 				// Show fully qualified Type name (called UseFullyQualifiedMemberNames though)
@@ -233,7 +234,6 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			description = ambience.Convert(entity);
 			this.Image = ClassBrowserIconService.GetIcon(entity);
 			this.Overloads = 1;
-			this.InsertGenericArguments = false;
 			
 			this.Priority = CodeCompletionDataUsageCache.GetPriority(entity.DotNetName, true);
 		}
@@ -242,17 +242,14 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			get { return entity; }
 		}
 		
+		/// <summary>
+		/// The text inserted into the code editor.
+		/// </summary>
 		public string Text { get; set; }
 		
 		public int Overloads { get; set; }
 		
 		public IImage Image { get; set; }
-		
-		/// <summary>
-		/// If true, will insert Text including generic arguments (e.g. List&lt;T&gt; or List&lt;string&gt;).
-		/// Otherwise will insert Text without generic arguments (e.g. List).
-		/// </summary>
-		public bool InsertGenericArguments { get; set; }
 		
 		protected void MarkAsUsed()
 		{
@@ -290,7 +287,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					addUsing = !IsKnownName(nameResult);
 				}
 				
-				InsertTextStripGenericArguments(context, insertedText, this.InsertGenericArguments);
+				context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
+				context.EndOffset = context.StartOffset + insertedText.Length;
 				
 				if (addUsing && nameResult != null && nameResult.CallingClass != null) {
 					var cu = nameResult.CallingClass.CompilationUnit;
@@ -299,40 +297,9 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				}
 			} else {
 				// Something else than a class or Extension method is being inserted - just insert text
-				InsertTextStripGenericArguments(context, insertedText, this.InsertGenericArguments);
+				context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
+				context.EndOffset = context.StartOffset + insertedText.Length;
 			}
-		}
-		
-		/// <summary>
-		/// Inserts the given text. Strips generic arguments from it if specified.
-		/// </summary>
-		static void InsertTextStripGenericArguments(CompletionContext context, string insertedText, bool stringGenericArguments)
-		{
-			if (!stringGenericArguments) {
-				// FIXME CodeCompletionItem should contain IReturnType and decide whether to INCLUDE generic arguments
-				// or not, not strip them.
-				insertedText = StripGenericArguments(insertedText, context);
-			}
-			context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
-			context.EndOffset = context.StartOffset + insertedText.Length;
-		}
-		
-		/// <summary>
-		/// Turns e.g. "List&lt;T&gt;" into "List&lt;"
-		/// </summary>
-		static string StripGenericArguments(string itemText, CompletionContext context)
-		{
-			if (context == null || context.Editor == null || context.Editor.Language == null ||
-			    context.Editor.Language.Properties != LanguageProperties.CSharp)
-				return itemText;
-			if (itemText != null && itemText.EndsWith(">")) {
-				int pos = itemText.LastIndexOf('<');
-				if (pos == -1)
-					return itemText;
-				int insertLen = pos;
-				itemText = itemText.Substring(0, insertLen);
-			}
-			return itemText;
 		}
 		
 		IClass GetClassOrExtensionMethodClass(IEntity selectedEntity)
@@ -396,7 +363,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 						descriptionCreated = true;
 						if (Overloads > 1) {
 							description += Environment.NewLine +
-								StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.OverloadsCounter}", new string[,] {{"NumOverloads", this.Overloads.ToString()}});
+								StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.OverloadsCounter}", new StringTagPair("NumOverloads", this.Overloads.ToString()));
 						}
 						string entityDoc = entity.Documentation;
 						if (!string.IsNullOrEmpty(entityDoc)) {
@@ -506,6 +473,17 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			return cref;
 		}
 		#endregion
+		
+		/// <summary>
+		/// The content displayed in the list.
+		/// </summary>
+		public object Content { get; set; }
+		
+		object IFancyCompletionItem.Description {
+			get {
+				return Description;
+			}
+		}
 	}
 	
 	/// <summary>
@@ -518,7 +496,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			: base(entity)
 		{
 			this.Text = nameWithSpecifiedGenericArguments;
-			this.InsertGenericArguments = true;
+			this.Content = nameWithSpecifiedGenericArguments;
 		}
 	}
 }

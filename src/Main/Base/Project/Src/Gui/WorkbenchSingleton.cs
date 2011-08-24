@@ -114,14 +114,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void OnWorkbenchUnloaded()
 		{
-			Project.ProjectService.CloseSolution();
-			NavigationService.Unload();
-			
-			ApplicationStateInfoService.UnregisterStateGetter(activeContentState);
-			
-			WorkbenchUnloaded(null, EventArgs.Empty);
-			
-			FileService.Unload();
+			if (!Project.ProjectService.IsClosingCanceled()) {
+				Project.ProjectService.CloseSolution();
+				NavigationService.Unload();
+				
+				ApplicationStateInfoService.UnregisterStateGetter(activeContentState);
+				
+				WorkbenchUnloaded(null, EventArgs.Empty);
+				
+				FileService.Unload();
+			}
 		}
 		
 		#region Safe Thread Caller

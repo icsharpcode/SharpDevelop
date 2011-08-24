@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (loader != null)	{
 				loader.Load(fileName);
 			} else {
-				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fileName}}));
+				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new StringTagPair("FileName", fileName)));
 			}
 		}
 		
@@ -242,7 +242,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void BeforeLoadSolution()
 		{
-			if (openSolution != null) {
+			if (openSolution != null && !IsClosingCanceled()) {
 				SaveSolutionPreferences();
 				WorkbenchSingleton.Workbench.CloseAllViews();
 				CloseSolution();
@@ -258,6 +258,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (!Path.IsPathRooted(fileName))
 				throw new ArgumentException("Path must be rooted!");
+			
+			if (IsClosingCanceled())
+				return;
+			
 			BeforeLoadSolution();
 			OnSolutionLoading(fileName);
 			try {
@@ -348,7 +352,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 					if (found == false) {
-						string[,] parseArgs = {{"SolutionName", Path.GetFileName(solutionFile)}, {"ProjectName", Path.GetFileName(fileName)}};
+						var parseArgs = new[] { new StringTagPair("SolutionName", Path.GetFileName(solutionFile)), new StringTagPair("ProjectName", Path.GetFileName(fileName))};
 						int res = MessageService.ShowCustomDialog(MessageService.ProductName,
 						                                          StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject}", parseArgs),
 						                                          0, 2,
@@ -378,7 +382,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				}
 			}
-			Solution solution = new Solution();
+			Solution solution = new Solution(new ProjectChangeWatcher(solutionFile));
 			solution.Name = Path.GetFileNameWithoutExtension(fileName);
 			IProjectBinding binding = ProjectBindingService.GetBindingPerProjectFile(fileName);
 			IProject project;
@@ -391,7 +395,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				}
 			} else {
-				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fileName}}));
+				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new StringTagPair("FileName", fileName)));
 				return;
 			}
 			solution.AddFolder(project);
@@ -500,7 +504,28 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public static void CloseSolution()
+		/// <summary>
+		/// Executes the OnBeforeSolutionClosing event.
+		/// </summary>
+		/// <remarks>This method must be used after CloseSolution is called.</remarks>
+		/// <returns><c>true</c>, if closing solution was canceled; <c>false</c>, otherwise.</returns>
+		internal static bool IsClosingCanceled()
+		{
+			// run onbefore closing
+			var beforeClosingArgs = new SolutionCancelEventArgs(openSolution);
+			OnBeforeSolutionClosing(beforeClosingArgs);
+			
+			return beforeClosingArgs.Cancel;
+		}
+		
+		/// <summary>
+		/// Closes the solution: cancels build, clears solution data, fires the SolutionClosing and SolutionClosed events.
+		/// <remarks>
+		/// 	Before invoking this method, one should check if the closing was canceled (<see cref="IsClosingCanceled"/>),
+		/// 	save solution and project data (e.g. files, bookmarks), then invoke CloseSolution().
+		/// </remarks>
+		/// </summary>
+		internal static void CloseSolution()
 		{
 			// If a build is running, cancel it.
 			// If we would let a build run but unload the MSBuild projects, the next project.StartBuild call
@@ -538,6 +563,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (SolutionClosing != null) {
 				SolutionClosing(null, e);
+			}
+		}
+		
+		static void OnBeforeSolutionClosing(SolutionCancelEventArgs e)
+		{
+			if (BeforeSolutionClosing != null) {
+				BeforeSolutionClosing(null, e);
 			}
 		}
 		
@@ -713,6 +745,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static event EventHandler<SolutionEventArgs> SolutionClosing;
 		public static event EventHandler                    SolutionClosed;
+		
+		/// <summary>
+		/// Raised before SolutionClosing.
+		/// <remarks>
+		/// When one modifies the e.Cancel property, should have in mind that other consumers might want to cancel the closing.<br/>
+		/// Setting e.Cancel = false might override other consumers (if they exist) e.Cancel = true, and might break other functionalities.
+		/// </remarks>
+		/// </summary>
+		public static event EventHandler<SolutionCancelEventArgs> BeforeSolutionClosing;
 		
 		/// <summary>
 		/// Raised before the solution preferences are being saved. Allows you to save

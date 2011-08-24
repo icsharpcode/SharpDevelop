@@ -235,7 +235,8 @@ namespace ICSharpCode.Svn.Commands
 								    || ex.IsKnownError(KnownError.CannotDeleteFileNotUnderVersionControl))
 								{
 									if (MessageService.ShowCustomDialog("${res:AddIns.Subversion.DeleteDirectory}",
-									                                    StringParser.Parse("${res:AddIns.Subversion.ErrorDelete}:\n", new string[,] { { "File", fullName } }) +
+									                                    StringParser.Parse("${res:AddIns.Subversion.ErrorDelete}:\n",
+									                                                       new StringTagPair("File", fullName)) +
 									                                    ex.Message, 0, 1,
 									                                    "${res:AddIns.Subversion.ForceDelete}", "${res:Global.CancelButtonText}")
 									    == 0)

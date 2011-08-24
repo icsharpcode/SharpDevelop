@@ -36,6 +36,6 @@ namespace ICSharpCode.Reports.Core
 				return groupLevel;
 			}
 		}
-		
+
 	}
 }

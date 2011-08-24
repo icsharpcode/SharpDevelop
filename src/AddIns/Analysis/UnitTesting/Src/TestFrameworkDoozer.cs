@@ -17,9 +17,9 @@ namespace ICSharpCode.UnitTesting
 			get { return false; }
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return BuildItem(codon, new TestFrameworkFactory(codon.AddIn));
+			return BuildItem(args.Codon, new TestFrameworkFactory(args.AddIn));
 		}
 		
 		public TestFrameworkDescriptor BuildItem(Codon codon, ITestFrameworkFactory factory)

@@ -71,7 +71,7 @@ namespace PythonBinding.Tests.Converter
 			convertProjectCommand.ProjectContent = mockProjectContent;
 			convertProjectCommand.FileServiceDefaultEncoding = Encoding.Unicode;
 			
-			Solution solution = new Solution();
+			Solution solution = new Solution(new MockProjectChangeWatcher());
 			sourceProject = new MSBuildBasedProject(
 				new ProjectCreateInformation() {
 					Solution = solution,

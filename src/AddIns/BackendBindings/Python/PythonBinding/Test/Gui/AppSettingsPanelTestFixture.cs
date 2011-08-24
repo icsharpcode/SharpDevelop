@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop;
@@ -11,6 +12,7 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
+using UnitTesting.Tests.Utils;
 
 namespace PythonBinding.Tests.Gui
 {
@@ -29,7 +31,7 @@ namespace PythonBinding.Tests.Gui
 			PythonMSBuildEngineHelper.InitMSBuildEngine();
 			
 			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.Solution = new Solution();
+			info.Solution = new Solution(new MockProjectChangeWatcher());
 			info.ProjectName = "Test";
 			info.OutputProjectFileName = @"C:\Projects\Test\Test.pyproj";
 			info.RootNamespace = "Test";

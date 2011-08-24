@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.Core
 {
@@ -86,19 +87,20 @@ namespace ICSharpCode.Core
 //			properties.BinarySerialize(writer);
 //		}
 //
-		public object BuildItem(object owner, ArrayList subItems)
+		
+		internal object BuildItem(BuildItemArgs args)
 		{
 			IDoozer doozer;
 			if (!AddInTree.Doozers.TryGetValue(Name, out doozer))
 				throw new CoreException("Doozer " + Name + " not found! " + ToString());
 			
-			if (!doozer.HandleConditions && conditions.Length > 0) {
-				ConditionFailedAction action = GetFailedAction(owner);
+			if (!doozer.HandleConditions) {
+				ConditionFailedAction action = Condition.GetFailedAction(args.Conditions, args.Caller);
 				if (action != ConditionFailedAction.Nothing) {
 					return null;
 				}
 			}
-			return doozer.BuildItem(owner, this, subItems);
+			return doozer.BuildItem(args);
 		}
 		
 		public override string ToString()

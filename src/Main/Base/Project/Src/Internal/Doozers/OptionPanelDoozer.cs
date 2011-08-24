@@ -42,24 +42,21 @@ namespace ICSharpCode.SharpDevelop
 		/// Creates an item with the specified sub items. And the current
 		/// Condition status for this item.
 		/// </summary>
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			string label = codon.Properties["label"];
+			string label = args.Codon["label"];
+			string id = args.Codon.Id;
 			
-			if (subItems == null || subItems.Count == 0) {
-				if (codon.Properties.Contains("class")) {
-					return new DefaultOptionPanelDescriptor(codon.Id, StringParser.Parse(label), codon.AddIn, caller, codon.Properties["class"]);
+			var subItems = args.BuildSubItems<IOptionPanelDescriptor>();
+			if (subItems.Count == 0) {
+				if (args.Codon.Properties.Contains("class")) {
+					return new DefaultOptionPanelDescriptor(id, StringParser.Parse(label), args.AddIn, args.Caller, args.Codon["class"]);
 				} else {
-					return new DefaultOptionPanelDescriptor(codon.Id, StringParser.Parse(label));
+					return new DefaultOptionPanelDescriptor(id, StringParser.Parse(label));
 				}
 			}
 			
-			List<IOptionPanelDescriptor> newList = new List<IOptionPanelDescriptor>();
-			foreach (IOptionPanelDescriptor d in subItems) {
-				newList.Add(d);
-			}
-			
-			return new DefaultOptionPanelDescriptor(codon.Id, StringParser.Parse(label), newList);
+			return new DefaultOptionPanelDescriptor(id, StringParser.Parse(label), subItems);
 		}
 	}
 }

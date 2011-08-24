@@ -19,7 +19,7 @@
 		<!--<DisplayBinding id    = "WPFDesigner"
 		                class = "ICSharpCode.WpfDesign.AddIn.WpfPrimaryDisplayBinding"
 		                insertbefore    = "Text"
-		                fileNamePattern = "\.xaml$"
+		                fileNamePattern = "\.(xaml)$"
 		                title = "WPF designer"/>-->
 		<DisplayBinding id="WPFDesigner" type="Secondary" class="ICSharpCode.WpfDesign.AddIn.WpfSecondaryDisplayBinding" fileNamePattern="\.xaml$" />
 	</Path>

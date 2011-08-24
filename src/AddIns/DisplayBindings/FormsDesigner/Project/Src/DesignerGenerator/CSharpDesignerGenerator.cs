@@ -35,7 +35,8 @@ namespace ICSharpCode.FormsDesigner
 					body = "// TODO: Implement " + eventMethodName;
 				}
 			}
-			b.AppendLine(indentation + "\t" + body);
+			string singleIndent = EditorControlService.GlobalOptions.IndentationString;
+			b.AppendLine(indentation + singleIndent + body);
 			b.AppendLine(indentation + "}");
 			return b.ToString();
 		}

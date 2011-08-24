@@ -53,13 +53,14 @@ namespace ICSharpCode.SettingsEditor
 									this.ValueColumn});
 			this.grid.DataSource = this.bindingSource;
 			this.grid.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.grid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+			this.grid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
 			this.grid.Location = new System.Drawing.Point(0, 0);
 			this.grid.Name = "grid";
 			this.grid.Size = new System.Drawing.Size(486, 362);
 			this.grid.TabIndex = 0;
 			this.grid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.GridDataError);
 			this.grid.SelectionChanged += new System.EventHandler(this.GridSelectionChanged);
+			this.grid.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.GridUserDeletingRow);
 			// 
 			// NameColumn
 			// 

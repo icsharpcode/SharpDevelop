@@ -2,6 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop
@@ -12,6 +15,8 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public interface IDisplayBinding
 	{
+		bool IsPreferredBindingForFile(string fileName);
+		
 		/// <remarks>
 		/// This function determines, if this display binding is able to create
 		/// an IViewContent for the file given by fileName.
@@ -23,6 +28,8 @@ namespace ICSharpCode.SharpDevelop
 		/// </returns>
 		bool CanCreateContentForFile(string fileName);
 		
+		double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType);
+		
 		/// <remarks>
 		/// Creates a new IViewContent object for the file fileName
 		/// </remarks>
@@ -31,4 +38,6 @@ namespace ICSharpCode.SharpDevelop
 		/// </returns>
 		IViewContent CreateContentForFile(OpenedFile file);
 	}
+	
+
 }

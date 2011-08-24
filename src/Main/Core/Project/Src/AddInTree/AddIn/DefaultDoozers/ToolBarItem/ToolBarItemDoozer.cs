@@ -51,9 +51,9 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return new ToolbarItemDescriptor(caller, codon, subItems);
+			return new ToolbarItemDescriptor(args.Caller, args.Codon, args.BuildSubItems<object>());
 		}
 	}
 	

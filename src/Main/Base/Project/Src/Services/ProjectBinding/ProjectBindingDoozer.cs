@@ -42,9 +42,9 @@ namespace ICSharpCode.SharpDevelop
 		/// Creates an item with the specified sub items. And the current
 		/// Condition status for this item.
 		/// </summary>
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return new ProjectBindingDescriptor(codon);
+			return new ProjectBindingDescriptor(args.Codon);
 		}
 	}
 }

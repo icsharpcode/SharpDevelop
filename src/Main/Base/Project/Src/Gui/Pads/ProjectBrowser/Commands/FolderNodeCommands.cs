@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			if (caption == null)
 				caption = "${res:ProjectComponent.ContextMenu.AddExistingFiles.ReplaceExistingFile.Title}";
-			string text = StringParser.Parse("${res:ProjectComponent.ContextMenu.AddExistingFiles.ReplaceExistingFile}", new string[,] {{"FileName", fileName}});
+			string text = StringParser.Parse("${res:ProjectComponent.ContextMenu.AddExistingFiles.ReplaceExistingFile}", new StringTagPair("FileName", fileName));
 			if (replacingMultiple) {
 				return (ReplaceExistingFile)
 					MessageService.ShowCustomDialog(caption, text,

@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Globals;
 
 /// <summary>
 /// This Class is the BaseClass for <see cref="BaseTextItem"></see>
@@ -30,7 +31,6 @@ namespace ICSharpCode.Reports.Core {
 			this.FrameColor = Color.Black;
 			this.ForeColor = Color.Black;
 			this.Font = GlobalValues.DefaultFont;
-			this.Visible = true;
 		}
 		
 		
@@ -110,8 +110,9 @@ namespace ICSharpCode.Reports.Core {
 		
 		
 		#region Properties
+		public bool Visible {get;set;}
 		
-		public virtual bool Visible {get;set;}
+		public  bool VisibleInReport {get;set;}
 		
 		public bool CanGrow {get;set;}
 			

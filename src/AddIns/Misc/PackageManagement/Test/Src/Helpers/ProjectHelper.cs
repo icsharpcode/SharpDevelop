@@ -16,7 +16,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public static TestableProject CreateTestProject(string name)
 		{
-			Solution solution = new Solution();
+			Solution solution = new Solution(new MockProjectChangeWatcher());
 			solution.FileName = @"d:\projects\Test\TestSolution.sln";
 			
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();

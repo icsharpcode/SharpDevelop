@@ -31,5 +31,9 @@ namespace ICSharpCode.ILAsmBinding
 		{
 			return new ILAsmProject(info);
 		}
+		
+		public bool HandlingMissingProject {
+			get { return false; }
+		}
 	}
 }
