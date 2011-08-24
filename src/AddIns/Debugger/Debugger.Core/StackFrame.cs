@@ -193,10 +193,6 @@ namespace Debugger
 		
 		void AsyncStep(bool stepIn)
 		{
-			if (this.MethodInfo.DebugModule.HasSymbols == false && process.Options.StepOverNoSymbols) {
-				throw new DebuggerException("Unable to step. No symbols loaded.");
-			}
-			
 			int[] stepRanges;
 			if (ILRanges == null) {
 				SourcecodeSegment nextSt = NextStatement;

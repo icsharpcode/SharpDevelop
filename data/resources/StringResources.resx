@@ -5803,6 +5803,9 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols" xml:space="preserve">
     <value>You cannot switch to a function without symbols.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
+    <value>You cannot switch to a function without symbols without enabling decompiled code options.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[External methods]</value>
     <comment>Show in the callstack instead of external methods (without symbols)</comment>
@@ -6116,6 +6119,12 @@ Shows the full callstack of the error.</comment>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.ThreadSwitch" xml:space="preserve">
     <value>Thread switch</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
+    <value>You cannot switch to a thread in decompiled code without enabling decomplied code options.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
+    <value>You cannot switch to a thread with no available frame.</value>
   </data>
   <data name="MainWindow.Windows.Debug.ToggleMethodView" xml:space="preserve">
     <value>Toggle Method View</value>

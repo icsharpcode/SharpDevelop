@@ -52,12 +52,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return "The process is running";
 			}
 			try {
-				var context = !process.IsInExternalCode ? process.SelectedStackFrame : process.SelectedThread.MostRecentStackFrame;
 				var debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-				object data = debugger.debuggerDecompilerService.GetLocalVariableIndex(context.MethodInfo.DeclaringType.MetadataToken, 
-				                                                                       context.MethodInfo.MetadataToken, 
+				StackFrame frame = debugger.DebuggedProcess.GetCurrentExecutingFrame();
+				if (frame == null) return "No current execution frame";
+				
+				object data = debugger.debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
+				                                                                       frame.MethodInfo.MetadataToken,
 				                                                                       code);
-				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, context, data);
+				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, frame, data);
 				return ExpressionEvaluator.FormatValue(val);
 			} catch (GetValueException e) {
 				return e.Message;
@@ -112,8 +114,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (this.process == null || this.process.IsRunning)
 				return;
 			
-			var context = !process.IsInExternalCode ? process.SelectedStackFrame : process.SelectedThread.MostRecentStackFrame;
-			if (context == null)
+			StackFrame frame = this.process.GetCurrentExecutingFrame();
+			if (frame == null)
 				return;
 			
 			foreach (char ch in e.Text) {
@@ -125,11 +127,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void ShowDotCompletion(string currentText)
 		{
-			var context = !process.IsInExternalCode ? process.SelectedStackFrame : process.SelectedThread.MostRecentStackFrame;
-			if (context == null)
+			StackFrame frame = this.process.GetCurrentExecutingFrame();
+			if (frame == null)
 				return;
 			
-			var seg = context.NextStatement;
+			var seg = frame.NextStatement;
+			if (seg == null)
+				return;
 			
 			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
 			var info = ParserService.GetParseInformation(seg.Filename);

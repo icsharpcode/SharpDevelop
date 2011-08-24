@@ -131,9 +131,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				console.JumpToLine(line);
 				
 			} catch (System.Exception ex) {
-				#if DEBUG
 				LoggingService.Error(ex.Message);
-				#endif
 			}
 		}
 		

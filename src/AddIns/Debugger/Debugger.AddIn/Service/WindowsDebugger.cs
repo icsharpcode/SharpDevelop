@@ -85,15 +85,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			set;
 		}
 		
-		public bool IsInExternalCode {
-			get {
-				if (debuggedProcess == null)
-					return true;
-				
-				return debuggedProcess.IsInExternalCode;
-			}
-		}
-		
 		protected virtual void OnProcessSelected(ProcessEventArgs e)
 		{
 			if (ProcessSelected != null) {
@@ -494,11 +485,11 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			}
 			
-			var frame = debuggedProcess.SelectedStackFrame ?? debuggedProcess.SelectedThread.MostRecentStackFrame;
+			var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 			if (frame == null) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
-				if (IsInExternalCode) {
+				if (!frame.HasSymbols) {
 					// get frame info from external code mappings
 					frame = GetStackFrame();
 				}
@@ -519,11 +510,11 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			}
 			
-			var frame = debuggedProcess.SelectedStackFrame ?? debuggedProcess.SelectedThread.MostRecentStackFrame;
+			var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 			if (frame == null) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepOver}");
 			} else {
-				if (IsInExternalCode) {
+				if (!frame.HasSymbols) {
 					// get frame info from external code mappings
 					frame = GetStackFrame();
 				}
@@ -544,11 +535,11 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			}
 			
-			var frame = debuggedProcess.SelectedStackFrame ?? debuggedProcess.SelectedThread.MostRecentStackFrame;
+			var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 			if (frame == null) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
-				if (IsInExternalCode) {
+				if (!frame.HasSymbols) {
 					// get frame info from external code mappings
 					frame = GetStackFrame();
 				}
@@ -580,13 +571,13 @@ namespace ICSharpCode.SharpDevelop.Services
 				return null;
 			}
 			
-			var stackFrame = !debuggedProcess.IsInExternalCode ? debuggedProcess.SelectedStackFrame : debuggedProcess.SelectedThread.MostRecentStackFrame;
+			var frame = debuggedProcess.GetCurrentExecutingFrame();
 			try {
-				object data = debuggerDecompilerService.GetLocalVariableIndex(stackFrame.MethodInfo.DeclaringType.MetadataToken,
-				                                                              stackFrame.MethodInfo.MetadataToken,
+				object data = debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
+				                                                              frame.MethodInfo.MetadataToken,
 				                                                              variableName);
 				// evaluate expression
-				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, stackFrame, data);
+				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, frame, data);
 			} catch {
 				throw;
 			}
@@ -651,7 +642,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				var image = ExpressionNode.GetImageForLocalVariable(out imageName);
 				ExpressionNode expressionNode = new ExpressionNode(image, variableName, tooltipExpression);
 				expressionNode.ImageName = imageName;
-				return new DebuggerTooltipControl(logicalPosition, expressionNode) { ShowPins = !IsInExternalCode };
+				return new DebuggerTooltipControl(logicalPosition, expressionNode) { ShowPins = debuggedProcess.SelectedThread.MostRecentStackFrame.HasSymbols };
 			} catch (GetValueException) {
 				return null;
 			}
@@ -1040,20 +1031,45 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			
 			WorkbenchSingleton.MainWindow.Activate();
-			DebuggerService.RemoveCurrentLineMarker();
 			
-			if (!IsInExternalCode) {
-				SourcecodeSegment nextStatement = debuggedProcess.NextStatement;
-				if (nextStatement != null) {
-					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
+			
+			if (debuggedProcess.IsSelectedFrameForced()) {
+				if (debuggedProcess.SelectedStackFrame != null && debuggedProcess.SelectedStackFrame.HasSymbols) {
+					JumpToSourceCode();
+				} else {
+					JumpToDecompiledCode(debuggedProcess.SelectedStackFrame);
 				}
 			} else {
-				JumpToDecompiledCode();
+				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
+				// other pause reasons
+				if (frame.HasSymbols) {
+					JumpToSourceCode();
+				} else {
+					// use most recent stack frame because we don't have the symbols
+					JumpToDecompiledCode(debuggedProcess.SelectedThread.MostRecentStackFrame);
+				}
+			}
+		}
+
+		void JumpToSourceCode()
+		{
+			if (debuggedProcess == null || debuggedProcess.SelectedThread == null)
+				return;
+			
+			SourcecodeSegment nextStatement = debuggedProcess.NextStatement;
+			if (nextStatement != null) {
+				DebuggerService.RemoveCurrentLineMarker();
+				DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 			}
 		}
 		
-		void JumpToDecompiledCode()
+		void JumpToDecompiledCode(Debugger.StackFrame frame)
 		{
+			if (frame == null) {
+				LoggingService.Error("No stack frame!");
+				return;
+			}
+			
 			if (debuggerDecompilerService == null) {
 				LoggingService.Warn("No IDebuggerDecompilerService found!");
 				return;
@@ -1064,11 +1080,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				LoggingService.Info("Decompiled code debugging is disabled!");
 				return;
 			}
-			
-			// use most recent stack frame because we don't have the symbols
-			var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
-			Debug.Assert(frame != null);
-			
+			DebuggerService.RemoveCurrentLineMarker();
 			// get external data
 			int typeToken = frame.MethodInfo.DeclaringType.MetadataToken;
 			int methodToken = frame.MethodInfo.MetadataToken;
@@ -1087,8 +1099,8 @@ namespace ICSharpCode.SharpDevelop.Services
 				                             line);
 			} else {
 				// no line => do decompilation
-				NavigationService.NavigateTo(debugType.DebugModule.FullPath, 
-				                             debugType.FullNameWithoutGenericArguments, 
+				NavigationService.NavigateTo(debugType.DebugModule.FullPath,
+				                             debugType.FullNameWithoutGenericArguments,
 				                             string.Empty);
 			}
 		}
