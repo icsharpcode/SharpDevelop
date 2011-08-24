@@ -29,6 +29,9 @@ namespace ICSharpCode.FormsDesigner
 		ServiceContainer container;
 		DesignerLoader loader;
 		IFormsDesignerLoggingService logger;
+		IDesignerGenerator generator;
+		bool unloading;
+		FormsDesignerAppDomainCreationProperties properties;
 		
 		public string DesignSurfaceName {
 			get {
@@ -82,6 +85,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		void Initialize(FormsDesignerAppDomainCreationProperties properties)
 		{
+			this.properties = properties;
 			this.container = new DefaultServiceContainer();
 			container.AddService(typeof(FormsDesignerAppDomainHost), this);
 			container.AddService(typeof(IFormsDesignerLoggingService), logger = new FormsDesignerLoggingServiceProxy(properties.Logger));
@@ -150,15 +154,6 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		public event EventHandler<ComponentChangedEventArgsProxy> ComponentChanged;
-		
-		protected virtual void OnComponentChanged(ComponentChangedEventArgsProxy e)
-		{
-			if (ComponentChanged != null) {
-				ComponentChanged(this, e);
-			}
-		}
-		
 		public event EventHandler<ComponentEventArgsProxy> ComponentAdded;
 		
 		protected virtual void OnComponentAdded(ComponentEventArgsProxy e)
@@ -204,6 +199,24 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		void ComponentChanged(object sender, ComponentChangedEventArgs e)
+		{
+			bool loading = IsLoaderLoading;
+			LoggingService.Debug("Forms designer: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + this.unloading);
+			if (!loading && !unloading) {
+				try {
+					properties.FormsDesignerProxy.MakeDirty();
+					if (e.Component != null && e.Member != null && e.Member.Name == "Name" &&
+					    e.NewValue is string && !object.Equals(e.OldValue, e.NewValue)) {
+						// changing the name of the component
+						generator.NotifyComponentRenamed(e.Component, (string)e.NewValue, (string)e.OldValue);
+					}
+				} catch (Exception ex) {
+					MessageService.ShowException(ex, "");
+				}
+			}
+		}
+		
 		void InitializeEvents()
 		{
 			designSurface.Loading += designSurface_Loading;
@@ -214,7 +227,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			IComponentChangeService componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
 			if (componentChangeService != null) {
-				componentChangeService.ComponentChanged += componentChangeService_ComponentChanged;
+				componentChangeService.ComponentChanged += ComponentChanged;
 				componentChangeService.ComponentAdded   += componentChangeService_ComponentAdded;
 				componentChangeService.ComponentRemoved += componentChangeService_ComponentRemoved;
 				componentChangeService.ComponentRename  += componentChangeService_ComponentRename;
@@ -252,11 +265,6 @@ namespace ICSharpCode.FormsDesigner
 		{
 			OnComponentAdded(new ComponentEventArgsProxy { Component = e.Component });
 		}
-
-		void componentChangeService_ComponentChanged(object sender, ComponentChangedEventArgs e)
-		{
-			OnComponentChanged(new ComponentChangedEventArgsProxy { Component = e.Component, Member = e.Member, NewValue = e.NewValue, OldValue = e.OldValue });
-		}
 		
 		void designSurface_Unloaded(object sender, EventArgs e)
 		{
@@ -265,6 +273,7 @@ namespace ICSharpCode.FormsDesigner
 
 		void designSurface_Unloading(object sender, EventArgs e)
 		{
+			unloading = true;
 			OnDesignSurfaceUnloading(e);
 		}
 
@@ -275,11 +284,13 @@ namespace ICSharpCode.FormsDesigner
 
 		void designSurface_Loaded(object sender, LoadedEventArgs e)
 		{
+			unloading = false;
 			OnDesignSurfaceLoaded(e);
 		}
 
 		void designSurface_Loading(object sender, EventArgs e)
 		{
+			unloading = false;
 			OnDesignSurfaceLoading(e);
 		}
 		#endregion
@@ -307,6 +318,7 @@ namespace ICSharpCode.FormsDesigner
 		{
 			var loader = new SharpDevelopDesignerLoader(this, generator, loaderProvider.CreateLoader(generator));
 			var provider = loader.GetCodeDomProviderInstance();
+			this.generator = generator;
 			if (provider != null) {
 				AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), provider);
 			}

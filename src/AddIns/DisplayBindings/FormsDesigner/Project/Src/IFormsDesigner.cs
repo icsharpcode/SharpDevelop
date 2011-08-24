@@ -26,6 +26,8 @@ namespace ICSharpCode.FormsDesigner
 		void ShowSourceCode(IComponent component, EventDescriptor edesc, string methodName);
 		
 		SharpDevelopDesignerOptions DesignerOptions { get; }
+		
+		void MakeDirty();
 	}
 	
 	public enum ResourceType
