@@ -194,7 +194,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public static IList<ITypeDefinition> GetPossibleStartupObjects(IProject project)
 		{
 			List<ITypeDefinition> results = new List<ITypeDefinition>();
-			IProjectContent pc = ParserService.GetProjectContent(project);
+			IProjectContent pc = project.ProjectContent;
 			if (pc != null) {
 				foreach (ITypeDefinition c in pc.GetTypes()) {
 					foreach (IMethod m in c.Methods) {

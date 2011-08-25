@@ -1087,5 +1087,34 @@ namespace ICSharpCode.SharpDevelop.Parser
 			LoggingService.Debug("Resolved " + location + " to " + rr);
 			return rr;
 		}
+		
+		public static Task<ResolveResult> ResolveAsync(FileName fileName, TextLocation location, ITextSource fileContent = null,
+		                                               CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var entry = GetFileEntry(fileName, true);
+			if (entry.parser == null)
+				return NullTask<ResolveResult>();
+			return entry.ParseAsync(fileContent).ContinueWith(
+				delegate (Task<ParseInformation> parseInfoTask) {
+					var parseInfo = parseInfoTask.Result;
+					if (parseInfo == null)
+						return null;
+					IProject project = GetProject(parseInfo.ProjectContent);
+					var context = project != null ? project.TypeResolveContext : GetDefaultTypeResolveContext();
+					ResolveResult rr;
+					using (var ctx = context.Synchronize()) {
+						rr = entry.parser.Resolve(parseInfo, location, ctx, cancellationToken);
+					}
+					LoggingService.Debug("Resolved " + location + " to " + rr);
+					return rr;
+				}, cancellationToken);
+		}
+		
+		static Task<T> NullTask<T>() where T : class
+		{
+			TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
+			tcs.SetResult(null);
+			return tcs.Task;
+		}
 	}
 }

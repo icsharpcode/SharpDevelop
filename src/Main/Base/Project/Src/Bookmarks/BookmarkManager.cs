@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		                                  Predicate<SDBookmark> canToggle,
 		                                  Func<TextLocation, SDBookmark> bookmarkFactory)
 		{
-			foreach (SDBookmark bookmark in GetBookmarks(FileName.Create(editor.FileName))) {
+			foreach (SDBookmark bookmark in GetBookmarks(editor.FileName)) {
 				if (canToggle(bookmark) && bookmark.LineNumber == line) {
 					BookmarkManager.RemoveMark(bookmark);
 					return;

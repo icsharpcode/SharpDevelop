@@ -462,7 +462,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						// Immediately parse on enter.
 						// This ensures we have up-to-date CC info about the method boundary when a user
 						// types near the end of a method.
-						ParserService.ParseAsync(this.FileName, this.DocumentAdapter.CreateSnapshot());
+						ParserService.ParseAsync(this.FileName, this.Document.CreateSnapshot());
 					}
 				}
 			}

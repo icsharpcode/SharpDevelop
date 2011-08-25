@@ -241,7 +241,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			List<ITypeDefinition> list = new List<ITypeDefinition>();
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
-					IProjectContent projectContent = ParserService.GetProjectContent(project);
+					IProjectContent projectContent = project.ProjectContent;
 					if (projectContent != null) {
 						foreach (ITypeDefinition c in projectContent.GetAllTypes()) {
 							string className = c.Name;

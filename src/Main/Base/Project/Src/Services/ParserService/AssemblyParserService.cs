@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -11,6 +13,7 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Tasks;
 using Mono.Cecil;
@@ -130,10 +133,17 @@ namespace ICSharpCode.SharpDevelop.Parser
 		}
 		#endregion
 		
-		#region Load Assembly + XML documentation
-		static IProjectContent LoadAssembly(string fileName, CancellationToken cancellationToken)
+		#region Load Assembly
+		static IProjectContent LoadAssembly(FileName fileName, CancellationToken cancellationToken)
 		{
+			DateTime lastWriteTime = File.GetLastWriteTimeUtc(fileName);
+			string cacheFileName = GetCacheFileName(fileName);
+			IProjectContent pc = TryReadFromCache(cacheFileName, lastWriteTime);
+			if (pc != null)
+				return pc;
+			
 			LoggingService.Debug("Loading " + fileName);
+			cancellationToken.ThrowIfCancellationRequested();
 			var param = new ReaderParameters();
 			param.AssemblyResolver = new DummyAssemblyResolver();
 			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);
@@ -151,9 +161,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 					LoggingService.Warn("Ignoring error while reading xml doc from " + xmlDocFile, ex);
 				}
 			}
-			l.InterningProvider = new SimpleInterningProvider();
 			l.CancellationToken = cancellationToken;
-			return l.LoadAssembly(asm);
+			pc = l.LoadAssembly(asm);
+			SaveToCache(cacheFileName, lastWriteTime, pc);
+			return pc;
 		}
 		
 		// used to prevent Cecil from loading referenced assemblies
@@ -179,7 +190,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 				return null;
 			}
 		}
+		#endregion
 		
+		#region Lookup XML documentation
 		static readonly string referenceAssembliesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Reference Assemblies\Microsoft\\Framework");
 		static readonly string frameworkPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework");
 		
@@ -211,6 +224,96 @@ namespace ICSharpCode.SharpDevelop.Parser
 		static string LookupLocalizedXmlDoc(string fileName)
 		{
 			return XmlDocumentationProvider.LookupLocalizedXmlDoc(fileName);
+		}
+		#endregion
+		
+		#region DomPersistence
+		/// <summary>
+		/// Gets/Sets the directory for cached project contents.
+		/// </summary>
+		public static string DomPersistencePath { get; set; }
+		
+		static string GetCacheFileName(FileName assemblyFileName)
+		{
+			if (DomPersistencePath == null)
+				return null;
+			string cacheFileName = Path.GetFileNameWithoutExtension(assemblyFileName);
+			if (cacheFileName.Length > 32)
+				cacheFileName = cacheFileName.Substring(cacheFileName.Length - 32); // use 32 last characters
+			cacheFileName = Path.Combine(DomPersistencePath, cacheFileName + "." + assemblyFileName.GetHashCode().ToString("x8") + ".dat");
+			return cacheFileName;
+		}
+		
+		static IProjectContent TryReadFromCache(string cacheFileName, DateTime lastWriteTime)
+		{
+			if (cacheFileName == null || !File.Exists(cacheFileName))
+				return null;
+			LoggingService.Debug("Deserializing " + cacheFileName);
+			try {
+				using (FileStream fs = new FileStream(cacheFileName, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete, 4096, FileOptions.SequentialScan)) {
+					using (BinaryReader reader = new BinaryReaderWith7BitEncodedInts(fs)) {
+						if (reader.ReadInt64() != lastWriteTime.Ticks) {
+							LoggingService.Debug("Timestamp mismatch, deserialization aborted.");
+							return null;
+						}
+						FastSerializer s = new FastSerializer();
+						s.SerializationBinder = new MySerializationBinder();
+						return (IProjectContent)s.Deserialize(reader);
+					}
+				}
+			} catch (IOException ex) {
+				LoggingService.Warn(ex);
+				return null;
+			} catch (UnauthorizedAccessException ex) {
+				LoggingService.Warn(ex);
+				return null;
+			} catch (SerializationException ex) {
+				LoggingService.Warn(ex);
+				return null;
+			}
+		}
+		
+		static void SaveToCache(string cacheFileName, DateTime lastWriteTime, IProjectContent pc)
+		{
+			if (cacheFileName == null)
+				return;
+			LoggingService.Debug("Serializing to " + cacheFileName);
+			Directory.CreateDirectory(DomPersistencePath);
+			using (FileStream fs = new FileStream(cacheFileName, FileMode.Create, FileAccess.Write)) {
+				using (BinaryWriter writer = new BinaryWriterWith7BitEncodedInts(fs)) {
+					writer.Write(lastWriteTime.Ticks);
+					FastSerializer s = new FastSerializer();
+					s.SerializationBinder = new MySerializationBinder();
+					s.Serialize(writer, pc);
+				}
+			}
+		}
+		
+		sealed class MySerializationBinder : SerializationBinder
+		{
+			public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
+			{
+				if (serializedType.Assembly == typeof(IProjectContent).Assembly) {
+					assemblyName = "NRefactory";
+				} else {
+					assemblyName = serializedType.Assembly.FullName;
+				}
+				typeName = serializedType.FullName;
+			}
+			
+			public override Type BindToType(string assemblyName, string typeName)
+			{
+				Assembly asm;
+				switch (assemblyName) {
+					case "NRefactory":
+						asm = typeof(IProjectContent).Assembly;
+						break;
+					default:
+						asm = Assembly.Load(assemblyName);
+						break;
+				}
+				return asm.GetType(typeName);
+			}
 		}
 		#endregion
 		

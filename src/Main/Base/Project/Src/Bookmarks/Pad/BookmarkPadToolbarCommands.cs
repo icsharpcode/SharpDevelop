@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			// get current mark
 			var mark = item.Mark as SDBookmark;
 			int line = mark.LineNumber;
-			var fileName = new FileName(mark.FileName);
+			var fileName = mark.FileName;
 			
 			SDBookmark bookmark;
 			if (item.Mark is BreakpointBookmark) {

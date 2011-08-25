@@ -151,7 +151,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				
 				// we set the file name after loading because this will place the fold markers etc.
-				codeEditor.FileName = FileName.Create(file.FileName);
+				codeEditor.FileName = file.FileName;
 				BookmarksAttach();
 			} finally {
 				isLoading = false;
@@ -163,7 +163,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			base.OnFileNameChanged(file);
 			if (file == PrimaryFile) {
 				FileName oldFileName = codeEditor.FileName;
-				FileName newFileName = FileName.Create(file.FileName);
+				FileName newFileName = file.FileName;
 				
 				if (!string.IsNullOrEmpty(oldFileName))
 					ParserService.ClearParseInformation(oldFileName);
@@ -211,25 +211,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void BookmarksAttach()
 		{
 			foreach (SDBookmark bookmark in BookmarkManager.GetBookmarks(codeEditor.FileName)) {
-				bookmark.Document = codeEditor.DocumentAdapter;
+				bookmark.Document = codeEditor.Document;
 				codeEditor.IconBarManager.Bookmarks.Add(bookmark);
 			}
 			BookmarkManager.Added += BookmarkManager_Added;
 			BookmarkManager.Removed += BookmarkManager_Removed;
 			
-			PermanentAnchorService.AttachDocument(codeEditor.FileName, codeEditor.DocumentAdapter);
+			PermanentAnchorService.AttachDocument(codeEditor.FileName, codeEditor.Document);
 		}
 
 		void BookmarksDetach()
 		{
 			if (codeEditor.FileName != null) {
-				PermanentAnchorService.DetachDocument(codeEditor.FileName, codeEditor.DocumentAdapter);
+				PermanentAnchorService.DetachDocument(codeEditor.FileName, codeEditor.Document);
 			}
 			
 			BookmarkManager.Added -= BookmarkManager_Added;
 			BookmarkManager.Removed -= BookmarkManager_Removed;
 			foreach (SDBookmark bookmark in codeEditor.IconBarManager.Bookmarks.OfType<SDBookmark>()) {
-				if (bookmark.Document == codeEditor.DocumentAdapter) {
+				if (bookmark.Document == codeEditor.Document) {
 					bookmark.Document = null;
 				}
 			}
@@ -239,7 +239,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void BookmarkManager_Removed(object sender, BookmarkEventArgs e)
 		{
 			codeEditor.IconBarManager.Bookmarks.Remove(e.Bookmark);
-			if (e.Bookmark.Document == codeEditor.DocumentAdapter) {
+			if (e.Bookmark.Document == codeEditor.Document) {
 				e.Bookmark.Document = null;
 			}
 		}
@@ -248,13 +248,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (FileUtility.IsEqualFileName(this.PrimaryFileName, e.Bookmark.FileName)) {
 				codeEditor.IconBarManager.Bookmarks.Add(e.Bookmark);
-				e.Bookmark.Document = codeEditor.DocumentAdapter;
+				e.Bookmark.Document = codeEditor.Document;
 			}
 		}
 		
 		void BookmarksNotifyNameChange(FileName oldFileName, FileName newFileName)
 		{
-			PermanentAnchorService.RenameDocument(oldFileName, newFileName, codeEditor.DocumentAdapter);
+			PermanentAnchorService.RenameDocument(oldFileName, newFileName, codeEditor.Document);
 			
 			foreach (SDBookmark bookmark in codeEditor.IconBarManager.Bookmarks.OfType<SDBookmark>()) {
 				bookmark.FileName = newFileName;
@@ -321,7 +321,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public IDocument GetDocumentForFile(OpenedFile file)
 		{
 			if (file == this.PrimaryFile)
-				return codeEditor.DocumentAdapter;
+				return codeEditor.Document;
 			else
 				return null;
 		}

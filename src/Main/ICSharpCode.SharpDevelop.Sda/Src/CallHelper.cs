@@ -12,11 +12,11 @@ using System.Resources;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Sda
 {
@@ -49,8 +49,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			if (properties.PropertiesName != null) {
 				startup.PropertiesName = properties.PropertiesName;
 			}
-			#warning reimplement DOM persistence, or remove the setting
-			//AssemblyParserService.DomPersistencePath = properties.DomPersistencePath;
+			AssemblyParserService.DomPersistencePath = properties.DomPersistencePath;
 			
 			if (properties.ApplicationRootPath != null) {
 				FileUtility.ApplicationRootPath = properties.ApplicationRootPath;

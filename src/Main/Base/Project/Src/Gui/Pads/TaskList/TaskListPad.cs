@@ -195,7 +195,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				case 1:
 					return ProjectService.CurrentProject != null && ProjectService.CurrentProject.FindFile(item.FileName) != null;
 				case 2:
-					return WorkbenchSingleton.Workbench.ActiveViewContent != null && WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == FileName.Create(item.FileName);
+					return WorkbenchSingleton.Workbench.ActiveViewContent != null && WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == item.FileName;
 				case 3:
 					return current != null && itemClass != null && current.Namespace == itemClass.Namespace;
 				case 4:
