@@ -295,5 +295,23 @@ select new { c.Name, o.OrderID, o.Total }",
 						new QuerySelectClause { Expression = new IdentifierExpression("g") }
 					}});
 		}
+		
+		[Test]
+		public void QueryWithGroupBy()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"from a in b group c by d",
+				new QueryExpression {
+					Clauses = {
+						new QueryFromClause {
+							Identifier = "a",
+							Expression = new IdentifierExpression("b")
+						},
+						new QueryGroupClause {
+							Projection = new IdentifierExpression("c"),
+							Key = new IdentifierExpression("d")
+						}
+					}});
+		}
 	}
 }

@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public virtual void SetUp()
 		{
 			project = new SimpleProjectContent();
-			context = new CompositeTypeResolveContext(new [] { project, mscorlib });
+			context = new CompositeTypeResolveContext(new [] { project, mscorlib, CecilLoaderTests.SystemCore });
 			resolver = new CSharpResolver(context);
 			resolver.UsingScope = MakeUsingScope("");
 		}

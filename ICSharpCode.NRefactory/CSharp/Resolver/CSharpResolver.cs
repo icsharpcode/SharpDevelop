@@ -197,6 +197,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		/// <summary>
 		/// Opens a new scope for local variables.
+		/// This works like <see cref="PushBlock"/>, but additionally sets <see cref="IsWithinLambdaExpression"/> to true.
 		/// </summary>
 		public void PushLambdaBlock()
 		{

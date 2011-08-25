@@ -122,7 +122,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					else
 						supportsInternDict.Add(s, s);
 				}
-			} else if (obj is IType || Type.GetTypeCode(obj.GetType()) >= TypeCode.Boolean) {
+			} else if (Type.GetTypeCode(obj.GetType()) >= TypeCode.Boolean) {
+				// IType cannot be interned by value because ITypeParameters with different names are considered
+				// equal (for object.Equals), but should not be interned.
 				object output;
 				if (byValueDict.TryGetValue(obj, out output))
 					obj = (T)output;

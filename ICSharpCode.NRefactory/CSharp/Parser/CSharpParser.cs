@@ -2853,10 +2853,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				var result = new QueryGroupClause ();
 				var location = LocationsBag.GetLocations (groupBy);
 				result.AddChild (new CSharpTokenNode (Convert (groupBy.Location), "group".Length), QueryGroupClause.GroupKeywordRole);
-				result.AddChild ((Expression)groupBy.ElementSelector.Accept (this), QueryGroupClause.KeyRole);
+				result.AddChild ((Expression)groupBy.ElementSelector.Accept (this), QueryGroupClause.ProjectionRole);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "by".Length), QueryGroupClause.ByKeywordRole);
-				result.AddChild ((Expression)groupBy.Expr.Accept (this), QueryGroupClause.ProjectionRole);
+				result.AddChild ((Expression)groupBy.Expr.Accept (this), QueryGroupClause.KeyRole);
 				return result;
 			}
 			

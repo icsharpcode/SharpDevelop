@@ -22,7 +22,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
-	[TestFixture, Ignore("LINQ not yet implemented")]
+	[TestFixture]
 	public class LinqTests : ResolverTestBase
 	{
 		[Test]

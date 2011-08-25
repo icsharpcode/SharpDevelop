@@ -59,6 +59,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		CSharpResolver resolver;
 		SimpleNameLookupMode currentTypeLookupMode = SimpleNameLookupMode.Type;
+		/// <summary>Resolve result of the current LINQ query</summary>
+		ResolveResult currentQueryResult;
 		readonly ParsedFile parsedFile;
 		readonly Dictionary<AstNode, ResolveResult> resolveResultCache = new Dictionary<AstNode, ResolveResult>();
 		readonly Dictionary<AstNode, CSharpResolver> resolverBeforeDict = new Dictionary<AstNode, CSharpResolver>();
@@ -123,16 +125,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			var oldMode = this.mode;
 			var oldResolver = this.resolver;
 			var oldTypeLookupMode = this.currentTypeLookupMode;
+			var oldQueryType = this.currentQueryResult;
 			try {
 				this.mode = (navigator == null) ? ResolveVisitorNavigationMode.ResolveAll : ResolveVisitorNavigationMode.Resolve;
 				this.resolver = storedContext;
 				this.currentTypeLookupMode = SimpleNameLookupMode.Type;
+				this.currentQueryResult = null;
 				
 				action();
 			} finally {
 				this.mode = oldMode;
 				this.resolver = oldResolver;
 				this.currentTypeLookupMode = oldTypeLookupMode;
+				this.currentQueryResult = oldQueryType;
 			}
 		}
 		#endregion
@@ -222,6 +227,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		protected override ResolveResult VisitChildren(AstNode node, object data)
 		{
 			Log.WriteLine("ResolveVisitor: unhandled node " + node.GetType().Name);
+			Console.WriteLine("ResolveVisitor: unhandled node " + node.GetType().Name);
 			ScanChildren(node);
 			return null;
 		}
@@ -2052,6 +2058,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
+		public override ResolveResult VisitSwitchStatement(SwitchStatement switchStatement, object data)
+		{
+			resolver.PushBlock();
+			ScanChildren(switchStatement);
+			resolver.PopBlock();
+			return voidResult;
+		}
+		
 		public override ResolveResult VisitCatchClause(CatchClause catchClause, object data)
 		{
 			resolver.PushBlock();
@@ -2179,6 +2193,60 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
 			ScanChildren(expressionStatement);
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitLockStatement(LockStatement lockStatement, object data)
+		{
+			ScanChildren(lockStatement);
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitEmptyStatement(EmptyStatement emptyStatement, object data)
+		{
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitBreakStatement(BreakStatement breakStatement, object data)
+		{
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitContinueStatement(ContinueStatement continueStatement, object data)
+		{
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitThrowStatement(ThrowStatement throwStatement, object data)
+		{
+			Scan(throwStatement.Expression);
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
+		{
+			ScanChildren(tryCatchStatement);
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
+		{
+			ScanChildren(gotoCaseStatement);
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitGotoDefaultStatement(GotoDefaultStatement gotoDefaultStatement, object data)
+		{
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitGotoStatement(GotoStatement gotoStatement, object data)
+		{
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitLabelStatement(LabelStatement labelStatement, object data)
+		{
 			return voidResult;
 		}
 		#endregion
@@ -2331,6 +2399,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 			}
 		}
+		
+		public override ResolveResult VisitAttributeSection(AttributeSection attributeSection, object data)
+		{
+			ScanChildren(attributeSection);
+			return voidResult;
+		}
 		#endregion
 		
 		#region Using Declaration
@@ -2430,7 +2504,214 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Query Expressions
 		public override ResolveResult VisitQueryExpression(QueryExpression queryExpression, object data)
 		{
-			throw new NotImplementedException();
+			resolver.PushBlock();
+			ResolveResult oldQueryResult = currentQueryResult;
+			try {
+				currentQueryResult = null;
+				foreach (var clause in queryExpression.Clauses) {
+					currentQueryResult = Resolve(clause);
+				}
+				return new ResolveResult(currentQueryResult != null ? currentQueryResult.Type : SharedTypes.UnknownType);
+			} finally {
+				currentQueryResult = oldQueryResult;
+				resolver.PopBlock();
+			}
+		}
+		
+		IType GetTypeForQueryVariable(IType type)
+		{
+			// This assumes queries are only used on IEnumerable.
+			// We might want to look at the signature of a LINQ method (e.g. Select) instead.
+			return GetElementType(type, resolver.Context, false);
+		}
+		
+		sealed class QueryExpressionLambda : LambdaResolveResult
+		{
+			readonly IParameter[] parameters;
+			readonly IType lambdaReturnType;
+			
+			public QueryExpressionLambda(int parameterCount, IType returnType)
+			{
+				this.parameters = new IParameter[parameterCount];
+				for (int i = 0; i < parameterCount; i++) {
+					parameters[i] = new DefaultParameter(SharedTypes.UnknownType, "x" + i);
+				}
+				this.lambdaReturnType = returnType;
+			}
+			
+			public override IList<IParameter> Parameters {
+				get { return parameters; }
+			}
+			
+			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
+			{
+				return conversions.ImplicitConversion(lambdaReturnType, returnType);
+			}
+			
+			public override bool IsImplicitlyTyped {
+				get { return true; }
+			}
+			
+			public override bool IsAnonymousMethod {
+				get { return false; }
+			}
+			
+			public override bool HasParameterList {
+				get { return true; }
+			}
+			
+			public override IType GetInferredReturnType(IType[] parameterTypes)
+			{
+				return lambdaReturnType;
+			}
+			
+			public override string ToString()
+			{
+				return string.Format("[QueryExpressionLambda ({0}) => {1}]", string.Join(",", parameters.Select(p => p.Name)), lambdaReturnType);
+			}
+		}
+		
+		public override ResolveResult VisitQueryFromClause(QueryFromClause queryFromClause, object data)
+		{
+			ResolveResult result = null;
+			ResolveResult expr = Resolve(queryFromClause.Expression);
+			IType variableType;
+			if (queryFromClause.Type.IsNull) {
+				variableType = GetTypeForQueryVariable(expr.Type);
+				result = expr;
+			} else {
+				variableType = ResolveType(queryFromClause.Type);
+				if (resolverEnabled) {
+					// resolve the .Cast<>() call
+					ResolveResult methodGroup = resolver.ResolveMemberAccess(expr, "Cast", new[] { variableType }, true);
+					result = resolver.ResolveInvocation(methodGroup, new ResolveResult[0]);
+				}
+			}
+			if (resolverEnabled && currentQueryResult != null) {
+				// this is a second 'from': resolve the .SelectMany() call
+				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "SelectMany", EmptyList<IType>.Instance, true);
+				ResolveResult[] arguments = {
+					new QueryExpressionLambda(1, result.Type),
+					new QueryExpressionLambda(2, SharedTypes.UnboundTypeArgument)
+				};
+				result = resolver.ResolveInvocation(methodGroup, arguments);
+			}
+			DomRegion region = MakeRegion(queryFromClause.IdentifierToken);
+			IVariable v = resolver.AddVariable(variableType, region, queryFromClause.Identifier);
+			StoreResult(queryFromClause.IdentifierToken, new LocalResolveResult(v, variableType));
+			return result;
+		}
+		
+		public override ResolveResult VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause, object data)
+		{
+			ResolveResult rr = Resolve(queryContinuationClause.PrecedingQuery);
+			IType variableType = GetTypeForQueryVariable(rr.Type);
+			DomRegion region = MakeRegion(queryContinuationClause.IdentifierToken);
+			IVariable v = resolver.AddVariable(variableType, region, queryContinuationClause.Identifier);
+			StoreResult(queryContinuationClause.IdentifierToken, new LocalResolveResult(v, variableType));
+			return rr;
+		}
+		
+		public override ResolveResult VisitQueryLetClause(QueryLetClause queryLetClause, object data)
+		{
+			ResolveResult expr = Resolve(queryLetClause.Expression);
+			DomRegion region = MakeRegion(queryLetClause.IdentifierToken);
+			IVariable v = resolver.AddVariable(expr.Type, region, queryLetClause.Identifier);
+			StoreResult(queryLetClause.IdentifierToken, new LocalResolveResult(v, expr.Type));
+			if (resolverEnabled && currentQueryResult != null) {
+				// resolve the .Select() call
+				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Select", EmptyList<IType>.Instance, true);
+				ResolveResult[] arguments = { new QueryExpressionLambda(1, SharedTypes.UnboundTypeArgument) };
+				return resolver.ResolveInvocation(currentQueryResult, arguments);
+			} else {
+				return null;
+			}
+		}
+		
+		public override ResolveResult VisitQueryJoinClause(QueryJoinClause queryJoinClause, object data)
+		{
+			// join v in expr on onExpr equals equalsExpr [into g]
+			ResolveResult inResult = null;
+			ResolveResult expr = Resolve(queryJoinClause.InExpression);
+			IType variableType;
+			if (queryJoinClause.Type.IsNull) {
+				variableType = GetTypeForQueryVariable(expr.Type);
+				if (resolverEnabled)
+					inResult = (currentQueryResult != null ? expr : new ResolveResult(variableType));
+			} else {
+				variableType = ResolveType(queryJoinClause.Type);
+				if (resolverEnabled) {
+					// resolve the .Cast<>() call
+					ResolveResult methodGroup = resolver.ResolveMemberAccess(expr, "Cast", new[] { variableType }, true);
+					inResult = resolver.ResolveInvocation(methodGroup, new ResolveResult[0]);
+				}
+			}
+			
+			// scan the 'On' expression in a context that contains only the previously existing range variables:
+			// (before adding any variable)
+			Scan(queryJoinClause.OnExpression);
+			
+			// scan the 'Equals' expression in a context that contains only the variable 'v'
+			CSharpResolver resolverOutsideQuery = resolver.Clone();
+			resolverOutsideQuery.PopBlock(); // pop all variables from the current query expression
+			DomRegion joinIdentifierRegion = MakeRegion(queryJoinClause.JoinIdentifierToken);
+			IVariable v = resolverOutsideQuery.AddVariable(variableType, joinIdentifierRegion, queryJoinClause.JoinIdentifier);
+			ResetContext(resolverOutsideQuery, delegate { Scan(queryJoinClause.EqualsExpression); });
+			StoreResult(queryJoinClause.JoinIdentifierToken, new LocalResolveResult(v, variableType));
+			
+			if (queryJoinClause.IsGroupJoin) {
+				throw new NotImplementedException();
+			} else {
+				resolver.AddVariable(variableType, joinIdentifierRegion, queryJoinClause.JoinIdentifier);
+				if (resolverEnabled)
+					throw new NotImplementedException();
+				else
+					return null;
+			}
+		}
+		
+		public override ResolveResult VisitQueryWhereClause(QueryWhereClause queryWhereClause, object data)
+		{
+			ResolveAndProcessConversion(queryWhereClause.Condition, KnownTypeReference.Boolean.Resolve(resolver.Context));
+			if (resolverEnabled && currentQueryResult != null) {
+				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Where", EmptyList<IType>.Instance);
+				ResolveResult[] arguments = { new QueryExpressionLambda(1, KnownTypeReference.Boolean.Resolve(resolver.Context)) };
+				return resolver.ResolveInvocation(methodGroup, arguments);
+			} else {
+				return null;
+			}
+		}
+		
+		public override ResolveResult VisitQuerySelectClause(QuerySelectClause querySelectClause, object data)
+		{
+			if (resolverEnabled && currentQueryResult != null) {
+				ResolveResult expr = Resolve(querySelectClause.Expression);
+				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Select", EmptyList<IType>.Instance);
+				ResolveResult[] arguments = { new QueryExpressionLambda(1, expr.Type) };
+				return resolver.ResolveInvocation(methodGroup, arguments);
+			} else {
+				Scan(querySelectClause.Expression);
+				return null;
+			}
+		}
+		
+		public override ResolveResult VisitQueryGroupClause(QueryGroupClause queryGroupClause, object data)
+		{
+			if (resolverEnabled && currentQueryResult != null) {
+				// ... group projection by key
+				ResolveResult projection = Resolve(queryGroupClause.Projection);
+				ResolveResult key = Resolve(queryGroupClause.Key);
+				
+				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "GroupBy", EmptyList<IType>.Instance);
+				ResolveResult[] arguments = {
+					new QueryExpressionLambda(1, key.Type),
+					new QueryExpressionLambda(1, projection.Type)
+				};
+				return resolver.ResolveInvocation(methodGroup, arguments);
+			} else {
+				ScanChildren(queryGroupClause);
+				return null;
+			}
 		}
 		#endregion
 		
@@ -2453,7 +2734,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		#region Token Nodes
+		#region Other Nodes
+		// Token nodes
 		public override ResolveResult VisitIdentifier(Identifier identifier, object data)
 		{
 			return null;
@@ -2467,6 +2749,31 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitCSharpTokenNode(CSharpTokenNode cSharpTokenNode, object data)
 		{
 			return null;
+		}
+		
+		// Nodes where we just need to visit the children:
+		public override ResolveResult VisitAccessor(Accessor accessor, object data)
+		{
+			ScanChildren(accessor);
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitSwitchSection(SwitchSection switchSection, object data)
+		{
+			ScanChildren(switchSection);
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitCaseLabel(CaseLabel caseLabel, object data)
+		{
+			ScanChildren(caseLabel);
+			return voidResult;
+		}
+		
+		public override ResolveResult VisitConstraint(Constraint constraint, object data)
+		{
+			ScanChildren(constraint);
+			return voidResult;
 		}
 		#endregion
 	}
