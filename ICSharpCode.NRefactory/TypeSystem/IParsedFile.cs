@@ -38,9 +38,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		string FileName { get; }
 		
 		/// <summary>
-		/// Gets the time of object creation.
+		/// Gets the time when the file was last written.
 		/// </summary>
-		DateTime ParseTime { get; }
+		DateTime LastWriteTime { get; }
 		
 		/// <summary>
 		/// Gets all top-level type definitions.

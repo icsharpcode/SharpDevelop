@@ -134,7 +134,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		///    new List { all extensions from SomeExtensions }
 		/// }
 		/// </remarks>
-		public List<List<IMethod>> GetExtensionMethods()
+		public IList<List<IMethod>> GetExtensionMethods()
 		{
 			if (resolver != null) {
 				Debug.Assert(extensionMethods == null);
@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					usingScope = null;
 				}
 			}
-			return extensionMethods;
+			return extensionMethods ?? EmptyList<List<IMethod>>.Instance;
 		}
 		
 		public override string ToString()

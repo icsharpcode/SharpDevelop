@@ -837,8 +837,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region Constant Values
 		IConstantValue ConvertConstantValue(ITypeReference targetType, AstNode expression)
 		{
-			ConstantValueBuilder b = new ConstantValueBuilder();
-			b.convertVisitor = this;
+			return ConvertConstantValue(targetType, expression, currentTypeDefinition, currentMethod, usingScope);
+		}
+		
+		internal static IConstantValue ConvertConstantValue(ITypeReference targetType, AstNode expression,
+		                                             ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope)
+		{
+			ConstantValueBuilder b = new ConstantValueBuilder(parentTypeDefinition, parentMethodDefinition, parentUsingScope, false);
 			ConstantExpression c = expression.AcceptVisitor(b, null);
 			if (c == null)
 				return null;
@@ -848,14 +853,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new SimpleConstantValue(targetType, pc.Value);
 			}
 			// cast to the desired type
-			return new CSharpConstantValue(new ConstantCast(targetType, c), usingScope, currentTypeDefinition);
+			return new CSharpConstantValue(new ConstantCast(targetType, c), parentUsingScope, parentTypeDefinition);
 		}
 		
 		IConstantValue ConvertAttributeArgument(Expression expression)
 		{
-			ConstantValueBuilder b = new ConstantValueBuilder();
-			b.convertVisitor = this;
-			b.isAttributeArgument = true;
+			ConstantValueBuilder b = new ConstantValueBuilder(currentTypeDefinition, currentMethod, usingScope, true);
 			ConstantExpression c = expression.AcceptVisitor(b, null);
 			if (c == null)
 				return null;
@@ -870,8 +873,23 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		sealed class ConstantValueBuilder : DepthFirstAstVisitor<object, ConstantExpression>
 		{
-			internal TypeSystemConvertVisitor convertVisitor;
-			internal bool isAttributeArgument;
+			readonly ITypeDefinition currentTypeDefinition;
+			readonly IMethod currentMethod;
+			readonly UsingScope usingScope;
+			readonly bool isAttributeArgument;
+			
+			public ConstantValueBuilder(ITypeDefinition currentTypeDefinition, IMethod currentMethod, UsingScope usingScope, bool isAttributeArgument)
+			{
+				this.currentTypeDefinition = currentTypeDefinition;
+				this.currentMethod = currentMethod;
+				this.usingScope = usingScope;
+				this.isAttributeArgument = isAttributeArgument;
+			}
+			
+			ITypeReference ConvertType(AstType type)
+			{
+				return TypeSystemConvertVisitor.ConvertType(type, currentTypeDefinition, currentMethod, usingScope, SimpleNameLookupMode.Type);
+			}
 			
 			protected override ConstantExpression VisitChildren(AstNode node, object data)
 			{
@@ -897,7 +915,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				ITypeReference[] result = new ITypeReference[count];
 				int pos = 0;
 				foreach (AstType type in types) {
-					result[pos++] = convertVisitor.ConvertType(type);
+					result[pos++] = ConvertType(type);
 				}
 				return result;
 			}
@@ -913,7 +931,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (tre != null) {
 					// handle "int.MaxValue"
 					return new ConstantMemberReference(
-						convertVisitor.ConvertType(tre.Type),
+						ConvertType(tre.Type),
 						memberReferenceExpression.MemberName,
 						ConvertTypeArguments(memberReferenceExpression.TypeArguments));
 				}
@@ -935,7 +953,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				ConstantExpression v = castExpression.Expression.AcceptVisitor(this, data);
 				if (v == null)
 					return null;
-				return new ConstantCast(convertVisitor.ConvertType(castExpression.Type), v);
+				return new ConstantCast(ConvertType(castExpression.Type), v);
 			}
 			
 			public override ConstantExpression VisitCheckedExpression(CheckedExpression checkedExpression, object data)
@@ -958,7 +976,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override ConstantExpression VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 			{
-				return new ConstantDefaultValue(convertVisitor.ConvertType(defaultValueExpression.Type));
+				return new ConstantDefaultValue(ConvertType(defaultValueExpression.Type));
 			}
 			
 			public override ConstantExpression VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
@@ -989,7 +1007,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override ConstantExpression VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 			{
 				if (isAttributeArgument) {
-					return new PrimitiveConstantExpression(KnownTypeReference.Type, convertVisitor.ConvertType(typeOfExpression.Type));
+					return new PrimitiveConstantExpression(KnownTypeReference.Type, ConvertType(typeOfExpression.Type));
 				} else {
 					return null;
 				}
@@ -1004,7 +1022,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (arrayCreateExpression.Type.IsNull) {
 						type = null;
 					} else {
-						type = convertVisitor.ConvertType(arrayCreateExpression.Type);
+						type = ConvertType(arrayCreateExpression.Type);
 						foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
 							type = ArrayTypeReference.Create(type, spec.Dimensions);
 						}

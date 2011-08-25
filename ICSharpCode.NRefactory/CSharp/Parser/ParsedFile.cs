@@ -62,10 +62,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return fileName; }
 		}
 		
-		DateTime parseTime = DateTime.Now;
-		public DateTime ParseTime {
-			get {
-				return parseTime;
+		DateTime lastWriteTime = DateTime.UtcNow;
+		
+		public DateTime LastWriteTime {
+			get { return lastWriteTime; }
+			set {
+				CheckBeforeMutation();
+				lastWriteTime = value;
 			}
 		}
 		

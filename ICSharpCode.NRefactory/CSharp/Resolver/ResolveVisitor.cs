@@ -2085,8 +2085,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					VariableInitializer vi = (VariableInitializer)node;
 					
 					IConstantValue cv = null;
-					if (isConst)
-						throw new NotImplementedException();
+					if (isConst) {
+						cv = TypeSystemConvertVisitor.ConvertConstantValue(type, vi.Initializer, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope);
+					}
 					resolver.AddVariable(type, MakeRegion(vi), vi.Name, cv);
 					
 					if (resolverEnabled && initializerCount == 1) {
