@@ -20,8 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Xml;
-
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.Documentation
@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.Documentation
 	/// This way, we avoid keeping all the documentation in memory.
 	/// </remarks>
 	[Serializable]
-	public class XmlDocumentationProvider : IDocumentationProvider
+	public class XmlDocumentationProvider : IDocumentationProvider, IDeserializationCallback
 	{
 		#region Cache
 		sealed class XmlDocumentationCache
@@ -93,7 +93,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		}
 		
 		[NonSerialized]
-		readonly XmlDocumentationCache cache = new XmlDocumentationCache();
+		XmlDocumentationCache cache = new XmlDocumentationCache();
 		
 		readonly string fileName;
 		DateTime lastWriteDate;
@@ -394,5 +394,10 @@ namespace ICSharpCode.NRefactory.Documentation
 			}
 		}
 		#endregion
+		
+		public virtual void OnDeserialization(object sender)
+		{
+			cache = new XmlDocumentationCache();
+		}
 	}
 }

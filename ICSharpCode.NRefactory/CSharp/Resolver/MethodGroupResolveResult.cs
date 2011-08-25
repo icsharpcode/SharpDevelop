@@ -153,7 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override string ToString()
 		{
-			return string.Format("[{0} with {1} method(s)]", GetType().Name, methodLists.Count);
+			return string.Format("[{0} with {1} method(s)]", GetType().Name, this.Methods.Count());
 		}
 		
 		public OverloadResolution PerformOverloadResolution(ITypeResolveContext context, ResolveResult[] arguments, string[] argumentNames = null, bool allowExtensionMethods = true, bool allowExpandingParams = true)
