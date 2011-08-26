@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("context");
 			this.context = context;
 			this.cancellationToken = cancellationToken;
-			this.conversions = new Conversions(context);
+			this.conversions = Conversions.Get(context);
 		}
 		#endregion
 		
@@ -100,12 +100,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					
 					CacheManager cache = context.CacheManager;
 					if (cache != null) {
-						object obj;
-						if (cache.Dictionary.TryGetValue(value, out obj)) {
-							currentUsingScope = (UsingScopeCache)obj;
-						} else {
+						currentUsingScope = cache.GetShared(value) as UsingScopeCache;
+						if (currentUsingScope == null) {
 							currentUsingScope = new UsingScopeCache(value);
-							cache.Dictionary.TryAdd(value, currentUsingScope);
+							cache.SetShared(value, currentUsingScope);
 						}
 					} else {
 						currentUsingScope = new UsingScopeCache(value);

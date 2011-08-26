@@ -61,9 +61,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CacheManager cacheManager = context.CacheManager;
 			if (cacheManager != null) {
-				object result;
-				if (cacheManager.Dictionary.TryGetValue(this, out result))
-					return (ResolveResult)result;
+				ResolveResult cachedResult = cacheManager.GetShared(this) as ResolveResult;;
+				if (cachedResult != null)
+					return cachedResult;
 			}
 			
 			ResolveResult targetRR = target.DoResolve(context);
@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			ResolveResult rr = r.ResolveMemberType(targetRR, identifier, typeArgs);
 			if (cacheManager != null)
-				cacheManager.Dictionary.TryAdd(this, rr);
+				cacheManager.SetShared(this, rr);
 			return rr;
 		}
 		

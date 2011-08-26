@@ -137,7 +137,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (typeArguments != null && typeArguments.Length > 0)
 				this.explicitlyGivenTypeArguments = typeArguments;
 			
-			this.conversions = conversions ?? new Conversions(context);
+			this.conversions = conversions ?? Conversions.Get(context);
 			this.AllowExpandingParams = true;
 		}
 		#endregion

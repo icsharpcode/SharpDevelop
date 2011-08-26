@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
-			this.conversions = conversions ?? new Conversions(context);
+			this.conversions = conversions ?? Conversions.Get(context);
 		}
 		#endregion
 		

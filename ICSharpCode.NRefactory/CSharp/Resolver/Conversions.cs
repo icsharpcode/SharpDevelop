@@ -248,6 +248,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.dynamicErasure = new DynamicErasure(this);
 		}
 		
+		/// <summary>
+		/// Gets the Conversions instance for the specified <see cref="ITypeResolveContext"/>.
+		/// This will make use of the context's cache manager (if available) to reuse the Conversions instance.
+		/// </summary>
+		public static Conversions Get(ITypeResolveContext context)
+		{
+			CacheManager cache = context.CacheManager;
+			if (cache != null) {
+				Conversions conversions = cache.GetThreadLocal(typeof(Conversions)) as Conversions;
+				if (conversions == null) {
+					conversions = new Conversions(context);
+					cache.SetThreadLocal(typeof(Conversions), conversions);
+				}
+				return conversions;
+			} else {
+				return new Conversions(context);
+			}
+		}
+		
 		#region TypePair (for caching)
 		struct TypePair : IEquatable<TypePair>
 		{
