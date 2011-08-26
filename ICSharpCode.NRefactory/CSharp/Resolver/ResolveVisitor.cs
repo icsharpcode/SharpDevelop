@@ -1478,7 +1478,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		DomRegion MakeRegion(AstNode node)
 		{
-			return new DomRegion(parsedFile.FileName, node.StartLocation, node.EndLocation);
+			return new DomRegion(parsedFile != null ? parsedFile.FileName : null, node.StartLocation, node.EndLocation);
 		}
 		
 		sealed class ExplicitlyTypedLambda : LambdaBase

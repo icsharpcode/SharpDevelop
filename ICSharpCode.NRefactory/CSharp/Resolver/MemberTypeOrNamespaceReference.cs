@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
@@ -26,13 +27,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// Reference to a qualified type or namespace name.
 	/// </summary>
 	[Serializable]
-	public sealed class MemberTypeOrNamespaceReference : ITypeOrNamespaceReference
+	public sealed class MemberTypeOrNamespaceReference : ITypeOrNamespaceReference, ISupportsInterning
 	{
-		readonly ITypeOrNamespaceReference target;
+		ITypeOrNamespaceReference target;
 		readonly ITypeDefinition parentTypeDefinition;
 		readonly UsingScope parentUsingScope;
-		readonly string identifier;
-		readonly IList<ITypeReference> typeArguments;
+		string identifier;
+		IList<ITypeReference> typeArguments;
 		
 		public MemberTypeOrNamespaceReference(ITypeOrNamespaceReference target, string identifier, IList<ITypeReference> typeArguments, ITypeDefinition parentTypeDefinition, UsingScope parentUsingScope)
 		{
@@ -58,6 +59,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public ResolveResult DoResolve(ITypeResolveContext context)
 		{
+			CacheManager cacheManager = context.CacheManager;
+			if (cacheManager != null) {
+				object result;
+				if (cacheManager.Dictionary.TryGetValue(this, out result))
+					return (ResolveResult)result;
+			}
+			
 			ResolveResult targetRR = target.DoResolve(context);
 			if (targetRR.IsError)
 				return targetRR;
@@ -68,7 +76,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			for (int i = 0; i < typeArgs.Length; i++) {
 				typeArgs[i] = typeArguments[i].Resolve(context);
 			}
-			return r.ResolveMemberType(targetRR, identifier, typeArgs);
+			ResolveResult rr = r.ResolveMemberType(targetRR, identifier, typeArgs);
+			if (cacheManager != null)
+				cacheManager.Dictionary.TryAdd(this, rr);
+			return rr;
 		}
 		
 		public NamespaceResolveResult ResolveNamespace(ITypeResolveContext context)
@@ -90,6 +101,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return target.ToString() + "." + identifier;
 			else
 				return target.ToString() + "." + identifier + "<" + DotNet35Compat.StringJoin(",", typeArguments) + ">";
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			target = provider.Intern(target);
+			identifier = provider.Intern(identifier);
+			typeArguments = provider.InternList(typeArguments);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			int hashCode = 0;
+			unchecked {
+				hashCode += 1000000007 * target.GetHashCode();
+				if (parentTypeDefinition != null)
+					hashCode += 1000000009 * parentTypeDefinition.GetHashCode();
+				if (parentUsingScope != null)
+					hashCode += 1000000021 * parentUsingScope.GetHashCode();
+				hashCode += 1000000033 * identifier.GetHashCode();
+				hashCode += 1000000087 * typeArguments.GetHashCode();
+			}
+			return hashCode;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			MemberTypeOrNamespaceReference o = other as MemberTypeOrNamespaceReference;
+			return o != null && this.target == o.target && this.parentTypeDefinition == o.parentTypeDefinition
+				&& this.parentUsingScope == o.parentUsingScope && this.identifier == o.identifier
+				&& this.typeArguments == o.typeArguments;
 		}
 	}
 }

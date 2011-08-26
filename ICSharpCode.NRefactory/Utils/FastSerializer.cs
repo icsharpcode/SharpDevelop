@@ -20,10 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace ICSharpCode.NRefactory.Utils
@@ -49,19 +47,6 @@ namespace ICSharpCode.NRefactory.Utils
 		#endregion
 		
 		#region Serialization
-		sealed class ReferenceComparer : IEqualityComparer<object>
-		{
-			bool IEqualityComparer<object>.Equals(object a, object b)
-			{
-				return a == b;
-			}
-			
-			int IEqualityComparer<object>.GetHashCode(object obj)
-			{
-				return RuntimeHelpers.GetHashCode(obj);
-			}
-		}
-		
 		sealed class SerializationType
 		{
 			public readonly int ID;
@@ -81,7 +66,7 @@ namespace ICSharpCode.NRefactory.Utils
 		
 		sealed class SerializationContext
 		{
-			readonly Dictionary<object, int> objectToID = new Dictionary<object, int>(new ReferenceComparer());
+			readonly Dictionary<object, int> objectToID = new Dictionary<object, int>(ReferenceComparer.Instance);
 			readonly List<object> instances = new List<object>(); // index: object ID
 			readonly List<SerializationType> objectTypes = new List<SerializationType>(); // index: object ID
 			SerializationType stringType;

@@ -39,6 +39,17 @@ namespace ICSharpCode.NRefactory.CSharp
 		DefaultTypeDefinition currentTypeDefinition;
 		DefaultMethod currentMethod;
 		
+		IInterningProvider interningProvider = new SimpleInterningProvider();
+		
+		/// <summary>
+		/// Gets/Sets the interning provider to use.
+		/// The default value is a new <see cref="SimpleInterningProvider"/> instance.
+		/// </summary>
+		public IInterningProvider InterningProvider {
+			get { return interningProvider; }
+			set { interningProvider = value; }
+		}
+		
 		/// <summary>
 		/// Creates a new TypeSystemConvertVisitor.
 		/// </summary>
@@ -201,6 +212,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			td.HasExtensionMethods = td.Methods.Any(m => m.IsExtensionMethod);
 			
 			currentTypeDefinition = (DefaultTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
+			if (interningProvider != null) {
+				td.ApplyInterningProvider(interningProvider);
+			}
 			return td;
 		}
 		
@@ -231,6 +245,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 			currentTypeDefinition = (DefaultTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
+			if (interningProvider != null) {
+				td.ApplyInterningProvider(interningProvider);
+			}
 			return td;
 		}
 		
@@ -326,6 +343,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				
 				currentTypeDefinition.Fields.Add(field);
+				if (interningProvider != null) {
+					field.ApplyInterningProvider(interningProvider);
+				}
 			}
 			return isSingleField ? field : null;
 		}
@@ -351,6 +371,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 			currentTypeDefinition.Fields.Add(field);
+			if (interningProvider != null) {
+				field.ApplyInterningProvider(interningProvider);
+			}
 			return field;
 		}
 		#endregion
@@ -380,6 +403,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			currentTypeDefinition.Methods.Add(m);
 			currentMethod = null;
+			if (interningProvider != null) {
+				m.ApplyInterningProvider(interningProvider);
+			}
 			return m;
 		}
 		
@@ -443,6 +469,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			ConvertParameters(m.Parameters, operatorDeclaration.Parameters);
 			
 			currentTypeDefinition.Methods.Add(m);
+			if (interningProvider != null) {
+				m.ApplyInterningProvider(interningProvider);
+			}
 			return m;
 		}
 		#endregion
@@ -471,6 +500,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				ApplyModifiers(ctor, modifiers);
 			
 			currentTypeDefinition.Methods.Add(ctor);
+			if (interningProvider != null) {
+				ctor.ApplyInterningProvider(interningProvider);
+			}
 			return ctor;
 		}
 		#endregion
@@ -489,6 +521,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			ConvertAttributes(dtor.Attributes, destructorDeclaration.Attributes);
 			
 			currentTypeDefinition.Methods.Add(dtor);
+			if (interningProvider != null) {
+				dtor.ApplyInterningProvider(interningProvider);
+			}
 			return dtor;
 		}
 		#endregion
@@ -509,6 +544,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			p.Getter = ConvertAccessor(propertyDeclaration.Getter, p.Accessibility);
 			p.Setter = ConvertAccessor(propertyDeclaration.Setter, p.Accessibility);
 			currentTypeDefinition.Properties.Add(p);
+			if (interningProvider != null) {
+				p.ApplyInterningProvider(interningProvider);
+			}
 			return p;
 		}
 		
@@ -529,6 +567,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			p.Setter = ConvertAccessor(indexerDeclaration.Setter, p.Accessibility);
 			ConvertParameters(p.Parameters, indexerDeclaration.Parameters);
 			currentTypeDefinition.Properties.Add(p);
+			if (interningProvider != null) {
+				p.ApplyInterningProvider(interningProvider);
+			}
 			return p;
 		}
 		
@@ -582,6 +623,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				
 				currentTypeDefinition.Events.Add(ev);
+				if (interningProvider != null) {
+					ev.ApplyInterningProvider(interningProvider);
+				}
 			}
 			return isSingleEvent ? ev : null;
 		}
@@ -604,6 +648,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			e.RemoveAccessor = ConvertAccessor(eventDeclaration.RemoveAccessor, e.Accessibility);
 			
 			currentTypeDefinition.Events.Add(e);
+			if (interningProvider != null) {
+				e.ApplyInterningProvider(interningProvider);
+			}
 			return e;
 		}
 		#endregion
@@ -841,7 +888,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		internal static IConstantValue ConvertConstantValue(ITypeReference targetType, AstNode expression,
-		                                             ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope)
+		                                                    ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope)
 		{
 			ConstantValueBuilder b = new ConstantValueBuilder(parentTypeDefinition, parentMethodDefinition, parentUsingScope, false);
 			ConstantExpression c = expression.AcceptVisitor(b, null);

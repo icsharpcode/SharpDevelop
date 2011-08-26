@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Threading;
 
 namespace ICSharpCode.NRefactory.Utils
@@ -28,6 +29,12 @@ namespace ICSharpCode.NRefactory.Utils
 	/// <remarks>This class is thread-safe</remarks>
 	public sealed class CacheManager : IDisposable
 	{
+		readonly ConcurrentDictionary<object, object> dict = new ConcurrentDictionary<object, object>(ReferenceComparer.Instance);
+		
+		public ConcurrentDictionary<object, object> Dictionary {
+			get { return dict; }
+		}
+		
 		/* Lots of code commented out because I don't know if it's useful, clients can usually replicate
 		 * the functionality much more easily and only need the Disposed event to ensure cleanup.
 		 * 

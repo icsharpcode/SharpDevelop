@@ -349,6 +349,7 @@
     <Compile Include="Utils\FastSerializer.cs" />
     <Compile Include="Utils\GraphVizGraph.cs" />
     <Compile Include="Utils\Platform.cs" />
+    <Compile Include="Utils\ReferenceComparer.cs" />
     <Compile Include="Utils\TreeTraversal.cs" />
     <Compile Include="CSharp\Ast\ComposedType.cs" />
     <Compile Include="CSharp\Ast\Expressions\DirectionExpression.cs" />

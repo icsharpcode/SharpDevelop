@@ -39,21 +39,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				Intern(r);
 		}
 		
-		sealed class ReferenceComparer : IEqualityComparer<object>
-		{
-			public readonly static ReferenceComparer Instance = new ReferenceComparer();
-			
-			public new bool Equals(object a, object b)
-			{
-				return ReferenceEquals(a, b);
-			}
-			
-			public int GetHashCode(object obj)
-			{
-				return RuntimeHelpers.GetHashCode(obj);
-			}
-		}
-		
 		sealed class InterningComparer : IEqualityComparer<ISupportsInterning>
 		{
 			public bool Equals(ISupportsInterning x, ISupportsInterning y)
