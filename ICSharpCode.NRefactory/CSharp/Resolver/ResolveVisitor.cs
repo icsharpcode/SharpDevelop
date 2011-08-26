@@ -2076,17 +2076,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitCatchClause(CatchClause catchClause, object data)
 		{
 			resolver.PushBlock();
-			IVariable v = null;
 			if (catchClause.VariableName != null) {
-				v = resolver.AddVariable(MakeTypeReference(catchClause.Type, null, false), MakeRegion(catchClause.VariableNameToken), catchClause.VariableName);
+				ITypeReference variableType = MakeTypeReference(catchClause.Type, null, false);
+				DomRegion region = MakeRegion(catchClause.VariableNameToken);
+				IVariable v = resolver.AddVariable(variableType, region, catchClause.VariableName);
+				StoreResult(catchClause.VariableNameToken, new LocalResolveResult(v, v.Type.Resolve(resolver.Context)));
 			}
 			ScanChildren(catchClause);
 			resolver.PopBlock();
-			if (resolverEnabled && v != null) {
-				return new LocalResolveResult(v, v.Type.Resolve(resolver.Context));
-			} else {
-				return null;
-			}
+			return voidResult;
 		}
 		#endregion
 		
@@ -2420,7 +2418,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			currentTypeLookupMode = SimpleNameLookupMode.TypeInUsingDeclaration;
 			ScanChildren(usingDeclaration);
 			currentTypeLookupMode = SimpleNameLookupMode.Type;
-			return null;
+			return voidResult;
 		}
 		
 		public override ResolveResult VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
@@ -2428,7 +2426,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			currentTypeLookupMode = SimpleNameLookupMode.TypeInUsingDeclaration;
 			ScanChildren(usingDeclaration);
 			currentTypeLookupMode = SimpleNameLookupMode.Type;
-			return null;
+			return voidResult;
 		}
 		#endregion
 		

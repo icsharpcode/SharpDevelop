@@ -110,6 +110,7 @@
     <Compile Include="CSharp\Resolver\InvocationResolveResult.cs" />
     <Compile Include="CSharp\Resolver\LambdaResolveResult.cs" />
     <Compile Include="CSharp\Resolver\MapTypeIntoNewContext.cs" />
+    <Compile Include="CSharp\Resolver\ResolveAtLocation.cs" />
     <Compile Include="CSharp\Resolver\SimpleNameLookupMode.cs" />
     <Compile Include="Documentation\IDStringProvider.cs" />
     <Compile Include="PatternMatching\BacktrackingInfo.cs" />
