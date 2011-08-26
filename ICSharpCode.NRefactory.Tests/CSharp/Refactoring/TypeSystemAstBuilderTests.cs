@@ -77,7 +77,7 @@ namespace OtherNS {
 		{
 			return new TypeSystemAstBuilder(
 				new CSharpResolver(ctx) {
-					UsingScope = currentTypeDef != null ? parsedFile.GetUsingScope(currentTypeDef.Region.Begin) : parsedFile.RootUsingScope,
+					CurrentUsingScope = currentTypeDef != null ? parsedFile.GetUsingScope(currentTypeDef.Region.Begin) : parsedFile.RootUsingScope,
 					CurrentTypeDefinition = currentTypeDef
 				});
 		}

@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	}
 	
 	[Serializable]
-	public class ByReferenceTypeReference : ITypeReference, ISupportsInterning
+	public sealed class ByReferenceTypeReference : ITypeReference, ISupportsInterning
 	{
 		ITypeReference elementType;
 		

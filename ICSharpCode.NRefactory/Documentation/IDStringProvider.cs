@@ -170,6 +170,15 @@ namespace ICSharpCode.NRefactory.Documentation
 				AppendTypeName(b, resolvedType);
 				return;
 			}
+			KnownTypeReference knownType = type as KnownTypeReference;
+			if (knownType != null) {
+				if (!string.IsNullOrEmpty(knownType.Namespace)) {
+					b.Append(knownType.Namespace);
+					b.Append('.');
+				}
+				b.Append(knownType.Name);
+				return;
+			}
 			GetClassTypeReference gctr = type as GetClassTypeReference;
 			if (gctr != null) {
 				if (!string.IsNullOrEmpty(gctr.Namespace)) {
@@ -240,15 +249,6 @@ namespace ICSharpCode.NRefactory.Documentation
 		
 		static int AppendParameterizedTypeName(StringBuilder b, ITypeReference type, IList<ITypeReference> typeArguments, ITypeResolveContext context)
 		{
-			KnownTypeReference knownType = type as KnownTypeReference;
-			if (knownType != null) {
-				if (!string.IsNullOrEmpty(knownType.Namespace)) {
-					b.Append(knownType.Namespace);
-					b.Append('.');
-				}
-				b.Append(knownType.Name);
-				return 0;
-			}
 			GetClassTypeReference gctr = type as GetClassTypeReference;
 			if (gctr != null) {
 				if (!string.IsNullOrEmpty(gctr.Namespace)) {

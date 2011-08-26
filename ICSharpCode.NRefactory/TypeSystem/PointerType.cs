@@ -87,7 +87,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	}
 	
 	[Serializable]
-	public class PointerTypeReference : ITypeReference, ISupportsInterning
+	public sealed class PointerTypeReference : ITypeReference, ISupportsInterning
 	{
 		ITypeReference elementType;
 		
