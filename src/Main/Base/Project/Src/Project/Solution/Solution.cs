@@ -359,11 +359,14 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 					SaveProjectSections(folder.Sections, projectSection);
 					
-					ISolutionFolder subFolder;
+					// Push the sub folders in reverse order so that we pop them
+					// in the correct order.
 					for (int i = folder.Folders.Count - 1; i >= 0; i--) {
-						//foreach (ISolutionFolder subFolder in folder.Folders) {
-						subFolder = folder.Folders[i];
-						stack.Push(subFolder);
+						stack.Push(folder.Folders[i]);
+					}
+					// But use normal order for printing the nested projects section
+					for (int i = 0; i < folder.Folders.Count; i++) {
+						ISolutionFolder subFolder = folder.Folders[i];
 						nestedProjectsSection.Append("\t\t");
 						nestedProjectsSection.Append(subFolder.IdGuid);
 						nestedProjectsSection.Append(" = ");
@@ -1191,6 +1194,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region System.IDisposable interface implementation
 		public void Dispose()
 		{
+			changeWatcher.Dispose();
 			foreach (IProject project in Projects) {
 				project.Dispose();
 			}
