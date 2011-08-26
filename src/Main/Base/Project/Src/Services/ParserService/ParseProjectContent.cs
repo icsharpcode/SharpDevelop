@@ -58,9 +58,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return string.Format("[{0}: {1}]", GetType().Name, project.Name);
 		}
 		
+		const int LoadingReferencesWorkAmount = 15; // in number of C# files
+		
 		int GetInitializationWorkAmount()
 		{
-			return project.Items.Count + 15;
+			return project.Items.Count + LoadingReferencesWorkAmount;
 		}
 		
 		void Initialize(IProgressMonitor progressMonitor)
@@ -73,8 +75,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 				ProjectService.ProjectItemAdded += OnProjectItemAdded;
 				ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
 			}
-			using (IProgressMonitor initReferencesProgressMonitor = progressMonitor.CreateSubTask(15),
-			       parseProgressMonitor = progressMonitor.CreateSubTask(projectItems.Count))
+			double scalingFactor = 1.0 / (project.Items.Count + LoadingReferencesWorkAmount);
+			using (IProgressMonitor initReferencesProgressMonitor = progressMonitor.CreateSubTask(LoadingReferencesWorkAmount * scalingFactor),
+			       parseProgressMonitor = progressMonitor.CreateSubTask(projectItems.Count * scalingFactor))
 			{
 				var resolveReferencesTask = ResolveReferencesAsync(projectItems, initReferencesProgressMonitor);
 				
@@ -122,18 +125,42 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return System.Threading.Tasks.Task.Factory.StartNew(
 				delegate {
 					project.ResolveAssemblyReferences();
-					List<ITypeResolveContext> contexts = new List<ITypeResolveContext>();
+					const double assemblyResolvingProgress = 0.3;
+					progressMonitor.Progress += assemblyResolvingProgress;
+					progressMonitor.CancellationToken.ThrowIfCancellationRequested();
+					
+					List<string> assemblyFiles = new List<string>();
 					string mscorlib = project.MscorlibPath;
-					if (mscorlib != null && File.Exists(mscorlib)) {
-						var pc = AssemblyParserService.GetAssembly(FileName.Create(mscorlib), progressMonitor.CancellationToken);
-						contexts.Add(pc);
-					}
+					if (mscorlib != null)
+						assemblyFiles.Add(mscorlib);
+					
+					List<ITypeResolveContext> contexts = new List<ITypeResolveContext>();
 					contexts.Add(this);
-					foreach (ReferenceProjectItem reference in projectItems.OfType<ReferenceProjectItem>()) {
-						if (File.Exists(reference.FileName)) {
-							var pc = AssemblyParserService.GetAssembly(FileName.Create(reference.FileName), progressMonitor.CancellationToken);
-							contexts.Add(pc);
+					foreach (ProjectItem item in projectItems) {
+						ReferenceProjectItem reference = item as ReferenceProjectItem;
+						if (reference != null) {
+							if (ItemType.ReferenceItemTypes.Contains(reference.ItemType)) {
+								ProjectReferenceProjectItem projectReference = reference as ProjectReferenceProjectItem;
+								if (projectReference != null) {
+									IProject p = projectReference.ReferencedProject;
+									if (p != null)
+										contexts.Add(p.ProjectContent);
+								} else {
+									assemblyFiles.Add(reference.FileName);
+								}
+							}
 						}
+					}
+					
+					foreach (string file in assemblyFiles) {
+						progressMonitor.CancellationToken.ThrowIfCancellationRequested();
+						if (File.Exists(file)) {
+							var pc = AssemblyParserService.GetAssembly(FileName.Create(file), progressMonitor.CancellationToken);
+							if (pc != null) {
+								contexts.Add(pc);
+							}
+						}
+						progressMonitor.Progress += (1.0 - assemblyResolvingProgress) / assemblyFiles.Count;
 					}
 					this.typeResolveContext = new CompositeTypeResolveContext(contexts);
 				}, progressMonitor.CancellationToken);

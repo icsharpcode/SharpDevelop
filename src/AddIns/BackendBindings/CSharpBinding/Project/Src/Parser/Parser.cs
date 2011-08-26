@@ -71,7 +71,13 @@ namespace CSharpBinding.Parser
 		{
 			CSharpParser parser = new CSharpParser();
 			parser.GenerateTypeSystemMode = !fullParseInformationRequested;
-			CompilationUnit cu = parser.Parse(fileContent.CreateReader());
+			CompilationUnit cu;
+			try {
+				cu = parser.Parse(fileContent.CreateReader());
+			} catch (Exception ex) {
+				LoggingService.Error(ex);
+				cu = new CompilationUnit();
+			}
 			
 			TypeSystemConvertVisitor cv = new TypeSystemConvertVisitor(projectContent, fileName);
 			ParsedFile file = cv.Convert(cu);

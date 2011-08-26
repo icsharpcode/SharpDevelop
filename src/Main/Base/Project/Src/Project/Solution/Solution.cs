@@ -63,6 +63,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public IEnumerable<IProject> Projects {
 			get {
+				// TODO: make this property thread-safe
 				Stack<ISolutionFolder> stack = new Stack<ISolutionFolder>();
 				
 				foreach (ISolutionFolder solutionFolder in Folders) {

@@ -10,11 +10,12 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class ProjectReferenceProjectItem : ReferenceProjectItem
 	{
-		IProject referencedProject;
+		volatile IProject referencedProject;
 		
 		[Browsable(false)]
 		public IProject ReferencedProject {
 			get {
+				// must be thread-safe because it's used by LoadSolutionProjectsThread
 				if (referencedProject == null)
 					referencedProject = ProjectService.GetProject(this.FileName);
 				return referencedProject;

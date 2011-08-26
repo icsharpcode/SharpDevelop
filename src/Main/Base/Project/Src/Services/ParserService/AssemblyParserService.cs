@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,7 +40,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		
-		static Dictionary<FileName, WeakReference> projectContentDictionary = new Dictionary<FileName, WeakReference>();
+		// TODO: use weak reference to IProjectContent (not to LoadedAssembly!) so that unused assemblies can be unloaded
+		static Dictionary<FileName, LoadedAssembly> projectContentDictionary = new Dictionary<FileName, LoadedAssembly>();
 		
 		[ThreadStatic] static Dictionary<FileName, LoadedAssembly> up2dateProjectContents;
 		
@@ -90,8 +93,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			List<FileName> removed = new List<FileName>();
 			foreach (var pair in projectContentDictionary) {
-				if (!pair.Value.IsAlive)
-					removed.Add(pair.Key);
+				//if (!pair.Value.IsAlive)
+				//	removed.Add(pair.Key);
 			}
 			foreach (var key in removed)
 				projectContentDictionary.Remove(key);
@@ -108,26 +111,21 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 			DateTime lastWriteTime = File.GetLastWriteTimeUtc(fileName);
 			lock (projectContentDictionary) {
-				WeakReference wr;
-				if (projectContentDictionary.TryGetValue(fileName, out wr)) {
-					asm = (LoadedAssembly)wr.Target;
-					if (asm != null && asm.AssemblyFileLastWriteTime == lastWriteTime) {
+				if (projectContentDictionary.TryGetValue(fileName, out asm)) {
+					if (asm.AssemblyFileLastWriteTime == lastWriteTime) {
 						return asm;
 					}
 				} else {
-					wr = null;
+					asm = null;
 				}
 				var task = new Task<IProjectContent>(() => LoadAssembly(fileName, CancellationToken.None));
 				isNewTask = true;
 				asm = new LoadedAssembly(task, lastWriteTime);
-				if (wr != null) {
-					wr.Target = asm;
-				} else {
-					if (up2dateProjectContents == null)
-						CleanWeakDictionary();
-					wr = new WeakReference(asm);
-					projectContentDictionary.Add(fileName, wr);
-				}
+				
+				if (up2dateProjectContents == null)
+					CleanWeakDictionary();
+				projectContentDictionary.Add(fileName, asm);
+				
 				return asm;
 			}
 		}
@@ -278,14 +276,23 @@ namespace ICSharpCode.SharpDevelop.Parser
 			if (cacheFileName == null)
 				return;
 			LoggingService.Debug("Serializing to " + cacheFileName);
-			Directory.CreateDirectory(DomPersistencePath);
-			using (FileStream fs = new FileStream(cacheFileName, FileMode.Create, FileAccess.Write)) {
-				using (BinaryWriter writer = new BinaryWriterWith7BitEncodedInts(fs)) {
-					writer.Write(lastWriteTime.Ticks);
-					FastSerializer s = new FastSerializer();
-					s.SerializationBinder = new MySerializationBinder();
-					s.Serialize(writer, pc);
+			try {
+				Directory.CreateDirectory(DomPersistencePath);
+				using (FileStream fs = new FileStream(cacheFileName, FileMode.Create, FileAccess.Write)) {
+					using (BinaryWriter writer = new BinaryWriterWith7BitEncodedInts(fs)) {
+						writer.Write(lastWriteTime.Ticks);
+						FastSerializer s = new FastSerializer();
+						s.SerializationBinder = new MySerializationBinder();
+						s.Serialize(writer, pc);
+					}
 				}
+			} catch (IOException ex) {
+				LoggingService.Warn(ex);
+				// Can happen if two SD instances are trying to access the file at the same time.
+				// We'll just let one of them win, and instance that got the exception won't write to the cache at all.
+				// Similarly, we also ignore the other kinds of IO exceptions.
+			} catch (UnauthorizedAccessException ex) {
+				LoggingService.Warn(ex);
 			}
 		}
 		

@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public static class ProjectService
 	{
-		static Solution openSolution;
+		volatile static Solution openSolution;
 		volatile static IProject currentProject;
 		
 		public static Solution OpenSolution {
@@ -52,8 +52,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static IProject GetProject(string projectFilename)
 		{
-			if (openSolution == null) return null;
-			foreach (IProject project in openSolution.Projects) {
+			Solution sln = openSolution;
+			if (sln == null)
+				return null;
+			foreach (IProject project in sln.Projects) {
 				if (FileUtility.IsEqualFileName(project.FileName, projectFilename)) {
 					return project;
 				}
