@@ -115,7 +115,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			if (resolver != null) {
 				// Look if there's an alias to the target type
-				for (UsingScope usingScope = resolver.UsingScope; usingScope != null; usingScope = usingScope.Parent) {
+				for (UsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
 					foreach (var pair in usingScope.UsingAliases) {
 						IType type = pair.Value.Resolve(resolver.Context);
 						if (TypeMatches(type, typeDef, typeArguments))
@@ -200,7 +200,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (resolver != null) {
 				// Look if there's an alias to the target namespace
-				for (UsingScope usingScope = resolver.UsingScope; usingScope != null; usingScope = usingScope.Parent) {
+				for (UsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
 					foreach (var pair in usingScope.UsingAliases) {
 						// maybe add some caching? we're resolving all aliases N times when converting a namespace name with N parts
 						NamespaceResolveResult nrr = pair.Value.ResolveNamespace(resolver.Context);

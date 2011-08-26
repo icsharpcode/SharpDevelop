@@ -357,31 +357,31 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Track UsingScope
 		public override ResolveResult VisitCompilationUnit(CompilationUnit unit, object data)
 		{
-			UsingScope previousUsingScope = resolver.UsingScope;
+			UsingScope previousUsingScope = resolver.CurrentUsingScope;
 			try {
 				if (parsedFile != null)
-					resolver.UsingScope = parsedFile.RootUsingScope;
+					resolver.CurrentUsingScope = parsedFile.RootUsingScope;
 				ScanChildren(unit);
 				return voidResult;
 			} finally {
-				resolver.UsingScope = previousUsingScope;
+				resolver.CurrentUsingScope = previousUsingScope;
 			}
 		}
 		
 		public override ResolveResult VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
-			UsingScope previousUsingScope = resolver.UsingScope;
+			UsingScope previousUsingScope = resolver.CurrentUsingScope;
 			try {
 				if (parsedFile != null) {
-					resolver.UsingScope = parsedFile.GetUsingScope(namespaceDeclaration.StartLocation);
+					resolver.CurrentUsingScope = parsedFile.GetUsingScope(namespaceDeclaration.StartLocation);
 				}
 				ScanChildren(namespaceDeclaration);
-				if (resolver.UsingScope != null)
-					return new NamespaceResolveResult(resolver.UsingScope.NamespaceName);
+				if (resolver.CurrentUsingScope != null)
+					return new NamespaceResolveResult(resolver.CurrentUsingScope.NamespaceName);
 				else
 					return null;
 			} finally {
-				resolver.UsingScope = previousUsingScope;
+				resolver.CurrentUsingScope = previousUsingScope;
 			}
 		}
 		#endregion
@@ -782,11 +782,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, object data)
 		{
 			// 7.6.10.6 Anonymous object creation expressions
-			if (resolver.UsingScope == null) {
+			if (resolver.ProjectContent == null) {
 				ScanChildren(anonymousTypeCreateExpression);
 				return errorResult;
 			}
-			var anonymousType = new DefaultTypeDefinition(resolver.UsingScope.ProjectContent, string.Empty, "$Anonymous$");
+			var anonymousType = new DefaultTypeDefinition(resolver.ProjectContent, string.Empty, "$Anonymous$");
 			anonymousType.IsSynthetic = true;
 			resolver.PushInitializerType(anonymousType);
 			foreach (var expr in anonymousTypeCreateExpression.Initializers) {
@@ -2100,7 +2100,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					
 					IConstantValue cv = null;
 					if (isConst) {
-						cv = TypeSystemConvertVisitor.ConvertConstantValue(type, vi.Initializer, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope);
+						cv = TypeSystemConvertVisitor.ConvertConstantValue(type, vi.Initializer, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.CurrentUsingScope);
 					}
 					resolver.AddVariable(type, MakeRegion(vi), vi.Name, cv);
 					
@@ -2299,7 +2299,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ITypeReference MakeTypeReference(AstType type)
 		{
-			return TypeSystemConvertVisitor.ConvertType(type, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope, currentTypeLookupMode);
+			return TypeSystemConvertVisitor.ConvertType(type, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.CurrentUsingScope, currentTypeLookupMode);
 		}
 		
 		sealed class VarTypeReference : ITypeReference
@@ -2440,7 +2440,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult HandleAttributeType(AstType astType)
 		{
 			ScanChildren(astType);
-			IType type = TypeSystemConvertVisitor.ConvertAttributeType(astType, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope).Resolve(resolver.Context);
+			IType type = TypeSystemConvertVisitor.ConvertAttributeType(astType, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.CurrentUsingScope).Resolve(resolver.Context);
 			if (type.Kind != TypeKind.Unknown)
 				return new TypeResolveResult(type);
 			else

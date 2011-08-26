@@ -138,12 +138,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolver != null) {
 				Debug.Assert(extensionMethods == null);
-				UsingScope oldUsingScope = resolver.UsingScope;
+				UsingScope oldUsingScope = resolver.CurrentUsingScope;
 				try {
-					resolver.UsingScope = usingScope;
+					resolver.CurrentUsingScope = usingScope;
 					extensionMethods = resolver.GetExtensionMethods(this.TargetType, methodName, typeArguments);
 				} finally {
-					resolver.UsingScope = oldUsingScope;
+					resolver.CurrentUsingScope = oldUsingScope;
 					resolver = null;
 					usingScope = null;
 				}

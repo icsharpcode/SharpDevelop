@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			return new CSharpResolver(context) {
 				CheckForOverflow = false, // TODO: get project-wide overflow setting
 				CurrentTypeDefinition = parentTypeDefinition,
-				UsingScope = parentUsingScope
+				CurrentUsingScope = parentUsingScope
 			};
 		}
 		

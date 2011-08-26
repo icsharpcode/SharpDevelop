@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return targetRR;
 			CSharpResolver r = new CSharpResolver(context);
 			r.CurrentTypeDefinition = parentTypeDefinition;
-			r.UsingScope = parentUsingScope;
+			r.CurrentUsingScope = parentUsingScope;
 			IType[] typeArgs = new IType[typeArguments.Count];
 			for (int i = 0; i < typeArgs.Length; i++) {
 				typeArgs[i] = typeArguments[i].Resolve(context);

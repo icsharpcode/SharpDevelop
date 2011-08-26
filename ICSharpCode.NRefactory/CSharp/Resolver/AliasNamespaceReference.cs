@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult DoResolve(ITypeResolveContext context)
 		{
 			CSharpResolver r = new CSharpResolver(context);
-			r.UsingScope = parentUsingScope;
+			r.CurrentUsingScope = parentUsingScope;
 			return r.ResolveAlias(identifier);
 		}
 		

@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -25,6 +26,7 @@ using System.Text;
 using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
@@ -82,10 +84,67 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public ITypeDefinition CurrentTypeDefinition { get; set; }
 		
+		UsingScopeCache currentUsingScope;
+		
 		/// <summary>
 		/// Gets/Sets the current using scope that is used to look up identifiers as class names.
 		/// </summary>
-		public UsingScope UsingScope { get; set; }
+		public UsingScope CurrentUsingScope {
+			get { return currentUsingScope != null ? currentUsingScope.UsingScope : null; }
+			set {
+				if (value == null) {
+					currentUsingScope = null;
+				} else {
+					if (currentUsingScope != null && currentUsingScope.UsingScope == value)
+						return;
+					
+					CacheManager cache = context.CacheManager;
+					if (cache != null) {
+						object obj;
+						if (cache.Dictionary.TryGetValue(value, out obj)) {
+							currentUsingScope = (UsingScopeCache)obj;
+						} else {
+							currentUsingScope = new UsingScopeCache(value);
+							cache.Dictionary.TryAdd(value, currentUsingScope);
+						}
+					} else {
+						currentUsingScope = new UsingScopeCache(value);
+					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Gets the current project content.
+		/// Returns <c>CurrentUsingScope.ProjectContent</c>.
+		/// </summary>
+		public IProjectContent ProjectContent {
+			get {
+				if (currentUsingScope != null)
+					return currentUsingScope.UsingScope.ProjectContent;
+				else
+					return null;
+			}
+		}
+		#endregion
+		
+		#region Per-UsingScope Cache
+		/// <summary>
+		/// There is one cache instance per using scope; and it might be shared between multiple resolvers
+		/// that are on different threads, so it must be thread-safe.
+		/// </summary>
+		sealed class UsingScopeCache
+		{
+			public readonly UsingScope UsingScope;
+			
+			public volatile List<List<IMethod>> AllExtensionMethods;
+			
+			
+			public UsingScopeCache(UsingScope usingScope)
+			{
+				this.UsingScope = usingScope;
+			}
+		}
 		#endregion
 		
 		#region Local Variable Management
@@ -1910,6 +1969,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (parameterizeResultType && typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument))
 				parameterizeResultType = false;
 			
+			ResolveResult r;
 			// look in current type definitions
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
 				if (k == 0) {
@@ -1928,7 +1988,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				MemberLookup lookup = new MemberLookup(context, t, t.ProjectContent);
-				ResolveResult r;
 				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
 					r = lookup.Lookup(new TypeResolveResult(t), identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
 				} else {
@@ -1939,7 +1998,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			// look in current namespace definitions
-			for (UsingScope n = this.UsingScope; n != null; n = n.Parent) {
+			for (UsingScope n = this.CurrentUsingScope; n != null; n = n.Parent) {
 				// first look for a namespace
 				if (k == 0) {
 					string fullName = NamespaceDeclaration.BuildQualifiedName(n.NamespaceName, identifier);
@@ -1966,7 +2025,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (n.ExternAliases.Contains(identifier)) {
 						return ResolveExternAlias(identifier);
 					}
-					if (lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration || n != this.UsingScope) {
+					if (lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration || n != this.CurrentUsingScope) {
 						foreach (var pair in n.UsingAliases) {
 							if (pair.Key == identifier) {
 								NamespaceResolveResult ns = pair.Value.ResolveNamespace(context);
@@ -1979,7 +2038,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				// finally, look in the imported namespaces:
-				if (lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration || n != this.UsingScope) {
+				if (lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration || n != this.CurrentUsingScope) {
 					IType firstResult = null;
 					foreach (var u in n.Usings) {
 						NamespaceResolveResult ns = u.ResolveNamespace(context);
@@ -2020,7 +2079,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (identifier == "global")
 				return new NamespaceResolveResult(string.Empty);
 			
-			for (UsingScope n = this.UsingScope; n != null; n = n.Parent) {
+			for (UsingScope n = this.CurrentUsingScope; n != null; n = n.Parent) {
 				if (n.ExternAliases.Contains(identifier)) {
 					return ResolveExternAlias(identifier);
 				}
@@ -2033,7 +2092,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return ErrorResult;
 		}
 		
-		ResolveResult ResolveExternAlias(string alias)
+		static ResolveResult ResolveExternAlias(string alias)
 		{
 			// TODO: implement extern alias support
 			return new NamespaceResolveResult(string.Empty);
@@ -2069,7 +2128,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (mgrr != null) {
 					Debug.Assert(mgrr.extensionMethods == null);
 					// set the values that are necessary to make MethodGroupResolveResult.GetExtensionMethods() work
-					mgrr.usingScope = this.UsingScope;
+					mgrr.usingScope = this.CurrentUsingScope;
 					mgrr.resolver = this;
 				}
 			}
@@ -2115,7 +2174,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public MemberLookup CreateMemberLookup()
 		{
-			return new MemberLookup(context, this.CurrentTypeDefinition, this.UsingScope != null ? this.UsingScope.ProjectContent : null);
+			return new MemberLookup(context, this.CurrentTypeDefinition, this.ProjectContent);
 		}
 		#endregion
 		
@@ -2178,17 +2237,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets all extension methods available in the current using scope.
 		/// This list includes unaccessible
 		/// </summary>
-		List<List<IMethod>> GetAllExtensionMethods()
+		IList<List<IMethod>> GetAllExtensionMethods()
 		{
-			// TODO: maybe cache the result?
-			// Idea: class ExtensionMethodGroupCache : List<List<IMethod>>
-			// a new ExtensionMethodGroupCache instance would be created whenever the UsingScope is changed
-			// The list contents would be initialized on-demand.
-			// Because cloning the resolver would re-use the cache, it must be thread-safe.
-			// The cache could be passed to the MethodGroupResolveResult instead of passing the resolver.
-			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
+			if (currentUsingScope == null)
+				return EmptyList<List<IMethod>>.Instance;
+			List<List<IMethod>> extensionMethodGroups = currentUsingScope.AllExtensionMethods;
+			if (extensionMethodGroups != null)
+				return extensionMethodGroups;
+			extensionMethodGroups = new List<List<IMethod>>();
 			List<IMethod> m;
-			for (UsingScope scope = this.UsingScope; scope != null; scope = scope.Parent) {
+			for (UsingScope scope = currentUsingScope.UsingScope; scope != null; scope = scope.Parent) {
 				m = GetExtensionMethods(scope.NamespaceName).ToList();
 				if (m.Count > 0)
 					extensionMethodGroups.Add(m);
@@ -2202,6 +2260,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (m.Count > 0)
 					extensionMethodGroups.Add(m);
 			}
+			currentUsingScope.AllExtensionMethods = extensionMethodGroups;
 			return extensionMethodGroups;
 		}
 		
