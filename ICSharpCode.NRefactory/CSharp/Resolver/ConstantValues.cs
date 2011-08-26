@@ -57,28 +57,52 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			};
 		}
 		
-		public IType GetValueType(ITypeResolveContext context)
+		sealed class ConstantValueResult
 		{
+			public readonly IType ValueType;
+			public readonly object Value;
+			
+			public ConstantValueResult(IType valueType, object value)
+			{
+				this.ValueType = valueType;
+				this.Value = value;
+			}
+		}
+		
+		ConstantValueResult DoResolve(ITypeResolveContext context)
+		{
+			CacheManager cache = context.CacheManager;
+			if (cache != null) {
+				ConstantValueResult cachedResult = cache.GetShared(this) as ConstantValueResult;
+				if (cachedResult != null)
+					return cachedResult;
+			}
 			CSharpResolver resolver = CreateResolver(context);
-			IType type = expression.Resolve(resolver).Type;
+			ResolveResult rr = expression.Resolve(resolver);
+			IType type = rr.Type;
+			object val = rr.ConstantValue;
 			if (resolver.Context != context) {
 				// Retrieve the equivalent type in the new resolve context.
 				// E.g. if the constant is defined in a .NET 2.0 project, type might be Int32 from mscorlib 2.0.
 				// However, the calling project might be a .NET 4.0 project, so we need to return Int32 from mscorlib 4.0.
-				return type.AcceptVisitor(new MapTypeIntoNewContext(context));
+				type = type.AcceptVisitor(new MapTypeIntoNewContext(context));
+				// If 'val' is a type or an array containing types, we need to map it to the new context.
+				val = MapToNewContext(val, context);
 			}
-			return type;
+			ConstantValueResult result = new ConstantValueResult(type, val);
+			if (cache != null)
+				cache.SetShared(this, result);
+			return result;
+		}
+		
+		public IType GetValueType(ITypeResolveContext context)
+		{
+			return DoResolve(context).ValueType;
 		}
 		
 		public object GetValue(ITypeResolveContext context)
 		{
-			CSharpResolver resolver = CreateResolver(context);
-			object val = expression.Resolve(resolver).ConstantValue;
-			if (resolver.Context != context) {
-				// If 'val' is a type or an array containing types, we need to map it to the new context.
-				val = MapToNewContext(val, context);
-			}
-			return val;
+			return DoResolve(context).Value;
 		}
 		
 		static object MapToNewContext(object val, ITypeResolveContext context)
