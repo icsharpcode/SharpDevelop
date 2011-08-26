@@ -376,6 +376,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					resolver.CurrentUsingScope = parsedFile.GetUsingScope(namespaceDeclaration.StartLocation);
 				}
 				ScanChildren(namespaceDeclaration);
+				// merge undecided lambdas before leaving the using scope so that
+				// the resolver can make better use of its cache
+				MergeUndecidedLambdas();
 				if (resolver.CurrentUsingScope != null)
 					return new NamespaceResolveResult(resolver.CurrentUsingScope.NamespaceName);
 				else
@@ -414,6 +417,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						Scan(child);
 					}
 				}
+				
+				// merge undecided lambdas before leaving the type definition so that
+				// the resolver can make better use of its cache
+				MergeUndecidedLambdas();
 				
 				return newTypeDefinition != null ? new TypeResolveResult(newTypeDefinition) : errorResult;
 			} finally {

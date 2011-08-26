@@ -105,17 +105,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (value == null) {
 					currentTypeDefinition = null;
 				} else {
-					if (currentTypeDefinition != null && currentTypeDefinition.TypeDefinition == value)
-						return;
-					
-					CacheManager cache = context.CacheManager;
-					if (cache != null) {
-						currentTypeDefinition = cache.GetThreadLocal(value) as TypeDefinitionCache;
-						if (currentTypeDefinition == null) {
-							currentTypeDefinition = new TypeDefinitionCache(value);
-							cache.SetThreadLocal(value, currentTypeDefinition);
-						}
-					} else {
+					if (currentTypeDefinition == null || currentTypeDefinition.TypeDefinition != value) {
 						currentTypeDefinition = new TypeDefinitionCache(value);
 					}
 				}
@@ -148,17 +138,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (value == null) {
 					currentUsingScope = null;
 				} else {
-					if (currentUsingScope != null && currentUsingScope.UsingScope == value)
-						return;
-					
-					CacheManager cache = context.CacheManager;
-					if (cache != null) {
-						currentUsingScope = cache.GetThreadLocal(value) as UsingScopeCache;
-						if (currentUsingScope == null) {
-							currentUsingScope = new UsingScopeCache(value);
-							cache.SetThreadLocal(value, currentUsingScope);
-						}
-					} else {
+					if (currentUsingScope == null || currentUsingScope.UsingScope != value) {
 						currentUsingScope = new UsingScopeCache(value);
 					}
 				}
