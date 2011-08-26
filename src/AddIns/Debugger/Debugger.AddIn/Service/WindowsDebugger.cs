@@ -642,10 +642,11 @@ namespace ICSharpCode.SharpDevelop.Services
 				var image = ExpressionNode.GetImageForLocalVariable(out imageName);
 				ExpressionNode expressionNode = new ExpressionNode(image, variableName, tooltipExpression);
 				expressionNode.ImageName = imageName;
-				return new DebuggerTooltipControl(logicalPosition, expressionNode) { ShowPins = debuggedProcess.SelectedThread.MostRecentStackFrame.HasSymbols };
-			} catch (GetValueException) {
+				return new DebuggerTooltipControl(logicalPosition, expressionNode) { ShowPins = debuggedProcess.GetCurrentExecutingFrame().HasSymbols };
+			} catch (System.Exception ex) {
+				LoggingService.Error("Error on GetTooltipControl: " + ex.Message);
 				return null;
-			}
+			} 
 		}
 		
 		public ITreeNode GetNode(string variable, string currentImageName = null)
