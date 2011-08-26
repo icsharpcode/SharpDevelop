@@ -130,16 +130,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override IEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
 			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, SimpleNameLookupMode.TypeInUsingDeclaration) as ITypeOrNamespaceReference;
-			if (u != null)
+			if (u != null) {
+				if (interningProvider != null)
+					u = interningProvider.Intern(u);
 				usingScope.Usings.Add(u);
+			}
 			return null;
 		}
 		
 		public override IEntity VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
 			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, SimpleNameLookupMode.TypeInUsingDeclaration) as ITypeOrNamespaceReference;
-			if (u != null)
+			if (u != null) {
+				if (interningProvider != null)
+					u = interningProvider.Intern(u);
 				usingScope.UsingAliases.Add(new KeyValuePair<string, ITypeOrNamespaceReference>(usingDeclaration.Alias, u));
+			}
 			return null;
 		}
 		#endregion

@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		IType[] explicitlyGivenTypeArguments;
 		
 		#region Constructor
-		public OverloadResolution(ITypeResolveContext context, ResolveResult[] arguments, string[] argumentNames = null, IType[] typeArguments = null)
+		public OverloadResolution(ITypeResolveContext context, ResolveResult[] arguments, string[] argumentNames = null, IType[] typeArguments = null, Conversions conversions = null)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
@@ -137,7 +137,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (typeArguments != null && typeArguments.Length > 0)
 				this.explicitlyGivenTypeArguments = typeArguments;
 			
-			this.conversions = new Conversions(context);
+			this.conversions = conversions ?? new Conversions(context);
 			this.AllowExpandingParams = true;
 		}
 		#endregion

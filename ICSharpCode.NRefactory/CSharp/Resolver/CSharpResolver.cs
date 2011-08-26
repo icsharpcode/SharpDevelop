@@ -539,7 +539,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool isNullable = NullableType.IsNullable(expression.Type);
 			
 			// the operator is overloadable:
-			OverloadResolution userDefinedOperatorOR = new OverloadResolution(context, new[] { expression });
+			OverloadResolution userDefinedOperatorOR = new OverloadResolution(context, new[] { expression }, conversions: conversions);
 			foreach (var candidate in GetUserDefinedOperatorCandidates(type, overloadableOperatorName)) {
 				userDefinedOperatorOR.AddCandidate(candidate);
 			}
@@ -587,7 +587,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					throw new InvalidOperationException();
 			}
-			OverloadResolution builtinOperatorOR = new OverloadResolution(context, new[] { expression });
+			OverloadResolution builtinOperatorOR = new OverloadResolution(context, new[] { expression }, conversions: conversions);
 			foreach (var candidate in methodGroup) {
 				builtinOperatorOR.AddCandidate(candidate);
 			}
@@ -800,7 +800,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType rhsType = NullableType.GetUnderlyingType(rhs.Type);
 			
 			// the operator is overloadable:
-			OverloadResolution userDefinedOperatorOR = new OverloadResolution(context, new[] { lhs, rhs });
+			OverloadResolution userDefinedOperatorOR = new OverloadResolution(context, new[] { lhs, rhs }, conversions: conversions);
 			HashSet<IParameterizedMember> userOperatorCandidates = new HashSet<IParameterizedMember>();
 			userOperatorCandidates.UnionWith(GetUserDefinedOperatorCandidates(lhsType, overloadableOperatorName));
 			userOperatorCandidates.UnionWith(GetUserDefinedOperatorCandidates(rhsType, overloadableOperatorName));
@@ -1016,7 +1016,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					throw new InvalidOperationException();
 			}
-			OverloadResolution builtinOperatorOR = new OverloadResolution(context, new[] { lhs, rhs });
+			OverloadResolution builtinOperatorOR = new OverloadResolution(context, new[] { lhs, rhs }, conversions: conversions);
 			foreach (var candidate in methodGroup) {
 				builtinOperatorOR.AddCandidate(candidate);
 			}
@@ -2240,7 +2240,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
 			if (mgrr != null) {
-				OverloadResolution or = mgrr.PerformOverloadResolution(context, arguments, argumentNames);
+				OverloadResolution or = mgrr.PerformOverloadResolution(context, arguments, argumentNames, conversions: conversions);
 				if (or.BestCandidate != null) {
 					return new InvocationResolveResult(mgrr.TargetResult, or, context);
 				} else {
@@ -2260,7 +2260,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			IMethod invokeMethod = target.Type.GetDelegateInvokeMethod();
 			if (invokeMethod != null) {
-				OverloadResolution or = new OverloadResolution(context, arguments, argumentNames);
+				OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, conversions: conversions);
 				or.AddCandidate(invokeMethod);
 				return new InvocationResolveResult(
 					target, invokeMethod, invokeMethod.ReturnType.Resolve(context),
@@ -2386,7 +2386,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			// §7.6.6.2 Indexer access
-			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
+			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, conversions: conversions);
 			MemberLookup lookup = CreateMemberLookup();
 			var indexers = lookup.LookupIndexers(target.Type);
 			or.AddMethodLists(indexers);
@@ -2435,7 +2435,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (type.Kind == TypeKind.Delegate && arguments.Length == 1) {
 				return Convert(arguments[0], type);
 			}
-			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
+			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, conversions: conversions);
 			MemberLookup lookup = CreateMemberLookup();
 			bool allowProtectedAccess = lookup.IsProtectedAccessAllowed(type);
 			var constructors = type.GetConstructors(context, m => lookup.IsAccessible(m, allowProtectedAccess));

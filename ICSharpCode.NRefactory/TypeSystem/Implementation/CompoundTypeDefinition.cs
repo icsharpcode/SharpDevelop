@@ -25,6 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Type definition that represents a partial class with multiple parts.
 	/// </summary>
+	[Serializable]
 	public class CompoundTypeDefinition : DefaultTypeDefinition
 	{
 		IList<ITypeDefinition> parts;

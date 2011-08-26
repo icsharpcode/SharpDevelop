@@ -1078,7 +1078,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					var addRR = memberLookup.Lookup(targetResult, "Add", EmptyList<IType>.Instance, true);
 					var mgrr = addRR as MethodGroupResolveResult;
 					if (mgrr != null) {
-						OverloadResolution or = mgrr.PerformOverloadResolution(resolver.Context, addArguments, null, false, false);
+						OverloadResolution or = mgrr.PerformOverloadResolution(resolver.Context, addArguments, null, false, false, resolver.conversions);
 						var invocationRR = new InvocationResolveResult(targetResult, or, resolver.Context);
 						StoreResult(aie, invocationRR);
 						ProcessConversionsInResult(invocationRR);
@@ -1923,7 +1923,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					for (int i = 0; i < returnValues.Count; i++) {
 						returnValues[i] = resolveResultCache[alv.ReturnExpressions[i]];
 					}
-					TypeInference ti = new TypeInference(resolver.Context);
+					TypeInference ti = new TypeInference(resolver.Context, resolver.conversions);
 					bool tiSuccess;
 					inferredReturnType = ti.GetBestCommonType(returnValues, out tiSuccess);
 					// Failure to infer a return type does not make the lambda invalid,

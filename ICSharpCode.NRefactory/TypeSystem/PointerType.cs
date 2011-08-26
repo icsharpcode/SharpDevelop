@@ -23,7 +23,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 namespace ICSharpCode.NRefactory.TypeSystem
 {
 	[Serializable]
-	public sealed class PointerType : TypeWithElementType
+	public sealed class PointerType : TypeWithElementType, ISupportsInterning
 	{
 		public PointerType(IType elementType) : base(elementType)
 		{
@@ -68,12 +68,28 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			else
 				return new PointerType(e);
 		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			elementType = provider.Intern(elementType);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return elementType.GetHashCode() ^ 91725811;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			PointerType o = other as PointerType;
+			return o != null && this.elementType == o.elementType;
+		}
 	}
 	
 	[Serializable]
-	public class PointerTypeReference : ITypeReference
+	public class PointerTypeReference : ITypeReference, ISupportsInterning
 	{
-		readonly ITypeReference elementType;
+		ITypeReference elementType;
 		
 		public PointerTypeReference(ITypeReference elementType)
 		{
@@ -102,6 +118,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new PointerType((IType)elementType);
 			else
 				return new PointerTypeReference(elementType);
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			elementType = provider.Intern(elementType);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return elementType.GetHashCode() ^ 91725812;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			PointerTypeReference o = other as PointerTypeReference;
+			return o != null && this.elementType == o.elementType;
 		}
 	}
 }
