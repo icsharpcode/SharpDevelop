@@ -82,5 +82,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			// it might not be cache-safe.
 			get { return null; }
 		}
+		
+		/// <inheritdoc/>
+		public virtual ITypeDefinition GetKnownTypeDefinition(TypeCode typeCode)
+		{
+			return target.GetKnownTypeDefinition(typeCode);
+		}
 	}
 }

@@ -177,6 +177,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		#endregion
 		
 		#region IProjectContent implementation
+		public ITypeDefinition GetKnownTypeDefinition(TypeCode typeCode)
+		{
+			readerWriterLock.EnterReadLock();
+			try {
+				return types.GetKnownTypeDefinition(typeCode);
+			} finally {
+				readerWriterLock.ExitReadLock();
+			}
+		}
+		
 		public ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
 			readerWriterLock.EnterReadLock();
