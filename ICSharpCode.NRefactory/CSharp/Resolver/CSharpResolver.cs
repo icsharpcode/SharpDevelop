@@ -80,10 +80,63 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public IMember CurrentMember { get; set; }
 		
 		/// <summary>
+		/// Gets the current project content.
+		/// Returns <c>CurrentUsingScope.ProjectContent</c>.
+		/// </summary>
+		public IProjectContent ProjectContent {
+			get {
+				if (currentUsingScope != null)
+					return currentUsingScope.UsingScope.ProjectContent;
+				else
+					return null;
+			}
+		}
+		#endregion
+		
+		#region Per-CurrentTypeDefinition Cache
+		TypeDefinitionCache currentTypeDefinition;
+		
+		/// <summary>
 		/// Gets/Sets the current type definition that is used to look up identifiers as simple members.
 		/// </summary>
-		public ITypeDefinition CurrentTypeDefinition { get; set; }
+		public ITypeDefinition CurrentTypeDefinition {
+			get { return currentTypeDefinition != null ? currentTypeDefinition.TypeDefinition : null; }
+			set {
+				if (value == null) {
+					currentTypeDefinition = null;
+				} else {
+					if (currentTypeDefinition != null && currentTypeDefinition.TypeDefinition == value)
+						return;
+					
+					CacheManager cache = context.CacheManager;
+					if (cache != null) {
+						currentTypeDefinition = cache.GetThreadLocal(value) as TypeDefinitionCache;
+						if (currentTypeDefinition == null) {
+							currentTypeDefinition = new TypeDefinitionCache(value);
+							cache.SetThreadLocal(value, currentTypeDefinition);
+						}
+					} else {
+						currentTypeDefinition = new TypeDefinitionCache(value);
+					}
+				}
+			}
+		}
 		
+		sealed class TypeDefinitionCache
+		{
+			public readonly ITypeDefinition TypeDefinition;
+			public readonly Dictionary<string, ResolveResult> SimpleNameLookupCacheExpression = new Dictionary<string, ResolveResult>();
+			public readonly Dictionary<string, ResolveResult> SimpleNameLookupCacheInvocationTarget = new Dictionary<string, ResolveResult>();
+			public readonly Dictionary<string, ResolveResult> SimpleTypeLookupCache = new Dictionary<string, ResolveResult>();
+			
+			public TypeDefinitionCache(ITypeDefinition typeDefinition)
+			{
+				this.TypeDefinition = typeDefinition;
+			}
+		}
+		#endregion
+		
+		#region CurrentUsingScope
 		UsingScopeCache currentUsingScope;
 		
 		/// <summary>
@@ -100,10 +153,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					
 					CacheManager cache = context.CacheManager;
 					if (cache != null) {
-						currentUsingScope = cache.GetShared(value) as UsingScopeCache;
+						currentUsingScope = cache.GetThreadLocal(value) as UsingScopeCache;
 						if (currentUsingScope == null) {
 							currentUsingScope = new UsingScopeCache(value);
-							cache.SetShared(value, currentUsingScope);
+							cache.SetThreadLocal(value, currentUsingScope);
 						}
 					} else {
 						currentUsingScope = new UsingScopeCache(value);
@@ -113,30 +166,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
-		/// Gets the current project content.
-		/// Returns <c>CurrentUsingScope.ProjectContent</c>.
-		/// </summary>
-		public IProjectContent ProjectContent {
-			get {
-				if (currentUsingScope != null)
-					return currentUsingScope.UsingScope.ProjectContent;
-				else
-					return null;
-			}
-		}
-		#endregion
-		
-		#region Per-UsingScope Cache
-		/// <summary>
 		/// There is one cache instance per using scope; and it might be shared between multiple resolvers
 		/// that are on different threads, so it must be thread-safe.
 		/// </summary>
 		sealed class UsingScopeCache
 		{
 			public readonly UsingScope UsingScope;
+			public readonly Dictionary<string, ResolveResult> ResolveCache = new Dictionary<string, ResolveResult>();
 			
-			public volatile List<List<IMethod>> AllExtensionMethods;
-			
+			public List<List<IMethod>> AllExtensionMethods;
 			
 			public UsingScopeCache(UsingScope usingScope)
 			{
@@ -1967,7 +2005,63 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (parameterizeResultType && typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument))
 				parameterizeResultType = false;
 			
-			ResolveResult r;
+			ResolveResult r = null;
+			if (currentTypeDefinition != null) {
+				Dictionary<string, ResolveResult> cache = null;
+				bool foundInCache = false;
+				if (k == 0) {
+					switch (lookupMode) {
+						case SimpleNameLookupMode.Expression:
+							cache = currentTypeDefinition.SimpleNameLookupCacheExpression;
+							break;
+						case SimpleNameLookupMode.InvocationTarget:
+							cache = currentTypeDefinition.SimpleNameLookupCacheInvocationTarget;
+							break;
+						case SimpleNameLookupMode.Type:
+							cache = currentTypeDefinition.SimpleTypeLookupCache;
+							break;
+					}
+					if (cache != null) {
+						foundInCache = cache.TryGetValue(identifier, out r);
+					}
+				}
+				if (!foundInCache) {
+					r = LookInCurrentType(identifier, typeArguments, lookupMode, parameterizeResultType);
+					if (cache != null) {
+						// also cache missing members (r==null)
+						cache[identifier] = r;
+					}
+				}
+				if (r != null)
+					return r;
+			}
+			
+			if (currentUsingScope != null) {
+				if (k == 0 && lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration) {
+					if (!currentUsingScope.ResolveCache.TryGetValue(identifier, out r)) {
+						r = LookInCurrentUsingScope(identifier, typeArguments, false, false);
+						currentUsingScope.ResolveCache[identifier] = r;
+					}
+				} else {
+					r = LookInCurrentUsingScope(identifier, typeArguments, lookupMode == SimpleNameLookupMode.TypeInUsingDeclaration, parameterizeResultType);
+				}
+				if (r != null)
+					return r;
+			}
+			
+			if (typeArguments.Count == 0) {
+				if (identifier == "dynamic")
+					return new TypeResolveResult(SharedTypes.Dynamic);
+				else
+					return new UnknownIdentifierResolveResult(identifier);
+			} else {
+				return ErrorResult;
+			}
+		}
+		
+		ResolveResult LookInCurrentType(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode, bool parameterizeResultType)
+		{
+			int k = typeArguments.Count;
 			// look in current type definitions
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
 				if (k == 0) {
@@ -1986,6 +2080,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				MemberLookup lookup = new MemberLookup(context, t, t.ProjectContent);
+				ResolveResult r;
 				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
 					r = lookup.Lookup(new TypeResolveResult(t), identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
 				} else {
@@ -1994,9 +2089,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (!(r is UnknownMemberResolveResult)) // but do return AmbiguousMemberResolveResult
 					return r;
 			}
-			
+			return null;
+		}
+		
+		ResolveResult LookInCurrentUsingScope(string identifier, IList<IType> typeArguments, bool isInUsingDeclaration, bool parameterizeResultType)
+		{
+			int k = typeArguments.Count;
 			// look in current namespace definitions
-			for (UsingScope n = this.CurrentUsingScope; n != null; n = n.Parent) {
+			UsingScope currentUsingScope = this.CurrentUsingScope;
+			for (UsingScope n = currentUsingScope; n != null; n = n.Parent) {
 				// first look for a namespace
 				if (k == 0) {
 					string fullName = NamespaceDeclaration.BuildQualifiedName(n.NamespaceName, identifier);
@@ -2023,7 +2124,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (n.ExternAliases.Contains(identifier)) {
 						return ResolveExternAlias(identifier);
 					}
-					if (lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration || n != this.CurrentUsingScope) {
+					if (!(isInUsingDeclaration && n == currentUsingScope)) {
 						foreach (var pair in n.UsingAliases) {
 							if (pair.Key == identifier) {
 								NamespaceResolveResult ns = pair.Value.ResolveNamespace(context);
@@ -2036,7 +2137,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				// finally, look in the imported namespaces:
-				if (lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration || n != this.CurrentUsingScope) {
+				if (!(isInUsingDeclaration && n == currentUsingScope)) {
 					IType firstResult = null;
 					foreach (var u in n.Usings) {
 						NamespaceResolveResult ns = u.ResolveNamespace(context);
@@ -2059,14 +2160,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				// if we didn't find anything: repeat lookup with parent namespace
 			}
-			if (typeArguments.Count == 0) {
-				if (identifier == "dynamic")
-					return new TypeResolveResult(SharedTypes.Dynamic);
-				else
-					return new UnknownIdentifierResolveResult(identifier);
-			} else {
-				return ErrorResult;
-			}
+			return null;
 		}
 		
 		/// <summary>
