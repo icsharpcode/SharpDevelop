@@ -115,7 +115,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return FindEntity(topLevelTypeDefinitions, location);
 		}
 		
-		public ITypeDefinition GetTypeDefinition(AstLocation location)
+		public ITypeDefinition GetInnerMostTypeDefinition(AstLocation location)
 		{
 			ITypeDefinition parent = null;
 			ITypeDefinition type = GetTopLevelTypeDefinition(location);
@@ -128,7 +128,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IMember GetMember(AstLocation location)
 		{
-			ITypeDefinition type = GetTypeDefinition(location);
+			ITypeDefinition type = GetInnerMostTypeDefinition(location);
 			if (type == null)
 				return null;
 			return FindEntity(type.Methods, location)

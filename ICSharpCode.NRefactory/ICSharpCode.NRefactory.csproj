@@ -60,7 +60,6 @@
   <ItemGroup>
     <Compile Include="CSharp\Analysis\ControlFlow.cs" />
     <Compile Include="CSharp\Analysis\DefiniteAssignmentAnalysis.cs" />
-    <Compile Include="CSharp\Analysis\MinimalResolveContext.cs" />
     <Compile Include="CSharp\Ast\AstNodeCollection.cs" />
     <Compile Include="CSharp\Ast\Expressions\TypeReferenceExpression.cs" />
     <Compile Include="CSharp\Ast\IAstVisitor.cs" />
@@ -252,6 +251,7 @@
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\CompositeTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\GetMembersHelper.cs" />
+    <Compile Include="TypeSystem\Implementation\MinimalResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\TypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\Implementation\NestedTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\ProxyTypeResolveContext.cs" />
@@ -426,6 +426,10 @@
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.Editor\ICSharpCode.Editor.csproj">
+      <Project>{F054A788-B591-4561-A8BA-AE745BBEB817}</Project>
+      <Name>ICSharpCode.Editor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

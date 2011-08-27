@@ -50,6 +50,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		#endregion
 		
+		public virtual string AssemblyName {
+			get { return string.Empty; }
+		}
+		
 		#region AssemblyAttributes
 		readonly List<IAttribute> assemblyAttributes = new List<IAttribute>(); // mutable assembly attribute storage
 		readonly List<IAttribute> moduleAttributes = new List<IAttribute>();

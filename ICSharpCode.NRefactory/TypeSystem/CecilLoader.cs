@@ -196,6 +196,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				get { return moduleAttributes; }
 			}
 			
+			public string AssemblyName {
+				get { return assemblyName; }
+			}
+			
 			public override string ToString()
 			{
 				return "[CecilProjectContent " + assemblyName + "]";

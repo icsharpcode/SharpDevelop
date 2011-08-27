@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the type (potentially a nested type) defined at the specified location.
 		/// Returns null if no type is defined at that location.
 		/// </summary>
-		ITypeDefinition GetTypeDefinition(AstLocation location);
+		ITypeDefinition GetInnerMostTypeDefinition(AstLocation location);
 		
 		/// <summary>
 		/// Gets the member defined at the specified location.
