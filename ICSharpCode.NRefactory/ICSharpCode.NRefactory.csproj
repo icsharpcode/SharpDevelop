@@ -101,7 +101,9 @@
     <Compile Include="CSharp\Ast\GeneralScope\TypeParameterDeclaration.cs" />
     <Compile Include="CSharp\Ast\MemberType.cs" />
     <Compile Include="CSharp\Refactoring\TypeSystemAstBuilder.cs" />
+    <Compile Include="CSharp\Resolver\CompositeResolveVisitorNavigator.cs" />
     <Compile Include="CSharp\Resolver\DetectSkippableNodesNavigator.cs" />
+    <Compile Include="CSharp\Resolver\FindReferences.cs" />
     <Compile Include="CSharp\Resolver\Log.cs" />
     <Compile Include="CSharp\Resolver\OperatorResolveResult.cs" />
     <Compile Include="CSharp\Resolver\ConversionResolveResult.cs" />

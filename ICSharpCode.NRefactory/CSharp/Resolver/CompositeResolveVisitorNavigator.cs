@@ -17,23 +17,38 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
-namespace ICSharpCode.NRefactory.Utils
+namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
-	sealed class ReferenceComparer : IEqualityComparer<object>
+	public sealed class CompositeResolveVisitorNavigator : IResolveVisitorNavigator
 	{
-		public readonly static ReferenceComparer Instance = new ReferenceComparer();
+		IResolveVisitorNavigator[] navigators;
 		
-		public new bool Equals(object a, object b)
+		public CompositeResolveVisitorNavigator(IResolveVisitorNavigator[] navigators)
 		{
-			return a == b;
+			this.navigators = navigators;
 		}
 		
-		public int GetHashCode(object obj)
+		public ResolveVisitorNavigationMode Scan(AstNode node)
 		{
-			return RuntimeHelpers.GetHashCode(obj);
+			ResolveVisitorNavigationMode mode = ResolveVisitorNavigationMode.Skip;
+			foreach (var navigator in navigators) {
+				ResolveVisitorNavigationMode newMode = navigator.Scan(node);
+				if (newMode == ResolveVisitorNavigationMode.ResolveAll)
+					return newMode; // ResolveAll has highest priority
+				if (newMode == ResolveVisitorNavigationMode.Resolve)
+					mode = newMode; // resolve has high priority and replaces the previous mode
+				else if (mode == ResolveVisitorNavigationMode.Skip)
+					mode = newMode; // skip has lowest priority and always gets replaced
+			}
+			return mode;
+		}
+		
+		public void Resolved(AstNode node, ResolveResult result)
+		{
+			foreach (var navigator in navigators) {
+				navigator.Resolved(node, result);
+			}
 		}
 	}
 }

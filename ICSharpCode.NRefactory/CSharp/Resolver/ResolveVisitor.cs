@@ -1881,10 +1881,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				AstNode parent = lambda.LambdaExpression.Parent;
 				// Continue going upwards until we find a node that can be resolved and provides
 				// an expected type.
-				while (parent is ParenthesizedExpression
-				       || parent is CheckedExpression || parent is UncheckedExpression
-				       || parent is NamedArgumentExpression || parent is ArrayInitializerExpression)
-				{
+				while (ActsAsParenthesizedExpression(parent) || parent is NamedArgumentExpression || parent is ArrayInitializerExpression) {
 					parent = parent.Parent;
 				}
 				CSharpResolver storedResolver;
@@ -1904,6 +1901,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			Log.Unindent();
 			Log.WriteLine("MergeUndecidedLambdas() finished.");
+		}
+		
+		internal static bool ActsAsParenthesizedExpression(AstNode expression)
+		{
+			return expression is ParenthesizedExpression || expression is CheckedExpression || expression is UncheckedExpression;
+		}
+		
+		internal static Expression UnpackParenthesizedExpression(Expression expr)
+		{
+			while (ActsAsParenthesizedExpression(expr))
+				expr = expr.GetChildByRole(ParenthesizedExpression.Roles.Expression);
+			return expr;
 		}
 		#endregion
 		
