@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
 
@@ -46,6 +47,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.typeArguments = typeArguments ?? EmptyList<ITypeReference>.Instance;
 			this.parentTypeDefinition = parentTypeDefinition;
 			this.parentUsingScope = parentUsingScope;
+		}
+		
+		public string Identifier {
+			get { return identifier; }
+		}
+		
+		public ITypeOrNamespaceReference Target {
+			get { return target; }
+		}
+		
+		public IList<ITypeReference> TypeArguments {
+			get { return new ReadOnlyCollection<ITypeReference>(typeArguments); }
 		}
 		
 		/// <summary>

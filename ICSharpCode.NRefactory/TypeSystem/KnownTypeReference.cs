@@ -129,6 +129,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		readonly TypeCode typeCode;
 		
+		public TypeCode TypeCode {
+			get { return typeCode; }
+		}
+		
 		public KnownTypeReference(TypeCode typeCode)
 		{
 			this.typeCode = typeCode;

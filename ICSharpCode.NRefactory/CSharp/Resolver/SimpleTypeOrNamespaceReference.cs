@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
 
@@ -44,6 +45,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.parentTypeDefinition = parentTypeDefinition;
 			this.parentUsingScope = parentUsingScope;
 			this.lookupMode = lookupMode;
+		}
+		
+		public string Identifier {
+			get { return identifier; }
+		}
+		
+		public IList<ITypeReference> TypeArguments {
+			get { return new ReadOnlyCollection<ITypeReference>(typeArguments); }
 		}
 		
 		/// <summary>

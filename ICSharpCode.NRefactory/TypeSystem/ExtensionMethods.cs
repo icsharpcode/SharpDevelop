@@ -253,9 +253,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the type (potentially a nested type) defined at the specified location.
 		/// Returns null if no type is defined at that location.
 		/// </summary>
-		public static ITypeDefinition GetTypeDefinition (this IParsedFile file, int line, int column)
+		public static ITypeDefinition GetInnermostTypeDefinition (this IParsedFile file, int line, int column)
 		{
-			return file.GetInnerMostTypeDefinition (new AstLocation (line, column));
+			return file.GetInnermostTypeDefinition (new AstLocation (line, column));
 		}
 		
 		/// <summary>

@@ -534,7 +534,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Debug.Assert(rr.IsCompileTimeConstant);
 			TypeCode constantType = ReflectionHelper.GetTypeCode(rr.Type);
 			if (constantType >= TypeCode.SByte && constantType <= TypeCode.Decimal && Convert.ToDouble(rr.ConstantValue) == 0) {
-				return NullableType.GetUnderlyingType(toType).IsEnum();
+				return NullableType.GetUnderlyingType(toType).Kind == TypeKind.Enum;
 			}
 			return false;
 		}

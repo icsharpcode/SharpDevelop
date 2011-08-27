@@ -1895,7 +1895,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						return new ConstantResolveResult(targetType, expression.ConstantValue);
 					else
 						return new ErrorResolveResult(targetType);
-				} else if (targetType.IsEnum()) {
+				} else if (targetType.Kind == TypeKind.Enum) {
 					code = ReflectionHelper.GetTypeCode(targetType.GetEnumUnderlyingType(context));
 					if (code >= TypeCode.SByte && code <= TypeCode.UInt64 && expression.ConstantValue != null) {
 						try {
