@@ -35,10 +35,19 @@ namespace ICSharpCode.NRefactory.Utils
 		/// full assembly and type names.
 		/// </summary>
 		public SerializationBinder SerializationBinder { get; set; }
+		
+		/// <summary>
+		/// Can be used to set several 'fixed' instances.
+		/// When serializing, such instances will not be included; and any references to a fixed instance
+		/// will be stored as the index in this array.
+		/// When deserializing, the same (or equivalent) instances must be specified, and the deserializer
+		/// will use them in place of the fixed instances.
+		/// </summary>
+		public object[] FixedInstances { get; set; }
 		#endregion
 		
 		#region Constants
-		const int magic = 0x71D18A5D;
+		const int magic = 0x71D28A5D;
 		
 		const byte Type_ReferenceType = 1;
 		const byte Type_ValueType = 2;
@@ -79,6 +88,7 @@ namespace ICSharpCode.NRefactory.Utils
 			
 			readonly FastSerializer fastSerializer;
 			public readonly BinaryWriter writer;
+			int fixedInstanceCount;
 			
 			internal SerializationContext(FastSerializer fastSerializer, BinaryWriter writer)
 			{
@@ -89,6 +99,19 @@ namespace ICSharpCode.NRefactory.Utils
 			}
 			
 			#region Scanning
+			public void MarkFixedInstances(object[] fixedInstances)
+			{
+				if (fixedInstances == null)
+					return;
+				foreach (object obj in fixedInstances) {
+					if (!objectToID.ContainsKey(obj)) {
+						objectToID.Add(obj, instances.Count);
+						instances.Add(obj);
+						fixedInstanceCount++;
+					}
+				}
+			}
+			
 			/// <summary>
 			/// Marks an instance for future scanning.
 			/// </summary>
@@ -106,7 +129,8 @@ namespace ICSharpCode.NRefactory.Utils
 			{
 				Log("Scanning...");
 				// starting from 1, because index 0 is null
-				for (int i = 1; i < instances.Count; i++) {
+				// Also, do not scan any of the 'fixed instances'.
+				for (int i = 1 + fixedInstanceCount; i < instances.Count; i++) {
 					object instance = instances[i];
 					ISerializable serializable = instance as ISerializable;
 					Type type = instance.GetType();
@@ -224,6 +248,7 @@ namespace ICSharpCode.NRefactory.Utils
 				writer.Write(instances.Count);
 				writer.Write(types.Count);
 				writer.Write(assemblyNames.Count);
+				writer.Write(fixedInstanceCount);
 				
 				foreach (string assemblyName in assemblyNames) {
 					writer.Write(assemblyName);
@@ -280,7 +305,7 @@ namespace ICSharpCode.NRefactory.Utils
 				
 				// Write out information necessary to create the instances
 				// starting from 1, because index 0 is null
-				for (int i = 1; i < instances.Count; i++) {
+				for (int i = 1 + fixedInstanceCount; i < instances.Count; i++) {
 					SerializationType sType = objectTypes[i];
 					if (types.Count <= ushort.MaxValue)
 						writer.Write((ushort)sType.ID);
@@ -296,7 +321,7 @@ namespace ICSharpCode.NRefactory.Utils
 					}
 				}
 				// Write out information necessary to fill data into the instances
-				for (int i = 1; i < instances.Count; i++) {
+				for (int i = 1 + fixedInstanceCount; i < instances.Count; i++) {
 					Log("0x{2:x6}, Write #{0}: {1}", i, objectTypes[i].Type.Name, writer.BaseStream.Position);
 					objectTypes[i].Writer(this, instances[i]);
 				}
@@ -744,10 +769,12 @@ namespace ICSharpCode.NRefactory.Utils
 		public void Serialize(BinaryWriter writer, object instance)
 		{
 			SerializationContext context = new SerializationContext(this, writer);
+			context.MarkFixedInstances(this.FixedInstances);
 			context.Mark(instance);
 			context.Scan();
 			context.ScanTypes();
 			context.Write();
+			context.WriteObjectID(instance);
 		}
 
 		delegate void TypeSerializer(object instance, SerializationContext context);
@@ -833,6 +860,15 @@ namespace ICSharpCode.NRefactory.Utils
 			context.Objects = new object[reader.ReadInt32()];
 			context.Types = new Type[reader.ReadInt32()];
 			string[] assemblyNames = new string[reader.ReadInt32()];
+			int fixedInstanceCount = reader.ReadInt32();
+			
+			if (fixedInstanceCount != 0) {
+				if (this.FixedInstances == null || this.FixedInstances.Length != fixedInstanceCount)
+					throw new SerializationException("Number of fixed instances doesn't match");
+				for (int i = 0; i < fixedInstanceCount; i++) {
+					context.Objects[i + 1] = this.FixedInstances[i];
+				}
+			}
 			
 			for (int i = 0; i < assemblyNames.Length; i++) {
 				assemblyNames[i] = reader.ReadString();
@@ -884,7 +920,7 @@ namespace ICSharpCode.NRefactory.Utils
 			}
 			context.DeserializeTypeDescriptions(this);
 			int[] typeIDByObjectID = new int[context.Objects.Length];
-			for (int i = 1; i < context.Objects.Length; i++) {
+			for (int i = 1 + fixedInstanceCount; i < context.Objects.Length; i++) {
 				int typeID = context.ReadTypeID();
 				
 				object instance;
@@ -904,7 +940,7 @@ namespace ICSharpCode.NRefactory.Utils
 			}
 			List<CustomDeserialization> customDeserializatons = new List<CustomDeserialization>();
 			ObjectReader[] objectReaders = new ObjectReader[context.Types.Length]; // index: type ID
-			for (int i = 1; i < context.Objects.Length; i++) {
+			for (int i = 1 + fixedInstanceCount; i < context.Objects.Length; i++) {
 				object instance = context.Objects[i];
 				int typeID = typeIDByObjectID[i];
 				Log("0x{2:x6} Read #{0}: {1}", i, context.Types[typeID].Name, reader.BaseStream.Position);
@@ -933,16 +969,13 @@ namespace ICSharpCode.NRefactory.Utils
 			foreach (CustomDeserialization customDeserializaton in customDeserializatons) {
 				customDeserializaton.Run(streamingContext);
 			}
-			for (int i = 1; i < context.Objects.Length; i++) {
+			for (int i = 1 + fixedInstanceCount; i < context.Objects.Length; i++) {
 				IDeserializationCallback dc = context.Objects[i] as IDeserializationCallback;
 				if (dc != null)
 					dc.OnDeserialization(null);
 			}
 			
-			if (context.Objects.Length <= 1)
-				return null;
-			else
-				return context.Objects[1];
+			return context.ReadObject();
 		}
 		
 		#region Object Reader
