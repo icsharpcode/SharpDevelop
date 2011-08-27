@@ -150,5 +150,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public string Name {
 			get { return ReflectionHelper.GetShortNameByTypeCode(typeCode); }
 		}
+		
+		public override string ToString()
+		{
+			return ReflectionHelper.GetCSharpNameByTypeCode(typeCode) ?? (this.Namespace + "." + this.Name);
+		}
 	}
 }

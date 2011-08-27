@@ -313,5 +313,52 @@ select new { c.Name, o.OrderID, o.Total }",
 						}
 					}});
 		}
+		
+		[Test]
+		public void QueryWithJoin()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"from a in b join c in d on e equals f select g",
+				new QueryExpression {
+					Clauses = {
+						new QueryFromClause {
+							Identifier = "a",
+							Expression = new IdentifierExpression("b")
+						},
+						new QueryJoinClause {
+							JoinIdentifier = "c",
+							InExpression = new IdentifierExpression("d"),
+							OnExpression = new IdentifierExpression("e"),
+							EqualsExpression = new IdentifierExpression("f")
+						},
+						new QuerySelectClause {
+							Expression = new IdentifierExpression("g")
+						}
+					}});
+		}
+		
+		[Test]
+		public void QueryWithGroupJoin()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"from a in b join c in d on e equals f into g select h",
+				new QueryExpression {
+					Clauses = {
+						new QueryFromClause {
+							Identifier = "a",
+							Expression = new IdentifierExpression("b")
+						},
+						new QueryJoinClause {
+							JoinIdentifier = "c",
+							InExpression = new IdentifierExpression("d"),
+							OnExpression = new IdentifierExpression("e"),
+							EqualsExpression = new IdentifierExpression("f"),
+							IntoIdentifier = "g"
+						},
+						new QuerySelectClause {
+							Expression = new IdentifierExpression("h")
+						}
+					}});
+		}
 	}
 }

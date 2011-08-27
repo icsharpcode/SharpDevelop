@@ -216,10 +216,10 @@ class Program {
 	static void T(ref int y) {}
 }";
 			
-			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program, "T(a)");
+			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program.Replace("T(a)", "$T(a)$"));
 			Assert.IsFalse(mrr.Member.Parameters[0].IsRef);
 			
-			mrr = Resolve<InvocationResolveResult>(program, "T(ref a)");
+			mrr = Resolve<InvocationResolveResult>(program.Replace("T(ref a)", "$T(ref a)$"));
 			Assert.IsTrue(mrr.Member.Parameters[0].IsRef);
 		}
 		

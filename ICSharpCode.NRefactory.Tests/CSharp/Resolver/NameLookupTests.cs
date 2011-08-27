@@ -391,11 +391,11 @@ class TestClass {
 	COL.ArrayList ff;
 }
 ";
-			TypeResolveResult type = Resolve<TypeResolveResult>(program, "COL.ArrayList");
+			TypeResolveResult type = Resolve<TypeResolveResult>(program.Replace("COL.ArrayList", "$COL.ArrayList$"));
 			Assert.IsNotNull(type, "COL.ArrayList should resolve to a type");
 			Assert.AreEqual("System.Collections.ArrayList", type.Type.FullName, "TypeResolveResult");
 			
-			MemberResolveResult member = Resolve<MemberResolveResult>(program, "ff");
+			MemberResolveResult member = Resolve<MemberResolveResult>(program.Replace("ff", "$ff$"));
 			Assert.AreEqual("System.Collections.ArrayList", member.Type.FullName, "the full type should be resolved");
 		}
 		

@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// Moreover, there is the <c>ResolveAll</c> mode - it works similar to resolving mode, but will not switch back to scanning mode.
 	/// The whole subtree will be resolved without notifying the navigator.
 	/// </remarks>
-	public sealed class ResolveVisitor : DepthFirstAstVisitor<object, ResolveResult>
+	public sealed class ResolveVisitor : IAstVisitor<object, ResolveResult>
 	{
 		// The ResolveVisitor is also responsible for handling lambda expressions.
 		
@@ -224,14 +224,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				navigator.Resolved(node, result);
 		}
 		
-		protected override ResolveResult VisitChildren(AstNode node, object data)
-		{
-			Log.WriteLine("ResolveVisitor: unhandled node " + node.GetType().Name);
-			Console.WriteLine("ResolveVisitor: unhandled node " + node.GetType().Name);
-			ScanChildren(node);
-			return null;
-		}
-		
 		void ScanChildren(AstNode node)
 		{
 			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
@@ -355,7 +347,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Track UsingScope
-		public override ResolveResult VisitCompilationUnit(CompilationUnit unit, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitCompilationUnit(CompilationUnit unit, object data)
 		{
 			UsingScope previousUsingScope = resolver.CurrentUsingScope;
 			try {
@@ -368,7 +360,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			UsingScope previousUsingScope = resolver.CurrentUsingScope;
 			try {
@@ -428,29 +420,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			return VisitTypeOrDelegate(typeDeclaration);
 		}
 		
-		public override ResolveResult VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
 		{
 			return VisitTypeOrDelegate(delegateDeclaration);
 		}
 		#endregion
 		
 		#region Track CurrentMember
-		public override ResolveResult VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{
 			return VisitFieldOrEventDeclaration(fieldDeclaration);
 		}
 		
-		public override ResolveResult VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration, object data)
 		{
 			return VisitFieldOrEventDeclaration(fixedFieldDeclaration);
 		}
 		
-		public override ResolveResult VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
 		{
 			return VisitFieldOrEventDeclaration(eventDeclaration);
 		}
@@ -479,7 +471,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return result;
 		}
 		
-		public override ResolveResult VisitVariableInitializer(VariableInitializer variableInitializer, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitVariableInitializer(VariableInitializer variableInitializer, object data)
 		{
 			if (resolverEnabled) {
 				ResolveResult result = errorResult;
@@ -517,7 +509,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitFixedVariableInitializer(FixedVariableInitializer fixedVariableInitializer, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitFixedVariableInitializer(FixedVariableInitializer fixedVariableInitializer, object data)
 		{
 			if (resolverEnabled) {
 				ResolveResult result = errorResult;
@@ -550,22 +542,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			return VisitMethodMember(methodDeclaration);
 		}
 		
-		public override ResolveResult VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
 		{
 			return VisitMethodMember(operatorDeclaration);
 		}
 		
-		public override ResolveResult VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			return VisitMethodMember(constructorDeclaration);
 		}
 		
-		public override ResolveResult VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
 		{
 			return VisitMethodMember(destructorDeclaration);
 		}
@@ -597,17 +589,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			return VisitPropertyMember(propertyDeclaration);
 		}
 		
-		public override ResolveResult VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
 		{
 			return VisitPropertyMember(indexerDeclaration);
 		}
 		
-		public override ResolveResult VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration, object data)
 		{
 			try {
 				if (resolver.CurrentTypeDefinition != null) {
@@ -632,7 +624,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitParameterDeclaration(ParameterDeclaration parameterDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitParameterDeclaration(ParameterDeclaration parameterDeclaration, object data)
 		{
 			ScanChildren(parameterDeclaration);
 			if (resolverEnabled) {
@@ -657,7 +649,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration, object data)
 		{
 			ScanChildren(typeParameterDeclaration);
 			if (resolverEnabled) {
@@ -683,7 +675,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration, object data)
 		{
 			try {
 				if (resolver.CurrentTypeDefinition != null) {
@@ -703,7 +695,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Track CheckForOverflow
-		public override ResolveResult VisitCheckedExpression(CheckedExpression checkedExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitCheckedExpression(CheckedExpression checkedExpression, object data)
 		{
 			bool oldCheckForOverflow = resolver.CheckForOverflow;
 			try {
@@ -719,7 +711,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
 		{
 			bool oldCheckForOverflow = resolver.CheckForOverflow;
 			try {
@@ -735,7 +727,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitCheckedStatement(CheckedStatement checkedStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitCheckedStatement(CheckedStatement checkedStatement, object data)
 		{
 			bool oldCheckForOverflow = resolver.CheckForOverflow;
 			try {
@@ -747,7 +739,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data)
 		{
 			bool oldCheckForOverflow = resolver.CheckForOverflow;
 			try {
@@ -786,7 +778,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return null;
 		}
 		
-		public override ResolveResult VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression, object data)
 		{
 			// 7.6.10.6 Anonymous object creation expressions
 			if (resolver.ProjectContent == null) {
@@ -813,7 +805,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return new ResolveResult(anonymousType);
 		}
 		
-		public override ResolveResult VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			if (!resolverEnabled) {
 				ScanChildren(arrayCreateExpression);
@@ -873,14 +865,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
 			// Array initializers are handled by their parent expression.
 			ScanChildren(arrayInitializerExpression);
 			return errorResult;
 		}
 		
-		public override ResolveResult VisitAsExpression(AsExpression asExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitAsExpression(AsExpression asExpression, object data)
 		{
 			if (resolverEnabled) {
 				Scan(asExpression.Expression);
@@ -891,7 +883,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			if (resolverEnabled) {
 				ResolveResult left = Resolve(assignmentExpression.Left);
@@ -903,7 +895,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			if (resolverEnabled) {
 				return resolver.ResolveBaseReference();
@@ -913,7 +905,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			if (resolverEnabled) {
 				ResolveResult left = Resolve(binaryOperatorExpression.Left);
@@ -925,7 +917,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitCastExpression(CastExpression castExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitCastExpression(CastExpression castExpression, object data)
 		{
 			if (resolverEnabled) {
 				return resolver.ResolveCast(ResolveType(castExpression.Type), Resolve(castExpression.Expression));
@@ -935,7 +927,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
 		{
 			if (resolverEnabled) {
 				return resolver.ResolveConditional(
@@ -948,7 +940,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 		{
 			if (resolverEnabled) {
 				return resolver.ResolveDefaultValue(ResolveType(defaultValueExpression.Type));
@@ -958,7 +950,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitDirectionExpression(DirectionExpression directionExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitDirectionExpression(DirectionExpression directionExpression, object data)
 		{
 			if (resolverEnabled) {
 				ResolveResult rr = Resolve(directionExpression.Expression);
@@ -969,12 +961,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitEmptyExpression(EmptyExpression emptyExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitEmptyExpression(EmptyExpression emptyExpression, object data)
 		{
 			return errorResult;
 		}
 		
-		public override ResolveResult VisitIndexerExpression(IndexerExpression indexerExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
 			if (resolverEnabled) {
 				ResolveResult target = Resolve(indexerExpression.Target);
@@ -987,7 +979,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitIsExpression(IsExpression isExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitIsExpression(IsExpression isExpression, object data)
 		{
 			ScanChildren(isExpression);
 			if (resolverEnabled)
@@ -997,7 +989,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		// NamedArgumentExpression is "identifier: Expression"
-		public override ResolveResult VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
 		{
 			// The parent expression takes care of handling NamedArgumentExpressions
 			// by calling GetArguments().
@@ -1008,7 +1000,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		// NamedExpression is "identifier = Expression" in object initializers and attributes
-		public override ResolveResult VisitNamedExpression(NamedExpression namedExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitNamedExpression(NamedExpression namedExpression, object data)
 		{
 			Expression rhs = namedExpression.Expression;
 			if (rhs is ArrayInitializerExpression) {
@@ -1027,7 +1019,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression, object data)
 		{
 			if (resolverEnabled) {
 				return resolver.ResolvePrimitive(null);
@@ -1036,7 +1028,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			if (resolverEnabled || !objectCreateExpression.Initializer.IsNull) {
 				IType type = ResolveType(objectCreateExpression.Type);
@@ -1101,7 +1093,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			resolver.PopInitializerType();
 		}
 		
-		public override ResolveResult VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
 			if (resolverEnabled) {
 				return Resolve(parenthesizedExpression.Expression);
@@ -1111,7 +1103,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
 			if (resolverEnabled) {
 				ResolveResult target = Resolve(pointerReferenceExpression.Target);
@@ -1129,7 +1121,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
 			if (resolverEnabled) {
 				return resolver.ResolvePrimitive(primitiveExpression.Value);
@@ -1138,7 +1130,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
 		{
 			if (resolverEnabled) {
 				return resolver.ResolveSizeOf(ResolveType(sizeOfExpression.Type));
@@ -1148,7 +1140,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
 		{
 			if (resolverEnabled) {
 				ResolveAndProcessConversion(stackAllocExpression.CountExpression, KnownTypeReference.Int32.Resolve(resolver.Context));
@@ -1159,7 +1151,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
 			if (resolverEnabled)
 				return resolver.ResolveThisReference();
@@ -1167,7 +1159,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 		}
 		
-		public override ResolveResult VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
 			ScanChildren(typeOfExpression);
 			if (resolverEnabled)
@@ -1176,7 +1168,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 		}
 		
-		public override ResolveResult VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
 			if (resolverEnabled) {
 				return Resolve(typeReferenceExpression.Type);
@@ -1186,7 +1178,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			if (resolverEnabled) {
 				ResolveResult expr = Resolve(unaryOperatorExpression.Expression);
@@ -1197,7 +1189,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitUndocumentedExpression(UndocumentedExpression undocumentedExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitUndocumentedExpression(UndocumentedExpression undocumentedExpression, object data)
 		{
 			ScanChildren(undocumentedExpression);
 			if (resolverEnabled) {
@@ -1293,7 +1285,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return mrr != null && mrr.Member.IsStatic;
 		}
 		
-		public override ResolveResult VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			// Note: this method is not called when it occurs in a situation where an ambiguity between
 			// simple names and type names might occur.
@@ -1307,7 +1299,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
 			// target = Resolve(identifierExpression = memberReferenceExpression.Target)
 			// trr = ResolveType(identifierExpression)
@@ -1365,7 +1357,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				IsTargetOfInvocation(memberReferenceExpression));
 		}
 		
-		public override ResolveResult VisitInvocationExpression(InvocationExpression invocationExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			// rr = Resolve(invocationExpression)
 			// target = Resolve(memberReferenceExpression = invocationExpression.Target)
@@ -1430,7 +1422,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Lamdbas / Anonymous Functions
-		public override ResolveResult VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			return HandleExplicitlyTypedLambda(
 				anonymousMethodExpression.Parameters, anonymousMethodExpression.Body,
@@ -1438,7 +1430,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				hasParameterList: anonymousMethodExpression.HasParameterList);
 		}
 		
-		public override ResolveResult VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
 			Debug.Assert(resolverEnabled);
 			bool isExplicitlyTyped = false;
@@ -2017,7 +2009,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Local Variable Scopes (Block Statements)
-		public override ResolveResult VisitBlockStatement(BlockStatement blockStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
 			resolver.PushBlock();
 			ScanChildren(blockStatement);
@@ -2025,7 +2017,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitUsingStatement(UsingStatement usingStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitUsingStatement(UsingStatement usingStatement, object data)
 		{
 			resolver.PushBlock();
 			if (resolverEnabled) {
@@ -2044,7 +2036,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitFixedStatement(FixedStatement fixedStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitFixedStatement(FixedStatement fixedStatement, object data)
 		{
 			resolver.PushBlock();
 			
@@ -2064,7 +2056,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitForeachStatement(ForeachStatement foreachStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			resolver.PushBlock();
 			ITypeReference type = MakeTypeReference(foreachStatement.VariableType, foreachStatement.InExpression, true);
@@ -2074,7 +2066,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitSwitchStatement(SwitchStatement switchStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitSwitchStatement(SwitchStatement switchStatement, object data)
 		{
 			resolver.PushBlock();
 			ScanChildren(switchStatement);
@@ -2082,7 +2074,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitCatchClause(CatchClause catchClause, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitCatchClause(CatchClause catchClause, object data)
 		{
 			resolver.PushBlock();
 			if (catchClause.VariableName != null) {
@@ -2098,7 +2090,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region VariableDeclarationStatement
-		public override ResolveResult VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement, object data)
 		{
 			bool isConst = (variableDeclarationStatement.Modifiers & Modifiers.Const) != 0;
 			VariableInitializer firstInitializer = variableDeclarationStatement.Variables.FirstOrDefault();
@@ -2132,7 +2124,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Condition Statements
-		public override ResolveResult VisitForStatement(ForStatement forStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitForStatement(ForStatement forStatement, object data)
 		{
 			resolver.PushBlock();
 			HandleConditionStatement(forStatement);
@@ -2140,19 +2132,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
 		{
 			HandleConditionStatement(ifElseStatement);
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitWhileStatement(WhileStatement whileStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitWhileStatement(WhileStatement whileStatement, object data)
 		{
 			HandleConditionStatement(whileStatement);
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitDoWhileStatement(DoWhileStatement doWhileStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitDoWhileStatement(DoWhileStatement doWhileStatement, object data)
 		{
 			HandleConditionStatement(doWhileStatement);
 			return voidResult;
@@ -2175,7 +2167,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Return Statements
-		public override ResolveResult VisitReturnStatement(ReturnStatement returnStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitReturnStatement(ReturnStatement returnStatement, object data)
 		{
 			if (resolverEnabled && !resolver.IsWithinLambdaExpression && resolver.CurrentMember != null) {
 				ResolveAndProcessConversion(returnStatement.Expression, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
@@ -2185,7 +2177,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitYieldStatement(YieldStatement yieldStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitYieldStatement(YieldStatement yieldStatement, object data)
 		{
 			if (resolverEnabled && resolver.CurrentMember != null) {
 				IType returnType = resolver.CurrentMember.ReturnType.Resolve(resolver.Context);
@@ -2197,69 +2189,74 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitYieldBreakStatement(YieldBreakStatement yieldBreakStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitYieldBreakStatement(YieldBreakStatement yieldBreakStatement, object data)
 		{
 			return voidResult;
 		}
 		#endregion
 		
 		#region Other statements
-		public override ResolveResult VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
 			ScanChildren(expressionStatement);
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitLockStatement(LockStatement lockStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitLockStatement(LockStatement lockStatement, object data)
 		{
 			ScanChildren(lockStatement);
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitEmptyStatement(EmptyStatement emptyStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitEmptyStatement(EmptyStatement emptyStatement, object data)
 		{
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitBreakStatement(BreakStatement breakStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitBreakStatement(BreakStatement breakStatement, object data)
 		{
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitContinueStatement(ContinueStatement continueStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitContinueStatement(ContinueStatement continueStatement, object data)
 		{
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitThrowStatement(ThrowStatement throwStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitThrowStatement(ThrowStatement throwStatement, object data)
 		{
 			Scan(throwStatement.Expression);
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
 		{
 			ScanChildren(tryCatchStatement);
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
 		{
 			ScanChildren(gotoCaseStatement);
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitGotoDefaultStatement(GotoDefaultStatement gotoDefaultStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitGotoDefaultStatement(GotoDefaultStatement gotoDefaultStatement, object data)
 		{
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitGotoStatement(GotoStatement gotoStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitGotoStatement(GotoStatement gotoStatement, object data)
 		{
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitLabelStatement(LabelStatement labelStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitLabelStatement(LabelStatement labelStatement, object data)
+		{
+			return voidResult;
+		}
+		
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data)
 		{
 			return voidResult;
 		}
@@ -2388,7 +2385,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Attributes
-		public override ResolveResult VisitAttribute(Attribute attribute, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitAttribute(Attribute attribute, object data)
 		{
 			var type = ResolveType(attribute.Type);
 			
@@ -2414,7 +2411,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitAttributeSection(AttributeSection attributeSection, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitAttributeSection(AttributeSection attributeSection, object data)
 		{
 			ScanChildren(attributeSection);
 			return voidResult;
@@ -2422,7 +2419,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Using Declaration
-		public override ResolveResult VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
 			currentTypeLookupMode = SimpleNameLookupMode.TypeInUsingDeclaration;
 			ScanChildren(usingDeclaration);
@@ -2430,17 +2427,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
 			currentTypeLookupMode = SimpleNameLookupMode.TypeInUsingDeclaration;
 			ScanChildren(usingDeclaration);
 			currentTypeLookupMode = SimpleNameLookupMode.Type;
+			return voidResult;
+		}
+		
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitExternAliasDeclaration(ExternAliasDeclaration externAliasDeclaration, object data)
+		{
 			return voidResult;
 		}
 		#endregion
 		
 		#region Type References
-		public override ResolveResult VisitPrimitiveType(PrimitiveType primitiveType, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitPrimitiveType(PrimitiveType primitiveType, object data)
 		{
 			if (!resolverEnabled)
 				return null;
@@ -2461,7 +2463,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return errorResult;
 		}
 		
-		public override ResolveResult VisitSimpleType(SimpleType simpleType, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitSimpleType(SimpleType simpleType, object data)
 		{
 			if (!resolverEnabled) {
 				ScanChildren(simpleType);
@@ -2475,7 +2477,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return resolver.LookupSimpleNameOrTypeName(simpleType.Identifier, typeArguments, currentTypeLookupMode);
 		}
 		
-		public override ResolveResult VisitMemberType(MemberType memberType, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitMemberType(MemberType memberType, object data)
 		{
 			if (!resolverEnabled) {
 				ScanChildren(memberType);
@@ -2495,7 +2497,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return resolver.ResolveMemberType(target, memberType.MemberName, typeArguments);
 		}
 		
-		public override ResolveResult VisitComposedType(ComposedType composedType, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitComposedType(ComposedType composedType, object data)
 		{
 			if (!resolverEnabled) {
 				ScanChildren(composedType);
@@ -2516,7 +2518,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Query Expressions
-		public override ResolveResult VisitQueryExpression(QueryExpression queryExpression, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryExpression(QueryExpression queryExpression, object data)
 		{
 			resolver.PushBlock();
 			ResolveResult oldQueryResult = currentQueryResult;
@@ -2525,7 +2527,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				foreach (var clause in queryExpression.Clauses) {
 					currentQueryResult = Resolve(clause);
 				}
-				return new ResolveResult(currentQueryResult != null ? currentQueryResult.Type : SharedTypes.UnknownType);
+				return currentQueryResult;
 			} finally {
 				currentQueryResult = oldQueryResult;
 				resolver.PopBlock();
@@ -2585,7 +2587,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitQueryFromClause(QueryFromClause queryFromClause, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryFromClause(QueryFromClause queryFromClause, object data)
 		{
 			ResolveResult result = null;
 			ResolveResult expr = Resolve(queryFromClause.Expression);
@@ -2616,7 +2618,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return result;
 		}
 		
-		public override ResolveResult VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause, object data)
 		{
 			ResolveResult rr = Resolve(queryContinuationClause.PrecedingQuery);
 			IType variableType = GetTypeForQueryVariable(rr.Type);
@@ -2626,7 +2628,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return rr;
 		}
 		
-		public override ResolveResult VisitQueryLetClause(QueryLetClause queryLetClause, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryLetClause(QueryLetClause queryLetClause, object data)
 		{
 			ResolveResult expr = Resolve(queryLetClause.Expression);
 			DomRegion region = MakeRegion(queryLetClause.IdentifierToken);
@@ -2636,13 +2638,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// resolve the .Select() call
 				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Select", EmptyList<IType>.Instance, true);
 				ResolveResult[] arguments = { new QueryExpressionLambda(1, SharedTypes.UnboundTypeArgument) };
-				return resolver.ResolveInvocation(currentQueryResult, arguments);
+				return resolver.ResolveInvocation(methodGroup, arguments);
 			} else {
 				return null;
 			}
 		}
 		
-		public override ResolveResult VisitQueryJoinClause(QueryJoinClause queryJoinClause, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryJoinClause(QueryJoinClause queryJoinClause, object data)
 		{
 			// join v in expr on onExpr equals equalsExpr [into g]
 			ResolveResult inResult = null;
@@ -2650,8 +2652,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType variableType;
 			if (queryJoinClause.Type.IsNull) {
 				variableType = GetTypeForQueryVariable(expr.Type);
-				if (resolverEnabled)
-					inResult = (currentQueryResult != null ? expr : new ResolveResult(variableType));
+				inResult = expr;
 			} else {
 				variableType = ResolveType(queryJoinClause.Type);
 				if (resolverEnabled) {
@@ -2661,30 +2662,110 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
-			// scan the 'On' expression in a context that contains only the previously existing range variables:
+			// resolve the 'On' expression in a context that contains only the previously existing range variables:
 			// (before adding any variable)
-			Scan(queryJoinClause.OnExpression);
+			ResolveResult onResult = Resolve(queryJoinClause.OnExpression);
 			
 			// scan the 'Equals' expression in a context that contains only the variable 'v'
 			CSharpResolver resolverOutsideQuery = resolver.Clone();
 			resolverOutsideQuery.PopBlock(); // pop all variables from the current query expression
 			DomRegion joinIdentifierRegion = MakeRegion(queryJoinClause.JoinIdentifierToken);
 			IVariable v = resolverOutsideQuery.AddVariable(variableType, joinIdentifierRegion, queryJoinClause.JoinIdentifier);
-			ResetContext(resolverOutsideQuery, delegate { Scan(queryJoinClause.EqualsExpression); });
+			ResolveResult equalsResult = errorResult;
+			ResetContext(resolverOutsideQuery, delegate {
+			             	equalsResult = Resolve(queryJoinClause.EqualsExpression);
+			             });
 			StoreResult(queryJoinClause.JoinIdentifierToken, new LocalResolveResult(v, variableType));
 			
 			if (queryJoinClause.IsGroupJoin) {
-				throw new NotImplementedException();
+				// We need to declare the group variable, but it's a bit tricky to determine its type:
+				// We'll have to resolve the GroupJoin invocation and take a look at the inferred types
+				// for the lambda given as last parameter.
+				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "GroupJoin", EmptyList<IType>.Instance);
+				GroupJoinLambda groupJoinLambda = new GroupJoinLambda();
+				ResolveResult[] arguments = {
+					inResult,
+					new QueryExpressionLambda(1, onResult.Type),
+					new QueryExpressionLambda(1, equalsResult.Type),
+					groupJoinLambda
+				};
+				ResolveResult rr = resolver.ResolveInvocation(methodGroup, arguments);
+				InvocationResolveResult invocationRR = rr as InvocationResolveResult;
+				IType groupParameterType = null;
+				if (invocationRR != null && invocationRR.Arguments.Count > 0) {
+					ConversionResolveResult crr = invocationRR.Arguments[invocationRR.Arguments.Count - 1] as ConversionResolveResult;
+					if (crr != null && crr.Conversion.IsAnonymousFunctionConversion) {
+						groupParameterType = crr.Conversion.data as IType;
+					}
+				}
+				if (groupParameterType == null)
+					groupParameterType = groupJoinLambda.groupParameterType ?? SharedTypes.UnknownType;
+				
+				DomRegion intoIdentifierRegion = MakeRegion(queryJoinClause.IntoIdentifierToken);
+				resolver.AddVariable(groupParameterType, joinIdentifierRegion, queryJoinClause.IntoIdentifier);
+				
+				return rr;
 			} else {
 				resolver.AddVariable(variableType, joinIdentifierRegion, queryJoinClause.JoinIdentifier);
-				if (resolverEnabled)
-					throw new NotImplementedException();
-				else
+				if (resolverEnabled && currentQueryResult != null) {
+					var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Join", EmptyList<IType>.Instance);
+					ResolveResult[] arguments = {
+						inResult,
+						new QueryExpressionLambda(1, onResult.Type),
+						new QueryExpressionLambda(1, equalsResult.Type),
+						new QueryExpressionLambda(2, SharedTypes.UnboundTypeArgument)
+					};
+					return resolver.ResolveInvocation(methodGroup, arguments);
+				} else {
 					return null;
+				}
 			}
 		}
 		
-		public override ResolveResult VisitQueryWhereClause(QueryWhereClause queryWhereClause, object data)
+		sealed class GroupJoinLambda : LambdaResolveResult
+		{
+			IParameter[] parameters = {
+				new DefaultParameter(SharedTypes.UnknownType, "x"),
+				new DefaultParameter(SharedTypes.UnknownType, "g")
+			};
+			
+			internal IType groupParameterType;
+			
+			public override IList<IParameter> Parameters {
+				get { return parameters; }
+			}
+			
+			public override bool IsImplicitlyTyped {
+				get { return true; }
+			}
+			
+			public override bool IsAnonymousMethod {
+				get { return false; }
+			}
+			
+			public override bool HasParameterList {
+				get { return true; }
+			}
+			
+			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
+			{
+				if (parameterTypes.Length == 2) {
+					groupParameterType = parameterTypes[1];
+					return Conversion.AnonymousFunctionConversion(groupParameterType);
+				} else {
+					return Conversion.None;
+				}
+			}
+			
+			public override IType GetInferredReturnType(IType[] parameterTypes)
+			{
+				if (parameterTypes.Length == 2)
+					groupParameterType = parameterTypes[1];
+				return SharedTypes.UnboundTypeArgument;
+			}
+		}
+		
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryWhereClause(QueryWhereClause queryWhereClause, object data)
 		{
 			ResolveAndProcessConversion(queryWhereClause.Condition, KnownTypeReference.Boolean.Resolve(resolver.Context));
 			if (resolverEnabled && currentQueryResult != null) {
@@ -2696,9 +2777,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitQuerySelectClause(QuerySelectClause querySelectClause, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitQuerySelectClause(QuerySelectClause querySelectClause, object data)
 		{
 			if (resolverEnabled && currentQueryResult != null) {
+				QueryExpression query = querySelectClause.Parent as QueryExpression;
+				string rangeVariable = GetSingleRangeVariable(query);
+				if (rangeVariable != null) {
+					IdentifierExpression ident = UnpackParenthesizedExpression(querySelectClause.Expression) as IdentifierExpression;
+					if (ident != null && ident.Identifier == rangeVariable && !ident.TypeArguments.Any()) {
+						// selecting the single identifier that is the range variable
+						if (query.Clauses.Count > 2) {
+							// only if the query is not degenerate:
+							// the Select call will be optimized away, so directly return the previous result
+							Scan(querySelectClause.Expression);
+							return currentQueryResult;
+						}
+					}
+				}
+				
 				ResolveResult expr = Resolve(querySelectClause.Expression);
 				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Select", EmptyList<IType>.Instance);
 				ResolveResult[] arguments = { new QueryExpressionLambda(1, expr.Type) };
@@ -2709,7 +2805,30 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public override ResolveResult VisitQueryGroupClause(QueryGroupClause queryGroupClause, object data)
+		/// <summary>
+		/// Gets the name of the range variable in the specified query.
+		/// If the query has multiple range variables, this method returns null.
+		/// </summary>
+		string GetSingleRangeVariable(QueryExpression query)
+		{
+			if (query == null)
+				return null;
+			foreach (QueryClause clause in query.Clauses.Skip(1)) {
+				if (clause is QueryFromClause || clause is QueryJoinClause || clause is QueryLetClause) {
+					// query has more than 1 range variable
+					return null;
+				}
+			}
+			QueryFromClause fromClause = query.Clauses.FirstOrDefault() as QueryFromClause;
+			if (fromClause != null)
+				return fromClause.Identifier;
+			QueryContinuationClause continuationClause = query.Clauses.FirstOrDefault() as QueryContinuationClause;
+			if (continuationClause != null)
+				return continuationClause.Identifier;
+			return null;
+		}
+		
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryGroupClause(QueryGroupClause queryGroupClause, object data)
 		{
 			if (resolverEnabled && currentQueryResult != null) {
 				// ... group projection by key
@@ -2727,10 +2846,46 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 			}
 		}
+		
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryOrderClause(QueryOrderClause queryOrderClause, object data)
+		{
+			if (resolverEnabled) {
+				foreach (QueryOrdering ordering in queryOrderClause.Orderings) {
+					currentQueryResult = Resolve(ordering);
+				}
+				return currentQueryResult;
+			} else {
+				ScanChildren(queryOrderClause);
+				return null;
+			}
+		}
+		
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryOrdering(QueryOrdering queryOrdering, object data)
+		{
+			if (resolverEnabled && currentQueryResult != null) {
+				// ... orderby sortKey [descending]
+				ResolveResult sortKey = Resolve(queryOrdering.Expression);
+				
+				QueryOrderClause parentClause = queryOrdering.Parent as QueryOrderClause;
+				bool isFirst = (parentClause == null || parentClause.Orderings.FirstOrDefault() == queryOrdering);
+				string methodName = isFirst ? "OrderBy" : "ThenBy";
+				if (queryOrdering.Direction == QueryOrderingDirection.Descending)
+					methodName += "Descending";
+				
+				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, methodName, EmptyList<IType>.Instance);
+				ResolveResult[] arguments = {
+					new QueryExpressionLambda(1, sortKey.Type),
+				};
+				return resolver.ResolveInvocation(methodGroup, arguments);
+			} else {
+				Scan(queryOrdering.Expression);
+				return null;
+			}
+		}
 		#endregion
 		
 		#region Constructor Initializer
-		public override ResolveResult VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data)
 		{
 			if (!resolverEnabled) {
 				ScanChildren(constructorInitializer);
@@ -2750,41 +2905,51 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		#region Other Nodes
 		// Token nodes
-		public override ResolveResult VisitIdentifier(Identifier identifier, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitIdentifier(Identifier identifier, object data)
 		{
 			return null;
 		}
 		
-		public override ResolveResult VisitComment(Comment comment, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitComment(Comment comment, object data)
 		{
 			return null;
 		}
 		
-		public override ResolveResult VisitCSharpTokenNode(CSharpTokenNode cSharpTokenNode, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitCSharpTokenNode(CSharpTokenNode cSharpTokenNode, object data)
+		{
+			return null;
+		}
+		
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitArraySpecifier(ArraySpecifier arraySpecifier, object data)
+		{
+			return null;
+		}
+		
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitPatternPlaceholder(AstNode placeholder, ICSharpCode.NRefactory.PatternMatching.Pattern pattern, object data)
 		{
 			return null;
 		}
 		
 		// Nodes where we just need to visit the children:
-		public override ResolveResult VisitAccessor(Accessor accessor, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitAccessor(Accessor accessor, object data)
 		{
 			ScanChildren(accessor);
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitSwitchSection(SwitchSection switchSection, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitSwitchSection(SwitchSection switchSection, object data)
 		{
 			ScanChildren(switchSection);
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitCaseLabel(CaseLabel caseLabel, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitCaseLabel(CaseLabel caseLabel, object data)
 		{
 			ScanChildren(caseLabel);
 			return voidResult;
 		}
 		
-		public override ResolveResult VisitConstraint(Constraint constraint, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitConstraint(Constraint constraint, object data)
 		{
 			ScanChildren(constraint);
 			return voidResult;

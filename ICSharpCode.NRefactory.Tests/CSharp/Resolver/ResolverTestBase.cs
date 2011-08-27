@@ -226,11 +226,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return (T)rr;
 		}
 		
-		protected T Resolve<T>(string code, string exprToResolve) where T : ResolveResult
-		{
-			return Resolve<T>(code.Replace(exprToResolve, "$" + exprToResolve + "$"));
-		}
-		
 		sealed class FindNodeVisitor : DepthFirstAstVisitor<object, object>
 		{
 			readonly AstLocation start;

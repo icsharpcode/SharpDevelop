@@ -226,6 +226,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			"Single", "Double", "Decimal", "DateTime", null, "String"
 		};
 		
+		static readonly string[] csharpTypeNamesByTypeCode = {
+			"void", "object", null, "bool", "char",
+			"sbyte", "byte", "short", "ushort", "int", "uint", "long", "ulong",
+			"float", "double", "decimal", null, null, "string"
+		};
+		
 		internal static int ByTypeCodeArraySize {
 			get { return typeNamesByTypeCode.Length; }
 		}
@@ -233,6 +239,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		internal static string GetShortNameByTypeCode(TypeCode typeCode)
 		{
 			return typeNamesByTypeCode[(int)typeCode];
+		}
+		
+		internal static string GetCSharpNameByTypeCode(TypeCode typeCode)
+		{
+			return csharpTypeNamesByTypeCode[(int)typeCode];
 		}
 		
 		/// <summary>

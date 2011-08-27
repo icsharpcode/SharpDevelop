@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public class LinqTests : ResolverTestBase
 	{
 		[Test]
-		public void SimpleLinqTest()
+		public void SimpleLinq()
 		{
 			string program = @"using System; using System.Linq;
 class TestClass {
@@ -51,7 +51,7 @@ class TestClass {
 		}
 		
 		[Test]
-		public void LinqGroupTest()
+		public void Group()
 		{
 			string program = @"using System; using System.Linq;
 class TestClass {
@@ -71,7 +71,7 @@ class TestClass {
 		}
 		
 		[Test]
-		public void LinqQueryableGroupTest()
+		public void QueryableGroup()
 		{
 			string program = @"using System; using System.Linq;
 class TestClass {
@@ -91,7 +91,7 @@ class TestClass {
 		}
 		
 		[Test]
-		public void ParenthesizedLinqTest()
+		public void Parenthesized()
 		{
 			string program = @"using System; using System.Linq;
 class TestClass {
@@ -100,13 +100,14 @@ class TestClass {
 	}
 }
 ";
-			ResolveResult rr = Resolve<ResolveResult>(program);
+			var rr = Resolve<InvocationResolveResult>(program);
+			Assert.AreEqual("System.Linq.Enumerable.Select", rr.Member.FullName);
 			Assert.AreEqual("System.Collections.Generic.IEnumerable", rr.Type.FullName);
 			Assert.AreEqual("System.Int32", ((ParameterizedType)rr.Type).TypeArguments[0].FullName);
 		}
 		
 		[Test]
-		public void LinqSelectReturnTypeTest()
+		public void SelectReturnType()
 		{
 			string program = @"using System;
 class TestClass { static void M() {
@@ -115,12 +116,13 @@ class TestClass { static void M() {
 class XYZ {
 	public int Select<U>(Func<string, U> f) { return 42; }
 }";
-			ResolveResult rr = Resolve<ResolveResult>(program);
+			var rr = Resolve<InvocationResolveResult>(program);
+			Assert.AreEqual("XYZ.Select", rr.Member.FullName);
 			Assert.AreEqual("System.Int32", rr.Type.FullName);
 		}
 		
 		[Test]
-		public void LinqQueryContinuationTest()
+		public void Continuation()
 		{
 			string program = @"using System; using System.Linq;
 class TestClass {
@@ -146,6 +148,141 @@ class TestClass {
 			
 			lrr = Resolve<LocalResolveResult>(program.Replace("r.ToString", "$r$.ToString"));
 			Assert.AreEqual("System.Collections.Generic.IEnumerable`1[[System.Int32]]", lrr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void OrderingWithSelectCall()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	void Test(string[] input) {
+		$var$ r = from x in input
+			orderby x.Length
+			select x + x;
+	}
+}
+";
+			TypeResolveResult rr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable`1[[System.String]]", rr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void OrderingWithoutSelectCall()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	void Test(string[] input) {
+		$var$ r = from x in input
+			orderby x.Length
+			select x;
+	}
+}
+";
+			TypeResolveResult rr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("System.Linq.IOrderedEnumerable`1[[System.String]]", rr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void OrderingWithSelectCallDueToSecondRangeVariable1()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	void Test(string[] input) {
+		$var$ r = from x in input
+			from y in input
+			orderby x.Length
+			select x;
+	}
+}
+";
+			TypeResolveResult rr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable`1[[System.String]]", rr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void OrderingWithSelectCallDueToSecondRangeVariable2()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	void Test(string[] input) {
+		$var$ r = from x in input
+			join y in input on x equals y
+			orderby x.Length
+			select x;
+	}
+}
+";
+			TypeResolveResult rr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable`1[[System.String]]", rr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void OrderingWithSelectCallDueToSecondRangeVariable3()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	void Test(string[] input) {
+		$var$ r = from x in input
+			join y in input on x equals y into g
+			orderby x.Length
+			select x;
+	}
+}
+";
+			TypeResolveResult rr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable`1[[System.String]]", rr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void OrderingWithSelectCallDueToSecondRangeVariable4()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	void Test(string[] input) {
+		$var$ r = from x in input
+			let y = x
+			orderby x.Length
+			select x;
+	}
+}
+";
+			TypeResolveResult rr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable`1[[System.String]]", rr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void DegenerateQuery()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	void Test(string[] input) {
+		$var$ r = from x in input select x;
+	}
+}
+";
+			TypeResolveResult rr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable`1[[System.String]]", rr.Type.ReflectionName);
+		}
+		
+		[Test, Ignore("lots of bugs here.. not only parser bugs")]
+		public void GroupJoinWithCustomMethod()
+		{
+			string program = @"using System;
+class TestClass { static void M(long [] args) {
+	var q = (from a in new XYZ() join b in args on a equals b into g select g);
+}}
+class XYZ {
+	public XYZ GroupJoin<T, K, R>(IEnumerable<T> f, Func<string, K> key1, Func<T, K> key2, Func<string, decimal, R> s) { return this; }
+	public int Select<U>(Func<string, U> f) { return 42; }
+}";
+			var local = Resolve<LocalResolveResult>(program.Replace("into g", "into $g$"));
+			Assert.AreEqual("System.Decimal", local.Type.FullName);
+			
+			local = Resolve<LocalResolveResult>(program.Replace("select g", "select $g$"));
+			Assert.AreEqual("System.Decimal", local.Type.FullName);
+			
+			var trr = Resolve<TypeResolveResult>(program.Replace("var", "$var$"));
+			Assert.AreEqual("XYZ", trr.Type.FullName); // because 'Select' is done as part of GroupJoin()
 		}
 	}
 }

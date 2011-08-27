@@ -312,6 +312,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public Identifier IntoIdentifierToken {
+			get { return GetChildByRole(IntoIdentifierRole); }
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryJoinClause (this, data);

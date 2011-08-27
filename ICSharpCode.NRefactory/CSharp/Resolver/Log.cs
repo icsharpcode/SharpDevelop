@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	static class Log
 	{
-		const bool logEnabled = false;
+		const bool logEnabled = true;
 		
 		[Conditional(logEnabled ? "DEBUG" : "LOG_DISABLED")]
 		internal static void WriteLine(string text)

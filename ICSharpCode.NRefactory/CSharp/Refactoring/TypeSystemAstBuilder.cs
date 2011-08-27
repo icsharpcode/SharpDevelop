@@ -161,13 +161,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			// (anything is better than displaying a question mark)
 			KnownTypeReference knownType = typeRef as KnownTypeReference;
 			if (knownType != null) {
-				PrimitiveType primitiveType;
-				if (knownType.TypeCode == TypeCode.Empty)
-					primitiveType = new PrimitiveType("void");
-				else
-					primitiveType = ConvertPrimitiveType(knownType.TypeCode);
-				if (primitiveType != null)
-					return primitiveType;
+				string keyword = ReflectionHelper.GetCSharpNameByTypeCode(knownType.TypeCode);
+				if (keyword != null)
+					return new PrimitiveType(keyword);
 			}
 			SimpleTypeOrNamespaceReference str = typeRef as SimpleTypeOrNamespaceReference;
 			if (str != null) {
@@ -187,50 +183,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new SimpleType("?");
 		}
 		
-		PrimitiveType ConvertPrimitiveType(TypeCode typeCode)
-		{
-			switch (typeCode) {
-				case TypeCode.Object:
-					return new PrimitiveType("object");
-				case TypeCode.Boolean:
-					return new PrimitiveType("bool");
-				case TypeCode.Char:
-					return new PrimitiveType("char");
-				case TypeCode.SByte:
-					return new PrimitiveType("sbyte");
-				case TypeCode.Byte:
-					return new PrimitiveType("byte");
-				case TypeCode.Int16:
-					return new PrimitiveType("short");
-				case TypeCode.UInt16:
-					return new PrimitiveType("ushort");
-				case TypeCode.Int32:
-					return new PrimitiveType("int");
-				case TypeCode.UInt32:
-					return new PrimitiveType("uint");
-				case TypeCode.Int64:
-					return new PrimitiveType("long");
-				case TypeCode.UInt64:
-					return new PrimitiveType("ulong");
-				case TypeCode.Single:
-					return new PrimitiveType("float");
-				case TypeCode.Double:
-					return new PrimitiveType("double");
-				case TypeCode.Decimal:
-					return new PrimitiveType("decimal");
-				case TypeCode.String:
-					return new PrimitiveType("string");
-				default:
-					return null;
-			}
-		}
-		
 		AstType ConvertTypeHelper(ITypeDefinition typeDef, IList<IType> typeArguments)
 		{
 			Debug.Assert(typeArguments.Count >= typeDef.TypeParameterCount);
-			PrimitiveType primitiveType = ConvertPrimitiveType(ReflectionHelper.GetTypeCode(typeDef));
-			if (primitiveType != null)
-				return primitiveType;
+			TypeCode typeCode = ReflectionHelper.GetTypeCode(typeDef);
+			if (typeCode != TypeCode.Empty) {
+				string keyword = ReflectionHelper.GetCSharpNameByTypeCode(typeCode);
+				if (keyword != null)
+					return new PrimitiveType(keyword);
+			}
 			// There is no type code for System.Void
 			if (typeDef.Kind == TypeKind.Void)
 				return new PrimitiveType("void");

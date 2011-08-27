@@ -132,13 +132,13 @@ class C : B {
  	{}
 }
 ";
-			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program, "base(b)");
+			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program.Replace("base(b)", "$base(b)$"));
 			Assert.AreEqual("A..ctor", mrr.Member.FullName);
 			
-			mrr = Resolve<InvocationResolveResult>(program, "base(c)");
+			mrr = Resolve<InvocationResolveResult>(program.Replace("base(c)", "$base(c)$"));
 			Assert.AreEqual("B..ctor", mrr.Member.FullName);
 			
-			mrr = Resolve<InvocationResolveResult>(program, "this(0)");
+			mrr = Resolve<InvocationResolveResult>(program.Replace("this(0)", "$this(0)$"));
 			Assert.AreEqual("C..ctor", mrr.Member.FullName);
 		}
 		
