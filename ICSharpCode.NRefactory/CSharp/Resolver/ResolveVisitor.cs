@@ -55,6 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		// The ResolveVisitor is also responsible for handling lambda expressions.
 		
 		static readonly ResolveResult errorResult = new ErrorResolveResult(SharedTypes.UnknownType);
+		static readonly ResolveResult transparentIdentifierResolveResult = new ResolveResult(SharedTypes.UnboundTypeArgument);
 		readonly ResolveResult voidResult;
 		
 		CSharpResolver resolver;
@@ -1505,6 +1506,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return body.Parent; }
 			}
 			
+			internal override AstNode Body {
+				get { return body; }
+			}
+			
 			public ExplicitlyTypedLambda(IList<IParameter> parameters, bool isAnonymousMethod, CSharpResolver storedContext, ResolveVisitor visitor, AstNode body)
 			{
 				this.parameters = parameters;
@@ -1615,7 +1620,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Implicitly typed
 		sealed class ImplicitlyTypedLambda : LambdaBase
 		{
-			internal readonly LambdaExpression lambda;
+			readonly LambdaExpression lambda;
+			readonly QuerySelectClause selectClause;
+			
 			readonly CSharpResolver storedContext;
 			readonly ParsedFile parsedFile;
 			readonly List<LambdaTypeHypothesis> hypotheses = new List<LambdaTypeHypothesis>();
@@ -1629,24 +1636,57 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			internal override AstNode LambdaExpression {
-				get { return lambda; }
+				get {
+					if (selectClause != null)
+						return selectClause.Expression;
+					else
+						return lambda;
+				}
 			}
 			
-			public ImplicitlyTypedLambda(LambdaExpression lambda, ResolveVisitor parentVisitor)
+			internal override AstNode Body {
+				get {
+					if (selectClause != null)
+						return selectClause.Expression;
+					else
+						return lambda.Body;
+				}
+			}
+			
+			private ImplicitlyTypedLambda(ResolveVisitor parentVisitor)
 			{
-				this.lambda = lambda;
 				this.parentVisitor = parentVisitor;
 				this.storedContext = parentVisitor.resolver.Clone();
 				this.parsedFile = parentVisitor.parsedFile;
+			}
+			
+			public ImplicitlyTypedLambda(LambdaExpression lambda, ResolveVisitor parentVisitor)
+				: this(parentVisitor)
+			{
+				this.lambda = lambda;
 				foreach (var pd in lambda.Parameters) {
 					parameters.Add(new DefaultParameter(SharedTypes.UnknownType, pd.Name) {
 					               	Region = parentVisitor.MakeRegion(pd)
 					               });
 				}
+				RegisterUndecidedLambda();
+			}
+			
+			public ImplicitlyTypedLambda(QuerySelectClause selectClause, IEnumerable<IParameter> parameters, ResolveVisitor parentVisitor)
+				: this(parentVisitor)
+			{
+				this.selectClause = selectClause;
+				this.parameters.AddRange(parameters);
+				
+				RegisterUndecidedLambda();
+			}
+			
+			void RegisterUndecidedLambda()
+			{
 				if (parentVisitor.undecidedLambdas == null)
 					parentVisitor.undecidedLambdas = new List<LambdaBase>();
 				parentVisitor.undecidedLambdas.Add(this);
-				Log.WriteLine("Added undecided implicitly-typed lambda: " + lambda);
+				Log.WriteLine("Added undecided implicitly-typed lambda: " + this.LambdaExpression);
 			}
 			
 			public override IList<IParameter> Parameters {
@@ -1686,7 +1726,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						return h;
 				}
 				ResolveVisitor visitor = new ResolveVisitor(storedContext.Clone(), parsedFile);
-				LambdaTypeHypothesis newHypothesis = new LambdaTypeHypothesis(this, parameterTypes, visitor);
+				var newHypothesis = new LambdaTypeHypothesis(this, parameterTypes, visitor, lambda != null ? lambda.Parameters : null);
 				hypotheses.Add(newHypothesis);
 				return newHypothesis;
 			}
@@ -1697,6 +1737,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			/// </summary>
 			internal LambdaTypeHypothesis GetAnyHypothesis()
 			{
+				if (winningHypothesis != null)
+					return winningHypothesis;
 				if (hypotheses.Count == 0) {
 					// make a new hypothesis with unknown parameter types
 					IType[] parameterTypes = new IType[parameters.Count];
@@ -1740,7 +1782,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override string ToString()
 			{
-				return "[ImplicitlyTypedLambda " + lambda + "]";
+				return "[ImplicitlyTypedLambda " + this.LambdaExpression + "]";
 			}
 		}
 		
@@ -1755,6 +1797,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		sealed class LambdaTypeHypothesis
 		{
 			readonly ImplicitlyTypedLambda lambda;
+			internal readonly IParameter[] lambdaParameters;
 			internal readonly IType[] parameterTypes;
 			readonly ResolveVisitor visitor;
 			
@@ -1763,7 +1806,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool isValidAsVoidMethod;
 			internal bool success;
 			
-			public LambdaTypeHypothesis(ImplicitlyTypedLambda lambda, IType[] parameterTypes, ResolveVisitor visitor)
+			public LambdaTypeHypothesis(ImplicitlyTypedLambda lambda, IType[] parameterTypes, ResolveVisitor visitor,
+			                            ICollection<ParameterDeclaration> parameterDeclarations)
 			{
 				Debug.Assert(parameterTypes.Length == lambda.Parameters.Count);
 				
@@ -1774,14 +1818,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.WriteLine("Analyzing " + ToString() + "...");
 				Log.Indent();
 				visitor.resolver.PushLambdaBlock();
-				int i = 0;
-				foreach (var pd in lambda.lambda.Parameters) {
-					visitor.resolver.AddLambdaParameter(parameterTypes[i], visitor.MakeRegion(pd), pd.Name, false, false);
-					i++;
-					visitor.Scan(pd);
+				lambdaParameters = new IParameter[parameterTypes.Length];
+				if (parameterDeclarations != null) {
+					int i = 0;
+					foreach (var pd in parameterDeclarations) {
+						lambdaParameters[i] = visitor.resolver.AddLambdaParameter(parameterTypes[i], visitor.MakeRegion(pd), pd.Name);
+						i++;
+						visitor.Scan(pd);
+					}
+				} else {
+					for (int i = 0; i < parameterTypes.Length; i++) {
+						var p = lambda.Parameters[i];
+						lambdaParameters[i] = visitor.resolver.AddLambdaParameter(parameterTypes[i], p.Region, p.Name);
+					}
 				}
 				
-				visitor.AnalyzeLambda(lambda.lambda.Body, out success, out isValidAsVoidMethod, out inferredReturnType, out returnValues);
+				visitor.AnalyzeLambda(lambda.Body, out success, out isValidAsVoidMethod, out inferredReturnType, out returnValues);
 				visitor.resolver.PopBlock();
 				Log.Unindent();
 				Log.WriteLine("Finished analyzing " + ToString());
@@ -1846,7 +1898,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					b.Append(lambda.Parameters[i].Name);
 				}
 				b.Append(") => ");
-				b.Append(lambda.lambda.Body.ToString());
+				b.Append(lambda.Body.ToString());
 				b.Append(']');
 				return b.ToString();
 			}
@@ -1858,6 +1910,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			internal abstract bool IsUndecided { get; }
 			internal abstract AstNode LambdaExpression { get; }
+			internal abstract AstNode Body { get; }
 			
 			internal abstract void EnforceMerge(ResolveVisitor parentVisitor);
 		}
@@ -2544,15 +2597,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		sealed class QueryExpressionLambda : LambdaResolveResult
 		{
 			readonly IParameter[] parameters;
-			readonly IType lambdaReturnType;
+			readonly ResolveResult bodyExpression;
 			
-			public QueryExpressionLambda(int parameterCount, IType returnType)
+			internal IType[] inferredParameterTypes;
+			
+			public QueryExpressionLambda(int parameterCount, ResolveResult bodyExpression)
 			{
 				this.parameters = new IParameter[parameterCount];
 				for (int i = 0; i < parameterCount; i++) {
 					parameters[i] = new DefaultParameter(SharedTypes.UnknownType, "x" + i);
 				}
-				this.lambdaReturnType = returnType;
+				this.bodyExpression = bodyExpression;
 			}
 			
 			public override IList<IParameter> Parameters {
@@ -2561,7 +2616,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
 			{
-				return conversions.ImplicitConversion(lambdaReturnType, returnType);
+				if (parameterTypes.Length == parameters.Length) {
+					this.inferredParameterTypes = parameterTypes;
+					return Conversion.AnonymousFunctionConversion(parameterTypes);
+				} else {
+					return Conversion.None;
+				}
 			}
 			
 			public override bool IsImplicitlyTyped {
@@ -2578,13 +2638,31 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override IType GetInferredReturnType(IType[] parameterTypes)
 			{
-				return lambdaReturnType;
+				return bodyExpression.Type;
 			}
 			
 			public override string ToString()
 			{
-				return string.Format("[QueryExpressionLambda ({0}) => {1}]", string.Join(",", parameters.Select(p => p.Name)), lambdaReturnType);
+				return string.Format("[QueryExpressionLambda ({0}) => {1}]", string.Join(",", parameters.Select(p => p.Name)), bodyExpression);
 			}
+		}
+		
+		QueryClause GetPreviousQueryClause(QueryClause clause)
+		{
+			for (AstNode node = clause.PrevSibling; node != null; node = node.PrevSibling) {
+				if (node.Role == QueryExpression.ClauseRole)
+					return (QueryClause)node;
+			}
+			return null;
+		}
+		
+		QueryClause GetNextQueryClause(QueryClause clause)
+		{
+			for (AstNode node = clause.NextSibling; node != null; node = node.NextSibling) {
+				if (node.Role == QueryExpression.ClauseRole)
+					return (QueryClause)node;
+			}
+			return null;
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryFromClause(QueryFromClause queryFromClause, object data)
@@ -2603,18 +2681,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					result = resolver.ResolveInvocation(methodGroup, new ResolveResult[0]);
 				}
 			}
-			if (resolverEnabled && currentQueryResult != null) {
-				// this is a second 'from': resolve the .SelectMany() call
-				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "SelectMany", EmptyList<IType>.Instance, true);
-				ResolveResult[] arguments = {
-					new QueryExpressionLambda(1, result.Type),
-					new QueryExpressionLambda(2, SharedTypes.UnboundTypeArgument)
-				};
-				result = resolver.ResolveInvocation(methodGroup, arguments);
-			}
+			
 			DomRegion region = MakeRegion(queryFromClause.IdentifierToken);
 			IVariable v = resolver.AddVariable(variableType, region, queryFromClause.Identifier);
 			StoreResult(queryFromClause.IdentifierToken, new LocalResolveResult(v, variableType));
+			
+			if (resolverEnabled && currentQueryResult != null) {
+				// this is a second 'from': resolve the .SelectMany() call
+				QuerySelectClause selectClause = GetNextQueryClause(queryFromClause) as QuerySelectClause;
+				ResolveResult selectResult;
+				if (selectClause != null) {
+					// from ... from ... select - the SelectMany call also performs the Select operation
+					selectResult = Resolve(selectClause.Expression);
+				} else {
+					// from .. from ... ... - introduce a transparent identifier
+					selectResult = transparentIdentifierResolveResult;
+				}
+				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "SelectMany", EmptyList<IType>.Instance, true);
+				ResolveResult[] arguments = {
+					new QueryExpressionLambda(1, result),
+					new QueryExpressionLambda(2, selectResult)
+				};
+				result = resolver.ResolveInvocation(methodGroup, arguments);
+			}
 			return result;
 		}
 		
@@ -2637,7 +2726,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolverEnabled && currentQueryResult != null) {
 				// resolve the .Select() call
 				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Select", EmptyList<IType>.Instance, true);
-				ResolveResult[] arguments = { new QueryExpressionLambda(1, SharedTypes.UnboundTypeArgument) };
+				ResolveResult[] arguments = { new QueryExpressionLambda(1, transparentIdentifierResolveResult) };
 				return resolver.ResolveInvocation(methodGroup, arguments);
 			} else {
 				return null;
@@ -2678,42 +2767,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			StoreResult(queryJoinClause.JoinIdentifierToken, new LocalResolveResult(v, variableType));
 			
 			if (queryJoinClause.IsGroupJoin) {
-				// We need to declare the group variable, but it's a bit tricky to determine its type:
-				// We'll have to resolve the GroupJoin invocation and take a look at the inferred types
-				// for the lambda given as last parameter.
-				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "GroupJoin", EmptyList<IType>.Instance);
-				GroupJoinLambda groupJoinLambda = new GroupJoinLambda();
-				ResolveResult[] arguments = {
-					inResult,
-					new QueryExpressionLambda(1, onResult.Type),
-					new QueryExpressionLambda(1, equalsResult.Type),
-					groupJoinLambda
-				};
-				ResolveResult rr = resolver.ResolveInvocation(methodGroup, arguments);
-				InvocationResolveResult invocationRR = rr as InvocationResolveResult;
-				IType groupParameterType = null;
-				if (invocationRR != null && invocationRR.Arguments.Count > 0) {
-					ConversionResolveResult crr = invocationRR.Arguments[invocationRR.Arguments.Count - 1] as ConversionResolveResult;
-					if (crr != null && crr.Conversion.IsAnonymousFunctionConversion) {
-						groupParameterType = crr.Conversion.data as IType;
-					}
-				}
-				if (groupParameterType == null)
-					groupParameterType = groupJoinLambda.groupParameterType ?? SharedTypes.UnknownType;
-				
-				DomRegion intoIdentifierRegion = MakeRegion(queryJoinClause.IntoIdentifierToken);
-				resolver.AddVariable(groupParameterType, joinIdentifierRegion, queryJoinClause.IntoIdentifier);
-				
-				return rr;
+				return ResolveGroupJoin(queryJoinClause, inResult, onResult, equalsResult);
 			} else {
 				resolver.AddVariable(variableType, joinIdentifierRegion, queryJoinClause.JoinIdentifier);
 				if (resolverEnabled && currentQueryResult != null) {
+					QuerySelectClause selectClause = GetNextQueryClause(queryJoinClause) as QuerySelectClause;
+					ResolveResult selectResult;
+					if (selectClause != null) {
+						// from ... join ... select - the Join call also performs the Select operation
+						selectResult = Resolve(selectClause.Expression);
+					} else {
+						// from .. join ... ... - introduce a transparent identifier
+						selectResult = transparentIdentifierResolveResult;
+					}
+					
 					var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Join", EmptyList<IType>.Instance);
 					ResolveResult[] arguments = {
 						inResult,
-						new QueryExpressionLambda(1, onResult.Type),
-						new QueryExpressionLambda(1, equalsResult.Type),
-						new QueryExpressionLambda(2, SharedTypes.UnboundTypeArgument)
+						new QueryExpressionLambda(1, onResult),
+						new QueryExpressionLambda(1, equalsResult),
+						new QueryExpressionLambda(2, selectResult)
 					};
 					return resolver.ResolveInvocation(methodGroup, arguments);
 				} else {
@@ -2722,55 +2795,105 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		sealed class GroupJoinLambda : LambdaResolveResult
+		ResolveResult ResolveGroupJoin(QueryJoinClause queryJoinClause,
+		                               ResolveResult inResult, ResolveResult onResult, ResolveResult equalsResult)
 		{
-			IParameter[] parameters = {
-				new DefaultParameter(SharedTypes.UnknownType, "x"),
-				new DefaultParameter(SharedTypes.UnknownType, "g")
+			Debug.Assert(queryJoinClause.IsGroupJoin);
+			
+			DomRegion intoIdentifierRegion = MakeRegion(queryJoinClause.IntoIdentifierToken);
+			
+			// We need to declare the group variable, but it's a bit tricky to determine its type:
+			// We'll have to resolve the GroupJoin invocation and take a look at the inferred types
+			// for the lambda given as last parameter.
+			var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "GroupJoin", EmptyList<IType>.Instance);
+			QuerySelectClause selectClause = GetNextQueryClause(queryJoinClause) as QuerySelectClause;
+			LambdaResolveResult groupJoinLambda;
+			if (selectClause != null) {
+				// from ... join ... into g select - the GroupJoin call also performs the Select operation
+				IParameter[] selectLambdaParameters = {
+					new DefaultParameter(SharedTypes.UnknownType, "<>transparentIdentifier"),
+					new DefaultParameter(SharedTypes.UnknownType, queryJoinClause.IntoIdentifier) {
+						Region = intoIdentifierRegion
+					}
+				};
+				groupJoinLambda = new ImplicitlyTypedLambda(selectClause, selectLambdaParameters, this);
+			} else {
+				// from .. join ... ... - introduce a transparent identifier
+				groupJoinLambda = new QueryExpressionLambda(2, transparentIdentifierResolveResult);
+			}
+			
+			ResolveResult[] arguments = {
+				inResult,
+				new QueryExpressionLambda(1, onResult),
+				new QueryExpressionLambda(1, equalsResult),
+				groupJoinLambda
 			};
+			ResolveResult rr = resolver.ResolveInvocation(methodGroup, arguments);
+			InvocationResolveResult invocationRR = rr as InvocationResolveResult;
 			
-			internal IType groupParameterType;
-			
-			public override IList<IParameter> Parameters {
-				get { return parameters; }
-			}
-			
-			public override bool IsImplicitlyTyped {
-				get { return true; }
-			}
-			
-			public override bool IsAnonymousMethod {
-				get { return false; }
-			}
-			
-			public override bool HasParameterList {
-				get { return true; }
-			}
-			
-			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
-			{
-				if (parameterTypes.Length == 2) {
-					groupParameterType = parameterTypes[1];
-					return Conversion.AnonymousFunctionConversion(groupParameterType);
-				} else {
-					return Conversion.None;
+			IVariable groupVariable;
+			if (groupJoinLambda is ImplicitlyTypedLambda) {
+				var implicitlyTypedLambda = (ImplicitlyTypedLambda)groupJoinLambda;
+				
+				if (invocationRR != null && invocationRR.Arguments.Count > 0) {
+					ConversionResolveResult crr = invocationRR.Arguments[invocationRR.Arguments.Count - 1] as ConversionResolveResult;
+					if (crr != null)
+						ProcessConversion(crr.Input, crr.Conversion, crr.Type);
 				}
+				
+				implicitlyTypedLambda.EnforceMerge(this);
+				if (implicitlyTypedLambda.winningHypothesis.parameterTypes.Length == 2)
+					groupVariable = implicitlyTypedLambda.winningHypothesis.lambdaParameters[1];
+				else
+					groupVariable = null;
+			} else {
+				Debug.Assert(groupJoinLambda is QueryExpressionLambda);
+				
+				// Add the variable if the query expression continues after the group join
+				// (there's no need to do this if there's only a select clause remaining, as
+				// we already handled that in the ImplicitlyTypedLambda).
+				
+				// Get the inferred type of the group variable:
+				IType[] inferredParameterTypes = null;
+				if (invocationRR != null && invocationRR.Arguments.Count > 0) {
+					ConversionResolveResult crr = invocationRR.Arguments[invocationRR.Arguments.Count - 1] as ConversionResolveResult;
+					if (crr != null && crr.Conversion.IsAnonymousFunctionConversion) {
+						inferredParameterTypes = crr.Conversion.data as IType[];
+					}
+				}
+				if (inferredParameterTypes == null)
+					inferredParameterTypes = ((QueryExpressionLambda)groupJoinLambda).inferredParameterTypes;
+				
+				IType groupParameterType;
+				if (inferredParameterTypes != null && inferredParameterTypes.Length == 2)
+					groupParameterType = inferredParameterTypes[1];
+				else
+					groupParameterType = SharedTypes.UnknownType;
+				
+				groupVariable = resolver.AddVariable(groupParameterType, intoIdentifierRegion, queryJoinClause.IntoIdentifier);
 			}
 			
-			public override IType GetInferredReturnType(IType[] parameterTypes)
-			{
-				if (parameterTypes.Length == 2)
-					groupParameterType = parameterTypes[1];
-				return SharedTypes.UnboundTypeArgument;
+			if (groupVariable != null) {
+				LocalResolveResult lrr = new LocalResolveResult(groupVariable, groupVariable.Type.Resolve(resolver.Context));
+				StoreResult(queryJoinClause.IntoIdentifierToken, lrr);
 			}
+			
+			return rr;
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryWhereClause(QueryWhereClause queryWhereClause, object data)
 		{
-			ResolveAndProcessConversion(queryWhereClause.Condition, KnownTypeReference.Boolean.Resolve(resolver.Context));
+			ResolveResult condition = Resolve(queryWhereClause.Condition);
+			IType boolType = KnownTypeReference.Boolean.Resolve(resolver.Context);
+			Conversion conversionToBool = resolver.conversions.ImplicitConversion(condition, boolType);
+			ProcessConversion(condition, conversionToBool, boolType);
 			if (resolverEnabled && currentQueryResult != null) {
+				if (conversionToBool != Conversion.IdentityConversion && conversionToBool != Conversion.None) {
+					condition = new ConversionResolveResult(boolType, condition, conversionToBool);
+				}
+				
 				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Where", EmptyList<IType>.Instance);
-				ResolveResult[] arguments = { new QueryExpressionLambda(1, KnownTypeReference.Boolean.Resolve(resolver.Context)) };
+				ResolveResult[] arguments = { new QueryExpressionLambda(1, condition) };
 				return resolver.ResolveInvocation(methodGroup, arguments);
 			} else {
 				return null;
@@ -2780,6 +2903,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitQuerySelectClause(QuerySelectClause querySelectClause, object data)
 		{
 			if (resolverEnabled && currentQueryResult != null) {
+				QueryClause previousQueryClause = GetPreviousQueryClause(querySelectClause);
+				// If the 'select' follows on a 'SelectMany', 'Join' or 'GroupJoin' clause, then the 'select' portion
+				// was already done as part of the previous clause.
+				if (((previousQueryClause is QueryFromClause && GetPreviousQueryClause(previousQueryClause) != null))
+				    || previousQueryClause is QueryJoinClause)
+				{
+					Scan(querySelectClause.Expression);
+					return currentQueryResult;
+				}
+				
 				QueryExpression query = querySelectClause.Parent as QueryExpression;
 				string rangeVariable = GetSingleRangeVariable(query);
 				if (rangeVariable != null) {
@@ -2797,7 +2930,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				ResolveResult expr = Resolve(querySelectClause.Expression);
 				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Select", EmptyList<IType>.Instance);
-				ResolveResult[] arguments = { new QueryExpressionLambda(1, expr.Type) };
+				ResolveResult[] arguments = { new QueryExpressionLambda(1, expr) };
 				return resolver.ResolveInvocation(methodGroup, arguments);
 			} else {
 				Scan(querySelectClause.Expression);
@@ -2837,8 +2970,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "GroupBy", EmptyList<IType>.Instance);
 				ResolveResult[] arguments = {
-					new QueryExpressionLambda(1, key.Type),
-					new QueryExpressionLambda(1, projection.Type)
+					new QueryExpressionLambda(1, key),
+					new QueryExpressionLambda(1, projection)
 				};
 				return resolver.ResolveInvocation(methodGroup, arguments);
 			} else {
@@ -2874,7 +3007,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, methodName, EmptyList<IType>.Instance);
 				ResolveResult[] arguments = {
-					new QueryExpressionLambda(1, sortKey.Type),
+					new QueryExpressionLambda(1, sortKey),
 				};
 				return resolver.ResolveInvocation(methodGroup, arguments);
 			} else {

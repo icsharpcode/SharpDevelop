@@ -264,15 +264,16 @@ class TestClass {
 			Assert.AreEqual("System.Collections.Generic.IEnumerable`1[[System.String]]", rr.Type.ReflectionName);
 		}
 		
-		[Test, Ignore("lots of bugs here.. not only parser bugs")]
+		[Test, Ignore("Parser bug (incorrect position), but also resolver bug (handles Select as a separate call when it's combined into the GroupJoin)")]
 		public void GroupJoinWithCustomMethod()
 		{
 			string program = @"using System;
+using System.Collections.Generic;
 class TestClass { static void M(long [] args) {
 	var q = (from a in new XYZ() join b in args on a equals b into g select g);
 }}
 class XYZ {
-	public XYZ GroupJoin<T, K, R>(IEnumerable<T> f, Func<string, K> key1, Func<T, K> key2, Func<string, decimal, R> s) { return this; }
+	public XYZ GroupJoin<T, R>(IEnumerable<T> f, Func<string, object> key1, Func<T, object> key2, Func<string, decimal, R> s) { return this; }
 	public int Select<U>(Func<string, U> f) { return 42; }
 }";
 			var local = Resolve<LocalResolveResult>(program.Replace("into g", "into $g$"));
@@ -283,6 +284,34 @@ class XYZ {
 			
 			var trr = Resolve<TypeResolveResult>(program.Replace("var", "$var$"));
 			Assert.AreEqual("XYZ", trr.Type.FullName); // because 'Select' is done as part of GroupJoin()
+		}
+		
+		[Test]
+		public void GroupJoinWithOverloadedCustomMethod()
+		{
+			string program = @"using System;
+using System.Collections.Generic;
+class TestClass
+{
+	static void M(string[] args)
+	{
+		var q = $(from a in new XYZ() join b in args on a equals b into g select g.ToUpper())$;
+	}
+}
+class XYZ
+{
+	public int GroupJoin(IEnumerable<string> f, Func<string, object> key1, Func<string, object> key2, Func<string, int, int> s) { return 0; }
+	public decimal GroupJoin(IEnumerable<string> f, Func<string, object> key1, Func<string, object> key2, Func<string, string, string> s) { return 0; }
+}";
+			var rr = Resolve<InvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("GroupJoin", rr.Member.Name);
+			Assert.AreEqual("System.Decimal", rr.Type.FullName);
+			
+			rr = Resolve<InvocationResolveResult>(program.Replace("g.ToUpper()", "g.CompareTo(42)"));
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("GroupJoin", rr.Member.Name);
+			Assert.AreEqual("System.Int32", rr.Type.FullName);
 		}
 	}
 }

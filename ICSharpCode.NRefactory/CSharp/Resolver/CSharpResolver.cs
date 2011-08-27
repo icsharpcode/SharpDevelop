@@ -308,7 +308,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Adds a new lambda parameter to the current block.
 		/// </summary>
-		public IParameter AddLambdaParameter(ITypeReference type, DomRegion declarationRegion, string name, bool isRef, bool isOut)
+		public IParameter AddLambdaParameter(ITypeReference type, DomRegion declarationRegion, string name, bool isRef = false, bool isOut = false)
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
