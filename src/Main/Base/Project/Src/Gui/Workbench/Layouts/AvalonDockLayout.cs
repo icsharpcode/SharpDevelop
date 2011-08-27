@@ -222,7 +222,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			AvalonPadContent p;
 			if (pads.TryGetValue(padDescriptor, out p))
-				return p.IsVisible;
+				return p.State != DockableContentState.Hidden;
 			else
 				return false;
 		}
