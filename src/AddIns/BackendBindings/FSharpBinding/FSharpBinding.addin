@@ -102,6 +102,7 @@
 		     category = "Main"
 		     title    = "F# Interactive"
 		     icon     = "F#.ProjectIcon"
+             shortcut = "Control|Alt|F"
 		     class    = "FSharpBinding.FSharpInteractive"
 		     defaultPosition = "Bottom, Hidden" />
 	</Path>
@@ -110,6 +111,7 @@
 		<Condition name = "ProjectActive" activeproject="F#">
 			<MenuItem id = "SendToFSharpInteractive"
 				  label = "Send To F# Interactive"
+                  shortcut = "Alt|Return"
 				  class= "FSharpBinding.SentToFSharpInteractive"/>
 		</Condition>
 	</Path>
