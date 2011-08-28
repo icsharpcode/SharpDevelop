@@ -1619,26 +1619,27 @@
 		
 		<MenuItem id = "Search" label = "${res:XML.MainMenu.SearchMenu}" type="Menu">
 			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />
-			<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable"> -->
-			<MenuItem id = "ToggleBookmark"
-			          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
-			          shortcut = "Control|M"
-			          icon = "Bookmarks.ToggleMark"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
-			<MenuItem id = "PrevBookmark"
-			          label = "${res:XML.MainMenu.SearchMenu.PrevBookmark}"
-			          shortcut = "Control|OemComma"
-			          icon = "Bookmarks.GotoPrevInFile"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"/>
-			<MenuItem id = "NextBookmark"
-			          label = "${res:XML.MainMenu.SearchMenu.NextBookmark}"
-			          shortcut = "Control|OemPeriod"
-			          icon = "Bookmarks.GotoNextInFile"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmark"/>
-			<MenuItem id = "ClearBookmarks"
-			          label = "${res:XML.MainMenu.SearchMenu.ClrBookmark}"
-			          icon = "Bookmarks.ClearAll"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
+				<MenuItem id = "ToggleBookmark"
+				          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
+				          shortcut = "Control|M"
+				          icon = "Bookmarks.ToggleMark"
+				          class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
+				<MenuItem id = "PrevBookmark"
+				          label = "${res:XML.MainMenu.SearchMenu.PrevBookmark}"
+				          shortcut = "Control|OemComma"
+				          icon = "Bookmarks.GotoPrevInFile"
+				          class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"/>
+				<MenuItem id = "NextBookmark"
+				          label = "${res:XML.MainMenu.SearchMenu.NextBookmark}"
+				          shortcut = "Control|OemPeriod"
+				          icon = "Bookmarks.GotoNextInFile"
+				          class = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmark"/>
+				<MenuItem id = "ClearBookmarks"
+				          label = "${res:XML.MainMenu.SearchMenu.ClrBookmark}"
+				          icon = "Bookmarks.ClearAll"
+				          class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
+			</Condition>
 			<MenuItem id = "Separator2" type = "Separator" />
 			
 			<MenuItem id = "GotoLineNr"
@@ -1991,6 +1992,13 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
+			<ToolbarItem id = "ToggleBookmark"
+			             tooltip = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
+			             icon = "Bookmarks.ToggleMark"
+			             class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
+		</Condition>
+		
 		<ToolbarItem id      = "GotoPrev"
 		             icon    = "Bookmarks.GotoPrev"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip}"
