@@ -311,13 +311,13 @@ namespace ICSharpCode.SharpDevelop
 		public static Point TransformToDevice(this Point point, Visual visual)
 		{
 			Matrix matrix = PresentationSource.FromVisual(visual).CompositionTarget.TransformToDevice;
-			return new Point(point.X * matrix.M11, point.Y * matrix.M22);
+			return matrix.Transform(point);
 		}
 		
 		public static Point TransformFromDevice(this Point point, Visual visual)
 		{
 			Matrix matrix = PresentationSource.FromVisual(visual).CompositionTarget.TransformFromDevice;
-			return new Point(point.X * matrix.M11, point.Y * matrix.M22);
+			return matrix.Transform(point);
 		}
 		#endregion
 		
