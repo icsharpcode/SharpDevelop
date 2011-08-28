@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
@@ -31,23 +32,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public ResolveVisitorNavigationMode Scan(AstNode node)
 		{
-			ResolveVisitorNavigationMode mode = ResolveVisitorNavigationMode.Skip;
+			bool needsScan = false;
 			foreach (var navigator in navigators) {
-				ResolveVisitorNavigationMode newMode = navigator.Scan(node);
-				if (newMode == ResolveVisitorNavigationMode.ResolveAll)
-					return newMode; // ResolveAll has highest priority
-				if (newMode == ResolveVisitorNavigationMode.Resolve)
-					mode = newMode; // resolve has high priority and replaces the previous mode
-				else if (mode == ResolveVisitorNavigationMode.Skip)
-					mode = newMode; // skip has lowest priority and always gets replaced
+				ResolveVisitorNavigationMode mode = navigator.Scan(node);
+				if (mode == ResolveVisitorNavigationMode.Resolve)
+					return mode; // resolve has highest priority
+				else if (mode == ResolveVisitorNavigationMode.Scan)
+					needsScan = true;
 			}
-			return mode;
+			return needsScan ? ResolveVisitorNavigationMode.Scan : ResolveVisitorNavigationMode.Skip;
 		}
 		
 		public void Resolved(AstNode node, ResolveResult result)
 		{
 			foreach (var navigator in navigators) {
 				navigator.Resolved(node, result);
+			}
+		}
+		
+		public void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
+		{
+			foreach (var navigator in navigators) {
+				navigator.ProcessConversion(expression, result, conversion, targetType);
 			}
 		}
 	}

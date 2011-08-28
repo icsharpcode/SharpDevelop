@@ -2784,7 +2784,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Specifies whether to allow treating single-dimensional arrays like compile-time constants.
 		/// This is used for attribute arguments.
 		/// </param>
-		public ResolveResult ResolveArrayCreation(IType elementType, int dimensions = 1, ResolveResult[] sizeArguments = null, ResolveResult[] initializerElements = null, bool allowArrayConstants = false)
+		public ArrayCreateResolveResult ResolveArrayCreation(IType elementType, int dimensions = 1, ResolveResult[] sizeArguments = null, ResolveResult[] initializerElements = null, bool allowArrayConstants = false)
 		{
 			if (sizeArguments != null && dimensions != Math.Max(1, sizeArguments.Length))
 				throw new ArgumentException("dimensions and sizeArguments.Length don't match");

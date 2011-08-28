@@ -127,10 +127,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			void IResolveVisitorNavigator.Resolved(AstNode node, ResolveResult result)
 			{
 				if (CanMatch(node) && IsMatch(result)) {
-					var referenceFound = findReferences.ReferenceFound;
-					if (referenceFound != null)
-						referenceFound(node, result);
+					ReportMatch(node, result);
 				}
+			}
+			
+			void IResolveVisitorNavigator.ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
+			{
+				ProcessConversion(expression, result, conversion, targetType);
+			}
+			
+			internal virtual void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
+			{
+			}
+			
+			protected void ReportMatch(AstNode node, ResolveResult result)
+			{
+				var referenceFound = findReferences.ReferenceFound;
+				if (referenceFound != null)
+					referenceFound(node, result);
 			}
 		}
 		#endregion
@@ -593,7 +607,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			internal override bool IsMatch(ResolveResult rr)
 			{
-				throw new NotImplementedException();
+				return false;
+			}
+			
+			internal override void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
+			{
+				if (conversion.IsUserDefined && conversion.Method.MemberDefinition == op) {
+					ReportMatch(expression, result);
+				}
 			}
 		}
 		

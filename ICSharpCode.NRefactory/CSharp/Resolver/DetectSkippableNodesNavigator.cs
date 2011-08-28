@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
@@ -75,6 +76,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void Resolved(AstNode node, ResolveResult result)
 		{
 			navigator.Resolved(node, result);
+		}
+		
+		/// <inheritdoc/>
+		public void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
+		{
+			navigator.ProcessConversion(expression, result, conversion, targetType);
 		}
 	}
 }
