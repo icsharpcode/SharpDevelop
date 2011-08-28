@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public BookmarkPad()
 		{
-			instance = this;			
+			instance = this;
 			myPanel.Children.Add(CreateToolBar());
 			listView.HideColumns(2, 0);
 		}
@@ -149,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				if (mark != null) {
 					FileService.JumpToFilePosition(mark.FileName, mark.LineNumber, 1);
 				}
-			}	
+			}
 		}
 		
 		void BookmarkManagerAdded(object sender, BookmarkEventArgs e)
@@ -176,8 +176,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						model.Image = string.IsNullOrEmpty(model.Condition) ? BreakpointBookmark.BreakpointImage.ImageSource : BreakpointBookmark.BreakpointConditionalImage.ImageSource;
 					} else {
 						model.Image = BreakpointBookmark.DisabledBreakpointImage.ImageSource;
-	}
-}
+					}
+				}
 			}
 		}
 	}
