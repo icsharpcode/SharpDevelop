@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void EnsureFloatingWindowsLocations()
 		{
 			foreach (var window in dockingManager.FloatingWindows) {
-				var newLocation = FormLocationHelper.Validate(new Rect(window.Left, window.Top, window.Width, window.Height));
+				var newLocation = FormLocationHelper.Validate(new Rect(window.Left, window.Top, window.Width, window.Height).TransformToDevice(window).ToSystemDrawing()).ToWpf().TransformFromDevice(window);
 				window.Left = newLocation.Left;
 				window.Top = newLocation.Top;
 			}
