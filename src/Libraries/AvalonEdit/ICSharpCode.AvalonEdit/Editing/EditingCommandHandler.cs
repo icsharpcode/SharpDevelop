@@ -365,6 +365,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (textArea != null && textArea.Document != null) {
 				args.CanExecute = textArea.ReadOnlySectionProvider.CanInsert(textArea.Caret.Offset)
 					&& Clipboard.ContainsText();
+				// WPF Clipboard.ContainsText() is safe to call without catching ExternalExceptions
+				// because it doesn't try to lock the clipboard - it just peeks inside with IsClipboardFormatAvailable().
 				args.Handled = true;
 			}
 		}
@@ -373,15 +375,24 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-				Debug.WriteLine( Clipboard.GetText(TextDataFormat.Html) );
+				IDataObject dataObject;
+				try {
+					dataObject = Clipboard.GetDataObject();
+				} catch (ExternalException) {
+					return;
+				}
+				if (dataObject == null)
+					return;
+				Debug.WriteLine( dataObject.GetData(DataFormats.Html) as string );
 				
 				// convert text back to correct newlines for this document
 				string newLine = TextUtilities.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
-				string text = TextUtilities.NormalizeNewLines(Clipboard.GetText(), newLine);
+				string text = (string)dataObject.GetData(DataFormats.UnicodeText);
+				text = TextUtilities.NormalizeNewLines(text, newLine);
 				
 				if (!string.IsNullOrEmpty(text)) {
-					bool fullLine = textArea.Options.CutCopyWholeLine && Clipboard.ContainsData(LineSelectedType);
-					bool rectangular = Clipboard.ContainsData(RectangleSelection.RectangularSelectionDataType);
+					bool fullLine = textArea.Options.CutCopyWholeLine && dataObject.GetDataPresent(LineSelectedType);
+					bool rectangular = dataObject.GetDataPresent(RectangleSelection.RectangularSelectionDataType);
 					if (fullLine) {
 						DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
 						if (textArea.ReadOnlySectionProvider.CanInsert(currentLine.Offset)) {
