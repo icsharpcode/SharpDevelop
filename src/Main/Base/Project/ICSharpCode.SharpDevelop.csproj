@@ -90,6 +90,7 @@
     <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
       <Link>Src\Project\MSBuildEngine\ExtendedBinaryReader.cs</Link>
     </Compile>
+    <Compile Include="Src\Bookmarks\IBreakpointCreateService.cs" />
     <Compile Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml.cs">
       <DependentUpon>ListViewPad.xaml</DependentUpon>
     </Compile>

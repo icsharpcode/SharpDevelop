@@ -10,7 +10,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	public class DecompiledBreakpointBookmark : BreakpointBookmark
 	{
-		public const string SEPARATOR = ","; // don't use '.'
+		public const string SEPARATOR = @"\";
 			
 		MemberReference memberReference;
 		string assemblyFile;
@@ -57,13 +57,19 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		/// <returns><c>true</c>, if the operation succeded; <c>false</c>, otherwise.</returns>
 		public static bool GetAssemblyAndType(string fileName, out string assemblyFile, out string typeName)
 		{
-			if (string.IsNullOrEmpty(fileName) || !fileName.Contains(",")) {
+			if (string.IsNullOrEmpty(fileName)) {
 				assemblyFile = null;
 				typeName = null;
 				return false;
 			}
 			
-			int index = fileName.IndexOf(SEPARATOR);
+			int index = fileName.LastIndexOf(SEPARATOR);
+			if (index == -1) {
+				assemblyFile = null;
+				typeName = null;
+				return false;
+			}
+			
 			assemblyFile = fileName.Substring(0, index);
 			typeName = fileName.Substring(index + 1, fileName.Length - index - 4);
 			return true;

@@ -217,6 +217,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			codeEditorView.TextArea.LeftMargins.Add(new ChangeMarkerMargin(changeWatcher));
 			
 			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
+			textView.Services.AddService(typeof(IBreakpointCreateService), new BreakpointCreateService());
 			
 			codeEditorView.TextArea.MouseRightButtonDown += TextAreaMouseRightButtonDown;
 			codeEditorView.TextArea.ContextMenuOpening += TextAreaContextMenuOpening;

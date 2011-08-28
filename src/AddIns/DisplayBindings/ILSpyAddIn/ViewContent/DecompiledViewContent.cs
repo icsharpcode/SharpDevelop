@@ -55,7 +55,7 @@ namespace ICSharpCode.ILSpyAddIn
 			string shortTypeName = fullTypeName.Substring(fullTypeName.LastIndexOf('.') + 1);
 			this.TitleName = "[" + shortTypeName + "]";
 			
-			this.InfoTip = tempFileName;
+			this.InfoTip = string.Format("{0}{1}{2}.cs", assemblyFile, " in ", fullTypeName);
 			
 			Thread thread = new Thread(DecompilationThread);
 			thread.Name = "Decompiler (" + shortTypeName + ")";
