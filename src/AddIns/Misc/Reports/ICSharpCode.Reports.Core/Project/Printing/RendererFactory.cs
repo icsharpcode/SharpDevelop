@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Core
 	/// <summary>
 	/// Description of RendererFactory.
 	/// </summary>
-	public class PrintRendererFactory
+	public static class PrintRendererFactory
 	{
 		  
 		public static IBaseRenderer  CreateRenderer (BaseReportItem itemToConvert,IDataNavigator dataNavigator,
@@ -24,13 +24,12 @@ namespace ICSharpCode.Reports.Core
 
 			Type t = itemToConvert.GetType();
 			if (t.Equals(typeof(BaseTableItem))) {
-				Console.WriteLine("render Table");
 				return new RenderTable(dataNavigator,Rectangle.Empty,singlePage,layouter,section);
 			}
 			
 			if (t.Equals(typeof(BaseRowItem))) {
 //				return new GroupedRowConverter (dataNavigator,singlePage,layouter);
-				Console.WriteLine("render Row");
+//				Console.WriteLine("render Row");
 			}
 			return null;
 		}

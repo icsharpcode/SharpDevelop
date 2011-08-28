@@ -28,6 +28,12 @@ namespace ICSharpCode.Reports.Addin.Designer
 			this.ctrl = (BaseTextItem) component;
 		}
 		
+		protected override void PostFilterProperties(System.Collections.IDictionary properties)
+		{
+			DesignerHelper.RemoveProperties(properties);
+			base.PostFilterProperties(properties);
+		}
+		
 		
 		private void GetService ()
 		{

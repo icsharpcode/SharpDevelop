@@ -19,5 +19,10 @@ namespace ICSharpCode.Svn
 			using (SvnClientWrapper client = new SvnClientWrapper())
 				return client.OpenBaseVersion(fileName);
 		}
+		
+		public IDisposable WatchBaseVersionChanges(string fileName, EventHandler callback)
+		{
+			return null;
+		}
 	}
 }

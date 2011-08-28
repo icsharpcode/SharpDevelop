@@ -9,6 +9,7 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
@@ -60,19 +61,19 @@ namespace ICSharpCode.Reports.Core
 			Size rs = Size.Empty;
 			
 			
-			ISimpleContainer headerRow = null;
+//			ISimpleContainer headerRow = null;
 			
 			var simpleContainer = table.Items[0] as ISimpleContainer;
 			
 //			foreach (BaseRowItem row in table.Items)
 //			{
 			rs = simpleContainer.Size;
-			PrintHelper.AdjustParent(table as BaseReportItem,table.Items);
+			PrintHelper.AdjustParent(table,table.Items);
 			
 //				if (PrintHelper.IsTextOnlyRow(simpleContainer) )
 //				{
 			
-			PrintHelper.SetLayoutForRow(ReportPageEventArgs.PrintPageEventArgs.Graphics,Layouter,simpleContainer);
+			LayoutHelper.SetLayoutForRow(ReportPageEventArgs.PrintPageEventArgs.Graphics,Layouter,simpleContainer);
 			
 			var r =  StandardPrinter.RenderContainer(simpleContainer,evaluator,currentPosition,ReportPageEventArgs);
 			
@@ -93,7 +94,6 @@ namespace ICSharpCode.Reports.Core
 				pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)table,currentPosition);
 				
 				if (PrintHelper.IsPageFull(pageBreakRect,this.SectionBounds)) {
-					Console.WriteLine("PageBreak - PageFull");
 					table.Location = saveLocation;
 					AbstractRenderer.PageBreak(ReportPageEventArgs);
 					return;
@@ -101,7 +101,7 @@ namespace ICSharpCode.Reports.Core
 				
 				this.dataNavigator.Fill(simpleContainer.Items);
 				
-				PrintHelper.SetLayoutForRow(ReportPageEventArgs.PrintPageEventArgs.Graphics,Layouter,simpleContainer);
+				LayoutHelper.SetLayoutForRow(ReportPageEventArgs.PrintPageEventArgs.Graphics,Layouter,simpleContainer);
 				
 				r =  StandardPrinter.RenderContainer(simpleContainer,evaluator,currentPosition,ReportPageEventArgs);
 				
@@ -113,79 +113,6 @@ namespace ICSharpCode.Reports.Core
 			//-----
 //				}
 		}
-		
-		
-
-		
-		public void old_Render (ISimpleContainer table,ReportPageEventArgs rpea,IExpressionEvaluatorFacade evaluator)
-		{
-			if (this.dataNavigator.CurrentRow < 0 ) {
-				this.dataNavigator.MoveNext();
-			}
-			this.reportPageEventArgs = rpea;
-			Point saveLocation = table.Location;
-			Rectangle pageBreakRect = Rectangle.Empty;
-			
-			Point currentPosition = new Point(PrintHelper.DrawingAreaRelativeToParent(this.currentSection,table).Location.X,
-			                                  this.currentSection.Location.Y);
-			table.Items.SortByLocation();
-			
-			Size rs = Size.Empty;
-			
-			
-			
-			
-			foreach (BaseRowItem row in table.Items)
-			{
-				rs = row.Size;
-				PrintHelper.AdjustParent(table as BaseReportItem,table.Items);
-				
-				if (PrintHelper.IsTextOnlyRow(row) )
-				{
-					
-					PrintHelper.SetLayoutForRow(ReportPageEventArgs.PrintPageEventArgs.Graphics,Layouter,row);
-					
-					Rectangle r =  StandardPrinter.RenderContainer(row,evaluator,currentPosition,ReportPageEventArgs);
-					
-					currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
-					
-					table.Location = saveLocation;
-				}
-				else {
-					int adjust = row.Location.Y - saveLocation.Y;
-					row.Location = new Point(row.Location.X,row.Location.Y - adjust - 3 * GlobalValues.GapBetweenContainer);
-					rs = row.Size;
-					
-					do {
-						
-						pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)table,currentPosition);
-						
-						if (PrintHelper.IsPageFull(parentRectangle,this.SectionBounds)) {
-							Console.WriteLine("PageBreak - PageFull");
-							table.Location = saveLocation;
-							AbstractRenderer.PageBreak(ReportPageEventArgs);
-							return;
-						}
-						
-						this.dataNavigator.Fill(row.Items);
-						
-						PrintHelper.SetLayoutForRow(ReportPageEventArgs.PrintPageEventArgs.Graphics,Layouter,row);
-						
-						Rectangle r =  StandardPrinter.RenderContainer(row,evaluator,currentPosition,ReportPageEventArgs);
-						
-						currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
-
-						row.Size = rs;
-					}
-					while (this.dataNavigator.MoveNext());
-					
-				}
-				
-				row.Size = rs;
-			}
-//			base.NotifyAfterPrint (rpea.LocationAfterDraw);
-		}
-		
 		
 		
 		public ICSharpCode.Reports.Core.BaseClasses.SectionBounds SectionBounds {

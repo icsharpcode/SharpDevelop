@@ -527,9 +527,6 @@ Musisz zainstalować .NET Framework SDK aby otrzymać system pomocy.</value>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Plik</value>
   </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Wiersz</value>
-  </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>O...</value>
   </data>
@@ -2753,6 +2750,9 @@ Możesz również wybrać przechowywanie ustawienia w pliku użytkownika zamiast
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Start</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Wiersz</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Akt&amp;ualizuj</value>
   </data>
@@ -2968,9 +2968,6 @@ Możesz również wybrać przechowywanie ustawienia w pliku użytkownika zamiast
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Końcowy Wiersz</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Wiersz</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Jeżeli NCover jest zainstalowane, proszę wskazać lokalizację aplikacji w opcjach Pokrywania Kodu.</value>

@@ -9,7 +9,7 @@
 using System;
 using System.ComponentModel;
 using ICSharpCode.Reports.Core;
-
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin.Dialogs
 {

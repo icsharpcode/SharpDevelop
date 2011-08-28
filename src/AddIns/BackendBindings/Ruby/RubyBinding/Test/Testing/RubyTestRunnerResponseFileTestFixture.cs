@@ -67,7 +67,7 @@ namespace RubyBinding.Tests.Testing
 		[Test]
 		public void WriteTestsAddsFileNamesForFileInProject()
 		{
-			MockCSharpProject project = new MockCSharpProject(new Solution(), "mytests");
+			MockCSharpProject project = new MockCSharpProject(new Solution(new MockProjectChangeWatcher()), "mytests");
 			
 			FileProjectItem item = new FileProjectItem(project, ItemType.Compile);
 			item.FileName = @"c:\projects\mytests\myTests.rb";
@@ -83,7 +83,7 @@ namespace RubyBinding.Tests.Testing
 		[Test]
 		public void WriteTestsDoesNotThrowNullReferenceExceptionWhenNonFileProjectItemInProject()
 		{
-			MockCSharpProject project = new MockCSharpProject(new Solution(), "mytests");
+			MockCSharpProject project = new MockCSharpProject(new Solution(new MockProjectChangeWatcher()), "mytests");
 			WebReferenceUrl webRef = new WebReferenceUrl(project);
 			webRef.Include = "test";
 			ProjectService.AddProjectItem(project, webRef);

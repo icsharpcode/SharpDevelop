@@ -14,10 +14,10 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.NRefactory;
@@ -239,14 +239,27 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
 			}
 			
-			TextMarkerService textMarkerService = this.Adapter.GetService(typeof(ITextMarkerService)) as TextMarkerService;
-			if (args.InDocument && textMarkerService != null) {
-				var markersAtOffset = textMarkerService.GetMarkersAtOffset(args.Editor.Document.PositionToOffset(args.LogicalPosition.Line, args.LogicalPosition.Column));
+			if (args.InDocument) {
+				int offset = args.Editor.Document.PositionToOffset(args.LogicalPosition.Line, args.LogicalPosition.Column);
 				
-				ITextMarker markerWithToolTip = markersAtOffset.FirstOrDefault(marker => marker.ToolTip != null);
+				FoldingManager foldings = this.Adapter.GetService(typeof(FoldingManager)) as FoldingManager;
+				if (foldings != null) {
+					var foldingsAtOffset = foldings.GetFoldingsContaining(offset);
+					FoldingSection collapsedSection = foldingsAtOffset.FirstOrDefault(section => section.IsFolded);
+					
+					if (collapsedSection != null) {
+						args.SetToolTip(collapsedSection.TooltipText);
+					}
+				}
 				
-				if (markerWithToolTip != null) {
-					args.SetToolTip(markerWithToolTip.ToolTip);
+				TextMarkerService textMarkerService = this.Adapter.GetService(typeof(ITextMarkerService)) as TextMarkerService;
+				if (textMarkerService != null) {
+					var markersAtOffset = textMarkerService.GetMarkersAtOffset(offset);
+					ITextMarker markerWithToolTip = markersAtOffset.FirstOrDefault(marker => marker.ToolTip != null);
+					
+					if (markerWithToolTip != null) {
+						args.SetToolTip(markerWithToolTip.ToolTip);
+					}
 				}
 			}
 			

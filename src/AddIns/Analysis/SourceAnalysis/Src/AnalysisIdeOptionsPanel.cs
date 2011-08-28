@@ -42,13 +42,13 @@ namespace MattEverson.SourceAnalysis
 		{
 			using (OpenFileDialog dlg = new OpenFileDialog()) {
 				dlg.DefaultExt = "dll";
-				dlg.Filter = StringParser.Parse("StyleCop|Microsoft.StyleCop.dll|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+				dlg.Filter = StringParser.Parse("StyleCop|*" + StyleCopWrapper.STYLE_COP_FILE + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 				if (dlg.ShowDialog() == DialogResult.OK) {
-					string path = Path.GetDirectoryName(dlg.FileName);
+					string path = dlg.FileName;
 					if (StyleCopWrapper.IsStyleCopPath(path)) {
 						StyleCopPath = path;
 					} else {
-						MessageService.ShowError("Directory does not contain StyleCop.");
+						MessageService.ShowError(string.Format("Directory does not contain StyleCop (*{0}).", StyleCopWrapper.STYLE_COP_FILE));
 					}
 				}
 			}
@@ -57,7 +57,7 @@ namespace MattEverson.SourceAnalysis
 		
 		void ModifyStyleCopSettingsClick(object sender, EventArgs e)
 		{
-		    var executable = Path.Combine(StyleCopWrapper.FindStyleCopPath(), "StyleCopSettingsEditor.exe");
+			var executable = Path.Combine(Path.GetDirectoryName(StyleCopWrapper.FindStyleCopPath()), "StyleCopSettingsEditor.exe");
 		    var parameters = "\"" + StyleCopWrapper.GetMasterSettingsFile() + "\"";
 
             if (!File.Exists(executable)) {

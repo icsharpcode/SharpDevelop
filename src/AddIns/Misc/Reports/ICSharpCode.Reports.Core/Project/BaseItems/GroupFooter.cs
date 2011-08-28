@@ -13,12 +13,13 @@ namespace ICSharpCode.Reports.Core
 	/// <summary>
 	/// Description of BaseGroupeFooter.
 	/// </summary>
-	public class GroupFooter:GroupHeader
+	public class GroupFooter:BaseRowItem
 	{
 		
 		public GroupFooter()
 		{
 		}
-		
+
+        public bool PageBreakOnGroupChange { get; set; }
 	}
 }

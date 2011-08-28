@@ -16,6 +16,7 @@ namespace Debugger.AddIn.TreeModel
 		}
 		
 		public SavedTreeNode(IImage image, string fullname, string text)
+			: base(null)
 		{
 			base.IconImage = image;
 			FullName = fullname;

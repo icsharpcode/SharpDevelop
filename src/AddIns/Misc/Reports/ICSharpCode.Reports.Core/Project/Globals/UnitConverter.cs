@@ -31,7 +31,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.Globals
 {
   /// <summary>
   /// Represents a value and its unit of measure. The structure converts implicitly from and to

@@ -36,7 +36,8 @@
 		<FileFilter id = "C#"
 		            insertbefore="AllFiles"
 		            name = "${res:SharpDevelop.FileFilter.CSharpFiles}"
-		            extensions = "*.cs"/>
+		            extensions = "*.cs"
+		            mimeType = "text/plain"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">

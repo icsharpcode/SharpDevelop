@@ -25,11 +25,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		bool isLoading;
 		string fileName = String.Empty;
+		IProjectChangeWatcher changeWatcher;
 		
-		public Solution()
+		public Solution(IProjectChangeWatcher changeWatcher)
 		{
 			preferences = new SolutionPreferences(this);
 			this.MSBuildProjectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
+			this.changeWatcher = changeWatcher;
 		}
 		
 		public Microsoft.Build.Evaluation.ProjectCollection MSBuildProjectCollection { get; private set; }
@@ -183,7 +185,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				return fileName;
 			}
 			set {
+				changeWatcher.Disable();
 				fileName = value;
+				changeWatcher.Rename(fileName);
+				changeWatcher.Enable();
 			}
 		}
 		
@@ -288,8 +293,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void Save()
 		{
 			try {
+				changeWatcher.Disable();
 				Save(fileName);
-				return;
+				changeWatcher.Enable();
 			} catch (IOException ex) {
 				MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.CannotSave.IOException}", fileName, ex.Message);
 			} catch (UnauthorizedAccessException ex) {
@@ -307,6 +313,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void Save(string fileName)
 		{
+			changeWatcher.Disable();
+			changeWatcher.Rename(fileName);
 			this.fileName = fileName;
 			string outputDirectory = Path.GetDirectoryName(fileName);
 			if (!System.IO.Directory.Exists(outputDirectory)) {
@@ -415,6 +423,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				sw.WriteLine("EndGlobal");
 			}
+			changeWatcher.Enable();
 		}
 		
 		static void SaveProjectSections(IEnumerable<ProjectSection> sections, StringBuilder projectSection)
@@ -1159,7 +1168,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static Solution Load(string fileName)
 		{
-			Solution newSolution = new Solution();
+			Solution newSolution = new Solution(new ProjectChangeWatcher(fileName));
 			solutionBeingLoaded = newSolution;
 			newSolution.Name     = Path.GetFileNameWithoutExtension(fileName);
 			

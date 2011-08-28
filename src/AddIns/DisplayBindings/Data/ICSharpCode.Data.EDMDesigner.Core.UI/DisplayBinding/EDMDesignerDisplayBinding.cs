@@ -19,7 +19,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 	{
 		public bool CanCreateContentForFile(string fileName)
 		{
-			return Path.GetExtension(fileName).Equals(".edmx", StringComparison.OrdinalIgnoreCase);
+			return true; // .addin file filters for *.edmx
 		}
 
 		public IViewContent CreateContentForFile(OpenedFile file)
@@ -29,6 +29,16 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 			} catch (WizardCancelledException) {
 				return null;
 			}
+		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return true;
+		}
+		
+		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		{
+			return 1;
 		}
 	}
 	

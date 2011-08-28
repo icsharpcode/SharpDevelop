@@ -4,7 +4,9 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using  ICSharpCode.Reports.Core.Exporter;
+
+using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Globals;
 
 /// <summary>
 /// This class draws a Ellipse/Ellipse

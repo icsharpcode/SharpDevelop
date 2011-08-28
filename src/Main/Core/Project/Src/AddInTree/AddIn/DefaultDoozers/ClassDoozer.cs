@@ -29,8 +29,9 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
+			Codon codon = args.Codon;
 			return codon.AddIn.CreateObject(codon.Properties["class"]);
 		}
 	}

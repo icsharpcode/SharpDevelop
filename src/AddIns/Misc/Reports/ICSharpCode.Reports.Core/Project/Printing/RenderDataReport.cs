@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 
 /// <summary>
@@ -132,7 +133,7 @@ namespace ICSharpCode.Reports.Core {
 				this.ReportDocument.ReportHasData = false;
 				PrintNoDataMessage(rpea.PrintPageEventArgs);
 			}	
-			base.CurrentSection.SectionOffset = (int)base.SectionBounds.DetailStart.Y + GlobalValues.GapBetweenContainer;
+			base.CurrentSection.SectionOffset = base.SectionBounds.DetailArea.Top + GlobalValues.GapBetweenContainer;
 		}
 		
 		

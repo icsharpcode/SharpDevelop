@@ -133,41 +133,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		}
 		
 		
-		[Test]
-		public void CheckIsSorted()
-		{
-			
-			ReportSettings rs = new ReportSettings();
-			rs.ConnectionString = "goodConnection";
-			IDataAccessStrategy da = new MockDataAccessStrategy (rs);
-			ICSharpCode.Reports.Core.DataManager dm = (ICSharpCode.Reports.Core.DataManager)ICSharpCode.Reports.Core.DataManager.CreateInstance(rs,da);
-			Assert.IsFalse(dm.IsSorted,"IsSorted should be 'false'");
-		}
-		
-		/*
-		[Test]
-		public void CheckIsGrouped()
-		{
-			IDataAccessStrategy da = new MockDataAccessStrategy ();
-			ReportSettings rs = new ReportSettings();
-			rs.ConnectionString = "goodConnection";
-			ICSharpCode.Reports.Core.DataManager dm = (ICSharpCode.Reports.Core.DataManager)ICSharpCode.Reports.Core.DataManager.CreateInstance(rs,da);
-			Assert.IsFalse(dm.IsGrouped,"IsGrouped should be 'false'");
-		}
-		
-		
-		[Test]
-		public void CheckIsFitered()
-		{
-			IDataAccessStrategy da = new MockDataAccessStrategy ();
-			ReportSettings rs = new ReportSettings();
-			rs.ConnectionString = "goodConnection";
-			ICSharpCode.Reports.Core.DataManager dm = (ICSharpCode.Reports.Core.DataManager)ICSharpCode.Reports.Core.DataManager.CreateInstance(rs,da);
-			Assert.IsFalse(dm.IsFiltered,"IsFiltered should be 'false'");
-		}
-		*/
-		
-		
 		#region Setup/TearDown
 		
 		[TestFixtureSetUp]

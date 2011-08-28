@@ -5,6 +5,8 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
+
 namespace ICSharpCode.Reports.Core{
 	public interface IDataViewStrategy:IEnumerator,IDisposable{
 		
@@ -14,23 +16,24 @@ namespace ICSharpCode.Reports.Core{
 		
 		void Bind();
 		
+		void Fill (int position,ReportItemCollection collection);
+		
+		//rausnehmen
 		void Fill (IDataItem item);
 		
-		IndexList IndexList {get;}
-		//test
+		IndexList IndexList {get;set;}
+		
+        object CurrentFromPosition(int pos);
+        
 		CurrentItemsCollection FillDataRow();
+        CurrentItemsCollection FillDataRow(int pos);
 		//
 		AvailableFieldsCollection AvailableFields {get;}
 	
 		int Count {get;}
 	
  		int CurrentPosition {get;set;}
- 	
- 		bool HasMoreData  {get;}
  		
- 		bool IsSorted {get;}
- 		
- 		bool IsGrouped {get;set;}
- 	
+ 		IExpressionEvaluatorFacade ExpressionEvaluator {get;}
 	}
 }

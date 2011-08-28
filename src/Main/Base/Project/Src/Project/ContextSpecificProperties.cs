@@ -38,8 +38,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, System.Collections.ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
+			Codon codon = args.Codon;
 			CustomProperty cp = new CustomProperty(codon.Properties["name"]) {
 				displayName = codon.Properties["displayName"],
 				description = codon.Properties["description"]

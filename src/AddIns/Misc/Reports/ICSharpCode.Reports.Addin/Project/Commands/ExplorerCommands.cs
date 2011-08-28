@@ -66,17 +66,26 @@ namespace ICSharpCode.Reports.Addin.Commands
 	{
 		public override void Run()
 		{
-			ReportExplorerPad r = this.Owner as ReportExplorerPad;
-			if (r != null) {
-				ParameterCollection par = r.ReportModel.ReportSettings.ParameterCollection;
+			ReportExplorerPad pad = this.Owner as ReportExplorerPad;
+			if (pad != null) {
+				ParameterCollection par = pad.ReportModel.ReportSettings.ParameterCollection;
 				
-				using (ParameterDialog e = new ParameterDialog(par)) {
-					e.ShowDialog();
-					if (e.DialogResult == System.Windows.Forms.DialogResult.OK) {
+				using (ParameterDialog paramDialog = new ParameterDialog(par)) {
+					paramDialog.ShowDialog();
+					if (paramDialog.DialogResult == System.Windows.Forms.DialogResult.OK) {
+						/*
 						foreach (BasicParameter bp in e.Collection as ParameterCollection){
 							r.ReportModel.ReportSettings.ParameterCollection.Add (bp);
 						}
-						r.RefreshParameters();
+						*/
+						foreach (BasicParameter bp in new System.Collections.ArrayList(paramDialog.Collection))
+						{
+							if (bp.ParameterName != null) 
+							{
+								pad.ReportModel.ReportSettings.ParameterCollection.Add (bp);
+							}
+						}
+						pad.RefreshParameters();
 					}
 				}
 			}

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -16,6 +17,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// to disk or a base version provided by any VCS.
 		/// </summary>
 		Stream OpenBaseVersion(string fileName);
+		
+		IDisposable WatchBaseVersionChanges(string fileName, EventHandler callback);
 	}
 	
 	public class VersioningServices
@@ -34,4 +37,79 @@ namespace ICSharpCode.SharpDevelop.Editor
 		}
 	}
 	
+	public class RepoChangeWatcher
+	{
+		static readonly Dictionary<string, RepoChangeWatcher> watchers
+			= new Dictionary<string, RepoChangeWatcher>(StringComparer.OrdinalIgnoreCase);
+		
+		Action actions;
+		FileSystemWatcher watcher;
+		
+		RepoChangeWatcher(string repositoryRoot)
+		{
+			this.watcher = new FileSystemWatcher(repositoryRoot);
+			
+			if (WorkbenchSingleton.Workbench != null)
+				watcher.SynchronizingObject = WorkbenchSingleton.Workbench.SynchronizingObject;
+			
+			WorkbenchSingleton.MainWindow.Activated += MainWindowActivated;
+			
+			watcher.Created += FileChanged;
+			watcher.Deleted += FileChanged;
+			watcher.Changed += FileChanged;
+			watcher.Renamed += FileChanged;
+			
+//			watcher.IncludeSubdirectories = true;
+			watcher.EnableRaisingEvents = true;
+		}
+
+		void MainWindowActivated(object sender, EventArgs e)
+		{
+			if (alreadyCalled) {
+				alreadyCalled = false;
+				actions();
+			}
+		}
+		
+		bool alreadyCalled;
+		
+		void FileChanged(object sender, FileSystemEventArgs e)
+		{
+			if (!alreadyCalled) {
+				alreadyCalled = true;
+				LoggingService.Info(e.Name + " changed!" + e.ChangeType);
+				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
+					WorkbenchSingleton.CallLater(
+						TimeSpan.FromSeconds(2),
+						() => { MainWindowActivated(this, EventArgs.Empty); }
+					);
+				}
+			}
+		}
+		
+		public static RepoChangeWatcher AddWatch(string repositoryRoot, Action action)
+		{
+			RepoChangeWatcher watcher;
+			if (!watchers.TryGetValue(repositoryRoot, out watcher)) {
+				watcher = new RepoChangeWatcher(repositoryRoot);
+				watchers.Add(repositoryRoot, watcher);
+			}
+			
+			watcher.actions += action;
+			return watcher;
+		}
+		
+		bool disposed;
+		
+		public void ReleaseWatch(Action action)
+		{
+			actions -= action;
+			if (actions == null && !disposed) {
+				WorkbenchSingleton.MainWindow.Activated -= MainWindowActivated;
+				watchers.Remove(watcher.Path);
+				this.watcher.Dispose();
+				disposed = true;
+			}
+		}
+	}
 }

@@ -34,7 +34,7 @@ namespace PackageManagement.Cmdlets.Tests.Helpers
 			this.FakePackageManagementConsoleHost = consoleHost;
 			this.FakeCmdletTerminatingError = cmdletTerminatingError;
 			
-			Solution = new Solution();
+			Solution = new Solution(new MockProjectChangeWatcher());
 			Solution.FileName = @"d:\projects\MyProject\MyProject.sln";
 			projectService.OpenSolution = Solution;
 		}

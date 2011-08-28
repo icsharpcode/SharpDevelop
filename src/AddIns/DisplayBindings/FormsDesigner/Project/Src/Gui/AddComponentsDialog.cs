@@ -68,7 +68,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 					if (lastAssembly != null) {
 						name = lastAssembly.FullName;
 					}
-					ClearComponentsList(StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.NoComponentsFound}", new string[,] {{"Name", name}}));
+					ClearComponentsList(StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.NoComponentsFound}", new StringTagPair("Name", name)));
 				}
 			}
 			componentListView.EndUpdate();
