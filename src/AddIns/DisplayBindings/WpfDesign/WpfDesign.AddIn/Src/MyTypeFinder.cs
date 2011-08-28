@@ -26,19 +26,21 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public override Assembly LoadAssembly(string name)
 		{
-			if (string.IsNullOrEmpty(name)) {
-				IProjectContent pc = GetProjectContent(file);
-				if (pc != null) {
-					return this.typeResolutionService.LoadAssembly(pc);
-				}
-				return null;
-			} else {
-				Assembly assembly = FindAssemblyInProjectReferences(name);
-				if (assembly != null) {
-					return assembly;
-				}
-				return base.LoadAssembly(name);
-			}
+			#warning fix
+			throw new NotImplementedException();
+//			if (string.IsNullOrEmpty(name)) {
+//				IProjectContent pc = GetProjectContent(file);
+//				if (pc != null) {
+//					return this.typeResolutionService.LoadAssembly(pc);
+//				}
+//				return null;
+//			} else {
+//				Assembly assembly = FindAssemblyInProjectReferences(name);
+//				if (assembly != null) {
+//					return assembly;
+//				}
+//				return base.LoadAssembly(name);
+//			}
 		}
 		
 		Assembly FindAssemblyInProjectReferences(string name)
@@ -52,11 +54,13 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		Assembly FindAssemblyInProjectReferences(IProjectContent pc, string name)
 		{
-			foreach (IProjectContent referencedProjectContent in pc.ReferencedContents) {
-				if (name == referencedProjectContent.AssemblyName) {
-					return this.typeResolutionService.LoadAssembly(referencedProjectContent);
-				}
-			}
+			#warning fix
+			throw new NotImplementedException();
+//			foreach (IProjectContent referencedProjectContent in pc.ReferencedContents) {
+//				if (name == referencedProjectContent.AssemblyName) {
+//					return this.typeResolutionService.LoadAssembly(referencedProjectContent);
+//				}
+//			}
 			return null;
 		}
 		

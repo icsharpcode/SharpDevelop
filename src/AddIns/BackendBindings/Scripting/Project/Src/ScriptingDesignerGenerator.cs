@@ -291,10 +291,5 @@ namespace ICSharpCode.Scripting
 		{
 			throw new NotImplementedException();
 		}
-		
-		public void NotifyComponentRenamed(object component, string newName, string oldName)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }
