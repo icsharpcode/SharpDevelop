@@ -142,10 +142,15 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 
 		public bool CanInsert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)
 		{
-			var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
 			var placementBehavior = DesignItem.GetBehavior<IPlacementBehavior>();
-			if(operation!=null)
-				return placementBehavior.CanEnterContainer(operation);
+			if (placementBehavior == null)
+				return false;
+			var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
+			if (operation != null) {
+				bool canEnter = placementBehavior.CanEnterContainer(operation);
+				operation.Abort();
+				return canEnter;
+			}
 			return false;
 		}
 
