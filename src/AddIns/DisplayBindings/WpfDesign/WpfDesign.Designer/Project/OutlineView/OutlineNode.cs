@@ -156,25 +156,26 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 
 		public void Insert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)
 		{
-			if (copy) {
-				nodes = nodes.Select(n => OutlineNode.Create(n.DesignItem.Clone()));
-			}
-			else {
-				foreach (var node in nodes) {
-					node.DesignItem.Remove();
+			using (var moveTransaction = DesignItem.Context.OpenGroup("Item moved in outline view", nodes.Select(n => n.DesignItem).ToList())) {
+				if (copy) {
+					nodes = nodes.Select(n => OutlineNode.Create(n.DesignItem.Clone())).ToList();
+				} else {
+					foreach (var node in nodes) {
+						node.DesignItem.Remove();
+					}
 				}
-			}
 
-			var index = after == null ? 0 : Children.IndexOf(after) + 1;
+				var index = after == null ? 0 : Children.IndexOf(after) + 1;
 
-			var content = DesignItem.ContentProperty;
-			if (content.IsCollection) {
-				foreach (var node in nodes) {
-					content.CollectionElements.Insert(index++, node.DesignItem);
+				var content = DesignItem.ContentProperty;
+				if (content.IsCollection) {
+					foreach (var node in nodes) {
+						content.CollectionElements.Insert(index++, node.DesignItem);
+					}
+				} else {
+					content.SetValue(nodes.First().DesignItem);
 				}
-			}
-			else {
-				content.SetValue(nodes.First().DesignItem);
+				moveTransaction.Commit();
 			}
 		}
 
