@@ -139,16 +139,20 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
+		#endregion
+		
+		#region RighToLeft
 		
 		[Category("Appearance")]
-		public override System.Windows.Forms.RightToLeft RightToLeft {
+		public  System.Windows.Forms.RightToLeft RTL
+		{
 			get { return base.RightToLeft; }
 			set { base.RightToLeft = value; }
 		}
-		
-		
+
 		#endregion
 		
+		#region DataType
 		
 		[Browsable(true),
 		 Category("Databinding"),
@@ -158,6 +162,7 @@ namespace ICSharpCode.Reports.Addin
 
 		public string DataType {get;set;}
 		
+		#endregion
 		
 		#region Expression
 		
@@ -169,6 +174,7 @@ namespace ICSharpCode.Reports.Addin
 		public string Expression {get;set;}
 		
 		#endregion
+		
 		
 		#region CanGrow/CanShrink
 		
