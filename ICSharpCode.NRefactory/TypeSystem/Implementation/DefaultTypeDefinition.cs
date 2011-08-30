@@ -29,6 +29,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	public class DefaultTypeDefinition : AbstractFreezable, ITypeDefinition
 	{
 		readonly IProjectContent projectContent;
+		readonly IParsedFile parsedFile;
 		readonly ITypeDefinition declaringTypeDefinition;
 		
 		volatile ITypeDefinition compoundTypeDefinition;
@@ -79,9 +80,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentException("name");
 			this.projectContent = declaringTypeDefinition.ProjectContent;
+			this.parsedFile = declaringTypeDefinition.ParsedFile;
 			this.declaringTypeDefinition = declaringTypeDefinition;
+			
 			this.name = name;
 			this.ns = declaringTypeDefinition.Namespace;
+			
+			this.compoundTypeDefinition = this;
+		}
+		
+		public DefaultTypeDefinition(IParsedFile parsedFile, string ns, string name)
+		{
+			if (parsedFile == null)
+				throw new ArgumentNullException("parsedFile");
+			if (string.IsNullOrEmpty(name))
+				throw new ArgumentException("name");
+			this.parsedFile = parsedFile;
+			this.projectContent = parsedFile.ProjectContent;
+			this.ns = ns ?? string.Empty;
+			this.name = name;
 			
 			this.compoundTypeDefinition = this;
 		}
@@ -375,6 +392,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IProjectContent ProjectContent {
 			get { return projectContent; }
+		}
+		
+		public IParsedFile ParsedFile {
+			get { return parsedFile; }
 		}
 		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)

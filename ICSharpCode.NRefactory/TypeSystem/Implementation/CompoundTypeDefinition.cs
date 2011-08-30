@@ -35,6 +35,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 		}
 		
+		private CompoundTypeDefinition(IParsedFile parsedFile, string ns, string name)
+			: base(parsedFile, ns, name)
+		{
+		}
+		
 		private CompoundTypeDefinition(IProjectContent projectContent, string ns, string name)
 			: base(projectContent, ns, name)
 		{
@@ -74,7 +79,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (mainPart.DeclaringTypeDefinition != null) {
 				throw new NotImplementedException("nested compound types not implemented");
 			} else {
-				compound = new CompoundTypeDefinition(mainPart.ProjectContent, mainPart.Namespace, mainPart.Name);
+				if (mainPart.ParsedFile != null)
+					compound = new CompoundTypeDefinition(mainPart.ParsedFile, mainPart.Namespace, mainPart.Name);
+				else
+					compound = new CompoundTypeDefinition(mainPart.ProjectContent, mainPart.Namespace, mainPart.Name);
 			}
 			compound.parts = parts;
 			compound.Region = mainPart.Region;

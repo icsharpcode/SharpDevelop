@@ -553,6 +553,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { throw new NotSupportedException(); }
 			}
 			
+			IParsedFile IEntity.ParsedFile {
+				get { return null; }
+			}
+			
 			string INamedElement.FullName {
 				get { return "operator"; }
 			}

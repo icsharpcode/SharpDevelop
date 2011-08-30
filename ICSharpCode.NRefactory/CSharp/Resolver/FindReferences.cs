@@ -20,7 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using ICSharpCode.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
@@ -41,6 +43,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			this.cancellationToken = cancellationToken;
 		}
+		#endregion
+		
+		#region Properties
+		/// <summary>
+		/// Gets/Sets whether to find type references even if an alias is being used.
+		/// </summary>
+		public bool FindTypeReferencesEvenIfAliased { get; set; }
 		#endregion
 		
 		#region GetEffectiveAccessibility
@@ -94,7 +103,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			protected string searchTerm;
 			internal Accessibility accessibility;
-			internal IEntity topLevelEntity;
+			internal ITypeDefinition topLevelTypeDefinition;
 			internal FindReferences findReferences;
 			
 			/// <summary>
@@ -111,7 +120,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			/// <summary>
 			/// Gets the top-level entity that defines the search scope.
 			/// </summary>
-			public IEntity TopLevelEntity { get { return topLevelEntity; } }
+			public ITypeDefinition TopLevelTypeDefinition { get { return topLevelTypeDefinition; } }
 			
 			internal abstract bool CanMatch(AstNode node);
 			internal abstract bool IsMatch(ResolveResult rr);
@@ -155,17 +164,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (entity == null)
 				throw new ArgumentNullException("entity");
 			Accessibility effectiveAccessibility = GetEffectiveAccessibility(entity);
-			IEntity topLevelEntity = entity;
-			while (topLevelEntity.DeclaringTypeDefinition != null)
-				topLevelEntity = topLevelEntity.DeclaringTypeDefinition;
+			ITypeDefinition topLevelTypeDefinition = entity.DeclaringTypeDefinition;
+			while (topLevelTypeDefinition != null && topLevelTypeDefinition.DeclaringTypeDefinition != null)
+				topLevelTypeDefinition = topLevelTypeDefinition.DeclaringTypeDefinition;
 			SearchScope scope;
 			SearchScope additionalScope = null;
 			switch (entity.EntityType) {
 				case EntityType.TypeDefinition:
-					scope = new FindTypeDefinitionReferences((ITypeDefinition)entity);
+					scope = new FindTypeDefinitionReferences((ITypeDefinition)entity, this.FindTypeReferencesEvenIfAliased);
 					break;
 				case EntityType.Field:
-					scope = new FindFieldReferences((IField)entity);
+					if (entity.DeclaringTypeDefinition != null && entity.DeclaringTypeDefinition.Kind == TypeKind.Enum)
+						scope = new FindEnumMemberReferences((IField)entity);
+					else
+						scope = new FindFieldReferences((IField)entity);
 					break;
 				case EntityType.Property:
 					scope = new FindPropertyReferences((IProperty)entity);
@@ -194,12 +206,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			if (scope.accessibility == Accessibility.None)
 				scope.accessibility = effectiveAccessibility;
-			scope.topLevelEntity = topLevelEntity;
+			scope.topLevelTypeDefinition = topLevelTypeDefinition;
 			scope.findReferences = this;
 			if (additionalScope != null) {
 				if (additionalScope.accessibility == Accessibility.None)
 					additionalScope.accessibility = effectiveAccessibility;
-				additionalScope.topLevelEntity = topLevelEntity;
+				additionalScope.topLevelTypeDefinition = topLevelTypeDefinition;
 				additionalScope.findReferences = this;
 				return new[] { scope, additionalScope };
 			} else {
@@ -208,11 +220,77 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region FindReferencesInSolution
+		/// <summary>
+		/// Gets the file names that possibly contain references to the element being searched for.
+		/// </summary>
+		public IEnumerable<string> GetInterestingFileNames(SearchScope searchScope, ITypeResolveContext context)
+		{
+			IEnumerable<ITypeDefinition> interestingTypes;
+			if (searchScope.TopLevelTypeDefinition != null) {
+				switch (searchScope.Accessibility) {
+					case Accessibility.None:
+					case Accessibility.Private:
+						interestingTypes = new [] { searchScope.TopLevelTypeDefinition.GetDefinition() };
+						break;
+					case Accessibility.Protected:
+						interestingTypes = GetInterestingTypesProtected(context, searchScope.TopLevelTypeDefinition);
+						break;
+					case Accessibility.Internal:
+						interestingTypes = GetInterestingTypesInternal(context, searchScope.TopLevelTypeDefinition.ProjectContent);
+						break;
+					case Accessibility.ProtectedAndInternal:
+						interestingTypes = GetInterestingTypesProtected(context, searchScope.TopLevelTypeDefinition)
+							.Intersect(GetInterestingTypesInternal(context, searchScope.TopLevelTypeDefinition.ProjectContent));
+						break;
+					case Accessibility.ProtectedOrInternal:
+						interestingTypes = GetInterestingTypesProtected(context, searchScope.TopLevelTypeDefinition)
+							.Union(GetInterestingTypesInternal(context, searchScope.TopLevelTypeDefinition.ProjectContent));
+						break;
+					default:
+						interestingTypes = context.GetTypes();
+						break;
+				}
+			} else {
+				interestingTypes = context.GetTypes();
+			}
+			return (from typeDef in interestingTypes
+			        from part in typeDef.GetParts()
+			        where part.ParsedFile != null
+			        select part.ParsedFile.FileName
+			       ).Distinct(Platform.FileNameComparer);
+		}
+		
+		IEnumerable<ITypeDefinition> GetInterestingTypesProtected(ITypeResolveContext context, ITypeDefinition referencedTypeDefinition)
+		{
+			return referencedTypeDefinition.GetSubTypeDefinitions(context);
+		}
+		
+		IEnumerable<ITypeDefinition> GetInterestingTypesInternal(ITypeResolveContext context, IProjectContent referencedProjectContent)
+		{
+			return context.GetTypes().Where(t => referencedProjectContent.InternalsVisibleTo(t.ProjectContent, context));
+		}
+		#endregion
+		
 		#region FindReferencesInFile
 		/// <summary>
 		/// Finds all references in the given file.
 		/// </summary>
-		/// <param name="searchScope">The search scopes for which to look.</param>
+		/// <param name="searchScope">The search scope for which to look.</param>
+		/// <param name="parsedFile">The type system representation of the file being searched.</param>
+		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
+		/// <param name="context">The type resolve context to use for resolving the file.</param>
+		public void FindReferencesInFile(SearchScope searchScope, ParsedFile parsedFile, CompilationUnit compilationUnit, ITypeResolveContext context)
+		{
+			if (searchScope == null)
+				throw new ArgumentNullException("searchScope");
+			FindReferencesInFile(new[] { searchScope }, parsedFile, compilationUnit, context);
+		}
+		
+		/// <summary>
+		/// Finds all references in the given file.
+		/// </summary>
+		/// <param name="searchScopes">The search scopes for which to look.</param>
 		/// <param name="parsedFile">The type system representation of the file being searched.</param>
 		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
 		/// <param name="context">The type resolve context to use for resolving the file.</param>
@@ -252,10 +330,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ITypeDefinition typeDefinition;
 			
-			public FindTypeDefinitionReferences(ITypeDefinition typeDefinition)
+			public FindTypeDefinitionReferences(ITypeDefinition typeDefinition, bool findTypeReferencesEvenIfAliased)
 			{
 				this.typeDefinition = typeDefinition;
-				if (ReflectionHelper.GetTypeCode(typeDefinition) == TypeCode.Empty) {
+				if (!findTypeReferencesEvenIfAliased && ReflectionHelper.GetTypeCode(typeDefinition) == TypeCode.Empty) {
 					// not a built-in type
 					this.searchTerm = typeDefinition.Name;
 				}
@@ -282,7 +360,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (searchTerm == null && node is PrimitiveType)
 					return true;
 				
-				return false;
+				return node is TypeDeclaration;
 			}
 			
 			internal override bool IsMatch(ResolveResult rr)
@@ -340,7 +418,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			internal override bool CanMatch(AstNode node)
 			{
-				return node is FieldDeclaration || base.CanMatch(node);
+				return node is FieldDeclaration || node is VariableInitializer || base.CanMatch(node);
+			}
+		}
+		
+		sealed class FindEnumMemberReferences : FindMemberReferences
+		{
+			public FindEnumMemberReferences(IField field) : base(field)
+			{
+			}
+			
+			internal override bool CanMatch(AstNode node)
+			{
+				return node is EnumMemberDeclaration || base.CanMatch(node);
 			}
 		}
 		
@@ -607,7 +697,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			internal override bool IsMatch(ResolveResult rr)
 			{
-				return false;
+				MemberResolveResult mrr = rr as MemberResolveResult;
+				return mrr != null && op == mrr.Member.MemberDefinition;
 			}
 			
 			internal override void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)

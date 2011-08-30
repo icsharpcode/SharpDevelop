@@ -42,9 +42,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public void Resolved(AstNode node, ResolveResult result)
 		{
+			if (ResolveVisitor.ActsAsParenthesizedExpression(node))
+				return;
+			
 			MemberResolveResult mrr = result as MemberResolveResult;
 			if (mrr != null) {
-				referenceFound(node, mrr.Member);
+				referenceFound(node, mrr.Member.MemberDefinition);
 			}
 			TypeResolveResult trr = result as TypeResolveResult;
 			if (trr != null) {
@@ -57,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
 		{
 			if (conversion.IsUserDefined || conversion.IsMethodGroupConversion) {
-				referenceFound(expression, conversion.Method);
+				referenceFound(expression, conversion.Method.MemberDefinition);
 			}
 		}
 	}

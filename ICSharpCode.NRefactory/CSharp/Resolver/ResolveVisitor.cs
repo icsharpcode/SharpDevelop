@@ -174,6 +174,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						// lambdas must be resolved so that they get stored in the 'undecided' list only once
 						goto case ResolveVisitorNavigationMode.Resolve;
 					}
+					
+					// We shouldn't scan nodes that were already resolved.
+					Debug.Assert(!resolveResultCache.ContainsKey(node));
+					// Doing so should be harmless since we allow scanning twice, but it indicates
+					// a bug in the logic that causes the scan.
+					
 					bool oldResolverEnabled = resolverEnabled;
 					resolverEnabled = false;
 					StoreState(node, resolver.Clone());
@@ -231,6 +237,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Debug.Assert(result != null);
 			if (node.IsNull)
 				return;
+			Debug.Assert(!resolveResultCache.ContainsKey(node));
 			resolveResultCache.Add(node, result);
 			if (navigator != null)
 				navigator.Resolved(node, result);
@@ -1631,7 +1638,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			var lambda = new ExplicitlyTypedLambda(parameters, isAnonymousMethod, resolver.Clone(), this, body);
 			
-			Scan(body);
+			// Don't scan the lambda body here - we'll do that later when analyzing the ExplicitlyTypedLambda.
 			
 			resolver.PopBlock();
 			return lambda;
@@ -2263,12 +2270,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitFixedStatement(FixedStatement fixedStatement, object data)
 		{
 			resolver.PushBlock();
-			
-			VariableInitializer firstInitializer = fixedStatement.Variables.FirstOrDefault();
-			ITypeReference type = MakeTypeReference(fixedStatement.Type,
-			                                        firstInitializer != null ? firstInitializer.Initializer : null,
-			                                        false);
-			
+			ITypeReference type = MakeTypeReference(fixedStatement.Type);
 			for (AstNode node = fixedStatement.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == FixedStatement.Roles.Variable) {
 					VariableInitializer vi = (VariableInitializer)node;
@@ -2283,10 +2285,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			resolver.PushBlock();
-			ITypeReference type = MakeTypeReference(foreachStatement.VariableType, foreachStatement.InExpression, true);
+			ITypeReference type;
+			if (IsVar(foreachStatement.VariableType)) {
+				if (navigator.Scan(foreachStatement.VariableType) == ResolveVisitorNavigationMode.Resolve) {
+					IType collectionType = Resolve(foreachStatement.InExpression).Type;
+					IType elementType = GetElementType(collectionType, resolver.Context, false);
+					StoreResult(foreachStatement.VariableType, new TypeResolveResult(elementType));
+					type = elementType;
+				} else {
+					Scan(foreachStatement.InExpression);
+					type = MakeVarTypeReference(foreachStatement.InExpression, true);
+				}
+			} else {
+				type = ResolveType(foreachStatement.VariableType);
+			}
 			IVariable v = resolver.AddVariable(type, MakeRegion(foreachStatement.VariableNameToken), foreachStatement.VariableName);
 			StoreResult(foreachStatement.VariableNameToken, new LocalResolveResult(v, v.Type.Resolve(resolver.Context)));
-			ScanChildren(foreachStatement);
+			Scan(foreachStatement.EmbeddedStatement);
 			resolver.PopBlock();
 			return voidResult;
 		}
@@ -2302,8 +2317,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitCatchClause(CatchClause catchClause, object data)
 		{
 			resolver.PushBlock();
-			if (catchClause.VariableName != null) {
-				ITypeReference variableType = MakeTypeReference(catchClause.Type, null, false);
+			if (!string.IsNullOrEmpty(catchClause.VariableName)) {
+				ITypeReference variableType = MakeTypeReference(catchClause.Type);
 				DomRegion region = MakeRegion(catchClause.VariableNameToken);
 				IVariable v = resolver.AddVariable(variableType, region, catchClause.VariableName);
 				StoreResult(catchClause.VariableNameToken, new LocalResolveResult(v, v.Type.Resolve(resolver.Context)));
@@ -2318,33 +2333,56 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement, object data)
 		{
 			bool isConst = (variableDeclarationStatement.Modifiers & Modifiers.Const) != 0;
-			VariableInitializer firstInitializer = variableDeclarationStatement.Variables.FirstOrDefault();
-			ITypeReference type = MakeTypeReference(variableDeclarationStatement.Type,
-			                                        firstInitializer != null ? firstInitializer.Initializer : null,
-			                                        false);
-
-			int initializerCount = variableDeclarationStatement.Variables.Count;
-			ResolveResult result = null;
-			for (AstNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
-				if (node.Role == VariableDeclarationStatement.Roles.Variable) {
-					VariableInitializer vi = (VariableInitializer)node;
-					
-					IConstantValue cv = null;
-					if (isConst) {
-						cv = TypeSystemConvertVisitor.ConvertConstantValue(type, vi.Initializer, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.CurrentUsingScope);
+			if (!isConst && IsVar(variableDeclarationStatement.Type) && variableDeclarationStatement.Variables.Count == 1) {
+				VariableInitializer vi = variableDeclarationStatement.Variables.Single();
+				bool needResolve = resolverEnabled
+					|| navigator.Scan(variableDeclarationStatement.Type) == ResolveVisitorNavigationMode.Resolve
+					|| navigator.Scan(vi) == ResolveVisitorNavigationMode.Resolve;
+				ITypeReference type;
+				if (needResolve) {
+					type = Resolve(vi.Initializer).Type;
+				} else {
+					Scan(vi.Initializer);
+					type = MakeVarTypeReference(vi.Initializer, false);
+				}
+				IVariable v = resolver.AddVariable(type, MakeRegion(vi), vi.Name);
+				StoreState(vi, resolver.Clone());
+				if (needResolve) {
+					ResolveResult result;
+					if (!resolveResultCache.TryGetValue(vi, out result)) {
+						result = new LocalResolveResult(v, type.Resolve(resolver.Context));
+						StoreResult(vi, result);
 					}
-					resolver.AddVariable(type, MakeRegion(vi), vi.Name, cv);
-					
-					if (resolverEnabled && initializerCount == 1) {
-						result = Resolve(node);
+					return result;
+				} else {
+					return null;
+				}
+			} else {
+				ITypeReference type = MakeTypeReference(variableDeclarationStatement.Type);
+
+				int initializerCount = variableDeclarationStatement.Variables.Count;
+				ResolveResult result = null;
+				for (AstNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
+					if (node.Role == VariableDeclarationStatement.Roles.Variable) {
+						VariableInitializer vi = (VariableInitializer)node;
+						
+						IConstantValue cv = null;
+						if (isConst) {
+							cv = TypeSystemConvertVisitor.ConvertConstantValue(type, vi.Initializer, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.CurrentUsingScope);
+						}
+						resolver.AddVariable(type, MakeRegion(vi), vi.Name, cv);
+						
+						if (resolverEnabled && initializerCount == 1) {
+							result = Resolve(node);
+						} else {
+							Scan(node);
+						}
 					} else {
 						Scan(node);
 					}
-				} else {
-					Scan(node);
 				}
+				return result;
 			}
-			return result;
 		}
 		#endregion
 		
@@ -2488,39 +2526,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Local Variable Type Inference
-		/// <summary>
-		/// Creates a type reference for the specified type node.
-		/// If the type node is 'var', performs type inference on the initializer expression.
-		/// </summary>
-		ITypeReference MakeTypeReference(AstType type, AstNode initializerExpression, bool isForEach)
-		{
-			bool typeNeedsResolving = (navigator.Scan(type) == ResolveVisitorNavigationMode.Resolve);
-			if (initializerExpression != null && IsVar(type)) {
-				var typeRef = new VarTypeReference(this, resolver.Clone(), initializerExpression, isForEach);
-				if (typeNeedsResolving) {
-					// Hack: I don't see a clean way to make the 'var' SimpleType resolve to the inferred type,
-					// so we just do it here and store the result in the resolver cache.
-					IType actualType = typeRef.Resolve(resolver.Context);
-					if (actualType.Kind != TypeKind.Unknown) {
-						StoreResult(type, new TypeResolveResult(actualType));
-					} else {
-						StoreResult(type, errorResult);
-					}
-					return actualType;
-				} else {
-					return typeRef;
-				}
-			} else {
-				// Perf: avoid duplicate resolving of the type (once as ITypeReference, once directly in ResolveVisitor)
-				// if possible. By using ResolveType when we know we need to resolve the node anyways, the resolve cache
-				// can take care of the duplicate call.
-				if (typeNeedsResolving)
-					return ResolveType(type);
-				else
-					return MakeTypeReference(type);
-			}
-		}
-		
 		static bool IsVar(AstType returnType)
 		{
 			SimpleType st = returnType as SimpleType;
@@ -2530,6 +2535,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ITypeReference MakeTypeReference(AstType type)
 		{
 			return TypeSystemConvertVisitor.ConvertType(type, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.CurrentUsingScope, currentTypeLookupMode);
+		}
+		
+		ITypeReference MakeVarTypeReference(Expression initializer, bool isForEach)
+		{
+			return new VarTypeReference(this, resolver.Clone(), initializer, isForEach);
 		}
 		
 		sealed class VarTypeReference : ITypeReference
