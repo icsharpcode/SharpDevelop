@@ -138,24 +138,27 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return this;
 		}
 		
-		public override int GetHashCode()
-		{
-			unchecked {
-				return (int)ownerType * 178256151 + index;
-			}
-		}
-		
-		public override bool Equals(object obj)
-		{
-			return Equals(obj as IType);
-		}
+//		public override int GetHashCode()
+//		{
+//			unchecked {
+//				return (int)ownerType * 178256151 + index;
+//			}
+//		}
+//
+//		public override bool Equals(object obj)
+//		{
+//			return Equals(obj as IType);
+//		}
 		
 		public bool Equals(IType other)
 		{
-			DefaultTypeParameter p = other as DefaultTypeParameter;
-			if (p == null)
-				return false;
-			return ownerType == p.ownerType && index == p.index;
+			// Use reference equality for type parameters. While we could consider any types with same
+			// ownerType + index as equal for the type system, doing so makes it difficult to cache calculation
+			// results based on types - e.g. the cache in the Conversions class.
+			return this == other;
+			// We can still consider type parameters of different methods/classes to be equal to each other,
+			// if they have been interned. But then also all constraints are equal, so caching conversions
+			// is valid in that case.
 		}
 		
 		public EntityType OwnerType {

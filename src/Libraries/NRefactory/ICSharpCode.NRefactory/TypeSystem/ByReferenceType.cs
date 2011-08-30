@@ -22,7 +22,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 namespace ICSharpCode.NRefactory.TypeSystem
 {
 	[Serializable]
-	public sealed class ByReferenceType : TypeWithElementType
+	public sealed class ByReferenceType : TypeWithElementType, ISupportsInterning
 	{
 		public ByReferenceType(IType elementType) : base(elementType)
 		{
@@ -67,12 +67,28 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			else
 				return new ByReferenceType(e);
 		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			elementType = provider.Intern(elementType);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return GetHashCode();
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			ByReferenceType brt = other as ByReferenceType;
+			return brt != null && this.elementType == brt.elementType;
+		}
 	}
 	
 	[Serializable]
-	public class ByReferenceTypeReference : ITypeReference
+	public sealed class ByReferenceTypeReference : ITypeReference, ISupportsInterning
 	{
-		readonly ITypeReference elementType;
+		ITypeReference elementType;
 		
 		public ByReferenceTypeReference(ITypeReference elementType)
 		{
@@ -101,6 +117,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new ByReferenceType((IType)elementType);
 			else
 				return new ByReferenceTypeReference(elementType);
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			elementType = provider.Intern(elementType);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return elementType.GetHashCode() ^ 91725814;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			ByReferenceTypeReference brt = other as ByReferenceTypeReference;
+			return brt != null && this.elementType == brt.elementType;
 		}
 	}
 }

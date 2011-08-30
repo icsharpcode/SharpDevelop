@@ -183,7 +183,7 @@ namespace CSharpBinding.FormattingStrategy
 			if (fileName != null) {
 				IParsedFile parsedFile = ParserService.ParseFile(fileName, editor.Document.CreateSnapshot());
 				if (parsedFile != null) {
-					ITypeDefinition currentClass = parsedFile.GetInnerMostTypeDefinition(new TextLocation(caretLine, 0));
+					ITypeDefinition currentClass = parsedFile.GetInnermostTypeDefinition(caretLine, 0);
 					int nextElementLine = int.MaxValue;
 					if (currentClass == null) {
 						foreach (ITypeDefinition c in parsedFile.TopLevelTypeDefinitions) {

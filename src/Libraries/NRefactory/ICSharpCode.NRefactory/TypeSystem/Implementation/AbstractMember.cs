@@ -271,6 +271,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return declaringTypeDefinition.ProjectContent; }
 		}
 		
+		public IParsedFile ParsedFile {
+			get { return declaringTypeDefinition.ParsedFile; }
+		}
+		
 		public string Name {
 			get { return name; }
 			set {

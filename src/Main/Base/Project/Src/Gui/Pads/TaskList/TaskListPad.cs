@@ -214,7 +214,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (parseInfo != null) {
 				IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
 				if (positionable != null) {
-					ITypeDefinition c = parseInfo.GetTypeDefinition(positionable.Line, positionable.Column);
+					ITypeDefinition c = parseInfo.GetInnermostTypeDefinition(positionable.Line, positionable.Column);
 					if (c != null) return c;
 				}
 			}
@@ -229,7 +229,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// We use GetExistingParseInformation to avoid trying to parse a file that might have been deleted/renamed.
 			IParsedFile parseInfo = ParserService.GetExistingParsedFile(item.FileName);
 			if (parseInfo != null) {
-				ITypeDefinition c = parseInfo.GetTypeDefinition(item.Line, item.Column);
+				ITypeDefinition c = parseInfo.GetInnermostTypeDefinition(item.Line, item.Column);
 				if (c != null) return c;
 			}
 			

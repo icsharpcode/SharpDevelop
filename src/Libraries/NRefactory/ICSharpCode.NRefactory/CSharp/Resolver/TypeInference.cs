@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
-			this.conversions = conversions ?? new Conversions(context);
+			this.conversions = conversions ?? Conversions.Get(context);
 		}
 		#endregion
 		
@@ -908,7 +908,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// Finds a type X so that "LB <: X <: UB"
 			Log.WriteCollection("FindTypesInBound, LowerBounds=", lowerBounds);
 			Log.WriteCollection("FindTypesInBound, UpperBounds=", upperBounds);
-			Log.Indent();
 			
 			// First try the Fixing algorithm from the C# spec (§7.5.2.11)
 			List<IType> candidateTypes = lowerBounds.Union(upperBounds)
@@ -930,6 +929,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			candidateTypes.Clear();
 			
 			// Now try the improved algorithm
+			Log.Indent();
 			List<ITypeDefinition> candidateTypeDefinitions;
 			if (lowerBounds.Count > 0) {
 				// Find candidates by using the lower bounds:

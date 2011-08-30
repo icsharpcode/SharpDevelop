@@ -20,6 +20,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		readonly CSharpResolver resolver;
 		readonly ITypeResolveContext context;
 		
+		#region Constructor
 		/// <summary>
 		/// Creates a new TypeSystemAstBuilder.
 		/// </summary>
@@ -35,6 +36,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			InitProperties();
 		}
 		
+		/// <summary>
+		/// Creates a new TypeSystemAstBuilder.
+		/// </summary>
+		/// <param name="context">
+		/// Context used for resolving types.
+		/// </param>
 		public TypeSystemAstBuilder(ITypeResolveContext context)
 		{
 			if (context == null)
@@ -42,6 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			this.context = context;
 			InitProperties();
 		}
+		#endregion
 		
 		#region Properties
 		void InitProperties()
@@ -131,40 +139,58 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new SimpleType(type.Name);
 		}
 		
+		public AstType ConvertTypeReference(ITypeReference typeRef)
+		{
+			ArrayTypeReference array = typeRef as ArrayTypeReference;
+			if (array != null) {
+				return ConvertTypeReference(array.ElementType).MakeArrayType(array.Dimensions);
+			}
+			PointerTypeReference pointer = typeRef as PointerTypeReference;
+			if (pointer != null) {
+				return ConvertTypeReference(pointer.ElementType).MakePointerType();
+			}
+			ByReferenceType brt = typeRef as ByReferenceType;
+			if (brt != null) {
+				return ConvertTypeReference(brt.ElementType);
+			}
+			
+			IType type = typeRef.Resolve(context);
+			if (type.Kind != TypeKind.Unknown)
+				return ConvertType(type);
+			// Unknown type, let's try if we can find an appropriate type
+			// (anything is better than displaying a question mark)
+			KnownTypeReference knownType = typeRef as KnownTypeReference;
+			if (knownType != null) {
+				string keyword = ReflectionHelper.GetCSharpNameByTypeCode(knownType.TypeCode);
+				if (keyword != null)
+					return new PrimitiveType(keyword);
+			}
+			SimpleTypeOrNamespaceReference str = typeRef as SimpleTypeOrNamespaceReference;
+			if (str != null) {
+				return new SimpleType(str.Identifier, str.TypeArguments.Select(ConvertTypeReference));
+			}
+			MemberTypeOrNamespaceReference mtr = typeRef as MemberTypeOrNamespaceReference;
+			if (mtr != null) {
+				return new MemberType(ConvertTypeReference(mtr.Target), mtr.Identifier, mtr.TypeArguments.Select(ConvertTypeReference)) {
+					IsDoubleColon = mtr.Target is AliasNamespaceReference
+				};
+			}
+			AliasNamespaceReference alias = typeRef as AliasNamespaceReference;
+			if (alias != null) {
+				return new SimpleType(alias.Identifier);
+			}
+			// Unknown type reference that couldn't be resolved
+			return new SimpleType("?");
+		}
+		
 		AstType ConvertTypeHelper(ITypeDefinition typeDef, IList<IType> typeArguments)
 		{
 			Debug.Assert(typeArguments.Count >= typeDef.TypeParameterCount);
-			switch (ReflectionHelper.GetTypeCode(typeDef)) {
-				case TypeCode.Object:
-					return new PrimitiveType("object");
-				case TypeCode.Boolean:
-					return new PrimitiveType("bool");
-				case TypeCode.Char:
-					return new PrimitiveType("char");
-				case TypeCode.SByte:
-					return new PrimitiveType("sbyte");
-				case TypeCode.Byte:
-					return new PrimitiveType("byte");
-				case TypeCode.Int16:
-					return new PrimitiveType("short");
-				case TypeCode.UInt16:
-					return new PrimitiveType("ushort");
-				case TypeCode.Int32:
-					return new PrimitiveType("int");
-				case TypeCode.UInt32:
-					return new PrimitiveType("uint");
-				case TypeCode.Int64:
-					return new PrimitiveType("long");
-				case TypeCode.UInt64:
-					return new PrimitiveType("ulong");
-				case TypeCode.Single:
-					return new PrimitiveType("float");
-				case TypeCode.Double:
-					return new PrimitiveType("double");
-				case TypeCode.Decimal:
-					return new PrimitiveType("decimal");
-				case TypeCode.String:
-					return new PrimitiveType("string");
+			TypeCode typeCode = ReflectionHelper.GetTypeCode(typeDef);
+			if (typeCode != TypeCode.Empty) {
+				string keyword = ReflectionHelper.GetCSharpNameByTypeCode(typeCode);
+				if (keyword != null)
+					return new PrimitiveType(keyword);
 			}
 			// There is no type code for System.Void
 			if (typeDef.Kind == TypeKind.Void)
@@ -179,7 +205,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			if (resolver != null) {
 				// Look if there's an alias to the target type
-				for (UsingScope usingScope = resolver.UsingScope; usingScope != null; usingScope = usingScope.Parent) {
+				for (UsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
 					foreach (var pair in usingScope.UsingAliases) {
 						IType type = pair.Value.Resolve(resolver.Context);
 						if (TypeMatches(type, typeDef, typeArguments))
@@ -264,7 +290,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (resolver != null) {
 				// Look if there's an alias to the target namespace
-				for (UsingScope usingScope = resolver.UsingScope; usingScope != null; usingScope = usingScope.Parent) {
+				for (UsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
 					foreach (var pair in usingScope.UsingAliases) {
 						// maybe add some caching? we're resolving all aliases N times when converting a namespace name with N parts
 						NamespaceResolveResult nrr = pair.Value.ResolveNamespace(resolver.Context);
@@ -337,7 +363,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			} else if (parameter.IsParams) {
 				decl.ParameterModifier = ParameterModifier.Params;
 			}
-			decl.Type = ConvertType(parameter.Type.Resolve(context));
+			decl.Type = ConvertTypeReference(parameter.Type);
 			if (this.ShowParameterNames) {
 				decl.Name = parameter.Name;
 			}
@@ -428,7 +454,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			if (this.ShowBaseTypes) {
 				foreach (ITypeReference baseType in typeDefinition.BaseTypes) {
-					decl.BaseTypes.Add(ConvertType(baseType.Resolve(context)));
+					decl.BaseTypes.Add(ConvertTypeReference(baseType));
 				}
 			}
 			
@@ -448,7 +474,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			DelegateDeclaration decl = new DelegateDeclaration();
 			decl.Modifiers = modifiers;
-			decl.ReturnType = ConvertType(invokeMethod.ReturnType.Resolve(context));
+			decl.ReturnType = ConvertTypeReference(invokeMethod.ReturnType);
 			decl.Name = d.Name;
 			
 			if (this.ShowTypeParameters) {
@@ -484,7 +510,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				m |= Modifiers.Volatile;
 			}
 			decl.Modifiers = m;
-			decl.ReturnType = ConvertType(field.ReturnType.Resolve(context));
+			decl.ReturnType = ConvertTypeReference(field.ReturnType);
 			Expression initializer = null;
 			if (field.IsConst && this.ShowConstantValues)
 				initializer = ConvertConstantValue(field.ConstantValue);
@@ -505,7 +531,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			PropertyDeclaration decl = new PropertyDeclaration();
 			decl.Modifiers = GetMemberModifiers(property);
-			decl.ReturnType = ConvertType(property.ReturnType.Resolve(context));
+			decl.ReturnType = ConvertTypeReference(property.ReturnType);
 			decl.Name = property.Name;
 			decl.Getter = ConvertAccessor(property.Getter);
 			decl.Setter = ConvertAccessor(property.Setter);
@@ -516,7 +542,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			IndexerDeclaration decl = new IndexerDeclaration();
 			decl.Modifiers = GetMemberModifiers(indexer);
-			decl.ReturnType = ConvertType(indexer.ReturnType.Resolve(context));
+			decl.ReturnType = ConvertTypeReference(indexer.ReturnType);
 			foreach (IParameter p in indexer.Parameters) {
 				decl.Parameters.Add(ConvertParameter(p));
 			}
@@ -529,7 +555,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			EventDeclaration decl = new EventDeclaration();
 			decl.Modifiers = GetMemberModifiers(ev);
-			decl.ReturnType = ConvertType(ev.ReturnType.Resolve(context));
+			decl.ReturnType = ConvertTypeReference(ev.ReturnType);
 			decl.Variables.Add(new VariableInitializer(ev.Name));
 			return decl;
 		}
@@ -538,7 +564,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			MethodDeclaration decl = new MethodDeclaration();
 			decl.Modifiers = GetMemberModifiers(method);
-			decl.ReturnType = ConvertType(method.ReturnType.Resolve(context));
+			decl.ReturnType = ConvertTypeReference(method.ReturnType);
 			decl.Name = method.Name;
 			
 			if (this.ShowTypeParameters) {
@@ -570,7 +596,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			OperatorDeclaration decl = new OperatorDeclaration();
 			decl.Modifiers = GetMemberModifiers(op);
 			decl.OperatorType = opType.Value;
-			decl.ReturnType = ConvertType(op.ReturnType.Resolve(context));
+			decl.ReturnType = ConvertTypeReference(op.ReturnType);
 			foreach (IParameter p in op.Parameters) {
 				decl.Parameters.Add(ConvertParameter(p));
 			}
@@ -663,7 +689,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				c.BaseTypes.Add(new PrimitiveType("struct"));
 			}
 			foreach (ITypeReference tr in tp.Constraints) {
-				c.BaseTypes.Add(ConvertType(tr.Resolve(context)));
+				c.BaseTypes.Add(ConvertTypeReference(tr));
 			}
 			if (tp.HasDefaultConstructorConstraint) {
 				c.BaseTypes.Add(new PrimitiveType("new"));
@@ -677,7 +703,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			VariableDeclarationStatement decl = new VariableDeclarationStatement();
 			decl.Modifiers = v.IsConst ? Modifiers.Const : Modifiers.None;
-			decl.Type = ConvertType(v.Type.Resolve(context));
+			decl.Type = ConvertTypeReference(v.Type);
 			Expression initializer = null;
 			if (v.IsConst)
 				initializer = ConvertConstantValue(v.ConstantValue);

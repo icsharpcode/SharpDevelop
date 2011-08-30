@@ -48,6 +48,7 @@ namespace ICSharpCode.NRefactory.Demo
 		{
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.csharpCodeTextBox = new System.Windows.Forms.TextBox();
+			this.findReferencesButton = new System.Windows.Forms.Button();
 			this.resolveButton = new System.Windows.Forms.Button();
 			this.csharpTreeView = new System.Windows.Forms.TreeView();
 			this.csharpGenerateCodeButton = new System.Windows.Forms.Button();
@@ -71,6 +72,7 @@ namespace ICSharpCode.NRefactory.Demo
 			// 
 			// splitContainer1.Panel2
 			// 
+			this.splitContainer1.Panel2.Controls.Add(this.findReferencesButton);
 			this.splitContainer1.Panel2.Controls.Add(this.resolveButton);
 			this.splitContainer1.Panel2.Controls.Add(this.csharpTreeView);
 			this.splitContainer1.Panel2.Controls.Add(this.csharpGenerateCodeButton);
@@ -97,10 +99,22 @@ namespace ICSharpCode.NRefactory.Demo
 			this.csharpCodeTextBox.WordWrap = false;
 			this.csharpCodeTextBox.TextChanged += new System.EventHandler(this.CsharpCodeTextBoxTextChanged);
 			// 
+			// findReferencesButton
+			// 
+			this.findReferencesButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
+			this.findReferencesButton.Enabled = false;
+			this.findReferencesButton.Location = new System.Drawing.Point(344, 4);
+			this.findReferencesButton.Name = "findReferencesButton";
+			this.findReferencesButton.Size = new System.Drawing.Size(100, 23);
+			this.findReferencesButton.TabIndex = 4;
+			this.findReferencesButton.Text = "Find References";
+			this.findReferencesButton.UseVisualStyleBackColor = true;
+			this.findReferencesButton.Click += new System.EventHandler(this.FindReferencesButtonClick);
+			// 
 			// resolveButton
 			// 
 			this.resolveButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
-			this.resolveButton.Location = new System.Drawing.Point(187, 3);
+			this.resolveButton.Location = new System.Drawing.Point(132, 4);
 			this.resolveButton.Name = "resolveButton";
 			this.resolveButton.Size = new System.Drawing.Size(100, 23);
 			this.resolveButton.TabIndex = 3;
@@ -123,7 +137,7 @@ namespace ICSharpCode.NRefactory.Demo
 			// csharpGenerateCodeButton
 			// 
 			this.csharpGenerateCodeButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
-			this.csharpGenerateCodeButton.Location = new System.Drawing.Point(293, 2);
+			this.csharpGenerateCodeButton.Location = new System.Drawing.Point(238, 4);
 			this.csharpGenerateCodeButton.Name = "csharpGenerateCodeButton";
 			this.csharpGenerateCodeButton.Size = new System.Drawing.Size(100, 23);
 			this.csharpGenerateCodeButton.TabIndex = 1;
@@ -134,7 +148,7 @@ namespace ICSharpCode.NRefactory.Demo
 			// csharpParseButton
 			// 
 			this.csharpParseButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
-			this.csharpParseButton.Location = new System.Drawing.Point(81, 3);
+			this.csharpParseButton.Location = new System.Drawing.Point(26, 4);
 			this.csharpParseButton.Name = "csharpParseButton";
 			this.csharpParseButton.Size = new System.Drawing.Size(100, 23);
 			this.csharpParseButton.TabIndex = 0;
@@ -156,6 +170,7 @@ namespace ICSharpCode.NRefactory.Demo
 			this.splitContainer1.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.Button findReferencesButton;
 		private System.Windows.Forms.Button csharpParseButton;
 		private System.Windows.Forms.Button csharpGenerateCodeButton;
 		private System.Windows.Forms.TreeView csharpTreeView;

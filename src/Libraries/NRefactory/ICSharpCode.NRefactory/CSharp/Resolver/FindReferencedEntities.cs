@@ -22,50 +22,46 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// Looks up an alias (identifier in front of :: operator).
+	/// Find all entities that are referenced in the scanned AST.
 	/// </summary>
-	/// <remarks>
-	/// The member lookup performed by the :: operator is handled
-	/// by <see cref="MemberTypeOrNamespaceReference"/>.
-	/// </remarks>
-	[Serializable]
-	public class AliasNamespaceReference : ITypeOrNamespaceReference
+	public sealed class FindReferencedEntities : IResolveVisitorNavigator
 	{
-		readonly UsingScope parentUsingScope;
-		readonly string identifier;
+		readonly Action<AstNode, IEntity> referenceFound;
 		
-		public AliasNamespaceReference(string identifier, UsingScope parentUsingScope)
+		public FindReferencedEntities(Action<AstNode, IEntity> referenceFound)
 		{
-			if (identifier == null)
-				throw new ArgumentNullException("identifier");
-			this.identifier = identifier;
-			this.parentUsingScope = parentUsingScope;
+			if (referenceFound == null)
+				throw new ArgumentNullException("referenceFound");
+			this.referenceFound = referenceFound;
 		}
 		
-		public string Identifier {
-			get { return identifier; }
+		public ResolveVisitorNavigationMode Scan(AstNode node)
+		{
+			return ResolveVisitorNavigationMode.Resolve;
 		}
 		
-		public ResolveResult DoResolve(ITypeResolveContext context)
+		public void Resolved(AstNode node, ResolveResult result)
 		{
-			CSharpResolver r = new CSharpResolver(context);
-			r.CurrentUsingScope = parentUsingScope;
-			return r.ResolveAlias(identifier);
+			if (ResolveVisitor.ActsAsParenthesizedExpression(node))
+				return;
+			
+			MemberResolveResult mrr = result as MemberResolveResult;
+			if (mrr != null) {
+				referenceFound(node, mrr.Member.MemberDefinition);
+			}
+			TypeResolveResult trr = result as TypeResolveResult;
+			if (trr != null) {
+				ITypeDefinition typeDef = trr.Type.GetDefinition();
+				if (typeDef != null)
+					referenceFound(node, typeDef);
+			}
 		}
 		
-		public NamespaceResolveResult ResolveNamespace(ITypeResolveContext context)
+		public void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
 		{
-			return DoResolve(context) as NamespaceResolveResult;
-		}
-		
-		public IType Resolve(ITypeResolveContext context)
-		{
-			return SharedTypes.UnknownType;
-		}
-		
-		public override string ToString()
-		{
-			return identifier + "::";
+			if (conversion.IsUserDefined || conversion.IsMethodGroupConversion) {
+				referenceFound(expression, conversion.Method.MemberDefinition);
+			}
 		}
 	}
 }

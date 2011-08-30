@@ -134,35 +134,35 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		///    new List { all extensions from SomeExtensions }
 		/// }
 		/// </remarks>
-		public List<List<IMethod>> GetExtensionMethods()
+		public IList<List<IMethod>> GetExtensionMethods()
 		{
 			if (resolver != null) {
 				Debug.Assert(extensionMethods == null);
-				UsingScope oldUsingScope = resolver.UsingScope;
+				UsingScope oldUsingScope = resolver.CurrentUsingScope;
 				try {
-					resolver.UsingScope = usingScope;
+					resolver.CurrentUsingScope = usingScope;
 					extensionMethods = resolver.GetExtensionMethods(this.TargetType, methodName, typeArguments);
 				} finally {
-					resolver.UsingScope = oldUsingScope;
+					resolver.CurrentUsingScope = oldUsingScope;
 					resolver = null;
 					usingScope = null;
 				}
 			}
-			return extensionMethods;
+			return extensionMethods ?? EmptyList<List<IMethod>>.Instance;
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("[{0} with {1} method(s)]", GetType().Name, methodLists.Count);
+			return string.Format("[{0} with {1} method(s)]", GetType().Name, this.Methods.Count());
 		}
 		
-		public OverloadResolution PerformOverloadResolution(ITypeResolveContext context, ResolveResult[] arguments, string[] argumentNames = null, bool allowExtensionMethods = true, bool allowExpandingParams = true)
+		public OverloadResolution PerformOverloadResolution(ITypeResolveContext context, ResolveResult[] arguments, string[] argumentNames = null, bool allowExtensionMethods = true, bool allowExpandingParams = true, Conversions conversions = null)
 		{
 			Log.WriteLine("Performing overload resolution for " + this);
 			Log.WriteCollection("  Arguments: ", arguments);
 			
 			var typeArgumentArray = this.TypeArguments.ToArray();
-			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, typeArgumentArray);
+			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, typeArgumentArray, conversions);
 			or.AllowExpandingParams = allowExpandingParams;
 			
 			or.AddMethodLists(methodLists);
@@ -182,7 +182,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						extArgumentNames = new string[argumentNames.Length + 1];
 						argumentNames.CopyTo(extArgumentNames, 1);
 					}
-					var extOr = new OverloadResolution(context, extArguments, extArgumentNames, typeArgumentArray);
+					var extOr = new OverloadResolution(context, extArguments, extArgumentNames, typeArgumentArray, conversions);
 					extOr.AllowExpandingParams = allowExpandingParams;
 					extOr.IsExtensionMethodInvocation = true;
 					

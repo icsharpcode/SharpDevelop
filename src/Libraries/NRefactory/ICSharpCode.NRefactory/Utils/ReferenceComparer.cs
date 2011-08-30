@@ -17,45 +17,23 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
-namespace ICSharpCode.NRefactory.TypeSystem.Implementation
+namespace ICSharpCode.NRefactory.Utils
 {
-	[Serializable]
-	public abstract class TypeWithElementType : AbstractType
+	sealed class ReferenceComparer : IEqualityComparer<object>
 	{
-		protected IType elementType;
+		public readonly static ReferenceComparer Instance = new ReferenceComparer();
 		
-		protected TypeWithElementType(IType elementType)
+		public new bool Equals(object a, object b)
 		{
-			if (elementType == null)
-				throw new ArgumentNullException("elementType");
-			this.elementType = elementType;
+			return a == b;
 		}
 		
-		public override string Name {
-			get { return elementType.Name + NameSuffix; }
+		public int GetHashCode(object obj)
+		{
+			return RuntimeHelpers.GetHashCode(obj);
 		}
-		
-		public override string Namespace {
-			get { return elementType.Namespace; }
-		}
-		
-		public override string FullName {
-			get { return elementType.FullName + NameSuffix; }
-		}
-		
-		public override string ReflectionName {
-			get { return elementType.ReflectionName + NameSuffix; }
-		}
-		
-		public abstract string NameSuffix { get; }
-		
-		public IType ElementType {
-			get { return elementType; }
-		}
-		
-		// Force concrete implementations to override VisitChildren - the base implementation
-		// in AbstractType assumes there are no children, but we know there is (at least) 1.
-		public abstract override IType VisitChildren(TypeVisitor visitor);
 	}
 }

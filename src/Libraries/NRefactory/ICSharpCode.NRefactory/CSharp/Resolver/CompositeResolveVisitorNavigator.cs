@@ -21,51 +21,40 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
-	/// <summary>
-	/// Looks up an alias (identifier in front of :: operator).
-	/// </summary>
-	/// <remarks>
-	/// The member lookup performed by the :: operator is handled
-	/// by <see cref="MemberTypeOrNamespaceReference"/>.
-	/// </remarks>
-	[Serializable]
-	public class AliasNamespaceReference : ITypeOrNamespaceReference
+	public sealed class CompositeResolveVisitorNavigator : IResolveVisitorNavigator
 	{
-		readonly UsingScope parentUsingScope;
-		readonly string identifier;
+		IResolveVisitorNavigator[] navigators;
 		
-		public AliasNamespaceReference(string identifier, UsingScope parentUsingScope)
+		public CompositeResolveVisitorNavigator(IResolveVisitorNavigator[] navigators)
 		{
-			if (identifier == null)
-				throw new ArgumentNullException("identifier");
-			this.identifier = identifier;
-			this.parentUsingScope = parentUsingScope;
+			this.navigators = navigators;
 		}
 		
-		public string Identifier {
-			get { return identifier; }
+		public ResolveVisitorNavigationMode Scan(AstNode node)
+		{
+			bool needsScan = false;
+			foreach (var navigator in navigators) {
+				ResolveVisitorNavigationMode mode = navigator.Scan(node);
+				if (mode == ResolveVisitorNavigationMode.Resolve)
+					return mode; // resolve has highest priority
+				else if (mode == ResolveVisitorNavigationMode.Scan)
+					needsScan = true;
+			}
+			return needsScan ? ResolveVisitorNavigationMode.Scan : ResolveVisitorNavigationMode.Skip;
 		}
 		
-		public ResolveResult DoResolve(ITypeResolveContext context)
+		public void Resolved(AstNode node, ResolveResult result)
 		{
-			CSharpResolver r = new CSharpResolver(context);
-			r.CurrentUsingScope = parentUsingScope;
-			return r.ResolveAlias(identifier);
+			foreach (var navigator in navigators) {
+				navigator.Resolved(node, result);
+			}
 		}
 		
-		public NamespaceResolveResult ResolveNamespace(ITypeResolveContext context)
+		public void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
 		{
-			return DoResolve(context) as NamespaceResolveResult;
-		}
-		
-		public IType Resolve(ITypeResolveContext context)
-		{
-			return SharedTypes.UnknownType;
-		}
-		
-		public override string ToString()
-		{
-			return identifier + "::";
+			foreach (var navigator in navigators) {
+				navigator.ProcessConversion(expression, result, conversion, targetType);
+			}
 		}
 	}
 }

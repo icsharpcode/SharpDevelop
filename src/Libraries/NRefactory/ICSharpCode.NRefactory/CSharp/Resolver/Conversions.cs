@@ -86,16 +86,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public static Conversion UserDefinedImplicitConversion(IMethod operatorMethod, bool isLifted)
 		{
+			if (operatorMethod == null)
+				throw new ArgumentNullException("operatorMethod");
 			return new Conversion(isLifted ? liftedUserDefinedImplicitConversionKind : userDefinedImplicitConversionKind, operatorMethod);
 		}
 		
 		public static Conversion UserDefinedExplicitConversion(IMethod operatorMethod, bool isLifted)
 		{
+			if (operatorMethod == null)
+				throw new ArgumentNullException("operatorMethod");
 			return new Conversion(isLifted ? liftedUserDefinedExplicitConversionKind : userDefinedExplicitConversionKind, operatorMethod);
 		}
 		
 		public static Conversion MethodGroupConversion(IMethod chosenMethod)
 		{
+			if (chosenMethod == null)
+				throw new ArgumentNullException("chosenMethod");
 			return new Conversion(methodGroupConversionKind, chosenMethod);
 		}
 		
@@ -235,6 +241,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public class Conversions
 	{
+		readonly Dictionary<TypePair, Conversion> implicitConversionCache = new Dictionary<TypePair, Conversion>();
 		readonly ITypeResolveContext context;
 		readonly IType objectType;
 		
@@ -246,6 +253,56 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.objectType = KnownTypeReference.Object.Resolve(context);
 			this.dynamicErasure = new DynamicErasure(this);
 		}
+		
+		/// <summary>
+		/// Gets the Conversions instance for the specified <see cref="ITypeResolveContext"/>.
+		/// This will make use of the context's cache manager (if available) to reuse the Conversions instance.
+		/// </summary>
+		public static Conversions Get(ITypeResolveContext context)
+		{
+			CacheManager cache = context.CacheManager;
+			if (cache != null) {
+				Conversions conversions = cache.GetThreadLocal(typeof(Conversions)) as Conversions;
+				if (conversions == null) {
+					conversions = new Conversions(context);
+					cache.SetThreadLocal(typeof(Conversions), conversions);
+				}
+				return conversions;
+			} else {
+				return new Conversions(context);
+			}
+		}
+		
+		#region TypePair (for caching)
+		struct TypePair : IEquatable<TypePair>
+		{
+			public readonly IType FromType;
+			public readonly IType ToType;
+			
+			public TypePair(IType fromType, IType toType)
+			{
+				this.FromType = fromType;
+				this.ToType = toType;
+			}
+			
+			public override bool Equals(object obj)
+			{
+				return (obj is TypePair) && Equals((TypePair)obj);
+			}
+			
+			public bool Equals(TypePair other)
+			{
+				return this.FromType.Equals(other.FromType) && this.ToType.Equals(other.ToType);
+			}
+			
+			public override int GetHashCode()
+			{
+				unchecked {
+					return 1000000007 * FromType.GetHashCode() + 1000000009 * ToType.GetHashCode();
+				}
+			}
+		}
+		#endregion
 		
 		#region ImplicitConversion
 		public Conversion ImplicitConversion(ResolveResult resolveResult, IType toType)
@@ -273,11 +330,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("fromType");
 			if (toType == null)
 				throw new ArgumentNullException("toType");
-			// C# 4.0 spec: §6.1
-			Conversion c = StandardImplicitConversion(fromType, toType);
-			if (c) return c;
 			
-			return UserDefinedImplicitConversion(fromType, toType);
+			TypePair pair = new TypePair(fromType, toType);
+			Conversion c;
+			if (implicitConversionCache.TryGetValue(pair, out c))
+				return c;
+			
+			// C# 4.0 spec: §6.1
+			c = StandardImplicitConversion(fromType, toType);
+			if (!c) {
+				c = UserDefinedImplicitConversion(fromType, toType);
+			}
+			implicitConversionCache[pair] = c;
+			return c;
 		}
 		
 		public Conversion StandardImplicitConversion(IType fromType, IType toType)
@@ -475,7 +540,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Debug.Assert(rr.IsCompileTimeConstant);
 			TypeCode constantType = ReflectionHelper.GetTypeCode(rr.Type);
 			if (constantType >= TypeCode.SByte && constantType <= TypeCode.Decimal && Convert.ToDouble(rr.ConstantValue) == 0) {
-				return NullableType.GetUnderlyingType(toType).IsEnum();
+				return NullableType.GetUnderlyingType(toType).Kind == TypeKind.Enum;
 			}
 			return false;
 		}
@@ -928,7 +993,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					args[i] = new ResolveResult(parameterType);
 				}
 			}
-			var or = rr.PerformOverloadResolution(context, args, allowExpandingParams: false);
+			var or = rr.PerformOverloadResolution(context, args, allowExpandingParams: false, conversions: this);
 			if (or.FoundApplicableCandidate)
 				return Conversion.MethodGroupConversion((IMethod)or.BestCandidate);
 			else

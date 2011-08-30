@@ -62,10 +62,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return fileName; }
 		}
 		
-		DateTime parseTime = DateTime.Now;
-		public DateTime ParseTime {
-			get {
-				return parseTime;
+		DateTime lastWriteTime = DateTime.UtcNow;
+		
+		public DateTime LastWriteTime {
+			get { return lastWriteTime; }
+			set {
+				CheckBeforeMutation();
+				lastWriteTime = value;
 			}
 		}
 		
@@ -112,7 +115,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return FindEntity(topLevelTypeDefinitions, location);
 		}
 		
-		public ITypeDefinition GetInnerMostTypeDefinition(AstLocation location)
+		public ITypeDefinition GetInnermostTypeDefinition(AstLocation location)
 		{
 			ITypeDefinition parent = null;
 			ITypeDefinition type = GetTopLevelTypeDefinition(location);
@@ -125,7 +128,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IMember GetMember(AstLocation location)
 		{
-			ITypeDefinition type = GetInnerMostTypeDefinition(location);
+			ITypeDefinition type = GetInnermostTypeDefinition(location);
 			if (type == null)
 				return null;
 			return FindEntity(type.Methods, location)

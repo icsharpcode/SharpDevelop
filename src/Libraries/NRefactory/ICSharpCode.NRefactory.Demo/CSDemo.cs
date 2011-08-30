@@ -22,12 +22,12 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -71,6 +71,7 @@ namespace ICSharpCode.NRefactory.Demo
 			}
 			SelectCurrentNode(csharpTreeView.Nodes);
 			resolveButton.Enabled = true;
+			findReferencesButton.Enabled = true;
 		}
 		
 		TreeNode MakeTreeNode(AstNode node)
@@ -245,6 +246,55 @@ namespace ICSharpCode.NRefactory.Demo
 		void CsharpCodeTextBoxTextChanged(object sender, EventArgs e)
 		{
 			resolveButton.Enabled = false;
+			findReferencesButton.Enabled = false;
+		}
+		
+		void FindReferencesButtonClick(object sender, EventArgs e)
+		{
+			if (csharpTreeView.SelectedNode == null)
+				return;
+			
+			SimpleProjectContent project = new SimpleProjectContent();
+			var parsedFile = new TypeSystemConvertVisitor(project, "dummy.cs").Convert(compilationUnit);
+			project.UpdateProjectContent(null, parsedFile);
+			
+			List<ITypeResolveContext> projects = new List<ITypeResolveContext>();
+			projects.Add(project);
+			projects.AddRange(builtInLibs.Value);
+			
+			using (var context = new CompositeTypeResolveContext(projects).Synchronize()) {
+				CSharpResolver resolver = new CSharpResolver(context);
+				
+				AstNode node = (AstNode)csharpTreeView.SelectedNode.Tag;
+				IResolveVisitorNavigator navigator = new NodeListResolveVisitorNavigator(new[] { node });
+				ResolveVisitor visitor = new ResolveVisitor(resolver, parsedFile, navigator);
+				visitor.Scan(compilationUnit);
+				IEntity entity;
+				MemberResolveResult mrr = visitor.GetResolveResult(node) as MemberResolveResult;
+				TypeResolveResult trr = visitor.GetResolveResult(node) as TypeResolveResult;
+				if (mrr != null) {
+					entity = mrr.Member;
+				} else if (trr != null) {
+					entity = trr.Type.GetDefinition();
+				} else {
+					return;
+				}
+				
+				FindReferences fr = new FindReferences();
+				int referenceCount = 0;
+				fr.ReferenceFound += delegate { referenceCount++; };
+				
+				var searchScopes = fr.GetSearchScopes(entity);
+				navigator = new CompositeResolveVisitorNavigator(searchScopes.ToArray());
+				visitor = new ResolveVisitor(resolver, parsedFile, navigator);
+				visitor.Scan(compilationUnit);
+				
+				csharpTreeView.BeginUpdate();
+				ShowResolveResultsInTree(csharpTreeView.Nodes, visitor);
+				csharpTreeView.EndUpdate();
+				
+				MessageBox.Show("Found " + referenceCount + " references to " + entity.FullName);
+			}
 		}
 	}
 }

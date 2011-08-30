@@ -107,18 +107,7 @@ namespace CSharpBinding.Parser
 			if (parsedFile == null)
 				throw new ArgumentException("Parse info does not have a C# ParsedFile");
 			
-			AstNode node = cu.GetResolveableNodeAt(location);
-			if (node == null) {
-				LoggingService.Debug("Could not find resolvable node at " + location);
-				return null;
-			}
-			LoggingService.DebugFormatted("Resolving '{0}' at {1}", node, location);
-			var navigator = new NodeListResolveVisitorNavigator(new[] { node });
-			var resolver = new CSharpResolver(context, cancellationToken);
-			ResolveVisitor visitor = new ResolveVisitor(resolver, parsedFile, navigator);
-			visitor.Scan(cu);
-			
-			return visitor.GetResolveResult(node);
+			return ResolveAtLocation.Resolve(context, parsedFile, cu, location, cancellationToken);
 		}
 	}
 }

@@ -39,21 +39,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				Intern(r);
 		}
 		
-		sealed class ReferenceComparer : IEqualityComparer<object>
-		{
-			public readonly static ReferenceComparer Instance = new ReferenceComparer();
-			
-			public new bool Equals(object a, object b)
-			{
-				return ReferenceEquals(a, b);
-			}
-			
-			public int GetHashCode(object obj)
-			{
-				return RuntimeHelpers.GetHashCode(obj);
-			}
-		}
-		
 		sealed class InterningComparer : IEqualityComparer<ISupportsInterning>
 		{
 			public bool Equals(ISupportsInterning x, ISupportsInterning y)
@@ -122,7 +107,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					else
 						supportsInternDict.Add(s, s);
 				}
-			} else if (obj is IType || Type.GetTypeCode(obj.GetType()) >= TypeCode.Boolean) {
+			} else if (Type.GetTypeCode(obj.GetType()) >= TypeCode.Boolean) {
+				// IType cannot be interned by value because ITypeParameters with different names are considered
+				// equal (for object.Equals), but should not be interned.
 				object output;
 				if (byValueDict.TryGetValue(obj, out output))
 					obj = (T)output;

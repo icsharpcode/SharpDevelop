@@ -196,7 +196,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		{
 			var parseInfo = ParserService.GetExistingParsedFile(editor.FileName);
 			if (parseInfo != null) {
-				return parseInfo.GetInnerMostTypeDefinition(editor.Caret.Location);
+				return parseInfo.GetInnermostTypeDefinition(editor.Caret.Location);
 			}
 			return null;
 		}

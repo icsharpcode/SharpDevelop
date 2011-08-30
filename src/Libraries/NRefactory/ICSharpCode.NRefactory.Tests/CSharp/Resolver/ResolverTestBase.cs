@@ -42,9 +42,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public virtual void SetUp()
 		{
 			project = new SimpleProjectContent();
-			context = new CompositeTypeResolveContext(new [] { project, mscorlib });
+			context = new CompositeTypeResolveContext(new [] { project, mscorlib, CecilLoaderTests.SystemCore });
 			resolver = new CSharpResolver(context);
-			resolver.UsingScope = MakeUsingScope("");
+			resolver.CurrentUsingScope = MakeUsingScope("");
 		}
 		
 		protected UsingScope MakeUsingScope(string namespaceName)
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		protected void AddUsing(string namespaceName)
 		{
-			resolver.UsingScope.Usings.Add(MakeReference(namespaceName));
+			resolver.CurrentUsingScope.Usings.Add(MakeReference(namespaceName));
 		}
 		
 		/// <summary>
@@ -71,15 +71,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		protected void AddUsingAlias(string alias, string target)
 		{
-			resolver.UsingScope.UsingAliases.Add(new KeyValuePair<string, ITypeOrNamespaceReference>(alias, MakeReference(target)));
+			resolver.CurrentUsingScope.UsingAliases.Add(new KeyValuePair<string, ITypeOrNamespaceReference>(alias, MakeReference(target)));
 		}
 		
 		protected ITypeOrNamespaceReference MakeReference(string namespaceName)
 		{
 			string[] nameParts = namespaceName.Split('.');
-			ITypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.UsingScope, SimpleNameLookupMode.TypeInUsingDeclaration);
+			ITypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.CurrentUsingScope, SimpleNameLookupMode.TypeInUsingDeclaration);
 			for (int i = 1; i < nameParts.Length; i++) {
-				r = new MemberTypeOrNamespaceReference(r, nameParts[i], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.UsingScope);
+				r = new MemberTypeOrNamespaceReference(r, nameParts[i], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.CurrentUsingScope);
 			}
 			return r;
 		}
@@ -194,8 +194,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			SetUp();
 			
-			ParsedFile parsedFile = new ParsedFile("test.cs", resolver.UsingScope);
-			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(parsedFile, resolver.UsingScope, null);
+			ParsedFile parsedFile = new ParsedFile("test.cs", resolver.CurrentUsingScope);
+			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(parsedFile, resolver.CurrentUsingScope, null);
 			cu.AcceptVisitor(convertVisitor, null);
 			project.UpdateProjectContent(null, convertVisitor.ParsedFile);
 			
@@ -226,11 +226,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return (T)rr;
 		}
 		
-		protected T Resolve<T>(string code, string exprToResolve) where T : ResolveResult
-		{
-			return Resolve<T>(code.Replace(exprToResolve, "$" + exprToResolve + "$"));
-		}
-		
 		sealed class FindNodeVisitor : DepthFirstAstVisitor<object, object>
 		{
 			readonly AstLocation start;
@@ -253,6 +248,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return base.VisitChildren(node, data);
 				}
 			}
+		}
+		
+		protected ResolveResult ResolveAtLocation(string code)
+		{
+			CompilationUnit cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")));
+			
+			AstLocation[] dollars = FindDollarSigns(code).ToArray();
+			Assert.AreEqual(1, dollars.Length, "Expected 1 dollar signs marking the location");
+			
+			SetUp();
+			
+			ParsedFile parsedFile = new ParsedFile("test.cs", resolver.CurrentUsingScope);
+			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(parsedFile, resolver.CurrentUsingScope, null);
+			cu.AcceptVisitor(convertVisitor, null);
+			project.UpdateProjectContent(null, convertVisitor.ParsedFile);
+			
+			ResolveResult rr = Resolver.ResolveAtLocation.Resolve(this.context, parsedFile, cu, dollars[0]);
+			return rr;
+		}
+		
+		protected T ResolveAtLocation<T>(string code) where T : ResolveResult
+		{
+			ResolveResult rr = ResolveAtLocation(code);
+			Assert.IsNotNull(rr);
+			Assert.IsTrue(rr.GetType() == typeof(T), "Resolve should be " + typeof(T).Name + ", but was " + rr.GetType().Name);
+			return (T)rr;
 		}
 	}
 }

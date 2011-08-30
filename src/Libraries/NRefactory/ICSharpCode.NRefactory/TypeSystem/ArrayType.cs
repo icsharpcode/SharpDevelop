@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// Represents an array type.
 	/// </summary>
 	[Serializable]
-	public sealed class ArrayType : TypeWithElementType
+	public sealed class ArrayType : TypeWithElementType, ISupportsInterning
 	{
 		readonly int dimensions;
 		
@@ -133,6 +133,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return this;
 			else
 				return new ArrayType(e, dimensions);
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			elementType = provider.Intern(elementType);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return elementType.GetHashCode() ^ dimensions;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			ArrayType o = other as ArrayType;
+			return o != null && elementType == o.elementType && dimensions == o.dimensions;
 		}
 	}
 	

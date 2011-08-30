@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void SimpleNameLookupWithoutContext()
 		{
 			// nothing should be found without specifying any UsingScope - however, the resolver also must not crash
-			resolver.UsingScope = null;
+			resolver.CurrentUsingScope = null;
 			Assert.IsTrue(resolver.ResolveSimpleName("System", new IType[0]).IsError);
 		}
 		
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void NamespaceInParentNamespaceLookup()
 		{
-			resolver.UsingScope = MakeUsingScope("System.Collections.Generic");
+			resolver.CurrentUsingScope = MakeUsingScope("System.Collections.Generic");
 			NamespaceResolveResult nrr = (NamespaceResolveResult)resolver.ResolveSimpleName("Text", new IType[0]);
 			Assert.AreEqual("System.Text", nrr.NamespaceName);
 		}
@@ -102,7 +102,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void AliasToImportedType2()
 		{
 			AddUsing("System");
-			resolver.UsingScope = new UsingScope(resolver.UsingScope, "SomeNamespace");
+			resolver.CurrentUsingScope = new UsingScope(resolver.CurrentUsingScope, "SomeNamespace");
 			AddUsingAlias("x", "String");
 			TypeResolveResult trr = (TypeResolveResult)resolver.ResolveSimpleName("x", new IType[0]);
 			Assert.AreEqual("System.String", trr.Type.FullName);
@@ -132,7 +132,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void FindClassInCurrentNamespace()
 		{
-			resolver.UsingScope = MakeUsingScope("System.Collections");
+			resolver.CurrentUsingScope = MakeUsingScope("System.Collections");
 			TypeResolveResult trr = (TypeResolveResult)resolver.ResolveSimpleName("String", new IType[0]);
 			Assert.AreEqual("System.String", trr.Type.FullName);
 		}
@@ -140,7 +140,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void FindNeighborNamespace()
 		{
-			resolver.UsingScope = MakeUsingScope("System.Collections");
+			resolver.CurrentUsingScope = MakeUsingScope("System.Collections");
 			NamespaceResolveResult nrr = (NamespaceResolveResult)resolver.ResolveSimpleName("Text", new IType[0]);
 			Assert.AreEqual("System.Text", nrr.NamespaceName);
 		}
@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void FindTypeParameters()
 		{
-			resolver.UsingScope = MakeUsingScope("System.Collections.Generic");
+			resolver.CurrentUsingScope = MakeUsingScope("System.Collections.Generic");
 			resolver.CurrentTypeDefinition = context.GetTypeDefinition(typeof(List<>));
 			resolver.CurrentMember = resolver.CurrentTypeDefinition.Methods.Single(m => m.Name == "ConvertAll");
 			
@@ -391,11 +391,11 @@ class TestClass {
 	COL.ArrayList ff;
 }
 ";
-			TypeResolveResult type = Resolve<TypeResolveResult>(program, "COL.ArrayList");
+			TypeResolveResult type = Resolve<TypeResolveResult>(program.Replace("COL.ArrayList", "$COL.ArrayList$"));
 			Assert.IsNotNull(type, "COL.ArrayList should resolve to a type");
 			Assert.AreEqual("System.Collections.ArrayList", type.Type.FullName, "TypeResolveResult");
 			
-			MemberResolveResult member = Resolve<MemberResolveResult>(program, "ff");
+			MemberResolveResult member = Resolve<MemberResolveResult>(program.Replace("ff", "$ff$"));
 			Assert.AreEqual("System.Collections.ArrayList", member.Type.FullName, "the full type should be resolved");
 		}
 		

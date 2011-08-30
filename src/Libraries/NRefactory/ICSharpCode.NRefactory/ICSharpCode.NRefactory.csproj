@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</ProjectGuid>
@@ -20,6 +20,8 @@
     <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -98,7 +100,10 @@
     <Compile Include="CSharp\Ast\GeneralScope\TypeParameterDeclaration.cs" />
     <Compile Include="CSharp\Ast\MemberType.cs" />
     <Compile Include="CSharp\Refactoring\TypeSystemAstBuilder.cs" />
+    <Compile Include="CSharp\Resolver\CompositeResolveVisitorNavigator.cs" />
     <Compile Include="CSharp\Resolver\DetectSkippableNodesNavigator.cs" />
+    <Compile Include="CSharp\Resolver\FindReferencedEntities.cs" />
+    <Compile Include="CSharp\Resolver\FindReferences.cs" />
     <Compile Include="CSharp\Resolver\Log.cs" />
     <Compile Include="CSharp\Resolver\OperatorResolveResult.cs" />
     <Compile Include="CSharp\Resolver\ConversionResolveResult.cs" />
@@ -107,6 +112,7 @@
     <Compile Include="CSharp\Resolver\InvocationResolveResult.cs" />
     <Compile Include="CSharp\Resolver\LambdaResolveResult.cs" />
     <Compile Include="CSharp\Resolver\MapTypeIntoNewContext.cs" />
+    <Compile Include="CSharp\Resolver\ResolveAtLocation.cs" />
     <Compile Include="CSharp\Resolver\SimpleNameLookupMode.cs" />
     <Compile Include="Documentation\IDStringProvider.cs" />
     <Compile Include="PatternMatching\BacktrackingInfo.cs" />
@@ -347,6 +353,7 @@
     <Compile Include="Utils\FastSerializer.cs" />
     <Compile Include="Utils\GraphVizGraph.cs" />
     <Compile Include="Utils\Platform.cs" />
+    <Compile Include="Utils\ReferenceComparer.cs" />
     <Compile Include="Utils\TreeTraversal.cs" />
     <Compile Include="CSharp\Ast\ComposedType.cs" />
     <Compile Include="CSharp\Ast\Expressions\DirectionExpression.cs" />
