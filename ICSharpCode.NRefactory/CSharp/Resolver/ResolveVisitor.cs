@@ -953,7 +953,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				for (int i = 0; i < initializerElementResults.Length; i++) {
 					initializerElementResults[i] = Resolve(initializerElements[i]);
 				}
-				StoreResult(arrayCreateExpression.Initializer, voidResult);
+				if (!resolveResultCache.ContainsKey(arrayCreateExpression.Initializer))
+					StoreResult(arrayCreateExpression.Initializer, voidResult);
 			}
 			
 			ArrayCreateResolveResult acrr;
@@ -1251,7 +1252,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			resolver.PopInitializerType();
-			StoreResult(initializer, voidResult);
+			if (!resolveResultCache.ContainsKey(initializer))
+				StoreResult(initializer, voidResult);
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
