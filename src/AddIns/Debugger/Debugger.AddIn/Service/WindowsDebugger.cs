@@ -688,7 +688,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			} catch (System.Exception ex) {
 				LoggingService.Error("Error on GetTooltipControl: " + ex.Message);
 				return null;
-			} 
+			}
 		}
 		
 		public ITreeNode GetNode(string variable, string currentImageName = null)
@@ -1075,22 +1075,17 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			WorkbenchSingleton.MainWindow.Activate();
 			
+			var frame = debuggedProcess.GetCurrentExecutingFrame();
+			if (frame == null) {
+				LoggingService.Error("Error: no executing frame!");
+				return;
+			}
 			
-			if (debuggedProcess.IsSelectedFrameForced()) {
-				if (debuggedProcess.SelectedStackFrame != null && debuggedProcess.SelectedStackFrame.HasSymbols) {
-					JumpToSourceCode();
-				} else {
-					JumpToDecompiledCode(debuggedProcess.SelectedStackFrame);
-				}
+			if (frame.HasSymbols) {
+				JumpToSourceCode();
 			} else {
-				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
-				// other pause reasons
-				if (frame.HasSymbols) {
-					JumpToSourceCode();
-				} else {
-					// use most recent stack frame because we don't have the symbols
-					JumpToDecompiledCode(debuggedProcess.SelectedThread.MostRecentStackFrame);
-				}
+				// use most recent stack frame because we don't have the symbols
+				JumpToDecompiledCode(frame);
 			}
 		}
 

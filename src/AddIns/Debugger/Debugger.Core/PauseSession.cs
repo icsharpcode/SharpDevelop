@@ -18,7 +18,6 @@ namespace Debugger
 		
 		public PausedReason PausedReason {
 			get { return pausedReason; }
-			set { pausedReason = value; }
 		}
 		
 		public PauseSession(Process process, PausedReason pausedReason)

@@ -124,7 +124,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						return;
 					}
 					debuggedProcess.SelectedThread.SelectedStackFrame = item.Frame;
-					debuggedProcess.PauseSession.PausedReason = PausedReason.CurrentFunctionChanged;
 					debuggedProcess.OnPaused(); // Force refresh of pads - artificial pause
 				}
 			} else {

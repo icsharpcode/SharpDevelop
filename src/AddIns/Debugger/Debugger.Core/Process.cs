@@ -340,7 +340,7 @@ namespace Debugger
 			AssertPaused();
 			DisableAllSteppers();
 			CheckSelectedStackFrames();
-			SelectMostRecentStackFrameWithLoadedSymbols();
+			SelectMostRecentStackFrame();
 			
 			if (this.PauseSession.PausedReason == PausedReason.Exception) {
 				ExceptionEventArgs args = new ExceptionEventArgs(this, this.SelectedThread.CurrentException, this.SelectedThread.CurrentExceptionType, this.SelectedThread.CurrentExceptionIsUnhandled);
@@ -595,18 +595,18 @@ namespace Debugger
 			}
 		}
 		
-		internal void SelectMostRecentStackFrameWithLoadedSymbols()
+		internal void SelectMostRecentStackFrame()
 		{
 			SelectSomeThread();
 			if (this.SelectedThread != null) {
 				this.SelectedThread.SelectedStackFrame = null;
 				foreach (StackFrame stackFrame in this.SelectedThread.Callstack) {
-					if (stackFrame.HasSymbols) {
-						if (this.Options.StepOverDebuggerAttributes && stackFrame.MethodInfo.IsNonUserCode)
-							continue;
-						this.SelectedThread.SelectedStackFrame = stackFrame;
-						break;
-					}
+					//if (stackFrame.HasSymbols) {
+					if (this.Options.StepOverDebuggerAttributes && stackFrame.MethodInfo.IsNonUserCode)
+						continue;
+					this.SelectedThread.SelectedStackFrame = stackFrame;
+					break;
+					//}
 				}
 			}
 		}
@@ -708,29 +708,7 @@ namespace Debugger
 		
 		public StackFrame GetCurrentExecutingFrame()
 		{
-			if (IsSelectedFrameForced()) {
-				return SelectedStackFrame; // selected from callstack or threads pads
-			}
-			
-			if (SelectedStackFrame != null) {
-				if (SelectedThread.MostRecentStackFrame != null) {
-					if (SelectedStackFrame.HasSymbols && SelectedThread.MostRecentStackFrame.HasSymbols)
-						return SelectedStackFrame;
-					else
-						return SelectedThread.MostRecentStackFrame;
-				} else {
-					return SelectedThread.MostRecentStackFrame;
-				}
-			} else {
-				return SelectedThread.MostRecentStackFrame;
-			}
-		}
-		
-		public bool IsSelectedFrameForced()
-		{
-			return pauseSession.PausedReason == PausedReason.CurrentFunctionChanged ||
-				pauseSession.PausedReason == PausedReason.CurrentThreadChanged ||
-				pauseSession.PausedReason == PausedReason.EvalComplete;
+			return SelectedStackFrame ?? SelectedThread.MostRecentStackFrame; // selected from callstack or threads pads
 		}
 	}
 }
