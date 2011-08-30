@@ -479,37 +479,38 @@ namespace ICSharpCode.FormsDesigner
 				
 				appDomainHost.SelectionChanged -= new EventHandlerProxy(SelectionChangedHandler);
 				
-				appDomainHost.DesignSurfaceUnloaded += delegate {
-					ServiceContainer serviceContainer = appDomainHost.GetService(typeof(ServiceContainer)) as ServiceContainer;
-					if (serviceContainer != null) {
-						// Workaround for .NET bug: .NET unregisters the designer host only if no component throws an exception,
-						// but then in a finally block assumes that the designer host is already unloaded.
-						// Thus we would get the confusing "InvalidOperationException: The container cannot be disposed at design time"
-						// when any component throws an exception.
-						
-						// See http://community.sharpdevelop.net/forums/p/10928/35288.aspx
-						// Reproducible with a custom control that has a designer that crashes on unloading
-						// e.g. http://www.codeproject.com/KB/toolbars/WinFormsRibbon.aspx
-						
-						// We work around this problem by unregistering the designer host manually.
-						try {
-							var services = (Dictionary<Type, object>)typeof(ServiceContainer).InvokeMember(
-								"Services",
-								BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.NonPublic,
-								null, serviceContainer, null);
-							foreach (var pair in services.ToArray()) {
-								if (pair.Value is IDesignerHost) {
-									serviceContainer.GetType().InvokeMember(
-										"RemoveFixedService",
-										BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.NonPublic,
-										null, serviceContainer, new object[] { pair.Key });
+				appDomainHost.DesignSurfaceUnloaded += new EventHandlerProxy(
+					delegate {
+						ServiceContainer serviceContainer = appDomainHost.GetService(typeof(ServiceContainer)) as ServiceContainer;
+						if (serviceContainer != null) {
+							// Workaround for .NET bug: .NET unregisters the designer host only if no component throws an exception,
+							// but then in a finally block assumes that the designer host is already unloaded.
+							// Thus we would get the confusing "InvalidOperationException: The container cannot be disposed at design time"
+							// when any component throws an exception.
+							
+							// See http://community.sharpdevelop.net/forums/p/10928/35288.aspx
+							// Reproducible with a custom control that has a designer that crashes on unloading
+							// e.g. http://www.codeproject.com/KB/toolbars/WinFormsRibbon.aspx
+							
+							// We work around this problem by unregistering the designer host manually.
+							try {
+								var services = (Dictionary<Type, object>)typeof(ServiceContainer).InvokeMember(
+									"Services",
+									BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.NonPublic,
+									null, serviceContainer, null);
+								foreach (var pair in services.ToArray()) {
+									if (pair.Value is IDesignerHost) {
+										serviceContainer.GetType().InvokeMember(
+											"RemoveFixedService",
+											BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.NonPublic,
+											null, serviceContainer, new object[] { pair.Key });
+									}
 								}
+							} catch (Exception ex) {
+								LoggingService.Error(ex);
 							}
-						} catch (Exception ex) {
-							LoggingService.Error(ex);
 						}
-					}
-				};
+					});
 				try {
 					appDomainHost.DisposeDesignSurface();
 				} catch (ExceptionCollection exceptions) {
@@ -599,8 +600,6 @@ namespace ICSharpCode.FormsDesigner
 				// enableFontInheritance: Make sure auto-scaling is based on the correct font.
 				// This is required on Vista, I don't know why it works correctly in XP
 				CustomWindowsFormsHost designView = WrapInCustomHost(appDomainHost.DesignSurfaceView, enableFontInheritance: false);
-				
-
 				
 				this.UserContent = designView;
 				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + appDomainHost.DesignSurfaceName);
