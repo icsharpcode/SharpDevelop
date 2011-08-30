@@ -394,9 +394,11 @@ namespace ICSharpCode.FormsDesigner
 			designSurface.Dispose();
 		}
 		
+		PropertyGrid grid;
+		
 		public PropertyGrid CreatePropertyGrid()
 		{
-			var grid = new PropertyGrid() { Dock = DockStyle.Fill };
+			grid = new PropertyGrid() { Dock = DockStyle.Fill };
 			
 			return grid;
 		}
@@ -404,20 +406,30 @@ namespace ICSharpCode.FormsDesigner
 		public void UpdatePropertyPad()
 		{
 			if (HasDesignerHost) {
-//				propertyContainer.Host = appDomainHost.Host;
+				UpdateDesignerHost(); // TODO reuse code from PropertyPad!
 //				propertyContainer.SelectableObjects = appDomainHost.Host.Container.Components;
-//				ISelectionService selectionService = (ISelectionService)appDomainHost.GetService(typeof(ISelectionService));
-//				if (selectionService != null) {
-//					UpdatePropertyPadSelection(selectionService);
-//				}
+				ISelectionService selectionService = (ISelectionService)GetService(typeof(ISelectionService));
+				if (selectionService != null) {
+					UpdatePropertyPadSelection(selectionService);
+				}
 			}
+		}
+		
+		void UpdateDesignerHost()
+		{
+//			if (grid. == Host)
+//				return;
+//			if (instance.host != null)
+//				instance.RemoveHost(instance.host);
+//			if (container.Host != null)
+//				instance.SetDesignerHost(container.Host);
 		}
 		
 		public void UpdatePropertyPadSelection(ISelectionService selectionService)
 		{
-//			ICollection selection = selectionService.GetSelectedComponents();
-//			object[] selArray = new object[selection.Count];
-//			selection.CopyTo(selArray, 0);
+			var selection = selectionService.GetSelectedComponents();
+			object[] selArray = new object[selection.Count];
+			selection.CopyTo(selArray, 0);
 //			propertyContainer.SelectedObjects = selArray;
 			properties.FormsDesignerProxy.InvalidateRequerySuggested();
 		}

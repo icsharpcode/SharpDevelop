@@ -379,11 +379,6 @@ namespace ICSharpCode.FormsDesigner
 			
 			undoEngine = (IFormsDesignerUndoEngine)appDomainHost.GetService(typeof(IFormsDesignerUndoEngine));
 			
-//			appDomainHost.ComponentAdded   += new ComponentEventHandlerProxy(ComponentListChanged);
-//			appDomainHost.ComponentRemoved += new ComponentEventHandlerProxy(ComponentListChanged);
-//			appDomainHost.ComponentRename  += new ComponentRenameEventHandlerProxy(ComponentListChanged);
-//			appDomainHost.HostTransactionClosed += new DesignerTransactionCloseEventHandlerProxy(TransactionClose);
-			
 			appDomainHost.SelectionChanged += new EventHandlerProxy(SelectionChangedHandler);
 			
 			if (IsTabOrderMode) { // fixes SD2-1015
@@ -432,6 +427,7 @@ namespace ICSharpCode.FormsDesigner
 			options.EnableInSituEditing         = PropertyService.Get("FormsDesigner.DesignerOptions.EnableInSituEditing", true);
 			options.ObjectBoundSmartTagAutoShow = GeneralOptionsPanel.SmartTagAutoShow;
 			options.UseOptimizedCodeGeneration  = PropertyService.Get("FormsDesigner.DesignerOptions.UseOptimizedCodeGeneration", true);
+			options.EventHandlerNameFormat      = "{0}{1}";
 			
 			return options;
 		}
@@ -472,10 +468,6 @@ namespace ICSharpCode.FormsDesigner
 				appDomainHost.DesignSurfaceLoaded -= new LoadedEventHandlerProxy(DesignerLoaded);
 				appDomainHost.DesignSurfaceFlushed -= new EventHandlerProxy(DesignerFlushed);
 				appDomainHost.DesignSurfaceUnloading -= new EventHandlerProxy(DesignerUnloading);
-				
-//				appDomainHost.ComponentAdded   -= new ComponentEventHandlerProxy(ComponentListChanged);
-//				appDomainHost.ComponentRemoved -= new ComponentEventHandlerProxy(ComponentListChanged);
-//				appDomainHost.ComponentRename  -= new ComponentRenameEventHandlerProxy(ComponentListChanged);
 				
 				appDomainHost.SelectionChanged -= new EventHandlerProxy(SelectionChangedHandler);
 				
