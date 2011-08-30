@@ -268,9 +268,10 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		CustomWindowsFormsHost WrapInCustomHost(Control control)
+		CustomWindowsFormsHost WrapInCustomHost(Control control, bool enableFontInheritance = true)
 		{
 			var host = new CustomWindowsFormsHost(appDomain);
+			host.EnableFontInheritance = enableFontInheritance;
 			host.Child = control;
 			return host;
 		}
@@ -594,13 +595,12 @@ namespace ICSharpCode.FormsDesigner
 			if (e.HasSucceeded) {
 				// Display the designer on the view content
 				bool savedIsDirty = this.DesignerCodeFile.IsDirty;
-				CustomWindowsFormsHost designView = WrapInCustomHost(appDomainHost.DesignSurfaceView);
 				
-//				designView.BackColor = Color.White;
-//				designView.RightToLeft = RightToLeft.No;
-				// Make sure auto-scaling is based on the correct font.
+				// enableFontInheritance: Make sure auto-scaling is based on the correct font.
 				// This is required on Vista, I don't know why it works correctly in XP
-//				designView.Font = System.Windows.Forms.Control.DefaultFont;
+				CustomWindowsFormsHost designView = WrapInCustomHost(appDomainHost.DesignSurfaceView, enableFontInheritance: false);
+				
+
 				
 				this.UserContent = designView;
 				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + appDomainHost.DesignSurfaceName);

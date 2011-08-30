@@ -375,9 +375,17 @@ namespace ICSharpCode.FormsDesigner
 			designSurface.Flush();
 		}
 		
+		bool isDesignSurfaceViewInitialized = false;
+		
 		public Control DesignSurfaceView {
 			get {
-				return (Control)designSurface.View;
+				var designView = (Control)designSurface.View;
+				if (!isDesignSurfaceViewInitialized) {
+					designView.BackColor = Color.White;
+					designView.RightToLeft = RightToLeft.No;
+					isDesignSurfaceViewInitialized = true;
+				}
+				return designView;
 			}
 		}
 		
