@@ -66,6 +66,19 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
+		bool enableChangeMarkerMargin = true;
+		
+		[DefaultValue(true)]
+		public bool EnableChangeMarkerMargin {
+			get { return enableChangeMarkerMargin; }
+			set {
+				if (enableChangeMarkerMargin != value) {
+					enableChangeMarkerMargin = value;
+					OnPropertyChanged("EnableChangeMarkerMargin");
+				}
+			}
+		}
+		
 		bool wordWrap;
 		
 		[DefaultValue(false)]

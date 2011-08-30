@@ -83,6 +83,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnSourceInitialized(e);
 			HwndSource.FromHwnd(this.MainWin32Window.Handle).AddHook(SingleInstanceHelper.WndProc);
+			// validate after PresentationSource is initialized
+			Rect bounds = new Rect(Left, Top, Width, Height);
+			bounds = FormLocationHelper.Validate(bounds.TransformToDevice(this).ToSystemDrawing()).ToWpf().TransformFromDevice(this);
+			this.Left = bounds.Left;
+			this.Top = bounds.Top;
+			this.Width = bounds.Width;
+			this.Height = bounds.Height;
 		}
 		
 		public void Initialize()
@@ -555,7 +562,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void SetMemento(Properties memento)
 		{
 			Rect bounds = memento.Get("Bounds", new Rect(10, 10, 750, 550));
-			bounds = FormLocationHelper.Validate(bounds);
+			// bounds are validated after PresentationSource is initialized (see OnSourceInitialized)
 			this.Left = bounds.Left;
 			this.Top = bounds.Top;
 			this.Width = bounds.Width;

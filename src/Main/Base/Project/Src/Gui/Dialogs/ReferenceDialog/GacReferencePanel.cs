@@ -153,6 +153,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 
 		void searchTask_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
+			if (this.IsDisposed) {
+				// avoid crash when dialog is closed before search is completed
+				return;
+			}
 			searchButton.Text = "Search"; this.toolTip.SetToolTip(searchButton, searchButton.Text);
 			filterTextBox.ReadOnly = false;
 			if (resultList != null && resultList.Count > 0) {

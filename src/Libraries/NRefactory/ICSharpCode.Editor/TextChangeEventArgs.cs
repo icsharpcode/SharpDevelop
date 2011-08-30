@@ -39,7 +39,7 @@ namespace ICSharpCode.Editor
 		}
 		
 		/// <summary>
-		/// The text that was inserted.
+		/// The text that was removed.
 		/// </summary>
 		public string RemovedText {
 			get { return removedText; }

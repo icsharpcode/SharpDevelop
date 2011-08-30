@@ -172,7 +172,14 @@ namespace ICSharpCode.VBNetBinding
 		
 		bool? GetValue(string name, bool defaultVal)
 		{
-			string val = GetEvaluatedProperty(name);
+			string val;
+			try {
+				val = GetEvaluatedProperty(name);
+			} catch (ObjectDisposedException) {
+				// This can happen when the project is disposed but the resolver still tries
+				// to access Option Infer (or similar).
+				val = null;
+			}
 			
 			if (val == null)
 				return defaultVal;

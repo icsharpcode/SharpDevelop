@@ -185,6 +185,4 @@ namespace ICSharpCode.GitAddIn
 			watcher.ReleaseWatch(HandleChanges);
 		}
 	}
-	
-
 }

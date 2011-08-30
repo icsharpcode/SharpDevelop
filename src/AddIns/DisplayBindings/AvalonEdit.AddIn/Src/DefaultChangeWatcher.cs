@@ -25,7 +25,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		IDocument baseDocument;
 		IDocumentVersionProvider usedProvider;
 		IDisposable watcher;
-		FileName fileName;
+		FileName currentFileName;
 		
 		public event EventHandler ChangeOccurred;
 		
@@ -43,36 +43,38 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void Initialize(IDocument document, FileName fileName)
 		{
-			if (changeList != null && changeList.Any())
-				return;
-			
-			this.document = document;
-			this.fileName = fileName;
-			this.textDocument = (TextDocument)document.GetService(typeof(TextDocument));
-			this.changeList = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
-			
-			InitializeBaseDocument();
-			
-			if (usedProvider != null) {
-				watcher = usedProvider.WatchBaseVersionChanges(fileName, HandleBaseVersionChanges);
+			if (this.document == null) {
+				this.document = document;
+				this.textDocument = (TextDocument)document.GetService(typeof(TextDocument));
+				this.changeList = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
 			}
 			
-			SetupInitialFileState(false);
 			
-			this.textDocument.LineTrackers.Add(this);
-			this.textDocument.UndoStack.PropertyChanged += UndoStackPropertyChanged;
+			InitializeBaseDocument(fileName);
+			if (watcher != null)
+				watcher.Dispose();
+			
+			if (usedProvider != null)
+				watcher = usedProvider.WatchBaseVersionChanges(fileName, HandleBaseVersionChanges);
+			
+			SetupInitialFileState(fileName != currentFileName);
+			currentFileName = fileName;
+			
+			if (!this.textDocument.LineTrackers.Contains(this)) {
+				this.textDocument.LineTrackers.Add(this);
+				this.textDocument.UndoStack.PropertyChanged += UndoStackPropertyChanged;
+			}
 		}
 		
 		void HandleBaseVersionChanges(object sender, EventArgs e)
 		{
-			ICSharpCode.Core.LoggingService.Info("HandleBaseVersionChanges");
-			InitializeBaseDocument();
+			InitializeBaseDocument(currentFileName);
 			SetupInitialFileState(true);
 		}
 		
-		void InitializeBaseDocument()
+		void InitializeBaseDocument(FileName fileName)
 		{
-			Stream baseFileStream = GetBaseVersion();
+			Stream baseFileStream = GetBaseVersion(fileName);
 			if (baseFileStream != null) {
 				// ReadAll() is taking care of closing the stream
 				baseDocument = new ReadOnlyDocument(ReadAll(baseFileStream));
@@ -140,7 +142,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return FileReader.ReadFileContent(memory, ParserService.DefaultFileEncoding);
 		}
 		
-		Stream GetBaseVersion()
+		Stream GetBaseVersion(FileName fileName)
 		{
 			foreach (IDocumentVersionProvider provider in VersioningServices.Instance.DocumentVersionProviders) {
 				var result = provider.OpenBaseVersion(fileName);

@@ -109,6 +109,12 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 				add    { avalonEditOptions.PropertyChanged += value; }
 				remove { avalonEditOptions.PropertyChanged -= value; }
 			}
+			
+			public string FontFamily {
+				get {
+					return "Consolas";
+				}
+			}
 		}
 		
 		public virtual ICSharpCode.Core.FileName FileName {
