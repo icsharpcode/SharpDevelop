@@ -28,6 +28,7 @@ namespace ICSharpCode.FormsDesigner
 		SharpDevelopDesignerOptions DesignerOptions { get; }
 		
 		void MakeDirty();
+		void InvalidateRequerySuggested();
 	}
 	
 	public enum ResourceType

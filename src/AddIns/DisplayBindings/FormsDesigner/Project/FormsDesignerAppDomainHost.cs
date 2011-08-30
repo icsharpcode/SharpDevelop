@@ -1,8 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.AddIn.Contract;
-using System.AddIn.Pipeline;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
@@ -12,7 +10,6 @@ using System.Reflection;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Windows.Forms;
-using System.Windows.Forms.Integration;
 
 using ICSharpCode.FormsDesigner.Gui;
 using ICSharpCode.FormsDesigner.Services;
@@ -217,6 +214,27 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		bool shouldUpdateSelectableObjects = false;
+		
+		void TransactionClose(object sender, DesignerTransactionCloseEventArgs e)
+		{
+			if (shouldUpdateSelectableObjects) {
+				// update the property pad after the transaction is *really* finished
+				// (including updating the selection)
+				DesignSurfaceView.BeginInvoke((Action)UpdatePropertyPad);
+				shouldUpdateSelectableObjects = false;
+			}
+		}
+		
+		void ComponentListChanged(object sender, EventArgs e)
+		{
+			LoggingService.Debug("Forms designer: Component added/removed/renamed, Loading=" + IsLoaderLoading + ", Unloading=" + this.unloading);
+			if (!IsLoaderLoading && !unloading) {
+				shouldUpdateSelectableObjects = true;
+				properties.FormsDesignerProxy.MakeDirty();
+			}
+		}
+		
 		void InitializeEvents()
 		{
 			designSurface.Loading += designSurface_Loading;
@@ -228,9 +246,9 @@ namespace ICSharpCode.FormsDesigner
 			IComponentChangeService componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
 			if (componentChangeService != null) {
 				componentChangeService.ComponentChanged += ComponentChanged;
-				componentChangeService.ComponentAdded   += componentChangeService_ComponentAdded;
-				componentChangeService.ComponentRemoved += componentChangeService_ComponentRemoved;
-				componentChangeService.ComponentRename  += componentChangeService_ComponentRename;
+				componentChangeService.ComponentAdded   += ComponentListChanged;
+				componentChangeService.ComponentRemoved += ComponentListChanged;
+				componentChangeService.ComponentRename  += ComponentListChanged;
 			}
 			
 			ISelectionService selectionService = GetService(typeof(ISelectionService)) as ISelectionService;
@@ -238,7 +256,7 @@ namespace ICSharpCode.FormsDesigner
 				selectionService.SelectionChanged += selectionService_SelectionChanged;
 			}
 			
-			Host.TransactionClosed += Host_TransactionClosed;
+			Host.TransactionClosed += TransactionClose;
 		}
 
 		void selectionService_SelectionChanged(object sender, EventArgs e)
@@ -357,16 +375,9 @@ namespace ICSharpCode.FormsDesigner
 			designSurface.Flush();
 		}
 		
-		WindowsFormsHost host;
-		
-		public INativeHandleContract DesignSurfaceView {
+		public Control DesignSurfaceView {
 			get {
-				if (host == null) {
-					host = new WindowsFormsHost();
-					host.Child = (Control)designSurface.View;
-				}
-				
-				return FrameworkElementAdapters.ViewToContractAdapter(host);
+				return (Control)designSurface.View;
 			}
 		}
 		
@@ -375,13 +386,32 @@ namespace ICSharpCode.FormsDesigner
 			designSurface.Dispose();
 		}
 		
-		public INativeHandleContract CreatePropertyGrid()
+		public PropertyGrid CreatePropertyGrid()
 		{
 			var grid = new PropertyGrid() { Dock = DockStyle.Fill };
-			var host = new WindowsFormsHost();
-			host.Child = grid;
 			
-			return FrameworkElementAdapters.ViewToContractAdapter(host);
+			return grid;
+		}
+		
+		public void UpdatePropertyPad()
+		{
+			if (HasDesignerHost) {
+//				propertyContainer.Host = appDomainHost.Host;
+//				propertyContainer.SelectableObjects = appDomainHost.Host.Container.Components;
+//				ISelectionService selectionService = (ISelectionService)appDomainHost.GetService(typeof(ISelectionService));
+//				if (selectionService != null) {
+//					UpdatePropertyPadSelection(selectionService);
+//				}
+			}
+		}
+		
+		public void UpdatePropertyPadSelection(ISelectionService selectionService)
+		{
+//			ICollection selection = selectionService.GetSelectedComponents();
+//			object[] selArray = new object[selection.Count];
+//			selection.CopyTo(selArray, 0);
+//			propertyContainer.SelectedObjects = selArray;
+			properties.FormsDesignerProxy.InvalidateRequerySuggested();
 		}
 		
 		public IFormsDesignerLoggingService LoggingService {
@@ -443,6 +473,16 @@ namespace ICSharpCode.FormsDesigner
 			var undoEngine = new FormsDesignerUndoEngine(this);
 			container.AddService(typeof(UndoEngine), undoEngine);
 			container.AddService(typeof(IFormsDesignerUndoEngine), new FormsDesignerUndoEngineProxy(undoEngine));
+		}
+		
+		public void UseSDAssembly(string name, string location)
+		{
+			AppDomain.CurrentDomain.AssemblyResolve += delegate(object sender, ResolveEventArgs args) {
+				LoggingService.DebugFormatted("Looking for: {0} in {1} {2}", args.Name, name, location);
+				if (args.Name == name)
+					return Assembly.LoadFile(location);
+				return null;
+			};
 		}
 	}
 	

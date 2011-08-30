@@ -26,6 +26,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -169,6 +170,7 @@ namespace ICSharpCode.FormsDesigner
 			appDomain = null;
 			appDomainHost = FormsDesignerAppDomainHost.CreateFormsDesignerInAppDomain(ref appDomain, creationProperties);
 			toolbox = new ToolboxProvider(appDomainHost);
+			appDomainHost.UseSDAssembly(typeof(CustomWindowsFormsHost).Assembly.FullName, typeof(CustomWindowsFormsHost).Assembly.Location);
 		}
 		
 		bool inMasterLoadOperation;
@@ -179,7 +181,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			LoadAppDomain();
 			
-			propertyContainer.PropertyGridReplacementContent = FrameworkElementAdapters.ContractToViewAdapter(appDomainHost.CreatePropertyGrid());
+			propertyContainer.PropertyGridReplacementContent = WrapInCustomHost(appDomainHost.CreatePropertyGrid());
 			// TODO : init PropertyGrid
 			
 			if (inMasterLoadOperation) {
@@ -266,6 +268,13 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		CustomWindowsFormsHost WrapInCustomHost(Control control)
+		{
+			var host = new CustomWindowsFormsHost(appDomain);
+			host.Child = control;
+			return host;
+		}
+		
 		protected override void SaveInternal(OpenedFile file, System.IO.Stream stream)
 		{
 			LoggingService.Debug("Forms designer: Save " + file.FileName);
@@ -287,7 +296,7 @@ namespace ICSharpCode.FormsDesigner
 		#region Proxies
 		class ViewContentIFormsDesignerProxy : MarshalByRefObject, IFormsDesigner
 		{
-			FormsDesignerViewContent vc;
+			IFormsDesigner vc;
 			
 			public ViewContentIFormsDesignerProxy(FormsDesignerViewContent vc)
 			{
@@ -296,7 +305,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			public IDesignerGenerator Generator {
 				get {
-					return vc.generator;
+					return vc.Generator;
 				}
 			}
 			
@@ -329,6 +338,11 @@ namespace ICSharpCode.FormsDesigner
 			public void MakeDirty()
 			{
 				vc.MakeDirty();
+			}
+			
+			public void InvalidateRequerySuggested()
+			{
+				vc.InvalidateRequerySuggested();
 			}
 		}
 		#endregion
@@ -364,10 +378,10 @@ namespace ICSharpCode.FormsDesigner
 			
 			undoEngine = (IFormsDesignerUndoEngine)appDomainHost.GetService(typeof(IFormsDesignerUndoEngine));
 			
-			appDomainHost.ComponentAdded   += new ComponentEventHandlerProxy(ComponentListChanged);
-			appDomainHost.ComponentRemoved += new ComponentEventHandlerProxy(ComponentListChanged);
-			appDomainHost.ComponentRename  += new ComponentRenameEventHandlerProxy(ComponentListChanged);
-			appDomainHost.HostTransactionClosed += new DesignerTransactionCloseEventHandlerProxy(TransactionClose);
+//			appDomainHost.ComponentAdded   += new ComponentEventHandlerProxy(ComponentListChanged);
+//			appDomainHost.ComponentRemoved += new ComponentEventHandlerProxy(ComponentListChanged);
+//			appDomainHost.ComponentRename  += new ComponentRenameEventHandlerProxy(ComponentListChanged);
+//			appDomainHost.HostTransactionClosed += new DesignerTransactionCloseEventHandlerProxy(TransactionClose);
 			
 			appDomainHost.SelectionChanged += new EventHandlerProxy(SelectionChangedHandler);
 			
@@ -376,7 +390,7 @@ namespace ICSharpCode.FormsDesigner
 				ShowTabOrder();
 			}
 			
-			UpdatePropertyPad();
+			appDomainHost.UpdatePropertyPad();
 			
 			hasUnmergedChanges = false;
 			
@@ -431,31 +445,14 @@ namespace ICSharpCode.FormsDesigner
 			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
 		
+		void IFormsDesigner.InvalidateRequerySuggested()
+		{
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+		}
+		
 		void IFormsDesigner.MakeDirty()
 		{
 			MakeDirty();
-		}
-		
-		bool shouldUpdateSelectableObjects = false;
-		
-		void TransactionClose(object sender, DesignerTransactionCloseEventArgs e)
-		{
-			if (shouldUpdateSelectableObjects) {
-				// update the property pad after the transaction is *really* finished
-				// (including updating the selection)
-				WorkbenchSingleton.SafeThreadAsyncCall(UpdatePropertyPad);
-				shouldUpdateSelectableObjects = false;
-			}
-		}
-		
-		void ComponentListChanged(object sender, EventArgs e)
-		{
-			bool loading = appDomainHost.IsLoaderLoading;
-			LoggingService.Debug("Forms designer: Component added/removed/renamed, Loading=" + loading + ", Unloading=" + this.unloading);
-			if (!loading && !unloading) {
-				shouldUpdateSelectableObjects = true;
-				this.MakeDirty();
-			}
 		}
 		
 		void UnloadDesigner()
@@ -475,13 +472,9 @@ namespace ICSharpCode.FormsDesigner
 				appDomainHost.DesignSurfaceFlushed -= new EventHandlerProxy(DesignerFlushed);
 				appDomainHost.DesignSurfaceUnloading -= new EventHandlerProxy(DesignerUnloading);
 				
-				appDomainHost.ComponentAdded   -= new ComponentEventHandlerProxy(ComponentListChanged);
-				appDomainHost.ComponentRemoved -= new ComponentEventHandlerProxy(ComponentListChanged);
-				appDomainHost.ComponentRename  -= new ComponentRenameEventHandlerProxy(ComponentListChanged);
-				
-				if (appDomainHost.HasDesignerHost) {
-					appDomainHost.HostTransactionClosed -= new DesignerTransactionCloseEventHandlerProxy(TransactionClose);
-				}
+//				appDomainHost.ComponentAdded   -= new ComponentEventHandlerProxy(ComponentListChanged);
+//				appDomainHost.ComponentRemoved -= new ComponentEventHandlerProxy(ComponentListChanged);
+//				appDomainHost.ComponentRename  -= new ComponentRenameEventHandlerProxy(ComponentListChanged);
 				
 				appDomainHost.SelectionChanged -= new EventHandlerProxy(SelectionChangedHandler);
 				
@@ -579,33 +572,29 @@ namespace ICSharpCode.FormsDesigner
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader loading...");
 			this.reloadPending = false;
-			this.unloading = false;
 			this.UserContent = this.pleaseWaitLabel;
 		}
 		
 		void DesignerUnloading(object sender, EventArgs e)
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader unloading...");
-			this.unloading = true;
 			if (!this.disposing) {
 				this.UserContent = this.pleaseWaitLabel;
 			}
 		}
 		
 		bool reloadPending;
-		bool unloading;
 		
 		void DesignerLoaded(object sender, LoadedEventArgsProxy e)
 		{
 			// This method is called when the designer has loaded.
 			LoggingService.Debug("Forms designer: DesignerLoader loaded, HasSucceeded=" + e.HasSucceeded.ToString());
 			this.reloadPending = false;
-			this.unloading = false;
 			
 			if (e.HasSucceeded) {
 				// Display the designer on the view content
 				bool savedIsDirty = this.DesignerCodeFile.IsDirty;
-				System.Windows.FrameworkElement designView = FrameworkElementAdapters.ContractToViewAdapter(appDomainHost.DesignSurfaceView);
+				CustomWindowsFormsHost designView = WrapInCustomHost(appDomainHost.DesignSurfaceView);
 				
 //				designView.BackColor = Color.White;
 //				designView.RightToLeft = RightToLeft.No;
@@ -617,7 +606,7 @@ namespace ICSharpCode.FormsDesigner
 				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + appDomainHost.DesignSurfaceName);
 				appDomainHost.ActivateDesignSurface();
 				this.DesignerCodeFile.IsDirty = savedIsDirty;
-				this.UpdatePropertyPad();
+				appDomainHost.UpdatePropertyPad();
 			} else {
 				// This method can not only be called during initialization,
 				// but also when the designer reloads itself because of
@@ -748,28 +737,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		void SelectionChangedHandler(object sender, EventArgs args)
 		{
-			UpdatePropertyPadSelection((ISelectionService)sender);
-		}
-		
-		void UpdatePropertyPadSelection(ISelectionService selectionService)
-		{
-			ICollection selection = selectionService.GetSelectedComponents();
-			object[] selArray = new object[selection.Count];
-			selection.CopyTo(selArray, 0);
-			propertyContainer.SelectedObjects = selArray;
-			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
-		}
-		
-		protected void UpdatePropertyPad()
-		{
-			if (appDomainHost.HasDesignerHost) {
-//				propertyContainer.Host = appDomainHost.Host;
-//				propertyContainer.SelectableObjects = appDomainHost.Host.Container.Components;
-//				ISelectionService selectionService = (ISelectionService)appDomainHost.GetService(typeof(ISelectionService));
-//				if (selectionService != null) {
-//					UpdatePropertyPadSelection(selectionService);
-//				}
-			}
+			appDomainHost.UpdatePropertyPadSelection((ISelectionService)sender);
 		}
 		
 		#region IUndoHandler implementation
@@ -929,7 +897,7 @@ namespace ICSharpCode.FormsDesigner
 				this.Load(this.DesignerCodeFile, ms);
 			}
 			
-			UpdatePropertyPad();
+			appDomainHost.UpdatePropertyPad();
 		}
 		
 		public virtual object ToolsContent {
