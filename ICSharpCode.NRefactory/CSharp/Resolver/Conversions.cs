@@ -86,16 +86,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public static Conversion UserDefinedImplicitConversion(IMethod operatorMethod, bool isLifted)
 		{
+			if (operatorMethod == null)
+				throw new ArgumentNullException("operatorMethod");
 			return new Conversion(isLifted ? liftedUserDefinedImplicitConversionKind : userDefinedImplicitConversionKind, operatorMethod);
 		}
 		
 		public static Conversion UserDefinedExplicitConversion(IMethod operatorMethod, bool isLifted)
 		{
+			if (operatorMethod == null)
+				throw new ArgumentNullException("operatorMethod");
 			return new Conversion(isLifted ? liftedUserDefinedExplicitConversionKind : userDefinedExplicitConversionKind, operatorMethod);
 		}
 		
 		public static Conversion MethodGroupConversion(IMethod chosenMethod)
 		{
+			if (chosenMethod == null)
+				throw new ArgumentNullException("chosenMethod");
 			return new Conversion(methodGroupConversionKind, chosenMethod);
 		}
 		

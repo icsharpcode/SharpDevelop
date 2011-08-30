@@ -102,6 +102,7 @@
     <Compile Include="CSharp\Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="CSharp\Resolver\CompositeResolveVisitorNavigator.cs" />
     <Compile Include="CSharp\Resolver\DetectSkippableNodesNavigator.cs" />
+    <Compile Include="CSharp\Resolver\FindReferencedEntities.cs" />
     <Compile Include="CSharp\Resolver\FindReferences.cs" />
     <Compile Include="CSharp\Resolver\Log.cs" />
     <Compile Include="CSharp\Resolver\OperatorResolveResult.cs" />

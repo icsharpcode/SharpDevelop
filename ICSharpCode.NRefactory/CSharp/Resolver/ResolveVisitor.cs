@@ -359,6 +359,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public ResolveResult GetResolveResult(AstNode node)
 		{
+			if (IsUnresolvableNode(node))
+				return null;
+			
 			MergeUndecidedLambdas();
 			ResolveResult result;
 			if (resolveResultCache.TryGetValue(node, out result))
@@ -379,6 +382,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				});
 			
 			MergeUndecidedLambdas();
+			if (resolveResultCache.TryGetValue(node, out result))
+				return result;
+			else
+				return null;
+		}
+		
+		/// <summary>
+		/// Gets whether the specified node is unresolvable.
+		/// </summary>
+		public static bool IsUnresolvableNode(AstNode node)
+		{
+			return (node.NodeType == NodeType.Whitespace || node is ArraySpecifier || node is NamedArgumentExpression);
+		}
+		
+		/// <summary>
+		/// Gets the resolve result for the specified node.
+		/// If the node was not resolved by the navigator, this method will return null.
+		/// </summary>
+		public ResolveResult GetResolveResultIfResolved(AstNode node)
+		{
+			MergeUndecidedLambdas();
+			ResolveResult result;
 			if (resolveResultCache.TryGetValue(node, out result))
 				return result;
 			else
@@ -577,7 +602,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (aie != null && arrayType != null) {
 					StoreState(aie, resolver.Clone());
 					List<Expression> initializerElements = new List<Expression>();
-					UnpackArrayInitializer(initializerElements, aie, arrayType.Dimensions);
+					UnpackArrayInitializer(initializerElements, aie, arrayType.Dimensions, true);
 					ResolveResult[] initializerElementResults = new ResolveResult[initializerElements.Count];
 					for (int i = 0; i < initializerElementResults.Length; i++) {
 						initializerElementResults[i] = Resolve(initializerElements[i]);
@@ -916,11 +941,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				initializerElementResults = null;
 			} else {
 				initializerElements = new List<Expression>();
-				UnpackArrayInitializer(initializerElements, arrayCreateExpression.Initializer, dimensions);
+				UnpackArrayInitializer(initializerElements, arrayCreateExpression.Initializer, dimensions, true);
 				initializerElementResults = new ResolveResult[initializerElements.Count];
 				for (int i = 0; i < initializerElementResults.Length; i++) {
 					initializerElementResults[i] = Resolve(initializerElements[i]);
 				}
+				StoreResult(arrayCreateExpression.Initializer, voidResult);
 			}
 			
 			ArrayCreateResolveResult acrr;
@@ -936,16 +962,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return acrr;
 		}
 		
-		void UnpackArrayInitializer(List<Expression> elementList, ArrayInitializerExpression initializer, int dimensions)
+		void UnpackArrayInitializer(List<Expression> elementList, ArrayInitializerExpression initializer, int dimensions, bool resolveNestedInitializesToVoid)
 		{
 			Debug.Assert(dimensions >= 1);
 			if (dimensions > 1) {
 				foreach (var node in initializer.Elements) {
 					ArrayInitializerExpression aie = node as ArrayInitializerExpression;
-					if (aie != null)
-						UnpackArrayInitializer(elementList, aie, dimensions - 1);
-					else
+					if (aie != null) {
+						if (resolveNestedInitializesToVoid)
+							StoreResult(aie, voidResult);
+						UnpackArrayInitializer(elementList, aie, dimensions - 1, resolveNestedInitializesToVoid);
+					} else {
 						elementList.Add(node);
+					}
 				}
 			} else {
 				foreach (var expr in initializer.Elements)
@@ -1215,6 +1244,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			resolver.PopInitializerType();
+			StoreResult(initializer, voidResult);
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
@@ -1672,7 +1702,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					visitor.ResetContext(
 						storedContext,
 						delegate {
+							var oldNavigator = visitor.navigator;
+							visitor.navigator = new ConstantModeResolveVisitorNavigator(ResolveVisitorNavigationMode.Resolve, oldNavigator);
 							visitor.AnalyzeLambda(body, out success, out isValidAsVoidMethod, out inferredReturnType, out returnExpressions, out returnValues);
+							visitor.navigator = oldNavigator;
 						});
 					Log.Unindent();
 					Log.WriteLine("Finished analyzing " + this.LambdaExpression);
@@ -1857,7 +1890,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (ok)
 						return h;
 				}
-				ResolveVisitor visitor = new ResolveVisitor(storedContext.Clone(), parsedFile);
+				var resolveAll = new ConstantModeResolveVisitorNavigator(ResolveVisitorNavigationMode.Resolve, null);
+				ResolveVisitor visitor = new ResolveVisitor(storedContext.Clone(), parsedFile, resolveAll);
 				var newHypothesis = new LambdaTypeHypothesis(this, parameterTypes, visitor, lambda != null ? lambda.Parameters : null);
 				hypotheses.Add(newHypothesis);
 				return newHypothesis;
@@ -2050,7 +2084,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		void MergeUndecidedLambdas()
 		{
-			if (undecidedLambdas == null)
+			if (undecidedLambdas == null || undecidedLambdas.Count == 0)
 				return;
 			Log.WriteLine("MergeUndecidedLambdas()...");
 			Log.Indent();
@@ -2097,9 +2131,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region AnalyzeLambda
 		void AnalyzeLambda(AstNode body, out bool success, out bool isValidAsVoidMethod, out IType inferredReturnType, out IList<Expression> returnExpressions, out IList<ResolveResult> returnValues)
 		{
-			var oldNavigator = this.navigator;
-			this.navigator = new ConstantModeResolveVisitorNavigator(ResolveVisitorNavigationMode.Resolve, oldNavigator);
-			
 			Expression expr = body as Expression;
 			if (expr != null) {
 				isValidAsVoidMethod = ExpressionPermittedAsStatement(expr);
@@ -2133,7 +2164,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// TODO: check for compiler errors within the lambda body
 			
 			success = true;
-			this.navigator = oldNavigator;
 		}
 		
 		static bool ExpressionPermittedAsStatement(Expression expr)
@@ -2679,7 +2709,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			ResolveResult target;
 			if (memberType.IsDoubleColon && memberType.Target is SimpleType) {
-				target = resolver.ResolveAlias(((SimpleType)memberType.Target).Identifier);
+				SimpleType t = (SimpleType)memberType.Target;
+				target = resolver.ResolveAlias(t.Identifier);
+				StoreResult(t, target);
 			} else {
 				target = Resolve(memberType.Target);
 			}
