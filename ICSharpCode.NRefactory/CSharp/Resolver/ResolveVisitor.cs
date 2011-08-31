@@ -374,14 +374,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolveResultCache.TryGetValue(node, out result))
 				return result;
 			
+			bool needResolveParent = (node.NodeType == NodeType.Token || IsVar(node));
+			
+			AstNode nodeToResolve = node;
+			if (needResolveParent) {
+				nodeToResolve = node.Parent;
+				if (resolveResultCache.ContainsKey(nodeToResolve))
+					return null;
+			}
+			
 			AstNode parent;
-			CSharpResolver storedResolver = GetPreviouslyScannedContext(node, out parent);
+			CSharpResolver storedResolver = GetPreviouslyScannedContext(nodeToResolve, out parent);
 			ResetContext(
 				storedResolver.Clone(),
 				delegate {
-					navigator = new NodeListResolveVisitorNavigator(node);
-					if (parent == node) {
-						Resolve(node);
+					navigator = new NodeListResolveVisitorNavigator(nodeToResolve);
+					if (parent == nodeToResolve) {
+						Resolve(nodeToResolve);
 					} else {
 						Debug.Assert(!resolverEnabled);
 						parent.AcceptVisitor(this, null);
@@ -2343,6 +2352,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ITypeReference type;
 				if (needResolve) {
 					type = Resolve(vi.Initializer).Type;
+					if (!resolveResultCache.ContainsKey(variableDeclarationStatement.Type)) {
+						StoreResult(variableDeclarationStatement.Type, new TypeResolveResult(type.Resolve(resolver.Context)));
+					}
 				} else {
 					Scan(vi.Initializer);
 					type = MakeVarTypeReference(vi.Initializer, false);
@@ -2528,7 +2540,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Local Variable Type Inference
-		static bool IsVar(AstType returnType)
+		static bool IsVar(AstNode returnType)
 		{
 			SimpleType st = returnType as SimpleType;
 			return st != null && st.Identifier == "var" && st.TypeArguments.Count == 0;

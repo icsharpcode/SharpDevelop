@@ -340,9 +340,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				field.IsReadOnly = (modifiers & Modifiers.Readonly) != 0;
 				
 				field.ReturnType = ConvertType(fieldDeclaration.ReturnType);
-				if ((modifiers & Modifiers.Fixed) != 0) {
-					field.ReturnType = PointerTypeReference.Create(field.ReturnType);
-				}
 				
 				if ((modifiers & Modifiers.Const) != 0) {
 					field.ConstantValue = ConvertConstantValue(field.ReturnType, vi.Initializer);
@@ -354,6 +351,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			return isSingleField ? field : null;
+		}
+		
+		public override IEntity VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration, object data)
+		{
+			// TODO: add support for fixed fields
+			return base.VisitFixedFieldDeclaration(fixedFieldDeclaration, data);
 		}
 		
 		public override IEntity VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration, object data)
