@@ -68,5 +68,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			return string.Format("[LocalResolveResult {0}]", variable);
 		}
+		
+		public override DomRegion GetDefinitionRegion()
+		{
+			return variable.Region;
+		}
 	}
 }

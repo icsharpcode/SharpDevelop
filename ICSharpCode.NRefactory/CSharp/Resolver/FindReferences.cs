@@ -31,21 +31,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public class FindReferences
 	{
-		CancellationToken cancellationToken;
-		
 		/// <summary>
 		/// Callback that is invoked whenever a reference is found.
 		/// </summary>
 		public event Action<AstNode, ResolveResult> ReferenceFound;
 		
-		#region Constructor
-		public FindReferences(CancellationToken cancellationToken = default(CancellationToken))
-		{
-			this.cancellationToken = cancellationToken;
-		}
-		#endregion
-		
 		#region Properties
+		/// <summary>
+		/// Gets/Sets the cancellation token.
+		/// </summary>
+		public CancellationToken CancellationToken { get; set; }
+		
 		/// <summary>
 		/// Gets/Sets whether to find type references even if an alias is being used.
 		/// </summary>
@@ -224,7 +220,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets the file names that possibly contain references to the element being searched for.
 		/// </summary>
-		public IEnumerable<string> GetInterestingFileNames(SearchScope searchScope, ITypeResolveContext context)
+		public IList<string> GetInterestingFileNames(SearchScope searchScope, IEnumerable<ITypeDefinition> allTypes, ITypeResolveContext context)
 		{
 			IEnumerable<ITypeDefinition> interestingTypes;
 			if (searchScope.TopLevelTypeDefinition != null) {
@@ -234,41 +230,41 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						interestingTypes = new [] { searchScope.TopLevelTypeDefinition.GetDefinition() };
 						break;
 					case Accessibility.Protected:
-						interestingTypes = GetInterestingTypesProtected(context, searchScope.TopLevelTypeDefinition);
+						interestingTypes = GetInterestingTypesProtected(allTypes, context, searchScope.TopLevelTypeDefinition);
 						break;
 					case Accessibility.Internal:
-						interestingTypes = GetInterestingTypesInternal(context, searchScope.TopLevelTypeDefinition.ProjectContent);
+						interestingTypes = GetInterestingTypesInternal(allTypes, context, searchScope.TopLevelTypeDefinition.ProjectContent);
 						break;
 					case Accessibility.ProtectedAndInternal:
-						interestingTypes = GetInterestingTypesProtected(context, searchScope.TopLevelTypeDefinition)
-							.Intersect(GetInterestingTypesInternal(context, searchScope.TopLevelTypeDefinition.ProjectContent));
+						interestingTypes = GetInterestingTypesProtected(allTypes, context, searchScope.TopLevelTypeDefinition)
+							.Intersect(GetInterestingTypesInternal(allTypes, context, searchScope.TopLevelTypeDefinition.ProjectContent));
 						break;
 					case Accessibility.ProtectedOrInternal:
-						interestingTypes = GetInterestingTypesProtected(context, searchScope.TopLevelTypeDefinition)
-							.Union(GetInterestingTypesInternal(context, searchScope.TopLevelTypeDefinition.ProjectContent));
+						interestingTypes = GetInterestingTypesProtected(allTypes, context, searchScope.TopLevelTypeDefinition)
+							.Union(GetInterestingTypesInternal(allTypes, context, searchScope.TopLevelTypeDefinition.ProjectContent));
 						break;
 					default:
-						interestingTypes = context.GetTypes();
+						interestingTypes = allTypes;
 						break;
 				}
 			} else {
-				interestingTypes = context.GetTypes();
+				interestingTypes = allTypes;
 			}
 			return (from typeDef in interestingTypes
 			        from part in typeDef.GetParts()
 			        where part.ParsedFile != null
 			        select part.ParsedFile.FileName
-			       ).Distinct(Platform.FileNameComparer);
+			       ).Distinct(Platform.FileNameComparer).ToList();
 		}
 		
-		IEnumerable<ITypeDefinition> GetInterestingTypesProtected(ITypeResolveContext context, ITypeDefinition referencedTypeDefinition)
+		IEnumerable<ITypeDefinition> GetInterestingTypesProtected(IEnumerable<ITypeDefinition> allTypes, ITypeResolveContext context, ITypeDefinition referencedTypeDefinition)
 		{
-			return referencedTypeDefinition.GetSubTypeDefinitions(context);
+			return allTypes.Where(t => t.IsDerivedFrom(referencedTypeDefinition, context));
 		}
 		
-		IEnumerable<ITypeDefinition> GetInterestingTypesInternal(ITypeResolveContext context, IProjectContent referencedProjectContent)
+		IEnumerable<ITypeDefinition> GetInterestingTypesInternal(IEnumerable<ITypeDefinition> allTypes, ITypeResolveContext context, IProjectContent referencedProjectContent)
 		{
-			return context.GetTypes().Where(t => referencedProjectContent.InternalsVisibleTo(t.ProjectContent, context));
+			return allTypes.Where(t => referencedProjectContent.InternalsVisibleTo(t.ProjectContent, context));
 		}
 		#endregion
 		
@@ -304,7 +300,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("compilationUnit");
 			if (context == null)
 				throw new ArgumentNullException("context");
-			cancellationToken.ThrowIfCancellationRequested();
+			this.CancellationToken.ThrowIfCancellationRequested();
 			if (searchScopes.Count == 0)
 				return;
 			foreach (SearchScope scope in searchScopes) {
@@ -318,7 +314,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				else
 					navigator = new CompositeResolveVisitorNavigator(searchScopes.ToArray());
 				navigator = new DetectSkippableNodesNavigator(navigator, compilationUnit);
-				CSharpResolver resolver = new CSharpResolver(ctx, cancellationToken);
+				CSharpResolver resolver = new CSharpResolver(ctx, this.CancellationToken);
 				ResolveVisitor v = new ResolveVisitor(resolver, parsedFile, navigator);
 				v.Scan(compilationUnit);
 			}
