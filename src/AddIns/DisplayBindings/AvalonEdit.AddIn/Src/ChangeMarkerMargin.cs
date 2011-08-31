@@ -38,6 +38,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (!disposed) {
 				changeWatcher.ChangeOccurred -= ChangeOccurred;
+				changeWatcher.Dispose();
 				disposed = true;
 			}
 		}
