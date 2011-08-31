@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class TypeSystemConvertVisitor : DepthFirstAstVisitor<object, IEntity>
 	{
-		readonly ParsedFile parsedFile;
+		readonly CSharpParsedFile parsedFile;
 		UsingScope usingScope;
 		DefaultTypeDefinition currentTypeDefinition;
 		DefaultMethod currentMethod;
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				throw new ArgumentNullException("pc");
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			this.parsedFile = new ParsedFile(fileName, new UsingScope(pc));
+			this.parsedFile = new CSharpParsedFile(fileName, new UsingScope(pc));
 			this.usingScope = parsedFile.RootUsingScope;
 		}
 		
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <param name="parsedFile">The parsed file to which members should be added.</param>
 		/// <param name="currentUsingScope">The current using scope.</param>
 		/// <param name="currentTypeDefinition">The current type definition.</param>
-		public TypeSystemConvertVisitor(ParsedFile parsedFile, UsingScope currentUsingScope = null, DefaultTypeDefinition currentTypeDefinition = null)
+		public TypeSystemConvertVisitor(CSharpParsedFile parsedFile, UsingScope currentUsingScope = null, DefaultTypeDefinition currentTypeDefinition = null)
 		{
 			if (parsedFile == null)
 				throw new ArgumentNullException("parsedFile");
@@ -80,13 +80,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.currentTypeDefinition = currentTypeDefinition;
 		}
 		
-		public ParsedFile Convert(AstNode node)
+		public CSharpParsedFile Convert(AstNode node)
 		{
 			node.AcceptVisitor(this, null);
 			return parsedFile;
 		}
 		
-		public ParsedFile ParsedFile {
+		public CSharpParsedFile ParsedFile {
 			get { return parsedFile; }
 		}
 		

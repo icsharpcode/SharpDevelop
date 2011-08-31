@@ -55,7 +55,7 @@ namespace OtherNS {
 		SimpleProjectContent pc;
 		ITypeResolveContext ctx;
 		ITypeDefinition baseClass, derivedClass, nestedClass, systemClass;
-		ParsedFile parsedFile;
+		CSharpParsedFile parsedFile;
 		
 		[SetUp]
 		public void SetUp()

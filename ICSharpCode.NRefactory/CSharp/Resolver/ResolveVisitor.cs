@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		SimpleNameLookupMode currentTypeLookupMode = SimpleNameLookupMode.Type;
 		/// <summary>Resolve result of the current LINQ query</summary>
 		ResolveResult currentQueryResult;
-		readonly ParsedFile parsedFile;
+		readonly CSharpParsedFile parsedFile;
 		readonly Dictionary<AstNode, ResolveResult> resolveResultCache = new Dictionary<AstNode, ResolveResult>();
 		readonly Dictionary<AstNode, CSharpResolver> resolverBeforeDict = new Dictionary<AstNode, CSharpResolver>();
 		
@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// If you pass <c>null</c>, then nothing will be resolved on the initial scan, and the resolver
 		/// will resolve additional nodes on demand (when one of the Get-methods is called).
 		/// </param>
-		public ResolveVisitor(CSharpResolver resolver, ParsedFile parsedFile, IResolveVisitorNavigator navigator = null)
+		public ResolveVisitor(CSharpResolver resolver, CSharpParsedFile parsedFile, IResolveVisitorNavigator navigator = null)
 		{
 			if (resolver == null)
 				throw new ArgumentNullException("resolver");
@@ -1798,7 +1798,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			readonly QuerySelectClause selectClause;
 			
 			readonly CSharpResolver storedContext;
-			readonly ParsedFile parsedFile;
+			readonly CSharpParsedFile parsedFile;
 			readonly List<LambdaTypeHypothesis> hypotheses = new List<LambdaTypeHypothesis>();
 			readonly List<IParameter> parameters = new List<IParameter>();
 			
