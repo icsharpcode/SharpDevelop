@@ -99,6 +99,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\NRefactory\ICSharpCode.Editor\ICSharpCode.Editor.csproj">
+      <Project>{F054A788-B591-4561-A8BA-AE745BBEB817}</Project>
+      <Name>ICSharpCode.Editor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>

@@ -67,7 +67,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CheckAssemblyFlags.cs" />
     <Compile Include="CodeConverterTests.cs" />
-    <Compile Include="CSharpExpressionFinderTests.cs" />
+    <Compile Include="CSharpAmbienceTests.cs" />
     <Compile Include="ExceptionClassOverridesTestFixture.cs" />
     <Compile Include="GenerateOverrideMethodTests.cs" />
     <Compile Include="GetElementByReflectionNameTests.cs" />
@@ -105,7 +105,6 @@
     <Compile Include="Utils\MockTextMarker.cs" />
     <Compile Include="Utils\MockTextMarkerService.cs" />
     <Compile Include="Utils\Tests\MockAssemblyTests.cs" />
-    <Compile Include="VBExpressionFinderTests.cs" />
     <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
     <Compile Include="WebReferences\ValidWebReferenceNamespaceTests.cs" />
     <Compile Include="WebReferences\WebReferenceProjectItemsTest.cs" />
@@ -144,6 +143,10 @@
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\Test\ICSharpCode.Core.Tests.csproj">
       <Project>{AD6FAA08-D6F5-4DBA-AF85-F4DA9F40C3B5}</Project>
       <Name>ICSharpCode.Core.Tests</Name>
@@ -151,10 +154,6 @@
     <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
@@ -167,10 +166,6 @@
     <Folder Include="WebReferences" />
     <Folder Include="Templates" />
     <Folder Include="Services_Navigation" />
-    <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

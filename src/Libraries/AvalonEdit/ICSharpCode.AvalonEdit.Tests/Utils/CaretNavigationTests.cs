@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Documents;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Editor;
 using NUnit.Framework;
 
 namespace ICSharpCode.AvalonEdit.Utils
