@@ -369,6 +369,7 @@
     <Compile Include="Src\Services\RefactoringService\FindReferenceService.cs" />
     <Compile Include="Src\Services\RefactoringService\GoToClassAction.cs" />
     <Compile Include="Src\Services\RefactoringService\GoToMemberAction.cs" />
+    <Compile Include="Src\Services\RefactoringService\TypeGraphNode.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />
     <Compile Include="Src\Services\Tasks\TagComment.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />

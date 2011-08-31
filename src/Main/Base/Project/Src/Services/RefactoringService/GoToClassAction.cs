@@ -2,23 +2,23 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	/*
 	public class GoToClassAction : IContextAction
 	{
 		public string Title { get; private set; }
-		public IClass Class { get; private set; }
+		public ITypeDefinition Class { get; private set; }
 		
-		public GoToClassAction(IClass c, IAmbience ambience)
+		public GoToClassAction(ITypeDefinition c, string title)
 		{
-			if (ambience == null)
-				throw new ArgumentNullException("ambience");
 			if (c == null)
 				throw new ArgumentNullException("c");
+			if (title == null)
+				throw new ArgumentNullException("title");
 			this.Class = c;
-			this.Title = ambience.Convert(c);
+			this.Title = title;
 		}
 		
 		public void Execute()
@@ -26,5 +26,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			NavigationService.NavigateTo(this.Class);
 		}
 	}
-	*/
 }

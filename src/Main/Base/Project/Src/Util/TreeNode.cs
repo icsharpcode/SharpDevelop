@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop
 		IEnumerable<ITreeNode<TContent>> Children { get; }
 	}
 	
-	public class TreeNode<TContent> : ITreeNode<TContent>
+	sealed class TreeNode<TContent> : ITreeNode<TContent>
 	{
 		public TreeNode(TContent content)
 		{
@@ -32,6 +32,25 @@ namespace ICSharpCode.SharpDevelop
 		public override string ToString()
 		{
 			return string.Format("[TreeNode {0}]", this.Content.ToString());
+		}
+		
+		public static TreeNode<TContent> FromGraph<GraphNode>(GraphNode rootNode, Func<GraphNode, IEnumerable<GraphNode>> children, Func<GraphNode, TContent> content)
+		{
+			HashSet<GraphNode> visited = new HashSet<GraphNode>();
+			return FromGraph(visited, rootNode, children, content);
+		}
+		
+		static TreeNode<TContent> FromGraph<GraphNode>(HashSet<GraphNode> visited, GraphNode graphNode, Func<GraphNode, IEnumerable<GraphNode>> children, Func<GraphNode, TContent> content)
+		{
+			TreeNode<TContent> treeNode = new TreeNode<TContent>(content(graphNode));
+			List<TreeNode<TContent>> childList = new List<TreeNode<TContent>>();
+			foreach (GraphNode graphChild in children(graphNode)) {
+				if (visited.Add(graphChild)) { // every graph node may appear only once in the tree
+					childList.Add(FromGraph(visited, graphChild, children, content));
+				}
+			}
+			treeNode.Children = childList;
+			return treeNode;
 		}
 	}
 }

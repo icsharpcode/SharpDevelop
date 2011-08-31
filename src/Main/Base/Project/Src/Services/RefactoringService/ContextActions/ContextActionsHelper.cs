@@ -5,29 +5,33 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Refactoring;
 
-/*
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	public class ContextActionsHelper
 	{
-		public static ContextActionsPopup MakePopupWithDerivedClasses(IClass baseClass)
+		public static ContextActionsPopup MakePopupWithDerivedClasses(ITypeDefinition baseClass)
 		{
-			var derivedClassesTree = RefactoringService.FindDerivedClassesTree(baseClass);
+			var derivedClassesTree = FindReferenceService.BuildDerivedTypesGraph(baseClass).ConvertToDerivedTypeTree();
 			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
 				"${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new StringTagPair("Name", baseClass.Name)))};
-			popupViewModel.Actions = new PopupTreeViewModelBuilder().BuildTreeViewModel(derivedClassesTree);
+			popupViewModel.Actions = new PopupTreeViewModelBuilder().BuildTreeViewModel(derivedClassesTree.Children);
 			return new ContextActionsPopup { Actions = popupViewModel, Symbol = baseClass };
 		}
 		
-		public static ContextActionsPopup MakePopupWithBaseClasses(IClass @class)
+		public static ContextActionsPopup MakePopupWithBaseClasses(ITypeDefinition @class)
 		{
-			var baseClassList = @class.ClassInheritanceTree.Where(
-				baseClass => (baseClass != @class) && (baseClass.CompilationUnit != null) && (baseClass.CompilationUnit.FileName != null));
+			List<ITypeDefinition> baseClassList;
+			using (var context = ParserService.GetTypeResolveContext(@class.ProjectContent).Synchronize()) {
+				@class = @class.GetDefinition();
+				baseClassList = @class.GetAllBaseTypeDefinitions(context).Where(
+					baseClass => (baseClass != @class) && (baseClass.ParsedFile != null)).ToList();
+			}
 			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
 				"${res:SharpDevelop.Refactoring.BaseClassesOf}", new StringTagPair("Name", @class.Name)))};
 			popupViewModel.Actions = new PopupListViewModelBuilder().BuildListViewModel(baseClassList);
@@ -36,14 +40,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static ContextActionsPopup MakePopupWithOverrides(IMember member)
 		{
-			var derivedClassesTree = RefactoringService.FindDerivedClassesTree(member.DeclaringType);
+			#warning Reimplement MakePopupWithOverrides
+			throw new NotImplementedException();
+			/*var derivedClassesTree = RefactoringService.FindDerivedClassesTree(member.DeclaringType);
 			var popupViewModel = new ContextActionsViewModel {
 				Title = MenuService.ConvertLabel(StringParser.Parse(
 					"${res:SharpDevelop.Refactoring.OverridesOf}",
 					new StringTagPair("Name", member.FullyQualifiedName))
 			)};
 			popupViewModel.Actions = new OverridesPopupTreeViewModelBuilder(member).BuildTreeViewModel(derivedClassesTree);
-			return new ContextActionsPopup { Actions = popupViewModel, Symbol = member };
+			return new ContextActionsPopup { Actions = popupViewModel, Symbol = member };*/
 		}
 		
 		class PopupViewModelBuilder
@@ -56,10 +62,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				this.LabelAmbience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
 			}
 			
-			protected ContextActionViewModel MakeGoToClassAction(IClass @class, ObservableCollection<ContextActionViewModel> childActions)
+			protected ContextActionViewModel MakeGoToClassAction(ITypeDefinition @class, ObservableCollection<ContextActionViewModel> childActions)
 			{
 				return new ContextActionViewModel {
-					Action = new GoToClassAction(@class, this.LabelAmbience),
+					Action = new GoToClassAction(@class, this.LabelAmbience.ConvertEntity(@class)),
 					Image = ClassBrowserIconService.GetIcon(@class).ImageSource,
 					Comment = string.Format("(in {0})", @class.Namespace),
 					ChildActions = childActions
@@ -69,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		class PopupListViewModelBuilder : PopupViewModelBuilder
 		{
-			public ObservableCollection<ContextActionViewModel> BuildListViewModel(IEnumerable<IClass> classList)
+			public ObservableCollection<ContextActionViewModel> BuildListViewModel(IEnumerable<ITypeDefinition> classList)
 			{
 				return new ObservableCollection<ContextActionViewModel>(
 					classList.Select(@class => MakeGoToClassAction(@class, null)));
@@ -78,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		class PopupTreeViewModelBuilder : PopupViewModelBuilder
 		{
-			public ObservableCollection<ContextActionViewModel> BuildTreeViewModel(IEnumerable<ITreeNode<IClass>> classTree)
+			public ObservableCollection<ContextActionViewModel> BuildTreeViewModel(IEnumerable<ITreeNode<ITypeDefinition>> classTree)
 			{
 				return new ObservableCollection<ContextActionViewModel>(
 					classTree.Select(
@@ -86,6 +92,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
+		/*
 		class OverridesPopupTreeViewModelBuilder : PopupViewModelBuilder
 		{
 			IMember member;
@@ -97,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				this.member = member;
 			}
 			
-			protected ContextActionViewModel MakeGoToMemberAction(IClass containingClass, ObservableCollection<ContextActionViewModel> childActions)
+			protected ContextActionViewModel MakeGoToMemberAction(ITypeDefinition containingClass, ObservableCollection<ContextActionViewModel> childActions)
 			{
 				var overridenMember = MemberLookupHelper.FindSimilarMember(containingClass, this.member);
 				if (overridenMember == null || overridenMember.Region.IsEmpty)
@@ -106,18 +113,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return new ContextActionViewModel {
 					Action = new GoToMemberAction(overridenMember, this.LabelAmbience),
 					Image = ClassBrowserIconService.GetIcon(overridenMember).ImageSource,
-					Comment = string.Format("(in {0})", containingClass.FullyQualifiedName),
+					Comment = string.Format("(in {0})", containingClass.FullName),
 					ChildActions = childActions
 				};
 			}
 			
-			public ObservableCollection<ContextActionViewModel> BuildTreeViewModel(IEnumerable<ITreeNode<IClass>> classTree)
+			public ObservableCollection<ContextActionViewModel> BuildTreeViewModel(IEnumerable<ITreeNode<ITypeDefinition>> classTree)
 			{
 				return new ObservableCollection<ContextActionViewModel>(
 					classTree.Select(
 						node => MakeGoToMemberAction(node.Content, BuildTreeViewModel(node.Children))).Where(action => action != null));
 			}
-		}
+		}*/
 	}
 }
-*/

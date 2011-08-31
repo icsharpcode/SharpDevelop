@@ -1,9 +1,10 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-/*
+
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -16,15 +17,13 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
 		{
-			var classUnderCaret = GetClass(symbol);
-			if (classUnderCaret != null) {
-				ContextActionsHelper.MakePopupWithDerivedClasses(classUnderCaret).OpenAtCaretAndFocus();
+			IEntity entityUnderCaret = GetEntity(symbol);
+			if (entityUnderCaret is ITypeDefinition && !entityUnderCaret.IsSealed) {
+				ContextActionsHelper.MakePopupWithDerivedClasses((ITypeDefinition)entityUnderCaret).OpenAtCaretAndFocus();
 				return;
 			}
-			var memberUnderCaret = GetMember(symbol);
-			if (memberUnderCaret != null && memberUnderCaret.IsOverridable)
-			{
-				ContextActionsHelper.MakePopupWithOverrides(memberUnderCaret).OpenAtCaretAndFocus();
+			if (entityUnderCaret is IMember && ((IMember)entityUnderCaret).IsOverridable) {
+				ContextActionsHelper.MakePopupWithOverrides((IMember)entityUnderCaret).OpenAtCaretAndFocus();
 				return;
 			}
 			MessageService.ShowError("${res:ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError}");
@@ -42,4 +41,3 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 //		}
 	}
 }
-*/

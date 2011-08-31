@@ -66,13 +66,31 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </remarks>
 		public static ITypeResolveContext CurrentTypeResolveContext {
 			get {
-				IProject currentProject = ProjectService.CurrentProject;
-				if (currentProject != null) {
-					return currentProject.TypeResolveContext ?? GetDefaultTypeResolveContext();
-				} else {
-					return GetDefaultTypeResolveContext();
-				}
+				return GetTypeResolveContext(ProjectService.CurrentProject);
 			}
+		}
+		
+		public static ITypeResolveContext GetTypeResolveContext(IProject project)
+		{
+			if (project != null) {
+				return project.TypeResolveContext;
+			} else {
+				return GetDefaultTypeResolveContext();
+			}
+		}
+		
+		/// <summary>
+		/// Gets a type resolve context that includes all referenced assemblies for the specified project content.
+		/// </summary>
+		public static ITypeResolveContext GetTypeResolveContext(IProjectContent projectContent)
+		{
+			if (projectContent == null)
+				return GetDefaultTypeResolveContext();
+			IProject p = GetProject(projectContent);
+			if (p != null)
+				return p.TypeResolveContext;
+			else
+				return projectContent;
 		}
 		
 		[Obsolete("Use project.ProjectContent instead")]

@@ -1,10 +1,7 @@
 ﻿
 Commented code, needs to be ported and re-enabled:
-	AssemblyParserService
 	ParseProjectContent
-	ProjectContentRegistryDescriptor
 	Ambiences
-	Tooltips (DebuggerService.GetText)
 	DefinitionViewPad
 	Class Browser (removed from source tree; to be reimplemented using WPF)
 	NRefactoryLanguageConverter
@@ -29,7 +26,7 @@ Stuff that was renamed/moved:
 Functionality changes:
 	The result of a parser run (ParseInformation) now may contain a fully parsed AST.
 	The ParserService may cache such full ASTs, but may also drop them from memory at any time.
-	This is implemented by keeping the last N accessed files in the cache.
+	This will be implemented by keeping the last N accessed files in the cache. (currently we just keep the caches around forever)
 	Every parse information also contains an IParsedFile instance with the type system information.
 	The IParsedFile is stored permanently (both in ParserService and in the IProjectContents).
 

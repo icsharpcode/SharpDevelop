@@ -63,8 +63,7 @@ namespace CSharpBinding
 					}
 					
 					if (canReferenceEntity) {
-						var allTypesInPC = TreeTraversal.PreOrder(ctx.GetTypes().Where(t => t.ProjectContent == pc), t => t.NestedTypes);
-						interestingFileNames[i] = fr.GetInterestingFileNames(searchScopes[i], allTypesInPC, ctx);
+						interestingFileNames[i] = fr.GetInterestingFileNames(searchScopes[i], pc.GetAllTypes(), ctx);
 						workAmount += interestingFileNames[i].Count;
 					} else {
 						interestingFileNames[i] = new string[0];
