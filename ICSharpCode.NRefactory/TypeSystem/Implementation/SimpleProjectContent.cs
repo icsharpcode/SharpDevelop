@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	public class SimpleProjectContent : AbstractAnnotatable, IProjectContent, ISerializable, IDeserializationCallback
 	{
 		readonly TypeStorage types = new TypeStorage();
-		readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
+		readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 		readonly Dictionary<string, IParsedFile> fileDict = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
 		
 		#region Constructor
