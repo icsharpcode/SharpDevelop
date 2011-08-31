@@ -113,7 +113,7 @@
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\FindBaseClasses.cs" />
     <Compile Include="Src\Editor\Commands\FindDerivedClassesOrOverrides.cs" />
-    <Compile Include="Src\Editor\Commands\FindReferences.cs" />
+    <Compile Include="Src\Editor\Commands\FindReferencesCommand.cs" />
     <Compile Include="Src\Editor\Commands\GotoLineNumber.cs" />
     <Compile Include="Src\Editor\Commands\SymbolUnderCaretMenuCommand.cs" />
     <Compile Include="Src\Editor\IDocumentBaseVersionProvider.cs" />
@@ -366,6 +366,7 @@
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionCache.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionsProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
+    <Compile Include="Src\Services\RefactoringService\FindReferenceService.cs" />
     <Compile Include="Src\Services\RefactoringService\GoToClassAction.cs" />
     <Compile Include="Src\Services\RefactoringService\GoToMemberAction.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />
@@ -670,7 +671,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\Bookmarks\BookmarkConverter.cs" />
-    <Compile Include="Src\Bookmarks\ClassMemberBookmark.cs" />
+    <Compile Include="Src\Bookmarks\EntityBookmark.cs" />
     <Compile Include="Src\Services\RefactoringService\RefactoringService.cs" />
     <Compile Include="Src\Services\RefactoringService\Reference.cs" />
     <Compile Include="Src\Services\ProjectService\ParseableFileContentFinder.cs" />

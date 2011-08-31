@@ -63,5 +63,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			return Enumerable.Empty<ResolveResult>();
 		}
+		
+		public virtual DomRegion GetDefinitionRegion()
+		{
+			return DomRegion.Empty;
+		}
 	}
 }

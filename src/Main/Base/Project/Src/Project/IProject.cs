@@ -218,7 +218,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets project specific properties.
 		/// </summary>
 		Properties ProjectSpecificProperties { get; }
-		*/
+		 */
 		
 		/// <summary>
 		/// Starts the project.
@@ -316,6 +316,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Never returns null.
 		/// </remarks>
 		IAmbience GetAmbience();
+		
+		/// <summary>
+		/// Prepares searching for references to the specified entity.
+		/// This method should calculate the amount of work to be done (e.g. using the number of files to search through),
+		/// it should not perform the actual search.
+		/// </summary>
+		/// <returns>
+		/// An object that can be used to perform the search; or null if this project does not support symbol searches.
+		/// </returns>
+		Refactoring.ISymbolSearch PrepareSymbolSearch(IEntity entity);
 	}
 	
 	/// <summary>

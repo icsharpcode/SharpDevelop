@@ -67,6 +67,7 @@
     <Compile Include="Src\OptionPanels\BuildOptions.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Src\Parser\CSharpSymbolSearch.cs" />
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Project\VBNetToCSharpConvertVisitorWithMyFormsSupport.cs" />
     <Compile Include="Src\Project\CSharpMyNamespaceBuilder.cs" />

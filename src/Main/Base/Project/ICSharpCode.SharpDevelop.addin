@@ -1658,7 +1658,7 @@
 			          label = "${res:SharpDevelop.Refactoring.FindReferences}"
 			          shortcut = "F12"
 			          icon="Icons.16x16.SelectionArrow"
-			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferences"/>
+			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferencesCommand"/>
 			
 			<MenuItem id = "FindDerivedOrOverridesClasses"
 			          label = "${res:SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand}"
@@ -1806,20 +1806,8 @@
 		                class = "ICSharpCode.SharpDevelop.ShellExecuteDisplayBinding" />
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
-		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Editor.Commands.ClassMemberMenuBuilder" />
-	</Path>
-	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
-		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Editor.Commands.ClassBookmarkSubmenuBuilder" />
-	</Path>
-	
-	<Path name = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu">
-		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Editor.Commands.ClassMemberMenuBuilder" />
-	</Path>
-	
-	<Path name = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu">
-		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Editor.Commands.ClassBookmarkSubmenuBuilder" />
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/EntityContextMenu">
+		
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common">
@@ -1879,20 +1867,6 @@
 		          label = "${res:XML.TextAreaContextMenu.Indent}"
 		          shortcut = "Control|I"
 		          class = "ICSharpCode.SharpDevelop.Editor.Commands.IndentSelection" />
-	</Path>
-	
-	<!-- DefaultTextEditor=old editor. TODO: remove this -->
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
-		<Include id="DefaultEditor" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu"/>
-		<MenuItem id = "FileMode" label = "${res:XML.TextAreaContextMenu.FileMode}"  type="Menu">
-			<MenuItem id = "HighlightBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.HighlightingTypeBuilder" />
-		</MenuItem>
-		
-		<MenuItem id = "Separator3" type = "Separator" />
-		<MenuItem id = "Options"
-		          label = "${res:XML.TextAreaContextMenu.BufferOptions}"
-		          icon = "Icons.16x16.PropertiesIcon"
-		          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowBufferOptions"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ToolTips">

@@ -11,8 +11,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	public class SearchResultMatch
 	{
 		ProvidedDocumentInformation providedDocumentInformation;
-		int    offset;
-		int    length;
+		int offset;
+		int length;
+		TextLocation startLocation;
+		TextLocation endLocation;
 		
 		public ProvidedDocumentInformation ProvidedDocumentInformation {
 			set { providedDocumentInformation = value; }
@@ -26,13 +28,33 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		
 		public int Offset {
 			get {
+				if (offset < 0)
+					offset = providedDocumentInformation.Document.GetOffset(startLocation);
 				return offset;
 			}
 		}
 		
 		public int Length {
 			get {
+				if (length < 0)
+					length = providedDocumentInformation.Document.GetOffset(endLocation) - this.Offset;
 				return length;
+			}
+		}
+		
+		public TextLocation StartLocation {
+			get { 
+				if (startLocation.IsEmpty)
+					startLocation = providedDocumentInformation.Document.GetLocation(offset);
+				return startLocation; 
+			}
+		}
+		
+		public TextLocation EndLocation {
+			get { 
+				if (endLocation.IsEmpty)
+					endLocation = providedDocumentInformation.Document.GetLocation(offset + length);
+				return endLocation; 
 			}
 		}
 		
@@ -69,11 +91,27 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			this.length   = length;
 		}
 		
+		
+		public SearchResultMatch(ProvidedDocumentInformation providedDocumentInformation, TextLocation startLocation, TextLocation endLocation)
+		{
+			if (providedDocumentInformation == null)
+				throw new ArgumentNullException("providedDocumentInformation");
+			if (length < 0)
+				throw new ArgumentOutOfRangeException("length");
+			this.offset = -1;
+			this.length = -1;
+			this.providedDocumentInformation = providedDocumentInformation;
+			this.startLocation = startLocation;
+			this.endLocation = endLocation;
+		}
+		
+		[Obsolete("Use the StartLocation property instead")]
 		public virtual TextLocation GetStartPosition(IDocument document)
 		{
 			return document.GetLocation(Math.Min(Offset, document.TextLength));
 		}
 		
+		[Obsolete("Use the EndLocation property instead")]
 		public virtual TextLocation GetEndPosition(IDocument document)
 		{
 			return document.GetLocation(Math.Min(Offset + Length, document.TextLength));
@@ -98,18 +136,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	
 	public class SimpleSearchResultMatch : SearchResultMatch
 	{
-		TextLocation position;
-		
-		public override TextLocation GetStartPosition(IDocument doc)
-		{
-			return position;
-		}
-		
-		public override TextLocation GetEndPosition(IDocument doc)
-		{
-			return position;
-		}
-		
 		string displayText;
 		
 		public override string DisplayText {
@@ -119,9 +145,8 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		}
 		
 		public SimpleSearchResultMatch(ProvidedDocumentInformation providedDocumentInformation, string displayText, TextLocation position)
-			: base(providedDocumentInformation, 0, 0)
+			: base(providedDocumentInformation, position, position)
 		{
-			this.position = position;
 			this.displayText = displayText;
 		}
 	}

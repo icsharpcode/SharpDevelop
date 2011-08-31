@@ -143,5 +143,10 @@ namespace CSharpBinding
 			}
 		}
 		 */
+		
+		public override ICSharpCode.SharpDevelop.Refactoring.ISymbolSearch PrepareSymbolSearch(ICSharpCode.NRefactory.TypeSystem.IEntity entity)
+		{
+			return new CSharpSymbolSearch(this, entity);
+		}
 	}
 }

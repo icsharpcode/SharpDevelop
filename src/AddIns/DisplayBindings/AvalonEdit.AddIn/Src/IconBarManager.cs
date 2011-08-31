@@ -43,46 +43,29 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void UpdateClassMemberBookmarks(IParsedFile parseInfo)
 		{
 			for (int i = bookmarks.Count - 1; i >= 0; i--) {
-				if (IsClassMemberBookmark(bookmarks[i]))
+				if (bookmarks[i] is EntityBookmark)
 					bookmarks.RemoveAt(i);
 			}
 			if (parseInfo == null)
 				return;
 			foreach (ITypeDefinition c in parseInfo.TopLevelTypeDefinitions) {
-				AddClassMemberBookmarks(c);
+				AddEntityBookmarks(c);
 			}
 		}
 		
-		void AddClassMemberBookmarks(ITypeDefinition c)
+		void AddEntityBookmarks(ITypeDefinition c)
 		{
 			if (c.IsSynthetic) return;
 			if (!c.Region.IsEmpty) {
-				bookmarks.Add(new ClassBookmark(c));
+				bookmarks.Add(new EntityBookmark(c));
 			}
 			foreach (ITypeDefinition innerClass in c.NestedTypes) {
-				AddClassMemberBookmarks(innerClass);
+				AddEntityBookmarks(innerClass);
 			}
-			foreach (IMethod m in c.Methods) {
+			foreach (IMember m in c.Members) {
 				if (m.Region.IsEmpty || m.IsSynthetic) continue;
-				bookmarks.Add(new ClassMemberBookmark(m));
+				bookmarks.Add(new EntityBookmark(m));
 			}
-			foreach (IProperty m in c.Properties) {
-				if (m.Region.IsEmpty || m.IsSynthetic) continue;
-				bookmarks.Add(new ClassMemberBookmark(m));
-			}
-			foreach (IField f in c.Fields) {
-				if (f.Region.IsEmpty || f.IsSynthetic) continue;
-				bookmarks.Add(new ClassMemberBookmark(f));
-			}
-			foreach (IEvent e in c.Events) {
-				if (e.Region.IsEmpty || e.IsSynthetic) continue;
-				bookmarks.Add(new ClassMemberBookmark(e));
-			}
-		}
-		
-		static bool IsClassMemberBookmark(IBookmark b)
-		{
-			return b is ClassMemberBookmark || b is ClassBookmark;
 		}
 	}
 }

@@ -2,7 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-/*
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
@@ -10,49 +13,29 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class Reference
 	{
-		string fileName;
-		int offset, length;
-		string expression;
+		DomRegion region;
 		ResolveResult resolveResult;
 		
-		public Reference(string fileName, int offset, int length, string expression, ResolveResult resolveResult)
+		public Reference(DomRegion region, ResolveResult resolveResult)
 		{
-			this.fileName = fileName;
-			this.offset = offset;
-			this.length = length;
-			this.expression = expression;
+			if (region.IsEmpty)
+				throw new ArgumentException("Region must not be empty");
+			if (resolveResult == null)
+				throw new ArgumentNullException("resolveResult");
+			this.region = region;
 			this.resolveResult = resolveResult;
 		}
 		
-		public string FileName {
-			get {
-				return fileName;
-			}
+		public FileName FileName {
+			get { return FileName.Create(region.FileName); }
 		}
 		
-		public int Offset {
-			get {
-				return offset;
-			}
-		}
-		
-		public int Length {
-			get {
-				return length;
-			}
-		}
-		
-		public string Expression {
-			get {
-				return expression;
-			}
+		public DomRegion Region {
+			get { return region; }
 		}
 		
 		public ResolveResult ResolveResult {
-			get {
-				return resolveResult;
-			}
+			get { return resolveResult; }
 		}
 	}
 }
-*/

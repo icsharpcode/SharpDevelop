@@ -31,38 +31,35 @@ namespace SearchAndReplace
 			this.result = result;
 			
 			IDocument document = result.CreateDocument();
-			var startPosition = result.GetStartPosition(document);
-			int lineNumber = startPosition.Line;
-			int column = startPosition.Column;
-			this.anchor = new PermanentAnchor(result.FileName, lineNumber, column);
+			var startPosition = result.StartLocation;
+			this.anchor = new PermanentAnchor(result.FileName, startPosition.Line, startPosition.Column);
 			anchor.SurviveDeletion = true;
 			
-			if (lineNumber >= 1 && lineNumber <= document.LineCount) {
-				IDocumentLine matchedLine = document.GetLineByNumber(lineNumber);
-				inlineBuilder = new HighlightedInlineBuilder(document.GetText(matchedLine));
-				inlineBuilder.SetFontFamily(0, inlineBuilder.Text.Length, new FontFamily(EditorControlService.GlobalOptions.FontFamily));
-				
-				IHighlighter highlighter = document.GetService(typeof(IHighlighter)) as IHighlighter;
-				if (highlighter != null) {
-					HighlightedLine highlightedLine = highlighter.HighlightLine(lineNumber);
-					int startOffset = highlightedLine.DocumentLine.Offset;
-					// copy only the foreground color
-					foreach (HighlightedSection section in highlightedLine.Sections) {
-						if (section.Color.Foreground != null) {
-							inlineBuilder.SetForeground(section.Offset - startOffset, section.Length, section.Color.Foreground.GetBrush(null));
-						}
+			int lineNumber = anchor.Line;
+			IDocumentLine matchedLine = document.GetLineByNumber(lineNumber);
+			inlineBuilder = new HighlightedInlineBuilder(document.GetText(matchedLine));
+			inlineBuilder.SetFontFamily(0, inlineBuilder.Text.Length, new FontFamily(EditorControlService.GlobalOptions.FontFamily));
+			
+			IHighlighter highlighter = document.GetService(typeof(IHighlighter)) as IHighlighter;
+			if (highlighter != null) {
+				HighlightedLine highlightedLine = highlighter.HighlightLine(lineNumber);
+				int startOffset = highlightedLine.DocumentLine.Offset;
+				// copy only the foreground color
+				foreach (HighlightedSection section in highlightedLine.Sections) {
+					if (section.Color.Foreground != null) {
+						inlineBuilder.SetForeground(section.Offset - startOffset, section.Length, section.Color.Foreground.GetBrush(null));
 					}
 				}
-				
-				// now highlight the match in bold
-				if (column >= 1) {
-					var endPosition = result.GetEndPosition(document);
-					if (endPosition.Line == startPosition.Line && endPosition.Column > startPosition.Column) {
-						// subtract one from the column to get the offset inside the line's text
-						int startOffset = column - 1;
-						int endOffset = Math.Min(inlineBuilder.Text.Length, endPosition.Column - 1);
-						inlineBuilder.SetFontWeight(startOffset, endOffset - startOffset, FontWeights.Bold);
-					}
+			}
+			
+			// now highlight the match in bold
+			if (startPosition.Column >= 1) {
+				var endPosition = result.EndLocation;
+				if (endPosition.Line == startPosition.Line && endPosition.Column > startPosition.Column) {
+					// subtract one from the column to get the offset inside the line's text
+					int startOffset = startPosition.Column - 1;
+					int endOffset = Math.Min(inlineBuilder.Text.Length, endPosition.Column - 1);
+					inlineBuilder.SetFontWeight(startOffset, endOffset - startOffset, FontWeights.Bold);
 				}
 			}
 		}

@@ -1,10 +1,12 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-/*
+
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
@@ -17,33 +19,23 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		{
 			ITextEditorProvider editorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 			if (editorProvider != null) {
-				Run(editorProvider.TextEditor, editorProvider.TextEditor.Caret.Offset);
+				ITextEditor editor = editorProvider.TextEditor;
+				var resolveResult = ParserService.Resolve(editor.FileName, editor.Caret.Location, editor.Document);
+				RunImpl(editor, editor.Caret.Offset, resolveResult);
 			}
-		}
-		
-		public void Run(ITextEditor editor, int caretOffset)
-		{
-			var resolveResult = ParserService.Resolve(caretOffset, editor.Document, editor.FileName);
-			RunImpl(editor, caretOffset, resolveResult);
 		}
 		
 		protected abstract void RunImpl(ITextEditor editor, int caretOffset, ResolveResult symbol);
 		
-		public IClass GetClass(ResolveResult symbol)
+		protected IEntity GetEntity(ResolveResult symbol)
 		{
-			if (symbol == null || !(symbol is TypeResolveResult)) {
-				return null;
-			}
-			return ((TypeResolveResult)symbol).ResolvedClass;
-		}
-		
-		public IMember GetMember(ResolveResult symbol)
-		{
-			if (symbol == null || !(symbol is MemberResolveResult)) {
-				return null;
-			}
-			return ((MemberResolveResult)symbol).ResolvedMember;
+			TypeResolveResult trr = symbol as TypeResolveResult;
+			if (trr != null)
+				return trr.Type.GetDefinition();
+			MemberResolveResult mrr = symbol as MemberResolveResult;
+			if (mrr != null)
+				return mrr.Member.MemberDefinition;
+			return null;
 		}
 	}
 }
-*/

@@ -30,5 +30,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			: base(type)
 		{
 		}
+		
+		public override DomRegion GetDefinitionRegion()
+		{
+			ITypeDefinition def = this.Type.GetDefinition();
+			if (def != null)
+				return def.Region;
+			else
+				return DomRegion.Empty;
+		}
 	}
 }

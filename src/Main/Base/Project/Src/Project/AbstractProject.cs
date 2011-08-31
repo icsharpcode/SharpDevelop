@@ -640,5 +640,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			return new CSharpAmbience();
 		}
+		
+		public virtual Refactoring.ISymbolSearch PrepareSymbolSearch(IEntity entity)
+		{
+			return null;
+		}
 	}
 }
