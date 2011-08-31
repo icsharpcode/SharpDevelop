@@ -225,7 +225,7 @@ namespace ICSharpCode.NRefactory.Demo
 			foreach (TreeNode t in c) {
 				AstNode node = t.Tag as AstNode;
 				if (node != null) {
-					ResolveResult rr = v.GetResolveResult(node);
+					ResolveResult rr = v.GetResolveResultIfResolved(node);
 					if (rr != null)
 						t.Text = GetNodeTitle(node) + " " + rr.ToString();
 					else
