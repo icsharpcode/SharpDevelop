@@ -21,42 +21,31 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
-	public sealed class CompositeResolveVisitorNavigator : IResolveVisitorNavigator
+	/// <summary>
+	/// Represents a scope in which references are searched.
+	/// </summary>
+	public interface IFindReferenceSearchScope
 	{
-		IResolveVisitorNavigator[] navigators;
+		/// <summary>
+		/// Gets the search term. Only files that contain this identifier need to be parsed.
+		/// Can return null if all files need to be parsed.
+		/// </summary>
+		string SearchTerm { get; }
 		
-		public CompositeResolveVisitorNavigator(params IResolveVisitorNavigator[] navigators)
-		{
-			if (navigators == null)
-				throw new ArgumentNullException("navigators");
-			this.navigators = navigators;
-		}
+		/// <summary>
+		/// Gets the accessibility that defines the search scope.
+		/// </summary>
+		Accessibility Accessibility { get; }
 		
-		public ResolveVisitorNavigationMode Scan(AstNode node)
-		{
-			bool needsScan = false;
-			foreach (var navigator in navigators) {
-				ResolveVisitorNavigationMode mode = navigator.Scan(node);
-				if (mode == ResolveVisitorNavigationMode.Resolve)
-					return mode; // resolve has highest priority
-				else if (mode == ResolveVisitorNavigationMode.Scan)
-					needsScan = true;
-			}
-			return needsScan ? ResolveVisitorNavigationMode.Scan : ResolveVisitorNavigationMode.Skip;
-		}
+		/// <summary>
+		/// Gets the top-level entity that defines the search scope.
+		/// </summary>
+		ITypeDefinition TopLevelTypeDefinition { get; }
 		
-		public void Resolved(AstNode node, ResolveResult result)
-		{
-			foreach (var navigator in navigators) {
-				navigator.Resolved(node, result);
-			}
-		}
-		
-		public void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
-		{
-			foreach (var navigator in navigators) {
-				navigator.ProcessConversion(expression, result, conversion, targetType);
-			}
-		}
+		/// <summary>
+		/// Creates a navigator that can find references to this entity and reports
+		/// them to the specified callback.
+		/// </summary>
+		IResolveVisitorNavigator GetNavigator(FoundReferenceCallback callback);
 	}
 }

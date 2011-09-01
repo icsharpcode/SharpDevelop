@@ -26,16 +26,13 @@ using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
+	public delegate void FoundReferenceCallback(AstNode astNode, ResolveResult result);
+	
 	/// <summary>
 	/// 'Find references' implementation.
 	/// </summary>
 	public class FindReferences
 	{
-		/// <summary>
-		/// Callback that is invoked whenever a reference is found.
-		/// </summary>
-		public event Action<AstNode, ResolveResult> ReferenceFound;
-		
 		#region Properties
 		/// <summary>
 		/// Gets/Sets the cancellation token.
@@ -95,28 +92,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region class SearchScope
-		public abstract class SearchScope : IResolveVisitorNavigator
+		abstract class SearchScope : IResolveVisitorNavigator, IFindReferenceSearchScope
 		{
 			protected string searchTerm;
 			internal Accessibility accessibility;
 			internal ITypeDefinition topLevelTypeDefinition;
-			internal FindReferences findReferences;
 			
-			/// <summary>
-			/// Gets the search term. Only files that contain this identifier need to be parsed.
-			/// Can return null if all files need to be parsed.
-			/// </summary>
-			public string SearchTerm { get { return searchTerm; } }
+			FoundReferenceCallback callback;
 			
-			/// <summary>
-			/// Gets the accessibility that defines the search scope.
-			/// </summary>
-			public Accessibility Accessibility { get { return accessibility; } }
+			IResolveVisitorNavigator IFindReferenceSearchScope.GetNavigator(FoundReferenceCallback callback)
+			{
+				SearchScope n = (SearchScope)MemberwiseClone();
+				n.callback = callback;
+				return n;
+			}
 			
-			/// <summary>
-			/// Gets the top-level entity that defines the search scope.
-			/// </summary>
-			public ITypeDefinition TopLevelTypeDefinition { get { return topLevelTypeDefinition; } }
+			string IFindReferenceSearchScope.SearchTerm {
+				get { return searchTerm; }
+			}
+			
+			Accessibility IFindReferenceSearchScope.Accessibility {
+				get { return accessibility; }
+			}
+			
+			ITypeDefinition IFindReferenceSearchScope.TopLevelTypeDefinition {
+				get { return topLevelTypeDefinition; }
+			}
 			
 			internal abstract bool CanMatch(AstNode node);
 			internal abstract bool IsMatch(ResolveResult rr);
@@ -147,15 +148,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			protected void ReportMatch(AstNode node, ResolveResult result)
 			{
-				var referenceFound = findReferences.ReferenceFound;
-				if (referenceFound != null)
-					referenceFound(node, result);
+				if (callback != null)
+					callback(node, result);
 			}
 		}
 		#endregion
 		
 		#region GetSearchScopes
-		public IList<SearchScope> GetSearchScopes(IEntity entity)
+		public IList<IFindReferenceSearchScope> GetSearchScopes(IEntity entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
@@ -196,19 +196,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					additionalScope = new FindChainedConstructorReferences(ctor);
 					break;
 				case EntityType.Destructor:
-					return EmptyList<SearchScope>.Instance;
+					return EmptyList<IFindReferenceSearchScope>.Instance;
 				default:
 					throw new ArgumentException("Unknown entity type " + entity.EntityType);
 			}
 			if (scope.accessibility == Accessibility.None)
 				scope.accessibility = effectiveAccessibility;
 			scope.topLevelTypeDefinition = topLevelTypeDefinition;
-			scope.findReferences = this;
 			if (additionalScope != null) {
 				if (additionalScope.accessibility == Accessibility.None)
 					additionalScope.accessibility = effectiveAccessibility;
 				additionalScope.topLevelTypeDefinition = topLevelTypeDefinition;
-				additionalScope.findReferences = this;
 				return new[] { scope, additionalScope };
 			} else {
 				return new[] { scope };
@@ -220,7 +218,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets the file names that possibly contain references to the element being searched for.
 		/// </summary>
-		public IList<string> GetInterestingFileNames(SearchScope searchScope, IEnumerable<ITypeDefinition> allTypes, ITypeResolveContext context)
+		public IList<string> GetInterestingFileNames(IFindReferenceSearchScope searchScope, IEnumerable<ITypeDefinition> allTypes, ITypeResolveContext context)
 		{
 			IEnumerable<ITypeDefinition> interestingTypes;
 			if (searchScope.TopLevelTypeDefinition != null) {
@@ -276,11 +274,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="parsedFile">The type system representation of the file being searched.</param>
 		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
 		/// <param name="context">The type resolve context to use for resolving the file.</param>
-		public void FindReferencesInFile(SearchScope searchScope, ParsedFile parsedFile, CompilationUnit compilationUnit, ITypeResolveContext context)
+		/// <param name="callback">Callback used to report the references that were found.</param>
+		public void FindReferencesInFile(IFindReferenceSearchScope searchScope, ParsedFile parsedFile, CompilationUnit compilationUnit,
+		                                 ITypeResolveContext context, FoundReferenceCallback callback)
 		{
 			if (searchScope == null)
 				throw new ArgumentNullException("searchScope");
-			FindReferencesInFile(new[] { searchScope }, parsedFile, compilationUnit, context);
+			FindReferencesInFile(new[] { searchScope }, parsedFile, compilationUnit, context, callback);
 		}
 		
 		/// <summary>
@@ -290,7 +290,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="parsedFile">The type system representation of the file being searched.</param>
 		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
 		/// <param name="context">The type resolve context to use for resolving the file.</param>
-		public void FindReferencesInFile(IList<SearchScope> searchScopes, ParsedFile parsedFile, CompilationUnit compilationUnit, ITypeResolveContext context)
+		/// <param name="callback">Callback used to report the references that were found.</param>
+		public void FindReferencesInFile(IList<IFindReferenceSearchScope> searchScopes, ParsedFile parsedFile, CompilationUnit compilationUnit,
+		                                 ITypeResolveContext context, FoundReferenceCallback callback)
 		{
 			if (searchScopes == null)
 				throw new ArgumentNullException("searchScopes");
@@ -303,16 +305,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.CancellationToken.ThrowIfCancellationRequested();
 			if (searchScopes.Count == 0)
 				return;
-			foreach (SearchScope scope in searchScopes) {
-				if (scope.findReferences != this)
-					throw new ArgumentException("Cannot use a search scope that was created by another FindReferences instance");
-			}
 			using (var ctx = context.Synchronize()) {
 				IResolveVisitorNavigator navigator;
 				if (searchScopes.Count == 1)
-					navigator = searchScopes[0];
+					navigator = searchScopes[0].GetNavigator(callback);
 				else
-					navigator = new CompositeResolveVisitorNavigator(searchScopes.ToArray());
+					navigator = new CompositeResolveVisitorNavigator(searchScopes.Select(s => s.GetNavigator(callback)).ToArray());
 				navigator = new DetectSkippableNodesNavigator(navigator, compilationUnit);
 				CSharpResolver resolver = new CSharpResolver(ctx, this.CancellationToken);
 				ResolveVisitor v = new ResolveVisitor(resolver, parsedFile, navigator);

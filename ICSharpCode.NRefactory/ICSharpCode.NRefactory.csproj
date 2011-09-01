@@ -104,6 +104,7 @@
     <Compile Include="CSharp\Resolver\DetectSkippableNodesNavigator.cs" />
     <Compile Include="CSharp\Resolver\FindReferencedEntities.cs" />
     <Compile Include="CSharp\Resolver\FindReferences.cs" />
+    <Compile Include="CSharp\Resolver\FindReferenceSearchScope.cs" />
     <Compile Include="CSharp\Resolver\Log.cs" />
     <Compile Include="CSharp\Resolver\OperatorResolveResult.cs" />
     <Compile Include="CSharp\Resolver\ConversionResolveResult.cs" />
