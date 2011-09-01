@@ -195,9 +195,22 @@ namespace ICSharpCode.NRefactory.CSharp
 						
 					if (attr.PosArguments != null) {
 						foreach (var arg in attr.PosArguments) {
+							var na = arg as NamedArgument;
+							if (na != null) {
+								var newArg = new NamedArgumentExpression ();
+								newArg.AddChild (Identifier.Create (na.Name, Convert (na.Location)), NamedArgumentExpression.Roles.Identifier);
+								
+								var argLoc = LocationsBag.GetLocations (na);
+								if (argLoc != null)
+									newArg.AddChild (new CSharpTokenNode (Convert (argLoc[0]), 1), NamedArgumentExpression.Roles.Assign);
+								newArg.AddChild ((Expression)na.Expr.Accept (this), NamedExpression.Roles.Expression);
+								result.AddChild (newArg, Attribute.Roles.Argument);
+								continue;
+							}
 							result.AddChild ((Expression)arg.Expr.Accept (this), Attribute.Roles.Argument);
 						}
 					}
+					Console.WriteLine ("---");
 					if (attr.NamedArguments != null) { 
 						foreach (NamedArgument na in attr.NamedArguments) {
 							var newArg = new NamedExpression ();
@@ -714,7 +727,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				if (a.OptAttributes == null)
 					return;
-				foreach (var attr in a.OptAttributes.Sections) {
+				AddAttributeSection (parent, a.OptAttributes);
+			}
+			
+			public void AddAttributeSection (AstNode parent, Attributes attrs)
+			{
+				if (attrs == null)
+					return;
+				foreach (var attr in attrs.Sections) {
 					parent.AddChild (ConvertAttributeSection (attr), AttributedNode.AttributeRole);
 				}
 			}
@@ -2156,7 +2176,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (arg == null)
 						continue;
 					TypeParameterDeclaration tp = new TypeParameterDeclaration();
-					// TODO: attributes
+					
+					AddAttributeSection (tp, arg.OptAttributes);
+
 					switch (arg.Variance) {
 						case Variance.Covariant:
 							tp.Variance = VarianceModifier.Covariant;
