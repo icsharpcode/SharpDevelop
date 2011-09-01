@@ -57,6 +57,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 				"new int[] { 1 }",
 				new ArrayCreateExpression {
 					Type = new PrimitiveType("int"),
+					AdditionalArraySpecifiers = {
+						new ArraySpecifier(0)
+					},
 					Initializer = new ArrayInitializerExpression {
 						Elements = { new PrimitiveExpression(1) }
 					}
@@ -70,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 				"new int[,] { { 1 } }",
 				new ArrayCreateExpression {
 					Type = new PrimitiveType("int"),
-					Arguments = { new EmptyExpression(), new EmptyExpression() }, // TODO: can we improve the AST for this?
+					AdditionalArraySpecifiers = { new ArraySpecifier (2) },
 					Initializer = new ArrayInitializerExpression {
 						Elements = {
 							new ArrayInitializerExpression {
@@ -87,6 +90,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			ParseUtilCSharp.AssertExpression(
 				"new[] { 1, 10, 100, 1000 }",
 				new ArrayCreateExpression {
+					AdditionalArraySpecifiers = {
+						new ArraySpecifier(0)
+					},
 					Initializer = new ArrayInitializerExpression {
 						Elements = {
 							new PrimitiveExpression(1),
@@ -103,7 +109,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			ParseUtilCSharp.AssertExpression(
 				"new [,] { { 1, 10 }, { 100, 1000 } }",
 				new ArrayCreateExpression {
-					Arguments = { new EmptyExpression(), new EmptyExpression() }, // TODO: can we improve the AST for this?
+					AdditionalArraySpecifiers = {
+						new ArraySpecifier(2),
+					},
 					Initializer = new ArrayInitializerExpression {
 						Elements = {
 							new ArrayInitializerExpression {
@@ -128,6 +136,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			ParseUtilCSharp.AssertExpression(
 				"new [] { a = 10 }",
 				new ArrayCreateExpression {
+					AdditionalArraySpecifiers = {
+						new ArraySpecifier(0)
+					},
 					Initializer = new ArrayInitializerExpression {
 						Elements = {
 							new AssignmentExpression(new IdentifierExpression("a"), new PrimitiveExpression(10))

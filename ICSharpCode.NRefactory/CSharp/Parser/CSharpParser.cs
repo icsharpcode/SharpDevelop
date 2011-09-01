@@ -2432,7 +2432,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.AddChild (ConvertToType (arrayCreationExpression.NewType), ArrayCreateExpression.Roles.Type);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ArrayCreateExpression.Roles.LBracket);
+				
+				var next = arrayCreationExpression.Rank;
 				if (arrayCreationExpression.Arguments != null) {
+					// skip first array rank.
+					next = next.Next;
 					var commaLocations = LocationsBag.GetLocations (arrayCreationExpression.Arguments);
 					for (int i = 0 ;i < arrayCreationExpression.Arguments.Count; i++) {
 						result.AddChild ((Expression)arrayCreationExpression.Arguments[i].Accept (this), ArrayCreateExpression.Roles.Argument);
@@ -2440,7 +2444,7 @@ namespace ICSharpCode.NRefactory.CSharp
 							result.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - i]), 1), ArrayCreateExpression.Roles.Comma);
 					}
 				}
-				var next = arrayCreationExpression.Rank.Next;
+				
 				while (next != null) {
 					ArraySpecifier spec = new ArraySpecifier (next.Dimension);
 					var loc = LocationsBag.GetLocations (next);
