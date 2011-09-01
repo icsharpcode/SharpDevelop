@@ -2892,7 +2892,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				var result = new QueryJoinClause ();
 				var location = LocationsBag.GetLocations (join);
 				result.AddChild (new CSharpTokenNode (Convert (join.Location), "join".Length), QueryJoinClause.JoinKeywordRole);
-				
 				result.AddChild (Identifier.Create (join.JoinVariable.Name, Convert (join.JoinVariable.Location)), QueryJoinClause.JoinIdentifierRole);
 				
 				if (location != null)
@@ -2902,11 +2901,17 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), "on".Length), QueryJoinClause.OnKeywordRole);
-				// TODO: on expression
+				
+				var outer = join.OuterSelector.Statements.FirstOrDefault () as ContextualReturn;
+				if (outer != null)
+					result.AddChild ((Expression)outer.Expr.Accept (this), QueryJoinClause.OnExpressionRole);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[2]), "equals".Length), QueryJoinClause.EqualsKeywordRole);
-				// TODO: equals expression
+				
+				var inner = join.InnerSelector.Statements.FirstOrDefault () as ContextualReturn;
+				if (inner != null)
+					result.AddChild ((Expression)inner.Expr.Accept (this), QueryJoinClause.EqualsExpressionRole);
 				
 				return result;
 			}
@@ -2923,16 +2928,19 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "in".Length), QueryJoinClause.InKeywordRole);
 				
-				result.AddChild ((Expression)join.Expr.Accept (this), QueryJoinClause.InExpressionRole);
+				var outer = join.OuterSelector.Statements.FirstOrDefault () as ContextualReturn;
+				if (outer != null)
+					result.AddChild ((Expression)outer.Expr.Accept (this), QueryJoinClause.OnExpressionRole);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), "on".Length), QueryJoinClause.OnKeywordRole);
-				
-				// TODO: on expression
+				result.AddChild ((Expression)join.Expr.Accept (this), QueryJoinClause.InExpressionRole);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[2]), "equals".Length), QueryJoinClause.EqualsKeywordRole);
-				// TODO: equals expression
+				var inner = join.InnerSelector.Statements.FirstOrDefault () as ContextualReturn;
+				if (inner != null)
+					result.AddChild ((Expression)inner.Expr.Accept (this), QueryJoinClause.EqualsExpressionRole);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[3]), "into".Length), QueryJoinClause.IntoKeywordRole);
