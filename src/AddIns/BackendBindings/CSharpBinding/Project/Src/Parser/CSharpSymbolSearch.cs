@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.Editor;
 using ICSharpCode.NRefactory.CSharp;
@@ -25,12 +26,11 @@ namespace CSharpBinding
 	{
 		IProject project;
 		FindReferences fr = new FindReferences();
-		IList<FindReferences.SearchScope> searchScopes;
+		IList<IFindReferenceSearchScope> searchScopes;
 		IList<string>[] interestingFileNames;
 		int workAmount;
 		double workAmountInverse;
 		Action<Reference> callback;
-		FileName currentFileName;
 		
 		public CSharpSymbolSearch(IProject project, IEntity entity)
 		{
@@ -84,40 +84,45 @@ namespace CSharpBinding
 			if (this.callback != null)
 				throw new InvalidOperationException("Cannot call FindReferences() twice");
 			this.callback = callback;
-			fr.ReferenceFound += OnReferenceFound;
 			
 			for (int i = 0; i < searchScopes.Count; i++) {
-				FindReferences.SearchScope searchScope = searchScopes[i];
-				foreach (string file in interestingFileNames[i]) {
-					currentFileName = FileName.Create(file);
-					FindReferencesInCurrentFile(args, searchScope);
-					args.ProgressMonitor.Progress += workAmountInverse;
-				}
+				IFindReferenceSearchScope searchScope = searchScopes[i];
+				object progressLock = new object();
+				Parallel.ForEach(
+					interestingFileNames[i],
+					new ParallelOptions {
+						MaxDegreeOfParallelism = Environment.ProcessorCount
+					},
+					delegate (string file) {
+						FindReferencesInFile(args, searchScope, FileName.Create(file));
+						lock (progressLock)
+							args.ProgressMonitor.Progress += workAmountInverse;
+					});
 			}
 		}
 		
-		void OnReferenceFound(AstNode node, ResolveResult result)
+		void FindReferencesInFile(SymbolSearchArgs args, IFindReferenceSearchScope searchScope, FileName fileName)
 		{
-			callback(new Reference(new DomRegion(currentFileName, node.StartLocation, node.EndLocation), result));
-		}
-		
-		void FindReferencesInCurrentFile(SymbolSearchArgs args, FindReferences.SearchScope searchScope)
-		{
-			ITextSource textSource = args.ParseableFileContentFinder.Create(currentFileName);
+			ITextSource textSource = args.ParseableFileContentFinder.Create(fileName);
 			if (textSource == null)
 				return;
 			if (searchScope.SearchTerm != null) {
 				// TODO: do a fast check with IndexOf()
 			}
 			
-			ParseInformation parseInfo = ParserService.Parse(currentFileName, textSource);
+			ParseInformation parseInfo = ParserService.Parse(fileName, textSource);
 			if (parseInfo == null)
 				return;
 			ParsedFile parsedFile = parseInfo.ParsedFile as ParsedFile;
 			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
 			if (parsedFile == null || cu == null)
 				return;
-			fr.FindReferencesInFile(searchScope, parsedFile, cu, project.TypeResolveContext);
+			fr.FindReferencesInFile(
+				searchScope, parsedFile, cu, project.TypeResolveContext,
+				delegate (AstNode node, ResolveResult result) {
+					var region = new DomRegion(fileName, node.StartLocation, node.EndLocation);
+					callback(new Reference(region, result));
+				});
 		}
 	}
 }

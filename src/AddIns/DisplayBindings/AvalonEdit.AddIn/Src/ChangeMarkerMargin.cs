@@ -200,7 +200,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					differ.editor.Visibility = Visibility.Collapsed;
 					differ.copyButton.Visibility = Visibility.Collapsed;
 				} else {
-					var baseDocument = new TextDocument(DocumentUtilitites.GetTextSource(changeWatcher.BaseDocument));
+					var baseDocument = new TextDocument(changeWatcher.BaseDocument);
 					if (differ.editor.SyntaxHighlighting != null) {
 						var mainHighlighter = new DocumentHighlighter(baseDocument, differ.editor.SyntaxHighlighting.MainRuleSet);
 						var popupHighlighter = differ.editor.TextArea.GetService(typeof(IHighlighter)) as DocumentHighlighter;

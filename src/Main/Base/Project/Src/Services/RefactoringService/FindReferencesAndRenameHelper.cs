@@ -512,7 +512,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			string entityName = (entity.DeclaringTypeDefinition != null ? entity.DeclaringTypeDefinition.Name + "." + entity.Name : entity.Name);
 			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}", true)) {
 				List<Reference> references = new List<Reference>();
-				FindReferenceService.FindReferences(entity, monitor, references.Add);
+				FindReferenceService.FindReferences(entity, monitor, r => { lock (references) references.Add(r); });
 				FindReferencesAndRenameHelper.ShowAsSearchResults(
 					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
 					                   new StringTagPair("Name", entityName)),

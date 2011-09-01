@@ -50,8 +50,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return symbolSearches;
 		}
 		
+		/// <summary>
+		/// Finds all references to the specified entity.
+		/// The results are reported using the callback.
+		/// FindReferences may internally use parallelism, and may invoke the callback on multiple
+		/// threads in parallel.
+		/// </summary>
 		public static void FindReferences(IEntity entity, IProgressMonitor progressMonitor, Action<Reference> callback)
 		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			if (progressMonitor == null)
+				throw new ArgumentNullException("progressMonitor");
+			if (callback == null)
+				throw new ArgumentNullException("callback");
 			if (ParserService.LoadSolutionProjectsThreadRunning) {
 				progressMonitor.ShowingDialog = true;
 				MessageService.ShowMessage("${res:SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning}");
