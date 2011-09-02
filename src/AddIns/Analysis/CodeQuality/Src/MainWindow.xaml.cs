@@ -106,7 +106,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 
 			matrixControl.Matrix = matrix;
-			matrixControl.DrawMatrix();
 			matrixControl.DrawTree(metricsReader.MainModule);
 		}
 
