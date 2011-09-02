@@ -12,6 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
@@ -38,52 +39,53 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			InitializeComponent();
 		}
 		
-		public void DrawMatrix()
-		{
-			// matrixControl.DrawMatrix();
-		}
 		
 		public void DrawTree(Module module)
 		{
+			FillTree (leftTree,module);
+			FillTree (topTree,module);
+			
+		}
+		
+		private void FillTree (System.Windows.Controls.TreeView tree,Module module)
+		{
 			foreach (var ns in module.Namespaces)
 			{
-				var nsType = new TreeViewItem
-				{
-					Header = ns.Name
-				};
+				var leftType = CreateTreeItem(ns.Name);
 
-				leftTree.Items.Add(nsType);
+				tree.Items.Add(leftType);
 
 				foreach (var type in ns.Types)
 				{
-					var itemType = new TreeViewItem
-					{
-						Header = type.Name
-					};
-
-					nsType.Items.Add(itemType);
+					var lType = CreateTreeItem(type.Name);
+					
+					leftType.Items.Add(lType);
 
 					foreach (var method in type.Methods)
 					{
-						var itemMethod = new TreeViewItem
-						{
-							Header = method.Name
-						};
-
-						itemType.Items.Add(itemMethod);
+						var leftMethod = CreateTreeItem(method.Name);
+						leftType.Items.Add(leftMethod);
 					}
 
 					foreach (var field in type.Fields)
 					{
-						var itemField = new TreeViewItem
-						{
-							Header = field.Name
-						};
-
-						itemType.Items.Add(itemField);
+						var leftField = CreateTreeItem(field.Name);
+						leftType.Items.Add(leftField);
 					}
 				}
 			}
+		}
+			
+			
+		private TreeViewItem CreateTreeItem (string ns)
+		{
+			var nsType = new TreeViewItem
+			{
+				Header = ns,
+				ToolTip = ns
+			};
+//			nsType.Height = matrixControl.CellHeight;
+			return nsType;
 		}
 	}
 }
