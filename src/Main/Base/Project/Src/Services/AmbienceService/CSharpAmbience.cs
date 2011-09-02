@@ -21,9 +21,9 @@ namespace ICSharpCode.SharpDevelop
 		public ConversionFlags ConversionFlags { get; set; }
 		
 		#region ConvertEntity
-		public string ConvertEntity(IEntity e)
+		public string ConvertEntity(IEntity e, ITypeResolveContext context)
 		{
-			using (var ctx = ParserService.CurrentTypeResolveContext.Synchronize()) {
+			using (var ctx = context.Synchronize()) {
 				StringWriter writer = new StringWriter();
 				
 				switch (e.EntityType) {
@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop
 						ConvertTypeDeclaration((ITypeDefinition)e, ctx, writer);
 						break;
 					case EntityType.Field:
-						
+						ConvertField((IField)e, ctx, writer);
 						break;
 					case EntityType.Property:
 						
@@ -64,6 +64,20 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		void ConvertField(IField field, ISynchronizedTypeResolveContext ctx, StringWriter writer)
+		{
+			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
+			astBuilder.ShowModifiers = (ConversionFlags & ConversionFlags.ShowModifiers) == ConversionFlags.ShowModifiers;
+			astBuilder.ShowAccessibility = (ConversionFlags & ConversionFlags.ShowAccessibility) == ConversionFlags.ShowAccessibility;
+			FieldDeclaration fieldDecl = (FieldDeclaration)astBuilder.ConvertEntity(field);
+			PrintModifiers(fieldDecl.Modifiers, writer);
+			if ((ConversionFlags & ConversionFlags.ShowReturnType) == ConversionFlags.ShowReturnType) {
+				writer.Write(ConvertType(field.Type, ctx));
+				writer.Write(' ');
+			}
+			WriteFieldDeclarationName(field, ctx, writer);
+		}
+		
 		void ConvertTypeDeclaration(ITypeDefinition typeDef, ITypeResolveContext ctx, StringWriter writer)
 		{
 			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
@@ -88,7 +102,7 @@ namespace ICSharpCode.SharpDevelop
 					default:
 						throw new Exception("Invalid value for ClassType");
 				}
-				writer.Write(" ");
+				writer.Write(' ');
 			}
 			WriteTypeDeclarationName(typeDef, ctx, writer);
 		}
@@ -109,6 +123,15 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		void WriteFieldDeclarationName(IField field, ITypeResolveContext ctx, StringWriter writer)
+		{
+			if ((ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) == ConversionFlags.UseFullyQualifiedMemberNames) {
+				writer.Write(ConvertType(field.DeclaringType));
+				writer.Write('.');
+			}
+			writer.Write(field.Name);
+		}
+		
 		void PrintNode(AstNode node, StringWriter writer)
 		{
 			node.AcceptVisitor(CreatePrinter(writer), null);
@@ -124,15 +147,15 @@ namespace ICSharpCode.SharpDevelop
 			foreach (var m in CSharpModifierToken.AllModifiers) {
 				if ((modifiers & m) == m) {
 					writer.Write(CSharpModifierToken.GetModifierName(m));
-					writer.Write(" ");
+					writer.Write(' ');
 				}
 			}
 		}
 		#endregion
 		
-		public string ConvertVariable(IVariable v)
+		public string ConvertVariable(IVariable v, ITypeResolveContext context)
 		{
-			using (var ctx = ParserService.CurrentTypeResolveContext.Synchronize()) {
+			using (var ctx = context.Synchronize()) {
 				TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
 				AstNode astNode = astBuilder.ConvertVariable(v);
 				CSharpFormattingOptions formatting = new CSharpFormattingOptions();
@@ -152,6 +175,16 @@ namespace ICSharpCode.SharpDevelop
 				astType.AcceptVisitor(new OutputVisitor(writer, formatting), null);
 				return writer.ToString();
 			}
+		}
+		
+		public string ConvertType(ITypeReference type, ITypeResolveContext context)
+		{
+			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(context);
+			AstType astType = astBuilder.ConvertTypeReference(type);
+			CSharpFormattingOptions formatting = new CSharpFormattingOptions();
+			StringWriter writer = new StringWriter();
+			astType.AcceptVisitor(new OutputVisitor(writer, formatting), null);
+			return writer.ToString();
 		}
 		
 		public string WrapAttribute(string attribute)

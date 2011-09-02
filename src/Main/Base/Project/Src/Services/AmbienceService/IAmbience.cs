@@ -69,9 +69,10 @@ namespace ICSharpCode.SharpDevelop
 			set;
 		}
 		
-		string ConvertEntity(IEntity e);
+		string ConvertEntity(IEntity e, ITypeResolveContext context);
 		string ConvertType(IType type);
-		string ConvertVariable(IVariable variable);
+		string ConvertType(ITypeReference type, ITypeResolveContext context);
+		string ConvertVariable(IVariable variable, ITypeResolveContext context);
 		
 		string WrapAttribute(string attribute);
 		string WrapComment(string comment);

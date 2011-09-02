@@ -275,7 +275,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <remarks>
 		/// This property must not return null.
 		/// If no resolve context is available for this project, it should return a dummy context
-		/// (e.g. <see cref="ICSharpCode.NRefactory.CSharp.Analysis.MinimalResolveContext/">).
+		/// (e.g. <see cref="ICSharpCode.NRefactory.CSharp.Analysis.MinimalResolveContext"/>).
 		/// 
 		/// This member is thread-safe.
 		/// The resulting type resolve context is thread-safe, but repeated locking on every access might be inefficient.

@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			protected ContextActionViewModel MakeGoToClassAction(ITypeDefinition @class, ObservableCollection<ContextActionViewModel> childActions)
 			{
 				return new ContextActionViewModel {
-					Action = new GoToClassAction(@class, this.LabelAmbience.ConvertEntity(@class)),
+					Action = new GoToClassAction(@class, this.LabelAmbience.ConvertEntity(@class, ParserService.CurrentTypeResolveContext)),
 					Image = ClassBrowserIconService.GetIcon(@class).ImageSource,
 					Comment = string.Format("(in {0})", @class.Namespace),
 					ChildActions = childActions
