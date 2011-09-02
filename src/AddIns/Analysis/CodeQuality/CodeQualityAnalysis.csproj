@@ -120,17 +120,17 @@
     <Compile Include="Src\Controls\DependencyMatrix.cs" />
     <Compile Include="Src\Controls\DependencyVertex.cs" />
     <Compile Include="Src\Controls\DependencyIconVertexConverter.cs" />
-    <Compile Include="Src\Controls\Matrix.cs" />
     <Compile Include="Src\Controls\MatrixControl.cs" />
     <Compile Include="Src\Controls\TreeMatrixControl.xaml.cs">
-      <DependentUpon>TreeMatrixControl.xaml</DependentUpon>
       <SubType>Code</SubType>
+      <DependentUpon>TreeMatrixControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\DependencyGraphCommand.cs" />
     <Compile Include="Src\Event.cs" />
     <Compile Include="Src\Field.cs" />
     <Compile Include="Src\INode.cs" />
     <Compile Include="Src\Instruction.cs" />
+    <Compile Include="Src\IValue.cs" />
     <Compile Include="Src\NodeIconService.cs" />
     <Compile Include="Src\IDependency.cs" />
     <Compile Include="Src\MetricsReader.cs" />
@@ -139,6 +139,8 @@
     <Compile Include="Src\Relationship.cs" />
     <Compile Include="Src\RelationshipType.cs" />
     <Compile Include="Src\Type.cs" />
+    <Compile Include="Src\Utility\DoubleKeyDictionary.cs" />
+    <Compile Include="Src\Utility\Matrix.cs" />
     <Page Include="Resources\GraphTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -243,7 +245,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Src\Utility" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

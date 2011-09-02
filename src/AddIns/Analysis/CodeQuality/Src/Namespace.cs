@@ -80,8 +80,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         		foreach (var type in ns.Types)
         		{
         			if (Types.Contains(type)) {
-        		    	relationship.NumberOfOccurrences++;
-        		    	relationship.Relationships.Add(RelationshipType.UseThis);
+        		    	relationship.AddRelationship(RelationshipType.UseThis);
     		    	}
         		}
         	}
@@ -91,26 +90,23 @@ namespace ICSharpCode.CodeQualityAnalysis
         		Type type = (Type)node;
         		
         		if (this.Types.Contains(type.BaseType)) {
-        		    relationship.NumberOfOccurrences++;
-        		    relationship.Relationships.Add(RelationshipType.UseThis);
+        		    relationship.AddRelationship(RelationshipType.UseThis);
     		    }
         		
         		foreach (var thisType in type.GenericImplementedInterfacesTypes) {
     		    	if (this.Types.Contains(thisType)) {
-    		    		relationship.NumberOfOccurrences++;
-    		    		relationship.Relationships.Add(RelationshipType.UseThis);
+    		    		relationship.AddRelationship(RelationshipType.UseThis);
     		    	}
     		    }
         		
         		foreach (var thisType in type.ImplementedInterfaces) {
     		    	if (this.Types.Contains(thisType)) {
-    		    		relationship.NumberOfOccurrences++;
-    		    		relationship.Relationships.Add(RelationshipType.UseThis);
+    		    		relationship.AddRelationship(RelationshipType.UseThis);
     		    	}
     		    }
         		
         		if (this.Types.Contains(type)) {
-        		    relationship.Relationships.Add(RelationshipType.Contains);
+        		    relationship.AddRelationship(RelationshipType.Contains);
     		    }
         	}
         	
@@ -118,51 +114,44 @@ namespace ICSharpCode.CodeQualityAnalysis
         		Method method = (Method)node;
         		
         		if (this.Types.Contains(method.ReturnType)) {
-        		    relationship.NumberOfOccurrences++;
-        		    relationship.Relationships.Add(RelationshipType.UseThis);
+        		    relationship.AddRelationship(RelationshipType.UseThis);
     		    }
     		    
         		foreach (var type in method.GenericReturnTypes) {
     		    	if (this.Types.Contains(type)) {
-    		    		relationship.NumberOfOccurrences++;
-    		    		relationship.Relationships.Add(RelationshipType.UseThis);
+    		    		relationship.AddRelationship(RelationshipType.UseThis);
     		    	}
     		    }
         		
         		foreach (var parameter in method.Parameters) {
         			
         			if (this.Types.Contains(parameter.ParameterType)) {
-        				relationship.NumberOfOccurrences++;
-    		    		relationship.Relationships.Add(RelationshipType.UseThis);
+    		    		relationship.AddRelationship(RelationshipType.UseThis);
         			}
         			
         			foreach (var type in parameter.GenericTypes) {
         				if (this.Types.Contains(type)) {
-		    				relationship.NumberOfOccurrences++;
-				    		relationship.Relationships.Add(RelationshipType.UseThis);
+				    		relationship.AddRelationship(RelationshipType.UseThis);
 		    			}
         			}
         		}
         		
         		foreach (var type in method.TypeUses) {
         			if (this.Types.Contains(type)) {
-	    				relationship.NumberOfOccurrences++;
-			    		relationship.Relationships.Add(RelationshipType.UseThis);
+			    		relationship.AddRelationship(RelationshipType.UseThis);
 	    			}
         		}
         		
         		foreach (var type in method.TypeUses) {
         			if (this.Types.Contains(type)) {
-	    				relationship.NumberOfOccurrences++;
-			    		relationship.Relationships.Add(RelationshipType.UseThis);
+			    		relationship.AddRelationship(RelationshipType.UseThis);
 	    			}
         		}
         		
         		foreach (var field in method.FieldUses) {
         			foreach (var type in this.Types) {
         				if (type.Fields.Contains(field)) {
-		    				relationship.NumberOfOccurrences++;
-				    		relationship.Relationships.Add(RelationshipType.UseThis);
+				    		relationship.AddRelationship(RelationshipType.UseThis);
         				}
 	    			}
         		}
@@ -170,40 +159,36 @@ namespace ICSharpCode.CodeQualityAnalysis
         		foreach (var meth in method.MethodUses) {
         			foreach (var type in this.Types) {
         				if (type.Methods.Contains(meth)) {
-		    				relationship.NumberOfOccurrences++;
-				    		relationship.Relationships.Add(RelationshipType.UseThis);
+				    		relationship.AddRelationship(RelationshipType.UseThis);
         				}
 	    			}
         		}
         		
         		foreach (var type in method.TypeUses) {
         			if (this.Types.Contains(type)) { 
-	    				relationship.NumberOfOccurrences++;
-			    		relationship.Relationships.Add(RelationshipType.UseThis);
+			    		relationship.AddRelationship(RelationshipType.UseThis);
     				}
         				
         		}
         		
         		if (this.Types.Contains(method.DeclaringType))
-    		    	relationship.Relationships.Add(RelationshipType.Contains);
+    		    	relationship.AddRelationship(RelationshipType.Contains);
         	}
         	
         	if (node is Field) {
         		Field field = (Field)node;
         		if (this.Types.Contains(field.FieldType)) {
-        		    relationship.NumberOfOccurrences++;
-        		    relationship.Relationships.Add(RelationshipType.UseThis);
+        		    relationship.AddRelationship(RelationshipType.UseThis);
     		    }
     		    
     		    foreach (var type in field.GenericTypes) {
     		    	if (this.Types.Contains(type)) {
-    		    		relationship.NumberOfOccurrences++;
-    		    		relationship.Relationships.Add(RelationshipType.UseThis);
+    		    		relationship.AddRelationship(RelationshipType.UseThis);
     		    	}
     		    }
     		    
     		    if (this.Types.Contains(field.DeclaringType))
-    		    	relationship.Relationships.Add(RelationshipType.Contains);
+    		    	relationship.AddRelationship(RelationshipType.Contains);
         	}
         	
         	return relationship;

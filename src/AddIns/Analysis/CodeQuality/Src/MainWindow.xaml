@@ -54,11 +54,18 @@
 	
 	<Grid>
 		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
 			<RowDefinition />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		
-		<TabControl Grid.Row="0">
+		<ToolBarTray Background="White" Grid.Row="0">
+			<ToolBar>
+				<Button Name="btnOpenAssembly" Click="btnOpenAssembly_Click" Margin="0 0 5 0">Open Assembly</Button>
+			</ToolBar>
+		</ToolBarTray>
+			
+		<TabControl Grid.Row="1" Name="mainTabs" IsEnabled="False"> <!-- It is enabled once assembly is loaded. -->
 			<TabItem Header="Dependency Graph">
 				<Grid>
 					<Grid.RowDefinitions>
@@ -74,7 +81,6 @@
 					
 					<ToolBarTray Background="White" Grid.Row="0" Grid.ColumnSpan="2">
 						<ToolBar>
-							<Button Name="btnOpenAssembly" Click="btnOpenAssembly_Click" Margin="0 0 5 0">Open Assembly</Button>
 							<Button Name="btnRelayout" Click="btnRelayout_Click" Margin="0 0 5 0">Relayout</Button>
 							<Button Name="btnContinueLayout" Click="btnContinueLayout_Click" Margin="0 0 5 0">Continue Layout</Button>
 							<Button Name="btnResetGraph" Click="btnResetGraph_Click" Margin="0 0 5 0">Reset Graph</Button>
@@ -147,7 +153,7 @@
 				</Grid>
 			</TabItem>
 		</TabControl>
-		<StatusBar Grid.Row="1">
+		<StatusBar Grid.Row="2">
 			<StatusBarItem HorizontalAlignment="Left" x:Name="progressBar" Visibility="Hidden">
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="Loading " />

@@ -5,14 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ICSharpCode.CodeQualityAnalysis.Utility;
 
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
-    public class DependencyMatrix : Matrix<INode>
+    public class DependencyMatrix : Matrix<INode, Relationship>
     {
-        public override object EvaluateCell(MatrixCell<INode> rowHeader, MatrixCell<INode> columnHeader)
-        {
-        	return rowHeader.Value.GetRelationship(columnHeader.Value);
-        }
+		protected override Relationship GetCellValue(int rowIndex, int columnIndex)
+		{
+			return HeaderRows[rowIndex].Value.GetRelationship(HeaderColumns[columnIndex].Value);
+		}
     }
 }

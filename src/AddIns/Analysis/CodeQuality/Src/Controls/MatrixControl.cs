@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.CodeQualityAnalysis.Utility;
 using System.Drawing.Drawing2D;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,7 +13,8 @@ using System.Windows.Media.Imaging;
 
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
-	public class MatrixControl<TValue> : FrameworkElement, IScrollInfo
+	public class MatrixControl<TItem, TValue> : FrameworkElement, IScrollInfo
+		where TValue : IValue
 	{
 		private Dictionary<string, ImageSource> imgs = new Dictionary<string, ImageSource>();
 		private Coords currentCell = new Coords(-1, -1);
@@ -28,17 +30,17 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		private int matrixWidth = 0;
 		private int matrixHeight = 0;
 
-		private Matrix<TValue> matrix;
+		private Matrix<TItem, TValue> matrix;
 		
-		public Matrix<TValue> Matrix
+		public Matrix<TItem, TValue> Matrix
 		{
 			get { return matrix; }
 			set
 			{
 				matrix = value;
 
-				matrixHeight = Matrix.HeaderRows.Count;
-				matrixWidth = Matrix.HeaderColumns.Count;
+				matrixHeight = Matrix.HeaderRows.Count - 1;
+				matrixWidth = Matrix.HeaderColumns.Count - 1;
 			}
 		}
 		
@@ -46,12 +48,16 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 
 		public int CellWidth { get; set; }
 		
+		public HoveredCell<TValue> HoveredCell { get; set; }
+		
 		public MatrixControl()
 		{
 			CellHeight = CellWidth = 36;
 			matrixWidth = 20;
 			matrixHeight = 20;
 			font = "Verdana";
+			
+			HoveredCell = new HoveredCell<TValue>();
 		}
 		
 		protected override void OnMouseMove(System.Windows.Input.MouseEventArgs e)
@@ -148,20 +154,23 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			cellsVertically = maxHeight > matrixHeight ? matrixHeight : maxHeight + 1;
 
 			// text
-			for (int i = 0; i < cellsHorizontally; i++)
-				for (int j = 0; j < cellsVertically; j++)
+			for (int i = 0; i < cellsHorizontally; i++) {
+				for (int j = 0; j < cellsVertically; j++) {
+					HoveredCell.RowIndex = i + scaledOffsetX;
+					HoveredCell.ColumnIndex = j + scaledOffsetY;
+					HoveredCell.Value = matrix[HoveredCell.RowIndex, HoveredCell.ColumnIndex];
 					drawingContext.DrawImage(
-						CreateText((i + scaledOffsetX) * (j + scaledOffsetY)),
+						CreateText(HoveredCell.Value.Text),
 						new Rect(i * CellWidth - offsetDiffX, j * CellHeight - offsetDiffY, CellWidth, CellHeight));
-		}
-		
-		public ImageSource CreateText(int number)
-		{
-			return CreateText(number.ToString());
+				}
+			}
 		}
 		
 		public ImageSource CreateText(string text)
 		{
+			if (text == "0") // rendering zeroes would be distracting
+				text = string.Empty;
+			
 			if (imgs.ContainsKey(text))
 				return imgs[text];
 			
@@ -375,5 +384,12 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 				Y = y;
 			}
 		}
+	}
+	
+	public class HoveredCell<TValue>
+	{
+		public int RowIndex { get; set; }
+		public int ColumnIndex { get; set; }
+		public TValue Value { get; set; }
 	}
 }

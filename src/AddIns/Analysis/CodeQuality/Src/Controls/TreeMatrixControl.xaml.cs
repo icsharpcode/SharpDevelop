@@ -12,6 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Forms;
+using ICSharpCode.CodeQualityAnalysis.Utility;
 
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
@@ -20,7 +21,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 	/// </summary>
 	public partial class TreeMatrixControl : System.Windows.Controls.UserControl
 	{
-		public Matrix<INode> Matrix
+		public Matrix<INode, Relationship> Matrix
 		{
 			get
 			{

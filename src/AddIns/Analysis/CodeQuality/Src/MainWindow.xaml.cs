@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 
 using GraphSharp.Controls;
 using ICSharpCode.CodeQualityAnalysis.Controls;
+using ICSharpCode.CodeQualityAnalysis.Utility;
 using Microsoft.Win32;
 
 namespace ICSharpCode.CodeQualityAnalysis
@@ -72,6 +73,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			worker.RunWorkerCompleted += (source, args) => {
 				progressBar.Visibility = Visibility.Hidden;
 				assemblyStats.Visibility = Visibility.Visible;
+				mainTabs.IsEnabled = true;
 				FillMatrix();
 			};
 			
@@ -93,13 +95,13 @@ namespace ICSharpCode.CodeQualityAnalysis
 			var matrix = new DependencyMatrix();
 
 			foreach (var ns in metricsReader.MainModule.Namespaces) {
-				matrix.HeaderRows.Add(new MatrixCell<INode>(ns));
+				matrix.HeaderRows.Add(new Cell<INode>(ns));
 				foreach (var type in ns.Types) {
-					matrix.HeaderRows.Add(new MatrixCell<INode>(type));
+					matrix.HeaderRows.Add(new Cell<INode>(type));
 				}
-				matrix.HeaderColumns.Add(new MatrixCell<INode>(ns));
+				matrix.HeaderColumns.Add(new Cell<INode>(ns));
 				foreach (var type in ns.Types) {
-					matrix.HeaderColumns.Add(new MatrixCell<INode>(type));
+					matrix.HeaderColumns.Add(new Cell<INode>(type));
 				}
 			}
 

@@ -11,7 +11,8 @@ using System.Windows.Controls.Primitives;
 
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
-    public class DependencyMatrixControl : MatrixControl<INode>
+    public class DependencyMatrixControl : MatrixControl<INode, Relationship>
     {
+    	
     }
 }
