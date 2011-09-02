@@ -44,48 +44,44 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		{
 			FillTree (leftTree,module);
 			FillTree (topTree,module);
-			
 		}
 		
-		private void FillTree (System.Windows.Controls.TreeView tree,Module module)
+		
+		private void FillTree (ICSharpCode.TreeView.SharpTreeView tree,Module module)
 		{
+			var root = CreateTreeItem(module);
+			tree.Root = root;
+			
 			foreach (var ns in module.Namespaces)
 			{
-				var leftType = CreateTreeItem(ns.Name);
-
-				tree.Items.Add(leftType);
-
+				var namespaceNode = CreateTreeItem(ns);
+				tree.Root.Children.Add(namespaceNode);
+				
 				foreach (var type in ns.Types)
 				{
-					var lType = CreateTreeItem(type.Name);
-					
-					leftType.Items.Add(lType);
+					var typeNode = CreateTreeItem(type);
+					namespaceNode.Children.Add(typeNode);
 
 					foreach (var method in type.Methods)
 					{
-						var leftMethod = CreateTreeItem(method.Name);
-						leftType.Items.Add(leftMethod);
+						var methodName = CreateTreeItem(method);
+						namespaceNode.Children.Add(methodName);
 					}
 
 					foreach (var field in type.Fields)
 					{
-						var leftField = CreateTreeItem(field.Name);
-						leftType.Items.Add(leftField);
+						var fieldNode = CreateTreeItem(field);
+						namespaceNode.Children.Add(fieldNode);
 					}
 				}
 			}
 		}
 			
 			
-		private TreeViewItem CreateTreeItem (string ns)
+		private DependecyTreeNode CreateTreeItem (INode node)
 		{
-			var nsType = new TreeViewItem
-			{
-				Header = ns,
-				ToolTip = ns
-			};
-//			nsType.Height = matrixControl.CellHeight;
-			return nsType;
+			DependecyTreeNode dtn = new DependecyTreeNode(node);
+			return dtn;
 		}
 	}
 }
