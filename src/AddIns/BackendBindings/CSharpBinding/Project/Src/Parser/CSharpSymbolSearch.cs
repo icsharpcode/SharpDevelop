@@ -107,13 +107,14 @@ namespace CSharpBinding
 			if (textSource == null)
 				return;
 			if (searchScope.SearchTerm != null) {
-				// TODO: do a fast check with IndexOf()
+				if (textSource.IndexOf(searchScope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) < 0)
+					return;
 			}
 			
 			ParseInformation parseInfo = ParserService.Parse(fileName, textSource);
 			if (parseInfo == null)
 				return;
-			ParsedFile parsedFile = parseInfo.ParsedFile as ParsedFile;
+			CSharpParsedFile parsedFile = parseInfo.ParsedFile as CSharpParsedFile;
 			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
 			if (parsedFile == null || cu == null)
 				return;

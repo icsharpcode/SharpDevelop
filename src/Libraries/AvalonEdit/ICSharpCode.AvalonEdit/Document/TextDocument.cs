@@ -156,10 +156,25 @@ namespace ICSharpCode.AvalonEdit.Document
 			return GetText(segment.Offset, segment.Length);
 		}
 		
-		int ITextSource.IndexOfAny(char[] anyOf, int startIndex, int count)
+		/// <inheritdoc/>
+		public int IndexOfAny(char[] anyOf, int startIndex, int count)
 		{
 			DebugVerifyAccess(); // frequently called (NewLineFinder), so must be fast in release builds
 			return rope.IndexOfAny(anyOf, startIndex, count);
+		}
+		
+		/// <inheritdoc/>
+		public int IndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			DebugVerifyAccess();
+			return rope.IndexOf(searchText, startIndex, count, comparisonType);
+		}
+		
+		/// <inheritdoc/>
+		public int LastIndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			DebugVerifyAccess();
+			return rope.LastIndexOf(searchText, startIndex, count, comparisonType);
 		}
 		
 		/// <inheritdoc/>

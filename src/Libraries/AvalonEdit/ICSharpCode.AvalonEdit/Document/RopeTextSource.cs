@@ -110,5 +110,15 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			return rope.ToString(segment.Offset, segment.Length);
 		}
+		
+		public int IndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			return rope.IndexOf(searchText, startIndex, count, comparisonType);
+		}
+		
+		public int LastIndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			return rope.LastIndexOf(searchText, startIndex, count, comparisonType);
+		}
 	}
 }

@@ -80,7 +80,7 @@ namespace CSharpBinding.Parser
 			}
 			
 			TypeSystemConvertVisitor cv = new TypeSystemConvertVisitor(projectContent, fileName);
-			ParsedFile file = cv.Convert(cu);
+			CSharpParsedFile file = cv.Convert(cu);
 			
 			ParseInformation info = new ParseInformation(file, fullParseInformationRequested);
 			if (fullParseInformationRequested)
@@ -103,7 +103,7 @@ namespace CSharpBinding.Parser
 			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
 			if (cu == null)
 				throw new ArgumentException("Parse info does not have CompilationUnit");
-			ParsedFile parsedFile = parseInfo.ParsedFile as ParsedFile;
+			CSharpParsedFile parsedFile = parseInfo.ParsedFile as CSharpParsedFile;
 			if (parsedFile == null)
 				throw new ArgumentException("Parse info does not have a C# ParsedFile");
 			

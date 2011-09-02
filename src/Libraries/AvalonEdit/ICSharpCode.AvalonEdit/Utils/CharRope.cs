@@ -168,5 +168,39 @@ namespace ICSharpCode.AvalonEdit.Utils
 			}
 			return -1;
 		}
+		
+		/// <summary>
+		/// Gets the index of the first occurrence of the search text.
+		/// </summary>
+		public static int IndexOf(this Rope<char> rope, string searchText, int startIndex, int length, StringComparison comparisonType)
+		{
+			if (rope == null)
+				throw new ArgumentNullException("rope");
+			if (searchText == null)
+				throw new ArgumentNullException("searchText");
+			rope.VerifyRange(startIndex, length);
+			int pos = rope.ToString(startIndex, length).IndexOf(searchText, startIndex, length, comparisonType);
+			if (pos < 0)
+				return -1;
+			else
+				return pos + startIndex;
+		}
+		
+		/// <summary>
+		/// Gets the index of the last occurrence of the search text.
+		/// </summary>
+		public static int LastIndexOf(this Rope<char> rope, string searchText, int startIndex, int length, StringComparison comparisonType)
+		{
+			if (rope == null)
+				throw new ArgumentNullException("rope");
+			if (searchText == null)
+				throw new ArgumentNullException("searchText");
+			rope.VerifyRange(startIndex, length);
+			int pos = rope.ToString(startIndex, length).LastIndexOf(searchText, startIndex, length, comparisonType);
+			if (pos < 0)
+				return -1;
+			else
+				return pos + startIndex;
+		}
 	}
 }
