@@ -100,7 +100,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 				// hover x line
 				var rect = new Rect(0,
 				                (currentCell.Y - scaledOffsetY) * CellHeight - offsetDiffY,
-				                CellWidth * cellsVertically,
+				                CellWidth * cellsHorizontally,
 				                CellHeight);
 				
 				var brush = new SolidColorBrush(Colors.GreenYellow);
@@ -110,7 +110,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 				rect = new Rect((currentCell.X - scaledOffsetX) * CellWidth - offsetDiffX,
 				                0,
 				                CellWidth,
-				                CellHeight * cellsHorizontally);
+				                CellHeight * cellsVertically);
 				
 				brush = new SolidColorBrush(Colors.GreenYellow);
 				drawingContext.DrawRectangle(brush, null, rect);
