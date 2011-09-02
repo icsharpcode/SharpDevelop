@@ -32,6 +32,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			AstNode node = cu.GetNodeAt(location);
+			if (node == null)
+				return null;
 			AstNode resolvableNode;
 			if (node is Identifier) {
 				resolvableNode = node.Parent;

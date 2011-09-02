@@ -17,56 +17,35 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// Represents the result of resolving an expression.
+	/// Represents a scope in which references are searched.
 	/// </summary>
-	public class ResolveResult
+	public interface IFindReferenceSearchScope
 	{
-		IType type;
+		/// <summary>
+		/// Gets the search term. Only files that contain this identifier need to be parsed.
+		/// Can return null if all files need to be parsed.
+		/// </summary>
+		string SearchTerm { get; }
 		
-		public ResolveResult(IType type)
-		{
-			if (type == null)
-				throw new ArgumentNullException("type");
-			this.type = type;
-		}
+		/// <summary>
+		/// Gets the accessibility that defines the search scope.
+		/// </summary>
+		Accessibility Accessibility { get; }
 		
-		public IType Type {
-			get { return type; }
-		}
+		/// <summary>
+		/// Gets the top-level entity that defines the search scope.
+		/// </summary>
+		ITypeDefinition TopLevelTypeDefinition { get; }
 		
-		public virtual bool IsCompileTimeConstant {
-			get { return false; }
-		}
-		
-		public virtual object ConstantValue {
-			get { return null; }
-		}
-		
-		public virtual bool IsError {
-			get { return false; }
-		}
-		
-		public override string ToString()
-		{
-			return "[" + GetType().Name + " " + type + "]";
-		}
-		
-		public virtual IEnumerable<ResolveResult> GetChildResults()
-		{
-			return Enumerable.Empty<ResolveResult>();
-		}
-		
-		public virtual DomRegion GetDefinitionRegion()
-		{
-			return DomRegion.Empty;
-		}
+		/// <summary>
+		/// Creates a navigator that can find references to this entity and reports
+		/// them to the specified callback.
+		/// </summary>
+		IResolveVisitorNavigator GetNavigator(FoundReferenceCallback callback);
 	}
 }

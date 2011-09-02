@@ -92,5 +92,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			return string.Format("[{0} {1}]", GetType().Name, member);
 		}
+		
+		public override DomRegion GetDefinitionRegion()
+		{
+			return member.Region;
+		}
 	}
 }

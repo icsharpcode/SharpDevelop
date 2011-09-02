@@ -282,10 +282,12 @@ namespace ICSharpCode.NRefactory.Demo
 				
 				FindReferences fr = new FindReferences();
 				int referenceCount = 0;
-				fr.ReferenceFound += delegate { referenceCount++; };
+				FoundReferenceCallback callback = delegate(AstNode matchNode, ResolveResult result) {
+					referenceCount++;
+				};
 				
 				var searchScopes = fr.GetSearchScopes(entity);
-				navigator = new CompositeResolveVisitorNavigator(searchScopes.ToArray());
+				navigator = new CompositeResolveVisitorNavigator(searchScopes.Select(s => s.GetNavigator(callback)).ToArray());
 				visitor = new ResolveVisitor(resolver, parsedFile, navigator);
 				visitor.Scan(compilationUnit);
 				

@@ -25,8 +25,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	{
 		IResolveVisitorNavigator[] navigators;
 		
-		public CompositeResolveVisitorNavigator(IResolveVisitorNavigator[] navigators)
+		public CompositeResolveVisitorNavigator(params IResolveVisitorNavigator[] navigators)
 		{
+			if (navigators == null)
+				throw new ArgumentNullException("navigators");
 			this.navigators = navigators;
 		}
 		
