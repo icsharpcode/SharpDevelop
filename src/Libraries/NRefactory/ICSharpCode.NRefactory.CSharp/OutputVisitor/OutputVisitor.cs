@@ -154,6 +154,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		void WriteSpecialsUpToRole (Role role)
 		{
+			if (positionStack.Count == 0)
+				return;
 			for (AstNode pos = positionStack.Peek(); pos != null; pos = pos.NextSibling) {
 				if (pos.Role == role) {
 					WriteSpecials (positionStack.Pop (), pos);
@@ -169,6 +171,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		void WriteSpecialsUpToNode (AstNode node)
 		{
+			if (positionStack.Count == 0)
+				return;
 			for (AstNode pos = positionStack.Peek(); pos != null; pos = pos.NextSibling) {
 				if (pos == node) {
 					WriteSpecials (positionStack.Pop (), pos);
@@ -180,6 +184,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		void WriteSpecialsUpToRole (Role role, AstNode nextNode)
 		{
+			if (positionStack.Count == 0)
+				return;
 			// Look for the role between the current position and the nextNode.
 			for (AstNode pos = positionStack.Peek(); pos != null && pos != nextNode; pos = pos.NextSibling) {
 				if (pos.Role == AstNode.Roles.Comma) {
@@ -433,7 +439,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		void WriteTypeParameters (IEnumerable<TypeParameterDeclaration> typeParameters)
+		public void WriteTypeParameters (IEnumerable<TypeParameterDeclaration> typeParameters)
 		{
 			if (typeParameters.Any ()) {
 				WriteToken ("<", AstNode.Roles.LChevron);

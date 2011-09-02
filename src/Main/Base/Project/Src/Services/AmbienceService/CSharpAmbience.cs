@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
@@ -18,17 +20,115 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public ConversionFlags ConversionFlags { get; set; }
 		
+		#region ConvertEntity
 		public string ConvertEntity(IEntity e)
 		{
 			using (var ctx = ParserService.CurrentTypeResolveContext.Synchronize()) {
-				TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
-				var astNode = astBuilder.ConvertEntity(e);
-				CSharpFormattingOptions formatting = new CSharpFormattingOptions();
 				StringWriter writer = new StringWriter();
-				astNode.AcceptVisitor(new OutputVisitor(writer, formatting), null);
+				
+				switch (e.EntityType) {
+					case EntityType.None:
+						break;
+					case EntityType.TypeDefinition:
+						ConvertTypeDeclaration((ITypeDefinition)e, ctx, writer);
+						break;
+					case EntityType.Field:
+						
+						break;
+					case EntityType.Property:
+						
+						break;
+					case EntityType.Indexer:
+						
+						break;
+					case EntityType.Event:
+						
+						break;
+					case EntityType.Method:
+						
+						break;
+					case EntityType.Operator:
+						
+						break;
+					case EntityType.Constructor:
+						
+						break;
+					case EntityType.Destructor:
+						
+						break;
+					default:
+						throw new Exception("Invalid value for EntityType");
+				}
+				
 				return writer.ToString().TrimEnd();
 			}
 		}
+		
+		void ConvertTypeDeclaration(ITypeDefinition typeDef, ITypeResolveContext ctx, StringWriter writer)
+		{
+			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
+			astBuilder.ShowModifiers = (ConversionFlags & ConversionFlags.ShowModifiers) == ConversionFlags.ShowModifiers;
+			astBuilder.ShowAccessibility = (ConversionFlags & ConversionFlags.ShowAccessibility) == ConversionFlags.ShowAccessibility;
+			TypeDeclaration typeDeclaration = (TypeDeclaration)astBuilder.ConvertEntity(typeDef);
+			PrintModifiers(typeDeclaration.Modifiers, writer);
+			if ((ConversionFlags & ConversionFlags.ShowDefinitionKeyWord) == ConversionFlags.ShowDefinitionKeyWord) {
+				switch (typeDeclaration.ClassType) {
+					case ClassType.Class:
+						writer.Write("class");
+						break;
+					case ClassType.Struct:
+						writer.Write("struct");
+						break;
+					case ClassType.Interface:
+						writer.Write("interface");
+						break;
+					case ClassType.Enum:
+						writer.Write("enum");
+						break;
+					default:
+						throw new Exception("Invalid value for ClassType");
+				}
+				writer.Write(" ");
+			}
+			WriteTypeDeclarationName(typeDef, ctx, writer);
+		}
+
+		void WriteTypeDeclarationName(ITypeDefinition typeDef, ITypeResolveContext ctx, StringWriter writer)
+		{
+			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
+			if (typeDef.DeclaringTypeDefinition != null) {
+				WriteTypeDeclarationName(typeDef.DeclaringTypeDefinition, ctx, writer);
+				writer.Write('.');
+			} else if ((ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) == ConversionFlags.UseFullyQualifiedMemberNames) {
+				writer.Write(typeDef.Namespace);
+				writer.Write('.');
+			}
+			writer.Write(typeDef.Name);
+			if ((ConversionFlags & ConversionFlags.ShowTypeParameterList) == ConversionFlags.ShowTypeParameterList) {
+				CreatePrinter(writer).WriteTypeParameters(((TypeDeclaration)astBuilder.ConvertEntity(typeDef)).TypeParameters);
+			}
+		}
+		
+		void PrintNode(AstNode node, StringWriter writer)
+		{
+			node.AcceptVisitor(CreatePrinter(writer), null);
+		}
+		
+		OutputVisitor CreatePrinter(StringWriter writer)
+		{
+			return new OutputVisitor(writer, new CSharpFormattingOptions());
+		}
+		
+		void PrintModifiers(Modifiers modifiers, StringWriter writer)
+		{
+			foreach (var m in CSharpModifierToken.AllModifiers) {
+				if ((modifiers & m) == m) {
+					writer.Write(CSharpModifierToken.GetModifierName(m));
+					writer.Write(" ");
+				}
+			}
+		}
+		#endregion
 		
 		public string ConvertVariable(IVariable v)
 		{

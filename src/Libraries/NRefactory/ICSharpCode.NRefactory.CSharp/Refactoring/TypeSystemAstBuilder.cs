@@ -462,8 +462,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			decl.ClassType = classType;
 			decl.Name = typeDefinition.Name;
 			
+			int outerTypeParameterCount = (typeDefinition.DeclaringTypeDefinition == null) ? 0 : typeDefinition.DeclaringTypeDefinition.TypeParameterCount;
+			
 			if (this.ShowTypeParameters) {
-				foreach (ITypeParameter tp in typeDefinition.TypeParameters) {
+				foreach (ITypeParameter tp in typeDefinition.TypeParameters.Skip(outerTypeParameterCount)) {
 					decl.TypeParameters.Add(ConvertTypeParameter(tp));
 				}
 			}

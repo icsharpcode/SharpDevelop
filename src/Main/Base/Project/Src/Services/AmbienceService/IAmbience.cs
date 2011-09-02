@@ -38,12 +38,6 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		ShowModifiers          = 0x20,
 		/// <summary>
-		/// Show the inheritance declaration
-		/// </summary>
-		ShowInheritanceList    = 0x40,
-		
-		IncludeHtmlMarkup      = 0x80,
-		/// <summary>
 		/// Show the return type
 		/// </summary>
 		ShowReturnType = 0x100,
@@ -51,12 +45,6 @@ namespace ICSharpCode.SharpDevelop
 		/// Use fully qualified names for return type and parameters.
 		/// </summary>
 		UseFullyQualifiedTypeNames = 0x200,
-		/// <summary>
-		/// Include opening brace (or equivalent) for methods or classes;
-		/// or semicolon (or equivalent) for field, events.
-		/// For properties, a block indicating if there is a getter/setter is included.
-		/// </summary>
-		IncludeBody = 0x400,
 		/// <summary>
 		/// Show the list of type parameters on method and class declarations.
 		/// Type arguments for parameter/return types are always shown.
