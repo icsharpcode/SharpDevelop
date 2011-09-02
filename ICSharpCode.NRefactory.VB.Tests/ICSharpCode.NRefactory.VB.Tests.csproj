@@ -62,8 +62,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\lib\nunit.framework.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\Mono.Cecil\Test\libs\nunit-2.4.8\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
