@@ -71,4 +71,5 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// Special value used to match any modifiers during pattern matching.
 		/// </summary>
 		Any = unchecked((int)0x80000000)
-	}}
+	}
+}
