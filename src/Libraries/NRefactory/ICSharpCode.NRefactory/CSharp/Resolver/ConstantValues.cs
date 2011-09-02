@@ -57,72 +57,56 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			};
 		}
 		
-		sealed class ConstantValueResult
-		{
-			public readonly IType ValueType;
-			public readonly object Value;
-			
-			public ConstantValueResult(IType valueType, object value)
-			{
-				this.ValueType = valueType;
-				this.Value = value;
-			}
-		}
-		
-		ConstantValueResult DoResolve(ITypeResolveContext context)
+		public ResolveResult Resolve(ITypeResolveContext context)
 		{
 			CacheManager cache = context.CacheManager;
 			if (cache != null) {
-				ConstantValueResult cachedResult = cache.GetShared(this) as ConstantValueResult;
+				ResolveResult cachedResult = cache.GetShared(this) as ResolveResult;
 				if (cachedResult != null)
 					return cachedResult;
 			}
 			CSharpResolver resolver = CreateResolver(context);
 			ResolveResult rr = expression.Resolve(resolver);
-			IType type = rr.Type;
-			object val = rr.ConstantValue;
-			if (resolver.Context != context) {
-				// Retrieve the equivalent type in the new resolve context.
-				// E.g. if the constant is defined in a .NET 2.0 project, type might be Int32 from mscorlib 2.0.
-				// However, the calling project might be a .NET 4.0 project, so we need to return Int32 from mscorlib 4.0.
-				type = type.AcceptVisitor(new MapTypeIntoNewContext(context));
-				// If 'val' is a type or an array containing types, we need to map it to the new context.
-				val = MapToNewContext(val, context);
-			}
-			ConstantValueResult result = new ConstantValueResult(type, val);
+			// Retrieve the equivalent type in the new resolve context.
+			// E.g. if the constant is defined in a .NET 2.0 project, type might be Int32 from mscorlib 2.0.
+			// However, the calling project might be a .NET 4.0 project, so we need to return Int32 from mscorlib 4.0.
+			rr = MapToNewContext(rr, new MapTypeIntoNewContext(context));
 			if (cache != null)
-				cache.SetShared(this, result);
-			return result;
+				cache.SetShared(this, rr);
+			return rr;
 		}
 		
-		public IType GetValueType(ITypeResolveContext context)
+		static ResolveResult MapToNewContext(ResolveResult rr, MapTypeIntoNewContext mapping)
 		{
-			return DoResolve(context).ValueType;
-		}
-		
-		public object GetValue(ITypeResolveContext context)
-		{
-			return DoResolve(context).Value;
-		}
-		
-		static object MapToNewContext(object val, ITypeResolveContext context)
-		{
-			IType type = val as IType;
-			if (type != null) {
-				return type.AcceptVisitor(new MapTypeIntoNewContext(context));
+			if (rr is TypeOfResolveResult) {
+				return new TypeOfResolveResult(
+					rr.Type.AcceptVisitor(mapping),
+					((TypeOfResolveResult)rr).ReferencedType.AcceptVisitor(mapping));
+			} else if (rr is ArrayCreateResolveResult) {
+				ArrayCreateResolveResult acrr = (ArrayCreateResolveResult)rr;
+				return new ArrayCreateResolveResult(
+					acrr.Type.AcceptVisitor(mapping),
+					MapToNewContext(acrr.SizeArguments, mapping),
+					MapToNewContext(acrr.InitializerElements, mapping));
+			} else if (rr.IsCompileTimeConstant) {
+				return new ConstantResolveResult(
+					rr.Type.AcceptVisitor(mapping),
+					rr.ConstantValue
+				);
+			} else {
+				return new ErrorResolveResult(rr.Type.AcceptVisitor(mapping));
 			}
-			object[] arr = val as object[];
-			if (arr != null) {
-				object[] newArr = new object[arr.Length];
-				bool modified = false;
-				for (int i = 0; i < arr.Length; i++) {
-					newArr[i] = MapToNewContext(arr[i], context);
-					modified |= arr[i] != newArr[i];
-				}
-				if (modified)
-					return newArr;
+		}
+		
+		static ResolveResult[] MapToNewContext(ResolveResult[] input, MapTypeIntoNewContext mapping)
+		{
+			if (input == null)
+				return null;
+			ResolveResult[] output = new ResolveResult[input.Length];
+			for (int i = 0; i < input.Length; i++) {
+				output[i] = MapToNewContext(input[i], mapping);
 			}
-			return val;
+			return output;
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -170,21 +154,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 			}
 		}
 		
-		public IType GetValueType(ITypeResolveContext context)
+		public ResolveResult Resolve(ITypeResolveContext context)
 		{
-			return baseValue.GetValueType(context);
-		}
-		
-		public object GetValue(ITypeResolveContext context)
-		{
-			object val = baseValue.GetValue(context);
-			if (val == null)
-				return null;
-			TypeCode typeCode = Type.GetTypeCode(val.GetType());
-			if (!(typeCode >= TypeCode.SByte && typeCode <= TypeCode.UInt64))
-				return null;
-			long intVal = (long)CSharpPrimitiveCast.Cast(TypeCode.Int64, val, false);
-			return CSharpPrimitiveCast.Cast(typeCode, unchecked(intVal + incrementAmount), false);
+			ResolveResult rr = baseValue.Resolve(context);
+			if (rr.IsCompileTimeConstant && rr.ConstantValue != null) {
+				object val = rr.ConstantValue;
+				TypeCode typeCode = Type.GetTypeCode(val.GetType());
+				if (typeCode >= TypeCode.SByte && typeCode <= TypeCode.UInt64) {
+					long intVal = (long)CSharpPrimitiveCast.Cast(TypeCode.Int64, val, false);
+					object newVal = CSharpPrimitiveCast.Cast(typeCode, unchecked(intVal + incrementAmount), false);
+					return new ConstantResolveResult(rr.Type, newVal);
+				}
+			}
+			return new ErrorResolveResult(rr.Type);
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -672,9 +654,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 				elements[i] = arrayElements[i].Resolve(resolver);
 			}
 			if (elementType != null) {
-				return resolver.ResolveArrayCreation(elementType.Resolve(resolver.Context), 1, null, elements, true);
+				return resolver.ResolveArrayCreation(elementType.Resolve(resolver.Context), 1, null, elements);
 			} else {
-				return resolver.ResolveArrayCreation(null, 1, null, elements, true);
+				return resolver.ResolveArrayCreation(null, 1, null, elements);
 			}
 		}
 		

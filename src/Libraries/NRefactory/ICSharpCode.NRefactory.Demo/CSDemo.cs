@@ -225,7 +225,7 @@ namespace ICSharpCode.NRefactory.Demo
 			foreach (TreeNode t in c) {
 				AstNode node = t.Tag as AstNode;
 				if (node != null) {
-					ResolveResult rr = v.GetResolveResult(node);
+					ResolveResult rr = v.GetResolveResultIfResolved(node);
 					if (rr != null)
 						t.Text = GetNodeTitle(node) + " " + rr.ToString();
 					else
@@ -282,10 +282,12 @@ namespace ICSharpCode.NRefactory.Demo
 				
 				FindReferences fr = new FindReferences();
 				int referenceCount = 0;
-				fr.ReferenceFound += delegate { referenceCount++; };
+				FoundReferenceCallback callback = delegate(AstNode matchNode, ResolveResult result) {
+					referenceCount++;
+				};
 				
 				var searchScopes = fr.GetSearchScopes(entity);
-				navigator = new CompositeResolveVisitorNavigator(searchScopes.ToArray());
+				navigator = new CompositeResolveVisitorNavigator(searchScopes.Select(s => s.GetNavigator(callback)).ToArray());
 				visitor = new ResolveVisitor(resolver, parsedFile, navigator);
 				visitor.Scan(compilationUnit);
 				

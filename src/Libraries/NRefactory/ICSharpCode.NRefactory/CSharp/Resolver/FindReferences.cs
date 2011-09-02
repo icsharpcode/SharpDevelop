@@ -31,7 +31,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// <summary>
 	/// 'Find references' implementation.
 	/// </summary>
-	public class FindReferences
+	/// <remarks>
+	/// This class is thread-safe.
+	/// The intended multi-threaded usage is to call GetSearchScopes() once, and then
+	/// call FindReferencesInFile() concurrently on multiple threads (parallel foreach over all interesting files).
+	/// </remarks>
+	public sealed class FindReferences
 	{
 		#region Properties
 		/// <summary>
@@ -214,7 +219,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		#region FindReferencesInSolution
+		#region GetInterestingFileNames
 		/// <summary>
 		/// Gets the file names that possibly contain references to the element being searched for.
 		/// </summary>
@@ -275,7 +280,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
 		/// <param name="context">The type resolve context to use for resolving the file.</param>
 		/// <param name="callback">Callback used to report the references that were found.</param>
-		public void FindReferencesInFile(IFindReferenceSearchScope searchScope, ParsedFile parsedFile, CompilationUnit compilationUnit,
+		public void FindReferencesInFile(IFindReferenceSearchScope searchScope, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
 		                                 ITypeResolveContext context, FoundReferenceCallback callback)
 		{
 			if (searchScope == null)
@@ -291,7 +296,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
 		/// <param name="context">The type resolve context to use for resolving the file.</param>
 		/// <param name="callback">Callback used to report the references that were found.</param>
-		public void FindReferencesInFile(IList<IFindReferenceSearchScope> searchScopes, ParsedFile parsedFile, CompilationUnit compilationUnit,
+		public void FindReferencesInFile(IList<IFindReferenceSearchScope> searchScopes, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
 		                                 ITypeResolveContext context, FoundReferenceCallback callback)
 		{
 			if (searchScopes == null)

@@ -19,6 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
@@ -70,14 +72,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (positionalArguments != null) {
 				while (i < positionalArguments.Count) {
 					IConstantValue cv = positionalArguments[i];
-					arguments[i] = new ConstantResolveResult(cv.GetValueType(context), cv.GetValue(context));
+					arguments[i] = cv.Resolve(context);
 					i++;
 				}
 			}
 			if (namedCtorArguments != null) {
 				foreach (var pair in namedCtorArguments) {
 					argumentNames[i] = pair.Key;
-					arguments[i] = new ConstantResolveResult(pair.Value.GetValueType(context), pair.Value.GetValue(context));
+					arguments[i] = pair.Value.Resolve(context);
 					i++;
 				}
 			}
@@ -85,17 +87,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return mrr != null ? mrr.Member as IMethod : null;
 		}
 		
-		public IList<IConstantValue> GetPositionalArguments(ITypeResolveContext context)
+		public IList<ResolveResult> GetPositionalArguments(ITypeResolveContext context)
 		{
+			List<ResolveResult> result = new List<ResolveResult>();
+			if (positionalArguments != null) {
+				foreach (var arg in positionalArguments) {
+					result.Add(Resolve(arg, context));
+				}
+			}
 			if (namedCtorArguments == null || namedCtorArguments.Count == 0) {
 				// no namedCtorArguments: just return the positionalArguments
-				if (positionalArguments != null)
-					return new ReadOnlyCollection<IConstantValue>(positionalArguments);
-				else
-					return EmptyList<IConstantValue>.Instance;
+				return result.AsReadOnly();
 			}
 			// we do have namedCtorArguments, which need to be re-ordered and appended to the positional arguments
-			List<IConstantValue> result = new List<IConstantValue>(this.positionalArguments);
 			IMethod method = ResolveConstructor(context);
 			if (method != null) {
 				for (int i = result.Count; i < method.Parameters.Count; i++) {
@@ -103,25 +107,40 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					bool found = false;
 					foreach (var pair in namedCtorArguments) {
 						if (pair.Key == p.Name) {
-							result.Add(pair.Value);
+							result.Add(Resolve(pair.Value, context));
 							found = true;
 						}
 					}
 					if (!found) {
 						// add the parameter's default value:
-						result.Add(p.DefaultValue ?? new SimpleConstantValue(p.Type, CSharpResolver.GetDefaultValue(p.Type.Resolve(context))));
+						if (p.DefaultValue != null) {
+							result.Add(Resolve(p.DefaultValue, context));
+						} else {
+							IType type = p.Type.Resolve(context);
+							result.Add(new ConstantResolveResult(type, CSharpResolver.GetDefaultValue(type)));
+						}
 					}
 				}
 			}
 			return result.AsReadOnly();
 		}
 		
-		public IList<KeyValuePair<string, IConstantValue>> GetNamedArguments(ITypeResolveContext context)
+		ResolveResult Resolve(IConstantValue constantValue, ITypeResolveContext context)
 		{
-			if (namedArguments != null)
-				return new ReadOnlyCollection<KeyValuePair<string, IConstantValue>>(namedArguments);
+			if (constantValue != null)
+				return constantValue.Resolve(context);
 			else
-				return EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
+				return new ErrorResolveResult(SharedTypes.UnknownType);
+		}
+		
+		public IList<KeyValuePair<string, ResolveResult>> GetNamedArguments(ITypeResolveContext context)
+		{
+			if (namedArguments != null) {
+				return namedArguments.Select(p => new KeyValuePair<string, ResolveResult>(p.Key, p.Value.Resolve(context)))
+					.ToList().AsReadOnly();
+			} else {
+				return EmptyList<KeyValuePair<string, ResolveResult>>.Instance;
+			}
 		}
 	}
 	

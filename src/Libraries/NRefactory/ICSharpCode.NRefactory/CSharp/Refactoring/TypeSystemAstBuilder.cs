@@ -335,17 +335,31 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (constantValue == null)
 				throw new ArgumentNullException("constantValue");
-			IType type = constantValue.GetValueType(context);
-			object val = constantValue.GetValue(context);
-			if (val == null) {
-				if (type.IsReferenceType(context) == true)
-					return new NullReferenceExpression();
-				else
-					return new DefaultValueExpression(ConvertType(type));
-			} else if (type.Kind == TypeKind.Enum) {
+			return ConvertConstantValue(constantValue.Resolve(context));
+		}
+		
+		Expression ConvertConstantValue(ResolveResult rr)
+		{
+			if (rr is TypeOfResolveResult) {
+				return new TypeOfExpression(ConvertType(((TypeOfResolveResult)rr).Type));
+			} else if (rr is ArrayCreateResolveResult) {
+				ArrayCreateResolveResult acrr = (ArrayCreateResolveResult)rr;
+				AstType type = ConvertType(acrr.Type);
 				throw new NotImplementedException();
+			} else if (rr.IsCompileTimeConstant) {
+				object val = rr.ConstantValue;
+				if (val == null) {
+					if (rr.Type.IsReferenceType(context) == true)
+						return new NullReferenceExpression();
+					else
+						return new DefaultValueExpression(ConvertType(rr.Type));
+				} else if (rr.Type.Kind == TypeKind.Enum) {
+					throw new NotImplementedException();
+				} else {
+					return new PrimitiveExpression(val);
+				}
 			} else {
-				return new PrimitiveExpression(val);
+				return new EmptyExpression();
 			}
 		}
 		#endregion

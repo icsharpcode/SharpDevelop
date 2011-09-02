@@ -551,7 +551,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode (arrayCreateExpression);
 			WriteKeyword ("new");
 			arrayCreateExpression.Type.AcceptVisitor (this, data);
-			WriteCommaSeparatedListInBrackets (arrayCreateExpression.Arguments);
+			if (arrayCreateExpression.Arguments.Count > 0)
+				WriteCommaSeparatedListInBrackets (arrayCreateExpression.Arguments);
 			foreach (var specifier in arrayCreateExpression.AdditionalArraySpecifiers)
 				specifier.AcceptVisitor (this, data);
 			arrayCreateExpression.Initializer.AcceptVisitor (this, data);

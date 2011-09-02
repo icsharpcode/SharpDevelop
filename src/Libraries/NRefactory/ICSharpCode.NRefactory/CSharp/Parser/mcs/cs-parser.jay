@@ -145,6 +145,7 @@ namespace Mono.CSharp
 		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
 		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
+		List<Location> attributeCommas = new List<Location> ();
 		
 		object lastYYVal;
 		
@@ -670,6 +671,10 @@ attribute_sections
 		var sect = (List<Attribute>) $1;
 		$$ = new Attributes (sect);
 		lbag.AddLocation (sect, savedOpenLocation, savedCloseLocation);
+		if (attributeCommas.Count > 0) {
+			lbag.AppendTo (sect, attributeCommas);
+			attributeCommas.Clear ();
+		}
 	  }
 	| attribute_sections attribute_section
 	  {
@@ -752,7 +757,7 @@ attribute_list
 	  {
 		var attrs = (List<Attribute>) $1;
 		attrs.Add ((Attribute) $3);
-		lbag.AppendTo (attrs, GetLocation ($2));
+		attributeCommas.Add (GetLocation ($2));
 
 		$$ = attrs;
 	  }

@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// Represents a file that was parsed and converted for the type system.
 	/// </summary>
 	[Serializable]
-	public sealed class ParsedFile : AbstractFreezable, IParsedFile
+	public sealed class CSharpParsedFile : AbstractFreezable, IParsedFile
 	{
 		readonly string fileName;
 		readonly UsingScope rootUsingScope;
@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			usingScopes = FreezeList(usingScopes);
 		}
 		
-		public ParsedFile(string fileName, UsingScope rootUsingScope)
+		public CSharpParsedFile(string fileName, UsingScope rootUsingScope)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");

@@ -327,6 +327,18 @@ namespace ICSharpCode.Editor
 			return textSource.IndexOfAny(anyOf, startIndex, count);
 		}
 		
+		/// <inheritdoc/>
+		public int IndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			return textSource.IndexOf(searchText, startIndex, count, comparisonType);
+		}
+		
+		/// <inheritdoc/>
+		public int LastIndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			return textSource.LastIndexOf(searchText, startIndex, count, comparisonType);
+		}
+		
 		object IServiceProvider.GetService(Type serviceType)
 		{
 			return null;

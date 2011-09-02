@@ -129,8 +129,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (compoundTypeDef != null) {
 				// Remove one part from a compound class
 				var newParts = new List<ITypeDefinition>(compoundTypeDef.GetParts());
-				if (newParts.Remove(typeDefinition)) {
-					((DefaultTypeDefinition)typeDefinition).SetCompoundTypeDefinition(typeDefinition);
+				// We cannot use newParts.Remove() because we need to use reference equality
+				for (int i = 0; i < newParts.Count; i++) {
+					if (newParts[i] == typeDefinition) {
+						newParts.RemoveAt(i);
+						((DefaultTypeDefinition)typeDefinition).SetCompoundTypeDefinition(typeDefinition);
+						break;
+					}
 				}
 				types.UpdateType(CompoundTypeDefinition.Create(newParts));
 			} else {

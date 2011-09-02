@@ -97,10 +97,30 @@ namespace ICSharpCode.Editor
 		/// Gets the index of the first occurrence of any character in the specified array.
 		/// </summary>
 		/// <param name="anyOf">Characters to search for</param>
-		/// <param name="startIndex">Start index of the search.</param>
+		/// <param name="startIndex">Start index of the area to search.</param>
 		/// <param name="count">Length of the area to search.</param>
 		/// <returns>The first index where any character was found; or -1 if no occurrence was found.</returns>
 		int IndexOfAny(char[] anyOf, int startIndex, int count);
+		
+		/// <summary>
+		/// Gets the index of the first occurrence of the specified search text in this text source.
+		/// </summary>
+		/// <param name="searchText">The search text</param>
+		/// <param name="startIndex">Start index of the area to search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <param name="comparisonType">String comparison to use.</param>
+		/// <returns>The first index where the search term was found; or -1 if no occurrence was found.</returns>
+		int IndexOf(string searchText, int startIndex, int count, StringComparison comparisonType);
+		
+		/// <summary>
+		/// Gets the index of the last occurrence of the specified search text in this text source.
+		/// </summary>
+		/// <param name="searchText">The search text</param>
+		/// <param name="startIndex">Start index of the area to search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <param name="comparisonType">String comparison to use.</param>
+		/// <returns>The last index where the search term was found; or -1 if no occurrence was found.</returns>
+		int LastIndexOf(string searchText, int startIndex, int count, StringComparison comparisonType);
 		
 		/* What about:
 		void Insert (int offset, string value);
@@ -116,7 +136,7 @@ namespace ICSharpCode.Editor
 		
 		IEnumerable<int> SearchBackward (string pattern, int startIndex);
 		IEnumerable<int> SearchBackwardIgnoreCase (string pattern, int startIndex);
-		*/
+		 */
 	}
 	
 	/// <summary>

@@ -88,7 +88,7 @@ public class Form1 {
 						}}});
 		}
 		
-		[Test, Ignore("Parser doesn't support attributes on type parameters")]
+		[Test]
 		public void AttributesOnTypeParameter()
 		{
 			ParseUtilCSharp.AssertGlobal(
@@ -148,7 +148,7 @@ public class Form1 {
 		
 		// TODO: Tests for other contexts where attributes can appear
 		
-		[Test, Ignore("Parser does not support NamedArgumentExpression in attributes")]
+		[Test]
 		public void AttributeWithNamedArguments()
 		{
 			ParseUtilCSharp.AssertTypeMember(

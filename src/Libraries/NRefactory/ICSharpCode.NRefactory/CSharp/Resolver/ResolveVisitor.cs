@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		SimpleNameLookupMode currentTypeLookupMode = SimpleNameLookupMode.Type;
 		/// <summary>Resolve result of the current LINQ query</summary>
 		ResolveResult currentQueryResult;
-		readonly ParsedFile parsedFile;
+		readonly CSharpParsedFile parsedFile;
 		readonly Dictionary<AstNode, ResolveResult> resolveResultCache = new Dictionary<AstNode, ResolveResult>();
 		readonly Dictionary<AstNode, CSharpResolver> resolverBeforeDict = new Dictionary<AstNode, CSharpResolver>();
 		
@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// If you pass <c>null</c>, then nothing will be resolved on the initial scan, and the resolver
 		/// will resolve additional nodes on demand (when one of the Get-methods is called).
 		/// </param>
-		public ResolveVisitor(CSharpResolver resolver, ParsedFile parsedFile, IResolveVisitorNavigator navigator = null)
+		public ResolveVisitor(CSharpResolver resolver, CSharpParsedFile parsedFile, IResolveVisitorNavigator navigator = null)
 		{
 			if (resolver == null)
 				throw new ArgumentNullException("resolver");
@@ -374,14 +374,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolveResultCache.TryGetValue(node, out result))
 				return result;
 			
+			bool needResolveParent = (node.NodeType == NodeType.Token || IsVar(node));
+			
+			AstNode nodeToResolve = node;
+			if (needResolveParent) {
+				nodeToResolve = node.Parent;
+				if (resolveResultCache.ContainsKey(nodeToResolve))
+					return null;
+			}
+			
 			AstNode parent;
-			CSharpResolver storedResolver = GetPreviouslyScannedContext(node, out parent);
+			CSharpResolver storedResolver = GetPreviouslyScannedContext(nodeToResolve, out parent);
 			ResetContext(
 				storedResolver.Clone(),
 				delegate {
-					navigator = new NodeListResolveVisitorNavigator(node);
-					if (parent == node) {
-						Resolve(node);
+					navigator = new NodeListResolveVisitorNavigator(nodeToResolve);
+					if (parent == nodeToResolve) {
+						Resolve(nodeToResolve);
 					} else {
 						Debug.Assert(!resolverEnabled);
 						parent.AcceptVisitor(this, null);
@@ -598,7 +607,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					string identifier = variableInitializer.Name;
 					foreach (IVariable v in resolver.LocalVariables) {
 						if (v.Name == identifier) {
-							object constantValue = v.IsConst ? v.ConstantValue.GetValue(resolver.Context) : null;
+							object constantValue = v.IsConst ? v.ConstantValue.Resolve(resolver.Context).ConstantValue : null;
 							result = new LocalResolveResult(v, v.Type.Resolve(resolver.Context), constantValue);
 							break;
 						}
@@ -927,18 +936,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			int dimensions = arrayCreateExpression.Arguments.Count;
 			ResolveResult[] sizeArguments;
+			IEnumerable<ArraySpecifier> additionalArraySpecifiers;
 			if (dimensions == 0) {
-				dimensions = 1;
+				var firstSpecifier = arrayCreateExpression.AdditionalArraySpecifiers.FirstOrDefault();
+				if (firstSpecifier != null) {
+					dimensions = firstSpecifier.Dimensions;
+					additionalArraySpecifiers = arrayCreateExpression.AdditionalArraySpecifiers.Skip(1);
+				} else {
+					dimensions = 0;
+					additionalArraySpecifiers = arrayCreateExpression.AdditionalArraySpecifiers;
+				}
 				sizeArguments = null;
 			} else {
-				if (arrayCreateExpression.Arguments.All(e => e is EmptyExpression)) {
-					sizeArguments = null;
-				} else {
-					sizeArguments = new ResolveResult[dimensions];
-					int pos = 0;
-					foreach (var node in arrayCreateExpression.Arguments)
-						sizeArguments[pos++] = Resolve(node);
-				}
+				sizeArguments = new ResolveResult[dimensions];
+				int pos = 0;
+				foreach (var node in arrayCreateExpression.Arguments)
+					sizeArguments[pos++] = Resolve(node);
+				additionalArraySpecifiers = arrayCreateExpression.AdditionalArraySpecifiers;
 			}
 			
 			List<Expression> initializerElements;
@@ -962,7 +976,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				acrr = resolver.ResolveArrayCreation(null, dimensions, sizeArguments, initializerElementResults);
 			} else {
 				IType elementType = ResolveType(arrayCreateExpression.Type);
-				foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
+				foreach (var spec in additionalArraySpecifiers.Reverse()) {
 					elementType = new ArrayType(elementType, spec.Dimensions);
 				}
 				acrr = resolver.ResolveArrayCreation(elementType, dimensions, sizeArguments, initializerElementResults);
@@ -1798,7 +1812,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			readonly QuerySelectClause selectClause;
 			
 			readonly CSharpResolver storedContext;
-			readonly ParsedFile parsedFile;
+			readonly CSharpParsedFile parsedFile;
 			readonly List<LambdaTypeHypothesis> hypotheses = new List<LambdaTypeHypothesis>();
 			readonly List<IParameter> parameters = new List<IParameter>();
 			
@@ -2343,6 +2357,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ITypeReference type;
 				if (needResolve) {
 					type = Resolve(vi.Initializer).Type;
+					if (!resolveResultCache.ContainsKey(variableDeclarationStatement.Type)) {
+						StoreResult(variableDeclarationStatement.Type, new TypeResolveResult(type.Resolve(resolver.Context)));
+					}
 				} else {
 					Scan(vi.Initializer);
 					type = MakeVarTypeReference(vi.Initializer, false);
@@ -2528,7 +2545,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Local Variable Type Inference
-		static bool IsVar(AstType returnType)
+		static bool IsVar(AstNode returnType)
 		{
 			SimpleType st = returnType as SimpleType;
 			return st != null && st.Identifier == "var" && st.TypeArguments.Count == 0;

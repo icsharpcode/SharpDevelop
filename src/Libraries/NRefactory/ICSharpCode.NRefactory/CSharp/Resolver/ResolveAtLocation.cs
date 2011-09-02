@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public static class ResolveAtLocation
 	{
-		public static ResolveResult Resolve(ITypeResolveContext context, ParsedFile parsedFile, CompilationUnit cu, AstLocation location,
+		public static ResolveResult Resolve(ITypeResolveContext context, CSharpParsedFile parsedFile, CompilationUnit cu, AstLocation location,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			AstNode node = cu.GetNodeAt(location);

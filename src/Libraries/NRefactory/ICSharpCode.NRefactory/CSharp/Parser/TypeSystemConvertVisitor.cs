@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class TypeSystemConvertVisitor : DepthFirstAstVisitor<object, IEntity>
 	{
-		readonly ParsedFile parsedFile;
+		readonly CSharpParsedFile parsedFile;
 		UsingScope usingScope;
 		DefaultTypeDefinition currentTypeDefinition;
 		DefaultMethod currentMethod;
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				throw new ArgumentNullException("pc");
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			this.parsedFile = new ParsedFile(fileName, new UsingScope(pc));
+			this.parsedFile = new CSharpParsedFile(fileName, new UsingScope(pc));
 			this.usingScope = parsedFile.RootUsingScope;
 		}
 		
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <param name="parsedFile">The parsed file to which members should be added.</param>
 		/// <param name="currentUsingScope">The current using scope.</param>
 		/// <param name="currentTypeDefinition">The current type definition.</param>
-		public TypeSystemConvertVisitor(ParsedFile parsedFile, UsingScope currentUsingScope = null, DefaultTypeDefinition currentTypeDefinition = null)
+		public TypeSystemConvertVisitor(CSharpParsedFile parsedFile, UsingScope currentUsingScope = null, DefaultTypeDefinition currentTypeDefinition = null)
 		{
 			if (parsedFile == null)
 				throw new ArgumentNullException("parsedFile");
@@ -80,13 +80,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.currentTypeDefinition = currentTypeDefinition;
 		}
 		
-		public ParsedFile Convert(AstNode node)
+		public CSharpParsedFile Convert(AstNode node)
 		{
 			node.AcceptVisitor(this, null);
 			return parsedFile;
 		}
 		
-		public ParsedFile ParsedFile {
+		public CSharpParsedFile ParsedFile {
 			get { return parsedFile; }
 		}
 		
@@ -340,9 +340,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				field.IsReadOnly = (modifiers & Modifiers.Readonly) != 0;
 				
 				field.ReturnType = ConvertType(fieldDeclaration.ReturnType);
-				if ((modifiers & Modifiers.Fixed) != 0) {
-					field.ReturnType = PointerTypeReference.Create(field.ReturnType);
-				}
 				
 				if ((modifiers & Modifiers.Const) != 0) {
 					field.ConstantValue = ConvertConstantValue(field.ReturnType, vi.Initializer);
@@ -354,6 +351,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			return isSingleField ? field : null;
+		}
+		
+		public override IEntity VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration, object data)
+		{
+			// TODO: add support for fixed fields
+			return base.VisitFixedFieldDeclaration(fixedFieldDeclaration, data);
 		}
 		
 		public override IEntity VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration, object data)
@@ -762,12 +765,12 @@ namespace ICSharpCode.NRefactory.CSharp
 						namedCtorArguments = new List<KeyValuePair<string, IConstantValue>>();
 					namedCtorArguments.Add(new KeyValuePair<string, IConstantValue>(nae.Identifier, ConvertAttributeArgument(nae.Expression)));
 				} else {
-					AssignmentExpression ae = expr as AssignmentExpression;
-					if (ae != null && ae.Left is IdentifierExpression && ae.Operator == AssignmentOperatorType.Assign) {
-						string name = ((IdentifierExpression)ae.Left).Identifier;
+					NamedExpression namedExpression = expr as NamedExpression;
+					if (namedExpression != null) {
+						string name = namedExpression.Identifier;
 						if (namedArguments == null)
 							namedArguments = new List<KeyValuePair<string, IConstantValue>>();
-						namedArguments.Add(new KeyValuePair<string, IConstantValue>(name, ConvertAttributeArgument(ae.Right)));
+						namedArguments.Add(new KeyValuePair<string, IConstantValue>(name, ConvertAttributeArgument(namedExpression.Expression)));
 					} else {
 						if (positionalArguments == null)
 							positionalArguments = new List<IConstantValue>();

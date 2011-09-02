@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (field != null) {
 				isConstant = field.IsConst;
 				if (isConstant)
-					constantValue = field.ConstantValue.GetValue(context);
+					constantValue = field.ConstantValue.Resolve(context).ConstantValue;
 			}
 		}
 		

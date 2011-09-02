@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			}
 			
 			var testCasePC = new SimpleProjectContent();
-			ParsedFile parsedFile = new TypeSystemConvertVisitor(testCasePC, fileName).Convert(cu);
+			CSharpParsedFile parsedFile = new TypeSystemConvertVisitor(testCasePC, fileName).Convert(cu);
 			parsedFile.Freeze();
 			testCasePC.UpdateProjectContent(null, parsedFile);
 			return testCasePC;

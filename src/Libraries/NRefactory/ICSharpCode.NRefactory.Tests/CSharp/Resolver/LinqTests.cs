@@ -313,5 +313,24 @@ class XYZ
 			Assert.AreEqual("GroupJoin", rr.Member.Name);
 			Assert.AreEqual("System.Int32", rr.Type.FullName);
 		}
+		
+		[Test]
+		public void GroupWithQueryContinuation()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass
+{
+	static void M(string[] args)
+	{
+		var query =
+		from w in ""one to three"".Split()
+			group w by w.Length into g
+			orderby g.Key descending
+			select new { g.Key, Count = g.Count(), Avg = g.Average ($w$ => w.Length) };
+	}
+}";
+			var rr = Resolve<LocalResolveResult>(program);
+			Assert.AreEqual("System.String", rr.Type.FullName);
+		}
 	}
 }

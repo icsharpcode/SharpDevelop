@@ -102,5 +102,17 @@ namespace ICSharpCode.Editor
 		{
 			return text.IndexOfAny(anyOf, startIndex, count);
 		}
+		
+		/// <inheritdoc/>
+		public int IndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			return text.IndexOf(searchText, startIndex, count, comparisonType);
+		}
+		
+		/// <inheritdoc/>
+		public int LastIndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			return text.LastIndexOf(searchText, startIndex, count, comparisonType);
+		}
 	}
 }
