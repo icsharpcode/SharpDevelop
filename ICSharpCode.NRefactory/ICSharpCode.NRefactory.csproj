@@ -115,6 +115,7 @@
     <Compile Include="CSharp\Resolver\MapTypeIntoNewContext.cs" />
     <Compile Include="CSharp\Resolver\ResolveAtLocation.cs" />
     <Compile Include="CSharp\Resolver\SimpleNameLookupMode.cs" />
+    <Compile Include="CSharp\Resolver\TypeOfResolveResult.cs" />
     <Compile Include="Documentation\IDStringProvider.cs" />
     <Compile Include="PatternMatching\BacktrackingInfo.cs" />
     <Compile Include="PatternMatching\Choice.cs" />

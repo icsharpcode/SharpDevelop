@@ -765,12 +765,12 @@ namespace ICSharpCode.NRefactory.CSharp
 						namedCtorArguments = new List<KeyValuePair<string, IConstantValue>>();
 					namedCtorArguments.Add(new KeyValuePair<string, IConstantValue>(nae.Identifier, ConvertAttributeArgument(nae.Expression)));
 				} else {
-					AssignmentExpression ae = expr as AssignmentExpression;
-					if (ae != null && ae.Left is IdentifierExpression && ae.Operator == AssignmentOperatorType.Assign) {
-						string name = ((IdentifierExpression)ae.Left).Identifier;
+					NamedExpression namedExpression = expr as NamedExpression;
+					if (namedExpression != null) {
+						string name = namedExpression.Identifier;
 						if (namedArguments == null)
 							namedArguments = new List<KeyValuePair<string, IConstantValue>>();
-						namedArguments.Add(new KeyValuePair<string, IConstantValue>(name, ConvertAttributeArgument(ae.Right)));
+						namedArguments.Add(new KeyValuePair<string, IConstantValue>(name, ConvertAttributeArgument(namedExpression.Expression)));
 					} else {
 						if (positionalArguments == null)
 							positionalArguments = new List<IConstantValue>();

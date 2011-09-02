@@ -1960,7 +1960,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// Look in local variables
 					foreach (IVariable v in this.LocalVariables) {
 						if (v.Name == identifier) {
-							object constantValue = v.IsConst ? v.ConstantValue.GetValue(context) : null;
+							object constantValue = v.IsConst ? v.ConstantValue.Resolve(context).ConstantValue : null;
 							return new LocalResolveResult(v, v.Type.Resolve(context), constantValue);
 						}
 					}
@@ -2788,7 +2788,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Specifies whether to allow treating single-dimensional arrays like compile-time constants.
 		/// This is used for attribute arguments.
 		/// </param>
-		public ArrayCreateResolveResult ResolveArrayCreation(IType elementType, int dimensions = 1, ResolveResult[] sizeArguments = null, ResolveResult[] initializerElements = null, bool allowArrayConstants = false)
+		public ArrayCreateResolveResult ResolveArrayCreation(IType elementType, int dimensions = 1, ResolveResult[] sizeArguments = null, ResolveResult[] initializerElements = null)
 		{
 			if (sizeArguments != null && dimensions != Math.Max(1, sizeArguments.Length))
 				throw new ArgumentException("dimensions and sizeArguments.Length don't match");
@@ -2807,7 +2807,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					initializerElements[i] = Convert(initializerElements[i], elementType);
 				}
 			}
-			return new ArrayCreateResolveResult(arrayType, sizeArguments, initializerElements, allowArrayConstants);
+			return new ArrayCreateResolveResult(arrayType, sizeArguments, initializerElements);
 		}
 		#endregion
 	}

@@ -20,6 +20,7 @@ using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.TypeSystem.TestCase;
 using NUnit.Framework;
@@ -132,14 +133,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var posArgs = typeTest.GetPositionalArguments(ctx);
 			Assert.AreEqual(3, posArgs.Count);
 			// first argument is (int)42
-			Assert.AreEqual(42, (int)posArgs[0].GetValue(ctx));
+			Assert.AreEqual(42, (int)posArgs[0].ConstantValue);
 			// second argument is typeof(System.Action<>)
-			IType rt = (IType)posArgs[1].GetValue(ctx);
-			Assert.IsFalse(rt is ParameterizedType); // rt must not be constructed - it's just an unbound type
-			Assert.AreEqual("System.Action", rt.FullName);
-			Assert.AreEqual(1, rt.TypeParameterCount);
+			TypeOfResolveResult rt = (TypeOfResolveResult)posArgs[1];
+			Assert.IsFalse(rt.ReferencedType is ParameterizedType); // rt must not be constructed - it's just an unbound type
+			Assert.AreEqual("System.Action", rt.ReferencedType.FullName);
+			Assert.AreEqual(1, rt.ReferencedType.TypeParameterCount);
 			// third argument is typeof(IDictionary<string, IList<TestAttribute>>)
-			ParameterizedType crt = (ParameterizedType)posArgs[2].GetValue(ctx);
+			rt = (TypeOfResolveResult)posArgs[2];
+			ParameterizedType crt = (ParameterizedType)rt.ReferencedType;
 			Assert.AreEqual("System.Collections.Generic.IDictionary", crt.FullName);
 			Assert.AreEqual("System.String", crt.TypeArguments[0].FullName);
 			// ? for NUnit.TestAttribute (because that assembly isn't in ctx)
@@ -153,8 +155,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var forwardAttribute = attributes.Single(a => a.AttributeType.Resolve(ctx).FullName == typeof(TypeForwardedToAttribute).FullName);
 			var posArgs = forwardAttribute.GetPositionalArguments(ctx);
 			Assert.AreEqual(1, posArgs.Count);
-			IType rt = (IType)posArgs[0].GetValue(ctx);
-			Assert.AreEqual("System.Func`2", rt.ReflectionName);
+			TypeOfResolveResult rt = (TypeOfResolveResult)posArgs[0];
+			Assert.AreEqual("System.Func`2", rt.ReferencedType.ReflectionName);
 		}
 		
 		[Test]
@@ -254,33 +256,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				Assert.IsTrue(f.IsStatic);
 				Assert.IsTrue(f.IsConst);
 				Assert.AreEqual(Accessibility.Public, f.Accessibility);
-				Assert.AreSame(e, f.ConstantValue.GetValueType(ctx));
-				Assert.AreEqual(typeof(short), f.ConstantValue.GetValue(ctx).GetType());
+				Assert.AreSame(e, f.ConstantValue.Resolve(ctx).Type);
+				Assert.AreEqual(typeof(short), f.ConstantValue.Resolve(ctx).ConstantValue.GetType());
 			}
 			
 			Assert.AreEqual("First", e.Fields[0].Name);
-			Assert.AreEqual(0, e.Fields[0].ConstantValue.GetValue(ctx));
+			Assert.AreEqual(0, e.Fields[0].ConstantValue.Resolve(ctx).ConstantValue);
 			
 			Assert.AreEqual("Second", e.Fields[1].Name);
-			Assert.AreSame(e, e.Fields[1].ConstantValue.GetValueType(ctx));
-			Assert.AreEqual(1, e.Fields[1].ConstantValue.GetValue(ctx));
+			Assert.AreSame(e, e.Fields[1].ConstantValue.Resolve(ctx).Type);
+			Assert.AreEqual(1, e.Fields[1].ConstantValue.Resolve(ctx).ConstantValue);
 			
 			Assert.AreEqual("Flag1", e.Fields[2].Name);
-			Assert.AreEqual(0x10, e.Fields[2].ConstantValue.GetValue(ctx));
+			Assert.AreEqual(0x10, e.Fields[2].ConstantValue.Resolve(ctx).ConstantValue);
 
 			Assert.AreEqual("Flag2", e.Fields[3].Name);
-			Assert.AreEqual(0x20, e.Fields[3].ConstantValue.GetValue(ctx));
+			Assert.AreEqual(0x20, e.Fields[3].ConstantValue.Resolve(ctx).ConstantValue);
 			
 			Assert.AreEqual("CombinedFlags", e.Fields[4].Name);
-			Assert.AreEqual(0x30, e.Fields[4].ConstantValue.GetValue(ctx));
-		}
-		
-		[Test]
-		public void GetNestedTypesFromGenericClassTest()
-		{
-			ITypeDefinition b = ctx.GetTypeDefinition(typeof(Base<>));
-			// Base.GetNestedTypes() = { Base`1+Nested`1[`0, unbound] }
-			
+			Assert.AreEqual(0x30, e.Fields[4].ConstantValue.Resolve(ctx).ConstantValue);
 		}
 		
 		[Test]
@@ -336,20 +330,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			IAttribute attr = ctx.GetTypeDefinition(typeof(ExplicitFieldLayoutStruct)).Attributes.Single();
 			Assert.AreEqual("System.Runtime.InteropServices.StructLayoutAttribute", attr.AttributeType.Resolve(ctx).FullName);
-			IConstantValue arg1 = attr.GetPositionalArguments(ctx).Single();
-			Assert.AreEqual("System.Runtime.InteropServices.LayoutKind", arg1.GetValueType(ctx).FullName);
-			Assert.AreEqual((int)LayoutKind.Explicit, arg1.GetValue(ctx));
+			ResolveResult arg1 = attr.GetPositionalArguments(ctx).Single();
+			Assert.AreEqual("System.Runtime.InteropServices.LayoutKind", arg1.Type.FullName);
+			Assert.AreEqual((int)LayoutKind.Explicit, arg1.ConstantValue);
 			
 			var namedArgs = attr.GetNamedArguments(ctx);
 			var arg2 = namedArgs[0];
 			Assert.AreEqual("CharSet", arg2.Key);
-			Assert.AreEqual("System.Runtime.InteropServices.CharSet", arg2.Value.GetValueType(ctx).FullName);
-			Assert.AreEqual((int)CharSet.Unicode, arg2.Value.GetValue(ctx));
+			Assert.AreEqual("System.Runtime.InteropServices.CharSet", arg2.Value.Type.FullName);
+			Assert.AreEqual((int)CharSet.Unicode, arg2.Value.ConstantValue);
 			
 			var arg3 = namedArgs[1];
 			Assert.AreEqual("Pack", arg3.Key);
-			Assert.AreEqual("System.Int32", arg3.Value.GetValueType(ctx).FullName);
-			Assert.AreEqual(8, arg3.Value.GetValue(ctx));
+			Assert.AreEqual("System.Int32", arg3.Value.Type.FullName);
+			Assert.AreEqual(8, arg3.Value.ConstantValue);
 		}
 		
 		[Test]
@@ -357,15 +351,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			IField field = ctx.GetTypeDefinition(typeof(ExplicitFieldLayoutStruct)).Fields.Single(f => f.Name == "Field0");
 			Assert.AreEqual("System.Runtime.InteropServices.FieldOffsetAttribute", field.Attributes.Single().AttributeType.Resolve(ctx).FullName);
-			IConstantValue arg = field.Attributes.Single().GetPositionalArguments(ctx).Single();
-			Assert.AreEqual("System.Int32", arg.GetValueType(ctx).FullName);
-			Assert.AreEqual(0, arg.GetValue(ctx));
+			ResolveResult arg = field.Attributes.Single().GetPositionalArguments(ctx).Single();
+			Assert.AreEqual("System.Int32", arg.Type.FullName);
+			Assert.AreEqual(0, arg.ConstantValue);
 			
 			field = ctx.GetTypeDefinition(typeof(ExplicitFieldLayoutStruct)).Fields.Single(f => f.Name == "Field100");
 			Assert.AreEqual("System.Runtime.InteropServices.FieldOffsetAttribute", field.Attributes.Single().AttributeType.Resolve(ctx).FullName);
 			arg = field.Attributes.Single().GetPositionalArguments(ctx).Single();
-			Assert.AreEqual("System.Int32", arg.GetValueType(ctx).FullName);
-			Assert.AreEqual(100, arg.GetValue(ctx));
+			Assert.AreEqual("System.Int32", arg.Type.FullName);
+			Assert.AreEqual(100, arg.ConstantValue);
 		}
 		
 		[Test]
@@ -374,8 +368,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IMethod method = ctx.GetTypeDefinition(typeof(NonCustomAttributes)).Methods.Single(m => m.Name == "DllMethod");
 			IAttribute dllImport = method.Attributes.Single();
 			Assert.AreEqual("System.Runtime.InteropServices.DllImportAttribute", dllImport.AttributeType.Resolve(ctx).FullName);
-			Assert.AreEqual("unmanaged.dll", dllImport.GetPositionalArguments(ctx)[0].GetValue(ctx));
-			Assert.AreEqual((int)CharSet.Unicode, dllImport.GetNamedArguments(ctx).Single().Value.GetValue(ctx));
+			Assert.AreEqual("unmanaged.dll", dllImport.GetPositionalArguments(ctx)[0].ConstantValue);
+			Assert.AreEqual((int)CharSet.Unicode, dllImport.GetNamedArguments(ctx).Single().Value.ConstantValue);
 		}
 		
 		[Test]
@@ -394,7 +388,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			IMethod method = ctx.GetTypeDefinition(typeof(NonCustomAttributes)).Methods.Single(m => m.Name == "DllMethod");
 			IAttribute marshalAs = method.ReturnTypeAttributes.Single();
-			Assert.AreEqual((int)UnmanagedType.Bool, marshalAs.GetPositionalArguments(ctx).Single().GetValue(ctx));
+			Assert.AreEqual((int)UnmanagedType.Bool, marshalAs.GetPositionalArguments(ctx).Single().ConstantValue);
 		}
 		
 		[Test]

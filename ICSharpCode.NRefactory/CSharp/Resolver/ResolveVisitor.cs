@@ -607,7 +607,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					string identifier = variableInitializer.Name;
 					foreach (IVariable v in resolver.LocalVariables) {
 						if (v.Name == identifier) {
-							object constantValue = v.IsConst ? v.ConstantValue.GetValue(resolver.Context) : null;
+							object constantValue = v.IsConst ? v.ConstantValue.Resolve(resolver.Context).ConstantValue : null;
 							result = new LocalResolveResult(v, v.Type.Resolve(resolver.Context), constantValue);
 							break;
 						}
@@ -936,18 +936,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			int dimensions = arrayCreateExpression.Arguments.Count;
 			ResolveResult[] sizeArguments;
+			IEnumerable<ArraySpecifier> additionalArraySpecifiers;
 			if (dimensions == 0) {
-				dimensions = 1;
+				var firstSpecifier = arrayCreateExpression.AdditionalArraySpecifiers.FirstOrDefault();
+				if (firstSpecifier != null) {
+					dimensions = firstSpecifier.Dimensions;
+					additionalArraySpecifiers = arrayCreateExpression.AdditionalArraySpecifiers.Skip(1);
+				} else {
+					dimensions = 0;
+					additionalArraySpecifiers = arrayCreateExpression.AdditionalArraySpecifiers;
+				}
 				sizeArguments = null;
 			} else {
-				if (arrayCreateExpression.Arguments.All(e => e is EmptyExpression)) {
-					sizeArguments = null;
-				} else {
-					sizeArguments = new ResolveResult[dimensions];
-					int pos = 0;
-					foreach (var node in arrayCreateExpression.Arguments)
-						sizeArguments[pos++] = Resolve(node);
-				}
+				sizeArguments = new ResolveResult[dimensions];
+				int pos = 0;
+				foreach (var node in arrayCreateExpression.Arguments)
+					sizeArguments[pos++] = Resolve(node);
+				additionalArraySpecifiers = arrayCreateExpression.AdditionalArraySpecifiers;
 			}
 			
 			List<Expression> initializerElements;
@@ -971,7 +976,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				acrr = resolver.ResolveArrayCreation(null, dimensions, sizeArguments, initializerElementResults);
 			} else {
 				IType elementType = ResolveType(arrayCreateExpression.Type);
-				foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
+				foreach (var spec in additionalArraySpecifiers.Reverse()) {
 					elementType = new ArrayType(elementType, spec.Dimensions);
 				}
 				acrr = resolver.ResolveArrayCreation(elementType, dimensions, sizeArguments, initializerElementResults);
