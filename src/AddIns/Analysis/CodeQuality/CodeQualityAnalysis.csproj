@@ -113,7 +113,6 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\Controls\DependecyTreeNode.cs" />
     <Compile Include="Src\Controls\DependencyEdge.cs" />
     <Compile Include="Src\Controls\DependencyGraph.cs" />
     <Compile Include="Src\Controls\DependencyGraphLayout.cs" />
@@ -127,8 +126,10 @@
       <DependentUpon>TreeMatrixControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\DependencyGraphCommand.cs" />
+    <Compile Include="Src\DependencyTreeNode.cs" />
     <Compile Include="Src\Event.cs" />
     <Compile Include="Src\Field.cs" />
+    <Compile Include="Src\Helper.cs" />
     <Compile Include="Src\INode.cs" />
     <Compile Include="Src\Instruction.cs" />
     <Compile Include="Src\IValue.cs" />

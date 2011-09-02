@@ -74,6 +74,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				progressBar.Visibility = Visibility.Hidden;
 				assemblyStats.Visibility = Visibility.Visible;
 				mainTabs.IsEnabled = true;
+				Helper.FillTree(definitionTree, metricsReader.MainModule);
 				FillMatrix();
 			};
 			
@@ -108,18 +109,19 @@ namespace ICSharpCode.CodeQualityAnalysis
 			matrixControl.Matrix = matrix;
 			matrixControl.DrawTree(metricsReader.MainModule);
 		}
-
-		private void definitionTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		
+		
+		private void definitionTree_SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
-			var item = definitionTree.SelectedItem as INode;
-
-			if (item != null && item.Dependency != null)
+			var item = definitionTree.SelectedItem as DependecyTreeNode;
+			if (item != null && item.INode.Dependency != null)
 			{
-				var graph = item.Dependency.BuildDependencyGraph();
+				var graph = item.INode.Dependency.BuildDependencyGraph();
 				graphLayout.ChangeGraph(graph);
 			}
 		}
-
+		
+	
 		private void graphLayout_VertexClick(object sender, MouseButtonEventArgs e)
 		{
 			var vertexControl = sender as VertexControl;

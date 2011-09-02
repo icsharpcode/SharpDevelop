@@ -7,6 +7,8 @@
         xmlns:src="clr-namespace:ICSharpCode.CodeQualityAnalysis"
         xmlns:debug="clr-namespace:System.Diagnostics;assembly=System"
         xmlns:datavis="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+        xmlns:tree="http://icsharpcode.net/sharpdevelop/treeview"
+	
         Title="Code Quality Analysis"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         x:Name="root">
@@ -88,12 +90,12 @@
 						</ToolBar>
 					</ToolBarTray>
 					
-					<TreeView Name="definitionTree" Grid.Row="1" Grid.Column="0"
-					          SelectedItemChanged="definitionTree_SelectedItemChanged"
-					          ItemsSource="{Binding}"
-					          DataContext="{Binding Path=MetricsReader.Modules}"
-					          ItemTemplate="{StaticResource ModuleTemplate}">
-					</TreeView>
+					
+					<tree:SharpTreeView Name="definitionTree"
+						Grid.Row="1" Grid.Column="0"
+						SelectionChanged="definitionTree_SelectedItemChanged">
+					</tree:SharpTreeView>
+
 					
 					<Controls:ZoomControl Grid.Row="1" Grid.Column="1" Name="zoom" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
 						<Graph:DependencyGraphLayout x:Name="graphLayout"

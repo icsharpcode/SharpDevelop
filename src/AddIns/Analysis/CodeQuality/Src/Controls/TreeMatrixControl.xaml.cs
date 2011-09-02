@@ -43,46 +43,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		
 		public void DrawTree(Module module)
 		{
-			FillTree (leftTree,module);
-			FillTree (topTree,module);
-		}
-		
-		
-		private void FillTree (ICSharpCode.TreeView.SharpTreeView tree,Module module)
-		{
-			var root = CreateTreeItem(module);
-			tree.Root = root;
-			
-			foreach (var ns in module.Namespaces)
-			{
-				var namespaceNode = CreateTreeItem(ns);
-				tree.Root.Children.Add(namespaceNode);
-				
-				foreach (var type in ns.Types)
-				{
-					var typeNode = CreateTreeItem(type);
-					namespaceNode.Children.Add(typeNode);
-
-					foreach (var method in type.Methods)
-					{
-						var methodName = CreateTreeItem(method);
-						namespaceNode.Children.Add(methodName);
-					}
-
-					foreach (var field in type.Fields)
-					{
-						var fieldNode = CreateTreeItem(field);
-						namespaceNode.Children.Add(fieldNode);
-					}
-				}
-			}
-		}
-			
-			
-		private DependecyTreeNode CreateTreeItem (INode node)
-		{
-			DependecyTreeNode dtn = new DependecyTreeNode(node);
-			return dtn;
+			Helper.FillTree (leftTree,module);
+			Helper.FillTree (topTree,module);
 		}
 	}
 }
