@@ -239,7 +239,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			if (AlwaysUseShortTypeNames) {
-				return new SimpleType(typeDef.Name);
+				var shortResult = new SimpleType(typeDef.Name);
+				AddTypeArguments(shortResult, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
+				return shortResult;
 			}
 			
 			MemberType result = new MemberType();
