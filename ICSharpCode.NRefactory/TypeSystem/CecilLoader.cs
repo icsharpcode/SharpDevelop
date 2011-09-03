@@ -95,6 +95,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Loads the assembly definition into a project content.
 		/// </summary>
 		/// <returns>IProjectContent that represents the assembly</returns>
+		[CLSCompliant(false)]
 		public IProjectContent LoadAssembly(AssemblyDefinition assemblyDefinition)
 		{
 			if (assemblyDefinition == null)
@@ -155,6 +156,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name="typeDefinition">The Cecil TypeDefinition.</param>
 		/// <param name="projectContent">The project content used as parent for the new type.</param>
 		/// <returns>ITypeDefinition representing the Cecil type.</returns>
+		[CLSCompliant(false)]
 		public ITypeDefinition LoadType(TypeDefinition typeDefinition, IProjectContent projectContent)
 		{
 			if (typeDefinition == null)
@@ -317,6 +319,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// This is used to support the 'dynamic' type.</param>
 		/// <param name="entity">The entity that owns this type reference.
 		/// Used for generic type references.</param>
+		[CLSCompliant(false)]
 		public ITypeReference ReadTypeReference(
 			TypeReference type,
 			ICustomAttributeProvider typeAttributes = null,
@@ -791,6 +794,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
+		[CLSCompliant(false)]
 		public IAttribute ReadAttribute(CustomAttribute attribute)
 		{
 			if (attribute == null)
@@ -852,6 +856,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Constant Value
+		[CLSCompliant(false)]
 		public IConstantValue ReadConstantValue(CustomAttributeArgument arg)
 		{
 			object value = arg.Value;
@@ -1100,6 +1105,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Method
+		[CLSCompliant(false)]
 		public IMethod ReadMethod(MethodDefinition method, ITypeDefinition parentType, EntityType methodType = EntityType.Method)
 		{
 			DefaultMethod m = new DefaultMethod(parentType, method.Name);
@@ -1206,6 +1212,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Parameter
+		[CLSCompliant(false)]
 		public IParameter ReadParameter(ParameterDefinition parameter, IParameterizedMember parentMember = null)
 		{
 			if (parameter == null)
@@ -1248,6 +1255,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				|| att == FieldAttributes.FamORAssem;
 		}
 		
+		[CLSCompliant(false)]
 		public IField ReadField(FieldDefinition field, ITypeDefinition parentType)
 		{
 			if (field == null)
@@ -1318,6 +1326,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Property
+		[CLSCompliant(false)]
 		public IProperty ReadProperty(PropertyDefinition property, ITypeDefinition parentType, EntityType propertyType = EntityType.Property)
 		{
 			if (property == null)
@@ -1362,6 +1371,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Event
+		[CLSCompliant(false)]
 		public IEvent ReadEvent(EventDefinition ev, ITypeDefinition parentType)
 		{
 			if (ev == null)
@@ -1408,11 +1418,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return result as T;
 		}
 		
+		[CLSCompliant(false)]
 		public AssemblyDefinition GetCecilObject (IProjectContent content)
 		{
 			return InternalGetCecilObject<AssemblyDefinition> (content);
 		}
 		
+		[CLSCompliant(false)]
 		public TypeDefinition GetCecilObject (ITypeDefinition type)
 		{
 			if (type == null)
@@ -1423,21 +1435,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return cecilType.typeDefinition;
 		}
 		
+		[CLSCompliant(false)]
 		public MethodDefinition GetCecilObject (IMethod method)
 		{
 			return InternalGetCecilObject<MethodDefinition> (method);
 		}
 		
+		[CLSCompliant(false)]
 		public FieldDefinition GetCecilObject (IField field)
 		{
 			return InternalGetCecilObject<FieldDefinition> (field);
 		}
 		
+		[CLSCompliant(false)]
 		public EventDefinition GetCecilObject (IEvent evt)
 		{
 			return InternalGetCecilObject<EventDefinition> (evt);
 		}
 		
+		[CLSCompliant(false)]
 		public PropertyDefinition GetCecilObject (IProperty property)
 		{
 			return InternalGetCecilObject<PropertyDefinition> (property);

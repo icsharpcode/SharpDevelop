@@ -83,6 +83,8 @@ namespace ICSharpCode.NRefactory
 		// Annotations: points either null (no annotations), to the single annotation,
 		// or to an AnnotationList.
 		// Once it is pointed at an AnnotationList, it will never change (this allows thread-safety support by locking the list)
+		
+		[CLSCompliant(false)]
 		protected object annotations;
 		
 		sealed class AnnotationList : List<object>, ICloneable
