@@ -25,42 +25,8 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="../Resources/GraphTemplate.xaml" />
+			<ResourceDictionary Source="../Resources/GridSplitterTemplate.xaml" />
 			</ResourceDictionary.MergedDictionaries>
-			<!--
-			<DataTemplate x:Key="MemberTemplate">
-				<StackPanel Orientation="Horizontal">
-					<Image Source="{Binding Path=Icon}" Margin="0, 0, 5, 0" />
-					<TextBlock Text="{Binding Path=Name}" />
-				</StackPanel>
-			</DataTemplate>
-			
-			<HierarchicalDataTemplate x:Key="TypeTemplate"
-				ItemTemplate="{StaticResource MemberTemplate}"
-				ItemsSource="{Binding Members}">
-				<StackPanel Orientation="Horizontal">
-					<Image Source="{Binding Path=Icon}"  Margin="0, 0, 5, 0" />
-					<TextBlock Text="{Binding Path=Name}" />
-				</StackPanel>
-			</HierarchicalDataTemplate>
-			
-			<HierarchicalDataTemplate x:Key="NamespaceTemplate"
-				ItemsSource="{Binding Types}"
-				ItemTemplate="{StaticResource TypeTemplate}">
-				<StackPanel Orientation="Horizontal">
-					<Image Source="{Binding Path=Icon}"  Margin="0, 0, 5, 0" />
-					<TextBlock Text="{Binding Path=Name}" />
-				</StackPanel>
-			</HierarchicalDataTemplate>
-			
-			<HierarchicalDataTemplate ItemsSource="{Binding Namespaces}"
-				ItemTemplate="{StaticResource NamespaceTemplate}"
-				x:Key="ModuleTemplate">
-				<StackPanel Orientation="Horizontal">
-					<Image Source="{Binding Path=Icon}"  Margin="0, 0, 5, 0" />
-					<TextBlock Text="{Binding Path=Name}" />
-				</StackPanel>
-			</HierarchicalDataTemplate>
--->
 		</ResourceDictionary>
 	</Window.Resources>
 	
@@ -73,19 +39,15 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 		
 		<ToolBarTray Background="White" Grid.Row="0">
 			<ToolBar>
-				
 				<Button Name="btnOpenAssembly"
 				        Content="{Binding OpenAssembly}"
 				        Click="btnOpenAssembly_Click" 
 				        Margin="0 0 5 0"></Button>
-<!--
-			<Button Command="{Binding Path=OpenAssemblyCommand}" Margin="0 0 5 0">Open Assembly</Button>
-			 -->       
 			</ToolBar>
 		</ToolBarTray>
 			
 		<TabControl Grid.Row="1" Name="mainTabs" IsEnabled="False"> <!-- It is enabled once assembly is loaded. -->
-			<TabItem Header="Dependency Graph">
+			<TabItem Header="{Binding DependencyGraph}">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -94,11 +56,13 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 					
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="250px" />
+						<ColumnDefinition Width="3"></ColumnDefinition>
 						<ColumnDefinition />
+						<ColumnDefinition Width="3"></ColumnDefinition>
 						<ColumnDefinition Width="200px" />
 					</Grid.ColumnDefinitions>
 					
-					<ToolBarTray Background="White" Grid.Row="0" Grid.ColumnSpan="2">
+					<ToolBarTray Background="White" Grid.Row="0" Grid.ColumnSpan="3">
 						<ToolBar>
 							<Button Name="btnRelayout" Click="btnRelayout_Click" Margin="0 0 5 0">Relayout</Button>
 							<Button Name="btnContinueLayout" Click="btnContinueLayout_Click" Margin="0 0 5 0">Continue Layout</Button>
@@ -110,11 +74,19 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 					
 					<tree:SharpTreeView Name="definitionTree"
 						Grid.Row="1" Grid.Column="0"
+						Margin="2"
 						SelectionChanged="definitionTree_SelectedItemChanged">
 					</tree:SharpTreeView>
-
 					
-					<Controls:ZoomControl Grid.Row="1" Grid.Column="1" Name="zoom" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
+					<GridSplitter Grid.Column="1"
+					              Grid.Row="1"					             
+					              Grid.RowSpan="2"
+					              ResizeDirection="Columns"
+					              HorizontalAlignment="Stretch"
+					              VerticalAlignment="Stretch"
+								  Style="{DynamicResource GridSplitterStyle1}"></GridSplitter>
+
+					<Controls:ZoomControl Grid.Row="1" Grid.Column="2" Name="zoom" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
 						<Graph:DependencyGraphLayout x:Name="graphLayout"
 							LayoutAlgorithmType="LinLog"
 							OverlapRemovalAlgorithmType="FSA"
@@ -123,7 +95,16 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 						/>
 					</Controls:ZoomControl>
 					
-					<TextBlock Name="txbTypeInfo" Grid.Column="3" Grid.Row="1"/>
+					<GridSplitter Grid.Column="3"
+					              Grid.RowSpan="2"
+					              ResizeDirection="Columns"
+					              HorizontalAlignment="Stretch"
+					              VerticalAlignment="Stretch"
+					 			Style="{DynamicResource GridSplitterStyle1}"></GridSplitter>
+					
+					<TextBlock Name="txbTypeInfo"
+					           Margin="2"
+					           Grid.Column="4"  Grid.RowSpan="2" Padding="5" Background="LightBlue"/>
 				</Grid>
 			</TabItem>
 			<TabItem Header="Dependency Matrix">

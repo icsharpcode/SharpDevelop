@@ -26,13 +26,15 @@ namespace ICSharpCode.CodeQualityAnalysis
 		public MainWindowTranslationViewModel():base()
 		{
 			this.Title = "Code Quality Analysis";
-			this.OpenAssembly = "OpenAssembly";
+			this.OpenAssembly = "Open Assembly";
+			this.DependencyGraph = "Dependency Graph";
 		}
 		
 		public string Title {get;private set;}
 		
 		public string OpenAssembly {get; private set;}
 		
+		public string DependencyGraph {get; private set;}
 		
 		#region OpenAssembly
 		/*

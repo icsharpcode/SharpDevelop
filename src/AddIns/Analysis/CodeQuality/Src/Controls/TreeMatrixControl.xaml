@@ -42,7 +42,8 @@
 		              Grid.RowSpan="3"
 		              ResizeDirection="Columns"
 		              HorizontalAlignment="Stretch"
-		              VerticalAlignment="Stretch"></GridSplitter>
+		              VerticalAlignment="Stretch"
+		              Style="{DynamicResource GridSplitterStyle1}"></GridSplitter>
 		
 		<tree:SharpTreeView
 			Name="topTree"
@@ -54,12 +55,11 @@
 			</tree:SharpTreeView.LayoutTransform>
 		</tree:SharpTreeView>
 		
-		<GridSplitter Grid.Row="1"
-		              Grid.Column="2"
+		<GridSplitter Grid.Row="1" Grid.Column="2"		             
 		              Height="3"
 		              ResizeDirection="Rows"
-		              HorizontalAlignment="Stretch"></GridSplitter>
-		
+		              HorizontalAlignment="Stretch"		
+					Background="LightGray"></GridSplitter>		
 		<ScrollViewer
 			Grid.Column="2"
 			Grid.Row="2"

@@ -146,6 +146,7 @@
     <Compile Include="Src\Utility\Matrix.cs" />
     <Compile Include="Src\Utility\RelayCommand.cs" />
     <Compile Include="Src\Utility\ViewModelBase.cs" />
+    <Page Include="Resources\GridSplitterTemplate.xaml" />
     <Page Include="Resources\GraphTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
