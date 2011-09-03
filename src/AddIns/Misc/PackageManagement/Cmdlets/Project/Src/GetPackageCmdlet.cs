@@ -142,11 +142,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IQueryable<IPackage> FilterPackages(IQueryable<IPackage> packages)
 		{
-			if (Filter != null) {
-				string[] searchTerms = Filter.Split(' ');
-				return packages.Find(searchTerms);
-			}
-			return packages;
+			return packages.Find(Filter);
 		}
 		
 		IQueryable<IPackage> GetUpdatedPackages()

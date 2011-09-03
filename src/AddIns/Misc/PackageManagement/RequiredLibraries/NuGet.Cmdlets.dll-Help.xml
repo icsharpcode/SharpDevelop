@@ -192,6 +192,9 @@ c:\temp\packages to find the package.
           <maml:name>Updates</maml:name>
         </command:parameter>
         <command:parameter required="false" position="named">
+            <maml:name>ProjectName</maml:name>
+        </command:parameter>
+        <command:parameter required="false" position="named">
           <maml:name>Recent</maml:name>
         </command:parameter>
         <command:parameter required="false" position="named">
@@ -228,6 +231,12 @@ c:\temp\packages to find the package.
         <maml:description>
           <maml:para>Gets packages available from the online package source.</maml:para>
         </maml:description>
+      </command:parameter>
+      <command:parameter required="false">
+         <maml:name>ProjectName</maml:name>
+         <maml:description>
+           <maml:para>Specifies the project to get installed packages from. If ommitted, the command will return installed projects for the entire solution.</maml:para>
+         </maml:description>
       </command:parameter>
       <command:parameter required="false" position="named">
         <maml:name>Recent</maml:name>
@@ -276,7 +285,7 @@ c:\temp\packages to find the package.
           <maml:para>
 Description
 ------------------------------------------------------------------
-Returns the packages installed in the default project.
+Returns packages installed in the current solution.
           </maml:para>
           <maml:para></maml:para>
           <maml:para></maml:para>
@@ -284,6 +293,19 @@ Returns the packages installed in the default project.
       </command:example>
       <command:example>
         <maml:title>----------  EXAMPLE 2  ----------</maml:title>
+        <dev:code>PM&gt; Get-Package -ProjectName MyProject</dev:code>
+        <dev:remarks>
+            <maml:para>
+Description
+------------------------------------------------------------------
+Returns packages installed in the "MyProject" project.
+            </maml:para>
+            <maml:para></maml:para>
+            <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>----------  EXAMPLE 3  ----------</maml:title>
         <dev:code>PM&gt; Get-Package -ListAvailable</dev:code>
         <dev:remarks>
           <maml:para>
@@ -296,7 +318,7 @@ Returns a list of packages available online in the current package source.
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>----------  EXAMPLE 3  ----------</maml:title>
+        <maml:title>----------  EXAMPLE 4  ----------</maml:title>
         <dev:code>PM&gt; Get-Package -ListAvailable -Filter Ninject</dev:code>
         <dev:remarks>
           <maml:para>
@@ -308,7 +330,7 @@ Returns a list of packages available online using "Ninject" as a search term.
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>----------  EXAMPLE 4  ----------</maml:title>
+        <maml:title>----------  EXAMPLE 5  ----------</maml:title>
         <dev:code>PS&gt; Get-Package -Updates</dev:code>
         <dev:remarks>
           <maml:para>
@@ -321,7 +343,7 @@ Returns a list of packages installed in the default project that have updates av
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>----------  EXAMPLE 5  ----------</maml:title>
+        <maml:title>----------  EXAMPLE 6  ----------</maml:title>
         <dev:code>PM&gt; Get-Package -Recent</dev:code>
         <dev:remarks>
           <maml:para>
