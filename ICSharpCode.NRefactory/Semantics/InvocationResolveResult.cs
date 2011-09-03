@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
@@ -29,82 +28,19 @@ namespace ICSharpCode.NRefactory.Semantics
 	/// <summary>
 	/// Represents the result of a method invocation.
 	/// </summary>
-	public class InvocationResolveResult : MemberResolveResult
+	public abstract class InvocationResolveResult : MemberResolveResult
 	{
-		public readonly OverloadResolutionErrors OverloadResolutionErrors;
-		
+		/// <summary>
+		/// Gets the arguments that are being passed to the method.
+		/// </summary>
 		public readonly IList<ResolveResult> Arguments;
-		
-		/// <summary>
-		/// Gets whether this invocation is calling an extension method using extension method syntax.
-		/// </summary>
-		public readonly bool IsExtensionMethodInvocation;
-		
-		/// <summary>
-		/// Gets whether this invocation is calling a delegate (without explicitly calling ".Invoke()").
-		/// </summary>
-		public readonly bool IsDelegateInvocation;
-		
-		/// <summary>
-		/// Gets whether a params-Array is being used in its expanded form.
-		/// </summary>
-		public readonly bool IsExpandedForm;
-		
-		/// <summary>
-		/// Gets whether this is a lifted operator invocation.
-		/// </summary>
-		public readonly bool IsLiftedOperatorInvocation;
-		
-		readonly IList<int> argumentToParameterMap;
-		
-		public InvocationResolveResult(ResolveResult targetResult, OverloadResolution or, ITypeResolveContext context)
-			: base(
-				or.IsExtensionMethodInvocation ? null : targetResult,
-				or.GetBestCandidateWithSubstitutedTypeArguments(),
-				context)
-		{
-			this.OverloadResolutionErrors = or.BestCandidateErrors;
-			this.argumentToParameterMap = or.GetArgumentToParameterMap();
-			this.Arguments = or.GetArgumentsWithConversions();
-			
-			this.IsExtensionMethodInvocation = or.IsExtensionMethodInvocation;
-			this.IsExpandedForm = or.BestCandidateIsExpandedForm;
-			this.IsLiftedOperatorInvocation = or.BestCandidate is OverloadResolution.ILiftedOperator;
-		}
 		
 		public InvocationResolveResult(
 			ResolveResult targetResult, IParameterizedMember member, IType returnType,
-			IList<ResolveResult> arguments,
-			OverloadResolutionErrors overloadResolutionErrors = OverloadResolutionErrors.None,
-			bool isExtensionMethodInvocation = false, 
-			bool isExpandedForm = false,
-			bool isLiftedOperatorInvocation = false,
-			bool isDelegateInvocation = false,
-			IList<int> argumentToParameterMap = null)
+			IList<ResolveResult> arguments)
 			: base(targetResult, member, returnType)
 		{
-			this.OverloadResolutionErrors = overloadResolutionErrors;
 			this.Arguments = arguments ?? EmptyList<ResolveResult>.Instance;
-			this.IsExtensionMethodInvocation = isExtensionMethodInvocation;
-			this.IsExpandedForm = isExpandedForm;
-			this.IsLiftedOperatorInvocation = isLiftedOperatorInvocation;
-			this.IsDelegateInvocation = isDelegateInvocation;
-			this.argumentToParameterMap = argumentToParameterMap;
-		}
-		
-		public override bool IsError {
-			get { return this.OverloadResolutionErrors != OverloadResolutionErrors.None; }
-		}
-		
-		/// <summary>
-		/// Gets an array that maps argument indices to parameter indices.
-		/// For arguments that could not be mapped to any parameter, the value will be -1.
-		/// 
-		/// parameterIndex = ArgumentToParameterMap[argumentIndex]
-		/// </summary>
-		public IList<int> GetArgumentToParameterMap()
-		{
-			return argumentToParameterMap;
 		}
 		
 		public new IParameterizedMember Member {

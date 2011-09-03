@@ -17,7 +17,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -97,9 +96,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override string ToString()
 		{
 			if (typeParameterCount == 0)
-				return NamespaceDeclaration.BuildQualifiedName(nameSpace, name);
+				return BuildQualifiedName(nameSpace, name);
 			else
-				return NamespaceDeclaration.BuildQualifiedName(nameSpace, name) + "`" + typeParameterCount;
+				return BuildQualifiedName(nameSpace, name) + "`" + typeParameterCount;
+		}
+		
+		static string BuildQualifiedName (string name1, string name2)
+		{
+			if (string.IsNullOrEmpty (name1))
+				return name2;
+			if (string.IsNullOrEmpty (name2))
+				return name1;
+			return name1 + "." + name2;
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)

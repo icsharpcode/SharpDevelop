@@ -504,7 +504,7 @@ class Test {
 	}
 }
 ";
-			InvocationResolveResult irr = Resolve<InvocationResolveResult>(program);
+			var irr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(irr.IsError);
 			Assert.IsTrue(irr.IsLiftedOperatorInvocation);
 			Assert.AreEqual("A.op_Addition", irr.Member.FullName);

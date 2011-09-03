@@ -349,7 +349,7 @@ interface IBoth : ILeft, IRight {}
 class A {
  	void Test(IBoth x) { $x.Method()$; }
 }";
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsTrue(rr.IsError);
 			Assert.AreEqual(OverloadResolutionErrors.AmbiguousMatch, rr.OverloadResolutionErrors);
 		}

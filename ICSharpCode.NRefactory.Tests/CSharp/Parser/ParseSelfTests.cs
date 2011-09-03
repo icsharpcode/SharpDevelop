@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			}
 		}
 		
-		void CheckWhitespace(AstLocation whitespaceStart, AstLocation whitespaceEnd)
+		void CheckWhitespace(TextLocation whitespaceStart, TextLocation whitespaceEnd)
 		{
 			if (whitespaceStart == whitespaceEnd)
 				return;

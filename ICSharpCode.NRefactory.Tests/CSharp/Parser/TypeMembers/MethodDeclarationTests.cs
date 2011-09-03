@@ -328,8 +328,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 				"}", true // expect errors
 			);
 			Assert.AreEqual("A", md.Name);
-			Assert.AreEqual(new AstLocation(2, 1), md.Body.StartLocation);
-			Assert.AreEqual(new AstLocation(5, 2), md.Body.EndLocation);
+			Assert.AreEqual(new TextLocation(2, 1), md.Body.StartLocation);
+			Assert.AreEqual(new TextLocation(5, 2), md.Body.EndLocation);
 		}
 		
 		[Test]

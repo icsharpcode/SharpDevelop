@@ -153,7 +153,7 @@ namespace ICSharpCode.NRefactory.Demo
 			csharpCodeTextBox.Text = w.ToString();
 		}
 		
-		int GetOffset(TextBox textBox, AstLocation location)
+		int GetOffset(TextBox textBox, TextLocation location)
 		{
 			return textBox.GetFirstCharIndexFromLine(location.Line - 1) + location.Column - 1;
 		}

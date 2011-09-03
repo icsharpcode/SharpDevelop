@@ -17,7 +17,7 @@ namespace ICSharpCode.NRefactory.VB
 	/// <summary>
 	/// Description of OutputVisitor.
 	/// </summary>
-	public class OutputVisitor : IAstVisitor<object, object>, IPatternAstVisitor<object, object>
+	public class OutputVisitor : IAstVisitor<object, object>
 	{
 		readonly IOutputFormatter formatter;
 		readonly VBFormattingOptions policy;
@@ -679,43 +679,6 @@ namespace ICSharpCode.NRefactory.VB
 			WriteTypeArguments(simpleType.TypeArguments);
 			
 			return EndNode(simpleType);
-		}
-		#endregion
-		
-		#region Pattern Matching
-		public object VisitAnyNode(AnyNode anyNode, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public object VisitBackreference(Backreference backreference, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public object VisitChoice(Choice choice, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public object VisitNamedNode(NamedNode namedNode, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public object VisitRepeat(Repeat repeat, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public object VisitOptionalNode(OptionalNode optionalNode, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public object VisitIdentifierExpressionBackreference(IdentifierExpressionBackreference identifierExpressionBackreference, object data)
-		{
-			throw new NotImplementedException();
 		}
 		#endregion
 		
