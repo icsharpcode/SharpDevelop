@@ -142,7 +142,7 @@ namespace Mono.CSharp
 		LocationsBag lbag;
 		UsingsBag ubag;
 		List<Tuple<Modifiers, Location>> mod_locations;
-		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
+		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation, savedEnumBaseTypeColonLocation;
 		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
 		List<Location> attributeCommas = new List<Location> ();
@@ -564,6 +564,7 @@ qualified_identifier
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		$$ = new MemberName ((MemberName) $1, lt.Value, lt.Location);		
+		lbag.AddLocation ($$, GetLocation ($2));		
 	  }
 	| error
 	  {
@@ -932,6 +933,7 @@ struct_declaration
 	  { 
 		MemberName name = MakeName ((MemberName) $6);
 		push_current_class (new Struct (current_namespace, current_class, name, (Modifiers) $2, (Attributes) $1), $3);
+		lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($4));
 	  }
 	  opt_class_base
 	  opt_type_parameter_constraints_clauses
@@ -943,7 +945,6 @@ struct_declaration
 		if (doc_support)
 			current_container.DocComment = Lexer.consume_doc_comment ();
 
-		lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($4));
 	  }
 	  struct_body
 	  {
@@ -1973,7 +1974,11 @@ interface_declaration
 	  }
 	  opt_semicolon 
 	  {
-	    lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13));
+		if ($15 != null) {
+			lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13), GetLocation ($15));
+		} else {
+			lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13));
+		}
 		$$ = pop_current_class ();
 	  }
 	| opt_attributes opt_modifiers opt_partial INTERFACE error
@@ -2580,8 +2585,19 @@ enum_declaration
 
 //			if (doc_support)
 //				em.DocComment = ev.DocComment;
-
-		lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), GetLocation ($7), GetLocation ($11));
+		if ($5 != null) {
+			if ($12 != null) {
+				lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), savedEnumBaseTypeColonLocation, GetLocation ($7), GetLocation ($11), GetLocation ($12));
+			} else {
+				lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), savedEnumBaseTypeColonLocation, GetLocation ($7), GetLocation ($11));
+			}
+		} else {
+			if ($12 != null) {
+				lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), GetLocation ($7), GetLocation ($11), GetLocation ($12));
+			} else {
+				lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), GetLocation ($7), GetLocation ($11));
+			}
+		}
 		$$ = pop_current_class ();
 	  }
 	;
@@ -2595,6 +2611,7 @@ opt_enum_base
 			Enum.Error_1008 (GetLocation ($2), report);
 			$$ = null;
 		} else {
+			savedEnumBaseTypeColonLocation = GetLocation ($1);
 			$$ = $2;
 		}
 	 }
@@ -4322,7 +4339,8 @@ class_declaration
 		if (((c.ModFlags & Modifiers.STATIC) != 0) && lang_version == LanguageVersion.ISO_1) {
 			FeatureIsNotAvailable (c.Location, "static classes");
 		}
-			
+		
+		lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($4));
 		push_current_class (c, $3);
 	  }
 	  opt_class_base
@@ -4331,7 +4349,6 @@ class_declaration
 		lexer.ConstraintsParsing = false;
 
 		current_class.SetParameterInfo ((List<Constraints>) $9);
-		lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($4));
 
 		if (doc_support) {
 			current_container.DocComment = Lexer.consume_doc_comment ();
@@ -4346,7 +4363,11 @@ class_declaration
 	  }
 	  opt_semicolon 
 	  {
-		lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13), GetLocation ($15));
+		if ($15 != null) {
+			lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13), GetLocation ($15));
+		} else {
+			lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13));
+		}
 		$$ = pop_current_class ();
 	  }
 	;	
@@ -4474,6 +4495,7 @@ opt_class_base
 	: /* empty */
 	| COLON type_list
 	 {
+		lbag.AppendToMember (current_class, GetLocation ($1));
 		current_container.AddBasesForPart (current_class, (List<FullNamedExpression>) $2);
 	 }
 	;

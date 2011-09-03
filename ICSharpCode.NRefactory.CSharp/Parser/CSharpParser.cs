@@ -281,6 +281,15 @@ namespace ICSharpCode.NRefactory.CSharp
 					Identifier newIdent = Identifier.Create (memberName.Name, Convert (memberName.Location));
 					namespaceDecl.InsertChildBefore (insertPos, newIdent, NamespaceDeclaration.Roles.Identifier);
 					insertPos = newIdent;
+					
+					var location = LocationsBag.GetLocations (memberName);
+					
+					if (location != null) {
+						var dotToken = new CSharpTokenNode (Convert (location[0]), 1);
+						namespaceDecl.InsertChildBefore (insertPos, dotToken, NamespaceDeclaration.Roles.Dot);
+						insertPos = dotToken;
+					}
+					
 					memberName = memberName.Left;
 				}
 			}
@@ -349,8 +358,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				var location = LocationsBag.GetMemberLocation (c);
 				AddModifiers (newType, location);
+				int curLoc = 0;
 				if (location != null)
-					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "class".Length), TypeDeclaration.Roles.Keyword);
+					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), "class".Length), TypeDeclaration.Roles.Keyword);
+				
 				newType.AddChild (Identifier.Create (c.MemberName.Name, Convert (c.MemberName.Location)), AstNode.Roles.Identifier);
 				if (c.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (c.MemberName);
@@ -362,16 +373,23 @@ namespace ICSharpCode.NRefactory.CSharp
 					AddConstraints (newType, c);
 				}
 				if (c.TypeBaseExpressions != null) {
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Colon);
 					foreach (var baseTypes in c.TypeBaseExpressions) {
 						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
 					}
 				}
-				if (location != null && location.Count > 1)
-					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AstNode.Roles.LBrace);
+				if (location != null && curLoc < location.Count)
+					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (c);
-				if (location != null && location.Count > 2) {
-					newType.AddChild (new CSharpTokenNode (Convert (location[2]), 1), AstNode.Roles.RBrace);
+				if (location != null && curLoc < location.Count) {
+					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.RBrace);
+					
+					// optional semicolon
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Semicolon);
+					
 				} else {
 					// parser error, set end node to max value.
 					newType.AddChild (new ErrorNode (), AstNode.Roles.Error);
@@ -387,8 +405,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddAttributeSection (newType, s);
 				var location = LocationsBag.GetMemberLocation (s);
 				AddModifiers (newType, location);
+				int curLoc = 0;
 				if (location != null)
-					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "struct".Length), TypeDeclaration.Roles.Keyword);
+					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), "struct".Length), TypeDeclaration.Roles.Keyword);
 				newType.AddChild (Identifier.Create (s.MemberName.Name, Convert (s.MemberName.Location)), AstNode.Roles.Identifier);
 				if (s.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (s.MemberName);
@@ -401,17 +420,23 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				
 				if (s.TypeBaseExpressions != null) {
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Colon);
 					foreach (var baseTypes in s.TypeBaseExpressions) {
 						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
 					}
 				}
 				
-				if (location != null && location.Count > 1)
-					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AstNode.Roles.LBrace);
+				if (location != null && curLoc < location.Count)
+					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (s);
 				if (location != null && location.Count > 2) {
-					newType.AddChild (new CSharpTokenNode  (Convert (location[2]), 1), AstNode.Roles.RBrace);
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.RBrace);
+					// optional semicolon
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Semicolon);
 				} else {
 					// parser error, set end node to max value.
 					newType.AddChild (new ErrorNode (), AstNode.Roles.Error);
@@ -427,8 +452,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddAttributeSection (newType, i);
 				var location = LocationsBag.GetMemberLocation (i);
 				AddModifiers (newType, location);
+				int curLoc = 0;
 				if (location != null)
-					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "interface".Length), TypeDeclaration.Roles.Keyword);
+					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), "interface".Length), TypeDeclaration.Roles.Keyword);
 				newType.AddChild (Identifier.Create (i.MemberName.Name, Convert (i.MemberName.Location)), AstNode.Roles.Identifier);
 				if (i.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (i.MemberName);
@@ -440,16 +466,22 @@ namespace ICSharpCode.NRefactory.CSharp
 					AddConstraints (newType, i);
 				}
 				if (i.TypeBaseExpressions != null) {
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Colon);
 					foreach (var baseTypes in i.TypeBaseExpressions) {
 						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
 					}
 				}
-				if (location != null && location.Count > 1)
-					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AstNode.Roles.LBrace);
+				if (location != null && curLoc < location.Count)
+					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (i);
 				if (location != null && location.Count > 2) {
-					newType.AddChild (new CSharpTokenNode  (Convert (location[2]), 1), AstNode.Roles.RBrace);
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.RBrace);
+					// optional semicolon
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Semicolon);
 				} else {
 					// parser error, set end node to max value.
 					newType.AddChild (new ErrorNode (), AstNode.Roles.Error);
@@ -514,19 +546,27 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetMemberLocation (e);
 				
 				AddModifiers (newType, location);
+				int curLoc = 0;
 				if (location != null)
-					newType.AddChild (new CSharpTokenNode (Convert (location [0]), "enum".Length), TypeDeclaration.Roles.Keyword);
+					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++]), "enum".Length), TypeDeclaration.Roles.Keyword);
 				newType.AddChild (Identifier.Create (e.MemberName.Name, Convert (e.MemberName.Location)), AstNode.Roles.Identifier);
 				
-				if (e.BaseTypeExpression != null)
+				if (e.BaseTypeExpression != null) {
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Colon);
 					newType.AddChild (ConvertToType (e.BaseTypeExpression), TypeDeclaration.BaseTypeRole);
+				}
 
-				if (location != null && location.Count > 1)
-					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AstNode.Roles.LBrace);
+				if (location != null && curLoc < location.Count)
+					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (e);
 				if (location != null && location.Count > 2) {
-					newType.AddChild (new CSharpTokenNode  (Convert (location[2]), 1), AstNode.Roles.RBrace);
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.RBrace);
+					// optional semicolon
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Semicolon);
 				} else {
 					// parser error, set end node to max value.
 					newType.AddChild (new ErrorNode (), AstNode.Roles.Error);
