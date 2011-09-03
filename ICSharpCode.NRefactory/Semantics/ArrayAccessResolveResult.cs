@@ -20,53 +20,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
-	/// Represents the result of resolving an expression.
+	/// Resolve result representing an array access.
 	/// </summary>
-	public class ResolveResult
+	public class ArrayAccessResolveResult : ResolveResult
 	{
-		IType type;
+		public readonly ResolveResult Array;
+		public readonly ResolveResult[] Indices;
 		
-		public ResolveResult(IType type)
+		public ArrayAccessResolveResult(IType elementType, ResolveResult array, ResolveResult[] indices) : base(elementType)
 		{
-			if (type == null)
-				throw new ArgumentNullException("type");
-			this.type = type;
+			if (array == null)
+				throw new ArgumentNullException("array");
+			if (indices == null)
+				throw new ArgumentNullException("indices");
+			this.Array = array;
+			this.Indices = indices;
 		}
 		
-		public IType Type {
-			get { return type; }
-		}
-		
-		public virtual bool IsCompileTimeConstant {
-			get { return false; }
-		}
-		
-		public virtual object ConstantValue {
-			get { return null; }
-		}
-		
-		public virtual bool IsError {
-			get { return false; }
-		}
-		
-		public override string ToString()
+		public override IEnumerable<ResolveResult> GetChildResults()
 		{
-			return "[" + GetType().Name + " " + type + "]";
-		}
-		
-		public virtual IEnumerable<ResolveResult> GetChildResults()
-		{
-			return Enumerable.Empty<ResolveResult>();
-		}
-		
-		public virtual DomRegion GetDefinitionRegion()
-		{
-			return DomRegion.Empty;
+			return new [] { Array }.Concat(Indices);
 		}
 	}
 }

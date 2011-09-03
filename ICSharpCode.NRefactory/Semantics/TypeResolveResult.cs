@@ -17,32 +17,27 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
-	public class ConversionResolveResult : ResolveResult
+	/// <summary>
+	/// The resolved expression refers to a type name.
+	/// </summary>
+	public class TypeResolveResult : ResolveResult
 	{
-		public readonly ResolveResult Input;
-		public readonly Conversion Conversion;
-		
-		public ConversionResolveResult(IType targetType, ResolveResult input, Conversion conversion)
-			: base(targetType)
+		public TypeResolveResult(IType type)
+			: base(type)
 		{
-			if (input == null)
-				throw new ArgumentNullException("input");
-			this.Input = input;
-			this.Conversion = conversion;
 		}
 		
-		public override bool IsError {
-			get { return !Conversion.IsValid; }
-		}
-		
-		public override IEnumerable<ResolveResult> GetChildResults()
+		public override DomRegion GetDefinitionRegion()
 		{
-			return new [] { Input };
+			ITypeDefinition def = this.Type.GetDefinition();
+			if (def != null)
+				return def.Region;
+			else
+				return DomRegion.Empty;
 		}
 	}
 }

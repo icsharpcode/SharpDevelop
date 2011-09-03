@@ -19,27 +19,26 @@
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
-	/// Represents that an expression resolved to a namespace.
+	/// Represents the 'typeof'.
 	/// </summary>
-	public class NamespaceResolveResult : ResolveResult
+	public class TypeOfResolveResult : ResolveResult
 	{
-		readonly string namespaceName;
+		readonly IType referencedType;
 		
-		public NamespaceResolveResult(string namespaceName) : base(SharedTypes.UnknownType)
+		public TypeOfResolveResult(IType systemType, IType referencedType)
+			: base(systemType)
 		{
-			this.namespaceName = namespaceName;
+			this.referencedType = referencedType;
 		}
 		
-		public string NamespaceName {
-			get { return namespaceName; }
-		}
-		
-		public override string ToString()
-		{
-			return string.Format("[{0} {1}]", GetType().Name, namespaceName);
+		/// <summary>
+		/// The type referenced by the 'typeof'.
+		/// </summary>
+		public IType ReferencedType {
+			get { return referencedType; }
 		}
 	}
 }

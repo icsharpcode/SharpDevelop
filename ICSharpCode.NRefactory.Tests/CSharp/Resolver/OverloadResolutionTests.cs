@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;

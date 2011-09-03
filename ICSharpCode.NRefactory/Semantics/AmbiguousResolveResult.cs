@@ -17,55 +17,32 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
-	[TestFixture]
-	public class LocalTypeInferenceTests : ResolverTestBase
+	/// <summary>
+	/// Represents an ambiguous type resolve result.
+	/// </summary>
+	public class AmbiguousTypeResolveResult : TypeResolveResult
 	{
-		[Test]
-		public void TypeInferenceTest()
+		public AmbiguousTypeResolveResult(IType type) : base(type)
 		{
-			string program = @"class TestClass {
-	static void Test() {
-		var a = 3;
-		$a$.ToString();
-	}
-}
-";
-			var lrr = Resolve<LocalResolveResult>(program);
-			Assert.AreEqual("System.Int32", lrr.Type.FullName);
 		}
 		
-		[Test]
-		public void TypeInferenceCycleTest()
-		{
-			string program = @"class TestClass {
-	static void Test() {
-		var a = a;
-		$a$.ToString();
+		public override bool IsError {
+			get { return true; }
+		}
 	}
-}
-";
-			var lrr = Resolve<LocalResolveResult>(program);
-			Assert.AreSame(SharedTypes.UnknownType, lrr.Type);
+	
+	public class AmbiguousMemberResolveResult : MemberResolveResult
+	{
+		public AmbiguousMemberResolveResult(ResolveResult targetResult, IMember member, IType returnType) : base(targetResult, member, returnType)
+		{
 		}
 		
-		[Test]
-		public void InvalidAnonymousTypeDeclaration()
-		{
-			// see SD-1393
-			string program = @"using System;
-class TestClass {
-	static void Main() {
-			var contact = {id = 54321};
-			$contact$.ToString();
-		} }";
-			var lrr = Resolve<LocalResolveResult>(program);
-			Assert.AreEqual(SharedTypes.UnknownType, lrr.Type);
+		public override bool IsError {
+			get { return true; }
 		}
 	}
 }

@@ -18,6 +18,7 @@
 
 using System;
 using System.Threading;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver

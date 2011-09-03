@@ -18,6 +18,7 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;

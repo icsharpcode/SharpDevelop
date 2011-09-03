@@ -17,28 +17,33 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
-	/// <summary>
-	/// Represents the 'typeof'.
-	/// </summary>
-	public class TypeOfResolveResult : ResolveResult
+	public class ConversionResolveResult : ResolveResult
 	{
-		readonly IType referencedType;
+		public readonly ResolveResult Input;
+		public readonly Conversion Conversion;
 		
-		public TypeOfResolveResult(IType systemType, IType referencedType)
-			: base(systemType)
+		public ConversionResolveResult(IType targetType, ResolveResult input, Conversion conversion)
+			: base(targetType)
 		{
-			this.referencedType = referencedType;
+			if (input == null)
+				throw new ArgumentNullException("input");
+			this.Input = input;
+			this.Conversion = conversion;
 		}
 		
-		/// <summary>
-		/// The type referenced by the 'typeof'.
-		/// </summary>
-		public IType ReferencedType {
-			get { return referencedType; }
+		public override bool IsError {
+			get { return !Conversion.IsValid; }
+		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			return new [] { Input };
 		}
 	}
 }

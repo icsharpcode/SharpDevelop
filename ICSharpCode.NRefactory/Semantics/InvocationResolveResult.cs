@@ -20,10 +20,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
 	/// Represents the result of a method invocation.

@@ -19,6 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
 
@@ -102,64 +104,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override IEnumerable<ResolveResult> GetChildResults()
 		{
 			return new [] { Condition, True, False };
-		}
-	}
-	
-	/// <summary>
-	/// Resolve result representing an array access.
-	/// </summary>
-	public class ArrayAccessResolveResult : ResolveResult
-	{
-		public readonly ResolveResult Array;
-		public readonly ResolveResult[] Indices;
-		
-		public ArrayAccessResolveResult(IType elementType, ResolveResult array, ResolveResult[] indices) : base(elementType)
-		{
-			if (array == null)
-				throw new ArgumentNullException("array");
-			if (indices == null)
-				throw new ArgumentNullException("indices");
-			this.Array = array;
-			this.Indices = indices;
-		}
-		
-		public override IEnumerable<ResolveResult> GetChildResults()
-		{
-			return new [] { Array }.Concat(Indices);
-		}
-	}
-	
-	/// <summary>
-	/// Resolve result representing an array creation.
-	/// </summary>
-	public class ArrayCreateResolveResult : ResolveResult
-	{
-		/// <summary>
-		/// Gets the size arguments.
-		/// </summary>
-		public readonly ResolveResult[] SizeArguments;
-		
-		/// <summary>
-		/// Gets the initializer elements.
-		/// This field may be null if no initializer was specified.
-		/// </summary>
-		public readonly ResolveResult[] InitializerElements;
-		
-		readonly object[] constantArray;
-		
-		public ArrayCreateResolveResult(IType arrayType, ResolveResult[] sizeArguments, ResolveResult[] initializerElements)
-			: base(arrayType)
-		{
-			this.SizeArguments = sizeArguments;
-			this.InitializerElements = initializerElements;
-		}
-		
-		public override IEnumerable<ResolveResult> GetChildResults()
-		{
-			if (SizeArguments != null && InitializerElements != null)
-				return SizeArguments.Concat(InitializerElements);
-			else
-				return SizeArguments ?? InitializerElements ?? EmptyList<ResolveResult>.Instance;
 		}
 	}
 }

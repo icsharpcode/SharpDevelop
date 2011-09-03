@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
@@ -514,16 +516,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		AstNode ConvertField(IField field)
 		{
 			FieldDeclaration decl = new FieldDeclaration();
-			Modifiers m = GetMemberModifiers(field);
-			if (field.IsConst) {
-				m &= ~Modifiers.Static;
-				m |= Modifiers.Const;
-			} else if (field.IsReadOnly) {
-				m |= Modifiers.Readonly;
-			} else if (field.IsVolatile) {
-				m |= Modifiers.Volatile;
+			if (ShowModifiers) {
+				Modifiers m = GetMemberModifiers(field);
+				if (field.IsConst) {
+					m &= ~Modifiers.Static;
+					m |= Modifiers.Const;
+				} else if (field.IsReadOnly) {
+					m |= Modifiers.Readonly;
+				} else if (field.IsVolatile) {
+					m |= Modifiers.Volatile;
+				}
+				decl.Modifiers = m;
 			}
-			decl.Modifiers = m;
 			decl.ReturnType = ConvertTypeReference(field.ReturnType);
 			Expression initializer = null;
 			if (field.IsConst && this.ShowConstantValues)

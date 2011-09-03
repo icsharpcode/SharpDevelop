@@ -24,9 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {

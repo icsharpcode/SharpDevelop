@@ -17,33 +17,44 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
-	/// ResolveResult representing a compile-time constant.
+	/// Resolve result representing an array creation.
 	/// </summary>
-	public class ConstantResolveResult : ResolveResult
+	public class ArrayCreateResolveResult : ResolveResult
 	{
-		object constantValue;
+		/// <summary>
+		/// Gets the size arguments.
+		/// </summary>
+		public readonly ResolveResult[] SizeArguments;
 		
-		public ConstantResolveResult(IType type, object constantValue) : base(type)
+		/// <summary>
+		/// Gets the initializer elements.
+		/// This field may be null if no initializer was specified.
+		/// </summary>
+		public readonly ResolveResult[] InitializerElements;
+		
+		readonly object[] constantArray;
+		
+		public ArrayCreateResolveResult(IType arrayType, ResolveResult[] sizeArguments, ResolveResult[] initializerElements)
+			: base(arrayType)
 		{
-			this.constantValue = constantValue;
+			this.SizeArguments = sizeArguments;
+			this.InitializerElements = initializerElements;
 		}
 		
-		public override bool IsCompileTimeConstant {
-			get { return true; }
-		}
-		
-		public override object ConstantValue {
-			get { return constantValue; }
-		}
-		
-		public override string ToString()
+		public override IEnumerable<ResolveResult> GetChildResults()
 		{
-			return string.Format("[{0} {1} = {2}]", GetType().Name, this.Type, constantValue);
+			if (SizeArguments != null && InitializerElements != null)
+				return SizeArguments.Concat(InitializerElements);
+			else
+				return SizeArguments ?? InitializerElements ?? EmptyList<ResolveResult>.Instance;
 		}
 	}
 }

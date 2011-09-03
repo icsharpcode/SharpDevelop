@@ -902,7 +902,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ConstantValueBuilder b = new ConstantValueBuilder(parentTypeDefinition, parentMethodDefinition, parentUsingScope, false);
 			ConstantExpression c = expression.AcceptVisitor(b, null);
 			if (c == null)
-				return null;
+				return new ErrorConstantValue(targetType);
 			PrimitiveConstantExpression pc = c as PrimitiveConstantExpression;
 			if (pc != null && pc.Type == targetType) {
 				// Save memory by directly using a SimpleConstantValue.

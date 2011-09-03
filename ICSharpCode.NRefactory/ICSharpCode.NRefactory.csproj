@@ -105,17 +105,14 @@
     <Compile Include="CSharp\Resolver\FindReferencedEntities.cs" />
     <Compile Include="CSharp\Resolver\FindReferences.cs" />
     <Compile Include="CSharp\Resolver\FindReferenceSearchScope.cs" />
+    <Compile Include="CSharp\Resolver\LambdaResolveResult.cs" />
     <Compile Include="CSharp\Resolver\Log.cs" />
-    <Compile Include="CSharp\Resolver\OperatorResolveResult.cs" />
-    <Compile Include="CSharp\Resolver\ConversionResolveResult.cs" />
     <Compile Include="CSharp\Resolver\CSharpAttribute.cs" />
     <Compile Include="CSharp\Resolver\ConstantValues.cs" />
-    <Compile Include="CSharp\Resolver\InvocationResolveResult.cs" />
-    <Compile Include="CSharp\Resolver\LambdaResolveResult.cs" />
     <Compile Include="CSharp\Resolver\MapTypeIntoNewContext.cs" />
+    <Compile Include="CSharp\Resolver\OperatorResolveResult.cs" />
     <Compile Include="CSharp\Resolver\ResolveAtLocation.cs" />
     <Compile Include="CSharp\Resolver\SimpleNameLookupMode.cs" />
-    <Compile Include="CSharp\Resolver\TypeOfResolveResult.cs" />
     <Compile Include="Documentation\IDStringProvider.cs" />
     <Compile Include="PatternMatching\BacktrackingInfo.cs" />
     <Compile Include="PatternMatching\Choice.cs" />
@@ -192,32 +189,37 @@
     <Compile Include="CSharp\Parser\ParsedFile.cs" />
     <Compile Include="CSharp\Parser\TypeSystemConvertVisitor.cs" />
     <Compile Include="CSharp\Resolver\AliasNamespaceReference.cs" />
-    <Compile Include="CSharp\Resolver\AmbiguousResolveResult.cs" />
-    <Compile Include="CSharp\Resolver\ByReferenceResolveResult.cs" />
-    <Compile Include="CSharp\Resolver\ConstantResolveResult.cs" />
     <Compile Include="CSharp\Resolver\Conversions.cs" />
     <Compile Include="CSharp\Resolver\CSharpResolver.cs" />
     <Compile Include="CSharp\Resolver\ErrorResolveResult.cs" />
     <Compile Include="CSharp\Resolver\IResolveVisitorNavigator.cs" />
     <Compile Include="CSharp\Resolver\ITypeOrNamespaceReference.cs" />
     <Compile Include="CSharp\Resolver\MemberLookup.cs" />
-    <Compile Include="CSharp\Resolver\MemberResolveResult.cs" />
     <Compile Include="CSharp\Resolver\MemberTypeOrNamespaceReference.cs" />
-    <Compile Include="CSharp\Resolver\MethodGroupResolveResult.cs" />
-    <Compile Include="CSharp\Resolver\NamespaceResolveResult.cs" />
     <Compile Include="CSharp\Resolver\NodeListResolveVisitorNavigator.cs" />
     <Compile Include="CSharp\Resolver\OverloadResolution.cs" />
     <Compile Include="CSharp\Resolver\OverloadResolutionErrors.cs" />
-    <Compile Include="CSharp\Resolver\ResolveResult.cs" />
     <Compile Include="CSharp\Resolver\ResolveVisitor.cs" />
     <Compile Include="CSharp\Resolver\SimpleTypeOrNamespaceReference.cs" />
     <Compile Include="CSharp\Resolver\TypeInference.cs" />
-    <Compile Include="CSharp\Resolver\TypeResolveResult.cs" />
-    <Compile Include="CSharp\Resolver\UnknownMemberResolveResult.cs" />
     <Compile Include="CSharp\Resolver\UsingScope.cs" />
-    <Compile Include="CSharp\Resolver\LocalResolveResult.cs" />
     <Compile Include="Documentation\XmlDocumentationProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Semantics\AmbiguousResolveResult.cs" />
+    <Compile Include="Semantics\ArrayAccessResolveResult.cs" />
+    <Compile Include="Semantics\ArrayCreateResolveResult.cs" />
+    <Compile Include="Semantics\ByReferenceResolveResult.cs" />
+    <Compile Include="Semantics\ConstantResolveResult.cs" />
+    <Compile Include="Semantics\ConversionResolveResult.cs" />
+    <Compile Include="Semantics\InvocationResolveResult.cs" />
+    <Compile Include="Semantics\LocalResolveResult.cs" />
+    <Compile Include="Semantics\MemberResolveResult.cs" />
+    <Compile Include="Semantics\MethodGroupResolveResult.cs" />
+    <Compile Include="Semantics\NamespaceResolveResult.cs" />
+    <Compile Include="Semantics\ResolveResult.cs" />
+    <Compile Include="Semantics\TypeOfResolveResult.cs" />
+    <Compile Include="Semantics\TypeResolveResult.cs" />
+    <Compile Include="Semantics\UnknownMemberResolveResult.cs" />
     <Compile Include="TypeSystem\Accessibility.cs" />
     <Compile Include="TypeSystem\ArrayType.cs" />
     <Compile Include="TypeSystem\ByReferenceType.cs" />
@@ -424,6 +426,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
+    <Folder Include="Semantics" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

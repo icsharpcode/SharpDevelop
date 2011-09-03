@@ -19,30 +19,27 @@
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
-	/// Represents an ambiguous type resolve result.
+	/// Represents that an expression resolved to a namespace.
 	/// </summary>
-	public class AmbiguousTypeResolveResult : TypeResolveResult
+	public class NamespaceResolveResult : ResolveResult
 	{
-		public AmbiguousTypeResolveResult(IType type) : base(type)
+		readonly string namespaceName;
+		
+		public NamespaceResolveResult(string namespaceName) : base(SharedTypes.UnknownType)
 		{
+			this.namespaceName = namespaceName;
 		}
 		
-		public override bool IsError {
-			get { return true; }
-		}
-	}
-	
-	public class AmbiguousMemberResolveResult : MemberResolveResult
-	{
-		public AmbiguousMemberResolveResult(ResolveResult targetResult, IMember member, IType returnType) : base(targetResult, member, returnType)
-		{
+		public string NamespaceName {
+			get { return namespaceName; }
 		}
 		
-		public override bool IsError {
-			get { return true; }
+		public override string ToString()
+		{
+			return string.Format("[{0} {1}]", GetType().Name, namespaceName);
 		}
 	}
 }

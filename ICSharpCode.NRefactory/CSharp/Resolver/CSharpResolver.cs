@@ -24,6 +24,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
+
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;

@@ -22,7 +22,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
 	/// Represents an unknown member.

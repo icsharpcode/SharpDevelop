@@ -19,7 +19,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.NRefactory.CSharp.Analysis;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
@@ -128,6 +130,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver.ConstantValues
 				&& expression == cv.expression
 				&& parentUsingScope == cv.parentUsingScope
 				&& parentTypeDefinition == cv.parentTypeDefinition;
+		}
+	}
+	
+	/// <summary>
+	/// Used for constants that could not be converted to IConstantValue.
+	/// </summary>
+	[Serializable]
+	public sealed class ErrorConstantValue : Immutable, IConstantValue
+	{
+		ITypeReference type;
+		
+		public ErrorConstantValue(ITypeReference type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			this.type = type;
+		}
+		
+		public ResolveResult Resolve(ITypeResolveContext context)
+		{
+			return new ErrorResolveResult(type.Resolve(context));
 		}
 	}
 	

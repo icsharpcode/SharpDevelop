@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 

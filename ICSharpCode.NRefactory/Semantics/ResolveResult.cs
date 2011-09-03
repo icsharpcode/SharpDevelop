@@ -17,61 +17,56 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
-	/// Represents a local variable.
+	/// Represents the result of resolving an expression.
 	/// </summary>
-	public class LocalResolveResult : ResolveResult
+	public class ResolveResult
 	{
-		readonly IVariable variable;
-		readonly object constantValue;
+		IType type;
 		
-		public LocalResolveResult(IVariable variable, IType type, object constantValue = null)
-			: base(UnpackTypeIfByRefParameter(type, variable))
+		public ResolveResult(IType type)
 		{
-			if (variable == null)
-				throw new ArgumentNullException("variable");
-			this.variable = variable;
-			this.constantValue = constantValue;
+			if (type == null)
+				throw new ArgumentNullException("type");
+			this.type = type;
 		}
 		
-		static IType UnpackTypeIfByRefParameter(IType type, IVariable v)
-		{
-			if (type.Kind == TypeKind.ByReference) {
-				IParameter p = v as IParameter;
-				if (p != null && (p.IsRef || p.IsOut))
-					return ((ByReferenceType)type).ElementType;
-			}
-			return type;
+		public IType Type {
+			get { return type; }
 		}
 		
-		public IVariable Variable {
-			get { return variable; }
+		public virtual bool IsCompileTimeConstant {
+			get { return false; }
 		}
 		
-		public bool IsParameter {
-			get { return variable is IParameter; }
+		public virtual object ConstantValue {
+			get { return null; }
 		}
 		
-		public override bool IsCompileTimeConstant {
-			get { return variable.IsConst; }
-		}
-		
-		public override object ConstantValue {
-			get { return constantValue; }
+		public virtual bool IsError {
+			get { return false; }
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("[LocalResolveResult {0}]", variable);
+			return "[" + GetType().Name + " " + type + "]";
 		}
 		
-		public override DomRegion GetDefinitionRegion()
+		public virtual IEnumerable<ResolveResult> GetChildResults()
 		{
-			return variable.Region;
+			return Enumerable.Empty<ResolveResult>();
+		}
+		
+		public virtual DomRegion GetDefinitionRegion()
+		{
+			return DomRegion.Empty;
 		}
 	}
 }

@@ -17,55 +17,33 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
-	[TestFixture]
-	public class LocalTypeInferenceTests : ResolverTestBase
+	/// <summary>
+	/// ResolveResult representing a compile-time constant.
+	/// </summary>
+	public class ConstantResolveResult : ResolveResult
 	{
-		[Test]
-		public void TypeInferenceTest()
+		object constantValue;
+		
+		public ConstantResolveResult(IType type, object constantValue) : base(type)
 		{
-			string program = @"class TestClass {
-	static void Test() {
-		var a = 3;
-		$a$.ToString();
-	}
-}
-";
-			var lrr = Resolve<LocalResolveResult>(program);
-			Assert.AreEqual("System.Int32", lrr.Type.FullName);
+			this.constantValue = constantValue;
 		}
 		
-		[Test]
-		public void TypeInferenceCycleTest()
-		{
-			string program = @"class TestClass {
-	static void Test() {
-		var a = a;
-		$a$.ToString();
-	}
-}
-";
-			var lrr = Resolve<LocalResolveResult>(program);
-			Assert.AreSame(SharedTypes.UnknownType, lrr.Type);
+		public override bool IsCompileTimeConstant {
+			get { return true; }
 		}
 		
-		[Test]
-		public void InvalidAnonymousTypeDeclaration()
+		public override object ConstantValue {
+			get { return constantValue; }
+		}
+		
+		public override string ToString()
 		{
-			// see SD-1393
-			string program = @"using System;
-class TestClass {
-	static void Main() {
-			var contact = {id = 54321};
-			$contact$.ToString();
-		} }";
-			var lrr = Resolve<LocalResolveResult>(program);
-			Assert.AreEqual(SharedTypes.UnknownType, lrr.Type);
+			return string.Format("[{0} {1} = {2}]", GetType().Name, this.Type, constantValue);
 		}
 	}
 }

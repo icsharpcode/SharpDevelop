@@ -19,6 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
 

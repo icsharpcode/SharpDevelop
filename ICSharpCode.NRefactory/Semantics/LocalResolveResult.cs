@@ -17,49 +17,61 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
-	/// Represents the resolve result of an 'ref x' or 'out x' expression.
+	/// Represents a local variable.
 	/// </summary>
-	public class ByReferenceResolveResult : ResolveResult
+	public class LocalResolveResult : ResolveResult
 	{
-		public bool IsOut { get; private set; }
-		public bool IsRef { get { return !IsOut;} }
+		readonly IVariable variable;
+		readonly object constantValue;
 		
-		public readonly ResolveResult ElementResult;
-		
-		public ByReferenceResolveResult(ResolveResult elementResult, bool isOut)
-			: this(elementResult.Type, isOut)
+		public LocalResolveResult(IVariable variable, IType type, object constantValue = null)
+			: base(UnpackTypeIfByRefParameter(type, variable))
 		{
-			this.ElementResult = elementResult;
+			if (variable == null)
+				throw new ArgumentNullException("variable");
+			this.variable = variable;
+			this.constantValue = constantValue;
 		}
 		
-		public ByReferenceResolveResult(IType elementType, bool isOut)
-			: base(new ByReferenceType(elementType))
+		static IType UnpackTypeIfByRefParameter(IType type, IVariable v)
 		{
-			this.IsOut = isOut;
+			if (type.Kind == TypeKind.ByReference) {
+				IParameter p = v as IParameter;
+				if (p != null && (p.IsRef || p.IsOut))
+					return ((ByReferenceType)type).ElementType;
+			}
+			return type;
 		}
 		
-		public IType ElementType {
-			get { return ((ByReferenceType)this.Type).ElementType; }
+		public IVariable Variable {
+			get { return variable; }
 		}
 		
-		public override IEnumerable<ResolveResult> GetChildResults()
-		{
-			if (ElementResult != null)
-				return new[] { ElementResult };
-			else
-				return Enumerable.Empty<ResolveResult>();
+		public bool IsParameter {
+			get { return variable is IParameter; }
+		}
+		
+		public override bool IsCompileTimeConstant {
+			get { return variable.IsConst; }
+		}
+		
+		public override object ConstantValue {
+			get { return constantValue; }
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("[{0} {1} {2}]", GetType().Name, IsOut ? "out" : "ref", ElementType);
+			return string.Format("[LocalResolveResult {0}]", variable);
+		}
+		
+		public override DomRegion GetDefinitionRegion()
+		{
+			return variable.Region;
 		}
 	}
 }

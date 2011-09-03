@@ -17,27 +17,49 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver
+namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
-	/// The resolved expression refers to a type name.
+	/// Represents the resolve result of an 'ref x' or 'out x' expression.
 	/// </summary>
-	public class TypeResolveResult : ResolveResult
+	public class ByReferenceResolveResult : ResolveResult
 	{
-		public TypeResolveResult(IType type)
-			: base(type)
+		public bool IsOut { get; private set; }
+		public bool IsRef { get { return !IsOut;} }
+		
+		public readonly ResolveResult ElementResult;
+		
+		public ByReferenceResolveResult(ResolveResult elementResult, bool isOut)
+			: this(elementResult.Type, isOut)
 		{
+			this.ElementResult = elementResult;
 		}
 		
-		public override DomRegion GetDefinitionRegion()
+		public ByReferenceResolveResult(IType elementType, bool isOut)
+			: base(new ByReferenceType(elementType))
 		{
-			ITypeDefinition def = this.Type.GetDefinition();
-			if (def != null)
-				return def.Region;
+			this.IsOut = isOut;
+		}
+		
+		public IType ElementType {
+			get { return ((ByReferenceType)this.Type).ElementType; }
+		}
+		
+		public override IEnumerable<ResolveResult> GetChildResults()
+		{
+			if (ElementResult != null)
+				return new[] { ElementResult };
 			else
-				return DomRegion.Empty;
+				return Enumerable.Empty<ResolveResult>();
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[{0} {1} {2}]", GetType().Name, IsOut ? "out" : "ref", ElementType);
 		}
 	}
 }

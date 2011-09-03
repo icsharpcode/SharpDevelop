@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Semantics;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
