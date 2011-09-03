@@ -20,7 +20,9 @@ using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.TypeSystem.TestCase;
 using NUnit.Framework;
@@ -455,6 +457,24 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(Accessibility.Public, m.Accessibility);
 			Assert.IsTrue(m.IsAbstract);
 			Assert.IsFalse(m.IsVirtual);
+		}
+		
+		[Test]
+		public void ConstantAnswer()
+		{
+			ITypeDefinition type = ctx.GetTypeDefinition(typeof(ConstantTest));
+			IField answer = type.Fields.Single(f => f.Name == "Answer");
+			Assert.IsTrue(answer.IsConst);
+			Assert.AreEqual(42, answer.ConstantValue.Resolve(ctx).ConstantValue);
+		}
+		
+		[Test]
+		public void ConstantNullString()
+		{
+			ITypeDefinition type = ctx.GetTypeDefinition(typeof(ConstantTest));
+			IField answer = type.Fields.Single(f => f.Name == "NullString");
+			Assert.IsTrue(answer.IsConst);
+			Assert.IsNull(answer.ConstantValue.Resolve(ctx).ConstantValue);
 		}
 	}
 }

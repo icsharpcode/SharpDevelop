@@ -19,6 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
@@ -423,7 +425,7 @@ class TestClass {
 ";
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program.Replace("COL a", "$COL$ a"));
 			Assert.AreEqual("System.Collections.ArrayList", trr.Type.FullName, "COL");
-			ResolveResult rr = Resolve<InvocationResolveResult>(program.Replace("new COL()", "$new COL()$"));
+			ResolveResult rr = Resolve<CSharpInvocationResolveResult>(program.Replace("new COL()", "$new COL()$"));
 			Assert.AreEqual("System.Collections.ArrayList", rr.Type.FullName, "a");
 		}
 		
@@ -558,7 +560,7 @@ class TestClass {
 			trr = Resolve<TypeResolveResult>(program.Replace("$", "$global::XX.XX$"));
 			Assert.AreEqual("XX.XX", trr.Type.FullName);
 			
-			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$XX.Test()$"));
+			InvocationResolveResult mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$XX.Test()$"));
 			Assert.AreEqual("XX.XX.Test", mrr.Member.FullName);
 		}
 		
@@ -670,7 +672,7 @@ namespace A {
 	class BaseClass {
 		public static string Test() {}
 	}";
-			MemberResolveResult mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$BaseClass.Test()$"));
+			MemberResolveResult mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$BaseClass.Test()$"));
 			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
 			
 			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$Test$"));
@@ -680,7 +682,7 @@ namespace A {
 			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
 			
 			// returns BaseClass.Test because DerivedClass.Test is not invocable
-			mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$DerivedClass.Test()$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$DerivedClass.Test()$"));
 			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
 		}
 		

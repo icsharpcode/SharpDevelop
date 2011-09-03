@@ -21,7 +21,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using ICSharpCode.NRefactory.CSharp.Resolver;
+
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {

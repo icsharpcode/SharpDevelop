@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
 
@@ -55,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void AttributeConstructor1()
 		{
 			string program = "using System; [$LoaderOptimization(3)$] class Test { }";
-			var mrr = Resolve<InvocationResolveResult>(program);
+			var mrr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("System.LoaderOptimizationAttribute..ctor", mrr.Member.FullName);
 			Assert.AreEqual("System.Byte", mrr.Member.Parameters[0].Type.Resolve(context).FullName);
 		}
@@ -64,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void AttributeConstructor2()
 		{
 			string program = "using System; [$LoaderOptimization(LoaderOptimization.NotSpecified)$] class Test { }";
-			var mrr = Resolve<InvocationResolveResult>(program);
+			var mrr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("System.LoaderOptimizationAttribute..ctor", mrr.Member.FullName);
 			Assert.AreEqual("System.LoaderOptimization", mrr.Member.Parameters[0].Type.Resolve(context).FullName);
 		}
@@ -74,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			string program = "using System; [$Obsolete$] class Test {}";
 			
-			var result = Resolve<InvocationResolveResult>(program);
+			var result = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("System.ObsoleteAttribute..ctor", result.Member.FullName);
 		}
 		

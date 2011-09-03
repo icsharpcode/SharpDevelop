@@ -185,9 +185,9 @@
     <Compile Include="FormattingTests\TestBlankLineFormatting.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ICSharpCode.Editor\ICSharpCode.Editor.csproj">
-      <Project>{F054A788-B591-4561-A8BA-AE745BBEB817}</Project>
-      <Name>ICSharpCode.Editor</Name>
+    <ProjectReference Include="..\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>

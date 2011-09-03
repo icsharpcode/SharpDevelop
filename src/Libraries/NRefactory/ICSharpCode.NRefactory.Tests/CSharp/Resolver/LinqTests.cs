@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
 
@@ -100,7 +101,7 @@ class TestClass {
 	}
 }
 ";
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("System.Linq.Enumerable.Select", rr.Member.FullName);
 			Assert.AreEqual("System.Collections.Generic.IEnumerable", rr.Type.FullName);
 			Assert.AreEqual("System.Int32", ((ParameterizedType)rr.Type).TypeArguments[0].FullName);
@@ -116,7 +117,7 @@ class TestClass { static void M() {
 class XYZ {
 	public int Select<U>(Func<string, U> f) { return 42; }
 }";
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("XYZ.Select", rr.Member.FullName);
 			Assert.AreEqual("System.Int32", rr.Type.FullName);
 		}
@@ -303,12 +304,12 @@ class XYZ
 	public int GroupJoin(IEnumerable<string> f, Func<string, object> key1, Func<string, object> key2, Func<string, int, int> s) { return 0; }
 	public decimal GroupJoin(IEnumerable<string> f, Func<string, object> key1, Func<string, object> key2, Func<string, string, string> s) { return 0; }
 }";
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("GroupJoin", rr.Member.Name);
 			Assert.AreEqual("System.Decimal", rr.Type.FullName);
 			
-			rr = Resolve<InvocationResolveResult>(program.Replace("g.ToUpper()", "g.CompareTo(42)"));
+			rr = Resolve<CSharpInvocationResolveResult>(program.Replace("g.ToUpper()", "g.CompareTo(42)"));
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("GroupJoin", rr.Member.Name);
 			Assert.AreEqual("System.Int32", rr.Type.FullName);

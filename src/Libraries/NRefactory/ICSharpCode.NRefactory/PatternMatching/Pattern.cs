@@ -63,18 +63,6 @@ namespace ICSharpCode.NRefactory.PatternMatching
 			return DoMatch (pos, match);
 		}
 		
-		public abstract S AcceptVisitor<T, S> (IPatternAstVisitor<T, S> visitor, T data);
-		
-		// Make debugging easier by giving Patterns a ToString() implementation
-		public override string ToString()
-		{
-			// TODO: what if this pattern contains a VB-AST?
-			// either remove ToString() here, or add some magic to figure out the correct output visitor
-			StringWriter w = new StringWriter();
-			AcceptVisitor(new CSharp.OutputVisitor(w, new CSharp.CSharpFormattingOptions()), null);
-			return w.ToString();
-		}
-		
 		public static bool DoMatchCollection(Role role, INode firstPatternChild, INode firstOtherChild, Match match)
 		{
 			BacktrackingInfo backtrackingInfo = new BacktrackingInfo();
