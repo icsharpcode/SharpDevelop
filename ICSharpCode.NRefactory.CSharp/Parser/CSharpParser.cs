@@ -97,9 +97,15 @@ namespace ICSharpCode.NRefactory.CSharp
 					result = new SimpleType () { IdentifierToken = Identifier.Create (memberName.Name, Convert (memberName.Location)) };
 				}
 				if (memberName.TypeArguments != null && !memberName.TypeArguments.IsEmpty) {
+					var chevronLocs = LocationsBag.GetLocations (memberName.TypeArguments);
+					if (chevronLocs != null)
+						result.AddChild (new CSharpTokenNode (Convert (chevronLocs[chevronLocs.Count - 2]), 1), InvocationExpression.Roles.LChevron);
+					
 					foreach (var arg in memberName.TypeArguments.Args) {
 						result.AddChild (ConvertToType (arg), AstType.Roles.TypeArgument);
 					}
+					if (chevronLocs != null)
+						result.AddChild (new CSharpTokenNode (Convert (chevronLocs[chevronLocs.Count - 1]), 1), InvocationExpression.Roles.RChevron);
 				}
 				return result;
 			}
@@ -368,12 +374,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				newType.AddChild (Identifier.Create (c.MemberName.Name, Convert (c.MemberName.Location)), AstNode.Roles.Identifier);
 				if (c.MemberName.TypeArguments != null)  {
-					var typeArgLocation = LocationsBag.GetLocations (c.MemberName);
-					if (typeArgLocation != null)
-						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[0]), 1), TypeDeclaration.Roles.LChevron);
-					AddTypeParameters (newType, typeArgLocation, c.MemberName.TypeArguments);
-					if (typeArgLocation != null)
-						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), TypeDeclaration.Roles.RChevron);
+					AddTypeParameters (newType, c.MemberName.TypeArguments);
 				}
 				
 				if (c.TypeBaseExpressions != null) {
@@ -422,12 +423,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), "struct".Length), TypeDeclaration.Roles.Keyword);
 				newType.AddChild (Identifier.Create (s.MemberName.Name, Convert (s.MemberName.Location)), AstNode.Roles.Identifier);
 				if (s.MemberName.TypeArguments != null)  {
-					var typeArgLocation = LocationsBag.GetLocations (s.MemberName);
-					if (typeArgLocation != null)
-						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[0]), 1), TypeDeclaration.Roles.LChevron);
-					AddTypeParameters (newType, typeArgLocation, s.MemberName.TypeArguments);
-					if (typeArgLocation != null)
-						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), TypeDeclaration.Roles.RChevron);
+					AddTypeParameters (newType, s.MemberName.TypeArguments);
 				}
 				
 				if (s.TypeBaseExpressions != null) {
@@ -474,12 +470,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), "interface".Length), TypeDeclaration.Roles.Keyword);
 				newType.AddChild (Identifier.Create (i.MemberName.Name, Convert (i.MemberName.Location)), AstNode.Roles.Identifier);
 				if (i.MemberName.TypeArguments != null)  {
-					var typeArgLocation = LocationsBag.GetLocations (i.MemberName);
-					if (typeArgLocation != null)
-						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[0]), 1), MemberReferenceExpression.Roles.LChevron);
-					AddTypeParameters (newType, typeArgLocation, i.MemberName.TypeArguments);
-					if (typeArgLocation != null)
-						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), MemberReferenceExpression.Roles.RChevron);
+					AddTypeParameters (newType, i.MemberName.TypeArguments);
 				}
 				
 				if (i.TypeBaseExpressions != null) {
@@ -525,13 +516,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				newDelegate.AddChild (ConvertToType (d.ReturnType), AstNode.Roles.Type);
 				newDelegate.AddChild (Identifier.Create (d.MemberName.Name, Convert (d.MemberName.Location)), AstNode.Roles.Identifier);
 				if (d.MemberName.TypeArguments != null)  {
-					var typeArgLocation = LocationsBag.GetLocations (d.MemberName);
-					if (typeArgLocation != null)
-						newDelegate.AddChild (new CSharpTokenNode (Convert (typeArgLocation[0]), 1), TypeDeclaration.Roles.LChevron);
-					AddTypeParameters (newDelegate, typeArgLocation, d.MemberName.TypeArguments);
-					if (typeArgLocation != null)
-						newDelegate.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), TypeDeclaration.Roles.RChevron);
-					
+					AddTypeParameters (newDelegate, d.MemberName.TypeArguments);
 				}
 				if (location != null)
 					newDelegate.AddChild (new CSharpTokenNode (Convert (location[1]), 1), DelegateDeclaration.Roles.LPar);
@@ -890,12 +875,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				newMethod.AddChild (Identifier.Create (m.MethodName.Name, Convert (m.Location)), AstNode.Roles.Identifier);
 				
 				if (m.MemberName.TypeArguments != null)  {
-					var typeArgLocation = LocationsBag.GetLocations (m.MemberName);
-					if (typeArgLocation != null)
-						newMethod.AddChild (new CSharpTokenNode (Convert (typeArgLocation[0]), 1), MemberReferenceExpression.Roles.LChevron);
-					AddTypeParameters (newMethod, typeArgLocation, m.MemberName.TypeArguments);
-					if (typeArgLocation != null)
-						newMethod.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), MemberReferenceExpression.Roles.RChevron);
+					AddTypeParameters (newMethod, m.MemberName.TypeArguments);
 				}
 				
 				if (location != null)
@@ -2266,13 +2246,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			void AddTypeParameters (AstNode parent, List<Location> location, Mono.CSharp.TypeArguments typeArguments)
+			void AddTypeParameters (AstNode parent, Mono.CSharp.TypeArguments typeArguments)
 			{
 				if (typeArguments == null || typeArguments.IsEmpty)
 					return;
+				var chevronLocs = LocationsBag.GetLocations (typeArguments);
+				if (chevronLocs != null)
+					parent.AddChild (new CSharpTokenNode (Convert (chevronLocs[chevronLocs.Count - 2]), 1), InvocationExpression.Roles.LChevron);
 				for (int i = 0; i < typeArguments.Count; i++) {
-					if (location != null && i > 0 && i - 1 < location.Count)
-						parent.AddChild (new CSharpTokenNode (Convert (location[i - 1]), 1), InvocationExpression.Roles.Comma);
+					if (chevronLocs != null && i > 0 && i - 1 < chevronLocs.Count)
+						parent.AddChild (new CSharpTokenNode (Convert (chevronLocs[i - 1]), 1), InvocationExpression.Roles.Comma);
 					var arg = (TypeParameterName)typeArguments.Args[i];
 					if (arg == null)
 						continue;
@@ -2291,12 +2274,18 @@ namespace ICSharpCode.NRefactory.CSharp
 					tp.AddChild (Identifier.Create (arg.Name, Convert (arg.Location)), InvocationExpression.Roles.Identifier);
 					parent.AddChild (tp, InvocationExpression.Roles.TypeParameter);
 				}
+				if (chevronLocs != null)
+					parent.AddChild (new CSharpTokenNode (Convert (chevronLocs[chevronLocs.Count - 1]), 1), InvocationExpression.Roles.RChevron);
 			}
 			
 			void AddTypeArguments (AstNode parent, LocationsBag.MemberLocations location, Mono.CSharp.TypeArguments typeArguments)
 			{
 				if (typeArguments == null || typeArguments.IsEmpty)
 					return;
+				var chevronLocs = LocationsBag.GetLocations (typeArguments);
+				if (chevronLocs != null)
+					parent.AddChild (new CSharpTokenNode (Convert (chevronLocs[chevronLocs.Count - 2]), 1), InvocationExpression.Roles.LChevron);
+				
 				for (int i = 0; i < typeArguments.Count; i++) {
 					if (location != null && i > 0 && i - 1 < location.Count)
 						parent.AddChild (new CSharpTokenNode (Convert (location[i - 1]), 1), InvocationExpression.Roles.Comma);
@@ -2305,12 +2294,18 @@ namespace ICSharpCode.NRefactory.CSharp
 						continue;
 					parent.AddChild (ConvertToType (arg), InvocationExpression.Roles.TypeArgument);
 				}
+				
+				if (chevronLocs != null)
+					parent.AddChild (new CSharpTokenNode (Convert (chevronLocs[chevronLocs.Count - 1]), 1), InvocationExpression.Roles.RChevron);
 			}
 			
 			void AddTypeArguments (AstNode parent, List<Location> location, Mono.CSharp.TypeArguments typeArguments)
 			{
 				if (typeArguments == null || typeArguments.IsEmpty)
 					return;
+				var chevronLocs = LocationsBag.GetLocations (typeArguments);
+				if (chevronLocs != null)
+					parent.AddChild (new CSharpTokenNode (Convert (chevronLocs[0]), 1), InvocationExpression.Roles.LChevron);
 				for (int i = 0; i < typeArguments.Count; i++) {
 					if (location != null && i > 0 && i - 1 < location.Count)
 						parent.AddChild (new CSharpTokenNode (Convert (location[i - 1]), 1), InvocationExpression.Roles.Comma);
@@ -2319,6 +2314,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						continue;
 					parent.AddChild (ConvertToType (arg), InvocationExpression.Roles.TypeArgument);
 				}
+				if (chevronLocs != null)
+					parent.AddChild (new CSharpTokenNode (Convert (chevronLocs[1]), 1), InvocationExpression.Roles.RChevron);
 			}
 			
 			void AddConstraints (AstNode parent, DeclSpace d)
@@ -2329,11 +2326,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					Constraints c = d.PlainConstraints [i];
 					var location = LocationsBag.GetLocations (c);
 					var constraint = new Constraint ();
-					if (location != null)
-						constraint.AddChild (new CSharpTokenNode (Convert (location [0]), "where".Length), InvocationExpression.Roles.Keyword);
+					constraint.AddChild (new CSharpTokenNode (Convert (c.Location), "where".Length), InvocationExpression.Roles.Keyword);
 					constraint.AddChild (Identifier.Create (c.TypeParameter.Value, Convert (c.TypeParameter.Location)), InvocationExpression.Roles.Identifier);
-					if (location != null && location.Count > 1)
-						constraint.AddChild (new CSharpTokenNode (Convert (location [1]), 1), Constraint.ColonRole);
+					if (location != null)
+						constraint.AddChild (new CSharpTokenNode (Convert (location [0]), 1), Constraint.ColonRole);
 					foreach (var expr in c.ConstraintExpressions)
 						constraint.AddChild (ConvertToType (expr), Constraint.BaseTypeRole);
 					parent.AddChild (constraint, AstNode.Roles.Constraint);
