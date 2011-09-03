@@ -11,7 +11,7 @@ using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Services;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Internal.Templates;

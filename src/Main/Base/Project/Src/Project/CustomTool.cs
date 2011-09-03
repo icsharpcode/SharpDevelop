@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 

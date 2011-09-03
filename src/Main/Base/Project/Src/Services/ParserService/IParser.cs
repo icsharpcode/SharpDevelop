@@ -3,8 +3,9 @@
 
 using System.Threading;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
-using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using System;

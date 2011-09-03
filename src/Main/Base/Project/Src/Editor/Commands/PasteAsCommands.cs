@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Editor.Commands

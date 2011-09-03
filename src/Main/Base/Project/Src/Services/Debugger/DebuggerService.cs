@@ -9,9 +9,9 @@ using System.Text;
 using System.Windows;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
@@ -363,12 +363,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					return GetMemberText(ambience, c, e, result, out debuggerCanShowValue);
 				else
 					return ambience.ConvertType(result.Type);
-			} else if (result is MethodGroupResolveResult) {
-				MethodGroupResolveResult mrr = result as MethodGroupResolveResult;
-				if (mrr.Methods.Count() == 1)
-					return GetMemberText(ambience, mrr.Methods.Single(), e, result, out debuggerCanShowValue);
-				else
-					return "Overload of " + ambience.ConvertType(mrr.TargetType) + "." + mrr.MethodName;
 			} else {
 				#if DEBUG
 				if (Control.ModifierKeys == Keys.Control) {

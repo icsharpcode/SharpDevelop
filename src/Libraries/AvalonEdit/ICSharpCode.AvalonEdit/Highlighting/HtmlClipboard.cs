@@ -7,9 +7,8 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows;
-
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {

@@ -3,8 +3,8 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.SharpDevelop.Editor.Search
 {

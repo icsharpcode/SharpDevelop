@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Input;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.SharpDevelop.Editor
@@ -158,5 +158,38 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the name of the currently used font.
 		/// </summary>
 		string FontFamily { get; }
+	}
+	
+	/// <summary>
+	/// Represents the caret in a text editor.
+	/// </summary>
+	public interface ITextEditorCaret
+	{
+		/// <summary>
+		/// Gets/Sets the caret offset;
+		/// </summary>
+		int Offset { get; set; }
+
+		/// <summary>
+		/// Gets/Sets the caret line number.
+		/// Line numbers are counted starting from 1.
+		/// </summary>
+		int Line { get; set; }
+
+		/// <summary>
+		/// Gets/Sets the caret column number.
+		/// Column numbers are counted starting from 1.
+		/// </summary>
+		int Column { get; set; }
+
+		/// <summary>
+		/// Gets/sets the caret location.
+		/// </summary>
+		TextLocation Location { get; set; }
+
+		/// <summary>
+		/// Is raised whenever the location of the caret has changed.
+		/// </summary>
+		event EventHandler LocationChanged;
 	}
 }

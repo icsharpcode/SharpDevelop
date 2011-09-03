@@ -3,8 +3,8 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {

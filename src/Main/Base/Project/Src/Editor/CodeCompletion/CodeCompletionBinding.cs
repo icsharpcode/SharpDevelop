@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
 
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {

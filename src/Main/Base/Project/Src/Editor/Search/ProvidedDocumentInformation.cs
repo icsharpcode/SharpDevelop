@@ -4,7 +4,7 @@
 using System;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.SharpDevelop.Editor.Search

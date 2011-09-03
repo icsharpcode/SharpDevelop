@@ -7,9 +7,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
-
 using ICSharpCode.AvalonEdit.Utils;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Rendering
 {

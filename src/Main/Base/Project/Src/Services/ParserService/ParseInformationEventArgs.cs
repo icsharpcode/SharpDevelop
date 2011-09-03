@@ -4,7 +4,7 @@
 using System;
 using System.Diagnostics;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop.Parser

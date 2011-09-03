@@ -11,7 +11,8 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
@@ -51,13 +52,48 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		}
 		
 		public ITextEditorCaret Caret { 
-			get { return textEditor.TextArea.Caret; }
+			get { return new CaretAdapter(textEditor.TextArea.Caret); }
 		}
 		
 		public virtual ITextEditorOptions Options { get; private set; }
 		
 		public virtual ILanguageBinding Language {
 			get { return AggregatedLanguageBinding.NullLanguageBinding; }
+		}
+		
+		sealed class CaretAdapter : ITextEditorCaret
+		{
+			Caret caret;
+			
+			public CaretAdapter(Caret caret)
+			{
+				this.caret = caret;
+			}
+			
+			event EventHandler ITextEditorCaret.LocationChanged {
+				add { caret.PositionChanged += value; }
+				remove {  caret.PositionChanged -= value; }
+			}
+			
+			int ITextEditorCaret.Offset {
+				get { return caret.Offset; }
+				set { caret.Offset = value; }
+			}
+			
+			int ITextEditorCaret.Line {
+				get { return caret.Line; }
+				set { caret.Line = value; }
+			}
+			
+			int ITextEditorCaret.Column {
+				get { return caret.Column; }
+				set { caret.Column = value; }
+			}
+			
+			TextLocation ITextEditorCaret.Location {
+				get { return caret.Location; }
+				set { caret.Location = value; }
+			}
 		}
 		
 		sealed class OptionsAdapter : ITextEditorOptions

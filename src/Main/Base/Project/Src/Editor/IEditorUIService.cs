@@ -4,7 +4,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {

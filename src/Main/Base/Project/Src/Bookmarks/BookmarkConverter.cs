@@ -7,7 +7,6 @@ using System.Globalization;
 using System.Text;
 using System.Windows;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks

@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Editor

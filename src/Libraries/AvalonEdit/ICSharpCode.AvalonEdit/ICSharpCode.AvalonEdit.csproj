@@ -412,9 +412,9 @@
     <EmbeddedResource Include="Highlighting\Resources\CSS-Mode.xshd" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\NRefactory\ICSharpCode.Editor\ICSharpCode.Editor.csproj">
-      <Project>{F054A788-B591-4561-A8BA-AE745BBEB817}</Project>
-      <Name>ICSharpCode.Editor</Name>
+    <ProjectReference Include="..\..\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

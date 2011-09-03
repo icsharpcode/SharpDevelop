@@ -8,9 +8,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
-
 using ICSharpCode.AvalonEdit.Utils;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {

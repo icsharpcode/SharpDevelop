@@ -4,8 +4,7 @@
 using System;
 using System.Globalization;
 using System.Windows.Documents;
-
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {

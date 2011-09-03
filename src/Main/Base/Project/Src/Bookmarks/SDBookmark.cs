@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks

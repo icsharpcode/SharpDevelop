@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop

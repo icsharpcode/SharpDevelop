@@ -4,7 +4,6 @@
 using System;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Indentation;
-using ICSharpCode.Editor;
 
 namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 {

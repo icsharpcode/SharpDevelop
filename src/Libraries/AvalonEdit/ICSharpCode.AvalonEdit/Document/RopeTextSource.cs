@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 using ICSharpCode.AvalonEdit.Utils;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -72,6 +72,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <inheritdoc/>
+		public string GetText(ISegment segment)
+		{
+			return rope.ToString(segment.Offset, segment.Length);
+		}
+		
+		/// <inheritdoc/>
 		public TextReader CreateReader()
 		{
 			return new RopeTextReader(rope);
@@ -106,16 +112,13 @@ namespace ICSharpCode.AvalonEdit.Document
 			get { return version; }
 		}
 		
-		string ITextSource.GetText(ICSharpCode.Editor.ISegment segment)
-		{
-			return rope.ToString(segment.Offset, segment.Length);
-		}
-		
+		/// <inheritdoc/>
 		public int IndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
 			return rope.IndexOf(searchText, startIndex, count, comparisonType);
 		}
 		
+		/// <inheritdoc/>
 		public int LastIndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
 			return rope.LastIndexOf(searchText, startIndex, count, comparisonType);

@@ -3,9 +3,8 @@
 
 using System;
 using System.Diagnostics;
-using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 

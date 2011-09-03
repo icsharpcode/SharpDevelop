@@ -1,10 +1,10 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.Editor;
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Windows.Input;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {

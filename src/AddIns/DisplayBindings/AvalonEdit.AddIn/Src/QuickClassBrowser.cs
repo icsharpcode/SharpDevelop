@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;

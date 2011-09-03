@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {

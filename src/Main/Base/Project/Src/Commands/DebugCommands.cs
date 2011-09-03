@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.Editor;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls;
 using ICSharpCode.SharpDevelop.Debugging;

@@ -15,7 +15,8 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
@@ -100,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public virtual ICSharpCode.Editor.IDocument GetDocumentForFile(OpenedFile file)
+		public virtual IDocument GetDocumentForFile(OpenedFile file)
 		{
 			return null;
 		}

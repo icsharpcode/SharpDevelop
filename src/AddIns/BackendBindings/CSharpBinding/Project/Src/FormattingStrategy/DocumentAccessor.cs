@@ -3,7 +3,7 @@
 
 using System;
 using ICSharpCode.AvalonEdit.Indentation.CSharp;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding.FormattingStrategy

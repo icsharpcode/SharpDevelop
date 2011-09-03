@@ -3,7 +3,7 @@
 
 using System;
 using System.Globalization;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.AvalonEdit
 {

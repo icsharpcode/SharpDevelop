@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
