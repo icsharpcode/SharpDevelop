@@ -81,10 +81,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			string comment = "(" + node.GetType().Name + " at " + node.StartLocation + " in " + currentFileName + ")";
 			Assert.IsTrue(node.StartLocation <= node.EndLocation, "StartLocation must be before EndLocation " + comment);
 			var prevNodeEnd = node.StartLocation;
+			var prevNode = node;
 			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
-				Assert.IsTrue(child.StartLocation >= prevNodeEnd, "Child must start after previous sibling " + comment);
+				Assert.IsTrue(child.StartLocation >= prevNodeEnd, currentFileName + ": Child " + child.GetType () +" (" + child.StartLocation + ")" +" must start after previous sibling " + prevNode.GetType () + "(" + prevNode.StartLocation + ")");
 				CheckPositionConsistency(child);
 				prevNodeEnd = child.EndLocation;
+				prevNode = child;
 			}
 			Assert.IsTrue(prevNodeEnd <= node.EndLocation, "Last child must end before parent node ends " + comment);
 		}
