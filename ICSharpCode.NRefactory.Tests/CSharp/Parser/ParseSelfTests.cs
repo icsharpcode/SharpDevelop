@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		[TestFixtureSetUp]
 		public void SetUp()
 		{
-			string path = Path.GetFullPath(@"..\..\..");
+			string path = Path.GetFullPath (@".." + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "..");
 			if (!File.Exists(Path.Combine(path, "NRefactory.sln")))
 				throw new InvalidOperationException("Test cannot find the NRefactory source code in " + path);
 			fileNames = Directory.GetFiles(path, "*.cs", SearchOption.AllDirectories);
