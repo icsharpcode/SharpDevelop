@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop
@@ -70,7 +71,7 @@ namespace ICSharpCode.SharpDevelop
 			if (ambience == null && Gui.WorkbenchSingleton.MainWin32Window != null) {
 				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError}");
 			}
-			return ambience ?? new CSharpAmbience();
+			return ambience ?? new DefaultAmbience();
 		}
 		
 		public static string DefaultAmbienceName {

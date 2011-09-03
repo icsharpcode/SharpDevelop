@@ -67,7 +67,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CheckAssemblyFlags.cs" />
     <Compile Include="CodeConverterTests.cs" />
-    <Compile Include="CSharpAmbienceTests.cs" />
     <Compile Include="ExceptionClassOverridesTestFixture.cs" />
     <Compile Include="GenerateOverrideMethodTests.cs" />
     <Compile Include="GetElementByReflectionNameTests.cs" />
