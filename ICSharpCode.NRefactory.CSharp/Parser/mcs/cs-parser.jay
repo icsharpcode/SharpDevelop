@@ -146,6 +146,7 @@ namespace Mono.CSharp
 		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
 		List<Location> attributeCommas = new List<Location> ();
+		List<Location> parameterListCommas = new List<Location> ();
 		
 		object lastYYVal;
 		
@@ -1434,20 +1435,25 @@ formal_parameter_list
 	  {
 		var pars_list = (List<Parameter>) $1;
 	  	$$ = new ParametersCompiled (pars_list.ToArray ());
-	  	lbag.AddLocation ($$, lbag.GetLocations (pars_list));
+	  	lbag.AddLocation ($$, parameterListCommas);
 	  } 
 	| fixed_parameters COMMA parameter_array
 	  {
 		var pars_list = (List<Parameter>) $1;
 		pars_list.Add ((Parameter) $3);
-
+		parameterListCommas.Add (GetLocation ($2));
+		
 		$$ = new ParametersCompiled (pars_list.ToArray ()); 
+	  	lbag.AddLocation ($$, parameterListCommas);
 	  }
 	| fixed_parameters COMMA arglist_modifier
 	  {
 		var pars_list = (List<Parameter>) $1;
 		pars_list.Add (new ArglistParameter (GetLocation ($3)));
+		parameterListCommas.Add (GetLocation ($2));
+		
 		$$ = new ParametersCompiled (pars_list.ToArray (), true);
+	  	lbag.AddLocation ($$, parameterListCommas);
 	  }
 	| parameter_array COMMA error
 	  {
@@ -1455,6 +1461,7 @@ formal_parameter_list
 			report.Error (231, ((Parameter) $1).Location, "A params parameter must be the last parameter in a formal parameter list");
 
 		$$ = new ParametersCompiled (new Parameter[] { (Parameter) $1 } );			
+	  	lbag.AddLocation ($$, parameterListCommas);
 	  }
 	| fixed_parameters COMMA parameter_array COMMA error
 	  {
@@ -1463,14 +1470,18 @@ formal_parameter_list
 
 		var pars_list = (List<Parameter>) $1;
 		pars_list.Add (new ArglistParameter (GetLocation ($3)));
-
+		parameterListCommas.Add (GetLocation ($2));
+		parameterListCommas.Add (GetLocation ($4));
+		
 		$$ = new ParametersCompiled (pars_list.ToArray (), true);
+	  	lbag.AddLocation ($$, parameterListCommas);
 	  }
 	| arglist_modifier COMMA error
 	  {
 		report.Error (257, GetLocation ($1), "An __arglist parameter must be the last parameter in a formal parameter list");
 
 		$$ = new ParametersCompiled (new Parameter [] { new ArglistParameter (GetLocation ($1)) }, true);
+	  	lbag.AddLocation ($$, parameterListCommas);
 	  }
 	| fixed_parameters COMMA ARGLIST COMMA error 
 	  {
@@ -1478,8 +1489,11 @@ formal_parameter_list
 
 		var pars_list = (List<Parameter>) $1;
 		pars_list.Add (new ArglistParameter (GetLocation ($3)));
+		parameterListCommas.Add (GetLocation ($2));
+		parameterListCommas.Add (GetLocation ($4));
 
 		$$ = new ParametersCompiled (pars_list.ToArray (), true);
+	  	lbag.AddLocation ($$, parameterListCommas);
 	  }
 	| parameter_array 
 	  {
@@ -1502,7 +1516,7 @@ fixed_parameters
 		parameters_bucket.Clear ();
 		Parameter p = (Parameter) $1;
 		parameters_bucket.Add (p);
-		
+		parameterListCommas.Clear ();
 		default_parameter_used = p.HasDefaultValue;
 		$$ = parameters_bucket;
 	  }
@@ -1519,7 +1533,7 @@ fixed_parameters
 			default_parameter_used |= p.HasDefaultValue;
 			pars.Add (p);
 			
-			lbag.AppendTo (pars, GetLocation ($2));
+			parameterListCommas.Add (GetLocation ($2));
 		}
 		
 		$$ = $1;

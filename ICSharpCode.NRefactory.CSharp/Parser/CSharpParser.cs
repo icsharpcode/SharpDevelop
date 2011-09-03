@@ -836,7 +836,7 @@ namespace ICSharpCode.NRefactory.CSharp
 //					} else {
 					newMethod.AddChild (bodyBlock, MethodDeclaration.Roles.Body);
 //					}
-				} else if (location != null && location.Count < 3) {
+				} else if (location != null && location.Count < 3 && typeStack.Peek ().ClassType != ClassType.Interface) {
 					// parser error, set end node to max value.
 					newMethod.AddChild (new ErrorNode (), AstNode.Roles.Error);
 				}
@@ -2136,8 +2136,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				var paramLocation = LocationsBag.GetLocations (parameters);
 				
 				for (int i = 0; i < parameters.Count; i++) {
-					if (paramLocation != null && i > 0 && i - 1 < paramLocation.Count)
+					if (paramLocation != null && i > 0 && i - 1 < paramLocation.Count) {
 						parent.AddChild (new CSharpTokenNode (Convert (paramLocation [i - 1]), 1), ParameterDeclaration.Roles.Comma);
+					}
 					var p = (Parameter)parameters.FixedParameters [i];
 					var location = LocationsBag.GetLocations (p);
 					
