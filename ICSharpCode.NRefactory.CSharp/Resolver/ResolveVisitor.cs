@@ -580,7 +580,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			for (AstNode node = fieldOrEventDeclaration.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == FieldDeclaration.Roles.Variable) {
 					if (resolver.CurrentTypeDefinition != null) {
-						resolver.CurrentMember = resolver.CurrentTypeDefinition.Fields.FirstOrDefault(f => f.Region.IsInside(node.StartLocation));
+						IEnumerable<IMember> members;
+						if (fieldOrEventDeclaration is EventDeclaration)
+							members = resolver.CurrentTypeDefinition.Events;
+						else
+							members = resolver.CurrentTypeDefinition.Fields;
+						resolver.CurrentMember = members.FirstOrDefault(f => f.Region.IsInside(node.StartLocation));
 					}
 					
 					if (resolverEnabled && initializerCount == 1) {
@@ -601,7 +606,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				ResolveResult result = errorResult;
-				if (variableInitializer.Parent is FieldDeclaration) {
+				if (variableInitializer.Parent is FieldDeclaration || variableInitializer.Parent is EventDeclaration) {
 					if (resolver.CurrentMember != null) {
 						result = new MemberResolveResult(null, resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
 					}

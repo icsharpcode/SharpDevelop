@@ -75,5 +75,47 @@ class A { void M() {
 class A { public A() : ba$se() {} }");
 			Assert.AreEqual("System.Object..ctor", rr.Member.FullName);
 		}
+		
+		[Test]
+		public void Field()
+		{
+			var rr = ResolveAtLocation<MemberResolveResult>("public class A { int te$st; }");
+			Assert.AreEqual("test", rr.Member.Name);
+		}
+		
+		[Test]
+		public void Field1InLineWithTwoFields()
+		{
+			var rr = ResolveAtLocation<MemberResolveResult>("public class A { int te$st, test2; }");
+			Assert.AreEqual("test", rr.Member.Name);
+		}
+		
+		[Test]
+		public void Field2InLineWithTwoFields()
+		{
+			var rr = ResolveAtLocation<MemberResolveResult>("public class A { int test, te$st2; }");
+			Assert.AreEqual("test2", rr.Member.Name);
+		}
+		
+		[Test]
+		public void Event()
+		{
+			var rr = ResolveAtLocation<MemberResolveResult>("public class A { event EventHandler Te$st; }");
+			Assert.AreEqual("Test", rr.Member.Name);
+		}
+		
+		[Test]
+		public void Event1InLineWithTwoEvents()
+		{
+			var rr = ResolveAtLocation<MemberResolveResult>("public class A { event EventHandler Te$st, Test2; }");
+			Assert.AreEqual("Test", rr.Member.Name);
+		}
+		
+		[Test]
+		public void Event2InLineWithTwoEvents()
+		{
+			var rr = ResolveAtLocation<MemberResolveResult>("public class A { event EventHandler Test, Te$st2; }");
+			Assert.AreEqual("Test2", rr.Member.Name);
+		}
 	}
 }
