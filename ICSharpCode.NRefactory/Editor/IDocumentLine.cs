@@ -18,53 +18,28 @@
 
 using System;
 
-namespace ICSharpCode.Editor
+namespace ICSharpCode.NRefactory.Editor
 {
 	/// <summary>
-	/// An (Offset,Length)-pair.
+	/// A line inside a <see cref="IDocument"/>.
 	/// </summary>
-	public interface ISegment
+	public interface IDocumentLine : ISegment
 	{
 		/// <summary>
-		/// Gets the start offset of the segment.
+		/// Gets the length of this line, including the line delimiter.
 		/// </summary>
-		int Offset { get; }
+		int TotalLength { get; }
 		
 		/// <summary>
-		/// Gets the length of the segment.
+		/// Gets the length of the line terminator.
+		/// Returns 1 or 2; or 0 at the end of the document.
 		/// </summary>
-		/// <remarks>Must not be negative.</remarks>
-		int Length { get; }
+		int DelimiterLength { get; }
 		
 		/// <summary>
-		/// Gets the end offset of the segment.
+		/// Gets the number of this line.
+		/// The first line has the number 1.
 		/// </summary>
-		/// <remarks>EndOffset = Offset + Length;</remarks>
-		int EndOffset { get; }
-	}
-	
-	/// <summary>
-	/// Extension methods for <see cref="ISegment"/>.
-	/// </summary>
-	public static class ISegmentExtensions
-	{
-		/// <summary>
-		/// Gets whether the segment contains the offset.
-		/// </summary>
-		/// <returns>
-		/// True, if offset is between segment.Start and segment.End (inclusive); otherwise, false.
-		/// </returns>
-		public static bool Contains (this ISegment segment, int offset)
-		{
-			return segment.Offset <= offset && offset <= segment.EndOffset;
-		}
-		
-		/// <summary>
-		/// True, if the segment contains the specified segment, false otherwise.
-		/// </summary>
-		public static bool Contains (this ISegment thisSegment, ISegment segment)
-		{
-			return  segment != null && thisSegment.Offset <= segment.Offset && segment.EndOffset <= thisSegment.EndOffset;
-		}
+		int LineNumber { get; }
 	}
 }

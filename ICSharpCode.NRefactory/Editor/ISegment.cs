@@ -18,62 +18,53 @@
 
 using System;
 
-namespace ICSharpCode.Editor
+namespace ICSharpCode.NRefactory.Editor
 {
 	/// <summary>
-	/// Describes a change of the document text.
-	/// This class is thread-safe.
+	/// An (Offset,Length)-pair.
 	/// </summary>
-	[Serializable]
-	public class TextChangeEventArgs : EventArgs
+	public interface ISegment
 	{
-		readonly int offset;
-		readonly string removedText;
-		readonly string insertedText;
+		/// <summary>
+		/// Gets the start offset of the segment.
+		/// </summary>
+		int Offset { get; }
 		
 		/// <summary>
-		/// The offset at which the change occurs.
+		/// Gets the length of the segment.
 		/// </summary>
-		public int Offset {
-			get { return offset; }
-		}
+		/// <remarks>Must not be negative.</remarks>
+		int Length { get; }
 		
 		/// <summary>
-		/// The text that was removed.
+		/// Gets the end offset of the segment.
 		/// </summary>
-		public string RemovedText {
-			get { return removedText; }
-		}
-		
+		/// <remarks>EndOffset = Offset + Length;</remarks>
+		int EndOffset { get; }
+	}
+	
+	/// <summary>
+	/// Extension methods for <see cref="ISegment"/>.
+	/// </summary>
+	public static class ISegmentExtensions
+	{
 		/// <summary>
-		/// The number of characters removed.
+		/// Gets whether the segment contains the offset.
 		/// </summary>
-		public int RemovalLength {
-			get { return removedText.Length; }
-		}
-		
-		/// <summary>
-		/// The text that was inserted.
-		/// </summary>
-		public string InsertedText {
-			get { return insertedText; }
-		}
-		
-		/// <summary>
-		/// The number of characters inserted.
-		/// </summary>
-		public int InsertionLength {
-			get { return insertedText.Length; }
-		}
-		
-		/// <summary>
-		/// Creates a new TextChangeEventArgs object.
-		/// </summary>
-		public TextChangeEventArgs(int offset, string removedText, string insertedText)
+		/// <returns>
+		/// True, if offset is between segment.Start and segment.End (inclusive); otherwise, false.
+		/// </returns>
+		public static bool Contains (this ISegment segment, int offset)
 		{
-			this.offset = offset;
-			this.removedText = removedText ?? string.Empty;
-			this.insertedText = insertedText ?? string.Empty;
+			return segment.Offset <= offset && offset <= segment.EndOffset;
+		}
+		
+		/// <summary>
+		/// True, if the segment contains the specified segment, false otherwise.
+		/// </summary>
+		public static bool Contains (this ISegment thisSegment, ISegment segment)
+		{
+			return  segment != null && thisSegment.Offset <= segment.Offset && segment.EndOffset <= thisSegment.EndOffset;
 		}
 	}
 }

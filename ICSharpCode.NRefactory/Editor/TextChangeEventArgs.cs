@@ -18,28 +18,62 @@
 
 using System;
 
-namespace ICSharpCode.Editor
+namespace ICSharpCode.NRefactory.Editor
 {
 	/// <summary>
-	/// A line inside a <see cref="IDocument"/>.
+	/// Describes a change of the document text.
+	/// This class is thread-safe.
 	/// </summary>
-	public interface IDocumentLine : ISegment
+	[Serializable]
+	public class TextChangeEventArgs : EventArgs
 	{
-		/// <summary>
-		/// Gets the length of this line, including the line delimiter.
-		/// </summary>
-		int TotalLength { get; }
+		readonly int offset;
+		readonly string removedText;
+		readonly string insertedText;
 		
 		/// <summary>
-		/// Gets the length of the line terminator.
-		/// Returns 1 or 2; or 0 at the end of the document.
+		/// The offset at which the change occurs.
 		/// </summary>
-		int DelimiterLength { get; }
+		public int Offset {
+			get { return offset; }
+		}
 		
 		/// <summary>
-		/// Gets the number of this line.
-		/// The first line has the number 1.
+		/// The text that was removed.
 		/// </summary>
-		int LineNumber { get; }
+		public string RemovedText {
+			get { return removedText; }
+		}
+		
+		/// <summary>
+		/// The number of characters removed.
+		/// </summary>
+		public int RemovalLength {
+			get { return removedText.Length; }
+		}
+		
+		/// <summary>
+		/// The text that was inserted.
+		/// </summary>
+		public string InsertedText {
+			get { return insertedText; }
+		}
+		
+		/// <summary>
+		/// The number of characters inserted.
+		/// </summary>
+		public int InsertionLength {
+			get { return insertedText.Length; }
+		}
+		
+		/// <summary>
+		/// Creates a new TextChangeEventArgs object.
+		/// </summary>
+		public TextChangeEventArgs(int offset, string removedText, string insertedText)
+		{
+			this.offset = offset;
+			this.removedText = removedText ?? string.Empty;
+			this.insertedText = insertedText ?? string.Empty;
+		}
 	}
 }

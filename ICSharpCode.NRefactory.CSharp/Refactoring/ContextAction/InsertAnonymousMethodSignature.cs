@@ -1,4 +1,4 @@
-// 
+﻿// 
 // InsertAnonymousMethodSignature.cs
 //  
 // Author:
@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (resolvedType == null)
 				return null;
 			delegateType = resolvedType;
-			if (!delegateType.IsDelegate ()) 
+			if (delegateType.Kind != TypeKind.Delegate) 
 				return null;
 			
 			return anonymousMethodExpression;

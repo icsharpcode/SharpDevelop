@@ -40,8 +40,6 @@ namespace ICSharpCode.NRefactory.Semantics
 		/// </summary>
 		public readonly ResolveResult[] InitializerElements;
 		
-		readonly object[] constantArray;
-		
 		public ArrayCreateResolveResult(IType arrayType, ResolveResult[] sizeArguments, ResolveResult[] initializerElements)
 			: base(arrayType)
 		{

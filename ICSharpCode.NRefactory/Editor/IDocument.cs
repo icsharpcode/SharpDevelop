@@ -18,7 +18,7 @@
 
 using System;
 
-namespace ICSharpCode.Editor
+namespace ICSharpCode.NRefactory.Editor
 {
 	/// <summary>
 	/// A document representing a source code file for refactoring.
