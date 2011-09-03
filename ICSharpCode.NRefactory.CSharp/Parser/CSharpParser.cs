@@ -776,9 +776,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					newOperator.AddChild (new CSharpTokenNode (Convert (location[3]), 1), OperatorDeclaration.Roles.RPar);
 				
-				if (o.Block != null)
+				if (o.Block != null) {
 					newOperator.AddChild ((BlockStatement)o.Block.Accept (this), OperatorDeclaration.Roles.Body);
-				
+				} else {
+					if (location != null && location.Count >= 5)
+						newOperator.AddChild (new CSharpTokenNode (Convert (location[4]), 1), MethodDeclaration.Roles.Semicolon);
+				}
 				typeStack.Peek ().AddChild (newOperator, TypeDeclaration.MemberRole);
 			}
 			
@@ -895,9 +898,13 @@ namespace ICSharpCode.NRefactory.CSharp
 //					} else {
 					newMethod.AddChild (bodyBlock, MethodDeclaration.Roles.Body);
 //					}
-				} else if (location != null && location.Count < 3 && typeStack.Peek ().ClassType != ClassType.Interface) {
-					// parser error, set end node to max value.
-					newMethod.AddChild (new ErrorNode (), AstNode.Roles.Error);
+				} else if (location != null) {
+					if (location.Count < 3) {
+						// parser error, set end node to max value.
+						newMethod.AddChild (new ErrorNode (), AstNode.Roles.Error);
+					} else {
+						newMethod.AddChild (new CSharpTokenNode (Convert (location[2]), 1), MethodDeclaration.Roles.Semicolon);
+					}
 				}
 				typeStack.Peek ().AddChild (newMethod, TypeDeclaration.MemberRole);
 			}

@@ -1266,6 +1266,7 @@ method_declaration
 		method.Block = (ToplevelBlock) $3;
 		
 		if (method.Block == null) {
+			lbag.AppendToMember (method, savedLocation); // semicolon
 			method.ParameterInfo.CheckParameters (method);
 
 			if ((method.ModFlags & Modifiers.ASYNC) != 0) {
@@ -1421,7 +1422,7 @@ method_header
 
 method_body
 	: block
-	| SEMICOLON		{ $$ = null; }
+	| SEMICOLON		{ savedLocation = GetLocation ($1); $$ = null; }
 	;
 
 opt_formal_parameter_list
@@ -2049,6 +2050,9 @@ operator_declaration
 			current_container.AddOperator (op);
 
 			lbag.AddMember (op, GetModifierLocations (), lbag.GetLocations (decl));
+			if ($5 == null) { // Semicolon
+				lbag.AppendTo (op, savedLocation); 
+			}
 		}
 		
 		current_local_parameters = null;
@@ -2057,7 +2061,7 @@ operator_declaration
 
 operator_body 
 	: block
-	| SEMICOLON { $$ = null; }
+	| SEMICOLON { savedLocation = GetLocation ($1); $$ = null; }
 	; 
 
 operator_type
