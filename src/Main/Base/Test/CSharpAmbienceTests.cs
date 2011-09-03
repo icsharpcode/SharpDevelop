@@ -126,29 +126,29 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void SimpleField()
 		{
-			var field = typeof(CSharpAmbienceTests.MyClass).ToTypeReference().Resolve(myLib)
+			var field = typeof(CSharpAmbienceTests.Program).ToTypeReference().Resolve(myLib)
 				.GetDefinition().Fields.Single(f => f.Name == "test");
 			ambience.ConversionFlags = ConversionFlags.All;
 			string result = ambience.ConvertEntity(field, compositeContext);
 			
-			Assert.AreEqual("private int ICSharpCode.SharpDevelop.Tests.CSharpAmbienceTests.MyClass.test", result);
+			Assert.AreEqual("private int ICSharpCode.SharpDevelop.Tests.CSharpAmbienceTests.Program.test", result);
 		}
 		
 		[Test]
 		public void SimpleConstField()
 		{
-			var field = typeof(CSharpAmbienceTests.MyClass).ToTypeReference().Resolve(myLib)
-				.GetDefinition().Fields.Single(f => f.Name == "TEST");
+			var field = typeof(CSharpAmbienceTests.Program).ToTypeReference().Resolve(myLib)
+				.GetDefinition().Fields.Single(f => f.Name == "TEST2");
 			ambience.ConversionFlags = ConversionFlags.All;
 			string result = ambience.ConvertEntity(field, compositeContext);
 			
-			Assert.AreEqual("private const int ICSharpCode.SharpDevelop.Tests.CSharpAmbienceTests.MyClass.TEST", result);
+			Assert.AreEqual("private const int ICSharpCode.SharpDevelop.Tests.CSharpAmbienceTests.Program.TEST2", result);
 		}
 		
 		[Test]
 		public void SimpleFieldWithoutModifiers()
 		{
-			var field = typeof(CSharpAmbienceTests.MyClass).ToTypeReference().Resolve(myLib)
+			var field = typeof(CSharpAmbienceTests.Program).ToTypeReference().Resolve(myLib)
 				.GetDefinition().Fields.Single(f => f.Name == "test");
 			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowModifiers | ConversionFlags.ShowAccessibility);
 			string result = ambience.ConvertEntity(field, compositeContext);
@@ -160,10 +160,62 @@ namespace ICSharpCode.SharpDevelop.Tests
 		#region Test types
 		#pragma warning disable 169
 		
-		class MyClass
+		class Test {}
+		
+		class Program
 		{
-			const int TEST = 0;
 			int test;
+			const int TEST2 = 2;
+			
+			public int Test { get; set; }
+			
+			public int this[int index] {
+				get {
+					return index;
+				}
+			}
+			
+			public event EventHandler ProgramChanged;
+			
+			public event EventHandler SomeEvent {
+				add {}
+				remove {}
+			}
+			
+			public static bool operator +(Program lhs, Program rhs)
+			{
+				throw new NotImplementedException();
+			}
+			
+			public static implicit operator Test(Program lhs)
+			{
+				throw new NotImplementedException();
+			}
+			
+			public static explicit operator int(Program lhs)
+			{
+				throw new NotImplementedException();
+			}
+			
+			public Program(int x)
+			{
+				
+			}
+			
+			~Program()
+			{
+				
+			}
+			
+			public static void Main(string[] args)
+			{
+				Console.WriteLine("Hello World!");
+				
+				// TODO: Implement Functionality Here
+				
+				Console.Write("Press any key to continue . . . ");
+				Console.ReadKey(true);
+			}
 		}
 		#endregion
 	}
