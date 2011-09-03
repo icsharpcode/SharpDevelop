@@ -4336,7 +4336,7 @@ class_declaration
 		}
 		
 		push_current_class (c, $3);
-		lbag.AddMember (current_class, GetModifierLocations ());
+		lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($4));
 	  }
 	  opt_class_base
 	  opt_type_parameter_constraints_clauses
@@ -4358,7 +4358,7 @@ class_declaration
 	  }
 	  opt_semicolon 
 	  {
-		lbag.AppendToMember (current_class, GetLocation ($4), GetLocation ($11), GetLocation ($13));
+		lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13));
 		if ($15 != null) 
 			current_class.OptionalSemicolon = GetLocation ($15);
 		$$ = pop_current_class ();

@@ -7080,7 +7080,7 @@ void case_645()
 		}
 		
 		push_current_class (c, yyVals[-3+yyTop]);
-		lbag.AddMember (current_class, GetModifierLocations ());
+		lbag.AddMember (current_class, GetModifierLocations (), GetLocation (yyVals[-2+yyTop]));
 	  }
 
 void case_646()
@@ -7107,7 +7107,7 @@ void case_647()
 void case_648()
 #line 4360 "cs-parser.jay"
 {
-		lbag.AppendToMember (current_class, GetLocation (yyVals[-11+yyTop]), GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[-2+yyTop]));
+		lbag.AppendToMember (current_class, GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[-2+yyTop]));
 		if (yyVals[0+yyTop] != null) 
 			current_class.OptionalSemicolon = GetLocation (yyVals[0+yyTop]);
 		yyVal = pop_current_class ();
