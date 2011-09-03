@@ -22,10 +22,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
+	
 	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
 		private MetricsReader metricsReader;
 		public event PropertyChangedEventHandler PropertyChanged;
+		
 		
 		public MetricsReader MetricsReader
 		{
@@ -41,6 +43,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 
+		
+		
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -215,6 +219,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 
+		
 		private void Metrics_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var levelItem = cbxMetrixLevel.SelectedItem as ComboBoxItem;

@@ -17,9 +17,10 @@ namespace ICSharpCode.CodeQualityAnalysis
 	{
 		public static  void FillTree (ICSharpCode.TreeView.SharpTreeView tree,Module module)
 		{
+			tree.ShowRoot = false;
 			var root = CreateTreeItem(module);
 			tree.Root = root;
-			
+		
 			foreach (var ns in module.Namespaces)
 			{
 				var namespaceNode = CreateTreeItem(ns);

@@ -133,6 +133,7 @@
     <Compile Include="Src\INode.cs" />
     <Compile Include="Src\Instruction.cs" />
     <Compile Include="Src\IValue.cs" />
+    <Compile Include="Src\MainWindowTranslationModel.cs" />
     <Compile Include="Src\NodeIconService.cs" />
     <Compile Include="Src\IDependency.cs" />
     <Compile Include="Src\MetricsReader.cs" />
@@ -143,6 +144,8 @@
     <Compile Include="Src\Type.cs" />
     <Compile Include="Src\Utility\DoubleKeyDictionary.cs" />
     <Compile Include="Src\Utility\Matrix.cs" />
+    <Compile Include="Src\Utility\RelayCommand.cs" />
+    <Compile Include="Src\Utility\ViewModelBase.cs" />
     <Page Include="Resources\GraphTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
