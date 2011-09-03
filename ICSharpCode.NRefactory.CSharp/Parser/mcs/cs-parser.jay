@@ -1626,7 +1626,6 @@ parameter_modifiers
 	: parameter_modifier
 	  {
 		$$ = $1;
-		parameterModifierLocation = GetLocation ($1);
 	  }
 	| parameter_modifiers parameter_modifier
 	  {
@@ -1656,14 +1655,14 @@ parameter_modifier
 	  {
 	  	if ((valid_param_mod & ParameterModifierType.Ref) == 0)
 	  		Error_ParameterModifierNotValid ("ref", GetLocation ($1));
-	  		
+		parameterModifierLocation = GetLocation ($1);
 	  	$$ = Parameter.Modifier.REF;
 	  }
 	| OUT
 	  {
 	  	if ((valid_param_mod & ParameterModifierType.Out) == 0)
 	  		Error_ParameterModifierNotValid ("out", GetLocation ($1));
-	  
+		parameterModifierLocation = GetLocation ($1);
 	  	$$ = Parameter.Modifier.OUT;
 	  }
 	| THIS
@@ -1673,7 +1672,7 @@ parameter_modifier
 
 	  	if (lang_version <= LanguageVersion.ISO_2)
 	  		FeatureIsNotAvailable (GetLocation ($1), "extension methods");
-	  			
+		parameterModifierLocation = GetLocation ($1);
 		$$ = Parameter.Modifier.This;
 	  }
 	;
@@ -4344,7 +4343,7 @@ class_declaration
 			FeatureIsNotAvailable (c.Location, "static classes");
 		}
 		
-		lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($4));
+		lbag.AddMember (current_class, GetModifierLocations ());
 		push_current_class (c, $3);
 	  }
 	  opt_class_base
@@ -4368,9 +4367,9 @@ class_declaration
 	  opt_semicolon 
 	  {
 		if ($15 != null) {
-			lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13), GetLocation ($15));
+			lbag.AppendToMember (current_class, GetLocation ($4), GetLocation ($11), GetLocation ($13), GetLocation ($15));
 		} else {
-			lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13));
+			lbag.AppendToMember (current_class, GetLocation ($4), GetLocation ($11), GetLocation ($13));
 		}
 		$$ = pop_current_class ();
 	  }

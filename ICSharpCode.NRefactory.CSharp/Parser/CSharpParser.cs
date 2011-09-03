@@ -91,10 +91,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				AstType result;
 				if (memberName.Left != null) {
-					result = new MemberType () { MemberName = memberName.Name };
+					result = new MemberType () { MemberNameToken = Identifier.Create (memberName.Name, Convert (memberName.Location)) };
 					result.AddChild (ConvertToType (memberName.Left), MemberType.TargetRole);
 				} else {
-					result = new SimpleType () { Identifier = memberName.Name };
+					result = new SimpleType () { IdentifierToken = Identifier.Create (memberName.Name, Convert (memberName.Location)) };
 				}
 				if (memberName.TypeArguments != null && !memberName.TypeArguments.IsEmpty) {
 					foreach (var arg in memberName.TypeArguments.Args) {
@@ -210,7 +210,6 @@ namespace ICSharpCode.NRefactory.CSharp
 							result.AddChild ((Expression)arg.Expr.Accept (this), Attribute.Roles.Argument);
 						}
 					}
-					Console.WriteLine ("---");
 					if (attr.NamedArguments != null) { 
 						foreach (NamedArgument na in attr.NamedArguments) {
 							var newArg = new NamedExpression ();
@@ -2207,7 +2206,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					var p = (Parameter)parameters.FixedParameters [i];
 					var location = LocationsBag.GetLocations (p);
-					
 					ParameterDeclaration parameterDeclarationExpression = new ParameterDeclaration ();
 					AddAttributeSection (parameterDeclarationExpression, p);
 					switch (p.ModFlags) {
@@ -2229,8 +2227,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					default:
 						if (p.HasExtensionMethodModifier) {
 							parameterDeclarationExpression.ParameterModifier = ParameterModifier.This;
-							if (location != null)
+							if (location != null) {
 								parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location [0]), "this".Length), ParameterDeclaration.Roles.Keyword);
+							}
 						}
 						break;
 					}
