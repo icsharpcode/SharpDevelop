@@ -330,6 +330,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					var t = new MemberType();
 					t.IsDoubleColon = memberName.IsDoubleColon;
 					t.AddChild (ConvertImport (memberName.Left), MemberType.TargetRole);
+					
+					var location = LocationsBag.GetLocations (memberName);
+					if (location != null)
+						t.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MemberType.Roles.Dot);
+					
 					t.AddChild (Identifier.Create (memberName.Name, Convert(memberName.Location)), MemberType.Roles.Identifier);
 					AddTypeArguments (t, (List<Location>)null, memberName.TypeArguments);
 					return t;
