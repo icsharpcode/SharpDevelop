@@ -374,8 +374,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					AddTypeParameters (newType, typeArgLocation, c.MemberName.TypeArguments);
 					if (typeArgLocation != null)
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), TypeDeclaration.Roles.RChevron);
-					AddConstraints (newType, c);
 				}
+				
 				if (c.TypeBaseExpressions != null) {
 					if (location != null && curLoc < location.Count)
 						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Colon);
@@ -390,6 +390,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						}
 					}
 				}
+				
+				AddConstraints (newType, c);
 				if (location != null && curLoc < location.Count)
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
@@ -426,7 +428,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					AddTypeParameters (newType, typeArgLocation, s.MemberName.TypeArguments);
 					if (typeArgLocation != null)
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), TypeDeclaration.Roles.RChevron);
-					AddConstraints (newType, s);
 				}
 				
 				if (s.TypeBaseExpressions != null) {
@@ -443,6 +444,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 				}
 				
+				AddConstraints (newType, s);
 				if (location != null && curLoc < location.Count)
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
@@ -478,8 +480,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					AddTypeParameters (newType, typeArgLocation, i.MemberName.TypeArguments);
 					if (typeArgLocation != null)
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), MemberReferenceExpression.Roles.RChevron);
-					AddConstraints (newType, i);
 				}
+				
 				if (i.TypeBaseExpressions != null) {
 					if (location != null && curLoc < location.Count)
 						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Colon);
@@ -493,6 +495,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						}
 					}
 				}
+				
+				AddConstraints (newType, i);
 				if (location != null && curLoc < location.Count)
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
@@ -527,7 +531,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					AddTypeParameters (newDelegate, typeArgLocation, d.MemberName.TypeArguments);
 					if (typeArgLocation != null)
 						newDelegate.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), TypeDeclaration.Roles.RChevron);
-					AddConstraints (newDelegate, d);
+					
 				}
 				if (location != null)
 					newDelegate.AddChild (new CSharpTokenNode (Convert (location[1]), 1), DelegateDeclaration.Roles.LPar);
@@ -535,6 +539,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (location != null) {
 					newDelegate.AddChild (new CSharpTokenNode (Convert (location[2]), 1), DelegateDeclaration.Roles.RPar);
+				}
+				AddConstraints (newDelegate, d);
+				if (location != null) {
 					newDelegate.AddChild (new CSharpTokenNode (Convert (location[3]), 1), DelegateDeclaration.Roles.Semicolon);
 				}
 				AddType (newDelegate);
@@ -889,7 +896,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					AddTypeParameters (newMethod, typeArgLocation, m.MemberName.TypeArguments);
 					if (typeArgLocation != null)
 						newMethod.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), MemberReferenceExpression.Roles.RChevron);
-					AddConstraints (newMethod, m.GenericMethod);
 				}
 				
 				if (location != null)
@@ -898,6 +904,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (location != null)
 					newMethod.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MethodDeclaration.Roles.RPar);
+				
+				AddConstraints (newMethod, m.GenericMethod);
+				
 				if (m.Block != null) {
 					var bodyBlock = (BlockStatement)m.Block.Accept (this);
 //					if (m.Block is ToplevelBlock) {
