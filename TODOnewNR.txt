@@ -1,7 +1,6 @@
 ﻿
 Commented code, needs to be ported and re-enabled:
 	ParseProjectContent
-	DefinitionViewPad
 	Class Browser (removed from source tree; to be reimplemented using WPF)
 	NRefactoryLanguageConverter
 	Context Actions (EditorContext etc.)

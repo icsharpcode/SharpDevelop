@@ -4,12 +4,14 @@
 using System;
 using System.IO;
 using System.Windows;
-using System.Windows.Forms;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -36,11 +38,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			ctl = Editor.AvalonEdit.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
 			ctl.IsReadOnly = true;
-			/*ctl.MouseDoubleClick += OnDoubleClick;
+			ctl.MouseDoubleClick += OnDoubleClick;
 			ParserService.ParserUpdateStepFinished += OnParserUpdateStep;
-			ctl.IsVisibleChanged += delegate { UpdateTick(null); };*/
+			ctl.IsVisibleChanged += delegate { UpdateTick(null); };
 		}
-		/*
+		
 		/// <summary>
 		/// Cleans up all used resources
 		/// </summary>
@@ -75,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ResolveResult res = ResolveAtCaret(e);
 			if (res == null) return;
-			FilePosition pos = res.GetDefinitionPosition();
+			var pos = res.GetDefinitionRegion();
 			if (pos.IsEmpty) return;
 			OpenFile(pos);
 		}
@@ -96,37 +98,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// don't resolve when an unrelated file was changed
 			if (e != null && editor.FileName != e.FileName) return null;
 			
-			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(editor.FileName);
-			if (expressionFinder == null) return null;
-			ITextEditorCaret caret = editor.Caret;
-			string content = (e == null) ? editor.Document.Text : e.Content.Text;
-			if (caret.Offset > content.Length) {
-				LoggingService.Debug("caret.Offset = " + caret.Offset + ", content.Length=" + content.Length);
-				return null;
-			}
-			try {
-				ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
-				if (expr.Expression == null) return null;
-				return ParserService.Resolve(expr, caret.Line, caret.Column, editor.FileName, content);
-			} catch (Exception ex) {
-				disableDefinitionView = true;
-				ctl.Visibility = Visibility.Collapsed;
-				MessageService.ShowException(ex, "Error resolving at " + caret.Line + "/" + caret.Column
-				                             + ". DefinitionViewPad is disabled until you restart SharpDevelop.");
-				return null;
-			}
+			return ParserService.Resolve(editor.FileName, editor.Caret.Location, editor.Document);
 		}
 		
-		FilePosition oldPosition;
+		DomRegion oldPosition;
 		string currentFileName;
 		
-		void OpenFile(FilePosition pos)
+		void OpenFile(DomRegion pos)
 		{
 			if (pos.Equals(oldPosition)) return;
 			oldPosition = pos;
 			if (pos.FileName != currentFileName)
 				LoadFile(pos.FileName);
-			ctl.TextArea.Caret.Location = new ICSharpCode.AvalonEdit.Document.TextLocation(pos.Line, pos.Column);
+			ctl.TextArea.Caret.Location = pos.Begin;
 			Rect r = ctl.TextArea.Caret.CalculateCaretRectangle();
 			if (!r.IsEmpty) {
 				ctl.ScrollToVerticalOffset(r.Top - 4);
@@ -154,6 +138,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			currentFileName = fileName;
 			ctl.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
-		}*/
+		}
 	}
 }
