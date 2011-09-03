@@ -28,8 +28,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
@@ -151,7 +153,7 @@ namespace ICSharpCode.NRefactory.Demo
 			csharpCodeTextBox.Text = w.ToString();
 		}
 		
-		int GetOffset(TextBox textBox, AstLocation location)
+		int GetOffset(TextBox textBox, TextLocation location)
 		{
 			return textBox.GetFirstCharIndexFromLine(location.Line - 1) + location.Column - 1;
 		}

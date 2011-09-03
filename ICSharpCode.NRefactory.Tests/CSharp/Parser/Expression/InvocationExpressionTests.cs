@@ -119,14 +119,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		public void NestedInvocationPositions()
 		{
 			InvocationExpression expr = ParseUtilCSharp.ParseExpression<InvocationExpression>("a.B().C(args)");
-			Assert.AreEqual(new AstLocation(1, 8), expr.StartLocation);
-			Assert.AreEqual(new AstLocation(1, 14), expr.EndLocation);
+			Assert.AreEqual(new TextLocation(1, 8), expr.StartLocation);
+			Assert.AreEqual(new TextLocation(1, 14), expr.EndLocation);
 			MemberReferenceExpression mre = (MemberReferenceExpression)expr.Target;
-			Assert.AreEqual(new AstLocation(1, 6), mre.StartLocation);
-			Assert.AreEqual(new AstLocation(1, 8), mre.EndLocation);
+			Assert.AreEqual(new TextLocation(1, 6), mre.StartLocation);
+			Assert.AreEqual(new TextLocation(1, 8), mre.EndLocation);
 			
-			Assert.AreEqual(new AstLocation(1, 4), mre.Target.StartLocation);
-			Assert.AreEqual(new AstLocation(1, 6), mre.Target.EndLocation);
+			Assert.AreEqual(new TextLocation(1, 4), mre.Target.StartLocation);
+			Assert.AreEqual(new TextLocation(1, 6), mre.Target.EndLocation);
 		}
 		
 		[Test]

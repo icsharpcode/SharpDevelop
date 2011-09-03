@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
@@ -368,7 +369,7 @@ class TestClass {
 		$list.ConvertAll(x => (int)x)$;
 	}
 }";
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 			SpecializedMethod m = (SpecializedMethod)rr.Member;
 			Assert.AreEqual("System.Int32", m.TypeArguments[0].ReflectionName);

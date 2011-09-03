@@ -18,7 +18,7 @@
 
 using System;
 using System.IO;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		[TestFixtureSetUp]
 		public void SetUp()
 		{
-			string path = Path.GetFullPath(@"..\..\..");
+			string path = Path.GetFullPath (Path.Combine ("..", "..", ".."));
 			if (!File.Exists(Path.Combine(path, "NRefactory.sln")))
 				throw new InvalidOperationException("Test cannot find the NRefactory source code in " + path);
 			fileNames = Directory.GetFiles(path, "*.cs", SearchOption.AllDirectories);
@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			}
 		}
 		
-		void CheckWhitespace(AstLocation whitespaceStart, AstLocation whitespaceEnd)
+		void CheckWhitespace(TextLocation whitespaceStart, TextLocation whitespaceEnd)
 		{
 			if (whitespaceStart == whitespaceEnd)
 				return;

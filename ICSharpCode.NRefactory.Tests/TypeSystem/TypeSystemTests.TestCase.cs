@@ -120,4 +120,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		[PreserveSig()]
 		int GetNextAssembly(uint dwFlags);
 	}
+	
+	public class ConstantTest
+	{
+		public const int Answer = 42;
+		
+		public const string NullString = null;
+	}
 }

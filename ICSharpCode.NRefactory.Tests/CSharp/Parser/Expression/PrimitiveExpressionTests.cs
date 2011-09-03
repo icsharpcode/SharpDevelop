@@ -219,8 +219,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		public void TestPositionOfIntegerAtEndOfLine()
 		{
 			var pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("0\r\n");
-			Assert.AreEqual(new AstLocation(1, 1), pe.StartLocation);
-			Assert.AreEqual(new AstLocation(1, 2), pe.EndLocation);
+			Assert.AreEqual(new TextLocation(1, 1), pe.StartLocation);
+			Assert.AreEqual(new TextLocation(1, 2), pe.EndLocation);
 		}
 	}
 }

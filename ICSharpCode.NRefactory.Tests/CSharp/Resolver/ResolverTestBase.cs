@@ -21,7 +21,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+
 using ICSharpCode.NRefactory.CSharp.Parser;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
@@ -169,13 +171,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		IEnumerable<AstLocation> FindDollarSigns(string code)
+		IEnumerable<TextLocation> FindDollarSigns(string code)
 		{
 			int line = 1;
 			int col = 1;
 			foreach (char c in code) {
 				if (c == '$') {
-					yield return new AstLocation(line, col);
+					yield return new TextLocation(line, col);
 				} else if (c == '\n') {
 					line++;
 					col = 1;
@@ -189,7 +191,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CompilationUnit cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")));
 			
-			AstLocation[] dollars = FindDollarSigns(code).ToArray();
+			TextLocation[] dollars = FindDollarSigns(code).ToArray();
 			Assert.AreEqual(2, dollars.Length, "Expected 2 dollar signs marking start+end of desired node");
 			
 			SetUp();
@@ -228,11 +230,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		sealed class FindNodeVisitor : DepthFirstAstVisitor<object, object>
 		{
-			readonly AstLocation start;
-			readonly AstLocation end;
+			readonly TextLocation start;
+			readonly TextLocation end;
 			public AstNode ResultNode;
 			
-			public FindNodeVisitor(AstLocation start, AstLocation end)
+			public FindNodeVisitor(TextLocation start, TextLocation end)
 			{
 				this.start = start;
 				this.end = end;
@@ -254,7 +256,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CompilationUnit cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")));
 			
-			AstLocation[] dollars = FindDollarSigns(code).ToArray();
+			TextLocation[] dollars = FindDollarSigns(code).ToArray();
 			Assert.AreEqual(1, dollars.Length, "Expected 1 dollar signs marking the location");
 			
 			SetUp();

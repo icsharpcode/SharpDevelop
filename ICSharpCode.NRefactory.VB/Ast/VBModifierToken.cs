@@ -77,7 +77,7 @@ namespace ICSharpCode.NRefactory.VB.Ast
 			get { return lengthTable.Select(p => p.Key); }
 		}
 		
-		public VBModifierToken(AstLocation location, Modifiers modifier) : base (location, 0)
+		public VBModifierToken(TextLocation location, Modifiers modifier) : base (location, 0)
 		{
 			this.Modifier = modifier;
 		}
