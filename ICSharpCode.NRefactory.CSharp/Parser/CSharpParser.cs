@@ -375,8 +375,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (c.TypeBaseExpressions != null) {
 					if (location != null && curLoc < location.Count)
 						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Colon);
+					
+					var commaLocations = LocationsBag.GetLocations (c.TypeBaseExpressions);
+					int i = 0;
 					foreach (var baseTypes in c.TypeBaseExpressions) {
 						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
+						if (commaLocations != null && i < commaLocations.Count) {
+							newType.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - i - 1]), 1), TypeDeclaration.Roles.Comma);
+							i++;
+						}
 					}
 				}
 				if (location != null && curLoc < location.Count)
@@ -422,8 +429,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (s.TypeBaseExpressions != null) {
 					if (location != null && curLoc < location.Count)
 						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Colon);
+					var commaLocations = LocationsBag.GetLocations (s.TypeBaseExpressions);
+					int i = 0;
 					foreach (var baseTypes in s.TypeBaseExpressions) {
 						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
+						if (commaLocations != null && i < commaLocations.Count) {
+							newType.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - i - 1]), 1), TypeDeclaration.Roles.Comma);
+							i++;
+						}
 					}
 				}
 				
@@ -468,8 +481,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (i.TypeBaseExpressions != null) {
 					if (location != null && curLoc < location.Count)
 						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Colon);
+					var commaLocations = LocationsBag.GetLocations (i.TypeBaseExpressions);
+					int j = 0;
 					foreach (var baseTypes in i.TypeBaseExpressions) {
 						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
+						if (commaLocations != null && j < commaLocations.Count) {
+							newType.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - j - 1]), 1), TypeDeclaration.Roles.Comma);
+							j++;
+						}
 					}
 				}
 				if (location != null && curLoc < location.Count)
