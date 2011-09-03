@@ -84,6 +84,22 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				progressMonitor.Progress = workDone / totalWorkAmount;
 			}
 		}
+		
+		public static void FindReferences(IVariable variable, Action<Reference> callback)
+		{
+			if (variable == null)
+				throw new ArgumentNullException("variable");
+			if (callback == null)
+				throw new ArgumentNullException("callback");
+			var fileName = FileName.Create(variable.Region.FileName);
+			IParser parser = ParserService.GetParser(fileName);
+			ParseInformation pi = ParserService.Parse(fileName);
+			if (pi == null || parser == null)
+				return;
+			IProject project = ParserService.GetProject(pi.ProjectContent);
+			var context = project != null ? project.TypeResolveContext : ParserService.GetDefaultTypeResolveContext();
+			parser.FindLocalReferences(pi, variable, context, callback);
+		}
 		#endregion
 		
 		#region FindDerivedTypes

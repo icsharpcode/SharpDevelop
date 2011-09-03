@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System;
 using System.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -8,8 +9,8 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
-using System;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -53,5 +54,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		                       bool fullParseInformationRequested);
 		
 		ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ITypeResolveContext context, CancellationToken cancellationToken);
+		
+		void FindLocalReferences(ParseInformation parseInfo, IVariable variable, ITypeResolveContext context, Action<Reference> callback);
 	}
 }

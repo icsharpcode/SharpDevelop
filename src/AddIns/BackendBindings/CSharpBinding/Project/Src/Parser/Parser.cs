@@ -14,6 +14,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace CSharpBinding.Parser
 {
@@ -110,6 +111,24 @@ namespace CSharpBinding.Parser
 				throw new ArgumentException("Parse info does not have a C# ParsedFile");
 			
 			return ResolveAtLocation.Resolve(context, parsedFile, cu, location, cancellationToken);
+		}
+		
+		public void FindLocalReferences(ParseInformation parseInfo, IVariable variable, ITypeResolveContext context, Action<Reference> callback)
+		{
+			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
+			if (cu == null)
+				throw new ArgumentException("Parse info does not have CompilationUnit");
+			
+			CSharpParsedFile parsedFile = parseInfo.ParsedFile as CSharpParsedFile;
+			if (parsedFile == null)
+				throw new ArgumentException("Parse info does not have a C# ParsedFile");
+			
+			new FindReferences().FindLocalReferences(
+				variable, parsedFile, cu, context,
+				delegate (AstNode node, ResolveResult result) {
+					var region = new DomRegion(parseInfo.FileName, node.StartLocation, node.EndLocation);
+					callback(new Reference(region, result));
+				});
 		}
 	}
 }

@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
@@ -520,16 +522,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		/*
 		public static void RunFindReferences(LocalResolveResult local)
 		{
+			var references = new List<Reference>();
+			FindReferenceService.FindReferences(local.Variable, r => { lock (references) references.Add(r); });
 			FindReferencesAndRenameHelper.ShowAsSearchResults(
 				StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-				                   new StringTagPair("Name", local.VariableName)),
-				RefactoringService.FindReferences(local, null)
+				                   new StringTagPair("Name", local.Variable.Name)),
+				references
 			);
 		}
-		 */
 		
 //		public static ICSharpCode.Core.WinForms.MenuCommand MakeFindReferencesMenuCommand(EventHandler handler)
 //		{

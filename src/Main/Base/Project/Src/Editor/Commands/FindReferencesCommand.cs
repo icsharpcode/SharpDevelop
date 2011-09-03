@@ -20,9 +20,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				return;
 			}
 			if (symbol is LocalResolveResult) {
-				#warning Find References not implemented for locals
-				throw new NotImplementedException();
-				//FindReferencesAndRenameHelper.RunFindReferences((LocalResolveResult)symbol);
+				FindReferencesAndRenameHelper.RunFindReferences((LocalResolveResult)symbol);
 			}
 		}
 	}

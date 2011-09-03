@@ -216,7 +216,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// <summary>
 		/// Gets the type resolve context for the default project content.
 		/// </summary>
-		static ITypeResolveContext GetDefaultTypeResolveContext()
+		public static ITypeResolveContext GetDefaultTypeResolveContext()
 		{
 			List<ITypeResolveContext> references = new List<ITypeResolveContext>();
 			references.Add(defaultProjectContent);
