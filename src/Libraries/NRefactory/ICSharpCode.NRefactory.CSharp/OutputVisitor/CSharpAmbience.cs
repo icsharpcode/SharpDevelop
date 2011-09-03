@@ -49,9 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		void ConvertMember(IMember member, ISynchronizedTypeResolveContext ctx, StringWriter writer)
 		{
-			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
-			astBuilder.ShowModifiers = (ConversionFlags & ConversionFlags.ShowModifiers) == ConversionFlags.ShowModifiers;
-			astBuilder.ShowAccessibility = (ConversionFlags & ConversionFlags.ShowAccessibility) == ConversionFlags.ShowAccessibility;
+			TypeSystemAstBuilder astBuilder = CreateAstBuilder(ctx);
 			astBuilder.ShowParameterNames = (ConversionFlags & ConversionFlags.ShowParameterNames) == ConversionFlags.ShowParameterNames;
 			
 			AttributedNode node = (AttributedNode)astBuilder.ConvertEntity(member);
@@ -81,12 +79,19 @@ namespace ICSharpCode.NRefactory.CSharp
 				writer.Write((node is IndexerDeclaration) ? ']' : ')');
 			}
 		}
-		
-		void ConvertTypeDeclaration(ITypeDefinition typeDef, ITypeResolveContext ctx, StringWriter writer)
+
+		TypeSystemAstBuilder CreateAstBuilder(ITypeResolveContext ctx)
 		{
 			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
 			astBuilder.ShowModifiers = (ConversionFlags & ConversionFlags.ShowModifiers) == ConversionFlags.ShowModifiers;
 			astBuilder.ShowAccessibility = (ConversionFlags & ConversionFlags.ShowAccessibility) == ConversionFlags.ShowAccessibility;
+			astBuilder.AlwaysUseShortTypeNames = (ConversionFlags & ConversionFlags.UseFullyQualifiedTypeNames) != ConversionFlags.UseFullyQualifiedTypeNames;
+			return astBuilder;
+		}
+		
+		void ConvertTypeDeclaration(ITypeDefinition typeDef, ITypeResolveContext ctx, StringWriter writer)
+		{
+			TypeSystemAstBuilder astBuilder = CreateAstBuilder(ctx);
 			TypeDeclaration typeDeclaration = (TypeDeclaration)astBuilder.ConvertEntity(typeDef);
 			PrintModifiers(typeDeclaration.Modifiers, writer);
 			if ((ConversionFlags & ConversionFlags.ShowDefinitionKeyWord) == ConversionFlags.ShowDefinitionKeyWord) {
@@ -113,7 +118,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		void WriteTypeDeclarationName(ITypeDefinition typeDef, ITypeResolveContext ctx, StringWriter writer)
 		{
-			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
+			TypeSystemAstBuilder astBuilder = CreateAstBuilder(ctx);
 			if (typeDef.DeclaringTypeDefinition != null) {
 				WriteTypeDeclarationName(typeDef.DeclaringTypeDefinition, ctx, writer);
 				writer.Write('.');
@@ -129,7 +134,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		void WriteMemberDeclarationName(IMember member, ITypeResolveContext ctx, StringWriter writer)
 		{
-			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
+			TypeSystemAstBuilder astBuilder = CreateAstBuilder(ctx);
 			if ((ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) == ConversionFlags.UseFullyQualifiedMemberNames) {
 				writer.Write(ConvertType(member.DeclaringType));
 				writer.Write('.');
@@ -193,11 +198,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public string ConvertVariable(IVariable v, ITypeResolveContext context)
 		{
 			using (var ctx = context.Synchronize()) {
-				TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
-				astBuilder.ShowModifiers = (ConversionFlags & ConversionFlags.ShowModifiers) == ConversionFlags.ShowModifiers;
-				astBuilder.ShowAccessibility = (ConversionFlags & ConversionFlags.ShowAccessibility) == ConversionFlags.ShowAccessibility;
-				astBuilder.ShowParameterNames = (ConversionFlags & ConversionFlags.ShowParameterNames) == ConversionFlags.ShowParameterNames;
-				astBuilder.AlwaysUseShortTypeNames = (ConversionFlags & ConversionFlags.UseFullyQualifiedTypeNames) != ConversionFlags.UseFullyQualifiedTypeNames;
+				TypeSystemAstBuilder astBuilder = CreateAstBuilder(ctx);
 				AstNode astNode = astBuilder.ConvertVariable(v);
 				CSharpFormattingOptions formatting = new CSharpFormattingOptions();
 				StringWriter writer = new StringWriter();
@@ -208,8 +209,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public string ConvertType(IType type)
 		{
-			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(MinimalResolveContext.Instance);
-			astBuilder.AlwaysUseShortTypeNames = (ConversionFlags & ConversionFlags.UseFullyQualifiedTypeNames) != ConversionFlags.UseFullyQualifiedTypeNames;
+			TypeSystemAstBuilder astBuilder = CreateAstBuilder(MinimalResolveContext.Instance);
 			AstType astType = astBuilder.ConvertType(type);
 			CSharpFormattingOptions formatting = new CSharpFormattingOptions();
 			StringWriter writer = new StringWriter();
@@ -220,8 +220,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public string ConvertType(ITypeReference type, ITypeResolveContext context)
 		{
 			using (var ctx = context.Synchronize()) {
-				TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder(ctx);
-				astBuilder.AlwaysUseShortTypeNames = (ConversionFlags & ConversionFlags.UseFullyQualifiedTypeNames) != ConversionFlags.UseFullyQualifiedTypeNames;
+				TypeSystemAstBuilder astBuilder = CreateAstBuilder(ctx);
 				AstType astType = astBuilder.ConvertTypeReference(type);
 				CSharpFormattingOptions formatting = new CSharpFormattingOptions();
 				StringWriter writer = new StringWriter();
