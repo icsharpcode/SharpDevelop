@@ -1838,7 +1838,6 @@ get_accessor_declaration
 		}	
 	  
 		current_local_parameters = current_property.Get.ParameterInfo;	  
-		lbag.AddMember (current_property.Get, GetModifierLocations ());
 		lexer.PropertyParsing = false;
 	  }
 	  accessor_body
@@ -1849,7 +1848,10 @@ get_accessor_declaration
 			if (current_container.Kind == MemberKind.Interface) {
 				report.Error (531, current_property.Get.Block.StartLocation,
 					"`{0}': interface members cannot have a definition", current_property.Get.GetSignatureForError ());
-			}		
+			}
+			lbag.AddMember (current_property.Get, GetModifierLocations ());
+		} else {
+			lbag.AddMember (current_property.Get, GetModifierLocations (), savedLocation);
 		}
 	  
 		current_local_parameters = null;
@@ -1886,7 +1888,6 @@ set_accessor_declaration
 		}
 		
 		current_local_parameters = current_property.Set.ParameterInfo;	
-		lbag.AddMember (current_property.Set, GetModifierLocations ());
 		lexer.PropertyParsing = false;
 	  }
 	  accessor_body
@@ -1898,6 +1899,9 @@ set_accessor_declaration
 				report.Error (531, current_property.Set.Block.StartLocation,
 					"`{0}': interface members cannot have a definition", current_property.Set.GetSignatureForError ());
 			}
+			lbag.AddMember (current_property.Set, GetModifierLocations ());
+		} else {
+			lbag.AddMember (current_property.Set, GetModifierLocations (), savedLocation);
 		}
 		
 		current_local_parameters = null;
@@ -1913,7 +1917,7 @@ accessor_body
 	: block 
 	| SEMICOLON
 	  {
-		lbag.AppendToMember (lbag.LastMember, GetLocation ($1));
+		savedLocation = GetLocation ($1);
 	  	$$ = null;
 	  }
 	| error

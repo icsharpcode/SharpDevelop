@@ -909,8 +909,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					newProperty.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MethodDeclaration.Roles.LBrace);
 				
+				Accessor getAccessor = null;
 				if (p.Get != null) {
-					Accessor getAccessor = new Accessor ();
+					getAccessor = new Accessor ();
 					AddAttributeSection (getAccessor, p.Get);
 					var getLocation = LocationsBag.GetMemberLocation (p.Get);
 					AddModifiers (getAccessor, getLocation);
@@ -920,13 +921,13 @@ namespace ICSharpCode.NRefactory.CSharp
 						getAccessor.AddChild ((BlockStatement)p.Get.Block.Accept (this), MethodDeclaration.Roles.Body);
 					} else {
 						if (getLocation != null && getLocation.Count > 0)
-							newProperty.AddChild (new CSharpTokenNode (Convert (getLocation[0]), 1), MethodDeclaration.Roles.Semicolon);
+							getAccessor.AddChild (new CSharpTokenNode (Convert (getLocation[0]), 1), MethodDeclaration.Roles.Semicolon);
 					}
-					newProperty.AddChild (getAccessor, PropertyDeclaration.GetterRole);
 				}
 				
+				Accessor setAccessor = null;
 				if (p.Set != null) {
-					Accessor setAccessor = new Accessor ();
+					setAccessor = new Accessor ();
 					AddAttributeSection (setAccessor, p.Set);
 					var setLocation = LocationsBag.GetMemberLocation (p.Set);
 					AddModifiers (setAccessor, setLocation);
@@ -936,10 +937,24 @@ namespace ICSharpCode.NRefactory.CSharp
 						setAccessor.AddChild ((BlockStatement)p.Set.Block.Accept (this), MethodDeclaration.Roles.Body);
 					} else {
 						if (setLocation != null && setLocation.Count > 0)
-							newProperty.AddChild (new CSharpTokenNode (Convert (setLocation[0]), 1), MethodDeclaration.Roles.Semicolon);
+							setAccessor.AddChild (new CSharpTokenNode (Convert (setLocation[0]), 1), MethodDeclaration.Roles.Semicolon);
 					}
-					newProperty.AddChild (setAccessor, PropertyDeclaration.SetterRole);
 				}
+				if (getAccessor != null && setAccessor != null) {
+					if (getAccessor.StartLocation < setAccessor.StartLocation) {
+						newProperty.AddChild (getAccessor, PropertyDeclaration.GetterRole);
+						newProperty.AddChild (setAccessor, PropertyDeclaration.SetterRole);
+					} else {
+						newProperty.AddChild (setAccessor, PropertyDeclaration.SetterRole);
+						newProperty.AddChild (getAccessor, PropertyDeclaration.GetterRole);
+					}
+				} else {
+					if (getAccessor != null)
+						newProperty.AddChild (getAccessor, PropertyDeclaration.GetterRole);
+					if (setAccessor != null)
+						newProperty.AddChild (setAccessor, PropertyDeclaration.SetterRole);
+				}
+				
 				if (location != null && location.Count > 1) {
 					newProperty.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MethodDeclaration.Roles.RBrace);
 				} else {
