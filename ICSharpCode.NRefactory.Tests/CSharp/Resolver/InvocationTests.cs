@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	}
 }
 ";
-			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
+			InvocationResolveResult result = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("A.TargetMethod", result.Member.FullName);
 			Assert.AreEqual("System.Int32", result.Type.ReflectionName);
 		}
@@ -82,7 +82,7 @@ class B : A {
 	}
 }
 ";
-			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
+			InvocationResolveResult result = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("B.GetRandomNumber", result.Member.FullName);
 		}
 		
@@ -102,7 +102,7 @@ class B : A {
 	}
 }
 ";
-			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
+			InvocationResolveResult result = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("B.GetRandomNumber", result.Member.FullName);
 		}
 		
@@ -119,7 +119,7 @@ class B : A {
 	}
 }
 ";
-			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
+			InvocationResolveResult result = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("A.TargetMethod", result.Member.FullName);
 			Assert.AreEqual("System.Int32", result.Type.ReflectionName);
 		}
@@ -217,10 +217,10 @@ class Program {
 	static void T(ref int y) {}
 }";
 			
-			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program.Replace("T(a)", "$T(a)$"));
+			InvocationResolveResult mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("T(a)", "$T(a)$"));
 			Assert.IsFalse(mrr.Member.Parameters[0].IsRef);
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("T(ref a)", "$T(ref a)$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("T(ref a)", "$T(ref a)$"));
 			Assert.IsTrue(mrr.Member.Parameters[0].IsRef);
 		}
 		
@@ -236,7 +236,7 @@ class Program {
 class DerivedClass : BaseClass {
 	public void Test(object a) { }
 }";
-			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program);
+			InvocationResolveResult mrr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
 		}
 		
@@ -251,7 +251,7 @@ class Test {
 		$d.Method(3)$;
 	}
 }";
-			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program);
+			InvocationResolveResult mrr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("IDerived.Method", mrr.Member.FullName);
 		}
 		
@@ -267,10 +267,10 @@ class Test {
 class DerivedClass : BaseClass {
 	public void Test(string a) { }
 }";
-			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program);
+			InvocationResolveResult mrr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("(3)", "(\"3\")"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("(3)", "(\"3\")"));
 			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
 		}
 		
@@ -291,7 +291,7 @@ class DerivedClass : MiddleClass {
 	public override void Test(int a) { }
 }";
 			
-			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program);
+			InvocationResolveResult mrr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("MiddleClass.Test", mrr.Member.FullName);
 		}
 		
@@ -299,7 +299,7 @@ class DerivedClass : MiddleClass {
 		public void SubstituteClassAndMethodTypeParametersAtOnce()
 		{
 			string program = @"class C<X> { static void M<T>(X a, T b) { $C<T>.M(b, a)$; } }";
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 			
 			var m = (SpecializedMethod)rr.Member;
@@ -367,7 +367,7 @@ class A {
 }";
 			// IBase.Method is "hidden" because ILeft.Method is also applicable,
 			// so IRight.Method is unambiguously the chosen overload.
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("IRight.Method", rr.Member.FullName);
 		}
@@ -384,7 +384,7 @@ interface IBoth : IRight, ILeft {}
 class A {
  	void Test(IBoth x) { $x.Method(1)$; }
 }";
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("IRight.Method", rr.Member.FullName);
 		}
@@ -402,7 +402,7 @@ interface IBoth : ILeft, IRight {}
 class A {
 	void Test(IBoth x) { $x.Method(1)$; }
 }";
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("ILeft.Method", rr.Member.FullName);
 		}
@@ -420,7 +420,7 @@ interface IBoth : ILeft, IRight {}
 class A {
 	void Test(IBoth x) { $x.Method(1)$; }
 }";
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("ILeft.Method", rr.Member.FullName);
 		}
@@ -438,7 +438,7 @@ interface IBoth : IRight, ILeft {}
 class A {
 	void Test(IBoth x) { $x.Method(1)$; }
 }";
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("IBase`1[[System.Int64]]", rr.Member.DeclaringType.ReflectionName);
 		}
@@ -456,7 +456,7 @@ interface IBoth : IRight, ILeft {}
 class A {
 	void Test(IBoth x) { $x.Method(1)$; }
 }";
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("IBase`1[[System.Int64]]", rr.Member.DeclaringType.ReflectionName);
 		}
@@ -471,7 +471,7 @@ interface IBoth : ILeft, IRight {}
 class A {
 	void Test(IBoth x) { $x.Method(null)$; }
 }";
-			var rr = Resolve<InvocationResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("ILeft.Method", rr.Member.FullName);
 		}

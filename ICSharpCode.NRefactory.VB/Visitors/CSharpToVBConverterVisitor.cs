@@ -169,7 +169,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 		
 		public AstNode VisitBaseReferenceExpression(CSharp.BaseReferenceExpression baseReferenceExpression, object data)
 		{
-			InstanceExpression result = new InstanceExpression(InstanceExpressionType.MyBase, ConvertLocation(baseReferenceExpression.StartLocation));
+			InstanceExpression result = new InstanceExpression(InstanceExpressionType.MyBase, baseReferenceExpression.StartLocation);
 			
 			return EndNode(baseReferenceExpression, result);
 		}
@@ -599,7 +599,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 		
 		public AstNode VisitThisReferenceExpression(CSharp.ThisReferenceExpression thisReferenceExpression, object data)
 		{
-			InstanceExpression result = new InstanceExpression(InstanceExpressionType.Me, ConvertLocation(thisReferenceExpression.StartLocation));
+			InstanceExpression result = new InstanceExpression(InstanceExpressionType.Me, thisReferenceExpression.StartLocation);
 			return EndNode(thisReferenceExpression, result);
 		}
 		
@@ -2162,7 +2162,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 		
 		public AstNode VisitIdentifier(CSharp.Identifier identifier, object data)
 		{
-			var ident = new Identifier(identifier.Name, ConvertLocation(identifier.StartLocation));
+			var ident = new Identifier(identifier.Name, identifier.StartLocation);
 			
 			return EndNode(identifier, ident);
 		}
@@ -2179,12 +2179,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 				if (n != null)
 					result.Add(n);
 			}
-		}
-		
-		[Obsolete]
-		TextLocation ConvertLocation(TextLocation location)
-		{
-			return location;
 		}
 		
 		T EndNode<T>(CSharp.AstNode node, T result) where T : VB.AstNode

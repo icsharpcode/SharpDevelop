@@ -51,25 +51,25 @@ namespace XN {
 ";
 			InvocationResolveResult mrr;
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$a.F(1)$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$a.F(1)$"));
 			Assert.AreEqual("XN.XC.F", mrr.Member.FullName);
 			Assert.AreEqual("System.Int32", mrr.Member.Parameters[1].Type.Resolve(context).FullName);
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$a.F(\"text\")$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$a.F(\"text\")$"));
 			Assert.AreEqual("XN.XC.F", mrr.Member.FullName);
 			Assert.AreEqual("System.String", mrr.Member.Parameters[1].Type.Resolve(context).FullName);
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$b.F(1)$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$b.F(1)$"));
 			Assert.AreEqual("B.F", mrr.Member.FullName);
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$b.F(\"text\")$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$b.F(\"text\")$"));
 			Assert.AreEqual("XN.XC.F", mrr.Member.FullName);
 			Assert.AreEqual("System.String", mrr.Member.Parameters[1].Type.Resolve(context).FullName);
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$c.F(1)$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$c.F(1)$"));
 			Assert.AreEqual("C.F", mrr.Member.FullName);
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$c.F(\"text\")$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$c.F(\"text\")$"));
 			Assert.AreEqual("C.F", mrr.Member.FullName);
 		}
 		
@@ -88,16 +88,16 @@ public static class XC {
 	public static IEnumerable<T> Filter<T>(this IEnumerable<T> source, Predicate<T> predicate) { throw new NotImplementedException(); }
 }
 ";
-			InvocationResolveResult mrr;
+			CSharpInvocationResolveResult mrr;
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$\"text\".ToInt32()$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$\"text\".ToInt32()$"));
 			Assert.AreEqual("XC.ToInt32", mrr.Member.FullName);
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$args.Slice(1, 2)$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$args.Slice(1, 2)$"));
 			Assert.AreEqual("XC.Slice", mrr.Member.FullName);
 			Assert.AreEqual("System.String[]", mrr.Type.ReflectionName);
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("$", "$args.Filter(delegate { return true; })$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$args.Filter(delegate { return true; })$"));
 			Assert.AreEqual("XC.Filter", mrr.Member.FullName);
 			Assert.AreEqual("System.Collections.Generic.IEnumerable`1[[System.String]]", mrr.Type.ReflectionName);
 		}

@@ -764,7 +764,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public CSharpInvocationResolveResult CreateResolveResult(ResolveResult targetResolveResult)
 		{
-			throw new NotImplementedException();
+			IParameterizedMember member = GetBestCandidateWithSubstitutedTypeArguments();
+			if (member == null)
+				throw new InvalidOperationException();
+			
+			return new CSharpInvocationResolveResult(
+				targetResolveResult,
+				member,
+				member.EntityType == EntityType.Constructor ? member.DeclaringType : member.ReturnType.Resolve(context),
+				GetArgumentsWithConversions(),
+				this.BestCandidateErrors,
+				this.IsExtensionMethodInvocation,
+				this.BestCandidateIsExpandedForm,
+				member is ILiftedOperator,
+				isDelegateInvocation: false,
+				argumentToParameterMap: this.GetArgumentToParameterMap());
 		}
 	}
 }

@@ -534,7 +534,7 @@ class Test {
 	}
 }
 ";
-			var irr = Resolve<InvocationResolveResult>(program);
+			var irr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsTrue(irr.IsError); // cannot convert from A to S
 			Assert.AreEqual("A.op_Addition", irr.Member.FullName);
 			Assert.AreEqual("S", irr.Type.ReflectionName);

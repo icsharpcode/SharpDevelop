@@ -36,7 +36,7 @@ class A {
 	}
 }
 ";
-			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
+			var result = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("System.Collections.Generic.List..ctor", result.Member.FullName);
 			
 			Assert.AreEqual("System.Collections.Generic.List`1[[System.String]]", result.Type.ReflectionName);
@@ -83,16 +83,16 @@ class A {
 	A(double dblVal) {}
 }
 ";
-			InvocationResolveResult result = Resolve<InvocationResolveResult>(program.Replace("$", "$new A()$"));
+			var result = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$new A()$"));
 			Assert.IsFalse(result.Member.IsStatic, "new A() is static");
 			Assert.AreEqual(0, result.Member.Parameters.Count, "new A() parameter count");
 			Assert.AreEqual("A", result.Type.FullName);
 			
-			result = Resolve<InvocationResolveResult>(program.Replace("$", "$new A(10)$"));
+			result = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$new A(10)$"));
 			Assert.AreEqual(1, result.Member.Parameters.Count, "new A(10) parameter count");
 			Assert.AreEqual("intVal", result.Member.Parameters[0].Name, "new A(10) parameter");
 			
-			result = Resolve<InvocationResolveResult>(program.Replace("$", "$new A(11.1)$"));
+			result = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$new A(11.1)$"));
 			Assert.AreEqual(1, result.Member.Parameters.Count, "new A(11.1) parameter count");
 			Assert.AreEqual("dblVal", result.Member.Parameters[0].Name, "new A(11.1) parameter");
 		}
@@ -106,7 +106,7 @@ class A {
 	}
 }
 ";
-			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
+			var result = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("A", result.Type.ReflectionName);
 			Assert.AreEqual(0, result.Member.Parameters.Count);
 		}

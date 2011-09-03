@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void MethodInvocation()
 		{
-			var rr = ResolveAtLocation<InvocationResolveResult>(@"using System;
+			var rr = ResolveAtLocation<CSharpInvocationResolveResult>(@"using System;
 class A { void M() {
 	Console.W$riteLine(1);
 }}");
