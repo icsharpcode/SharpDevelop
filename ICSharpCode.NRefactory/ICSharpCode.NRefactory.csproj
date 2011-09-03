@@ -103,6 +103,7 @@
     <Compile Include="TypeSystem\EntityType.cs" />
     <Compile Include="TypeSystem\ExtensionMethods.cs" />
     <Compile Include="TypeSystem\IAccessor.cs" />
+    <Compile Include="TypeSystem\IAmbience.cs" />
     <Compile Include="TypeSystem\IAttribute.cs" />
     <Compile Include="TypeSystem\IConstantValue.cs" />
     <Compile Include="TypeSystem\IDocumentationProvider.cs" />
