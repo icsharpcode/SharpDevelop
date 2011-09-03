@@ -144,7 +144,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ambience.ConversionFlags = ConversionFlags.All;
 			string result = ambience.ConvertEntity(field, compositeContext);
 			
-			Assert.AreEqual("private int ICSharpCode.SharpDevelop.Tests.CSharpAmbienceTests.Program.test", result);
+			Assert.AreEqual("private int ICSharpCode.NRefactory.CSharp.CSharpAmbienceTests.Program.test", result);
 		}
 		
 		[Test]
@@ -155,7 +155,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ambience.ConversionFlags = ConversionFlags.All;
 			string result = ambience.ConvertEntity(field, compositeContext);
 			
-			Assert.AreEqual("private const int ICSharpCode.SharpDevelop.Tests.CSharpAmbienceTests.Program.TEST2", result);
+			Assert.AreEqual("private const int ICSharpCode.NRefactory.CSharp.CSharpAmbienceTests.Program.TEST2", result);
 		}
 		
 		[Test]
