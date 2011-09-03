@@ -1440,6 +1440,21 @@ namespace Mono.CSharp {
 			get;
 			private set;
 		}
+		
+		public bool HasOptionalSemicolon {
+			get;
+			private set;
+		}
+		Location optionalSemicolon;
+		public Location OptionalSemicolon {
+			get {
+				return optionalSemicolon;
+			}
+			set {
+				optionalSemicolon = value;
+				HasOptionalSemicolon = true;
+			}
+		}
 #endif
 
 		public List<Constraints> Constraints {

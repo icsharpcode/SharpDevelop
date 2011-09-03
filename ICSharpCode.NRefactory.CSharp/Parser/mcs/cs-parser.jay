@@ -142,11 +142,12 @@ namespace Mono.CSharp
 		LocationsBag lbag;
 		UsingsBag ubag;
 		List<Tuple<Modifiers, Location>> mod_locations;
-		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation, savedEnumBaseTypeColonLocation;
+		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
 		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
 		List<Location> attributeCommas = new List<Location> ();
 		List<Location> parameterListCommas = new List<Location> ();
+		List<Location> enumCommas = new List<Location> ();
 		
 		object lastYYVal;
 		
@@ -954,7 +955,8 @@ struct_declaration
 	  }
 	  opt_semicolon
 	  {
-		lbag.AppendToMember (current_class, GetLocation ($13));
+		if ($13 != null) 
+			current_class.OptionalSemicolon = GetLocation ($13);
 		$$ = pop_current_class ();
 	  }
 	| opt_attributes opt_modifiers opt_partial STRUCT error
@@ -1974,11 +1976,9 @@ interface_declaration
 	  }
 	  opt_semicolon 
 	  {
-		if ($15 != null) {
-			lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13), GetLocation ($15));
-		} else {
-			lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13));
-		}
+		if ($15 != null) 
+			current_class.OptionalSemicolon = GetLocation ($15);
+		lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13));
 		$$ = pop_current_class ();
 	  }
 	| opt_attributes opt_modifiers opt_partial INTERFACE error
@@ -2558,6 +2558,7 @@ enum_declaration
 	  ENUM type_declaration_name
 	  opt_enum_base
 	  {
+		enumCommas.Add (GetLocation ($3));
 		if (doc_support)
 			enumTypeComment = Lexer.consume_doc_comment ();
 	  }
@@ -2565,6 +2566,7 @@ enum_declaration
 	  {
 		if (doc_support)
 			Lexer.doc_state = XmlCommentState.Allowed;
+		enumCommas.Add (GetLocation ($7));
 
 		MemberName name = (MemberName) $4;
 		if (name.IsGeneric) {
@@ -2581,26 +2583,16 @@ enum_declaration
 	  }
 	  CLOSE_BRACE opt_semicolon
 	  {
+		enumCommas.Add (GetLocation ($11));
+		if ($12 != null)
+			current_class.OptionalSemicolon = GetLocation ($12);
 		if (doc_support)
 			current_class.DocComment = enumTypeComment;
 			
 		--lexer.parsing_declaration;
 
-//			if (doc_support)
-//				em.DocComment = ev.DocComment;
-		if ($5 != null) {
-			if ($12 != null) {
-				lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), savedEnumBaseTypeColonLocation, GetLocation ($7), GetLocation ($11), GetLocation ($12));
-			} else {
-				lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), savedEnumBaseTypeColonLocation, GetLocation ($7), GetLocation ($11));
-			}
-		} else {
-			if ($12 != null) {
-				lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), GetLocation ($7), GetLocation ($11), GetLocation ($12));
-			} else {
-				lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), GetLocation ($7), GetLocation ($11));
-			}
-		}
+		lbag.AddMember (current_class, GetModifierLocations (), enumCommas);
+		enumCommas.Clear ();
 		$$ = pop_current_class ();
 	  }
 	;
@@ -2614,7 +2606,7 @@ opt_enum_base
 			Enum.Error_1008 (GetLocation ($2), report);
 			$$ = null;
 		} else {
-			savedEnumBaseTypeColonLocation = GetLocation ($1);
+			enumCommas.Add (GetLocation ($1));
 			$$ = $2;
 		}
 	 }
@@ -2630,7 +2622,7 @@ opt_enum_member_declarations
 	| enum_member_declarations
 	| enum_member_declarations COMMA
 	  {
-	  	lbag.AddLocation ($1, GetLocation ($2));
+	  	enumCommas.Add (GetLocation ($2));
 	  }
 	;
 
@@ -2638,7 +2630,7 @@ enum_member_declarations
 	: enum_member_declaration
 	| enum_member_declarations COMMA enum_member_declaration
 	  {
-	  	lbag.AddLocation ($1, GetLocation ($2));
+	  	enumCommas.Add (GetLocation ($2));
 	  	$$ = $3;
 	  }
 	;
@@ -4343,8 +4335,8 @@ class_declaration
 			FeatureIsNotAvailable (c.Location, "static classes");
 		}
 		
-		lbag.AddMember (current_class, GetModifierLocations ());
 		push_current_class (c, $3);
+		lbag.AddMember (current_class, GetModifierLocations ());
 	  }
 	  opt_class_base
 	  opt_type_parameter_constraints_clauses
@@ -4366,11 +4358,9 @@ class_declaration
 	  }
 	  opt_semicolon 
 	  {
-		if ($15 != null) {
-			lbag.AppendToMember (current_class, GetLocation ($4), GetLocation ($11), GetLocation ($13), GetLocation ($15));
-		} else {
-			lbag.AppendToMember (current_class, GetLocation ($4), GetLocation ($11), GetLocation ($13));
-		}
+		lbag.AppendToMember (current_class, GetLocation ($4), GetLocation ($11), GetLocation ($13));
+		if ($15 != null) 
+			current_class.OptionalSemicolon = GetLocation ($15);
 		$$ = pop_current_class ();
 	  }
 	;	
