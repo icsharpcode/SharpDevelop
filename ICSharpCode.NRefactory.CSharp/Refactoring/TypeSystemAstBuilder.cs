@@ -100,6 +100,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// Controls whether to show default values of optional parameters, and the values of constant fields.
 		/// </summary>
 		public bool ShowConstantValues { get; set; }
+		
+		/// <summary>
+		/// Controls whether to use fully-qualified type names or short type names.
+		/// </summary>
+		public bool AlwaysUseShortTypeNames { get; set; }
 		#endregion
 		
 		#region Convert Type
@@ -231,6 +236,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					AddTypeArguments(shortResult, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 					return shortResult;
 				}
+			}
+			
+			if (AlwaysUseShortTypeNames) {
+				return new SimpleType(typeDef.Name);
 			}
 			
 			MemberType result = new MemberType();
