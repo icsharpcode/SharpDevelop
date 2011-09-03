@@ -543,16 +543,14 @@ namespace_declaration
 	  }
 	  opt_extern_alias_directives opt_using_directives opt_namespace_or_type_declarations CLOSE_BRACE opt_semicolon
 	  {
-		if ($11 != null)
-			lbag.AddLocation (current_namespace, GetLocation ($2), GetLocation ($5), GetLocation ($10), GetLocation ($11));
-		else
-			lbag.AddLocation (current_namespace, GetLocation ($2), GetLocation ($5), GetLocation ($10));
-		
 		current_namespace = current_namespace.Parent;
 		current_class = current_namespace.SlaveDeclSpace;
 		current_container = current_class.PartialContainer;
 		ubag.CloseNamespace (GetLocation ($10));
-		ubag.EndNamespace (GetLocation ($10));
+		if ($11 != null)
+			ubag.EndNamespace (GetLocation ($11));
+		else
+			ubag.EndNamespace ();
 	  }
 	;
 

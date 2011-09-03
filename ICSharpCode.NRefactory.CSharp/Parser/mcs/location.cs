@@ -898,6 +898,12 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		}
 		
 		[Conditional ("FULL_AST")]
+		public void EndNamespace ()
+		{
+			curNamespace.Pop ();
+		}
+		
+		[Conditional ("FULL_AST")]
 		public void OpenNamespace (Location bracketLocation)
 		{
 			curNamespace.Peek ().OpenBrace = bracketLocation;

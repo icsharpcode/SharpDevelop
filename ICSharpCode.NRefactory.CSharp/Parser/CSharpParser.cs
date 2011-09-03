@@ -3100,7 +3100,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				while (true) {
 					var nextLeaf = NextLeaf(leaf);
-					// instert comment at the end
+					// insert comment at begin
+					if (domComment.StartLocation < leaf.StartLocation) {
+						var node = leaf.Parent ?? conversionVisitor.Unit;
+						node.InsertChildBefore (leaf, domComment, AstNode.Roles.Comment);
+						leaf = domComment;
+						break;
+					}
+					
+					// insert comment at the end
 					if (nextLeaf == null) {
 						var node = leaf.Parent ?? conversionVisitor.Unit;
 						node.AddChild(domComment, AstNode.Roles.Comment);
