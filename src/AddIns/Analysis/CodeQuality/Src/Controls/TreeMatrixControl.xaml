@@ -6,11 +6,8 @@
 	xmlns:Controls="clr-namespace:ICSharpCode.CodeQualityAnalysis.Controls"
 	xmlns:tree="http://icsharpcode.net/sharpdevelop/treeview">
 	<UserControl.Resources>
-		<Style
-			TargetType="{x:Type tree:SharpTreeNodeView}"
-		>
-			<Setter Property="Height" Value="36" />
-		
+		<Style TargetType="{x:Type tree:SharpTreeNodeView}">
+			<Setter Property="Height" Value="{Binding ElementName=matrixControl, Path=CellHeight}" />
 		</Style>
 	</UserControl.Resources>
 	<Grid>

@@ -16,6 +16,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 	public class MatrixControl<TItem, TValue> : FrameworkElement, IScrollInfo
 		where TValue : IValue
 	{
+		public event EventHandler<HoveredCellEventArgs<TValue>> HoveredCellChanged;
+		
 		private Dictionary<string, ImageSource> imgs = new Dictionary<string, ImageSource>();
 		private Coords currentCell = new Coords(-1, -1);
 		private string font;
@@ -50,6 +52,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		
 		public HoveredCell<TValue> HoveredCell { get; set; }
 		
+		public bool RenderZeroes { get; set; }
+		
 		public MatrixControl()
 		{
 			CellHeight = CellWidth = 36;
@@ -72,7 +76,17 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			else
 				currentCell = new Coords(-1, -1);
 			
-			InvalidateVisual();
+			if (currentCell.X != HoveredCell.RowIndex ||
+			    currentCell.Y != HoveredCell.ColumnIndex)
+			{
+				InvalidateVisual();
+				
+				HoveredCell.RowIndex = currentCell.X;
+				HoveredCell.ColumnIndex = currentCell.Y;
+				HoveredCell.Value = matrix[HoveredCell.RowIndex, HoveredCell.ColumnIndex];
+				if (HoveredCellChanged != null)
+					HoveredCellChanged(this, new HoveredCellEventArgs<TValue>(HoveredCell));
+			}
 		}
 		
 		protected override void OnRender(DrawingContext drawingContext)
@@ -156,11 +170,11 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			// text
 			for (int i = 0; i < cellsHorizontally; i++) {
 				for (int j = 0; j < cellsVertically; j++) {
-					HoveredCell.RowIndex = i + scaledOffsetX;
-					HoveredCell.ColumnIndex = j + scaledOffsetY;
-					HoveredCell.Value = matrix[HoveredCell.RowIndex, HoveredCell.ColumnIndex];
+					int rowIndex = i + scaledOffsetX;
+					int columnIndex = j + scaledOffsetY;
+					var value = matrix[rowIndex, columnIndex];
 					drawingContext.DrawImage(
-						CreateText(HoveredCell.Value.Text),
+						CreateText(value.Text),
 						new Rect(i * CellWidth - offsetDiffX, j * CellHeight - offsetDiffY, CellWidth, CellHeight));
 				}
 			}
@@ -168,7 +182,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		
 		public ImageSource CreateText(string text)
 		{
-			if (text == "0") // rendering zeroes would be distracting
+			if (!RenderZeroes && text == "0") // rendering zeroes would be distracting
 				text = string.Empty;
 			
 			if (imgs.ContainsKey(text))
@@ -391,5 +405,15 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		public int RowIndex { get; set; }
 		public int ColumnIndex { get; set; }
 		public TValue Value { get; set; }
+	}
+	
+	public class HoveredCellEventArgs<TValue> : EventArgs
+	{
+		public HoveredCell<TValue> HoveredCell { get; set; }
+		
+		public HoveredCellEventArgs(HoveredCell<TValue> cell)
+		{
+			HoveredCell = cell;
+		}
 	}
 }
