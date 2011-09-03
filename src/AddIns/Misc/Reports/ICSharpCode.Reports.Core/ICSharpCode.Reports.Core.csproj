@@ -312,9 +312,7 @@
     <Compile Include="Project\Printing\Graphics\RectangleShape.cs" />
     <Compile Include="Project\Printing\AbstractRenderer.cs" />
     <Compile Include="Project\Printing\RenderDataReport.cs" />
-    <Compile Include="Project\Printing\RendererFactory.cs" />
     <Compile Include="Project\Printing\RenderFormSheetReport.cs" />
-    <Compile Include="Project\Printing\RenderTable.cs" />
     <Compile Include="Project\Printing\ReportDocument.cs">
       <SubType>Component</SubType>
     </Compile>
