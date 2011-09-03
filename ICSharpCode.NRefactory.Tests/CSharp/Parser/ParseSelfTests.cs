@@ -97,23 +97,25 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				Assert.IsNull(node.FirstChild, "Token nodes should not have children");
 			} else {
 				var prevNodeEnd = node.StartLocation;
+				var prevNode = node;
 				for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
-					CheckWhitespace(prevNodeEnd, child.StartLocation);
+					CheckWhitespace(prevNode, prevNodeEnd, child, child.StartLocation);
 					CheckMissingTokens(child);
+					prevNode = child;
 					prevNodeEnd = child.EndLocation;
 				}
-				CheckWhitespace(prevNodeEnd, node.EndLocation);
+				CheckWhitespace(prevNode, prevNodeEnd, node, node.EndLocation);
 			}
 		}
 		
-		void CheckWhitespace(TextLocation whitespaceStart, TextLocation whitespaceEnd)
+		void CheckWhitespace(AstNode startNode, TextLocation whitespaceStart, AstNode endNode, TextLocation whitespaceEnd)
 		{
 			if (whitespaceStart == whitespaceEnd)
 				return;
 			int start = currentDocument.GetOffset(whitespaceStart.Line, whitespaceStart.Column);
 			int end = currentDocument.GetOffset(whitespaceEnd.Line, whitespaceEnd.Column);
 			string text = currentDocument.GetText(start, end - start);
-			Assert.IsTrue(string.IsNullOrWhiteSpace(text), "Expected whitespace between " + whitespaceStart + " and " + whitespaceEnd
+			Assert.IsTrue(string.IsNullOrWhiteSpace(text), "Expected whitespace between " + startNode.GetType () +":" + whitespaceStart + " and " + endNode.GetType () + ":" + whitespaceEnd
 			              + ", but got '" + text + "' (in " + currentFileName + ")");
 		}
 		#endregion
