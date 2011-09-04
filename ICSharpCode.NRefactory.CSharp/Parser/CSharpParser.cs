@@ -2382,14 +2382,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				var commaLocations = LocationsBag.GetLocations (args);
 				for (int i = 0; i < args.Count; i++) {
 					parent.AddChild (ConvertArgument (args[i]), InvocationExpression.Roles.Argument);
-					if (commaLocations != null && i > 0) {
-						int idx = commaLocations.Count - i;
-						if (idx >= 0)
-							parent.AddChild (new CSharpTokenNode (Convert (commaLocations[idx]), 1), InvocationExpression.Roles.Comma);
+					if (commaLocations != null && i < commaLocations.Count) {
+						parent.AddChild (new CSharpTokenNode (Convert (commaLocations[i]), 1), InvocationExpression.Roles.Comma);
 					}
 				}
 				if (commaLocations != null && commaLocations.Count > args.Count)
-					parent.AddChild (new CSharpTokenNode (Convert (commaLocations[0]), 1), InvocationExpression.Roles.Comma);
+					parent.AddChild (new CSharpTokenNode (Convert (commaLocations[args.Count]), 1), InvocationExpression.Roles.Comma);
 			}
 			
 			public override object Visit (Invocation invocationExpression)
