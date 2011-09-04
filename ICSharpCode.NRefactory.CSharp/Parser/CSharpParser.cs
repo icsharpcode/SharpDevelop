@@ -136,7 +136,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					memberType.AddChild (ConvertToType (ma.LeftExpression), MemberType.TargetRole);
 					
 					var location = LocationsBag.GetLocations (ma);
-					cw
 					if (location != null)
 						memberType.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MemberType.Roles.Dot);
 					
@@ -813,8 +812,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetMemberLocation (indexer);
 				AddModifiers (newIndexer, location);
 				
-				if (indexer.MemberName.Left != null)
+				if (indexer.MemberName.Left != null) {
 					newIndexer.AddChild (ConvertToType (indexer.MemberName.Left), IndexerDeclaration.PrivateImplementationTypeRole);
+					var privateImplTypeLoc = LocationsBag.GetLocations (indexer.MemberName.Left);
+					if (privateImplTypeLoc != null)
+						newIndexer.AddChild (new CSharpTokenNode (Convert (privateImplTypeLoc[0]), 1), MethodDeclaration.Roles.Dot);
+				}
 				newIndexer.AddChild (ConvertToType (indexer.TypeName), IndexerDeclaration.Roles.Type);
 				
 				if (location != null)
@@ -875,9 +878,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newMethod, location);
 				
 				newMethod.AddChild (ConvertToType (m.TypeName), AstNode.Roles.Type);
-				if (m.MethodName.Left != null)
+				if (m.MethodName.Left != null) {
 					newMethod.AddChild (ConvertToType (m.MethodName.Left), MethodDeclaration.PrivateImplementationTypeRole);
-				
+					var privateImplTypeLoc = LocationsBag.GetLocations (m.MethodName.Left);
+					if (privateImplTypeLoc != null)
+						newMethod.AddChild (new CSharpTokenNode (Convert (privateImplTypeLoc[0]), 1), MethodDeclaration.Roles.Dot);
+				}
 				newMethod.AddChild (Identifier.Create (m.MethodName.Name, Convert (m.Location)), AstNode.Roles.Identifier);
 				
 				if (m.MemberName.TypeArguments != null)  {
@@ -969,8 +975,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetMemberLocation (p);
 				AddModifiers (newProperty, location);
 				newProperty.AddChild (ConvertToType (p.TypeName), AstNode.Roles.Type);
-				if (p.MemberName.Left != null)
+				if (p.MemberName.Left != null) {
 					newProperty.AddChild (ConvertToType (p.MemberName.Left), PropertyDeclaration.PrivateImplementationTypeRole);
+					var privateImplTypeLoc = LocationsBag.GetLocations (p.MemberName.Left);
+					if (privateImplTypeLoc != null)
+						newProperty.AddChild (new CSharpTokenNode (Convert (privateImplTypeLoc[0]), 1), MethodDeclaration.Roles.Dot);
+				}
 				
 				newProperty.AddChild (Identifier.Create (p.MemberName.Name, Convert (p.Location)), PropertyDeclaration.Roles.Identifier);
 				
@@ -1142,8 +1152,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					newEvent.AddChild (new CSharpTokenNode (Convert (location[0]), "event".Length), CustomEventDeclaration.Roles.Keyword);
 				newEvent.AddChild (ConvertToType (ep.TypeName), CustomEventDeclaration.Roles.Type);
-				if (ep.MemberName.Left != null)
+				if (ep.MemberName.Left != null) {
 					newEvent.AddChild (ConvertToType (ep.MemberName.Left), CustomEventDeclaration.PrivateImplementationTypeRole);
+					var privateImplTypeLoc = LocationsBag.GetLocations (ep.MemberName.Left);
+					if (privateImplTypeLoc != null)
+						newEvent.AddChild (new CSharpTokenNode (Convert (privateImplTypeLoc[0]), 1), MethodDeclaration.Roles.Dot);
+				}
 				
 				newEvent.AddChild (Identifier.Create (ep.MemberName.Name, Convert (ep.Location)), CustomEventDeclaration.Roles.Identifier);
 
