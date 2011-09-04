@@ -80,6 +80,25 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			matrixHeight = matrix.HeaderRows.Count;
 			matrixWidth = matrix.HeaderColumns.Count;
 			
+			bool changedCoords = false;
+			if (currentCell.X > matrixHeight) {
+				currentCell = new Coords(matrixHeight - 1, currentCell.Y);
+				changedCoords = true;
+			}
+			
+			if (currentCell.Y > matrixWidth) {
+				currentCell = new Coords(currentCell.X, matrixWidth - 1);
+				changedCoords = true;
+			}
+			
+			if (changedCoords) {
+				HoveredCell.RowIndex = currentCell.Y;
+				HoveredCell.ColumnIndex = currentCell.X;
+				HoveredCell.Value = matrix[HoveredCell.RowIndex, HoveredCell.ColumnIndex];
+				if (HoveredCellChanged != null)
+					HoveredCellChanged(this, new HoveredCellEventArgs<TValue>(HoveredCell));
+			}
+			
 			if (matrixHeight >= 0 && matrixWidth >= 0)
 				InvalidateVisual();
 		}
@@ -119,8 +138,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			var maxHeight = ((int) viewport.Height / CellHeight) + 1;
 
 			// how many cells we will draw
-			var cellsHorizontally = maxWidth > matrixWidth ? matrixWidth : maxWidth;
-			var cellsVertically = maxHeight > matrixHeight ? matrixHeight : maxHeight;
+			var cellsHorizontally = maxWidth > matrixWidth ? matrixWidth : maxWidth + 1;
+			var cellsVertically = maxHeight > matrixHeight ? matrixHeight : maxHeight + 1;
 			
 			// number of cell which will be drawn
 			var scaledOffsetX = (int)offset.X / CellWidth;
@@ -138,8 +157,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			
 			// sometimes happens when half of cell is hidden in scroll so text isnt drawn
 			// so lets drawn one more cell
-			cellsHorizontally = maxWidth > matrixWidth ? matrixWidth : maxWidth + 1;
-			cellsVertically = maxHeight > matrixHeight ? matrixHeight : maxHeight + 1;
+//			cellsHorizontally = maxWidth > matrixWidth ? matrixWidth : maxWidth + 1;
+//			cellsVertically = maxHeight > matrixHeight ? matrixHeight : maxHeight + 1;
 			
 			var currentXLine = (currentCell.X - scaledOffsetX) * CellWidth - offsetDiffX;
 			var currentYLine = (currentCell.Y - scaledOffsetY) * CellHeight - offsetDiffY;
@@ -182,8 +201,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			// text
 			for (int i = 0; i < cellsHorizontally; i++) {
 				for (int j = 0; j < cellsVertically; j++) { // dont draw text in unavailables places
-					int rowIndex = j + scaledOffsetX;
-					int columnIndex = i + scaledOffsetY;
+					int rowIndex = j;
+					int columnIndex = i;
 					var value = matrix[rowIndex, columnIndex];
 						
 					if (Colorizer != null) {
@@ -203,7 +222,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 						drawingContext.DrawRectangle(brush, null, rect);
 					}
 					
-					if (!RenderZeroes && value.Text != "0") // rendering zeroes would be distracting
+					if (!RenderZeroes && value != null && value.Text != "0") // rendering zeroes would be distracting
 						drawingContext.DrawImage(
 							CreateText(value.Text),
 							new Rect(i * CellWidth - offsetDiffX, j * CellHeight - offsetDiffY, CellWidth, CellHeight));

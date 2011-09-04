@@ -38,6 +38,9 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		
 		public Color GetColor(Relationship relationship)
 		{
+			if (relationship == null)
+				return Colors.Transparent;
+			
 			if (relationship.Relationships.Any(r => r == RelationshipType.UseThis))
 				return Colors.Azure;
 			if (relationship.Relationships.Any(r => r == RelationshipType.UsedBy))
