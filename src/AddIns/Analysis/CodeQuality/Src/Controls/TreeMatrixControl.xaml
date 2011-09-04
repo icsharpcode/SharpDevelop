@@ -33,6 +33,7 @@
 			Name="leftTree"
 			Grid.Row="2"
 			ScrollViewer.ScrollChanged="LeftTree_ScrollChanged"
+			
 			Grid.Column="0">
 		</tree:SharpTreeView>
 		

@@ -3,18 +3,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Forms;
-using System.Linq;
+using System.Windows.Threading;
 using ICSharpCode.CodeQualityAnalysis.Utility;
-
 
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
@@ -44,7 +46,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		public TreeMatrixControl()
 		{
 			InitializeComponent();
-			
 			matrixControl.Colorizer = new DependencyColorizer();
 			matrixControl.HoveredCellChanged += OnHoverChanged;
 		}
@@ -53,6 +54,11 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		{
 			Helper.FillTree(leftTree,module);
 			Helper.FillTree(topTree,module);
+			var leftCol = leftTree.Items.SourceCollection as INotifyCollectionChanged;
+			leftCol.CollectionChanged += BuildLeftINodeList;
+			
+			var rCol = leftTree.Items.SourceCollection as INotifyCollectionChanged;
+			rCol.CollectionChanged += BuildRightINodeList;
 		}
 		
 		
@@ -65,6 +71,54 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			topScrollViewer = Helper.FindVisualChild<ScrollViewer>(topTree);
 		}
 		
+		bool rebuildLeftNodeListRequested;
+		
+		void BuildLeftINodeList (object sender,NotifyCollectionChangedEventArgs e)
+		{
+			if (rebuildLeftNodeListRequested)
+				return;
+			rebuildLeftNodeListRequested = true;
+			Dispatcher.BeginInvoke(
+				DispatcherPriority.DataBind,
+				new Action(
+					delegate {
+						List <INode> leftNodes = new List<INode>();
+						foreach (DependecyTreeNode element in leftTree.Items) {
+							var n = element.INode;
+							leftNodes.Add(n);
+						}
+						
+						rebuildLeftNodeListRequested = false;
+						Console.WriteLine("List {0}",leftNodes.Count);
+						matrixControl.SetVisibleItems(HeaderType.Rows,leftNodes);
+					}
+				));
+		}
+		
+		
+		bool rebuildRightNodeListRequested;
+		
+		void BuildRightINodeList (object sender,NotifyCollectionChangedEventArgs e)
+		{
+			if (rebuildRightNodeListRequested)
+				return;
+			rebuildRightNodeListRequested = true;
+			Dispatcher.BeginInvoke(
+				DispatcherPriority.DataBind,
+				new Action(
+					delegate {
+						List <INode> rNodes = new List<INode>();
+						foreach (DependecyTreeNode element in topTree.Items) {
+							var n = element.INode;
+							rNodes.Add(n);
+						}
+						
+						rebuildRightNodeListRequested = false;
+						
+						matrixControl.SetVisibleItems(HeaderType.Columns,rNodes);
+					}
+				));
+		}
 		
 		void OnHoverChanged (object sender ,HoveredCellEventArgs <Relationship> e)
 		{
@@ -79,6 +133,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 				topTree.SelectedItem = topNode;
 				topTree.FocusNode(topNode);
 			}
+			
+			
 		}
 		
 		

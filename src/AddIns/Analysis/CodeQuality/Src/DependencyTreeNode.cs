@@ -35,5 +35,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		{
 			get {return node;}
 		}
+		
+		
 	}
 }
