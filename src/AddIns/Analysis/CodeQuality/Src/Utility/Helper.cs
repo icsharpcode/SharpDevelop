@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace ICSharpCode.CodeQualityAnalysis
@@ -66,7 +67,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		public static T FindVisualChild<T>( DependencyObject obj )
 			where T : DependencyObject
 		{
-			// Search immediate children first (breadth-first)
+			// depth-first Search
 
 			for( int i = 0; i < VisualTreeHelper.GetChildrenCount( obj ); i++ )
 			{
@@ -88,6 +89,21 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 
 			return null;
+		}
+		
+		
+		public static ItemContainer GetParent<ItemContainer>(this DependencyObject obj)
+			where ItemContainer : DependencyObject
+		{
+			if (obj == null)
+				return null;
+			while (VisualTreeHelper.GetParent(obj) != null && !(obj is ItemContainer))
+			{
+				obj = VisualTreeHelper.GetParent(obj);
+			}
+			
+			// Will return null if not found
+			return obj as ItemContainer;
 		}
 	}
 }

@@ -167,31 +167,31 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="Namespaces: " />
-							<TextBlock Text="{Binding Path=MetricsReader.MainModule.Namespaces.Count}" />
+							<TextBlock Text="{Binding Path=MainModule.Namespaces.Count}" />
 						</StackPanel>
 					</StatusBarItem>
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="Types: " />
-							<TextBlock Text="{Binding Path=MetricsReader.MainModule.TypesCount}" />
+							<TextBlock Text="{Binding Path=MainModule.TypesCount}" />
 						</StackPanel>
 					</StatusBarItem>
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="Methods: " />
-							<TextBlock Text="{Binding Path=MetricsReader.MainModule.MethodsCount}" />
+							<TextBlock Text="{Binding Path=MainModule.MethodsCount}" />
 						</StackPanel>
 					</StatusBarItem>
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="Fields: " />
-							<TextBlock Text="{Binding Path=MetricsReader.MainModule.FieldsCount}" />
+							<TextBlock Text="{Binding Path=MainModule.FieldsCount}" />
 						</StackPanel>
 					</StatusBarItem>
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="IL instructions: " />
-							<TextBlock Text="{Binding Path=MetricsReader.MainModule.InstructionsCount}" />
+							<TextBlock Text="{Binding Path=MainModule.InstructionsCount}" />
 						</StackPanel>
 					</StatusBarItem>
 				</StackPanel>

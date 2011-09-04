@@ -58,7 +58,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		private void btnOpenAssembly_Click(object sender, RoutedEventArgs e)
 		{
 			
-			var dc = this.DataContext as MainWindowTranslationViewModel;
+			var dataContext = this.DataContext as MainWindowTranslationViewModel;
 			
 			var fileDialog = new OpenFileDialog
 			{
@@ -70,19 +70,20 @@ namespace ICSharpCode.CodeQualityAnalysis
 			if (String.IsNullOrEmpty(fileDialog.FileName))
 				return;
 			
-			dc.ProgressbarVisible = Visibility.Visible;
-			dc.AssemblyStatsVisible = Visibility.Hidden;
-			dc.FileName = System.IO.Path.GetFileName(fileDialog.FileName);
+			dataContext.ProgressbarVisible = Visibility.Visible;
+			dataContext.AssemblyStatsVisible = Visibility.Hidden;
+			dataContext.FileName = System.IO.Path.GetFileName(fileDialog.FileName);
 			
 			var worker = new BackgroundWorker();
 			worker.DoWork += (source, args) => MetricsReader = new MetricsReader(fileDialog.FileName);
 			worker.RunWorkerCompleted += (source, args) => {
 
-				dc.ProgressbarVisible = Visibility.Hidden;
-				dc.AssemblyStatsVisible = Visibility.Visible;
-				dc.MainTabEnable = true;
+				dataContext.ProgressbarVisible = Visibility.Hidden;
+				dataContext.AssemblyStatsVisible = Visibility.Visible;
+				dataContext.MainTabEnable = true;
 
 				Helper.FillTree(definitionTree, metricsReader.MainModule);
+				dataContext.MainModule = metricsReader.MainModule;
 				FillMatrix();
 			};
 			

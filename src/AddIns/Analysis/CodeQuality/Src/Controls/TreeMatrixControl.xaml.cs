@@ -16,7 +16,9 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+
 using ICSharpCode.CodeQualityAnalysis.Utility;
+using ICSharpCode.TreeView;
 
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
@@ -48,18 +50,26 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			InitializeComponent();
 			matrixControl.Colorizer = new DependencyColorizer();
 			matrixControl.HoveredCellChanged += OnHoverChanged;
+			
 		}
 		
 		public void DrawTree(Module module)
-		{	
+		{
 			var leftCol = leftTree.Items.SourceCollection as INotifyCollectionChanged;
 			leftCol.CollectionChanged += BuildLeftINodeList;
 			Helper.FillTree(leftTree, module);
-			
+			leftTree.MouseMove += (s,e)=>
+			{
+				var c = Helper.GetParent<SharpTreeViewItem>(e.OriginalSource as DependencyObject);
+				if (c != null){
+				
+				
+			};
 			var topCol = topTree.Items.SourceCollection as INotifyCollectionChanged;
 			topCol.CollectionChanged += BuildTopINodeList;
 			Helper.FillTree(topTree, module);
 		}
+		
 		
 		void Trees_Loaded (object sender, EventArgs e)
 		{
@@ -69,6 +79,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			leftScrollViewer = Helper.FindVisualChild<ScrollViewer>(leftTree);
 			topScrollViewer = Helper.FindVisualChild<ScrollViewer>(topTree);
 		}
+		
+		#region Update MatricControl
 		
 		bool rebuildLeftNodeListRequested;
 		
@@ -117,6 +129,9 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			matrixControl.SetVisibleItems(HeaderType.Columns, topNodes);
 		}
 		
+		#endregion
+		
+		
 		void OnHoverChanged(object sender ,HoveredCellEventArgs <Relationship> e)
 		{
 			if (e.HoveredCell.RowIndex < leftTree.Items.Count) {
@@ -135,8 +150,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		
 		void LeftTree_ScrollChanged(object sender, ScrollChangedEventArgs e)
 		{
-//			Console.WriteLine("Left TreeScroll");
-//			scrollViewer.ScrollToVerticalOffset(e.VerticalOffset * matrixControl.CellHeight);
+			Console.WriteLine("Left TreeScroll {0} - {1}",e.VerticalOffset * matrixControl.CellHeight,leftTree.Items.Count);
+			scrollViewer.ScrollToVerticalOffset(e.VerticalOffset * matrixControl.CellHeight);
 			Console.WriteLine("--");
 		}
 		
@@ -144,7 +159,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		{
 //			Console.WriteLine("Top TreeScroll ");
 //			scrollViewer.ScrollToHorizontalOffset(e.VerticalChange * matrixControl.CellHeight);
-			Console.WriteLine("--");
+//			Console.WriteLine("--");
 		}
 		
 		

@@ -24,9 +24,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 	/// </summary>
 	public class MainWindowTranslationViewModel :ViewModelBase
 	{
-		string typeInfo;
-		
-	
 		
 		public MainWindowTranslationViewModel():base()
 		{
@@ -77,11 +74,24 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 		
+		
+		string typeInfo;
+		
 		public string TypeInfo {
 			get { return typeInfo; }
 			set { typeInfo = value;
 				base.RaisePropertyChanged(() =>this.TypeInfo);
 			}
+		}
+		
+		private Module mainModule;
+		
+		public Module MainModule {
+			get { return mainModule; }
+			set { mainModule = value; 
+			base.RaisePropertyChanged(() =>this.MainModule);}
+				                         
+				                      
 		}
 		
 		/*
