@@ -960,16 +960,17 @@ struct_declaration
 		if (doc_support)
 			Lexer.doc_state = XmlCommentState.Allowed;
 	  }
-	  opt_class_member_declarations CLOSE_BRACE
+	  opt_class_member_declarations CLOSE_BRACE	
 	  {
+		lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13));
 		--lexer.parsing_declaration;
 		if (doc_support)
 			Lexer.doc_state = XmlCommentState.Allowed;
 	  }
 	  opt_semicolon
 	  {
-		if ($13 != null) 
-			current_class.OptionalSemicolon = GetLocation ($13);
+		if ($15 != null) 
+			current_class.OptionalSemicolon = GetLocation ($15);
 		$$ = pop_current_class ();
 	  }
 	| opt_attributes opt_modifiers opt_partial STRUCT error
