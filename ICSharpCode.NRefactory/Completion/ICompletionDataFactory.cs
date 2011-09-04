@@ -26,7 +26,7 @@
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory
+namespace ICSharpCode.NRefactory.Completion
 {
 	public interface ICompletionDataFactory
 	{

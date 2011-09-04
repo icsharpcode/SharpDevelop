@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.NRefactory
+namespace ICSharpCode.NRefactory.Completion
 {
 	public interface ICompletionData
 	{
