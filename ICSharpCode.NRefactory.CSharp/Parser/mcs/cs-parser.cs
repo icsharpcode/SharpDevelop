@@ -5953,7 +5953,7 @@ void case_362()
 			FeatureIsNotAvailable (GetLocation (yyVals[-2+yyTop]), "generics");
 	  
 		yyVal = yyVals[-1+yyTop];
-		lbag.AddLocation (yyVal, GetLocation (yyVals[-2+yyTop]), GetLocation (yyVals[0+yyTop]));
+		lbag.AppendTo (yyVal, GetLocation (yyVals[-2+yyTop]), GetLocation (yyVals[0+yyTop]));
 	  }
 
 void case_363()
@@ -5970,7 +5970,7 @@ void case_364()
 		TypeArguments type_args = (TypeArguments) yyVals[-2+yyTop];
 		type_args.Add ((FullNamedExpression)yyVals[0+yyTop]);
 		yyVal = type_args;
-		lbag.AddLocation (yyVals[0+yyTop], GetLocation (yyVals[0+yyTop]));
+		lbag.AppendTo (type_args, GetLocation (yyVals[-1+yyTop]));
 	  }
 
 void case_365()

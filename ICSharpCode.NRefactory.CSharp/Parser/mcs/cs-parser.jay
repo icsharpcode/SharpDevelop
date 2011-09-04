@@ -2880,7 +2880,7 @@ opt_type_parameter_list
 			FeatureIsNotAvailable (GetLocation ($1), "generics");
 	  
 		$$ = $2;
-		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3));
+		lbag.AppendTo ($$, GetLocation ($1), GetLocation ($3));
 	  }
 	;
 
@@ -2896,7 +2896,7 @@ type_parameters
 		TypeArguments type_args = (TypeArguments) $1;
 		type_args.Add ((FullNamedExpression)$3);
 		$$ = type_args;
-		lbag.AddLocation ($3, GetLocation ($3));
+		lbag.AppendTo (type_args, GetLocation ($2));
 	  }	  
 	;
 
