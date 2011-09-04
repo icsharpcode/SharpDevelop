@@ -5,15 +5,20 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using ICSharpCode.TreeView;
+using System.Runtime.InteropServices;
 
-namespace ICSharpCode.CodeQualityAnalysis
+namespace ICSharpCode.CodeQualityAnalysis.Utility
 {
 	/// <summary>
 	/// Description of Helper.
 	/// </summary>
 	public static class Helper
 	{
-		public static void FillTree(ICSharpCode.TreeView.SharpTreeView tree,Module module)
+		[DllImport("gdi32.dll")]
+		public static extern bool DeleteObject(IntPtr hObject);
+		
+		public static void FillTree(SharpTreeView tree, Module module)
 		{
 			var root = CreateTreeItem(module);
 			tree.Root = root;
