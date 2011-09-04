@@ -53,12 +53,12 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		public void DrawTree(Module module)
 		{
 			Helper.FillTree(leftTree,module);
-			Helper.FillTree(topTree,module);
 			var leftCol = leftTree.Items.SourceCollection as INotifyCollectionChanged;
 			leftCol.CollectionChanged += BuildLeftINodeList;
 			
-			var rCol = leftTree.Items.SourceCollection as INotifyCollectionChanged;
-			rCol.CollectionChanged += BuildRightINodeList;
+			Helper.FillTree(topTree,module);
+			var topCol = topTree.Items.SourceCollection as INotifyCollectionChanged;
+			topCol.CollectionChanged += BuildTopINodeList;
 		}
 		
 		
@@ -70,6 +70,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			leftScrollViewer = Helper.FindVisualChild<ScrollViewer>(leftTree);
 			topScrollViewer = Helper.FindVisualChild<ScrollViewer>(topTree);
 		}
+		
 		
 		bool rebuildLeftNodeListRequested;
 		
@@ -87,35 +88,31 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 							var n = element.INode;
 							leftNodes.Add(n);
 						}
-						
 						rebuildLeftNodeListRequested = false;
-						Console.WriteLine("List {0}",leftNodes.Count);
 						matrixControl.SetVisibleItems(HeaderType.Rows,leftNodes);
 					}
 				));
 		}
 		
 		
-		bool rebuildRightNodeListRequested;
+		bool rebuildTopNodeListRequested;
 		
-		void BuildRightINodeList (object sender,NotifyCollectionChangedEventArgs e)
+		void BuildTopINodeList (object sender,NotifyCollectionChangedEventArgs e)
 		{
-			if (rebuildRightNodeListRequested)
+			if (rebuildTopNodeListRequested)
 				return;
-			rebuildRightNodeListRequested = true;
+			rebuildTopNodeListRequested = true;
 			Dispatcher.BeginInvoke(
 				DispatcherPriority.DataBind,
 				new Action(
 					delegate {
-						List <INode> rNodes = new List<INode>();
+						List <INode> topNodes = new List<INode>();
 						foreach (DependecyTreeNode element in topTree.Items) {
 							var n = element.INode;
-							rNodes.Add(n);
+							topNodes.Add(n);
 						}
-						
-						rebuildRightNodeListRequested = false;
-						
-						matrixControl.SetVisibleItems(HeaderType.Columns,rNodes);
+						rebuildTopNodeListRequested = false;
+						matrixControl.SetVisibleItems(HeaderType.Columns,topNodes);
 					}
 				));
 		}

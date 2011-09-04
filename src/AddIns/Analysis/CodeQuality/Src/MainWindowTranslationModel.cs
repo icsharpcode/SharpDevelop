@@ -30,11 +30,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 			this.DependencyGraph = "Dependency Graph";
 		}
 		
+		
 		public string Title {get;private set;}
 		
 		public string OpenAssembly {get; private set;}
 		
 		public string DependencyGraph {get; private set;}
+		
+		
 		
 		#region OpenAssembly
 		/*
