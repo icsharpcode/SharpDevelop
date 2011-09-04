@@ -8,10 +8,11 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using ICSharpCode.CodeQualityAnalysis.Utility;
 
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
-    public class DependencyMatrixControl : MatrixControl<INode, Relationship>
+    public class DependencyMatrixControl : MatrixControl<VisibleMatrix<INode, Relationship>, INode, Relationship>
     {
     	
     }

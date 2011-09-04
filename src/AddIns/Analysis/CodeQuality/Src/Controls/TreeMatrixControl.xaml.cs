@@ -29,11 +29,11 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		private ScrollViewer leftScrollViewer;
 		private ScrollViewer topScrollViewer;
 		
-		public Matrix<INode, Relationship> Matrix
+		public DependencyMatrix Matrix
 		{
 			get
 			{
-				return matrixControl.Matrix;
+				return (DependencyMatrix) matrixControl.Matrix;
 			}
 			
 			set
@@ -51,16 +51,15 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		}
 		
 		public void DrawTree(Module module)
-		{
-			Helper.FillTree(leftTree,module);
+		{	
 			var leftCol = leftTree.Items.SourceCollection as INotifyCollectionChanged;
 			leftCol.CollectionChanged += BuildLeftINodeList;
+			Helper.FillTree(leftTree, module);
 			
-			Helper.FillTree(topTree,module);
 			var topCol = topTree.Items.SourceCollection as INotifyCollectionChanged;
 			topCol.CollectionChanged += BuildTopINodeList;
+			Helper.FillTree(topTree, module);
 		}
-		
 		
 		void Trees_Loaded (object sender, EventArgs e)
 		{
@@ -71,53 +70,54 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			topScrollViewer = Helper.FindVisualChild<ScrollViewer>(topTree);
 		}
 		
-		
 		bool rebuildLeftNodeListRequested;
 		
-		void BuildLeftINodeList (object sender,NotifyCollectionChangedEventArgs e)
+		void BuildLeftINodeList(object sender,NotifyCollectionChangedEventArgs e)
 		{
 			if (rebuildLeftNodeListRequested)
 				return;
 			rebuildLeftNodeListRequested = true;
 			Dispatcher.BeginInvoke(
 				DispatcherPriority.DataBind,
-				new Action(
-					delegate {
-						List <INode> leftNodes = new List<INode>();
-						foreach (DependecyTreeNode element in leftTree.Items) {
-							var n = element.INode;
-							leftNodes.Add(n);
-						}
-						rebuildLeftNodeListRequested = false;
-						matrixControl.SetVisibleItems(HeaderType.Rows,leftNodes);
-					}
-				));
+				new Action(SetVisibleItemsForRows));
+		}
+
+		void SetVisibleItemsForRows()
+		{
+			List<INode> leftNodes = new List<INode>();
+			foreach (DependecyTreeNode element in leftTree.Items) {
+				var n = element.INode;
+				leftNodes.Add(n);
+			}
+			rebuildLeftNodeListRequested = false;
+			matrixControl.SetVisibleItems(HeaderType.Rows, leftNodes);
 		}
 		
 		
 		bool rebuildTopNodeListRequested;
 		
-		void BuildTopINodeList (object sender,NotifyCollectionChangedEventArgs e)
+		void BuildTopINodeList(object sender,NotifyCollectionChangedEventArgs e)
 		{
 			if (rebuildTopNodeListRequested)
 				return;
 			rebuildTopNodeListRequested = true;
 			Dispatcher.BeginInvoke(
 				DispatcherPriority.DataBind,
-				new Action(
-					delegate {
-						List <INode> topNodes = new List<INode>();
-						foreach (DependecyTreeNode element in topTree.Items) {
-							var n = element.INode;
-							topNodes.Add(n);
-						}
-						rebuildTopNodeListRequested = false;
-						matrixControl.SetVisibleItems(HeaderType.Columns,topNodes);
-					}
-				));
+				new Action(SetVisibleItemsForColumns));
+		}
+
+		void SetVisibleItemsForColumns()
+		{
+			List<INode> topNodes = new List<INode>();
+			foreach (DependecyTreeNode element in topTree.Items) {
+				var n = element.INode;
+				topNodes.Add(n);
+			}
+			rebuildTopNodeListRequested = false;
+			matrixControl.SetVisibleItems(HeaderType.Columns, topNodes);
 		}
 		
-		void OnHoverChanged (object sender ,HoveredCellEventArgs <Relationship> e)
+		void OnHoverChanged(object sender ,HoveredCellEventArgs <Relationship> e)
 		{
 			if (e.HoveredCell.RowIndex < leftTree.Items.Count) {
 				var leftNode = leftTree.Items[e.HoveredCell.RowIndex] as DependecyTreeNode;
@@ -130,8 +130,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 				topTree.SelectedItem = topNode;
 				topTree.FocusNode(topNode);
 			}
-			
-			
 		}
 		
 		

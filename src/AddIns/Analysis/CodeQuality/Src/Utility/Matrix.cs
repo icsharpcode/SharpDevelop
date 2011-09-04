@@ -10,16 +10,40 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 {
 	public abstract class Matrix<TItem, TValue>
     {
-        public List<Cell<TItem>> HeaderRows { get; set; }
-        public List<Cell<TItem>> HeaderColumns { get; set; }
+		protected List<Cell<TItem>> headerRows;
+		protected List<Cell<TItem>> headerColumns;
+			
+        public virtual List<Cell<TItem>> HeaderRows 
+        { 
+        	get {
+        		return headerRows;
+        	}
+        }
+        
+        public virtual List<Cell<TItem>> HeaderColumns
+        {
+        	get {
+        		return headerColumns;
+        	}
+        }
         
         private DoubleKeyDictionary<int, int, TValue> cache;
 
         protected Matrix()
         {
-            HeaderRows = new List<Cell<TItem>>();
-            HeaderColumns = new List<Cell<TItem>>();
+            headerRows = new List<Cell<TItem>>();
+            headerColumns = new List<Cell<TItem>>();
             cache = new DoubleKeyDictionary<int, int, TValue>();
+        }
+        
+        public void AddRow(TItem value)
+        {
+        	headerRows.Add(new Cell<TItem>(value));
+        }
+        
+        public void AddColumn(TItem value)
+        {
+        	headerColumns.Add(new Cell<TItem>(value));
         }
         
         private TValue GetFromCache(int rowIndex, int columnIndex)
@@ -49,7 +73,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
     			return result;
         	}
 		}
-
+        
+        public abstract void SetVisibleItems(HeaderType type, ICollection<TItem> visibleItems);
         protected abstract TValue GetCellValue(int rowIndex, int columnIndex);
     }
 
@@ -63,4 +88,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
             Value = value;
         }
     }
+    
+	public enum HeaderType
+	{
+		Columns,
+		Rows
+	}
 }
