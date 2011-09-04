@@ -11,6 +11,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Interop;
+using PointF = System.Drawing.PointF;
 
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
@@ -138,6 +140,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			var maxHeight = ((int) viewport.Height / CellHeight) + 1;
 
 			// how many cells we will draw
+			// sometimes happens when half of cell is hidden in scroll so text isnt drawn
+			// so lets drawn one more cell
 			var cellsHorizontally = maxWidth > matrixWidth ? matrixWidth : maxWidth + 1;
 			var cellsVertically = maxHeight > matrixHeight ? matrixHeight : maxHeight + 1;
 			
@@ -154,11 +158,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			var backgroundColor = new SolidColorBrush(Colors.Yellow);
 			backgroundColor.Freeze();
 			drawingContext.DrawRectangle(backgroundColor, null, background);
-			
-			// sometimes happens when half of cell is hidden in scroll so text isnt drawn
-			// so lets drawn one more cell
-//			cellsHorizontally = maxWidth > matrixWidth ? matrixWidth : maxWidth + 1;
-//			cellsVertically = maxHeight > matrixHeight ? matrixHeight : maxHeight + 1;
 			
 			var currentXLine = (currentCell.X - scaledOffsetX) * CellWidth - offsetDiffX;
 			var currentYLine = (currentCell.Y - scaledOffsetY) * CellHeight - offsetDiffY;
@@ -264,15 +263,18 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			var spanWidth = (CellWidth - size.Width) / 2;
 			var spanHeight = (CellHeight - size.Height) / 2;
 			
-			g.DrawString(text, fontOjb, System.Drawing.Brushes.Black, new System.Drawing.PointF(spanWidth, spanHeight));
+			g.DrawString(text, fontOjb, System.Drawing.Brushes.Black, new PointF(spanWidth, spanHeight));
 			g.Dispose();
 			
-			var img = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(bmp.GetHbitmap(),
-			                                                                       IntPtr.Zero,
-			                                                                       Int32Rect.Empty,
-			                                                                       BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height));
+			var bitmap = bmp.GetHbitmap();
+			var img = Imaging.CreateBitmapSourceFromHBitmap(bitmap,
+			                                                IntPtr.Zero,
+			                                                Int32Rect.Empty,
+			                                                BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height));
 			img.Freeze();
 			imgs.Add(text, img);
+			
+			Helper.DeleteObject(bitmap);
 			
 			return img;
 		}
