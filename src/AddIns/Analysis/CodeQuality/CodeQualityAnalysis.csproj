@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{76DD1CC0-0D86-44A1-9BD6-D91F79807BC3}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ICSharpCode.CodeQualityAnalysis</RootNamespace>
     <AssemblyName>CodeQualityAnalysis</AssemblyName>
@@ -130,7 +130,6 @@
     <Compile Include="Src\DependencyTreeNode.cs" />
     <Compile Include="Src\Event.cs" />
     <Compile Include="Src\Field.cs" />
-    <Compile Include="Src\Helper.cs" />
     <Compile Include="Src\INode.cs" />
     <Compile Include="Src\Instruction.cs" />
     <Compile Include="Src\IValue.cs" />
@@ -145,6 +144,7 @@
     <Compile Include="Src\Type.cs" />
     <Compile Include="Src\Utility\DoubleKeyDictionary.cs" />
     <Compile Include="Src\Utility\IColorizer.cs" />
+    <Compile Include="Src\Utility\Helper.cs" />
     <Compile Include="Src\Utility\Matrix.cs" />
     <Compile Include="Src\Utility\RelayCommand.cs" />
     <Compile Include="Src\Utility\ViewModelBase.cs" />

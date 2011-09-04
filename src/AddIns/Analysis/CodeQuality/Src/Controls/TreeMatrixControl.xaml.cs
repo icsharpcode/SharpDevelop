@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using System.Linq;
 using ICSharpCode.CodeQualityAnalysis.Utility;
 
+
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
 	/// <summary>
@@ -22,6 +23,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 	/// </summary>
 	public partial class TreeMatrixControl : System.Windows.Controls.UserControl
 	{
+		
+		private ScrollViewer leftScrollViewer;
+		private ScrollViewer topScrollViewer;
+		
 		public Matrix<INode, Relationship> Matrix
 		{
 			get
@@ -35,17 +40,62 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			}
 		}
 		
+
 		public TreeMatrixControl()
 		{
 			InitializeComponent();
 			
 			matrixControl.Colorizer = new DependencyColorizer();
+			matrixControl.HoveredCellChanged += OnHoverChanged;
 		}
 		
 		public void DrawTree(Module module)
 		{
 			Helper.FillTree(leftTree,module);
 			Helper.FillTree(topTree,module);
+		}
+		
+		
+		void Trees_Loaded (object sender, EventArgs e)
+		{
+			leftTree.ApplyTemplate();
+			topTree.ApplyTemplate();
+			
+			leftScrollViewer = Helper.FindVisualChild<ScrollViewer>(leftTree);
+			topScrollViewer = Helper.FindVisualChild<ScrollViewer>(topTree);
+		}
+		
+		void OnHoverChanged (object sender ,HoveredCellEventArgs <Relationship> e)
+		{
+			var leftNode = leftTree.Items[e.HoveredCell.RowIndex] as DependecyTreeNode;
+			leftTree.SelectedItem = leftNode;
+			leftTree.FocusNode(leftNode);
+			
+			var topNode = topTree.Items[e.HoveredCell.ColumnIndex] as DependecyTreeNode;
+			topTree.SelectedItem = topNode;
+			topTree.FocusNode(topNode);
+		}
+		
+		
+		void LeftTree_ScrollChanged(object sender, ScrollChangedEventArgs e)
+		{
+//			Console.WriteLine("Left TreeScroll");
+			scrollViewer.ScrollToVerticalOffset(e.VerticalOffset * matrixControl.CellHeight);
+			Console.WriteLine("--");
+		}
+		
+		void TopTree_ScrollChanged(object sender, ScrollChangedEventArgs e)
+		{
+//			Console.WriteLine("Top TreeScroll ");
+			scrollViewer.ScrollToHorizontalOffset(e.VerticalChange * matrixControl.CellHeight);
+			Console.WriteLine("--");
+		}
+		
+		
+		void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+		{
+//			Console.WriteLine("ScrollViewer_ScrollChanged {0} _ {1}",e.VerticalChange,scrollViewer != null);
+			//leftScrollViewer.ScrollToVerticalOffset (e.VerticalChange * matrixControl.CellHeight);
 		}
 	}
 }

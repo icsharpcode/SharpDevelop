@@ -89,8 +89,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			{
 				InvalidateVisual();
 				
-				HoveredCell.RowIndex = currentCell.X;
-				HoveredCell.ColumnIndex = currentCell.Y;
+				HoveredCell.RowIndex = currentCell.Y;
+				HoveredCell.ColumnIndex = currentCell.X;
 				HoveredCell.Value = matrix[HoveredCell.RowIndex, HoveredCell.ColumnIndex];
 				if (HoveredCellChanged != null)
 					HoveredCellChanged(this, new HoveredCellEventArgs<TValue>(HoveredCell));
