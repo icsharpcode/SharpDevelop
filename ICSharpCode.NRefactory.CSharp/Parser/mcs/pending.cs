@@ -51,6 +51,78 @@ namespace Mono.CSharp {
 		public MethodSpec [] need_proxy;
 	}
 
+	struct ProxyMethodContext : IMemberContext
+	{
+		readonly TypeContainer container;
+
+		public ProxyMethodContext (TypeContainer container)
+		{
+			this.container = container;
+		}
+
+		public TypeSpec CurrentType {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public TypeParameter[] CurrentTypeParameters {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public MemberCore CurrentMemberDefinition {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public bool IsObsolete {
+			get {
+				return false;
+			}
+		}
+
+		public bool IsUnsafe {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		public bool IsStatic {
+			get {
+				return false;
+			}
+		}
+
+		public ModuleContainer Module {
+			get {
+				return container.Module;
+			}
+		}
+
+		public string GetSignatureForError ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public ExtensionMethodCandidates LookupExtensionMethod (TypeSpec extensionType, string name, int arity)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public FullNamedExpression LookupNamespaceOrType (string name, int arity, LookupMode mode, Location loc)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public FullNamedExpression LookupNamespaceAlias (string name)
+		{
+			throw new NotImplementedException ();
+		}
+	}
+
 	public class PendingImplementation
 	{
 		/// <summary>
@@ -434,10 +506,11 @@ namespace Mono.CSharp {
 			}
 
 			int top = param.Count;
-			var ec = new EmitContext (null, proxy.GetILGenerator (), null);
+			var ec = new EmitContext (new ProxyMethodContext (container), proxy.GetILGenerator (), null);
+			ec.EmitThis ();
 			// TODO: GetAllParametersArguments
-			for (int i = 0; i <= top; i++)
-				ParameterReference.EmitLdArg (ec, i);
+			for (int i = 0; i < top; i++)
+				ec.EmitArgumentLoad (i);
 
 			ec.Emit (OpCodes.Call, base_method);
 			ec.Emit (OpCodes.Ret);

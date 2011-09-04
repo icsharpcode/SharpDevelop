@@ -2,14 +2,15 @@
 //
 // cs-parser.jay: The Parser for the C# compiler
 //
-// Authors: Miguel de Icaza (miguel@gnu.org)
+// Authors: Miguel de Icaza (miguel@gnome.org)
 //          Ravi Pratap     (ravi@ximian.com)
-//          Marek Safar		(marek.safar@gmail.com)
+//          Marek Safar	    (marek.safar@gmail.com)
 //
 // Dual Licensed under the terms of the GNU GPL and the MIT X11 license
 //
 // (C) 2001 Ximian, Inc (http://www.ximian.com)
-// (C) 2004 Novell, Inc
+// (C) 2004-2011 Novell, Inc
+// Copyright 2011 Xamarin Inc.
 //
 // TODO:
 //   (1) Figure out why error productions dont work.  `type-declaration' is a
@@ -898,8 +899,13 @@ opt_class_member_declarations
 
 class_member_declarations
 	: class_member_declaration
-	| class_member_declarations 
-	  class_member_declaration
+	  {
+		lexer.parsing_modifiers = true;
+	  }
+	| class_member_declarations class_member_declaration
+	  {
+		lexer.parsing_modifiers = true;
+	  }
 	;
 	
 class_member_declaration
@@ -946,10 +952,17 @@ struct_declaration
 		if (doc_support)
 			current_container.DocComment = Lexer.consume_doc_comment ();
 
+		
+		lexer.parsing_modifiers = true;
 	  }
-	  struct_body
+	  OPEN_BRACE
 	  {
-		--lexer.parsing_declaration;	  
+		if (doc_support)
+			Lexer.doc_state = XmlCommentState.Allowed;
+	  }
+	  opt_class_member_declarations CLOSE_BRACE
+	  {
+		--lexer.parsing_declaration;
 		if (doc_support)
 			Lexer.doc_state = XmlCommentState.Allowed;
 	  }
@@ -963,46 +976,6 @@ struct_declaration
 	  {
 		Error_SyntaxError (yyToken);
 	  }
-	;
-
-struct_body
-	: OPEN_BRACE
-	  {
-		if (doc_support)
-			Lexer.doc_state = XmlCommentState.Allowed;
-	  }
-	  opt_struct_member_declarations CLOSE_BRACE
-	  {
-		lbag.AppendToMember (current_class, GetLocation ($1), GetLocation ($4));
-	  }
-	;
-
-opt_struct_member_declarations
-	: /* empty */
-	| struct_member_declarations
-	;
-
-struct_member_declarations
-	: struct_member_declaration
-	| struct_member_declarations struct_member_declaration
-	;
-
-struct_member_declaration
-	: constant_declaration
-	| field_declaration
-	| method_declaration
-	| property_declaration
-	| event_declaration
-	| indexer_declaration
-	| operator_declaration
-	| constructor_declaration
-	| type_declaration
-
-	/*
-	 * This is only included so we can flag error 575: 
-	 * destructors only allowed on class types
-	 */
-	| destructor_declaration 
 	;
 	
 constant_declaration
@@ -1259,13 +1232,16 @@ method_declaration
 		if (doc_support)
 			Lexer.doc_state = XmlCommentState.NotAllowed;
 
-		// Add it early in the case of body being eof for full aot
-		current_container.AddMethod ((Method) $1);
+		// Add it early in the case of body being eof for full ast
+		Method m = (Method) $1;
+		lexer.async_block = (m.ModFlags & Modifiers.ASYNC) != 0;
+		current_container.AddMethod (m);
 	  }
 	  method_body
 	  {
 		Method method = (Method) $1;
 		method.Block = (ToplevelBlock) $3;
+		lexer.async_block = false;
 		
 		if (method.Block == null) {
 			lbag.AppendToMember (method, savedLocation); // semicolon
@@ -1967,6 +1943,8 @@ interface_declaration
 			current_container.DocComment = Lexer.consume_doc_comment ();
 			Lexer.doc_state = XmlCommentState.Allowed;
 		}
+		
+		lexer.parsing_modifiers = true;
 	  }
 	  OPEN_BRACE opt_interface_member_declarations CLOSE_BRACE
 	  {
@@ -1994,7 +1972,13 @@ opt_interface_member_declarations
 
 interface_member_declarations
 	: interface_member_declaration
+	  {
+		lexer.parsing_modifiers = true;
+	  }
 	| interface_member_declarations interface_member_declaration
+	  {
+		lexer.parsing_modifiers = true;
+	  }
 	;
 
 interface_member_declaration
@@ -3887,10 +3871,10 @@ cast_expression
 	
 await_expression
 	: AWAIT unary_expression
-	 {
+	  {
 		current_block.ParametersBlock.IsAsync = true;
 		$$ = new Await ((Expression) $2, GetLocation ($1));
-	 }
+	  }
 	;
 
 	//
@@ -4352,6 +4336,8 @@ class_declaration
 			current_container.DocComment = Lexer.consume_doc_comment ();
 			Lexer.doc_state = XmlCommentState.Allowed;
 		}
+		
+		lexer.parsing_modifiers = true;
 	  }
 	  OPEN_BRACE opt_class_member_declarations CLOSE_BRACE
 	  {
@@ -4380,8 +4366,12 @@ opt_modifiers
 	  {
 	    mod_locations = null;
 		$$ = ModifierNone;
+		lexer.parsing_modifiers = false;
 	  }
 	| modifiers
+	  {
+		lexer.parsing_modifiers = false;		
+	  }
 	;
 
 modifiers
@@ -4950,6 +4940,17 @@ opt_variable_declarators
 	: /* empty */
 	| variable_declarators
 	;
+	
+opt_using_or_fixed_variable_declarators
+	: /* empty */
+	| variable_declarators
+	  {
+		foreach (var d in current_variable.Declarators) {
+			if (d.Initializer == null)
+				Error_MissingInitializer (d.Variable.Location);
+		}
+	  }
+	;	
 	
 variable_declarators
 	: variable_declarator
@@ -5561,7 +5562,7 @@ fixed_statement
 		current_block.AddLocalName (li);
 		current_variable = new Fixed.VariableDeclaration ((FullNamedExpression) $3, li);
 	  }
-	  using_or_fixed_variable_initializer opt_variable_declarators CLOSE_PARENS
+	  using_or_fixed_variable_initializer opt_using_or_fixed_variable_declarators CLOSE_PARENS
 	  {
 		$$ = current_variable;
 		current_variable = null;
@@ -5589,7 +5590,7 @@ using_statement
 		current_block.AddLocalName (li);
 		current_variable = new Using.VariableDeclaration ((FullNamedExpression) $3, li);
 	  }
-	  using_or_fixed_variable_initializer opt_variable_declarators CLOSE_PARENS
+	  using_or_fixed_variable_initializer opt_using_or_fixed_variable_declarators CLOSE_PARENS
 	  {
 		$$ = current_variable;	  
 		current_variable = null;
@@ -5618,7 +5619,7 @@ using_statement
 using_or_fixed_variable_initializer
 	: /* empty */
 	  {
-		report.Error (210, lexer.Location, "You must provide an initializer in a fixed or using statement declaration");
+		Error_MissingInitializer (lexer.Location);
 	  }
 	| ASSIGN variable_initializer
 	  {
@@ -6366,6 +6367,11 @@ void Error_NamedArgumentExpected (NamedArgument a)
 	report.Error (1738, a.Location, "Named arguments must appear after the positional arguments");
 }
 
+void Error_MissingInitializer (Location loc)
+{
+	report.Error (210, loc, "You must provide an initializer in a fixed or using statement declaration");
+}
+
 void push_current_class (TypeContainer tc, object partial_token)
 {
 	if (module.Evaluator != null && current_container is ModuleContainer){
@@ -6621,6 +6627,7 @@ void start_anonymous (bool isLambda, ParametersCompiled parameters, bool isAsync
 	oob_stack.Push (current_anonymous_method);
 	oob_stack.Push (current_local_parameters);
 	oob_stack.Push (current_variable);
+	oob_stack.Push (lexer.async_block);
 
 	current_local_parameters = parameters;
 	if (isLambda) {
@@ -6635,6 +6642,7 @@ void start_anonymous (bool isLambda, ParametersCompiled parameters, bool isAsync
 		current_anonymous_method = new AnonymousMethodExpression (isAsync, loc);
 	}
 
+	lexer.async_block = isAsync;
 	// Force the next block to be created as a ToplevelBlock
 	parsing_anonymous_method = true;
 }
@@ -6650,6 +6658,7 @@ AnonymousMethodExpression end_anonymous (ParametersBlock anon_block)
 	current_anonymous_method.Block = anon_block;
 	retval = current_anonymous_method;
 
+	lexer.async_block = (bool) oob_stack.Pop ();
 	current_variable = (BlockVariableDeclaration) oob_stack.Pop ();
 	current_local_parameters = (ParametersCompiled) oob_stack.Pop ();
 	current_anonymous_method = (AnonymousMethodExpression) oob_stack.Pop ();

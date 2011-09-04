@@ -1151,7 +1151,7 @@ namespace Mono.CSharp {
 				}
 
 				if ((ModFlags & Modifiers.ASYNC) != 0) {
-					AsyncInitializer.Create (block, parameters, Parent.PartialContainer, ReturnType, Location);
+					AsyncInitializer.Create (this, block, parameters, Parent.PartialContainer, ReturnType, Location);
 				}
 			}
 
@@ -1316,6 +1316,11 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public override bool ContainsEmitWithAwait ()
+		{
+			throw new NotSupportedException ();
+		}
+
 		public override Expression CreateExpressionTree (ResolveContext ec)
 		{
 			throw new NotSupportedException ("ET");
@@ -1386,7 +1391,9 @@ namespace Mono.CSharp {
 			
 			ec.Mark (loc);
 
-			Invocation.EmitCall (ec, new CompilerGeneratedThis (type, loc), base_ctor, argument_list, loc);
+			var call = new CallEmitter ();
+			call.InstanceExpression = new CompilerGeneratedThis (type, loc); 
+			call.EmitPredefined (ec, base_ctor, argument_list);
 		}
 
 		public override void EmitStatement (EmitContext ec)
@@ -1632,11 +1639,6 @@ namespace Mono.CSharp {
 				if (block.Resolve (null, bc, this)) {
 					EmitContext ec = new EmitContext (this, ConstructorBuilder.GetILGenerator (), bc.ReturnType);
 					ec.With (EmitContext.Options.ConstructorScope, true);
-
-					if (!ec.HasReturnLabel && bc.HasReturnLabel) {
-						ec.ReturnLabel = bc.ReturnLabel;
-						ec.HasReturnLabel = true;
-					}
 
 					block.Emit (ec);
 				}
@@ -2036,10 +2038,6 @@ namespace Mono.CSharp {
 				BlockContext bc = new BlockContext (mc, block, method.ReturnType);
 				if (block.Resolve (null, bc, method)) {
 					EmitContext ec = method.CreateEmitContext (MethodBuilder.GetILGenerator ());
-					if (!ec.HasReturnLabel && bc.HasReturnLabel) {
-						ec.ReturnLabel = bc.ReturnLabel;
-						ec.HasReturnLabel = true;
-					}
 
 					block.Emit (ec);
 				}
