@@ -1158,8 +1158,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			Point pos = new Point(-scrollOffset.X, -clippedPixelsOnTop);
 			foreach (VisualLineDrawingVisual visual in visuals) {
-				visual.Transform = new TranslateTransform(pos.X, pos.Y);
-				visual.Transform.Freeze();
+				TranslateTransform t = visual.Transform as TranslateTransform;
+				if (t == null || t.X != pos.X || t.Y != pos.Y) {
+					visual.Transform = new TranslateTransform(pos.X, pos.Y);
+					visual.Transform.Freeze();
+				}
 				pos.Y += visual.Height;
 			}
 		}
