@@ -75,6 +75,15 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				CheckMissingTokens(cu);
 			}
 		}
+
+		void PrintNode (AstNode node)
+		{
+			Console.WriteLine ("Parent:" + node.GetType ());
+			Console.WriteLine ("Children:");
+			foreach (var c in node.Children)
+				Console.WriteLine (c.GetType () +" at:"+ c.StartLocation  + " Role: "+ c.Role);
+			Console.WriteLine ("----");
+		}
 		
 		void CheckPositionConsistency(AstNode node)
 		{
@@ -84,13 +93,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			var prevNode = node;
 			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
 				bool assertion = child.StartLocation >= prevNodeEnd;
-				if (!assertion) {
-					Console.WriteLine ("Parent:" + node.GetType ());
-					Console.WriteLine ("Children:");
-					foreach (var c in node.Children)
-						Console.WriteLine (c.GetType () +" at:"+ c.StartLocation  + " Role: "+ c.Role);
-					Console.WriteLine ("----");
-				}
+				if (!assertion)
+					PrintNode (node);
 				Assert.IsTrue(assertion, currentFileName + ": Child " + child.GetType () +" (" + child.StartLocation + ")" +" must start after previous sibling " + prevNode.GetType () + "(" + prevNode.StartLocation + ")");
 				CheckPositionConsistency(child);
 				prevNodeEnd = child.EndLocation;
@@ -123,8 +127,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			int start = currentDocument.GetOffset(whitespaceStart.Line, whitespaceStart.Column);
 			int end = currentDocument.GetOffset(whitespaceEnd.Line, whitespaceEnd.Column);
 			string text = currentDocument.GetText(start, end - start);
-			
-			Assert.IsTrue(string.IsNullOrWhiteSpace(text), "Expected whitespace between " + startNode.GetType () +":" + whitespaceStart + " and " + endNode.GetType () + ":" + whitespaceEnd
+			bool assertion = string.IsNullOrWhiteSpace(text);
+			if (!assertion) {
+				if (startNode.Parent == endNode.Parent)
+					PrintNode (startNode.Parent);
+			}
+			Assert.IsTrue(assertion, "Expected whitespace between " + startNode.GetType () +":" + whitespaceStart + " and " + endNode.GetType () + ":" + whitespaceEnd
 			              + ", but got '" + text + "' (in " + currentFileName + " parent:" + startNode.Parent.GetType () +")");
 		}
 		#endregion
