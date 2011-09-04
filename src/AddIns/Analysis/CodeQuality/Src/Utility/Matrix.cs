@@ -36,6 +36,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 		{
         	get
         	{
+        		if (rowIndex > HeaderRows.Count || rowIndex < 0 ||
+        		    columnIndex > HeaderColumns.Count || columnIndex < 0)
+        			return default(TValue);
+        		
         		var cacheResult = GetFromCache(rowIndex, columnIndex);
         		if (cacheResult != null)
         			return cacheResult;

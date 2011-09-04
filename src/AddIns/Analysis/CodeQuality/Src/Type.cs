@@ -255,13 +255,71 @@ namespace ICSharpCode.CodeQualityAnalysis
         
         public Relationship GetRelationship(INode node)
         {
-//        	if (node is Namespace) {
-//        		Namespace ns = (Namespace)node;
-//        		if (ns.Types.Contains(this)
-//        		    return RelationshipType.Contains;
-//        	}
-
-			return new Relationship();
+			Relationship relationship = new Relationship();
+        	
+        	if (node == this) {
+        		relationship.Relationships.Add(RelationshipType.Same);
+        		return relationship;
+        	}
+        	
+        	if (node is Namespace) {
+        		Namespace ns = (Namespace)node;
+        		
+        		if (this.Namespace.Name == ns.Name) {
+        			relationship.AddRelationship(RelationshipType.UseThis);
+        		}
+        		
+        		if (this.BaseType != null && this.BaseType.Namespace.Name == ns.Name) {
+        			relationship.AddRelationship(RelationshipType.UseThis);
+        		}
+        		
+        		foreach (var type in this.GenericBaseTypes) {
+        			if (type.Namespace.Name == ns.Name) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        		
+        		foreach (var type in this.GenericImplementedInterfacesTypes) {
+        			if (type.Namespace.Name == ns.Name) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        		
+        		foreach (var type in this.ImplementedInterfaces) {
+        			if (type.Namespace.Name == ns.Name) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        		
+        		foreach (var field in this.Fields) {
+        			if (field.DeclaringType.Namespace.Name == ns.Name) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        			if (field.FieldType != null && field.FieldType.Namespace.Name == ns.Name) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        			if (field.GenericTypes.Any(type => type.Namespace.Name == ns.Name)) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        		
+        		foreach (var method in this.Methods) {
+        			if (method.TypeUses.Any(type => type.Namespace.Name == ns.Name)) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        			if (method.GenericReturnTypes.Any(type => type.Namespace.Name == ns.Name)) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        			if (method.DeclaringType != null && method.DeclaringType.Namespace.Name == ns.Name) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        			if (method.ReturnType != null && method.ReturnType.Namespace.Name == ns.Name) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        	}
+        	
+        	return relationship;
         }
 
         public override string ToString()

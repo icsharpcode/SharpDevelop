@@ -113,6 +113,7 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\Controls\DependencyColorizer.cs" />
     <Compile Include="Src\Controls\DependencyEdge.cs" />
     <Compile Include="Src\Controls\DependencyGraph.cs" />
     <Compile Include="Src\Controls\DependencyGraphLayout.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="Src\RelationshipType.cs" />
     <Compile Include="Src\Type.cs" />
     <Compile Include="Src\Utility\DoubleKeyDictionary.cs" />
+    <Compile Include="Src\Utility\IColorizer.cs" />
     <Compile Include="Src\Utility\Matrix.cs" />
     <Compile Include="Src\Utility\RelayCommand.cs" />
     <Compile Include="Src\Utility\ViewModelBase.cs" />

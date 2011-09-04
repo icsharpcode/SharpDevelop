@@ -31,6 +31,9 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		// will be loaded from Matrix
 		private int matrixWidth = 0;
 		private int matrixHeight = 0;
+		
+		private int fontSize = 0;
+		private int penSize = 0;
 
 		private Matrix<TItem, TValue> matrix;
 		
@@ -54,11 +57,15 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		
 		public bool RenderZeroes { get; set; }
 		
+		public IColorizer<TValue> Colorizer { get; set; }
+		
 		public MatrixControl()
 		{
-			CellHeight = CellWidth = 36;
+			CellHeight = CellWidth = 18;
 			matrixWidth = 20;
 			matrixHeight = 20;
+			fontSize = CellHeight / 3;
+			penSize = 1;
 			font = "Verdana";
 			
 			HoveredCell = new HoveredCell<TValue>();
@@ -69,12 +76,13 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			base.OnMouseMove(e);
 			
 			var point = e.GetPosition(this);
-			if (point.X < matrixWidth * CellWidth && point.Y < matrixHeight * CellHeight)
+			if (point.X < matrixWidth * CellWidth
+			    && point.Y < matrixHeight * CellHeight)
 				currentCell = new Coords(
 					(int)((point.X + offset.X) / CellWidth),
 					(int)((point.Y + offset.Y) / CellHeight));
-			else
-				currentCell = new Coords(-1, -1);
+			// else // if we are out of matrix just use last cell
+			//	currentCell = new Coords(-1, -1);
 			
 			if (currentCell.X != HoveredCell.RowIndex ||
 			    currentCell.Y != HoveredCell.ColumnIndex)
@@ -112,27 +120,38 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			// background
 			var background = new Rect(0, 0, cellsHorizontally * CellWidth, cellsVertically * CellHeight);
 			var backgroundColor = new SolidColorBrush(Colors.Yellow);
+			backgroundColor.Freeze();
 			drawingContext.DrawRectangle(backgroundColor, null, background);
 			
+			// sometimes happens when half of cell is hidden in scroll so text isnt drawn
+			// so lets drawn one more cell
+			cellsHorizontally = maxWidth > matrixWidth ? matrixWidth : maxWidth + 1;
+			cellsVertically = maxHeight > matrixHeight ? matrixHeight : maxHeight + 1;
+			
+			var currentXLine = (currentCell.X - scaledOffsetX) * CellWidth - offsetDiffX;
+			var currentYLine = (currentCell.Y - scaledOffsetY) * CellHeight - offsetDiffY;
+
 			// hovering
 			if (currentCell.X >= 0 || currentCell.Y >= 0) {
 				
-				// hover x line
+				// hover y line
 				var rect = new Rect(0,
-				                (currentCell.Y - scaledOffsetY) * CellHeight - offsetDiffY,
+				                currentYLine,
 				                CellWidth * cellsHorizontally,
 				                CellHeight);
 				
 				var brush = new SolidColorBrush(Colors.GreenYellow);
+				brush.Freeze();
 				drawingContext.DrawRectangle(brush, null, rect);
 				
-				// hover y line
-				rect = new Rect((currentCell.X - scaledOffsetX) * CellWidth - offsetDiffX,
+				// hover x line
+				rect = new Rect(currentXLine,
 				                0,
 				                CellWidth,
 				                CellHeight * cellsVertically);
 				
 				brush = new SolidColorBrush(Colors.GreenYellow);
+				brush.Freeze();
 				drawingContext.DrawRectangle(brush, null, rect);
 				
 				// hover cell
@@ -143,11 +162,44 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 					CellHeight);
 
 				brush = new SolidColorBrush(Colors.Red);
+				brush.Freeze();
 				drawingContext.DrawRectangle(brush, null, rect);
 			}
 			
+			// text
+			for (int i = 0; i < cellsHorizontally; i++) {
+				for (int j = 0; j < cellsVertically; j++) { // dont draw text in unavailables places
+					int rowIndex = i + scaledOffsetX;
+					int columnIndex = j + scaledOffsetY;
+					var value = matrix[rowIndex, columnIndex];
+						
+					if (Colorizer != null) {
+						var rect = new Rect(
+							i * CellWidth - offsetDiffX,
+							j * CellHeight - offsetDiffY,
+							CellWidth,
+							CellHeight);
+
+						SolidColorBrush brush = null;
+						if ((i * CellWidth - offsetDiffX) == currentXLine ||
+						    ((i * CellWidth - offsetDiffX) == currentXLine))
+							brush = Colorizer.GetColorBrushMixedWith(Colors.GreenYellow, value);
+						else
+							brush = Colorizer.GetColorBrush(value);
+						
+						drawingContext.DrawRectangle(brush, null, rect);
+					}
+					
+					if (!RenderZeroes && value.Text != "0") // rendering zeroes would be distracting
+						drawingContext.DrawImage(
+							CreateText(value.Text),
+							new Rect(i * CellWidth - offsetDiffX, j * CellHeight - offsetDiffY, CellWidth, CellHeight));
+				}
+			}
+			
 			// grid
-			var pen = new Pen(Brushes.Black, 1);
+			var pen = new Pen(Brushes.Black, penSize);
+			pen.Freeze();
 
 			// grid x
 			for (int i = 0; i <= cellsHorizontally; i++)
@@ -161,30 +213,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 				                        new Point(0, i * CellHeight - offsetDiffY),
 				                        new Point(cellsHorizontally * CellHeight,
 				                                  i * CellHeight - offsetDiffY));
-
-			// sometimes happens when half of cell is hidden in scroll so text isnt drawn
-			// so lets drawn one more cell
-			cellsHorizontally = maxWidth > matrixWidth ? matrixWidth : maxWidth + 1;
-			cellsVertically = maxHeight > matrixHeight ? matrixHeight : maxHeight + 1;
-
-			// text
-			for (int i = 0; i < cellsHorizontally; i++) {
-				for (int j = 0; j < cellsVertically; j++) {
-					int rowIndex = i + scaledOffsetX;
-					int columnIndex = j + scaledOffsetY;
-					var value = matrix[rowIndex, columnIndex];
-					drawingContext.DrawImage(
-						CreateText(value.Text),
-						new Rect(i * CellWidth - offsetDiffX, j * CellHeight - offsetDiffY, CellWidth, CellHeight));
-				}
-			}
 		}
 		
 		public ImageSource CreateText(string text)
-		{
-			if (!RenderZeroes && text == "0") // rendering zeroes would be distracting
-				text = string.Empty;
-			
+		{	
 			if (imgs.ContainsKey(text))
 				return imgs[text];
 			
@@ -193,7 +225,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			g.SmoothingMode = SmoothingMode.AntiAlias;
 			g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 			
-			var fontOjb = new System.Drawing.Font(font, 12);
+			var fontOjb = new System.Drawing.Font(font, fontSize);
 			
 			var size = g.MeasureString(text, fontOjb);
 			
@@ -207,6 +239,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			                                                                       IntPtr.Zero,
 			                                                                       Int32Rect.Empty,
 			                                                                       BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height));
+			img.Freeze();
 			imgs.Add(text, img);
 			
 			return img;

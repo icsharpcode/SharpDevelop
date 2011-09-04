@@ -38,13 +38,14 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		public TreeMatrixControl()
 		{
 			InitializeComponent();
+			
+			matrixControl.Colorizer = new DependencyColorizer();
 		}
-		
 		
 		public void DrawTree(Module module)
 		{
-			Helper.FillTree (leftTree,module);
-			Helper.FillTree (topTree,module);
+			Helper.FillTree(leftTree,module);
+			Helper.FillTree(topTree,module);
 		}
 	}
 }

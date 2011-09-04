@@ -13,7 +13,16 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
     {
 		protected override Relationship GetCellValue(int rowIndex, int columnIndex)
 		{
-			return HeaderRows[rowIndex].Value.GetRelationship(HeaderColumns[columnIndex].Value);
+			var toRelationship = HeaderRows[rowIndex].Value.GetRelationship(HeaderColumns[columnIndex].Value);
+			var fromRelationship = HeaderColumns[columnIndex].Value.GetRelationship(HeaderRows[rowIndex].Value);
+			
+			// add other way
+			foreach (var relationship in fromRelationship.Relationships) {
+				if (relationship == RelationshipType.UseThis)
+					toRelationship.AddRelationship(RelationshipType.UsedBy);
+			}
+			
+			return toRelationship;
 		}
     }
 }

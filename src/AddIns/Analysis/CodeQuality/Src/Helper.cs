@@ -1,25 +1,21 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 02.09.2011
- * Time: 23:10
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
+using System.Windows.Media;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
 	/// <summary>
 	/// Description of Helper.
 	/// </summary>
-	public class Helper
+	public static class Helper
 	{
-		public static  void FillTree (ICSharpCode.TreeView.SharpTreeView tree,Module module)
+		public static void FillTree(ICSharpCode.TreeView.SharpTreeView tree,Module module)
 		{
-			tree.ShowRoot = false;
 			var root = CreateTreeItem(module);
 			tree.Root = root;
+			tree.ShowRoot = false;
 		
 			foreach (var ns in module.Namespaces)
 			{
@@ -34,23 +30,36 @@ namespace ICSharpCode.CodeQualityAnalysis
 					foreach (var method in type.Methods)
 					{
 						var methodName = CreateTreeItem(method);
-						namespaceNode.Children.Add(methodName);
+						typeNode.Children.Add(methodName);
 					}
 
 					foreach (var field in type.Fields)
 					{
 						var fieldNode = CreateTreeItem(field);
-						namespaceNode.Children.Add(fieldNode);
+						typeNode.Children.Add(fieldNode);
 					}
 				}
 			}
 		}
 			
-			
 		private static DependecyTreeNode CreateTreeItem (INode node)
 		{
 			DependecyTreeNode dtn = new DependecyTreeNode(node);
 			return dtn;
+		}
+		
+		public static Color MixedWith(this Color c1, Color c2)
+		{
+			int r = Math.Min((c1.R + c2.R), 255);
+			int g = Math.Min((c1.G + c2.G), 255);
+			int b = Math.Min((c1.B + c2.B), 255);
+
+			return new Color
+			{
+				R = Convert.ToByte(r),
+				G = Convert.ToByte(g),
+				B = Convert.ToByte(b)
+			};
 		}
 	}
 }

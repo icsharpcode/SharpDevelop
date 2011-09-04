@@ -25,7 +25,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		public void AddRelationship(RelationshipType type)
 		{
-			if (type == RelationshipType.UseThis)
+			if (type == RelationshipType.UseThis || type == RelationshipType.UsedBy)
 				OccurrenceCount++;
 			
 			Relationships.Add(type);
