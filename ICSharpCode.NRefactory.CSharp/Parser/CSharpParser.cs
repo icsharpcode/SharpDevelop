@@ -1616,12 +1616,16 @@ namespace ICSharpCode.NRefactory.CSharp
 					var newSection = new SwitchSection ();
 					foreach (var caseLabel in section.Labels) {
 						var newLabel = new CaseLabel ();
-						newLabel.AddChild (new CSharpTokenNode (Convert (caseLabel.Location), "case".Length), SwitchStatement.Roles.Keyword);
-						if (caseLabel.Label != null)
+						if (caseLabel.Label != null) {
+							newLabel.AddChild (new CSharpTokenNode (Convert (caseLabel.Location), "case".Length), SwitchStatement.Roles.Keyword);
 							newLabel.AddChild ((Expression)caseLabel.Label.Accept (this), SwitchStatement.Roles.Expression);
-						var colonLocation = LocationsBag.GetLocations (caseLabel);
-						if (colonLocation != null)
-							result.AddChild (new CSharpTokenNode (Convert (colonLocation [0]), 1), SwitchStatement.Roles.Colon);
+							var colonLocation = LocationsBag.GetLocations (caseLabel);
+							if (colonLocation != null)
+								newLabel.AddChild (new CSharpTokenNode (Convert (colonLocation [0]), 1), SwitchStatement.Roles.Colon);
+						} else {
+							newLabel.AddChild (new CSharpTokenNode (Convert (caseLabel.Location), "default".Length), SwitchStatement.Roles.Keyword);
+							newLabel.AddChild (new CSharpTokenNode (new TextLocation (caseLabel.Location.Row, caseLabel.Location.Column + "default".Length), 1), SwitchStatement.Roles.Colon);
+						}
 						newSection.AddChild (newLabel, SwitchSection.CaseLabelRole);
 					}
 					

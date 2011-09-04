@@ -151,6 +151,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets the expression. The expression can be null - if the expression is null, it's the default switch section.
+		/// </summary>
 		public Expression Expression {
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }
