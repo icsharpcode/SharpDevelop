@@ -2904,7 +2904,10 @@ type_parameter
 	: opt_attributes opt_type_parameter_variance IDENTIFIER
 	  {
 		var lt = (Tokenizer.LocatedToken)$3;
-		$$ = new TypeParameterName (lt.Value, (Attributes)$1, (Variance) $2, lt.Location);
+		var variance =  (Variance) $2;
+		$$ = new TypeParameterName (lt.Value, (Attributes)$1, variance, lt.Location);
+		if (variance != Variance.None)
+			lbag.AddLocation ($$, savedLocation);
   	  }
   	| error
   	  {
@@ -4613,10 +4616,12 @@ type_parameter_variance
 	: OUT
 	  {
 		$$ = Variance.Covariant;
+		savedLocation = GetLocation ($1);
 	  }
 	| IN
 	  {
 		$$ = Variance.Contravariant;
+		savedLocation = GetLocation ($1);
 	  }
 	;
 

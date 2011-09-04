@@ -2277,6 +2277,26 @@ namespace ICSharpCode.NRefactory.CSharp
 						continue;
 					TypeParameterDeclaration tp = new TypeParameterDeclaration();
 					
+					List<Location> varianceLocation;
+					switch (arg.Variance) {
+					case Variance.Contravariant:
+						tp.Variance = VarianceModifier.Contravariant;
+						varianceLocation = LocationsBag.GetLocations (arg);
+						if (varianceLocation != null)
+							tp.AddChild (new CSharpTokenNode (Convert (varianceLocation[0]), "out".Length), TypeParameterDeclaration.VarianceRole);
+						break;
+					case Variance.Covariant:
+						tp.Variance = VarianceModifier.Covariant;
+						varianceLocation = LocationsBag.GetLocations (arg);
+						if (varianceLocation != null)
+							tp.AddChild (new CSharpTokenNode (Convert (varianceLocation[0]), "out".Length), TypeParameterDeclaration.VarianceRole);
+						break;
+					default:
+						tp.Variance = VarianceModifier.Invariant;
+						break;
+						
+					}
+					
 					AddAttributeSection (tp, arg.OptAttributes);
 
 					switch (arg.Variance) {
