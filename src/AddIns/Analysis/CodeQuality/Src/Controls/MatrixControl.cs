@@ -105,16 +105,23 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		{
 			var items = type == HeaderType.Columns ? matrix.HeaderColumns : matrix.HeaderRows;
 			for (int i = 0; i < items.Count; i++) {
-				if (node.Equals(items[i])) {
+				if (items[i].Value.Equals(node)) {
+					if (currentCell.X == i && type == HeaderType.Rows)
+						return;
+					if (currentCell.Y == i && type == HeaderType.Columns)
+						return;
+							
 					currentCell = type == HeaderType.Columns ?
 									new Coords(i, currentCell.Y) :
 									new Coords(currentCell.X, i);
 					
 					SetHoveredCell();
+					InvalidateVisual();
+					
+					return;
 				}
 			}
 		}
-		
 		
 		protected override void OnMouseMove(System.Windows.Input.MouseEventArgs e)
 		{
@@ -137,6 +144,14 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			}
 		}
 		
+		protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+		{
+			base.OnMouseDown(e);
+			Relationship relationship = HoveredCell.Value as Relationship;
+			Console.WriteLine("To: " + relationship.To.Name);
+			Console.WriteLine("From:" + relationship.From.Name);
+		}
+		
 		protected void SetHoveredCell()
 		{
 			HoveredCell.RowIndex = currentCell.Y;
@@ -157,8 +172,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			// how many cells we will draw
 			// sometimes happens when half of cell is hidden in scroll so text isnt drawn
 			// so lets drawn one more cell
-			var cellsHorizontally = maxWidth > matrixWidth ? matrixWidth : maxWidth + 1;
-			var cellsVertically = maxHeight > matrixHeight ? matrixHeight : maxHeight + 1;
+			var cellsHorizontally = maxWidth >= matrixWidth ? matrixWidth : maxWidth + 1;
+			var cellsVertically = maxHeight >= matrixHeight ? matrixHeight : maxHeight + 1;
 			
 			// number of cell which will be drawn
 			var scaledOffsetX = (int)offset.X / CellWidth;

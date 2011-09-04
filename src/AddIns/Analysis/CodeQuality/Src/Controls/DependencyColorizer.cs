@@ -42,9 +42,9 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 				return Colors.Transparent;
 			
 			if (relationship.Relationships.Any(r => r == RelationshipType.UseThis))
-				return Colors.Azure;
+				return Colors.LightBlue;
 			if (relationship.Relationships.Any(r => r == RelationshipType.UsedBy))
-				return Colors.Beige;
+				return Colors.Violet;
 			if (relationship.Relationships.Any(r => r == RelationshipType.Same))
 				return Colors.Gray;
 			

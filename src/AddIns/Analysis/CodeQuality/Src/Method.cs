@@ -148,6 +148,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 		public Relationship GetRelationship(INode node)
 		{
 			Relationship relationship = new Relationship();
+        	
+        	if (node == this) {
+        		relationship.Relationships.Add(RelationshipType.Same);
+        		return relationship;
+        	}
+			
 			return relationship;
 		}
 

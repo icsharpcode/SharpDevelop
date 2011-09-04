@@ -125,9 +125,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			if (rebuildLeftNodeListRequested)
 				return;
 			rebuildLeftNodeListRequested = true;
-			Dispatcher.BeginInvoke(
-				DispatcherPriority.DataBind,
-				new Action(SetVisibleItemsForRows));
+			Dispatcher.BeginInvoke(DispatcherPriority.DataBind, new Action(SetVisibleItemsForRows));
 		}
 
 		void SetVisibleItemsForRows()
@@ -149,9 +147,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			if (rebuildTopNodeListRequested)
 				return;
 			rebuildTopNodeListRequested = true;
-			Dispatcher.BeginInvoke(
-				DispatcherPriority.DataBind,
-				new Action(SetVisibleItemsForColumns));
+			Dispatcher.BeginInvoke(DispatcherPriority.DataBind, new Action(SetVisibleItemsForColumns));
 		}
 
 		void SetVisibleItemsForColumns()
