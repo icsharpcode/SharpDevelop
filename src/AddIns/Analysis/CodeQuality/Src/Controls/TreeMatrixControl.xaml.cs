@@ -58,13 +58,20 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			var leftCol = leftTree.Items.SourceCollection as INotifyCollectionChanged;
 			leftCol.CollectionChanged += BuildLeftINodeList;
 			Helper.FillTree(leftTree, module);
+			
 			leftTree.MouseMove += (s,e)=>
 			{
 				var c = Helper.GetParent<SharpTreeViewItem>(e.OriginalSource as DependencyObject);
-				if (c != null){
-				
-				
+				if (c != null)
+				{
+					DependecyTreeNode n = c.Node as DependecyTreeNode;
+					Console.WriteLine(n.ToString());
+					matrixControl.HighlightLine(HeaderType.Rows,n.INode);
+					leftTree.SelectedItem = n;
+					leftTree.FocusNode(n);
+				}
 			};
+			
 			var topCol = topTree.Items.SourceCollection as INotifyCollectionChanged;
 			topCol.CollectionChanged += BuildTopINodeList;
 			Helper.FillTree(topTree, module);
