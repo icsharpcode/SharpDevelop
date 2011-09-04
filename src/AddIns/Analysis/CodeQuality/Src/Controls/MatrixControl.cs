@@ -38,20 +38,12 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		
 		private int fontSize = 0;
 		private int penSize = 0;
-
-		private TMatrix matrix;
 		
-		public TMatrix Matrix
-		{
-			get { return matrix; }
-			set
-			{
-				matrix = value;
-
-				// matrixHeight = matrix.HeaderRows.Count - 1;
-				// matrixWidth = matrix.HeaderColumns.Count - 1;
-			}
-		}
+		
+		protected int PageSizeWidth { get; set; }
+		protected int PageSizeHeight { get; set; }
+		
+		public TMatrix Matrix { get; set; }
 		
 		public int CellHeight { get; set; }
 
@@ -77,10 +69,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		
 		public void SetVisibleItems(HeaderType type, ICollection<TItem> visibleItems)
 		{
-			matrix.SetVisibleItems(type, visibleItems);
+			Matrix.SetVisibleItems(type, visibleItems);
 			
-			matrixHeight = matrix.HeaderRows.Count;
-			matrixWidth = matrix.HeaderColumns.Count;
+			matrixHeight = Matrix.HeaderRows.Count;
+			matrixWidth = Matrix.HeaderColumns.Count;
 			
 			bool changedCoords = false;
 			if (currentCell.X > matrixHeight) {
@@ -103,7 +95,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		
 		public void HighlightLine(HeaderType type, INode node)
 		{
-			var items = type == HeaderType.Columns ? matrix.HeaderColumns : matrix.HeaderRows;
+			var items = type == HeaderType.Columns ? Matrix.HeaderColumns : Matrix.HeaderRows;
 			for (int i = 0; i < items.Count; i++) {
 				if (items[i].Value.Equals(node)) {
 					if (currentCell.X == i && type == HeaderType.Rows)
@@ -156,7 +148,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		{
 			HoveredCell.RowIndex = currentCell.Y;
 			HoveredCell.ColumnIndex = currentCell.X;
-			HoveredCell.Value = matrix[HoveredCell.RowIndex, HoveredCell.ColumnIndex];
+			HoveredCell.Value = Matrix[HoveredCell.RowIndex, HoveredCell.ColumnIndex];
 			if (HoveredCellChanged != null)
 				HoveredCellChanged(this, new HoveredCellEventArgs<TValue>(HoveredCell));
 		}
@@ -175,7 +167,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			var cellsHorizontally = maxWidth >= matrixWidth ? matrixWidth : maxWidth + 1;
 			var cellsVertically = maxHeight >= matrixHeight ? matrixHeight : maxHeight + 1;
 			
-			// number of cell which will be drawn
+			PageSizeWidth = cellsHorizontally;
+			PageSizeHeight = cellsVertically;
+			
+			// number of cell which arent visible
 			var scaledOffsetX = (int)offset.X / CellWidth;
 			var scaledOffsetY = (int)offset.Y / CellHeight;
 
@@ -230,9 +225,14 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			// text
 			for (int i = 0; i < cellsHorizontally; i++) {
 				for (int j = 0; j < cellsVertically; j++) { // dont draw text in unavailables places
-					int rowIndex = j;
-					int columnIndex = i;
-					var value = matrix[rowIndex, columnIndex];
+					int rowIndex = j + scaledOffsetY;
+					int columnIndex = i + scaledOffsetX;
+					
+					// adjust scales
+					rowIndex = rowIndex >= Matrix.HeaderRows.Count ? rowIndex - 1 : rowIndex;
+					columnIndex = columnIndex >= Matrix.HeaderColumns.Count ? columnIndex - 1 : columnIndex;
+					
+					var value = Matrix[rowIndex, columnIndex];
 					
 					if (Colorizer != null) {
 						var rect = new Rect(
@@ -242,11 +242,18 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 							CellHeight);
 
 						SolidColorBrush brush = null;
-//						if ((i * CellWidth - offsetDiffX) == currentXLine ||
-//						    ((i * CellWidth - offsetDiffX) == currentXLine))
-//							brush = Brushes.Pink; //Colorizer.GetColorBrushMixedWith(Colors.GreenYellow, value);
-//						else
-						brush = Colorizer.GetColorBrush(value);
+						if ((i * CellWidth - offsetDiffX) == currentXLine ||
+						    ((j * CellHeight - offsetDiffY) == currentYLine)) {
+							var color = Colors.GreenYellow;
+							if (currentCell.X == i && currentCell.Y == j) {
+								color = color.MixedWith(Colors.Red);
+							}
+							brush = Colorizer.GetColorBrushMixedWith(color, value);
+							
+							
+						}
+						else
+							brush = Colorizer.GetColorBrush(value);
 						
 						drawingContext.DrawRectangle(brush, null, rect);
 					}
@@ -374,75 +381,75 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 
 		public void LineUp()
 		{
-			SetVerticalOffset(VerticalOffset - 1);
+			SetVerticalOffset(VerticalOffset - CellHeight);
 		}
 		
 		public void LineDown()
 		{
-			SetVerticalOffset(VerticalOffset + 1);
+			SetVerticalOffset(VerticalOffset + CellHeight);
 		}
 		
 		public void LineLeft()
 		{
-			SetHorizontalOffset(HorizontalOffset - 1);
+			SetHorizontalOffset(HorizontalOffset - CellWidth);
 		}
 		
 		public void LineRight()
 		{
-			SetHorizontalOffset(HorizontalOffset + 1);
+			SetHorizontalOffset(HorizontalOffset + CellWidth);
 		}
 		
 		public void PageUp()
 		{
-			SetVerticalOffset(VerticalOffset - CellHeight);
+			SetVerticalOffset(VerticalOffset - CellHeight * PageSizeHeight);
 		}
 		
 		public void PageDown()
 		{
-			SetVerticalOffset(VerticalOffset + CellHeight);
+			SetVerticalOffset(VerticalOffset + CellHeight * PageSizeHeight);
 		}
 		
 		public void PageLeft()
 		{
-			SetHorizontalOffset(HorizontalOffset - CellWidth);
+			SetHorizontalOffset(HorizontalOffset - CellWidth * PageSizeWidth);
 		}
 		
 		public void PageRight()
 		{
-			SetHorizontalOffset(HorizontalOffset + CellWidth);
+			SetHorizontalOffset(HorizontalOffset + CellWidth * PageSizeWidth);
 		}
 		
 		public void MouseWheelUp()
 		{
-			SetVerticalOffset(VerticalOffset - 4);
+			SetVerticalOffset(VerticalOffset - CellHeight);
 		}
 		
 		public void MouseWheelDown()
 		{
-			SetVerticalOffset(VerticalOffset + 4);
+			SetVerticalOffset(VerticalOffset + CellHeight);
 		}
 		
 		public void MouseWheelLeft()
 		{
-			SetVerticalOffset(HorizontalOffset - 4);
+			SetVerticalOffset(HorizontalOffset - CellWidth);
 		}
 		
 		public void MouseWheelRight()
 		{
-			SetVerticalOffset(HorizontalOffset + 4);
+			SetVerticalOffset(HorizontalOffset + CellWidth);
 		}
 		
 		public void SetHorizontalOffset(double offset)
 		{
 			if (offset == this.offset.X) return;
-			this.offset.X = offset;
+			this.offset.X = Math.Round(offset / CellWidth) * CellWidth;
 			InvalidateVisual();
 		}
 		
 		public void SetVerticalOffset(double offset)
 		{
 			if (offset == this.offset.Y) return;
-			this.offset.Y = offset;
+			this.offset.Y = Math.Round(offset / CellHeight) * CellHeight;
 			InvalidateVisual();
 		}
 		

@@ -64,12 +64,12 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
         		    columnIndex > HeaderColumns.Count || columnIndex < 0)
         			return default(TValue);
         		
-        		var cacheResult = GetFromCache(rowIndex, columnIndex);
-        		if (cacheResult != null)
-        			return cacheResult;
+//        		var cacheResult = GetFromCache(rowIndex, columnIndex);
+//        		if (cacheResult != null)
+//        			return cacheResult;
         		
     			var result = GetCellValue(rowIndex, columnIndex);
-    			SaveToCache(rowIndex, columnIndex, result);
+//    			SaveToCache(rowIndex, columnIndex, result);
     			return result;
         	}
 		}
