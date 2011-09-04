@@ -83,7 +83,15 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			var prevNodeEnd = node.StartLocation;
 			var prevNode = node;
 			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
-				Assert.IsTrue(child.StartLocation >= prevNodeEnd, currentFileName + ": Child " + child.GetType () +" (" + child.StartLocation + ")" +" must start after previous sibling " + prevNode.GetType () + "(" + prevNode.StartLocation + ")");
+				bool assertion = child.StartLocation >= prevNodeEnd;
+				if (!assertion) {
+					Console.WriteLine ("Parent:" + node.GetType ());
+					Console.WriteLine ("Children:");
+					foreach (var c in node.Children)
+						Console.WriteLine (c.GetType () +" at:"+ c.StartLocation  + " Role: "+ c.Role);
+					Console.WriteLine ("----");
+				}
+				Assert.IsTrue(assertion, currentFileName + ": Child " + child.GetType () +" (" + child.StartLocation + ")" +" must start after previous sibling " + prevNode.GetType () + "(" + prevNode.StartLocation + ")");
 				CheckPositionConsistency(child);
 				prevNodeEnd = child.EndLocation;
 				prevNode = child;
@@ -110,13 +118,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		void CheckWhitespace(AstNode startNode, TextLocation whitespaceStart, AstNode endNode, TextLocation whitespaceEnd)
 		{
-			if (whitespaceStart == whitespaceEnd)
+			if (whitespaceStart == whitespaceEnd || startNode == endNode)
 				return;
 			int start = currentDocument.GetOffset(whitespaceStart.Line, whitespaceStart.Column);
 			int end = currentDocument.GetOffset(whitespaceEnd.Line, whitespaceEnd.Column);
 			string text = currentDocument.GetText(start, end - start);
+			
 			Assert.IsTrue(string.IsNullOrWhiteSpace(text), "Expected whitespace between " + startNode.GetType () +":" + whitespaceStart + " and " + endNode.GetType () + ":" + whitespaceEnd
-			              + ", but got '" + text + "' (in " + currentFileName + ")");
+			              + ", but got '" + text + "' (in " + currentFileName + " parent:" + startNode.Parent.GetType () +")");
 		}
 		#endregion
 	}
