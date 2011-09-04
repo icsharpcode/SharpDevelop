@@ -70,6 +70,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			foreach (string fileName in fileNames) {
 				this.currentDocument = new ReadOnlyDocument(File.ReadAllText(fileName));
 				CompilationUnit cu = parser.Parse(currentDocument.CreateReader());
+				if (parser.HasErrors)
+					continue;
 				this.currentFileName = fileName;
 				CheckPositionConsistency(cu);
 				CheckMissingTokens(cu);
@@ -81,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			Console.WriteLine ("Parent:" + node.GetType ());
 			Console.WriteLine ("Children:");
 			foreach (var c in node.Children)
-				Console.WriteLine (c.GetType () +" at:"+ c.StartLocation  + " Role: "+ c.Role);
+				Console.WriteLine (c.GetType () +" at:"+ c.StartLocation +"-"+ c.EndLocation + " Role: "+ c.Role);
 			Console.WriteLine ("----");
 		}
 		
@@ -93,9 +95,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			var prevNode = node;
 			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
 				bool assertion = child.StartLocation >= prevNodeEnd;
-				if (!assertion)
+				if (!assertion) {
+					PrintNode (prevNode);
 					PrintNode (node);
-				Assert.IsTrue(assertion, currentFileName + ": Child " + child.GetType () +" (" + child.StartLocation + ")" +" must start after previous sibling " + prevNode.GetType () + "(" + prevNode.StartLocation + ")");
+					
+				}
+				Assert.IsTrue(assertion, currentFileName + ": Child " + child.GetType () +" (" + child.StartLocation  + ")" +" must start after previous sibling " + prevNode.GetType () + "(" + prevNode.StartLocation + ")");
 				CheckPositionConsistency(child);
 				prevNodeEnd = child.EndLocation;
 				prevNode = child;
@@ -129,8 +134,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			string text = currentDocument.GetText(start, end - start);
 			bool assertion = string.IsNullOrWhiteSpace(text);
 			if (!assertion) {
-				if (startNode.Parent == endNode.Parent)
+				if (startNode.Parent != endNode.Parent)
 					PrintNode (startNode.Parent);
+				PrintNode (endNode.Parent);
 			}
 			Assert.IsTrue(assertion, "Expected whitespace between " + startNode.GetType () +":" + whitespaceStart + " and " + endNode.GetType () + ":" + whitespaceEnd
 			              + ", but got '" + text + "' (in " + currentFileName + " parent:" + startNode.Parent.GetType () +")");
