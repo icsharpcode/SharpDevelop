@@ -57,16 +57,14 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 		
 		public static Color MixedWith(this Color c1, Color c2)
 		{
-			int r = Math.Min((c1.R + c2.R), 255);
-			int g = Math.Min((c1.G + c2.G), 255);
-			int b = Math.Min((c1.B + c2.B), 255);
+			var percent = .5f;
+			var amountFrom = 1.0f - percent;
 
-			return new Color
-			{
-				R = Convert.ToByte(r),
-				G = Convert.ToByte(g),
-				B = Convert.ToByte(b)
-			};
+            return Color.FromArgb(
+            (byte)(c1.A * amountFrom + c2.A * percent),
+            (byte)(c1.R * amountFrom + c2.R * percent),
+            (byte)(c1.G * amountFrom + c2.G * percent),
+            (byte)(c1.B * amountFrom + c2.B * percent));
 		}
 		
 		public static T FindVisualChild<T>( DependencyObject obj )
