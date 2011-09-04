@@ -754,19 +754,22 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddAttributeSection (newOperator, o);
 				AddModifiers (newOperator, location);
 				
-				newOperator.AddChild (ConvertToType (o.TypeName), AstNode.Roles.Type);
 				
 				if (o.OperatorType == Operator.OpType.Implicit) {
 					if (location != null) {
 						newOperator.AddChild (new CSharpTokenNode (Convert (location[0]), "implicit".Length), OperatorDeclaration.OperatorTypeRole);
 						newOperator.AddChild (new CSharpTokenNode (Convert (location[1]), "operator".Length), OperatorDeclaration.OperatorKeywordRole);
 					}
+					newOperator.AddChild (ConvertToType (o.TypeName), AstNode.Roles.Type);
 				} else if (o.OperatorType == Operator.OpType.Explicit) {
 					if (location != null) {
 						newOperator.AddChild (new CSharpTokenNode (Convert (location[0]), "explicit".Length), OperatorDeclaration.OperatorTypeRole);
 						newOperator.AddChild (new CSharpTokenNode (Convert (location[1]), "operator".Length), OperatorDeclaration.OperatorKeywordRole);
 					}
+					newOperator.AddChild (ConvertToType (o.TypeName), AstNode.Roles.Type);
 				} else {
+					newOperator.AddChild (ConvertToType (o.TypeName), AstNode.Roles.Type);
+					
 					if (location != null)
 						newOperator.AddChild (new CSharpTokenNode (Convert (location[0]), "operator".Length), OperatorDeclaration.OperatorKeywordRole);
 					
