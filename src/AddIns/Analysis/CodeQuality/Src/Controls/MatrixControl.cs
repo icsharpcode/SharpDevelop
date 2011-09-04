@@ -115,6 +115,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			}
 		}
 		
+		
 		protected override void OnMouseMove(System.Windows.Input.MouseEventArgs e)
 		{
 			base.OnMouseMove(e);

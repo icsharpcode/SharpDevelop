@@ -47,7 +47,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			base.RaisePropertyChanged(() =>FileName);}
 		}
 		
-		private Visibility progressbarVisibly ;
+		private Visibility progressbarVisibly = Visibility.Hidden;
 		
 		public Visibility ProgressbarVisible {
 			get { return progressbarVisibly; }
