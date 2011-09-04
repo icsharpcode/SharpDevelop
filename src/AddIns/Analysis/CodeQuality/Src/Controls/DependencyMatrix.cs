@@ -16,6 +16,9 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			var toRelationship = HeaderRows[rowIndex].Value.GetRelationship(HeaderColumns[columnIndex].Value);
 			var fromRelationship = HeaderColumns[columnIndex].Value.GetRelationship(HeaderRows[rowIndex].Value);
 			
+			toRelationship.From = HeaderRows[rowIndex].Value;
+			toRelationship.To = HeaderColumns[columnIndex].Value;
+			
 			// add other way
 			foreach (var relationship in fromRelationship.Relationships) {
 				if (relationship == RelationshipType.UseThis)

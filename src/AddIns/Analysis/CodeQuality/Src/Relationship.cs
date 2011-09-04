@@ -18,6 +18,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		public string Text { get { return OccurrenceCount.ToString(); } }
 		
+		public INode To { get; set; }
+		public INode From { get; set; }
+		
 		public Relationship()
 		{
 			Relationships = new HashSet<RelationshipType>();
