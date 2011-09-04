@@ -75,9 +75,9 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			HoveredCell = new HoveredCell<TValue>();
 		}
 		
-		public void SetVisibleItems(HeaderType tree, ICollection<TItem> visibleItems)
+		public void SetVisibleItems(HeaderType type, ICollection<TItem> visibleItems)
 		{
-			matrix.SetVisibleItems(tree, visibleItems);
+			matrix.SetVisibleItems(type, visibleItems);
 			
 			matrixHeight = matrix.HeaderRows.Count;
 			matrixWidth = matrix.HeaderColumns.Count;
@@ -94,15 +94,25 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			}
 			
 			if (changedCoords) {
-				HoveredCell.RowIndex = currentCell.Y;
-				HoveredCell.ColumnIndex = currentCell.X;
-				HoveredCell.Value = matrix[HoveredCell.RowIndex, HoveredCell.ColumnIndex];
-				if (HoveredCellChanged != null)
-					HoveredCellChanged(this, new HoveredCellEventArgs<TValue>(HoveredCell));
+				SetHoveredCell();
 			}
 			
 			if (matrixHeight >= 0 && matrixWidth >= 0)
 				InvalidateVisual();
+		}
+		
+		public void HighlightLine(HeaderType type, INode node)
+		{
+			var items = type == HeaderType.Columns ? matrix.HeaderColumns : matrix.HeaderRows;
+			for (int i = 0; i < items.Count; i++) {
+				if (node.Equals(items[i])) {
+					currentCell = type == HeaderType.Columns ?
+									new Coords(i, currentCell.Y) :
+									new Coords(currentCell.X, i);
+					
+					SetHoveredCell();
+				}
+			}
 		}
 		
 		protected override void OnMouseMove(System.Windows.Input.MouseEventArgs e)
@@ -122,13 +132,17 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			    currentCell.Y != HoveredCell.ColumnIndex)
 			{
 				InvalidateVisual();
-				
-				HoveredCell.RowIndex = currentCell.Y;
-				HoveredCell.ColumnIndex = currentCell.X;
-				HoveredCell.Value = matrix[HoveredCell.RowIndex, HoveredCell.ColumnIndex];
-				if (HoveredCellChanged != null)
-					HoveredCellChanged(this, new HoveredCellEventArgs<TValue>(HoveredCell));
+				SetHoveredCell();
 			}
+		}
+		
+		protected void SetHoveredCell()
+		{
+			HoveredCell.RowIndex = currentCell.Y;
+			HoveredCell.ColumnIndex = currentCell.X;
+			HoveredCell.Value = matrix[HoveredCell.RowIndex, HoveredCell.ColumnIndex];
+			if (HoveredCellChanged != null)
+				HoveredCellChanged(this, new HoveredCellEventArgs<TValue>(HoveredCell));
 		}
 		
 		protected override void OnRender(DrawingContext drawingContext)
@@ -167,9 +181,9 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 				
 				// hover y line
 				var rect = new Rect(0,
-				                currentYLine,
-				                CellWidth * cellsHorizontally,
-				                CellHeight);
+				                    currentYLine,
+				                    CellWidth * cellsHorizontally,
+				                    CellHeight);
 				
 				var brush = new SolidColorBrush(Colors.GreenYellow);
 				brush.Freeze();
@@ -203,7 +217,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 					int rowIndex = j;
 					int columnIndex = i;
 					var value = matrix[rowIndex, columnIndex];
-						
+					
 					if (Colorizer != null) {
 						var rect = new Rect(
 							i * CellWidth - offsetDiffX,
@@ -216,7 +230,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 //						    ((i * CellWidth - offsetDiffX) == currentXLine))
 //							brush = Brushes.Pink; //Colorizer.GetColorBrushMixedWith(Colors.GreenYellow, value);
 //						else
-							brush = Colorizer.GetColorBrush(value);
+						brush = Colorizer.GetColorBrush(value);
 						
 						drawingContext.DrawRectangle(brush, null, rect);
 					}
@@ -247,7 +261,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		}
 		
 		public ImageSource CreateText(string text)
-		{	
+		{
 			if (imgs.ContainsKey(text))
 				return imgs[text];
 			
