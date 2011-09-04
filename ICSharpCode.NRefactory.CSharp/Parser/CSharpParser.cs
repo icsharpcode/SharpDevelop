@@ -605,6 +605,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				newField.AddChild (Identifier.Create (em.Name, Convert (em.Location)), AstNode.Roles.Identifier);
 				
 				if (em.Initializer != null) {
+					newField.AddChild (new CSharpTokenNode (Convert (em.Initializer.Location), 1), EnumMemberDeclaration.Roles.Assign);
 					newField.AddChild ((Expression)em.Initializer.Accept (this), EnumMemberDeclaration.InitializerRole);
 				}
 				
@@ -1618,7 +1619,9 @@ namespace ICSharpCode.NRefactory.CSharp
 						newLabel.AddChild (new CSharpTokenNode (Convert (caseLabel.Location), "case".Length), SwitchStatement.Roles.Keyword);
 						if (caseLabel.Label != null)
 							newLabel.AddChild ((Expression)caseLabel.Label.Accept (this), SwitchStatement.Roles.Expression);
-						
+						var colonLocation = LocationsBag.GetLocations (caseLabel);
+						if (colonLocation != null)
+							result.AddChild (new CSharpTokenNode (Convert (colonLocation [0]), 1), SwitchStatement.Roles.Colon);
 						newSection.AddChild (newLabel, SwitchSection.CaseLabelRole);
 					}
 					
