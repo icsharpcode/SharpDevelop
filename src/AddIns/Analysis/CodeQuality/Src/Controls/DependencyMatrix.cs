@@ -9,7 +9,7 @@ using ICSharpCode.CodeQualityAnalysis.Utility;
 
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
-    public class DependencyMatrix : Matrix<INode, Relationship>
+    public class DependencyMatrix : VisibleMatrix<INode, Relationship>
     {
 		protected override Relationship GetCellValue(int rowIndex, int columnIndex)
 		{

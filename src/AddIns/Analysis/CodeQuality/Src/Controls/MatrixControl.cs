@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using ICSharpCode.CodeQualityAnalysis.Utility;
 using System.Drawing.Drawing2D;
 using System.Windows;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
@@ -44,8 +45,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			{
 				matrix = value;
 
-				matrixHeight = Matrix.HeaderRows.Count - 1;
-				matrixWidth = Matrix.HeaderColumns.Count - 1;
+				// matrixHeight = matrix.HeaderRows.Count - 1;
+				// matrixWidth = matrix.HeaderColumns.Count - 1;
 			}
 		}
 		
@@ -62,13 +63,27 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		public MatrixControl()
 		{
 			CellHeight = CellWidth = 18;
-			matrixWidth = 20;
-			matrixHeight = 20;
+			matrixWidth = 0;
+			matrixHeight = 0;
 			fontSize = CellHeight / 3;
 			penSize = 1;
 			font = "Verdana";
 			
 			HoveredCell = new HoveredCell<TValue>();
+		}
+		
+		public void SetVisibleItems(HeaderType tree, ICollection<TItem> visibleItems)
+		{
+			var items = tree == HeaderType.Columns ? matrix.HeaderColumns : matrix.HeaderRows;
+			
+			foreach (var item in items)
+			{
+				var foundItem = visibleItems.Where(n => n.Equals(item.Value)).SingleOrDefault();
+				item.Visible = foundItem != null;
+			}
+			
+			matrixHeight = matrix.HeaderRows.Count - 1;
+			matrixWidth = matrix.HeaderColumns.Count - 1;
 		}
 		
 		protected override void OnMouseMove(System.Windows.Input.MouseEventArgs e)
@@ -181,10 +196,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 							CellHeight);
 
 						SolidColorBrush brush = null;
-						if ((i * CellWidth - offsetDiffX) == currentXLine ||
-						    ((i * CellWidth - offsetDiffX) == currentXLine))
-							brush = Colorizer.GetColorBrushMixedWith(Colors.GreenYellow, value);
-						else
+//						if ((i * CellWidth - offsetDiffX) == currentXLine ||
+//						    ((i * CellWidth - offsetDiffX) == currentXLine))
+//							brush = Brushes.Pink; //Colorizer.GetColorBrushMixedWith(Colors.GreenYellow, value);
+//						else
 							brush = Colorizer.GetColorBrush(value);
 						
 						drawingContext.DrawRectangle(brush, null, rect);
@@ -448,5 +463,11 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		{
 			HoveredCell = cell;
 		}
+	}
+	
+	public enum HeaderType
+	{
+		Columns,
+		Rows
 	}
 }

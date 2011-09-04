@@ -56,6 +56,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
     public class Cell<TItem>
     {
         public TItem Value { get; set; }
+        public bool Visible { get; set; }
 
         public Cell(TItem value)
         {
