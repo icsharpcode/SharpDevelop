@@ -53,26 +53,20 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			
 		}
 		
+		
 		public void DrawTree(Module module)
 		{
 			var leftCol = leftTree.Items.SourceCollection as INotifyCollectionChanged;
 			leftCol.CollectionChanged += BuildLeftINodeList;
+			
 			Helper.FillTree(leftTree, module);
 			
-			leftTree.MouseMove += (s,e)=>
-			{
-				var c = Helper.GetParent<SharpTreeViewItem>(e.OriginalSource as DependencyObject);
-				if (c != null)
-				{
-					DependecyTreeNode n = c.Node as DependecyTreeNode;
-					Console.WriteLine(n.ToString());
-					matrixControl.HighlightLine(HeaderType.Rows,n.INode);
-					leftTree.SelectedItem = n;
-					leftTree.FocusNode(n);
-				}
-			};
+			leftTree.MouseMove += LeftTree_MouseMove;
+			
+			topTree.MouseMove += TopTree_MouseMove;
 			
 			var topCol = topTree.Items.SourceCollection as INotifyCollectionChanged;
+			
 			topCol.CollectionChanged += BuildTopINodeList;
 			Helper.FillTree(topTree, module);
 		}
@@ -86,6 +80,41 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			leftScrollViewer = Helper.FindVisualChild<ScrollViewer>(leftTree);
 			topScrollViewer = Helper.FindVisualChild<ScrollViewer>(topTree);
 		}
+		
+		#region Tree MouseMove
+		
+		 void  LeftTree_MouseMove (object sender,System.Windows.Input.MouseEventArgs  e)
+		{
+			DependecyTreeNode n = ConvertNode(e.OriginalSource);
+			if (n != null) {
+				matrixControl.HighlightLine(HeaderType.Rows,n.INode);
+				leftTree.SelectedItem = n;
+				leftTree.FocusNode(n);
+			}
+		}
+			
+		void TopTree_MouseMove (object sender,System.Windows.Input.MouseEventArgs  e)
+		{
+			DependecyTreeNode n = ConvertNode(e.OriginalSource);
+			if (n != null) {
+				matrixControl.HighlightLine(HeaderType.Columns,n.INode);
+				topTree.SelectedItem = n;
+				topTree.FocusNode(n);
+			}
+		}
+			
+		
+		DependecyTreeNode ConvertNode (object node)
+		{
+			var c = Helper.GetParent<SharpTreeViewItem>(node as DependencyObject);
+			if (c != null) {
+				return c.Node as DependecyTreeNode;
+			}
+			return null;
+		}
+		
+		#endregion
+		
 		
 		#region Update MatricControl
 		
