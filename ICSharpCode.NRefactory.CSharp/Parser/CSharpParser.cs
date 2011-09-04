@@ -1918,7 +1918,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				} else {
 					literalValue = constant.GetValueAsLiteral ();
 				}
-				var result = new PrimitiveExpression (constant.GetValue (), Convert (constant.Location), literalValue);
+				object val = constant.GetValue ();
+				if (val is bool)
+					literalValue = (bool)val ? "true" : "false";
+				var result = new PrimitiveExpression (val, Convert (constant.Location), literalValue);
 				return result;
 			}
 
