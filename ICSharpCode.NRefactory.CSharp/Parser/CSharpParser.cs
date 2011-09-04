@@ -2567,9 +2567,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				var result = new ArrayCreateExpression ();
 				
 				var location = LocationsBag.GetLocations (arrayCreationExpression);
+				result.AddChild (new CSharpTokenNode (Convert (arrayCreationExpression.Location), "new".Length), ArrayCreateExpression.Roles.Keyword);
 				if (arrayCreationExpression.NewType != null)
 					result.AddChild (ConvertToType (arrayCreationExpression.NewType), ArrayCreateExpression.Roles.Type);
-				
+					
 				var next = arrayCreationExpression.Rank;
 				if (arrayCreationExpression.Arguments != null) {
 					// skip first array rank.
