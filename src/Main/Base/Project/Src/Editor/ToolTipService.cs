@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// </summary>
 	public static class ToolTipRequestService
 	{
-		const string ToolTipProviderAddInTreePath = "/SharpDevelop/ViewContent/DefaultTextEditor/ToolTips";
+		const string ToolTipProviderAddInTreePath = "/SharpDevelop/ViewContent/TextEditor/ToolTips";
 		
 		/// <summary>
 		/// This event occurs on a tool tip request,

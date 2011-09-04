@@ -39,7 +39,7 @@
 		        class = "ICSharpCode.XamlBinding.XamlParser"/>
 	</Path>
 	
-	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
 		<CodeCompletionBinding id = "XAML" extensions = ".xaml" class = "ICSharpCode.XamlBinding.XamlCodeCompletionBinding"/>
 	</Path>
 	

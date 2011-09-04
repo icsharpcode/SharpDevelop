@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 	/// List of semicolon-separated entries of the file extensions handled by the binding.
 	/// If no extensions attribute is specified, the binding is activated in all files.
 	/// </attribute>
-	/// <usage>Only in /AddIns/DefaultTextEditor/CodeCompletion</usage>
+	/// <usage>Only in /SharpDevelop/ViewContent/TextEditor/CodeCompletion</usage>
 	/// <returns>
 	/// The ICodeCompletionBinding class specified with the 'class' attribute, or a
 	/// wrapper that lazy-loads the actual class when it is used in a file with the specified

@@ -21,7 +21,7 @@
 		<Class id="XmlFormatter" class="ICSharpCode.XmlEditor.XmlFormattingStrategy"/>
 	</Path>
 	
-	<Path name="/AddIns/DefaultTextEditor/CodeCompletion">
+	<Path name="/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
 		<CodeCompletionBinding
 			id="Xml"
 			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj"

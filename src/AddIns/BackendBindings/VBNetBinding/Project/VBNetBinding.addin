@@ -96,7 +96,7 @@
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>
 
-	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
 		<CodeCompletionBinding id = "VBNet" extensions = ".vb" class = "ICSharpCode.VBNetBinding.VBNetCompletionBinding"/>
 	</Path>
 	

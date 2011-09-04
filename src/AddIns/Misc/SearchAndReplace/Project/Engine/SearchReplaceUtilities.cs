@@ -97,7 +97,7 @@ namespace SearchAndReplace
 				return false;
 			
 			if (excludedFileExtensions == null) {
-				excludedFileExtensions = AddInTree.BuildItems<string>("/AddIns/DefaultTextEditor/Search/ExcludedFileExtensions", null, false);
+				excludedFileExtensions = AddInTree.BuildItems<string>("/AddIns/SearchAndReplace/ExcludedFileExtensions", null, false);
 			}
 			string extension = Path.GetExtension(fileName);
 			if (extension != null) {

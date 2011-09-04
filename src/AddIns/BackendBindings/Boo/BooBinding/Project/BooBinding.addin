@@ -101,7 +101,7 @@
 		    extensions=".boo" />
 	</Path>
 	
-	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
 		<CodeCompletionBinding id = "Boo" extensions = ".boo" class = "Grunwald.BooBinding.CodeCompletion.CompletionBinding"/>
 	</Path>
 	

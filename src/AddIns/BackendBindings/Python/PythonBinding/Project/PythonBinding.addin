@@ -111,7 +111,7 @@
 	</Path>
 	
 	<!-- The Python code completion binding -->
-	<Path name="/AddIns/DefaultTextEditor/CodeCompletion">
+	<Path name="/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
 		<CodeCompletionBinding id="Python"
 			extensions=".py"
 			class="ICSharpCode.PythonBinding.PythonCodeCompletionBinding"/>

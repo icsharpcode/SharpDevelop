@@ -37,7 +37,7 @@
 		          class = "SearchAndReplace.Replace"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/DefaultEditor/SearchAndReplace/WildcardHelpPath">
+	<Path name = "/AddIns/SearchAndReplace/WildcardHelpPath">
 		<MenuItem id    = "*Char"
 		          label = "* Zero or more of any character" />
 		<MenuItem id    = "?Char"
@@ -65,7 +65,7 @@
 	
 	<!-- File extensions that should not be searched since they are not opened
 	 in a text editor -->
-	<Path name="/AddIns/DefaultTextEditor/Search/ExcludedFileExtensions">
+	<Path name="/AddIns/SearchAndReplace/ExcludedFileExtensions">
 		<String text=".resx"/>
 		<String text=".resources"/>
 		<String text=".exe"/>

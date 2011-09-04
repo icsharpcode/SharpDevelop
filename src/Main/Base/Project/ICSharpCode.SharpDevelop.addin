@@ -1807,7 +1807,9 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/EntityContextMenu">
-		
+		<MenuItem id = "FindReferences"
+		          label = "${res:SharpDevelop.Refactoring.FindReferencesCommand}"
+		          class = "ICSharpCode.SharpDevelop.Refactoring.FindLocalVariableReferencesCommand"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common">
@@ -1836,7 +1838,6 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
-		<MenuItem id = "Refactoring" type = "Builder" class = "ICSharpCode.SharpDevelop.Refactoring.RefactoringMenuBuilder"/>
 		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
 		<Include id = "Copy" item = "/SharpDevelop/Workbench/MainMenu/Edit/Copy"/>
 		<Include id = "Paste" item = "/SharpDevelop/Workbench/MainMenu/Edit/Paste"/>
@@ -1869,7 +1870,7 @@
 		          class = "ICSharpCode.SharpDevelop.Editor.Commands.IndentSelection" />
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ToolTips">
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ToolTips">
 		<Class id = "DefaultDebuggerToolTips" class = "ICSharpCode.SharpDevelop.Debugging.DebuggerTextAreaToolTipProvider"/>
 	</Path>
 	

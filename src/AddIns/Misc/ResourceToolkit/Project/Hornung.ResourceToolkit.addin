@@ -17,7 +17,7 @@
 	
 	<!-- Code completion -->
 	
-	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
 		<CodeCompletionBinding
 			id = "CSharpResources"
 			extensions = ".cs"
@@ -108,7 +108,7 @@
 	
 	<!-- Tooltips -->
 	
-	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/ToolTips">
+	<Path name="/SharpDevelop/ViewContent/TextEditor/ToolTips">
 		<Class id="ResourceToolTips" class="Hornung.ResourceToolkit.ToolTips.ResourceToolTipProvider" insertafter="DefaultDebuggerToolTips"/>
 	</Path>
 	

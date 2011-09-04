@@ -382,7 +382,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public static ReadOnlyCollection<ICodeCompletionBinding> CodeCompletionBindings {
 			get {
 				if (codeCompletionBindings == null) {
-					codeCompletionBindings = AddInTree.BuildItems<ICodeCompletionBinding>("/AddIns/DefaultTextEditor/CodeCompletion", null, false).AsReadOnly();
+					codeCompletionBindings = AddInTree.BuildItems<ICodeCompletionBinding>("/SharpDevelop/ViewContent/TextEditor/CodeCompletion", null, false).AsReadOnly();
 				}
 				return codeCompletionBindings;
 			}
