@@ -7,6 +7,8 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Windows;
+using System.Windows.Media;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
@@ -51,6 +53,34 @@ namespace ICSharpCode.CodeQualityAnalysis
 		{
 			DependecyTreeNode dtn = new DependecyTreeNode(node);
 			return dtn;
+		}
+		
+		
+		public static T FindVisualChild<T>( DependencyObject obj )
+			where T : DependencyObject
+		{
+			// Search immediate children first (breadth-first)
+
+			for( int i = 0; i < VisualTreeHelper.GetChildrenCount( obj ); i++ )
+			{
+				DependencyObject child = VisualTreeHelper.GetChild( obj, i );
+
+				if( child != null && child is T )
+				{
+					return ( T )child;
+				}
+				else
+				{
+					T childOfChild = FindVisualChild<T>( child );
+
+					if( childOfChild != null )
+					{
+						return childOfChild;
+					}
+				}
+			}
+
+			return null;
 		}
 	}
 }

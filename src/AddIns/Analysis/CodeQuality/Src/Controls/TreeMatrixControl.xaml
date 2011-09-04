@@ -32,6 +32,7 @@
 		<tree:SharpTreeView
 			Name="leftTree"
 			Grid.Row="2"
+			ScrollViewer.ScrollChanged="LeftTree_ScrollChanged"
 			Grid.Column="0">
 		</tree:SharpTreeView>
 		
@@ -45,7 +46,9 @@
 		<tree:SharpTreeView
 			Name="topTree"
 			Grid.Row="0"
-			Grid.Column="2">
+			Grid.Column="2"
+			Loaded="Trees_Loaded"
+			ScrollViewer.ScrollChanged="TopTree_ScrollChanged">
 			<tree:SharpTreeView.LayoutTransform>
 				<RotateTransform
 					Angle="-90" />
@@ -57,12 +60,13 @@
 		              ResizeDirection="Rows"
 		              HorizontalAlignment="Stretch"		
 					Background="LightGray"></GridSplitter>		
-		<ScrollViewer
+		<ScrollViewer Name="scrollViewer"
 			Grid.Column="2"
 			Grid.Row="2"
 			CanContentScroll="True"
 			VerticalScrollBarVisibility="Visible"
-			HorizontalScrollBarVisibility="Visible">
+			HorizontalScrollBarVisibility="Visible"
+		ScrollChanged="ScrollViewer_ScrollChanged">
 			<Controls:DependencyMatrixControl
 				x:Name="matrixControl" />
 		</ScrollViewer>
