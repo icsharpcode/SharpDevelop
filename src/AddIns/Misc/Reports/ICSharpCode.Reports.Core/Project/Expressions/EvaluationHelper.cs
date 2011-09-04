@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Globalization;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Globals;
@@ -83,13 +84,13 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		
 		public static string ExtractExpressionPart (string src)
 		{
-			char v = Convert.ToChar("=");
+			char v = Convert.ToChar("=",CultureInfo.CurrentCulture );
 			return StringHelpers.RightOf(src,v).Trim();
 		}
 		
 		public static string ExtractResultPart (string src)
 		{
-			char v = Convert.ToChar("=");
+			char v = Convert.ToChar("=",CultureInfo.CurrentCulture );
 			return StringHelpers.LeftOf(src,v).Trim();
 		}
 	}

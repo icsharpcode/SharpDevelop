@@ -8,9 +8,7 @@
  */
 using System;
 using System.Data;
-using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Globals;
-using ICSharpCode.Reports.Core.ReportViewer;
 
 namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 {
@@ -86,6 +84,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			RunReport(reportModel, dataManager);
 		}
 		
+		
 		public void RunReport(ReportModel reportModel, IDataManager dataManager)
 		{
 			if (reportModel == null) {
@@ -110,6 +109,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 		
 		void BuildExportList(IReportCreator reportCreator)
 		{
+			Pages.Clear();
 			reportCreator.PageCreated += OnPageCreated;
 			reportCreator.BuildExportList();
 			reportCreator.PageCreated -= OnPageCreated;

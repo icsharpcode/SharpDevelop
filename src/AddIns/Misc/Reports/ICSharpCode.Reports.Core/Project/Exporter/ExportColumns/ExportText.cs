@@ -45,7 +45,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			CalculatePdfFormat pdfFormat = new CalculatePdfFormat(this.StyleDecorator,font);
 			
 			ColumnText columnText = new ColumnText(contentByte);
-			
+
 			if (StyleDecorator.RightToLeft.ToString() == "Yes") {
 				columnText.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
 			}
