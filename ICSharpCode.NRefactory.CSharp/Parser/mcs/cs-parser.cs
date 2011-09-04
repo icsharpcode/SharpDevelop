@@ -2410,7 +2410,7 @@ case 378:
 case 379:
 #line 2993 "cs-parser.jay"
   {
-		yyVal = new ComposedCast (((MemberName) yyVals[-1+yyTop]).GetTypeExpression (), (ComposedTypeSpecifier) yyVals[0+yyTop]);
+		yyVal = new ComposedCast (((MemberName) yyVals[-1+yyTop]).GetTypeExpression (lbag), (ComposedTypeSpecifier) yyVals[0+yyTop]);
 	  }
   break;
 case 380:
@@ -4244,7 +4244,7 @@ void case_64()
 		}
 
 		Arguments [] arguments = (Arguments []) yyVals[0+yyTop];
-		ATypeNameExpression expr = mname.GetTypeExpression ();
+		ATypeNameExpression expr = mname.GetTypeExpression (lbag);
 		yyVal = new Attribute (current_attr_target, expr, arguments, mname.Location, lexer.IsEscapedIdentifier (mname));
 		if (arguments != null) {
 			lbag.AddLocation (yyVal, savedAttrParenOpenLocation, savedAttrParenCloseLocation);
@@ -6018,12 +6018,12 @@ void case_378()
 		MemberName name = (MemberName) yyVals[-1+yyTop];
 
 		if (yyVals[0+yyTop] != null) {
-			yyVal = new ComposedCast (name.GetTypeExpression (), (ComposedTypeSpecifier) yyVals[0+yyTop]);
+			yyVal = new ComposedCast (name.GetTypeExpression (lbag), (ComposedTypeSpecifier) yyVals[0+yyTop]);
 		} else {
 			if (name.Left == null && name.Name == "var")
 				yyVal = new VarExpr (name.Location);
 			else
-				yyVal = name.GetTypeExpression ();
+				yyVal = name.GetTypeExpression (lbag);
 		}
 	  }
 
@@ -6610,7 +6610,7 @@ void case_533()
 void case_534()
 #line 3743 "cs-parser.jay"
 {
-		var te = ((MemberName) yyVals[-3+yyTop]).GetTypeExpression ();
+		var te = ((MemberName) yyVals[-3+yyTop]).GetTypeExpression (lbag);
 		if (te.HasTypeArguments)
 			Error_TypeExpected (GetLocation (yyVals[0+yyTop]));
 

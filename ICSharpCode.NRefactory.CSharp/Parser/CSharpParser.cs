@@ -134,6 +134,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					var memberType = new MemberType ();
 					memberType.AddChild (ConvertToType (ma.LeftExpression), MemberType.TargetRole);
+					
+					var location = LocationsBag.GetLocations (ma);
+					cw
+					if (location != null)
+						memberType.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MemberType.Roles.Dot);
+					
 					memberType.MemberNameToken = Identifier.Create (ma.Name, Convert (ma.Location));
 					
 					AddTypeArguments (ma, memberType);
@@ -1880,10 +1886,10 @@ namespace ICSharpCode.NRefactory.CSharp
 						var leftExpr = memberAccess.LeftExpression.Accept (this);
 						result.AddChild ((Expression)leftExpr, MemberReferenceExpression.Roles.TargetExpression);
 					}
+					var location = LocationsBag.GetLocations (memberAccess);
+					if (location != null)
+						result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MemberReferenceExpression.Roles.Dot);
 				}
-				var location = LocationsBag.GetLocations (memberAccess);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MemberReferenceExpression.Roles.Dot);
 						
 				result.AddChild (Identifier.Create (memberAccess.Name, Convert (memberAccess.Location)), MemberReferenceExpression.Roles.Identifier);
 				

@@ -138,7 +138,7 @@ namespace Mono.CSharp {
 			return name;
 		}
 
-		public ATypeNameExpression GetTypeExpression ()
+		public ATypeNameExpression GetTypeExpression (LocationsBag locations = null)
 		{
 			if (Left == null) {
 				if (TypeArguments != null)
@@ -154,7 +154,10 @@ namespace Mono.CSharp {
 			}
 
 			Expression lexpr = Left.GetTypeExpression ();
-			return new MemberAccess (lexpr, Name, TypeArguments, Location);
+			var result = new MemberAccess (lexpr, Name, TypeArguments, Location);
+			if (locations != null)
+				locations.AddLocation (result, locations.GetLocations (this));
+			return result;
 		}
 
 		public MemberName Clone ()

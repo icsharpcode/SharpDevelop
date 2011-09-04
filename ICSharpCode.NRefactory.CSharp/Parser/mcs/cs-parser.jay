@@ -779,7 +779,7 @@ attribute
 		}
 
 		Arguments [] arguments = (Arguments []) $3;
-		ATypeNameExpression expr = mname.GetTypeExpression ();
+		ATypeNameExpression expr = mname.GetTypeExpression (lbag);
 		$$ = new Attribute (current_attr_target, expr, arguments, mname.Location, lexer.IsEscapedIdentifier (mname));
 		if (arguments != null) {
 			lbag.AddLocation ($$, savedAttrParenOpenLocation, savedAttrParenCloseLocation);
@@ -2979,17 +2979,17 @@ type_expression
 		MemberName name = (MemberName) $1;
 
 		if ($2 != null) {
-			$$ = new ComposedCast (name.GetTypeExpression (), (ComposedTypeSpecifier) $2);
+			$$ = new ComposedCast (name.GetTypeExpression (lbag), (ComposedTypeSpecifier) $2);
 		} else {
 			if (name.Left == null && name.Name == "var")
 				$$ = new VarExpr (name.Location);
 			else
-				$$ = name.GetTypeExpression ();
+				$$ = name.GetTypeExpression (lbag);
 		}
 	  }
 	| namespace_or_type_name pointer_stars
 	  {
-		$$ = new ComposedCast (((MemberName) $1).GetTypeExpression (), (ComposedTypeSpecifier) $2);
+		$$ = new ComposedCast (((MemberName) $1).GetTypeExpression (lbag), (ComposedTypeSpecifier) $2);
 	  }
 	| builtin_types opt_nullable
 	  {
@@ -3741,7 +3741,7 @@ unbound_type_name
 	  }
 	| namespace_or_type_name DOT IDENTIFIER generic_dimension
 	  {
-		var te = ((MemberName) $1).GetTypeExpression ();
+		var te = ((MemberName) $1).GetTypeExpression (lbag);
 		if (te.HasTypeArguments)
 			Error_TypeExpected (GetLocation ($4));
 
