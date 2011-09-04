@@ -46,7 +46,7 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 			</ToolBar>
 		</ToolBarTray>
 			
-		<TabControl Grid.Row="1" Name="mainTabs" IsEnabled="False"> <!-- It is enabled once assembly is loaded. -->
+		<TabControl Grid.Row="1" IsEnabled="{Binding MainTabEnable}"> <!-- It is enabled once assembly is loaded. -->
 			<TabItem Header="{Binding DependencyGraph}">
 				<Grid>
 					<Grid.RowDefinitions>
@@ -93,16 +93,16 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 							HighlightAlgorithmType="Simple"
 							VertexClick="graphLayout_VertexClick"
 						/>
+					
 					</Controls:ZoomControl>
 					
 					<GridSplitter Grid.Column="3"
 					              Grid.RowSpan="2"
 					              ResizeDirection="Columns"
-					              HorizontalAlignment="Stretch"
-					              VerticalAlignment="Stretch"
-					 			Style="{DynamicResource GridSplitterStyle1}"></GridSplitter>
+					          		Style="{DynamicResource GridSplitterStyle1}"></GridSplitter>
 					
 					<TextBlock Name="txbTypeInfo"
+					           Text="{Binding TypeInfo}"
 					           Margin="2"
 					           Grid.Column="4"  Grid.RowSpan="2" Padding="5" Background="LightBlue"/>
 				</Grid>
@@ -154,15 +154,15 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 			</TabItem>
 		</TabControl>
 		<StatusBar Grid.Row="2">
-			<StatusBarItem HorizontalAlignment="Left" x:Name="progressBar" Visibility="Hidden">
+			<StatusBarItem HorizontalAlignment="Left" Visibility="{Binding ProgressbarVisible}">
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="Loading " />
-					<TextBlock x:Name="fileAssemblyLoading" />
+					<TextBlock Text="{Binding FileName}"></TextBlock>
 					<TextBlock Text="..." Margin="0, 0, 5, 0" />
 					<ProgressBar IsIndeterminate="True" Width="95" Height="15" />
 				</StackPanel>
 			</StatusBarItem>
-			<StatusBarItem HorizontalAlignment="Right" x:Name="assemblyStats" Visibility="Hidden">
+			<StatusBarItem HorizontalAlignment="Right" Visibility="{Binding AssemblyStatsVisible}">
 				<StackPanel Orientation="Horizontal">
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">

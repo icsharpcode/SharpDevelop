@@ -9,7 +9,9 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 using ICSharpCode.CodeQualityAnalysis.Controls;
 using ICSharpCode.CodeQualityAnalysis.Utility;
@@ -22,6 +24,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 	/// </summary>
 	public class MainWindowTranslationViewModel :ViewModelBase
 	{
+		string typeInfo;
+		
+	
 		
 		public MainWindowTranslationViewModel():base()
 		{
@@ -37,71 +42,113 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		public string DependencyGraph {get; private set;}
 		
+		private string fileName;
 		
+		public string FileName {
+			get { return fileName; }
+			set { fileName = value;
+			base.RaisePropertyChanged(() =>FileName);}
+		}
 		
-		#region OpenAssembly
+		private Visibility progressbarVisibly ;
+		
+		public Visibility ProgressbarVisible {
+			get { return progressbarVisibly; }
+			set { progressbarVisibly = value;
+				base.RaisePropertyChanged(() =>ProgressbarVisible);
+				}
+		}
+		
+		private Visibility assemblyStatsVisible;
+		
+		public Visibility AssemblyStatsVisible {
+			get { return assemblyStatsVisible; }
+			set { assemblyStatsVisible = value;
+				base.RaisePropertyChanged(() => AssemblyStatsVisible);
+			}
+		}
+
+		bool mainTabEnable;
+
+		public bool MainTabEnable {
+			get { return mainTabEnable; }
+			set { mainTabEnable = value;
+				base.RaisePropertyChanged(() => MainTabEnable);
+			}
+		}
+		
+		public string TypeInfo {
+			get { return typeInfo; }
+			set { typeInfo = value;
+				base.RaisePropertyChanged(() =>this.TypeInfo);
+			}
+		}
+		
 		/*
+		#region OpenAssembly
+		
 		public ICommand OpenAssemblyCommand
         {
-            get { return new RelayCommand(OpenAssemblyExecute, CanOpenAssemblyExecute); }
+            get { return new RelayCommand(SaveAssemblyExecute, CanSaveAssemblyExecute); }
         }
 		  
-		Boolean CanOpenAssemblyExecute()
+		Boolean CanSaveAssemblyExecute()
         {
             return true;
         }
 		
 		
-		void OpenAssemblyExecute()
+		void SaveAssemblyExecute()
         {
-            var fileDialog = new OpenFileDialog
+           var fileDialog = new SaveFileDialog()
 			{
-				Filter = "Component Files (*.dll, *.exe)|*.dll;*.exe"
+				Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|BMP (*.bmp)|*.bmp|TIFF (.tiff)|*.tiff"
 			};
 
 			fileDialog.ShowDialog();
 
 			if (String.IsNullOrEmpty(fileDialog.FileName))
 				return;
-			
-			progressBar.Visibility = Visibility.Visible;
-			assemblyStats.Visibility = Visibility.Hidden;
-			fileAssemblyLoading.Text = System.IO.Path.GetFileName(fileDialog.FileName);
-			
-			var worker = new BackgroundWorker();
-			worker.DoWork += (source, args) => MetricsReader = new MetricsReader(fileDialog.FileName);
-			worker.RunWorkerCompleted += (source, args) => {
-				
-				progressBar.Visibility = Visibility.Hidden;
-				assemblyStats.Visibility = Visibility.Visible;
-				mainTabs.IsEnabled = true;
-				Helper.FillTree(definitionTree, metricsReader.MainModule);
-				
-				FillMatrix();
-			};
-			
-			worker.RunWorkerAsync();
-        }
-		
-		private void FillMatrix()
-		{
-			var matrix = new DependencyMatrix();
 
-			foreach (var ns in metricsReader.MainModule.Namespaces) {
-				matrix.HeaderRows.Add(new Cell<INode>(ns));
-				foreach (var type in ns.Types) {
-					matrix.HeaderRows.Add(new Cell<INode>(type));
+			// render it
+			var renderBitmap = new RenderTargetBitmap((int)graphLayout.ActualWidth,
+			                                          (int)graphLayout.ActualHeight,
+			                                          96d,
+			                                          96d,
+			                                          PixelFormats.Default);
+			renderBitmap.Render(graphLayout);
+
+			using (var outStream = new FileStream(fileDialog.FileName, FileMode.Create))
+			{
+				BitmapEncoder encoder;
+
+				switch (fileDialog.FilterIndex)
+				{
+					case 1:
+						encoder = new PngBitmapEncoder();
+						break;
+					case 2:
+						encoder = new JpegBitmapEncoder();
+						break;
+					case 3:
+						encoder = new GifBitmapEncoder();
+						break;
+					case 4:
+						encoder = new BmpBitmapEncoder();
+						break;
+					case 5:
+						encoder = new TiffBitmapEncoder();
+						break;
+					default:
+						encoder = new PngBitmapEncoder();
+						break;
 				}
-				matrix.HeaderColumns.Add(new Cell<INode>(ns));
-				foreach (var type in ns.Types) {
-					matrix.HeaderColumns.Add(new Cell<INode>(type));
-				}
+				
+				encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+				encoder.Save(outStream);
 			}
-
-			//matrixControl.Matrix = matrix;
-			//matrixControl.DrawTree(metricsReader.MainModule);
-		}
-		*/
+        }
 		#endregion
+		*/
 	}
 }
