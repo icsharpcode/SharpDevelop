@@ -65,29 +65,34 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			topScrollViewer = Helper.FindVisualChild<ScrollViewer>(topTree);
 		}
 		
+		
 		void OnHoverChanged (object sender ,HoveredCellEventArgs <Relationship> e)
 		{
-			var leftNode = leftTree.Items[e.HoveredCell.RowIndex] as DependecyTreeNode;
-			leftTree.SelectedItem = leftNode;
-			leftTree.FocusNode(leftNode);
-			
-			var topNode = topTree.Items[e.HoveredCell.ColumnIndex] as DependecyTreeNode;
-			topTree.SelectedItem = topNode;
-			topTree.FocusNode(topNode);
+			if (e.HoveredCell.RowIndex < leftTree.Items.Count) {
+				var leftNode = leftTree.Items[e.HoveredCell.RowIndex] as DependecyTreeNode;
+				leftTree.SelectedItem = leftNode;
+				leftTree.FocusNode(leftNode);
+			}
+			if (e.HoveredCell.ColumnIndex < topTree.Items.Count )
+			{
+				var topNode = topTree.Items[e.HoveredCell.ColumnIndex] as DependecyTreeNode;
+				topTree.SelectedItem = topNode;
+				topTree.FocusNode(topNode);
+			}
 		}
 		
 		
 		void LeftTree_ScrollChanged(object sender, ScrollChangedEventArgs e)
 		{
 //			Console.WriteLine("Left TreeScroll");
-			scrollViewer.ScrollToVerticalOffset(e.VerticalOffset * matrixControl.CellHeight);
+//			scrollViewer.ScrollToVerticalOffset(e.VerticalOffset * matrixControl.CellHeight);
 			Console.WriteLine("--");
 		}
 		
 		void TopTree_ScrollChanged(object sender, ScrollChangedEventArgs e)
 		{
 //			Console.WriteLine("Top TreeScroll ");
-			scrollViewer.ScrollToHorizontalOffset(e.VerticalChange * matrixControl.CellHeight);
+//			scrollViewer.ScrollToHorizontalOffset(e.VerticalChange * matrixControl.CellHeight);
 			Console.WriteLine("--");
 		}
 		

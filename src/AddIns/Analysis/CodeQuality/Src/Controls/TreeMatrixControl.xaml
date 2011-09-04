@@ -61,12 +61,12 @@
 		              HorizontalAlignment="Stretch"		
 					Background="LightGray"></GridSplitter>		
 		<ScrollViewer Name="scrollViewer"
-			Grid.Column="2"
-			Grid.Row="2"
-			CanContentScroll="True"
-			VerticalScrollBarVisibility="Visible"
-			HorizontalScrollBarVisibility="Visible"
-		ScrollChanged="ScrollViewer_ScrollChanged">
+		              Grid.Column="2"
+		              Grid.Row="2"
+		              CanContentScroll="True"
+		              VerticalScrollBarVisibility="Visible"
+		              HorizontalScrollBarVisibility="Visible"
+		              ScrollChanged="ScrollViewer_ScrollChanged">
 			<Controls:DependencyMatrixControl
 				x:Name="matrixControl" />
 		</ScrollViewer>
