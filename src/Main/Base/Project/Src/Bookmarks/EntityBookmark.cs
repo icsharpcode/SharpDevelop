@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			if (e.ChangedButton == MouseButton.Left) {
 				var f = AnalyticsMonitorService.TrackFeature("ICSharpCode.SharpDevelop.Bookmarks.EntityBookmark.ShowContextMenu");
-				var ctx = MenuService.ShowContextMenu(e.Source as UIElement, this, ContextMenuPath);
+				var ctx = MenuService.ShowContextMenu(e.Source as UIElement, entity, ContextMenuPath);
 				ctx.Closed += delegate { f.EndTracking(); };
 				e.Handled = true;
 			}
