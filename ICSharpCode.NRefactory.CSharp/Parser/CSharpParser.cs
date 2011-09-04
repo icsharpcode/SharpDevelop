@@ -2569,33 +2569,35 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetLocations (arrayCreationExpression);
 				if (arrayCreationExpression.NewType != null)
 					result.AddChild (ConvertToType (arrayCreationExpression.NewType), ArrayCreateExpression.Roles.Type);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ArrayCreateExpression.Roles.LBracket);
 				
 				var next = arrayCreationExpression.Rank;
 				if (arrayCreationExpression.Arguments != null) {
 					// skip first array rank.
 					next = next.Next;
+					
+					if (location != null)
+						result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ArrayCreateExpression.Roles.LBracket);
+					
 					var commaLocations = LocationsBag.GetLocations (arrayCreationExpression.Arguments);
 					for (int i = 0 ;i < arrayCreationExpression.Arguments.Count; i++) {
 						result.AddChild ((Expression)arrayCreationExpression.Arguments[i].Accept (this), ArrayCreateExpression.Roles.Argument);
-						if (commaLocations != null && i > 0)
-							result.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - i]), 1), ArrayCreateExpression.Roles.Comma);
+						if (commaLocations != null && i < commaLocations.Count)
+							result.AddChild (new CSharpTokenNode (Convert (commaLocations [i]), 1), ArrayCreateExpression.Roles.Comma);
 					}
+					if (location != null)
+						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ArrayCreateExpression.Roles.RBracket);
+					
 				}
 				
 				while (next != null) {
 					ArraySpecifier spec = new ArraySpecifier (next.Dimension);
 					var loc = LocationsBag.GetLocations (next);
 					spec.AddChild (new CSharpTokenNode (Convert (next.Location), 1), ArraySpecifier.Roles.LBracket);
+					result.AddChild (spec, ArrayCreateExpression.AdditionalArraySpecifierRole);
 					if (loc != null)
 						result.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), ArraySpecifier.Roles.RBracket);
-					result.AddChild (spec, ArrayCreateExpression.AdditionalArraySpecifierRole);
 					next = next.Next;
 				}
-				
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ArrayCreateExpression.Roles.RBracket);
 				
 				if (arrayCreationExpression.Initializers != null && arrayCreationExpression.Initializers.Count != 0) {
 					var initLocation = LocationsBag.GetLocations (arrayCreationExpression.Initializers);
@@ -2605,8 +2607,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					var commaLocations = LocationsBag.GetLocations (arrayCreationExpression.Initializers.Elements);
 					for (int i = 0; i < arrayCreationExpression.Initializers.Count; i++) {
 						initializer.AddChild ((Expression)arrayCreationExpression.Initializers[i].Accept (this), ArrayInitializerExpression.Roles.Expression);
-						if (commaLocations != null && i > 0) {
-							initializer.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - i]), 1), IndexerExpression.Roles.Comma);
+						if (commaLocations != null && i < commaLocations.Count) {
+							initializer.AddChild (new CSharpTokenNode (Convert (commaLocations [i]), 1), IndexerExpression.Roles.Comma);
 						}
 					}
 					
