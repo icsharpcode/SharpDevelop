@@ -12,30 +12,35 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 	/// </summary>
 	public abstract class VisibleMatrix<TItem, TValue> : Matrix<TItem, TValue>
 	{
-		public new List<Cell<TItem>> HeaderRows
+		protected List<Cell<TItem>> visibleHeaderRows;
+		protected List<Cell<TItem>> visibleHeaderColumns;
+		
+		public override List<Cell<TItem>> HeaderRows
 		{
-			get
-			{
-				return base.HeaderRows.Where(c => c.Visible).ToList();
-			}
-			
-			set
-			{
-				base.HeaderRows = value;
+			get {
+				return visibleHeaderRows;
 			}
 		}
 		
-		public new List<Cell<TItem>> HeaderColumns
+		public override List<Cell<TItem>> HeaderColumns
 		{
-			get
+			get {
+				return visibleHeaderColumns;
+			}
+		} 
+		
+		public override void SetVisibleItems(HeaderType type, ICollection<TItem> visibleItems)
+		{
+			var items = type == HeaderType.Columns ? headerColumns : headerRows;
+			
+			foreach (var item in items)
 			{
-				return base.HeaderColumns.Where(c => c.Visible).ToList();
+				var foundItem = visibleItems.Where(n => n.Equals(item.Value)).SingleOrDefault();
+				item.Visible = foundItem != null;
 			}
 			
-			set
-			{
-				base.HeaderColumns = value;
-			}
+			visibleHeaderRows = headerRows.Where(c => c.Visible).ToList();
+			visibleHeaderColumns = headerColumns.Where(c => c.Visible).ToList();
 		}
 	}
 }

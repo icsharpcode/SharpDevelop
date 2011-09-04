@@ -100,13 +100,22 @@ namespace ICSharpCode.CodeQualityAnalysis
 			var matrix = new DependencyMatrix();
 
 			foreach (var ns in metricsReader.MainModule.Namespaces) {
-				matrix.HeaderRows.Add(new Cell<INode>(ns));
+				matrix.AddRow(ns);
 				foreach (var type in ns.Types) {
-					matrix.HeaderRows.Add(new Cell<INode>(type));
+					matrix.AddRow(type);
+					foreach (var field in type.Fields)
+						matrix.AddRow(field);
+					foreach (var method in type.Methods)
+						matrix.AddRow(method);
 				}
-				matrix.HeaderColumns.Add(new Cell<INode>(ns));
+				
+				matrix.AddColumn(ns);
 				foreach (var type in ns.Types) {
-					matrix.HeaderColumns.Add(new Cell<INode>(type));
+					matrix.AddColumn(type);
+					foreach (var field in type.Fields)
+						matrix.AddColumn(field);
+					foreach (var method in type.Methods)
+						matrix.AddColumn(method);
 				}
 			}
 

@@ -14,13 +14,14 @@ using System.Windows.Media.Imaging;
 
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
-	public class MatrixControl<TItem, TValue> : FrameworkElement, IScrollInfo
+	public class MatrixControl<TMatrix, TItem, TValue> : FrameworkElement, IScrollInfo
 		where TValue : IValue
+		where TMatrix : Matrix<TItem, TValue>
 	{
 		public event EventHandler<HoveredCellEventArgs<TValue>> HoveredCellChanged;
 		
 		private Dictionary<string, ImageSource> imgs = new Dictionary<string, ImageSource>();
-		private Coords currentCell = new Coords(-1, -1);
+		private Coords currentCell = new Coords(0, 0);
 		private string font;
 
 		private bool canHorizontalScroll = true;
@@ -36,9 +37,9 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		private int fontSize = 0;
 		private int penSize = 0;
 
-		private Matrix<TItem, TValue> matrix;
+		private TMatrix matrix;
 		
-		public Matrix<TItem, TValue> Matrix
+		public TMatrix Matrix
 		{
 			get { return matrix; }
 			set
@@ -74,16 +75,13 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		
 		public void SetVisibleItems(HeaderType tree, ICollection<TItem> visibleItems)
 		{
-			var items = tree == HeaderType.Columns ? matrix.HeaderColumns : matrix.HeaderRows;
+			matrix.SetVisibleItems(tree, visibleItems);
 			
-			foreach (var item in items)
-			{
-				var foundItem = visibleItems.Where(n => n.Equals(item.Value)).SingleOrDefault();
-				item.Visible = foundItem != null;
-			}
+			matrixHeight = matrix.HeaderRows.Count;
+			matrixWidth = matrix.HeaderColumns.Count;
 			
-			matrixHeight = matrix.HeaderRows.Count - 1;
-			matrixWidth = matrix.HeaderColumns.Count - 1;
+			if (matrixHeight >= 0 && matrixWidth >= 0)
+				InvalidateVisual();
 		}
 		
 		protected override void OnMouseMove(System.Windows.Input.MouseEventArgs e)
@@ -184,8 +182,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			// text
 			for (int i = 0; i < cellsHorizontally; i++) {
 				for (int j = 0; j < cellsVertically; j++) { // dont draw text in unavailables places
-					int rowIndex = i + scaledOffsetX;
-					int columnIndex = j + scaledOffsetY;
+					int rowIndex = j + scaledOffsetX;
+					int columnIndex = i + scaledOffsetY;
 					var value = matrix[rowIndex, columnIndex];
 						
 					if (Colorizer != null) {
@@ -463,11 +461,5 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		{
 			HoveredCell = cell;
 		}
-	}
-	
-	public enum HeaderType
-	{
-		Columns,
-		Rows
 	}
 }
