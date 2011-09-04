@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <summary>
 		/// Gets the length of the segment.
 		/// </summary>
-		/// <remarks>Must not be negative.</remarks>
+		/// <remarks>For line segments (IDocumentLine), the length does not include the line delimeter.</remarks>
 		int Length { get; }
 		
 		/// <summary>

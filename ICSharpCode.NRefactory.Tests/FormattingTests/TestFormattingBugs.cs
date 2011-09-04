@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TestFormattingBugs.cs
 //  
 // Author:
@@ -131,9 +131,9 @@ using (IDisposable b = null) {
 		" + input + @"
 	}
 }");
-			int start = result.GetLineOffset (5);
-			int end = result.GetLineOffset (result.LineCount - 1);
-			string text = result.GetTextAt (start, end - start).Trim ();
+			int start = result.GetOffset (5, 1);
+			int end = result.GetOffset (result.LineCount - 1, 1);
+			string text = result.GetText (start, end - start).Trim ();
 			expectedOutput = expectedOutput.Replace ("\n", "\n\t\t");
 			Assert.AreEqual (expectedOutput, text);
 		}
