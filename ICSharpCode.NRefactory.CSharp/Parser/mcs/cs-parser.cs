@@ -145,7 +145,7 @@ namespace Mono.CSharp
 		UsingsBag ubag;
 		List<Tuple<Modifiers, Location>> mod_locations;
 		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
-		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation;
+		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation, savedOperatorLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
 		List<Location> attributeCommas = new List<Location> ();
 		List<Location> parameterListCommas = new List<Location> ();
@@ -2020,91 +2020,91 @@ case 247:
   break;
 case 249:
 #line 2125 "cs-parser.jay"
-  { yyVal = Operator.OpType.LogicalNot; }
+  { yyVal = Operator.OpType.LogicalNot; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 250:
 #line 2126 "cs-parser.jay"
-  { yyVal = Operator.OpType.OnesComplement; }
+  { yyVal = Operator.OpType.OnesComplement; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 251:
 #line 2127 "cs-parser.jay"
-  { yyVal = Operator.OpType.Increment; }
+  { yyVal = Operator.OpType.Increment; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 252:
 #line 2128 "cs-parser.jay"
-  { yyVal = Operator.OpType.Decrement; }
+  { yyVal = Operator.OpType.Decrement; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 253:
 #line 2129 "cs-parser.jay"
-  { yyVal = Operator.OpType.True; }
+  { yyVal = Operator.OpType.True; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 254:
 #line 2130 "cs-parser.jay"
-  { yyVal = Operator.OpType.False; }
+  { yyVal = Operator.OpType.False; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 255:
 #line 2132 "cs-parser.jay"
-  { yyVal = Operator.OpType.Addition; }
+  { yyVal = Operator.OpType.Addition; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 256:
 #line 2133 "cs-parser.jay"
-  { yyVal = Operator.OpType.Subtraction; }
+  { yyVal = Operator.OpType.Subtraction; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 257:
 #line 2135 "cs-parser.jay"
-  { yyVal = Operator.OpType.Multiply; }
+  { yyVal = Operator.OpType.Multiply; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 258:
 #line 2136 "cs-parser.jay"
-  {  yyVal = Operator.OpType.Division; }
+  {  yyVal = Operator.OpType.Division; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 259:
 #line 2137 "cs-parser.jay"
-  { yyVal = Operator.OpType.Modulus; }
+  { yyVal = Operator.OpType.Modulus; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 260:
 #line 2138 "cs-parser.jay"
-  { yyVal = Operator.OpType.BitwiseAnd; }
+  { yyVal = Operator.OpType.BitwiseAnd; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 261:
 #line 2139 "cs-parser.jay"
-  { yyVal = Operator.OpType.BitwiseOr; }
+  { yyVal = Operator.OpType.BitwiseOr; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 262:
 #line 2140 "cs-parser.jay"
-  { yyVal = Operator.OpType.ExclusiveOr; }
+  { yyVal = Operator.OpType.ExclusiveOr; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 263:
 #line 2141 "cs-parser.jay"
-  { yyVal = Operator.OpType.LeftShift; }
+  { yyVal = Operator.OpType.LeftShift; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 264:
 #line 2142 "cs-parser.jay"
-  { yyVal = Operator.OpType.RightShift; }
+  { yyVal = Operator.OpType.RightShift; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 265:
 #line 2143 "cs-parser.jay"
-  { yyVal = Operator.OpType.Equality; }
+  { yyVal = Operator.OpType.Equality; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 266:
 #line 2144 "cs-parser.jay"
-  { yyVal = Operator.OpType.Inequality; }
+  { yyVal = Operator.OpType.Inequality; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 267:
 #line 2145 "cs-parser.jay"
-  { yyVal = Operator.OpType.GreaterThan; }
+  { yyVal = Operator.OpType.GreaterThan; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 268:
 #line 2146 "cs-parser.jay"
-  { yyVal = Operator.OpType.LessThan; }
+  { yyVal = Operator.OpType.LessThan; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 269:
 #line 2147 "cs-parser.jay"
-  { yyVal = Operator.OpType.GreaterThanOrEqual; }
+  { yyVal = Operator.OpType.GreaterThanOrEqual; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 270:
 #line 2148 "cs-parser.jay"
-  { yyVal = Operator.OpType.LessThanOrEqual; }
+  { yyVal = Operator.OpType.LessThanOrEqual; savedOperatorLocation = GetLocation (yyVals[0+yyTop]); }
   break;
 case 271:
 #line 2155 "cs-parser.jay"
@@ -5298,7 +5298,7 @@ void case_247()
 		}
 
 		yyVal = new OperatorDeclaration (op, (FullNamedExpression) yyVals[-6+yyTop], loc);
-		lbag.AddLocation (yyVal, GetLocation (yyVals[-5+yyTop]), GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[-3+yyTop]), GetLocation (yyVals[0+yyTop]));
+		lbag.AddLocation (yyVal, GetLocation (yyVals[-5+yyTop]), savedOperatorLocation, GetLocation (yyVals[-3+yyTop]), GetLocation (yyVals[0+yyTop]));
 	  }
 
 void case_272()

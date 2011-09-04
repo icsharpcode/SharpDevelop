@@ -143,7 +143,7 @@ namespace Mono.CSharp
 		UsingsBag ubag;
 		List<Tuple<Modifiers, Location>> mod_locations;
 		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
-		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation;
+		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation, savedOperatorLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
 		List<Location> attributeCommas = new List<Location> ();
 		List<Location> parameterListCommas = new List<Location> ();
@@ -2115,37 +2115,37 @@ operator_declarator
 		}
 
 		$$ = new OperatorDeclaration (op, (FullNamedExpression) $1, loc);
-		lbag.AddLocation ($$, GetLocation ($2), GetLocation ($3), GetLocation ($4), GetLocation ($7));
+		lbag.AddLocation ($$, GetLocation ($2), savedOperatorLocation, GetLocation ($4), GetLocation ($7));
 	  }
 	| conversion_operator_declarator
 	;
 
 overloadable_operator
 // Unary operators:
-	: BANG   { $$ = Operator.OpType.LogicalNot; }
-        | TILDE  { $$ = Operator.OpType.OnesComplement; }  
-        | OP_INC { $$ = Operator.OpType.Increment; }
-        | OP_DEC { $$ = Operator.OpType.Decrement; }
-        | TRUE   { $$ = Operator.OpType.True; }
-        | FALSE  { $$ = Operator.OpType.False; }
+	: BANG   { $$ = Operator.OpType.LogicalNot; savedOperatorLocation = GetLocation ($1); }
+        | TILDE  { $$ = Operator.OpType.OnesComplement; savedOperatorLocation = GetLocation ($1); }  
+        | OP_INC { $$ = Operator.OpType.Increment; savedOperatorLocation = GetLocation ($1); }
+        | OP_DEC { $$ = Operator.OpType.Decrement; savedOperatorLocation = GetLocation ($1); }
+        | TRUE   { $$ = Operator.OpType.True; savedOperatorLocation = GetLocation ($1); }
+        | FALSE  { $$ = Operator.OpType.False; savedOperatorLocation = GetLocation ($1); }
 // Unary and binary:
-        | PLUS { $$ = Operator.OpType.Addition; }
-        | MINUS { $$ = Operator.OpType.Subtraction; }
+        | PLUS { $$ = Operator.OpType.Addition; savedOperatorLocation = GetLocation ($1); }
+        | MINUS { $$ = Operator.OpType.Subtraction; savedOperatorLocation = GetLocation ($1); }
 // Binary:
-        | STAR { $$ = Operator.OpType.Multiply; }
-        | DIV {  $$ = Operator.OpType.Division; }
-        | PERCENT { $$ = Operator.OpType.Modulus; }
-        | BITWISE_AND { $$ = Operator.OpType.BitwiseAnd; }
-        | BITWISE_OR { $$ = Operator.OpType.BitwiseOr; }
-        | CARRET { $$ = Operator.OpType.ExclusiveOr; }
-        | OP_SHIFT_LEFT { $$ = Operator.OpType.LeftShift; }
-        | OP_SHIFT_RIGHT { $$ = Operator.OpType.RightShift; }
-        | OP_EQ { $$ = Operator.OpType.Equality; }
-        | OP_NE { $$ = Operator.OpType.Inequality; }
-        | OP_GT { $$ = Operator.OpType.GreaterThan; }
-        | OP_LT { $$ = Operator.OpType.LessThan; }
-        | OP_GE { $$ = Operator.OpType.GreaterThanOrEqual; }
-        | OP_LE { $$ = Operator.OpType.LessThanOrEqual; }
+        | STAR { $$ = Operator.OpType.Multiply; savedOperatorLocation = GetLocation ($1); }
+        | DIV {  $$ = Operator.OpType.Division; savedOperatorLocation = GetLocation ($1); }
+        | PERCENT { $$ = Operator.OpType.Modulus; savedOperatorLocation = GetLocation ($1); }
+        | BITWISE_AND { $$ = Operator.OpType.BitwiseAnd; savedOperatorLocation = GetLocation ($1); }
+        | BITWISE_OR { $$ = Operator.OpType.BitwiseOr; savedOperatorLocation = GetLocation ($1); }
+        | CARRET { $$ = Operator.OpType.ExclusiveOr; savedOperatorLocation = GetLocation ($1); }
+        | OP_SHIFT_LEFT { $$ = Operator.OpType.LeftShift; savedOperatorLocation = GetLocation ($1); }
+        | OP_SHIFT_RIGHT { $$ = Operator.OpType.RightShift; savedOperatorLocation = GetLocation ($1); }
+        | OP_EQ { $$ = Operator.OpType.Equality; savedOperatorLocation = GetLocation ($1); }
+        | OP_NE { $$ = Operator.OpType.Inequality; savedOperatorLocation = GetLocation ($1); }
+        | OP_GT { $$ = Operator.OpType.GreaterThan; savedOperatorLocation = GetLocation ($1); }
+        | OP_LT { $$ = Operator.OpType.LessThan; savedOperatorLocation = GetLocation ($1); }
+        | OP_GE { $$ = Operator.OpType.GreaterThanOrEqual; savedOperatorLocation = GetLocation ($1); }
+        | OP_LE { $$ = Operator.OpType.LessThanOrEqual; savedOperatorLocation = GetLocation ($1); }
 	;
 
 conversion_operator_declarator
