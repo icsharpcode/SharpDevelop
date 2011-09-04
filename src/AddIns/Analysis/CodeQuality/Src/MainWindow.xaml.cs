@@ -131,9 +131,10 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		private void definitionTree_SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
-			var item = definitionTree.SelectedItem as DependecyTreeNode;
+			var item = e.AddedItems[0] as DependecyTreeNode;
 			if (item != null && item.INode.Dependency != null)
 			{
+				definitionTree.SelectedItem = item;
 				var graph = item.INode.Dependency.BuildDependencyGraph();
 				graphLayout.ChangeGraph(graph);
 			}

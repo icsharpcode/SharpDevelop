@@ -50,7 +50,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			InitializeComponent();
 			matrixControl.Colorizer = new DependencyColorizer();
 			matrixControl.HoveredCellChanged += OnHoverChanged;
-			
 		}
 		
 		
@@ -59,15 +58,13 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			var leftCol = leftTree.Items.SourceCollection as INotifyCollectionChanged;
 			leftCol.CollectionChanged += BuildLeftINodeList;
 			
-			Helper.FillTree(leftTree, module);
+			var topCol = topTree.Items.SourceCollection as INotifyCollectionChanged;
+			topCol.CollectionChanged += BuildTopINodeList;
 			
 			leftTree.MouseMove += LeftTree_MouseMove;
-			
 			topTree.MouseMove += TopTree_MouseMove;
 			
-			var topCol = topTree.Items.SourceCollection as INotifyCollectionChanged;
-			
-			topCol.CollectionChanged += BuildTopINodeList;
+			Helper.FillTree(leftTree, module);
 			Helper.FillTree(topTree, module);
 		}
 		
@@ -89,7 +86,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			if (n != null) {
 				matrixControl.HighlightLine(HeaderType.Rows,n.INode);
 				leftTree.SelectedItem = n;
-				leftTree.FocusNode(n);
 			}
 		}
 			
@@ -99,7 +95,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			if (n != null) {
 				matrixControl.HighlightLine(HeaderType.Columns,n.INode);
 				topTree.SelectedItem = n;
-				topTree.FocusNode(n);
 			}
 		}
 			
@@ -163,42 +158,54 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		
 		#endregion
 		
+		#region OnHoover
 		
 		void OnHoverChanged(object sender ,HoveredCellEventArgs <Relationship> e)
 		{
 			if (e.HoveredCell.RowIndex < leftTree.Items.Count) {
 				var leftNode = leftTree.Items[e.HoveredCell.RowIndex] as DependecyTreeNode;
 				leftTree.SelectedItem = leftNode;
-				leftTree.FocusNode(leftNode);
 			}
 			if (e.HoveredCell.ColumnIndex < topTree.Items.Count )
 			{
 				var topNode = topTree.Items[e.HoveredCell.ColumnIndex] as DependecyTreeNode;
 				topTree.SelectedItem = topNode;
-				topTree.FocusNode(topNode);
 			}
 		}
 		
+		#endregion
+		
+		#region Tree Scroll
+		bool scrollerWorking;
 		
 		void LeftTree_ScrollChanged(object sender, ScrollChangedEventArgs e)
 		{
-			Console.WriteLine("Left TreeScroll {0} - {1}",e.VerticalOffset * matrixControl.CellHeight,leftTree.Items.Count);
+			scrollerWorking = true;
 			scrollViewer.ScrollToVerticalOffset(e.VerticalOffset * matrixControl.CellHeight);
-			Console.WriteLine("--");
+			scrollerWorking = false;
 		}
 		
 		void TopTree_ScrollChanged(object sender, ScrollChangedEventArgs e)
 		{
-//			Console.WriteLine("Top TreeScroll ");
-//			scrollViewer.ScrollToHorizontalOffset(e.VerticalChange * matrixControl.CellHeight);
-//			Console.WriteLine("--");
+			scrollerWorking = true;
+			scrollViewer.ScrollToHorizontalOffset(e.VerticalOffset * matrixControl.CellWidth);
+			scrollerWorking = false;
 		}
 		
+		#endregion
+		
+		#region ScrollViewer Scroll
 		
 		void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
 		{
-//			Console.WriteLine("ScrollViewer_ScrollChanged {0} _ {1}",e.VerticalChange,scrollViewer != null);
-			//leftScrollViewer.ScrollToVerticalOffset (e.VerticalChange * matrixControl.CellHeight);
+			if (scrollerWorking) {
+				return;
+			}
+			leftScrollViewer.ScrollToVerticalOffset (e.VerticalOffset / matrixControl.CellHeight);
+			topScrollViewer.ScrollToVerticalOffset (e.HorizontalOffset / matrixControl.CellWidth);
 		}
+		
+		#endregion
+		
 	}
 }
