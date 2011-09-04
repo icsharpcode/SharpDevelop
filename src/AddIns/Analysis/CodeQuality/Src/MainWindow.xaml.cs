@@ -26,8 +26,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
 		private MetricsReader metricsReader;
-		public event PropertyChangedEventHandler PropertyChanged;
 		
+		public event PropertyChangedEventHandler PropertyChanged;
 		
 		public MetricsReader MetricsReader
 		{
@@ -43,12 +43,11 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 
-		
-		
 		public MainWindow()
 		{
 			InitializeComponent();
 		}
+		
 		
 		private void NotifyPropertyChanged(string propertyName)
 		{
@@ -58,6 +57,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 
 		private void btnOpenAssembly_Click(object sender, RoutedEventArgs e)
 		{
+			
+			var dc = this.DataContext as MainWindowTranslationViewModel;
+			
 			var fileDialog = new OpenFileDialog
 			{
 				Filter = "Component Files (*.dll, *.exe)|*.dll;*.exe"
@@ -68,16 +70,18 @@ namespace ICSharpCode.CodeQualityAnalysis
 			if (String.IsNullOrEmpty(fileDialog.FileName))
 				return;
 			
-			progressBar.Visibility = Visibility.Visible;
-			assemblyStats.Visibility = Visibility.Hidden;
-			fileAssemblyLoading.Text = System.IO.Path.GetFileName(fileDialog.FileName);
+			dc.ProgressbarVisible = Visibility.Visible;
+			dc.AssemblyStatsVisible = Visibility.Hidden;
+			dc.FileName = System.IO.Path.GetFileName(fileDialog.FileName);
 			
 			var worker = new BackgroundWorker();
 			worker.DoWork += (source, args) => MetricsReader = new MetricsReader(fileDialog.FileName);
 			worker.RunWorkerCompleted += (source, args) => {
-				progressBar.Visibility = Visibility.Hidden;
-				assemblyStats.Visibility = Visibility.Visible;
-				mainTabs.IsEnabled = true;
+
+				dc.ProgressbarVisible = Visibility.Hidden;
+				dc.AssemblyStatsVisible = Visibility.Visible;
+				dc.MainTabEnable = true;
+
 				Helper.FillTree(definitionTree, metricsReader.MainModule);
 				FillMatrix();
 			};
@@ -143,7 +147,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var vertex = vertexControl.Vertex as DependencyVertex;
 				if (vertex != null)
 				{
-					txbTypeInfo.Text = vertex.Node.GetInfo();
+					var d = this.DataContext as MainWindowTranslationViewModel;
+					d.TypeInfo = vertex.Node.GetInfo();
 				}
 			}
 		}
@@ -155,6 +160,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 
 		private void btnSaveImageGraph_Click(object sender, RoutedEventArgs e)
 		{
+		
 			var fileDialog = new SaveFileDialog()
 			{
 				Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|BMP (*.bmp)|*.bmp|TIFF (.tiff)|*.tiff"
