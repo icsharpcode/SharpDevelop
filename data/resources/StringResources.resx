@@ -7524,6 +7524,9 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Empty File</value>
   </data>
+  <data name="Templates.File.Exception.Description" xml:space="preserve">
+    <value>Creates a new Exception class.</value>
+  </data>
   <data name="Templates.File.Exception.Name" xml:space="preserve">
     <value>Exception</value>
   </data>
@@ -7661,6 +7664,9 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>ASP.NET Web Form</value>
+  </data>
+  <data name="Templates.File.WebHandler.Description" xml:space="preserve">
+    <value>Creates a ASP.NET WebHandler with code-behind.</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>ASP.NET Web Handler</value>
