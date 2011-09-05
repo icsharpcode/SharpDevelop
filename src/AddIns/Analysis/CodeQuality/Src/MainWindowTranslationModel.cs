@@ -27,17 +27,27 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		public MainWindowTranslationViewModel():base()
 		{
-			this.Title = "Code Quality Analysis";
-			this.OpenAssembly = "Open Assembly";
-			this.DependencyGraph = "Dependency Graph";
+			this.FrmTitle = "$Code Quality Analysis";
+			this.btnOpenAssembly = "$Open Assembly";
+			#region MainTab
+			this.TabDependencyGraph = "$Dependency Graph";
+			this.TabDependencyMatrix = "$Dependency Matrix";
+			this.TabMetrics = "$Metrics";
+			#endregion
+			
+			
 		}
 		
 		
-		public string Title {get;private set;}
+		public string FrmTitle {get;private set;}
 		
-		public string OpenAssembly {get; private set;}
+		public string btnOpenAssembly {get; private set;}
+		#region Main TabControl
+		public string TabDependencyGraph {get; private set;}
+		public string TabDependencyMatrix {get; private set;}
+		public string TabMetrics {get;private set;}
+		#endregion
 		
-		public string DependencyGraph {get; private set;}
 		
 		private string fileName;
 		

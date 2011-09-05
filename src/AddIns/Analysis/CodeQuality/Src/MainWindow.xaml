@@ -10,7 +10,7 @@
         xmlns:tree="http://icsharpcode.net/sharpdevelop/treeview"
 	xmlns:local="clr-namespace:ICSharpCode.CodeQualityAnalysis"
         
-        Title="{Binding Title}"
+        Title="{Binding FrmTitle}"
        
         x:Name="root">
 	<!-- 
@@ -40,14 +40,14 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 		<ToolBarTray Background="White" Grid.Row="0">
 			<ToolBar>
 				<Button Name="btnOpenAssembly"
-				        Content="{Binding OpenAssembly}"
+				        Content="{Binding BtnOpenAssembly}"
 				        Click="btnOpenAssembly_Click" 
 				        Margin="0 0 5 0"></Button>
 			</ToolBar>
 		</ToolBarTray>
 			
 		<TabControl Grid.Row="1" IsEnabled="{Binding MainTabEnable}"> <!-- It is enabled once assembly is loaded. -->
-			<TabItem Header="{Binding DependencyGraph}">
+			<TabItem Header="{Binding TabDependencyGraph}">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -107,10 +107,10 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 					           Grid.Column="4"  Grid.RowSpan="2" Padding="5" Background="LightBlue"/>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Dependency Matrix">
+			<TabItem Header="{Binding TabDependencyMatrix}">
 				<Graph:TreeMatrixControl x:Name="matrixControl"></Graph:TreeMatrixControl>
 			</TabItem>
-			<TabItem Header="Metrics">
+			<TabItem Header="{Binding TabMetrics}">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
