@@ -81,7 +81,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (textArea != null && textArea.Document != null) {
 				args.Handled = true;
 				textArea.Caret.Offset = textArea.Document.TextLength;
-				textArea.Selection = new SimpleSelection(0, textArea.Document.TextLength);
+				textArea.Selection = SimpleSelection.Create(textArea, 0, textArea.Document.TextLength);
 			}
 		}
 		
@@ -112,7 +112,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				TextArea textArea = GetTextArea(target);
 				if (textArea != null && textArea.Document != null) {
 					args.Handled = true;
-					textArea.Selection = Selection.Empty;
+					textArea.ClearSelection();
 					MoveCaret(textArea, direction);
 					textArea.Caret.BringCaretToView();
 				}
@@ -125,9 +125,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 				TextArea textArea = GetTextArea(target);
 				if (textArea != null && textArea.Document != null) {
 					args.Handled = true;
-					int oldOffset = textArea.Caret.Offset;
+					TextViewPosition oldPosition = textArea.Caret.Position;
 					MoveCaret(textArea, direction);
-					textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldOffset, textArea.Caret.Offset);
+					textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldPosition, textArea.Caret.Position);
 					textArea.Caret.BringCaretToView();
 				}
 			};

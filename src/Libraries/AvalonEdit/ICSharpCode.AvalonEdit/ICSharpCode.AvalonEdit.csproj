@@ -144,6 +144,10 @@
     <Compile Include="Editing\DottedLineMargin.cs" />
     <Compile Include="Editing\DragDropException.cs" />
     <Compile Include="Editing\EditingCommandHandler.cs" />
+    <Compile Include="Editing\EmptySelection.cs">
+      <DependentUpon>Selection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editing\SelectionSegment.cs" />
     <Compile Include="Folding\AbstractFoldingStrategy.cs" />
     <Compile Include="Folding\FoldingElementGenerator.cs" />
     <Compile Include="Folding\FoldingManager.cs" />

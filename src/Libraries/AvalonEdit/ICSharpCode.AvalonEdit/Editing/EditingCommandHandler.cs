@@ -143,7 +143,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 						if (defaultSegmentType == DefaultSegmentType.CurrentLine) {
 							segments = new ISegment[] { textArea.Document.GetLineByNumber(textArea.Caret.Line) };
 						} else if (defaultSegmentType == DefaultSegmentType.WholeDocument) {
-							segments = textArea.Document.Lines.Cast<ISegment>();
+							segments = textArea.Document.Lines;
 						} else {
 							segments = null;
 						}
@@ -181,7 +181,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
 				using (textArea.Document.RunUpdate()) {
-					if (textArea.Selection.IsMultiline(textArea.Document)) {
+					if (textArea.Selection.IsMultiline) {
 						var segment = textArea.Selection.SurroundingSegment;
 						DocumentLine start = textArea.Document.GetLineByOffset(segment.Offset);
 						DocumentLine end = textArea.Document.GetLineByOffset(segment.EndOffset);
@@ -246,7 +246,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 								// If nothing in the selection is deletable; then reset caret+selection
 								// to the previous value. This prevents the caret from moving through read-only sections.
 								textArea.Caret.Position = oldCaretPosition;
-								textArea.Selection = Selection.Empty;
+								textArea.ClearSelection();
 							}
 						}
 						textArea.RemoveSelectedText();
@@ -325,7 +325,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				return;
 			}
 			
-			string text = textArea.Selection.GetText(textArea.Document);
+			string text = textArea.Selection.GetText();
 			text = TextUtilities.NormalizeNewLines(text, Environment.NewLine);
 			textArea.OnTextCopied(new TextEventArgs(text));
 		}
@@ -399,7 +399,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 							textArea.Document.Insert(currentLine.Offset, text);
 						}
 					} else if (rectangular && textArea.Selection.IsEmpty) {
-						if (!RectangleSelection.PerformRectangularPaste(textArea, textArea.Caret.Offset, text, false))
+						if (!RectangleSelection.PerformRectangularPaste(textArea, textArea.Caret.Position, text, false))
 							textArea.ReplaceSelectionWithText(text);
 					} else {
 						textArea.ReplaceSelectionWithText(text);
@@ -417,7 +417,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
 				DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
-				textArea.Selection = new SimpleSelection(currentLine.Offset, currentLine.Offset + currentLine.TotalLength);
+				textArea.Selection = Selection.Create(textArea, currentLine.Offset, currentLine.Offset + currentLine.TotalLength);
 				textArea.RemoveSelectedText();
 				args.Handled = true;
 			}

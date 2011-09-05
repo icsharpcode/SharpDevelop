@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -17,15 +17,44 @@ namespace ICSharpCode.AvalonEdit.Editing
 	public abstract class Selection
 	{
 		/// <summary>
-		/// Gets the empty selection.
+		/// Creates a new simple selection that selects the text from startOffset to endOffset.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification="Empty selection is immutable")]
-		public static readonly Selection Empty = new SimpleSelection(-1, -1);
+		public static Selection Create(TextArea textArea, int startOffset, int endOffset)
+		{
+			if (textArea == null)
+				throw new ArgumentNullException("textArea");
+			if (startOffset == endOffset)
+				return textArea.emptySelection;
+			else
+				return new SimpleSelection(textArea, startOffset, endOffset);
+		}
+		
+		/// <summary>
+		/// Creates a new simple selection that selects the text in the specified segment.
+		/// </summary>
+		public static Selection Create(TextArea textArea, ISegment segment)
+		{
+			if (segment == null)
+				throw new ArgumentNullException("segment");
+			return Create(textArea, segment.Offset, segment.EndOffset);
+		}
+		
+		internal readonly TextArea textArea;
+		
+		/// <summary>
+		/// Constructor for Selection.
+		/// </summary>
+		protected Selection(TextArea textArea)
+		{
+			if (textArea == null)
+				throw new ArgumentNullException("textArea");
+			this.textArea = textArea;
+		}
 		
 		/// <summary>
 		/// Gets the selected text segments.
 		/// </summary>
-		public abstract IEnumerable<ISegment> Segments { get; }
+		public abstract IEnumerable<SelectionSegment> Segments { get; }
 		
 		/// <summary>
 		/// Gets the smallest segment that contains all segments in this selection.
@@ -36,7 +65,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <summary>
 		/// Replaces the selection with the specified text.
 		/// </summary>
-		public abstract void ReplaceSelectionWithText(TextArea textArea, string newText);
+		public abstract void ReplaceSelectionWithText(string newText);
 		
 		/// <summary>
 		/// Updates the selection when the document changes.
@@ -59,42 +88,39 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// Returns a new selection with the changed end point.
 		/// </summary>
 		/// <exception cref="NotSupportedException">Cannot set endpoint for empty selection</exception>
-		public abstract Selection SetEndpoint(int newEndOffset);
+		public abstract Selection SetEndpoint(TextViewPosition endPosition);
 		
 		/// <summary>
 		/// If this selection is empty, starts a new selection from <paramref name="startOffset"/> to
 		/// <paramref name="newEndOffset"/>, otherwise, changes the endpoint of this selection.
 		/// </summary>
-		public virtual Selection StartSelectionOrSetEndpoint(int startOffset, int newEndOffset)
-		{
-			if (IsEmpty)
-				return new SimpleSelection(startOffset, newEndOffset);
-			else
-				return SetEndpoint(newEndOffset);
-		}
+		public abstract Selection StartSelectionOrSetEndpoint(TextViewPosition startPosition, TextViewPosition endPosition);
 		
 		/// <summary>
 		/// Gets whether the selection is multi-line.
 		/// </summary>
-		public virtual bool IsMultiline(TextDocument document)
-		{
-			if (document == null)
-				throw new ArgumentNullException("document");
-			ISegment surroundingSegment = this.SurroundingSegment;
-			if (surroundingSegment == null)
-				return false;
-			int start = surroundingSegment.Offset;
-			int end = start + surroundingSegment.Length;
-			return document.GetLineByOffset(start) != document.GetLineByOffset(end);
+		public virtual bool IsMultiline {
+			get {
+				ISegment surroundingSegment = this.SurroundingSegment;
+				if (surroundingSegment == null)
+					return false;
+				int start = surroundingSegment.Offset;
+				int end = start + surroundingSegment.Length;
+				var document = textArea.Document;
+				if (document == null)
+					throw ThrowUtil.NoDocumentAssigned();
+				return document.GetLineByOffset(start) != document.GetLineByOffset(end);
+			}
 		}
 		
 		/// <summary>
 		/// Gets the selected text.
 		/// </summary>
-		public virtual string GetText(TextDocument document)
+		public virtual string GetText()
 		{
+			var document = textArea.Document;
 			if (document == null)
-				throw new ArgumentNullException("document");
+				throw ThrowUtil.NoDocumentAssigned();
 			StringBuilder b = null;
 			string text = null;
 			foreach (ISegment s in Segments) {
@@ -117,10 +143,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <summary>
 		/// Creates a HTML fragment for the selected text.
 		/// </summary>
-		public string CreateHtmlFragment(TextArea textArea, HtmlOptions options)
+		public string CreateHtmlFragment(HtmlOptions options)
 		{
-			if (textArea == null)
-				throw new ArgumentNullException("textArea");
 			if (options == null)
 				throw new ArgumentNullException("options");
 			IHighlighter highlighter = textArea.GetService(typeof(IHighlighter)) as IHighlighter;
@@ -166,7 +190,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// </summary>
 		public virtual DataObject CreateDataObject(TextArea textArea)
 		{
-			string text = GetText(textArea.Document);
+			string text = GetText();
 			// Ensure we use the appropriate newline sequence for the OS
 			DataObject data = new DataObject(TextUtilities.NormalizeNewLines(text, Environment.NewLine));
 			// we cannot use DataObject.SetText - then we cannot drag to SciTe
@@ -174,7 +198,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			// Also copy text in HTML format to clipboard - good for pasting text into Word
 			// or to the SharpDevelop forums.
-			HtmlClipboard.SetHtml(data, CreateHtmlFragment(textArea, new HtmlOptions(textArea.Options)));
+			HtmlClipboard.SetHtml(data, CreateHtmlFragment(new HtmlOptions(textArea.Options)));
 			return data;
 		}
 	}
