@@ -56,7 +56,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				}
 		}
 		
-		private Visibility assemblyStatsVisible;
+		private Visibility assemblyStatsVisible= Visibility.Hidden; 
 		
 		public Visibility AssemblyStatsVisible {
 			get { return assemblyStatsVisible; }
