@@ -5,7 +5,7 @@
 	<Color name="String" foreground="Blue" exampleText="string text = &quot;Hello, World!&quot;"/>
 	<Color name="Char" foreground="Magenta" exampleText="char linefeed = '\n';"/>
 	<Color name="Preprocessor" foreground="Green" exampleText="#region Title" />
-	<Color name="Punctuation" foreground="DarkGreen" exampleText="a(b.c);" />
+	<Color name="Punctuation" exampleText="a(b.c);" />
 	<Color name="ValueTypes" fontWeight="bold" foreground="Red" exampleText="bool b = true;" />
 	<Color name="ReferenceTypes" foreground="Red" exampleText="object o;" />
 	<Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" exampleText="o.ToString();"/>
