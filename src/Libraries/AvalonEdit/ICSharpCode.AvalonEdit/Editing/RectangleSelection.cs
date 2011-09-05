@@ -13,7 +13,7 @@ using ICSharpCode.AvalonEdit.Utils;
 namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
-	/// Rectangular selection.
+	/// Rectangular selection ("box selection").
 	/// </summary>
 	public sealed class RectangleSelection : Selection
 	{

@@ -224,8 +224,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public TextLine GetTextLine(int visualColumn)
 		{
-			ThrowUtil.CheckInRangeInclusive(visualColumn, "visualColumn", 0, VisualLength);
-			if (visualColumn == VisualLength)
+			if (visualColumn < 0)
+				throw new ArgumentOutOfRangeException("visualColumn");
+			if (visualColumn >= VisualLength)
 				return TextLines[TextLines.Count - 1];
 			foreach (TextLine line in TextLines) {
 				if (visualColumn < line.Length)
@@ -307,9 +308,25 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public Point GetVisualPosition(int visualColumn, VisualYPosition yPositionMode)
 		{
 			TextLine textLine = GetTextLine(visualColumn);
-			double xPos = textLine.GetDistanceFromCharacterHit(new CharacterHit(visualColumn, 0));
+			double xPos = GetTextLineVisualXPosition(textLine, visualColumn);
 			double yPos = GetTextLineVisualYPosition(textLine, yPositionMode);
 			return new Point(xPos, yPos);
+		}
+		
+		/// <summary>
+		/// Gets the distance to the left border of the text area of the specified visual column.
+		/// The visual column must belong to the specified text line.
+		/// </summary>
+		public double GetTextLineVisualXPosition(TextLine textLine, int visualColumn)
+		{
+			if (textLine == null)
+				throw new ArgumentNullException("textLine");
+			double xPos = textLine.GetDistanceFromCharacterHit(
+				new CharacterHit(Math.Min(visualColumn, VisualLength), 0));
+			if (visualColumn > VisualLength) {
+				xPos += (visualColumn - VisualLength) * textView.WideSpaceWidth;
+			}
+			return xPos;
 		}
 		
 		/// <summary>
@@ -318,7 +335,18 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public int GetVisualColumn(Point point)
 		{
+			return GetVisualColumn(point, textView.Options.EnableVirtualSpace);
+		}
+		
+		public int GetVisualColumn(Point point, bool allowVirtualSpace)
+		{
 			TextLine textLine = GetTextLineByVisualYPosition(point.Y);
+			if (point.X > textLine.WidthIncludingTrailingWhitespace) {
+				if (allowVirtualSpace && textLine == TextLines[TextLines.Count - 1]) {
+					int virtualX = (int)Math.Round((point.X - textLine.WidthIncludingTrailingWhitespace) / textView.WideSpaceWidth);
+					return VisualLength + virtualX;
+				}
+			}
 			CharacterHit ch = textLine.GetCharacterHitFromDistance(point.X);
 			return ch.FirstCharacterIndex + ch.TrailingLength;
 		}
@@ -329,12 +357,23 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public int GetVisualColumnFloor(Point point)
 		{
+			return GetVisualColumnFloor(point, textView.Options.EnableVirtualSpace);
+		}
+		
+		public int GetVisualColumnFloor(Point point, bool allowVirtualSpace)
+		{
 			TextLine textLine = GetTextLineByVisualYPosition(point.Y);
 			if (point.X > textLine.WidthIncludingTrailingWhitespace) {
-				// GetCharacterHitFromDistance returns a hit with FirstCharacterIndex=last character inline
-				// and TrailingLength=1 when clicking behind the line, so the floor function needs to handle this case
-				// specially end return the line's end column instead.
-				return GetTextLineVisualStartColumn(textLine) + textLine.Length;
+				if (allowVirtualSpace && textLine == TextLines[TextLines.Count - 1]) {
+					// clicking virtual space in the last line
+					int virtualX = (int)((point.X - textLine.WidthIncludingTrailingWhitespace) / textView.WideSpaceWidth);
+					return VisualLength + virtualX;
+				} else {
+					// GetCharacterHitFromDistance returns a hit with FirstCharacterIndex=last character in line
+					// and TrailingLength=1 when clicking behind the line, so the floor function needs to handle this case
+					// specially and return the line's end column instead.
+					return GetTextLineVisualStartColumn(textLine) + textLine.Length;
+				}
 			}
 			CharacterHit ch = textLine.GetCharacterHitFromDistance(point.X);
 			return ch.FirstCharacterIndex;
@@ -352,14 +391,23 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			if (elements.Count == 0) {
 				// special handling for empty visual lines:
-				// even though we don't have any elements,
-				// there's a single caret stop at visualColumn 0
-				if (visualColumn < 0 && direction == LogicalDirection.Forward)
-					return 0;
-				else if (visualColumn > 0 && direction == LogicalDirection.Backward)
-					return 0;
-				else
-					return -1;
+				if (textView.Options.EnableVirtualSpace) {
+					if (direction == LogicalDirection.Forward)
+						return Math.Max(0, visualColumn + 1);
+					else if (visualColumn > 0)
+						return visualColumn - 1;
+					else
+						return -1;
+				} else {
+					// even though we don't have any elements,
+					// there's a single caret stop at visualColumn 0
+					if (visualColumn < 0 && direction == LogicalDirection.Forward)
+						return 0;
+					else if (visualColumn > 0 && direction == LogicalDirection.Backward)
+						return 0;
+					else
+						return -1;
+				}
 			}
 			
 			int i;
@@ -368,7 +416,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				// If the last element doesn't handle line borders, return the line end as caret stop
 				
 				if (visualColumn > this.VisualLength && !elements[elements.Count-1].HandlesLineBorders && HasImplicitStopAtLineEnd(mode)) {
-					return this.VisualLength;
+					if (textView.Options.EnableVirtualSpace)
+						return visualColumn - 1;
+					else
+						return this.VisualLength;
 				}
 				// skip elements that start after or at visualColumn
 				for (i = elements.Count - 1; i >= 0; i--) {
@@ -407,8 +458,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				}
 				// if we've found nothing, and the last element doesn't handle line borders,
 				// return the line end as caret stop
-				if (visualColumn < this.VisualLength && !elements[elements.Count-1].HandlesLineBorders && HasImplicitStopAtLineEnd(mode))
-					return this.VisualLength;
+				if (!elements[elements.Count-1].HandlesLineBorders && HasImplicitStopAtLineEnd(mode)) {
+					if (visualColumn < this.VisualLength)
+						return this.VisualLength;
+					else if (textView.Options.EnableVirtualSpace)
+						return visualColumn + 1;
+				}
 			}
 			// we've found nothing, return -1 and let the caret search continue in the next line
 			return -1;

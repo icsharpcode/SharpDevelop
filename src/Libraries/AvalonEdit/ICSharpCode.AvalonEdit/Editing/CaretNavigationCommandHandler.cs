@@ -4,10 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media.TextFormatting;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
@@ -250,7 +250,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			// moving up/down happens using the desired visual X position
 			double xPos = textArea.Caret.DesiredXPos;
 			if (double.IsNaN(xPos))
-				xPos = textLine.GetDistanceFromCharacterHit(new CharacterHit(caretVisualColumn, 0));
+				xPos = visualLine.GetTextLineVisualXPosition(textLine, caretVisualColumn);
 			// now find the TextLine+VisualLine where the caret will end up in
 			VisualLine targetVisualLine = visualLine;
 			TextLine targetLine;
@@ -306,8 +306,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 					throw new NotSupportedException(direction.ToString());
 			}
 			if (targetLine != null) {
-				CharacterHit ch = targetLine.GetCharacterHitFromDistance(xPos);
-				SetCaretPosition(textArea, targetVisualLine, targetLine, ch, false);
+				double yPos = targetVisualLine.GetTextLineVisualYPosition(targetLine, VisualYPosition.LineMiddle);
+				int newVisualColumn = targetVisualLine.GetVisualColumn(new Point(xPos, yPos));
+				SetCaretPosition(textArea, targetVisualLine, targetLine, newVisualColumn, false);
 				textArea.Caret.DesiredXPos = xPos;
 			}
 		}
@@ -315,12 +316,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		#region SetCaretPosition
 		static void SetCaretPosition(TextArea textArea, VisualLine targetVisualLine, TextLine targetLine,
-		                             CharacterHit ch, bool allowWrapToNextLine)
+		                             int newVisualColumn, bool allowWrapToNextLine)
 		{
-			int newVisualColumn = ch.FirstCharacterIndex + ch.TrailingLength;
 			int targetLineStartCol = targetVisualLine.GetTextLineVisualStartColumn(targetLine);
-			if (!allowWrapToNextLine && newVisualColumn >= targetLineStartCol + targetLine.Length)
-				newVisualColumn = targetLineStartCol + targetLine.Length - 1;
+			if (!allowWrapToNextLine && newVisualColumn >= targetLineStartCol + targetLine.Length) {
+				if (newVisualColumn <= targetVisualLine.VisualLength)
+					newVisualColumn = targetLineStartCol + targetLine.Length - 1;
+			}
 			int newOffset = targetVisualLine.GetRelativeOffset(newVisualColumn) + targetVisualLine.FirstDocumentLine.Offset;
 			SetCaretPosition(textArea, newVisualColumn, newOffset);
 		}

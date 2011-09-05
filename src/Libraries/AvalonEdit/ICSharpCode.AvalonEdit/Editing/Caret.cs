@@ -289,7 +289,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (offsetFromVisualColumn != caretOffset) {
 					position.VisualColumn = visualLine.GetVisualColumn(caretOffset - firstDocumentLineOffset);
 				} else {
-					if (position.VisualColumn > visualLine.VisualLength) {
+					if (position.VisualColumn > visualLine.VisualLength && !textArea.Options.EnableVirtualSpace) {
 						position.VisualColumn = visualLine.VisualLength;
 					}
 				}
@@ -347,7 +347,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 			
 			TextLine textLine = visualLine.GetTextLine(position.VisualColumn);
-			double xPos = textLine.GetDistanceFromCharacterHit(new CharacterHit(position.VisualColumn, 0));
+			double xPos = visualLine.GetTextLineVisualXPosition(textLine, position.VisualColumn);
 			double lineTop = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextTop);
 			double lineBottom = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.LineBottom);
 			

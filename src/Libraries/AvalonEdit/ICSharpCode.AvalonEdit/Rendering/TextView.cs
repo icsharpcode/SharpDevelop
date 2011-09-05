@@ -1360,7 +1360,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		double wideSpaceWidth; // Width of an 'x'. Used as basis for the tab width, and for scrolling.
 		double defaultLineHeight; // Height of a line containing 'x'. Used for scrolling.
 		
-		double WideSpaceWidth {
+		internal double WideSpaceWidth {
 			get {
 				if (wideSpaceWidth == 0) {
 					MeasureWideSpaceWidthAndDefaultLineHeight();

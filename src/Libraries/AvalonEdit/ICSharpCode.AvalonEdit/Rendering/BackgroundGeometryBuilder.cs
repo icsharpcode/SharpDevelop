@@ -129,7 +129,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					if (segmentStartVCInLine == segmentEndVCInLine) {
 						// GetTextBounds crashes for length=0, so we'll handle this case with GetDistanceFromCharacterHit
 						// We need to return a rectangle to ensure empty lines are still visible
-						double pos = line.GetDistanceFromCharacterHit(new CharacterHit(segmentStartVCInLine, 0));
+						double pos = vl.GetTextLineVisualXPosition(line, segmentStartVCInLine);
 						pos -= scrollOffset.X;
 						// The following special cases are necessary to get rid of empty rectangles at the end of a TextLine if "Show Spaces" is active.
 						// If not excluded once, the same rectangle is calculated (and added) twice (since the offset could be mapped to two visual positions; end/start of line), if there is no trailing whitespace.
