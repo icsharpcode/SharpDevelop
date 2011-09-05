@@ -691,6 +691,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					} else {
 						return null;
 					}
+				case UnaryOperatorType.Await:
+					var crt = type.CastToConstructedReturnType();
+					if (crt != null && crt.Name == "Task" && crt.TypeArguments.Count == 1) {
+						return CreateResolveResult(crt.TypeArguments[0]);
+					} else {
+						return null;
+					}
 				default:
 					return CreateResolveResult(type);
 			}
