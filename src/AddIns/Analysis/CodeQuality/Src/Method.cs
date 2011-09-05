@@ -145,6 +145,28 @@ namespace ICSharpCode.CodeQualityAnalysis
 			Variables = 0;
 		}
 		
+		public IEnumerable<Type> GetAllTypes()
+        {
+        	yield return this.DeclaringType;
+        	yield return this.ReturnType;
+        	foreach (var type in this.TypeUses)
+        		yield return type;
+        	foreach (var type in this.GenericReturnTypes)
+        		yield return type;
+        }
+		
+		public IEnumerable<Method> GetAllMethods()
+		{
+			foreach (var method in this.MethodUses)
+        		yield return method;
+		}
+		
+		public IEnumerable<Field> GetAllFields()
+		{
+			foreach (var field in this.FieldUses)
+        		yield return field;
+		}
+		
 		public Relationship GetRelationship(INode node)
 		{
 			Relationship relationship = new Relationship();
@@ -152,6 +174,46 @@ namespace ICSharpCode.CodeQualityAnalysis
         	if (node == this) {
         		relationship.Relationships.Add(RelationshipType.Same);
         		return relationship;
+        	}
+			
+			if (node is Namespace) {
+        		Namespace ns = (Namespace)node;
+        		
+        		foreach (var type in this.GetAllTypes()) {
+        			if (type != null && type.Namespace == ns) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        	}
+        	
+        	if (node is Type) {
+        		Type type = (Type)node;
+        		
+        		foreach (var usedType in this.GetAllTypes()) {
+        			if (type == usedType) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        	}
+        	
+        	if (node is Method) {
+        		Method method = (Method)node;
+        		
+        		foreach (var usedMethod in this.GetAllMethods()) {
+        			if (method == usedMethod) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        	}
+        	
+        	if (node is Field) {
+        		Field field = (Field)node;
+        		
+        		foreach (var usedField in this.GetAllFields()) {
+        			if (field == usedField) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
         	}
 			
 			return relationship;

@@ -65,6 +65,34 @@ namespace ICSharpCode.CodeQualityAnalysis
             return g;
         }
         
+        public IEnumerable<Type> GetAllTypes()
+        {
+        	foreach (var type in Types) {
+        		yield return type;
+        		foreach (var usedType in type.GetAllTypes()) {
+        			yield return usedType;
+        		}
+        	}
+        }
+		
+		public IEnumerable<Method> GetAllMethods()
+		{
+			foreach (var type in Types) {
+        		foreach (var method in type.GetAllMethods()) {
+        			yield return method;
+        		}
+        	}
+		}
+		
+		public IEnumerable<Field> GetAllFields()
+		{
+			foreach (var type in Types) {
+        		foreach (var field in type.GetAllFields()) {
+        			yield return field;
+        		}
+        	}
+		}
+        
         public Relationship GetRelationship(INode node)
         {
         	Relationship relationship = new Relationship();
@@ -77,118 +105,41 @@ namespace ICSharpCode.CodeQualityAnalysis
         	if (node is Namespace) {
         		Namespace ns = (Namespace)node;
         		
-        		foreach (var type in ns.Types)
-        		{
-        			if (Types.Contains(type)) {
-        		    	relationship.AddRelationship(RelationshipType.UseThis);
-    		    	}
+        		foreach (var type in this.GetAllTypes()) {
+        			if (type != null && type.Namespace == ns) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
         		}
         	}
-
         	
         	if (node is Type) {
         		Type type = (Type)node;
         		
-        		if (this.Types.Contains(type.BaseType)) {
-        		    relationship.AddRelationship(RelationshipType.UseThis);
-    		    }
-        		
-        		foreach (var thisType in type.GenericImplementedInterfacesTypes) {
-    		    	if (this.Types.Contains(thisType)) {
-    		    		relationship.AddRelationship(RelationshipType.UseThis);
-    		    	}
-    		    }
-        		
-        		foreach (var thisType in type.ImplementedInterfaces) {
-    		    	if (this.Types.Contains(thisType)) {
-    		    		relationship.AddRelationship(RelationshipType.UseThis);
-    		    	}
-    		    }
-        		
-        		if (this.Types.Contains(type)) {
-        		    relationship.AddRelationship(RelationshipType.Contains);
-    		    }
+        		foreach (var usedType in this.GetAllTypes()) {
+        			if (type == usedType) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
         	}
         	
         	if (node is Method) {
         		Method method = (Method)node;
         		
-        		if (this.Types.Contains(method.ReturnType)) {
-        		    relationship.AddRelationship(RelationshipType.UseThis);
-    		    }
-    		    
-        		foreach (var type in method.GenericReturnTypes) {
-    		    	if (this.Types.Contains(type)) {
-    		    		relationship.AddRelationship(RelationshipType.UseThis);
-    		    	}
-    		    }
-        		
-        		foreach (var parameter in method.Parameters) {
-        			
-        			if (this.Types.Contains(parameter.ParameterType)) {
-    		    		relationship.AddRelationship(RelationshipType.UseThis);
-        			}
-        			
-        			foreach (var type in parameter.GenericTypes) {
-        				if (this.Types.Contains(type)) {
-				    		relationship.AddRelationship(RelationshipType.UseThis);
-		    			}
+        		foreach (var usedMethod in this.GetAllMethods()) {
+        			if (method == usedMethod) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
         			}
         		}
-        		
-        		foreach (var type in method.TypeUses) {
-        			if (this.Types.Contains(type)) {
-			    		relationship.AddRelationship(RelationshipType.UseThis);
-	    			}
-        		}
-        		
-        		foreach (var type in method.TypeUses) {
-        			if (this.Types.Contains(type)) {
-			    		relationship.AddRelationship(RelationshipType.UseThis);
-	    			}
-        		}
-        		
-        		foreach (var field in method.FieldUses) {
-        			foreach (var type in this.Types) {
-        				if (type.Fields.Contains(field)) {
-				    		relationship.AddRelationship(RelationshipType.UseThis);
-        				}
-	    			}
-        		}
-        		
-        		foreach (var meth in method.MethodUses) {
-        			foreach (var type in this.Types) {
-        				if (type.Methods.Contains(meth)) {
-				    		relationship.AddRelationship(RelationshipType.UseThis);
-        				}
-	    			}
-        		}
-        		
-        		foreach (var type in method.TypeUses) {
-        			if (this.Types.Contains(type)) { 
-			    		relationship.AddRelationship(RelationshipType.UseThis);
-    				}
-        				
-        		}
-        		
-        		if (this.Types.Contains(method.DeclaringType))
-    		    	relationship.AddRelationship(RelationshipType.Contains);
         	}
         	
         	if (node is Field) {
         		Field field = (Field)node;
-        		if (this.Types.Contains(field.FieldType)) {
-        		    relationship.AddRelationship(RelationshipType.UseThis);
-    		    }
-    		    
-    		    foreach (var type in field.GenericTypes) {
-    		    	if (this.Types.Contains(type)) {
-    		    		relationship.AddRelationship(RelationshipType.UseThis);
-    		    	}
-    		    }
-    		    
-    		    if (this.Types.Contains(field.DeclaringType))
-    		    	relationship.AddRelationship(RelationshipType.Contains);
+        		
+        		foreach (var usedField in this.GetAllFields()) {
+        			if (field == usedField) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
         	}
         	
         	return relationship;

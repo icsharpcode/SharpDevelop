@@ -253,67 +253,98 @@ namespace ICSharpCode.CodeQualityAnalysis
             return g;
         }
         
+        public IEnumerable<Type> GetAllTypes()
+        {
+        	foreach (var field in Fields) {
+        		foreach (var type in field.GetAllTypes()) {
+        			yield return type;
+        		}
+        	}
+        	
+        	foreach (var method in Methods) {
+        		foreach (var type in method.GetAllTypes()) {
+        			yield return type;
+        		}
+        	}
+        	
+        	yield return this.BaseType;
+        	yield return this.DeclaringType;
+        	
+        	foreach (var type in this.GenericBaseTypes) {
+        		yield return type;
+        	}
+        	
+        	foreach (var type in this.NestedTypes) {
+        		yield return type;
+        	}
+        }
+		
+		public IEnumerable<Method> GetAllMethods()
+		{
+			foreach (var method in this.Methods) {
+        		yield return method;
+        		foreach (var usedMethod in method.GetAllMethods())
+        			yield return usedMethod;
+			}
+		}
+		
+		public IEnumerable<Field> GetAllFields()
+		{
+			foreach (var field in this.Fields) {
+				yield return field;
+			}
+			
+			foreach (var method in this.Methods) {
+				foreach (var field in method.GetAllFields()) {
+					yield return field;
+				}
+			}
+		}
+        
         public Relationship GetRelationship(INode node)
         {
 			Relationship relationship = new Relationship();
-        	
-        	if (node == this) {
+        
+			if (node == this) {
         		relationship.Relationships.Add(RelationshipType.Same);
         		return relationship;
         	}
-        	
-        	if (node is Namespace) {
+			
+			if (node is Namespace) {
         		Namespace ns = (Namespace)node;
         		
-        		if (this.Namespace.Name == ns.Name) {
-        			relationship.AddRelationship(RelationshipType.UseThis);
-        		}
-        		
-        		if (this.BaseType != null && this.BaseType.Namespace.Name == ns.Name) {
-        			relationship.AddRelationship(RelationshipType.UseThis);
-        		}
-        		
-        		foreach (var type in this.GenericBaseTypes) {
-        			if (type.Namespace.Name == ns.Name) {
+        		foreach (var type in this.GetAllTypes()) {
+        			if (type != null && type.Namespace == ns) {
         				relationship.AddRelationship(RelationshipType.UseThis);
         			}
         		}
+        	}
+        	
+        	if (node is Type) {
+        		Type type = (Type)node;
         		
-        		foreach (var type in this.GenericImplementedInterfacesTypes) {
-        			if (type.Namespace.Name == ns.Name) {
+        		foreach (var usedType in this.GetAllTypes()) {
+        			if (type == usedType) {
         				relationship.AddRelationship(RelationshipType.UseThis);
         			}
         		}
+        	}
+        	
+        	if (node is Method) {
+        		Method method = (Method)node;
         		
-        		foreach (var type in this.ImplementedInterfaces) {
-        			if (type.Namespace.Name == ns.Name) {
+        		foreach (var usedMethod in this.GetAllMethods()) {
+        			if (method == usedMethod) {
         				relationship.AddRelationship(RelationshipType.UseThis);
         			}
         		}
+        	}
+        	
+        	if (node is Field) {
+        		Field field = (Field)node;
         		
-        		foreach (var field in this.Fields) {
-        			if (field.DeclaringType.Namespace.Name == ns.Name) {
-        				relationship.AddRelationship(RelationshipType.UseThis);
-        			}
-        			if (field.FieldType != null && field.FieldType.Namespace.Name == ns.Name) {
-        				relationship.AddRelationship(RelationshipType.UseThis);
-        			}
-        			if (field.GenericTypes.Any(type => type.Namespace.Name == ns.Name)) {
-        				relationship.AddRelationship(RelationshipType.UseThis);
-        			}
-        		}
-        		
-        		foreach (var method in this.Methods) {
-        			if (method.TypeUses.Any(type => type.Namespace.Name == ns.Name)) {
-        				relationship.AddRelationship(RelationshipType.UseThis);
-        			}
-        			if (method.GenericReturnTypes.Any(type => type.Namespace.Name == ns.Name)) {
-        				relationship.AddRelationship(RelationshipType.UseThis);
-        			}
-        			if (method.DeclaringType != null && method.DeclaringType.Namespace.Name == ns.Name) {
-        				relationship.AddRelationship(RelationshipType.UseThis);
-        			}
-        			if (method.ReturnType != null && method.ReturnType.Namespace.Name == ns.Name) {
+        		foreach (var usedField in this.GetAllFields()) {
+        			if (field == usedField) {
         				relationship.AddRelationship(RelationshipType.UseThis);
         			}
         		}

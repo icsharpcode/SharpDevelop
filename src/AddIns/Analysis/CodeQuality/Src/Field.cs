@@ -83,6 +83,15 @@ namespace ICSharpCode.CodeQualityAnalysis
             Dependency = null;
         }
         
+        public IEnumerable<Type> GetAllTypes()
+        {
+        	yield return FieldType;
+        	yield return DeclaringType;
+        	foreach (var genericType in GenericTypes) {
+        		yield return genericType;
+        	}
+        }
+        
         public Relationship GetRelationship(INode node)
         {
         	Relationship relationship = new Relationship();
@@ -90,6 +99,34 @@ namespace ICSharpCode.CodeQualityAnalysis
         	if (node == this) {
         		relationship.Relationships.Add(RelationshipType.Same);
         		return relationship;
+        	}
+        	
+        	if (node is Namespace) {
+        		Namespace ns = (Namespace)node;
+        		
+        		foreach (var type in this.GetAllTypes()) {
+        			if (type != null && type.Namespace == ns) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        	}
+        	
+        	if (node is Type) {
+        		Type type = (Type)node;
+        		
+        		foreach (var usedType in this.GetAllTypes()) {
+        			if (type == usedType) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        	}
+        	
+        	if (node is Field) {
+        		Field field = (Field)node;
+        		
+        		if (this == field) {
+    				relationship.AddRelationship(RelationshipType.UseThis);
+    			}
         	}
         	
         	return relationship;

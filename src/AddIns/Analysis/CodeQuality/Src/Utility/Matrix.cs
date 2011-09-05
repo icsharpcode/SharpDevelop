@@ -27,13 +27,13 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
         	}
         }
         
-        private DoubleKeyDictionary<int, int, TValue> cache;
+        private DoubleKeyDictionary<TItem, TItem, TValue> cache;
 
         protected Matrix()
         {
             headerRows = new List<Cell<TItem>>();
             headerColumns = new List<Cell<TItem>>();
-            cache = new DoubleKeyDictionary<int, int, TValue>();
+            cache = new DoubleKeyDictionary<TItem, TItem, TValue>();
         }
         
         public void AddRow(TItem value)
@@ -46,12 +46,12 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
         	headerColumns.Add(new Cell<TItem>(value));
         }
         
-        private TValue GetFromCache(int rowIndex, int columnIndex)
+        private TValue GetFromCache(TItem rowIndex, TItem columnIndex)
     	{
         	return cache[rowIndex, columnIndex];
     	}
     	
-    	private void SaveToCache(int rowIndex, int columnIndex, TValue result)
+    	private void SaveToCache(TItem rowIndex, TItem columnIndex, TValue result)
     	{
     		cache.Add(rowIndex, columnIndex, result);
     	}
@@ -64,12 +64,15 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
         		    columnIndex > HeaderColumns.Count || columnIndex < 0)
         			return default(TValue);
         		
-//        		var cacheResult = GetFromCache(rowIndex, columnIndex);
-//        		if (cacheResult != null)
-//        			return cacheResult;
+        		var from = HeaderRows[rowIndex].Value;
+				var to = HeaderColumns[columnIndex].Value;
+        		
+        		var cacheResult = GetFromCache(from, to);
+        		if (cacheResult != null)
+        			return cacheResult;
         		
     			var result = GetCellValue(rowIndex, columnIndex);
-//    			SaveToCache(rowIndex, columnIndex, result);
+    			SaveToCache(from, to, result);
     			return result;
         	}
 		}
