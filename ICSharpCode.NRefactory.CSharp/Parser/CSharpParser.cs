@@ -3194,46 +3194,56 @@ namespace ICSharpCode.NRefactory.CSharp
 			var leaf = GetOuterLeft(conversionVisitor.Unit);
 			
 			foreach (var special in top.SpecialsBag.Specials) {
+				Comment newLeaf = null;
 				
 				var comment = special as SpecialsBag.Comment;
-				if (comment == null)
+				if (comment != null) {
+					if (conversionVisitor.convertTypeSystemMode && (comment.CommentType != SpecialsBag.CommentType.Documentation))
+						continue;
+					var type = (CommentType)comment.CommentType;
+					var start = new TextLocation (comment.Line, comment.Col);
+					var end = new TextLocation (comment.EndLine, comment.EndCol);
+					newLeaf = new Comment (type, start, end) {
+							StartsLine = comment.StartsLine,
+							Content = comment.Content
+					};
+				} else {
+					// TODO: Proper handling of pre processor directives (atm got treated as comments Ast wise)
+					var directive = special as SpecialsBag.PreProcessorDirective;
+					if (directive != null)
+						newLeaf = new Comment (CommentType.SingleLine, new TextLocation (directive.Line, directive.Col), new TextLocation (directive.EndLine, directive.EndCol + 1));
+				}
+				
+				if (newLeaf == null)
 					continue;
-				if (conversionVisitor.convertTypeSystemMode && (comment.CommentType != SpecialsBag.CommentType.Documentation))
-					continue;
-				var type = (CommentType)comment.CommentType;
-				var start = new TextLocation (comment.Line, comment.Col);
-				var end = new TextLocation (comment.EndLine, comment.EndCol);
-				var domComment = new Comment (type, start, end);
-				domComment.StartsLine = comment.StartsLine;
-				domComment.Content = comment.Content;
 				
 				while (true) {
 					var nextLeaf = NextLeaf(leaf);
 					// insert comment at begin
-					if (domComment.StartLocation < leaf.StartLocation) {
+					if (newLeaf.StartLocation < leaf.StartLocation) {
 						var node = leaf.Parent ?? conversionVisitor.Unit;
 						while (node.Parent != null && node.FirstChild == leaf) {
 							leaf = node;
 							node = node.Parent;
 						}
-						node.InsertChildBefore (leaf, domComment, AstNode.Roles.Comment);
-						leaf = domComment;
+						node.InsertChildBefore (leaf, newLeaf, AstNode.Roles.Comment);
+						leaf = newLeaf;
 						break;
 					}
 					
 					// insert comment at the end
 					if (nextLeaf == null) {
 						var node = leaf.Parent ?? conversionVisitor.Unit;
-						node.AddChild(domComment, AstNode.Roles.Comment);
-						leaf = domComment;
+						node.AddChild(newLeaf, AstNode.Roles.Comment);
+						leaf = newLeaf;
 						break;
 					}
 					
 					// comment is between 2 nodes
-					if (leaf.EndLocation <= domComment.StartLocation && domComment.StartLocation <= nextLeaf.StartLocation) {
+					if (leaf.EndLocation <= newLeaf.StartLocation && newLeaf.StartLocation <= nextLeaf.StartLocation) {
 						var node = leaf.Parent ?? conversionVisitor.Unit;
-						node.InsertChildAfter(leaf, domComment, AstNode.Roles.Comment);
-						leaf = domComment;
+						node.InsertChildAfter(leaf, newLeaf, AstNode.Roles.Comment);
+						leaf = newLeaf;
 						break;
 					}
 					leaf = nextLeaf;
