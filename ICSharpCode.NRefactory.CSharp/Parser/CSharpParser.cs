@@ -241,7 +241,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				if (optAttributes == null)
 					return null;
-				
 				AttributeSection result = new AttributeSection ();
 				var loc = LocationsBag.GetLocations (optAttributes);
 				if (loc != null)
@@ -267,8 +266,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OpenBrace), 1), NamespaceDeclaration.Roles.LBrace);
 					AddToNamespace (nDecl);
 					namespaceStack.Push (nDecl);
-					
 				}
+				
 				VisitNamespaceUsings (nspace);
 				VisitNamespaceBody (nspace);
 				
@@ -3252,8 +3251,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (top == null)
 				return null;
 			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (convertTypeSystemMode, top.LocationsBag);
-			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			top.UsingsBag.Global.Accept (conversionVisitor);
+			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			InsertComments (top, conversionVisitor);
 			return conversionVisitor.Unit;
 		}
@@ -3325,8 +3324,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (top == null)
 				return null;
 			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (GenerateTypeSystemMode, top.LocationsBag);
-			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			top.UsingsBag.Global.Accept (conversionVisitor);
+			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
 			InsertComments (top, conversionVisitor);
 			if (CompilationUnitCallback != null)
 				CompilationUnitCallback (top);
