@@ -5625,6 +5625,7 @@ using_or_fixed_variable_initializer
 	| ASSIGN variable_initializer
 	  {
 		current_variable.Initializer = (Expression) $2;
+		lbag.AppendTo (current_variable, GetLocation ($1));
 		$$ = current_variable;
 	  }
 	;

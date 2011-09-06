@@ -687,12 +687,13 @@ namespace ICSharpCode.NRefactory.CSharp
 					foreach (var decl in f.Declarators) {
 						var declLoc = LocationsBag.GetLocations (decl);
 						if (declLoc != null)
-							newField.AddChild (new CSharpTokenNode (Convert (declLoc[0]), 1), FieldDeclaration.Roles.Comma);
+							newField.AddChild (new CSharpTokenNode (Convert (declLoc [0]), 1), FieldDeclaration.Roles.Comma);
 						
 						variable = new VariableInitializer ();
 						variable.AddChild (Identifier.Create (decl.Name.Value, Convert (decl.Name.Location)), VariableInitializer.Roles.Identifier);
 						if (decl.Initializer != null) {
-							variable.AddChild (new CSharpTokenNode (Convert (decl.Initializer.Location), 1), FieldDeclaration.Roles.Assign);
+							if (declLoc != null)
+								variable.AddChild (new CSharpTokenNode (Convert (declLoc [1]), 1), FieldDeclaration.Roles.Assign);
 							variable.AddChild ((Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
 						}
 						newField.AddChild (variable, FieldDeclaration.Roles.Variable);
@@ -1129,13 +1130,14 @@ namespace ICSharpCode.NRefactory.CSharp
 					foreach (var decl in e.Declarators) {
 						var declLoc = LocationsBag.GetLocations (decl);
 						if (declLoc != null)
-							newEvent.AddChild (new CSharpTokenNode (Convert (declLoc[0]), 1), FieldDeclaration.Roles.Comma);
+							newEvent.AddChild (new CSharpTokenNode (Convert (declLoc [0]), 1), FieldDeclaration.Roles.Comma);
 						
 						variable = new VariableInitializer ();
 						variable.AddChild (Identifier.Create (decl.Name.Value, Convert (decl.Name.Location)), VariableInitializer.Roles.Identifier);
 
 						if (decl.Initializer != null) {
-							variable.AddChild (new CSharpTokenNode (Convert (decl.Initializer.Location), 1), FieldDeclaration.Roles.Assign);
+							if (declLoc != null)
+								variable.AddChild (new CSharpTokenNode (Convert (declLoc [1]), 1), FieldDeclaration.Roles.Assign);
 							variable.AddChild ((Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
 						}
 						newEvent.AddChild (variable, FieldDeclaration.Roles.Variable);
@@ -1545,7 +1547,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						
 						var loc = LocationsBag.GetLocations (u.Variables);
 						if (loc != null)
-							initializer.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), VariableInitializer.Roles.Assign);
+							initializer.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), VariableInitializer.Roles.Assign);
 						if (u.Variables.Initializer != null)
 							initializer.Initializer = u.Variables.Initializer.Accept (this) as Expression;
 						
