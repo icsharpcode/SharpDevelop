@@ -565,8 +565,9 @@ qualified_identifier
 	| qualified_identifier DOT IDENTIFIER
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
-		$$ = new MemberName ((MemberName) $1, lt.Value, lt.Location);		
-		lbag.AddLocation ($$, GetLocation ($2));		
+		$$ = new MemberName ((MemberName) $1, lt.Value, lt.Location) {
+			DotLocation = GetLocation ($2)
+		};
 	  }
 	| error
 	  {
@@ -780,7 +781,7 @@ attribute
 		}
 
 		Arguments [] arguments = (Arguments []) $3;
-		ATypeNameExpression expr = mname.GetTypeExpression (lbag);
+		ATypeNameExpression expr = mname.GetTypeExpression ();
 		$$ = new Attribute (current_attr_target, expr, arguments, mname.Location, lexer.IsEscapedIdentifier (mname));
 		if (arguments != null) {
 			lbag.AddLocation ($$, savedAttrParenOpenLocation, savedAttrParenCloseLocation);
@@ -2732,8 +2733,9 @@ member_name
 	| namespace_or_type_name DOT IDENTIFIER opt_type_argument_list
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
-		$$ = new MemberName ((MemberName) $1, lt.Value, (TypeArguments) $4, lt.Location);
-		lbag.AddLocation ($$, GetLocation ($2));		
+		$$ = new MemberName ((MemberName) $1, lt.Value, (TypeArguments) $4, lt.Location) {
+			DotLocation = GetLocation ($2)
+		};
 	  }
 	;
 
@@ -2967,17 +2969,17 @@ type_expression
 		MemberName name = (MemberName) $1;
 
 		if ($2 != null) {
-			$$ = new ComposedCast (name.GetTypeExpression (lbag), (ComposedTypeSpecifier) $2);
+			$$ = new ComposedCast (name.GetTypeExpression (), (ComposedTypeSpecifier) $2);
 		} else {
 			if (name.Left == null && name.Name == "var")
 				$$ = new VarExpr (name.Location);
 			else
-				$$ = name.GetTypeExpression (lbag);
+				$$ = name.GetTypeExpression ();
 		}
 	  }
 	| namespace_or_type_name pointer_stars
 	  {
-		$$ = new ComposedCast (((MemberName) $1).GetTypeExpression (lbag), (ComposedTypeSpecifier) $2);
+		$$ = new ComposedCast (((MemberName) $1).GetTypeExpression (), (ComposedTypeSpecifier) $2);
 	  }
 	| builtin_types opt_nullable
 	  {
@@ -3140,20 +3142,23 @@ member_access
 	: primary_expression DOT IDENTIFIER opt_type_argument_list
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
-		$$ = new MemberAccess ((Expression) $1, lt.Value, (TypeArguments) $4, lt.Location);
-		lbag.AddLocation ($$, GetLocation ($2));
+		$$ = new MemberAccess ((Expression) $1, lt.Value, (TypeArguments) $4, lt.Location) {
+			DotLocation = GetLocation ($2)
+		};
 	  }
 	| builtin_types DOT IDENTIFIER opt_type_argument_list
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
-		$$ = new MemberAccess ((Expression) $1, lt.Value, (TypeArguments) $4, lt.Location);
-		lbag.AddLocation ($$, GetLocation ($2));
+		$$ = new MemberAccess ((Expression) $1, lt.Value, (TypeArguments) $4, lt.Location) {
+			DotLocation = GetLocation ($2)
+		};
 	  }
 	| BASE DOT IDENTIFIER opt_type_argument_list
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
-		$$ = new MemberAccess (new BaseThis (GetLocation ($1)), lt.Value, (TypeArguments) $4, lt.Location);
-		lbag.AddLocation ($$, GetLocation ($2));
+		$$ = new MemberAccess (new BaseThis (GetLocation ($1)), lt.Value, (TypeArguments) $4, lt.Location) {
+			DotLocation = GetLocation ($2)
+		};
 	  }
 	| qualified_alias_member IDENTIFIER opt_type_argument_list
 	  {
@@ -3719,22 +3724,28 @@ unbound_type_name
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		
-		$$ = new MemberAccess ((Expression) $1, lt.Value, lt.Location);		
+		$$ = new MemberAccess ((Expression) $1, lt.Value, lt.Location) {
+			DotLocation = GetLocation ($2)
+		};
 	  }
 	| unbound_type_name DOT IDENTIFIER generic_dimension
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		
-		$$ = new MemberAccess ((Expression) $1, lt.Value, (int) $4, lt.Location);		
+		$$ = new MemberAccess ((Expression) $1, lt.Value, (int) $4, lt.Location) {
+			DotLocation = GetLocation ($2)
+		};
 	  }
 	| namespace_or_type_name DOT IDENTIFIER generic_dimension
 	  {
-		var te = ((MemberName) $1).GetTypeExpression (lbag);
+		var te = ((MemberName) $1).GetTypeExpression ();
 		if (te.HasTypeArguments)
 			Error_TypeExpected (GetLocation ($4));
 
 		var lt = (Tokenizer.LocatedToken) $3;
-		$$ = new MemberAccess (te, lt.Value, (int) $4, lt.Location);		
+		$$ = new MemberAccess (te, lt.Value, (int) $4, lt.Location) {
+			DotLocation = GetLocation ($2)
+		};
 	  }
 	;
 

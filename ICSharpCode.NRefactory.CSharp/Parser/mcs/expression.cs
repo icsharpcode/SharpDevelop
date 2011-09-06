@@ -7763,6 +7763,13 @@ namespace Mono.CSharp
 	{
 		protected Expression expr;
 
+#if FULL_AST
+		public Location DotLocation {
+			get;
+			set;
+		}
+#endif
+		
 		public MemberAccess (Expression expr, string id)
 			: base (id, expr.Location)
 		{

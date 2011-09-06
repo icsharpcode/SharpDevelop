@@ -134,10 +134,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					var memberType = new MemberType ();
 					memberType.AddChild (ConvertToType (ma.LeftExpression), MemberType.TargetRole);
-					
-					var location = LocationsBag.GetLocations (ma);
-					if (location != null)
-						memberType.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MemberType.Roles.Dot);
+					memberType.AddChild (new CSharpTokenNode (Convert (ma.DotLocation), 1), MemberType.Roles.Dot);
 					
 					memberType.MemberNameToken = Identifier.Create (ma.Name, Convert (ma.Location));
 					
@@ -292,10 +289,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					namespaceDecl.InsertChildBefore (insertPos, newIdent, NamespaceDeclaration.Roles.Identifier);
 					insertPos = newIdent;
 					
-					var location = LocationsBag.GetLocations (memberName);
-					
-					if (location != null) {
-						var dotToken = new CSharpTokenNode (Convert (location[0]), 1);
+					if (!memberName.DotLocation.IsNull) {
+						var dotToken = new CSharpTokenNode (Convert (memberName.DotLocation), 1);
 						namespaceDecl.InsertChildBefore (insertPos, dotToken, NamespaceDeclaration.Roles.Dot);
 						insertPos = dotToken;
 					}
@@ -342,9 +337,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					t.IsDoubleColon = memberName.IsDoubleColon;
 					t.AddChild (ConvertImport (memberName.Left), MemberType.TargetRole);
 					
-					var location = LocationsBag.GetLocations (memberName);
-					if (location != null)
-						t.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MemberType.Roles.Dot);
+					if (!memberName.DotLocation.IsNull)
+						t.AddChild (new CSharpTokenNode (Convert (memberName.DotLocation), 1), MemberType.Roles.Dot);
 					
 					t.AddChild (Identifier.Create (memberName.Name, Convert(memberName.Location)), MemberType.Roles.Identifier);
 					AddTypeArguments (t, memberName.TypeArguments);
@@ -1914,9 +1908,9 @@ namespace ICSharpCode.NRefactory.CSharp
 						var leftExpr = memberAccess.LeftExpression.Accept (this);
 						result.AddChild ((Expression)leftExpr, MemberReferenceExpression.Roles.TargetExpression);
 					}
-					var location = LocationsBag.GetLocations (memberAccess);
-					if (location != null)
-						result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MemberReferenceExpression.Roles.Dot);
+					if (!memberAccess.DotLocation.IsNull) {
+						result.AddChild (new CSharpTokenNode (Convert (memberAccess.DotLocation), 1), MemberReferenceExpression.Roles.Dot);
+					}
 				}
 						
 				result.AddChild (Identifier.Create (memberAccess.Name, Convert (memberAccess.Location)), MemberReferenceExpression.Roles.Identifier);
