@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override TextLocation EndLocation {
 			get {
-				return new TextLocation (Location.Line, Location.Column);
+				return new TextLocation (Location.Line, Location.Column + 1);
 			}
 		}
 		
