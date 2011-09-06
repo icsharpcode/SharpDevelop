@@ -3194,6 +3194,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			var leaf = GetOuterLeft(conversionVisitor.Unit);
 			
 			foreach (var special in top.SpecialsBag.Specials) {
+				
 				var comment = special as SpecialsBag.Comment;
 				if (comment == null)
 					continue;
@@ -3211,6 +3212,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					// insert comment at begin
 					if (domComment.StartLocation < leaf.StartLocation) {
 						var node = leaf.Parent ?? conversionVisitor.Unit;
+						while (node.Parent != null && node.FirstChild == leaf) {
+							leaf = node;
+							node = node.Parent;
+						}
 						node.InsertChildBefore (leaf, domComment, AstNode.Roles.Comment);
 						leaf = domComment;
 						break;
