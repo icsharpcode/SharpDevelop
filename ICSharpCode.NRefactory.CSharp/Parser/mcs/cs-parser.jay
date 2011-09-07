@@ -4166,7 +4166,7 @@ lambda_parameter_list
 	  {
 		var pars = new List<Parameter> (4);
 		pars.Add ((Parameter) $1);
-
+		parameterListCommas.Clear ();
 		$$ = pars;
 	  }
 	| lambda_parameter_list COMMA lambda_parameter
@@ -4178,7 +4178,7 @@ lambda_parameter_list
 		}
 		
 		pars.Add (p);
-		lbag.AppendTo (pars, GetLocation ($2));
+		parameterListCommas.Add (GetLocation ($2));
 
 		$$ = pars;
 	  }
@@ -4209,6 +4209,7 @@ opt_lambda_parameter_list
 	| lambda_parameter_list		{ 
 		var pars_list = (List<Parameter>) $1;
 		$$ = new ParametersCompiled (pars_list.ToArray ());
+		lbag.AddLocation ($$, parameterListCommas);
 	  }
 	;
 

@@ -2249,9 +2249,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				var paramLocation = LocationsBag.GetLocations (parameters);
 				
 				for (int i = 0; i < parameters.Count; i++) {
-					if (paramLocation != null && i > 0 && i - 1 < paramLocation.Count) {
-						parent.AddChild (new CSharpTokenNode (Convert (paramLocation [i - 1]), 1), ParameterDeclaration.Roles.Comma);
-					}
 					var p = (Parameter)parameters.FixedParameters [i];
 					var location = LocationsBag.GetLocations (p);
 					ParameterDeclaration parameterDeclarationExpression = new ParameterDeclaration ();
@@ -2291,6 +2288,9 @@ namespace ICSharpCode.NRefactory.CSharp
 						parameterDeclarationExpression.AddChild ((Expression)p.DefaultValue.Accept (this), ParameterDeclaration.Roles.Expression);
 					}
 					parent.AddChild (parameterDeclarationExpression, InvocationExpression.Roles.Parameter);
+					if (paramLocation != null && i < paramLocation.Count) {
+						parent.AddChild (new CSharpTokenNode (Convert (paramLocation [i]), 1), ParameterDeclaration.Roles.Comma);
+					}
 				}
 			}
 			
