@@ -16,7 +16,7 @@
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
-		UpgradeCode="BEA7A5F1-423F-47AD-9286-6A803A844AC5"
+		UpgradeCode="EAB97D14-7713-4001-98E0-0414F495ECB8"
 		Version="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)">
 		
 		<!-- When a new major SharpDevelop version should be allowed to be installed in parallel to old versions,
@@ -28,11 +28,11 @@
 			Compressed="yes"/>
 		
 		<!-- Upgrade information -->
-		<Upgrade Id="BEA7A5F1-423F-47AD-9286-6A803A844AC5">
+		<Upgrade Id="EAB97D14-7713-4001-98E0-0414F495ECB8">
 			<!-- The UpgradeCode must be changed to allow two versions of SharpDevelop to be installed side-by-side -->
 			
 			<!-- Checks for older versions -->
-			<UpgradeVersion Minimum="4.2.0"
+			<UpgradeVersion Minimum="4.3.0"
 				IncludeMinimum="yes"
 				Maximum="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)"
 				IncludeMaximum="no" 

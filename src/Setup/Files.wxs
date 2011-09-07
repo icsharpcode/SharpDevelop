@@ -1697,7 +1697,7 @@
 			</Directory>
 			<!-- SharpDevelop Start menu folder -->
 			<Directory Id="ProgramMenuFolder" Name="Programs">
-				<Component Id="SharpDevelopProgramMenuItems" Guid="E7C5EA6C-D3D2-4567-BA9F-377D6D6BCB66">
+				<Component Id="SharpDevelopProgramMenuItems" Guid="D0C47C33-1DD1-41DF-BB48-968C7B4F7C08">
 					<!--
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
@@ -1708,7 +1708,7 @@
 			</Directory>
 			<!-- Desktop shortcuts -->
 			<Directory Id="DesktopFolder" Name="Desktop">
-				<Component Id="DesktopFolderItems" Guid="2C49B793-F6B6-4AF9-BDD5-7C8D61270FD9">
+				<Component Id="DesktopFolderItems" Guid="1443FDA1-E22B-4B84-B321-F12960D3FF36">
 					<!--
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
