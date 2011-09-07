@@ -5,7 +5,7 @@ using System;
 using System.Data;
 using System.Globalization;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.DataAccess
 {
 	/// <summary>
 	/// This Class checks for invalid SqlStatements

@@ -2707,6 +2707,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.AntialiasedFontCheckBox" xml:space="preserve">
     <value>&amp;Gebruik anti-alias lettertype</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.ChangeMarkerMarginCheckBox" xml:space="preserve">
+    <value>Zet de 'Wijzigen Markering' kantlijn aan.</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox" xml:space="preserve">
     <value>&amp;Code Completeren inschakelen</value>
   </data>
@@ -5529,6 +5532,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols" xml:space="preserve">
     <value>Overschakelen naar een functie zonder symbolen is niet mogelijk.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
+    <value>Wisselen naar een functie zonder symbolen zonder dat de gedecompileerde code opties zijn ingeschakeld.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[Externe methodes]</value>
   </data>
@@ -5775,6 +5781,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.SetCurrentStatement" xml:space="preserve">
     <value>Stel momentele instructie in</value>
   </data>
+  <data name="MainWindow.Windows.Debug.StopDebugging.Message" xml:space="preserve">
+    <value>Wilt u stoppen met foutzoeken?</value>
+  </data>
   <data name="MainWindow.Windows.Debug.StopProcessDialog.Message" xml:space="preserve">
     <value>Wilt u het proces ontkoppelen of afsluiten?</value>
   </data>
@@ -5787,8 +5796,14 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction" xml:space="preserve">
     <value>Stappen is niet mogelijk, er is geen actieve functie geselecteerd.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
+    <value>Wisselen naar een thread zonder beschikbaar frame is niet mogelijk.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning" xml:space="preserve">
     <value>Threads wisselen is niet mogelijk als de foutopsporing actief is.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
+    <value>Wisselen naar een thread in gedecompileerde code is niet mogelijk als de gedecompileerde code opties niet zijn ingeschakeld.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Freeze" xml:space="preserve">
     <value>Bevries</value>
@@ -8121,15 +8136,6 @@ Startfout:</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Gebruiker:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Dat u zou moeten uitkijken naar nieuwere versies van SharpDevelop, uw vrienden erover vertellen en hoe ermee coole C# programma's te schrijven!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Dat u het sjabloon eindvenster kan openen met Ctrl+J</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Dat je kunt typen "? name = ...;" (C#) of "Dim name As ? = ..."(VB) en SharpDevelop vervangt het vraagteken door het type van "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Buffer opties</value>

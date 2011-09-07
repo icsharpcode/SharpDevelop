@@ -55,10 +55,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						action = (Debugging.BreakpointAction)Enum.Parse(typeof(Debugging.BreakpointAction), v[5]);
 						scriptLanguage = v[6];
 						script = v[7];
-						int ilfrom = Convert.ToInt32(v[8]);
-						int ilto = Convert.ToInt32(v[9]);
 						
-						bbm = new DecompiledBreakpointBookmark(null, ilfrom, ilto, fileName, new TextLocation(lineNumber, columnNumber), action, scriptLanguage, script);
+						bbm = new DecompiledBreakpointBookmark(fileName, new TextLocation(columnNumber, lineNumber), action, scriptLanguage, script);
 						bbm.IsEnabled = bool.Parse(v[4]);
 						bbm.Action = action;
 						bbm.ScriptLanguage = scriptLanguage;
@@ -125,10 +123,6 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					b.Append(bbm.ScriptLanguage);
 					b.Append('|');
 					b.Append(bbm.Condition);
-					b.Append('|');
-					b.Append(bbm.ILFrom);
-					b.Append('|');
-					b.Append(bbm.ILTo);
 				} else if (bookmark is Debugging.BreakpointBookmark) {
 					var bbm = (Debugging.BreakpointBookmark)bookmark;
 					b.Append('|');

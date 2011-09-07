@@ -41,7 +41,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (isResizable) {
 				Rect bounds = PropertyService.Get(propertyName, GetDefaultBounds(window));
 				bounds.Offset(ownerLocation.X, ownerLocation.Y);
-				bounds = Validate(bounds.TransformToDevice(window).ToSystemDrawing()).ToWpf().TransformFromDevice(window);
+				window.SourceInitialized += delegate {
+					bounds = Validate(bounds.TransformToDevice(window).ToSystemDrawing())
+						.ToWpf().TransformFromDevice(window);
+				};
 				window.Left = bounds.X;
 				window.Top = bounds.Y;
 				window.Width = bounds.Width;
@@ -50,9 +53,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Size size = new Size(window.ActualWidth, window.ActualHeight);
 				Point location = PropertyService.Get(propertyName, GetDefaultLocation(window));
 				location.Offset(ownerLocation.X, ownerLocation.Y);
-				var bounds = Validate(new Rect(location, size).TransformToDevice(window).ToSystemDrawing()).ToWpf().TransformFromDevice(window);
-				window.Left = bounds.X;
-				window.Top = bounds.Y;
+				window.SourceInitialized += delegate {
+					var bounds = Validate(new Rect(location, size).TransformToDevice(window).ToSystemDrawing())
+						.ToWpf().TransformFromDevice(window);
+					window.Left = bounds.X;
+					window.Top = bounds.Y;
+				};
 			}
 			window.Closing += delegate {
 				var relativeToOwner = GetLocationRelativeToOwner(window);

@@ -253,15 +253,104 @@ namespace ICSharpCode.CodeQualityAnalysis
             return g;
         }
         
+        public IEnumerable<Type> GetAllTypes()
+        {
+        	foreach (var field in Fields) {
+        		foreach (var type in field.GetAllTypes()) {
+        			yield return type;
+        		}
+        	}
+        	
+        	foreach (var method in Methods) {
+        		foreach (var type in method.GetAllTypes()) {
+        			yield return type;
+        		}
+        	}
+        	
+        	yield return this.BaseType;
+        	yield return this.DeclaringType;
+        	
+        	foreach (var type in this.GenericBaseTypes) {
+        		yield return type;
+        	}
+        	
+        	foreach (var type in this.NestedTypes) {
+        		yield return type;
+        	}
+        }
+		
+		public IEnumerable<Method> GetAllMethods()
+		{
+			foreach (var method in this.Methods) {
+        		yield return method;
+        		foreach (var usedMethod in method.GetAllMethods())
+        			yield return usedMethod;
+			}
+		}
+		
+		public IEnumerable<Field> GetAllFields()
+		{
+			foreach (var field in this.Fields) {
+				yield return field;
+			}
+			
+			foreach (var method in this.Methods) {
+				foreach (var field in method.GetAllFields()) {
+					yield return field;
+				}
+			}
+		}
+        
         public Relationship GetRelationship(INode node)
         {
-//        	if (node is Namespace) {
-//        		Namespace ns = (Namespace)node;
-//        		if (ns.Types.Contains(this)
-//        		    return RelationshipType.Contains;
-//        	}
-
-			return new Relationship();
+			Relationship relationship = new Relationship();
+        
+			if (node == this) {
+        		relationship.Relationships.Add(RelationshipType.Same);
+        		return relationship;
+        	}
+			
+			if (node is Namespace) {
+        		Namespace ns = (Namespace)node;
+        		
+        		foreach (var type in this.GetAllTypes()) {
+        			if (type != null && type.Namespace == ns) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        	}
+        	
+        	if (node is Type) {
+        		Type type = (Type)node;
+        		
+        		foreach (var usedType in this.GetAllTypes()) {
+        			if (type == usedType) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        	}
+        	
+        	if (node is Method) {
+        		Method method = (Method)node;
+        		
+        		foreach (var usedMethod in this.GetAllMethods()) {
+        			if (method == usedMethod) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        	}
+        	
+        	if (node is Field) {
+        		Field field = (Field)node;
+        		
+        		foreach (var usedField in this.GetAllFields()) {
+        			if (field == usedField) {
+        				relationship.AddRelationship(RelationshipType.UseThis);
+        			}
+        		}
+        	}
+        	
+        	return relationship;
         }
 
         public override string ToString()

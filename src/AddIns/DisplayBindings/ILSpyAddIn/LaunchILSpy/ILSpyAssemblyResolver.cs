@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn.LaunchILSpy
@@ -16,14 +17,23 @@ namespace ICSharpCode.ILSpyAddIn.LaunchILSpy
 	{
 		readonly DirectoryInfo directoryInfo;
 		readonly IDictionary<string, AssemblyDefinition> cache;
+		readonly IDictionary<string, AssemblyDefinition> localAssembliesCache;
 		
 		public ILSpyAssemblyResolver(string decompiledAssemblyFolder)
 		{
 			if (string.IsNullOrEmpty(decompiledAssemblyFolder))
 				throw new ArgumentException("Invalid working folder");
 			
+			FolderPath = decompiledAssemblyFolder;
 			this.directoryInfo = new DirectoryInfo(decompiledAssemblyFolder);
 			this.cache = new Dictionary<string, AssemblyDefinition> ();
+			this.localAssembliesCache = new Dictionary<string, AssemblyDefinition>();
+			
+			ReadLocalAssemblies();
+		}
+		
+		public string FolderPath {
+			get; private set;
 		}
 		
 		public AssemblyDefinition Resolve(AssemblyNameReference name)
@@ -44,13 +54,9 @@ namespace ICSharpCode.ILSpyAddIn.LaunchILSpy
 				if (cache.TryGetValue(name.FullName, out assembly))
 					return assembly;
 
-				// serach into assemblyDecompiledFolder
-				var file = this.directoryInfo.GetFiles()
-					.Where(f => f != null && f.FullName.Contains(name.Name))
-					.FirstOrDefault();
-				
-				if (file != null) {
-					assembly = AssemblyDefinition.ReadAssembly(file.FullName, parameters);
+				// search into assemblyDecompiledFolder
+				if (localAssembliesCache.ContainsKey(name.FullName)) {
+					assembly = localAssembliesCache[name.FullName];
 				}
 				
 				if (assembly == null) {
@@ -67,7 +73,7 @@ namespace ICSharpCode.ILSpyAddIn.LaunchILSpy
 				}
 				return assembly;
 			} catch (Exception ex) {
-				LoggingService.Error("Exception: " + ex.Message);
+				LoggingService.Error("Exception (ILSpyAssemblyResolver): " + ex.Message);
 				return null;
 			}
 		}
@@ -83,6 +89,19 @@ namespace ICSharpCode.ILSpyAddIn.LaunchILSpy
 				throw new ArgumentException("fullName is null or empty");
 
 			return Resolve(AssemblyNameReference.Parse(fullName), parameters);
+		}
+		
+		void ReadLocalAssemblies()
+		{
+			// read local assemblies
+			foreach (var file in this.directoryInfo.GetFiles()) {
+				try {
+					var localAssembly = AssemblyDefinition.ReadAssembly(file.FullName);
+					localAssembliesCache.Add(localAssembly.FullName, localAssembly);
+				} catch {
+					// unable to read assembly file
+				}
+			}
 		}
 		
 		#region FindAssemblyInGac
@@ -113,7 +132,7 @@ namespace ICSharpCode.ILSpyAddIn.LaunchILSpy
 		// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		//
 
-		static readonly string[] gac_paths = { Fusion.GetGacPath(false), Fusion.GetGacPath(true) };
+		static readonly string[] gac_paths = { GacInterop.GacRootPathV2, GacInterop.GacRootPathV4 };
 		static readonly string[] gacs = { "GAC_MSIL", "GAC_32", "GAC" };
 		static readonly string[] prefixes = { string.Empty, "v4.0_" };
 		

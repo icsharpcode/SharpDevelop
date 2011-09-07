@@ -7,59 +7,47 @@
         xmlns:src="clr-namespace:ICSharpCode.CodeQualityAnalysis"
         xmlns:debug="clr-namespace:System.Diagnostics;assembly=System"
         xmlns:datavis="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit"
-        Title="Code Quality Analysis"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        xmlns:tree="http://icsharpcode.net/sharpdevelop/treeview"
+	xmlns:local="clr-namespace:ICSharpCode.CodeQualityAnalysis"
+        
+        Title="{Binding FrmTitle}"
+       
         x:Name="root">
+	<!-- 
+ Title="Code Quality Analysis"
+DataContext="{Binding RelativeSource={RelativeSource Self}}"
+ -->
+	  <Window.DataContext>
+        <local:MainWindowTranslationViewModel />
+    </Window.DataContext>
+
 	<Window.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="../Resources/GraphTemplate.xaml" />
+			<ResourceDictionary Source="../Resources/GridSplitterTemplate.xaml" />
 			</ResourceDictionary.MergedDictionaries>
-			
-			<DataTemplate x:Key="MemberTemplate">
-				<StackPanel Orientation="Horizontal">
-					<Image Source="{Binding Path=Icon}" Margin="0, 0, 5, 0" />
-					<TextBlock Text="{Binding Path=Name}" />
-				</StackPanel>
-			</DataTemplate>
-			
-			<HierarchicalDataTemplate x:Key="TypeTemplate"
-				ItemTemplate="{StaticResource MemberTemplate}"
-				ItemsSource="{Binding Members}">
-				<StackPanel Orientation="Horizontal">
-					<Image Source="{Binding Path=Icon}"  Margin="0, 0, 5, 0" />
-					<TextBlock Text="{Binding Path=Name}" />
-				</StackPanel>
-			</HierarchicalDataTemplate>
-			
-			<HierarchicalDataTemplate x:Key="NamespaceTemplate"
-				ItemsSource="{Binding Types}"
-				ItemTemplate="{StaticResource TypeTemplate}">
-				<StackPanel Orientation="Horizontal">
-					<Image Source="{Binding Path=Icon}"  Margin="0, 0, 5, 0" />
-					<TextBlock Text="{Binding Path=Name}" />
-				</StackPanel>
-			</HierarchicalDataTemplate>
-			
-			<HierarchicalDataTemplate ItemsSource="{Binding Namespaces}"
-				ItemTemplate="{StaticResource NamespaceTemplate}"
-				x:Key="ModuleTemplate">
-				<StackPanel Orientation="Horizontal">
-					<Image Source="{Binding Path=Icon}"  Margin="0, 0, 5, 0" />
-					<TextBlock Text="{Binding Path=Name}" />
-				</StackPanel>
-			</HierarchicalDataTemplate>
 		</ResourceDictionary>
 	</Window.Resources>
 	
 	<Grid>
 		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
 			<RowDefinition />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		
-		<TabControl Grid.Row="0">
-			<TabItem Header="Dependency Graph">
+		<ToolBarTray Background="White" Grid.Row="0">
+			<ToolBar>
+				<Button Name="btnOpenAssembly"
+				        Content="{Binding BtnOpenAssembly}"
+				        Click="btnOpenAssembly_Click" 
+				        Margin="0 0 5 0"></Button>
+			</ToolBar>
+		</ToolBarTray>
+			
+		<TabControl Grid.Row="1" IsEnabled="{Binding MainTabEnable}"> <!-- It is enabled once assembly is loaded. -->
+			<TabItem Header="{Binding TabDependencyGraph}">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -68,13 +56,14 @@
 					
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="250px" />
+						<ColumnDefinition Width="3"></ColumnDefinition>
 						<ColumnDefinition />
+						<ColumnDefinition Width="3"></ColumnDefinition>
 						<ColumnDefinition Width="200px" />
 					</Grid.ColumnDefinitions>
 					
-					<ToolBarTray Background="White" Grid.Row="0" Grid.ColumnSpan="2">
+					<ToolBarTray Background="White" Grid.Row="0" Grid.ColumnSpan="3">
 						<ToolBar>
-							<Button Name="btnOpenAssembly" Click="btnOpenAssembly_Click" Margin="0 0 5 0">Open Assembly</Button>
 							<Button Name="btnRelayout" Click="btnRelayout_Click" Margin="0 0 5 0">Relayout</Button>
 							<Button Name="btnContinueLayout" Click="btnContinueLayout_Click" Margin="0 0 5 0">Continue Layout</Button>
 							<Button Name="btnResetGraph" Click="btnResetGraph_Click" Margin="0 0 5 0">Reset Graph</Button>
@@ -82,29 +71,46 @@
 						</ToolBar>
 					</ToolBarTray>
 					
-					<TreeView Name="definitionTree" Grid.Row="1" Grid.Column="0"
-					          SelectedItemChanged="definitionTree_SelectedItemChanged"
-					          ItemsSource="{Binding}"
-					          DataContext="{Binding Path=MetricsReader.Modules}"
-					          ItemTemplate="{StaticResource ModuleTemplate}">
-					</TreeView>
 					
-					<Controls:ZoomControl Grid.Row="1" Grid.Column="1" Name="zoom" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
+					<tree:SharpTreeView Name="definitionTree"
+						Grid.Row="1" Grid.Column="0"
+						Margin="2"
+						SelectionChanged="definitionTree_SelectedItemChanged">
+					</tree:SharpTreeView>
+					
+					<GridSplitter Grid.Column="1"
+					              Grid.Row="1"					             
+					              Grid.RowSpan="2"
+					              ResizeDirection="Columns"
+					              HorizontalAlignment="Stretch"
+					              VerticalAlignment="Stretch"
+								  Style="{DynamicResource GridSplitterStyle1}"></GridSplitter>
+
+					<Controls:ZoomControl Grid.Row="1" Grid.Column="2" Name="zoom" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
 						<Graph:DependencyGraphLayout x:Name="graphLayout"
 							LayoutAlgorithmType="LinLog"
 							OverlapRemovalAlgorithmType="FSA"
 							HighlightAlgorithmType="Simple"
 							VertexClick="graphLayout_VertexClick"
 						/>
+					
 					</Controls:ZoomControl>
 					
-					<TextBlock Name="txbTypeInfo" Grid.Column="3" Grid.Row="1"/>
+					<GridSplitter Grid.Column="3"
+					              Grid.RowSpan="2"
+					              ResizeDirection="Columns"
+					          		Style="{DynamicResource GridSplitterStyle1}"></GridSplitter>
+					
+					<TextBlock Name="txbTypeInfo"
+					           Text="{Binding TypeInfo}"
+					           Margin="2"
+					           Grid.Column="4"  Grid.RowSpan="2" Padding="5" Background="LightBlue"/>
 				</Grid>
 			</TabItem>
-			<TabItem Header="Dependency Matrix">
+			<TabItem Header="{Binding TabDependencyMatrix}">
 				<Graph:TreeMatrixControl x:Name="matrixControl"></Graph:TreeMatrixControl>
 			</TabItem>
-			<TabItem Header="Metrics">
+			<TabItem Header="{Binding TabMetrics}">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -147,45 +153,45 @@
 				</Grid>
 			</TabItem>
 		</TabControl>
-		<StatusBar Grid.Row="1">
-			<StatusBarItem HorizontalAlignment="Left" x:Name="progressBar" Visibility="Hidden">
+		<StatusBar Grid.Row="2">
+			<StatusBarItem HorizontalAlignment="Left" Visibility="{Binding ProgressbarVisible}">
 				<StackPanel Orientation="Horizontal">
 					<TextBlock Text="Loading " />
-					<TextBlock x:Name="fileAssemblyLoading" />
+					<TextBlock Text="{Binding FileName}"></TextBlock>
 					<TextBlock Text="..." Margin="0, 0, 5, 0" />
 					<ProgressBar IsIndeterminate="True" Width="95" Height="15" />
 				</StackPanel>
 			</StatusBarItem>
-			<StatusBarItem HorizontalAlignment="Right" x:Name="assemblyStats" Visibility="Hidden">
+			<StatusBarItem HorizontalAlignment="Right" Visibility="{Binding AssemblyStatsVisible}">
 				<StackPanel Orientation="Horizontal">
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="Namespaces: " />
-							<TextBlock Text="{Binding Path=MetricsReader.MainModule.Namespaces.Count}" />
+							<TextBlock Text="{Binding Path=MainModule.Namespaces.Count}" />
 						</StackPanel>
 					</StatusBarItem>
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="Types: " />
-							<TextBlock Text="{Binding Path=MetricsReader.MainModule.TypesCount}" />
+							<TextBlock Text="{Binding Path=MainModule.TypesCount}" />
 						</StackPanel>
 					</StatusBarItem>
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="Methods: " />
-							<TextBlock Text="{Binding Path=MetricsReader.MainModule.MethodsCount}" />
+							<TextBlock Text="{Binding Path=MainModule.MethodsCount}" />
 						</StackPanel>
 					</StatusBarItem>
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="Fields: " />
-							<TextBlock Text="{Binding Path=MetricsReader.MainModule.FieldsCount}" />
+							<TextBlock Text="{Binding Path=MainModule.FieldsCount}" />
 						</StackPanel>
 					</StatusBarItem>
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="IL instructions: " />
-							<TextBlock Text="{Binding Path=MetricsReader.MainModule.InstructionsCount}" />
+							<TextBlock Text="{Binding Path=MainModule.InstructionsCount}" />
 						</StackPanel>
 					</StatusBarItem>
 				</StackPanel>

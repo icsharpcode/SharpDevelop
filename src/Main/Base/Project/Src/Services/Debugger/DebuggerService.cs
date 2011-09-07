@@ -3,10 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -253,22 +251,29 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber)
+		/// <summary>
+		/// Toggles a breakpoint bookmark.
+		/// </summary>
+		/// <param name="editor">Text editor where the bookmark is toggled.</param>
+		/// <param name="lineNumber">Line number.</param>
+		/// <param name="breakpointType">Type of breakpoint bookmark.</param>
+		/// <param name="parameters">Optional constructor parameters.</param>
+		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber, Type breakpointType, object[] parameters = null)
 		{
+			if (editor == null)
+				throw new ArgumentNullException("editor");
+			
+			if (breakpointType == null)
+				throw new ArgumentNullException("breakpointType");
+			
+			if (!typeof(BreakpointBookmark).IsAssignableFrom(breakpointType))
+				throw new ArgumentException("breakpointType is not a BreakpointBookmark");
+			
 			BookmarkManager.ToggleBookmark(
 				editor, lineNumber,
 				b => b.CanToggle && b is BreakpointBookmark,
-				location => new BreakpointBookmark(editor.FileName, location, BreakpointAction.Break, "", ""));
-		}
-		
-		public static void ToggleBreakpointAt(MemberReference memberReference, ITextEditor editor, int lineNumber)
-		{
-			// no bookmark on the line: create a new breakpoint
-			BookmarkManager.ToggleBookmark(
-				editor, lineNumber,
-				b => b.CanToggle,
-				location => new DecompiledBreakpointBookmark(
-					memberReference, 0, 0, editor.FileName, location, BreakpointAction.Break, "", ""));
+				location => (BreakpointBookmark)Activator.CreateInstance(breakpointType, 
+				                                                         parameters ?? new object[] { editor.FileName, location, BreakpointAction.Break, "", ""}));
 		}
 		
 		/* TODO: reimplement this stuff
@@ -458,5 +463,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// Gets the local variable index.
 		/// </summary>
 		object GetLocalVariableIndex(int typeToken, int memberToken, string name);
+		
+		/// <summary>
+		/// Gets an implementation of an assembly resolver.
+		/// </summary>
+		/// <param name="assemblyFile">Assembly file path.</param>
+		/// <returns>An <see cref="IAssemblyResolver"/>.</returns>
+		IAssemblyResolver GetAssemblyResolver(string assemblyFile);
 	}
 }

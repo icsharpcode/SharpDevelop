@@ -316,5 +316,58 @@ namespace PackageManagement.Tests
 			
 			Assert.IsFalse(lastUpdated.HasValue);
 		}
+		
+		[Test]
+		public void IsLatestVersion_WrappedPackageIsNotLatestVersion_ReturnsFalse()
+		{
+			CreatePackage();
+			fakePackage.IsLatestVersion = false;
+			bool result = package.IsLatestVersion;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsLatestVersion_WrappedPackageHasOneDependency_ReturnsTrue()
+		{
+			CreatePackage();
+			fakePackage.IsLatestVersion = true;
+			bool result = package.IsLatestVersion;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void Published_PackageWrapsPackageThatHasPublishedDateOffset_ReturnsDateTimeOffsetFromWrappedPackage()
+		{
+			CreatePackage();
+			var dateTime = new DateTime(2011, 1, 2);
+			var expectedDateTimeOffset = new DateTimeOffset(dateTime);
+			fakePackage.Published = expectedDateTimeOffset;
+			
+			DateTimeOffset? published = package.Published;
+			
+			Assert.AreEqual(expectedDateTimeOffset, published.Value);
+		}
+		
+		[Test]
+		public void Copyright_WrappedPackageCopyrightIsTest_ReturnsTest()
+		{
+			CreatePackage();
+			fakePackage.Copyright = "Test";
+			string copyright = package.Copyright;
+			
+			Assert.AreEqual("Test", copyright);
+		}
+		
+		[Test]
+		public void ReleaseNotes_WrappedPackageReleaseNotesIsTest_ReturnsTest()
+		{
+			CreatePackage();
+			fakePackage.ReleaseNotes = "Test";
+			string releaseNotes = package.ReleaseNotes;
+			
+			Assert.AreEqual("Test", releaseNotes);
+		}
 	}
 }

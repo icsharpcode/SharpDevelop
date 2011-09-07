@@ -595,6 +595,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
+		[Browsable(false)]
 		public Properties ProjectSpecificProperties { get; protected set; }
 		
 		public virtual string GetDefaultNamespace(string fileName)

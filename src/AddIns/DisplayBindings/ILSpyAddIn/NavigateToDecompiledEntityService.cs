@@ -48,29 +48,45 @@ namespace ICSharpCode.ILSpyAddIn
 			if (string.IsNullOrEmpty(typeName))
 				throw new ArgumentException("typeName is null or empty");
 			
-			foreach (var vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
-				if (string.Equals(vc.AssemblyFile, assemblyFile, StringComparison.OrdinalIgnoreCase) && typeName == vc.FullTypeName) {
-					vc.WorkbenchWindow.SelectWindow();
-					vc.JumpToEntity(entityTag);
+			foreach (var viewContent in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
+				if (string.Equals(viewContent.AssemblyFile, assemblyFile, StringComparison.OrdinalIgnoreCase) && typeName == viewContent.FullTypeName) {
+					viewContent.WorkbenchWindow.SelectWindow();
+					viewContent.JumpToEntity(entityTag);
 					return;
 				}
 			}
 			WorkbenchSingleton.Workbench.ShowView(new DecompiledViewContent(assemblyFile, typeName, entityTag));
 		}
 		
-		public bool NavigateToMember(string assemblyFile, string typeName, string entityTag, int lineNumber)
+		public bool NavigateToMember(string assemblyFile, string typeName, string entityTag, int lineNumber, bool updateMarker)
 		{
-			//close the window if exists - this is a workaround
-			foreach (var vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
-				if (string.Equals(vc.AssemblyFile, assemblyFile, StringComparison.OrdinalIgnoreCase) && typeName == vc.FullTypeName) {
-					vc.WorkbenchWindow.CloseWindow(true);
-					break;
+			if (string.IsNullOrEmpty(assemblyFile))
+				throw new ArgumentException("assemblyFile is null or empty");
+			
+			if (string.IsNullOrEmpty(typeName))
+				throw new ArgumentException("typeName is null or empty");
+			
+			// jump to line number if the decompiled view content exits - no need for a new decompilation
+			foreach (var viewContent in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
+				if (string.Equals(viewContent.AssemblyFile, assemblyFile, StringComparison.OrdinalIgnoreCase) && typeName == viewContent.FullTypeName) {
+					if (updateMarker) {
+						viewContent.UpdateDebuggingUI();
+					}
+					viewContent.JumpToLineNumber(lineNumber);
+					viewContent.WorkbenchWindow.SelectWindow();
+					return true;
 				}
 			}
 			
-			var view = new DecompiledViewContent(assemblyFile, typeName, entityTag);
-			view.DecompilationFinished += delegate { view.JumpTo(lineNumber); };
-			WorkbenchSingleton.Workbench.ShowView(view);
+			// create a new decompiled view
+			var decompiledView = new DecompiledViewContent(assemblyFile, typeName, entityTag);
+			decompiledView.DecompilationFinished += delegate {
+				if (updateMarker) {
+					decompiledView.UpdateDebuggingUI();
+				}
+				decompiledView.JumpToLineNumber(lineNumber);
+			};
+			WorkbenchSingleton.Workbench.ShowView(decompiledView);
 			return true;
 		}
 	}

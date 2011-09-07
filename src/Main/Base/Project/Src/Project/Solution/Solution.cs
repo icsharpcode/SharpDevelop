@@ -34,6 +34,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.changeWatcher = changeWatcher;
 		}
 		
+		[BrowsableAttribute(false)]
 		public Microsoft.Build.Evaluation.ProjectCollection MSBuildProjectCollection { get; private set; }
 		
 		#region Enumerate projects/folders

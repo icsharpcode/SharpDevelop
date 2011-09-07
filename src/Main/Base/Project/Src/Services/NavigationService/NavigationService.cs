@@ -8,7 +8,6 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
-using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -470,7 +469,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		#region Navigate to Member
 		
-		public static bool NavigateTo(string assemblyFile, string typeName, string entityTag, int lineNumber = 0)
+		public static bool NavigateTo(string assemblyFile, string typeName, string entityTag, int lineNumber = 0, bool updateMarker = true)
 		{
 			if (string.IsNullOrEmpty(assemblyFile))
 				throw new ArgumentException("assemblyFile is null or empty");
@@ -479,7 +478,7 @@ namespace ICSharpCode.SharpDevelop
 				throw new ArgumentException("typeName is null or empty");
 			
 			foreach (var item in AddInTree.BuildItems<INavigateToMemberService>("/SharpDevelop/Services/NavigateToEntityService", null, false)) {
-				if (item.NavigateToMember(assemblyFile, typeName, entityTag, lineNumber))
+				if (item.NavigateToMember(assemblyFile, typeName, entityTag, lineNumber, updateMarker))
 					return true;
 			}
 			return false;
@@ -507,6 +506,6 @@ namespace ICSharpCode.SharpDevelop
 	/// </remarks>
 	public interface INavigateToMemberService
 	{
-		bool NavigateToMember(string assemblyFile, string typeName, string entityTag, int lineNumber);
+		bool NavigateToMember(string assemblyFile, string typeName, string entityTag, int lineNumber, bool updateMarker);
 	}
 }

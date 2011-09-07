@@ -62,11 +62,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			}
 			
-			localVarList.WatchItems.Clear();
 			using(new PrintTimes("Local Variables refresh")) {
 				try {
 					Utils.DoEvents(debuggedProcess);
-					var frame = !debuggedProcess.IsInExternalCode ? debuggedProcess.SelectedStackFrame : debuggedProcess.SelectedThread.MostRecentStackFrame;
+					StackFrame frame = debuggedProcess.GetCurrentExecutingFrame();
+					if (frame == null) return;
+					
+					localVarList.WatchItems.Clear();
 					foreach (var item in new StackFrameNode(frame).ChildNodes) {
 						localVarList.WatchItems.Add(item);
 					}

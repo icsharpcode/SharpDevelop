@@ -88,6 +88,9 @@ namespace ICSharpCode.GitAddIn
 		
 		internal static string GetBlobHash(string gitExe, string fileName)
 		{
+			if (!File.Exists(fileName))
+				return null;
+			
 			ProcessRunner runner = new ProcessRunner();
 			runner.WorkingDirectory = Path.GetDirectoryName(fileName);
 			runner.Start(gitExe, "ls-tree HEAD " + Path.GetFileName(fileName));
@@ -107,6 +110,8 @@ namespace ICSharpCode.GitAddIn
 		
 		Stream OpenOutput(string gitExe, string fileName, string blobHash)
 		{
+			if (!File.Exists(fileName))
+				return null;
 			if (blobHash == null)
 				return null;
 			
@@ -140,6 +145,8 @@ namespace ICSharpCode.GitAddIn
 		
 		public IDisposable WatchBaseVersionChanges(string fileName, EventHandler callback)
 		{
+			if (!File.Exists(fileName))
+				return null;
 			if (!Git.IsInWorkingCopy(fileName))
 				return null;
 			

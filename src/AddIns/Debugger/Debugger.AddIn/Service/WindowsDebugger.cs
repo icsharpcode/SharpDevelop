@@ -2,7 +2,6 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -84,15 +83,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		public bool BreakAtBeginning {
 			get;
 			set;
-		}
-		
-		public bool IsInExternalCode {
-			get {
-				if (debuggedProcess == null)
-					return true;
-				
-				return debuggedProcess.IsInExternalCode;
-			}
 		}
 		
 		protected virtual void OnProcessSelected(ProcessEventArgs e)
@@ -537,11 +527,11 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			}
 			
-			var frame = debuggedProcess.SelectedStackFrame ?? debuggedProcess.SelectedThread.MostRecentStackFrame;
+			var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 			if (frame == null) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
-				if (IsInExternalCode) {
+				if (!frame.HasSymbols) {
 					// get frame info from external code mappings
 					frame = GetStackFrame();
 				}
@@ -562,11 +552,11 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			}
 			
-			var frame = debuggedProcess.SelectedStackFrame ?? debuggedProcess.SelectedThread.MostRecentStackFrame;
+			var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 			if (frame == null) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepOver}");
 			} else {
-				if (IsInExternalCode) {
+				if (!frame.HasSymbols) {
 					// get frame info from external code mappings
 					frame = GetStackFrame();
 				}
@@ -587,11 +577,11 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			}
 			
-			var frame = debuggedProcess.SelectedStackFrame ?? debuggedProcess.SelectedThread.MostRecentStackFrame;
+			var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 			if (frame == null) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
-				if (IsInExternalCode) {
+				if (!frame.HasSymbols) {
 					// get frame info from external code mappings
 					frame = GetStackFrame();
 				}
@@ -623,13 +613,13 @@ namespace ICSharpCode.SharpDevelop.Services
 				return null;
 			}
 			
-			var stackFrame = !debuggedProcess.IsInExternalCode ? debuggedProcess.SelectedStackFrame : debuggedProcess.SelectedThread.MostRecentStackFrame;
+			var frame = debuggedProcess.GetCurrentExecutingFrame();
 			try {
-				object data = debuggerDecompilerService.GetLocalVariableIndex(stackFrame.MethodInfo.DeclaringType.MetadataToken, 
-				                                                              stackFrame.MethodInfo.MetadataToken,
+				object data = debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
+				                                                              frame.MethodInfo.MetadataToken,
 				                                                              variableName);
 				// evaluate expression
-				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, stackFrame, data);
+				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, frame, data);
 			} catch {
 				throw;
 			}
@@ -694,10 +684,11 @@ namespace ICSharpCode.SharpDevelop.Services
 				var image = ExpressionNode.GetImageForLocalVariable(out imageName);
 				ExpressionNode expressionNode = new ExpressionNode(null, image, variableName, tooltipExpression);
 				expressionNode.ImageName = imageName;
-				return new DebuggerTooltipControl(logicalPosition, expressionNode) { ShowPins = !IsInExternalCode };
-			} catch (GetValueException) {
+				return new DebuggerTooltipControl(logicalPosition, expressionNode) { ShowPins = debuggedProcess.GetCurrentExecutingFrame().HasSymbols };
+			} catch (System.Exception ex) {
+				LoggingService.Error("Error on GetTooltipControl: " + ex.Message);
 				return null;
-			}
+			} 
 		}
 		
 		public ITreeNode GetNode(string variable, string currentImageName = null)
@@ -765,7 +756,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			// init NDebugger
 			debugger = new NDebugger();
-			debugger.Options = DebuggingOptions.Instance;			
+			debugger.Options = DebuggingOptions.Instance;
 			debugger.DebuggerTraceMessage    += debugger_TraceMessage;
 			debugger.Processes.Added         += debugger_ProcessStarted;
 			debugger.Processes.Removed       += debugger_ProcessExited;
@@ -797,29 +788,40 @@ namespace ICSharpCode.SharpDevelop.Services
 			Breakpoint breakpoint = null;
 			
 			if (bookmark is DecompiledBreakpointBookmark) {
-				var dbb = (DecompiledBreakpointBookmark)bookmark;
-				var memberReference = dbb.MemberReference;
-				int token = memberReference.MetadataToken.ToInt32();
-				
-				if (!debuggerDecompilerService.CheckMappings(token))
-					debuggerDecompilerService.DecompileOnDemand(memberReference as TypeDefinition);
-				
-				int[] ilRanges;
-				int methodToken;
-				if (debuggerDecompilerService.GetILAndTokenByLineNumber(token, dbb.LineNumber, out ilRanges, out methodToken)) {
-					dbb.ILFrom = ilRanges[0];
-					dbb.ILTo = ilRanges[1];
-					// create BP
-					breakpoint = new ILBreakpoint(
-						debugger,
-						dbb.MemberReference.FullName,
-						dbb.LineNumber,
-						memberReference.MetadataToken.ToInt32(),
-						methodToken,
-						dbb.ILFrom,
-						dbb.IsEnabled);
+				try {
+					if (debuggerDecompilerService == null) {
+						LoggingService.Warn("No IDebuggerDecompilerService found!");
+						return;
+					}
+					var dbb = (DecompiledBreakpointBookmark)bookmark;
+					MemberReference memberReference = null;
 					
-					debugger.Breakpoints.Add(breakpoint);
+					string assemblyFile, typeName;
+					if (DecompiledBreakpointBookmark.GetAssemblyAndType(dbb.FileName, out assemblyFile, out typeName)) {
+						memberReference = dbb.GetMemberReference(debuggerDecompilerService.GetAssemblyResolver(assemblyFile));
+					}
+					
+					int token = memberReference.MetadataToken.ToInt32();
+					if (!debuggerDecompilerService.CheckMappings(token))
+						debuggerDecompilerService.DecompileOnDemand(memberReference as TypeDefinition);
+					
+					int[] ilRanges;
+					int methodToken;
+					if (debuggerDecompilerService.GetILAndTokenByLineNumber(token, dbb.LineNumber, out ilRanges, out methodToken)) {
+						// create BP
+						breakpoint = new ILBreakpoint(
+							debugger,
+							memberReference.FullName,
+							dbb.LineNumber,
+							memberReference.MetadataToken.ToInt32(),
+							methodToken,
+							ilRanges[0],
+							dbb.IsEnabled);
+						
+						debugger.Breakpoints.Add(breakpoint);
+					}
+				} catch (System.Exception ex) {
+					LoggingService.Error("Error on DecompiledBreakpointBookmark: " + ex.Message);
 				}
 			} else {
 				breakpoint = debugger.Breakpoints.Add(bookmark.FileName, null, bookmark.LineNumber, 0, bookmark.IsEnabled);
@@ -1072,64 +1074,78 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			
 			WorkbenchSingleton.MainWindow.Activate();
-			DebuggerService.RemoveCurrentLineMarker();
 			
-			if (!IsInExternalCode) {
-				SourcecodeSegment nextStatement = debuggedProcess.NextStatement;
-				if (nextStatement != null) {
-					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
+			
+			if (debuggedProcess.IsSelectedFrameForced()) {
+				if (debuggedProcess.SelectedStackFrame != null && debuggedProcess.SelectedStackFrame.HasSymbols) {
+					JumpToSourceCode();
+				} else {
+					JumpToDecompiledCode(debuggedProcess.SelectedStackFrame);
 				}
 			} else {
-				if (debuggerDecompilerService == null) {
-					LoggingService.Warn("No IDebuggerDecompilerService found!");
-					return;
-				}
-				// use most recent stack frame because we don't have the symbols
 				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
-				if (frame == null)
-					return;
-				int typeToken = frame.MethodInfo.DeclaringType.MetadataToken;
-				
-				// get external data
-				int methodToken = frame.MethodInfo.MetadataToken;
-				int ilOffset = frame.IP;
-				
-				int[] ilRanges = null;
-				int line = -1;
-				bool isMatch = false;
-				if (debuggerDecompilerService.GetILAndLineNumber(typeToken, methodToken, ilOffset, out ilRanges, out line, out isMatch)) {
-					debuggerDecompilerService.DebugStepInformation = null; // we do not need to step into/out
-
-					// update marker
-					var debugType = (DebugType)frame.MethodInfo.DeclaringType;
-					
-					foreach (dynamic vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<AbstractViewContentWithoutFile>()) {
-						if (vc == null || vc.MemberReference == null)
-							continue;
-						
-						if (vc.MemberReference.MetadataToken.ToInt32() == debugType.MetadataToken) {
-							CurrentLineBookmark.SetPosition(vc, line, 0, line, 0);
-							var wbw = vc.WorkbenchWindow as IWorkbenchWindow;
-							if (wbw != null)
-								wbw.SelectWindow();
-							return;
-						}
-					}
-					// the decompiled content was closed so we have to recreate it
-					StepIntoUnknownFrame(frame, methodToken, ilOffset);
+				// other pause reasons
+				if (frame.HasSymbols) {
+					JumpToSourceCode();
 				} else {
-					StepIntoUnknownFrame(frame, methodToken, ilOffset);
+					// use most recent stack frame because we don't have the symbols
+					JumpToDecompiledCode(debuggedProcess.SelectedThread.MostRecentStackFrame);
 				}
-				
 			}
 		}
 
-		void StepIntoUnknownFrame(Debugger.StackFrame frame, int token, int ilOffset)
+		void JumpToSourceCode()
 		{
+			if (debuggedProcess == null || debuggedProcess.SelectedThread == null)
+				return;
+			
+			SourcecodeSegment nextStatement = debuggedProcess.NextStatement;
+			if (nextStatement != null) {
+				DebuggerService.RemoveCurrentLineMarker();
+				DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
+			}
+		}
+		
+		void JumpToDecompiledCode(Debugger.StackFrame frame)
+		{
+			if (frame == null) {
+				LoggingService.Error("No stack frame!");
+				return;
+			}
+			
+			if (debuggerDecompilerService == null) {
+				LoggingService.Warn("No IDebuggerDecompilerService found!");
+				return;
+			}
+			
+			// check for options - if these options are enabled, debugging decompiled code should not continue
+			if (debuggedProcess.Options.EnableJustMyCode || debuggedProcess.Options.StepOverNoSymbols) {
+				LoggingService.Info("Decompiled code debugging is disabled!");
+				return;
+			}
+			DebuggerService.RemoveCurrentLineMarker();
+			// get external data
+			int typeToken = frame.MethodInfo.DeclaringType.MetadataToken;
+			int methodToken = frame.MethodInfo.MetadataToken;
+			int ilOffset = frame.IP;
+			int[] ilRanges = null;
+			int line = -1;
+			bool isMatch = false;
 			var debugType = (DebugType)frame.MethodInfo.DeclaringType;
-			string fullName = debugType.FullNameWithoutGenericArguments;
-			debuggerDecompilerService.DebugStepInformation = Tuple.Create(token, ilOffset);
-			NavigationService.NavigateTo(debugType.DebugModule.FullPath, debugType.FullNameWithoutGenericArguments, string.Empty);
+			debuggerDecompilerService.DebugStepInformation = Tuple.Create(methodToken, ilOffset);
+			
+			if (debuggerDecompilerService.GetILAndLineNumber(typeToken, methodToken, ilOffset, out ilRanges, out line, out isMatch)) {
+				// update marker & navigate to line
+				NavigationService.NavigateTo(debugType.DebugModule.FullPath,
+				                             debugType.FullNameWithoutGenericArguments,
+				                             string.Empty,
+				                             line);
+			} else {
+				// no line => do decompilation
+				NavigationService.NavigateTo(debugType.DebugModule.FullPath,
+				                             debugType.FullNameWithoutGenericArguments,
+				                             string.Empty);
+			}
 		}
 		
 		StopAttachedProcessDialogResult ShowStopAttachedProcessDialog()
