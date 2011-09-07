@@ -1680,6 +1680,7 @@ parameter_array
 	  {
 		var lt = (Tokenizer.LocatedToken) $4;
 		$$ = new ParamsParameter ((FullNamedExpression) $3, lt.Value, (Attributes) $1, lt.Location);
+		lbag.AddLocation ($$, savedLocation);
 	  }
 	| opt_attributes params_modifier type IDENTIFIER ASSIGN constant_expression
 	  {
@@ -1687,6 +1688,7 @@ parameter_array
 		
 		var lt = (Tokenizer.LocatedToken) $4;
 		$$ = new ParamsParameter ((FullNamedExpression) $3, lt.Value, (Attributes) $1, lt.Location);		
+		lbag.AddLocation ($$, savedLocation);
 	  }
 	| opt_attributes params_modifier type error
 	  {
@@ -1700,6 +1702,7 @@ params_modifier
 	  {
 		if ((valid_param_mod & ParameterModifierType.Params) == 0)
 			report.Error (1670, (GetLocation ($1)), "The `params' modifier is not allowed in current context");
+		savedLocation = GetLocation ($1);
 	  }
 	| PARAMS parameter_modifier
 	  {
@@ -1709,6 +1712,7 @@ params_modifier
 		} else {
 			report.Error (1611, GetLocation ($1), "The params parameter cannot be declared as ref or out");
 		}	  
+		savedLocation = GetLocation ($1);
 	  }
 	| PARAMS params_modifier
 	  {
