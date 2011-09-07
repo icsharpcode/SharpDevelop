@@ -1459,9 +1459,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				var result = new GotoStatement ();
 				var location = LocationsBag.GetLocations (gotoStatement);
 				result.AddChild (new CSharpTokenNode (Convert (gotoStatement.loc), "goto".Length), GotoStatement.Roles.Keyword);
-				result.AddChild (Identifier.Create (gotoStatement.Target, Convert (gotoStatement.loc)), GotoStatement.Roles.Identifier);
+				var loc = location != null ? Convert (location [0]) : TextLocation.Empty;
+				result.AddChild (Identifier.Create (gotoStatement.Target, loc), GotoStatement.Roles.Identifier);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), GotoStatement.Roles.Semicolon);
+					result.AddChild (new CSharpTokenNode (Convert (location [1]), 1), GotoStatement.Roles.Semicolon);
 				
 				return result;
 			}
