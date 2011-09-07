@@ -198,8 +198,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.Type = ConvertToType (attr.TypeNameExpression);
 					var loc = LocationsBag.GetLocations (attr);
 					result.HasArgumentList = loc != null;
+					int pos = 0;
 					if (loc != null)
-						result.AddChild (new CSharpTokenNode (Convert (loc [0]), 1), AttributeSection.Roles.LPar);
+						result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), 1), AttributeSection.Roles.LPar);
 						
 					if (attr.PosArguments != null) {
 						foreach (var arg in attr.PosArguments) {
@@ -210,12 +211,14 @@ namespace ICSharpCode.NRefactory.CSharp
 								
 								var argLoc = LocationsBag.GetLocations (na);
 								if (argLoc != null)
-									newArg.AddChild (new CSharpTokenNode (Convert (argLoc[0]), 1), NamedArgumentExpression.Roles.Colon);
+									newArg.AddChild (new CSharpTokenNode (Convert (argLoc [0]), 1), NamedArgumentExpression.Roles.Colon);
 								newArg.AddChild ((Expression)na.Expr.Accept (this), NamedExpression.Roles.Expression);
 								result.AddChild (newArg, Attribute.Roles.Argument);
-								continue;
+							} else {
+								result.AddChild ((Expression)arg.Expr.Accept (this), Attribute.Roles.Argument);
 							}
-							result.AddChild ((Expression)arg.Expr.Accept (this), Attribute.Roles.Argument);
+							if (loc != null && pos + 1 < loc.Count)
+								result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), 1), AttributeSection.Roles.Comma);
 						}
 					}
 					if (attr.NamedArguments != null) { 
@@ -228,10 +231,12 @@ namespace ICSharpCode.NRefactory.CSharp
 								newArg.AddChild (new CSharpTokenNode (Convert (argLoc[0]), 1), NamedExpression.Roles.Assign);
 							newArg.AddChild ((Expression)na.Expr.Accept (this), NamedExpression.Roles.Expression);
 							result.AddChild (newArg, Attribute.Roles.Argument);
+							if (loc != null && pos + 1 < loc.Count)
+								result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), 1), AttributeSection.Roles.Comma);
 						}
 					}
-					if (loc != null)
-						result.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), AttributeSection.Roles.RPar);
+					if (loc != null && pos < loc.Count)
+						result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), 1), AttributeSection.Roles.RPar);
 					
 					yield return result;
 				}
