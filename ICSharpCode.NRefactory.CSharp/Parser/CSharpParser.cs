@@ -3201,9 +3201,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		static void InsertComments (CompilerCompilationUnit top, ConversionVisitor conversionVisitor)
 		{
-			var leaf = GetOuterLeft(conversionVisitor.Unit);
+			var leaf = GetOuterLeft (conversionVisitor.Unit);
 			
-			foreach (var special in top.SpecialsBag.Specials) {
+			for (int i = 0; i < top.SpecialsBag.Specials.Count; i++) {
+				var special = top.SpecialsBag.Specials [i];
 				Comment newLeaf = null;
 				
 				var comment = special as SpecialsBag.Comment;
@@ -3220,15 +3221,21 @@ namespace ICSharpCode.NRefactory.CSharp
 				} else {
 					// TODO: Proper handling of pre processor directives (atm got treated as comments Ast wise)
 					var directive = special as SpecialsBag.PreProcessorDirective;
-					if (directive != null)
+					if (directive != null) {
+						//FixMe:Search correct #endif
 						newLeaf = new Comment (CommentType.SingleLine, new TextLocation (directive.Line, directive.Col), new TextLocation (directive.EndLine, directive.EndCol + 1));
+						if (!directive.Take && i + 1 < top.SpecialsBag.Specials.Count) {
+							var s = top.SpecialsBag.Specials [i + 1] as SpecialsBag.PreProcessorDirective;
+							newLeaf = new Comment (CommentType.SingleLine, new TextLocation (directive.Line, directive.Col), new TextLocation (s.Line, s.Col));
+						}
+					}
 				}
 				
 				if (newLeaf == null)
 					continue;
 				
 				while (true) {
-					var nextLeaf = NextLeaf(leaf);
+					var nextLeaf = NextLeaf (leaf);
 					// insert comment at begin
 					if (newLeaf.StartLocation < leaf.StartLocation) {
 						var node = leaf.Parent ?? conversionVisitor.Unit;
@@ -3244,7 +3251,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					// insert comment at the end
 					if (nextLeaf == null) {
 						var node = leaf.Parent ?? conversionVisitor.Unit;
-						node.AddChild(newLeaf, AstNode.Roles.Comment);
+						node.AddChild (newLeaf, AstNode.Roles.Comment);
 						leaf = newLeaf;
 						break;
 					}
@@ -3252,7 +3259,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					// comment is between 2 nodes
 					if (leaf.EndLocation <= newLeaf.StartLocation && newLeaf.StartLocation <= nextLeaf.StartLocation) {
 						var node = leaf.Parent ?? conversionVisitor.Unit;
-						node.InsertChildAfter(leaf, newLeaf, AstNode.Roles.Comment);
+						node.InsertChildAfter (leaf, newLeaf, AstNode.Roles.Comment);
 						leaf = newLeaf;
 						break;
 					}

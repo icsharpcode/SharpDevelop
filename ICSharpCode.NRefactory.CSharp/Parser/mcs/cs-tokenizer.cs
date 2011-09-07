@@ -2578,6 +2578,7 @@ namespace Mono.CSharp
 					ifstack.Push (flags | TAKING);
 					return true;
 				}
+				sbag.SkipIf ();
 				ifstack.Push (flags);
 				return false;
 
