@@ -1471,6 +1471,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new LabelStatement ();
 				result.AddChild (Identifier.Create (labeledStatement.Name, Convert (labeledStatement.loc)), LabelStatement.Roles.Identifier);
+				var location = LocationsBag.GetLocations (labeledStatement);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location [0]), 1), LabelStatement.Roles.Colon);
 				return result;
 			}
 			

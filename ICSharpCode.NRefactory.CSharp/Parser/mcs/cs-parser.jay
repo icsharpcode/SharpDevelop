@@ -4810,7 +4810,7 @@ labeled_statement
 	  {
 		var lt = (Tokenizer.LocatedToken) $1;
 		LabeledStatement labeled = new LabeledStatement (lt.Value, current_block, lt.Location);
-
+		lbag.AddLocation (labeled, GetLocation ($2));
 		current_block.AddLabel (labeled);
 		current_block.AddStatement (labeled);
 	  }

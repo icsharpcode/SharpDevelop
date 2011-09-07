@@ -7497,7 +7497,7 @@ void case_724()
 {
 		var lt = (Tokenizer.LocatedToken) yyVals[-1+yyTop];
 		LabeledStatement labeled = new LabeledStatement (lt.Value, current_block, lt.Location);
-
+		lbag.AddLocation (labeled, GetLocation (yyVals[0+yyTop]));
 		current_block.AddLabel (labeled);
 		current_block.AddStatement (labeled);
 	  }
