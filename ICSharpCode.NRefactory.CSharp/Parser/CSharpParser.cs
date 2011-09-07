@@ -1257,7 +1257,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						init.AddChild (Identifier.Create (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
 						if (decl.Initializer != null) {
 							if (loc != null && loc.Count > 1)
-								result.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), VariableInitializer.Roles.Assign);
+								init.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), VariableInitializer.Roles.Assign);
 							init.AddChild ((Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
 						} else {
 						}
@@ -3251,7 +3251,7 @@ namespace ICSharpCode.NRefactory.CSharp
 									endifLevel++;
 									continue;
 								}
-								if (s.Cmd == Tokenizer.PreprocessorDirective.Endif) {
+								if (s.Cmd == Tokenizer.PreprocessorDirective.Endif || endifLevel == 0 && s.Cmd == Tokenizer.PreprocessorDirective.Else) {
 									if (endifLevel == 0) {
 										endif = s;
 										i = j;
