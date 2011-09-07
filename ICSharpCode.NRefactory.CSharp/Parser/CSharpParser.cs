@@ -3227,11 +3227,30 @@ namespace ICSharpCode.NRefactory.CSharp
 					// TODO: Proper handling of pre processor directives (atm got treated as comments Ast wise)
 					var directive = special as SpecialsBag.PreProcessorDirective;
 					if (directive != null) {
-						//FixMe:Search correct #endif
 						newLeaf = new Comment (CommentType.SingleLine, new TextLocation (directive.Line, directive.Col), new TextLocation (directive.EndLine, directive.EndCol + 1));
-						if (!directive.Take && i + 1 < top.SpecialsBag.Specials.Count) {
-							var s = top.SpecialsBag.Specials [i + 1] as SpecialsBag.PreProcessorDirective;
-							newLeaf = new Comment (CommentType.SingleLine, new TextLocation (directive.Line, directive.Col), new TextLocation (s.Line, s.Col));
+						
+						if (!directive.Take) {
+							SpecialsBag.PreProcessorDirective endif = null;
+							int endifLevel = 0;
+							for (int j = i + 1; j < top.SpecialsBag.Specials.Count; j++) {
+								var s = top.SpecialsBag.Specials [j] as SpecialsBag.PreProcessorDirective;
+								if (s == null)
+									continue;
+								if (s.Cmd == Tokenizer.PreprocessorDirective.If) {
+									endifLevel++;
+									continue;
+								}
+								if (s.Cmd == Tokenizer.PreprocessorDirective.Endif) {
+									if (endifLevel == 0) {
+										endif = s;
+										i = j;
+										break;
+									}
+									endifLevel--;
+								}
+							}
+							if (endif != null)
+								newLeaf = new Comment (CommentType.SingleLine, new TextLocation (directive.Line, directive.Col), new TextLocation (endif.EndLine, endif.EndCol));
 						}
 					}
 				}
