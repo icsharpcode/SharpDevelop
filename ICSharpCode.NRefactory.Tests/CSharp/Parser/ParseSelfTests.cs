@@ -87,10 +87,13 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			Console.WriteLine ("----");
 		}
 		
-		void CheckPositionConsistency(AstNode node)
+		void CheckPositionConsistency (AstNode node)
 		{
-			string comment = "(" + node.GetType().Name + " at " + node.StartLocation + " in " + currentFileName + ")";
-			Assert.IsTrue(node.StartLocation <= node.EndLocation, "StartLocation must be before EndLocation " + comment);
+			string comment = "(" + node.GetType ().Name + " at " + node.StartLocation + " in " + currentFileName + ")";
+			var pred = node.StartLocation <= node.EndLocation;
+			if (!pred)
+				PrintNode (node);
+			Assert.IsTrue(pred, "StartLocation must be before EndLocation " + comment);
 			var prevNodeEnd = node.StartLocation;
 			var prevNode = node;
 			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
