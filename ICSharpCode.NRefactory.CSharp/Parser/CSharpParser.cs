@@ -834,8 +834,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newIndexer, location);
 				newIndexer.AddChild (ConvertToType (indexer.TypeName), IndexerDeclaration.Roles.Type);
 				var name = indexer.MemberName;
-				if (name.Left != null) // the representation is a bit weird ?
-					name = name.Left;
 				if (name.Left != null) {
 					newIndexer.AddChild (ConvertToType (name.Left), IndexerDeclaration.PrivateImplementationTypeRole);
 					var privateImplTypeLoc = LocationsBag.GetLocations (name.Left);

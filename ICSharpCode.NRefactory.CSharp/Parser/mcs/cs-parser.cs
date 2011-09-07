@@ -5960,7 +5960,7 @@ void case_343()
 #line 2854 "cs-parser.jay"
 {
 		lexer.parsing_generic_declaration = false;
-		yyVal = new MemberName ((MemberName) yyVals[-1+yyTop], TypeContainer.DefaultIndexerName, null, GetLocation (yyVals[-1+yyTop]));
+		yyVal = new MemberName ((MemberName) yyVals[-1+yyTop], TypeContainer.DefaultIndexerName, null, GetLocation (yyVals[0+yyTop]));
 	  }
 
 void case_344()

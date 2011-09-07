@@ -2853,7 +2853,7 @@ indexer_declaration_name
 	| explicit_interface THIS
 	  {
 		lexer.parsing_generic_declaration = false;
-		$$ = new MemberName ((MemberName) $1, TypeContainer.DefaultIndexerName, null, GetLocation ($1));
+		$$ = new MemberName ((MemberName) $1, TypeContainer.DefaultIndexerName, null, GetLocation ($2));
 	  }
 	;
 
@@ -4594,7 +4594,7 @@ type_parameter_constraints
 		}
 
 		constraints.Add ((FullNamedExpression) $3);
-		lbag.AppendTo  (constraints, GetLocation ($2));
+		lbag.AppendTo (constraints, GetLocation ($2));
 		$$ = constraints;
 	  }
 	;
