@@ -2554,10 +2554,13 @@ event_accessor_block
 enum_declaration
 	: opt_attributes
 	  opt_modifiers
-	  ENUM type_declaration_name
-	  opt_enum_base
+	  ENUM
 	  {
 		enumCommas.Add (GetLocation ($3));
+	  }
+	  type_declaration_name
+	  opt_enum_base
+	  {
 		if (doc_support)
 			enumTypeComment = Lexer.consume_doc_comment ();
 	  }
@@ -2565,14 +2568,14 @@ enum_declaration
 	  {
 		if (doc_support)
 			Lexer.doc_state = XmlCommentState.Allowed;
-		enumCommas.Add (GetLocation ($7));
+		enumCommas.Add (GetLocation ($8));
 
-		MemberName name = (MemberName) $4;
+		MemberName name = (MemberName) $5;
 		if (name.IsGeneric) {
 			report.Error (1675, name.Location, "Enums cannot have type parameters");
 		}
 		
-		push_current_class (new Enum (current_namespace, current_class, (TypeExpression) $5, (Modifiers) $2, MakeName (name), (Attributes) $1), null);
+		push_current_class (new Enum (current_namespace, current_class, (TypeExpression) $6, (Modifiers) $2, MakeName (name), (Attributes) $1), null);
 	  }
 	  opt_enum_member_declarations
 	  {
@@ -2582,9 +2585,9 @@ enum_declaration
 	  }
 	  CLOSE_BRACE opt_semicolon
 	  {
-		enumCommas.Add (GetLocation ($11));
-		if ($12 != null)
-			current_class.OptionalSemicolon = GetLocation ($12);
+		enumCommas.Add (GetLocation ($12));
+		if ($13 != null)
+			current_class.OptionalSemicolon = GetLocation ($13);
 		if (doc_support)
 			current_class.DocComment = enumTypeComment;
 			
