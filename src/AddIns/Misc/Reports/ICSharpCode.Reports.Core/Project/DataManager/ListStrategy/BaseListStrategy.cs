@@ -18,9 +18,9 @@ using ICSharpCode.Reports.Expressions.ReportingLanguage;
 /// 	created on - 13.11.2005 15:26:02
 /// </remarks>
 
-namespace ICSharpCode.Reports.Core {	
+namespace ICSharpCode.Reports.Core.ListStrategy
+{
 	
-
 	internal static class SortExtension
 	{
 		
@@ -96,7 +96,7 @@ namespace ICSharpCode.Reports.Core {
 				}
 				CreateGroupedChildren(childList,element);
 				compVal = groupValue;
-			}
+			}			
 //			ShowIndexList(IndexList);
 		}
 		
@@ -235,6 +235,9 @@ namespace ICSharpCode.Reports.Core {
 		public virtual void Group()
 		{
 			this.IndexList.Clear();
+			if (ReportSettings.SortColumnsCollection.Count > 0) {
+				ReportSettings.GroupColumnsCollection.AddRange(ReportSettings.SortColumnsCollection);
+			}
 		}
 		
 		public virtual void Bind() 

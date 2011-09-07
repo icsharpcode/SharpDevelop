@@ -5,7 +5,9 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace ICSharpCode.Reports.Core
+using ICSharpCode.Reports.Core.Interfaces;
+
+namespace ICSharpCode.Reports.Core.Dialogs
 {
 	/// <summary>
 	/// Description of EditorDialog.

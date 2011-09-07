@@ -30,7 +30,7 @@ namespace SharpRefactoring.Gui
 			InitializeComponent();
 			
 			this.baseCall = baseCall;
-			this.fields = fields.Select(f => new PropertyOrFieldWrapper(f) { IsSelected = true }).ToList();
+			this.fields = fields.Where(f => f.ReturnType != null).Select(f => new PropertyOrFieldWrapper(f) { IsSelected = true }).ToList();
 			this.listBox.ItemsSource = this.fields;
 		}
 		

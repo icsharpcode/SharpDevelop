@@ -3,6 +3,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.BaseClasses;
 using iTextSharp.text.pdf;
 
 namespace ICSharpCode.Reports.Core.Exporter
@@ -32,12 +33,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 			base.DrawItem(graphics);
 			base.Decorate(graphics);
-			
 			items.ForEach(item =>item.DrawItem(graphics));
-//			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) 
-//			{
-//				baseExportColumn.DrawItem(graphics);
-//			}
 		}
 
 		

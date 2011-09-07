@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.DataAccess;
 using ICSharpCode.Reports.Core.Project.Interfaces;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 using NUnit.Framework;

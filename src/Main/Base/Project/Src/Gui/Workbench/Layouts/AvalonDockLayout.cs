@@ -53,6 +53,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// so we have to load the configuration now
 			LoggingService.Info("dockingManager_Loaded");
 			LoadConfiguration();
+			EnsureFloatingWindowsLocations();
+		}
+		
+		void EnsureFloatingWindowsLocations()
+		{
+			foreach (var window in dockingManager.FloatingWindows) {
+				var newLocation = FormLocationHelper.Validate(new Rect(window.Left, window.Top, window.Width, window.Height).TransformToDevice(window).ToSystemDrawing()).ToWpf().TransformFromDevice(window);
+				window.Left = newLocation.Left;
+				window.Top = newLocation.Top;
+			}
 		}
 		
 		void dockingManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -117,6 +127,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Busy = false;
 			}
 			LoadConfiguration();
+			EnsureFloatingWindowsLocations();
 		}
 		
 		public void Detach()
@@ -222,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			AvalonPadContent p;
 			if (pads.TryGetValue(padDescriptor, out p))
-				return p.IsVisible;
+				return p.State != DockableContentState.Hidden;
 			else
 				return false;
 		}

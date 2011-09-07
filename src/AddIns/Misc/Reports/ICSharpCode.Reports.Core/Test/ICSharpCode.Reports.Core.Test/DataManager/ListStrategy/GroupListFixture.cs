@@ -19,7 +19,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		#region standard test's
 		
 		[Test]
-		public void AvaiableFields_Should_Be_Set()
+		public void AvaiableFieldsShouldSet()
 		{
 			var dataNavigator = PrepareStringGrouping();
 			dataNavigator.MoveNext();
@@ -34,7 +34,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		#region Group by StringValue
 		
 		[Test]
-		public void Has_Children()
+		public void HasChildren()
 		{
 			var dataNavigator = PrepareStringGrouping();
 			while (dataNavigator.MoveNext()) {
@@ -44,7 +44,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		
 		
 		[Test]
-		public void Can_Read_Child_Count ()
+		public void ReadChildCount ()
 		{
 			var dataNavigator = PrepareStringGrouping();
 			while (dataNavigator.MoveNext())
@@ -59,7 +59,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		
 		
 		[Test]
-		public void Can_FillChild()
+		public void FillCollection()
 		{
 			var dataNavigator = PrepareStringGrouping();
 			ReportItemCollection searchCol = new ReportItemCollection();
@@ -85,15 +85,13 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 				{
 					dataNavigator.Fill(searchCol);
 					var b = (BaseDataItem)searchCol[1];
-					Console.WriteLine("-- <{0}>-",b.DBValue);
+//					Console.WriteLine("-- <{0}>-",b.DBValue);
 					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
-						Assert.That(dataNavigator.HasChildren,Is.True);
 						childNavigator.Fill(searchCol);
-						var a = (BaseDataItem)searchCol[0];
-						Console.WriteLine ("\t{0}",a.DBValue);
-				
+						var filledItem = (BaseDataItem)searchCol[0];
+						Assert.That(filledItem.DBValue,Is.Not.Empty);
 					}
 					while (childNavigator.MoveNext());
 				}
@@ -103,12 +101,13 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		
 		
 		[Test]
-		public void Collection_Contains_Subclass ()
+		public void CollectionContainsSubclass ()
 		{
 			var modifyedCollection = this.ModifyCollection();
 			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
 			ReportSettings rs = new ReportSettings();
 			rs.GroupColumnsCollection.Add(gc);
+			
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(modifyedCollection,rs);
 			IDataNavigator dataNavigator = dm.GetNavigator;
 			
@@ -132,107 +131,91 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			              }
 			             );
 			
-			dataNavigator.Reset();
-			dataNavigator.MoveNext();
+			string compare = string.Empty;
 
-			do
+			while (dataNavigator.MoveNext())
 			{
 				dataNavigator.Fill(searchCol);
-				var a1 = (BaseDataItem)searchCol[0];
-				var b1 = (BaseDataItem)searchCol[2];	
-				Console.WriteLine ("-----{0} - {1}------",a1.DBValue,b1.DBValue);
-							
+				var b1 = (BaseDataItem)searchCol[2];
+				var result = b1.DBValue;				
+				Assert.That (compare,Is.LessThan(result));
+				
 				if (dataNavigator.HasChildren)
 				{
 					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
 						childNavigator.Fill(searchCol);
-						var a = (BaseDataItem)searchCol[0];
-						var b = (BaseDataItem)searchCol[1];
-						var c = (BaseDataItem)searchCol[2];
-						Console.WriteLine ("\t{0} - {1} - {2}",a.DBValue,b.DBValue,c.DBValue);
-
+						var itemDummy = (BaseDataItem)searchCol[0];
+						var itemLast = (BaseDataItem)searchCol[1];
+						var itemGroup = (BaseDataItem)searchCol[2];
+//						Console.WriteLine ("\t{0} - {1} - {2}",itemDummy.DBValue,itemLast.DBValue,itemGroup.DBValue);
+						Assert.That(itemDummy.DBValue,Is.Not.Empty);
+						Assert.That(itemLast.DBValue,Is.Not.Empty);
+						Assert.That(itemGroup.DBValue,Is.Not.Empty);
 					}
 					while (childNavigator.MoveNext());
 				}
+				compare = result;
 			}
-			while (dataNavigator.MoveNext());
 		}
 		
 		#endregion
 		
-		#region FieldReference
-		
 		[Test]
-		public void Check_Field_Reference()
+		public void SortChildrenDescending()
 		{
-			var modifyedCollection = this.ModifyCollection();
-			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
 			ReportSettings rs = new ReportSettings();
+			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
 			rs.GroupColumnsCollection.Add(gc);
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(modifyedCollection,rs);
-			IDataNavigator dataNavigator = dm.GetNavigator;
+			
+			SortColumn sc = new SortColumn("Last",ListSortDirection.Descending);
+			rs.SortColumnsCollection.Add(sc);
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,rs);
+			var dataNavigator = dm.GetNavigator;
 			
 			ReportItemCollection searchCol = new ReportItemCollection();
-			
 			searchCol.Add(new BaseDataItem ()
 			              {
-			              	ColumnName ="DummyClass.DummyString"			     
-			              }
-			             );
-			searchCol.Add(new BaseDataItem ()
-			              {
-			              	Name ="Last",			           
-			              	ColumnName ="Last"	
+			              	Name ="Last",
+			              	ColumnName ="Last"
 			              }
 			             );
 			
 			searchCol.Add(new BaseDataItem ()
 			              {
-			             			           
-			              	ColumnName ="GroupItem"	
+			              	
+			              	ColumnName ="GroupItem"
 			              }
 			             );
-//			searchCol.Add(new BaseTextItem()
-//			              {
-//			              	Name ="FieldRef",
-//			              	Text ="=Fields!Last"
-//			              }
-//			             );
-			              
-			dataNavigator.Reset();
-			dataNavigator.MoveNext();
+			
+			string compare = String.Empty;
 
-			do
+			while (dataNavigator.MoveNext())
 			{
-				
 				dataNavigator.Fill(searchCol);
-				var a1 = (BaseDataItem)searchCol[0];
-				var b1 = (BaseDataItem)searchCol[2];	
-				Console.WriteLine ("-----{0} - {1}------",a1.DBValue,b1.DBValue);
-							
-				if (dataNavigator.HasChildren)
-				{
+				var column = (BaseDataItem)searchCol[1];
+				var result = column.DBValue.ToString();
+				
+				Assert.That (compare,Is.LessThan(result));
+				if (dataNavigator.HasChildren) {
+					string compareChild = String.Empty;
 					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
-						var dataRow = childNavigator.GetDataRow;
-						var item = dataRow.Find("Last");
-//						childNavigator.Fill(searchCol);
-//						var a = (BaseDataItem)searchCol[0];
-//						var b = (BaseDataItem)searchCol[1];
-//						var c = (BaseDataItem)searchCol[3];
-//						Console.WriteLine ("\t{0} - {1} - {2}",a.DBValue,b.DBValue,c.DBValue);
-						                        Console.WriteLine(item.Value);
+						childNavigator.Fill(searchCol);
+						var childColumn = (BaseDataItem)searchCol[0];
+						var childResult = childColumn.DBValue.ToString();
+//						Console.WriteLine("\t{0}",childResult);
+						if (!String.IsNullOrEmpty(compareChild)) {
+							Assert.LessOrEqual(childResult,compareChild);
+						}
+						compareChild = childResult;
 					}
 					while (childNavigator.MoveNext());
 				}
 			}
-			while (dataNavigator.MoveNext());
 		}
-	
-		#endregion
 		
 		
 		#region Group by DataTime
@@ -241,9 +224,20 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		public void DateTimeCan_FillChild()
 		{
 			var dataNavigator = PrepareDateTimeGrouping();
+			ReportItemCollection searchCol = new ReportItemCollection();
+			searchCol.Add(new BaseDataItem ()
+			              {
+			              	Name ="RandomDate",
+			              	ColumnName ="Last"
+			              }
+			             );
 			
-			Console.WriteLine("start datetime");
-			while (dataNavigator.MoveNext()) {
+			var compare = System.DateTime.MinValue;
+
+			while (dataNavigator.MoveNext())
+			{
+				Contributor groupResult = dataNavigator.Current as Contributor;
+				Assert.LessOrEqual(compare,groupResult.RandomDate);
 				if (dataNavigator.HasChildren) {
 					var childNavigator = dataNavigator.GetChildNavigator;
 					do
@@ -251,8 +245,9 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 						Assert.That(dataNavigator.HasChildren,Is.True);
 						// we know that current is a 'contributor'
 						Contributor c = dataNavigator.Current as Contributor;
-						string v2 = c.Last + " GroupVal :" +  c.RandomDate;
-						Console.WriteLine(v2);
+						Assert.IsNotNull(c);
+//						string v2 = c.Last + " GroupVal :" +  c.RandomDate;
+//						Console.WriteLine(v2);
 					}
 					while (childNavigator.MoveNext());
 				}

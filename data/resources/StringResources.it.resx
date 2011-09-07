@@ -298,6 +298,15 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
   <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
     <value>Sistema numerazione</value>
   </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
+    <value>Decimale</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Hexadecimal" xml:space="preserve">
+    <value>Esadecimale</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Octal" xml:space="preserve">
+    <value>Ottale</value>
+  </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Ridimensiona per riempire la larghezza corrente</value>
   </data>
@@ -4288,7 +4297,7 @@ Tutti i cambiamenti saranno persi.</value>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage" xml:space="preserve">
     <value>Il file
 ${File}
-è stato cambiato esternamente, vuoi ricaricarlo?
+è stato cambiato esternamente. Vuoi ricaricarlo?
 </value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ForwardsSearchStatusBarMessage" xml:space="preserve">
@@ -4814,6 +4823,9 @@ Sono ammesse solo lettere, numeri, spazi, '.' o '_'.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
     <value>Ricarica soluzione</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
+    <value>La soluzione ha subito dei cambiamenti esterni.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Converti &amp;progetti selezionati in:</value>
@@ -5770,6 +5782,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.SetCurrentStatement" xml:space="preserve">
     <value>Imposta istruzione corrente</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.StopDebugging.Message" xml:space="preserve">
+    <value>Vuoi interrompere il debug?</value>
   </data>
   <data name="MainWindow.Windows.Debug.StopProcessDialog.Message" xml:space="preserve">
     <value>Scollegare o chiudere il processo?</value>
@@ -7573,6 +7588,9 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
     <value>Rimuovi tutti i punti di interruzione</value>
   </data>
+  <data name="XML.MainMenu.DebugMenu.RunLastBuild" xml:space="preserve">
+    <value>Esegui l'ultima versione</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Esegue &amp;senza debugger</value>
   </data>
@@ -8111,15 +8129,6 @@ Errore durante esecuzione:</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Utente:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Controlla l'esistenza di nuove versioni di SharpDevelop, di a tutti i tuoi amici quanto è buono e scrivici programmi C# "ganzi"!!!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Puoi aprire la finestra di completamento dei modelli con Ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Vuoi che digitando "? name = ...;" (C#) o "Dim name As ? = ..." (VB) SharpDevelop sostituisca il punto interrogativo con il tipo di "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Opzioni dell'Editor</value>

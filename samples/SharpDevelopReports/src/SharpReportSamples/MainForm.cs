@@ -28,6 +28,7 @@ namespace SharpReportSamples
 		private TreeNode iListNode;
 		private TreeNode providerIndependent;
 		private TreeNode customized;
+		private TreeNode storedProcedure;
 		private ImageList imageList;
 		
 		public MainForm()
@@ -59,12 +60,15 @@ namespace SharpReportSamples
 			this.iListNode = this.treeView1.Nodes[0].Nodes[2];
 			this.providerIndependent = this.treeView1.Nodes[0].Nodes[3];
 			this.customized = this.treeView1.Nodes[0].Nodes[4];
+			this.storedProcedure = this.treeView1.Nodes[0].Nodes[5];
+			
 			
 			AddNodesToTree (this.formNode,startPath + @"FormSheet\" );
 			AddNodesToTree (this.pullNode,startPath + @"PullModel\" );
 			AddNodesToTree (this.iListNode,startPath + @"IList\" );
 			AddNodesToTree (this.providerIndependent,startPath + @"ProviderIndependent\" );
 			AddNodesToTree (this.customized,startPath + @"Customized\" );
+			AddNodesToTree (this.storedProcedure,startPath + @"StoredProcedure\" );
 		}
 		
 		
@@ -100,7 +104,12 @@ namespace SharpReportSamples
 			else if (s == "ContributorsListWithParameters"){
 				this.RunContributorsWithParameters(reportName);
 			}
-			         
+			
+			else if (s == "SalesByYear_2Params") {
+				{
+					StoredProcedureWithParam(reportName);
+				}
+			}
 			else if (s == "NoConnectionReport") {
 				this.RunProviderIndependent(reportName);
 			} else if (s =="EventLog")
@@ -110,8 +119,8 @@ namespace SharpReportSamples
 				
 				ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
 				
-				if ((parameters != null)&& (parameters.SqlParameters.Count > 0)){
-					parameters.SqlParameters[0].ParameterValue = "I'm the Parameter";
+				if ((parameters != null)&& (parameters.Parameters.Count > 0)){
+					parameters.Parameters[0].ParameterValue = "I'm the Parameter";
 				}
 				this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
 				{
@@ -127,16 +136,45 @@ namespace SharpReportSamples
 		{
 			string conOleDbString = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\SharpReport_TestReports\TestReports\Nordwind.mdb;Persist Security Info=False";
 			ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
+			
 			ConnectionObject con = ConnectionObject.CreateInstance(conOleDbString,
 			                                                       System.Data.Common.DbProviderFactories.GetFactory("System.Data.OleDb") );
 			
 			parameters.ConnectionObject = con;
-			parameters.SqlParameters[0].ParameterValue = "Provider Independent";
+			
+			parameters.Parameters[0].ParameterValue = "Provider Independent";
 			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
 			{
 				this.RunProviderIndependent(reportName);
 			};
 			this.previewControl1.RunReport(reportName,parameters);
+		}
+		
+		
+		#endregion
+		
+		
+		#region StoredProcedure
+		
+		void StoredProcedureWithParam(string fileName)
+		{
+			var model = ReportEngine.LoadReportModel(fileName);
+			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
+			
+			// The report has no sorting, so we can add it by code
+			
+			parameters.SortColumnCollection.Add (new SortColumn("ShippedDate",
+			                                                    System.ComponentModel.ListSortDirection.Ascending));
+			
+			
+			parameters.SqlParameters[0].ParameterValue = new System.DateTime(1997,11,01).ToString();
+			parameters.SqlParameters[1].ParameterValue = new System.DateTime(1997,12,31).ToString();
+
+			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
+			{
+				this.previewControl1.RunReport(fileName,parameters);
+			};
+			this.previewControl1.RunReport(fileName,parameters);
 		}
 		
 		
@@ -185,7 +223,7 @@ namespace SharpReportSamples
 			
 			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
 			
-			BasicParameter p1 = parameters.SqlParameters[0];
+			BasicParameter p1 = parameters.Parameters[0];
 			p1.ParameterValue ="Value of Parameter";
 			
 			
@@ -207,7 +245,7 @@ namespace SharpReportSamples
 			var model = ReportEngine.LoadReportModel(fileName);
 			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
 			
-			BasicParameter p1 = parameters.SqlParameters[0];
+			BasicParameter p1 = parameters.Parameters[0];
 			p1.ParameterValue ="Value of Parameter";
 			
 			
@@ -227,7 +265,7 @@ namespace SharpReportSamples
 			var model = ReportEngine.LoadReportModel(fileName);
 			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
 			
-			BasicParameter p1 = parameters.SqlParameters[0];
+			BasicParameter p1 = parameters.Parameters[0];
 			p1.ParameterValue ="Value of Parameter";
 			
 			
@@ -300,7 +338,7 @@ namespace SharpReportSamples
 		
 		
 		//Handles  SectionRenderEvent
-		int hour = 0;
+//		int hour = 0;
 		
 		private void PushPrinting (object sender, SectionRenderEventArgs e )
 		{
@@ -396,8 +434,6 @@ namespace SharpReportSamples
 		
 		#endregion
 		
-
-		
 		void TreeView1MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			TreeNode selectedNode = this.treeView1.SelectedNode;
@@ -405,32 +441,5 @@ namespace SharpReportSamples
 				RunStandardReport(selectedNode.Tag.ToString());
 			}
 		}
-		
-		/*
-		void Button2Click(object sender, EventArgs e)
-		{
-			// get Filename to save *.pdf
-			string saveTo = this.SelectFilename();
-			
-			// Create connectionobject
-			parameters =  ReportEngine.LoadParameters(reportName);
-			ConnectionObject con = ConnectionObject.CreateInstance(this.conOleDbString,
-			                                                       System.Data.Common.DbProviderFactories.GetFactory("System.Data.OleDb") );
-			
-			parameters.ConnectionObject = con;
-			
-			
-			// create a Pagebuilder
-			pageBuilder = ReportEngine.CreatePageBuilder(reportName,parameters);
-			pageBuilder.BuildExportList();
-		
-			using (PdfRenderer pdfRenderer = PdfRenderer.CreateInstance(pageBuilder,saveTo,true)){
-				pdfRenderer.Start();
-				pdfRenderer.RenderOutput();
-				pdfRenderer.End();
-			}
-		}
-		
-		 */
 	}
 }

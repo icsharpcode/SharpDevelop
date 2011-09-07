@@ -8000,15 +8000,6 @@ Fehler beim Starten:
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Benutzer:</value>
   </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>dass sie nach neuen SharpDevelop-Versionen Ausschau halten sollten und allen ihren Freunden erzählen sollten, wie gut SharpDevelop ist und dass sie tolle Programme in C# damit entwickeln sollten?</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>dass Sie mit Strg+J vordefinierte Code-Schablonen aktivieren können?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>dass Sie "? name = ...;" (C#) oder "Dim name As ? = ..." (VB) tippen können und SharpDevelop automatisch das Fragezeichen durch den passenden Typ ersetzt?</value>
-  </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Bufferoptionen</value>
   </data>

@@ -8,6 +8,8 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Dialogs;
+using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Addin.Designer
 {
