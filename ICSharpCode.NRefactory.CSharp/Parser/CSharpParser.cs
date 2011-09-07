@@ -91,8 +91,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				AstType result;
 				if (memberName.Left != null) {
-					result = new MemberType () { MemberNameToken = Identifier.Create (memberName.Name, Convert (memberName.Location)) };
+					result = new MemberType ();
 					result.AddChild (ConvertToType (memberName.Left), MemberType.TargetRole);
+					var loc = LocationsBag.GetLocations (memberName.Left);
+					if (loc != null)
+						result.AddChild (new CSharpTokenNode (Convert (loc [0]), 1), MemberType.Roles.Dot);
+					result.AddChild (Identifier.Create (memberName.Name, Convert (memberName.Location)), MemberType.Roles.Identifier);
 				} else {
 					result = new SimpleType () { IdentifierToken = Identifier.Create (memberName.Name, Convert (memberName.Location)) };
 				}
