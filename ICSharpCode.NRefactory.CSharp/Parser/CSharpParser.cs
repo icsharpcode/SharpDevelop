@@ -2374,8 +2374,13 @@ namespace ICSharpCode.NRefactory.CSharp
 					constraint.AddChild (Identifier.Create (c.TypeParameter.Value, Convert (c.TypeParameter.Location)), InvocationExpression.Roles.Identifier);
 					if (location != null)
 						constraint.AddChild (new CSharpTokenNode (Convert (location [0]), 1), Constraint.ColonRole);
-					foreach (var expr in c.ConstraintExpressions)
+					var commaLocs = LocationsBag.GetLocations (c.ConstraintExpressions);
+					int curComma = 0;
+					foreach (var expr in c.ConstraintExpressions) {
 						constraint.AddChild (ConvertToType (expr), Constraint.BaseTypeRole);
+						if (commaLocs != null && curComma < commaLocs.Count)
+							constraint.AddChild (new CSharpTokenNode (Convert (commaLocs[curComma++]), 1), InvocationExpression.Roles.Comma);
+					}
 					parent.AddChild (constraint, AstNode.Roles.Constraint);
 				}
 			}

@@ -801,6 +801,7 @@ attribute
 			attributeArgumentCommas.Insert (0, savedAttrParenOpenLocation);
 			attributeArgumentCommas.Add (savedAttrParenCloseLocation);
 			lbag.AddLocation ($$, attributeArgumentCommas);
+			attributeArgumentCommas.Clear ();
 		}
 	  }
 	;
@@ -4593,6 +4594,7 @@ type_parameter_constraints
 		}
 
 		constraints.Add ((FullNamedExpression) $3);
+		lbag.AppendTo  (constraints, GetLocation ($2));
 		$$ = constraints;
 	  }
 	;
