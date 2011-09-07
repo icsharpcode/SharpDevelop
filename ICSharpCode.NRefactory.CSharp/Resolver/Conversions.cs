@@ -635,18 +635,33 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		// Determines whether s is a subtype of t.
 		// Helper method used for ImplicitReferenceConversion, BoxingConversion and ImplicitTypeParameterConversion
+		
+		int subtypeCheckNestingDepth;
+		
 		bool IsSubtypeOf(IType s, IType t)
 		{
 			// conversion to dynamic + object are always possible
 			if (t.Equals(SharedTypes.Dynamic) || t.Equals(objectType))
 				return true;
-			
-			// let GetAllBaseTypes do the work for us
-			foreach (IType baseType in s.GetAllBaseTypes(context)) {
-				if (IdentityOrVarianceConversion(baseType, t))
-					return true;
+			try {
+				if (++subtypeCheckNestingDepth > 10) {
+					// Subtyping in C# is undecidable
+					// (see "On Decidability of Nominal Subtyping with Variance" by Andrew J. Kennedy and Benjamin C. Pierce),
+					// so we'll prevent infinite recursions by putting a limit on the nesting depth of variance conversions.
+					
+					// No real C# code should use generics nested more than 10 levels deep, and even if they do, most of
+					// those nestings should not involve variance.
+					return false;
+				}
+				// let GetAllBaseTypes do the work for us
+				foreach (IType baseType in s.GetAllBaseTypes(context)) {
+					if (IdentityOrVarianceConversion(baseType, t))
+						return true;
+				}
+				return false;
+			} finally {
+				subtypeCheckNestingDepth--;
 			}
-			return false;
 		}
 		
 		bool IdentityOrVarianceConversion(IType s, IType t)
