@@ -40,7 +40,7 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 		<ToolBarTray Background="White" Grid.Row="0">
 			<ToolBar>
 				<Button Name="btnOpenAssembly"
-				        Content="{Binding BtnOpenAssembly}"
+				        Content="{Binding btnOpenAssembly}"
 				        Click="btnOpenAssembly_Click" 
 				        Margin="0 0 5 0"></Button>
 			</ToolBar>
@@ -56,13 +56,13 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 					
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="250px" />
-						<ColumnDefinition Width="3"></ColumnDefinition>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
 						<ColumnDefinition />
-						<ColumnDefinition Width="3"></ColumnDefinition>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
 						<ColumnDefinition Width="200px" />
 					</Grid.ColumnDefinitions>
 					
-					<ToolBarTray Background="White" Grid.Row="0" Grid.ColumnSpan="3">
+					<ToolBarTray  Grid.Row="0" Grid.ColumnSpan="5">
 						<ToolBar>
 							<Button Name="btnRelayout" Click="btnRelayout_Click" Margin="0 0 5 0">Relayout</Button>
 							<Button Name="btnContinueLayout" Click="btnContinueLayout_Click" Margin="0 0 5 0">Continue Layout</Button>
@@ -70,7 +70,7 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 							<Button Name="btnSaveImageGraph" Click="btnSaveImageGraph_Click">Save an Image of Graph</Button>
 						</ToolBar>
 					</ToolBarTray>
-					
+				
 					
 					<tree:SharpTreeView Name="definitionTree"
 						Grid.Row="1" Grid.Column="0"
@@ -97,14 +97,17 @@ DataContext="{Binding RelativeSource={RelativeSource Self}}"
 					</Controls:ZoomControl>
 					
 					<GridSplitter Grid.Column="3"
-					              Grid.RowSpan="2"
+					              Grid.Row="2"
 					              ResizeDirection="Columns"
-					          		Style="{DynamicResource GridSplitterStyle1}"></GridSplitter>
+					              ResizeBehavior="PreviousAndNext"
+					              Style="{DynamicResource GridSplitterStyle1}"></GridSplitter>
 					
 					<TextBlock Name="txbTypeInfo"
 					           Text="{Binding TypeInfo}"
-					           Margin="2"
-					           Grid.Column="4"  Grid.RowSpan="2" Padding="5" Background="LightBlue"/>
+					           Margin="2" MinWidth="30"
+					           Grid.Column="4" Grid.Row="1" 
+					            Padding="5"
+					           Background="LightBlue"/>
 				</Grid>
 			</TabItem>
 			<TabItem Header="{Binding TabDependencyMatrix}">
