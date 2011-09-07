@@ -156,9 +156,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					var ccSpec = cc.Spec;
 					while (ccSpec != null) {
 						if (ccSpec.IsNullable) {
-							result.HasNullableSpecifier = true;
+							result.AddChild (new CSharpTokenNode (Convert (ccSpec.Location), 1), ComposedType.NullableRole);
 						} else if (ccSpec.IsPointer) {
-							result.PointerRank++;
+							result.AddChild (new CSharpTokenNode (Convert (ccSpec.Location), 1), ComposedType.PointerRole);
 						} else {
 							var location = LocationsBag.GetLocations (ccSpec);
 							var spec = new ArraySpecifier () { Dimensions = ccSpec.Dimension };
