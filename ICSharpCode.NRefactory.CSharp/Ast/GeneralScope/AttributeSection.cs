@@ -85,8 +85,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public string AttributeTarget {
-			get;
-			set;
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole (Roles.Identifier, CSharp.Identifier.Create (value, TextLocation.Empty));
+			}
+		}
+		
+		public Identifier AttributeTargetToken {
+			get {
+				return GetChildByRole (Roles.Identifier);
+			}
+			set {
+				SetChildByRole (Roles.Identifier, value);
+			}
 		}
 		
 		public AstNodeCollection<Attribute> Attributes {

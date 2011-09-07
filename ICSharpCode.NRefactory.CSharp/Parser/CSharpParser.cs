@@ -243,16 +243,30 @@ namespace ICSharpCode.NRefactory.CSharp
 					return null;
 				AttributeSection result = new AttributeSection ();
 				var loc = LocationsBag.GetLocations (optAttributes);
+				int pos = 0;
 				if (loc != null)
-					result.AddChild (new CSharpTokenNode (Convert (loc [0]), 1), AttributeSection.Roles.LBracket);
+					result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), 1), AttributeSection.Roles.LBracket);
 				
-				result.AttributeTarget = optAttributes.First ().ExplicitTarget;
+				string target = optAttributes.First ().ExplicitTarget;
+				
+				if (!string.IsNullOrEmpty (target)) {
+					if (loc != null && pos < loc.Count - 1) {
+						result.AddChild (Identifier.Create (target, Convert (loc [pos++])), AttributeSection.Roles.Identifier);
+					} else {
+						result.AddChild (Identifier.Create (target), AttributeSection.Roles.Identifier);
+					}
+					if (loc != null && pos < loc.Count)
+						result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), 1), AttributeSection.Roles.Colon);
+				}
+				
 				foreach (var attr in GetAttributes (optAttributes)) {
 					result.AddChild (attr, AttributeSection.AttributeRole);
 				}
-				
-				if (loc != null)
-					result.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), AttributeSection.Roles.RBracket);
+				// optional comma
+				if (loc != null && pos < loc.Count - 1 && !loc [pos].Equals (loc [pos + 1]))
+					result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), 1), AttributeSection.Roles.Comma);
+				if (loc != null && pos < loc.Count)
+					result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), 1), AttributeSection.Roles.RBracket);
 				return result;
 			}
 			

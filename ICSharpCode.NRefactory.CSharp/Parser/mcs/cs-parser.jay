@@ -673,7 +673,8 @@ attribute_sections
 	  {
 		var sect = (List<Attribute>) $1;
 		$$ = new Attributes (sect);
-		lbag.AddLocation (sect, savedOpenLocation, savedCloseLocation);
+		if (locationListStack.Count > 0)
+			lbag.AddLocation (sect, locationListStack.Pop ());
 		if (attributeCommas.Count > 0) {
 			lbag.AppendTo (sect, attributeCommas);
 			attributeCommas.Clear ();
@@ -683,6 +684,9 @@ attribute_sections
 	  {
 		Attributes attrs = $1 as Attributes;
 		var sect = (List<Attribute>) $2;
+		
+		if (locationListStack.Count > 0)
+			lbag.AddLocation (sect, locationListStack.Pop ());
 		if (attrs == null)
 			attrs = new Attributes (sect);
 		else
@@ -722,12 +726,20 @@ attribute_section_cont
 	  
 		current_attr_target = null;
 		lexer.parsing_attribute_section = false;
-		savedCloseLocation = GetLocation ($6);
+		if ($5 != null) {
+			locationListStack.Push (new List<Location>(new [] { savedOpenLocation, savedCloseLocation, GetLocation ($2), GetLocation ($5), GetLocation ($6) }));
+		} else {
+			locationListStack.Push (new List<Location>(new [] { savedOpenLocation, savedCloseLocation, GetLocation ($2), GetLocation ($6) }));
+		}
  	  }
 	| attribute_list opt_comma CLOSE_BRACKET
 	  {
 		$$ = $1;
-		savedCloseLocation = GetLocation ($3);
+		if ($2 != null) {
+			locationListStack.Push (new List<Location>(new [] { savedOpenLocation, GetLocation ($2), GetLocation ($3) }));
+		} else {
+			locationListStack.Push (new List<Location>(new [] { savedOpenLocation, GetLocation ($3) }));
+		}
 	  }
 	;	
 
@@ -736,9 +748,10 @@ attribute_target
 	  {
 		var lt = (Tokenizer.LocatedToken) $1;
 		$$ = CheckAttributeTarget (lt.Value, lt.Location);
+		savedCloseLocation = GetLocation ($1);
 	  }
-	| EVENT  { $$ = "event"; }
-	| RETURN { $$ = "return"; }
+	| EVENT  { $$ = "event"; savedCloseLocation = GetLocation ($1); }
+	| RETURN { $$ = "return"; savedCloseLocation = GetLocation ($1); }
 	| error
 	  {
 		if (yyToken == Token.IDENTIFIER) {
