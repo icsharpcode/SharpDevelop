@@ -398,7 +398,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					foreach (var baseTypes in c.TypeBaseExpressions) {
 						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
 						if (commaLocations != null && i < commaLocations.Count) {
-							newType.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - i - 1]), 1), TypeDeclaration.Roles.Comma);
+							newType.AddChild (new CSharpTokenNode (Convert (commaLocations [i]), 1), TypeDeclaration.Roles.Comma);
 							i++;
 						}
 					}
@@ -446,7 +446,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					foreach (var baseTypes in s.TypeBaseExpressions) {
 						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
 						if (commaLocations != null && i < commaLocations.Count) {
-							newType.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - i - 1]), 1), TypeDeclaration.Roles.Comma);
+							newType.AddChild (new CSharpTokenNode (Convert (commaLocations [i]), 1), TypeDeclaration.Roles.Comma);
 							i++;
 						}
 					}
@@ -493,7 +493,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					foreach (var baseTypes in i.TypeBaseExpressions) {
 						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
 						if (commaLocations != null && j < commaLocations.Count) {
-							newType.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - j - 1]), 1), TypeDeclaration.Roles.Comma);
+							newType.AddChild (new CSharpTokenNode (Convert (commaLocations [j]), 1), TypeDeclaration.Roles.Comma);
 							j++;
 						}
 					}
