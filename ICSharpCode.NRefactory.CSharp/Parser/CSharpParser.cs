@@ -2498,9 +2498,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (minit == null)
 					return null;
 				var init = new ArrayInitializerExpression ();
-				var braceLocs = LocationsBag.GetLocations (minit);
-				if (braceLocs != null)
-					init.AddChild (new CSharpTokenNode (Convert (braceLocs[0]), 1), ArrayInitializerExpression.Roles.LBrace);
 				AddConvertCollectionOrObjectInitializers (init, minit);
 				return init;
 			}
@@ -2510,6 +2507,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				var initLoc = LocationsBag.GetLocations (minit);
 				var commaLoc = LocationsBag.GetLocations (minit.Initializers);
 				int curComma = 0;
+				if (initLoc != null)
+					init.AddChild (new CSharpTokenNode (Convert (initLoc [0]), 1), ArrayInitializerExpression.Roles.LBrace);
 				foreach (var expr in minit.Initializers) {
 					var collectionInit = expr as CollectionElementInitializer;
 					if (collectionInit != null) {
@@ -2557,8 +2556,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				if (initLoc != null) {
 					if (initLoc.Count == 3) // optional comma
-						init.AddChild (new CSharpTokenNode (Convert (initLoc[1]), 1), ArrayInitializerExpression.Roles.Comma);
-					init.AddChild (new CSharpTokenNode (Convert (initLoc[initLoc.Count - 1]), 1), ArrayInitializerExpression.Roles.RBrace);
+						init.AddChild (new CSharpTokenNode (Convert (initLoc [1]), 1), ArrayInitializerExpression.Roles.Comma);
+					init.AddChild (new CSharpTokenNode (Convert (initLoc [initLoc.Count - 1]), 1), ArrayInitializerExpression.Roles.RBrace);
 				}
 			}
 			
