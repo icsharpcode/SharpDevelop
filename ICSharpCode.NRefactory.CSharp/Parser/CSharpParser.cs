@@ -104,9 +104,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					var chevronLocs = LocationsBag.GetLocations (memberName.TypeArguments);
 					if (chevronLocs != null)
 						result.AddChild (new CSharpTokenNode (Convert (chevronLocs[chevronLocs.Count - 2]), 1), InvocationExpression.Roles.LChevron);
-					
+					int i = 0;
 					foreach (var arg in memberName.TypeArguments.Args) {
 						result.AddChild (ConvertToType (arg), AstType.Roles.TypeArgument);
+						if (chevronLocs != null && i < chevronLocs.Count - 2)
+							result.AddChild (new CSharpTokenNode (Convert (chevronLocs [i++]), 1), InvocationExpression.Roles.Comma);
 					}
 					if (chevronLocs != null)
 						result.AddChild (new CSharpTokenNode (Convert (chevronLocs[chevronLocs.Count - 1]), 1), InvocationExpression.Roles.RChevron);
