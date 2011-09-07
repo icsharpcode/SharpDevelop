@@ -210,7 +210,7 @@ namespace ICSharpCode.NRefactory.CSharp
 								
 								var argLoc = LocationsBag.GetLocations (na);
 								if (argLoc != null)
-									newArg.AddChild (new CSharpTokenNode (Convert (argLoc[0]), 1), NamedArgumentExpression.Roles.Assign);
+									newArg.AddChild (new CSharpTokenNode (Convert (argLoc[0]), 1), NamedArgumentExpression.Roles.Colon);
 								newArg.AddChild ((Expression)na.Expr.Accept (this), NamedExpression.Roles.Expression);
 								result.AddChild (newArg, Attribute.Roles.Argument);
 								continue;
@@ -2380,7 +2380,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					var loc = LocationsBag.GetLocations (na);
 					if (loc != null)
-						newArg.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), NamedArgumentExpression.Roles.Assign);
+						newArg.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), NamedArgumentExpression.Roles.Colon);
 					
 					if (arg.ArgType == Argument.AType.Out || arg.ArgType == Argument.AType.Ref) {
 						DirectionExpression direction = new DirectionExpression ();

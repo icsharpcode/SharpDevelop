@@ -891,6 +891,7 @@ named_argument
 			
 		var lt = (Tokenizer.LocatedToken) $1;
 		$$ = new NamedArgument (lt.Value, lt.Location, (Expression) $4, arg_mod);
+		lbag.AddLocation ($$, GetLocation($2));
 	  }
 	;
 	

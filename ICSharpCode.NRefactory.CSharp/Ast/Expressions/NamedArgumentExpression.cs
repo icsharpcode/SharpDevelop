@@ -22,6 +22,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
 	/// Represents a named argument passed to a method or attribute.
+	/// name: expression
 	/// </summary>
 	public class NamedArgumentExpression : Expression
 	{
@@ -53,8 +54,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public CSharpTokenNode AssignToken {
-			get { return GetChildByRole (Roles.Assign); }
+		public CSharpTokenNode ColonToken {
+			get { return GetChildByRole (Roles.Colon); }
 		}
 		
 		public Expression Expression {
