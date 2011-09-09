@@ -107,10 +107,6 @@ namespace ICSharpCode.FormsDesigner
 		{
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			
-			if (!FormKeyHandler.inserted) {
-				FormKeyHandler.Insert();
-			}
-			
 			this.primaryViewContent = primaryViewContent;
 			
 			this.UserContent = this.pleaseWaitLabel;
@@ -181,8 +177,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			LoadAppDomain();
 			
-			propertyContainer.PropertyGridReplacementContent = WrapInCustomHost(appDomainHost.CreatePropertyGrid());
-			// TODO : init PropertyGrid
+			propertyContainer.PropertyGridReplacementContent = WrapInCustomHost(appDomainHost.CreatePropertyPad());
 			
 			if (inMasterLoadOperation) {
 				
@@ -345,6 +340,23 @@ namespace ICSharpCode.FormsDesigner
 			{
 				vc.InvalidateRequerySuggested();
 			}
+			
+			public bool IsTabOrderMode {
+				get {
+					return vc.IsTabOrderMode;
+				}
+			}
+			
+			public bool EnableDelete {
+				get {
+					return vc.EnableDelete;
+				}
+			}
+			
+			public void HideTabOrder()
+			{
+				vc.HideTabOrder();
+			}
 		}
 		#endregion
 		
@@ -378,8 +390,6 @@ namespace ICSharpCode.FormsDesigner
 			appDomainHost.InitializeUndoEngine();
 			
 			undoEngine = (IFormsDesignerUndoEngine)appDomainHost.GetService(typeof(IFormsDesignerUndoEngine));
-			
-			appDomainHost.SelectionChanged += new EventHandlerProxy(SelectionChangedHandler);
 			
 			if (IsTabOrderMode) { // fixes SD2-1015
 				tabOrderMode = false; // let ShowTabOrder call the designer command again
@@ -424,10 +434,11 @@ namespace ICSharpCode.FormsDesigner
 			options.UseSmartTags = GeneralOptionsPanel.UseSmartTags;
 			options.UseSnapLines = PropertyService.Get("FormsDesigner.DesignerOptions.UseSnapLines", true);
 
-			options.EnableInSituEditing         = PropertyService.Get("FormsDesigner.DesignerOptions.EnableInSituEditing", true);
-			options.ObjectBoundSmartTagAutoShow = GeneralOptionsPanel.SmartTagAutoShow;
-			options.UseOptimizedCodeGeneration  = PropertyService.Get("FormsDesigner.DesignerOptions.UseOptimizedCodeGeneration", true);
-			options.EventHandlerNameFormat      = "{0}{1}";
+			options.EnableInSituEditing          = PropertyService.Get("FormsDesigner.DesignerOptions.EnableInSituEditing", true);
+			options.ObjectBoundSmartTagAutoShow  = GeneralOptionsPanel.SmartTagAutoShow;
+			options.UseOptimizedCodeGeneration   = PropertyService.Get("FormsDesigner.DesignerOptions.UseOptimizedCodeGeneration", true);
+			options.EventHandlerNameFormat       = "{0}{1}";
+			options.PropertyGridSortAlphabetical = PropertyService.Get("FormsDesigner.DesignerOptions.PropertyGridSortAlphabetical", false);
 			
 			return options;
 		}
@@ -468,8 +479,6 @@ namespace ICSharpCode.FormsDesigner
 				appDomainHost.DesignSurfaceLoaded -= new LoadedEventHandlerProxy(DesignerLoaded);
 				appDomainHost.DesignSurfaceFlushed -= new EventHandlerProxy(DesignerFlushed);
 				appDomainHost.DesignSurfaceUnloading -= new EventHandlerProxy(DesignerUnloading);
-				
-				appDomainHost.SelectionChanged -= new EventHandlerProxy(SelectionChangedHandler);
 				
 				appDomainHost.DesignSurfaceUnloaded += new EventHandlerProxy(
 					delegate {

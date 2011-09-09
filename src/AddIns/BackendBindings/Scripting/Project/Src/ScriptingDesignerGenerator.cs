@@ -9,8 +9,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
-
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -64,7 +64,7 @@ namespace ICSharpCode.Scripting
 		/// Returns a list of method names that could be used as an
 		/// event handler with the specified event.
 		/// </summary>
-		public ICollection GetCompatibleMethods(EventDescriptor edesc)
+		public ICollection GetCompatibleMethods(EventDescriptorProxy edesc)
 		{
 			ParseInformation parseInfo = ParseFile();
 			return GetCompatibleMethods(parseInfo);

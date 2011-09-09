@@ -10,9 +10,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -117,7 +117,7 @@ namespace ICSharpCode.WixBinding
 			return false;
 		}
 		
-		public ICollection GetCompatibleMethods(EventDescriptor edesc)
+		public ICollection GetCompatibleMethods(EventDescriptorProxy edesc)
 		{
 			return new ArrayList();
 		}

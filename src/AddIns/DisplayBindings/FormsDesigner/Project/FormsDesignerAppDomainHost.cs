@@ -102,6 +102,10 @@ namespace ICSharpCode.FormsDesigner
 //			container.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(properties.ResourceStore, this));
 			
 			InitializeEvents();
+			
+			if (!FormKeyHandler.inserted) {
+				FormKeyHandler.Insert(this);
+			}
 		}
 		
 		#region Events
@@ -187,15 +191,6 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		public event EventHandler SelectionChanged;
-		
-		protected virtual void OnSelectionChanged(EventArgs e)
-		{
-			if (SelectionChanged != null) {
-				SelectionChanged(this, e);
-			}
-		}
-		
 		void ComponentChanged(object sender, ComponentChangedEventArgs e)
 		{
 			bool loading = IsLoaderLoading;
@@ -253,15 +248,15 @@ namespace ICSharpCode.FormsDesigner
 			
 			ISelectionService selectionService = GetService(typeof(ISelectionService)) as ISelectionService;
 			if (selectionService != null) {
-				selectionService.SelectionChanged += selectionService_SelectionChanged;
+				selectionService.SelectionChanged += SelectionServiceSelectionChanged;
 			}
 			
 			Host.TransactionClosed += TransactionClose;
 		}
 
-		void selectionService_SelectionChanged(object sender, EventArgs e)
+		void SelectionServiceSelectionChanged(object sender, EventArgs e)
 		{
-			OnSelectionChanged(e);
+			UpdatePropertyPadSelection((ISelectionService)sender);
 		}
 
 		void Host_TransactionClosed(object sender, DesignerTransactionCloseEventArgs e)
@@ -394,20 +389,19 @@ namespace ICSharpCode.FormsDesigner
 			designSurface.Dispose();
 		}
 		
-		PropertyGrid grid;
+		PropertyPadContent propertyPad;
 		
-		public PropertyGrid CreatePropertyGrid()
+		public PropertyPadContent CreatePropertyPad()
 		{
-			grid = new PropertyGrid() { Dock = DockStyle.Fill };
-			
-			return grid;
+			if (propertyPad == null)
+				propertyPad = new PropertyPadContent(Host, properties.FormsDesignerProxy);
+			return propertyPad;
 		}
 		
 		public void UpdatePropertyPad()
 		{
 			if (HasDesignerHost) {
-				UpdateDesignerHost(); // TODO reuse code from PropertyPad!
-//				propertyContainer.SelectableObjects = appDomainHost.Host.Container.Components;
+				propertyPad.SelectableObjects = Host.Container.Components;
 				ISelectionService selectionService = (ISelectionService)GetService(typeof(ISelectionService));
 				if (selectionService != null) {
 					UpdatePropertyPadSelection(selectionService);
@@ -415,22 +409,12 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		void UpdateDesignerHost()
-		{
-//			if (grid. == Host)
-//				return;
-//			if (instance.host != null)
-//				instance.RemoveHost(instance.host);
-//			if (container.Host != null)
-//				instance.SetDesignerHost(container.Host);
-		}
-		
 		public void UpdatePropertyPadSelection(ISelectionService selectionService)
 		{
 			var selection = selectionService.GetSelectedComponents();
 			object[] selArray = new object[selection.Count];
 			selection.CopyTo(selArray, 0);
-//			propertyContainer.SelectedObjects = selArray;
+			propertyPad.SelectedObjects = selArray;
 			properties.FormsDesignerProxy.InvalidateRequerySuggested();
 		}
 		

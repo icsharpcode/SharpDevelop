@@ -10,8 +10,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
 using ICSharpCode.Core;
+using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -570,7 +570,7 @@ namespace ICSharpCode.FormsDesigner
 			return c.Region.EndLine;
 		}
 		
-		public virtual ICollection GetCompatibleMethods(EventDescriptor edesc)
+		public virtual ICollection GetCompatibleMethods(EventDescriptorProxy edesc)
 		{
 			Reparse();
 			ArrayList compatibleMethods = new ArrayList();

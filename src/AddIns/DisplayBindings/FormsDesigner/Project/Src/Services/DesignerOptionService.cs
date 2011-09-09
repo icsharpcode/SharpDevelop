@@ -12,6 +12,7 @@ namespace ICSharpCode.FormsDesigner.Services
 	{
 		// Gets or sets a value that enables or disables in-place editing for ToolStrip controls.
 		public bool EnableInSituEditing { get; set; }
+		
 		// Obtains and shows whether smart tags are automatically opened.
 		public bool ObjectBoundSmartTagAutoShow { get; set; }
 		
@@ -36,6 +37,8 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		// Whether to include an underscore in the event handler name
 		public string EventHandlerNameFormat { get; set; }
+		
+		public bool PropertyGridSortAlphabetical { get; set; }
 	}
 
 	public class SharpDevelopDesignerOptionService : WindowsFormsDesignerOptionService

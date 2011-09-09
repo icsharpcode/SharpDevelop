@@ -26,8 +26,11 @@ namespace ICSharpCode.FormsDesigner
 		void ShowSourceCode(IComponent component, EventDescriptor edesc, string methodName);
 		
 		SharpDevelopDesignerOptions DesignerOptions { get; }
+		bool IsTabOrderMode { get; }
+		bool EnableDelete { get; }
 		
 		void MakeDirty();
+		void HideTabOrder();
 		void InvalidateRequerySuggested();
 	}
 	
