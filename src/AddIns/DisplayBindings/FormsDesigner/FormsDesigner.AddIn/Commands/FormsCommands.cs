@@ -29,7 +29,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 			return true;
 		}
 		
-		FormsDesignerViewContent FormDesigner {
+		protected FormsDesignerViewContent FormDesigner {
 			get {
 				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 				if (window == null) {
@@ -99,11 +99,9 @@ namespace ICSharpCode.FormsDesigner.Commands
 	{
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)owner;
-			
 			List<ToolStripItem> items = new List<ToolStripItem>();
 			
-			foreach (DesignerVerb verb in menuCommandService.Verbs) {
+			foreach (IDesignerVerbProxy verb in ((FormsDesignerAppDomainHost)owner).CommandVerbs) {
 				items.Add(new ContextMenuCommand(verb));
 			}
 			
@@ -117,9 +115,9 @@ namespace ICSharpCode.FormsDesigner.Commands
 		
 		class ContextMenuCommand : ICSharpCode.Core.WinForms.MenuCommand
 		{
-			DesignerVerb verb;
+			IDesignerVerbProxy verb;
 			
-			public ContextMenuCommand(DesignerVerb verb) : base(verb.Text)
+			public ContextMenuCommand(IDesignerVerbProxy verb) : base(verb.Text)
 			{
 				this.Enabled = verb.Enabled;
 //				this.Checked = verb.Checked;

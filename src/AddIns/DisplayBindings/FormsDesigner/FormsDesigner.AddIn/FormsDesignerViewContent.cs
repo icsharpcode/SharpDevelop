@@ -167,6 +167,8 @@ namespace ICSharpCode.FormsDesigner
 			appDomainHost = FormsDesignerAppDomainHost.CreateFormsDesignerInAppDomain(ref appDomain, creationProperties);
 			toolbox = new ToolboxProvider(appDomainHost);
 			appDomainHost.UseSDAssembly(typeof(CustomWindowsFormsHost).Assembly.FullName, typeof(CustomWindowsFormsHost).Assembly.Location);
+			
+			Application.Idle += ApplicationIdle;
 		}
 		
 		bool inMasterLoadOperation;
@@ -292,7 +294,7 @@ namespace ICSharpCode.FormsDesigner
 		#region Proxies
 		class ViewContentIFormsDesignerProxy : MarshalByRefObject, IFormsDesigner
 		{
-			IFormsDesigner vc;
+			FormsDesignerViewContent vc;
 			
 			public ViewContentIFormsDesignerProxy(FormsDesignerViewContent vc)
 			{
@@ -326,7 +328,7 @@ namespace ICSharpCode.FormsDesigner
 				vc.ShowSourceCode(lineNumber);
 			}
 			
-			public void ShowSourceCode(IComponent component, EventDescriptor edesc, string methodName)
+			public void ShowSourceCode(IComponent component, EventDescriptorProxy edesc, string methodName)
 			{
 				vc.ShowSourceCode(component, edesc, methodName);
 			}
@@ -338,7 +340,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			public void InvalidateRequerySuggested()
 			{
-				vc.InvalidateRequerySuggested();
+				((IFormsDesigner)vc).InvalidateRequerySuggested();
 			}
 			
 			public bool IsTabOrderMode {
@@ -387,7 +389,7 @@ namespace ICSharpCode.FormsDesigner
 				throw new FormsDesignerLoadException(appDomainHost.LoadErrors);
 			}
 			
-			appDomainHost.InitializeUndoEngine();
+			appDomainHost.InitializeRemainingServices();
 			
 			undoEngine = (IFormsDesignerUndoEngine)appDomainHost.GetService(typeof(IFormsDesignerUndoEngine));
 			
@@ -401,6 +403,11 @@ namespace ICSharpCode.FormsDesigner
 			hasUnmergedChanges = false;
 			
 			LoggingService.Info("Form Designer: END INITIALIZE");
+		}
+
+		void ApplicationIdle(object sender, EventArgs e)
+		{
+			appDomainHost.RaiseApplicationIdle();
 		}
 		
 		ProjectResourceService CreateProjectResourceService()
@@ -657,6 +664,11 @@ namespace ICSharpCode.FormsDesigner
 		
 		public void ShowSourceCode(IComponent component, EventDescriptor edesc, string eventMethodName)
 		{
+			ShowSourceCode(component, new EventDescriptorProxy(edesc), eventMethodName);
+		}
+		
+		public void ShowSourceCode(IComponent component, EventDescriptorProxy edesc, string eventMethodName)
+		{
 			int position;
 			string file;
 			bool eventCreated = generator.InsertComponentEvent(component, edesc, eventMethodName, "", out file, out position);
@@ -716,7 +728,8 @@ namespace ICSharpCode.FormsDesigner
 				ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting -= this.DebugStarting;
 				FileService.FileRemoving -= this.FileServiceFileRemoving;
 				
-				this.UnloadDesigner();
+				this.UnloadDesigner();
+				Application.Idle -= ApplicationIdle;
 				
 				// null check is required to support running in unit test mode
 				if (WorkbenchSingleton.Workbench != null) {

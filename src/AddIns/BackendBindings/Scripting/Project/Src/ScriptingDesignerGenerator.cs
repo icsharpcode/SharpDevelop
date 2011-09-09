@@ -241,7 +241,7 @@ namespace ICSharpCode.Scripting
 		/// <summary>
 		/// Inserts an event handler.
 		/// </summary>
-		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
+		public bool InsertComponentEvent(IComponent component, EventDescriptorProxy edesc, string eventMethodName, string body, out string file, out int position)
 		{		
 			position = GetExistingEventHandler(eventMethodName);
 			if (position == -1) {

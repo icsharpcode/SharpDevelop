@@ -110,7 +110,7 @@ namespace ICSharpCode.WixBinding
 		{
 		}
 		
-		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
+		public bool InsertComponentEvent(IComponent component, EventDescriptorProxy edesc, string eventMethodName, string body, out string file, out int position)
 		{
 			file = null;
 			position = 0;

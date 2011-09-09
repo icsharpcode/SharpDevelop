@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
 using CommandID = System.ComponentModel.Design.CommandID;
@@ -34,7 +35,7 @@ namespace ICSharpCode.FormsDesigner.Services
 
 		public override void ShowContextMenu(CommandID menuID, int x, int y)
 		{
-			commandProvider.ShowContextMenu(menuID, x, y);
+			commandProvider.ShowContextMenu(CommandIDEnumConverter.ToCommandIDEnum(menuID), x, y);
 		}
 		
 		public void AddProxyCommand(EventHandler commandCallBack, CommandID commandID)
@@ -91,6 +92,40 @@ namespace ICSharpCode.FormsDesigner.Services
 		public void RemoveVerb(System.ComponentModel.Design.DesignerVerb verb)
 		{
 			mcs.RemoveVerb(verb);
+		}
+	}
+	
+	public interface IDesignerVerbProxy
+	{
+		string Text { get; }
+		bool Enabled { get; }
+		void Invoke();
+	}
+	
+	public class DesignerVerbProxy : MarshalByRefObject, IDesignerVerbProxy
+	{
+		DesignerVerb verb;
+		
+		public DesignerVerbProxy(DesignerVerb verb)
+		{
+			this.verb = verb;
+		}
+		
+		public string Text {
+			get {
+				return verb.Text;
+			}
+		}
+		
+		public bool Enabled {
+			get {
+				return verb.Enabled;
+			}
+		}
+		
+		public void Invoke()
+		{
+			verb.Invoke();
 		}
 	}
 }

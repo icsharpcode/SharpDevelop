@@ -45,7 +45,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			return formsDesigner.DesignerOptions.EventHandlerNameFormat;
 		}
 
-		// sohuld look around in form class for compatible methodes
+		// sohuld look around in form class for compatible methods
 		protected override ICollection GetCompatibleMethods(EventDescriptor e)
 		{
 			return this.formsDesigner.Generator.GetCompatibleMethods(new EventDescriptorProxy(e));
@@ -76,7 +76,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			// event gets raised. In that case, ShowCode() already was called for the second set of arguments, and we can safely ignore
 			// the call with edesc==null.
 			if (formsDesigner != null && edesc != null) {
-				formsDesigner.ShowSourceCode(component, edesc, methodName);
+				formsDesigner.ShowSourceCode(component, new EventDescriptorProxy(edesc), methodName);
 				return true;
 			}
 			return false;

@@ -1,16 +1,17 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Drawing.Design;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.FormsDesigner.Gui;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.FormsDesigner.UndoRedo;
@@ -95,9 +96,9 @@ namespace ICSharpCode.FormsDesigner
 			
 			this.designSurface = designSurfaceManager.CreateDesignSurface(container);
 			
-			container.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(properties.Commands, designSurface).Proxy);
-			Services.EventBindingService eventBindingService = new Services.EventBindingService(properties.FormsDesignerProxy, designSurface);
+			var eventBindingService = new Services.EventBindingService(properties.FormsDesignerProxy, designSurface);
 			container.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
+			container.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(properties.Commands, designSurface).Proxy);
 			container.AddService(typeof(IToolboxService), new SharpDevelopToolboxService(this));
 //			container.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(properties.ResourceStore, this));
 			
@@ -424,6 +425,19 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		List<IDesignerVerbProxy> designerVerbs;
+		
+		public List<IDesignerVerbProxy> CommandVerbs {
+			get {
+				if (designerVerbs == null) {
+					designerVerbs = new List<IDesignerVerbProxy>();
+					designerVerbs.AddRange(((IMenuCommandService)GetService(typeof(IMenuCommandService))).Verbs.OfType<DesignerVerb>().Select(dv => new DesignerVerbProxy(dv)));
+				}
+				
+				return designerVerbs;
+			}
+		}
+		
 		public IMessageService MessageService {
 			get {
 				return GetService(typeof(IMessageService)) as IMessageService;
@@ -472,7 +486,7 @@ namespace ICSharpCode.FormsDesigner
 			return component.LoadAssembly().GetName();
 		}
 		
-		public void InitializeUndoEngine()
+		public void InitializeRemainingServices()
 		{
 			var undoEngine = new FormsDesignerUndoEngine(this);
 			container.AddService(typeof(UndoEngine), undoEngine);
@@ -487,6 +501,11 @@ namespace ICSharpCode.FormsDesigner
 					return Assembly.LoadFile(location);
 				return null;
 			};
+		}
+		
+		public void RaiseApplicationIdle()
+		{
+			Application.RaiseIdle(EventArgs.Empty);
 		}
 	}
 	

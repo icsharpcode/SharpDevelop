@@ -483,7 +483,7 @@ namespace ICSharpCode.FormsDesigner
 		/// <param name="component"></param>
 		/// <param name="edesc"></param>
 		/// <returns></returns>
-		public virtual bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
+		public virtual bool InsertComponentEvent(IComponent component, EventDescriptorProxy edesc, string eventMethodName, string body, out string file, out int position)
 		{
 			if (edesc == null)
 				throw new ArgumentNullException("edesc");

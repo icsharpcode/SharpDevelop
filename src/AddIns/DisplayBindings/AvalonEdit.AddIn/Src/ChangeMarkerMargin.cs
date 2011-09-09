@@ -50,8 +50,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (textView != null && textView.VisualLinesValid) {
 				var zeroLineInfo = changeWatcher.GetChange(0);
 				
-				Debug.Assert(zeroLineInfo.Change == ChangeType.None || zeroLineInfo.Change == ChangeType.Deleted);
-				
 				foreach (VisualLine line in textView.VisualLines) {
 					Rect rect = new Rect(0, line.VisualTop - textView.ScrollOffset.Y, 5, line.Height);
 					

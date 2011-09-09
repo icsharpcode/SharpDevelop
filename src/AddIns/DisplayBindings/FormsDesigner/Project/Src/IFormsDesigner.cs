@@ -23,7 +23,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		void ShowSourceCode();
 		void ShowSourceCode(int lineNumber);
-		void ShowSourceCode(IComponent component, EventDescriptor edesc, string methodName);
+		void ShowSourceCode(IComponent component, EventDescriptorProxy edesc, string methodName);
 		
 		SharpDevelopDesignerOptions DesignerOptions { get; }
 		bool IsTabOrderMode { get; }
