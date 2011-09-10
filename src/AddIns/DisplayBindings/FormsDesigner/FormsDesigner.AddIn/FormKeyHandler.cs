@@ -6,30 +6,36 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using ICSharpCode.Core;
+using ICSharpCode.FormsDesigner.Services;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public sealed class FormKeyHandler : IMessageFilter
+	public sealed class FormKeyHandler : MarshalByRefObject, IMessageFilter
 	{
 		const int keyPressedMessage          = 0x100;
 		const int leftMouseButtonDownMessage = 0x0202;
 		
 		readonly Dictionary<Keys, CommandWrapper> keyTable = new Dictionary<Keys, CommandWrapper>();
-		FormsDesignerAppDomainHost host;
+		FormsDesignerViewContent formsDesigner;
 		public static bool inserted = false;
 		
-		public static void Insert(FormsDesignerAppDomainHost host)
+		public static void Insert(FormsDesignerViewContent formsDesigner)
 		{
+			Debug.Assert(!DesignerAppDomainManager.IsDesignerDomain);
 			inserted = true;
-			Application.AddMessageFilter(new FormKeyHandler(host));
+			Application.AddMessageFilter(new FormKeyHandler(formsDesigner));
 		}
 		
-		public FormKeyHandler(FormsDesignerAppDomainHost host)
+		public FormKeyHandler(FormsDesignerViewContent formsDesigner)
 		{
-			this.host = host;
+			Debug.Assert(!DesignerAppDomainManager.IsDesignerDomain);
+			
+			this.formsDesigner = formsDesigner;
 			
 			// normal keys
 			keyTable[Keys.Left]  = new CommandWrapper(MenuCommands.KeyMoveLeft);
@@ -68,8 +74,6 @@ namespace ICSharpCode.FormsDesigner
 				return false;
 			}
 			
-			IFormsDesigner formsDesigner = host.GetService(typeof(IFormsDesigner)) as IFormsDesigner;
-			
 			if (formsDesigner == null || (formsDesigner.DesignerContent != null && !((Control)formsDesigner.DesignerContent).ContainsFocus)) {
 				return false;
 			}
@@ -98,10 +102,11 @@ namespace ICSharpCode.FormsDesigner
 						return false;
 					}
 				}
-				host.LoggingService.Debug("Run menu command: " + commandWrapper.CommandID);
+				var host = formsDesigner.AppDomainHost;
+				LoggingService.Debug("Run menu command: " + commandWrapper.CommandID);
 				
-				IMenuCommandService menuCommandService = host.MenuCommandService;
-				ISelectionService   selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
+				IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)host.MenuCommandService;
+				ISelectionService selectionService = host.SelectionService;
 				ICollection components = selectionService.GetSelectedComponents();
 				if (components.Count == 1) {
 					foreach (IComponent component in components) {
@@ -110,7 +115,7 @@ namespace ICSharpCode.FormsDesigner
 					}
 				}
 				
-				menuCommandService.GlobalInvoke(commandWrapper.CommandID);
+				menuCommandService.GlobalInvoke(CommandIDEnumConverter.ToCommandIDEnum(commandWrapper.CommandID));
 				
 				if (commandWrapper.RestoreSelection) {
 					selectionService.SetSelectedComponents(components);
@@ -126,9 +131,9 @@ namespace ICSharpCode.FormsDesigner
 			Assembly asm = typeof(WindowsFormsDesignerOptionService).Assembly;
 			// Microsoft made ToolStripKeyboardHandlingService internal, so we need Reflection
 			Type keyboardType = asm.GetType("System.Windows.Forms.Design.ToolStripKeyboardHandlingService");
-			object keyboardService = host.GetService(keyboardType);
+			object keyboardService = formsDesigner.AppDomainHost.GetService(keyboardType);
 			if (keyboardService == null) {
-				host.LoggingService.Debug("no ToolStripKeyboardHandlingService found");
+				LoggingService.Debug("no ToolStripKeyboardHandlingService found");
 				return false; // handle command normally
 			}
 			if (activeComponent is ToolStripItem) {

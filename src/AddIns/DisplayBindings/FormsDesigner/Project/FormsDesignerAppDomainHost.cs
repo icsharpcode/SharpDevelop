@@ -107,10 +107,6 @@ namespace ICSharpCode.FormsDesigner
 //			container.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(properties.ResourceStore, this));
 			
 			InitializeEvents();
-			
-			if (!FormKeyHandler.inserted) {
-				FormKeyHandler.Insert(this);
-			}
 		}
 		
 		#region Events
@@ -433,6 +429,12 @@ namespace ICSharpCode.FormsDesigner
 		public IMenuCommandService MenuCommandService {
 			get {
 				return menuCommandService.Proxy;
+			}
+		}
+		
+		public ISelectionService SelectionService {
+			get {
+				return new SelectionServiceProxy(GetService(typeof(ISelectionService)) as ISelectionService);
 			}
 		}
 		

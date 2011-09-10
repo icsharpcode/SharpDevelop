@@ -168,6 +168,10 @@ namespace ICSharpCode.FormsDesigner
 			toolbox = new ToolboxProvider(appDomainHost);
 			appDomainHost.UseSDAssembly(typeof(CustomWindowsFormsHost).Assembly.FullName, typeof(CustomWindowsFormsHost).Assembly.Location);
 			
+			if (!FormKeyHandler.inserted) {
+				FormKeyHandler.Insert(this);
+			}
+			
 			Application.Idle += ApplicationIdle;
 		}
 		

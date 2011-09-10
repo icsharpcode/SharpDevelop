@@ -88,6 +88,7 @@
     <Compile Include="DesignerLoader\DesignerLoaderProvider.cs" />
     <Compile Include="DesignerLoader\NRefactoryDesignerLoader.cs" />
     <Compile Include="DesignerSourceCodeStorage.cs" />
+    <Compile Include="FormKeyHandler.cs" />
     <Compile Include="FormsDesignerLoggingServiceImpl.cs" />
     <Compile Include="FormsDesignerViewContent.cs" />
     <Compile Include="ImageResourceEditorDialog.cs" />

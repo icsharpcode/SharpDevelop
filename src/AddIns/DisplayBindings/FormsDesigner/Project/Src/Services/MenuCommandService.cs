@@ -98,11 +98,17 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			return FindCommand(CommandIDEnumConverter.ToCommandID(command)).Enabled;
 		}
+		
+		public void GlobalInvoke(CommandIDEnum command)
+		{
+			GlobalInvoke(CommandIDEnumConverter.ToCommandID(command));
+		}
 	}
 	
 	public interface IMenuCommandServiceProxy
 	{
 		bool IsCommandEnabled(CommandIDEnum command);
+		void GlobalInvoke(CommandIDEnum command);
 	}
 	
 	public interface IDesignerVerbProxy
@@ -136,6 +142,68 @@ namespace ICSharpCode.FormsDesigner.Services
 		public void Invoke()
 		{
 			verb.Invoke();
+		}
+	}
+	
+	public class SelectionServiceProxy : MarshalByRefObject, ISelectionService
+	{
+		ISelectionService svc;
+		
+		public SelectionServiceProxy(ISelectionService svc)
+		{
+			this.svc = svc;
+			this.svc.SelectionChanged += delegate { OnSelectionChanged(EventArgs.Empty); };
+			this.svc.SelectionChanging += delegate { OnSelectionChanging(EventArgs.Empty); };
+		}
+		
+		public event EventHandler SelectionChanged;
+		
+		protected virtual void OnSelectionChanged(EventArgs e)
+		{
+			if (SelectionChanged != null) {
+				SelectionChanged(this, e);
+			}
+		}
+		
+		public event EventHandler SelectionChanging;
+		
+		protected virtual void OnSelectionChanging(EventArgs e)
+		{
+			if (SelectionChanging != null) {
+				SelectionChanging(this, e);
+			}
+		}
+		
+		public object PrimarySelection {
+			get {
+				return svc.PrimarySelection;
+			}
+		}
+		
+		public int SelectionCount {
+			get {
+				return svc.SelectionCount;
+			}
+		}
+		
+		public bool GetComponentSelected(object component)
+		{
+			return svc.GetComponentSelected(component);
+		}
+		
+		public System.Collections.ICollection GetSelectedComponents()
+		{
+			return svc.GetSelectedComponents();
+		}
+		
+		public void SetSelectedComponents(System.Collections.ICollection components)
+		{
+			svc.SetSelectedComponents(components);
+		}
+		
+		public void SetSelectedComponents(System.Collections.ICollection components, SelectionTypes selectionType)
+		{
+			svc.SetSelectedComponents(components, selectionType);
 		}
 	}
 }
