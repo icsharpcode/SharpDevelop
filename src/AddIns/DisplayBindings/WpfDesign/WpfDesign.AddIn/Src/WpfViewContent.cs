@@ -114,7 +114,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		protected override void SaveInternal(OpenedFile file, System.IO.Stream stream)
 		{
-			if(designer.DesignContext!=null){
+			if(IsDirty && designer.DesignContext!=null){
 				XmlWriterSettings settings = new XmlWriterSettings();
 				settings.Indent = true;
 				settings.IndentChars = EditorControlService.GlobalOptions.IndentationString;
