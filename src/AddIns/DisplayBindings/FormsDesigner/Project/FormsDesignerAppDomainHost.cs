@@ -6,6 +6,7 @@ using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -27,6 +28,7 @@ namespace ICSharpCode.FormsDesigner
 		ServiceContainer container;
 		DesignerLoader loader;
 		IFormsDesignerLoggingService logger;
+		Services.MenuCommandService menuCommandService;
 		IDesignerGenerator generator;
 		bool unloading;
 		FormsDesignerAppDomainCreationProperties properties;
@@ -97,8 +99,10 @@ namespace ICSharpCode.FormsDesigner
 			this.designSurface = designSurfaceManager.CreateDesignSurface(container);
 			
 			var eventBindingService = new Services.EventBindingService(properties.FormsDesignerProxy, designSurface);
+			this.menuCommandService = new ICSharpCode.FormsDesigner.Services.MenuCommandService(properties.Commands, designSurface);
+			
 			container.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
-			container.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(properties.Commands, designSurface).Proxy);
+			container.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), menuCommandService.Proxy);
 			container.AddService(typeof(IToolboxService), new SharpDevelopToolboxService(this));
 //			container.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(properties.ResourceStore, this));
 			
@@ -325,7 +329,8 @@ namespace ICSharpCode.FormsDesigner
 		
 		public object GetService(Type serviceType)
 		{
-			return designSurface.GetService(serviceType);
+			var svc = designSurface.GetService(serviceType);
+			return svc;
 		}
 		
 		public void BeginDesignSurfaceLoad(IDesignerGenerator generator, IDesignerLoaderProvider loaderProvider)
@@ -425,6 +430,12 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		public IMenuCommandService MenuCommandService {
+			get {
+				return menuCommandService.Proxy;
+			}
+		}
+		
 		List<IDesignerVerbProxy> designerVerbs;
 		
 		public List<IDesignerVerbProxy> CommandVerbs {
@@ -449,28 +460,30 @@ namespace ICSharpCode.FormsDesigner
 			Services.AddService(type, service);
 		}
 		
-		public Bitmap LoadComponentIcon(ToolComponent component)
+		public Stream LoadComponentIconStream(ToolComponent component)
 		{
 			Assembly asm = component.LoadAssembly();
 			Type type = asm.GetType(component.FullName);
-			Bitmap b = null;
+			Stream s = null;
 			if (type != null) {
 				object[] attributes = type.GetCustomAttributes(false);
 				foreach (object attr in attributes) {
 					if (attr is ToolboxBitmapAttribute) {
 						ToolboxBitmapAttribute toolboxBitmapAttribute = (ToolboxBitmapAttribute)attr;
-						b = new Bitmap(toolboxBitmapAttribute.GetImage(type));
-						b.MakeTransparent();
+						var img = new Bitmap(toolboxBitmapAttribute.GetImage(type));
+						s = new MemoryStream();
+						img.Save(s, ImageFormat.Png);
 						break;
 					}
 				}
 			}
-			if (b == null) {
+			if (s == null) {
 				try {
 					Stream imageStream = asm.GetManifestResourceStream(component.FullName + ".bmp");
 					if (imageStream != null) {
-						b = new Bitmap(Image.FromStream(imageStream));
-						b.MakeTransparent();
+						var img = new Bitmap(Image.FromStream(imageStream));
+						s = new MemoryStream();
+						img.Save(s, ImageFormat.Png);
 					}
 				} catch (Exception e) {
 					logger.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);
@@ -478,7 +491,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			// TODO: Maybe default icon needed ??!?!
-			return b;
+			return s;
 		}
 		
 		public AssemblyName GetAssemblyName(ToolComponent component)

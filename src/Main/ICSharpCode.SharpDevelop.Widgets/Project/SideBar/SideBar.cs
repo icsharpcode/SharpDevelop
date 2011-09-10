@@ -26,11 +26,11 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		{
 			return new SideTabItem(name, tag);
 		}
+		
 		public SideTabItem CreateSideTabItem(string name, object tag, Bitmap bitmap)
 		{
 			return new SideTabItem(name, tag, bitmap);
 		}
-		
 	}
 	
 	public interface ISideTabFactory

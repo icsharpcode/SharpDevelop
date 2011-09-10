@@ -40,11 +40,10 @@ namespace ICSharpCode.FormsDesigner.Commands
 		}
 		public override void Run()
 		{
-			
 			try {
 				FormsDesignerViewContent formDesigner = FormDesigner;
 				if (formDesigner != null && CanExecuteCommand(formDesigner.AppDomainHost)) {
-					IMenuCommandService menuCommandService = (IMenuCommandService)formDesigner.AppDomainHost.GetService(typeof(IMenuCommandService));
+					IMenuCommandService menuCommandService = formDesigner.AppDomainHost.MenuCommandService;
 					menuCommandService.GlobalInvoke(CommandIDEnumConverter.ToCommandID(CommandID));
 				}
 			} catch (Exception e) {

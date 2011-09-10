@@ -177,7 +177,9 @@ namespace ICSharpCode.FormsDesigner
 		{
 			LoggingService.Debug("Forms designer: Load " + file.FileName + "; inMasterLoadOperation=" + this.inMasterLoadOperation);
 			
-			LoadAppDomain();
+			if (appDomain == null) {
+				LoadAppDomain();
+			}
 			
 			propertyContainer.PropertyGridReplacementContent = WrapInCustomHost(appDomainHost.CreatePropertyPad());
 			
@@ -359,6 +361,12 @@ namespace ICSharpCode.FormsDesigner
 			{
 				vc.HideTabOrder();
 			}
+			
+			public Control DesignerContent {
+				get {
+					return vc.DesignerContent;
+				}
+			}
 		}
 		#endregion
 		
@@ -424,7 +432,6 @@ namespace ICSharpCode.FormsDesigner
 			}
 			return DefaultProjectContent.DummyProjectContent;
 		}
-
 		
 		SharpDevelopDesignerOptions LoadOptions()
 		{
@@ -595,6 +602,8 @@ namespace ICSharpCode.FormsDesigner
 		
 		bool reloadPending;
 		
+		CustomWindowsFormsHost designView;
+		
 		void DesignerLoaded(object sender, LoadedEventArgsProxy e)
 		{
 			// This method is called when the designer has loaded.
@@ -607,7 +616,7 @@ namespace ICSharpCode.FormsDesigner
 				
 				// enableFontInheritance: Make sure auto-scaling is based on the correct font.
 				// This is required on Vista, I don't know why it works correctly in XP
-				CustomWindowsFormsHost designView = WrapInCustomHost(appDomainHost.DesignSurfaceView, enableFontInheritance: false);
+				designView = WrapInCustomHost(appDomainHost.DesignSurfaceView, enableFontInheritance: false);
 				
 				this.UserContent = designView;
 				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + appDomainHost.DesignSurfaceName);
@@ -728,7 +737,8 @@ namespace ICSharpCode.FormsDesigner
 				ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting -= this.DebugStarting;
 				FileService.FileRemoving -= this.FileServiceFileRemoving;
 				
-				this.UnloadDesigner();
+				this.UnloadDesigner();
+
 				Application.Idle -= ApplicationIdle;
 				
 				// null check is required to support running in unit test mode
@@ -786,48 +796,42 @@ namespace ICSharpCode.FormsDesigner
 		#endregion
 		
 		#region IClipboardHandler implementation
-		bool IsMenuCommandEnabled(CommandID commandID)
+		bool IsMenuCommandEnabled(CommandIDEnum commandID)
 		{
 			if (appDomainHost.DesignSurfaceName == null) {
 				return false;
 			}
 			
-			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
+			IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)appDomainHost.MenuCommandService;
 			if (menuCommandService == null) {
 				return false;
 			}
 			
-			System.ComponentModel.Design.MenuCommand menuCommand = menuCommandService.FindCommand(commandID);
-			if (menuCommand == null) {
-				return false;
-			}
-			
-			//int status = menuCommand.OleStatus;
-			return menuCommand.Enabled;
+			return menuCommandService.IsCommandEnabled(commandID);
 		}
 		
 		public bool EnableCut {
 			get {
-				return IsMenuCommandEnabled(StandardCommands.Cut);
+				return IsMenuCommandEnabled(CommandIDEnum.Cut);
 			}
 		}
 		
 		public bool EnableCopy {
 			get {
-				return IsMenuCommandEnabled(StandardCommands.Copy);
+				return IsMenuCommandEnabled(CommandIDEnum.Copy);
 			}
 		}
 		
 		const string ComponentClipboardFormat = "CF_DESIGNERCOMPONENTS";
 		public bool EnablePaste {
 			get {
-				return IsMenuCommandEnabled(StandardCommands.Paste);
+				return IsMenuCommandEnabled(CommandIDEnum.Paste);
 			}
 		}
 		
 		public bool EnableDelete {
 			get {
-				return IsMenuCommandEnabled(StandardCommands.Delete);
+				return IsMenuCommandEnabled(CommandIDEnum.Delete);
 			}
 		}
 		
@@ -914,7 +918,12 @@ namespace ICSharpCode.FormsDesigner
 		}
 		
 		public virtual object ToolsContent {
-			get { return toolbox.FormsDesignerSideBar; }
+			get {
+				if (appDomain == null) {
+					LoadAppDomain();
+				}
+				return toolbox.FormsDesignerSideBar;
+			}
 		}
 		
 		void FileServiceFileRemoving(object sender, FileCancelEventArgs e)
@@ -1002,6 +1011,12 @@ namespace ICSharpCode.FormsDesigner
 		public IDesignerGenerator Generator {
 			get {
 				return generator;
+			}
+		}
+		
+		public Control DesignerContent {
+			get {
+				return designView.Child;
 			}
 		}
 	}

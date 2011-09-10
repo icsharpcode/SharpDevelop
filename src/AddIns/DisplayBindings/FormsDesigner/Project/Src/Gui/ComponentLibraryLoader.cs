@@ -353,7 +353,9 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		public Bitmap GetIcon(ToolComponent component)
 		{
-			return appDomainHost.LoadComponentIcon(component);
+			var img = new Bitmap(appDomainHost.LoadComponentIconStream(component));
+			img.MakeTransparent();
+			return img;
 		}
 		
 		public ToolComponent GetToolComponent(string assemblyName)

@@ -90,7 +90,6 @@
     <Compile Include="DesignerSourceCodeStorage.cs" />
     <Compile Include="FormsDesignerLoggingServiceImpl.cs" />
     <Compile Include="FormsDesignerViewContent.cs" />
-    <Compile Include="FormKeyHandler.cs" />
     <Compile Include="ImageResourceEditorDialog.cs" />
     <Compile Include="ImageResourceEditorDialog.Designer.cs">
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>

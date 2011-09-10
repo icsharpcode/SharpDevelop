@@ -7,7 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Resources;
 using System.Security.AccessControl;
-
+using System.Windows.Forms;
 using ICSharpCode.FormsDesigner.Services;
 
 namespace ICSharpCode.FormsDesigner
@@ -28,6 +28,7 @@ namespace ICSharpCode.FormsDesigner
 		SharpDevelopDesignerOptions DesignerOptions { get; }
 		bool IsTabOrderMode { get; }
 		bool EnableDelete { get; }
+		Control DesignerContent { get; }
 		
 		void MakeDirty();
 		void HideTabOrder();

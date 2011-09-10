@@ -70,19 +70,16 @@ namespace ICSharpCode.FormsDesigner
 			
 			IFormsDesigner formsDesigner = host.GetService(typeof(IFormsDesigner)) as IFormsDesigner;
 			
-			if (formsDesigner == null) {
+			if (formsDesigner == null || (formsDesigner.DesignerContent != null && !((Control)formsDesigner.DesignerContent).ContainsFocus)) {
 				return false;
 			}
-//			if (formDesigner.UserContent != null && !((Control)formDesigner.UserContent).ContainsFocus) {
-//				return false;
-//			}
-//			
-//			Control originControl = Control.FromChildHandle(m.HWnd);
-//			if (originControl != null && formDesigner.UserContent != null && !(formDesigner.UserContent == originControl || ((WindowsFormsHost)formDesigner.UserContent).Child.Contains(originControl))) {
-//				// Ignore if message origin not in forms designer
-//				// (e.g. navigating the main menu)
-//				return false;
-//			}
+			
+			Control originControl = Control.FromChildHandle(m.HWnd);
+			if (originControl != null && formsDesigner.DesignerContent != null && formsDesigner.DesignerContent != originControl) {
+				// Ignore if message origin not in forms designer
+				// (e.g. navigating the main menu)
+				return false;
+			}
 			
 			Keys keyPressed = (Keys)m.WParam.ToInt32() | Control.ModifierKeys;
 			
@@ -103,7 +100,7 @@ namespace ICSharpCode.FormsDesigner
 				}
 				host.LoggingService.Debug("Run menu command: " + commandWrapper.CommandID);
 				
-				IMenuCommandService menuCommandService = (IMenuCommandService)host.GetService(typeof(IMenuCommandService));
+				IMenuCommandService menuCommandService = host.MenuCommandService;
 				ISelectionService   selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
 				ICollection components = selectionService.GetSelectedComponents();
 				if (components.Count == 1) {

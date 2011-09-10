@@ -44,7 +44,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		}
 	}
 	
-	public class MenuCommandServiceProxy : MarshalByRefObject, System.ComponentModel.Design.IMenuCommandService
+	public class MenuCommandServiceProxy : MarshalByRefObject, System.ComponentModel.Design.IMenuCommandService, IMenuCommandServiceProxy
 	{
 		MenuCommandService mcs;
 		
@@ -93,6 +93,16 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			mcs.RemoveVerb(verb);
 		}
+		
+		public bool IsCommandEnabled(CommandIDEnum command)
+		{
+			return FindCommand(CommandIDEnumConverter.ToCommandID(command)).Enabled;
+		}
+	}
+	
+	public interface IMenuCommandServiceProxy
+	{
+		bool IsCommandEnabled(CommandIDEnum command);
 	}
 	
 	public interface IDesignerVerbProxy

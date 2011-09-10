@@ -103,6 +103,7 @@ namespace ICSharpCode.FormsDesigner
 			foreach (Category category in componentLibraryLoader.Categories) {
 				if (category.IsEnabled) {
 					try {
+						bool domain = DesignerAppDomainManager.IsDesignerDomain;
 						DesignerSideTab newTab = new DesignerSideTab(this, sideBar, category, toolboxService);
 						newTab.ItemRemoved += SideTabItemRemoved;
 						newTab.ItemsExchanged += SideTabItemsExchanged;
