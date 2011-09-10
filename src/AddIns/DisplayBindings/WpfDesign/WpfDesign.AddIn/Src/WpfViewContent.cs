@@ -72,7 +72,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				this.UserContent = designer;
 				InitPropertyEditor();
 			}
-			this.UserContent=designer;
+			this.UserContent = designer;
 			if (outline != null) {
 				outline.Root = null;
 			}
@@ -88,8 +88,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 						context.Services.AddService(typeof(ChooseClassServiceBase), new IdeChooseClassService());
 					});
 				settings.TypeFinder = MyTypeFinder.Create(this.PrimaryFile);
-				try{
-					settings.ReportErrors=UpdateTasks;
+				try {
+					settings.ReportErrors = UpdateTasks;
 					designer.LoadDesigner(r, settings);
 					
 					designer.ContextMenuOpening += (sender, e) => MenuService.ShowContextMenu(e.OriginalSource as UIElement, designer, "/AddIns/WpfDesign/Designer/ContextMenu");
@@ -101,10 +101,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 					propertyGridView.PropertyGrid.SelectedItems = null;
 					designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
 					designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;
-				}
-				catch
-				{
-					this.UserContent=new WpfDocumentError();
+				} catch {
+					this.UserContent = new WpfDocumentError();
 				}
 			}
 		}
@@ -114,7 +112,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		protected override void SaveInternal(OpenedFile file, System.IO.Stream stream)
 		{
-			if(IsDirty && designer.DesignContext!=null){
+			if (IsDirty && designer.DesignContext != null) {
 				XmlWriterSettings settings = new XmlWriterSettings();
 				settings.Indent = true;
 				settings.IndentChars = EditorControlService.GlobalOptions.IndentationString;
@@ -122,36 +120,35 @@ namespace ICSharpCode.WpfDesign.AddIn
 				using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
 					designer.SaveDesigner(xmlWriter);
 				}
-			}
-			else{
-				if(_stream.CanRead){
+			} else {
+				if (_stream.CanRead) {
 					_stream.Position = 0;
-					using (var reader = new StreamReader(_stream))
+					using (var reader = new StreamReader(_stream)) {
 						using (var writer = new StreamWriter(stream)) {
-						writer.Write(reader.ReadToEnd());
+							writer.Write(reader.ReadToEnd());
+						}
 					}
 				}
 			}
-			
 		}
 		
 		void UpdateTasks(XamlErrorService xamlErrorService)
 		{
-			Debug.Assert(xamlErrorService!=null);
-			foreach (var task in tasks) {
+			Debug.Assert(xamlErrorService != null);
+			foreach (Task task in tasks) {
 				TaskService.Remove(task);
 			}
 			
 			tasks.Clear();
 			
-			foreach (var error in xamlErrorService.Errors) {
+			foreach (XamlError error in xamlErrorService.Errors) {
 				var task = new Task(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line - 1, TaskType.Error);
 				tasks.Add(task);
 				TaskService.Add(task);
 			}
 			
 			if (xamlErrorService.Errors.Count != 0) {
-				WorkbenchSingleton.Workbench.GetPad(typeof (ErrorListPad)).BringPadToFront();
+				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 		}
 		
@@ -182,11 +179,11 @@ namespace ICSharpCode.WpfDesign.AddIn
 				if (!propertyGridView.PropertyGrid.IsNameCorrect) return;
 				
 				// get the XAML file
-				var fileName = this.Files.Where(f => f.FileName.ToString().EndsWith(".xaml")).FirstOrDefault();
-				if (fileName == null)return;
+				OpenedFile fileName = this.Files.Where(f => f.FileName.ToString().EndsWith(".xaml")).FirstOrDefault();
+				if (fileName == null) return;
 				
 				// parse the XAML file
-				var info = ParserService.ParseFile(fileName.FileName.ToString());
+				ParseInformation info = ParserService.ParseFile(fileName.FileName.ToString());
 				if (info == null || info.CompilationUnit == null) return;
 				if (info.CompilationUnit.Classes.Count != 1) return;
 				
