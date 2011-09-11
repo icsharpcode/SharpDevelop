@@ -17,9 +17,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		
 		DataTable table;
 		
-		
 		[Test]
-		public void Can_add_GroupColumn ()
+		public void AddGroupColumn ()
 		{
 			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
 			ReportSettings rs = new ReportSettings();
@@ -30,7 +29,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		
 		
 		[Test]
-		public void AvaiableFields_Should_Be_Set()
+		public void AvaiableFieldsShouldSet()
 		{
 			var dataNavigator = PrepareStringGrouping();
 			dataNavigator.MoveNext();
@@ -44,7 +43,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		#region Group by String
 		
 		[Test]
-		public void Has_Children()
+		public void HasChildren()
 		{
 			var dataNavigator = PrepareStringGrouping();
 			while (dataNavigator.MoveNext()) {
@@ -53,7 +52,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		}
 		
 		[Test]
-		public void Can_Read_Child_Count ()
+		public void ReadChildCount ()
 		{
 			var dataNavigator = PrepareStringGrouping();
 			while (dataNavigator.MoveNext())
@@ -65,55 +64,129 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 				}
 			}
 		}
+		
+		
+		[Test]
+		public void CeckGrouping()
+		{
+			var dataNavigator = PrepareStringGrouping();
+			string compare = string.Empty;
+			
+			while (dataNavigator.MoveNext())
+			{
+				DataRow dr = dataNavigator.Current as DataRow;
+				var result = dr[3].ToString();
+				Assert.That (compare,Is.LessThan(result));
+				compare =  result;
+			}
+		}
 			
 		
 		[Test]
-		public void Can_FillChild()
+		public void FillChild()
 		{
 			var dataNavigator = PrepareStringGrouping();
-			while (dataNavigator.MoveNext()) {
+			string compare = string.Empty;
+			
+			while (dataNavigator.MoveNext())
+			{
+				DataRow dr = dataNavigator.Current as DataRow;
+				Assert.That (compare,Is.LessThan(dr[3].ToString()));
 				if (dataNavigator.HasChildren)
 				{
 					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
 						Assert.That(dataNavigator.HasChildren,Is.True);
-						DataRow r = dataNavigator.Current as DataRow;
-						string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
-						Console.WriteLine(v2);
+						DataRow r = childNavigator.Current as DataRow;
+						Assert.That( r[3].ToString(),Is.Not.Empty);
+//						string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
+//						Console.WriteLine(v2);
 					}
 					while (childNavigator.MoveNext());
 				}
+				compare =  dr[3].ToString();
 			}
 		}
+		
+		
+		[Test]
+		public void SortChildrenDescending()
+		{
+			ReportSettings rs = new ReportSettings();
+			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
+			rs.GroupColumnsCollection.Add(gc);
+			
+			SortColumn sc = new SortColumn("Last",ListSortDirection.Descending);
+			rs.SortColumnsCollection.Add(sc);
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
+			var dataNavigator = dm.GetNavigator;
+			
+			string compare = String.Empty;
+			
+			while (dataNavigator.MoveNext())
+			{
+				DataRow dr = dataNavigator.Current as DataRow;
+				var result = dr[3].ToString();
+				Assert.That(compare,Is.LessThan(result));
+				if (dataNavigator.HasChildren)
+				{
+					string compareChild = String.Empty;
+					var childNavigator = dataNavigator.GetChildNavigator;
+					do
+					{
+						DataRow childRow = childNavigator.Current as DataRow;
+						var childResult = childRow[1].ToString();
+						if (!String.IsNullOrEmpty(compareChild)) {
+							Assert.LessOrEqual(childResult,compareChild);
+						}
+//						Console.WriteLine("\t{0}",childResult);
+						compareChild = childResult;
+					}
+					while (childNavigator.MoveNext());
+				}
+				compare = result;
+			}
+		}
+		
 		
 		#endregion
 		
 		#region GroupbyDataTime
 		
 		[Test]
-		public void DateTimeCan_FillChild()
+		public void DateTimeCanFillChild()
 		{
 			var dataNavigator = PrepareDateTimeGrouping();
-			while (dataNavigator.MoveNext()) {
+			var compare = System.DateTime.MinValue;
+			
+			while (dataNavigator.MoveNext()) 
+			{
+				
+				DataRow dr = dataNavigator.Current as DataRow;
+				var result = Convert.ToDateTime(dr[5]);
+				Assert.That (compare,Is.LessThan(result));
+				
 				if (dataNavigator.HasChildren)
 				{
 					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
 						Assert.That(dataNavigator.HasChildren,Is.True);
-						DataRow r = dataNavigator.Current as DataRow;
-						string v2 = r["last"].ToString() + " GroupVal :" +  r[5].ToString();
-						Console.WriteLine(v2);
+						DataRow r = childNavigator.Current as DataRow;
+						Assert.That( r[3].ToString(),Is.Not.Empty);
+//						string v2 = r["last"].ToString() + " GroupVal :" +  r[5].ToString();
+//						Console.WriteLine(v2);
 					}
 					while (childNavigator.MoveNext());
 				}
+				compare =  Convert.ToDateTime(dr[5]);
 			}
 		}
 		
 		
 		[Test]
-		public void DataTime_Has_Children()
+		public void DataTimeHasChildren()
 		{
 			var dataNav = PrepareDateTimeGrouping();
 			while (dataNav.MoveNext()) {
@@ -126,9 +199,9 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		#region Try make recursive with ChildNavigator
 	
 		[Test]
-		public void Can_Get_ChildNavigator ()
+		public void GetChildNavigator ()
 		{
-			Console.WriteLine("Start Recusive Version");
+//			Console.WriteLine("Start Recusive Version");
 			var dataNavigator = PrepareStringGrouping();
 			
 			while (dataNavigator.MoveNext()) {
@@ -138,7 +211,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString() ;
 					IDataNavigator child = dataNavigator.GetChildNavigator;
 					
-					Console.WriteLine(v2);
+//					Console.WriteLine(v2);
 					Assert.That (child,Is.Not.Null);
 					RecursiveCall(child);
 				}
@@ -178,8 +251,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		
 		private IDataNavigator PrepareDateTimeGrouping ()
 		{
-			GroupColumn gc = new GroupColumn("RandomDate",1,ListSortDirection.Ascending);
 			ReportSettings rs = new ReportSettings();
+			GroupColumn gc = new GroupColumn("RandomDate",1,ListSortDirection.Ascending);
 			rs.GroupColumnsCollection.Add(gc);
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
 			return dm.GetNavigator;

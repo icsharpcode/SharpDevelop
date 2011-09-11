@@ -126,8 +126,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					} else {
 						this.errorPainter.UpdateErrors();
 					}
-					changeWatcher.Initialize(this.DocumentAdapter);
-					
+					if (changeWatcher != null) {
+						changeWatcher.Initialize(this.DocumentAdapter);
+					}
 					FetchParseInformation();
 				}
 			}
@@ -154,8 +155,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			textMarkerService = new TextMarkerService(this);
 			iconBarManager = new IconBarManager();
-			changeWatcher = new DefaultChangeWatcher();
-			
+			if (CodeEditorOptions.Instance.EnableChangeMarkerMargin) {
+				changeWatcher = new DefaultChangeWatcher();
+			}
 			primaryTextEditor = CreateTextEditor();
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 			Debug.Assert(primaryTextEditorAdapter != null);
@@ -214,7 +216,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
 			codeEditorView.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
 			
-			codeEditorView.TextArea.LeftMargins.Add(new ChangeMarkerMargin(changeWatcher));
+			if (changeWatcher != null) {
+				codeEditorView.TextArea.LeftMargins.Add(new ChangeMarkerMargin(changeWatcher));
+			}
 			
 			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
 			

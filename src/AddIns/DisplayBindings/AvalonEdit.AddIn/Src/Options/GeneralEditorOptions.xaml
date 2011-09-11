@@ -17,6 +17,9 @@
 				<CheckBox 
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.EnableFolding}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.FoldingCheckBox}" />
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.EnableChangeMarkerMargin}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.ChangeMarkerMarginCheckBox}" />
 				<CheckBox 
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.EnableQuickClassBrowser}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.ShowQuickClassBrowserCheckBox}" />

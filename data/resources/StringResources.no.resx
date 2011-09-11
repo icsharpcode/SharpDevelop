@@ -7922,15 +7922,6 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Bruker:</value>
   </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Du burde være på utkikk etter nye versjoner av SharpDevelop, fortelle alle vennene dine hvor bra SharpDevelop er, og bruke det til å skrive kule C# programmer!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Du kan åpne kodefullføringsvinduet med Ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>At du kan skrive "? name=...;" (C#) eller "Dim name As ? = ..." (VB) og SharpDevelop vil erstatte spørsmålstegnet med typen "..."?</value>
-  </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Alternativer for bufring</value>
   </data>

@@ -134,8 +134,9 @@
     <Compile Include="Project\DataManager\Comparer\BaseComparer.cs" />
     <Compile Include="Project\DataManager\Comparer\GroupSeparator.cs" />
     <Compile Include="Project\DataManager\Comparer\SortComparer.cs" />
+    <Compile Include="Project\DataManager\DataAccess\SqlDataAccess.cs" />
+    <Compile Include="Project\DataManager\DataAccess\SqlQueryChecker.cs" />
     <Compile Include="Project\DataManager\ListStrategy\TableStrategy.cs" />
-    <Compile Include="Project\DataManager\SqlDataAccess.cs" />
     <Compile Include="Project\DataManager\ListHandling\IndexList.cs" />
     <Compile Include="Project\DataManager\ListHandling\ExtendedPropertyDescriptor.cs" />
     <Compile Include="Project\DataManager\ListHandling\ExtendedTypeDescriptor.cs" />
@@ -148,7 +149,6 @@
     </Compile>
     <Compile Include="Project\Dialogs\EditorDialog.Designer.cs" />
     <Compile Include="Project\Dialogs\GroupingCollectionEditor.cs" />
-    <Compile Include="Project\Dialogs\IStringBasedEditorDialog.cs" />
     <Compile Include="Project\Dialogs\ParametersCollectionEditor.cs" />
     <Compile Include="Project\Dialogs\ParameterDialog.cs">
       <SubType>Form</SubType>
@@ -301,6 +301,7 @@
     <Compile Include="Project\Interfaces\IReportItem.cs" />
     <Compile Include="Project\Interfaces\IReportModel.cs" />
     <Compile Include="Project\Interfaces\ISinglePage.cs" />
+    <Compile Include="Project\Interfaces\IStringBasedEditorDialog.cs" />
     <Compile Include="Project\IReportCreator.cs" />
     <Compile Include="Project\Printing\Graphics\BaseLine.cs" />
     <Compile Include="Project\Printing\Graphics\BaseShape.cs" />
@@ -311,9 +312,7 @@
     <Compile Include="Project\Printing\Graphics\RectangleShape.cs" />
     <Compile Include="Project\Printing\AbstractRenderer.cs" />
     <Compile Include="Project\Printing\RenderDataReport.cs" />
-    <Compile Include="Project\Printing\RendererFactory.cs" />
     <Compile Include="Project\Printing\RenderFormSheetReport.cs" />
-    <Compile Include="Project\Printing\RenderTable.cs" />
     <Compile Include="Project\Printing\ReportDocument.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -335,7 +334,6 @@
     <Compile Include="Project\BaseClasses\BasicParameter.cs" />
     <Compile Include="Project\BaseClasses\SqlParameter.cs" />
     <Compile Include="Project\Collections\Collections.cs" />
-    <Compile Include="Project\DataManager\SqlQueryChecker.cs" />
     <Compile Include="Project\Exceptions\MissingModelException.cs" />
     <Compile Include="Project\BaseItems\BaseRowItem.cs" />
     <Compile Include="Project\Interfaces\IContainerItem.cs" />
@@ -398,6 +396,7 @@
     <None Include="Project\ReportViewer\Resources\Icons\Next.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Project\DataManager\DataAccess" />
     <Folder Include="Project\WpfReportViewer" />
     <Folder Include="Project\WPF" />
   </ItemGroup>

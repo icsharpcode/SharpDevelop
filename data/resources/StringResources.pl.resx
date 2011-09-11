@@ -6457,15 +6457,6 @@ Błąd podczas uruchamiania:</value>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Użytkownik:</value>
   </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Powinieneś często sprawdzać czy nie ma nowej wersji SharpDevelop oraz powiedzieć wszystkim znajomym jak dobry jest SharpDevelop oraz pisać w nim świetne programy w C#!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Okno szablonów uzupełniania można otworzyć przez Ctrl + J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Możesz pisać "? name=...;" (C#) lub "Dim name As ? = ..." (VB) a SharpDevelop podmieni znaki zapytania typem "..."?</value>
-  </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Opcje buforowania</value>
   </data>

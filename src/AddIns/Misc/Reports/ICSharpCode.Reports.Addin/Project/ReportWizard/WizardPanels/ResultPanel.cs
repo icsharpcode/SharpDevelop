@@ -16,6 +16,7 @@ using ICSharpCode.Data.Core.Enums;
 using ICSharpCode.Data.Core.Interfaces;
 using ICSharpCode.Reports.Addin.Commands;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.DataAccess;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Project.BaseClasses;
 using ICSharpCode.SharpDevelop;

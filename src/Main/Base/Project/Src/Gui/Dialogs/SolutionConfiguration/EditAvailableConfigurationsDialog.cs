@@ -220,7 +220,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						IProjectAllowChangeConfigurations pacc = project as IProjectAllowChangeConfigurations;
 						if (pacc != null) {
 							if (editPlatforms) {
-								pacc.AddProjectPlatform(newName, dlg.CopyFrom);
+								pacc.AddProjectPlatform(MSBuildInternals.FixPlatformNameForProject(newName), dlg.CopyFrom);
 							} else {
 								pacc.AddProjectConfiguration(newName, dlg.CopyFrom);
 							}

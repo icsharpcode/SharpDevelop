@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Data;
 
+using ICSharpCode.Reports.Core.DataAccess;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Core.Project.Interfaces;
 

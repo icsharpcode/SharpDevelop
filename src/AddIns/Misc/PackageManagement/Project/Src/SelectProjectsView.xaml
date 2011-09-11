@@ -56,11 +56,11 @@
 			Orientation="Horizontal"
 			HorizontalAlignment="Right">
 			<Button 
-				Content="_Cancel"
-				IsCancel="True"/>
-			<Button 
 				Content="_OK" 
 				Click="AcceptButtonClick"/>
+			<Button 
+				Content="_Cancel"
+				IsCancel="True"/>
 		</StackPanel>
 	</Grid>
 </Window>

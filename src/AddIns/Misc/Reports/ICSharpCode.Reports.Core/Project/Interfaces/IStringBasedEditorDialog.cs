@@ -10,7 +10,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.Interfaces
 {
 	/// <summary>
 	/// Description of EditorDialog.

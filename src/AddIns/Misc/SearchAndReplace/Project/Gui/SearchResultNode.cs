@@ -21,8 +21,6 @@ namespace SearchAndReplace
 	/// </summary>
 	sealed class SearchResultNode : SearchNode
 	{
-		static readonly FontFamily resultLineFamily = new FontFamily("Consolas, Courier New");
-		
 		SearchResultMatch result;
 		PermanentAnchor anchor;
 		HighlightedInlineBuilder inlineBuilder;
@@ -41,7 +39,7 @@ namespace SearchAndReplace
 			if (lineNumber >= 1 && lineNumber <= document.TotalNumberOfLines) {
 				IDocumentLine matchedLine = document.GetLine(lineNumber);
 				inlineBuilder = new HighlightedInlineBuilder(matchedLine.Text);
-				inlineBuilder.SetFontFamily(0, inlineBuilder.Text.Length, resultLineFamily);
+				inlineBuilder.SetFontFamily(0, inlineBuilder.Text.Length, new FontFamily(EditorControlService.GlobalOptions.FontFamily));
 				
 				IHighlighter highlighter = document.GetService(typeof(IHighlighter)) as IHighlighter;
 				if (highlighter != null) {
