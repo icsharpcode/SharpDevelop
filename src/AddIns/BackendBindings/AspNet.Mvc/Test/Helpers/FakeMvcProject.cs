@@ -63,5 +63,17 @@ namespace AspNet.Mvc.Tests.Helpers
 			GetModelClassesCallCount++;
 			return ModelClasses;
 		}
+		
+		public List<MvcMasterPageFileName> MasterPageFileNames = new List<MvcMasterPageFileName>();
+		
+		public void AddMasterPageFile(MvcMasterPageFileName fileName)
+		{
+			MasterPageFileNames.Add(fileName);
+		}
+		
+		public IEnumerable<MvcMasterPageFileName> GetAspxMasterPageFileNames()
+		{
+			return MasterPageFileNames;
+		}
 	}
 }

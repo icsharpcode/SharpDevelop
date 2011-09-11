@@ -55,5 +55,13 @@ namespace AspNet.Mvc.Tests.Helpers
 		public override bool ReadOnly {
 			get { return false; }
 		}
+		
+		public FileProjectItem AddFileToProject(string fileName)
+		{
+			var projectItem = new FileProjectItem(this, ItemType.Compile);
+			projectItem.FileName = fileName;
+			ProjectService.AddProjectItem(this, projectItem);
+			return projectItem;
+		}
 	}
 }

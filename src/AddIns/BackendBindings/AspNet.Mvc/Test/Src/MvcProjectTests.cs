@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
@@ -19,9 +20,26 @@ namespace AspNet.Mvc.Tests
 		
 		void CreateProject()
 		{
-			testableProject = TestableProject.CreateProject();
+			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
+		}
+		
+		void CreateProject(string fileName)
+		{
+			testableProject = TestableProject.CreateProject(fileName, "MyProject");
 			fakeModelClassLocator = new FakeMvcModelClassLocator();
 			project = new MvcProject(testableProject, fakeModelClassLocator);
+		}
+		
+		void AddFileToProject(string fileName)
+		{
+			testableProject.AddFileToProject(fileName);
+		}
+		
+		List<MvcMasterPageFileName> GetAspxMasterPageFileNames()
+		{
+			return new List<MvcMasterPageFileName>(
+				project.GetAspxMasterPageFileNames()
+			);
 		}
 		
 		[Test]
@@ -104,6 +122,77 @@ namespace AspNet.Mvc.Tests
 			project.GetModelClasses();
 			
 			Assert.AreEqual(project, fakeModelClassLocator.ProjectPassedToGetModelClasses);
+		}
+		
+		[Test]
+		public void GetAspxMasterPageFileNames_OneMasterPageInProject_ReturnsOneFileName()
+		{
+			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
+			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\Site.Master");
+			List<MvcMasterPageFileName> fileNames = GetAspxMasterPageFileNames();
+			
+			Assert.AreEqual(1, fileNames.Count);
+		}
+		
+		[Test]
+		public void GetAspxMasterPageFileNames_OneMasterPageInProject_ReturnsOneMasterPageWithExpectedFileName()
+		{
+			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
+			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\Site.Master");
+			MvcMasterPageFileName fileName = GetAspxMasterPageFileNames().First();
+			
+			var expectedFileName = new MvcMasterPageFileName() {
+				FullPath = @"d:\projects\AspNetMvcProject\Views\Shared\Site.Master",
+				FileName = "Site.Master",
+				FolderRelativeToProject = @"Views\Shared"
+			};
+			
+			MvcMasterPageFileNameAssert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void GetAspxMasterPageFileNames_OneHtmlFileAndOneMasterPageInProject_ReturnsOneMasterPageWithExpectedFileName()
+		{
+			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
+			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\test.html");
+			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\Site.Master");
+			List<MvcMasterPageFileName> fileNames = GetAspxMasterPageFileNames();
+			
+			var expectedFileName = new MvcMasterPageFileName() {
+				FullPath = @"d:\projects\AspNetMvcProject\Views\Shared\Site.Master",
+				FileName = "Site.Master",
+				FolderRelativeToProject = @"Views\Shared"
+			};
+			
+			var expectedFileNames = new MvcMasterPageFileName[] {
+				expectedFileName
+			};
+			
+			MvcMasterPageFileNameCollectionAssert.AreEqual(expectedFileNames, fileNames);
+		}
+		
+		[Test]
+		public void GetAspxMasterPageFileNames_OneMasterPageWithFileExtensionInUpperCaseInProject_ReturnsOneMasterPageWithExpectedFileName()
+		{
+			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
+			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\TEST.MASTER");
+			MvcMasterPageFileName fileName = GetAspxMasterPageFileNames().First();
+			
+			var expectedFileName = new MvcMasterPageFileName() {
+				FullPath = @"d:\projects\AspNetMvcProject\Views\Shared\TEST.MASTER",
+				FileName = "TEST.MASTER",
+				FolderRelativeToProject = @"Views\Shared"
+			};
+			
+			MvcMasterPageFileNameAssert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void IsMvcMasterPage_NullFileNamePassed_ReturnsFalse()
+		{
+			bool result = MvcMasterPageFileName.IsMasterPageFileName(null);
+			
+			Assert.IsFalse(result);
 		}
 	}
 }

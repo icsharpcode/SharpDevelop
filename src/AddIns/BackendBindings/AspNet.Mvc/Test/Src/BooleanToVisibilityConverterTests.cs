@@ -84,5 +84,45 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.IsFalse(value);
 		}
+		
+		[Test]
+		public void Convert_FalseWithIsReversedSetToTrue_ReturnsVisible()
+		{
+			CreateConverter();
+			converter.IsReversed = true;
+			Visibility visibility = Convert(false);
+			
+			Assert.AreEqual(Visibility.Visible, visibility);
+		}
+		
+		[Test]
+		public void Convert_TrueWithIsReversedSetToTrue_ReturnsCollapsed()
+		{
+			CreateConverter();
+			converter.IsReversed = true;
+			Visibility visibility = Convert(true);
+			
+			Assert.AreEqual(Visibility.Collapsed, visibility);
+		}
+		
+		[Test]
+		public void ConvertBack_VisibleWithIsReversedSetToTrue_ReturnsFalse()
+		{
+			CreateConverter();
+			converter.IsReversed = true;
+			bool value = ConvertBack(Visibility.Visible);
+			
+			Assert.IsFalse(value);
+		}
+		
+		[Test]
+		public void ConvertBack_CollapsedWithIsReversedSetToTrue_ReturnsTrue()
+		{
+			CreateConverter();
+			converter.IsReversed = true;
+			bool value = ConvertBack(Visibility.Collapsed);
+			
+			Assert.IsTrue(value);
+		}
 	}
 }

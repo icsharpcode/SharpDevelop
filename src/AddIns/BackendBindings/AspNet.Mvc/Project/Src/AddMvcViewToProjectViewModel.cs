@@ -19,6 +19,9 @@ namespace ICSharpCode.AspNet.Mvc
 		MvcViewEngineViewModel selectedViewEngine;
 		bool isStronglyTypedView;
 		bool isContentPage;
+		bool isSelectMasterPageViewOpen;
+		MvcMasterPageFileName selectedMasterPage;
+		string masterPageFile = String.Empty;
 		
 		MvcModelClassViewModelsForSelectedFolder modelClassesForSelectedFolder;
 		
@@ -38,6 +41,7 @@ namespace ICSharpCode.AspNet.Mvc
 			this.viewFileName.Folder = selectedViewFolder.Path;
 			this.ModelClassName = String.Empty;
 			this.PrimaryContentPlaceHolderId = "Main";
+			this.MasterPages = new ObservableCollection<MvcMasterPageFileName>();
 			
 			CreateModelClassesForSelectedFolder();
 			CreateCommands();
@@ -53,9 +57,15 @@ namespace ICSharpCode.AspNet.Mvc
 		void CreateCommands()
 		{
 			AddMvcViewCommand = new DelegateCommand(param => AddMvcView(), param => CanAddMvcView());
+			OpenSelectMasterPageViewCommand = new DelegateCommand(param => OpenSelectMasterPageView());
+			CloseSelectMasterPageViewCommand = new DelegateCommand(param => CloseSelectMasterPageView());
+			SelectMasterPageCommand = new DelegateCommand(param => SelectMasterPage(), param => CanSelectMasterPage());
 		}
 		
 		public ICommand AddMvcViewCommand { get; private set; }
+		public ICommand OpenSelectMasterPageViewCommand { get; private set; }
+		public ICommand CloseSelectMasterPageViewCommand { get; private set; }
+		public ICommand SelectMasterPageCommand { get; private set; }
 		
 		public string ViewName {
 			get { return viewFileName.ViewName; }
@@ -236,8 +246,67 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public MvcModelClassViewModel SelectedModelClass { get; set; }
 		public string ModelClassName { get; set; }
-		public string MasterPageFile { get; set; }
 		public string PrimaryContentPlaceHolderId { get; set; }
+		
+		public string MasterPageFile {
+			get { return masterPageFile; }
+			set {
+				masterPageFile = value;
+				OnPropertyChanged(viewModel => viewModel.MasterPageFile);
+			}
+		}
+		
+		public bool IsSelectMasterPageViewOpen {
+			get { return isSelectMasterPageViewOpen; }
+			set {
+				isSelectMasterPageViewOpen = value;
+				OnPropertyChanged(viewModel => viewModel.IsSelectMasterPageViewOpen);
+			}
+		}
+		
+		public void OpenSelectMasterPageView()
+		{
+			UpdateMasterPages();
+			IsSelectMasterPageViewOpen = true;
+		}
+		
+		void UpdateMasterPages()
+		{
+			MasterPages.Clear();
+			foreach (MvcMasterPageFileName fileName in GetAspxMasterPageFileNames()) {
+				MasterPages.Add(fileName);
+			}
+		}
+		
+		IEnumerable<MvcMasterPageFileName> GetAspxMasterPageFileNames()
+		{
+			return selectedViewFolder.Project.GetAspxMasterPageFileNames();
+		}
+		
+		public void CloseSelectMasterPageView()
+		{
+			IsSelectMasterPageViewOpen = false;
+		}
+		
+		public ObservableCollection<MvcMasterPageFileName> MasterPages { get; private set; }
+		
+		public MvcMasterPageFileName SelectedMasterPage {
+			get { return selectedMasterPage; }
+			set { selectedMasterPage = value; }
+		}
+		
+		public void SelectMasterPage()
+		{
+			if (selectedMasterPage != null) {
+				MasterPageFile = selectedMasterPage.VirtualPath;
+			}
+			IsSelectMasterPageViewOpen = false;
+		}
+		
+		public bool CanSelectMasterPage()
+		{
+			return selectedMasterPage != null;
+		}
 	}
 }
 

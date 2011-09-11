@@ -43,5 +43,15 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			return modelClassLocator.GetModelClasses(this);
 		}
+		
+		public IEnumerable<MvcMasterPageFileName> GetAspxMasterPageFileNames()
+		{
+			foreach (ProjectItem projectItem in Project.Items) {
+				MvcMasterPageFileName fileName = MvcMasterPageFileName.CreateMvcMasterPageFileName(projectItem);
+				if (fileName != null) {
+					yield return fileName;
+				}
+			}
+		}
 	}
 }

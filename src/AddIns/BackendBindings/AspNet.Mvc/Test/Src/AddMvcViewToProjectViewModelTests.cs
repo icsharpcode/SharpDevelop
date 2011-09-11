@@ -207,7 +207,7 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void AddMvcViewCommand_ViewNameIsNotEmptyString_CommandIsEnable()
+		public void AddMvcViewCommand_ViewNameIsNotEmptyString_CommandIsEnabled()
 		{
 			CreateViewModel();
 			viewModel.ViewName = "MyView";
@@ -729,6 +729,188 @@ namespace AspNet.Mvc.Tests
 			string id = fakeViewGenerator.PrimaryContentPlaceHolderId;
 			
 			Assert.AreEqual(String.Empty, id);
+		}
+		
+		[Test]
+		public void OpenSelectMasterPageViewCommand_Executed_SelectMasterPageViewModelIsOpened()
+		{
+			CreateViewModel();
+			viewModel.OpenSelectMasterPageViewCommand.Execute(null);
+			
+			bool open = viewModel.IsSelectMasterPageViewOpen;
+			
+			Assert.IsTrue(open);
+		}
+		
+		[Test]
+		public void OpenSelectMasterPageViewCommand_Executed_IsSelectMasterPageViewOpenPropertyChanged()
+		{
+			CreateViewModel();
+			MonitorPropertyChangedEvents();
+			viewModel.OpenSelectMasterPageViewCommand.Execute(null);
+			
+			bool contains = propertyChangedEvents.Contains("IsSelectMasterPageViewOpen");
+			
+			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void IsSelectMasterPageViewOpen_NotExecuted_SelectMasterPageViewModelIsNotOpened()
+		{
+			CreateViewModel();
+			
+			bool open = viewModel.IsSelectMasterPageViewOpen;
+			
+			Assert.IsFalse(open);
+		}
+		
+		[Test]
+		public void CloseSelectMasterPageViewCommand_Executed_SelectMasterPageViewModelIsClosed()
+		{
+			CreateViewModel();
+			viewModel.OpenSelectMasterPageView();
+			viewModel.CloseSelectMasterPageViewCommand.Execute(null);
+			
+			bool open = viewModel.IsSelectMasterPageViewOpen;
+			
+			Assert.IsFalse(open);
+		}
+		
+		[Test]
+		public void CloseSelectMasterPageViewCommand_Executed_IsSelectMasterPageViewOpenPropertyChanged()
+		{
+			CreateViewModel();
+			MonitorPropertyChangedEvents();
+			viewModel.CloseSelectMasterPageViewCommand.Execute(null);
+			
+			bool contains = propertyChangedEvents.Contains("IsSelectMasterPageViewOpen");
+			
+			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void MasterPages_ProjectContainsOneAspxMasterPage_ReturnsOneAspxMasterPage()
+		{
+			CreateViewModel();
+			SelectAspxViewEngine();
+			var masterPageFile = new MvcMasterPageFileName() {
+				FullPath = @"d:\projects\MyProject\Views\Shared\Site.Master",
+				FileName = "Site.Master",
+				FolderRelativeToProject = @"Views\Shared"
+			};
+			fakeProject.AddMasterPageFile(masterPageFile);
+			viewModel.OpenSelectMasterPageView();
+			
+			var expectedFileNames = new MvcMasterPageFileName[] {
+				masterPageFile
+			};
+			
+			ObservableCollection<MvcMasterPageFileName> fileNames = viewModel.MasterPages;
+			
+			Assert.AreEqual(expectedFileNames, fileNames);
+		}
+		
+		[Test]
+		public void MasterPages_CloseAndReOpenSelectMasterPageViewWhenProjectContainsOneAspxMasterPage_ReturnsOneAspxMasterPage()
+		{
+			CreateViewModel();
+			SelectAspxViewEngine();
+			var masterPageFile = new MvcMasterPageFileName();
+			fakeProject.AddMasterPageFile(masterPageFile);
+			viewModel.OpenSelectMasterPageView();
+			viewModel.CloseSelectMasterPageView();
+			viewModel.OpenSelectMasterPageView();
+			
+			var expectedFileNames = new MvcMasterPageFileName[] {
+				masterPageFile
+			};
+			
+			ObservableCollection<MvcMasterPageFileName> fileNames = viewModel.MasterPages;
+			
+			Assert.AreEqual(expectedFileNames, fileNames);
+		}
+		
+		[Test]
+		public void SelectMasterPageCommand_MasterPageNotSelected_CommandIsDisabled()
+		{
+			CreateViewModel();
+			viewModel.SelectedMasterPage = null;
+			
+			bool canExecute = viewModel.SelectMasterPageCommand.CanExecute(null);
+			
+			Assert.IsFalse(canExecute);
+		}
+		
+		[Test]
+		public void SelectMasterPageCommand_MasterPageIsSelected_CommandIsEnabled()
+		{
+			CreateViewModel();
+			viewModel.SelectedMasterPage = new MvcMasterPageFileName();
+			
+			bool canExecute = viewModel.SelectMasterPageCommand.CanExecute(null);
+			
+			Assert.IsTrue(canExecute);
+		}
+		
+		[Test]
+		public void SelectMasterPageCommand_Executed_SelectMasterPageViewModelIsClosed()
+		{
+			CreateViewModel();
+			viewModel.OpenSelectMasterPageView();
+			viewModel.SelectMasterPageCommand.Execute(null);
+			
+			bool open = viewModel.IsSelectMasterPageViewOpen;
+			
+			Assert.IsFalse(open);
+		}
+		
+		[Test]
+		public void SelectMasterPageCommand_Executed_IsSelectMasterPageViewOpenPropertyChanged()
+		{
+			CreateViewModel();
+			viewModel.OpenSelectMasterPageView();
+			MonitorPropertyChangedEvents();
+			viewModel.SelectMasterPageCommand.Execute(null);
+			
+			bool contains = propertyChangedEvents.Contains("IsSelectMasterPageViewOpen");
+			
+			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void SelectMasterPage_MasterPageSelected_MasterPageFileNameUpdated()
+		{
+			CreateViewModel();
+			viewModel.MasterPageFile = "test.master";
+			viewModel.OpenSelectMasterPageView();
+			var masterPageFileName = new MvcMasterPageFileName() {
+				FullPath = @"d:\projects\MyProject\Views\Shared\site.master",
+				FileName = "site.master",
+				FolderRelativeToProject = @"Views\Shared",
+				VirtualPath = "~/Views/Shared/site.master"
+			};
+			viewModel.SelectedMasterPage = masterPageFileName;
+			viewModel.SelectMasterPage();
+			
+			string updatedMasterPageFile = viewModel.MasterPageFile;
+			
+			Assert.AreEqual("~/Views/Shared/site.master", updatedMasterPageFile);
+		}
+		
+		[Test]
+		public void SelectMasterPage_MasterPageSelected_MasterPageFilePropertyChangedEventFired()
+		{
+			CreateViewModel();
+			viewModel.OpenSelectMasterPageView();
+			var masterPageFileName = new MvcMasterPageFileName();
+			viewModel.SelectedMasterPage = masterPageFileName;
+			
+			MonitorPropertyChangedEvents();
+			viewModel.SelectMasterPage();
+			
+			bool fired = propertyChangedEvents.Contains("MasterPageFile");
+			
+			Assert.IsTrue(fired);
 		}
 	}
 }

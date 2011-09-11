@@ -11,10 +11,12 @@ namespace ICSharpCode.AspNet.Mvc
 	public class BooleanToVisibilityConverter : IValueConverter
 	{
 		public bool Hidden { get; set; }
+		public bool IsReversed { get; set; }
 		
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if ((bool)value) {
+			bool visible = IsVisible((bool)value);
+			if (visible) {
 				return Visibility.Visible;
 			} else if (Hidden) {
 				return Visibility.Hidden;
@@ -22,10 +24,23 @@ namespace ICSharpCode.AspNet.Mvc
 			return Visibility.Collapsed;
 		}
 		
+		bool IsVisible(bool value)
+		{
+			if (IsReversed) {
+				return !value;
+			}
+			return value;
+		}
+		
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			Visibility visibility = (Visibility)value;
-			return visibility == Visibility.Visible;
+			return IsVisible((Visibility)value);
+		}
+		
+		bool IsVisible(Visibility visibility)
+		{
+			bool visible = visibility == Visibility.Visible;
+			return IsVisible(visible);
 		}
 	}
 }

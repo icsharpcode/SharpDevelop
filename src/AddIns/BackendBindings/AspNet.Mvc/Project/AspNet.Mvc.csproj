@@ -79,6 +79,7 @@
     <Compile Include="Src\IsMvcFolderSelectedConditionEvaluator.cs" />
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluator.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\MvcMasterPageFileName.cs" />
     <Compile Include="Src\MvcModelClassLocator.cs" />
     <Compile Include="Src\MvcAddViewTextTemplateFolder.cs" />
     <Compile Include="Src\MvcClass.cs" />
@@ -111,10 +112,12 @@
     <Compile Include="Src\MvcViewFileGenerator.cs" />
     <Compile Include="Src\MvcViewTextTemplateFileName.cs" />
     <Compile Include="Src\MvcViewTypeViewModel.cs" />
+    <Compile Include="Src\MvcVirtualPath.cs" />
     <Compile Include="Src\SelectedFolderNodeInProjectsView.cs" />
     <Compile Include="Src\SelectedMvcControllerFolder.cs" />
     <Compile Include="Src\SelectedMvcFolder.cs" />
     <Compile Include="Src\SelectedMvcViewFolder.cs" />
+    <Compile Include="Src\SlideBehaviour.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
   </ItemGroup>
   <ItemGroup>
