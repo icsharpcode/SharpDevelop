@@ -58,7 +58,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		private void btnOpenAssembly_Click(object sender, RoutedEventArgs e)
 		{
 			
-			var dataContext = this.DataContext as MainWindowTranslationViewModel;
+			var dataContext = this.DataContext as MainWindowViewModel;
 			
 			var fileDialog = new OpenFileDialog
 			{
@@ -137,6 +137,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 				definitionTree.SelectedItem = item;
 				var graph = item.INode.Dependency.BuildDependencyGraph();
 				graphLayout.ChangeGraph(graph);
+				var d = this.DataContext as MainWindowViewModel;
+				d.MetrixTabEnable = true;
 			}
 		}
 		
@@ -149,7 +151,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var vertex = vertexControl.Vertex as DependencyVertex;
 				if (vertex != null)
 				{
-					var d = this.DataContext as MainWindowTranslationViewModel;
+					var d = this.DataContext as MainWindowViewModel;
 					d.TypeInfo = vertex.Node.GetInfo();
 				}
 			}
@@ -260,6 +262,10 @@ namespace ICSharpCode.CodeQualityAnalysis
 			} else if (level == "Field") {
 
 			} else if (level == "Method") {
+				var r =  from ns in MetricsReader.MainModule.Namespaces
+									  from type in ns.Types
+									  from method in type.Methods
+									  select method;
 				treemap.ItemsSource = from ns in MetricsReader.MainModule.Namespaces
 									  from type in ns.Types
 									  from method in type.Methods

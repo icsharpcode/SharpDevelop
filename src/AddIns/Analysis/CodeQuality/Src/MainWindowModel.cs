@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -22,30 +23,35 @@ namespace ICSharpCode.CodeQualityAnalysis
 	/// <summary>
 	/// Description of MainWindowViewModel.
 	/// </summary>
-	public class MainWindowTranslationViewModel :ViewModelBase
+	
+	
+	public class MainWindowViewModel :ViewModelBase
 	{
 		
-		public MainWindowTranslationViewModel():base()
+		public MainWindowViewModel():base()
 		{
 			this.FrmTitle = "$Code Quality Analysis";
 			this.btnOpenAssembly = "$Open Assembly";
+			
 			#region MainTab
 			this.TabDependencyGraph = "$Dependency Graph";
 			this.TabDependencyMatrix = "$Dependency Matrix";
 			this.TabMetrics = "$Metrics";
 			#endregion
-			
-			
+			MetrixTabEnable = false;
 		}
 		
 		
 		public string FrmTitle {get;private set;}
 		
 		public string btnOpenAssembly {get; private set;}
+		
 		#region Main TabControl
+		
 		public string TabDependencyGraph {get; private set;}
 		public string TabDependencyMatrix {get; private set;}
 		public string TabMetrics {get;private set;}
+		
 		#endregion
 		
 		
@@ -56,6 +62,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			set { fileName = value;
 			base.RaisePropertyChanged(() =>FileName);}
 		}
+		
 		
 		private Visibility progressbarVisibly = Visibility.Hidden;
 		
@@ -84,6 +91,13 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 		
+		bool metrixTabEnable;
+		
+		public bool MetrixTabEnable {
+			get { return metrixTabEnable; }
+			set { metrixTabEnable = value;
+			base.RaisePropertyChanged(() => MetrixTabEnable);}
+		}
 		
 		string typeInfo;
 		
@@ -99,76 +113,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		public Module MainModule {
 			get { return mainModule; }
 			set { mainModule = value; 
-			base.RaisePropertyChanged(() =>this.MainModule);}
-				                         
-				                      
+			base.RaisePropertyChanged(() =>this.MainModule);}			                         	                      
 		}
-		
-		/*
-		#region OpenAssembly
-		
-		public ICommand OpenAssemblyCommand
-        {
-            get { return new RelayCommand(SaveAssemblyExecute, CanSaveAssemblyExecute); }
-        }
-		  
-		Boolean CanSaveAssemblyExecute()
-        {
-            return true;
-        }
-		
-		
-		void SaveAssemblyExecute()
-        {
-           var fileDialog = new SaveFileDialog()
-			{
-				Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|BMP (*.bmp)|*.bmp|TIFF (.tiff)|*.tiff"
-			};
-
-			fileDialog.ShowDialog();
-
-			if (String.IsNullOrEmpty(fileDialog.FileName))
-				return;
-
-			// render it
-			var renderBitmap = new RenderTargetBitmap((int)graphLayout.ActualWidth,
-			                                          (int)graphLayout.ActualHeight,
-			                                          96d,
-			                                          96d,
-			                                          PixelFormats.Default);
-			renderBitmap.Render(graphLayout);
-
-			using (var outStream = new FileStream(fileDialog.FileName, FileMode.Create))
-			{
-				BitmapEncoder encoder;
-
-				switch (fileDialog.FilterIndex)
-				{
-					case 1:
-						encoder = new PngBitmapEncoder();
-						break;
-					case 2:
-						encoder = new JpegBitmapEncoder();
-						break;
-					case 3:
-						encoder = new GifBitmapEncoder();
-						break;
-					case 4:
-						encoder = new BmpBitmapEncoder();
-						break;
-					case 5:
-						encoder = new TiffBitmapEncoder();
-						break;
-					default:
-						encoder = new PngBitmapEncoder();
-						break;
-				}
-				
-				encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
-				encoder.Save(outStream);
-			}
-        }
-		#endregion
-		*/
 	}
 }
