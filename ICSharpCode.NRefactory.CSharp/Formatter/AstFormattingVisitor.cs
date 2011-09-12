@@ -488,7 +488,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration, object data)
 		{
-			FixIndentationForceNewLine (eventDeclaration.StartLocation);
+			FormatAttributedNode (eventDeclaration);
 			EnforceBraceStyle (policy.EventBraceStyle, eventDeclaration.LBraceToken, eventDeclaration.RBraceToken);
 			if (policy.IndentEventBody)
 				IndentLevel++;
@@ -531,7 +531,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitEventDeclaration (EventDeclaration eventDeclaration, object data)
 		{
-			FixIndentationForceNewLine (eventDeclaration.StartLocation);
+			FormatAttributedNode (eventDeclaration);
 			if (eventDeclaration.NextSibling is EventDeclaration && IsSimpleEvent (eventDeclaration) && IsSimpleEvent (eventDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter (eventDeclaration, policy.BlankLinesBetweenEventFields);
 			} else if (IsMember (eventDeclaration.NextSibling)) {
