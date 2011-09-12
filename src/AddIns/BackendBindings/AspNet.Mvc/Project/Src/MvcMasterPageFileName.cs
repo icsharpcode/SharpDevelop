@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public class MvcMasterPageFileName
+	public class MvcMasterPageFileName : IComparable<MvcMasterPageFileName>
 	{
 		public MvcMasterPageFileName(FileProjectItem fileProjectItem)
 		{
@@ -80,6 +80,25 @@ namespace ICSharpCode.AspNet.Mvc
 				return Path.GetExtension(fileName).ToLowerInvariant();
 			}
 			return String.Empty;
+		}
+		
+		public int CompareTo(MvcMasterPageFileName other)
+		{
+			int result = CompareFileNames(other);
+			if (result == 0) {
+				return CompareFolderRelativeToProject(other);
+			}
+			return result;
+		}
+		
+		int CompareFileNames(MvcMasterPageFileName other)
+		{
+			return FileName.CompareTo(other.FileName);
+		}
+		
+		int CompareFolderRelativeToProject(MvcMasterPageFileName other)
+		{
+			return FolderRelativeToProject.CompareTo(other.FolderRelativeToProject);
 		}
 	}
 }

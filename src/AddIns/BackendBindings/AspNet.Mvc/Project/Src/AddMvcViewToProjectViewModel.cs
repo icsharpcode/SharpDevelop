@@ -280,7 +280,10 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		IEnumerable<MvcMasterPageFileName> GetAspxMasterPageFileNames()
 		{
-			return selectedViewFolder.Project.GetAspxMasterPageFileNames();
+			var unsortedMasterPages = selectedViewFolder.Project.GetAspxMasterPageFileNames() as IEnumerable<MvcMasterPageFileName>;
+			var masterPages = new List<MvcMasterPageFileName>(unsortedMasterPages);
+			masterPages.Sort();
+			return masterPages;
 		}
 		
 		public void CloseSelectMasterPageView()

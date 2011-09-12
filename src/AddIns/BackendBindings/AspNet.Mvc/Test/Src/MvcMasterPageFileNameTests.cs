@@ -20,11 +20,12 @@ namespace AspNet.Mvc.Tests
 			project = TestableProject.CreateProject(fileName, "MyProject");
 		}
 		
-		void CreateMasterPageFileName(string fullPath)
+		MvcMasterPageFileName CreateMasterPageFileName(string fullPath)
 		{
 			var projectItem = new FileProjectItem(project, ItemType.Compile);
 			projectItem.FileName = fullPath;
 			masterPageFileName = new MvcMasterPageFileName(projectItem);
+			return masterPageFileName;
 		}
 		
 		[Test]
@@ -81,6 +82,66 @@ namespace AspNet.Mvc.Tests
 			string virtualPath = masterPageFileName.VirtualPath;
 			
 			Assert.AreEqual("~/Site.Master", virtualPath);
+		}
+		
+		[Test]
+		public void CompareTo_FileNamesAreTheSame_ReturnsZero()
+		{
+			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
+			MvcMasterPageFileName lhs = CreateMasterPageFileName(@"d:\projects\MyProject\Site.Master");
+			MvcMasterPageFileName rhs = CreateMasterPageFileName(@"d:\projects\MyProject\Site.Master");
+			
+			int result = lhs.CompareTo(rhs);
+			
+			Assert.AreEqual(0, result);
+		}
+		
+		[Test]
+		public void CompareTo_FoldersAreSameAndSecondFileNameIsGreaterThanFirstFileName_ReturnsMinusOne()
+		{
+			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
+			MvcMasterPageFileName lhs = CreateMasterPageFileName(@"d:\projects\MyProject\Shared\A.Master");
+			MvcMasterPageFileName rhs = CreateMasterPageFileName(@"d:\projects\MyProject\Shared\Z.Master");
+			
+			int result = lhs.CompareTo(rhs);
+			
+			Assert.AreEqual(-1, result);
+		}
+		
+		[Test]
+		public void CompareTo_FoldersAreSameAndSecondFileNameIsLessThanFirstFileName_ReturnsPlusOne()
+		{
+			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
+			MvcMasterPageFileName lhs = CreateMasterPageFileName(@"d:\projects\MyProject\Shared\Z.Master");
+			MvcMasterPageFileName rhs = CreateMasterPageFileName(@"d:\projects\MyProject\Shared\A.Master");
+			
+			int result = lhs.CompareTo(rhs);
+			
+			Assert.AreEqual(1, result);
+		}
+		
+		[Test]
+		public void CompareTo_FileNamesAreSameAndSecondFolderIsLessThanFirstFolder_ReturnsPlusOne()
+		{
+			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
+			MvcMasterPageFileName lhs = CreateMasterPageFileName(@"d:\projects\MyProject\Z\site.Master");
+			MvcMasterPageFileName rhs = CreateMasterPageFileName(@"d:\projects\MyProject\A\site.Master");
+			
+			int result = lhs.CompareTo(rhs);
+			
+			Assert.AreEqual(1, result);
+		}
+		
+		[Test]
+		public void CompareTo_FileNamesAreSameAndSecondFolderIsGreaterThanFirstFolder_ReturnsMinussOne()
+		{
+			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
+			MvcMasterPageFileName lhs = CreateMasterPageFileName(@"d:\projects\MyProject\A\site.Master");
+			MvcMasterPageFileName rhs = CreateMasterPageFileName(@"d:\projects\MyProject\Z\site.Master");
+			
+			int result = lhs.CompareTo(rhs);
+			
+			Assert.AreEqual(-1, result);
 		}
 	}
 }

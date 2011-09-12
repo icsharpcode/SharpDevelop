@@ -912,5 +912,34 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.IsTrue(fired);
 		}
+		
+		[Test]
+		public void MasterPages_ProjectContainsTwoAspxMasterPagesInIncorrectSortOrder_ReturnsTwoAspxMasterPagesSorted()
+		{
+			CreateViewModel();
+			SelectAspxViewEngine();
+			var masterPageFile1 = new MvcMasterPageFileName() {
+				FullPath = @"d:\projects\MyProject\Views\Shared\ViewSite.Master",
+				FileName = "ViewSite.Master",
+				FolderRelativeToProject = @"Views\Shared"
+			};
+			fakeProject.AddMasterPageFile(masterPageFile1);
+			var masterPageFile2 = new MvcMasterPageFileName() {
+				FullPath = @"d:\projects\MyProject\Views\Shared\Site.Master",
+				FileName = "Site.Master",
+				FolderRelativeToProject = @"Views\Shared"
+			};
+			fakeProject.AddMasterPageFile(masterPageFile2);
+			viewModel.OpenSelectMasterPageView();
+			
+			var expectedFileNames = new MvcMasterPageFileName[] {
+				masterPageFile2,
+				masterPageFile1
+			};
+			
+			ObservableCollection<MvcMasterPageFileName> fileNames = viewModel.MasterPages;
+			
+			Assert.AreEqual(expectedFileNames, fileNames);
+		}
 	}
 }
