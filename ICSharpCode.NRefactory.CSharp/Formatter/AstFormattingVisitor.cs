@@ -561,7 +561,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration, object data)
 		{
-			FixIndentationForceNewLine (fixedFieldDeclaration.StartLocation);
+			FormatAttributedNode (fixedFieldDeclaration);
 			FormatCommas (fixedFieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
 			if (fixedFieldDeclaration.NextSibling is FieldDeclaration || fixedFieldDeclaration.NextSibling is FixedFieldDeclaration) {
 				EnsureBlankLinesAfter (fixedFieldDeclaration, policy.BlankLinesBetweenFields);
@@ -573,7 +573,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, object data)
 		{
-			FixIndentationForceNewLine (enumMemberDeclaration.StartLocation);
+			FormatAttributedNode (enumMemberDeclaration);
 			return base.VisitEnumMemberDeclaration (enumMemberDeclaration, data);
 		}
 
