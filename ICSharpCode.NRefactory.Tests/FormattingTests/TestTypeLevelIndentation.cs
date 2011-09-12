@@ -45,6 +45,20 @@ namespace ICSharpCode.NRefactory.FormattingTests
 @"class Test {}");
 		}
 		
+		[Test()]
+		public void TestAttributeIndentation ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			policy.ClassBraceStyle = BraceStyle.DoNotChange;
+			
+			Test (policy,
+@"					[Attribute1]
+		[Attribute2()]
+          class Test {}",
+@"[Attribute1]
+[Attribute2()]
+class Test {}");
+		}
 		
 		[Test()]
 		public void TestClassIndentationInNamespaces ()

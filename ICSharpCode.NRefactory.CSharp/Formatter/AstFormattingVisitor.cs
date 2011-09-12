@@ -173,7 +173,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 		{
-			FixIndentationForceNewLine (typeDeclaration.StartLocation);
+			FormatAttributedNode (typeDeclaration);
 			BraceStyle braceStyle;
 			bool indentBody = false;
 			switch (typeDeclaration.ClassType) {
@@ -334,7 +334,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
 		{
-			FixIndentationForceNewLine (propertyDeclaration.StartLocation);
+			FormatAttributedNode (propertyDeclaration);
 			bool oneLine = false;
 			switch (policy.PropertyFormatting) {
 			case PropertyFormatting.AllowOneLine:
@@ -446,7 +446,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			FormatCommas (indexerDeclaration, policy.SpaceBeforeIndexerDeclarationParameterComma, policy.SpaceAfterIndexerDeclarationParameterComma);
 
 			
-			FixIndentationForceNewLine (indexerDeclaration.StartLocation);
+			FormatAttributedNode (indexerDeclaration);
 			EnforceBraceStyle (policy.PropertyBraceStyle, indexerDeclaration.LBraceToken, indexerDeclaration.RBraceToken);
 			if (policy.IndentPropertyBody)
 				IndentLevel++;
@@ -549,7 +549,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
-			FixIndentationForceNewLine (fieldDeclaration.StartLocation);
+			FormatAttributedNode (fieldDeclaration);
 			FormatCommas (fieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
 			if (fieldDeclaration.NextSibling is FieldDeclaration || fieldDeclaration.NextSibling is FixedFieldDeclaration) {
 				EnsureBlankLinesAfter (fieldDeclaration, policy.BlankLinesBetweenFields);
@@ -579,7 +579,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, object data)
 		{
-			FixIndentation (delegateDeclaration.StartLocation);
+			FormatAttributedNode (delegateDeclaration);
 			
 			ForceSpacesBefore (delegateDeclaration.LParToken, policy.SpaceBeforeDelegateDeclarationParentheses);
 			if (delegateDeclaration.Parameters.Any ()) {
@@ -604,10 +604,23 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return nextSibling != null && nextSibling.NodeType == NodeType.Member;
 		}
-
+		
+		void FormatAttributedNode (AstNode node)
+		{
+			if (node == null)
+				return;
+			AstNode child = node.FirstChild;
+			while (child != null && child is AttributeSection) {
+				FixIndentationForceNewLine (child.StartLocation);
+				child = child.NextSibling;
+			}
+			if (child != null)
+				FixIndentationForceNewLine (child.StartLocation);
+		}
+		
 		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
 		{
-			FixIndentationForceNewLine (methodDeclaration.StartLocation);
+			FormatAttributedNode (methodDeclaration);
 			
 			ForceSpacesBefore (methodDeclaration.LParToken, policy.SpaceBeforeMethodDeclarationParentheses);
 			if (methodDeclaration.Parameters.Any ()) {
@@ -635,7 +648,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration, object data)
 		{
-			FixIndentationForceNewLine (operatorDeclaration.StartLocation);
+			FormatAttributedNode (operatorDeclaration);
 			
 			ForceSpacesBefore (operatorDeclaration.LParToken, policy.SpaceBeforeMethodDeclarationParentheses);
 			if (operatorDeclaration.Parameters.Any ()) {
@@ -663,7 +676,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, object data)
 		{
-			FixIndentationForceNewLine (constructorDeclaration.StartLocation);
+			FormatAttributedNode (constructorDeclaration);
 			
 			ForceSpacesBefore (constructorDeclaration.LParToken, policy.SpaceBeforeConstructorDeclarationParentheses);
 			if (constructorDeclaration.Parameters.Any ()) {
@@ -691,7 +704,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, object data)
 		{
-			FixIndentationForceNewLine (destructorDeclaration.StartLocation);
+			FormatAttributedNode (destructorDeclaration);
 			
 			CSharpTokenNode lParen = destructorDeclaration.LParToken;
 			int offset = this.document.GetOffset (lParen.StartLocation);
