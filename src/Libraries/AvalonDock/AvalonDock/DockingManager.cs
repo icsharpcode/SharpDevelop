@@ -3754,7 +3754,7 @@ namespace AvalonDock
                 throw new FileFormatException("Unsupported layout file version");
 
             if (doc.DocumentElement.ChildNodes.Count != 3 ||
-                (doc.DocumentElement.ChildNodes[0].Name != "ResizingPanel" && doc.DocumentElement.ChildNodes[0].Name != "DocumentPane") ||
+                (doc.DocumentElement.ChildNodes[0].Name != "ResizingPanel" && doc.DocumentElement.ChildNodes[0].Name != "DocumentPane" && doc.DocumentElement.ChildNodes[0].Name != "DocumentPaneResizingPanel") ||
                 doc.DocumentElement.ChildNodes[1].Name != "Hidden" ||
                 doc.DocumentElement.ChildNodes[2].Name != "Windows")
             {
