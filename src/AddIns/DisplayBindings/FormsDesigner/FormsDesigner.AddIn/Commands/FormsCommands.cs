@@ -29,7 +29,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 			return true;
 		}
 		
-		protected FormsDesignerViewContent FormDesigner {
+		protected FormsDesignerViewContent FormsDesigner {
 			get {
 				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 				if (window == null) {
@@ -41,10 +41,10 @@ namespace ICSharpCode.FormsDesigner.Commands
 		public override void Run()
 		{
 			try {
-				FormsDesignerViewContent formDesigner = FormDesigner;
-				if (formDesigner != null && CanExecuteCommand(formDesigner.AppDomainHost)) {
-					IMenuCommandService menuCommandService = formDesigner.AppDomainHost.MenuCommandService;
-					menuCommandService.GlobalInvoke(CommandIDEnumConverter.ToCommandID(CommandID));
+				FormsDesignerViewContent formsDesigner = FormsDesigner;
+				if (formsDesigner != null && CanExecuteCommand(formsDesigner.AppDomainHost)) {
+					IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)formsDesigner.AppDomainHost.MenuCommandService;
+					menuCommandService.GlobalInvoke(CommandID);
 				}
 			} catch (Exception e) {
 				MessageService.ShowException(e);

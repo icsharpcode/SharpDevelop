@@ -31,6 +31,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			CreateBindings(processShortcutsInWPF);
 		}
 		
+		public SDWindowsFormsHost(AppDomain childDomain, bool processShortcutsInWPF = false)
+			: base(childDomain)
+		{
+			this.DisposeChild = true;
+			CreateBindings(processShortcutsInWPF);
+		}
+		
 		#region Binding
 		void CreateBindings(bool processShortcutsInWPF)
 		{

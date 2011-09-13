@@ -273,7 +273,9 @@ namespace ICSharpCode.FormsDesigner
 		
 		CustomWindowsFormsHost WrapInCustomHost(Control control, bool enableFontInheritance = true)
 		{
-			var host = new CustomWindowsFormsHost(appDomain);
+			var host = new SDWindowsFormsHost(appDomain, true);
+			host.DisposeChild = false;
+			host.ServiceObject = this;
 			host.EnableFontInheritance = enableFontInheritance;
 			host.Child = control;
 			return host;
@@ -847,32 +849,32 @@ namespace ICSharpCode.FormsDesigner
 		
 		public void Cut()
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
-			menuCommandService.GlobalInvoke(StandardCommands.Cut);
+			IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)appDomainHost.MenuCommandService;
+			menuCommandService.GlobalInvoke(CommandIDEnum.Cut);
 		}
 		
 		public void Copy()
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
-			menuCommandService.GlobalInvoke(StandardCommands.Copy);
+			IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)appDomainHost.MenuCommandService;
+			menuCommandService.GlobalInvoke(CommandIDEnum.Copy);
 		}
 		
 		public void Paste()
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
-			menuCommandService.GlobalInvoke(StandardCommands.Paste);
+			IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)appDomainHost.MenuCommandService;
+			menuCommandService.GlobalInvoke(CommandIDEnum.Paste);
 		}
 		
 		public void Delete()
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
-			menuCommandService.GlobalInvoke(StandardCommands.Delete);
+			IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)appDomainHost.MenuCommandService;
+			menuCommandService.GlobalInvoke(CommandIDEnum.Delete);
 		}
 		
 		public void SelectAll()
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
-			menuCommandService.GlobalInvoke(StandardCommands.SelectAll);
+			IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)appDomainHost.MenuCommandService;
+			menuCommandService.GlobalInvoke(CommandIDEnum.SelectAll);
 		}
 		#endregion
 		
@@ -887,8 +889,8 @@ namespace ICSharpCode.FormsDesigner
 		public virtual void ShowTabOrder()
 		{
 			if (!IsTabOrderMode) {
-				IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
-				menuCommandService.GlobalInvoke(StandardCommands.TabOrder);
+				IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)appDomainHost.MenuCommandService;
+				menuCommandService.GlobalInvoke(CommandIDEnum.TabOrder);
 				tabOrderMode = true;
 			}
 		}
@@ -896,8 +898,8 @@ namespace ICSharpCode.FormsDesigner
 		public virtual void HideTabOrder()
 		{
 			if (IsTabOrderMode) {
-				IMenuCommandService menuCommandService = (IMenuCommandService)appDomainHost.GetService(typeof(IMenuCommandService));
-				menuCommandService.GlobalInvoke(StandardCommands.TabOrder);
+				IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)appDomainHost.MenuCommandService;
+				menuCommandService.GlobalInvoke(CommandIDEnum.TabOrder);
 				tabOrderMode = false;
 			}
 		}
