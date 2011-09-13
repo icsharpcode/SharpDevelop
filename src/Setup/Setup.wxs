@@ -318,6 +318,11 @@
 				<ComponentRef Id="VBWcfServiceProjectTemplate"/>
 				<ComponentRef Id="VBWcfServiceFileTemplate"/>
 				
+				<ComponentRef Id="CSharpWcfRestServiceProjectTemplate"/>
+				<ComponentRef Id="CSharpWcfRestServiceFileTemplate"/>
+				<ComponentRef Id="VBWcfRestServiceProjectTemplate"/>
+				<ComponentRef Id="VBWcfRestServiceFileTemplate"/>
+				
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>
