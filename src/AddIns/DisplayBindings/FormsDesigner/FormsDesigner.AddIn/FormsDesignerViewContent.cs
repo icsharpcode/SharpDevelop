@@ -52,8 +52,6 @@ namespace ICSharpCode.FormsDesigner
 		
 		readonly DesignerSourceCodeStorage sourceCodeStorage;
 		
-		readonly Dictionary<Type, TypeDescriptionProvider> addedTypeDescriptionProviders = new Dictionary<Type, TypeDescriptionProvider>();
-		
 		public OpenedFile DesignerCodeFile {
 			get { return this.sourceCodeStorage.DesignerCodeFile; }
 		}
@@ -385,12 +383,8 @@ namespace ICSharpCode.FormsDesigner
 			
 			appDomainHost.AddService(typeof(IHelpService), new HelpService());
 			
-//			appDomainHost.AddService(typeof(IProjectResourceService), CreateProjectResourceService());
-//			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
-			
-			// Provide the ImageResourceEditor for all Image and Icon properties
-//			this.addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
-//			this.addedTypeDescriptionProviders.Add(typeof(Icon), TypeDescriptor.AddAttributes(typeof(Icon), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
+			appDomainHost.AddService(typeof(IProjectResourceService), CreateProjectResourceService());
+			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
 			
 			appDomainHost.DesignSurfaceLoading += new EventHandlerProxy(DesignerLoading);
 			appDomainHost.DesignSurfaceLoaded += new LoadedEventHandlerProxy(DesignerLoaded);
@@ -541,10 +535,7 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 			
-			foreach (KeyValuePair<Type, TypeDescriptionProvider> entry in this.addedTypeDescriptionProviders) {
-				TypeDescriptor.RemoveProvider(entry.Value, entry.Key);
-			}
-			this.addedTypeDescriptionProviders.Clear();
+			appDomainHost.UnregisterTypeProviders();
 		}
 		
 		readonly PropertyContainer propertyContainer = new PropertyContainer();

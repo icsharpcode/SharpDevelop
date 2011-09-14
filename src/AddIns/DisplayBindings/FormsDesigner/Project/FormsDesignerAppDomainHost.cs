@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
@@ -13,6 +14,7 @@ using System.Reflection;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.FormsDesigner.Gui;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.FormsDesigner.UndoRedo;
@@ -32,6 +34,7 @@ namespace ICSharpCode.FormsDesigner
 		IDesignerGenerator generator;
 		bool unloading;
 		FormsDesignerAppDomainCreationProperties properties;
+		readonly Dictionary<Type, TypeDescriptionProvider> addedTypeDescriptionProviders = new Dictionary<Type, TypeDescriptionProvider>();
 		
 		public string DesignSurfaceName {
 			get {
@@ -104,7 +107,11 @@ namespace ICSharpCode.FormsDesigner
 			container.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			container.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), menuCommandService.Proxy);
 			container.AddService(typeof(IToolboxService), new SharpDevelopToolboxService(this));
-//			container.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(properties.ResourceStore, this));
+			container.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(properties.ResourceStore, this));
+			
+			// Provide the ImageResourceEditor for all Image and Icon properties
+			addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
+			addedTypeDescriptionProviders.Add(typeof(Icon), TypeDescriptor.AddAttributes(typeof(Icon), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
 			
 			InitializeEvents();
 		}
@@ -521,6 +528,14 @@ namespace ICSharpCode.FormsDesigner
 		public void RaiseApplicationIdle()
 		{
 			Application.RaiseIdle(EventArgs.Empty);
+		}
+		
+		public void UnregisterTypeProviders()
+		{
+			foreach (KeyValuePair<Type, TypeDescriptionProvider> entry in addedTypeDescriptionProviders) {
+				TypeDescriptor.RemoveProvider(entry.Value, entry.Key);
+			}
+			addedTypeDescriptionProviders.Clear();
 		}
 	}
 	
