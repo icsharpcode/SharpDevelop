@@ -17,6 +17,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 		ComboBox comboBox;
 		PropertyGrid grid;
 		
+		readonly IDEContainer ideContainer;
+		
 		public PropertyGrid Grid {
 			get { return grid; }
 		}
@@ -68,14 +70,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 		public event EventHandler SelectedObjectChanged;
 		public event SelectedGridItemChangedEventHandler SelectedGridItemChanged;
 		
-		public PropertyPadContent(IDesignerHost host, IFormsDesigner designer)
+		public PropertyPadContent(IDesignerHost host, IFormsDesigner designer, FormsDesignerAppDomainHost appDomainHost)
 		{
-			this.host = host;
+			ideContainer = new IDEContainer(appDomainHost);
 			
 			grid = new PropertyGrid();
 			grid.PropertySort = designer.DesignerOptions.PropertyGridSortAlphabetical ? PropertySort.Alphabetical : PropertySort.CategorizedAlphabetical;
 			grid.Dock = DockStyle.Fill;
-			
 			grid.SelectedObjectsChanged += delegate(object sender, EventArgs e) {
 				if (SelectedObjectChanged != null)
 					SelectedObjectChanged(sender, e);
@@ -102,6 +103,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 			
 			grid.PropertyValueChanged += new PropertyValueChangedEventHandler(PropertyChanged);
 //			grid.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
+			
+			SetDesignerHost(host);
 		}
 		
 		/// <summary>
@@ -246,6 +249,23 @@ namespace ICSharpCode.FormsDesigner.Gui
 				} catch {}
 				grid.Dispose();
 				grid = null;
+			}
+		}
+		
+		void RemoveHost(IDesignerHost host)
+		{
+			this.host = null;
+			this.ideContainer.Disconnect();
+		}
+		
+		void SetDesignerHost(IDesignerHost host)
+		{
+			this.host = host;
+			if (host != null) {
+				this.ideContainer.ConnectGridAndHost(grid, host);
+				grid.PropertyTabs.AddTabType(typeof(System.Windows.Forms.Design.EventsTab), PropertyTabScope.Document);
+			} else {
+				this.ideContainer.Disconnect();
 			}
 		}
 		

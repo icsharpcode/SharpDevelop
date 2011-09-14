@@ -588,19 +588,19 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.project = project;
 		}
 		
-		public object GetValue(IProjectResourceInfo projectResource, object value, IProjectResourceService prs, ITypeDescriptorContext context, IWindowsFormsEditorService edsvc, IDictionaryService dictService)
+		public object GetValue(IProjectResourceInfo projectResource, object value, IProjectResourceService prs, Type propertyType, string propertyName, IWindowsFormsEditorService edsvc, IDictionaryService dictService)
 		{
 			ImageResourceEditorDialog dialog;
 			
 			if (projectResource != null && object.ReferenceEquals(projectResource.OriginalValue, value) && prs.DesignerSupportsProjectResources) {
-				dialog = new ImageResourceEditorDialog(project, context.PropertyDescriptor.PropertyType, projectResource);
+				dialog = new ImageResourceEditorDialog(project, propertyType, projectResource);
 			} else {
-				if (context.PropertyDescriptor.PropertyType == typeof(Image)) {
+				if (propertyType == typeof(Image)) {
 					dialog = new ImageResourceEditorDialog(project, value as Image, prs.DesignerSupportsProjectResources);
-				} else if (context.PropertyDescriptor.PropertyType == typeof(Icon)) {
+				} else if (propertyType == typeof(Icon)) {
 					dialog = new ImageResourceEditorDialog(project, value as Icon, prs.DesignerSupportsProjectResources);
 				} else {
-					throw new InvalidOperationException("ImageResourceEditor called on unsupported property type: " + context.PropertyDescriptor.PropertyType.ToString());
+					throw new InvalidOperationException("ImageResourceEditor called on unsupported property type: " + propertyType.ToString());
 				}
 			}
 			
@@ -608,7 +608,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 				if (edsvc.ShowDialog(dialog) == DialogResult.OK) {
 					projectResource = dialog.SelectedProjectResource;
 					if (projectResource != null) {
-						dictService.SetValue(prs.ProjectResourceKey + context.PropertyDescriptor.Name, projectResource);
+						dictService.SetValue(prs.ProjectResourceKey + propertyName, projectResource);
 						
 						// Ensure the resource generator is turned on for the selected resource file.
 						if (project != null) {
@@ -627,7 +627,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 						
 						return projectResource.OriginalValue;
 					} else {
-						dictService.SetValue(prs.ProjectResourceKey + context.PropertyDescriptor.Name, null);
+						dictService.SetValue(prs.ProjectResourceKey + propertyName, null);
 						return dialog.SelectedResourceValue;
 					}
 				}

@@ -22,6 +22,6 @@ namespace ICSharpCode.FormsDesigner.Services
 	
 	public interface IImageResourceEditorDialogWrapper
 	{
-		object GetValue(IProjectResourceInfo projectResource, object value, IProjectResourceService prs, ITypeDescriptorContext context, IWindowsFormsEditorService edsvc, IDictionaryService dictService);
+		object GetValue(IProjectResourceInfo projectResource, object value, IProjectResourceService prs, Type propertyType, string propertyName, IWindowsFormsEditorService edsvc, IDictionaryService dictService);
 	}
 }

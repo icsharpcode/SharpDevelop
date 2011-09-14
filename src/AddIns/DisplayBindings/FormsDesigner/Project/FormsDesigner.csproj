@@ -69,6 +69,7 @@
     <Compile Include="Src\EventHandlerProxy.cs" />
     <Compile Include="Src\Gui\ComponentLibraryLoader.cs" />
     <Compile Include="Src\Gui\CustomComponentToolBoxItem.cs" />
+    <Compile Include="Src\Gui\IDEContainer.cs" />
     <Compile Include="Src\Gui\PropertyPadContent.cs" />
     <Compile Include="Src\IDesignerGenerator.cs" />
     <Compile Include="Src\IFormsDesigner.cs" />

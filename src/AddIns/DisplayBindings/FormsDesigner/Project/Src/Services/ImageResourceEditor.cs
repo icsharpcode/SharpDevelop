@@ -80,7 +80,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			var imageDialogWrapper = provider.GetService(typeof(IImageResourceEditorDialogWrapper)) as IImageResourceEditorDialogWrapper;
 			
-			return imageDialogWrapper.GetValue(projectResource, value, prs, context, edsvc, dictService) ?? value;
+			return imageDialogWrapper.GetValue(projectResource, value, prs, context.PropertyDescriptor.PropertyType, context.PropertyDescriptor.Name, edsvc, new DictServiceProxy(dictService)) ?? value;
 		}
 		
 		[PermissionSet(SecurityAction.LinkDemand, Name="FullTrust")]
@@ -108,6 +108,31 @@ namespace ICSharpCode.FormsDesigner.Services
 					base.PaintValue(e);
 				}
 			}
+		}
+	}
+	
+	class DictServiceProxy : MarshalByRefObject, IDictionaryService
+	{
+		IDictionaryService svc;
+		
+		public DictServiceProxy(IDictionaryService svc)
+		{
+			this.svc = svc;
+		}
+		
+		public object GetKey(object value)
+		{
+			return svc.GetKey(value);
+		}
+		
+		public object GetValue(object key)
+		{
+			return svc.GetValue(key);
+		}
+		
+		public void SetValue(object key, object value)
+		{
+			svc.SetValue(key, value);
 		}
 	}
 }

@@ -403,7 +403,7 @@ namespace ICSharpCode.FormsDesigner
 		public PropertyPadContent CreatePropertyPad()
 		{
 			if (propertyPad == null)
-				propertyPad = new PropertyPadContent(Host, properties.FormsDesignerProxy);
+				propertyPad = new PropertyPadContent(Host, properties.FormsDesignerProxy, this);
 			return propertyPad;
 		}
 		
