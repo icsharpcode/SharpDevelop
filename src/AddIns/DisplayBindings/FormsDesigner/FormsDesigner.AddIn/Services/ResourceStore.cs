@@ -95,7 +95,6 @@ namespace ICSharpCode.FormsDesigner.Services
 		sealed class ResourceStorage
 		{
 			MemoryStream stream;
-			IResourceWriter writer;
 			byte[] buffer;
 			readonly string cultureName;
 			internal OpenedFile OpenedFile;
@@ -113,9 +112,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			public void Dispose()
 			{
 				if (this.stream != null) {
-					this.writer.Dispose();
 					this.stream.Dispose();
-					this.writer = null;
 					this.stream = null;
 				}
 				this.buffer = null;
@@ -129,10 +126,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			public void WriteResourcesToBuffer()
 			{
 				if (this.stream != null) {
-					this.writer.Close();
-					this.writer.Dispose();
 					this.buffer = this.stream.ToArray();
-					this.writer = null;
 					this.stream.Dispose();
 					this.stream = null;
 				}

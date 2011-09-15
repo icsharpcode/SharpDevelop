@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Resources;
 
@@ -13,7 +15,7 @@ namespace ICSharpCode.FormsDesigner.Services
 	/// <summary>
 	/// Describes a project resource reference.
 	/// </summary>
-	public sealed class ProjectResourceInfo : IProjectResourceInfo
+	public sealed class ProjectResourceInfo : MarshalByRefObject, IProjectResourceInfoWrapper
 	{
 		readonly string resourceFile;
 		readonly string resourceKey;
@@ -39,6 +41,20 @@ namespace ICSharpCode.FormsDesigner.Services
 		/// </summary>
 		public object OriginalValue {
 			get { return originalValue; }
+		}
+		
+		public Stream CreateStream()
+		{
+			MemoryStream stream = new MemoryStream();
+			
+			if (originalValue is Image)
+				((Image)originalValue).Save(stream, ImageFormat.Png);
+			else if (originalValue is Icon)
+				((Icon)originalValue).Save(stream);
+			else
+				return null;
+			
+			return stream;
 		}
 
 		/// <summary>
@@ -86,5 +102,10 @@ namespace ICSharpCode.FormsDesigner.Services
 
 			}
 		}
+	}
+	
+	public interface IProjectResourceInfoWrapper : IProjectResourceInfo
+	{
+		Stream CreateStream();
 	}
 }

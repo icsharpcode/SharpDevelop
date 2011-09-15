@@ -537,6 +537,20 @@ namespace ICSharpCode.FormsDesigner
 			}
 			addedTypeDescriptionProviders.Clear();
 		}
+		
+		public Stream CreateStream(object value)
+		{
+			MemoryStream stream = new MemoryStream();
+			
+			if (value is Image)
+				((Image)value).Save(stream, ImageFormat.Png);
+			else if (value is Icon)
+				((Icon)value).Save(stream);
+			else
+				return null;
+			
+			return stream;
+		}
 	}
 	
 	public class FormsDesignerAppDomainCreationProperties : MarshalByRefObject

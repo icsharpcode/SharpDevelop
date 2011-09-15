@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Resources;
@@ -31,9 +32,9 @@ namespace ICSharpCode.FormsDesigner.Gui
 	{
 		readonly IProject project;
 		readonly Type requiredResourceType;
-		object originalImage;
+		Stream originalImage;
 		bool selectedImageIsProjectResource;
-		object selectedImage;
+		Stream selectedImage;
 		
 		#region Constructors
 		
@@ -60,53 +61,45 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.projectResourcesTreeView.Visible = designerSupportsProjectResources;
 		}
 		
-		public ImageResourceEditorDialog(IProject project, Type requiredResourceType, IProjectResourceInfo projectResource)
+		public ImageResourceEditorDialog(IProject project, Type requiredResourceType, IProjectResourceInfoWrapper projectResource)
 			: this(project, requiredResourceType, true)
 		{
 			if (projectResource == null)
 				throw new ArgumentNullException("projectResource");
 			
 			this.projectResourceRadioButton.Checked = true;
-			this.originalImage = this.selectedImage = projectResource.OriginalValue;
+			this.originalImage = this.selectedImage = projectResource.CreateStream();
 			
-			Image image = this.selectedImage as Image;
-			if (image != null) {
-				this.selectedImageIsProjectResource = true;
-				this.SetPreviewImage(image);
-			} else {
-				Icon icon = this.selectedImage as Icon;
-				if (icon != null) {
-					this.selectedImageIsProjectResource = true;
-					this.SetPreviewImage(icon.ToBitmap());
-				}
-			}
+			this.selectedImageIsProjectResource = true;
+			this.SetPreviewImage(new Bitmap(selectedImage));
 			this.projectTreeScanningBackgroundWorker.RunWorkerAsync(projectResource);
 		}
 		
-		public ImageResourceEditorDialog(IProject project, Image localResource, bool designerSupportsProjectResources)
-			: this(project, typeof(Image), designerSupportsProjectResources)
+		public ImageResourceEditorDialog(IProject project, Stream localResource, bool isIcon, bool designerSupportsProjectResources)
+			: this(project, isIcon ? typeof(Icon) : typeof(Image), designerSupportsProjectResources)
 		{
 			if (localResource != null) {
 				this.localResourceRadioButton.Checked = true;
 				this.originalImage = this.selectedImage = localResource;
-				this.SetPreviewImage(localResource);
+				this.SetPreviewImage(new Bitmap(localResource));
 			} else {
 				this.noResourceRadioButton.Checked = true;
 			}
 			this.projectTreeScanningBackgroundWorker.RunWorkerAsync();
 		}
 		
-		public ImageResourceEditorDialog(IProject project, Icon localResource, bool designerSupportsProjectResources)
-			: this(project, typeof(Icon), designerSupportsProjectResources)
+		Stream CreateStream(object value)
 		{
-			if (localResource != null) {
-				this.localResourceRadioButton.Checked = true;
-				this.originalImage = this.selectedImage = localResource;
-				this.SetPreviewImage(localResource.ToBitmap());
-			} else {
-				this.noResourceRadioButton.Checked = true;
-			}
-			this.projectTreeScanningBackgroundWorker.RunWorkerAsync();
+			MemoryStream stream = new MemoryStream();
+			
+			if (value is Image)
+				((Image)value).Save(stream, ImageFormat.Png);
+			else if (value is Icon)
+				((Icon)value).Save(stream);
+			else
+				return null;
+			
+			return stream;
 		}
 		
 		static void Translate(Control c)
@@ -144,7 +137,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		/// Gets the selected image.
 		/// This can be an Image or an Icon (matching the type that was passed to the constructor) or null.
 		/// </summary>
-		public object SelectedResourceValue {
+		public Stream SelectedResourceValue {
 			get {
 				return this.selectedImage;
 			}
@@ -175,7 +168,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			}
 		}
 		
-		void SetSelectedImage(object image, bool isProjectResource)
+		void SetSelectedImage(Stream image, bool isIcon, bool isProjectResource)
 		{
 			if (!Object.ReferenceEquals(this.selectedImage, this.previewPictureBox.Image)) {
 				Image temp = this.previewPictureBox.Image;
@@ -189,21 +182,20 @@ namespace ICSharpCode.FormsDesigner.Gui
 				this.DisposeImageIfNotOriginal(this.selectedImage);
 			}
 			
-			Image img = image as Image;
-			if (img != null) {
-				this.selectedImage = img;
+			if (image == null) {
+				this.selectedImageIsProjectResource = false;
+				this.selectedImage = null;
+				return;
+			}
+			
+			if (isIcon) {
+				this.selectedImage = image;
 				this.selectedImageIsProjectResource = isProjectResource;
-				this.SetPreviewImage(img);
+				this.SetPreviewImage(new Bitmap(image));
 			} else {
-				Icon icon = image as Icon;
-				if (icon != null) {
-					this.selectedImage = icon;
-					this.selectedImageIsProjectResource = isProjectResource;
-					this.SetPreviewImage(icon.ToBitmap());
-				} else {
-					this.selectedImageIsProjectResource = false;
-					this.selectedImage = null;
-				}
+				this.selectedImage = image;
+				this.selectedImageIsProjectResource = isProjectResource;
+				this.SetPreviewImage(new Bitmap(image));
 			}
 		}
 		
@@ -464,7 +456,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		void NoResourceRadioButtonCheckedChanged(object sender, EventArgs e)
 		{
 			if (this.noResourceRadioButton.Checked) {
-				this.SetSelectedImage(null, false);
+				this.SetSelectedImage(null, false, false);
 				this.okButton.Enabled = true;
 			}
 		}
@@ -495,10 +487,10 @@ namespace ICSharpCode.FormsDesigner.Gui
 		{
 			TreeNode node = this.projectResourcesTreeView.SelectedNode;
 			if (node != null && node.Tag != null && this.requiredResourceType.IsAssignableFrom(node.Tag.GetType())) {
-				this.SetSelectedImage(node.Tag, true);
+				this.SetSelectedImage(CreateStream(node.Tag), false, true);
 				this.okButton.Enabled = true;
 			} else {
-				this.SetSelectedImage(null, false);
+				this.SetSelectedImage(null, false, false);
 				this.okButton.Enabled = false;
 			}
 		}
@@ -536,13 +528,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 				dialog.Title = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ImageResourceEditor.Title}");
 				if (dialog.ShowDialog(this) == DialogResult.OK && !String.IsNullOrEmpty(dialog.FileName)) {
 					try {
-						
-						if (isIcon) {
-							this.SetSelectedImage(new Icon(dialog.FileName), false);
-						} else {
-							this.SetSelectedImage(Image.FromFile(dialog.FileName), false);
-						}
-						
+						this.SetSelectedImage(new FileStream(dialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read), isIcon, false);
 					} catch (Exception ex) {
 						MessageService.ShowError(ex.Message);
 					}
@@ -580,12 +566,14 @@ namespace ICSharpCode.FormsDesigner.Gui
 	public class ImageResourceEditorDialogWrapper : MarshalByRefObject, IImageResourceEditorDialogWrapper
 	{
 		IProject project;
+		Func<object, Stream> createStream;
 		
-		public ImageResourceEditorDialogWrapper(IProject project)
+		public ImageResourceEditorDialogWrapper(IProject project, Func<object, Stream> createStream)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
 			this.project = project;
+			this.createStream = createStream;
 		}
 		
 		public object GetValue(IProjectResourceInfo projectResource, object value, IProjectResourceService prs, Type propertyType, string propertyName, IWindowsFormsEditorService edsvc, IDictionaryService dictService)
@@ -593,12 +581,12 @@ namespace ICSharpCode.FormsDesigner.Gui
 			ImageResourceEditorDialog dialog;
 			
 			if (projectResource != null && object.ReferenceEquals(projectResource.OriginalValue, value) && prs.DesignerSupportsProjectResources) {
-				dialog = new ImageResourceEditorDialog(project, propertyType, projectResource);
+				dialog = new ImageResourceEditorDialog(project, propertyType, (IProjectResourceInfoWrapper)projectResource);
 			} else {
 				if (propertyType == typeof(Image)) {
-					dialog = new ImageResourceEditorDialog(project, value as Image, prs.DesignerSupportsProjectResources);
+					dialog = new ImageResourceEditorDialog(project, createStream(value), false, prs.DesignerSupportsProjectResources);
 				} else if (propertyType == typeof(Icon)) {
-					dialog = new ImageResourceEditorDialog(project, value as Icon, prs.DesignerSupportsProjectResources);
+					dialog = new ImageResourceEditorDialog(project, createStream(value), true, prs.DesignerSupportsProjectResources);
 				} else {
 					throw new InvalidOperationException("ImageResourceEditor called on unsupported property type: " + propertyType.ToString());
 				}

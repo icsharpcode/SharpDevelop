@@ -10,6 +10,7 @@ using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -384,7 +385,7 @@ namespace ICSharpCode.FormsDesigner
 			appDomainHost.AddService(typeof(IHelpService), new HelpService());
 			
 			appDomainHost.AddService(typeof(IProjectResourceService), CreateProjectResourceService());
-			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
+			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject, value => appDomainHost.CreateStream(value)));
 			
 			appDomainHost.DesignSurfaceLoading += new EventHandlerProxy(DesignerLoading);
 			appDomainHost.DesignSurfaceLoaded += new LoadedEventHandlerProxy(DesignerLoaded);
@@ -412,7 +413,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			LoggingService.Info("Form Designer: END INITIALIZE");
 		}
-
+		
 		void ApplicationIdle(object sender, EventArgs e)
 		{
 			appDomainHost.RaiseApplicationIdle();

@@ -6,10 +6,10 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Design;
+using System.IO;
 using System.Security.Permissions;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-
 using ICSharpCode.FormsDesigner.Gui;
 
 namespace ICSharpCode.FormsDesigner.Services
@@ -80,7 +80,17 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			var imageDialogWrapper = provider.GetService(typeof(IImageResourceEditorDialogWrapper)) as IImageResourceEditorDialogWrapper;
 			
-			return imageDialogWrapper.GetValue(projectResource, value, prs, context.PropertyDescriptor.PropertyType, context.PropertyDescriptor.Name, edsvc, new DictServiceProxy(dictService)) ?? value;
+			var imageData = imageDialogWrapper.GetValue(projectResource, value, prs, context.PropertyDescriptor.PropertyType, context.PropertyDescriptor.Name, edsvc, new DictServiceProxy(dictService)) ?? value;
+			
+			if (imageData is Stream) {
+				if (context.PropertyDescriptor.PropertyType == typeof(Image))
+					return new Bitmap(imageData as Stream);
+				if (context.PropertyDescriptor.PropertyType == typeof(Bitmap))
+					return new Bitmap(imageData as Stream);
+				if (context.PropertyDescriptor.PropertyType == typeof(Icon))
+					return new Icon(imageData as Stream);
+			}
+			throw new Exception("Invalid datatype in ImageResourceEditor");
 		}
 		
 		[PermissionSet(SecurityAction.LinkDemand, Name="FullTrust")]
