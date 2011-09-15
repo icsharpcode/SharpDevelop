@@ -36,7 +36,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (node == null)
 				return null;
 			AstNode resolvableNode;
-			if (node is Identifier) {
+			if (node is AstType) {
+				resolvableNode = node;
+				if (resolvableNode.Parent is ComposedType) {
+					while (resolvableNode.Parent is ComposedType) 
+						resolvableNode = resolvableNode.Parent;
+					//node is preffered over the resolvable node. Which shouldn't be done in the case of nullables, arrays etc.
+					node = resolvableNode;
+				}
+			} else if (node is Identifier) {
 				resolvableNode = node.Parent;
 			} else if (node.NodeType == NodeType.Token) {
 				if (node.Parent is ConstructorInitializer) {
