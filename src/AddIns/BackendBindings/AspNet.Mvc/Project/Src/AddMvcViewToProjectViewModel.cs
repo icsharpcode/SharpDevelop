@@ -20,7 +20,7 @@ namespace ICSharpCode.AspNet.Mvc
 		bool isStronglyTypedView;
 		bool isContentPage;
 		bool isSelectMasterPageViewOpen;
-		MvcMasterPageFileName selectedMasterPage;
+		MvcProjectFile selectedMasterPage;
 		string masterPageFile = String.Empty;
 		
 		MvcModelClassViewModelsForSelectedFolder modelClassesForSelectedFolder;
@@ -41,7 +41,7 @@ namespace ICSharpCode.AspNet.Mvc
 			this.viewFileName.Folder = selectedViewFolder.Path;
 			this.ModelClassName = String.Empty;
 			this.PrimaryContentPlaceHolderId = "Main";
-			this.MasterPages = new ObservableCollection<MvcMasterPageFileName>();
+			this.MasterPages = new ObservableCollection<MvcProjectFile>();
 			
 			CreateModelClassesForSelectedFolder();
 			CreateCommands();
@@ -273,17 +273,26 @@ namespace ICSharpCode.AspNet.Mvc
 		void UpdateMasterPages()
 		{
 			MasterPages.Clear();
-			foreach (MvcMasterPageFileName fileName in GetAspxMasterPageFileNames()) {
+			foreach (MvcProjectFile fileName in GetMasterPageFileNames()) {
 				MasterPages.Add(fileName);
 			}
 		}
 		
-		IEnumerable<MvcMasterPageFileName> GetAspxMasterPageFileNames()
+		IEnumerable<MvcProjectFile> GetMasterPageFileNames()
 		{
-			var unsortedMasterPages = selectedViewFolder.Project.GetAspxMasterPageFileNames() as IEnumerable<MvcMasterPageFileName>;
-			var masterPages = new List<MvcMasterPageFileName>(unsortedMasterPages);
+			IEnumerable<MvcProjectFile> unsortedMasterPages = GetMasterPageFileNamesForSelectedViewEngine();
+			var masterPages = new List<MvcProjectFile>(unsortedMasterPages);
 			masterPages.Sort();
 			return masterPages;
+		}
+		
+		IEnumerable<MvcProjectFile> GetMasterPageFileNamesForSelectedViewEngine()
+		{
+			IMvcProject project = selectedViewFolder.Project;
+			if (IsAspxViewEngineSelected) {
+				return project.GetAspxMasterPageFiles();
+			}
+			return project.GetRazorFiles();
 		}
 		
 		public void CloseSelectMasterPageView()
@@ -291,9 +300,9 @@ namespace ICSharpCode.AspNet.Mvc
 			IsSelectMasterPageViewOpen = false;
 		}
 		
-		public ObservableCollection<MvcMasterPageFileName> MasterPages { get; private set; }
+		public ObservableCollection<MvcProjectFile> MasterPages { get; private set; }
 		
-		public MvcMasterPageFileName SelectedMasterPage {
+		public MvcProjectFile SelectedMasterPage {
 			get { return selectedMasterPage; }
 			set { selectedMasterPage = value; }
 		}

@@ -35,10 +35,17 @@ namespace AspNet.Mvc.Tests
 			testableProject.AddFileToProject(fileName);
 		}
 		
-		List<MvcMasterPageFileName> GetAspxMasterPageFileNames()
+		List<MvcProjectFile> GetAspxMasterPageFiles()
 		{
-			return new List<MvcMasterPageFileName>(
-				project.GetAspxMasterPageFileNames()
+			return new List<MvcProjectFile>(
+				project.GetAspxMasterPageFiles()
+			);
+		}
+		
+		List<MvcProjectFile> GetRazorFiles()
+		{
+			return new List<MvcProjectFile>(
+				project.GetRazorFiles()
 			);
 		}
 		
@@ -125,74 +132,129 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void GetAspxMasterPageFileNames_OneMasterPageInProject_ReturnsOneFileName()
+		public void GetAspxMasterPageFiles_OneMasterPageInProject_ReturnsOneFile()
 		{
 			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
 			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\Site.Master");
-			List<MvcMasterPageFileName> fileNames = GetAspxMasterPageFileNames();
+			List<MvcProjectFile> files = GetAspxMasterPageFiles();
 			
-			Assert.AreEqual(1, fileNames.Count);
+			Assert.AreEqual(1, files.Count);
 		}
 		
 		[Test]
-		public void GetAspxMasterPageFileNames_OneMasterPageInProject_ReturnsOneMasterPageWithExpectedFileName()
+		public void GetAspxMasterPageFiles_OneMasterPageInProject_ReturnsOneMasterPageWithExpectedFile()
 		{
 			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
 			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\Site.Master");
-			MvcMasterPageFileName fileName = GetAspxMasterPageFileNames().First();
+			MvcProjectFile file = GetAspxMasterPageFiles().First();
 			
-			var expectedFileName = new MvcMasterPageFileName() {
+			var expectedFile = new MvcProjectFile() {
 				FullPath = @"d:\projects\AspNetMvcProject\Views\Shared\Site.Master",
 				FileName = "Site.Master",
 				FolderRelativeToProject = @"Views\Shared"
 			};
 			
-			MvcMasterPageFileNameAssert.AreEqual(expectedFileName, fileName);
+			MvcProjectFileAssert.AreEqual(expectedFile, file);
 		}
 		
 		[Test]
-		public void GetAspxMasterPageFileNames_OneHtmlFileAndOneMasterPageInProject_ReturnsOneMasterPageWithExpectedFileName()
+		public void GetAspxMasterPageFiles_OneHtmlFileAndOneMasterPageInProject_ReturnsOneMasterPageWithExpectedFileName()
 		{
 			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
 			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\test.html");
 			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\Site.Master");
-			List<MvcMasterPageFileName> fileNames = GetAspxMasterPageFileNames();
+			List<MvcProjectFile> files = GetAspxMasterPageFiles();
 			
-			var expectedFileName = new MvcMasterPageFileName() {
+			var expectedFileName = new MvcProjectFile() {
 				FullPath = @"d:\projects\AspNetMvcProject\Views\Shared\Site.Master",
 				FileName = "Site.Master",
 				FolderRelativeToProject = @"Views\Shared"
 			};
 			
-			var expectedFileNames = new MvcMasterPageFileName[] {
+			var expectedFiles = new MvcProjectFile[] {
 				expectedFileName
 			};
 			
-			MvcMasterPageFileNameCollectionAssert.AreEqual(expectedFileNames, fileNames);
+			MvcProjectFileCollectionAssert.AreEqual(expectedFiles, files);
 		}
 		
 		[Test]
-		public void GetAspxMasterPageFileNames_OneMasterPageWithFileExtensionInUpperCaseInProject_ReturnsOneMasterPageWithExpectedFileName()
+		public void GetAspxMasterPageFiles_OneMasterPageWithFileExtensionInUpperCaseInProject_ReturnsOneMasterPageWithExpectedFileName()
 		{
 			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
 			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\TEST.MASTER");
-			MvcMasterPageFileName fileName = GetAspxMasterPageFileNames().First();
+			MvcProjectFile fileName = GetAspxMasterPageFiles().First();
 			
-			var expectedFileName = new MvcMasterPageFileName() {
+			var expectedFileName = new MvcProjectFile() {
 				FullPath = @"d:\projects\AspNetMvcProject\Views\Shared\TEST.MASTER",
 				FileName = "TEST.MASTER",
 				FolderRelativeToProject = @"Views\Shared"
 			};
 			
-			MvcMasterPageFileNameAssert.AreEqual(expectedFileName, fileName);
+			MvcProjectFileAssert.AreEqual(expectedFileName, fileName);
 		}
 		
 		[Test]
-		public void IsMvcMasterPage_NullFileNamePassed_ReturnsFalse()
+		public void GetRazorFiles_OneRazorFileInProject_ReturnsOneFile()
 		{
-			bool result = MvcMasterPageFileName.IsMasterPageFileName(null);
+			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
+			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\_Layout.cshtml");
+			List<MvcProjectFile> files = GetRazorFiles();
 			
-			Assert.IsFalse(result);
+			Assert.AreEqual(1, files.Count);
+		}
+		
+		[Test]
+		public void GetRazorFiles_OneRazorFileInProject_ReturnsOneRazorFileWithExpectedFile()
+		{
+			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
+			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\_Layout.cshtml");
+			MvcProjectFile file = GetRazorFiles().First();
+			
+			var expectedFile = new MvcProjectFile() {
+				FullPath = @"d:\projects\AspNetMvcProject\Views\Shared\_Layout.cshtml",
+				FileName = "_Layout.cshtml",
+				FolderRelativeToProject = @"Views\Shared"
+			};
+			
+			MvcProjectFileAssert.AreEqual(expectedFile, file);
+		}
+		
+		[Test]
+		public void GetRazorFiles_OneHtmlFileAndOneRazorFileInProject_ReturnsOneRazorFileWithExpectedFileName()
+		{
+			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
+			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\test.html");
+			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\test.cshtml");
+			List<MvcProjectFile> files = GetRazorFiles();
+			
+			var expectedFileName = new MvcProjectFile() {
+				FullPath = @"d:\projects\AspNetMvcProject\Views\Shared\test.cshtml",
+				FileName = "test.cshtml",
+				FolderRelativeToProject = @"Views\Shared"
+			};
+			
+			var expectedFiles = new MvcProjectFile[] {
+				expectedFileName
+			};
+			
+			MvcProjectFileCollectionAssert.AreEqual(expectedFiles, files);
+		}
+		
+		[Test]
+		public void GetRazorFiles_OneRazorWithFileExtensionInUpperCaseInProject_ReturnsOneRazorFileWithExpectedFileName()
+		{
+			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
+			AddFileToProject(@"d:\projects\AspNetMvcProject\Views\Shared\TEST.CSHTML");
+			MvcProjectFile fileName = GetRazorFiles().First();
+			
+			var expectedFileName = new MvcProjectFile() {
+				FullPath = @"d:\projects\AspNetMvcProject\Views\Shared\TEST.CSHTML",
+				FileName = "TEST.CSHTML",
+				FolderRelativeToProject = @"Views\Shared"
+			};
+			
+			MvcProjectFileAssert.AreEqual(expectedFileName, fileName);
 		}
 	}
 }

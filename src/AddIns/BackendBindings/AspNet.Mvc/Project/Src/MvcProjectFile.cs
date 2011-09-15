@@ -7,9 +7,9 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public class MvcMasterPageFileName : IComparable<MvcMasterPageFileName>
+	public class MvcProjectFile : IComparable<MvcProjectFile>
 	{
-		public MvcMasterPageFileName(FileProjectItem fileProjectItem)
+		public MvcProjectFile(FileProjectItem fileProjectItem)
 		{
 			UpdateFileName(fileProjectItem);
 		}
@@ -33,7 +33,7 @@ namespace ICSharpCode.AspNet.Mvc
 			return virtualPath.VirtualPath;
 		}
 		
-		public MvcMasterPageFileName()
+		public MvcProjectFile()
 		{
 			FullPath = String.Empty;
 			FileName = String.Empty;
@@ -51,29 +51,6 @@ namespace ICSharpCode.AspNet.Mvc
 			return FullPath;
 		}
 		
-		public static MvcMasterPageFileName CreateMvcMasterPageFileName(ProjectItem projectItem)
-		{
-			var fileProjectItem = projectItem as FileProjectItem;
-			if (fileProjectItem != null) {
-				return CreateMvcMasterPageFileName(fileProjectItem);
-			}
-			return null;
-		}
-		
-		public static MvcMasterPageFileName CreateMvcMasterPageFileName(FileProjectItem fileProjectItem)
-		{
-			if (IsMasterPageFileName(fileProjectItem.FileName)) {
-				return new MvcMasterPageFileName(fileProjectItem);
-			}
-			return null;
-		}
-		
-		public static bool IsMasterPageFileName(string fileName)
-		{
-			string extension = GetLowerCaseFileExtension(fileName);
-			return extension == ".master";
-		}
-		
 		static string GetLowerCaseFileExtension(string fileName)
 		{
 			if (fileName != null) {
@@ -82,7 +59,7 @@ namespace ICSharpCode.AspNet.Mvc
 			return String.Empty;
 		}
 		
-		public int CompareTo(MvcMasterPageFileName other)
+		public int CompareTo(MvcProjectFile other)
 		{
 			int result = CompareFileNames(other);
 			if (result == 0) {
@@ -91,12 +68,12 @@ namespace ICSharpCode.AspNet.Mvc
 			return result;
 		}
 		
-		int CompareFileNames(MvcMasterPageFileName other)
+		int CompareFileNames(MvcProjectFile other)
 		{
 			return FileName.CompareTo(other.FileName);
 		}
 		
-		int CompareFolderRelativeToProject(MvcMasterPageFileName other)
+		int CompareFolderRelativeToProject(MvcProjectFile other)
 		{
 			return FolderRelativeToProject.CompareTo(other.FolderRelativeToProject);
 		}

@@ -17,6 +17,7 @@ namespace ICSharpCode.AspNet.Mvc
 		MvcTextTemplateLanguage GetTemplateLanguage();
 		IEnumerable<IMvcClass> GetModelClasses();
 		
-		IEnumerable<MvcMasterPageFileName> GetAspxMasterPageFileNames();
+		IEnumerable<MvcProjectFile> GetAspxMasterPageFiles();
+		IEnumerable<MvcProjectFile> GetRazorFiles();
 	}
 }

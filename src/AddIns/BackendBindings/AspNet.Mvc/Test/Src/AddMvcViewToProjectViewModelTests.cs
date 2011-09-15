@@ -793,21 +793,21 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateViewModel();
 			SelectAspxViewEngine();
-			var masterPageFile = new MvcMasterPageFileName() {
+			var masterPageFile = new MvcProjectFile() {
 				FullPath = @"d:\projects\MyProject\Views\Shared\Site.Master",
 				FileName = "Site.Master",
 				FolderRelativeToProject = @"Views\Shared"
 			};
-			fakeProject.AddMasterPageFile(masterPageFile);
+			fakeProject.AddAspxMasterPageFile(masterPageFile);
 			viewModel.OpenSelectMasterPageView();
 			
-			var expectedFileNames = new MvcMasterPageFileName[] {
+			var expectedFiles = new MvcProjectFile[] {
 				masterPageFile
 			};
 			
-			ObservableCollection<MvcMasterPageFileName> fileNames = viewModel.MasterPages;
+			ObservableCollection<MvcProjectFile> files = viewModel.MasterPages;
 			
-			Assert.AreEqual(expectedFileNames, fileNames);
+			Assert.AreEqual(expectedFiles, files);
 		}
 		
 		[Test]
@@ -815,19 +815,19 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateViewModel();
 			SelectAspxViewEngine();
-			var masterPageFile = new MvcMasterPageFileName();
-			fakeProject.AddMasterPageFile(masterPageFile);
+			var masterPageFile = new MvcProjectFile();
+			fakeProject.AddAspxMasterPageFile(masterPageFile);
 			viewModel.OpenSelectMasterPageView();
 			viewModel.CloseSelectMasterPageView();
 			viewModel.OpenSelectMasterPageView();
 			
-			var expectedFileNames = new MvcMasterPageFileName[] {
+			var expectedFiles = new MvcProjectFile[] {
 				masterPageFile
 			};
 			
-			ObservableCollection<MvcMasterPageFileName> fileNames = viewModel.MasterPages;
+			ObservableCollection<MvcProjectFile> files = viewModel.MasterPages;
 			
-			Assert.AreEqual(expectedFileNames, fileNames);
+			Assert.AreEqual(expectedFiles, files);
 		}
 		
 		[Test]
@@ -845,7 +845,7 @@ namespace AspNet.Mvc.Tests
 		public void SelectMasterPageCommand_MasterPageIsSelected_CommandIsEnabled()
 		{
 			CreateViewModel();
-			viewModel.SelectedMasterPage = new MvcMasterPageFileName();
+			viewModel.SelectedMasterPage = new MvcProjectFile();
 			
 			bool canExecute = viewModel.SelectMasterPageCommand.CanExecute(null);
 			
@@ -883,7 +883,7 @@ namespace AspNet.Mvc.Tests
 			CreateViewModel();
 			viewModel.MasterPageFile = "test.master";
 			viewModel.OpenSelectMasterPageView();
-			var masterPageFileName = new MvcMasterPageFileName() {
+			var masterPageFileName = new MvcProjectFile() {
 				FullPath = @"d:\projects\MyProject\Views\Shared\site.master",
 				FileName = "site.master",
 				FolderRelativeToProject = @"Views\Shared",
@@ -902,7 +902,7 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateViewModel();
 			viewModel.OpenSelectMasterPageView();
-			var masterPageFileName = new MvcMasterPageFileName();
+			var masterPageFileName = new MvcProjectFile();
 			viewModel.SelectedMasterPage = masterPageFileName;
 			
 			MonitorPropertyChangedEvents();
@@ -918,28 +918,79 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateViewModel();
 			SelectAspxViewEngine();
-			var masterPageFile1 = new MvcMasterPageFileName() {
+			var masterPageFile1 = new MvcProjectFile() {
 				FullPath = @"d:\projects\MyProject\Views\Shared\ViewSite.Master",
 				FileName = "ViewSite.Master",
 				FolderRelativeToProject = @"Views\Shared"
 			};
-			fakeProject.AddMasterPageFile(masterPageFile1);
-			var masterPageFile2 = new MvcMasterPageFileName() {
+			fakeProject.AddAspxMasterPageFile(masterPageFile1);
+			var masterPageFile2 = new MvcProjectFile() {
 				FullPath = @"d:\projects\MyProject\Views\Shared\Site.Master",
 				FileName = "Site.Master",
 				FolderRelativeToProject = @"Views\Shared"
 			};
-			fakeProject.AddMasterPageFile(masterPageFile2);
+			fakeProject.AddAspxMasterPageFile(masterPageFile2);
 			viewModel.OpenSelectMasterPageView();
 			
-			var expectedFileNames = new MvcMasterPageFileName[] {
+			var expectedFiles = new MvcProjectFile[] {
 				masterPageFile2,
 				masterPageFile1
 			};
 			
-			ObservableCollection<MvcMasterPageFileName> fileNames = viewModel.MasterPages;
+			ObservableCollection<MvcProjectFile> files = viewModel.MasterPages;
 			
-			Assert.AreEqual(expectedFileNames, fileNames);
+			Assert.AreEqual(expectedFiles, files);
+		}
+		
+		[Test]
+		public void MasterPages_ProjectContainsOneRazorFileAndRazorEngineSelected_ReturnsOneRazorFile()
+		{
+			CreateViewModel();
+			SelectRazorViewEngine();
+			var razorFile = new MvcProjectFile() {
+				FullPath = @"d:\projects\MyProject\Views\Shared\_Layout.cshtml",
+				FileName = "_Layout.cshtml",
+				FolderRelativeToProject = @"Views\Shared"
+			};
+			fakeProject.AddRazorFile(razorFile);
+			viewModel.OpenSelectMasterPageView();
+			
+			var expectedFiles = new MvcProjectFile[] {
+				razorFile
+			};
+			
+			ObservableCollection<MvcProjectFile> files = viewModel.MasterPages;
+			
+			Assert.AreEqual(expectedFiles, files);
+		}
+		
+		[Test]
+		public void MasterPages_ProjectContainsTwoRazorPagesInIncorrectSortOrder_ReturnsTwoRazorFilesSorted()
+		{
+			CreateViewModel();
+			SelectRazorViewEngine();
+			var razorFile1 = new MvcProjectFile() {
+				FullPath = @"d:\projects\MyProject\Views\Shared\ViewSite.cshtml",
+				FileName = "ViewSite.cshtml",
+				FolderRelativeToProject = @"Views\Shared"
+			};
+			fakeProject.AddRazorFile(razorFile1);
+			var razorFile2 = new MvcProjectFile() {
+				FullPath = @"d:\projects\MyProject\Views\Shared\Site.cshtml",
+				FileName = "Site.cshtml",
+				FolderRelativeToProject = @"Views\Shared"
+			};
+			fakeProject.AddRazorFile(razorFile2);
+			viewModel.OpenSelectMasterPageView();
+			
+			var expectedFiles = new MvcProjectFile[] {
+				razorFile2,
+				razorFile1
+			};
+			
+			ObservableCollection<MvcProjectFile> files = viewModel.MasterPages;
+			
+			Assert.AreEqual(expectedFiles, files);
 		}
 	}
 }

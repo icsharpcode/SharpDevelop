@@ -9,23 +9,22 @@ using NUnit.Framework;
 
 namespace AspNet.Mvc.Tests
 {
-	[TestFixture]
-	public class MvcMasterPageFileNameTests
+	public class MvcProjectFileTests
 	{
 		TestableProject project;
-		MvcMasterPageFileName masterPageFileName;
+		MvcProjectFile file;
 		
 		void CreateProject(string fileName)
 		{
 			project = TestableProject.CreateProject(fileName, "MyProject");
 		}
 		
-		MvcMasterPageFileName CreateMasterPageFileName(string fullPath)
+		MvcProjectFile CreateProjectFile(string fullPath)
 		{
 			var projectItem = new FileProjectItem(project, ItemType.Compile);
 			projectItem.FileName = fullPath;
-			masterPageFileName = new MvcMasterPageFileName(projectItem);
-			return masterPageFileName;
+			file = new MvcProjectFile(projectItem);
+			return file;
 		}
 		
 		[Test]
@@ -33,9 +32,9 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
 			string expectedFullPath = @"d:\projects\MyProject\Views\Shared\Site.Master";
-			CreateMasterPageFileName(expectedFullPath);
+			CreateProjectFile(expectedFullPath);
 			
-			string fullPath = masterPageFileName.FullPath;
+			string fullPath = file.FullPath;
 			
 			Assert.AreEqual(expectedFullPath, fullPath);
 		}
@@ -44,9 +43,9 @@ namespace AspNet.Mvc.Tests
 		public void FileName_CreatedFromFileProjectItem_ReturnsFileNameWithoutFolder()
 		{
 			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
-			CreateMasterPageFileName(@"d:\projects\MyProject\Views\Shared\Site.Master");
+			CreateProjectFile(@"d:\projects\MyProject\Views\Shared\Site.Master");
 			
-			string fileName = masterPageFileName.FileName;
+			string fileName = file.FileName;
 			
 			Assert.AreEqual("Site.Master", fileName);
 		}
@@ -55,9 +54,9 @@ namespace AspNet.Mvc.Tests
 		public void FolderRelativeToProject_CreatedFromFileProjectItem_ReturnsFileNameWithoutFolder()
 		{
 			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
-			CreateMasterPageFileName(@"d:\projects\MyProject\Views\Shared\Site.Master");
+			CreateProjectFile(@"d:\projects\MyProject\Views\Shared\Site.Master");
 			
-			string folder = masterPageFileName.FolderRelativeToProject;
+			string folder = file.FolderRelativeToProject;
 			
 			Assert.AreEqual(@"Views\Shared", folder);
 		}
@@ -66,9 +65,9 @@ namespace AspNet.Mvc.Tests
 		public void VirtualPath_CreatedFromFileProjectItem_ReturnsAspNetVirtualPathForFileName()
 		{
 			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
-			CreateMasterPageFileName(@"d:\projects\MyProject\Views\Shared\Site.Master");
+			CreateProjectFile(@"d:\projects\MyProject\Views\Shared\Site.Master");
 			
-			string virtualPath = masterPageFileName.VirtualPath;
+			string virtualPath = file.VirtualPath;
 			
 			Assert.AreEqual("~/Views/Shared/Site.Master", virtualPath);
 		}
@@ -77,9 +76,9 @@ namespace AspNet.Mvc.Tests
 		public void VirtualPath_FileInProjectRootDirectory_ReturnsAspNetVirtualPathForFileName()
 		{
 			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
-			CreateMasterPageFileName(@"d:\projects\MyProject\Site.Master");
+			CreateProjectFile(@"d:\projects\MyProject\Site.Master");
 			
-			string virtualPath = masterPageFileName.VirtualPath;
+			string virtualPath = file.VirtualPath;
 			
 			Assert.AreEqual("~/Site.Master", virtualPath);
 		}
@@ -88,8 +87,8 @@ namespace AspNet.Mvc.Tests
 		public void CompareTo_FileNamesAreTheSame_ReturnsZero()
 		{
 			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
-			MvcMasterPageFileName lhs = CreateMasterPageFileName(@"d:\projects\MyProject\Site.Master");
-			MvcMasterPageFileName rhs = CreateMasterPageFileName(@"d:\projects\MyProject\Site.Master");
+			MvcProjectFile lhs = CreateProjectFile(@"d:\projects\MyProject\Site.Master");
+			MvcProjectFile rhs = CreateProjectFile(@"d:\projects\MyProject\Site.Master");
 			
 			int result = lhs.CompareTo(rhs);
 			
@@ -100,8 +99,8 @@ namespace AspNet.Mvc.Tests
 		public void CompareTo_FoldersAreSameAndSecondFileNameIsGreaterThanFirstFileName_ReturnsMinusOne()
 		{
 			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
-			MvcMasterPageFileName lhs = CreateMasterPageFileName(@"d:\projects\MyProject\Shared\A.Master");
-			MvcMasterPageFileName rhs = CreateMasterPageFileName(@"d:\projects\MyProject\Shared\Z.Master");
+			MvcProjectFile lhs = CreateProjectFile(@"d:\projects\MyProject\Shared\A.Master");
+			MvcProjectFile rhs = CreateProjectFile(@"d:\projects\MyProject\Shared\Z.Master");
 			
 			int result = lhs.CompareTo(rhs);
 			
@@ -112,8 +111,8 @@ namespace AspNet.Mvc.Tests
 		public void CompareTo_FoldersAreSameAndSecondFileNameIsLessThanFirstFileName_ReturnsPlusOne()
 		{
 			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
-			MvcMasterPageFileName lhs = CreateMasterPageFileName(@"d:\projects\MyProject\Shared\Z.Master");
-			MvcMasterPageFileName rhs = CreateMasterPageFileName(@"d:\projects\MyProject\Shared\A.Master");
+			MvcProjectFile lhs = CreateProjectFile(@"d:\projects\MyProject\Shared\Z.Master");
+			MvcProjectFile rhs = CreateProjectFile(@"d:\projects\MyProject\Shared\A.Master");
 			
 			int result = lhs.CompareTo(rhs);
 			
@@ -124,8 +123,8 @@ namespace AspNet.Mvc.Tests
 		public void CompareTo_FileNamesAreSameAndSecondFolderIsLessThanFirstFolder_ReturnsPlusOne()
 		{
 			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
-			MvcMasterPageFileName lhs = CreateMasterPageFileName(@"d:\projects\MyProject\Z\site.Master");
-			MvcMasterPageFileName rhs = CreateMasterPageFileName(@"d:\projects\MyProject\A\site.Master");
+			MvcProjectFile lhs = CreateProjectFile(@"d:\projects\MyProject\Z\site.Master");
+			MvcProjectFile rhs = CreateProjectFile(@"d:\projects\MyProject\A\site.Master");
 			
 			int result = lhs.CompareTo(rhs);
 			
@@ -136,8 +135,8 @@ namespace AspNet.Mvc.Tests
 		public void CompareTo_FileNamesAreSameAndSecondFolderIsGreaterThanFirstFolder_ReturnsMinussOne()
 		{
 			CreateProject(@"d:\projects\MyProject\MyProject.csproj");
-			MvcMasterPageFileName lhs = CreateMasterPageFileName(@"d:\projects\MyProject\A\site.Master");
-			MvcMasterPageFileName rhs = CreateMasterPageFileName(@"d:\projects\MyProject\Z\site.Master");
+			MvcProjectFile lhs = CreateProjectFile(@"d:\projects\MyProject\A\site.Master");
+			MvcProjectFile rhs = CreateProjectFile(@"d:\projects\MyProject\Z\site.Master");
 			
 			int result = lhs.CompareTo(rhs);
 			

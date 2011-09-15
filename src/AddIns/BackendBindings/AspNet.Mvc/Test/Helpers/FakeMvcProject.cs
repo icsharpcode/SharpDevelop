@@ -64,16 +64,28 @@ namespace AspNet.Mvc.Tests.Helpers
 			return ModelClasses;
 		}
 		
-		public List<MvcMasterPageFileName> MasterPageFileNames = new List<MvcMasterPageFileName>();
+		public List<MvcProjectFile> AspxMasterPageFiles = new List<MvcProjectFile>();
 		
-		public void AddMasterPageFile(MvcMasterPageFileName fileName)
+		public void AddAspxMasterPageFile(MvcProjectFile file)
 		{
-			MasterPageFileNames.Add(fileName);
+			AspxMasterPageFiles.Add(file);
 		}
 		
-		public IEnumerable<MvcMasterPageFileName> GetAspxMasterPageFileNames()
+		public IEnumerable<MvcProjectFile> GetAspxMasterPageFiles()
 		{
-			return MasterPageFileNames;
+			return AspxMasterPageFiles;
+		}
+		
+		public List<MvcProjectFile> RazorFiles = new List<MvcProjectFile>();
+		
+		public void AddRazorFile(MvcProjectFile file)
+		{
+			RazorFiles.Add(file);
+		}
+		
+		public IEnumerable<MvcProjectFile> GetRazorFiles()
+		{
+			return RazorFiles;
 		}
 	}
 }

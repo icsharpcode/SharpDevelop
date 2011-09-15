@@ -44,12 +44,22 @@ namespace ICSharpCode.AspNet.Mvc
 			return modelClassLocator.GetModelClasses(this);
 		}
 		
-		public IEnumerable<MvcMasterPageFileName> GetAspxMasterPageFileNames()
+		public IEnumerable<MvcProjectFile> GetAspxMasterPageFiles()
 		{
 			foreach (ProjectItem projectItem in Project.Items) {
-				MvcMasterPageFileName fileName = MvcMasterPageFileName.CreateMvcMasterPageFileName(projectItem);
-				if (fileName != null) {
-					yield return fileName;
+				MvcProjectFile file = MvcProjectMasterPageFile.CreateMvcProjectMasterPageFile(projectItem);
+				if (file != null) {
+					yield return file;
+				}
+			}
+		}
+		
+		public IEnumerable<MvcProjectFile> GetRazorFiles()
+		{
+			foreach (ProjectItem projectItem in Project.Items) {
+				MvcProjectFile file = MvcProjectRazorFile.CreateMvcProjectRazorFile(projectItem);
+				if (file != null) {
+					yield return file;
 				}
 			}
 		}

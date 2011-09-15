@@ -46,5 +46,13 @@ namespace ICSharpCode.AspNet.Mvc
 			}
 			return String.Empty;
 		}
+		
+		public static string GetLowerCaseFileExtension(string fileName)
+		{
+			if (fileName != null) {
+				return Path.GetExtension(fileName).ToLowerInvariant();
+			}
+			return String.Empty;
+		}
 	}
 }
