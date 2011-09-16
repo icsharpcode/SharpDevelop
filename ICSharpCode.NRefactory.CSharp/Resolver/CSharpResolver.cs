@@ -611,6 +611,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							return ErrorResult;
 					case UnaryOperatorType.AddressOf:
 						return new UnaryOperatorResolveResult(new PointerType(expression.Type), op, expression);
+					case UnaryOperatorType.Await:
+						ResolveResult getAwaiterMethodGroup = ResolveMemberAccess(expression, "GetAwaiter", EmptyList<IType>.Instance, true);
+						ResolveResult getAwaiterInvocation = ResolveInvocation(getAwaiterMethodGroup, new ResolveResult[0]);
+						var getResultMethodGroup = CreateMemberLookup().Lookup(getAwaiterInvocation, "GetResult", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
+						if (getResultMethodGroup != null) {
+							var or = getResultMethodGroup.PerformOverloadResolution(context, new ResolveResult[0], allowExtensionMethods: false, conversions: conversions);
+							IType awaitResultType = or.GetBestCandidateWithSubstitutedTypeArguments().ReturnType.Resolve(context);
+							return new UnaryOperatorResolveResult(awaitResultType, UnaryOperatorType.Await, expression);
+						} else {
+							return new UnaryOperatorResolveResult(SharedTypes.UnknownType, UnaryOperatorType.Await, expression);
+						}
 					default:
 						throw new ArgumentException("Invalid value for UnaryOperatorType", "op");
 				}

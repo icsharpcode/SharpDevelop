@@ -175,6 +175,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return true; }
 			}
 			
+			public override bool IsAsync {
+				get { return false; }
+			}
+			
 			public override IType GetInferredReturnType(IType[] parameterTypes)
 			{
 				Assert.AreEqual(expectedParameterTypes, parameterTypes, "Parameters types passed to " + this);
