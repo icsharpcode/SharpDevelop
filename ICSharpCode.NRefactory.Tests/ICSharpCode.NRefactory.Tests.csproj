@@ -114,7 +114,7 @@
     <Compile Include="CSharp\Parser\TypeMembers\OperatorDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\TypeMembers\PropertyDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\TypeSystemConvertVisitorTests.cs" />
-    <Compile Include="CSharp\Parser\Expression\AnonymousMethodTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\AnonymousMethodExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\ArrayCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\AssignmentExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\BaseReferenceExpressionTests.cs" />
