@@ -23,7 +23,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.CSharp
 {
 	[TestFixture]
-	public class OutputVisitorTests
+	public class CSharpOutputVisitorTests
 	{
 		void AssertOutput(string expected, Expression expr, CSharpFormattingOptions policy = null)
 		{

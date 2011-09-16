@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	{
 		// The ResolveVisitor is also responsible for handling lambda expressions.
 		
-		static readonly ResolveResult errorResult = new ErrorResolveResult(SharedTypes.UnknownType);
+		static readonly ResolveResult errorResult = ErrorResolveResult.UnknownError;
 		static readonly ResolveResult transparentIdentifierResolveResult = new ResolveResult(SharedTypes.UnboundTypeArgument);
 		readonly ResolveResult voidResult;
 		

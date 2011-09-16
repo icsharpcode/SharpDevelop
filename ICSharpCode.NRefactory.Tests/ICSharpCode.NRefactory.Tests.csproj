@@ -77,8 +77,9 @@
   <ItemGroup>
     <Compile Include="CSharp\Analysis\DefiniteAssignmentTests.cs" />
     <Compile Include="CSharp\AstStructureTests.cs" />
+    <Compile Include="CSharp\CodeDomConvertVisitorTests.cs" />
     <Compile Include="CSharp\InsertParenthesesVisitorTests.cs" />
-    <Compile Include="CSharp\OutputVisitorTests.cs" />
+    <Compile Include="CSharp\CSharpOutputVisitorTests.cs" />
     <Compile Include="CSharp\Parser\Expression\AnonymousTypeCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\ObjectCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\DelegateDeclarationTests.cs" />

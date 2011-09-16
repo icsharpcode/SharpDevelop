@@ -21,11 +21,12 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.PatternMatching;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -37,12 +38,75 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </remarks>
 	public class CodeDomConvertVisitor : IAstVisitor<object, CodeObject>
 	{
-		ITypeResolveContext context;
+		ITypeResolveContext context = MinimalResolveContext.Instance;
+		ResolveVisitor resolveVisitor;
 		bool useFullyQualifiedTypeNames;
+		
+		/// <summary>
+		/// Gets/Sets whether the visitor should use fully-qualified type references.
+		/// </summary>
+		public bool UseFullyQualifiedTypeNames {
+			get { return useFullyQualifiedTypeNames; }
+			set { useFullyQualifiedTypeNames = value; }
+		}
+		
+		/// <summary>
+		/// Converts a compilation unit to CodeDom.
+		/// </summary>
+		/// <param name="compilationUnit">The input compilation unit.</param>
+		/// <param name="context">Type resolve context, used for resolving type references.</param>
+		/// <param name="parsedFile">CSharpParsedFile, used for resolving.</param>
+		/// <returns>Converted CodeCompileUnit</returns>
+		/// <remarks>
+		/// This conversion process requires a resolver because it needs to distinguish field/property/event references etc.
+		/// </remarks>
+		public CodeCompileUnit Convert(CompilationUnit compilationUnit, ITypeResolveContext context, CSharpParsedFile parsedFile)
+		{
+			if (compilationUnit == null)
+				throw new ArgumentNullException("compilationUnit");
+			if (context == null)
+				throw new ArgumentNullException("context");
+			if (parsedFile == null)
+				throw new ArgumentNullException("parsedFile");
+			using (var ctx = context.Synchronize()) {
+				ResolveVisitor resolveVisitor = new ResolveVisitor(new CSharpResolver(ctx), parsedFile);
+				resolveVisitor.Scan(compilationUnit);
+				return (CodeCompileUnit)Convert(compilationUnit, resolveVisitor);
+			}
+		}
+		
+		/// <summary>
+		/// Converts a C# AST node to CodeDom.
+		/// </summary>
+		/// <param name="node">The input node.</param>
+		/// <param name="resolveVisitor">The resolve visitor.
+		/// The visitor must be already initialized for the file containing the given node (Scan must be called).</param>
+		/// <returns>The node converted into CodeDom</returns>
+		/// <remarks>
+		/// This conversion process requires a resolver because it needs to distinguish field/property/event references etc.
+		/// </remarks>
+		public CodeObject Convert(AstNode node, ResolveVisitor resolveVisitor)
+		{
+			if (node == null)
+				throw new ArgumentNullException("node");
+			if (resolveVisitor == null)
+				throw new ArgumentNullException("resolveVisitor");
+			try {
+				this.resolveVisitor = resolveVisitor;
+				this.context = resolveVisitor.TypeResolveContext;
+				return node.AcceptVisitor(this);
+			} finally {
+				this.resolveVisitor = null;
+				this.context = MinimalResolveContext.Instance;
+			}
+		}
 		
 		ResolveResult Resolve(AstNode node)
 		{
-			throw new NotImplementedException();
+			if (resolveVisitor == null)
+				return ErrorResolveResult.UnknownError;
+			else
+				return resolveVisitor.GetResolveResult(node);
 		}
 		
 		CodeExpression Convert(Expression expr)
@@ -79,7 +143,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		CodeTypeReference Convert(IType type)
 		{
-			throw new NotImplementedException();
+			return new CodeTypeReference(type.ReflectionName);
 		}
 		
 		CodeStatement Convert(Statement stmt)
@@ -147,25 +211,17 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			CodeArrayCreateExpression ace = new CodeArrayCreateExpression();
 			int dimensions = arrayCreateExpression.Arguments.Count;
-			if (dimensions > 1) {
-				// CodeDom does not support multi-dimensional arrays
+			int nestingDepth = arrayCreateExpression.AdditionalArraySpecifiers.Count;
+			if (dimensions > 0)
+				nestingDepth++;
+			if (nestingDepth > 1 || dimensions > 1) {
+				// CodeDom does not support jagged or multi-dimensional arrays
 				return MakeSnippetExpression(arrayCreateExpression);
 			}
 			if (arrayCreateExpression.Type.IsNull) {
-				ArrayType arrayType = Resolve(arrayCreateExpression).Type as ArrayType;
-				if (arrayType != null && arrayType.Dimensions == 1)
-					ace.CreateType = Convert(arrayType.ElementType);
-				else
-					return MakeSnippetExpression(arrayCreateExpression);
+				ace.CreateType = Convert(Resolve(arrayCreateExpression).Type);
 			} else {
 				ace.CreateType = Convert(arrayCreateExpression.Type);
-				IEnumerable<ArraySpecifier> additionalArraySpecifiers = arrayCreateExpression.AdditionalArraySpecifiers;
-				if (dimensions == 0) {
-					additionalArraySpecifiers = additionalArraySpecifiers.Skip(1);
-				}
-				foreach (var spec in additionalArraySpecifiers.Reverse()) {
-					ace.CreateType = new CodeTypeReference(ace.CreateType, spec.Dimensions);
-				}
 			}
 			if (arrayCreateExpression.Arguments.Count == 1) {
 				ace.SizeExpression = Convert(arrayCreateExpression.Arguments.Single());

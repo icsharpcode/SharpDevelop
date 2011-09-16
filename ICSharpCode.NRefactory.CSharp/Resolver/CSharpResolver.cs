@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public class CSharpResolver
 	{
-		static readonly ResolveResult ErrorResult = new ErrorResolveResult(SharedTypes.UnknownType);
+		static readonly ResolveResult ErrorResult = ErrorResolveResult.UnknownError;
 		static readonly ResolveResult DynamicResult = new ResolveResult(SharedTypes.Dynamic);
 		static readonly ResolveResult NullResult = new ResolveResult(SharedTypes.Null);
 		
