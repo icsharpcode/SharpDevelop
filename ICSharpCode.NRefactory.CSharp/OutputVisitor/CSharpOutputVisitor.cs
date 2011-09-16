@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Outputs the AST.
 	/// </summary>
-	public class OutputVisitor : IAstVisitor<object, object>
+	public class CSharpOutputVisitor : IAstVisitor<object, object>
 	{
 		readonly IOutputFormatter formatter;
 		readonly CSharpFormattingOptions policy;
@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			Division
 		}
 		
-		public OutputVisitor (TextWriter textWriter, CSharpFormattingOptions formattingPolicy)
+		public CSharpOutputVisitor (TextWriter textWriter, CSharpFormattingOptions formattingPolicy)
 		{
 			if (textWriter == null)
 				throw new ArgumentNullException ("textWriter");
@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.policy = formattingPolicy;
 		}
 		
-		public OutputVisitor (IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy)
+		public CSharpOutputVisitor (IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy)
 		{
 			if (formatter == null)
 				throw new ArgumentNullException ("formatter");
@@ -1856,15 +1856,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode (yieldBreakStatement);
 		}
 		
-		public object VisitYieldStatement (YieldStatement yieldStatement, object data)
+		public object VisitYieldReturnStatement (YieldReturnStatement yieldReturnStatement, object data)
 		{
-			StartNode (yieldStatement);
-			WriteKeyword ("yield", YieldStatement.YieldKeywordRole);
-			WriteKeyword ("return", YieldStatement.ReturnKeywordRole);
+			StartNode (yieldReturnStatement);
+			WriteKeyword ("yield", YieldReturnStatement.YieldKeywordRole);
+			WriteKeyword ("return", YieldReturnStatement.ReturnKeywordRole);
 			Space ();
-			yieldStatement.Expression.AcceptVisitor (this, data);
+			yieldReturnStatement.Expression.AcceptVisitor (this, data);
 			Semicolon ();
-			return EndNode (yieldStatement);
+			return EndNode (yieldReturnStatement);
 		}
 
 		#endregion

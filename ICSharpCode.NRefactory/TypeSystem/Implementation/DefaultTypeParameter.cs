@@ -382,6 +382,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return o != null
 				&& this.attributes == o.attributes
 				&& this.constraints == o.constraints
+				&& this.name == o.name
 				&& this.flags == o.flags
 				&& this.ownerType == o.ownerType
 				&& this.index == o.index

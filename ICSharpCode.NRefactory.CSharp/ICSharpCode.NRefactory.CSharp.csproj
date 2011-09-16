@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{53DCA265-3C3C-42F9-B647-F72BA678122B}</ProjectGuid>
@@ -14,6 +14,10 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -144,7 +148,7 @@
     <Compile Include="Ast\Statements\VariableDeclarationStatement.cs" />
     <Compile Include="Ast\Statements\WhileStatement.cs" />
     <Compile Include="Ast\Statements\YieldBreakStatement.cs" />
-    <Compile Include="Ast\Statements\YieldStatement.cs" />
+    <Compile Include="Ast\Statements\YieldReturnStatement.cs" />
     <Compile Include="Ast\TypeMembers\Accessor.cs" />
     <Compile Include="Ast\TypeMembers\AttributedNode.cs" />
     <Compile Include="Ast\TypeMembers\ConstructorDeclaration.cs" />
@@ -164,9 +168,10 @@
     <Compile Include="Formatter\AstFormattingVisitor.cs" />
     <Compile Include="Formatter\CSharpFormattingOptions.cs" />
     <Compile Include="Formatter\Indent.cs" />
+    <Compile Include="OutputVisitor\CodeDomConvertVisitor.cs" />
     <Compile Include="OutputVisitor\InsertParenthesesVisitor.cs" />
     <Compile Include="OutputVisitor\IOutputFormatter.cs" />
-    <Compile Include="OutputVisitor\OutputVisitor.cs" />
+    <Compile Include="OutputVisitor\CSharpOutputVisitor.cs" />
     <Compile Include="OutputVisitor\TextWriterOutputFormatter.cs" />
     <Compile Include="Parser\CSharpParser.cs" />
     <Compile Include="Parser\mcs\anonymous.cs" />

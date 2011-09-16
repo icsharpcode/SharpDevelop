@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		[Test]
 		public void YieldReturnStatementTest()
 		{
-			YieldStatement yieldStmt = ParseUtilCSharp.ParseStatement<YieldStatement>("yield return \"Foo\";");
+			YieldReturnStatement yieldStmt = ParseUtilCSharp.ParseStatement<YieldReturnStatement>("yield return \"Foo\";");
 			PrimitiveExpression expr =  (PrimitiveExpression)yieldStmt.Expression;
 			Assert.AreEqual("Foo", expr.Value);
 		}

@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 			{
 				return default (S);
 			}
@@ -130,7 +130,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return new Identifier (name, location);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitIdentifier (this, data);
 		}

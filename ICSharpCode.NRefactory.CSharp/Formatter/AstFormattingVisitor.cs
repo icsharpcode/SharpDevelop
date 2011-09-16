@@ -1278,7 +1278,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return null;
 		}
 
-		public override object VisitYieldStatement (YieldStatement yieldStatement, object data)
+		public override object VisitYieldReturnStatement (YieldReturnStatement yieldStatement, object data)
 		{
 			FixStatementIndentation (yieldStatement.StartLocation);
 			return null;

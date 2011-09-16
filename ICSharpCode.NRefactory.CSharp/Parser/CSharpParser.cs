@@ -1873,16 +1873,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (Yield yieldStatement)
 			{
-				var result = new YieldStatement ();
+				var result = new YieldReturnStatement ();
 				var location = LocationsBag.GetLocations (yieldStatement);
 				
-				result.AddChild (new CSharpTokenNode (Convert (yieldStatement.loc), "yield".Length), YieldStatement.YieldKeywordRole);
+				result.AddChild (new CSharpTokenNode (Convert (yieldStatement.loc), "yield".Length), YieldReturnStatement.YieldKeywordRole);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), "return".Length), YieldStatement.ReturnKeywordRole);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), "return".Length), YieldReturnStatement.ReturnKeywordRole);
 				if (yieldStatement.Expr != null)
-					result.AddChild ((Expression)yieldStatement.Expr.Accept (this), YieldStatement.Roles.Expression);
+					result.AddChild ((Expression)yieldStatement.Expr.Accept (this), YieldReturnStatement.Roles.Expression);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), ";".Length), YieldStatement.Roles.Semicolon);
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), ";".Length), YieldReturnStatement.Roles.Semicolon);
 				
 				return result;
 			}

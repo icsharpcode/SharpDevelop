@@ -2466,7 +2466,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
-		ResolveResult IAstVisitor<object, ResolveResult>.VisitYieldStatement(YieldStatement yieldStatement, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitYieldReturnStatement(YieldReturnStatement yieldStatement, object data)
 		{
 			if (resolverEnabled && resolver.CurrentMember != null) {
 				IType returnType = resolver.CurrentMember.ReturnType.Resolve(resolver.Context);

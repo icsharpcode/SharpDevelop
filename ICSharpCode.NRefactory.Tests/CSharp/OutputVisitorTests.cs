@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				policy = new CSharpFormattingOptions();;
 			StringWriter w = new StringWriter();
 			w.NewLine = "\n";
-			expr.AcceptVisitor(new OutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "\t" }, policy), null);
+			expr.AcceptVisitor(new CSharpOutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "\t" }, policy), null);
 			Assert.AreEqual(expected.Replace("\r", ""), w.ToString());
 		}
 		

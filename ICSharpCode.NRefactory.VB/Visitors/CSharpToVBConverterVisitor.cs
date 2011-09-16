@@ -1369,11 +1369,11 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			return EndNode(yieldBreakStatement, new ReturnStatement());
 		}
 		
-		public AstNode VisitYieldStatement(CSharp.YieldStatement yieldStatement, object data)
+		public AstNode VisitYieldReturnStatement(CSharp.YieldReturnStatement yieldReturnStatement, object data)
 		{
 			var frame = members.Peek();
 			frame.inIterator = true;
-			return EndNode(yieldStatement, new YieldStatement((Expression)yieldStatement.Expression.AcceptVisitor(this, data)));
+			return EndNode(yieldReturnStatement, new YieldStatement((Expression)yieldReturnStatement.Expression.AcceptVisitor(this, data)));
 		}
 		
 		public AstNode VisitAccessor(CSharp.Accessor accessor, object data)
