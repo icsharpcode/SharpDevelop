@@ -36,6 +36,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public readonly static TargetFramework Net45 = new TargetFramework("v4.5", ".NET Framework 4.5") {
 			BasedOn = Net40,
 			MinimumMSBuildVersion = new Version(4, 0),
+			SupportedRuntimeVersion = "v4.0",
 			SupportedSku = ".NETFramework,Version=v4.5",
 			RequiresAppConfigEntry = true
 		};
