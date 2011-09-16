@@ -395,7 +395,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		CodeObject IAstVisitor<object, CodeObject>.VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
-			return new CodeArrayIndexerExpression(Convert(indexerExpression.Target), Convert(indexerExpression.Arguments));
+			if (Resolve(indexerExpression) is ArrayAccessResolveResult)
+				return new CodeArrayIndexerExpression(Convert(indexerExpression.Target), Convert(indexerExpression.Arguments));
+			else
+				return new CodeIndexerExpression(Convert(indexerExpression.Target), Convert(indexerExpression.Arguments));
 		}
 		
 		CodeObject IAstVisitor<object, CodeObject>.VisitInvocationExpression(InvocationExpression invocationExpression, object data)
