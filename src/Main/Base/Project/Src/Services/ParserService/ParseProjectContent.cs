@@ -58,6 +58,17 @@ namespace ICSharpCode.SharpDevelop
 			// TODO: Translate me
 //			progressMonitor.TaskName = "Resolving references for " + project.Name + "...";
 			project.ResolveAssemblyReferences();
+			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
+			if (msbuildProject != null) {
+				string mscorlib = msbuildProject.MscorlibPath;
+				if (string.IsNullOrEmpty(mscorlib)) {
+					AddReferencedContent(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
+				} else {
+					AddReferencedContent(AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference("mscorlib", mscorlib));
+				}
+			} else {
+				AddReferencedContent(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
+			}
 			foreach (ProjectItem item in items) {
 				if (!initializing) return; // abort initialization
 				progressMonitor.CancellationToken.ThrowIfCancellationRequested();
@@ -76,13 +87,6 @@ namespace ICSharpCode.SharpDevelop
 		
 		internal void ReInitialize1(IProgressMonitor progressMonitor)
 		{
-			var mscorlib = AssemblyParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib;
-			// don't fetch mscorlib within lock - finding the correct registry might access the project, causing
-			// a deadlock between IProject.SyncRoot and the ReferencedContents lock
-			lock (ReferencedContents) {
-				ReferencedContents.Clear();
-				AddReferencedContent(mscorlib);
-			}
 			// prevent adding event handler twice
 			ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved -= OnProjectItemRemoved;

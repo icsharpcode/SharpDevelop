@@ -206,8 +206,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected override ParseProjectContent CreateProjectContent()
 		{
 			ParseProjectContent newProjectContent = new ParseProjectContent(this);
-			var mscorlib = AssemblyParserService.GetRegistryForReference(new ReferenceProjectItem(this, "mscorlib")).Mscorlib;
-			newProjectContent.AddReferencedContent(mscorlib);
 			return newProjectContent;
 		}
 		
