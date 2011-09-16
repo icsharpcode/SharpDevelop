@@ -33,9 +33,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		public readonly static TargetFramework Net40Client = new ClientProfileTargetFramework(Net40) {
 			BasedOn = Net35Client
 		};
+		public readonly static TargetFramework Net45 = new TargetFramework("v4.5", ".NET Framework 4.5") {
+			BasedOn = Net40,
+			MinimumMSBuildVersion = new Version(4, 0),
+			SupportedSku = ".NETFramework,Version=v4.5",
+			RequiresAppConfigEntry = true
+		};
+		public readonly static TargetFramework Net45Client = new ClientProfileTargetFramework(Net45) {
+			BasedOn = Net40Client
+		};
 		
 		public readonly static TargetFramework[] TargetFrameworks = {
-			Net40, Net40Client, Net35, Net35Client, Net30, Net20
+			Net45, Net45Client, Net40, Net40Client, Net35, Net35Client, Net30, Net20
 		};
 		
 		public readonly static TargetFramework DefaultTargetFramework = Net40Client;
