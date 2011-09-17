@@ -1142,8 +1142,6 @@
 			          label = "${res:Global.MoveDown}"
 			          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveTabDown"/>
 		</Condition>
-		
-		<Include id="CommonContextMenu" path="/SharpDevelop/Workbench/SharpDevelopSideBar/CommonContextMenu"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/SharpDevelopSideBar/SideTab/ContextMenu">
@@ -1171,8 +1169,6 @@
 			          label = "${res:Global.MoveDown}"
 			          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemDown"/>
 		</Condition>
-		
-		<Include id="CommonContextMenu" path="/SharpDevelop/Workbench/SharpDevelopSideBar/CommonContextMenu"/>
 	</Path>
 	
 	<!-- Main Menu -->

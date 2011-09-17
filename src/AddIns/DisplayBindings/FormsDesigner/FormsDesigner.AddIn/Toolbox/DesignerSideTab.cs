@@ -16,9 +16,12 @@ namespace ICSharpCode.FormsDesigner.Gui
 		protected bool loadImages = true;
 		IToolboxService toolboxService;
 		
-		protected DesignerSideTab(SideBarControl sideBar, string name, IToolboxService toolboxService)
+		protected DesignerSideTab(ToolboxProvider toolbox, SideBarControl sideBar, string name, IToolboxService toolboxService)
 			: base(sideBar, name)
 		{
+			if (toolbox == null)
+				throw new ArgumentNullException("toolbox");
+			this.toolbox = toolbox;
 			this.DisplayName = StringParser.Parse(name);
 			this.toolboxService = toolboxService;
 			this.CanSaved = false;
@@ -40,9 +43,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		///<summary>Load an assembly's controls</summary>
 		public DesignerSideTab(ToolboxProvider toolbox, SideBarControl sideBar, Category category, IToolboxService toolboxService)
-			: this(sideBar, category.Name, toolboxService)
+			: this(toolbox, sideBar, category.Name, toolboxService)
 		{
-			this.toolbox = toolbox;
 			foreach (ToolComponent component in category.ToolComponents) {
 				if (component.IsEnabled) {
 					ToolboxItem toolboxItem = new ToolboxItem();

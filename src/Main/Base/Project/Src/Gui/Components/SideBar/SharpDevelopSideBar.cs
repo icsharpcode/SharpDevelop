@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			SideTabItemFactory = new SharpDevelopSideTabItemFactory();
 			
-			MouseUp                     += new MouseEventHandler(SetContextMenu);
+			MouseUp                += new MouseEventHandler(SetContextMenu);
 			sideTabContent.MouseUp += new MouseEventHandler(SetItemContextMenu);
 		}
 		
@@ -139,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			if (e.Button == MouseButtons.Right) {
-				MenuService.ShowContextMenu(this, contextMenuPath, this, e.X, e.Y);
+				MenuService.ShowContextMenu(ActiveTab, contextMenuPath, this, e.X, e.Y);
 			}
 		}
 		
@@ -184,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					internalState = internalState & ~(SidebarState.CanMoveItemDown);
 				}
 				
-				MenuService.ShowContextMenu(this, sideTabContextMenuPath, sideTabContent, e.X, e.Y);
+				MenuService.ShowContextMenu(ActiveTab, sideTabContextMenuPath, this, e.X, e.Y);
 			}
 		}
 		

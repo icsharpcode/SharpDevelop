@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -12,18 +13,35 @@ namespace ICSharpCode.FormsDesigner.Gui
 {
 	public partial class ConfigureSideBarDialog : Form
 	{
-		ArrayList oldComponents;
+		List<Category> oldComponents;
 		ToolboxProvider toolbox;
 		
 		public ConfigureSideBarDialog(ToolboxProvider toolbox)
 		{
+			if (toolbox == null)
+				throw new ArgumentNullException("toolbox");
 			InitializeComponent();
 			
+			this.toolbox = toolbox;
 			oldComponents = toolbox.ComponentLibraryLoader.CopyCategories();
-			
+			Translate(this);
 			FillCategories();
 			CategoryListViewSelectedIndexChanged(this, EventArgs.Empty);
 			ComponentListViewSelectedIndexChanged(this, EventArgs.Empty);
+		}
+		
+		void Translate(Control control)
+		{
+			control.Text = StringParser.Parse(control.Text);
+			foreach (Control child in control.Controls) {
+				Translate(child);
+			}
+			if (control is ListView) {
+				var lv = control as ListView;
+				foreach (ColumnHeader col in lv.Columns) {
+					col.Text = StringParser.Parse(col.Text);
+				}
+			}
 		}
 		
 		void FillCategories()
@@ -41,10 +59,10 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void FillComponents()
 		{
-			categoryListView.ItemCheck -= this.ComponentListViewItemCheck;
-			categoryListView.BeginUpdate();
-			categoryListView.Items.Clear();
-			categoryListView.SmallImageList = new ImageList();
+			componentListView.ItemCheck -= this.ComponentListViewItemCheck;
+			componentListView.BeginUpdate();
+			componentListView.Items.Clear();
+			componentListView.SmallImageList = new ImageList();
 			
 			if (categoryListView.SelectedItems != null && categoryListView.SelectedItems.Count == 1) {
 				Category category = (Category)categoryListView.SelectedItems[0].Tag;
@@ -77,11 +95,9 @@ namespace ICSharpCode.FormsDesigner.Gui
 			componentListView.ItemCheck += this.ComponentListViewItemCheck;
 		}
 		
-		// THIS METHOD IS MAINTAINED BY THE FORM DESIGNER
-		// DO NOT EDIT IT MANUALLY! YOUR CHANGES ARE LIKELY TO BE LOST
 		void CategoryListViewSelectedIndexChanged(object sender, System.EventArgs e)
 		{
-			renameCategoryButton.Enabled = addComponentsButton.Enabled = CurrentCategory != null;
+			removeCategoryButton.Enabled = renameCategoryButton.Enabled = addComponentsButton.Enabled = CurrentCategory != null;
 			FillComponents();
 		}
 		
@@ -118,7 +134,6 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void RemoveCategoryButtonClick(object sender, System.EventArgs e)
 		{
-			
 			if (MessageService.AskQuestion("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSideBarDialog.RemoveCategoryQuestion}")) {
 				CategoryListViewSelectedIndexChanged(this, EventArgs.Empty);
 				toolbox.ComponentLibraryLoader.Categories.Remove(CurrentCategory);
@@ -160,6 +175,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			if (renameCategoryDialog.ShowDialog(this) == DialogResult.OK) {
 				this.CurrentCategory.Name = renameCategoryDialog.CategoryName;
 				FillCategories();
+				CategoryListViewSelectedIndexChanged(sender, e);
 			}
 		}
 		

@@ -89,6 +89,7 @@
     <Compile Include="DesignerLoader\NRefactoryDesignerLoader.cs" />
     <Compile Include="DesignerSourceCodeStorage.cs" />
     <Compile Include="FormKeyHandler.cs" />
+    <Compile Include="FormsDesignerAppDomainServer.cs" />
     <Compile Include="FormsDesignerLoggingServiceImpl.cs" />
     <Compile Include="FormsDesignerViewContent.cs" />
     <Compile Include="ImageResourceEditorDialogWrapper.cs" />
@@ -111,6 +112,7 @@
       <DependentUpon>ConfigureSideBarDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Toolbox\CustomComponentsSideTab.cs" />
+    <Compile Include="Toolbox\FormsDesignerSideBar.cs" />
     <Compile Include="Toolbox\RenameCategoryDialog.cs" />
     <Compile Include="Toolbox\RenameCategoryDialog.Designer.cs">
       <DependentUpon>RenameCategoryDialog.cs</DependentUpon>

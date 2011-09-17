@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -220,8 +221,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 	{
 		static readonly string VERSION = "1.1.0";
 		
-		ArrayList assemblies = new ArrayList();
-		ArrayList categories = new ArrayList();
+		List<ComponentAssembly> assemblies = new List<ComponentAssembly>();
+		
 		
 		IServiceProvider provider;
 		IFormsDesignerLoggingService logger;
@@ -232,31 +233,25 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.provider = provider;
 			logger = (IFormsDesignerLoggingService)provider.GetService(typeof(IFormsDesignerLoggingService));
 			appDomainHost = (FormsDesignerAppDomainHost)provider.GetService(typeof(FormsDesignerAppDomainHost));
+			Categories = new List<Category>();
 		}
 		
-		public ArrayList Categories {
-			get {
-				return categories;
-			}
-			set {
-				categories = value;
-			}
-		}
+		public List<Category> Categories { get; set; }
 		
-		public ArrayList CopyCategories()
+		public List<Category> CopyCategories()
 		{
-			ArrayList newCategories = new ArrayList();
-			foreach (Category category in categories) {
-				newCategories.Add(category.Clone());
+			List<Category> newCategories = new List<Category>();
+			foreach (Category category in Categories) {
+				newCategories.Add((Category)category.Clone());
 			}
 			return newCategories;
 		}
 		
 		public void RemoveCategory(string name)
 		{
-			foreach (Category category in categories) {
+			foreach (Category category in Categories) {
 				if (category.Name == name) {
-					categories.Remove(category);
+					Categories.Remove(category);
 					break;
 				}
 			}
@@ -264,7 +259,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		public void DisableToolComponent(string categoryName, string fullName)
 		{
-			foreach (Category category in categories) {
+			foreach (Category category in Categories) {
 				if (category.Name == categoryName) {
 					foreach (ToolComponent component in category.ToolComponents) {
 						if (component.FullName == fullName) {
@@ -281,7 +276,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		/// </summary>
 		public void ExchangeToolComponents(string categoryName, string fullName1, string fullName2)
 		{
-			foreach (Category category in categories) {
+			foreach (Category category in Categories) {
 				if (category.Name == categoryName) {
 					int index1 = -1;
 					int index2 = -1;
@@ -341,11 +336,11 @@ namespace ICSharpCode.FormsDesigner.Gui
 							                                                   IsEnabled(componentNode.Attributes["enabled"]));
 							newCategory.ToolComponents.Add(newToolComponent);
 						}
-						categories.Add(newCategory);
+						Categories.Add(newCategory);
 					}
 				}
 			} catch (Exception e) {
-				logger.Warn("ComponentLibraryLoader.LoadToolComponentLibrary: " + e.Message);
+				logger.Warn("ComponentLibraryLoader.LoadToolComponentLibrary: " + e.ToString());
 				return false;
 			}
 			return true;
@@ -360,7 +355,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		public ToolComponent GetToolComponent(string assemblyName)
 		{
-			foreach (Category category in categories) {
+			foreach (Category category in Categories) {
 				foreach (ToolComponent component in category.ToolComponents) {
 					if (component.AssemblyName == assemblyName) {
 						return component;
@@ -393,7 +388,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			
 			XmlElement categoryNode = doc.CreateElement("Categories");
 			doc.DocumentElement.AppendChild(categoryNode);
-			foreach (Category category in categories) {
+			foreach (Category category in Categories) {
 				XmlElement newCategory = doc.CreateElement("Category");
 				newCategory.SetAttribute("name", category.Name);
 				newCategory.SetAttribute("enabled", category.IsEnabled.ToString());

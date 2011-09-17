@@ -246,8 +246,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 			if (grid != null) {
 				try {
 					grid.SelectedObjects = null;
+					grid.Dispose();
 				} catch {}
-				grid.Dispose();
 				grid = null;
 			}
 		}

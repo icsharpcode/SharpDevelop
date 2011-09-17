@@ -56,6 +56,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.okButton.Size = new System.Drawing.Size(75, 23);
 			this.okButton.TabIndex = 6;
 			this.okButton.Text = "${res:Global.OKButtonText}";
+			this.okButton.Click += new System.EventHandler(this.OkButtonClick);
 			// 
 			// categoryNameTextBox
 			// 
@@ -79,8 +80,10 @@ namespace ICSharpCode.FormsDesigner.Gui
 			// 
 			// RenameCategoryDialog
 			// 
+			this.AcceptButton = this.okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.CancelButton = this.cancelButton;
 			this.ClientSize = new System.Drawing.Size(298, 85);
 			this.Controls.Add(this.cancelButton);
 			this.Controls.Add(this.okButton);

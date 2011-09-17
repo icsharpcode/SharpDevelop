@@ -29,9 +29,17 @@ namespace ICSharpCode.FormsDesigner.Gui
 		public AddComponentsDialog()
 		{
 			InitializeComponent();
-			
+			Translate(this);
 			Icon = null;
 			PrintGACCache();
+		}
+		
+		void Translate(Control control)
+		{
+			control.Text = StringParser.Parse(control.Text);
+			foreach (Control child in control.Controls) {
+				Translate(child);
+			}
 		}
 		
 		void PrintGACCache()

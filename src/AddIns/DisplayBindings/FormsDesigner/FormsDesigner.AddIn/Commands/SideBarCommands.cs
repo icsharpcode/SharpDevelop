@@ -12,13 +12,10 @@ namespace ICSharpCode.FormsDesigner
 	{
 		public override void Run()
 		{
-			#warning test this!
-			var sidebar = Owner as DesignerSideTab;
-			if (sidebar != null) {
-				using (ConfigureSideBarDialog configureSideBarDialog = new ConfigureSideBarDialog(sidebar.Toolbox)) {
-					if (configureSideBarDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-						sidebar.Toolbox.ReloadSideTabs(true);
-					}
+			var sidebar = (DesignerSideTab)Owner;
+			using (ConfigureSideBarDialog configureSideBarDialog = new ConfigureSideBarDialog(sidebar.Toolbox)) {
+				if (configureSideBarDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+					sidebar.Toolbox.ReloadSideTabs(true);
 				}
 			}
 		}

@@ -753,6 +753,7 @@ namespace ICSharpCode.FormsDesigner
 				this.UserContent = null;
 				this.pleaseWaitLabel.Dispose();
 				
+				
 			}
 		}
 		

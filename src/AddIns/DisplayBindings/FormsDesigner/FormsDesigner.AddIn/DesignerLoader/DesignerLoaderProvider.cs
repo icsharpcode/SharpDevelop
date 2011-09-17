@@ -16,7 +16,6 @@ namespace ICSharpCode.FormsDesigner
 	public class NRefactoryDesignerLoaderProvider : MarshalByRefObject, IDesignerLoaderProviderWithViewContent
 	{
 		readonly SupportedLanguage language;
-		FormsDesignerViewContent viewContent;
 		
 		public FormsDesignerViewContent ViewContent { get; set; }
 		

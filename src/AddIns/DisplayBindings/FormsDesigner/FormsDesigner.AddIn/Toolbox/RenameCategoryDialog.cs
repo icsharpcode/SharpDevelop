@@ -25,6 +25,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		{
 			this.toolbox = toolbox;
 			InitializeComponent();
+			Translate(this);
 			this.Owner = owner;
 			
 			if (categoryName == null) {
@@ -34,6 +35,14 @@ namespace ICSharpCode.FormsDesigner.Gui
 				this.categoryName = categoryName;
 				categoryNameTextBox.Text = categoryName;
 				Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.RenameCategoryDialog.RenameCategoryDialogName}");
+			}
+		}
+		
+		void Translate(Control control)
+		{
+			control.Text = StringParser.Parse(control.Text);
+			foreach (Control child in control.Controls) {
+				Translate(child);
 			}
 		}
 		

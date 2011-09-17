@@ -55,7 +55,7 @@ namespace ICSharpCode.FormsDesigner
 		{
 			Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
 			if (toolboxService == null) {
-				sideBar = new SharpDevelopSideBar();
+				sideBar = new FormsDesignerSideBar();
 				LoadToolbox();
 				toolboxService = (SharpDevelopToolboxService)services.GetService(typeof(IToolboxService));
 				ReloadSideTabs(false);
@@ -89,7 +89,6 @@ namespace ICSharpCode.FormsDesigner
 		{
 			if (!componentLibraryLoader.LoadToolComponentLibrary(UserConfigFile)) {
 				if (!componentLibraryLoader.LoadToolComponentLibrary(GlobalConfigFile)) {
-					
 					MessageService.ShowWarning("${res:ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CantLoadSidbarComponentLibraryWarning}");
 				}
 			}
@@ -276,4 +275,6 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 	}
+	
+
 }
