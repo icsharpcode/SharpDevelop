@@ -27,7 +27,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			                		fd.ShowSourceCode();
 			                }, StandardCommands.ViewCode);
 			AddProxyCommand(delegate {
-			                	IMessageService ms = serviceProvider.GetService(typeof(IMessageService)) as IMessageService;
+			                	ISharpDevelopIDEService ms = serviceProvider.GetService(typeof(ISharpDevelopIDEService)) as ISharpDevelopIDEService;
 			                	if (ms != null)
 			                		ms.ShowPropertiesPad();
 			                }, StandardCommands.PropertiesWindow);

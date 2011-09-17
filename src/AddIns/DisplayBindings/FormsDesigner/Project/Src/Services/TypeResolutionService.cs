@@ -129,7 +129,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				}
 			}
 			
-			IMessageService messenger = serviceContainer.GetService(typeof(IMessageService)) as IMessageService;
+			ISharpDevelopIDEService messenger = serviceContainer.GetService(typeof(ISharpDevelopIDEService)) as ISharpDevelopIDEService;
 			
 			string hash = GetHash(fileName);
 			lock (assemblyDict) {

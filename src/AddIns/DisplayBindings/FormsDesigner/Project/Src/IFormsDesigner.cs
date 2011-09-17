@@ -45,5 +45,6 @@ namespace ICSharpCode.FormsDesigner
 	{
 		Stream GetResourceAsStreamForReading(CultureInfo info, out ResourceType type);
 		Stream GetResourceAsStreamForWriting(CultureInfo info, out ResourceType type);
+		Stream OpenFile(string fileName);
 	}
 }

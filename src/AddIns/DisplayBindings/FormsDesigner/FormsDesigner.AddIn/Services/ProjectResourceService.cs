@@ -22,13 +22,17 @@ namespace ICSharpCode.FormsDesigner.Services
 	public sealed class ProjectResourceService : MarshalByRefObject, IProjectResourceService
 	{
 		IProjectContent projectContent;
+		FormsDesignerAppDomainHost host;
 		string stringLiteralDelimiter;
 		bool designerSupportsProjectResources = true;
 
-		public ProjectResourceService(IProjectContent projectContent)
+		public ProjectResourceService(FormsDesignerAppDomainHost host, IProjectContent projectContent)
 		{
+			if (host == null)
+				throw new ArgumentNullException("host");
 			if (projectContent == null)
 				throw new ArgumentNullException("projectContent");
+			this.host = host;
 			this.projectContent = projectContent;
 		}
 
@@ -71,7 +75,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		/// <summary>
 		/// Gets the project resource from the specified expression.
 		/// </summary>
-		public ProjectResourceInfo GetProjectResource(CodePropertyReferenceExpression propRef)
+		public IProjectResourceInfo GetProjectResource(CodePropertyReferenceExpression propRef)
 		{
 			CodeTypeReferenceExpression typeRef = propRef.TargetObject as CodeTypeReferenceExpression;
 			if (typeRef == null) {
@@ -157,7 +161,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			string resourceKey = code.Substring(index, endIndex - index);
 			LoggingService.Debug("-> Decoded resource: In: " + resourceFileName + ". Key: " + resourceKey);
 
-			return new ProjectResourceInfo(resourceFileName, resourceKey);
+			return host.CreateProjectResourceInfo(resourceFileName, resourceKey);
 		}
 
 		/// <summary>
@@ -173,11 +177,6 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			IReturnType generatedCodeAttribute = generatedCodeAttributeClass.DefaultReturnType;
 			return @class.Attributes.Any(att => att.AttributeType.Equals(generatedCodeAttribute) && att.PositionalArguments.Count == 2 && String.Equals("System.Resources.Tools.StronglyTypedResourceBuilder", att.PositionalArguments[0] as string, StringComparison.Ordinal));
-		}
-		
-		IProjectResourceInfo IProjectResourceService.GetProjectResource(CodePropertyReferenceExpression propRef)
-		{
-			throw new NotImplementedException();
 		}
 		
 		public bool FindResourceClassNames(IProjectResourceInfo resourceInfo, out string resourceClassFullyQualifiedName, out string resourcePropertyName)

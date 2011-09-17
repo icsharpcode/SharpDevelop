@@ -379,13 +379,13 @@ namespace ICSharpCode.FormsDesigner
 		{
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
 			
-			appDomainHost.AddService(typeof(IMessageService), new FormsMessageService());
+			appDomainHost.AddService(typeof(ISharpDevelopIDEService), new FormsMessageService());
 			appDomainHost.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService(this, appDomainHost));
 			
 			appDomainHost.AddService(typeof(IHelpService), new HelpService());
 			
 			appDomainHost.AddService(typeof(IProjectResourceService), CreateProjectResourceService());
-			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject, value => appDomainHost.CreateStream(value)));
+			appDomainHost.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
 			
 			appDomainHost.DesignSurfaceLoading += new EventHandlerProxy(DesignerLoading);
 			appDomainHost.DesignSurfaceLoaded += new LoadedEventHandlerProxy(DesignerLoaded);
@@ -422,7 +422,7 @@ namespace ICSharpCode.FormsDesigner
 		ProjectResourceService CreateProjectResourceService()
 		{
 			IProjectContent projectContent = GetProjectContentForFile();
-			return new ProjectResourceService(projectContent);
+			return new ProjectResourceService(appDomainHost, projectContent);
 		}
 		
 		IProjectContent GetProjectContentForFile()

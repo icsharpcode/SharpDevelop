@@ -3,23 +3,22 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Resources;
-
-using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
 	/// <summary>
 	/// Describes a project resource reference.
 	/// </summary>
-	public sealed class ProjectResourceInfo : MarshalByRefObject, IProjectResourceInfoWrapper
+	public sealed class ProjectResourceInfo : MarshalByRefObject, IProjectResourceInfo
 	{
 		readonly string resourceFile;
 		readonly string resourceKey;
-		readonly object originalValue;
+		object originalValue;
 
 		/// <summary>
 		/// Gets the full file name of the resource file that contains the resource.
@@ -43,28 +42,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			get { return originalValue; }
 		}
 		
-		public Stream CreateStream()
-		{
-			MemoryStream stream = new MemoryStream();
-			
-			if (originalValue is Image)
-				((Image)originalValue).Save(stream, ImageFormat.Png);
-			else if (originalValue is Icon)
-				((Icon)originalValue).Save(stream);
-			else
-				return null;
-			
-			return stream;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ProjectResourceInfo"/> class
-		/// and stores the resource value in the <see cref="OriginalValue"/> property
-		/// if the resource file is found and it contains the specified key.
-		/// </summary>
-		/// <param name="resourceFile">The full name of the resource file that contains the resource.</param>
-		/// <param name="resourceKey">The resource key.</param>
-		public ProjectResourceInfo(string resourceFile, string resourceKey)
+		ProjectResourceInfo(string resourceFile, string resourceKey)
 		{
 			if (resourceFile == null)
 				throw new ArgumentNullException("resourceFile");
@@ -72,19 +50,24 @@ namespace ICSharpCode.FormsDesigner.Services
 				throw new ArgumentNullException("resourceKey");
 			this.resourceFile = resourceFile;
 			this.resourceKey = resourceKey;
-
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ProjectResourceInfo"/> class
+		/// and stores the resource value in the <see cref="OriginalValue"/> property
+		/// if the resource file is found and it contains the specified key.
+		/// </summary>
+		/// <param name="resourceFile">The full name of the resource file that contains the resource.</param>
+		/// <param name="resourceKey">The resource key.</param>
+		public static ProjectResourceInfo Create(IResourceStore resourceStore, string resourceFile, string resourceKey)
+		{
+			Debug.Assert(DesignerAppDomainManager.IsDesignerDomain);
+			ProjectResourceInfo info = new ProjectResourceInfo(resourceFile, resourceKey);
 			if (File.Exists(resourceFile)) {
-
-				OpenedFile openedFile = FileService.GetOpenedFile(resourceFile);
-				Stream s;
-				if (openedFile != null) {
-					s = openedFile.OpenRead();
-				} else {
-					s = new FileStream(resourceFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-				}
+				Stream s = resourceStore.OpenFile(resourceFile);
 
 				using (s) {
-					using (IResourceReader reader = ResourceStore.CreateResourceReader(s, ResourceStore.GetResourceType(resourceFile))) {
+					using (IResourceReader reader = ResourceHelpers.CreateResourceReader(s, ResourceHelpers.GetResourceType(resourceFile))) {
 
 						ResXResourceReader resXReader = reader as ResXResourceReader;
 						if (resXReader != null) {
@@ -93,19 +76,14 @@ namespace ICSharpCode.FormsDesigner.Services
 
 						foreach (DictionaryEntry entry in reader) {
 							if (String.Equals(resourceKey, entry.Key as string, StringComparison.Ordinal)) {
-								this.originalValue = entry.Value;
+								info.originalValue = entry.Value;
 								break;
 							}
 						}
 					}
 				}
-
 			}
+			return info;
 		}
-	}
-	
-	public interface IProjectResourceInfoWrapper : IProjectResourceInfo
-	{
-		Stream CreateStream();
 	}
 }

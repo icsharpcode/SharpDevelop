@@ -13,7 +13,7 @@ namespace ICSharpCode.FormsDesigner.Services
 	/// <summary>
 	/// Description of MessageService.
 	/// </summary>
-	public class FormsMessageService : MarshalByRefObject, IMessageService
+	public class FormsMessageService : MarshalByRefObject, ISharpDevelopIDEService
 	{
 		public void ShowOutputPad()
 		{
@@ -47,6 +47,16 @@ namespace ICSharpCode.FormsDesigner.Services
 		public void ShowError(string message)
 		{
 			MessageService.ShowError(message);
+		}
+		
+		public string Parse(string input)
+		{
+			return StringParser.Parse(input);
+		}
+		
+		public string GetResourceString(string name)
+		{
+			return ResourceService.GetString(name);
 		}
 	}
 }

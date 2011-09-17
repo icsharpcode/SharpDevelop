@@ -74,6 +74,10 @@
     <Compile Include="Src\IDesignerGenerator.cs" />
     <Compile Include="Src\IFormsDesigner.cs" />
     <Compile Include="Src\IFormsDesignerLoggingService.cs" />
+    <Compile Include="Src\ImageResourceEditorDialog.cs" />
+    <Compile Include="Src\ImageResourceEditorDialog.Designer.cs">
+      <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Services\AssemblyInfo.cs" />
     <Compile Include="Src\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="Src\Services\DefaultServiceContainer.cs" />
@@ -84,6 +88,7 @@
     <Compile Include="Src\Services\IProjectResourceService.cs" />
     <Compile Include="Src\Services\ITypeLocator.cs" />
     <Compile Include="Src\Services\MenuCommandService.cs" />
+    <Compile Include="Src\Services\ProjectResourceInfo.cs" />
     <Compile Include="Src\Services\ProjectResourcesComponentCodeDomSerializer.cs" />
     <Compile Include="Src\Services\ProjectResourcesMemberCodeDomSerializer.cs" />
     <Compile Include="Src\Services\PropertyValueUIService.cs" />
@@ -101,6 +106,9 @@
     </Compile>
     <EmbeddedResource Include="Resources\WindowsFormsGeneralOptions.xfrm" />
     <Compile Include="Src\Services\DesignerSerializationService.cs" />
+    <EmbeddedResource Include="Src\ImageResourceEditorDialog.resx">
+      <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">

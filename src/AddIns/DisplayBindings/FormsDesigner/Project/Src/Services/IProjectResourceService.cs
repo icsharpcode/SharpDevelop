@@ -19,7 +19,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		bool FindResourceClassNames(IProjectResourceInfo resourceInfo, out string resourceClassFullyQualifiedName, out string resourcePropertyName);
 	}
 	
-	public interface IMessageService
+	public interface ISharpDevelopIDEService
 	{
 		void ShowOutputPad();
 		void ShowPropertiesPad();
@@ -27,6 +27,8 @@ namespace ICSharpCode.FormsDesigner.Services
 		void ShowError(string message);
 		void ShowException(Exception ex, string message);
 		string CodeStatementToString(CodeStatement statement);
+		string Parse(string input);
+		string GetResourceString(string name);
 	}
 	
 	public interface IProjectResourceInfo

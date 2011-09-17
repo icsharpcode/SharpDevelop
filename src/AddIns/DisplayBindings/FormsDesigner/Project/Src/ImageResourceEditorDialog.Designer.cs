@@ -42,7 +42,6 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.localResourceRadioButton = new System.Windows.Forms.RadioButton();
 			this.previewPictureBox = new System.Windows.Forms.PictureBox();
 			this.okButton = new System.Windows.Forms.Button();
-			this.projectTreeScanningBackgroundWorker = new System.ComponentModel.BackgroundWorker();
 			cancelButton = new System.Windows.Forms.Button();
 			splitContainer = new System.Windows.Forms.SplitContainer();
 			resourceSelectionGroup = new System.Windows.Forms.GroupBox();
@@ -199,12 +198,6 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.okButton.Text = "${res:Global.OKButtonText}";
 			this.okButton.UseVisualStyleBackColor = true;
 			// 
-			// projectTreeScanningBackgroundWorker
-			// 
-			this.projectTreeScanningBackgroundWorker.WorkerSupportsCancellation = true;
-			this.projectTreeScanningBackgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ProjectTreeScanningBackgroundWorkerDoWork);
-			this.projectTreeScanningBackgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.ProjectTreeScanningBackgroundWorkerRunWorkerCompleted);
-			// 
 			// ImageResourceEditorDialog
 			// 
 			this.AcceptButton = this.okButton;
@@ -231,7 +224,6 @@ namespace ICSharpCode.FormsDesigner.Gui
 			((System.ComponentModel.ISupportInitialize)(this.previewPictureBox)).EndInit();
 			this.ResumeLayout(false);
 		}
-		private System.ComponentModel.BackgroundWorker projectTreeScanningBackgroundWorker;
 		private System.Windows.Forms.RadioButton noResourceRadioButton;
 		private System.Windows.Forms.Button importLocalResourceButton;
 		private System.Windows.Forms.RadioButton projectResourceRadioButton;

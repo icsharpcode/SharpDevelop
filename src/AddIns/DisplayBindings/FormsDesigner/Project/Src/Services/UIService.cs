@@ -13,7 +13,7 @@ namespace ICSharpCode.FormsDesigner.Services
 	{
 		IFormsDesigner designer;
 		IServiceProvider provider;
-		IMessageService messenger;
+		ISharpDevelopIDEService messenger;
 		IDictionary styles = new Hashtable();
 		
 		public IDictionary Styles {
@@ -26,7 +26,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			this.designer = designer;
 			this.provider = provider;
-			messenger = (IMessageService)provider.GetService(typeof(IMessageService));
+			messenger = (ISharpDevelopIDEService)provider.GetService(typeof(ISharpDevelopIDEService));
 			styles["DialogFont"]     = Control.DefaultFont;
 			styles["HighlightColor"] = Color.LightYellow;
 		}

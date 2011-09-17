@@ -91,10 +91,7 @@
     <Compile Include="FormKeyHandler.cs" />
     <Compile Include="FormsDesignerLoggingServiceImpl.cs" />
     <Compile Include="FormsDesignerViewContent.cs" />
-    <Compile Include="ImageResourceEditorDialog.cs" />
-    <Compile Include="ImageResourceEditorDialog.Designer.cs">
-      <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
-    </Compile>
+    <Compile Include="ImageResourceEditorDialogWrapper.cs" />
     <Compile Include="OptionPanels\GeneralOptions.cs" />
     <Compile Include="OptionPanels\GridOptions.cs" />
     <Compile Include="OptionPanels\LocalizationModelOptionsPanel.cs" />
@@ -103,7 +100,6 @@
     <Compile Include="Services\DomTypeLocator.cs" />
     <Compile Include="Services\HelpService.cs" />
     <Compile Include="Services\FormsMessageService.cs" />
-    <Compile Include="Services\ProjectResourceInfo.cs" />
     <Compile Include="Services\ProjectResourceService.cs" />
     <Compile Include="Services\ResourceStore.cs" />
     <Compile Include="Toolbox\AddComponentsDialog.cs" />
@@ -173,9 +169,6 @@
     <Folder Include="Toolbox" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ImageResourceEditorDialog.resx">
-      <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="OptionPanels\LocalizationModelOptionsPanel.resx">
       <DependentUpon>LocalizationModelOptionsPanel.cs</DependentUpon>
     </EmbeddedResource>

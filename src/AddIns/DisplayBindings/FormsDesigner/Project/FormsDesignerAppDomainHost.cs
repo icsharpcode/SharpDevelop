@@ -107,6 +107,7 @@ namespace ICSharpCode.FormsDesigner
 			container.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			container.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), menuCommandService.Proxy);
 			container.AddService(typeof(IToolboxService), new SharpDevelopToolboxService(this));
+			container.AddService(typeof(IResourceStore), properties.ResourceStore);
 			container.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(properties.ResourceStore, this));
 			
 			// Provide the ImageResourceEditor for all Image and Icon properties
@@ -458,9 +459,9 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		public IMessageService MessageService {
+		public ISharpDevelopIDEService MessageService {
 			get {
-				return GetService(typeof(IMessageService)) as IMessageService;
+				return GetService(typeof(ISharpDevelopIDEService)) as ISharpDevelopIDEService;
 			}
 		}
 		
@@ -538,18 +539,21 @@ namespace ICSharpCode.FormsDesigner
 			addedTypeDescriptionProviders.Clear();
 		}
 		
-		public Stream CreateStream(object value)
+		public object CreateStream(object value)
 		{
 			MemoryStream stream = new MemoryStream();
 			
 			if (value is Image)
 				((Image)value).Save(stream, ImageFormat.Png);
-			else if (value is Icon)
-				((Icon)value).Save(stream);
 			else
-				return null;
+				return value;
 			
 			return stream;
+		}
+		
+		public IProjectResourceInfo CreateProjectResourceInfo(string resourceFile, string resourceKey)
+		{
+			return ProjectResourceInfo.Create((IResourceStore)GetService(typeof(IResourceStore)), resourceFile, resourceKey);
 		}
 	}
 	

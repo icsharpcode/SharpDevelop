@@ -18,7 +18,7 @@ namespace ICSharpCode.FormsDesigner.Services
 	/// <summary>
 	/// Manages the resource files that belong to an open forms designer view.
 	/// </summary>
-	internal sealed class ResourceStore : MarshalByRefObject, IResourceStore, IDisposable
+	public sealed class ResourceStore : MarshalByRefObject, IResourceStore, IDisposable
 	{
 		readonly FormsDesignerViewContent viewContent;
 		
@@ -106,7 +106,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			
 			public ResourceType Type {
-				get { return GetResourceType(OpenedFile.FileName); }
+				get { return ResourceHelpers.GetResourceType(OpenedFile.FileName); }
 			}
 			
 			public void Dispose()
@@ -306,32 +306,6 @@ namespace ICSharpCode.FormsDesigner.Services
 			return resourceFileName.ToString();
 		}
 		
-		internal static IResourceReader CreateResourceReader(Stream stream, ResourceType type)
-		{
-			if (stream.Length == 0)
-				return null;
-			if (type == ResourceType.Resources) {
-				return new ResourceReader(stream);
-			}
-			return new ResXResourceReader(stream);
-		}
-		
-		internal static IResourceWriter CreateResourceWriter(Stream stream, ResourceType type)
-		{
-			if (type == ResourceType.Resources) {
-				return new ResourceWriter(stream);
-			}
-			return new ResXResourceWriter(stream);
-		}
-		
-		internal static ResourceType GetResourceType(string fileName)
-		{
-			if (Path.GetExtension(fileName).ToLowerInvariant() == ".resx") {
-				return ResourceType.Resx;
-			}
-			return ResourceType.Resources;
-		}
-		
 		public Stream GetResourceAsStreamForReading(CultureInfo info, out ResourceType type)
 		{
 			ResourceStorage storage = GetResourceStorage(info);
@@ -344,6 +318,21 @@ namespace ICSharpCode.FormsDesigner.Services
 			ResourceStorage storage = GetResourceStorage(info);
 			type = storage.Type;
 			return storage.GetWritingStream();
+		}
+		
+		public Stream OpenFile(string fileName)
+		{
+			Stream s = null;
+			WorkbenchSingleton.SafeThreadCall(delegate {
+			                                  	OpenedFile file = FileService.GetOpenedFile(fileName);
+			                                  	if (file != null) {
+			                                  		s = file.OpenRead();
+			                                  	}
+			                                  });
+			if (s == null) {
+				s = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+			}
+			return s;
 		}
 	}
 }

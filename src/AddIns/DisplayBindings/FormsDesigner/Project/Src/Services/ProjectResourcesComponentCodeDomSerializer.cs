@@ -96,7 +96,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				return false;
 			}
 			
-			IMessageService messenger = manager.GetService(typeof(IMessageService)) as IMessageService;
+			ISharpDevelopIDEService messenger = manager.GetService(typeof(ISharpDevelopIDEService)) as ISharpDevelopIDEService;
 			
 			logger.Debug("Forms designer: deserializing a property assignment:");
 			logger.Debug("-> " + messenger.CodeStatementToString(assignStatement));
@@ -149,7 +149,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				return false;
 			}
 			
-			IMessageService messenger = manager.GetService(typeof(IMessageService)) as IMessageService;
+			ISharpDevelopIDEService messenger = manager.GetService(typeof(ISharpDevelopIDEService)) as ISharpDevelopIDEService;
 			
 			logger.Debug("Forms designer: deserializing a method invocation:");
 			logger.Debug("-> " + messenger.CodeStatementToString(new CodeExpressionStatement(invokeExpression)));

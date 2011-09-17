@@ -4,8 +4,10 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Permissions;
 using System.Windows.Forms;
@@ -22,11 +24,14 @@ namespace ICSharpCode.FormsDesigner.Services
 	{
 		public ImageResourceEditor()
 		{
+			Debug.Assert(DesignerAppDomainManager.IsDesignerDomain);
 		}
 		
 		[PermissionSet(SecurityAction.LinkDemand, Name="FullTrust")]
 		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
 		{
+			Debug.Assert(DesignerAppDomainManager.IsDesignerDomain);
+
 			if (context == null || context.PropertyDescriptor == null)
 				return UITypeEditorEditStyle.None;
 			
@@ -45,6 +50,8 @@ namespace ICSharpCode.FormsDesigner.Services
 		[PermissionSet(SecurityAction.LinkDemand, Name="FullTrust")]
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
+			Debug.Assert(DesignerAppDomainManager.IsDesignerDomain);
+			
 			if (context == null || context.PropertyDescriptor == null || context.Instance == null || provider == null) {
 				return value;
 			}
@@ -80,22 +87,47 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			var imageDialogWrapper = provider.GetService(typeof(IImageResourceEditorDialogWrapper)) as IImageResourceEditorDialogWrapper;
 			
-			var imageData = imageDialogWrapper.GetValue(projectResource, value, prs, context.PropertyDescriptor.PropertyType, context.PropertyDescriptor.Name, edsvc, new DictServiceProxy(dictService)) ?? value;
+			ImageResourceEditorDialog dialog;
 			
-			if (imageData is Stream) {
-				if (context.PropertyDescriptor.PropertyType == typeof(Image))
-					return new Bitmap(imageData as Stream);
-				if (context.PropertyDescriptor.PropertyType == typeof(Bitmap))
-					return new Bitmap(imageData as Stream);
-				if (context.PropertyDescriptor.PropertyType == typeof(Icon))
-					return new Icon(imageData as Stream);
+			if (projectResource != null && object.ReferenceEquals(projectResource.OriginalValue, value) && prs.DesignerSupportsProjectResources) {
+				dialog = new ImageResourceEditorDialog(provider, imageDialogWrapper, context.PropertyDescriptor.PropertyType, projectResource);
+			} else {
+				if (context.PropertyDescriptor.PropertyType == typeof(Image)) {
+					dialog = new ImageResourceEditorDialog(provider, imageDialogWrapper, value, false, prs.DesignerSupportsProjectResources);
+				} else if (context.PropertyDescriptor.PropertyType == typeof(Icon)) {
+					dialog = new ImageResourceEditorDialog(provider, imageDialogWrapper, value, true, prs.DesignerSupportsProjectResources);
+				} else {
+					throw new InvalidOperationException("ImageResourceEditor called on unsupported property type: " + context.PropertyDescriptor.PropertyType.ToString());
+				}
 			}
-			throw new Exception("Invalid datatype in ImageResourceEditor");
+			
+			object imageData = null;
+			
+			using(dialog) {
+				if (edsvc.ShowDialog(dialog) == DialogResult.OK) {
+					projectResource = dialog.SelectedProjectResource;
+					if (projectResource != null) {
+						dictService.SetValue(prs.ProjectResourceKey + context.PropertyDescriptor.Name, projectResource);
+						
+						// Ensure the resource generator is turned on for the selected resource file.
+						imageDialogWrapper.UpdateProjectResource(projectResource);
+						
+						imageData = projectResource.OriginalValue;
+					} else {
+						dictService.SetValue(prs.ProjectResourceKey + context.PropertyDescriptor.Name, null);
+						imageData = dialog.SelectedResourceValue;
+					}
+				}
+			}
+			
+			return imageData ?? value;
 		}
 		
 		[PermissionSet(SecurityAction.LinkDemand, Name="FullTrust")]
 		public override bool GetPaintValueSupported(ITypeDescriptorContext context)
 		{
+			Debug.Assert(DesignerAppDomainManager.IsDesignerDomain);
+			
 			if (context != null && context.PropertyDescriptor != null &&
 			    (context.PropertyDescriptor.PropertyType == typeof(Image) ||
 			     context.PropertyDescriptor.PropertyType == typeof(Icon))) {
@@ -107,6 +139,8 @@ namespace ICSharpCode.FormsDesigner.Services
 		[PermissionSet(SecurityAction.LinkDemand, Name="FullTrust")]
 		public override void PaintValue(PaintValueEventArgs e)
 		{
+			Debug.Assert(DesignerAppDomainManager.IsDesignerDomain);
+			
 			Image img = e.Value as Image;
 			if (img != null) {
 				e.Graphics.DrawImage(img, e.Bounds);
