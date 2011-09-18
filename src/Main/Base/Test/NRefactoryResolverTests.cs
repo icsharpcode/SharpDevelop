@@ -29,8 +29,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
 			pc.ReferencedContents.Add(projectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Core", "System.Core"));
-			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
+			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Core", typeof(System.Linq.Enumerable).Module.FullyQualifiedName ));
+			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Windows.Forms", typeof(System.Windows.Forms.Form).Module.FullyQualifiedName ));
 			HostCallback.GetCurrentProjectContent = delegate {
 				return pc;
 			};
@@ -59,8 +59,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 				return pc;
 			};
 			pc.ReferencedContents.Add(projectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
-			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("Microsoft.VisualBasic", "Microsoft.VisualBasic"));
+			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Windows.Forms", typeof(System.Windows.Forms.Form).Module.FullyQualifiedName));
+			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("Microsoft.VisualBasic", typeof(Microsoft.VisualBasic.Constants).Module.FullyQualifiedName));
 			pc.Language = LanguageProperties.VBNet;
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc, ICSharpCode.NRefactory.SupportedLanguage.VBNet);
