@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 
 using ICSharpCode.CodeQualityAnalysis.Controls;
 using ICSharpCode.CodeQualityAnalysis.Utility;
+
 using Microsoft.Win32;
 
 namespace ICSharpCode.CodeQualityAnalysis
@@ -23,7 +24,20 @@ namespace ICSharpCode.CodeQualityAnalysis
 	/// <summary>
 	/// Description of MainWindowViewModel.
 	/// </summary>
+	public enum MetricsLevel
+	{
+		Assembly,
+		Namespace,
+		Type,
+		Method
+	}
 	
+	public enum Metrics
+	{
+		ILInstructions,
+		CyclomaticComplexity,
+		Variables
+	}
 	
 	public class MainWindowViewModel :ViewModelBase
 	{
@@ -38,6 +52,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			this.TabDependencyMatrix = "$Dependency Matrix";
 			this.TabMetrics = "$Metrics";
 			#endregion
+			
 			MetrixTabEnable = false;
 		}
 		
@@ -112,8 +127,90 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		public Module MainModule {
 			get { return mainModule; }
-			set { mainModule = value; 
-			base.RaisePropertyChanged(() =>this.MainModule);}			                         	                      
+			set { mainModule = value;
+				base.RaisePropertyChanged(() =>this.MainModule);
+			}
 		}
+		
+		
+		private ObservableCollection<INode> nodes;
+		
+		public ObservableCollection<INode> Nodes {
+			get { return nodes; }
+			set { nodes = value;
+			base.RaisePropertyChanged(() =>this.Nodes);}
+		}
+		
+//http://stackoverflow.com/questions/58743/databinding-an-enum-property-to-a-combobox-in-wpf#62032	http://stackoverflow.com/questions/58743/databinding-an-enum-property-to-a-combobox-in-wpf#62032	
+		
+		//http://www.ageektrapped.com/blog/the-missing-net-7-displaying-enums-in-wpf/
+//		http://www.codeproject.com/KB/WPF/FriendlyEnums.aspx
+		
+		private string treeValueProperty ;
+		
+		public string TreeValueProperty {
+			get { return treeValueProperty; }
+			set { treeValueProperty = value;
+			base.RaisePropertyChanged(() =>this.TreeValueProperty);}
+		}
+		
+		// First Combo
+		
+		public MetricsLevel MetricsLevel {
+			get {return MetricsLevel;}
+		}
+	
+//		MetricsLevel metricsLevelSelectedItem = MetricsLevel.Assembly;
+//		
+//		public MetricsLevel MetricsLevelSelectedItem {
+//			get { return metricsLevelSelectedItem; }
+//			set { metricsLevelSelectedItem = value;
+//			base.RaisePropertyChanged(() =>this.MetricsLevelSelectedItem);
+//			}
+//		}
+		
+		// Second Combo
+		
+		public Metrics Metrics
+		{
+			get {return Metrics;}
+		}
+		
+		Metrics selectedMetrics;
+		
+		public Metrics SelectedMetrics {
+			get { return selectedMetrics; }
+			set { selectedMetrics = value;
+				base.RaisePropertyChanged(() =>this.SelectedMetrics);
+				ActivateTreemap();
+			}
+		}
+		
+		
+		void ActivateTreemap()
+		{
+			var r  = from ns in MainModule.Namespaces
+				from type in ns.Types
+				from method in type.Methods
+				select method;
+			Nodes = new ObservableCollection<INode>(r);
+			
+			switch (selectedMetrics)
+			{
+				case Metrics.ILInstructions:
+					TreeValueProperty = "Instructions.Count";
+					break;
+					
+				case Metrics.CyclomaticComplexity:
+					TreeValueProperty = Metrics.CyclomaticComplexity.ToString();
+					break;
+				case Metrics.Variables:
+					TreeValueProperty = Metrics.Variables.ToString();
+					break;
+				default:
+					throw new Exception("Invalid value for Metrics");
+			}
+		}
+		
 	}
 }

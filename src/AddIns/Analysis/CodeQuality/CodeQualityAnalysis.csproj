@@ -252,6 +252,10 @@
       <Private>True</Private>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
+    <ProjectReference Include="TreeMaps\TreeMaps.csproj">
+      <Project>{3ED2897F-1A8A-4106-89D2-4D342860D480}</Project>
+      <Name>TreeMaps</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="CodeQualityAnalysis.addin">
@@ -260,6 +264,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Utility" />
+    <Folder Include="Src\Utility\LocaliceableCombo" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

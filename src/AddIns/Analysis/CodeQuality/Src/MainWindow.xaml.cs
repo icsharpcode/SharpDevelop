@@ -236,6 +236,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				cbxMetrics.Items.Add(new ComboBoxItem { Content = "Cyclomatic Complexity" });
 				cbxMetrics.Items.Add(new ComboBoxItem { Content = "Variables" });
 			}
+			
 		}
 
 		
@@ -262,10 +263,10 @@ namespace ICSharpCode.CodeQualityAnalysis
 			} else if (level == "Field") {
 
 			} else if (level == "Method") {
-				var r =  from ns in MetricsReader.MainModule.Namespaces
-									  from type in ns.Types
-									  from method in type.Methods
-									  select method;
+//				var r =  from ns in MetricsReader.MainModule.Namespaces
+//									  from type in ns.Types
+//									  from method in type.Methods
+//									  select method;
 				treemap.ItemsSource = from ns in MetricsReader.MainModule.Namespaces
 									  from type in ns.Types
 									  from method in type.Methods
@@ -281,5 +282,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 					treemap.ItemDefinition.ValuePath = "Variables";
 			}
 		}
+		
 	}
 }
