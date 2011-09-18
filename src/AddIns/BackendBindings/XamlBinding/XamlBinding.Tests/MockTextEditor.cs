@@ -33,11 +33,11 @@ namespace ICSharpCode.XamlBinding.Tests
 			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
 			
 			Dictionary<string, string> referencedAssemblies = new Dictionary<string, string>() {
-				{ "System", null },
-				{ "System.Xml", null },
+				{ "System", typeof(Uri).Assembly.Location },
+				{ "System.Xml", typeof(System.Xml.XmlDocument).Assembly.Location },
 				{ "System.Xaml", typeof(System.Xaml.XamlReader).Assembly.Location },
 				{ "WindowsBase", typeof(System.Windows.Media.Matrix).Assembly.Location },
-				{ "System.Core", null },
+				{ "System.Core", typeof(System.Linq.Enumerable).Assembly.Location },
 				{ "PresentationCore", typeof(System.Windows.Media.Brush).Assembly.Location },
 				{ "PresentationFramework", typeof(System.Windows.EventSetter).Assembly.Location }
 			};

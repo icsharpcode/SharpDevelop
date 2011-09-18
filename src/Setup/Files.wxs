@@ -730,6 +730,9 @@
 										<Component Id="CSharpWcfServiceFileTemplate" Guid="FBCEE100-BE0D-11E0-A9F2-C7D14824019B" DiskId="1">
 											<File Id="CSharp.WcfService.xft" Name="CSharp.WcfService.xft" Source="..\..\data\templates\file\CSharp\CSharp.WcfService.xft" KeyPath="yes" />
 										</Component>
+										<Component Id="CSharpWcfRestServiceFileTemplate" Guid="00AE5E3C-DD9C-11E0-A234-EEB74724019B" DiskId="1">
+											<File Id="CSharp.WcfRestService.xft" Name="CSharp.WcfRestService.xft" Source="..\..\data\templates\file\CSharp\CSharp.WcfRestService.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscFileTemplatesFolder" Name="Misc">
 										<Component Guid="F47EE9EB-321F-4D98-A373-BFE2C2D801D0" Id="EmptyHTMLFileTemplate" DiskId="1">
@@ -804,6 +807,9 @@
 										<Component Id="VBWcfServiceFileTemplate" Guid="A1EABE3E-BE0D-11E0-A4E6-5BD14824019B" DiskId="1">
 											<File Id="VB.WcfService.xft" Name="VB.WcfService.xft" Source="..\..\data\templates\file\VB\VB.WcfService.xft" KeyPath="yes" />
 										</Component>
+										<Component Id="VBWcfRestServiceFileTemplate" Guid="28AB44B8-DD9C-11E0-AEE3-30B84724019B" DiskId="1">
+											<File Id="VB.WcfRestService.xft" Name="VB.WcfRestService.xft" Source="..\..\data\templates\file\VB\VB.WcfRestService.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 								</Directory>
 								<Directory Id="ProjectTemplatesFolder" Name="project">
@@ -848,6 +854,9 @@
 										<Component Id="CSharpWcfServiceProjectTemplate" Guid="D793DD78-BE0C-11E0-AC34-34D04824019B" DiskId="1">
 											<File Id="CSharp.WcfServiceProject.xpt" Name="CSharp.WcfServiceProject.xpt" Source="..\..\data\templates\project\CSharp\CSharp.WcfServiceProject.xpt" KeyPath="yes" />
 										</Component>
+										<Component Id="CSharpWcfRestServiceProjectTemplate" Guid="8FEE65EC-DD9C-11E0-8968-81B84724019B" DiskId="1">
+											<File Id="CSharp.WcfRestServiceProject.xpt" Name="CSharp.WcfRestServiceProject.xpt" Source="..\..\data\templates\project\CSharp\CSharp.WcfRestServiceProject.xpt" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
 										<Component Guid="F9A7F832-6EC8-4B15-A037-146BD028C9D5" Id="MiscProjectTemplates" DiskId="1">
@@ -888,6 +897,9 @@
 										</Component>
 										<Component Id="VBWcfServiceProjectTemplate" Guid="FF1C11DA-BE0C-11E0-A35E-6FD04824019B" DiskId="1">
 											<File Id="VB.WcfServiceProject.xpt" Name="VB.WcfServiceProject.xpt" Source="..\..\data\templates\project\VB\VB.WcfServiceProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="VBWcfRestServiceProjectTemplate" Guid="A45203E0-DD9C-11E0-974A-93B84724019B" DiskId="1">
+											<File Id="VB.WcfRestServiceProject.xpt" Name="VB.WcfRestServiceProject.xpt" Source="..\..\data\templates\project\VB\VB.WcfRestServiceProject.xpt" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">

@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <Template
 	author="Eusebiu Marcu"
-	created="03/08/2011"
-	lastModified="03/08/2011"
+	created="13/09/2011"
+	lastModified="13/09/2011"
 	version="1.0">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>WCF Service</Name>
+		<Name>WCF REST Service</Name>
 		<Category>VB</Category>
 		<Subcategory>WCF</Subcategory>
 		<Icon>VBNet.Project.Form</Icon>
-		<Description>WCF Service</Description>
-		<SupportedTargetFrameworks>v3.0</SupportedTargetFrameworks>
+		<Description>WCF REST Service</Description>
+		<SupportedTargetFrameworks>v3.5</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 
 	<!-- Actions -->
@@ -24,6 +24,7 @@
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.ServiceModel" />
+			<Reference Include="System.ServiceModel.Web" />
 		</ProjectItems>
 		
 		<PropertyGroup escapeValue="False">
@@ -51,18 +52,21 @@
 <![CDATA[${StandardHeader.VBNET}
 Imports System
 Imports System.ServiceModel
+Imports System.ServiceModel.Web
 
 <ServiceContract> _
 Public Interface IService
 	<OperationContract> _
-	Sub MyOperation()
+	<WebGet(UriTemplate := "operation/{name}")> _
+	Function MyOperation(name As String) As String
 End Interface
 
 Public Class Service
 	Implements IService
-	Public Sub MyOperation() Implements IService.MyOperation
+	Function MyOperation(name As String) As String Implements IService.MyOperation
 		' implement the operation
-	End Sub
+		Return String.Format("Operation name: {0}", name)
+	End Function
 End Class
 ]]>
 			</File>
@@ -73,10 +77,18 @@ End Class
     <services>
       <service name="${StandardNamespace}.Service">
         <endpoint address=""
-                  binding="wsHttpBinding"
-                  contract="${StandardNamespace}.IService" />
+                  binding="webHttpBinding"
+                  contract="${StandardNamespace}.IService"
+				  behaviorConfiguration="webHttp" />
       </service>
     </services>
+	<behaviors>
+	  <endpointBehaviors>
+        <behavior name="webHttp">
+            <webHttp/>
+        </behavior>
+      </endpointBehaviors>
+     </behaviors>
   </system.serviceModel>
 
 </configuration>

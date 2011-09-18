@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<Template 
+	author="Eusebiu Marcu"
+	created="13/09/2011"
+	lastModified="01/09/2011"
+	version="1.0">
+	
+	<Config
+		name="WCF REST Service"
+		icon="VBNet.File.NewClass"
+		category="VB"
+		subcategory="WCF"
+		defaultname="Service${Number}.svc"
+		language="VBNET"/>
+	 
+	<Description>WCF REST Service</Description>
+	
+	<Files>
+		<File name="${FullName}">
+<![CDATA[
+<%@ServiceHost language="VB" Debug="true" Service="${StandardNamespace}.${ClassName}"%>
+]]>
+		</File>
+		<File name="${FullName}.vb" language="VBNET" DependentUpon="${FullName}">
+<![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports System.ServiceModel
+Imports System.ServiceModel.Web
+
+<ServiceContract> _
+Public Interface I${ClassName}
+	<OperationContract> _
+	<WebGet(UriTemplate := "operation/{name}")> _
+	Function MyOperation(name As String) As String
+End Interface
+
+''' <summary>
+''' Description of ${ClassName}.
+''' </summary>
+Public Class ${ClassName}
+	Implements I${ClassName}
+	Function MyOperation(name As String) As String Implements I${ClassName}.MyOperation
+		' implement the operation
+		Return String.Format("Operation name: {0}", name)
+	End Sub
+End Class
+]]>
+		</File>
+	</Files>
+</Template>

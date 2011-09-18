@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <Template
 	author="Eusebiu Marcu"
-	created="03/08/2011"
-	lastModified="03/08/2011"
+	created="13/09/2011"
+	lastModified="13/09/2011"
 	version="1.0">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>WCF Service</Name>
+		<Name>WCF REST Service</Name>
 		<Category>C#</Category>
 		<Subcategory>WCF</Subcategory>
 		<Icon>C#.Project.Form</Icon>
-		<Description>WCF Service</Description>
-		<SupportedTargetFrameworks>v3.0</SupportedTargetFrameworks>
+		<Description>WCF REST Service</Description>
+		<SupportedTargetFrameworks>v3.5</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 
 	<!-- Actions -->
@@ -24,6 +24,7 @@
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.ServiceModel" />
+			<Reference Include="System.ServiceModel.Web" />
 		</ProjectItems>
 		
 		<PropertyGroup escapeValue="False">
@@ -51,6 +52,7 @@
 <![CDATA[${StandardHeader.C#}
 using System;
 using System.ServiceModel;
+using System.ServiceModel.Web;
 
 namespace ${StandardNamespace}
 {
@@ -58,14 +60,16 @@ namespace ${StandardNamespace}
 	public interface IService
 	{
 	   [OperationContract]
-	   void MyOperation();
+	   [WebGet(UriTemplate = "operation/{name}")]
+	   string MyOperation(string name);
 	}
 	
 	public class Service : IService
 	{
-	   public void MyOperation()
+	   public string MyOperation(string name)
 	   {
 		  // implement the operation
+		  return string.Format("Operation name: {0}", name);
 	   }
 	} 
 }
@@ -78,10 +82,18 @@ namespace ${StandardNamespace}
     <services>
       <service name="${StandardNamespace}.Service">
         <endpoint address=""
-                  binding="wsHttpBinding"
-                  contract="${StandardNamespace}.IService" />
+                  binding="webHttpBinding"
+                  contract="${StandardNamespace}.IService"
+				  behaviorConfiguration="webHttp" />
       </service>
     </services>
+	<behaviors>
+	  <endpointBehaviors>
+        <behavior name="webHttp">
+            <webHttp/>
+        </behavior>
+      </endpointBehaviors>
+     </behaviors>
   </system.serviceModel>
 
 </configuration>
