@@ -47,7 +47,6 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			MvcTextTemplateLanguage language = GetTemplateLanguage();
 			controllerFileName.Language = language;
-			controllerGenerator.TemplateLanguage = language;
 		}
 		
 		MvcTextTemplateLanguage GetTemplateLanguage()
@@ -120,7 +119,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void ConfigureMvcControllerGenerator()
 		{
-			controllerGenerator.AddActionMethods = SelectedControllerTemplate.AddActionMethods;
+			controllerGenerator.Template = SelectedControllerTemplate;
 			controllerGenerator.Project = selectedControllerFolder.Project;
 		}
 		

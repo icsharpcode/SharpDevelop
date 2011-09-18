@@ -14,26 +14,14 @@ namespace AspNet.Mvc.Tests
 	{
 		MvcControllerFileGenerator generator;
 		FakeMvcProject projectUsedByGenerator;
-		MvcTextTemplateRepository templateRepository;
 		FakeMvcTextTemplateHostFactory fakeHostFactory;
 		FakeMvcTextTemplateHost fakeHost;
 		
-		void CreateTemplateRepository(string templateRootDirectory)
-		{
-			templateRepository = new MvcTextTemplateRepository(templateRootDirectory);
-		}
-		
 		void CreateGenerator()
-		{
-			CreateTemplateRepository(@"d:\sd\addins\AspNet.Mvc");
-			CreateGenerator(templateRepository);
-		}
-		
-		void CreateGenerator(MvcTextTemplateRepository templateRepository)
 		{
 			fakeHostFactory = new FakeMvcTextTemplateHostFactory();
 			fakeHost = fakeHostFactory.FakeMvcTextTemplateHost;
-			generator = new MvcControllerFileGenerator(fakeHostFactory, templateRepository);
+			generator = new MvcControllerFileGenerator(fakeHostFactory);
 			projectUsedByGenerator = new FakeMvcProject();
 			generator.Project = projectUsedByGenerator;
 			ProjectPassedToGeneratorIsCSharpProject();
@@ -67,6 +55,13 @@ namespace AspNet.Mvc.Tests
 		void GenerateFile(MvcControllerFileName fileName)
 		{
 			generator.GenerateFile(fileName);
+		}
+		
+		MvcControllerTextTemplate CreateControllerTemplate(string fileName)
+		{
+			return new MvcControllerTextTemplate() {
+				FileName = fileName
+			};
 		}
 		
 		[Test]
@@ -109,23 +104,6 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void GenerateFile_CSharpControllerTemplate_TemplateFileUsedIsIsCSharpEmptyControllerTemplate()
-		{
-			string templateRootDirectory = @"d:\SharpDev\AddIns\AspNet.Mvc";
-			CreateTemplateRepository(templateRootDirectory);
-			CreateGenerator(templateRepository);
-			ProjectPassedToGeneratorIsCSharpProject();
-			
-			GenerateFile();
-			
-			string inputFileName = fakeHost.InputFilePassedToProcessTemplate;
-			string expectedInputFileName = 
-				@"d:\SharpDev\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddController\Controller.tt";
-			
-			Assert.AreEqual(expectedInputFileName, inputFileName);
-		}
-		
-		[Test]
 		public void GenerateFile_CSharpControllerTemplate_MvcTextTemplateHostControllerNameIsSet()
 		{
 			CreateGenerator();
@@ -155,12 +133,28 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void GenerateFile_AddActionMethodsIsTrue_MvcTextTemplateHostAddActionMethodsIsTrue()
+		public void GenerateFile_ControllerTemplateIsSet_ControllerTemplateFileNameUsedWhenGeneratingNewFile()
 		{
 			CreateGenerator();
 			ProjectPassedToGeneratorIsCSharpProject();
-			generator.AddActionMethods = true;
+			string expectedFileName = @"d:\templates\controller.tt";
+			MvcControllerTextTemplate template = CreateControllerTemplate(expectedFileName);
+			generator.Template = template;
+			GenerateFile();
 			
+			string fileName = fakeHost.InputFilePassedToProcessTemplate;
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void GenerateFile_ControllerTemplateHasAddActionsSetToTrue_MvcTextTemplateHostAddActionMethodsIsTrue()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			MvcControllerTextTemplate template = CreateControllerTemplate(@"d:\templates\controller.tt");
+			template.AddActionMethods = true;
+			generator.Template = template;
 			GenerateFile();
 			
 			bool addActionMethods = fakeHost.AddActionMethods;
@@ -169,12 +163,13 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void GenerateFile_AddActionMethodsIsFalse_MvcTextTemplateHostAddActionMethodsIsFalse()
+		public void GenerateFile_ControllerTemplateHasAddActionsSetToFalse_MvcTextTemplateHostAddActionMethodsIsFalse()
 		{
 			CreateGenerator();
 			ProjectPassedToGeneratorIsCSharpProject();
-			generator.AddActionMethods = false;
-			
+			MvcControllerTextTemplate template = CreateControllerTemplate(@"d:\templates\controller.tt");
+			template.AddActionMethods = false;
+			generator.Template = template;
 			GenerateFile();
 			
 			bool addActionMethods = fakeHost.AddActionMethods;

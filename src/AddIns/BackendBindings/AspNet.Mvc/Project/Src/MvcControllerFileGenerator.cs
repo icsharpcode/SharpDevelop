@@ -8,24 +8,18 @@ namespace ICSharpCode.AspNet.Mvc
 {
 	public class MvcControllerFileGenerator : MvcFileGenerator, IMvcControllerFileGenerator
 	{
-		MvcTextTemplateRepository textTemplateRepository;
-		
 		public MvcControllerFileGenerator()
-			: this(
-				new MvcTextTemplateHostFactory(),
-				new MvcTextTemplateRepository())
+			: this(new MvcTextTemplateHostFactory())
 		{
 		}
 		
-		public MvcControllerFileGenerator(
-			IMvcTextTemplateHostFactory hostFactory,
-			MvcTextTemplateRepository textTemplateRepository)
+		public MvcControllerFileGenerator(IMvcTextTemplateHostFactory hostFactory)
 			: base(hostFactory)
 		{
-			this.textTemplateRepository = textTemplateRepository;
+			this.Template = new MvcControllerTextTemplate();
 		}
 		
-		public bool AddActionMethods { get; set; }
+		public MvcControllerTextTemplate Template { get; set; }
 		
 		public void GenerateFile(MvcControllerFileName fileName)
 		{
@@ -36,7 +30,7 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			var controllerFileName = fileName as MvcControllerFileName;
 			host.ControllerName = controllerFileName.ControllerName;
-			host.AddActionMethods = AddActionMethods;
+			host.AddActionMethods = Template.AddActionMethods;
 			host.Namespace = GetNamespace();
 		}
 		
@@ -47,17 +41,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		protected override string GetTextTemplateFileName()
 		{
-			MvcTextTemplateCriteria templateCriteria = GetTextTemplateCriteria();
-			return textTemplateRepository.GetMvcControllerTextTemplateFileName(templateCriteria);
-		}
-		
-		MvcTextTemplateCriteria GetTextTemplateCriteria()
-		{
-			return new MvcTextTemplateCriteria() {
-				TemplateLanguage = TemplateLanguage,
-				TemplateName = "Controller",
-				TemplateType = MvcTextTemplateType.Aspx
-			};
+			return Template.FileName;
 		}
 	}
 }

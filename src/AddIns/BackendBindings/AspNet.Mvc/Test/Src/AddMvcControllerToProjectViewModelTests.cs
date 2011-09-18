@@ -110,29 +110,6 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void AddMvcController_SelectedControllerFolderIsInVisualBasicProject_VisualBasicMvcControllerFileGenerated()
-		{
-			CreateViewModelWithVisualBasicProject();
-			fakeSelectedMvcControllerFolder.TemplateLanguage = MvcTextTemplateLanguage.VisualBasic;
-			viewModel.AddMvcController();
-			
-			MvcTextTemplateLanguage templateLanguage = fakeControllerGenerator.TemplateLanguage;
-			
-			Assert.AreEqual(MvcTextTemplateLanguage.VisualBasic, templateLanguage);
-		}
-		
-		[Test]
-		public void AddMvcController_SelectedControllerFolderIsInCSharpProject_CSharpMvcControllerFileGenerated()
-		{
-			CreateViewModelWithCSharpProject();
-			viewModel.AddMvcController();
-			
-			MvcTextTemplateLanguage templateLanguage = fakeControllerGenerator.TemplateLanguage;
-			
-			Assert.AreEqual(MvcTextTemplateLanguage.CSharp, templateLanguage);
-		}
-		
-		[Test]
 		public void AddMvcController_SelectedControllerFolderIsInVisualBasicProject_VisualBasicProjectIsPassedToMvcControllerGenerator()
 		{
 			CreateViewModelWithCSharpProject();
@@ -259,25 +236,16 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void AddMvcController_EmptyReadWriteTemplateSelected_AddActionMethodsSetToTrueOnFileGenerator()
-		{
-			CreateViewModelWithCSharpProject();
-			SelectEmptyReadWriteControllerTemplate();
-			fakeControllerGenerator.AddActionMethods = false;
-			viewModel.AddMvcController();
-			
-			Assert.IsTrue(fakeControllerGenerator.AddActionMethods);
-		}
-		
-		[Test]
-		public void AddMvcController_EmptyTemplateSelected_AddActionMethodsSetToFalseOnFileGenerator()
+		public void AddMvcController_EmptyTemplateSelected_TemplatePassedToFileGenerator()
 		{
 			CreateViewModelWithCSharpProject();
 			SelectEmptyControllerTemplate();
-			fakeControllerGenerator.AddActionMethods = true;
+			MvcControllerTextTemplate expectedTemplate = viewModel.SelectedControllerTemplate;
 			viewModel.AddMvcController();
 			
-			Assert.IsFalse(fakeControllerGenerator.AddActionMethods);
+			MvcControllerTextTemplate template = fakeControllerGenerator.Template;
+			
+			Assert.AreEqual(expectedTemplate, template);
 		}
 		
 		[Test]
