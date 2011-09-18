@@ -98,6 +98,19 @@
 				SelectedItem="{Binding Path=SelectedModelClass}"/>
 			
 			<Label
+				Grid.Row="5"
+				IsEnabled="{Binding Path=IsStronglyTypedView}"
+				Content="Template:"/>
+			<ComboBox
+				Grid.Row="5"
+				Grid.Column="1"
+				Margin="0, 2, 0, 0"
+				IsEnabled="{Binding Path=IsStronglyTypedView}"
+				ItemsSource="{Binding Path=ViewTemplates}"
+				ItemTemplate="{StaticResource ViewEngineTemplate}"
+				SelectedItem="{Binding Path=SelectedViewTemplate}"/>
+			
+			<Label
 				Grid.Row="6"
 				Margin="0, 20, 0, 0"
 				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"

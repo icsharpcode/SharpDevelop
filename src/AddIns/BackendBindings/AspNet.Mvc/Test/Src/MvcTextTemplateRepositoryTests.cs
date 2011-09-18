@@ -22,15 +22,15 @@ namespace AspNet.Mvc.Tests
 			repository = new MvcTextTemplateRepository(mvcAddInPath, fakeFileSystem);
 		}
 		
-		void AddCSharpAspxTemplateToFolder(string path, string fileName)
+		void AddTextTemplateToFolder(string path, string fileName)
 		{
 			string[] fileNames = new string[] {
 				fileName
 			};
-			AddCSharpAspxTemplatesToFolder(path, fileNames);
+			AddTextTemplatesToFolder(path, fileNames);
 		}
 		
-		void AddCSharpAspxTemplatesToFolder(string path, string[] fileNames)
+		void AddTextTemplatesToFolder(string path, string[] fileNames)
 		{
 			fakeFileSystem.AddFakeFiles(path, "*.tt", fileNames);
 		}
@@ -201,6 +201,69 @@ namespace AspNet.Mvc.Tests
 			};
 			
 			MvcControllerTextTemplateCollectionAssert.AreEqual(expectedTemplates, templates);
+		}
+		
+		[Test]
+		public void GetMvcViewTextTemplates_CSharpAspxTemplatesRequestedAndOneViewTemplateInFolder_ReturnsOneViewTextTemplate()
+		{
+			CreateRepositoryWithAspNetMvcAddInDirectory(@"C:\SD\AddIns\AspNet.Mvc");
+			string templateFolder = 
+				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp";
+			string existingTemplateFileName = 
+				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt";
+			AddTextTemplateToFolder(templateFolder, existingTemplateFileName);
+			
+			var templateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = MvcTextTemplateLanguage.CSharp,
+				TemplateType = MvcTextTemplateType.Aspx
+			};
+			
+			List<MvcViewTextTemplate> templates = repository.GetMvcViewTextTemplates(templateCriteria).ToList();
+			
+			var expectedTemplate = new MvcViewTextTemplate() {
+				Name = "Empty",
+				FileName = existingTemplateFileName
+			};
+			var expectedTemplates = new MvcViewTextTemplate[] {
+				expectedTemplate
+			};
+			
+			MvcViewTextTemplateCollectionAssert.AreEqual(expectedTemplates, templates);
+		}
+		
+		[Test]
+		public void GetMvcViewTextTemplates_CSharpRazorTemplatesRequestedAndTwoViewTemplatesInFolder_ReturnsTwoViewTextTemplates()
+		{
+			CreateRepositoryWithAspNetMvcAddInDirectory(@"C:\SD\AddIns\AspNet.Mvc");
+			string templateFolder = 
+				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML";
+			string[] templateFileNames = new string[] {
+				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\B.tt",
+				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\A.tt"
+			};
+			AddTextTemplatesToFolder(templateFolder, templateFileNames);
+			
+			var templateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = MvcTextTemplateLanguage.CSharp,
+				TemplateType = MvcTextTemplateType.Razor
+			};
+			
+			List<MvcViewTextTemplate> templates = repository.GetMvcViewTextTemplates(templateCriteria).ToList();
+			
+			var expectedTemplate1 = new MvcViewTextTemplate() {
+				Name = "B",
+				FileName = templateFileNames[0]
+			};
+			var expectedTemplate2 = new MvcViewTextTemplate() {
+				Name = "A",
+				FileName = templateFileNames[1]
+			};
+			var expectedTemplates = new MvcViewTextTemplate[] {
+				expectedTemplate1,
+				expectedTemplate2
+			};
+			
+			MvcViewTextTemplateCollectionAssert.AreEqual(expectedTemplates, templates);
 		}
 	}
 }

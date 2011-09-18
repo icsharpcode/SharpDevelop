@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Input;
 
 namespace ICSharpCode.AspNet.Mvc
@@ -13,6 +14,7 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		IMvcViewFileGenerator viewGenerator;
 		ISelectedMvcFolder selectedViewFolder;
+		IMvcTextTemplateRepository textTemplateRepository;
 		MvcViewFileName viewFileName = new MvcViewFileName();
 		bool closed;
 		List<MvcViewEngineViewModel> viewEngines;
@@ -22,22 +24,26 @@ namespace ICSharpCode.AspNet.Mvc
 		bool isSelectMasterPageViewOpen;
 		MvcProjectFile selectedMasterPage;
 		string masterPageFile = String.Empty;
-		
+		List<MvcViewTextTemplate> viewTemplates;
+		MvcViewTextTemplate selectedViewTemplate;
 		MvcModelClassViewModelsForSelectedFolder modelClassesForSelectedFolder;
 		
 		public AddMvcViewToProjectViewModel(ISelectedMvcFolder selectedViewFolder)
 			: this(
 				selectedViewFolder,
-				new MvcViewFileGenerator())
+				new MvcViewFileGenerator(),
+				new MvcTextTemplateRepository())
 		{
 		}
 		
 		public AddMvcViewToProjectViewModel(
 			ISelectedMvcFolder selectedViewFolder,
-			IMvcViewFileGenerator viewGenerator)
+			IMvcViewFileGenerator viewGenerator,
+			IMvcTextTemplateRepository textTemplateRepository)
 		{
 			this.selectedViewFolder = selectedViewFolder;
 			this.viewGenerator = viewGenerator;
+			this.textTemplateRepository = textTemplateRepository;
 			this.viewFileName.Folder = selectedViewFolder.Path;
 			this.ModelClassName = String.Empty;
 			this.PrimaryContentPlaceHolderId = "Main";
@@ -138,10 +144,38 @@ namespace ICSharpCode.AspNet.Mvc
 			IsRazorViewEngineSelected = selectedViewEngine.TemplateType.IsRazor();
 			
 			SetDefaultMasterPage();
+			AddViewTemplates();
 			
 			OnPropertyChanged(viewModel => viewModel.IsAspxViewEngineSelected);
 			OnPropertyChanged(viewModel => viewModel.IsRazorViewEngineSelected);
 			OnPropertyChanged(viewModel => viewModel.MasterPageFile);
+			OnPropertyChanged(viewModel => viewModel.ViewTemplates);
+		}
+		
+		void AddViewTemplates()
+		{
+			viewTemplates = GetViewTemplates();
+		}
+		
+		List<MvcViewTextTemplate> GetViewTemplates()
+		{
+			var templateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = GetTemplateLanguage(),
+				TemplateType = selectedViewEngine.TemplateType
+			};
+			return textTemplateRepository
+				.GetMvcViewTextTemplates(templateCriteria)
+				.OrderBy(t => t.Name)
+				.ToList();
+		}
+		
+		public IEnumerable<MvcViewTextTemplate> ViewTemplates {
+			get { return viewTemplates; }
+		}
+		
+		public MvcViewTextTemplate SelectedViewTemplate {
+			get { return selectedViewTemplate; }
+			set { selectedViewTemplate = value; }
 		}
 		
 		public bool IsRazorViewEngineSelected { get; private set; }

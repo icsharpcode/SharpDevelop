@@ -115,6 +115,7 @@
     <Compile Include="Src\MvcTextTemplateTypeFolderName.cs" />
     <Compile Include="Src\MvcViewFileName.cs" />
     <Compile Include="Src\MvcViewFileGenerator.cs" />
+    <Compile Include="Src\MvcViewTextTemplate.cs" />
     <Compile Include="Src\MvcViewTextTemplateFileName.cs" />
     <Compile Include="Src\MvcViewTypeViewModel.cs" />
     <Compile Include="Src\MvcVirtualPath.cs" />

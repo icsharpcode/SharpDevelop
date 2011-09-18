@@ -12,9 +12,11 @@ namespace ICSharpCode.AspNet.Mvc
 	public class MvcTextTemplateRepository : IMvcTextTemplateRepository
 	{
 		string textTemplatesRootDirectory;
+		IFileSystem fileSystem;
 		
 		public MvcTextTemplateRepository(string mvcAddInPath, IFileSystem fileSystem)
 		{
+			this.fileSystem = fileSystem;
 			GetTextTemplatesRootDirectory(mvcAddInPath);
 		}
 		
@@ -80,6 +82,30 @@ namespace ICSharpCode.AspNet.Mvc
 				FileName = templateFileName,
 				AddActionMethods = true
 			};
+		}
+		
+		public IEnumerable<MvcViewTextTemplate> GetMvcViewTextTemplates(MvcTextTemplateCriteria templateCriteria)
+		{
+			foreach (string templateFileName in GetMvcViewTemplateFileNamesInFolder(templateCriteria)) {
+				yield return new MvcViewTextTemplate(templateFileName);
+			}
+		}
+		
+		IEnumerable<string> GetMvcViewTemplateFileNamesInFolder(MvcTextTemplateCriteria templateCriteria)
+		{
+			string templatePath = GetMvcViewTemplatePath(templateCriteria);
+			return fileSystem.GetFiles(templatePath, "*.tt");
+		}
+		
+		string GetMvcViewTemplatePath(MvcTextTemplateCriteria templateCriteria)
+		{
+			var emptyViewTemplateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = templateCriteria.TemplateLanguage,
+				TemplateName = "Empty",
+				TemplateType = templateCriteria.TemplateType
+			};
+			string emptyViewTemplateFileName = GetMvcViewTextTemplateFileName(emptyViewTemplateCriteria);
+			return Path.GetDirectoryName(emptyViewTemplateFileName);
 		}
 	}
 }

@@ -9,5 +9,6 @@ namespace ICSharpCode.AspNet.Mvc
 	public interface IMvcTextTemplateRepository
 	{
 		IEnumerable<MvcControllerTextTemplate> GetMvcControllerTextTemplates(MvcTextTemplateCriteria templateCriteria);
+		IEnumerable<MvcViewTextTemplate> GetMvcViewTextTemplates(MvcTextTemplateCriteria templateCriteria);
 	}
 }

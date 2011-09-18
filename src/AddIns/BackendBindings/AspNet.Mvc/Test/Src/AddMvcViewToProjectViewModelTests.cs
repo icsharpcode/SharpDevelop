@@ -20,6 +20,7 @@ namespace AspNet.Mvc.Tests
 		FakeSelectedMvcFolder fakeSelectedMvcViewFolder;
 		List<string> propertyChangedEvents;
 		FakeMvcProject fakeProject;
+		FakeMvcTextTemplateRepository fakeTextTemplateRepository;
 		
 		void CreateViewModel()
 		{
@@ -29,14 +30,34 @@ namespace AspNet.Mvc.Tests
 		
 		void CreateViewModelWithViewFolderPath(string path)
 		{
+			fakeTextTemplateRepository = new FakeMvcTextTemplateRepository();
+			CreateViewModelWithViewFolderPath(path, fakeTextTemplateRepository);
+		}
+		
+		void CreateViewModelWithViewFolderPath(
+			string path,
+			FakeMvcTextTemplateRepository fakeTextTemplateRepository)
+		{
+			CreateViewModelWithViewFolderPath(
+				path,
+				fakeTextTemplateRepository,
+				MvcTextTemplateLanguage.CSharp);
+		}
+		
+		void CreateViewModelWithViewFolderPath(
+			string path,
+			FakeMvcTextTemplateRepository fakeTextTemplateRepository,
+			MvcTextTemplateLanguage templateLanguage)
+		{
 			fakeSelectedMvcViewFolder = new FakeSelectedMvcFolder();
 			fakeSelectedMvcViewFolder.Path = path;
-			fakeSelectedMvcViewFolder.SetCSharpAsTemplateLanguage();
+			fakeSelectedMvcViewFolder.TemplateLanguage = templateLanguage;
 			fakeProject = fakeSelectedMvcViewFolder.FakeMvcProject;
 			fakeViewGenerator = new FakeMvcViewFileGenerator();
 			viewModel = new AddMvcViewToProjectViewModel(
 				fakeSelectedMvcViewFolder,
-				fakeViewGenerator);
+				fakeViewGenerator,
+				fakeTextTemplateRepository);
 		}
 		
 		void MonitorPropertyChangedEvents()
@@ -991,6 +1012,123 @@ namespace AspNet.Mvc.Tests
 			ObservableCollection<MvcProjectFile> files = viewModel.MasterPages;
 			
 			Assert.AreEqual(expectedFiles, files);
+		}
+		
+		[Test]
+		public void ViewTemplates_CSharpProjectAndOneTemplateInRepository_ReturnsOneViewTemplate()
+		{
+			fakeTextTemplateRepository = new FakeMvcTextTemplateRepository();
+			var expectedTemplate = new MvcViewTextTemplate(@"d:\templates\Empty.tt");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(expectedTemplate);
+			CreateViewModelWithViewFolderPath(@"d:\myproject\views", fakeTextTemplateRepository);
+			
+			IEnumerable<MvcViewTextTemplate> templates = viewModel.ViewTemplates;
+			
+			var expectedTemplates = new MvcViewTextTemplate[] {
+				expectedTemplate
+			};
+			
+			MvcViewTextTemplateCollectionAssert.AreEqual(expectedTemplates, templates);
+		}
+		
+		[Test]
+		public void ViewTemplates_CSharpProject_CSharpViewTemplatesRetrievedFromTemplateRepository()
+		{
+			CreateViewModel();
+			
+			IEnumerable<MvcViewTextTemplate> templates = viewModel.ViewTemplates;
+			MvcTextTemplateCriteria templateCriteria = fakeTextTemplateRepository.TemplateCriteriaPassedToGetMvcViewTextTemplates;
+			
+			Assert.AreEqual(MvcTextTemplateLanguage.CSharp, templateCriteria.TemplateLanguage);
+			Assert.AreEqual(MvcTextTemplateType.Aspx, templateCriteria.TemplateType);
+		}
+		
+		[Test]
+		public void ViewTemplates_VisualBasicProject_VisualBasicTemplatesRetrievedFromTemplateRepository()
+		{
+			fakeTextTemplateRepository = new FakeMvcTextTemplateRepository();
+			var expectedTemplate = new MvcViewTextTemplate(@"d:\templates\Empty.tt");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(expectedTemplate);
+			CreateViewModelWithViewFolderPath(
+				@"d:\myproject\views",
+				fakeTextTemplateRepository,
+				MvcTextTemplateLanguage.VisualBasic);
+			
+			IEnumerable<MvcViewTextTemplate> templates = viewModel.ViewTemplates;
+			MvcTextTemplateCriteria templateCriteria = fakeTextTemplateRepository.TemplateCriteriaPassedToGetMvcViewTextTemplates;
+			
+			Assert.AreEqual(MvcTextTemplateLanguage.VisualBasic, templateCriteria.TemplateLanguage);
+		}
+		
+		[Test]
+		public void ViewTemplates_CSharpProjectAndTwoTemplatesInRepository_ReturnsTwoViewTemplatesSortedByName()
+		{
+			fakeTextTemplateRepository = new FakeMvcTextTemplateRepository();
+			
+			var templateB = new MvcViewTextTemplate(@"d:\templates\B.tt");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(templateB);
+			
+			var templateA = new MvcViewTextTemplate(@"d:\templates\A.tt");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(templateA);
+			
+			CreateViewModelWithViewFolderPath(@"d:\myproject\views", fakeTextTemplateRepository);
+			
+			IEnumerable<MvcViewTextTemplate> templates = viewModel.ViewTemplates;
+			
+			var expectedTemplates = new MvcViewTextTemplate[] {
+				templateA,
+				templateB
+			};
+			
+			MvcViewTextTemplateCollectionAssert.AreEqual(expectedTemplates, templates);
+		}
+		
+		[Test]
+		public void ViewTemplates_CSharpProjectAndRazorViewEngineSelected_ViewTemplatesUpdatedFromRepository()
+		{
+			CreateViewModel();
+			List<MvcViewTextTemplate> templates = viewModel.ViewTemplates.ToList();
+			
+			var expectedTemplate = new MvcViewTextTemplate(@"d:\templates\Empty.tt");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(expectedTemplate);
+			
+			SelectRazorViewEngine();
+			
+			templates = viewModel.ViewTemplates.ToList();
+			
+			var expectedTemplates = new MvcViewTextTemplate[] {
+				expectedTemplate
+			};
+			
+			MvcViewTextTemplateCollectionAssert.AreEqual(expectedTemplates, templates);
+		}
+		
+		[Test]
+		public void ViewTemplates_VisualBasicProjectAndRazorViewEngineSelected_RazorViewTemplatesReadFromRepository()
+		{
+			CreateViewModel();
+			List<MvcViewTextTemplate> templates = viewModel.ViewTemplates.ToList();
+			
+			VisualBasicProjectSelected();
+			SelectRazorViewEngine();
+			
+			templates = viewModel.ViewTemplates.ToList();
+			MvcTextTemplateCriteria templateCriteria = fakeTextTemplateRepository.TemplateCriteriaPassedToGetMvcViewTextTemplates;
+			
+			Assert.AreEqual(MvcTextTemplateType.Razor, templateCriteria.TemplateType);
+			Assert.AreEqual(MvcTextTemplateLanguage.VisualBasic, templateCriteria.TemplateLanguage);
+		}
+		
+		[Test]
+		public void SelectedViewEngine_RazorViewEngineSelected_ViewTemplatesPropertyChangedEventIsFired()
+		{
+			CreateViewModel();
+			MonitorPropertyChangedEvents();
+			SelectRazorViewEngine();
+			
+			bool fired = propertyChangedEvents.Contains("ViewTemplates");
+			
+			Assert.IsTrue(fired);
 		}
 	}
 }

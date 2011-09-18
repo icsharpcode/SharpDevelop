@@ -17,5 +17,14 @@ namespace AspNet.Mvc.Tests.Helpers
 			TemplateCriteriaPassedToGetMvcControllerTextTemplates = templateCriteria;
 			return ControllerTextTemplates;
 		}
+		
+		public List<MvcViewTextTemplate> ViewTextTemplates = new List<MvcViewTextTemplate>();
+		public MvcTextTemplateCriteria TemplateCriteriaPassedToGetMvcViewTextTemplates;
+		
+		public IEnumerable<MvcViewTextTemplate> GetMvcViewTextTemplates(MvcTextTemplateCriteria templateCriteria)
+		{
+			TemplateCriteriaPassedToGetMvcViewTextTemplates = templateCriteria;
+			return ViewTextTemplates;
+		}
 	}
 }
