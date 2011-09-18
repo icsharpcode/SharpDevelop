@@ -45,16 +45,6 @@ namespace AspNet.Mvc.Tests
 			generator.TemplateLanguage = MvcTextTemplateLanguage.CSharp;			
 		}
 		
-		void SelectAspxTemplate()
-		{
-			generator.TemplateType = MvcTextTemplateType.Aspx;
-		}
-		
-		void SelectRazorTemplate()
-		{
-			generator.TemplateType = MvcTextTemplateType.Razor;
-		}
-		
 		void GenerateFile()
 		{
 			GenerateFile(@"d:\projects\myproject\Views\Home", "Index");
@@ -77,6 +67,13 @@ namespace AspNet.Mvc.Tests
 		void GenerateFile(MvcViewFileName fileName)
 		{
 			generator.GenerateFile(fileName);
+		}
+		
+		MvcViewTextTemplate CreateViewTemplate(string fileName)
+		{
+			return new MvcViewTextTemplate() {
+				FileName = fileName
+			};
 		}
 		
 		[Test]
@@ -106,7 +103,6 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateGenerator();
 			ProjectPassedToGeneratorIsCSharpProject();
-			SelectAspxTemplate();
 			
 			string viewFolder = @"d:\projects\MyProject\Views\Home";
 			string viewName = "Index";
@@ -120,24 +116,6 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void GenerateFile_CSharpEmptyAspxViewTemplate_TemplateFileUsedIsIsCSharpEmptyAspxViewTemplate()
-		{
-			string templateRootDirectory = @"d:\SharpDev\AddIns\AspNet.Mvc";
-			CreateTemplateRepository(templateRootDirectory);
-			CreateGenerator(templateRepository);
-			ProjectPassedToGeneratorIsCSharpProject();
-			SelectAspxTemplate();
-			
-			GenerateFile();
-			
-			string inputFileName = fakeHost.InputFilePassedToProcessTemplate;
-			string expectedInputFileName = 
-				@"d:\SharpDev\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt";
-			
-			Assert.AreEqual(expectedInputFileName, inputFileName);
-		}
-		
-		[Test]
 		public void GenerateFile_CSharpEmptyViewTemplate_MvcTextTemplateHostViewNameIsSet()
 		{
 			CreateGenerator();
@@ -148,24 +126,6 @@ namespace AspNet.Mvc.Tests
 			GenerateFile(viewFolder, viewName);
 		
 			Assert.AreEqual("About", fakeHost.ViewName);
-		}
-		
-		[Test]
-		public void GenerateFile_CSharpEmptyRazorViewTemplate_TemplateFileUsedIsIsCSharpRazorEmptyViewTemplate()
-		{
-			string templateRootDirectory = @"d:\SharpDev\AddIns\AspNet.Mvc";
-			CreateTemplateRepository(templateRootDirectory);
-			CreateGenerator(templateRepository);
-			ProjectPassedToGeneratorIsCSharpProject();
-			SelectRazorTemplate();
-			
-			GenerateFile();
-			
-			string inputFileName = fakeHost.InputFilePassedToProcessTemplate;
-			string expectedInputFileName = 
-				@"d:\SharpDev\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.tt";
-			
-			Assert.AreEqual(expectedInputFileName, inputFileName);
 		}
 		
 		[Test]
@@ -201,7 +161,6 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateGenerator();
 			ProjectPassedToGeneratorIsCSharpProject();
-			SelectAspxTemplate();
 			
 			string viewFolder = @"d:\projects\MyProject\Views\Home";
 			string viewName = "Index";
@@ -221,7 +180,6 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateGenerator();
 			ProjectPassedToGeneratorIsCSharpProject();
-			SelectAspxTemplate();
 			generator.ModelClassName = "MyNamespace.MyModel";
 			GenerateFile();
 			
@@ -293,6 +251,21 @@ namespace AspNet.Mvc.Tests
 			string id = fakeHost.PrimaryContentPlaceHolderID;
 			
 			Assert.AreEqual("MainContent", id);
+		}
+		
+		[Test]
+		public void GenerateFile_MvcViewTextTemplateSet_MvcViewTextTemplateUsedWhenGeneratingFile()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			string expectedFileName = @"d:\templates\controller.tt";
+			MvcViewTextTemplate template = CreateViewTemplate(expectedFileName);
+			generator.Template = template;
+			GenerateFile();
+			
+			string fileName = fakeHost.InputFilePassedToProcessTemplate;
+			
+			Assert.AreEqual(expectedFileName, fileName);
 		}
 	}
 }

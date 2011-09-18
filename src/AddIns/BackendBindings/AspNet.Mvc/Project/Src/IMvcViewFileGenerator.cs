@@ -8,13 +8,12 @@ namespace ICSharpCode.AspNet.Mvc
 {
 	public interface IMvcViewFileGenerator
 	{
-		MvcTextTemplateLanguage TemplateLanguage { get; set; }
-		MvcTextTemplateType TemplateType { get; set; }
 		IMvcProject Project { get; set; }
 		string ModelClassName { get; set; }
 		bool IsContentPage { get; set; }
 		string MasterPageFile { get; set; }
 		string PrimaryContentPlaceHolderId { get; set; }
+		MvcViewTextTemplate Template { get; set; }
 		
 		void GenerateFile(MvcViewFileName fileName);
 	}

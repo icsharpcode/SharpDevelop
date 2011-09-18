@@ -133,27 +133,18 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void AddMvcView_SelectedViewFolderIsInVisualBasicProject_VisualBasicMvcViewFileGenerated()
+		public void AddMvcView_SelectedViewTemplateIsSet_ViewTemplateUsedToGenerateMvcViewFile()
 		{
 			CreateViewModel();
 			fakeSelectedMvcViewFolder.TemplateLanguage = MvcTextTemplateLanguage.VisualBasic;
+			SelectRazorViewEngine();
+			MvcViewTextTemplate expectedTemplate = new MvcViewTextTemplate();
+			viewModel.SelectedViewTemplate = expectedTemplate;
 			viewModel.AddMvcView();
 			
-			MvcTextTemplateLanguage templateLanguage = fakeViewGenerator.TemplateLanguage;
+			MvcViewTextTemplate template = fakeViewGenerator.Template;
 			
-			Assert.AreEqual(MvcTextTemplateLanguage.VisualBasic, templateLanguage);
-		}
-		
-		[Test]
-		public void AddMvcView_SelectedViewFolderIsInCSharpProject_CSharpMvcViewFileGenerated()
-		{
-			CreateViewModel();
-			fakeSelectedMvcViewFolder.TemplateLanguage = MvcTextTemplateLanguage.CSharp;
-			viewModel.AddMvcView();
-			
-			MvcTextTemplateLanguage templateLanguage = fakeViewGenerator.TemplateLanguage;
-			
-			Assert.AreEqual(MvcTextTemplateLanguage.CSharp, templateLanguage);
+			Assert.AreEqual(expectedTemplate, template);
 		}
 		
 		[Test]
@@ -328,36 +319,6 @@ namespace AspNet.Mvc.Tests
 			string expectedFileName = @"d:\projects\MyProject\Views\Home\Index.vbhtml";
 			
 			Assert.AreEqual(expectedFileName, fileName);
-		}
-		
-		[Test]
-		public void AddMvcView_RazorViewEngineIsSelected_RazorViewFileGenerated()
-		{
-			CreateViewModel();
-			fakeViewGenerator.TemplateType = MvcTextTemplateType.Aspx;
-			CSharpProjectSelected();
-			viewModel.ViewName = "Index";
-			SelectRazorViewEngine();
-			viewModel.AddMvcView();
-			
-			MvcTextTemplateType templateType = fakeViewGenerator.TemplateType;
-			
-			Assert.AreEqual(MvcTextTemplateType.Razor, templateType);
-		}
-		
-		[Test]
-		public void AddMvcView_AspxViewEngineIsSelected_AspxViewFileGenerated()
-		{
-			CreateViewModel();
-			fakeViewGenerator.TemplateType = MvcTextTemplateType.Razor;
-			CSharpProjectSelected();
-			viewModel.ViewName = "Index";
-			SelectAspxViewEngine();
-			viewModel.AddMvcView();
-			
-			MvcTextTemplateType templateType = fakeViewGenerator.TemplateType;
-			
-			Assert.AreEqual(MvcTextTemplateType.Aspx, templateType);
 		}
 		
 		[Test]

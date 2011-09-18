@@ -27,13 +27,14 @@ namespace ICSharpCode.AspNet.Mvc
 			ModelClassName = String.Empty;
 			MasterPageFile = String.Empty;
 			PrimaryContentPlaceHolderId = String.Empty;
+			Template = new MvcViewTextTemplate();
 		}
 		
-		public MvcTextTemplateType TemplateType { get; set; }
 		public string ModelClassName { get; set; }
 		public bool IsContentPage { get; set; }
 		public string MasterPageFile { get; set; }
 		public string PrimaryContentPlaceHolderId { get; set; }
+		public MvcViewTextTemplate Template { get; set; }
 		
 		public void GenerateFile(MvcViewFileName fileName)
 		{
@@ -54,17 +55,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		protected override string GetTextTemplateFileName()
 		{
-			MvcTextTemplateCriteria templateCriteria = GetTextTemplateCriteria();
-			return textTemplateRepository.GetMvcViewTextTemplateFileName(templateCriteria);
-		}
-		
-		MvcTextTemplateCriteria GetTextTemplateCriteria()
-		{
-			return new MvcTextTemplateCriteria() {
-				TemplateLanguage = TemplateLanguage,
-				TemplateName = "Empty",
-				TemplateType = TemplateType
-			};
+			return Template.FileName;
 		}
 	}
 }

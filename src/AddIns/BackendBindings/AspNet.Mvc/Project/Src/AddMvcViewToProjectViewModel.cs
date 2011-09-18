@@ -232,8 +232,7 @@ namespace ICSharpCode.AspNet.Mvc
 			viewGenerator.ModelClassName = GetModelClassName();
 			viewGenerator.PrimaryContentPlaceHolderId = GetPrimaryContentPlaceHolderId();
 			viewGenerator.Project = selectedViewFolder.Project;
-			viewGenerator.TemplateLanguage = GetTemplateLanguage();
-			viewGenerator.TemplateType = selectedViewEngine.TemplateType;
+			viewGenerator.Template = selectedViewTemplate;
 		}
 		
 		string GetMasterPageFile()
