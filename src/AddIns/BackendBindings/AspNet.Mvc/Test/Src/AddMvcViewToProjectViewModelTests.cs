@@ -1130,5 +1130,62 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.IsTrue(fired);
 		}
+		
+		[Test]
+		public void SelectedViewTemplate_RazorViewEngineSelectedWhenThreeRazorViewTemplatesExist_EmptyTemplateSelectedByDefault()
+		{
+			CreateViewModel();
+			var templateA = new MvcViewTextTemplate(@"d:\razor\A.tt");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(templateA);
+			var emptyTemplate = new MvcViewTextTemplate(@"d:\razor\Empty.tt");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(emptyTemplate);
+			var templateZ = new MvcViewTextTemplate(@"d:\razor\Z.tt");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(templateZ);
+			SelectRazorViewEngine();
+			
+			MvcViewTextTemplate selectedTemplate = viewModel.SelectedViewTemplate;
+			
+			Assert.AreEqual(emptyTemplate, selectedTemplate);
+		}
+		
+		[Test]
+		public void SelectedViewTemplate_RazorViewEngineSelectedWhenTemplateNameIsInUpperCase_EmptyTemplateSelectedByDefault()
+		{
+			CreateViewModel();
+			var templateA = new MvcViewTextTemplate(@"d:\razor\A.tt");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(templateA);
+			var emptyTemplate = new MvcViewTextTemplate(@"d:\razor\EMPTY.TT");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(emptyTemplate);
+			SelectRazorViewEngine();
+			
+			MvcViewTextTemplate selectedTemplate = viewModel.SelectedViewTemplate;
+			
+			Assert.AreEqual(emptyTemplate, selectedTemplate);
+		}
+		
+		[Test]
+		public void SelectedViewTemplate_RazorViewEngineSelectedAndNoEmptyTemplate_FirstTemplateSelectedByDefault()
+		{
+			CreateViewModel();
+			var templateA = new MvcViewTextTemplate(@"d:\razor\A.tt");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(templateA);
+			SelectRazorViewEngine();
+			
+			MvcViewTextTemplate selectedTemplate = viewModel.SelectedViewTemplate;
+			
+			Assert.AreEqual(templateA, selectedTemplate);
+		}
+		
+		[Test]
+		public void SelectedViewEngine_RazorViewEngineSelected_SelectedViewTemplatePropertyChangedEventIsFired()
+		{
+			CreateViewModel();
+			MonitorPropertyChangedEvents();
+			SelectRazorViewEngine();
+			
+			bool fired = propertyChangedEvents.Contains("SelectedViewTemplate");
+			
+			Assert.IsTrue(fired);
+		}
 	}
 }

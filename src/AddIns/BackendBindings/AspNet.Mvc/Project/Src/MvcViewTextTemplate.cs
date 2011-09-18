@@ -21,5 +21,10 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public string Name { get; set; }
 		public string FileName { get; set; }
+		
+		public bool IsEmptyTemplate()
+		{
+			return "Empty".Equals(Name, StringComparison.InvariantCultureIgnoreCase);
+		}
 	}
 }

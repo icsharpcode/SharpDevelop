@@ -149,12 +149,13 @@ namespace ICSharpCode.AspNet.Mvc
 			OnPropertyChanged(viewModel => viewModel.IsAspxViewEngineSelected);
 			OnPropertyChanged(viewModel => viewModel.IsRazorViewEngineSelected);
 			OnPropertyChanged(viewModel => viewModel.MasterPageFile);
-			OnPropertyChanged(viewModel => viewModel.ViewTemplates);
 		}
 		
 		void AddViewTemplates()
 		{
 			viewTemplates = GetViewTemplates();
+			OnPropertyChanged(viewModel => viewModel.ViewTemplates);
+			SelectDefaultViewTemplate();
 		}
 		
 		List<MvcViewTextTemplate> GetViewTemplates()
@@ -169,13 +170,29 @@ namespace ICSharpCode.AspNet.Mvc
 				.ToList();
 		}
 		
+		void SelectDefaultViewTemplate()
+		{
+			SelectedViewTemplate = GetEmptyViewTemplate();
+			if (SelectedViewTemplate == null) {
+				SelectedViewTemplate = viewTemplates.FirstOrDefault();
+			}
+		}
+		
+		MvcViewTextTemplate GetEmptyViewTemplate()
+		{
+			return viewTemplates.Find(t => t.IsEmptyTemplate());
+		}
+		
 		public IEnumerable<MvcViewTextTemplate> ViewTemplates {
 			get { return viewTemplates; }
 		}
 		
 		public MvcViewTextTemplate SelectedViewTemplate {
 			get { return selectedViewTemplate; }
-			set { selectedViewTemplate = value; }
+			set {
+				selectedViewTemplate = value;
+				OnPropertyChanged(viewModel => viewModel.SelectedViewTemplate);
+			}
 		}
 		
 		public bool IsRazorViewEngineSelected { get; private set; }
