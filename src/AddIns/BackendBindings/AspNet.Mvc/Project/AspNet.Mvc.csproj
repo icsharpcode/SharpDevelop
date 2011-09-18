@@ -62,7 +62,9 @@
     <Compile Include="Src\BooleanToVisibilityConverter.cs" />
     <Compile Include="Src\CloseDialogBehaviour.cs" />
     <Compile Include="Src\DelegateCommand.cs" />
+    <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\IAddMvcItemToProjectView.cs" />
+    <Compile Include="Src\IFileSystem.cs" />
     <Compile Include="Src\IMvcModelClassLocator.cs" />
     <Compile Include="Src\IMvcClass.cs" />
     <Compile Include="Src\IMvcControllerFileGenerator.cs" />
@@ -72,6 +74,7 @@
     <Compile Include="Src\IMvcProjectContent.cs" />
     <Compile Include="Src\IMvcTextTemplateHost.cs" />
     <Compile Include="Src\IMvcTextTemplateHostFactory.cs" />
+    <Compile Include="Src\IMvcTextTemplateRepository.cs" />
     <Compile Include="Src\IMvcViewFileGenerator.cs" />
     <Compile Include="Src\ISelectedFolderNodeInProjectsView.cs" />
     <Compile Include="Src\ISelectedMvcFolder.cs" />
@@ -79,6 +82,7 @@
     <Compile Include="Src\IsMvcFolderSelectedConditionEvaluator.cs" />
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluator.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\MvcControllerTextTemplate.cs" />
     <Compile Include="Src\MvcProjectMasterPageFile.cs" />
     <Compile Include="Src\MvcModelClassLocator.cs" />
     <Compile Include="Src\MvcAddViewTextTemplateFolder.cs" />
@@ -86,7 +90,6 @@
     <Compile Include="Src\MvcControllerFileGenerator.cs" />
     <Compile Include="Src\MvcControllerFileName.cs" />
     <Compile Include="Src\MvcControllerName.cs" />
-    <Compile Include="Src\MvcControllerTemplateViewModel.cs" />
     <Compile Include="Src\MvcControllerTextTemplateFileName.cs" />
     <Compile Include="Src\MvcFileGenerator.cs" />
     <Compile Include="Src\MvcFileName.cs" />

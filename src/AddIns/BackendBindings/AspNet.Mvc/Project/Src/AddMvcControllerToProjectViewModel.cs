@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
 
 using ICSharpCode.AspNet.Mvc;
@@ -13,23 +14,27 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		IMvcControllerFileGenerator controllerGenerator;
 		ISelectedMvcFolder selectedControllerFolder;
+		IMvcTextTemplateRepository textTemplateRepository;
 		MvcControllerFileName controllerFileName = new MvcControllerFileName();
 		bool closed;
-		List<MvcControllerTemplateViewModel> controllerTemplates;
+		List<MvcControllerTextTemplate> controllerTemplates;
 		
 		public AddMvcControllerToProjectViewModel(ISelectedMvcFolder selectedControllerFolder)
 			: this(
 				selectedControllerFolder,
-				new MvcControllerFileGenerator())
+				new MvcControllerFileGenerator(),
+				new MvcTextTemplateRepository())
 		{
 		}
 		
 		public AddMvcControllerToProjectViewModel(
 			ISelectedMvcFolder selectedControllerFolder,
-			IMvcControllerFileGenerator controllerGenerator)
+			IMvcControllerFileGenerator controllerGenerator,
+			IMvcTextTemplateRepository textTemplateRepository)
 		{
 			this.selectedControllerFolder = selectedControllerFolder;
 			this.controllerGenerator = controllerGenerator;
+			this.textTemplateRepository = textTemplateRepository;
 			
 			this.controllerFileName.Folder = selectedControllerFolder.Path;
 			
@@ -70,46 +75,27 @@ namespace ICSharpCode.AspNet.Mvc
 			}
 		}
 		
-		public IEnumerable<MvcControllerTemplateViewModel> ControllerTemplates {
+		public IEnumerable<MvcControllerTextTemplate> ControllerTemplates {
 			get { return controllerTemplates; }
 		}
 		
-		public MvcControllerTemplateViewModel SelectedControllerTemplate { get; set; }
+		public MvcControllerTextTemplate SelectedControllerTemplate { get; set; }
 		
 		void AddControllerTemplates()
 		{
-			controllerTemplates = new List<MvcControllerTemplateViewModel>();
-			AddEmptyControllerTemplate();
-			AddEmptyReadWriteControllerTemplate();
-			SelectEmptyControllerTemplate();
+			controllerTemplates = GetControllerTemplatesFromRepository();
+			SelectFirstControllerTemplate();
 		}
 		
-		void AddEmptyReadWriteControllerTemplate()
+		List<MvcControllerTextTemplate> GetControllerTemplatesFromRepository()
 		{
-			var template = new MvcControllerTemplateViewModel() {
-				Name = "EmptyReadWrite",
-				Description = "Controller with create, read, update and delete actions",
-				AddActionMethods = true
+			var criteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = GetTemplateLanguage()
 			};
-			AddControllerTemplate(template);
+			return textTemplateRepository.GetMvcControllerTextTemplates(criteria).ToList();
 		}
 		
-		void AddEmptyControllerTemplate()
-		{
-			var template = new MvcControllerTemplateViewModel() {
-				Name = "Empty", 
-				Description = "Empty controller",
-				AddActionMethods = false
-			};
-			AddControllerTemplate(template);
-		}
-		
-		void AddControllerTemplate(MvcControllerTemplateViewModel template)
-		{
-			controllerTemplates.Add(template);
-		}
-		
-		void SelectEmptyControllerTemplate()
+		void SelectFirstControllerTemplate()
 		{
 			SelectedControllerTemplate = controllerTemplates[0];
 		}

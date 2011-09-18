@@ -54,6 +54,7 @@
     </Compile>
     <Compile Include="Helpers\FakeAddMvcItemToProjectView.cs" />
     <Compile Include="Helpers\FakeClass.cs" />
+    <Compile Include="Helpers\FakeFileSystem.cs" />
     <Compile Include="Helpers\FakeMvcModelClassLocator.cs" />
     <Compile Include="Helpers\FakeMvcClass.cs" />
     <Compile Include="Helpers\FakeMvcControllerFileGenerator.cs" />
@@ -63,9 +64,11 @@
     <Compile Include="Helpers\FakeMvcProjectContent.cs" />
     <Compile Include="Helpers\FakeMvcTextTemplateHost.cs" />
     <Compile Include="Helpers\FakeMvcTextTemplateHostFactory.cs" />
+    <Compile Include="Helpers\FakeMvcTextTemplateRepository.cs" />
     <Compile Include="Helpers\FakeMvcViewFileGenerator.cs" />
     <Compile Include="Helpers\FakeSelectedFolderNodeInProjectsView.cs" />
     <Compile Include="Helpers\FakeSelectedMvcFolder.cs" />
+    <Compile Include="Helpers\MvcControllerTextTemplateCollectionAssert.cs" />
     <Compile Include="Helpers\MvcProjectFileAssert.cs" />
     <Compile Include="Helpers\MvcProjectFileCollectionAssert.cs" />
     <Compile Include="Helpers\TestableAddMvcControllerToProjectCommand.cs" />

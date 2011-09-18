@@ -2,6 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
 using NUnit.Framework;
 
@@ -11,10 +14,25 @@ namespace AspNet.Mvc.Tests
 	public class MvcTextTemplateRepositoryTests
 	{
 		MvcTextTemplateRepository repository;
+		FakeFileSystem fakeFileSystem;
 		
 		void CreateRepositoryWithAspNetMvcAddInDirectory(string mvcAddInPath)
 		{
-			repository = new MvcTextTemplateRepository(mvcAddInPath);
+			fakeFileSystem = new FakeFileSystem();
+			repository = new MvcTextTemplateRepository(mvcAddInPath, fakeFileSystem);
+		}
+		
+		void AddCSharpAspxTemplateToFolder(string path, string fileName)
+		{
+			string[] fileNames = new string[] {
+				fileName
+			};
+			AddCSharpAspxTemplatesToFolder(path, fileNames);
+		}
+		
+		void AddCSharpAspxTemplatesToFolder(string path, string[] fileNames)
+		{
+			fakeFileSystem.AddFakeFiles(path, "*.tt", fileNames);
 		}
 		
 		[Test]
@@ -148,6 +166,41 @@ namespace AspNet.Mvc.Tests
 				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddController\Controller.tt";
 			
 			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void GetMvcControllerTextTemplates_CSharpAspxTemplatesRequestedAndOneControllerTemplateInFolder_ReturnsTwoCSharpAspxControllerTextTemplates()
+		{
+			CreateRepositoryWithAspNetMvcAddInDirectory(@"C:\SD\AddIns\AspNet.Mvc");
+			
+			var templateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = MvcTextTemplateLanguage.CSharp,
+				TemplateType = MvcTextTemplateType.Aspx
+			};
+			
+			List<MvcControllerTextTemplate> templates = repository.GetMvcControllerTextTemplates(templateCriteria).ToList();
+			
+			string existingTemplateFileName = 
+				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddController\Controller.tt";
+			
+			var expectedTemplate1 = new MvcControllerTextTemplate() {
+				Name = "Empty",
+				Description = "Empty controller",
+				FileName = existingTemplateFileName,
+				AddActionMethods = false
+			};
+			var expectedTemplate2 = new MvcControllerTextTemplate() {
+				Name = "EmptyReadWrite",
+				Description = "Controller with create, read, update and delete actions",
+				FileName = existingTemplateFileName,
+				AddActionMethods = true
+			};
+			var expectedTemplates = new MvcControllerTextTemplate[] {
+				expectedTemplate1,
+				expectedTemplate2
+			};
+			
+			MvcControllerTextTemplateCollectionAssert.AreEqual(expectedTemplates, templates);
 		}
 	}
 }

@@ -36,13 +36,23 @@ namespace AspNet.Mvc.Tests
 			string path,
 			MvcTextTemplateLanguage language)
 		{
+			var textTemplateRepository = new MvcTextTemplateRepository(@"d:\SD\ItemTemplates");
+			CreateViewModelWithControllerFolderPath(path, language, textTemplateRepository);
+		}
+		
+		void CreateViewModelWithControllerFolderPath(
+			string path,
+			MvcTextTemplateLanguage language,
+			MvcTextTemplateRepository textTemplateRepository)
+		{
 			fakeSelectedMvcControllerFolder = new FakeSelectedMvcFolder();
 			fakeSelectedMvcControllerFolder.TemplateLanguage = language;
 			fakeSelectedMvcControllerFolder.Path = path;
 			fakeControllerGenerator = new FakeMvcControllerFileGenerator();
 			viewModel = new AddMvcControllerToProjectViewModel(
 				fakeSelectedMvcControllerFolder,
-				fakeControllerGenerator);
+				fakeControllerGenerator,
+				textTemplateRepository);
 		}
 		
 		void MonitorPropertyChangedEvents()
@@ -56,7 +66,7 @@ namespace AspNet.Mvc.Tests
 			return viewModel.ControllerTemplates.Any(v => v.Name == templateName);
 		}
 		
-		MvcControllerTemplateViewModel GetControllerTemplateFromViewModel(string templateName)
+		MvcControllerTextTemplate GetControllerTemplateFromViewModel(string templateName)
 		{
 			return viewModel.ControllerTemplates.SingleOrDefault(v => v.Name == templateName);
 		}
@@ -243,7 +253,7 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateViewModelWithCSharpProject();
 			
-			MvcControllerTemplateViewModel controllerTemplate = viewModel.SelectedControllerTemplate;
+			MvcControllerTextTemplate controllerTemplate = viewModel.SelectedControllerTemplate;
 			
 			Assert.AreEqual("Empty", controllerTemplate.Name);
 		}
@@ -268,6 +278,38 @@ namespace AspNet.Mvc.Tests
 			viewModel.AddMvcController();
 			
 			Assert.IsFalse(fakeControllerGenerator.AddActionMethods);
+		}
+		
+		[Test]
+		public void ControllerTemplates_CSharpProjectDefaultTemplates_EmptyControllerTemplateFileNameIsCSharpTemplateFileName()
+		{
+			var templateRepository = new MvcTextTemplateRepository(@"d:\sd\AspNetMvcAddIn");
+			CreateViewModelWithControllerFolderPath(
+				@"d:\projects\MyAspMvcProject\Controllers",
+				MvcTextTemplateLanguage.CSharp,
+				templateRepository);
+			
+			MvcControllerTextTemplate template = GetControllerTemplateFromViewModel("Empty");
+			string fileName = template.FileName;
+			string expectedFileName = @"d:\sd\AspNetMvcAddIn\ItemTemplates\CSharp\CodeTemplates\AddController\Controller.tt";
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void ControllerTemplates_VisualBasicProjectDefaultTemplates_EmptyControllerTemplateFileNameIsVisualBasicTemplateFileName()
+		{
+			var templateRepository = new MvcTextTemplateRepository(@"d:\sd\AspNetMvcAddIn");
+			CreateViewModelWithControllerFolderPath(
+				@"d:\projects\MyAspMvcProject\Controllers",
+				MvcTextTemplateLanguage.VisualBasic,
+				templateRepository);
+			
+			MvcControllerTextTemplate template = GetControllerTemplateFromViewModel("Empty");
+			string fileName = template.FileName;
+			string expectedFileName = @"d:\sd\AspNetMvcAddIn\ItemTemplates\VisualBasic\CodeTemplates\AddController\Controller.tt";
+			
+			Assert.AreEqual(expectedFileName, fileName);
 		}
 	}
 }

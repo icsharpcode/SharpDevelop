@@ -2,18 +2,25 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public class MvcTextTemplateRepository
+	public class MvcTextTemplateRepository : IMvcTextTemplateRepository
 	{
 		string textTemplatesRootDirectory;
 		
-		public MvcTextTemplateRepository(string mvcAddInPath)
+		public MvcTextTemplateRepository(string mvcAddInPath, IFileSystem fileSystem)
 		{
 			GetTextTemplatesRootDirectory(mvcAddInPath);
+		}
+		
+		public MvcTextTemplateRepository(string mvcAddInPath)
+			: this(mvcAddInPath, new FileSystem())
+		{
 		}
 		
 		public MvcTextTemplateRepository()
@@ -36,6 +43,43 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			var fileName = new MvcControllerTextTemplateFileName(textTemplatesRootDirectory, templateCriteria);
 			return fileName.GetPath();
+		}
+		
+		public IEnumerable<MvcControllerTextTemplate> GetMvcControllerTextTemplates(MvcTextTemplateCriteria templateCriteria)
+		{
+			string templateFileName = GetDefaultMvcControllerTextTemplateFileName(templateCriteria);
+			yield return CreateEmptyControllerTemplate(templateFileName);
+			yield return CreateEmptyReadWriteControllerTemplate(templateFileName);
+		}
+		
+		string GetDefaultMvcControllerTextTemplateFileName(MvcTextTemplateCriteria templateCriteria)
+		{
+			var defaultControllerTemplateCriteria = new MvcTextTemplateCriteria() {
+				TemplateLanguage = templateCriteria.TemplateLanguage,
+				TemplateName = "Controller",
+				TemplateType = templateCriteria.TemplateType
+			};
+			return GetMvcControllerTextTemplateFileName(defaultControllerTemplateCriteria);
+		}
+		
+		MvcControllerTextTemplate CreateEmptyControllerTemplate(string templateFileName)
+		{
+			return new MvcControllerTextTemplate() {
+				Name = "Empty",
+				Description = "Empty controller",
+				FileName = templateFileName,
+				AddActionMethods = false
+			};
+		}
+		
+		MvcControllerTextTemplate CreateEmptyReadWriteControllerTemplate(string templateFileName)
+		{
+			return new MvcControllerTextTemplate() {
+				Name = "EmptyReadWrite",
+				Description = "Controller with create, read, update and delete actions",
+				FileName = templateFileName,
+				AddActionMethods = true
+			};
 		}
 	}
 }

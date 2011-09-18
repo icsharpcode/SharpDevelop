@@ -5,23 +5,26 @@ using System;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public class MvcControllerTemplateViewModel
+	public class MvcControllerTextTemplate
 	{
-		public MvcControllerTemplateViewModel()
-			: this(String.Empty, String.Empty)
+		public MvcControllerTextTemplate()
+			: this(String.Empty, String.Empty, String.Empty)
 		{
 		}
 
-		public MvcControllerTemplateViewModel(
+		public MvcControllerTextTemplate(
 			string name,
-			string description)
+			string description,
+			string fileName)
 		{
 			this.Name = name;
 			this.Description = description;
+			this.FileName = fileName;
 		}
 		
 		public string Name { get; set; }
 		public string Description { get; set; }
+		public string FileName { get; set; }
 		public bool AddActionMethods { get; set; }
 	}
 }
