@@ -1986,7 +1986,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			public override bool IsAsync {
-				get { return lambda.IsAsync; }
+				get { return lambda != null && lambda.IsAsync; }
 			}
 			
 			public override string ToString()
