@@ -261,9 +261,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			position = 0;
 			ResetColorStack();
 			HighlightingRuleSet currentRuleSet = this.CurrentRuleSet;
-			Stack<Match[]> storedMatchArrays = new Stack<Match[]>();
-			Match[] matches = AllocateMatchArray(currentRuleSet.Spans.Count);
-			Match endSpanMatch = null;
+			Stack<IMatch[]> storedMatchArrays = new Stack<IMatch[]>();
+			IMatch[] matches = AllocateMatchArray(currentRuleSet.Spans.Count);
+			IMatch endSpanMatch = null;
 			
 			while (true) {
 				for (int i = 0; i < matches.Length; i++) {
@@ -273,7 +273,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				if (endSpanMatch == null && !spanStack.IsEmpty)
 					endSpanMatch = spanStack.Peek().EndExpression.Match(lineText, position);
 				
-				Match firstMatch = Minimum(matches, endSpanMatch);
+				IMatch firstMatch = Minimum(matches, endSpanMatch);
 				if (firstMatch == null)
 					break;
 				
@@ -331,13 +331,13 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				return;
 			if (highlightedLine != null) {
 				IList<HighlightingRule> rules = CurrentRuleSet.Rules;
-				Match[] matches = AllocateMatchArray(rules.Count);
+				IMatch[] matches = AllocateMatchArray(rules.Count);
 				while (true) {
 					for (int i = 0; i < matches.Length; i++) {
 						if (matches[i] == null || (matches[i].Success && matches[i].Index < position))
-							matches[i] = rules[i].Regex.Match(lineText, position, until - position);
+							matches[i] = rules[i].Matcher.Match(lineText, position, until - position);
 					}
-					Match firstMatch = Minimum(matches, null);
+					IMatch firstMatch = Minimum(matches, null);
 					if (firstMatch == null)
 						break;
 					
@@ -347,7 +347,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 						throw new InvalidOperationException(
 							"A highlighting rule matched 0 characters, which would cause an endless loop.\n" +
 							"Change the highlighting definition so that the rule matches at least one character.\n" +
-							"Regex: " + rules[ruleIndex].Regex);
+							"Regex: " + rules[ruleIndex].Matcher);
 					}
 					PushColor(rules[ruleIndex].Color);
 					position = firstMatch.Index + firstMatch.Length;
@@ -433,14 +433,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		}
 		#endregion
 		
-		#region Match helpers
+		#region IMatch helpers
 		/// <summary>
 		/// Returns the first match from the array or endSpanMatch.
 		/// </summary>
-		static Match Minimum(Match[] arr, Match endSpanMatch)
+		static IMatch Minimum(IMatch[] arr, IMatch endSpanMatch)
 		{
-			Match min = null;
-			foreach (Match v in arr) {
+			IMatch min = null;
+			foreach (IMatch v in arr) {
 				if (v.Success && (min == null || v.Index < min.Index))
 					min = v;
 			}
@@ -450,12 +450,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				return min;
 		}
 		
-		static Match[] AllocateMatchArray(int count)
+		static IMatch[] AllocateMatchArray(int count)
 		{
 			if (count == 0)
-				return Empty<Match>.Array;
+				return Empty<IMatch>.Array;
 			else
-				return new Match[count];
+				return new IMatch[count];
 		}
 		#endregion
 	}

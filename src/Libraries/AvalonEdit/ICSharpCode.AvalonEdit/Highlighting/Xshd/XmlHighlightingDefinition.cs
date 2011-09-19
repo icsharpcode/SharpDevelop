@@ -232,7 +232,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				}
 				return new HighlightingRule {
 					Color = GetColor(keywords, keywords.ColorReference),
-					Regex = CreateRegex(keywords, keyWordRegex.ToString(), XshdRegexType.Default)
+					Matcher = CreateRegex(keywords, keyWordRegex.ToString(), XshdRegexType.Default)
 				};
 			}
 			
@@ -241,7 +241,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				return char.IsLetterOrDigit(word[0]) && char.IsLetterOrDigit(word, word.Length - 1);
 			}
 			
-			Regex CreateRegex(XshdElement position, string regex, XshdRegexType regexType)
+			RegexMatcher CreateRegex(XshdElement position, string regex, XshdRegexType regexType)
 			{
 				if (regex == null)
 					throw Error(position, "Regex missing");
@@ -251,7 +251,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				if (ignoreCase)
 					options |= RegexOptions.IgnoreCase;
 				try {
-					return new Regex(regex, options);
+					return new RegexMatcher(new Regex(regex, options));
 				} catch (ArgumentException ex) {
 					throw Error(position, ex.Message);
 				}
@@ -352,7 +352,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			{
 				return new HighlightingRule {
 					Color = GetColor(rule, rule.ColorReference),
-					Regex = CreateRegex(rule, rule.Regex, rule.RegexType)
+					Matcher = CreateRegex(rule, rule.Regex, rule.RegexType)
 				};
 			}
 		}

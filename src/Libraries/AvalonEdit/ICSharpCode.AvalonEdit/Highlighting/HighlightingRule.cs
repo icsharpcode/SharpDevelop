@@ -13,9 +13,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	public class HighlightingRule
 	{
 		/// <summary>
-		/// Gets/Sets the regular expression for the rule.
+		/// Gets/Sets the matcher for the rule.
 		/// </summary>
-		public Regex Regex { get; set; }
+        public IMatcher Matcher { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets the highlighting color.
@@ -25,7 +25,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return "[" + GetType().Name + " " + Regex + "]";
+			return "[" + GetType().Name + " " + Matcher + "]";
 		}
 	}
 }

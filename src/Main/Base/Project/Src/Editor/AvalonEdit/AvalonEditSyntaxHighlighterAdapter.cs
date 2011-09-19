@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			IHighlighter highlighter = textEditor.GetService(typeof(IHighlighter)) as IHighlighter;
 			if (highlighter != null) {
 				// delayed evaluation doesn't cause a problem here: GetSpanStack is called immediately,
-				// only the where/select portian is evaluated later. But that won't be a problem because the
+				// only the where/select portion is evaluated later. But that won't be a problem because the
 				// HighlightingSpan instance shouldn't change once it's in use.
 				return from span in highlighter.GetSpanStack(lineNumber - 1)
 					where span.SpanColor != null && span.SpanColor.Name != null
