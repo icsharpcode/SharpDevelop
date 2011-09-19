@@ -12,9 +12,9 @@ namespace ICSharpCode.FormsDesigner.Services
 	sealed class DesignerResourceService : System.ComponentModel.Design.IResourceService
 	{
 		readonly IResourceStore store;
-		FormsDesignerAppDomainHost host;
+		FormsDesignerManager host;
 		
-		public DesignerResourceService(IResourceStore store, FormsDesignerAppDomainHost host)
+		public DesignerResourceService(IResourceStore store, FormsDesignerManager host)
 		{
 			if (store == null)
 				throw new ArgumentNullException("store");

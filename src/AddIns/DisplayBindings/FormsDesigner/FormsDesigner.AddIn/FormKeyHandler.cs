@@ -22,13 +22,19 @@ namespace ICSharpCode.FormsDesigner
 		
 		readonly Dictionary<Keys, CommandWrapper> keyTable = new Dictionary<Keys, CommandWrapper>();
 		FormsDesignerViewContent formsDesigner;
-		public static bool inserted = false;
 		
-		public static void Insert(FormsDesignerViewContent formsDesigner)
+		public static FormKeyHandler Insert(FormsDesignerViewContent formsDesigner)
 		{
 			Debug.Assert(!DesignerAppDomainManager.IsDesignerDomain);
-			inserted = true;
-			Application.AddMessageFilter(new FormKeyHandler(formsDesigner));
+			var filter = new FormKeyHandler(formsDesigner);
+			Application.AddMessageFilter(filter);
+			return filter;
+		}
+		
+		public void Remove()
+		{
+			Debug.Assert(!DesignerAppDomainManager.IsDesignerDomain);
+			Application.RemoveMessageFilter(this);
 		}
 		
 		public FormKeyHandler(FormsDesignerViewContent formsDesigner)
@@ -102,7 +108,7 @@ namespace ICSharpCode.FormsDesigner
 						return false;
 					}
 				}
-				var host = formsDesigner.AppDomainHost;
+				var host = formsDesigner.AppDomainManager;
 				LoggingService.Debug("Run menu command: " + commandWrapper.CommandID);
 				
 				IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)host.MenuCommandService;
@@ -131,7 +137,7 @@ namespace ICSharpCode.FormsDesigner
 			Assembly asm = typeof(WindowsFormsDesignerOptionService).Assembly;
 			// Microsoft made ToolStripKeyboardHandlingService internal, so we need Reflection
 			Type keyboardType = asm.GetType("System.Windows.Forms.Design.ToolStripKeyboardHandlingService");
-			object keyboardService = formsDesigner.AppDomainHost.GetService(keyboardType);
+			object keyboardService = formsDesigner.AppDomainManager.GetService(keyboardType);
 			if (keyboardService == null) {
 				LoggingService.Debug("no ToolStripKeyboardHandlingService found");
 				return false; // handle command normally

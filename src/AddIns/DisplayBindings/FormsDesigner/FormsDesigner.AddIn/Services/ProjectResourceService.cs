@@ -22,11 +22,11 @@ namespace ICSharpCode.FormsDesigner.Services
 	public sealed class ProjectResourceService : MarshalByRefObject, IProjectResourceService
 	{
 		IProjectContent projectContent;
-		FormsDesignerAppDomainHost host;
+		FormsDesignerManager host;
 		string stringLiteralDelimiter;
 		bool designerSupportsProjectResources = true;
 
-		public ProjectResourceService(FormsDesignerAppDomainHost host, IProjectContent projectContent)
+		public ProjectResourceService(FormsDesignerManager host, IProjectContent projectContent)
 		{
 			if (host == null)
 				throw new ArgumentNullException("host");

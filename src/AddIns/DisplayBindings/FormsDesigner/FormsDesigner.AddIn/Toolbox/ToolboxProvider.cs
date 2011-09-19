@@ -58,6 +58,8 @@ namespace ICSharpCode.FormsDesigner
 				sideBar = new FormsDesignerSideBar();
 				LoadToolbox();
 				toolboxService = (SharpDevelopToolboxService)services.GetService(typeof(IToolboxService));
+				if (toolboxService == null)
+					throw new NullReferenceException("toolboxService not found!");
 				ReloadSideTabs(false);
 				toolboxService.SelectedItemUsed += new EventHandlerProxy(SelectedToolUsedHandler);
 				sideBar.SideTabDeleted += SideTabDeleted;

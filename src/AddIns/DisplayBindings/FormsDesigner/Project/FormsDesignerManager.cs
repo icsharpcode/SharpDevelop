@@ -24,7 +24,7 @@ namespace ICSharpCode.FormsDesigner
 	/// <summary>
 	/// Description of FormsDesignerAppDomainHost.
 	/// </summary>
-	public class FormsDesignerAppDomainHost : MarshalByRefObject, IServiceProvider
+	public class FormsDesignerManager : MarshalByRefObject, IServiceProvider, IDisposable
 	{
 		DesignSurface designSurface;
 		ServiceContainer container;
@@ -33,7 +33,7 @@ namespace ICSharpCode.FormsDesigner
 		Services.MenuCommandService menuCommandService;
 		IDesignerGenerator generator;
 		bool unloading;
-		FormsDesignerAppDomainCreationProperties properties;
+		FormsDesignerCreationProperties properties;
 		readonly Dictionary<Type, TypeDescriptionProvider> addedTypeDescriptionProviders = new Dictionary<Type, TypeDescriptionProvider>();
 		
 		public string DesignSurfaceName {
@@ -68,29 +68,17 @@ namespace ICSharpCode.FormsDesigner
 		
 		static readonly DesignSurfaceManager designSurfaceManager = new DesignSurfaceManager();
 		
-		public static FormsDesignerAppDomainHost CreateFormsDesignerInAppDomain(ref AppDomain appDomain, FormsDesignerAppDomainCreationProperties properties)
-		{
-			if (appDomain == null) {
-				// Construct and initialize settings for a second AppDomain.
-				AppDomainSetup formsDesignerAppDomainSetup = new AppDomainSetup();
-				formsDesignerAppDomainSetup.ApplicationBase = Path.GetDirectoryName(typeof(FormsDesignerAppDomainHost).Assembly.Location);
-				formsDesignerAppDomainSetup.DisallowBindingRedirects = false;
-				formsDesignerAppDomainSetup.DisallowCodeDownload = true;
-				formsDesignerAppDomainSetup.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
-
-				// Create the second AppDomain.
-				appDomain = AppDomain.CreateDomain("FormsDesigner AD", null, formsDesignerAppDomainSetup);
-			}
-			var host = (FormsDesignerAppDomainHost)appDomain.CreateInstanceAndUnwrap(typeof(FormsDesignerAppDomainHost).Assembly.FullName, typeof(FormsDesignerAppDomainHost).FullName);
-			host.Initialize(properties);
-			return host;
-		}
-		
-		void Initialize(FormsDesignerAppDomainCreationProperties properties)
+		public FormsDesignerManager(FormsDesignerCreationProperties properties)
 		{
 			this.properties = properties;
+			InitializeServices();
+			InitializeEvents();
+		}
+		
+		void InitializeServices()
+		{
 			this.container = new DefaultServiceContainer();
-			container.AddService(typeof(FormsDesignerAppDomainHost), this);
+			container.AddService(typeof(FormsDesignerManager), this);
 			container.AddService(typeof(IFormsDesignerLoggingService), logger = new FormsDesignerLoggingServiceProxy(properties.Logger));
 			container.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
 			container.AddService(typeof(ITypeResolutionService), new TypeResolutionService(properties.FileName, container, properties.TypeLocator));
@@ -113,8 +101,6 @@ namespace ICSharpCode.FormsDesigner
 			// Provide the ImageResourceEditor for all Image and Icon properties
 			addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
 			addedTypeDescriptionProviders.Add(typeof(Icon), TypeDescriptor.AddAttributes(typeof(Icon), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
-			
-			InitializeEvents();
 		}
 		
 		#region Events
@@ -145,7 +131,7 @@ namespace ICSharpCode.FormsDesigner
 				DesignSurfaceFlushed(this, e);
 			}
 		}
-
+		
 		public event EventHandler DesignSurfaceUnloading;
 		
 		protected virtual void OnDesignSurfaceUnloading(EventArgs e)
@@ -262,27 +248,27 @@ namespace ICSharpCode.FormsDesigner
 			
 			Host.TransactionClosed += TransactionClose;
 		}
-
+		
 		void SelectionServiceSelectionChanged(object sender, EventArgs e)
 		{
 			UpdatePropertyPadSelection((ISelectionService)sender);
 		}
-
+		
 		void Host_TransactionClosed(object sender, DesignerTransactionCloseEventArgs e)
 		{
 			OnHostTransactionClosed(e);
 		}
-
+		
 		void componentChangeService_ComponentRename(object sender, ComponentRenameEventArgs e)
 		{
 			OnComponentRename(new ComponentRenameEventArgsProxy { Component = e.Component, NewName = e.NewName, OldName = e.OldName });
 		}
-
+		
 		void componentChangeService_ComponentRemoved(object sender, ComponentEventArgs e)
 		{
 			OnComponentRemoved(new ComponentEventArgsProxy { Component = e.Component });
 		}
-
+		
 		void componentChangeService_ComponentAdded(object sender, ComponentEventArgs e)
 		{
 			OnComponentAdded(new ComponentEventArgsProxy { Component = e.Component });
@@ -292,24 +278,24 @@ namespace ICSharpCode.FormsDesigner
 		{
 			OnDesignSurfaceUnloaded(e);
 		}
-
+		
 		void designSurface_Unloading(object sender, EventArgs e)
 		{
 			unloading = true;
 			OnDesignSurfaceUnloading(e);
 		}
-
+		
 		void designSurface_Flushed(object sender, EventArgs e)
 		{
 			OnDesignSurfaceFlushed(e);
 		}
-
+		
 		void designSurface_Loaded(object sender, LoadedEventArgs e)
 		{
 			unloading = false;
 			OnDesignSurfaceLoaded(e);
 		}
-
+		
 		void designSurface_Loading(object sender, EventArgs e)
 		{
 			unloading = false;
@@ -555,17 +541,23 @@ namespace ICSharpCode.FormsDesigner
 		{
 			return ProjectResourceInfo.Create((IResourceStore)GetService(typeof(IResourceStore)), resourceFile, resourceKey);
 		}
-	}
-	
-	public class FormsDesignerAppDomainCreationProperties : MarshalByRefObject
-	{
-		public string FileName { get; set; }
-		public ITypeLocator TypeLocator { get; set; }
-		public IGacWrapper GacWrapper { get; set; }
-		public ICommandProvider Commands { get; set; }
-		public IFormsDesigner FormsDesignerProxy { get; set; }
-		public IFormsDesignerLoggingService Logger { get; set; }
-		public SharpDevelopDesignerOptions Options { get; set; }
-		public IResourceStore ResourceStore { get; set; }
+		
+		bool disposed;
+		
+		public void Dispose()
+		{
+			if (!disposed) {
+				DisposeDesignSurface();
+				UnregisterTypeProviders();
+				Services.Dispose();
+				disposed = true;
+			}
+		}
+		
+		public void ResetServiceContainer()
+		{
+			UnregisterTypeProviders();
+			InitializeServices();
+		}
 	}
 }

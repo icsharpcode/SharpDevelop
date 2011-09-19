@@ -226,13 +226,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		IServiceProvider provider;
 		IFormsDesignerLoggingService logger;
-		FormsDesignerAppDomainHost appDomainHost;
+		FormsDesignerManager appDomainHost;
 		
 		public ComponentLibraryLoader(IServiceProvider provider)
 		{
 			this.provider = provider;
 			logger = (IFormsDesignerLoggingService)provider.GetService(typeof(IFormsDesignerLoggingService));
-			appDomainHost = (FormsDesignerAppDomainHost)provider.GetService(typeof(FormsDesignerAppDomainHost));
+			appDomainHost = (FormsDesignerManager)provider.GetService(typeof(FormsDesignerManager));
 			Categories = new List<Category>();
 		}
 		

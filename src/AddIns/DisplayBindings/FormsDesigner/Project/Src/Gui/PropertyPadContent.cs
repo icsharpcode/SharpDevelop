@@ -70,7 +70,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		public event EventHandler SelectedObjectChanged;
 		public event SelectedGridItemChangedEventHandler SelectedGridItemChanged;
 		
-		public PropertyPadContent(IDesignerHost host, IFormsDesigner designer, FormsDesignerAppDomainHost appDomainHost)
+		public PropertyPadContent(IDesignerHost host, IFormsDesigner designer, FormsDesignerManager appDomainHost)
 		{
 			ideContainer = new IDEContainer(appDomainHost);
 			

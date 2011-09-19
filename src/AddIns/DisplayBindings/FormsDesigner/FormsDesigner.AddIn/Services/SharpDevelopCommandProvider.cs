@@ -46,7 +46,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			if (panel != null) {
 				Point p = panel.PointToClient(new Point(x, y));
 				
-				MenuService.ShowContextMenu(vc.AppDomainHost, contextMenuPath, panel, p.X, p.Y);
+				MenuService.ShowContextMenu(vc.AppDomainManager, contextMenuPath, panel, p.X, p.Y);
 			}
 		}
 	}

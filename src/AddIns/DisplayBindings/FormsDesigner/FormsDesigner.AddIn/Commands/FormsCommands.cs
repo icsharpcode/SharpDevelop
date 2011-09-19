@@ -24,7 +24,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 			get;
 		}
 		
-		protected virtual bool CanExecuteCommand(FormsDesignerAppDomainHost host)
+		protected virtual bool CanExecuteCommand(FormsDesignerManager host)
 		{
 			return true;
 		}
@@ -42,8 +42,8 @@ namespace ICSharpCode.FormsDesigner.Commands
 		{
 			try {
 				FormsDesignerViewContent formsDesigner = FormsDesigner;
-				if (formsDesigner != null && CanExecuteCommand(formsDesigner.AppDomainHost)) {
-					IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)formsDesigner.AppDomainHost.MenuCommandService;
+				if (formsDesigner != null && CanExecuteCommand(formsDesigner.AppDomainManager)) {
+					IMenuCommandServiceProxy menuCommandService = (IMenuCommandServiceProxy)formsDesigner.AppDomainManager.MenuCommandService;
 					menuCommandService.GlobalInvoke(CommandID);
 				}
 			} catch (Exception e) {
@@ -100,7 +100,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 		{
 			List<ToolStripItem> items = new List<ToolStripItem>();
 			
-			foreach (IDesignerVerbProxy verb in ((FormsDesignerAppDomainHost)owner).CommandVerbs) {
+			foreach (IDesignerVerbProxy verb in ((FormsDesignerManager)owner).CommandVerbs) {
 				items.Add(new ContextMenuCommand(verb));
 			}
 			
@@ -248,7 +248,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 			}
 		}
 		
-		protected override bool CanExecuteCommand(FormsDesignerAppDomainHost host)
+		protected override bool CanExecuteCommand(FormsDesignerManager host)
 		{
 			ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
 			return selectionService.SelectionCount > 1;
@@ -292,7 +292,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 			}
 		}
 		
-		protected override bool CanExecuteCommand(FormsDesignerAppDomainHost host)
+		protected override bool CanExecuteCommand(FormsDesignerManager host)
 		{
 			ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
 			return selectionService.SelectionCount > 1;
@@ -408,7 +408,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 			get {
 				FormsDesignerViewContent formDesigner = FormDesigner;
 				if (formDesigner != null) {
-					return formDesigner.AppDomainHost.GetService(typeof(ComponentTray)) as ComponentTray;
+					return formDesigner.AppDomainManager.GetService(typeof(ComponentTray)) as ComponentTray;
 				}
 				return null;
 				

@@ -79,6 +79,7 @@
     <Compile Include="Commands\FormsCommands.cs" />
     <Compile Include="Commands\SideBarCommands.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="DesignerAppDomainHost.cs" />
     <Compile Include="DesignerGenerator\AbstractDesignerGenerator.cs" />
     <Compile Include="DesignerGenerator\CodeDOMGenerator.cs" />
     <Compile Include="DesignerGenerator\CSharpDesignerGenerator.cs" />
@@ -89,7 +90,6 @@
     <Compile Include="DesignerLoader\NRefactoryDesignerLoader.cs" />
     <Compile Include="DesignerSourceCodeStorage.cs" />
     <Compile Include="FormKeyHandler.cs" />
-    <Compile Include="FormsDesignerAppDomainServer.cs" />
     <Compile Include="FormsDesignerLoggingServiceImpl.cs" />
     <Compile Include="FormsDesignerViewContent.cs" />
     <Compile Include="ImageResourceEditorDialogWrapper.cs" />

@@ -12,9 +12,9 @@ namespace ICSharpCode.FormsDesigner.Gui
 	{
 		IServiceProvider serviceProvider;
 		IComponent grid;
-		FormsDesignerAppDomainHost appDomainHost;
+		FormsDesignerManager appDomainHost;
 		
-		public IDEContainer(FormsDesignerAppDomainHost appDomainHost)
+		public IDEContainer(FormsDesignerManager appDomainHost)
 		{
 			this.appDomainHost = appDomainHost;
 		}

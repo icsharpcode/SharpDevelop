@@ -62,7 +62,8 @@
     </Compile>
     <EmbeddedResource Include="Resources\WindowsFormsGridOptions.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="FormsDesignerAppDomainHost.cs" />
+    <Compile Include="FormsDesignerCreationProperties.cs" />
+    <Compile Include="FormsDesignerManager.cs" />
     <Compile Include="Src\DesignerAppDomainManager.cs" />
     <Compile Include="Src\DesignerLoader\SharpDevelopDesignerLoader.cs" />
     <Compile Include="Src\DesignerLoader\IDesignerLoader.cs" />
@@ -109,13 +110,6 @@
     <EmbeddedResource Include="Src\ImageResourceEditorDialog.resx">
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
-      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
-      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
