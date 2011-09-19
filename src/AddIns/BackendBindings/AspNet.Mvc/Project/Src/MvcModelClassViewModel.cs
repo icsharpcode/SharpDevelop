@@ -19,7 +19,11 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void GetName()
 		{
-			name = String.Format("{0} ({1})", mvcClass.Name, mvcClass.Namespace);
+			if (String.IsNullOrEmpty(mvcClass.Namespace)) {
+				name = mvcClass.Name;
+			} else {
+				name = String.Format("{0} ({1})", mvcClass.Name, mvcClass.Namespace);
+			}
 		}
 		
 		public string Name {

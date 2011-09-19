@@ -52,5 +52,14 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual("ICSharpCode.Tests.MyClass", name);
 		}
+		
+		[Test]
+		public void Name_ClassNameButHasEmptyNamespace_ReturnsClassNameOnly()
+		{
+			CreateViewModel(String.Empty, "MyClass");
+			string text = viewModel.Name;
+			
+			Assert.AreEqual("MyClass", text);
+		}
 	}
 }
