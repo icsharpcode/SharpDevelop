@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 	{
 		string RootNamespace { get; }
 		string GetTypeNameForAttribute(CSharp.Attribute attribute);
-		ClassType GetClassTypeForAstType(CSharp.AstType type);
+		TypeKind GetTypeKindForAstType(CSharp.AstType type);
 		TypeCode ResolveExpression(CSharp.Expression expression);
 		bool? IsReferenceType(CSharp.Expression expression);
 		ITypeResolveContext ResolveContext { get; }
@@ -881,7 +881,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 				if (typeDeclaration.BaseTypes.Any()) {
 					var first = typeDeclaration.BaseTypes.First();
 					
-					if (provider.GetClassTypeForAstType(first) != ClassType.Interface) {
+					if (provider.GetTypeKindForAstType(first) != TypeKind.Interface) {
 						ConvertNodes(typeDeclaration.BaseTypes.Skip(1), type.ImplementsTypes);
 						type.InheritsType = (AstType)first.AcceptVisitor(this, data);
 					} else
@@ -1369,11 +1369,11 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			return EndNode(yieldBreakStatement, new ReturnStatement());
 		}
 		
-		public AstNode VisitYieldStatement(CSharp.YieldStatement yieldStatement, object data)
+		public AstNode VisitYieldReturnStatement(CSharp.YieldReturnStatement yieldReturnStatement, object data)
 		{
 			var frame = members.Peek();
 			frame.inIterator = true;
-			return EndNode(yieldStatement, new YieldStatement((Expression)yieldStatement.Expression.AcceptVisitor(this, data)));
+			return EndNode(yieldReturnStatement, new YieldStatement((Expression)yieldReturnStatement.Expression.AcceptVisitor(this, data)));
 		}
 		
 		public AstNode VisitAccessor(CSharp.Accessor accessor, object data)
@@ -1822,11 +1822,9 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			
 			ConvertNodes(parameterDeclaration.Attributes, param.Attributes);
 			param.Modifiers = ConvertParamModifiers(parameterDeclaration.ParameterModifier);
-			if ((param.Modifiers & Modifiers.None) == Modifiers.None)
-				param.Modifiers = Modifiers.ByVal;
 			if ((parameterDeclaration.ParameterModifier & ICSharpCode.NRefactory.CSharp.ParameterModifier.Out) == ICSharpCode.NRefactory.CSharp.ParameterModifier.Out) {
 				AttributeBlock block = new AttributeBlock();
-				block.Attributes.Add(new Ast.Attribute() { Type = new SimpleType("System.Runtime.InteropServices.OutAttribute") });
+				block.Attributes.Add(new Ast.Attribute() { Type = new SimpleType("Out") });
 				param.Attributes.Add(block);
 			}
 			param.Name = new Identifier(parameterDeclaration.Name, TextLocation.Empty);
@@ -1845,7 +1843,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 				case ICSharpCode.NRefactory.CSharp.ParameterModifier.This:
 					return Modifiers.None;
 				case ICSharpCode.NRefactory.CSharp.ParameterModifier.Ref:
-					return Modifiers.ByRef;
 				case ICSharpCode.NRefactory.CSharp.ParameterModifier.Out:
 					return Modifiers.ByRef;
 				case ICSharpCode.NRefactory.CSharp.ParameterModifier.Params:
@@ -2126,6 +2123,10 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			if (readable && !writeable)
 				mod |= Modifiers.ReadOnly;
 			
+			if ((modifier & CSharp.Modifiers.Override) == CSharp.Modifiers.Override)
+				mod |= Modifiers.Override;
+			if ((modifier & CSharp.Modifiers.Virtual) == CSharp.Modifiers.Virtual)
+				mod |= Modifiers.Overridable;
 			
 			return mod;
 		}

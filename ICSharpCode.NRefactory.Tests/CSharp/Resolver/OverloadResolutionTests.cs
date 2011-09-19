@@ -236,6 +236,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return true; }
 			}
 			
+			public override bool IsAsync {
+				get { return false; }
+			}
+			
 			public override IType GetInferredReturnType(IType[] parameterTypes)
 			{
 				return inferredReturnType;

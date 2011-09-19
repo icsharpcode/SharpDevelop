@@ -179,9 +179,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		OutputVisitor CreatePrinter(StringWriter writer)
+		CSharpOutputVisitor CreatePrinter(StringWriter writer)
 		{
-			return new OutputVisitor(writer, new CSharpFormattingOptions());
+			return new CSharpOutputVisitor(writer, new CSharpFormattingOptions());
 		}
 		
 		void PrintModifiers(Modifiers modifiers, StringWriter writer)
@@ -202,7 +202,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AstNode astNode = astBuilder.ConvertVariable(v);
 				CSharpFormattingOptions formatting = new CSharpFormattingOptions();
 				StringWriter writer = new StringWriter();
-				astNode.AcceptVisitor(new OutputVisitor(writer, formatting), null);
+				astNode.AcceptVisitor(new CSharpOutputVisitor(writer, formatting), null);
 				return writer.ToString().TrimEnd(';', '\r', '\n');
 			}
 		}
@@ -213,7 +213,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			AstType astType = astBuilder.ConvertType(type);
 			CSharpFormattingOptions formatting = new CSharpFormattingOptions();
 			StringWriter writer = new StringWriter();
-			astType.AcceptVisitor(new OutputVisitor(writer, formatting), null);
+			astType.AcceptVisitor(new CSharpOutputVisitor(writer, formatting), null);
 			return writer.ToString();
 		}
 		
@@ -224,7 +224,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AstType astType = astBuilder.ConvertTypeReference(type);
 				CSharpFormattingOptions formatting = new CSharpFormattingOptions();
 				StringWriter writer = new StringWriter();
-				astType.AcceptVisitor(new OutputVisitor(writer, formatting), null);
+				astType.AcceptVisitor(new CSharpOutputVisitor(writer, formatting), null);
 				return writer.ToString();
 			}
 		}

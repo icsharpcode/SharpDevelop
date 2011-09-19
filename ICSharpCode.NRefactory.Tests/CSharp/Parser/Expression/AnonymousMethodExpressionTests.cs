@@ -24,7 +24,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 {
 	[TestFixture]
-	public class AnonymousMethodTests
+	public class AnonymousMethodExpressionTests
 	{
 		AnonymousMethodExpression Parse(string expression)
 		{
@@ -37,6 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			AnonymousMethodExpression ame = Parse("delegate {}");
 			Assert.AreEqual(0, ame.Parameters.Count());
 			Assert.AreEqual(0, ame.Body.Statements.Count());
+			Assert.IsFalse(ame.IsAsync);
 			Assert.IsFalse(ame.HasParameterList);
 		}
 		
@@ -66,6 +67,16 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			Assert.AreEqual(2, ame.Parameters.Count());
 			Assert.AreEqual(1, ame.Body.Statements.Count());
 			Assert.IsTrue(ame.Body.Statements.First() is ReturnStatement);
+		}
+		
+		[Test, Ignore("async/await not yet supported")]
+		public void AsyncAnonymousMethod()
+		{
+			AnonymousMethodExpression ame = Parse("async delegate {}");
+			Assert.AreEqual(0, ame.Parameters.Count());
+			Assert.AreEqual(0, ame.Body.Statements.Count());
+			Assert.IsTrue(ame.IsAsync);
+			Assert.IsFalse(ame.HasParameterList);
 		}
 	}
 }

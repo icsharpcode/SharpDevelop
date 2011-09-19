@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.Demo
 		void CSharpGenerateCodeButtonClick(object sender, EventArgs e)
 		{
 			StringWriter w = new StringWriter();
-			OutputVisitor output = new OutputVisitor(w, new CSharpFormattingOptions());
+			CSharpOutputVisitor output = new CSharpOutputVisitor(w, new CSharpFormattingOptions());
 			compilationUnit.AcceptVisitor(output, null);
 			csharpCodeTextBox.Text = w.ToString();
 		}

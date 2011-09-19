@@ -92,6 +92,32 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			TestUnaryOperatorExpressionTest("&a", UnaryOperatorType.AddressOf);
 		}
 		
+		[Test, Ignore("async/await not yet supported")]
+		public void Await()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"async a => await a",
+				new LambdaExpression {
+					IsAsync = true,
+					Parameters = { new ParameterDeclaration { Name = "a" } },
+					Body = new UnaryOperatorExpression(UnaryOperatorType.Await, new IdentifierExpression("a"))
+				});
+		}
+		
+		[Test, Ignore("async/await not yet supported")]
+		public void AwaitAwait()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"async a => await await a",
+				new LambdaExpression {
+					IsAsync = true,
+					Parameters = { new ParameterDeclaration { Name = "a" } },
+					Body = new UnaryOperatorExpression(
+						UnaryOperatorType.Await,
+						new UnaryOperatorExpression(UnaryOperatorType.Await, new IdentifierExpression("a")))
+				});
+		}
+		
 		[Test]
 		public void DereferenceAfterCast()
 		{

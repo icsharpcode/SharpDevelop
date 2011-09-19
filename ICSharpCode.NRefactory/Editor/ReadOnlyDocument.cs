@@ -111,6 +111,24 @@ namespace ICSharpCode.NRefactory.Editor
 			public int LineNumber {
 				get { return lineNumber; }
 			}
+			
+			public IDocumentLine PreviousLine {
+				get {
+					if (lineNumber == 1)
+						return null;
+					else
+						return new ReadOnlyDocumentLine(doc, lineNumber - 1);
+				}
+			}
+			
+			public IDocumentLine NextLine {
+				get {
+					if (lineNumber == doc.LineCount)
+						return null;
+					else
+						return new ReadOnlyDocumentLine(doc, lineNumber + 1);
+				}
+			}
 		}
 		
 		int GetStartOffset(int lineNumber)
@@ -151,10 +169,10 @@ namespace ICSharpCode.NRefactory.Editor
 			if (line < 1 || line > lines.Length)
 				throw new ArgumentOutOfRangeException("line", line, "Value must be between 1 and " + lines.Length);
 			int lineStart = GetStartOffset(line);
-			if (column <= 0)
+			if (column <= 1)
 				return lineStart;
 			int lineEnd = GetEndOffset(line);
-			if (column >= lineEnd - lineStart)
+			if (column - 1 >= lineEnd - lineStart)
 				return lineEnd;
 			return lineStart + column - 1;
 		}
