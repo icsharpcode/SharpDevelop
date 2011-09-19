@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory.Editor;
 using SpanStack = ICSharpCode.AvalonEdit.Utils.ImmutableStack<ICSharpCode.AvalonEdit.Highlighting.HighlightingSpan>;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
@@ -26,14 +26,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		readonly CompressingTreeList<SpanStack> storedSpanStacks = new CompressingTreeList<SpanStack>(object.ReferenceEquals);
 		readonly CompressingTreeList<bool> isValid = new CompressingTreeList<bool>((a, b) => a == b);
-		readonly TextDocument document;
+		readonly IDocument document;
 		readonly HighlightingRuleSet baseRuleSet;
 		bool isHighlighting;
 		
 		/// <summary>
 		/// Gets the document that this DocumentHighlighter is highlighting.
 		/// </summary>
-		public TextDocument Document {
+		public IDocument Document {
 			get { return document; }
 		}
 		
@@ -49,6 +49,20 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			this.document = document;
 			this.baseRuleSet = baseRuleSet;
 			WeakLineTracker.Register(document, this);
+			InvalidateHighlighting();
+		}
+		
+		/// <summary>
+		/// Creates a new DocumentHighlighter instance.
+		/// </summary>
+		public DocumentHighlighter(ReadOnlyDocument document, HighlightingRuleSet baseRuleSet)
+		{
+			if (document == null)
+				throw new ArgumentNullException("document");
+			if (baseRuleSet == null)
+				throw new ArgumentNullException("baseRuleSet");
+			this.document = document;
+			this.baseRuleSet = baseRuleSet;
 			InvalidateHighlighting();
 		}
 		
@@ -125,19 +139,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		int firstInvalidLine;
 		
-		/// <summary>
-		/// Highlights the specified document line.
-		/// </summary>
-		/// <param name="line">The line to highlight.</param>
-		/// <returns>A <see cref="HighlightedLine"/> line object that represents the highlighted sections.</returns>
-		[ObsoleteAttribute("Use the (int lineNumber) overload instead")]
-		public HighlightedLine HighlightLine(DocumentLine line)
-		{
-			if (!document.Lines.Contains(line))
-				throw new ArgumentException("The specified line does not belong to the document.");
-			return HighlightLine(line.LineNumber);
-		}
-		
 		/// <inheritdoc/>
 		public HighlightedLine HighlightLine(int lineNumber)
 		{
@@ -146,7 +147,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			isHighlighting = true;
 			try {
 				HighlightUpTo(lineNumber);
-				DocumentLine line = document.GetLineByNumber(lineNumber);
+				IDocumentLine line = document.GetLineByNumber(lineNumber);
 				highlightedLine = new HighlightedLine(document, line);
 				HighlightLineAndUpdateTreeList(line, lineNumber);
 				return highlightedLine;
@@ -187,7 +188,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			}
 		}
 		
-		void HighlightLineAndUpdateTreeList(DocumentLine line, int lineNumber)
+		void HighlightLineAndUpdateTreeList(IDocumentLine line, int lineNumber)
 		{
 			//Debug.WriteLine("Highlight line " + lineNumber + (highlightedLine != null ? "" : " (span stack only)"));
 			spanStack = storedSpanStacks[lineNumber - 1];
@@ -236,7 +237,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <remarks>This callback must not call HighlightLine or InvalidateHighlighting.
 		/// It may call GetSpanStack, but only for the changed line and lines above.
 		/// This method must not modify the document.</remarks>
-		protected virtual void OnHighlightStateChanged(DocumentLine line, int lineNumber)
+		protected virtual void OnHighlightStateChanged(IDocumentLine line, int lineNumber)
 		{
 		}
 		
@@ -254,10 +255,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		HighlightedLine highlightedLine;
 		
-		void HighlightLineInternal(DocumentLine line)
+		void HighlightLineInternal(IDocumentLine line)
 		{
 			lineStartOffset = line.Offset;
-			lineText = document.GetText(line.Offset, line.Length);
+			lineText = document.GetText(lineStartOffset, line.Length);
 			position = 0;
 			ResetColorStack();
 			HighlightingRuleSet currentRuleSet = this.CurrentRuleSet;

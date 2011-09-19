@@ -12,6 +12,8 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -119,11 +121,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.baseHighlighter = baseHighlighter;
 			}
 
-			public TextDocument Document {
+			public IDocument Document {
 				get { return baseHighlighter.Document; }
 			}
 			
-			public ICSharpCode.AvalonEdit.Utils.ImmutableStack<HighlightingSpan> GetSpanStack(int lineNumber)
+			public ImmutableStack<HighlightingSpan> GetSpanStack(int lineNumber)
 			{
 				return baseHighlighter.GetSpanStack(lineNumber);
 			}

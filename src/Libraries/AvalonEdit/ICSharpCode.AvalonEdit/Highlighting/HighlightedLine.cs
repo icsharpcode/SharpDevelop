@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.NRefactory.Editor;
@@ -19,12 +20,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Creates a new HighlightedLine instance.
 		/// </summary>
-		public HighlightedLine(TextDocument document, DocumentLine documentLine)
+		public HighlightedLine(IDocument document, IDocumentLine documentLine)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");
-			if (!document.Lines.Contains(documentLine))
-				throw new ArgumentException("Line is null or not part of document");
+			//if (!document.Lines.Contains(documentLine))
+			//	throw new ArgumentException("Line is null or not part of document");
 			this.Document = document;
 			this.DocumentLine = documentLine;
 			this.Sections = new NullSafeCollection<HighlightedSection>();
@@ -33,12 +34,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Gets the document associated with this HighlightedLine.
 		/// </summary>
-		public TextDocument Document { get; private set; }
+		public IDocument Document { get; private set; }
 		
 		/// <summary>
 		/// Gets the document line associated with this HighlightedLine.
 		/// </summary>
-		public DocumentLine DocumentLine { get; private set; }
+		public IDocumentLine DocumentLine { get; private set; }
 		
 		/// <summary>
 		/// Gets the highlighted sections.
@@ -117,7 +118,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			}
 			elements.Sort();
 			
-			TextDocument document = this.Document;
+			IDocument document = this.Document;
 			StringWriter w = new StringWriter(CultureInfo.InvariantCulture);
 			int textOffset = startOffset;
 			foreach (HtmlElement e in elements) {

@@ -2,8 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
@@ -16,7 +16,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Gets the underlying text document.
 		/// </summary>
-		TextDocument Document { get; }
+		IDocument Document { get; }
 		
 			/// <summary>
 		/// Gets the span stack at the end of the specified line.

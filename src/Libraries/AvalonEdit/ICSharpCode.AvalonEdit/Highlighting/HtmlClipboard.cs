@@ -66,7 +66,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <param name="segment">The part of the document to create HTML for. You can pass <c>null</c> to create HTML for the whole document.</param>
 		/// <param name="options">The options for the HTML creation.</param>
 		/// <returns>HTML code for the document part.</returns>
-		public static string CreateHtmlFragment(TextDocument document, IHighlighter highlighter, ISegment segment, HtmlOptions options)
+		public static string CreateHtmlFragment(IDocument document, IHighlighter highlighter, ISegment segment, HtmlOptions options)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");
@@ -79,7 +79,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			
 			StringBuilder html = new StringBuilder();
 			int segmentEndOffset = segment.EndOffset;
-			DocumentLine line = document.GetLineByOffset(segment.Offset);
+			IDocumentLine line = document.GetLineByOffset(segment.Offset);
 			while (line != null && line.Offset < segmentEndOffset) {
 				HighlightedLine highlightedLine;
 				if (highlighter != null)

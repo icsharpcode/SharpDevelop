@@ -6,9 +6,9 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
@@ -206,7 +206,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				this.textView = textView;
 			}
 			
-			protected override void OnHighlightStateChanged(DocumentLine line, int lineNumber)
+			protected override void OnHighlightStateChanged(IDocumentLine line, int lineNumber)
 			{
 				base.OnHighlightStateChanged(line, lineNumber);
 				if (colorizer.lineNumberBeingColorized != lineNumber) {
