@@ -4,8 +4,8 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
-
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Search;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -40,6 +40,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, ExecuteUndo, CanExecuteUndo));
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, ExecuteRedo, CanExecuteRedo));
+			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, ExecuteFind));
 		}
 		
 		internal static KeyBinding CreateFrozenKeyBinding(ICommand command, ModifierKeys modifiers, Key key)
@@ -105,5 +106,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 		}
 		#endregion
+		
+		void ExecuteFind(object sender, ExecutedRoutedEventArgs e)
+		{
+			new SearchPanel(TextArea);
+		}
 	}
 }

@@ -290,6 +290,7 @@
     <Compile Include="Rendering\VisualYPosition.cs">
       <DependentUpon>VisualLine.cs</DependentUpon>
     </Compile>
+    <Compile Include="Search\SearchPanel.cs" />
     <Compile Include="Snippets\IActiveElement.cs" />
     <Compile Include="Snippets\SnippetAnchorElement.cs" />
     <Compile Include="Snippets\SnippetEventArgs.cs" />
@@ -411,5 +412,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Highlighting\Resources\CSS-Mode.xshd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Search" />
   </ItemGroup>
 </Project>
