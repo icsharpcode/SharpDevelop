@@ -203,7 +203,16 @@ namespace ICSharpCode.AspNet.Mvc
 			set {
 				isContentPage = value;
 				OnPropertyChanged(viewModel => viewModel.IsContentPage);
+				OnPropertyChanged(viewModel => viewModel.IsContentPagePropertiesEnabled);
 			}
+		}
+		
+		public bool IsContentPageEnabled {
+			get { return !IsPartialView; }
+		}
+		
+		public bool IsContentPagePropertiesEnabled {
+			get { return IsContentPage && IsContentPageEnabled; }
 		}
 		
 		public bool CanAddMvcView()
@@ -275,7 +284,11 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public bool IsPartialView {
 			get { return viewFileName.IsPartialView; }
-			set { viewFileName.IsPartialView = value; }
+			set {
+				viewFileName.IsPartialView = value;
+				OnPropertyChanged(viewModel => viewModel.IsContentPageEnabled);
+				OnPropertyChanged(viewModel => viewModel.IsContentPagePropertiesEnabled);
+			}
 		}
 		
 		public bool IsStronglyTypedView {

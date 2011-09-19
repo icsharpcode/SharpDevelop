@@ -1148,5 +1148,100 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.IsTrue(fired);
 		}
+		
+		[Test]
+		public void IsContentPageEnabled_IsPartialViewIsNotSelected_ReturnsTrue()
+		{
+			CreateViewModel();
+			viewModel.IsPartialView = false;
+			bool enabled = viewModel.IsContentPageEnabled;
+			
+			Assert.IsTrue(enabled);
+		}
+		
+		[Test]
+		public void IsContentPageEnabled_IsPartialViewIsSelected_ReturnsFalse()
+		{
+			CreateViewModel();
+			viewModel.IsPartialView = true;
+			bool enabled = viewModel.IsContentPageEnabled;
+			
+			Assert.IsFalse(enabled);
+		}
+		
+		[Test]
+		public void IsPartialView_IsPartialViewChangedFromTrueToFalse_IsContentPageEnabledPropertyChangedEventIsFired()
+		{
+			CreateViewModel();
+			viewModel.IsPartialView = true;
+			MonitorPropertyChangedEvents();
+			viewModel.IsPartialView = false;
+			SelectRazorViewEngine();
+			
+			bool fired = propertyChangedEvents.Contains("IsContentPageEnabled");
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void IsContentPagePropertiesEnabled_IsPartialViewIsNotSelectedAndIsContentPageIsSelected_ReturnsTrue()
+		{
+			CreateViewModel();
+			viewModel.IsPartialView = false;
+			viewModel.IsContentPage = true;
+			bool enabled = viewModel.IsContentPagePropertiesEnabled;
+			
+			Assert.IsTrue(enabled);
+		}
+		
+		[Test]
+		public void IsContentPagePropertiesEnabled_IsPartialViewIsNotSelectedAndIsContentPageIsNotSelected_ReturnsFalse()
+		{
+			CreateViewModel();
+			viewModel.IsPartialView = false;
+			viewModel.IsContentPage = false;
+			bool enabled = viewModel.IsContentPagePropertiesEnabled;
+			
+			Assert.IsFalse(enabled);
+		}
+		
+		[Test]
+		public void IsContentPagePropertiesEnabled_IsPartialViewIsSelectedAndIsContentPageIsSelected_ReturnsFalse()
+		{
+			CreateViewModel();
+			viewModel.IsPartialView = true;
+			viewModel.IsContentPage = true;
+			bool enabled = viewModel.IsContentPagePropertiesEnabled;
+			
+			Assert.IsFalse(enabled);
+		}
+		
+		[Test]
+		public void IsPartialView_IsPartialViewChangedFromTrueToFalse_IsContentPagePropertiesEnabledPropertyChangedEventIsFired()
+		{
+			CreateViewModel();
+			viewModel.IsPartialView = true;
+			MonitorPropertyChangedEvents();
+			viewModel.IsPartialView = false;
+			SelectRazorViewEngine();
+			
+			bool fired = propertyChangedEvents.Contains("IsContentPagePropertiesEnabled");
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void IsPartialView_IsContentPageChangedFromTrueToFalse_IsContentPagePropertiesEnabledPropertyChangedEventIsFired()
+		{
+			CreateViewModel();
+			viewModel.IsContentPage = true;
+			MonitorPropertyChangedEvents();
+			viewModel.IsContentPage = false;
+			SelectRazorViewEngine();
+			
+			bool fired = propertyChangedEvents.Contains("IsContentPagePropertiesEnabled");
+			
+			Assert.IsTrue(fired);
+		}
 	}
 }

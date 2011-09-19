@@ -113,39 +113,42 @@
 			<Label
 				Grid.Row="6"
 				Margin="0, 20, 0, 0"
+				IsEnabled="{Binding Path=IsContentPageEnabled}"
 				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
 				Content="Use Master Page:"/>
 			<Label
 				Grid.Row="6"
 				Margin="0, 20, 0, 0"
+				IsEnabled="{Binding Path=IsContentPageEnabled}"
 				Visibility="{Binding Path=IsRazorViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
 				Content="Use Layout:"/>
 			<CheckBox
 				Grid.Column="1"
 				Grid.Row="6"
 				Margin="0, 28, 0, 0"
+				IsEnabled="{Binding Path=IsContentPageEnabled}"
 				IsChecked="{Binding Path=IsContentPage}"/>
 			
 			<Label
 				Grid.Row="7"
 				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
-				IsEnabled="{Binding Path=IsContentPage}"
+				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}"
 				Content="Master Page:"/>
 			<Label
 				Grid.Row="7"
 				Visibility="{Binding Path=IsRazorViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
-				IsEnabled="{Binding Path=IsContentPage}"
+				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}"
 				Content="Layout:"/>
 			<Grid 
 				Grid.Row="7"
-				Grid.Column="1">
+				Grid.Column="1"
+				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="Auto"/>
 					<ColumnDefinition Width="Auto"/>
 				</Grid.ColumnDefinitions>
 				<TextBox
-					IsEnabled="{Binding Path=IsContentPage}"
 					Text="{Binding Path=MasterPageFile}"/>
 				<StackPanel
 					Grid.Column="2"
@@ -153,7 +156,6 @@
 					<Button
 						Padding="9, 0, 9, 0"
 						Style="{x:Null}"
-						IsEnabled="{Binding Path=IsContentPage}"
 						Content="..."
 						Command="{Binding Path=OpenSelectMasterPageViewCommand}"/>
 				</StackPanel>
@@ -162,13 +164,13 @@
 			<Label
 				Grid.Row="8"
 				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
-				IsEnabled="{Binding Path=IsContentPage}"
+				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}"
 				Content="Main Content ID:"/>
 			<TextBox
 				Grid.Row="8"
 				Grid.Column="1"
 				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
-				IsEnabled="{Binding Path=IsContentPage}"
+				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}"
 				Text="{Binding Path=PrimaryContentPlaceHolderId}"/>
 			
 			<StackPanel
