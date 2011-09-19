@@ -99,6 +99,5 @@
     </Compile>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildBinPath)\Microsoft.WinFX.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
