@@ -145,6 +145,8 @@
     <Compile Include="Src\Utility\DoubleKeyDictionary.cs" />
     <Compile Include="Src\Utility\IColorizer.cs" />
     <Compile Include="Src\Utility\Helper.cs" />
+    <Compile Include="Src\Utility\LocalizeableCombo\EnumToFriendlyNameConverter.cs" />
+    <Compile Include="Src\Utility\LocalizeableCombo\LocalizableDescriptionAttribute.cs" />
     <Compile Include="Src\Utility\Matrix.cs" />
     <Compile Include="Src\Utility\RelayCommand.cs" />
     <Compile Include="Src\Utility\ViewModelBase.cs" />
@@ -264,7 +266,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Utility" />
-    <Folder Include="Src\Utility\LocaliceableCombo" />
+    <Folder Include="Src\Utility\LocalizeableCombo" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

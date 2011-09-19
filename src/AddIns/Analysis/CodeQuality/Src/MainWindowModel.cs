@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 
 using ICSharpCode.CodeQualityAnalysis.Controls;
 using ICSharpCode.CodeQualityAnalysis.Utility;
-
+using ICSharpCode.CodeQualityAnalysis.Utility.LocalizeableCombo;
 using Microsoft.Win32;
 
 namespace ICSharpCode.CodeQualityAnalysis
@@ -32,10 +32,16 @@ namespace ICSharpCode.CodeQualityAnalysis
 		Method
 	}
 	
+	
 	public enum Metrics
 	{
+		[LocalizableDescription("IL Instructions")]
 		ILInstructions,
+		
+		[LocalizableDescription("Cyclomatic Complexity")]
 		CyclomaticComplexity,
+		
+		[LocalizableDescription("Variables")]
 		Variables
 	}
 	
@@ -211,6 +217,5 @@ namespace ICSharpCode.CodeQualityAnalysis
 					throw new Exception("Invalid value for Metrics");
 			}
 		}
-		
 	}
 }

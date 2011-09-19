@@ -12,11 +12,14 @@
 	xmlns:tree="http://icsharpcode.net/sharpdevelop/treeview"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
 	xmlns:t="clr-namespace:TreeMaps.Controls;assembly=TreeMaps"
+	xmlns:loc ="clr-namespace:ICSharpCode.CodeQualityAnalysis.Utility.LocalizeableCombo"
 	Title="{Binding FrmTitle}"
 	x:Name="root">
+	
 	<Window.DataContext>
 		<src:MainWindowViewModel />
 	</Window.DataContext>
+	
 	<Window.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -27,6 +30,7 @@
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Window.Resources>
+	
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition
@@ -238,6 +242,8 @@
 						</ObjectDataProvider.MethodParameters>
 					</ObjectDataProvider>
 					
+					 <loc:EnumToFriendlyNameConverter x:Key="enumItemsConverter"/>
+
 					<DataTemplate
 						x:Key="TreeMapDataTemplate">
 						<Border
@@ -279,10 +285,20 @@
 							
 							<TextBlock  Margin="4,0,0,0" Text="Metric: " />
 													
-							<ComboBox Width="200" Margin="4,0,0,0"							          							    
+							<ComboBox Width="200" Margin="4,0,0,0"
 							          ItemsSource="{Binding Source={StaticResource Metrics}}"
 							          SelectedItem="{Binding SelectedMetrics}">
-							</ComboBox>        
+								<ComboBox.ItemTemplate>
+									<DataTemplate>
+										<Label  Content="{Binding   Path=.,Mode=OneWay,
+										       Converter={StaticResource enumItemsConverter}}"
+										       Height="Auto"
+										       Margin="0"
+										       VerticalAlignment="Center"/>
+									
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
 						</ToolBar>
 					
 					</ToolBarTray>
