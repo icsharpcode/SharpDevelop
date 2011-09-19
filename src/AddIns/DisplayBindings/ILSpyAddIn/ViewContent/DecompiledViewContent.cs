@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
-
 using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
@@ -15,6 +14,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
 using Mono.Cecil;
 
@@ -197,7 +197,7 @@ namespace ICSharpCode.ILSpyAddIn
 			JumpToEntity(this.jumpToEntityTagWhenDecompilationFinished);
 			
 			// update UI
-			UpdateIconMargin(output.ToString());
+			UpdateIconMargin();
 			
 			// fire events
 			OnDecompilationFinished(EventArgs.Empty);
@@ -205,9 +205,11 @@ namespace ICSharpCode.ILSpyAddIn
 		#endregion
 		
 		#region Update UI
-		void UpdateIconMargin(string text)
+		void UpdateIconMargin()
 		{
-			codeView.IconBarManager.UpdateClassMemberBookmarks(ParserService.ParseFile(tempFileName, new StringTextBuffer(text)));
+			codeView.IconBarManager.UpdateClassMemberBookmarks(
+				ParserService.ParseFile(tempFileName, new AvalonEditDocumentAdapter(codeView.Document, null)),
+				null);
 			
 			// load bookmarks
 			foreach (SDBookmark bookmark in BookmarkManager.GetBookmarks(this.codeView.TextEditor.FileName)) {

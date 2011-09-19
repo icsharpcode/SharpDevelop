@@ -581,7 +581,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					quickClassBrowser = null;
 				}
 			}
-			iconBarManager.UpdateClassMemberBookmarks(parseInfo);
+			iconBarManager.UpdateClassMemberBookmarks(parseInfo, document);
 			primaryTextEditor.UpdateParseInformationForFolding(parseInfo);
 			if (secondaryTextEditor != null)
 				secondaryTextEditor.UpdateParseInformationForFolding(parseInfo);
