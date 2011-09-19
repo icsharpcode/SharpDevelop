@@ -515,7 +515,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		protected override IVisualLineTransformer CreateColorizer(IHighlightingDefinition highlightingDefinition)
 		{
 			return new CustomizableHighlightingColorizer(
-				highlightingDefinition.MainRuleSet,
+				highlightingDefinition,
 				FetchCustomizations(highlightingDefinition.Name));
 		}
 		

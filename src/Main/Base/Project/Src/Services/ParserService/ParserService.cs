@@ -658,13 +658,30 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 			}
 			
+			Task<ParseInformation> runningAsyncParseTask;
+			ITextSourceVersion runningAsyncParseFileContentVersion;
+			
 			public Task<ParseInformation> ParseAsync(ITextSource fileContent)
 			{
 				bool lookupOpenFileOnTargetThread;
 				SnapshotFileContentForAsyncOperation(ref fileContent, out lookupOpenFileOnTargetThread);
 				
-				// TODO: don't use background task if fileContent was specified and up-to-date parse info is available
-				return System.Threading.Tasks.Task.Factory.StartNew(
+				ITextSourceVersion fileContentVersion = fileContent != null ? fileContent.Version : null;
+				if (fileContentVersion != null) {
+					// Optimization:
+					// don't start a background task if fileContent was specified and up-to-date parse info is available
+					lock (this) {
+						if (cachedParseInformation != null && bufferVersion != null && bufferVersion.BelongsToSameDocumentAs(fileContentVersion)) {
+							if (bufferVersion.CompareAge(fileContentVersion) >= 0) {
+								TaskCompletionSource<ParseInformation> tcs = new TaskCompletionSource<ParseInformation>();
+								tcs.SetResult(cachedParseInformation);
+								return tcs.Task;
+							}
+						}
+					}
+				}
+				
+				var task = new Task<ParseInformation>(
 					delegate {
 						try {
 							if (lookupOpenFileOnTargetThread) {
@@ -677,9 +694,29 @@ namespace ICSharpCode.SharpDevelop.Parser
 						} catch (Exception ex) {
 							MessageService.ShowException(ex, "Error during async parse");
 							return null;
+						} finally {
+							lock (this) {
+								this.runningAsyncParseTask = null;
+								this.runningAsyncParseFileContentVersion = null;
+							}
 						}
 					}
 				);
+				if (fileContentVersion != null) {
+					// Optimization: when additional async parse runs are requested while the parser is already
+					// running for that file content, return the task that's already running
+					// instead of starting additional copies.
+					lock (this) {
+						if (runningAsyncParseTask != null && runningAsyncParseFileContentVersion.BelongsToSameDocumentAs(fileContentVersion)) {
+							if (runningAsyncParseFileContentVersion.CompareAge(fileContentVersion) >= 0)
+								return runningAsyncParseTask;
+						}
+						this.runningAsyncParseTask = task;
+						this.runningAsyncParseFileContentVersion = fileContentVersion;
+					}
+				}
+				task.Start();
+				return task;
 			}
 			
 			public Task<IParsedFile> ParseFileAsync(IProjectContent parentProjectContent, ITextSource fileContent)
@@ -1097,8 +1134,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			var parseInfo = entry.Parse(fileContent);
 			if (parseInfo == null)
 				return null;
-			IProject project = GetProject(parseInfo.ProjectContent);
-			var context = project != null ? project.TypeResolveContext : GetDefaultTypeResolveContext();
+			var context = GetTypeResolveContext(parseInfo.ProjectContent);
 			ResolveResult rr;
 			using (var ctx = context.Synchronize()) {
 				rr = entry.parser.Resolve(parseInfo, location, ctx, cancellationToken);
@@ -1118,8 +1154,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 					var parseInfo = parseInfoTask.Result;
 					if (parseInfo == null)
 						return null;
-					IProject project = GetProject(parseInfo.ProjectContent);
-					var context = project != null ? project.TypeResolveContext : GetDefaultTypeResolveContext();
+					var context = GetTypeResolveContext(parseInfo.ProjectContent);
 					ResolveResult rr;
 					using (var ctx = context.Synchronize()) {
 						rr = entry.parser.Resolve(parseInfo, location, ctx, cancellationToken);

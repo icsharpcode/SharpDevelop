@@ -157,7 +157,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			}
 		}
 		
-		/// <inheritdoc/>
+		/// <summary>
+		/// Gets the span stack at the end of the specified line.
+		/// -> GetSpanStack(1) returns the spans at the start of the second line.
+		/// </summary>
+		/// <remarks>
+		/// GetSpanStack(0) is valid and will return <see cref="InitialSpanStack"/>.
+		/// The elements are returned in inside-out order (first element of result enumerable is the color of the innermost span).
+		/// </remarks>
 		public SpanStack GetSpanStack(int lineNumber)
 		{
 			ThrowUtil.CheckInRangeInclusive(lineNumber, "lineNumber", 0, document.LineCount);
@@ -171,6 +178,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				}
 			}
 			return storedSpanStacks[lineNumber];
+		}
+		
+		/// <inheritdoc/>
+		public IEnumerable<HighlightingColor> GetColorStack(int lineNumber)
+		{
+			return GetSpanStack(lineNumber).Select(s => s.SpanColor).Where(s => s != null);
 		}
 		
 		void CheckIsHighlighting()

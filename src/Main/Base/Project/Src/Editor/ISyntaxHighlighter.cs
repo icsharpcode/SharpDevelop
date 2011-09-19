@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.AvalonEdit.Highlighting;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -17,6 +18,21 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Nested spans are returned in inside-out order (first element of result enumerable is the innermost span).
 		/// </summary>
 		IEnumerable<string> GetSpanColorNamesFromLineStart(int lineNumber);
+		
+		/// <summary>
+		/// Gets the highlighting definition that is being used.
+		/// </summary>
+		IHighlightingDefinition HighlightingDefinition { get; }
+		
+		/// <summary>
+		/// Adds an additional highlighting engine that runs in addition to the XSHD-based highlighting.
+		/// </summary>
+		void AddAdditionalHighlighter(IHighlighter highlighter);
+		
+		/// <summary>
+		/// Removes an additional highlighting engine.
+		/// </summary>
+		void RemoveAdditionalHighlighter(IHighlighter highlighter);
 	}
 	
 	public static class SyntaxHighligherKnownSpanNames

@@ -20,14 +20,34 @@ namespace CSharpBinding
 //		public override LanguageProperties Properties {
 //			get { return LanguageProperties.CSharp; }
 //		}
-//		
+//
 		public override IBracketSearcher BracketSearcher {
 			get { return new CSharpBracketSearcher(); }
 		}
 		
+		ITextEditor editor;
+		CSharpSemanticHighlighter semanticHighlighter;
+		
 		public override void Attach(ITextEditor editor)
 		{
-			//CSharpBackgroundCompiler.Init();
+			base.Attach(editor);
+			this.editor = editor;
+			ISyntaxHighlighter highlighter = editor.GetService(typeof(ISyntaxHighlighter)) as ISyntaxHighlighter;
+			if (highlighter != null) {
+				semanticHighlighter = new CSharpSemanticHighlighter(editor, highlighter.HighlightingDefinition);
+				highlighter.AddAdditionalHighlighter(semanticHighlighter);
+			}
+		}
+		
+		public override void Detach()
+		{
+			ISyntaxHighlighter highlighter = editor.GetService(typeof(ISyntaxHighlighter)) as ISyntaxHighlighter;
+			if (highlighter != null) {
+				highlighter.RemoveAdditionalHighlighter(semanticHighlighter);
+				semanticHighlighter = null;
+			}
+			this.editor = null;
+			base.Detach();
 		}
 	}
 }

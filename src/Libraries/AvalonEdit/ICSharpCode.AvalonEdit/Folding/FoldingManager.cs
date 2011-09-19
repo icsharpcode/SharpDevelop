@@ -36,15 +36,6 @@ namespace ICSharpCode.AvalonEdit.Folding
 			document.VerifyAccess();
 			TextDocumentWeakEventManager.Changed.AddListener(document, this);
 		}
-		
-		/// <summary>
-		/// Creates a new FoldingManager instance.
-		/// </summary>
-		[Obsolete("Use the (TextDocument) constructor instead.")]
-		public FoldingManager(TextView textView, TextDocument document)
-			: this(document)
-		{
-		}
 		#endregion
 		
 		#region ReceiveWeakEvent

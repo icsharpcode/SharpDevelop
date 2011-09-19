@@ -138,18 +138,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		}
 		
 		/// <summary>
-		/// Gets the names of the registered highlightings.
-		/// </summary>
-		[ObsoleteAttribute("Use the HighlightingDefinitions property instead.")]
-		public IEnumerable<string> HighlightingNames {
-			get {
-				lock (lockObj) {
-					return new List<string>(highlightingsByName.Keys);
-				}
-			}
-		}
-		
-		/// <summary>
 		/// Gets a highlighting definition by extension.
 		/// Returns null if the definition is not found.
 		/// </summary>

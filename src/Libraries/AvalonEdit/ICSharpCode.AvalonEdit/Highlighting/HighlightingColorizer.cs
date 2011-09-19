@@ -30,36 +30,20 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			this.ruleSet = ruleSet;
 		}
 		
-		/// <summary>
-		/// This constructor is obsolete - please use the other overload instead.
-		/// </summary>
-		/// <param name="textView">UNUSED</param>
-		/// <param name="ruleSet">The root highlighting rule set.</param>
-		[Obsolete("The TextView parameter is no longer used, please use the constructor taking only HighlightingRuleSet instead")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "textView")]
-		public HighlightingColorizer(TextView textView, HighlightingRuleSet ruleSet)
-			: this(ruleSet)
-		{
-		}
-		
 		void textView_DocumentChanged(object sender, EventArgs e)
 		{
 			OnDocumentChanged((TextView)sender);
 		}
 		
-		void OnDocumentChanged(TextView textView)
+		protected virtual void OnDocumentChanged(TextView textView)
 		{
 			// remove existing highlighter, if any exists
 			textView.Services.RemoveService(typeof(IHighlighter));
-			textView.Services.RemoveService(typeof(DocumentHighlighter));
 			
 			TextDocument document = textView.Document;
 			if (document != null) {
 				IHighlighter highlighter = CreateHighlighter(textView, document);
 				textView.Services.AddService(typeof(IHighlighter), highlighter);
-				// for backward compatiblity, we're registering using both the interface and concrete types
-				if (highlighter is DocumentHighlighter)
-					textView.Services.AddService(typeof(DocumentHighlighter), highlighter);
 			}
 		}
 		
@@ -99,7 +83,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				// We need to detect this case and issue a redraw (through TextViewDocumentHighligher.OnHighlightStateChanged)
 				// before the visual line construction reuses existing lines that were built using the invalid highlighting state.
 				lineNumberBeingColorized = e.FirstLineInView.LineNumber - 1;
-				highlighter.GetSpanStack(lineNumberBeingColorized);
+				highlighter.GetColorStack(lineNumberBeingColorized);
 				lineNumberBeingColorized = 0;
 			}
 		}
@@ -119,7 +103,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					// But even if we didn't highlight it, we'll have to update the highlighting state for it so that the
 					// proof inside TextViewDocumentHighlighter.OnHighlightStateChanged holds.
 					lineNumberBeingColorized = context.VisualLine.LastDocumentLine.LineNumber;
-					highlighter.GetSpanStack(lineNumberBeingColorized);
+					highlighter.GetColorStack(lineNumberBeingColorized);
 					lineNumberBeingColorized = 0;
 				}
 			}

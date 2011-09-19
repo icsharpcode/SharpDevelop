@@ -39,6 +39,9 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <OutputPath>..\..\..\..\..\AddIns\BackendBindings\CSharpBinding\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>DEBUG</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="PresentationCore">
@@ -62,6 +65,7 @@
     <Compile Include="Src\CSharpBracketSearcher.cs" />
     <Compile Include="Src\CSharpLanguageBinding.cs" />
     <Compile Include="Src\CSharpProjectBinding.cs" />
+    <Compile Include="Src\CSharpSemanticHighlighter.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingStrategy.cs" />
     <Compile Include="Src\FormattingStrategy\DocumentAccessor.cs" />
     <Compile Include="Src\OptionPanels\BuildOptions.cs">
@@ -80,6 +84,7 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <EmbeddedResource Include="Resources\CSharp-Semantic.xshd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">

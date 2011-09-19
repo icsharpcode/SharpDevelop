@@ -65,11 +65,9 @@
 		    extensions=".cs" />
 	</Path>
 	
-	<!--
-	<Path name = "/AddIns/DefaultTextEditor/AdvancedHighlighter/C#">
-		<Class id = "CSharpHighlighter" class = "CSharpBinding.CSharpAdvancedHighlighter"/>
+	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
+		<SyntaxMode id="C#" name="C#" extensions=".cs" resource="Resources.CSharp-Semantic.xshd" />
 	</Path>
-	-->
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
 		<OptionPanel id    = "Application"

@@ -14,6 +14,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -22,6 +23,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public class CustomizableHighlightingColorizer : HighlightingColorizer
 	{
+		#region ApplyCustomizationsToDefaultElements
 		public const string DefaultTextAndBackground = "Default text/background";
 		public const string SelectedText = "Selected text";
 		public const string NonPrintableCharacters = "Non-printable characters";
@@ -93,31 +95,47 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 		}
+		#endregion
 		
+		readonly IHighlightingDefinition highlightingDefinition;
 		readonly IEnumerable<CustomizedHighlightingColor> customizations;
 		
-		public CustomizableHighlightingColorizer(HighlightingRuleSet ruleSet, IEnumerable<CustomizedHighlightingColor> customizations)
-			: base(ruleSet)
+		public CustomizableHighlightingColorizer(IHighlightingDefinition highlightingDefinition, IEnumerable<CustomizedHighlightingColor> customizations)
+			: base(highlightingDefinition.MainRuleSet)
 		{
 			if (customizations == null)
 				throw new ArgumentNullException("customizations");
+			this.highlightingDefinition = highlightingDefinition;
 			this.customizations = customizations;
+		}
+		
+		protected override void OnDocumentChanged(TextView textView)
+		{
+			textView.Services.RemoveService(typeof(ISyntaxHighlighter));
+			base.OnDocumentChanged(textView);
+			textView.Services.AddService(typeof(ISyntaxHighlighter), (CustomizingHighlighter)textView.GetService(typeof(IHighlighter)));
 		}
 		
 		protected override IHighlighter CreateHighlighter(TextView textView, TextDocument document)
 		{
-			return new CustomizingHighlighter(customizations, base.CreateHighlighter(textView, document));
+			return new CustomizingHighlighter(customizations, highlightingDefinition, base.CreateHighlighter(textView, document));
 		}
 		
-		sealed class CustomizingHighlighter : IHighlighter
+		sealed class CustomizingHighlighter : IHighlighter, ISyntaxHighlighter
 		{
 			readonly IEnumerable<CustomizedHighlightingColor> customizations;
+			readonly IHighlightingDefinition highlightingDefinition;
 			readonly IHighlighter baseHighlighter;
+			List<IHighlighter> additionalHighlighters = new List<IHighlighter>();
 			
-			public CustomizingHighlighter(IEnumerable<CustomizedHighlightingColor> customizations, IHighlighter baseHighlighter)
+			public CustomizingHighlighter(IEnumerable<CustomizedHighlightingColor> customizations, IHighlightingDefinition highlightingDefinition, IHighlighter baseHighlighter)
 			{
 				Debug.Assert(customizations != null);
+				Debug.Assert(highlightingDefinition != null);
+				Debug.Assert(baseHighlighter != null);
+				
 				this.customizations = customizations;
+				this.highlightingDefinition = highlightingDefinition;
 				this.baseHighlighter = baseHighlighter;
 			}
 
@@ -125,18 +143,159 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				get { return baseHighlighter.Document; }
 			}
 			
-			public ImmutableStack<HighlightingSpan> GetSpanStack(int lineNumber)
+			public IHighlightingDefinition HighlightingDefinition {
+				get { return highlightingDefinition; }
+			}
+			
+			public void AddAdditionalHighlighter(IHighlighter highlighter)
 			{
-				return baseHighlighter.GetSpanStack(lineNumber);
+				if (highlighter == null)
+					throw new ArgumentNullException("highlighter");
+				if (highlighter.Document != baseHighlighter.Document)
+					throw new ArgumentException("Additional highlighters must use the same document as the base highlighter");
+				additionalHighlighters.Add(highlighter);
+			}
+			
+			public void RemoveAdditionalHighlighter(IHighlighter highlighter)
+			{
+				additionalHighlighters.Remove(highlighter);
+			}
+			
+			public IEnumerable<string> GetSpanColorNamesFromLineStart(int lineNumber)
+			{
+				// delayed evaluation doesn't cause a problem here: GetColorStack is called immediately,
+				// only the where/select portion is evaluated later. But that won't be a problem because the
+				// HighlightingColor instance shouldn't change once it's in use.
+				return from color in GetColorStack(lineNumber - 1)
+					where color.Name != null
+					select color.Name;
+			}
+			
+			public IEnumerable<HighlightingColor> GetColorStack(int lineNumber)
+			{
+				List<HighlightingColor> list = new List<HighlightingColor>();
+				for (int i = additionalHighlighters.Count - 1; i >= 0; i--) {
+					var s = additionalHighlighters[i].GetColorStack(lineNumber);
+					if (s != null)
+						list.AddRange(s);
+				}
+				list.AddRange(baseHighlighter.GetColorStack(lineNumber));
+				return list;
 			}
 			
 			public HighlightedLine HighlightLine(int lineNumber)
 			{
 				HighlightedLine line = baseHighlighter.HighlightLine(lineNumber);
+				foreach (IHighlighter h in additionalHighlighters) {
+					MergeHighlighting(line, h.HighlightLine(lineNumber));
+				}
 				foreach (HighlightedSection section in line.Sections) {
 					section.Color = CustomizeColor(section.Color);
 				}
 				return line;
+			}
+			
+			/// <summary>
+			/// Merges the highlighting sections from additionalLine into line.
+			/// </summary>
+			void MergeHighlighting(HighlightedLine line, HighlightedLine additionalLine)
+			{
+				if (additionalLine == null)
+					return;
+				ValidateInvariants(line);
+				ValidateInvariants(additionalLine);
+				
+				int pos = 0;
+				Stack<int> activeSectionEndOffsets = new Stack<int>();
+				int lineEndOffset = line.DocumentLine.EndOffset;
+				activeSectionEndOffsets.Push(lineEndOffset);
+				foreach (HighlightedSection newSection in additionalLine.Sections) {
+					int newSectionStart = newSection.Offset;
+					// Track the existing sections using the stack, up to the point where
+					// we need to insert the first part of the newSection
+					while (pos < line.Sections.Count) {
+						HighlightedSection s = line.Sections[pos];
+						if (newSection.Offset < s.Offset)
+							break;
+						while (s.Offset > activeSectionEndOffsets.Peek()) {
+							activeSectionEndOffsets.Pop();
+						}
+						activeSectionEndOffsets.Push(s.Offset + s.Length);
+						pos++;
+					}
+					// Now insert the new section
+					// Create a copy of the stack so that we can track the sections we traverse
+					// during the insertion process:
+					Stack<int> insertionStack = new Stack<int>(activeSectionEndOffsets.Reverse());
+					// The stack enumerator reverses the order of the elements, so we call Reverse() to restore
+					// the original order.
+					int i;
+					for (i = pos; i < line.Sections.Count; i++) {
+						HighlightedSection s = line.Sections[i];
+						if (newSection.Offset + newSection.Length <= s.Offset)
+							break;
+						// Insert a segment in front of s:
+						Insert(line.Sections, ref i, ref newSectionStart, s.Offset, newSection.Color, insertionStack);
+						
+						while (s.Offset > insertionStack.Peek()) {
+							insertionStack.Pop();
+						}
+						insertionStack.Push(s.Offset + s.Length);
+					}
+					Insert(line.Sections, ref i, ref newSectionStart, newSection.Offset + newSection.Length, newSection.Color, insertionStack);
+				}
+				
+				ValidateInvariants(line);
+			}
+			
+			void Insert(IList<HighlightedSection> sections, ref int pos, ref int newSectionStart, int insertionEndPos, HighlightingColor color, Stack<int> insertionStack)
+			{
+				if (newSectionStart >= insertionEndPos) {
+					// nothing to insert here
+					return;
+				}
+				
+				while (insertionStack.Peek() <= newSectionStart) {
+					insertionStack.Pop();
+				}
+				while (insertionStack.Peek() < insertionEndPos) {
+					int end = insertionStack.Pop();
+					// insert the portion from newSectionStart to end
+					sections.Insert(pos++, new HighlightedSection {
+					                	Offset = newSectionStart,
+					                	Length = end - newSectionStart,
+					                	Color = color
+					                });
+					newSectionStart = end;
+				}
+				sections.Insert(pos++, new HighlightedSection {
+				                	Offset = newSectionStart,
+				                	Length = insertionEndPos - newSectionStart,
+				                	Color = color
+				                });
+				newSectionStart = insertionEndPos;
+			}
+			
+			[Conditional("DEBUG")]
+			void ValidateInvariants(HighlightedLine line)
+			{
+				int lineStartOffset = line.DocumentLine.Offset;
+				int lineEndOffset = line.DocumentLine.EndOffset;
+				for (int i = 0; i < line.Sections.Count; i++) {
+					HighlightedSection s1 = line.Sections[i];
+					if (s1.Offset < lineStartOffset || s1.Length < 0 || s1.Offset + s1.Length > lineEndOffset)
+						throw new InvalidOperationException("Section is outside line bounds");
+					for (int j = i + 1; j < line.Sections.Count; j++) {
+						HighlightedSection s2 = line.Sections[j];
+						if (s2.Offset >= s1.Offset + s1.Length) {
+							// s2 is after s1
+						} else if (s2.Offset >= s1.Offset && s2.Offset + s2.Length <= s1.Offset + s1.Length) {
+							// s2 is nested within s1
+						} else {
+							throw new InvalidOperationException("Sections are overlapping or incorrectly sorted.");
+						}
+					}
+				}
 			}
 			
 			HighlightingColor CustomizeColor(HighlightingColor color)

@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.AvalonEdit.Utils;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
@@ -18,12 +18,18 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		IDocument Document { get; }
 		
-			/// <summary>
-		/// Gets the span stack at the end of the specified line.
-		/// -> GetSpanStack(1) returns the spans at the start of the second line.
+		/// <summary>
+		/// Gets the stack of active colors (the colors associated with the active spans) at the end of the specified line.
+		/// -> GetColorStack(1) returns the colors at the start of the second line.
 		/// </summary>
-		/// <remarks>GetSpanStack(0) is valid and will always return the empty stack.</remarks>
-		ImmutableStack<HighlightingSpan> GetSpanStack(int lineNumber);
+		/// <remarks>
+		/// GetColorStack(0) is valid and will return the empty stack.
+		/// The elements are returned in inside-out order (first element of result enumerable is the color of the innermost span).
+		/// </remarks>
+		IEnumerable<HighlightingColor> GetColorStack(int lineNumber);
+		
+		// Starting with SD 5.0, this interface exports GetColorStack() instead of GetSpanStack().
+		// This was done because custom highlighter implementations might not use the HighlightingSpan class (AST-based highlighting).
 		
 		/// <summary>
 		/// Highlights the specified document line.

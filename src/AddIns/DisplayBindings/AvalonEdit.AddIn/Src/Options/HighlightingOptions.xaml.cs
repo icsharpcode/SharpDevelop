@@ -349,7 +349,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				colorizer = null;
 				if (item != null) {
 					if (item.ParentDefinition != null) {
-						colorizer = new CustomizableHighlightingColorizer(item.ParentDefinition.MainRuleSet, customizationsForCurrentLanguage);
+						colorizer = new CustomizableHighlightingColorizer(item.ParentDefinition, customizationsForCurrentLanguage);
 						textView.LineTransformers.Add(colorizer);
 					}
 					textEditor.Select(0, 0);
