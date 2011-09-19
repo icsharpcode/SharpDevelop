@@ -34,7 +34,7 @@ namespace CSharpBinding
 			this.editor = editor;
 			ISyntaxHighlighter highlighter = editor.GetService(typeof(ISyntaxHighlighter)) as ISyntaxHighlighter;
 			if (highlighter != null) {
-				semanticHighlighter = new CSharpSemanticHighlighter(editor, highlighter.HighlightingDefinition);
+				semanticHighlighter = new CSharpSemanticHighlighter(editor, highlighter);
 				highlighter.AddAdditionalHighlighter(semanticHighlighter);
 			}
 		}
@@ -44,6 +44,7 @@ namespace CSharpBinding
 			ISyntaxHighlighter highlighter = editor.GetService(typeof(ISyntaxHighlighter)) as ISyntaxHighlighter;
 			if (highlighter != null) {
 				highlighter.RemoveAdditionalHighlighter(semanticHighlighter);
+				semanticHighlighter.Dispose();
 				semanticHighlighter = null;
 			}
 			this.editor = null;

@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -109,31 +109,39 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.customizations = customizations;
 		}
 		
-		protected override void OnDocumentChanged(TextView textView)
+		protected override void DeregisterServices(TextView textView)
 		{
 			textView.Services.RemoveService(typeof(ISyntaxHighlighter));
-			base.OnDocumentChanged(textView);
+			base.DeregisterServices(textView);
+		}
+		
+		protected override void RegisterServices(TextView textView)
+		{
+			base.RegisterServices(textView);
 			textView.Services.AddService(typeof(ISyntaxHighlighter), (CustomizingHighlighter)textView.GetService(typeof(IHighlighter)));
 		}
 		
 		protected override IHighlighter CreateHighlighter(TextView textView, TextDocument document)
 		{
-			return new CustomizingHighlighter(customizations, highlightingDefinition, base.CreateHighlighter(textView, document));
+			return new CustomizingHighlighter(textView, customizations, highlightingDefinition, base.CreateHighlighter(textView, document));
 		}
 		
 		sealed class CustomizingHighlighter : IHighlighter, ISyntaxHighlighter
 		{
+			readonly TextView textView;
 			readonly IEnumerable<CustomizedHighlightingColor> customizations;
 			readonly IHighlightingDefinition highlightingDefinition;
 			readonly IHighlighter baseHighlighter;
 			List<IHighlighter> additionalHighlighters = new List<IHighlighter>();
 			
-			public CustomizingHighlighter(IEnumerable<CustomizedHighlightingColor> customizations, IHighlightingDefinition highlightingDefinition, IHighlighter baseHighlighter)
+			public CustomizingHighlighter(TextView textView, IEnumerable<CustomizedHighlightingColor> customizations, IHighlightingDefinition highlightingDefinition, IHighlighter baseHighlighter)
 			{
+				Debug.Assert(textView != null);
 				Debug.Assert(customizations != null);
 				Debug.Assert(highlightingDefinition != null);
 				Debug.Assert(baseHighlighter != null);
 				
+				this.textView = textView;
 				this.customizations = customizations;
 				this.highlightingDefinition = highlightingDefinition;
 				this.baseHighlighter = baseHighlighter;
@@ -195,6 +203,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return line;
 			}
 			
+			#region MergeHighlighting
 			/// <summary>
 			/// Merges the highlighting sections from additionalLine into line.
 			/// </summary>
@@ -297,6 +306,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					}
 				}
 			}
+			#endregion
 			
 			HighlightingColor CustomizeColor(HighlightingColor color)
 			{
@@ -322,6 +332,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					return null;
 				else
 					return new CustomizedBrush(color.Value);
+			}
+			
+			public void InvalidateLine(IDocumentLine line)
+			{
+				textView.Redraw(line, DispatcherPriority.Background);
+			}
+			
+			public void InvalidateAll()
+			{
+				textView.Redraw(DispatcherPriority.Background);
 			}
 		}
 		

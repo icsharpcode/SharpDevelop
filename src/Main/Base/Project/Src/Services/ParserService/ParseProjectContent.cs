@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			if (project == null)
 				throw new ArgumentNullException("project");
 			this.project = project;
-			this.typeResolveContext = MinimalResolveContext.Instance;
+			this.typeResolveContext = new CompositeTypeResolveContext(new ITypeResolveContext[] { this, MinimalResolveContext.Instance });
 			
 			this.initializing = true;
 			LoadSolutionProjects.AddJob(Initialize, "Loading " + project.Name + "...", GetInitializationWorkAmount());

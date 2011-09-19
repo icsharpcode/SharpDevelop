@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -33,6 +34,24 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Removes an additional highlighting engine.
 		/// </summary>
 		void RemoveAdditionalHighlighter(IHighlighter highlighter);
+		
+		/// <summary>
+		/// Invalidates a line, causing it to be re-highlighted.
+		/// </summary>
+		/// <remarks>
+		/// This method is intended to be called by additional highlighters that process external information
+		/// (e.g. semantic highlighting).
+		/// </remarks>
+		void InvalidateLine(IDocumentLine line);
+		
+		/// <summary>
+		/// Invalidates all lines, causing-them to be re-highlighted.
+		/// </summary>
+		/// <remarks>
+		/// This method is intended to be called by additional highlighters that process external information
+		/// (e.g. semantic highlighting).
+		/// </remarks>
+		void InvalidateAll();
 	}
 	
 	public static class SyntaxHighligherKnownSpanNames

@@ -4,8 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
@@ -21,13 +20,16 @@ namespace CSharpBinding
 	/// <summary>
 	/// Semantic highlighting for C#.
 	/// </summary>
-	public class CSharpSemanticHighlighter : DepthFirstAstVisitor<object, object>, IHighlighter, IResolveVisitorNavigator
+	public class CSharpSemanticHighlighter : DepthFirstAstVisitor<object, object>, IHighlighter, IResolveVisitorNavigator, IDisposable
 	{
 		readonly ITextEditor textEditor;
+		readonly ISyntaxHighlighter syntaxHighlighter;
 		readonly HighlightingColor typeReferenceColor;
 		readonly HighlightingColor methodCallColor;
 		readonly HighlightingColor fieldAccessColor;
 		readonly HighlightingColor valueKeywordColor;
+		
+		HashSet<IDocumentLine> invalidLines = new HashSet<IDocumentLine>();
 		
 		int lineNumber;
 		HighlightedLine line;
@@ -35,20 +37,49 @@ namespace CSharpBinding
 		
 		bool isInAccessor;
 		
-		public CSharpSemanticHighlighter(ITextEditor textEditor, IHighlightingDefinition highlightingDefinition)
+		public CSharpSemanticHighlighter(ITextEditor textEditor, ISyntaxHighlighter syntaxHighlighter)
 		{
 			if (textEditor == null)
 				throw new ArgumentNullException("textEditor");
-			if (highlightingDefinition == null)
-				throw new ArgumentNullException("highlightingDefinition");
+			if (syntaxHighlighter == null)
+				throw new ArgumentNullException("syntaxHighlighter");
 			this.textEditor = textEditor;
+			this.syntaxHighlighter = syntaxHighlighter;
+			
+			IHighlightingDefinition highlightingDefinition = syntaxHighlighter.HighlightingDefinition;
 			this.typeReferenceColor = highlightingDefinition.GetNamedColor("TypeReferences");
 			this.methodCallColor = highlightingDefinition.GetNamedColor("MethodCall");
 			this.fieldAccessColor = highlightingDefinition.GetNamedColor("FieldAccess");
 			this.valueKeywordColor = highlightingDefinition.GetNamedColor("NullOrValueKeywords");
+			
+			ParserService.ParserUpdateStepFinished += ParserService_ParserUpdateStepFinished;
+			ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
 		}
 		
-		public IDocument Document {
+		public void Dispose()
+		{
+			ParserService.ParserUpdateStepFinished -= ParserService_ParserUpdateStepFinished;
+			ParserService.LoadSolutionProjectsThreadEnded -= ParserService_LoadSolutionProjectsThreadEnded;
+		}
+		
+		void ParserService_LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
+		{
+			syntaxHighlighter.InvalidateAll();
+		}
+		
+		void ParserService_ParserUpdateStepFinished(object sender, ParserUpdateStepEventArgs e)
+		{
+			if (e.FileName == textEditor.FileName && invalidLines.Count > 0) {
+				foreach (IDocumentLine line in invalidLines) {
+					if (!line.IsDeleted) {
+						syntaxHighlighter.InvalidateLine(line);
+					}
+				}
+				invalidLines.Clear();
+			}
+		}
+		
+		IDocument IHighlighter.Document {
 			get { return textEditor.Document; }
 		}
 		
@@ -59,16 +90,18 @@ namespace CSharpBinding
 		
 		public HighlightedLine HighlightLine(int lineNumber)
 		{
-			Task<ParseInformation> parseInfoTask = ParserService.ParseAsync(textEditor.FileName, textEditor.Document);
-			if (!parseInfoTask.IsCompleted) {
-				Debug.WriteLine("Semantic highlighting for line {0} - parser not completed", lineNumber);
+			ParseInformation parseInfo = ParserService.GetCachedParseInformation(textEditor.FileName, textEditor.Document.Version);
+			if (parseInfo == null) {
+				invalidLines.Add(textEditor.Document.GetLineByNumber(lineNumber));
+				Debug.WriteLine("Semantic highlighting for line {0} - marking as invalid", lineNumber);
 				return null;
 			}
-			ParseInformation parseInfo = parseInfoTask.Result;
 			CSharpParsedFile parsedFile = parseInfo.ParsedFile as CSharpParsedFile;
 			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
-			if (cu == null || parsedFile == null)
+			if (cu == null || parsedFile == null) {
+				Debug.WriteLine("Semantic highlighting for line {0} - not a C# file?", lineNumber);
 				return null;
+			}
 			
 			using (var ctx = ParserService.GetTypeResolveContext(parseInfo.ProjectContent).Synchronize()) {
 				CSharpResolver resolver = new CSharpResolver(ctx);
@@ -246,7 +279,7 @@ namespace CSharpBinding
 		
 		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
-			Colorize(typeDeclaration, typeReferenceColor);
+			Colorize(typeDeclaration.NameToken, typeReferenceColor);
 			foreach (var node in typeDeclaration.TypeParameters)
 				node.AcceptVisitor(this);
 			foreach (var node in typeDeclaration.BaseTypes)
@@ -255,6 +288,15 @@ namespace CSharpBinding
 				node.AcceptVisitor(this);
 			foreach (var node in typeDeclaration.Members)
 				node.AcceptVisitor(this);
+			return null;
+		}
+		
+		public override object VisitVariableInitializer(VariableInitializer variableInitializer, object data)
+		{
+			if (variableInitializer.Parent is FieldDeclaration) {
+				Colorize(variableInitializer.NameToken, fieldAccessColor);
+			}
+			variableInitializer.Initializer.AcceptVisitor(this);
 			return null;
 		}
 	}

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
@@ -410,6 +411,19 @@ namespace ICSharpCode.SharpDevelop.Parser
 			public ParseInformation GetCachedParseInformation()
 			{
 				return cachedParseInformation; // read volatile
+			}
+			
+			public ParseInformation GetCachedParseInformation(ITextSourceVersion version)
+			{
+				if (version == null)
+					return GetCachedParseInformation();
+				lock (this) {
+					if (bufferVersion != null && bufferVersion.BelongsToSameDocumentAs(version)) {
+						if (bufferVersion.CompareAge(version) >= 0)
+							return cachedParseInformation;
+					}
+				}
+				return null;
 			}
 			
 			public IParsedFile GetExistingParsedFile(IProjectContent content)
@@ -817,6 +831,26 @@ namespace ICSharpCode.SharpDevelop.Parser
 			FileEntry entry = GetFileEntry(fileName, false);
 			if (entry != null)
 				return entry.GetCachedParseInformation();
+			else
+				return null;
+		}
+		
+		/// <summary>
+		/// Gets full parse information for the specified file, if it is available and at least as recent as the specified version.
+		/// </summary>
+		/// <returns>
+		/// If only the IParsedFile is available (non-full parse information), this method
+		/// returns null.
+		/// If parse information is avaiable but potentially outdated (older than <paramref name="version"/>,
+		/// or belonging to a different document), this method returns null.
+		/// </returns>
+		public static ParseInformation GetCachedParseInformation(FileName fileName, ITextSourceVersion version)
+		{
+			if (string.IsNullOrEmpty(fileName))
+				return null;
+			FileEntry entry = GetFileEntry(fileName, false);
+			if (entry != null)
+				return entry.GetCachedParseInformation(version);
 			else
 				return null;
 		}

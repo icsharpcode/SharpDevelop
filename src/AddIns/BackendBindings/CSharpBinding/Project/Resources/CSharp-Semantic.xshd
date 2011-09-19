@@ -31,7 +31,7 @@
 	<Color name="TypeKeywords" fontWeight="bold" foreground="DarkCyan" exampleText="if (x is int) { a = x as int; type = typeof(int); size = sizeof(int); c = new object(); }"/>
 	
 	<!-- Colors used for semantic highlighting -->
-	<Color name="TypeReferences" foreground="DarkCyan" exampleText="System.Uri uri;"/>
+	<Color name="TypeReferences" foreground="#004085" exampleText="System.Uri uri;"/>
 	<Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" exampleText="o.ToString();"/>
 	<Color name="FieldAccess" fontStyle="italic" exampleText="return this.name;"/>
 	

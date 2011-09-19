@@ -32,14 +32,27 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		void textView_DocumentChanged(object sender, EventArgs e)
 		{
-			OnDocumentChanged((TextView)sender);
+			TextView textView = (TextView)sender;
+			DeregisterServices(textView);
+			RegisterServices(textView);
 		}
 		
-		protected virtual void OnDocumentChanged(TextView textView)
+		/// <summary>
+		/// This method is called when a text view is removed from this HighlightingColorizer,
+		/// and also when the TextDocument on any associated text view changes.
+		/// </summary>
+		protected virtual void DeregisterServices(TextView textView)
 		{
 			// remove existing highlighter, if any exists
 			textView.Services.RemoveService(typeof(IHighlighter));
-			
+		}
+		
+		/// <summary>
+		/// This method is called when a new text view is added to this HighlightingColorizer,
+		/// and also when the TextDocument on any associated text view changes.
+		/// </summary>
+		protected virtual void RegisterServices(TextView textView)
+		{
 			TextDocument document = textView.Document;
 			if (document != null) {
 				IHighlighter highlighter = CreateHighlighter(textView, document);
@@ -61,17 +74,16 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			base.OnAddToTextView(textView);
 			textView.DocumentChanged += textView_DocumentChanged;
 			textView.VisualLineConstructionStarting += textView_VisualLineConstructionStarting;
-			OnDocumentChanged(textView);
+			RegisterServices(textView);
 		}
 		
 		/// <inheritdoc/>
 		protected override void OnRemoveFromTextView(TextView textView)
 		{
-			base.OnRemoveFromTextView(textView);
-			textView.Services.RemoveService(typeof(IHighlighter));
-			textView.Services.RemoveService(typeof(DocumentHighlighter));
+			DeregisterServices(textView);
 			textView.DocumentChanged -= textView_DocumentChanged;
 			textView.VisualLineConstructionStarting -= textView_VisualLineConstructionStarting;
+			base.OnRemoveFromTextView(textView);
 		}
 		
 		void textView_VisualLineConstructionStarting(object sender, VisualLineConstructionStartEventArgs e)
