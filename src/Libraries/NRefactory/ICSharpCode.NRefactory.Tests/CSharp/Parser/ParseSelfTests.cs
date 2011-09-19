@@ -70,21 +70,43 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			foreach (string fileName in fileNames) {
 				this.currentDocument = new ReadOnlyDocument(File.ReadAllText(fileName));
 				CompilationUnit cu = parser.Parse(currentDocument.CreateReader());
+				if (parser.HasErrors)
+					continue;
 				this.currentFileName = fileName;
 				CheckPositionConsistency(cu);
 				CheckMissingTokens(cu);
 			}
 		}
-		
-		void CheckPositionConsistency(AstNode node)
+
+		void PrintNode (AstNode node)
 		{
-			string comment = "(" + node.GetType().Name + " at " + node.StartLocation + " in " + currentFileName + ")";
-			Assert.IsTrue(node.StartLocation <= node.EndLocation, "StartLocation must be before EndLocation " + comment);
+			Console.WriteLine ("Parent:" + node.GetType ());
+			Console.WriteLine ("Children:");
+			foreach (var c in node.Children)
+				Console.WriteLine (c.GetType () +" at:"+ c.StartLocation +"-"+ c.EndLocation + " Role: "+ c.Role);
+			Console.WriteLine ("----");
+		}
+		
+		void CheckPositionConsistency (AstNode node)
+		{
+			string comment = "(" + node.GetType ().Name + " at " + node.StartLocation + " in " + currentFileName + ")";
+			var pred = node.StartLocation <= node.EndLocation;
+			if (!pred)
+				PrintNode (node);
+			Assert.IsTrue(pred, "StartLocation must be before EndLocation " + comment);
 			var prevNodeEnd = node.StartLocation;
+			var prevNode = node;
 			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
-				Assert.IsTrue(child.StartLocation >= prevNodeEnd, "Child must start after previous sibling " + comment);
+				bool assertion = child.StartLocation >= prevNodeEnd;
+				if (!assertion) {
+					PrintNode (prevNode);
+					PrintNode (node);
+					
+				}
+				Assert.IsTrue(assertion, currentFileName + ": Child " + child.GetType () +" (" + child.StartLocation  + ")" +" must start after previous sibling " + prevNode.GetType () + "(" + prevNode.StartLocation + ")");
 				CheckPositionConsistency(child);
 				prevNodeEnd = child.EndLocation;
+				prevNode = child;
 			}
 			Assert.IsTrue(prevNodeEnd <= node.EndLocation, "Last child must end before parent node ends " + comment);
 		}
@@ -95,24 +117,32 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				Assert.IsNull(node.FirstChild, "Token nodes should not have children");
 			} else {
 				var prevNodeEnd = node.StartLocation;
+				var prevNode = node;
 				for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
-					CheckWhitespace(prevNodeEnd, child.StartLocation);
+					CheckWhitespace(prevNode, prevNodeEnd, child, child.StartLocation);
 					CheckMissingTokens(child);
+					prevNode = child;
 					prevNodeEnd = child.EndLocation;
 				}
-				CheckWhitespace(prevNodeEnd, node.EndLocation);
+				CheckWhitespace(prevNode, prevNodeEnd, node, node.EndLocation);
 			}
 		}
 		
-		void CheckWhitespace(TextLocation whitespaceStart, TextLocation whitespaceEnd)
+		void CheckWhitespace(AstNode startNode, TextLocation whitespaceStart, AstNode endNode, TextLocation whitespaceEnd)
 		{
-			if (whitespaceStart == whitespaceEnd)
+			if (whitespaceStart == whitespaceEnd || startNode == endNode)
 				return;
 			int start = currentDocument.GetOffset(whitespaceStart.Line, whitespaceStart.Column);
 			int end = currentDocument.GetOffset(whitespaceEnd.Line, whitespaceEnd.Column);
 			string text = currentDocument.GetText(start, end - start);
-			Assert.IsTrue(string.IsNullOrWhiteSpace(text), "Expected whitespace between " + whitespaceStart + " and " + whitespaceEnd
-			              + ", but got '" + text + "' (in " + currentFileName + ")");
+			bool assertion = string.IsNullOrWhiteSpace(text);
+			if (!assertion) {
+				if (startNode.Parent != endNode.Parent)
+					PrintNode (startNode.Parent);
+				PrintNode (endNode.Parent);
+			}
+			Assert.IsTrue(assertion, "Expected whitespace between " + startNode.GetType () +":" + whitespaceStart + " and " + endNode.GetType () + ":" + whitespaceEnd
+			              + ", but got '" + text + "' (in " + currentFileName + " parent:" + startNode.Parent.GetType () +")");
 		}
 		#endregion
 	}

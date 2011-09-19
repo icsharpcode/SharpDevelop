@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 			{
 				return default (S);
 			}
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				get { return NodeType.Pattern; }
 			}
 			
-			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 			{
 				return visitor.VisitPatternPlaceholder (this, child, data);
 			}
@@ -441,7 +441,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return copy;
 		}
 		
-		public abstract S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data);
+		public abstract S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T));
 		
 		#region Pattern Matching
 		protected static bool MatchString (string name1, string name2)
@@ -613,7 +613,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (IsNull)
 				return "Null";
 			StringWriter w = new StringWriter();
-			AcceptVisitor(new OutputVisitor(w, new CSharpFormattingOptions()), null);
+			AcceptVisitor(new CSharpOutputVisitor(w, new CSharpFormattingOptions()), null);
 			string text = w.ToString().TrimEnd().Replace("\t", "").Replace(w.NewLine, " ");
 			if (text.Length > 100)
 				return text.Substring(0, 97) + "...";

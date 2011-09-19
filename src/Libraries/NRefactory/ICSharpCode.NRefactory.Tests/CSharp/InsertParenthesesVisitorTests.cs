@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			expr.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true }, null);
 			StringWriter w = new StringWriter();
 			w.NewLine = " ";
-			expr.AcceptVisitor(new OutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "" }, policy), null);
+			expr.AcceptVisitor(new CSharpOutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "" }, policy), null);
 			return w.ToString();
 		}
 		
@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			expr.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = false }, null);
 			StringWriter w = new StringWriter();
 			w.NewLine = " ";
-			expr.AcceptVisitor(new OutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "" }, policy), null);
+			expr.AcceptVisitor(new CSharpOutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "" }, policy), null);
 			return w.ToString();
 		}
 		
@@ -359,6 +359,39 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			Assert.AreEqual("a && (b || c)", InsertRequired(expr));
 			Assert.AreEqual("a && (b || c)", InsertReadable(expr));
+		}
+		
+		[Test]
+		public void ArrayCreationInIndexer()
+		{
+			Expression expr = new IndexerExpression {
+				Target = new ArrayCreateExpression {
+					Type = new PrimitiveType("int"),
+					Arguments = { new PrimitiveExpression(1) }
+				},
+				Arguments = { new PrimitiveExpression(0) }
+			};
+			
+			Assert.AreEqual("(new int[1]) [0]", InsertRequired(expr));
+			Assert.AreEqual("(new int[1]) [0]", InsertReadable(expr));
+		}
+		
+		[Test]
+		public void ArrayCreationWithInitializerInIndexer()
+		{
+			Expression expr = new IndexerExpression {
+				Target = new ArrayCreateExpression {
+					Type = new PrimitiveType("int"),
+					Arguments = { new PrimitiveExpression(1) },
+					Initializer = new ArrayInitializerExpression {
+						Elements = { new PrimitiveExpression(42) }
+					}
+				},
+				Arguments = { new PrimitiveExpression(0) }
+			};
+			
+			Assert.AreEqual("new int[1] { 42 } [0]", InsertRequired(expr));
+			Assert.AreEqual("(new int[1] { 42 }) [0]", InsertReadable(expr));
 		}
 	}
 }

@@ -222,6 +222,14 @@ namespace ICSharpCode.AvalonEdit.Document
 				}
 			}
 		}
+		
+		IDocumentLine IDocumentLine.NextLine {
+			get { return this.NextLine; }
+		}
+		
+		IDocumentLine IDocumentLine.PreviousLine {
+			get { return this.PreviousLine; }
+		}
 		#endregion
 		
 		#region ToString

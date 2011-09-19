@@ -41,5 +41,15 @@ namespace ICSharpCode.NRefactory.Editor
 		/// The first line has the number 1.
 		/// </summary>
 		int LineNumber { get; }
+		
+		/// <summary>
+		/// Gets the previous line. Returns null if this is the first line in the document.
+		/// </summary>
+		IDocumentLine PreviousLine { get; }
+		
+		/// <summary>
+		/// Gets the next line. Returns null if this is the last line in the document.
+		/// </summary>
+		IDocumentLine NextLine { get; }
 	}
 }

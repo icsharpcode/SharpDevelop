@@ -119,5 +119,29 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 						FalseExpression = new NullReferenceExpression()
 					}});
 		}
+		
+		[Test, Ignore("async/await not yet supported")]
+		public void AsyncLambdaExpression()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"async x => x + 1",
+				new LambdaExpression {
+					IsAsync = true,
+					Parameters = { new ParameterDeclaration { Name = "x" } },
+					Body = new BinaryOperatorExpression(new IdentifierExpression("x"), BinaryOperatorType.Add, new PrimitiveExpression(1))
+				});
+		}
+		
+		[Test, Ignore("async/await not yet supported")]
+		public void AsyncLambdaExpressionWithMultipleParameters()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"async (x,y) => x + 1",
+				new LambdaExpression {
+					IsAsync = true,
+					Parameters = { new ParameterDeclaration { Name = "x" }, new ParameterDeclaration { Name = "y" } },
+					Body = new BinaryOperatorExpression(new IdentifierExpression("x"), BinaryOperatorType.Add, new PrimitiveExpression(1))
+				});
+		}
 	}
 }

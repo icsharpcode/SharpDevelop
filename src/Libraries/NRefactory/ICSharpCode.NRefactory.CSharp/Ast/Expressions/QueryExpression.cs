@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 			{
 				return default (S);
 			}
@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole(ClauseRole); }
 		}
 		
-		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitQueryExpression (this, data);
 		}
@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Identifier); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitQueryContinuationClause (this, data);
 		}
@@ -152,7 +152,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitQueryFromClause (this, data);
 		}
@@ -193,7 +193,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole(Roles.Expression, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitQueryLetClause (this, data);
 		}
@@ -217,7 +217,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (Roles.Condition, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitQueryWhereClause (this, data);
 		}
@@ -316,7 +316,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole(IntoIdentifierRole); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitQueryJoinClause (this, data);
 		}
@@ -344,7 +344,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (OrderingRole); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitQueryOrderClause (this, data);
 		}
@@ -376,7 +376,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitQueryOrdering (this, data);
 		}
@@ -406,7 +406,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitQuerySelectClause (this, data);
 		}
@@ -443,7 +443,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (KeyRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitQueryGroupClause (this, data);
 		}

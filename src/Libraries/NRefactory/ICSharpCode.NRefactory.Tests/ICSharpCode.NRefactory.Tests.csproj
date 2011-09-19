@@ -11,7 +11,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
@@ -79,8 +78,9 @@
     <Compile Include="CSharp\Analysis\DefiniteAssignmentTests.cs" />
     <Compile Include="CSharp\AstStructureTests.cs" />
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
+    <Compile Include="CSharp\CodeDomConvertVisitorTests.cs" />
     <Compile Include="CSharp\InsertParenthesesVisitorTests.cs" />
-    <Compile Include="CSharp\OutputVisitorTests.cs" />
+    <Compile Include="CSharp\CSharpOutputVisitorTests.cs" />
     <Compile Include="CSharp\Parser\Expression\AnonymousTypeCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\ObjectCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\DelegateDeclarationTests.cs" />
@@ -116,7 +116,7 @@
     <Compile Include="CSharp\Parser\TypeMembers\OperatorDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\TypeMembers\PropertyDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\TypeSystemConvertVisitorTests.cs" />
-    <Compile Include="CSharp\Parser\Expression\AnonymousMethodTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\AnonymousMethodExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\ArrayCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\AssignmentExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\BaseReferenceExpressionTests.cs" />

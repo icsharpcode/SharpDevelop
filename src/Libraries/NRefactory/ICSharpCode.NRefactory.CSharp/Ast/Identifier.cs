@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 			{
 				return default (S);
 			}
@@ -113,24 +113,25 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public static Identifier Create (string name, TextLocation location)
 		{
-			if (name == null)
-				throw new ArgumentNullException("name");
-			if (name.Length > 0 && name[0] == '@')
+			if (string.IsNullOrEmpty(name))
+				return Identifier.Null;
+			if (name[0] == '@')
 				return new VerbatimIdentifier(name.Substring (1), location);
-			return new Identifier (name, location);
+			else
+				return new Identifier (name, location);
 		}
 		
 		public static Identifier Create (string name, TextLocation location, bool isVerbatim)
 		{
-			if (name == null)
-				throw new ArgumentNullException("name");
+			if (string.IsNullOrEmpty(name))
+				return Identifier.Null;
 			
 			if (isVerbatim)
 				return new VerbatimIdentifier(name, location);
 			return new Identifier (name, location);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitIdentifier (this, data);
 		}

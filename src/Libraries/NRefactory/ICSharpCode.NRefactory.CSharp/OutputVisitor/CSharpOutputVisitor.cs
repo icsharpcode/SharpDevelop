@@ -23,7 +23,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
 using ICSharpCode.NRefactory.PatternMatching;
 using ICSharpCode.NRefactory.TypeSystem;
 
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Outputs the AST.
 	/// </summary>
-	public class OutputVisitor : IAstVisitor<object, object>
+	public class CSharpOutputVisitor : IAstVisitor<object, object>
 	{
 		readonly IOutputFormatter formatter;
 		readonly CSharpFormattingOptions policy;
@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			Division
 		}
 		
-		public OutputVisitor (TextWriter textWriter, CSharpFormattingOptions formattingPolicy)
+		public CSharpOutputVisitor (TextWriter textWriter, CSharpFormattingOptions formattingPolicy)
 		{
 			if (textWriter == null)
 				throw new ArgumentNullException ("textWriter");
@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.policy = formattingPolicy;
 		}
 		
-		public OutputVisitor (IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy)
+		public CSharpOutputVisitor (IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy)
 		{
 			if (formatter == null)
 				throw new ArgumentNullException ("formatter");
@@ -420,13 +420,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (unconditionalKeywords.Contains (identifier))
 				return true;
-			if (context.Ancestors.Any (a => a is QueryExpression)) {
-				if (queryKeywords.Contains (identifier))
+			foreach (AstNode ancestor in context.Ancestors) {
+				if (ancestor is QueryExpression && queryKeywords.Contains (identifier))
 					return true;
+				if (identifier == "await") {
+					// with lambdas/anonymous methods,
+					if (ancestor is LambdaExpression)
+						return ((LambdaExpression)ancestor).IsAsync;
+					if (ancestor is AnonymousMethodExpression)
+						return ((AnonymousMethodExpression)ancestor).IsAsync;
+					if (ancestor is AttributedNode)
+						return (((AttributedNode)ancestor).Modifiers & Modifiers.Async) == Modifiers.Async;
+				}
 			}
 			return false;
 		}
-
 		#endregion
 		
 		#region Write constructs
@@ -518,6 +526,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public object VisitAnonymousMethodExpression (AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			StartNode (anonymousMethodExpression);
+			if (anonymousMethodExpression.IsAsync) {
+				WriteKeyword ("async", AnonymousMethodExpression.AsyncModifierRole);
+				Space ();
+			}
 			WriteKeyword ("delegate");
 			if (anonymousMethodExpression.HasParameterList) {
 				Space (policy.SpaceBeforeMethodDeclarationParentheses);
@@ -792,6 +804,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public object VisitLambdaExpression (LambdaExpression lambdaExpression, object data)
 		{
 			StartNode (lambdaExpression);
+			if (lambdaExpression.IsAsync) {
+				WriteKeyword ("async", LambdaExpression.AsyncModifierRole);
+				Space ();
+			}
 			if (LambdaNeedsParenthesis (lambdaExpression)) {
 				WriteCommaSeparatedListInParenthesis (lambdaExpression.Parameters, policy.SpaceWithinMethodDeclarationParentheses);
 			} else {
@@ -1118,8 +1134,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode (unaryOperatorExpression);
 			UnaryOperatorType opType = unaryOperatorExpression.Operator;
 			string opSymbol = UnaryOperatorExpression.GetOperatorSymbol (opType);
-			if (!(opType == UnaryOperatorType.PostIncrement || opType == UnaryOperatorType.PostDecrement))
+			if (opType == UnaryOperatorType.Await) {
+				WriteKeyword (opSymbol, UnaryOperatorExpression.OperatorRole);
+			} else if (!(opType == UnaryOperatorType.PostIncrement || opType == UnaryOperatorType.PostDecrement)) {
 				WriteToken (opSymbol, UnaryOperatorExpression.OperatorRole);
+			}
 			unaryOperatorExpression.Expression.AcceptVisitor (this, data);
 			if (opType == UnaryOperatorType.PostIncrement || opType == UnaryOperatorType.PostDecrement)
 				WriteToken (opSymbol, UnaryOperatorExpression.OperatorRole);
@@ -1862,15 +1881,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			return EndNode (yieldBreakStatement);
 		}
 		
-		public object VisitYieldStatement (YieldStatement yieldStatement, object data)
+		public object VisitYieldReturnStatement (YieldReturnStatement yieldReturnStatement, object data)
 		{
-			StartNode (yieldStatement);
-			WriteKeyword ("yield", YieldStatement.YieldKeywordRole);
-			WriteKeyword ("return", YieldStatement.ReturnKeywordRole);
+			StartNode (yieldReturnStatement);
+			WriteKeyword ("yield", YieldReturnStatement.YieldKeywordRole);
+			WriteKeyword ("return", YieldReturnStatement.ReturnKeywordRole);
 			Space ();
-			yieldStatement.Expression.AcceptVisitor (this, data);
+			yieldReturnStatement.Expression.AcceptVisitor (this, data);
 			Semicolon ();
-			return EndNode (yieldStatement);
+			return EndNode (yieldReturnStatement);
 		}
 
 		#endregion

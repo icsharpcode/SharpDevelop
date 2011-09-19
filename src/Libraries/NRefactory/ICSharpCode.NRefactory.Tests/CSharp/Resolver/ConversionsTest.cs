@@ -478,5 +478,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual(2, BetterConversion(typeof(ushort?), typeof(long?), typeof(int?)));
 			Assert.AreEqual(0, BetterConversion(typeof(sbyte), typeof(int?), typeof(uint?)));
 		}
+		
+		[Test]
+		public void ExpansiveInheritance()
+		{
+			SimpleProjectContent pc = new SimpleProjectContent();
+			DefaultTypeDefinition a = new DefaultTypeDefinition(pc, string.Empty, "A");
+			DefaultTypeDefinition b = new DefaultTypeDefinition(pc, string.Empty, "B");
+			// interface A<in U>
+			a.Kind = TypeKind.Interface;
+			a.TypeParameters.Add(new DefaultTypeParameter(EntityType.TypeDefinition, 0, "U") { Variance = VarianceModifier.Contravariant });
+			// interface B<X> : A<A<B<X>>> { }
+			DefaultTypeParameter x = new DefaultTypeParameter(EntityType.TypeDefinition, 0, "X");
+			b.TypeParameters.Add(x);
+			b.BaseTypes.Add(new ParameterizedType(a, new[] { new ParameterizedType(a, new [] { new ParameterizedType(b, new [] { x }) } ) }));
+			
+			IType type1 = new ParameterizedType(b, new[] { KnownTypeReference.Double.Resolve(ctx) });
+			IType type2 = new ParameterizedType(a, new [] { new ParameterizedType(b, new[] { KnownTypeReference.String.Resolve(ctx) }) });
+			Assert.IsFalse(conversions.ImplicitConversion(type1, type2));
+		}
 	}
 }

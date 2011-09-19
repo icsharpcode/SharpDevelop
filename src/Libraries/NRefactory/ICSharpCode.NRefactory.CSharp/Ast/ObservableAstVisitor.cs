@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ObservableAstVisitor.cs
 //  
 // Author:
@@ -671,11 +671,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (yieldBreakStatement, data);
 		}
 		
-		public event Action<YieldStatement, T> YieldStatementVisited;
+		public event Action<YieldReturnStatement, T> YieldReturnStatementVisited;
 
-		S IAstVisitor<T, S>.VisitYieldStatement (YieldStatement yieldStatement, T data)
+		S IAstVisitor<T, S>.VisitYieldReturnStatement (YieldReturnStatement yieldStatement, T data)
 		{
-			var handler = YieldStatementVisited;
+			var handler = YieldReturnStatementVisited;
 			if (handler != null)
 				handler (yieldStatement, data);
 			return VisitChildren (yieldStatement, data);

@@ -8,12 +8,13 @@
     <RootNamespace>ICSharpCode.NRefactory.CSharp</RootNamespace>
     <AssemblyName>ICSharpCode.NRefactory.CSharp</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
@@ -148,7 +149,7 @@
     <Compile Include="Ast\Statements\VariableDeclarationStatement.cs" />
     <Compile Include="Ast\Statements\WhileStatement.cs" />
     <Compile Include="Ast\Statements\YieldBreakStatement.cs" />
-    <Compile Include="Ast\Statements\YieldStatement.cs" />
+    <Compile Include="Ast\Statements\YieldReturnStatement.cs" />
     <Compile Include="Ast\TypeMembers\Accessor.cs" />
     <Compile Include="Ast\TypeMembers\AttributedNode.cs" />
     <Compile Include="Ast\TypeMembers\ConstructorDeclaration.cs" />
@@ -168,11 +169,11 @@
     <Compile Include="Formatter\AstFormattingVisitor.cs" />
     <Compile Include="Formatter\CSharpFormattingOptions.cs" />
     <Compile Include="Formatter\Indent.cs" />
-    <Compile Include="Formatter\ITextEditorAdapter.cs" />
+    <Compile Include="OutputVisitor\CodeDomConvertVisitor.cs" />
     <Compile Include="OutputVisitor\CSharpAmbience.cs" />
     <Compile Include="OutputVisitor\InsertParenthesesVisitor.cs" />
     <Compile Include="OutputVisitor\IOutputFormatter.cs" />
-    <Compile Include="OutputVisitor\OutputVisitor.cs" />
+    <Compile Include="OutputVisitor\CSharpOutputVisitor.cs" />
     <Compile Include="OutputVisitor\TextWriterOutputFormatter.cs" />
     <Compile Include="Parser\CSharpParser.cs" />
     <Compile Include="Parser\mcs\anonymous.cs" />
@@ -302,21 +303,7 @@
     <Compile Include="Resolver\SimpleTypeOrNamespaceReference.cs" />
     <Compile Include="Resolver\TypeInference.cs" />
     <Compile Include="Resolver\UsingScope.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Analysis" />
-    <Folder Include="Ast" />
-    <Folder Include="Ast\Expressions" />
-    <Folder Include="Ast\GeneralScope" />
-    <Folder Include="Ast\Statements" />
-    <Folder Include="Ast\TypeMembers" />
-    <Folder Include="Formatter" />
-    <Folder Include="OutputVisitor" />
-    <Folder Include="Parser" />
-    <Folder Include="Parser\mcs" />
-    <Folder Include="Refactoring" />
-    <Folder Include="Refactoring\ContextAction" />
-    <Folder Include="Resolver" />
+    <Compile Include="Completion\CSharpCompletionEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

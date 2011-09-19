@@ -355,5 +355,33 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 						}
 					}});
 		}
+		
+		[Test, Ignore("async/await not yet supported")]
+		public void AsyncMethod()
+		{
+			ParseUtilCSharp.AssertTypeMember(
+				"async void MyMethod() {}",
+				new MethodDeclaration {
+					Modifiers = Modifiers.Async,
+					ReturnType = new PrimitiveType("void"),
+					Name = "MyMethod",
+					Body = new BlockStatement()
+				});
+		}
+		
+		[Test, Ignore("async/await not yet supported")]
+		public void AsyncAsyncAsync()
+		{
+			ParseUtilCSharp.AssertTypeMember(
+				"async async async(async async) {}",
+				new MethodDeclaration {
+					Modifiers = Modifiers.Async,
+					ReturnType = new SimpleType("async"),
+					Name = "async",
+					Body = new BlockStatement(),
+					Parameters = {
+						new ParameterDeclaration(new SimpleType("async"), "async")
+					}});
+		}
 	}
 }
