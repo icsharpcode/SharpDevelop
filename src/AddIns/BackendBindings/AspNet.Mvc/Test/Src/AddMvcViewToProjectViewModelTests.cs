@@ -1363,5 +1363,30 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(expectedModelClass, selectedModelClass);
 		}
+		
+		[Test]
+		public void ViewTemplates_NonEmptyViewTemplateSelectedWhenUserTypesInModelClassName_EmptyViewTemplateSelected()
+		{
+			fakeTextTemplateRepository = new FakeMvcTextTemplateRepository();
+			
+			var templateB = new MvcViewTextTemplate(@"d:\templates\B.tt");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(templateB);
+			
+			var emptyTemplate = new MvcViewTextTemplate(@"d:\templates\Empty.tt");
+			fakeTextTemplateRepository.ViewTextTemplates.Add(emptyTemplate);
+			
+			CreateViewModelWithViewFolderPath(@"d:\myproject\views", fakeTextTemplateRepository);
+			AddModelClassToProject("ICSharpCode.MyProject", "MyModel");
+			
+			viewModel.IsStronglyTypedView = true;
+			MvcModelClassViewModel expectedModelClass = viewModel.ModelClasses.First();
+			viewModel.SelectedModelClass = expectedModelClass;
+			viewModel.SelectedViewTemplate = templateB;
+			viewModel.ModelClassName = "test";
+			
+			MvcViewTextTemplate template = viewModel.SelectedViewTemplate;
+			
+			Assert.AreEqual(emptyTemplate, template);
+		}
 	}
 }

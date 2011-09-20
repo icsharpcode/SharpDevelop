@@ -24,7 +24,7 @@ namespace ICSharpCode.AspNet.Mvc
 		bool isSelectMasterPageViewOpen;
 		MvcProjectFile selectedMasterPage;
 		string masterPageFile = String.Empty;
-		List<MvcViewTextTemplate> viewTemplates;
+		List<MvcViewTextTemplate> viewTemplates = new List<MvcViewTextTemplate>();
 		MvcViewTextTemplate selectedViewTemplate;
 		MvcModelClassViewModelsForSelectedFolder modelClassesForSelectedFolder;
 		MvcModelClassViewModel selectedModelClass;
@@ -317,6 +317,9 @@ namespace ICSharpCode.AspNet.Mvc
 			get { return selectedModelClass; }
 			set {
 				selectedModelClass = value;
+				if (selectedModelClass == null) {
+					SelectDefaultViewTemplate();
+				}
 				OnPropertyChanged(viewModel => viewModel.SelectedModelClass);
 				OnPropertyChanged(viewModel => viewModel.IsViewTemplateEnabled);
 			}
