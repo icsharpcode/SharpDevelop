@@ -171,7 +171,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region Test types
-		#pragma warning disable 169
+		#pragma warning disable 169, 67
 		
 		class Test {}
 		
