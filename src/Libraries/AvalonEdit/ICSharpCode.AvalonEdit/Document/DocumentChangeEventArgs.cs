@@ -49,7 +49,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the new offset where the specified offset moves after this document change.
 		/// </summary>
-		public int GetNewOffset(int offset, AnchorMovementType movementType)
+		public override int GetNewOffset(int offset, AnchorMovementType movementType = AnchorMovementType.Default)
 		{
 			if (offsetChangeMap != null)
 				return offsetChangeMap.GetNewOffset(offset, movementType);

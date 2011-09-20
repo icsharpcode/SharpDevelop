@@ -343,6 +343,33 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			{
 				textView.Redraw(DispatcherPriority.Background);
 			}
+			
+			public event EventHandler VisibleDocumentLinesChanged {
+				add { textView.VisualLinesChanged += value; }
+				remove { textView.VisualLinesChanged -= value; }
+			}
+			
+			public IEnumerable<IDocumentLine> GetVisibleDocumentLines()
+			{
+				List<IDocumentLine> result = new List<IDocumentLine>();
+				foreach (VisualLine line in textView.VisualLines) {
+					if (line.FirstDocumentLine == line.LastDocumentLine) {
+						result.Add(line.FirstDocumentLine);
+					} else {
+						int firstLineStart = line.FirstDocumentLine.Offset;
+						int lineEndOffset = firstLineStart + line.FirstDocumentLine.TotalLength;
+						foreach (VisualLineElement e in line.Elements) {
+							int elementOffset = firstLineStart + e.RelativeTextOffset;
+							if (elementOffset >= lineEndOffset) {
+								var currentLine = this.Document.GetLineByOffset(elementOffset);
+								lineEndOffset = currentLine.Offset + currentLine.TotalLength;
+								result.Add(currentLine);
+							}
+						}
+					}
+				}
+				return result;
+			}
 		}
 		
 		sealed class CustomizedBrush : HighlightingBrush

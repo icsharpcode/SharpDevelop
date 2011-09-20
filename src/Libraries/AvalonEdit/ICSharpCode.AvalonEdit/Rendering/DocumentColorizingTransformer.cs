@@ -33,6 +33,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			currentDocumentLine = context.VisualLine.FirstDocumentLine;
 			firstLineStart = currentDocumentLineStartOffset = currentDocumentLine.Offset;
 			currentDocumentLineEndOffset = currentDocumentLineStartOffset + currentDocumentLine.Length;
+			int currentDocumentLineTotalEndOffset = currentDocumentLineStartOffset + currentDocumentLine.TotalLength;
 			
 			if (context.VisualLine.FirstDocumentLine == context.VisualLine.LastDocumentLine) {
 				ColorizeLine(currentDocumentLine);
@@ -41,10 +42,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				// ColorizeLine modifies the visual line elements, loop through a copy of the line elements
 				foreach (VisualLineElement e in context.VisualLine.Elements.ToArray()) {
 					int elementOffset = firstLineStart + e.RelativeTextOffset;
-					if (elementOffset >= currentDocumentLineEndOffset) {
+					if (elementOffset >= currentDocumentLineTotalEndOffset) {
 						currentDocumentLine = context.Document.GetLineByOffset(elementOffset);
 						currentDocumentLineStartOffset = currentDocumentLine.Offset;
 						currentDocumentLineEndOffset = currentDocumentLineStartOffset + currentDocumentLine.Length;
+						currentDocumentLineTotalEndOffset = currentDocumentLineStartOffset + currentDocumentLine.TotalLength;
 						ColorizeLine(currentDocumentLine);
 					}
 				}

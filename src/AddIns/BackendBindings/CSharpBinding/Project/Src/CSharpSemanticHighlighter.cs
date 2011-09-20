@@ -29,7 +29,65 @@ namespace CSharpBinding
 		readonly HighlightingColor fieldAccessColor;
 		readonly HighlightingColor valueKeywordColor;
 		
-		HashSet<IDocumentLine> invalidLines = new HashSet<IDocumentLine>();
+		List<IDocumentLine> invalidLines = new List<IDocumentLine>();
+		List<CachedLine> cachedLines = new List<CachedLine>();
+		
+		// If a line gets edited and we need to display it while no parse information is ready for the
+		// changed file, the line would flicker (semantic highlightings disappear temporarily).
+		// We avoid this issue by storing the semantic highlightings and updating them on document changes
+		// (using anchor movement)
+		class CachedLine
+		{
+			public readonly HighlightedLine HighlightedLine;
+			public ITextSourceVersion OldVersion;
+			
+			/// <summary>
+			/// Gets whether the cache line is valid (no document changes since it was created).
+			/// This field gets set to false when Update() is called.
+			/// </summary>
+			public bool IsValid;
+			
+			public IDocumentLine DocumentLine { get { return HighlightedLine.DocumentLine; } }
+			
+			public CachedLine(HighlightedLine highlightedLine, ITextSourceVersion fileVersion)
+			{
+				if (highlightedLine == null)
+					throw new ArgumentNullException("highlightedLine");
+				if (fileVersion == null)
+					throw new ArgumentNullException("fileVersion");
+				
+				this.HighlightedLine = highlightedLine;
+				this.OldVersion = fileVersion;
+				this.IsValid = true;
+			}
+			
+			public void Update(ITextSourceVersion newVersion)
+			{
+				// Apply document changes to all highlighting sections:
+				foreach (TextChangeEventArgs change in OldVersion.GetChangesTo(newVersion)) {
+					foreach (HighlightedSection section in HighlightedLine.Sections) {
+						int endOffset = section.Offset + section.Length;
+						section.Offset = change.GetNewOffset(section.Offset);
+						endOffset = change.GetNewOffset(endOffset);
+						section.Length = endOffset - section.Offset;
+					}
+				}
+				// The resulting sections might have become invalid:
+				// - zero-length if section was deleted,
+				// - a section might have moved outside the range of this document line (newline inserted in document = line split up)
+				// So we will remove all highlighting sections which have become invalid.
+				int lineStart = HighlightedLine.DocumentLine.Offset;
+				int lineEnd = lineStart + HighlightedLine.DocumentLine.Length;
+				for (int i = 0; i < HighlightedLine.Sections.Count; i++) {
+					HighlightedSection section = HighlightedLine.Sections[i];
+					if (section.Offset < lineStart || section.Offset + section.Length > lineEnd || section.Length <= 0)
+						HighlightedLine.Sections.RemoveAt(i--);
+				}
+				
+				this.OldVersion = newVersion;
+				this.IsValid = false;
+			}
+		}
 		
 		int lineNumber;
 		HighlightedLine line;
@@ -52,24 +110,36 @@ namespace CSharpBinding
 			this.fieldAccessColor = highlightingDefinition.GetNamedColor("FieldAccess");
 			this.valueKeywordColor = highlightingDefinition.GetNamedColor("NullOrValueKeywords");
 			
-			ParserService.ParserUpdateStepFinished += ParserService_ParserUpdateStepFinished;
+			ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
 			ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
+			syntaxHighlighter.VisibleDocumentLinesChanged += syntaxHighlighter_VisibleDocumentLinesChanged;
 		}
 		
 		public void Dispose()
 		{
-			ParserService.ParserUpdateStepFinished -= ParserService_ParserUpdateStepFinished;
+			ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
 			ParserService.LoadSolutionProjectsThreadEnded -= ParserService_LoadSolutionProjectsThreadEnded;
+			syntaxHighlighter.VisibleDocumentLinesChanged -= syntaxHighlighter_VisibleDocumentLinesChanged;
+		}
+		
+		void syntaxHighlighter_VisibleDocumentLinesChanged(object sender, EventArgs e)
+		{
+			// use this event to remove cached lines which are no longer visible
+			var visibleDocumentLines = new HashSet<IDocumentLine>(syntaxHighlighter.GetVisibleDocumentLines());
+			cachedLines.RemoveAll(c => !visibleDocumentLines.Contains(c.DocumentLine));
 		}
 		
 		void ParserService_LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
 		{
+			cachedLines.Clear();
+			invalidLines.Clear();
 			syntaxHighlighter.InvalidateAll();
 		}
 		
-		void ParserService_ParserUpdateStepFinished(object sender, ParserUpdateStepEventArgs e)
+		void ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
 			if (e.FileName == textEditor.FileName && invalidLines.Count > 0) {
+				cachedLines.Clear();
 				foreach (IDocumentLine line in invalidLines) {
 					if (!line.IsDeleted) {
 						syntaxHighlighter.InvalidateLine(line);
@@ -90,12 +160,42 @@ namespace CSharpBinding
 		
 		public HighlightedLine HighlightLine(int lineNumber)
 		{
+			IDocumentLine documentLine = textEditor.Document.GetLineByNumber(lineNumber);
+			ITextSourceVersion newVersion = textEditor.Document.Version;
+			CachedLine cachedLine = null;
+			for (int i = 0; i < cachedLines.Count; i++) {
+				if (cachedLines[i].DocumentLine == documentLine) {
+					if (newVersion == null || !newVersion.BelongsToSameDocumentAs(cachedLines[i].OldVersion)) {
+						// cannot list changes from old to new: we can't update the cache, so we'll remove it
+						cachedLines.RemoveAt(i);
+					} else {
+						cachedLine = cachedLines[i];
+					}
+					break;
+				}
+			}
+			
+			if (cachedLine != null && cachedLine.IsValid && newVersion.CompareAge(cachedLine.OldVersion) == 0) {
+				// the file hasn't changed since the cache was created, so just reuse the old highlighted line
+				return cachedLine.HighlightedLine;
+			}
+			
 			ParseInformation parseInfo = ParserService.GetCachedParseInformation(textEditor.FileName, textEditor.Document.Version);
 			if (parseInfo == null) {
-				invalidLines.Add(textEditor.Document.GetLineByNumber(lineNumber));
+				if (!invalidLines.Contains(documentLine))
+					invalidLines.Add(documentLine);
 				Debug.WriteLine("Semantic highlighting for line {0} - marking as invalid", lineNumber);
-				return null;
+				
+				if (cachedLine != null) {
+					// If there's a cached version, adjust it to the latest document changes and return it.
+					// This avoids flickering when changing a line that contains semantic highlighting.
+					cachedLine.Update(newVersion);
+					return cachedLine.HighlightedLine;
+				} else {
+					return null;
+				}
 			}
+			
 			CSharpParsedFile parsedFile = parseInfo.ParsedFile as CSharpParsedFile;
 			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
 			if (cu == null || parsedFile == null) {
@@ -109,13 +209,16 @@ namespace CSharpBinding
 				
 				resolveVisitor.Scan(cu);
 				
-				HighlightedLine line = new HighlightedLine(textEditor.Document, textEditor.Document.GetLineByNumber(lineNumber));
+				HighlightedLine line = new HighlightedLine(textEditor.Document, documentLine);
 				this.line = line;
 				this.lineNumber = lineNumber;
 				cu.AcceptVisitor(this);
 				this.line = null;
 				this.resolveVisitor = null;
 				Debug.WriteLine("Semantic highlighting for line {0} - added {1} sections", lineNumber, line.Sections.Count);
+				if (textEditor.Document.Version != null) {
+					cachedLines.Add(new CachedLine(line, textEditor.Document.Version));
+				}
 				return line;
 			}
 		}

@@ -52,6 +52,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// (e.g. semantic highlighting).
 		/// </remarks>
 		void InvalidateAll();
+		
+		/// <summary>
+		/// Gets the document lines that are currently visible in the editor.
+		/// </summary>
+		IEnumerable<IDocumentLine> GetVisibleDocumentLines();
+		
+		/// <summary>
+		/// Raised when the set of visible document lines has changed.
+		/// </summary>
+		event EventHandler VisibleDocumentLinesChanged;
 	}
 	
 	public static class SyntaxHighligherKnownSpanNames

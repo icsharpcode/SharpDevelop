@@ -167,7 +167,6 @@
     <Compile Include="Src\Editor\Search\SearchResultMatch.cs" />
     <Compile Include="Src\Editor\Search\SearchResultsPad.cs" />
     <Compile Include="Src\Editor\Search\SearchResultPadToolbarCommands.cs" />
-    <Compile Include="Src\Editor\TextChangeEventArgs.cs" />
     <Compile Include="Src\Editor\TextNavigationPoint.cs" />
     <Compile Include="Src\Editor\ToolTipRequestEventArgs.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
