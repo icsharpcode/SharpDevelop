@@ -27,6 +27,7 @@ namespace ICSharpCode.AspNet.Mvc
 		List<MvcViewTextTemplate> viewTemplates;
 		MvcViewTextTemplate selectedViewTemplate;
 		MvcModelClassViewModelsForSelectedFolder modelClassesForSelectedFolder;
+		MvcModelClassViewModel selectedModelClass;
 		
 		public AddMvcViewToProjectViewModel(ISelectedMvcFolder selectedViewFolder)
 			: this(
@@ -300,15 +301,47 @@ namespace ICSharpCode.AspNet.Mvc
 					OnPropertyChanged(viewModel => viewModel.ModelClasses);
 				}
 				OnPropertyChanged(viewModel => viewModel.IsStronglyTypedView);
+				OnPropertyChanged(viewModel => viewModel.IsViewTemplateEnabled);
 			}
+		}
+		
+		public bool IsViewTemplateEnabled {
+			get { return IsStronglyTypedView && (SelectedModelClass != null); }
 		}
 		
 		public IEnumerable<MvcModelClassViewModel> ModelClasses {
 			get { return modelClassesForSelectedFolder.ModelClasses; }
 		}
 		
-		public MvcModelClassViewModel SelectedModelClass { get; set; }
-		public string ModelClassName { get; set; }
+		public MvcModelClassViewModel SelectedModelClass {
+			get { return selectedModelClass; }
+			set {
+				selectedModelClass = value;
+				OnPropertyChanged(viewModel => viewModel.SelectedModelClass);
+				OnPropertyChanged(viewModel => viewModel.IsViewTemplateEnabled);
+			}
+		}
+		
+		string modelClassName;
+		
+		public string ModelClassName {
+			get { return modelClassName; }
+			set {
+				modelClassName = value;
+				if (!ModelClassNameMatchesSelectedModelClassName()) {
+					SelectedModelClass = null;
+				}
+			}
+		}
+		
+		bool ModelClassNameMatchesSelectedModelClassName()
+		{
+			if (selectedModelClass != null) {
+				return selectedModelClass.Name == modelClassName;
+			}
+			return false;
+		}
+		
 		public string PrimaryContentPlaceHolderId { get; set; }
 		
 		public string MasterPageFile {

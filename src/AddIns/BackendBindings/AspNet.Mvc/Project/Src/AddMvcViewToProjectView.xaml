@@ -99,13 +99,13 @@
 			
 			<Label
 				Grid.Row="5"
-				IsEnabled="{Binding Path=IsStronglyTypedView}"
+				IsEnabled="{Binding Path=IsViewTemplateEnabled}"
 				Content="Template:"/>
 			<ComboBox
 				Grid.Row="5"
 				Grid.Column="1"
 				Margin="0, 2, 0, 0"
-				IsEnabled="{Binding Path=IsStronglyTypedView}"
+				IsEnabled="{Binding Path=IsViewTemplateEnabled}"
 				ItemsSource="{Binding Path=ViewTemplates}"
 				ItemTemplate="{StaticResource ViewEngineTemplate}"
 				SelectedItem="{Binding Path=SelectedViewTemplate}"/>

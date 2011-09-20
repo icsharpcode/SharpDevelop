@@ -1243,5 +1243,125 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.IsTrue(fired);
 		}
+		
+		[Test]
+		public void IsViewTemplateEnabled_ModelClassSelectedAndIsStronglyTypedViewIsNotSelected_ReturnsFalse()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject.MyModel");
+			viewModel.IsStronglyTypedView = true;
+			viewModel.SelectedModelClass = viewModel.ModelClasses.First();
+			viewModel.IsStronglyTypedView = false;
+			
+			bool enabled = viewModel.IsViewTemplateEnabled;
+			
+			Assert.IsFalse(enabled);
+		}
+		
+		[Test]
+		public void IsViewTemplateEnabled_ModelClassSelectedAndIsStronglyTypedViewIsSelected_ReturnsTrue()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject.MyModel");
+			viewModel.IsStronglyTypedView = true;
+			viewModel.SelectedModelClass = viewModel.ModelClasses.First();
+			
+			bool enabled = viewModel.IsViewTemplateEnabled;
+			
+			Assert.IsTrue(enabled);
+		}
+		
+		[Test]
+		public void IsViewTemplateEnabled_NoModelClassSelectedAndIsStronglyTypedViewIsSelected_ReturnsFalse()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject.MyModel");
+			viewModel.IsStronglyTypedView = true;
+			viewModel.SelectedModelClass = null;
+			viewModel.ModelClassName = "Test";
+			
+			bool enabled = viewModel.IsViewTemplateEnabled;
+			
+			Assert.IsFalse(enabled);
+		}
+		
+		[Test]
+		public void IsStronglyTypedView_IsStronglyTypedViewIsChangedFromTrueToFalse_IsViewTemplateEnabledPropertyChangedEventFired()
+		{
+			CreateViewModel();
+			viewModel.IsStronglyTypedView = true;
+			MonitorPropertyChangedEvents();
+			viewModel.IsStronglyTypedView = false;
+			
+			bool fired = propertyChangedEvents.Contains("IsViewTemplateEnabled");
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void SelectedModelClass_SelectedModelClassChangedToNull_IsViewTemplateEnabledPropertyChangedEventFired()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject.MyModel");
+			viewModel.IsStronglyTypedView = true;
+			viewModel.SelectedModelClass = viewModel.ModelClasses.First();
+			MonitorPropertyChangedEvents();
+			viewModel.SelectedModelClass = null;
+			
+			bool fired = propertyChangedEvents.Contains("IsViewTemplateEnabled");
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void ModelClassName_ModelClassNameTextChangedFromSelectedModelClass_SelectedModelClassChangedToNull()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject", "MyModel");
+			viewModel.IsStronglyTypedView = true;
+			viewModel.SelectedModelClass = viewModel.ModelClasses.First();
+			viewModel.ModelClassName = "Test";
+			
+			MvcModelClassViewModel selectedModelClass = viewModel.SelectedModelClass;
+			
+			Assert.IsNull(selectedModelClass);
+		}
+		
+		[Test]
+		public void ModelClassName_ModelClassNameTextChangedFromSelectedModelClass_SelectedModelClassPropertyChangedEventFired()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject", "MyModel");
+			viewModel.IsStronglyTypedView = true;
+			viewModel.SelectedModelClass = viewModel.ModelClasses.First();
+			MonitorPropertyChangedEvents();
+			viewModel.ModelClassName = "Test";
+			
+			bool fired = propertyChangedEvents.Contains("SelectedModelClass");
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void ModelClassName_ModelClassNameTextChangedToMatchSelectedModelClass_SelectedModelClassIsNotChangedToNull()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			AddModelClassToProject("ICSharpCode.MyProject", "MyModel");
+			viewModel.IsStronglyTypedView = true;
+			MvcModelClassViewModel expectedModelClass = viewModel.ModelClasses.First();
+			viewModel.SelectedModelClass = expectedModelClass;
+			viewModel.ModelClassName = "MyModel (ICSharpCode.MyProject)";
+			
+			MvcModelClassViewModel selectedModelClass = viewModel.SelectedModelClass;
+			
+			Assert.AreEqual(expectedModelClass, selectedModelClass);
+		}
 	}
 }
