@@ -4,6 +4,7 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Dom;
@@ -18,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	public class ClassMemberBookmark : IBookmark
 	{
 		IMember member;
+		DocumentLine line;
 		
 		public IMember Member {
 			get {
@@ -30,6 +32,14 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			this.member = member;
 		}
 		
+		public ClassMemberBookmark(IMember member, TextDocument document)
+		{
+			this.member = member;
+			int lineNr = member.Region.BeginLine;
+			if (document != null && lineNr > 0 && lineNr <= document.LineCount)
+				this.line = document.GetLineByNumber(lineNr);
+		}
+		
 		public const string ContextMenuPath = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu";
 		
 		public virtual IImage Image {
@@ -37,7 +47,12 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		}
 		
 		public int LineNumber {
-			get { return member.Region.BeginLine; }
+			get {
+				if (line != null && !line.IsDeleted)
+					return line.LineNumber;
+				else
+					return member.Region.BeginLine;
+			}
 		}
 		
 		public virtual void MouseDown(MouseButtonEventArgs e)
@@ -71,6 +86,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	public class ClassBookmark : IBookmark
 	{
 		IClass @class;
+		DocumentLine line;
 		
 		public IClass Class {
 			get {
@@ -86,6 +102,14 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			this.@class = @class;
 		}
 		
+		public ClassBookmark(IClass @class, TextDocument document)
+		{
+			this.@class = @class;
+			int lineNr = @class.Region.BeginLine;
+			if (document != null && lineNr > 0 && lineNr <= document.LineCount)
+				this.line = document.GetLineByNumber(lineNr);
+		}
+		
 		public const string ContextMenuPath = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu";
 		
 		public virtual IImage Image {
@@ -95,7 +119,12 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		}
 		
 		public int LineNumber {
-			get { return @class.Region.BeginLine; }
+			get {
+				if (line != null && !line.IsDeleted)
+					return line.LineNumber;
+				else
+					return @class.Region.BeginLine;
+			}
 		}
 		
 		public virtual void MouseDown(MouseButtonEventArgs e)
