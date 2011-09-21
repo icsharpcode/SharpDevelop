@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Note that this method does not return all supertypes - doing so is impossible due to contravariance
 		/// (and undesirable for covariance as the list could become very large).
 		/// 
-		/// The output is ordered so that base types occur in before derived types.
+		/// The output is ordered so that base types occur before derived types.
 		/// </remarks>
 		public static IEnumerable<IType> GetAllBaseTypes(this IType type, ITypeResolveContext context)
 		{
@@ -47,12 +47,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
-		/// Gets the non-interface base types.
+		/// Gets all non-interface base types.
 		/// </summary>
 		/// <remarks>
-		/// When <paramref name="type"/> is an interface, this method will also return base interfaces.
+		/// When <paramref name="type"/> is an interface, this method will also return base interfaces (return same output as GetAllBaseTypes()).
 		/// 
-		/// The output is ordered so that base types occur in before derived types.
+		/// The output is ordered so that base types occur before derived types.
 		/// </remarks>
 		public static IEnumerable<IType> GetNonInterfaceBaseTypes(this IType type, ITypeResolveContext context)
 		{

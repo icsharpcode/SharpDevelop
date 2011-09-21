@@ -197,7 +197,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			SetUp();
 			
 			CSharpParsedFile parsedFile = new CSharpParsedFile("test.cs", resolver.CurrentUsingScope);
-			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(parsedFile, resolver.CurrentUsingScope, null);
+			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(parsedFile);
 			cu.AcceptVisitor(convertVisitor, null);
 			project.UpdateProjectContent(null, convertVisitor.ParsedFile);
 			
