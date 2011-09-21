@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 
 using ICSharpCode.CodeQualityAnalysis.Controls;
 using ICSharpCode.CodeQualityAnalysis.Utility;
-using ICSharpCode.CodeQualityAnalysis.Utility.LocalizeableCombo;
+using ICSharpCode.CodeQualityAnalysis.Utility.Localizeable;
 using Microsoft.Win32;
 
 namespace ICSharpCode.CodeQualityAnalysis
@@ -50,16 +50,19 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		public MainWindowViewModel():base()
 		{
-			this.FrmTitle = "$Code Quality Analysis";
-			this.btnOpenAssembly = "$Open Assembly";
+			this.FrmTitle = "Code Quality Analysis";
+			this.btnOpenAssembly = "Open Assembly";
 			
 			#region MainTab
-			this.TabDependencyGraph = "$Dependency Graph";
-			this.TabDependencyMatrix = "$Dependency Matrix";
-			this.TabMetrics = "$Metrics";
+			this.TabDependencyGraph = "Dependency Graph";
+			this.TabDependencyMatrix = "Dependency Matrix";
+			this.TabMetrics = "Metrics";
 			#endregion
 			
 			MetrixTabEnable = false;
+			
+			ActivateMetrics = new RelayCommand(ActivateMetricsExecute);
+			ShowTreeMap = new RelayCommand(ShowTreemapExecute,CanActivateTreemap);
 		}
 		
 		
@@ -147,10 +150,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 			base.RaisePropertyChanged(() =>this.Nodes);}
 		}
 		
-//http://stackoverflow.com/questions/58743/databinding-an-enum-property-to-a-combobox-in-wpf#62032	http://stackoverflow.com/questions/58743/databinding-an-enum-property-to-a-combobox-in-wpf#62032	
-		
-		//http://www.ageektrapped.com/blog/the-missing-net-7-displaying-enums-in-wpf/
-//		http://www.codeproject.com/KB/WPF/FriendlyEnums.aspx
 		
 		private string treeValueProperty ;
 		
@@ -160,22 +159,27 @@ namespace ICSharpCode.CodeQualityAnalysis
 			base.RaisePropertyChanged(() =>this.TreeValueProperty);}
 		}
 		
-		// First Combo
+		// MetricsLevel Combo
 		
 		public MetricsLevel MetricsLevel {
 			get {return MetricsLevel;}
 		}
 	
-//		MetricsLevel metricsLevelSelectedItem = MetricsLevel.Assembly;
-//		
-//		public MetricsLevel MetricsLevelSelectedItem {
-//			get { return metricsLevelSelectedItem; }
-//			set { metricsLevelSelectedItem = value;
-//			base.RaisePropertyChanged(() =>this.MetricsLevelSelectedItem);
-//			}
-//		}
+		#region ActivateMetrics
 		
-		// Second Combo
+		public ICommand ActivateMetrics {get;private set;}
+		
+		bool metricsIsActive;
+		
+		void ActivateMetricsExecute ()
+		{
+			metricsIsActive = true;
+		}
+		
+		#endregion
+		
+		
+		// Metrics Combo
 		
 		public Metrics Metrics
 		{
@@ -188,12 +192,19 @@ namespace ICSharpCode.CodeQualityAnalysis
 			get { return selectedMetrics; }
 			set { selectedMetrics = value;
 				base.RaisePropertyChanged(() =>this.SelectedMetrics);
-				ActivateTreemap();
 			}
 		}
 		
+		#region ShowTreeMap Treemap
 		
-		void ActivateTreemap()
+		public ICommand ShowTreeMap {get;private set;}
+		
+		bool CanActivateTreemap()
+		{
+			return metricsIsActive;
+		}
+		
+		void ShowTreemapExecute()
 		{
 			var r  = from ns in MainModule.Namespaces
 				from type in ns.Types
@@ -217,5 +228,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 					throw new Exception("Invalid value for Metrics");
 			}
 		}
+		
+		#endregion
 	}
 }

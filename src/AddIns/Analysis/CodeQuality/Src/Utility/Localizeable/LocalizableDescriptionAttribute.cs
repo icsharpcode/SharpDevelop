@@ -9,7 +9,7 @@
 using System;
 using System.ComponentModel;
 
-namespace ICSharpCode.CodeQualityAnalysis.Utility.LocalizeableCombo
+namespace ICSharpCode.CodeQualityAnalysis.Utility.Localizeable
 {
 	/// <summary>
 	/// Description of LocalizableDescriptionAttribute.

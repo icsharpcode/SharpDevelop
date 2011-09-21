@@ -12,7 +12,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace ICSharpCode.CodeQualityAnalysis.Utility.LocalizeableCombo
+namespace ICSharpCode.CodeQualityAnalysis.Utility.Localizeable
 {
 	/// <summary>
 	/// Description of EnumToFriendlyNameConverter.

@@ -12,7 +12,8 @@
 	xmlns:tree="http://icsharpcode.net/sharpdevelop/treeview"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
 	xmlns:t="clr-namespace:TreeMaps.Controls;assembly=TreeMaps"
-	xmlns:loc ="clr-namespace:ICSharpCode.CodeQualityAnalysis.Utility.LocalizeableCombo"
+	xmlns:loc ="clr-namespace:ICSharpCode.CodeQualityAnalysis.Utility.Localizeable"
+	xmlns:util="clr-namespace:ICSharpCode.CodeQualityAnalysis.Utility"
 	Title="{Binding FrmTitle}"
 	x:Name="root">
 	
@@ -279,16 +280,18 @@
 						Grid.Column="0">
 						<ToolBar>
 							<TextBlock Text="Level: " />
-							<!-- SelectedItem="{Binding MetricsLevelSelectedItem}"-->
-							<ComboBox Width="200"							          							          
-							          ItemsSource="{Binding Source={StaticResource MetricsLevel}}"></ComboBox>							         														
+							
+							<util:ComboBoxWithCommand Width="200"
+								ItemsSource="{Binding Source={StaticResource MetricsLevel}}"
+								Command="{Binding ActivateMetrics}">
+							</util:ComboBoxWithCommand>
 							
 							<TextBlock  Margin="4,0,0,0" Text="Metric: " />
-													
-							<ComboBox Width="200" Margin="4,0,0,0"
-							          ItemsSource="{Binding Source={StaticResource Metrics}}"
-							          SelectedItem="{Binding SelectedMetrics}">
-								<ComboBox.ItemTemplate>
+							
+							<util:ComboBoxWithCommand Width="200" Margin="4,0,0,0"
+								ItemsSource="{Binding Source={StaticResource Metrics}}"
+								Command="{Binding ShowTreeMap}">
+								<util:ComboBoxWithCommand.ItemTemplate>
 									<DataTemplate>
 										<Label  Content="{Binding   Path=.,Mode=OneWay,
 										       Converter={StaticResource enumItemsConverter}}"
@@ -297,10 +300,10 @@
 										       VerticalAlignment="Center"/>
 									
 									</DataTemplate>
-								</ComboBox.ItemTemplate>
-							</ComboBox>
+								</util:ComboBoxWithCommand.ItemTemplate>
+							</util:ComboBoxWithCommand>
+				
 						</ToolBar>
-					
 					</ToolBarTray>
 					
 	<!--  http://treemaps.codeplex.com/-->
