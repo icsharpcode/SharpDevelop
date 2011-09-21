@@ -2,10 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	/*
 	public class GoToMemberAction : IContextAction
 	{
 		public string Title { get; private set; }
@@ -18,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (member == null)
 				throw new ArgumentNullException("member");
 			this.Member = member;
-			this.Title = ambience.Convert(member);
+			this.Title = ambience.ConvertEntity(member, ParserService.CurrentTypeResolveContext);
 		}
 		
 		public void Execute()
@@ -26,5 +27,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			NavigationService.NavigateTo(this.Member);
 		}
 	}
-	*/
 }

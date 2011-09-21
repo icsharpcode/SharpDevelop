@@ -65,7 +65,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		internal static void Save(IWorkbenchWindow window)
 		{
-			window.ViewContents.ForEach(Save);
+			foreach (var vc in window.ViewContents)
+				Save(vc);
 		}
 		
 		internal static void Save(IViewContent content)
@@ -153,7 +154,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			// save remaining files once (display Save As dialog)
 			var files = remainingViewContents.SelectMany(content => content.Files).Distinct();
 			
-			files.ForEach(Save);
+			foreach (var file in files)
+				Save(file);
 		}
 		
 		internal static void Save(OpenedFile file)

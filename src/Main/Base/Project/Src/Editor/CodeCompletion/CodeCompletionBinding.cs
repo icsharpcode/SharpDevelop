@@ -13,7 +13,28 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 	/// </summary>
 	public interface ICodeCompletionBinding
 	{
+		/// <summary>
+		/// This method is called when typing a character in the editor, immediately before
+		/// the character is inserted into the document.
+		/// </summary>
+		/// <param name="editor">The editor</param>
+		/// <param name="ch">The character being inserted.</param>
+		/// <returns>Returns whether the completion binding has shown code completion.</returns>
 		CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch);
+		
+		/// <summary>
+		/// This method is called after typing a character in the editor,
+		/// after character is inserted into the document.
+		/// </summary>
+		/// <param name="editor">The editor</param>
+		/// <param name="ch">The character that was inserted.</param>
+		/// <returns>Returns whether the completion binding has shown code completion.</returns>
+		bool HandleKeyPressed(ITextEditor editor, char ch);
+		
+		/// <summary>
+		/// Invokes ctrl-space completion.
+		/// </summary>
+		/// <returns>Returns whether the completion binding has shown code completion.</returns>
 		bool CtrlSpace(ITextEditor editor);
 	}
 	
@@ -90,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			this.extensions = extensions;
 		}
 		
-		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
+		bool MatchesExtension(ITextEditor editor)
 		{
 			string ext = Path.GetExtension(editor.FileName);
 			foreach (string extension in extensions) {
@@ -98,132 +119,36 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					if (binding == null) {
 						binding = (ICodeCompletionBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
 						if (binding == null)
-							break;
+							return false;
 					}
-					return binding.HandleKeyPress(editor, ch);
+					return true;
 				}
 			}
-			return CodeCompletionKeyPressResult.None;
+			return false;
+		}
+		
+		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
+		{
+			if (MatchesExtension(editor))
+				return binding.HandleKeyPress(editor, ch);
+			else
+				return CodeCompletionKeyPressResult.None;
+		}
+		
+		public bool HandleKeyPressed(ITextEditor editor, char ch)
+		{
+			if (MatchesExtension(editor))
+				return binding.CtrlSpace(editor);
+			else
+				return false;
 		}
 		
 		public bool CtrlSpace(ITextEditor editor)
 		{
-			string ext = Path.GetExtension(editor.FileName);
-			foreach (string extension in extensions) {
-				if (ext.Equals(extension, StringComparison.OrdinalIgnoreCase)) {
-					if (binding == null) {
-						binding = (ICodeCompletionBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
-						if (binding == null)
-							break;
-					}
-					return binding.CtrlSpace(editor);
-				}
-			}
-			return false;
+			if (MatchesExtension(editor))
+				return binding.CtrlSpace(editor);
+			else
+				return false;
 		}
 	}
-	
-	/*
-	public class DefaultCodeCompletionBinding : ICodeCompletionBinding
-	{
-		bool enableMethodInsight = true;
-		bool enableIndexerInsight = true;
-		bool enableXmlCommentCompletion = true;
-		bool enableDotCompletion = true;
-		protected IInsightWindowHandler insightHandler;
-		
-		public bool EnableMethodInsight {
-			get {
-				return enableMethodInsight;
-			}
-			set {
-				enableMethodInsight = value;
-			}
-		}
-		
-		public bool EnableIndexerInsight {
-			get {
-				return enableIndexerInsight;
-			}
-			set {
-				enableIndexerInsight = value;
-			}
-		}
-		
-		public bool EnableXmlCommentCompletion {
-			get {
-				return enableXmlCommentCompletion;
-			}
-			set {
-				enableXmlCommentCompletion = value;
-			}
-		}
-		
-		public bool EnableDotCompletion {
-			get {
-				return enableDotCompletion;
-			}
-			set {
-				enableDotCompletion = value;
-			}
-		}
-		
-		public virtual CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
-		{
-			switch (ch) {
-				case '(':
-					if (enableMethodInsight && CodeCompletionOptions.InsightEnabled) {
-						IInsightWindow insightWindow = editor.ShowInsightWindow(new MethodInsightProvider().ProvideInsight(editor));
-						if (insightWindow != null && insightHandler != null) {
-							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
-							insightHandler.HighlightParameter(insightWindow, 0);
-						}
-						return CodeCompletionKeyPressResult.Completed;
-					}
-					break;
-				case '[':
-					if (enableIndexerInsight && CodeCompletionOptions.InsightEnabled) {
-						IInsightWindow insightWindow = editor.ShowInsightWindow(new IndexerInsightProvider().ProvideInsight(editor));
-						if (insightWindow != null && insightHandler != null)
-							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
-						return CodeCompletionKeyPressResult.Completed;
-					}
-					break;
-				case '<':
-					if (enableXmlCommentCompletion) {
-						new CommentCompletionItemProvider().ShowCompletion(editor);
-						return CodeCompletionKeyPressResult.Completed;
-					}
-					break;
-				case '.':
-					if (enableDotCompletion) {
-						new DotCodeCompletionItemProvider().ShowCompletion(editor);
-						return CodeCompletionKeyPressResult.Completed;
-					}
-					break;
-				case ' ':
-					if (CodeCompletionOptions.KeywordCompletionEnabled) {
-						string word = editor.GetWordBeforeCaret();
-						if (!string.IsNullOrEmpty(word)) {
-							if (HandleKeyword(editor, word))
-								return CodeCompletionKeyPressResult.Completed;
-						}
-					}
-					break;
-			}
-			return CodeCompletionKeyPressResult.None;
-		}
-		
-		public virtual bool HandleKeyword(ITextEditor editor, string word)
-		{
-			// DefaultCodeCompletionBinding does not support Keyword handling, but this
-			// method can be overridden
-			return false;
-		}
-		
-		public virtual bool CtrlSpace(ITextEditor editor)
-		{
-			return false;
-		}
-	}*/
 }

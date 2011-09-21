@@ -72,6 +72,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Runs an action for all elements in the input.
 		/// </summary>
+		[Obsolete("Please use a regular foreach loop instead. ForEach() is executed for its side-effects, and side-effects mix poorly with a functional programming style.")]
 		public static void ForEach<T>(this IEnumerable<T> input, Action<T> action)
 		{
 			if (input == null)

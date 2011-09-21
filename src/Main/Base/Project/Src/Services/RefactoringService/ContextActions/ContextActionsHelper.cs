@@ -40,16 +40,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static ContextActionsPopup MakePopupWithOverrides(IMember member)
 		{
-			#warning Reimplement MakePopupWithOverrides
-			throw new NotImplementedException();
-			/*var derivedClassesTree = RefactoringService.FindDerivedClassesTree(member.DeclaringType);
+			var derivedClassesTree = FindReferenceService.BuildDerivedTypesGraph(member.DeclaringTypeDefinition).ConvertToDerivedTypeTree();
 			var popupViewModel = new ContextActionsViewModel {
 				Title = MenuService.ConvertLabel(StringParser.Parse(
 					"${res:SharpDevelop.Refactoring.OverridesOf}",
-					new StringTagPair("Name", member.FullyQualifiedName))
-			)};
-			popupViewModel.Actions = new OverridesPopupTreeViewModelBuilder(member).BuildTreeViewModel(derivedClassesTree);
-			return new ContextActionsPopup { Actions = popupViewModel, Symbol = member };*/
+					new StringTagPair("Name", member.FullName))
+				                                )};
+			popupViewModel.Actions = new OverridesPopupTreeViewModelBuilder(member).BuildTreeViewModel(derivedClassesTree.Children);
+			return new ContextActionsPopup { Actions = popupViewModel, Symbol = member };
 		}
 		
 		class PopupViewModelBuilder
@@ -92,7 +90,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		/*
 		class OverridesPopupTreeViewModelBuilder : PopupViewModelBuilder
 		{
 			IMember member;
@@ -106,13 +103,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			protected ContextActionViewModel MakeGoToMemberAction(ITypeDefinition containingClass, ObservableCollection<ContextActionViewModel> childActions)
 			{
-				var overridenMember = MemberLookupHelper.FindSimilarMember(containingClass, this.member);
-				if (overridenMember == null || overridenMember.Region.IsEmpty)
+				IMember derivedMember = FindReferenceService.GetDerivedMember(member, containingClass);
+				if (derivedMember == null)
 					return null;
 				
 				return new ContextActionViewModel {
-					Action = new GoToMemberAction(overridenMember, this.LabelAmbience),
-					Image = ClassBrowserIconService.GetIcon(overridenMember).ImageSource,
+					Action = new GoToMemberAction(derivedMember, this.LabelAmbience),
+					Image = ClassBrowserIconService.GetIcon(derivedMember).ImageSource,
 					Comment = string.Format("(in {0})", containingClass.FullName),
 					ChildActions = childActions
 				};
@@ -124,6 +121,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					classTree.Select(
 						node => MakeGoToMemberAction(node.Content, BuildTreeViewModel(node.Children))).Where(action => action != null));
 			}
-		}*/
+		}
 	}
 }
