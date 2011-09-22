@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="ICSharpCode.AvalonEdit.Search.SearchPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<UserControl.Resources>
+		<BitmapImage x:Key="PrevImage" UriSource="prev.png" />
+		<BitmapImage x:Key="NextImage" UriSource="next.png" />
+	</UserControl.Resources>
+	<Border Background="WhiteSmoke" HorizontalAlignment="Right" VerticalAlignment="Top" Cursor="Arrow">
+		<StackPanel Orientation="Horizontal" Margin="3">
+			<Button Click="CloseClick" Margin="3" Height="16" Width="16" VerticalContentAlignment="Top" HorizontalContentAlignment="Left">
+				<Grid>
+					<Line X1="2" Y1="2" X2="8" Y2="8" Stroke="Black" StrokeThickness="1" />
+					<Line X1="8" Y1="2" X2="2" Y2="8" Stroke="Black" StrokeThickness="1" />
+				</Grid>
+			</Button>
+			<TextBox Name="searchTextBox" Width="100" Height="24" Margin="3" TextChanged="SearchTextBoxTextChanged" />
+			<Button Margin="3" Height="24" Width="24" Click="PrevClick">
+				<Image Width="16" Height="16" Stretch="Fill" Source="{StaticResource PrevImage}" />
+			</Button>
+			<Button Margin="3" Height="24" Width="24" Click="NextClick">
+				<Image Width="16" Height="16" Stretch="Fill" Source="{StaticResource NextImage}" />
+			</Button>
+		</StackPanel>
+	</Border>
+</UserControl>

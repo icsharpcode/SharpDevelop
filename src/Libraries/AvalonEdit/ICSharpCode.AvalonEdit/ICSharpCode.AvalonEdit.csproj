@@ -291,6 +291,10 @@
       <DependentUpon>VisualLine.cs</DependentUpon>
     </Compile>
     <Compile Include="Search\SearchPanel.cs" />
+    <Compile Include="Search\SearchPanel.xaml.cs">
+      <DependentUpon>SearchPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Snippets\IActiveElement.cs" />
     <Compile Include="Snippets\SnippetAnchorElement.cs" />
     <Compile Include="Snippets\SnippetEventArgs.cs" />
@@ -407,6 +411,7 @@
   <ItemGroup>
     <Page Include="CodeCompletion\CompletionList.xaml" />
     <Page Include="CodeCompletion\InsightWindow.xaml" />
+    <Page Include="Search\SearchPanel.xaml" />
     <Page Include="TextEditor.xaml" />
     <Page Include="themes\generic.xaml" />
   </ItemGroup>
@@ -415,5 +420,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Search" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Search\next.png" />
+    <Resource Include="Search\prev.png" />
   </ItemGroup>
 </Project>
