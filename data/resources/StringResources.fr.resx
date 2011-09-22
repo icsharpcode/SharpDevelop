@@ -2700,6 +2700,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.AntialiasedFontCheckBox" xml:space="preserve">
     <value>Lissage des polices</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.ChangeMarkerMarginCheckBox" xml:space="preserve">
+    <value>Activer la marge pour le marqueur de suivi des modification</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox" xml:space="preserve">
     <value>Activer la &amp;complétion de code</value>
   </data>
@@ -4392,7 +4395,7 @@ Toutes les modifications seront perdues.</value>
     <value>Catégories</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.DialogName" xml:space="preserve">
-    <value>Configurer l'encadré (sidebar)</value>
+    <value>Configuration des outils</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Namespace" xml:space="preserve">
     <value>Espace de noms</value>
@@ -5528,6 +5531,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols" xml:space="preserve">
     <value>Vous ne pouvez pas changer pour une fonction sans symboles.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
+    <value>Les options de décompilation du code doivent être activés pour aller vers une fonction sans symboles.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[Méthodes externes]</value>
   </data>
@@ -5790,8 +5796,14 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction" xml:space="preserve">
     <value>Vous ne pouvez pas faire de pas-à-pas car il n'y a pas de fonction active sélectionnée</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
+    <value>Impossible de chager de thread sans cadre disponible.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning" xml:space="preserve">
     <value>Vous ne pouvez pas changer de fonction lorsque le débogueur est lancé.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
+    <value>Les options de décompilation du code doivent être activés pour changer de thread.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Freeze" xml:space="preserve">
     <value>Pause</value>
@@ -7123,6 +7135,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Fichier vide</value>
   </data>
+  <data name="Templates.File.Exception.Description" xml:space="preserve">
+    <value>Créée une nouvelle classe pour les Exceptions.</value>
+  </data>
   <data name="Templates.File.Exception.Name" xml:space="preserve">
     <value>Exception</value>
   </data>
@@ -7254,6 +7269,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>Formulaire Web ASP.NET</value>
+  </data>
+  <data name="Templates.File.WebHandler.Description" xml:space="preserve">
+    <value>Créée un gestionnaire web ASP.NET avec code attaché.</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>Gestionnaire ASP.NET</value>
@@ -7484,7 +7502,7 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>Créer un nouveau rapport avec le Report Wizard</value>
   </data>
   <data name="XML.FormsDesigner.SideBar.CustomizeSidebar" xml:space="preserve">
-    <value>Configurer l'encadré (sidebar)...</value>
+    <value>Configuration des outils</value>
   </data>
   <data name="XML.MainMenu.Analysis" xml:space="preserve">
     <value>&amp;Analyses</value>

@@ -1519,6 +1519,9 @@ To create/manipulate a ActiveX/COM object, drag a class within a TypeLib/Control
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>Waiting for Application to Start</value>
   </data>
+  <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
+    <value>Code Quality Analysis</value>
+  </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Insert reference to explicit method; press tab or enter again to insert a new method stub.</value>
   </data>
