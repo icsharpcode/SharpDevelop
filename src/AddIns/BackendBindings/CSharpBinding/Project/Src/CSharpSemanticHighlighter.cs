@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
+using System.Linq;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
@@ -24,14 +24,54 @@ namespace CSharpBinding
 	{
 		readonly ITextEditor textEditor;
 		readonly ISyntaxHighlighter syntaxHighlighter;
-		readonly HighlightingColor typeReferenceColor;
+		readonly HighlightingColor referenceTypeColor;
+		readonly HighlightingColor valueTypeColor;
 		readonly HighlightingColor methodCallColor;
 		readonly HighlightingColor fieldAccessColor;
 		readonly HighlightingColor valueKeywordColor;
+		readonly HighlightingColor parameterModifierColor;
 		
 		List<IDocumentLine> invalidLines = new List<IDocumentLine>();
 		List<CachedLine> cachedLines = new List<CachedLine>();
 		
+		int lineNumber;
+		HighlightedLine line;
+		ResolveVisitor resolveVisitor;
+		
+		bool isInAccessor;
+		
+		#region Constructor + Dispose
+		public CSharpSemanticHighlighter(ITextEditor textEditor, ISyntaxHighlighter syntaxHighlighter)
+		{
+			if (textEditor == null)
+				throw new ArgumentNullException("textEditor");
+			if (syntaxHighlighter == null)
+				throw new ArgumentNullException("syntaxHighlighter");
+			this.textEditor = textEditor;
+			this.syntaxHighlighter = syntaxHighlighter;
+			
+			IHighlightingDefinition highlightingDefinition = syntaxHighlighter.HighlightingDefinition;
+			this.referenceTypeColor = highlightingDefinition.GetNamedColor("ReferenceTypes");
+			this.valueTypeColor = highlightingDefinition.GetNamedColor("ValueTypes");
+			this.methodCallColor = highlightingDefinition.GetNamedColor("MethodCall");
+			this.fieldAccessColor = highlightingDefinition.GetNamedColor("FieldAccess");
+			this.valueKeywordColor = highlightingDefinition.GetNamedColor("NullOrValueKeywords");
+			this.parameterModifierColor = highlightingDefinition.GetNamedColor("ParameterModifiers");
+			
+			ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
+			ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
+			syntaxHighlighter.VisibleDocumentLinesChanged += syntaxHighlighter_VisibleDocumentLinesChanged;
+		}
+		
+		public void Dispose()
+		{
+			ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
+			ParserService.LoadSolutionProjectsThreadEnded -= ParserService_LoadSolutionProjectsThreadEnded;
+			syntaxHighlighter.VisibleDocumentLinesChanged -= syntaxHighlighter_VisibleDocumentLinesChanged;
+		}
+		#endregion
+		
+		#region Caching
 		// If a line gets edited and we need to display it while no parse information is ready for the
 		// changed file, the line would flicker (semantic highlightings disappear temporarily).
 		// We avoid this issue by storing the semantic highlightings and updating them on document changes
@@ -88,40 +128,9 @@ namespace CSharpBinding
 				this.IsValid = false;
 			}
 		}
+		#endregion
 		
-		int lineNumber;
-		HighlightedLine line;
-		ResolveVisitor resolveVisitor;
-		
-		bool isInAccessor;
-		
-		public CSharpSemanticHighlighter(ITextEditor textEditor, ISyntaxHighlighter syntaxHighlighter)
-		{
-			if (textEditor == null)
-				throw new ArgumentNullException("textEditor");
-			if (syntaxHighlighter == null)
-				throw new ArgumentNullException("syntaxHighlighter");
-			this.textEditor = textEditor;
-			this.syntaxHighlighter = syntaxHighlighter;
-			
-			IHighlightingDefinition highlightingDefinition = syntaxHighlighter.HighlightingDefinition;
-			this.typeReferenceColor = highlightingDefinition.GetNamedColor("TypeReferences");
-			this.methodCallColor = highlightingDefinition.GetNamedColor("MethodCall");
-			this.fieldAccessColor = highlightingDefinition.GetNamedColor("FieldAccess");
-			this.valueKeywordColor = highlightingDefinition.GetNamedColor("NullOrValueKeywords");
-			
-			ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
-			ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
-			syntaxHighlighter.VisibleDocumentLinesChanged += syntaxHighlighter_VisibleDocumentLinesChanged;
-		}
-		
-		public void Dispose()
-		{
-			ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
-			ParserService.LoadSolutionProjectsThreadEnded -= ParserService_LoadSolutionProjectsThreadEnded;
-			syntaxHighlighter.VisibleDocumentLinesChanged -= syntaxHighlighter_VisibleDocumentLinesChanged;
-		}
-		
+		#region Event Handlers
 		void syntaxHighlighter_VisibleDocumentLinesChanged(object sender, EventArgs e)
 		{
 			// use this event to remove cached lines which are no longer visible
@@ -148,7 +157,9 @@ namespace CSharpBinding
 				invalidLines.Clear();
 			}
 		}
+		#endregion
 		
+		#region IHighlighter implementation
 		IDocument IHighlighter.Document {
 			get { return textEditor.Document; }
 		}
@@ -222,11 +233,17 @@ namespace CSharpBinding
 				return line;
 			}
 		}
+		#endregion
 		
+		#region Colorize
 		HighlightingColor GetColor(ResolveResult rr)
 		{
-			if (rr is TypeResolveResult)
-				return typeReferenceColor;
+			if (rr is TypeResolveResult) {
+				if (rr.Type.IsReferenceType(resolveVisitor.TypeResolveContext) == false)
+					return valueTypeColor;
+				else
+					return referenceTypeColor;
+			}
 			MemberResolveResult mrr = rr as MemberResolveResult;
 			if (mrr != null) {
 				if (mrr.Member is IField)
@@ -250,6 +267,11 @@ namespace CSharpBinding
 				int lineStartOffset = line.DocumentLine.Offset;
 				int startOffset = lineStartOffset + start.Column - 1;
 				int endOffset = lineStartOffset + end.Column - 1;
+				if (line.Sections.Count > 0) {
+					HighlightedSection prevSection = line.Sections.Last();
+					if (startOffset < prevSection.Offset + prevSection.Length)
+						throw new InvalidOperationException("Cannot create unordered highlighting section");
+				}
 				line.Sections.Add(new HighlightedSection {
 				                  	Offset = startOffset,
 				                  	Length = endOffset - startOffset,
@@ -257,7 +279,9 @@ namespace CSharpBinding
 				                  });
 			}
 		}
+		#endregion
 		
+		#region IResolveVisitorNavigator implementation
 		ResolveVisitorNavigationMode IResolveVisitorNavigator.Scan(AstNode node)
 		{
 			if (node.StartLocation.Line <= lineNumber && node.EndLocation.Line >= lineNumber) {
@@ -281,7 +305,9 @@ namespace CSharpBinding
 		void IResolveVisitorNavigator.ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
 		{
 		}
+		#endregion
 		
+		#region AST Traversal
 		protected override object VisitChildren(AstNode node, object data)
 		{
 			for (var child = node.FirstChild; child != null; child = child.NextSibling) {
@@ -293,8 +319,7 @@ namespace CSharpBinding
 		
 		public override object VisitSimpleType(SimpleType simpleType, object data)
 		{
-			if (resolveVisitor.GetResolveResult(simpleType) is TypeResolveResult)
-				Colorize(simpleType.IdentifierToken, typeReferenceColor);
+			Colorize(simpleType.IdentifierToken, GetColor(resolveVisitor.GetResolveResult(simpleType)));
 			foreach (AstNode node in simpleType.TypeArguments)
 				node.AcceptVisitor(this);
 			return null;
@@ -305,8 +330,7 @@ namespace CSharpBinding
 			// Ensure we visit/colorize the children in the correct order.
 			// This is required so that the resulting HighlightedSections are sorted correctly.
 			memberType.Target.AcceptVisitor(this);
-			if (resolveVisitor.GetResolveResult(memberType) is TypeResolveResult)
-				Colorize(memberType.MemberNameToken, typeReferenceColor);
+			Colorize(memberType.MemberNameToken, GetColor(resolveVisitor.GetResolveResult(memberType)));
 			foreach (AstNode node in memberType.TypeArguments)
 				node.AcceptVisitor(this);
 			return null;
@@ -382,7 +406,11 @@ namespace CSharpBinding
 		
 		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
-			Colorize(typeDeclaration.NameToken, typeReferenceColor);
+			if (typeDeclaration.ClassType == ClassType.Enum || typeDeclaration.ClassType == ClassType.Struct)
+				Colorize(typeDeclaration.NameToken, valueTypeColor);
+			else
+				Colorize(typeDeclaration.NameToken, referenceTypeColor);
+			
 			foreach (var node in typeDeclaration.TypeParameters)
 				node.AcceptVisitor(this);
 			foreach (var node in typeDeclaration.BaseTypes)
@@ -394,6 +422,34 @@ namespace CSharpBinding
 			return null;
 		}
 		
+		public override object VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration, object data)
+		{
+			if (typeParameterDeclaration.Variance == VarianceModifier.Contravariant)
+				Colorize(typeParameterDeclaration.GetChildByRole(TypeParameterDeclaration.VarianceRole), parameterModifierColor);
+			
+			bool isValueType = false;
+			if (typeParameterDeclaration.Parent != null) {
+				foreach (var constraint in typeParameterDeclaration.Parent.GetChildrenByRole(AstNode.Roles.Constraint)) {
+					if (constraint.TypeParameter == typeParameterDeclaration.Name) {
+						isValueType = constraint.BaseTypes.OfType<PrimitiveType>().Any(p => p.Keyword == "struct");
+					}
+				}
+			}
+			Colorize(typeParameterDeclaration.NameToken, isValueType ? valueTypeColor : referenceTypeColor);
+			return null;
+		}
+		
+		public override object VisitConstraint(Constraint constraint, object data)
+		{
+			if (constraint.Parent != null && constraint.Parent.GetChildrenByRole(AstNode.Roles.TypeParameter).Any(tp => tp.Name == constraint.TypeParameter)) {
+				bool isValueType = constraint.BaseTypes.OfType<PrimitiveType>().Any(p => p.Keyword == "struct");
+				Colorize(constraint.GetChildByRole(AstNode.Roles.Identifier), isValueType ? valueTypeColor : referenceTypeColor);
+			}
+			foreach (var baseType in constraint.BaseTypes)
+				baseType.AcceptVisitor(this);
+			return null;
+		}
+		
 		public override object VisitVariableInitializer(VariableInitializer variableInitializer, object data)
 		{
 			if (variableInitializer.Parent is FieldDeclaration) {
@@ -402,5 +458,6 @@ namespace CSharpBinding
 			variableInitializer.Initializer.AcceptVisitor(this);
 			return null;
 		}
+		#endregion
 	}
 }

@@ -10,8 +10,8 @@
 	<Color name="Char" foreground="Magenta" exampleText="char linefeed = '\n';"/>
 	<Color name="Preprocessor" foreground="Green" exampleText="#region Title" />
 	<Color name="Punctuation" exampleText="a(b.c);" />
-	<Color name="ValueTypes" fontWeight="bold" foreground="Red" exampleText="bool b = true;" />
-	<Color name="ReferenceTypes" foreground="Red" exampleText="object o;" />
+	<Color name="ValueTypeKeywords" fontWeight="bold" foreground="Red" exampleText="bool b = true;" />
+	<Color name="ReferenceTypeKeywords" foreground="Red" exampleText="object o;" />
 	<Color name="NumberLiteral" foreground="DarkBlue" exampleText="3.1415f"/>
 	<Color name="ThisOrBaseReference" fontWeight="bold" exampleText="this.Do(); base.Do();"/>
 	<Color name="NullOrValueKeywords" fontWeight="bold" exampleText="if (value == null)"/>
@@ -31,9 +31,10 @@
 	<Color name="TypeKeywords" fontWeight="bold" foreground="DarkCyan" exampleText="if (x is int) { a = x as int; type = typeof(int); size = sizeof(int); c = new object(); }"/>
 	
 	<!-- Colors used for semantic highlighting -->
-	<Color name="TypeReferences" foreground="#004085" exampleText="System.Uri uri;"/>
-	<Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" exampleText="o.ToString();"/>
-	<Color name="FieldAccess" fontStyle="italic" exampleText="return this.name;"/>
+	<Color name="ReferenceTypes" foreground="#004085" exampleText="System.#{#Uri#}# uri;"/>
+	<Color name="ValueTypes" fontWeight="bold" foreground="#004085" exampleText="System.#{#DateTime#}# date;"/>
+	<Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" exampleText="o.#{#ToString#}#();"/>
+	<Color name="FieldAccess" fontStyle="italic" exampleText="return this.#{#name#}#;"/>
 	
 	<RuleSet name="CommentMarkerSet">
 		<Keywords fontWeight="bold" foreground="Red">
@@ -197,7 +198,7 @@
 			<Word>unsafe</Word>
 		</Keywords>
 		
-		<Keywords color="ValueTypes">
+		<Keywords color="ValueTypeKeywords">
 			<Word>bool</Word>
 			<Word>byte</Word>
 			<Word>char</Word>
@@ -215,7 +216,7 @@
 			<Word>ulong</Word>
 		</Keywords>
 		
-		<Keywords color="ReferenceTypes">
+		<Keywords color="ReferenceTypeKeywords">
 			<Word>class</Word>
 			<Word>interface</Word>
 			<Word>delegate</Word>
