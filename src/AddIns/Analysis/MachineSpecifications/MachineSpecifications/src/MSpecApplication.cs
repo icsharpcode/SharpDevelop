@@ -73,25 +73,17 @@ namespace ICSharpCode.MachineSpecifications
 
         string CreateFilterFile()
         {
-        	var filter = new List<IClass>();
-        	if (tests.Class != null)
-        		filter.Add(tests.Class);
-            if (tests.NamespaceFilter != null)
-            {
-                var projectContent = ParserService.GetProjectContent(project);
-                foreach (var projectClass in projectContent.Classes)
-                    if (projectClass.FullyQualifiedName.StartsWith(tests.NamespaceFilter + "."))
-                        filter.Add(projectClass);
-            }
-                
+        	var classFilterBuilder = new ClassFilterBuilder();
+            var projectContent = ParserService.GetProjectContent(project);
+            var filter = classFilterBuilder.BuildFilterFor(tests, @using: projectContent);                
         	
         	string path = null;
         	if (filter.Count > 0) {
         		path = Path.GetTempFileName();
         		using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
     			using (var writer = new StreamWriter(stream))
-	        		foreach (var testClass in filter) {
-        			       	writer.WriteLine(testClass.FullyQualifiedName);
+	        		foreach (var testClassName in filter) {
+        			       	writer.WriteLine(testClassName);
 	        		}
         	}
             return path;

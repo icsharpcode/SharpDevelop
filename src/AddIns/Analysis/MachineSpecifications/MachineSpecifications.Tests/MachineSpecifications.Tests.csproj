@@ -44,6 +44,9 @@
     <Reference Include="Machine.Specifications">
       <HintPath>..\..\..\..\..\packages\Machine.Specifications.0.4.13.0\lib\Machine.Specifications.dll</HintPath>
     </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\..\..\..\packages\RhinoMocks.3.6\lib\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -55,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Src\ClassFilterBuilder.cs" />
     <Compile Include="Src\MSpecTestFrameworkTests.cs" />
   </ItemGroup>
   <ItemGroup />
