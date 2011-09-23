@@ -273,6 +273,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Saves the project extension content with the specified name.
 		/// </summary>
 		void SaveProjectExtensions(string name, XElement element);
+		
+		/// <summary>
+		/// This method identify whether given file can be parsed by parser responsible for given language
+		/// </summary>
+		/// <param name="language">language of parser</param>
+		/// <param name="fileNameExtention">extension of file</param>
+		/// <returns>true if file can be parsed by specified language parser, false - otherwise </returns>
+		bool CanParse(string language, string fileNameExtention);
 	}
 	
 	/// <summary>

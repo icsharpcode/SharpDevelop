@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Project;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -37,7 +38,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 		private System.ComponentModel.Container components = null;
 		
 		IProject configureProject;
-		
+
+		/// <summary>
+		/// Identify the different tabs
+		/// </summary>
+		[Flags]
+		public enum TabTypes
+		{
+			GAC,
+			Project,
+			Assembly,
+			COM
+		};
+
+		/// <summary>
+		/// Dictionary to hold alternative panels for each tab (optional)
+		/// </summary>
+		private Dictionary<TabTypes, Control> alternativePanels = new Dictionary<TabTypes, Control>();
+
 		public IProject ConfigureProject {
 			get { return configureProject; }
 		}
@@ -45,28 +63,104 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public ArrayList ReferenceInformations {
 			get {
 				ArrayList referenceInformations = new ArrayList();
-				foreach (ListViewItem item in referencesListView.Items) {
+				foreach (ListViewItem item in referencesListView.Items)
+				{
 					System.Diagnostics.Debug.Assert(item.Tag != null);
 					referenceInformations.Add(item.Tag);
 				}
 				return referenceInformations;
 			}
 		}
-		
+
 		public SelectReferenceDialog(IProject configureProject)
+			: this(configureProject, true)
+		{
+		}
+
+		/// <summary>
+		/// alternative constructor.
+		/// set defaultTabs=false if you wish to hide some tabs and\or set alternative panels.
+		/// </summary>
+		public SelectReferenceDialog(IProject configureProject, bool defaultTabs)
 		{
 			this.configureProject = configureProject;
-			
+
 			InitializeComponent();
-			
+
 			Translate(this);
-			gacTabPage.Controls.Add(new GacReferencePanel(this));
-			projectTabPage.Controls.Add(new ProjectReferencePanel(this));
-			browserTabPage.Controls.Add(new AssemblyReferencePanel(this));
-			comTabPage.Controls.Add(new COMReferencePanel(this));
-			RightToLeftConverter.ConvertRecursive(this);
+
+			if (defaultTabs)
+				InitializeAllTabs();   
 		}
-		
+
+		/// <summary>
+		/// Set and alternative panel for the specified tab.
+		/// </summary>
+		public void SetAlternativePanel(TabTypes tab, Control panel)
+		{
+			alternativePanels[tab] = panel;
+		}
+
+		/// <summary>
+		/// Initialize all the default tabs.
+		/// </summary>
+		public void InitializeAllTabs()
+		{
+			InitializeTabs(TabTypes.GAC | TabTypes.Project | TabTypes.Assembly | TabTypes.COM);
+		}
+
+		/// <summary>
+		/// Initialize only the specified tabs, and hide the remaining tabs
+		/// </summary>
+		public void InitializeTabs(TabTypes tabs)
+		{
+			InitializeTab(tabs, TabTypes.GAC);
+			InitializeTab(tabs, TabTypes.Project);
+			InitializeTab(tabs, TabTypes.Assembly);
+			InitializeTab(tabs, TabTypes.COM);
+		}
+
+		private void InitializeTab(TabTypes tabs, TabTypes tab)
+		{
+			if ((tabs & tab) == tab) {
+				GetTabPage(tab).Controls.Add(alternativePanels.ContainsKey(tab) ? alternativePanels[tab] : CreateTabPanel(tab));
+			} else {
+				referenceTabControl.TabPages.Remove(GetTabPage(tab));
+			}
+		}
+
+		private TabPage GetTabPage(TabTypes tab)
+		{
+			switch (tab) {
+				case TabTypes.GAC:
+					return gacTabPage;
+				case TabTypes.Project:
+					return projectTabPage;
+				case TabTypes.Assembly:
+					return browserTabPage;
+				case TabTypes.COM:
+					return comTabPage;
+			}
+
+			throw new ArgumentOutOfRangeException("tab");
+		}
+
+		private Control CreateTabPanel(TabTypes tab)
+		{
+			switch (tab) {
+				case TabTypes.GAC:
+					return new GacReferencePanel(this);
+				case TabTypes.Project:
+					return new ProjectReferencePanel(this);
+				case TabTypes.Assembly:
+					return new AssemblyReferencePanel(this);
+				case TabTypes.COM:
+					return new COMReferencePanel(this);
+			}
+
+			throw new ArgumentOutOfRangeException("tab");
+		}
+
 		void Translate(Control ctl)
 		{
 			ctl.Text = StringParser.Parse(ctl.Text);

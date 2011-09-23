@@ -601,5 +601,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		public Properties ProjectSpecificProperties {
 			get; protected set;
 		}
+		
+		public virtual bool CanParse(string language, string fileNameExtention)
+		{
+			return true;
+		}
 	}
 }

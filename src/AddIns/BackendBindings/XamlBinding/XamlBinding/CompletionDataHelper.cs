@@ -83,6 +83,8 @@ namespace ICSharpCode.XamlBinding
 		{
 			//using (new DebugTimerObject("ResolveContext")) {
 			XamlParser parser = string.IsNullOrEmpty(fileName) ? new XamlParser() : ParserService.GetParser(fileName) as XamlParser;
+			if (parser == null)
+				return null;
 			ParseInformation info = string.IsNullOrEmpty(fileName) ? null : ParserService.GetParseInformation(fileName);
 
 			using (parser.ParseAndLock(fileContent)) {

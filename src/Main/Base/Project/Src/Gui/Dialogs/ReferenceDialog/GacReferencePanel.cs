@@ -93,6 +93,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			chooseSpecificVersionCheckBox = new CheckBox();
 			chooseSpecificVersionCheckBox.Dock = DockStyle.Left;
+			chooseSpecificVersionCheckBox.AutoSize = true;
 			chooseSpecificVersionCheckBox.Text = StringParser.Parse("${res:Dialog.SelectReferenceDialog.GacReferencePanel.ChooseSpecificAssemblyVersion}");
 			
 			chooseSpecificVersionCheckBox.CheckedChanged += delegate {

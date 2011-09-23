@@ -271,6 +271,7 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
+    <Compile Include="Src\Internal\Doozers\ToolsPadDescriptor.cs" />
     <Compile Include="Src\Gui\ProgressCollector.cs" />
     <Compile Include="Src\Gui\SimpleViewContent.cs" />
     <Compile Include="Src\Gui\Workbench\FullScreenEnabledWindow.cs" />
@@ -326,6 +327,7 @@
     <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
+    <Compile Include="Src\Internal\Doozers\ToolContentDoozer.cs" />
     <Compile Include="Src\Services\File\FileChangeWatcher.cs" />
     <Compile Include="Src\Services\File\OpenedFile.cs" />
     <Compile Include="Src\Services\File\RecentOpen.cs" />

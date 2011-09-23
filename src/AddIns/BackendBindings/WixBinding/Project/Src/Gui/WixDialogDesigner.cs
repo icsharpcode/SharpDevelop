@@ -274,23 +274,33 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
-		static SharpDevelopSideBar setupDialogControlsToolBox;
-		
 		public static SharpDevelopSideBar SetupDialogControlsToolBox {
 			get {
 				WorkbenchSingleton.AssertMainThread();
-				if (setupDialogControlsToolBox == null) {
-					setupDialogControlsToolBox = new SharpDevelopSideBar();
-					setupDialogControlsToolBox.Tabs.Add(SetupDialogControlsSideTab.CreateSideTab());
-					setupDialogControlsToolBox.ActiveTab = setupDialogControlsToolBox.Tabs[0];
-				}
-				return setupDialogControlsToolBox;
+				return WixDialogSideBar.Instance;
 			}
 		}
 		
-		
-		public override object ToolsContent {
-			get { return SetupDialogControlsToolBox; }
+		public object ToolsContent {
+			get { return WixDialogSideBar.Instance; }
+		}
+	}
+
+	public sealed class WixDialogSideBar : SharpDevelopSideBar
+	{
+		private static WixDialogSideBar _instance;
+		public static WixDialogSideBar Instance
+		{
+			get
+			{
+				return _instance ?? (_instance = new WixDialogSideBar());
+			}
+		}
+
+		private WixDialogSideBar()
+		{
+			Instance.Tabs.Add(SetupDialogControlsSideTab.CreateSideTab());
+			Instance.ActiveTab = _instance.Tabs[0];
 		}
 	}
 }

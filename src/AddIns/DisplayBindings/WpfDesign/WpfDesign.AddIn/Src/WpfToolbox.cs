@@ -30,37 +30,40 @@ namespace ICSharpCode.WpfDesign.AddIn
 		}
 		
 		IToolService toolService;
-		WpfSideBar sideBar;
 		
-		public WpfToolbox()
-		{
-			sideBar = new WpfSideBar();
-			SideTab sideTab = new SideTab(sideBar, "Windows Presentation Foundation");
-			sideTab.DisplayName = StringParser.Parse(sideTab.Name);
-			sideTab.CanBeDeleted = false;
-			sideTab.ChoosedItemChanged += OnChoosedItemChanged;
-			
-			sideTab.Items.Add(new WpfSideTabItem());
-			foreach (Type t in Metadata.GetPopularControls())
-				sideTab.Items.Add(new WpfSideTabItem(t));
-			
-			sideBar.Tabs.Add(sideTab);
-			sideBar.ActiveTab = sideTab;
+		private SharpDevelopSideBar _sideBar;
+		internal SharpDevelopSideBar SideBar { 
+			get { return _sideBar; }
+			set
+			{
+				_sideBar = value;
+				var sideTab = new SideTab(_sideBar, "Windows Presentation Foundation");
+				sideTab.DisplayName = StringParser.Parse(sideTab.Name);
+				sideTab.CanBeDeleted = false;
+				sideTab.ChoosedItemChanged += OnChoosedItemChanged;
+
+				sideTab.Items.Add(new WpfSideTabItem());
+				foreach (Type t in Metadata.GetPopularControls())
+					sideTab.Items.Add(new WpfSideTabItem(t));
+				_sideBar.Tabs.Add(sideTab);
+				_sideBar.ActiveTab = sideTab;
+			}
 		}
 		
 		void OnChoosedItemChanged(object sender, EventArgs e)
 		{
 			if (toolService != null) {
 				ITool newTool = null;
-				if (sideBar.ActiveTab != null && sideBar.ActiveTab.ChoosedItem != null) {
-					newTool = sideBar.ActiveTab.ChoosedItem.Tag as ITool;
+				if (_sideBar.ActiveTab != null && _sideBar.ActiveTab.ChoosedItem != null)
+				{
+					newTool = _sideBar.ActiveTab.ChoosedItem.Tag as ITool;
 				}
 				toolService.CurrentTool = newTool ?? toolService.PointerTool;
 			}
 		}
 		
 		public Control ToolboxControl {
-			get { return sideBar; }
+			get { return _sideBar; }
 		}
 		
 		public IToolService ToolService {
@@ -85,40 +88,62 @@ namespace ICSharpCode.WpfDesign.AddIn
 			} else {
 				tagToFind = toolService.CurrentTool;
 			}
-			if (sideBar.ActiveTab.ChoosedItem != null) {
-				if (sideBar.ActiveTab.ChoosedItem.Tag == tagToFind)
+			
+			if (_sideBar == null)
+				return;
+			
+			if (_sideBar.ActiveTab.ChoosedItem != null)
+			{
+				if (_sideBar.ActiveTab.ChoosedItem.Tag == tagToFind)
 					return;
 			}
-			foreach (SideTabItem item in sideBar.ActiveTab.Items) {
+			foreach (SideTabItem item in _sideBar.ActiveTab.Items)
+			{
 				if (item.Tag == tagToFind) {
-					sideBar.ActiveTab.ChoosedItem = item;
-					sideBar.Refresh();
+					_sideBar.ActiveTab.ChoosedItem = item;
+					_sideBar.Refresh();
 					return;
 				}
 			}
-			foreach (SideTab tab in sideBar.Tabs) {
+			foreach (SideTab tab in _sideBar.Tabs)
+			{
 				foreach (SideTabItem item in tab.Items) {
 					if (item.Tag == tagToFind) {
-						sideBar.ActiveTab = tab;
-						sideBar.ActiveTab.ChoosedItem = item;
-						sideBar.Refresh();
+						_sideBar.ActiveTab = tab;
+						_sideBar.ActiveTab.ChoosedItem = item;
+						_sideBar.Refresh();
 						return;
 					}
 				}
 			}
-			sideBar.ActiveTab.ChoosedItem = null;
-			sideBar.Refresh();
+			_sideBar.ActiveTab.ChoosedItem = null;
+			_sideBar.Refresh();
+		}
+	}
+	
+	public sealed class WpfSideBar : SharpDevelopSideBar
+	{
+		private static WpfSideBar _instance;
+		public static WpfSideBar Instance
+		{
+			get
+			{
+				return _instance ?? (_instance = new WpfSideBar());
+			}
 		}
 		
-		sealed class WpfSideBar : SharpDevelopSideBar
+		private WpfSideBar()
 		{
-			protected override object StartItemDrag(SideTabItem draggedItem)
+			WpfToolbox.Instance.SideBar = this;
+		}
+		
+		protected override object StartItemDrag(SideTabItem draggedItem)
+		{
+			if (ActiveTab.ChoosedItem != draggedItem && ActiveTab.Items.Contains(draggedItem))
 			{
-				if (this.ActiveTab.ChoosedItem != draggedItem && this.ActiveTab.Items.Contains(draggedItem)) {
-					this.ActiveTab.ChoosedItem = draggedItem;
-				}
-				return new System.Windows.DataObject(draggedItem.Tag);
+				ActiveTab.ChoosedItem = draggedItem;
 			}
+			return new System.Windows.DataObject(draggedItem.Tag);
 		}
 	}
 }

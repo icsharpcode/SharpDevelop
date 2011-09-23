@@ -22,7 +22,7 @@ namespace ICSharpCode.FormsDesigner
 	{
 		static ICSharpCode.FormsDesigner.Services.ToolboxService toolboxService = null;
 		
-		static SharpDevelopSideBar sideBar;
+		static DesignerSideBar sideBar;
 		
 		static CustomComponentsSideTab customTab;
 		
@@ -40,7 +40,8 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		public static SharpDevelopSideBar FormsDesignerSideBar {
+		public static DesignerSideBar FormsDesignerSideBar
+		{
 			get {
 				CreateToolboxService();
 				return sideBar;
@@ -51,13 +52,18 @@ namespace ICSharpCode.FormsDesigner
 		{
 			Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
 			if (toolboxService == null) {
-				sideBar = new SharpDevelopSideBar();
+				sideBar = DesignerSideBar.Instance;
 				LoadToolbox();
 				toolboxService = new ICSharpCode.FormsDesigner.Services.ToolboxService();
 				ReloadSideTabs(false);
 				toolboxService.SelectedItemUsed += new EventHandler(SelectedToolUsedHandler);
 				sideBar.SideTabDeleted += SideTabDeleted;
 			}
+		}
+		
+		static ToolboxProvider()
+		{
+			sideBar = FormsDesignerSideBar;
 		}
 		
 		static string componentLibraryFile = "SharpDevelopControlLibrary.sdcl";
@@ -269,6 +275,22 @@ namespace ICSharpCode.FormsDesigner
 				componentLibraryLoader.ExchangeToolComponents(tab.Name, toolboxItem1.TypeName, toolboxItem2.TypeName);
 				SaveToolbox();
 			}
+		}
+	}
+	
+	public class DesignerSideBar : SharpDevelopSideBar
+	{
+		private static DesignerSideBar _instance;
+		public static DesignerSideBar Instance 
+		{ 
+			get
+			{
+				return _instance ?? (_instance = new DesignerSideBar());
+			}
+		}
+		
+		private DesignerSideBar()
+		{
 		}
 	}
 }

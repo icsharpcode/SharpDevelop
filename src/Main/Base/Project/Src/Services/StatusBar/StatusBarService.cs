@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows;
-
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Shapes;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -46,17 +48,41 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Shows progress for the specified ProgressCollector in the status bar.
 		/// </summary>
 		void AddProgress(ProgressCollector progress);
+
+	    /// <summary>
+	    /// Adds the custom UI element to the custom area of the SdStatusBar status bar.
+	    ///<remarks>
+	    /// Use the IsVisible property of the Added element in order to hide it from the status bar.
+	    /// </remarks>
+	    /// </summary>
+	    /// <param name="customElement">Element to add</param>
+	  	void AddCustomElement(UIElement customElement);
 	}
 	
 	sealed class SdStatusBarService : IStatusBarService
 	{
 		readonly SdStatusBar statusBar;
+    	readonly StackPanel  customPanel;
 		
 		public SdStatusBarService(SdStatusBar statusBar)
 		{
 			if (statusBar == null)
 				throw new ArgumentNullException("statusBar");
 			this.statusBar = statusBar;
+		    var customStatusBarItem = new StatusBarItem();
+		  
+			customPanel =
+		        new StackPanel
+		        {
+		          VerticalAlignment = VerticalAlignment.Center,
+		          Orientation       = Orientation.Horizontal,
+		        };
+      
+		    customStatusBarItem.Content = customPanel;
+
+		    statusBar.Items.Add(customStatusBarItem);
+		    DockPanel.SetDock(customStatusBarItem, Dock.Right);
+		  	customStatusBarItem.HorizontalAlignment = HorizontalAlignment.Right;
 		}
 		
 		public bool Visible {
@@ -87,7 +113,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			statusBar.SetMessage(StringParser.Parse(message), highlighted);
 		}
-		
+
+	    public void AddCustomElement(UIElement customElement)
+	    {
+	      customPanel.Children.Add(customElement);
+	    }
 		#region Progress Monitor
 		Stack<ProgressCollector> waitingProgresses = new Stack<ProgressCollector>();
 		ProgressCollector currentProgress;

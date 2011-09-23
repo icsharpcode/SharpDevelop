@@ -26,7 +26,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	}
 	
 	public class AvalonEditViewContent
-		: AbstractViewContent, IEditable, IMementoCapable, ICodeEditorProvider, IPositionable, IToolsHost
+		: AbstractViewContent, IEditable, IMementoCapable, ICodeEditorProvider, IPositionable
 	{
 		readonly CodeEditor codeEditor = new CodeEditor();
 		IAnalyticsMonitorTrackedFeature trackedFeature;
@@ -340,9 +340,5 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			codeEditor.ActiveTextEditor.JumpTo(line, column);
 		}
 		#endregion
-		
-		object IToolsHost.ToolsContent {
-			get { return TextEditorSideBar.Instance; }
-		}
 	}
 }

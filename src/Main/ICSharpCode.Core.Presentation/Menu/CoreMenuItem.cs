@@ -35,6 +35,12 @@ namespace ICSharpCode.Core.Presentation
 					this.Icon = image;
 				} catch (ResourceNotFoundException) {}
 			}
+			if (codon.Properties.Contains("name")){
+				this.Name = codon.Properties["name"];
+			}
+			else{
+				this.Name = NameUtil.ControlName("Menu", codon.Id, codon.Name);
+            }
 			UpdateText();
 		}
 

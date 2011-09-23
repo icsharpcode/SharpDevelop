@@ -23,6 +23,11 @@
 		                title = "WPF designer"/>-->
 		<DisplayBinding id="WPFDesigner" type="Secondary" class="ICSharpCode.WpfDesign.AddIn.WpfSecondaryDisplayBinding" fileNamePattern="\.xaml$" />
 	</Path>
+	<Path name = "/SharpDevelop/Workbench/ToolBoxContent">
+		<ToolContent  id = "WpfViewToolBox"
+		              holder ="ICSharpCode.WpfDesign.AddIn.WpfViewContent"
+		              class = "ICSharpCode.WpfDesign.AddIn.WpfSideBar"/>
+	</Path>
 	<!--
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id    = "OutlineViewPad"

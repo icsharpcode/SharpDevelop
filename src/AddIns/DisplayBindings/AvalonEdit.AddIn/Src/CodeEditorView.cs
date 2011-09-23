@@ -204,23 +204,29 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void ShowHelp()
 		{
 			// Resolve expression at cursor and show help
+			bool helpProvided = false;
 			TextArea textArea = this.TextArea;
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(this.Adapter.FileName);
-			if (expressionFinder == null)
-				return;
-			string textContent = this.Text;
-			ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, textArea.Caret.Offset);
-			string expression = expressionResult.Expression;
-			if (expression != null && expression.Length > 0) {
-				ResolveResult result = ParserService.Resolve(expressionResult, textArea.Caret.Line, textArea.Caret.Column, this.Adapter.FileName, textContent);
-				TypeResolveResult trr = result as TypeResolveResult;
-				if (trr != null) {
-					HelpProvider.ShowHelp(trr.ResolvedClass);
+			if (expressionFinder != null)
+			{
+				string textContent = this.Text;
+				ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, textArea.Caret.Offset);
+				string expression = expressionResult.Expression;
+				if (expression != null && expression.Length > 0) {
+					ResolveResult result = ParserService.Resolve(expressionResult, textArea.Caret.Line, textArea.Caret.Column, this.Adapter.FileName, textContent);
+					TypeResolveResult trr = result as TypeResolveResult;
+					if (trr != null) {
+						helpProvided = HelpProvider.ShowHelp(trr.ResolvedClass);
+					}
+					MemberResolveResult mrr = result as MemberResolveResult;
+					if (mrr != null) {
+						helpProvided = HelpProvider.ShowHelp(mrr.ResolvedMember);
+					}
 				}
-				MemberResolveResult mrr = result as MemberResolveResult;
-				if (mrr != null) {
-					HelpProvider.ShowHelp(mrr.ResolvedMember);
-				}
+			}
+
+			if (!helpProvided) {
+				HelpProvider.ShowHelp(textArea.Caret.Offset);
 			}
 		}
 		#endregion

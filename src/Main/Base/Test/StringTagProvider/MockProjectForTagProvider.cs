@@ -298,5 +298,10 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 				throw new NotImplementedException();
 			}
 		}
+
+		public bool CanParse(string language, string fileNameExtention)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

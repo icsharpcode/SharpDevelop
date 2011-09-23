@@ -9,6 +9,7 @@
 	
 	<Runtime>
 		<Import assembly = ":ICSharpCode.AvalonEdit"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 		<Import assembly = "ICSharpCode.AvalonEdit.AddIn.dll">
 			<Doozer name="SyntaxMode" class="ICSharpCode.AvalonEdit.AddIn.SyntaxModeDoozer"/>
 		</Import>
@@ -22,6 +23,12 @@
 		                insertbefore = "ShellExecute"
 		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.TextEditorWithEncoding}"
 		                class = "ICSharpCode.AvalonEdit.AddIn.ChooseEncodingDisplayBinding"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/ToolBoxContent">
+		<ToolContent  id = "AvalonEditToolBox"
+		              holder ="ICSharpCode.AvalonEdit.AddIn.AvalonEditViewContent"
+		              class = "ICSharpCode.SharpDevelop.Gui.TextEditorSideBar"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu">

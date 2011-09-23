@@ -25,7 +25,7 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public class FormsDesignerViewContent : AbstractViewContentHandlingLoadErrors, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost, IFileDocumentProvider
+	public class FormsDesignerViewContent : AbstractViewContentHandlingLoadErrors, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IFileDocumentProvider
 	{
 		readonly Control pleaseWaitLabel = new Label() { Text = StringParser.Parse("${res:Global.PleaseWait}"), TextAlign=ContentAlignment.MiddleCenter };
 		DesignSurface designSurface;
@@ -927,10 +927,7 @@ namespace ICSharpCode.FormsDesigner
 			UpdatePropertyPad();
 		}
 
-		public virtual object ToolsContent {
-			get { return ToolboxProvider.FormsDesignerSideBar; }
-		}
-
+		
 		void FileServiceFileRemoving(object sender, FileCancelEventArgs e)
 		{
 			if (!e.Cancel) {

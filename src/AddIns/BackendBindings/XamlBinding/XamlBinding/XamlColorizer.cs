@@ -134,7 +134,7 @@ namespace ICSharpCode.XamlBinding
 					if (index > -1) {
 						context = CompletionDataHelper.ResolveContext(snapshot, fileName, offset + index);
 						
-						if (context.ActiveElement == null || context.InAttributeValueOrMarkupExtension || context.InCommentOrCData)
+						if (context == null || context.ActiveElement == null || context.InAttributeValueOrMarkupExtension || context.InCommentOrCData)
 							continue;
 						
 						string propertyName;

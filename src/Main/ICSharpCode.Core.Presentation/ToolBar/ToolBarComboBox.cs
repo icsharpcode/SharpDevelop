@@ -24,6 +24,7 @@ namespace ICSharpCode.Core.Presentation
 			menuCommand = (IComboBoxCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
 			menuCommand.ComboBox = this;
 			menuCommand.Owner = caller;
+			this.Name = NameUtil.ControlName("ToolBar", codon.Id, codon.Name);
 			UpdateText();
 			
 			SetResourceReference(FrameworkElement.StyleProperty, ToolBar.ComboBoxStyleKey);

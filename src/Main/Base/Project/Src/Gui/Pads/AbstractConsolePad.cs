@@ -21,7 +21,7 @@ using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public abstract class AbstractConsolePad : AbstractPadContent, IEditable, IPositionable, ITextEditorProvider, IToolsHost
+	public abstract class AbstractConsolePad : AbstractPadContent, IEditable, IPositionable, ITextEditorProvider
 	{
 		const string toolBarTreePath = "/SharpDevelop/Pads/CommonConsole/ToolBar";
 		
@@ -123,10 +123,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		#endregion
-		
-		object IToolsHost.ToolsContent {
-			get { return TextEditorSideBar.Instance; }
-		}
 		
 		protected virtual bool HandleInput(Key key) {
 			switch (key) {

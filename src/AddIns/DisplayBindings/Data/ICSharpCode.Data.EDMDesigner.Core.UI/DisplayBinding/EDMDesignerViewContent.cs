@@ -31,7 +31,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 {
-    public class EDMDesignerViewContent : AbstractViewContent, IHasPropertyContainer, IToolsHost, IEDMDesignerChangeWatcherObserver
+    public class EDMDesignerViewContent : AbstractViewContent, IHasPropertyContainer, IEDMDesignerChangeWatcherObserver
     {
         #region Fields
 
@@ -196,15 +196,6 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 		}
 
 		#endregion
-
-        #region IToolsHost
-
-        object IToolsHost.ToolsContent 
-        {
-			get { return null; }
-        }
-
-        #endregion
 
         #region IEDMDesignerChangeWatcherObserver Member
 

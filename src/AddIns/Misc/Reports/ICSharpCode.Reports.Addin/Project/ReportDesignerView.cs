@@ -30,7 +30,7 @@ namespace ICSharpCode.Reports.Addin
 	/// Description of the view content
 	/// </summary>
 	public class ReportDesignerView : AbstractViewContent, IHasPropertyContainer,
-	IClipboardHandler,IUndoHandler, IToolsHost,IPrintable
+	IClipboardHandler, IUndoHandler, IPrintable
 	{
 		
 		private bool IsFormsDesignerVisible;
@@ -528,16 +528,6 @@ namespace ICSharpCode.Reports.Addin
 		
 		#endregion
 		
-		#region IToolsHost
-		
-		object IToolsHost.ToolsContent {
-			get {
-				return ReportingSideTabProvider.ReportingSideBar;
-			}
-		}
-		
-		#endregion
-		
 		#region IPrintable
 		
 		
@@ -583,7 +573,7 @@ namespace ICSharpCode.Reports.Addin
 	
 		#endregion
 		
-		#region IDesignerHost implementation
+				#region IDesignerHost implementation
 		
 		public IDesignerHost Host {
 			get {
@@ -736,5 +726,4 @@ namespace ICSharpCode.Reports.Addin
 		
 		#endregion
 	}
-	
 }

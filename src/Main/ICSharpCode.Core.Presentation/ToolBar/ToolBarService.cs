@@ -133,11 +133,11 @@ namespace ICSharpCode.Core.Presentation
 			return toolBars.ToArray();
 		}
 
-		internal static object CreateToolBarItemContent(Codon codon)
+		internal static object CreateToolBarItemContent(Codon codon, out Label label)
 		{
 			object result = null;
 			Image image = null;
-			Label label = null;
+			label = null;
 			bool isImage = false;
 			bool isLabel = false;
 			if (codon.Properties.Contains("icon"))

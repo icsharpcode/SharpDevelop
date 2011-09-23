@@ -2,49 +2,61 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using System.Windows.Controls;
 using ICSharpCode.Core;
+using System.Collections.Generic;
+using Internal.Doozers;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	/// <summary>
-	/// Implement this interface to make your view content display tools in the tool box.
-	/// </summary>
-	public interface IToolsHost
-	{
-		/// <summary>
-		/// Gets the control to display in the tool box.
-		/// </summary>
-		object ToolsContent { get; }
-	}
-	
 	/// <summary>
 	/// A pad that shows a single child control determined by the document that currently has the focus.
 	/// </summary>
 	public class ToolsPad : AbstractPadContent
 	{
-		ContentPresenter contentControl = new ContentPresenter();
+		private ContentPresenter contentControl = new ContentPresenter();
+		private Dictionary<string, ToolsPadDescriptor> _descriptors;
 		
-		public override object Control {
-			get {
-				return contentControl;
-			}
+		public override object Control
+		{
+			get { return contentControl; }
 		}
 		
 		public ToolsPad()
 		{
+			_descriptors = new Dictionary<string, ToolsPadDescriptor>();
+			List<ToolsPadDescriptor> descriptors = AddInTree.BuildItems<ToolsPadDescriptor>("/SharpDevelop/Workbench/ToolBoxContent", this);
+			foreach (ToolsPadDescriptor descriptor in descriptors)
+			{
+				if (descriptor.Holder != null && !_descriptors.ContainsKey(descriptor.Holder))
+				{
+					_descriptors.Add(descriptor.Holder, descriptor);
+				}
+			}
+
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
 		}
 		
-		void WorkbenchActiveContentChanged(object sender, EventArgs e)
+		private void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
-			IToolsHost th = WorkbenchSingleton.Workbench.ActiveViewContent as IToolsHost;
-			if (th != null && th.ToolsContent != null) {
-				contentControl.SetContent(th.ToolsContent, th);
-			} else {
-				contentControl.SetContent(StringParser.Parse("${res:SharpDevelop.SideBar.NoToolsAvailableForCurrentDocument}"));
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+			contentControl.SetContent(GetToolBoxContent(viewContent), viewContent);
+		}
+		
+		public object GetToolBoxContent(IViewContent viewContent)
+		{
+			if (viewContent != null)
+			{
+				Type holderType = viewContent.GetType();
+				if (_descriptors.ContainsKey(holderType.FullName))
+				{
+					return _descriptors[holderType.FullName].GetToolBoxContent();
+				}
 			}
+		
+			return StringParser.Parse("${res:SharpDevelop.SideBar.NoToolsAvailableForCurrentDocument}");;
 		}
 	}
 }

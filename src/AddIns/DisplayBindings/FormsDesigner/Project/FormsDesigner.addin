@@ -20,6 +20,12 @@
 		                fileNamePattern = "\.(cs|vb)$"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Workbench/ToolBoxContent">
+		<ToolContent  id = "FormsDesignerToolBox"
+		              holder ="ICSharpCode.FormsDesigner.FormsDesignerViewContent"
+		              class = "ICSharpCode.FormsDesigner.DesignerSideBar"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/FormsDesigner/ContextMenus/SelectionMenu">
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"

@@ -30,7 +30,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 	/// <summary>
 	/// IViewContent implementation that hosts the WPF designer.
 	/// </summary>
-	public class WpfViewContent : AbstractViewContentHandlingLoadErrors, IHasPropertyContainer, IToolsHost, IOutlineContentHost
+	public class WpfViewContent : AbstractViewContentHandlingLoadErrors, IHasPropertyContainer, IOutlineContentHost
 	{
 		public WpfViewContent(OpenedFile file) : base(file)
 		{
@@ -216,11 +216,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			get { return propertyContainer; }
 		}
 		#endregion
-		
-		public object ToolsContent {
-			get { return WpfToolbox.Instance.ToolboxControl; }
-		}
-		
+
 		public override void Dispose()
 		{
 			propertyContainer.Clear();

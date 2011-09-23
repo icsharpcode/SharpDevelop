@@ -2646,13 +2646,16 @@ namespace AvalonDock
                     };
             }
 
+            if ((PresentationSource.FromVisual(Content as Visual) == null))
+              (Content as FrameworkElement).UpdateLayout();
+
             //create e new window
             _flyoutWindow = new FlyoutPaneWindow(this, content);
             _flyoutWindow.Owner = parentWindow;
             _flyoutWindow.FlowDirection = this.FlowDirection;
             _flyoutWindow.ShowActivated = false;
             _flyoutWindow.AnchorTabActivating = tabActivating;
-            
+
             UpdateFlyoutWindowPosition(true);
 
             _flyoutWindow.Closing += new System.ComponentModel.CancelEventHandler(OnFlyoutWindowClosing);
@@ -3754,7 +3757,7 @@ namespace AvalonDock
                 throw new FileFormatException("Unsupported layout file version");
 
             if (doc.DocumentElement.ChildNodes.Count != 3 ||
-                (doc.DocumentElement.ChildNodes[0].Name != "ResizingPanel" && doc.DocumentElement.ChildNodes[0].Name != "DocumentPane") ||
+                (doc.DocumentElement.ChildNodes[0].Name != "ResizingPanel" && doc.DocumentElement.ChildNodes[0].Name != "DocumentPane" && doc.DocumentElement.ChildNodes[0].Name != "DocumentPaneResizingPanel") ||
                 doc.DocumentElement.ChildNodes[1].Name != "Hidden" ||
                 doc.DocumentElement.ChildNodes[2].Name != "Windows")
             {
