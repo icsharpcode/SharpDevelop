@@ -10,11 +10,13 @@ namespace TextTemplating.Tests.Helpers
 	{
 		public FakeTextTemplatingAppDomainFactory FakeTextTemplatingAppDomainFactory;
 		public FakeTextTemplatingAssemblyResolver FakeTextTemplatingAssemblyResolver;
+		public FakeTextTemplatingVariables FakeTextTemplatingVariables;
 
 		public TestableTextTemplatingHost(string applicationBase)
 			: this(
 				new FakeTextTemplatingAppDomainFactory(), 
 				new FakeTextTemplatingAssemblyResolver(), 
+				new FakeTextTemplatingVariables(),
 				applicationBase)
 		{
 		}
@@ -22,16 +24,23 @@ namespace TextTemplating.Tests.Helpers
 		public TestableTextTemplatingHost(
 			FakeTextTemplatingAppDomainFactory appDomainFactory,
 			FakeTextTemplatingAssemblyResolver assemblyResolver,
+			FakeTextTemplatingVariables textTemplatingVariables,
 			string applicationBase)
-			: base(appDomainFactory, assemblyResolver, applicationBase)
+			: base(appDomainFactory, assemblyResolver, textTemplatingVariables, applicationBase)
 		{
 			FakeTextTemplatingAppDomainFactory = appDomainFactory;
 			FakeTextTemplatingAssemblyResolver = assemblyResolver;
+			FakeTextTemplatingVariables = textTemplatingVariables;
 		}
 
 		public string CallResolveAssemblyReference(string assemblyReference)
 		{
 			return base.ResolveAssemblyReference(assemblyReference);
+		}
+		
+		public string CallResolvePath(string path)
+		{
+			return base.ResolvePath(path);
 		}
 	}
 }

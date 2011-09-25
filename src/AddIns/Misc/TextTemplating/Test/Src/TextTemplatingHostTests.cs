@@ -13,9 +13,10 @@ namespace TextTemplating.Tests
 	public class TextTemplatingHostTests
 	{
 		TestableTextTemplatingHost host;
-		FakeTextTemplatingAppDomainFactory textTemplatingAppDomainFactory;
-		FakeTextTemplatingAppDomain textTemplatingAppDomain;
-		FakeTextTemplatingAssemblyResolver assemblyResolver;
+		FakeTextTemplatingAppDomainFactory fakeTextTemplatingAppDomainFactory;
+		FakeTextTemplatingAppDomain fakeTextTemplatingAppDomain;
+		FakeTextTemplatingAssemblyResolver fakeAssemblyResolver;
+		FakeTextTemplatingVariables fakeTextTemplatingVariables;
 		
 		void CreateHost()
 		{
@@ -25,9 +26,15 @@ namespace TextTemplating.Tests
 		void CreateHost(string applicationBase)
 		{
 			host = new TestableTextTemplatingHost(applicationBase);
-			textTemplatingAppDomainFactory = host.FakeTextTemplatingAppDomainFactory;
-			textTemplatingAppDomain = textTemplatingAppDomainFactory.FakeTextTemplatingAppDomain;
-			assemblyResolver = host.FakeTextTemplatingAssemblyResolver;
+			fakeTextTemplatingAppDomainFactory = host.FakeTextTemplatingAppDomainFactory;
+			fakeTextTemplatingAppDomain = fakeTextTemplatingAppDomainFactory.FakeTextTemplatingAppDomain;
+			fakeAssemblyResolver = host.FakeTextTemplatingAssemblyResolver;
+			fakeTextTemplatingVariables = host.FakeTextTemplatingVariables;
+		}
+		
+		void AddTemplateVariableValue(string variableName, string variableValue)
+		{
+			fakeTextTemplatingVariables.AddVariable(variableName, variableValue);
 		}
 		
 		[Test]
@@ -35,7 +42,7 @@ namespace TextTemplating.Tests
 		{
 			CreateHost();
 			AppDomain expectedAppDomain = AppDomain.CreateDomain("TextTemplatingHostTests");
-			textTemplatingAppDomain.AppDomain = expectedAppDomain;
+			fakeTextTemplatingAppDomain.AppDomain = expectedAppDomain;
 			
 			AppDomain actualAppDomain = host.ProvideTemplatingAppDomain("test");
 			
@@ -49,7 +56,7 @@ namespace TextTemplating.Tests
 			host.ProvideTemplatingAppDomain("test");
 			host.Dispose();
 			
-			Assert.IsTrue(textTemplatingAppDomain.IsDisposeCalled);
+			Assert.IsTrue(fakeTextTemplatingAppDomain.IsDisposeCalled);
 		}
 		
 		[Test]
@@ -66,7 +73,7 @@ namespace TextTemplating.Tests
 			host.ProvideTemplatingAppDomain("test");
 			host.ProvideTemplatingAppDomain("test");
 			
-			Assert.AreEqual(1, textTemplatingAppDomainFactory.CreateTextTemplatingAppDomainCallCount);
+			Assert.AreEqual(1, fakeTextTemplatingAppDomainFactory.CreateTextTemplatingAppDomainCallCount);
 		}
 		
 		[Test]
@@ -76,10 +83,10 @@ namespace TextTemplating.Tests
 			host.ProvideTemplatingAppDomain("test");
 			host.Dispose();
 			
-			textTemplatingAppDomain.IsDisposeCalled = false;
+			fakeTextTemplatingAppDomain.IsDisposeCalled = false;
 			host.Dispose();
 			
-			Assert.IsFalse(textTemplatingAppDomain.IsDisposeCalled);
+			Assert.IsFalse(fakeTextTemplatingAppDomain.IsDisposeCalled);
 		}
 		
 		[Test]
@@ -89,7 +96,7 @@ namespace TextTemplating.Tests
 			CreateHost(applicationBase);
 			host.ProvideTemplatingAppDomain("test");
 			
-			string actualApplicationBase = textTemplatingAppDomainFactory.ApplicationBasePassedToCreateTextTemplatingAppDomain;
+			string actualApplicationBase = fakeTextTemplatingAppDomainFactory.ApplicationBasePassedToCreateTextTemplatingAppDomain;
 			Assert.AreEqual(applicationBase, actualApplicationBase);
 		}
 		
@@ -99,17 +106,27 @@ namespace TextTemplating.Tests
 			CreateHost();
 			host.CallResolveAssemblyReference("MyReference");
 			
-			Assert.AreEqual("MyReference", assemblyResolver.AssembyReferencePassedToResolve);
+			Assert.AreEqual("MyReference", fakeAssemblyResolver.AssembyReferencePassedToResolve);
 		}
 		
 		[Test]
 		public void ResolveAssemblyReference_PassedMyAssemblyReference_ReturnsFileNameReturnedFromAssemblyResolverResolveMethod()
 		{
 			CreateHost();
-			assemblyResolver.ResolveReturnValue = @"d:\projects\references\MyReference.dll";
+			fakeAssemblyResolver.ResolveReturnValue = @"d:\projects\references\MyReference.dll";
 			string result = host.CallResolveAssemblyReference("MyReference");
 			
 			Assert.AreEqual(@"d:\projects\references\MyReference.dll", result);
 		}
+		
+		[Test]
+		public void ResolvePath_PathContainsSolutionDirProperty_SolutionDirExpanded()
+		{
+			CreateHost();
+			AddTemplateVariableValue("$(SolutionDir)", @"d:\projects\MySolution\");
+			string path = host.CallResolvePath("$(SolutionDir)");
+			
+			Assert.AreEqual(@"d:\projects\MySolution\", path);
+		}	
 	}
 }

@@ -11,15 +11,18 @@ namespace ICSharpCode.TextTemplating
 		ITextTemplatingAppDomainFactory appDomainFactory;
 		ITextTemplatingAppDomain templatingAppDomain;
 		ITextTemplatingAssemblyResolver assemblyResolver;
+		ITextTemplatingVariables templatingVariables;
 		string applicationBase;
 		
 		public TextTemplatingHost(
 			ITextTemplatingAppDomainFactory appDomainFactory,
 			ITextTemplatingAssemblyResolver assemblyResolver,
+			ITextTemplatingVariables templatingVariables,
 			string applicationBase)
 		{
 			this.appDomainFactory = appDomainFactory;
 			this.assemblyResolver = assemblyResolver;
+			this.templatingVariables = templatingVariables;
 			this.applicationBase = applicationBase;
 		}
 		
@@ -47,6 +50,17 @@ namespace ICSharpCode.TextTemplating
 		protected override string ResolveAssemblyReference(string assemblyReference)
 		{
 			return assemblyResolver.Resolve(assemblyReference);
+		}
+		
+		protected override string ResolvePath(string path)
+		{
+			path = ExpandPath(path);
+			return base.ResolvePath(path);
+		}
+		
+		string ExpandPath(string path)
+		{
+			return templatingVariables.Expand(path);
 		}
 	}
 }
