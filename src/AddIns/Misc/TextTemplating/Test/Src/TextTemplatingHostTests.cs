@@ -103,7 +103,7 @@ namespace TextTemplating.Tests
 		}
 		
 		[Test]
-		public void ResolveAssemblyReference_PassedMyAssemblyReference_ReturnFileNameReturnedFromAssemblyResolverResolveMethod()
+		public void ResolveAssemblyReference_PassedMyAssemblyReference_ReturnsFileNameReturnedFromAssemblyResolverResolveMethod()
 		{
 			CreateHost();
 			assemblyResolver.ResolveReturnValue = @"d:\projects\references\MyReference.dll";

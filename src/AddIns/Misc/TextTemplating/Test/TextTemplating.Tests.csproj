@@ -64,6 +64,8 @@
     <Compile Include="Helpers\FakeTextTemplatingFilePreprocessor.cs" />
     <Compile Include="Helpers\FakeTextTemplatingHost.cs" />
     <Compile Include="Helpers\FakeTextTemplatingFileGenerator.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingStringParser.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingVariables.cs" />
     <Compile Include="Helpers\ProjectHelper.cs" />
     <Compile Include="Helpers\TestableFileProjectItem.cs" />
     <Compile Include="Helpers\TestableProject.cs" />
@@ -79,6 +81,8 @@
     <Compile Include="Src\TextTemplatingHostTests.cs" />
     <Compile Include="Src\TextTemplatingPreprocessorTests.cs" />
     <Compile Include="Src\TextTemplatingReflectionProjectContentTests.cs" />
+    <Compile Include="Src\TextTemplatingVariableLocationTests.cs" />
+    <Compile Include="Src\TextTemplatingVariablesTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />

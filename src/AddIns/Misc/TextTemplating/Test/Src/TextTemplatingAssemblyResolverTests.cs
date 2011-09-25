@@ -16,12 +16,14 @@ namespace TextTemplating.Tests
 		TextTemplatingAssemblyResolver resolver;
 		IProject project;
 		FakeAssemblyParserService fakeAssemblyParserService;
+		FakeTextTemplatingVariables fakeTemplatingVariables;
 		
 		void CreateResolver()
 		{
 			project = ProjectHelper.CreateProject();
 			fakeAssemblyParserService = new FakeAssemblyParserService();
-			resolver = new TextTemplatingAssemblyResolver(project, fakeAssemblyParserService);
+			fakeTemplatingVariables = new FakeTextTemplatingVariables();
+			resolver = new TextTemplatingAssemblyResolver(project, fakeAssemblyParserService, fakeTemplatingVariables);
 		}
 		
 		ReferenceProjectItem AddReferenceToProject(string referenceName)
@@ -145,6 +147,28 @@ namespace TextTemplating.Tests
 			string result = resolver.Resolve("System.Data");
 			
 			Assert.AreEqual("System.Data", result);
+		}
+		
+		[Test]
+		public void Resolve_AssemblyReferenceHasTemplateVariable_ReturnsExpandedAssemblyReferenceFileName()
+		{
+			CreateResolver();
+			fakeTemplatingVariables.AddVariable("$(SolutionDir)", @"d:\projects\MyProject\");
+			
+			string result = resolver.Resolve(@"$(SolutionDir)lib\Test.dll");
+			
+			Assert.AreEqual(@"d:\projects\MyProject\lib\Test.dll", result);
+		}
+		
+		[Test]
+		public void Resolve_AssemblyReferenceHasTemplateVariable_AssemblyParserServiceIsNotUsed()
+		{
+			CreateResolver();
+			fakeTemplatingVariables.AddVariable("$(SolutionDir)", @"d:\projects\MyProject\");
+			
+			string result = resolver.Resolve(@"$(SolutionDir)lib\Test.dll");
+			
+			Assert.IsFalse(fakeAssemblyParserService.IsGetReflectionProjectContentForReferenceCalled);
 		}
 	}
 }
