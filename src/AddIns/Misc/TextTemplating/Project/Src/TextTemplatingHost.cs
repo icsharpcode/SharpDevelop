@@ -60,7 +60,7 @@ namespace ICSharpCode.TextTemplating
 		
 		string ExpandPath(string path)
 		{
-			return templatingVariables.Expand(path);
+			return templatingVariables.ExpandVariables(path);
 		}
 	}
 }

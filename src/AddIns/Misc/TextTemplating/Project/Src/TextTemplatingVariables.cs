@@ -23,7 +23,7 @@ namespace ICSharpCode.TextTemplating
 			this.stringParser = stringParser;
 		}
 		
-		public string Expand(string name)
+		public string ExpandVariables(string name)
 		{
 			var variablesBuilder = new TextTemplatingVariablesStringBuilder(name, this);
 			foreach (TextTemplatingVariableLocation variableLocation in GetVariables(name)) {

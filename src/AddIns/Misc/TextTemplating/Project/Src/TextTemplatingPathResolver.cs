@@ -26,7 +26,7 @@ namespace ICSharpCode.TextTemplating
 		public string ResolvePath(string path)
 		{
 			path = environment.ExpandEnvironmentVariables(path);
-			return templatingVariables.Expand(path);
+			return templatingVariables.ExpandVariables(path);
 		}
 	}
 }

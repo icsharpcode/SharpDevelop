@@ -17,7 +17,7 @@ namespace TextTemplating.Tests.Helpers
 			Variables.Add(name, value);
 		}
 		
-		public string Expand(string name)
+		public string ExpandVariables(string name)
 		{
 			foreach (KeyValuePair<string, string> variable in Variables) {
 				name = name.Replace(variable.Key, variable.Value);

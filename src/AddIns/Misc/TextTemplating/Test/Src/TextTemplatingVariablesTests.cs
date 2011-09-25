@@ -28,24 +28,24 @@ namespace TextTemplating.Tests
 		}
 		
 		[Test]
-		public void Expand_SolutionDirProperty_SolutionDirPropertyIsExpanded()
+		public void ExpandVariables_SolutionDirProperty_SolutionDirPropertyIsExpanded()
 		{
 			CreateTextTemplatingVariables();
 			AddProperty("SolutionDir", @"d:\projects\MyProject\");
 			
-			string result = variables.Expand(@"$(SolutionDir)bin\Debug\Test.dll");
+			string result = variables.ExpandVariables(@"$(SolutionDir)bin\Debug\Test.dll");
 			
 			string expectedResult = @"d:\projects\MyProject\bin\Debug\Test.dll";
 			Assert.AreEqual(expectedResult, result);
 		}
 		
 		[Test]
-		public void Expand_ProjectDirProperty_ProjectDirPropertyIsExpanded()
+		public void ExpandVariables_ProjectDirProperty_ProjectDirPropertyIsExpanded()
 		{
 			CreateTextTemplatingVariables();
 			AddProperty("ProjectDir", @"d:\projects\MyProject\");
 			
-			string result = variables.Expand(@"$(ProjectDir)bin\Debug\Test.dll");
+			string result = variables.ExpandVariables(@"$(ProjectDir)bin\Debug\Test.dll");
 			
 			string expectedResult = @"d:\projects\MyProject\bin\Debug\Test.dll";
 			Assert.AreEqual(expectedResult, result);
@@ -227,12 +227,12 @@ namespace TextTemplating.Tests
 		}
 		
 		[Test]
-		public void Expand_ProjectDirPropertyHasNoTrailingSlash_ProjectDirPropertyIsExpandedWithTrailingSlash()
+		public void ExpandVariables_ProjectDirPropertyHasNoTrailingSlash_ProjectDirPropertyIsExpandedWithTrailingSlash()
 		{
 			CreateTextTemplatingVariables();
 			AddProperty("ProjectDir", @"d:\projects\MyProject");
 			
-			string result = variables.Expand(@"$(ProjectDir)bin\Debug\Test.dll");
+			string result = variables.ExpandVariables(@"$(ProjectDir)bin\Debug\Test.dll");
 			
 			string expectedResult = @"d:\projects\MyProject\bin\Debug\Test.dll";
 			Assert.AreEqual(expectedResult, result);

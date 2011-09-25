@@ -7,7 +7,7 @@ namespace ICSharpCode.TextTemplating
 {
 	public interface ITextTemplatingVariables
 	{
-		string Expand(string name);
+		string ExpandVariables(string name);
 		string GetValue(string name);
 	}
 }
