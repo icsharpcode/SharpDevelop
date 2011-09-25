@@ -11,29 +11,29 @@ namespace ICSharpCode.TextTemplating
 	{
 		IProject project;
 		IAssemblyParserService assemblyParserService;
-		ITextTemplatingVariables templatingVariables;
+		ITextTemplatingPathResolver pathResolver;
 		
 		public TextTemplatingAssemblyResolver(
 			IProject project,
 			IAssemblyParserService assemblyParserService,
-			ITextTemplatingVariables templatingVariables)
+			ITextTemplatingPathResolver pathResolver)
 		{
 			this.project = project;
 			this.assemblyParserService = assemblyParserService;
-			this.templatingVariables = templatingVariables;
+			this.pathResolver = pathResolver;
 		}
 		
 		public TextTemplatingAssemblyResolver(IProject project)
 			: this(
 				project,
 				new TextTemplatingAssemblyParserService(),
-				new TextTemplatingVariables())
+				new TextTemplatingPathResolver())
 		{
 		}
 		
 		public string Resolve(string assemblyReference)
 		{
-			assemblyReference = ExpandVariables(assemblyReference);
+			assemblyReference = ResolvePath(assemblyReference);
 			if (Path.IsPathRooted(assemblyReference)) {
 				return assemblyReference;
 			}
@@ -48,9 +48,9 @@ namespace ICSharpCode.TextTemplating
 			return assemblyReference;
 		}
 		
-		string ExpandVariables(string assemblyReference)
+		string ResolvePath(string assemblyReference)
 		{
-			return templatingVariables.Expand(assemblyReference);
+			return pathResolver.ResolvePath(assemblyReference);
 		}
 		
 		string ResolveAssemblyFromProject(string assemblyReference)

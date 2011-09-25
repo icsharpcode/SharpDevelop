@@ -123,7 +123,7 @@ namespace TextTemplating.Tests
 		public void ResolvePath_PathContainsSolutionDirProperty_SolutionDirExpanded()
 		{
 			CreateHost();
-			AddTemplateVariableValue("$(SolutionDir)", @"d:\projects\MySolution\");
+			AddTemplateVariableValue("SolutionDir", @"d:\projects\MySolution\");
 			string path = host.CallResolvePath("$(SolutionDir)");
 			
 			Assert.AreEqual(@"d:\projects\MySolution\", path);

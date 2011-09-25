@@ -57,9 +57,11 @@
     <Compile Include="Src\ITextTemplatingAppDomainFactory.cs" />
     <Compile Include="Src\ITextTemplatingAssemblyResolver.cs" />
     <Compile Include="Src\ITextTemplatingCustomToolContext.cs" />
+    <Compile Include="Src\ITextTemplatingEnvironment.cs" />
     <Compile Include="Src\ITextTemplatingFilePreprocessor.cs" />
     <Compile Include="Src\ITextTemplatingHost.cs" />
     <Compile Include="Src\ITextTemplatingFileGenerator.cs" />
+    <Compile Include="Src\ITextTemplatingPathResolver.cs" />
     <Compile Include="Src\ITextTemplatingStringParser.cs" />
     <Compile Include="Src\ITextTemplatingVariables.cs" />
     <Compile Include="Src\NamespaceHint.cs" />
@@ -71,6 +73,7 @@
     <Compile Include="Src\TextTemplatingCustomTool.cs" />
     <Compile Include="Src\TextTemplatingCustomToolContext.cs" />
     <Compile Include="Src\TextTemplatingDirectoryVariable.cs" />
+    <Compile Include="Src\TextTemplatingEnvironment.cs" />
     <Compile Include="Src\TextTemplatingFileGenerator.cs" />
     <Compile Include="Src\TextTemplatingFileGeneratorCustomTool.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
@@ -78,6 +81,7 @@
     <Compile Include="Src\TextTemplatingFilePreprocessorCustomTool.cs" />
     <Compile Include="Src\TextTemplatingFileProcessor.cs" />
     <Compile Include="Src\TextTemplatingHost.cs" />
+    <Compile Include="Src\TextTemplatingPathResolver.cs" />
     <Compile Include="Src\TextTemplatingReflectionProjectContent.cs" />
     <Compile Include="Src\TextTemplatingStringParser.cs" />
     <Compile Include="Src\TextTemplatingVariableLocation.cs" />

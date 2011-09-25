@@ -13,6 +13,7 @@ namespace TextTemplating.Tests.Helpers
 		
 		public void AddVariable(string name, string value)
 		{
+			name = "$(" + name + ")";
 			Variables.Add(name, value);
 		}
 		

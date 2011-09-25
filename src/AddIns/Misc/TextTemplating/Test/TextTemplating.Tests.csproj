@@ -61,9 +61,11 @@
     <Compile Include="Helpers\FakeTextTemplatingAppDomainFactory.cs" />
     <Compile Include="Helpers\FakeTextTemplatingAssemblyResolver.cs" />
     <Compile Include="Helpers\FakeTextTemplatingCustomToolContext.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingEnvironment.cs" />
     <Compile Include="Helpers\FakeTextTemplatingFilePreprocessor.cs" />
     <Compile Include="Helpers\FakeTextTemplatingHost.cs" />
     <Compile Include="Helpers\FakeTextTemplatingFileGenerator.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingPathResolver.cs" />
     <Compile Include="Helpers\FakeTextTemplatingStringParser.cs" />
     <Compile Include="Helpers\FakeTextTemplatingVariables.cs" />
     <Compile Include="Helpers\ProjectHelper.cs" />
@@ -79,6 +81,7 @@
     <Compile Include="Src\TextTemplatingFileGeneratorTests.cs" />
     <Compile Include="Src\TextTemplatingFilePreprocessorCustomToolTests.cs" />
     <Compile Include="Src\TextTemplatingHostTests.cs" />
+    <Compile Include="Src\TextTemplatingPathResolverTests.cs" />
     <Compile Include="Src\TextTemplatingPreprocessorTests.cs" />
     <Compile Include="Src\TextTemplatingReflectionProjectContentTests.cs" />
     <Compile Include="Src\TextTemplatingVariableLocationTests.cs" />

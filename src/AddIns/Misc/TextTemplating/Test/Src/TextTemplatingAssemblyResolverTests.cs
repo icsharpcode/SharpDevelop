@@ -16,14 +16,14 @@ namespace TextTemplating.Tests
 		TextTemplatingAssemblyResolver resolver;
 		IProject project;
 		FakeAssemblyParserService fakeAssemblyParserService;
-		FakeTextTemplatingVariables fakeTemplatingVariables;
+		FakeTextTemplatingPathResolver fakePathResolver;
 		
 		void CreateResolver()
 		{
 			project = ProjectHelper.CreateProject();
 			fakeAssemblyParserService = new FakeAssemblyParserService();
-			fakeTemplatingVariables = new FakeTextTemplatingVariables();
-			resolver = new TextTemplatingAssemblyResolver(project, fakeAssemblyParserService, fakeTemplatingVariables);
+			fakePathResolver = new FakeTextTemplatingPathResolver();
+			resolver = new TextTemplatingAssemblyResolver(project, fakeAssemblyParserService, fakePathResolver);
 		}
 		
 		ReferenceProjectItem AddReferenceToProject(string referenceName)
@@ -153,20 +153,24 @@ namespace TextTemplating.Tests
 		public void Resolve_AssemblyReferenceHasTemplateVariable_ReturnsExpandedAssemblyReferenceFileName()
 		{
 			CreateResolver();
-			fakeTemplatingVariables.AddVariable("$(SolutionDir)", @"d:\projects\MyProject\");
+			string path = @"$(SolutionDir)lib\Test.dll";
+			string expectedPath = @"d:\projects\MyProject\lib\Test.dll";
+			fakePathResolver.AddPath(path, expectedPath);
 			
-			string result = resolver.Resolve(@"$(SolutionDir)lib\Test.dll");
+			string resolvedPath = resolver.Resolve(path);
 			
-			Assert.AreEqual(@"d:\projects\MyProject\lib\Test.dll", result);
+			Assert.AreEqual(expectedPath, resolvedPath);
 		}
 		
 		[Test]
 		public void Resolve_AssemblyReferenceHasTemplateVariable_AssemblyParserServiceIsNotUsed()
 		{
 			CreateResolver();
-			fakeTemplatingVariables.AddVariable("$(SolutionDir)", @"d:\projects\MyProject\");
+			string path = @"$(SolutionDir)lib\Test.dll";
+			string expectedPath = @"d:\projects\MyProject\lib\Test.dll";
+			fakePathResolver.AddPath(path, expectedPath);
 			
-			string result = resolver.Resolve(@"$(SolutionDir)lib\Test.dll");
+			string result = resolver.Resolve(path);
 			
 			Assert.IsFalse(fakeAssemblyParserService.IsGetReflectionProjectContentForReferenceCalled);
 		}
