@@ -444,9 +444,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		public abstract S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T));
 		
 		#region Pattern Matching
-		protected static bool MatchString (string name1, string name2)
+		protected static bool MatchString (string pattern, string text)
 		{
-			return string.IsNullOrEmpty (name1) || name1 == name2;
+			return PatternMatching.Pattern.MatchString(pattern, text);
 		}
 		
 		protected internal abstract bool DoMatch (AstNode other, PatternMatching.Match match);

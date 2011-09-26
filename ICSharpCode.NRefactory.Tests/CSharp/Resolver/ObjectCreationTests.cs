@@ -111,7 +111,7 @@ class A {
 			Assert.AreEqual(0, result.Member.Parameters.Count);
 		}
 		
-		[Test, Ignore("Parser returns incorrect positions")]
+		[Test]
 		public void ChainedConstructorCall()
 		{
 			string program = @"using System;
@@ -133,13 +133,13 @@ class C : B {
  	{}
 }
 ";
-			InvocationResolveResult mrr = Resolve<InvocationResolveResult>(program.Replace("base(b)", "$base(b)$"));
+			InvocationResolveResult mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("base(b)", "$base(b)$"));
 			Assert.AreEqual("A..ctor", mrr.Member.FullName);
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("base(c)", "$base(c)$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("base(c)", "$base(c)$"));
 			Assert.AreEqual("B..ctor", mrr.Member.FullName);
 			
-			mrr = Resolve<InvocationResolveResult>(program.Replace("this(0)", "$this(0)$"));
+			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("this(0)", "$this(0)$"));
 			Assert.AreEqual("C..ctor", mrr.Member.FullName);
 		}
 		

@@ -604,7 +604,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitVariableInitializer(VariableInitializer variableInitializer, object data)
 		{
-			if (resolverEnabled) {
+			ArrayInitializerExpression aie = variableInitializer.Initializer as ArrayInitializerExpression;
+			if (resolverEnabled || aie != null) {
 				ResolveResult result = errorResult;
 				if (variableInitializer.Parent is FieldDeclaration || variableInitializer.Parent is EventDeclaration) {
 					if (resolver.CurrentMember != null) {
@@ -620,7 +621,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 					}
 				}
-				ArrayInitializerExpression aie = variableInitializer.Initializer as ArrayInitializerExpression;
 				ArrayType arrayType = result.Type as ArrayType;
 				if (aie != null && arrayType != null) {
 					StoreState(aie, resolver.Clone());
