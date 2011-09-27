@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Threading;
 using System.Xml.Linq;
 
 using ICSharpCode.Core;
@@ -523,6 +523,27 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void ResolveAssemblyReferences()
 		{
+		}
+		
+		public virtual IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
+		{
+			ResolveAssemblyReferences();
+			List<ReferenceProjectItem> referenceItems = new List<ReferenceProjectItem>();
+			bool mscorlib = false;
+			foreach (ProjectItem item in this.Items) {
+				cancellationToken.ThrowIfCancellationRequested();
+				if (ItemType.ReferenceItemTypes.Contains(item.ItemType)) {
+					ReferenceProjectItem reference = item as ReferenceProjectItem;
+					if (reference != null) {
+						referenceItems.Add(reference);
+						mscorlib |= "mscorlib".Equals(reference.Include, StringComparison.OrdinalIgnoreCase);
+					}
+				}
+			}
+			if (!mscorlib) {
+				referenceItems.Add(new ReferenceProjectItem(this, "mscorlib") { FileName = typeof(object).Module.FullyQualifiedName });
+			}
+			return referenceItems;
 		}
 		
 		public virtual void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)

@@ -57,27 +57,23 @@ namespace ICSharpCode.SharpDevelop
 			UpdateDefaultImports(items);
 			// TODO: Translate me
 //			progressMonitor.TaskName = "Resolving references for " + project.Name + "...";
-			project.ResolveAssemblyReferences();
-			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
-			if (msbuildProject != null) {
-				string mscorlib = msbuildProject.MscorlibPath;
-				if (string.IsNullOrEmpty(mscorlib)) {
-					AddReferencedContent(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
-				} else {
-					AddReferencedContent(AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference("mscorlib", mscorlib));
+			AbstractProject abstractProject = project as AbstractProject;
+			if (abstractProject != null) {
+				foreach (var reference in abstractProject.ResolveAssemblyReferences(progressMonitor.CancellationToken)) {
+					if (!initializing) return; // abort initialization
+					AddReference(reference, false, progressMonitor.CancellationToken);
 				}
 			} else {
+				project.ResolveAssemblyReferences();
 				AddReferencedContent(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
-			}
-			foreach (ProjectItem item in items) {
-				if (!initializing) return; // abort initialization
-				progressMonitor.CancellationToken.ThrowIfCancellationRequested();
-				if (ItemType.ReferenceItemTypes.Contains(item.ItemType)) {
-					ReferenceProjectItem reference = item as ReferenceProjectItem;
-					if (reference != null) {
-						// TODO: Translate me
-//						progressMonitor.TaskName = "Loading " + reference.ShortName + "...";
-						AddReference(reference, false, progressMonitor.CancellationToken);
+				foreach (ProjectItem item in items) {
+					if (!initializing) return; // abort initialization
+					progressMonitor.CancellationToken.ThrowIfCancellationRequested();
+					if (ItemType.ReferenceItemTypes.Contains(item.ItemType)) {
+						ReferenceProjectItem reference = item as ReferenceProjectItem;
+						if (reference != null) {
+							AddReference(reference, false, progressMonitor.CancellationToken);
+						}
 					}
 				}
 			}
@@ -116,6 +112,7 @@ namespace ICSharpCode.SharpDevelop
 		void AddReference(ReferenceProjectItem reference, bool updateInterDependencies, CancellationToken cancellationToken)
 		{
 			try {
+				cancellationToken.ThrowIfCancellationRequested();
 				AddReferencedContent(AssemblyParserService.GetProjectContentForReference(reference));
 				if (updateInterDependencies) {
 					UpdateReferenceInterDependencies();
