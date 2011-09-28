@@ -45,10 +45,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					}
 					break;
 				case WebServer.IIS:
-					if (WebProjectService.IISVersion == IISVersion.IIS5 ||
-					    WebProjectService.IISVersion == IISVersion.IIS6 ||
-					    WebProjectService.IISVersion == IISVersion.IIS7 ||
-					    WebProjectService.IISVersion == IISVersion.IIS_Future) {
+					if (WebProjectService.IISVersion != IISVersion.IISExpress &&
+					    WebProjectService.IISVersion != IISVersion.None) {
 						UseLocalIIS.IsChecked = true;
 						ProjectUrl.Text = CurrentProjectDebugData.ProjectUrl ?? string.Empty;
 						
@@ -134,9 +132,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			WebProjectDebugData data = new WebProjectDebugData();
 			data.WebServer = WebServer.IIS;
 			data.Port = string.Empty;
-			bool isIISInstalled = WebProjectService.IISVersion == IISVersion.IIS5 ||
-				WebProjectService.IISVersion == IISVersion.IIS6 ||
-				WebProjectService.IISVersion == IISVersion.IIS7;
+			bool isIISInstalled = WebProjectService.IISVersion != IISVersion.IISExpress &&
+					    WebProjectService.IISVersion != IISVersion.None;
 			
 			if (!isIISInstalled) {
 				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
