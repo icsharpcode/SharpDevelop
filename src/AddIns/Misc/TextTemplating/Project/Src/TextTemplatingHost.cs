@@ -8,24 +8,13 @@ namespace ICSharpCode.TextTemplating
 {
 	public class TextTemplatingHost : TemplateGenerator, ITextTemplatingHost, IServiceProvider
 	{
-		ITextTemplatingAppDomainFactory appDomainFactory;
 		ITextTemplatingAppDomain templatingAppDomain;
-		ITextTemplatingAssemblyResolver assemblyResolver;
-		ITextTemplatingVariables templatingVariables;
-		IServiceProvider serviceProvider;
+		TextTemplatingHostContext context;
 		string applicationBase;
 		
-		public TextTemplatingHost(
-			ITextTemplatingAppDomainFactory appDomainFactory,
-			ITextTemplatingAssemblyResolver assemblyResolver,
-			ITextTemplatingVariables templatingVariables,
-			IServiceProvider serviceProvider,
-			string applicationBase)
+		public TextTemplatingHost(TextTemplatingHostContext context, string applicationBase)
 		{
-			this.appDomainFactory = appDomainFactory;
-			this.assemblyResolver = assemblyResolver;
-			this.templatingVariables = templatingVariables;
-			this.serviceProvider = serviceProvider;
+			this.context = context;
 			this.applicationBase = applicationBase;
 		}
 		
@@ -47,12 +36,12 @@ namespace ICSharpCode.TextTemplating
 
 		void CreateAppDomain()
 		{
-			templatingAppDomain = appDomainFactory.CreateTextTemplatingAppDomain(applicationBase);
+			templatingAppDomain = context.CreateTextTemplatingAppDomain(applicationBase);
 		}
 		
 		protected override string ResolveAssemblyReference(string assemblyReference)
 		{
-			return assemblyResolver.Resolve(assemblyReference);
+			return context.ResolveAssemblyReference(assemblyReference);
 		}
 		
 		protected override string ResolvePath(string path)
@@ -63,12 +52,12 @@ namespace ICSharpCode.TextTemplating
 		
 		string ExpandPath(string path)
 		{
-			return templatingVariables.ExpandVariables(path);
+			return context.ExpandTemplateVariables(path);
 		}
 		
 		object IServiceProvider.GetService(Type serviceType)
 		{
-			return serviceProvider.GetService(serviceType);
+			return context.GetService(serviceType);
 		}
 	}
 }

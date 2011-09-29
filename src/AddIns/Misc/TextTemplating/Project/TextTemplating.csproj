@@ -81,6 +81,7 @@
     <Compile Include="Src\TextTemplatingFilePreprocessorCustomTool.cs" />
     <Compile Include="Src\TextTemplatingFileProcessor.cs" />
     <Compile Include="Src\TextTemplatingHost.cs" />
+    <Compile Include="Src\TextTemplatingHostContext.cs" />
     <Compile Include="Src\TextTemplatingPathResolver.cs" />
     <Compile Include="Src\TextTemplatingReflectionProjectContent.cs" />
     <Compile Include="Src\TextTemplatingServiceProvider.cs" />
