@@ -83,6 +83,7 @@
     <Compile Include="Src\TextTemplatingHost.cs" />
     <Compile Include="Src\TextTemplatingPathResolver.cs" />
     <Compile Include="Src\TextTemplatingReflectionProjectContent.cs" />
+    <Compile Include="Src\TextTemplatingServiceProvider.cs" />
     <Compile Include="Src\TextTemplatingStringParser.cs" />
     <Compile Include="Src\TextTemplatingVariableLocation.cs" />
     <Compile Include="Src\TextTemplatingVariables.cs" />

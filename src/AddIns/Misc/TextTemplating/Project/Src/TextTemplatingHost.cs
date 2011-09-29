@@ -6,23 +6,26 @@ using Mono.TextTemplating;
 
 namespace ICSharpCode.TextTemplating
 {
-	public class TextTemplatingHost : TemplateGenerator, ITextTemplatingHost
+	public class TextTemplatingHost : TemplateGenerator, ITextTemplatingHost, IServiceProvider
 	{
 		ITextTemplatingAppDomainFactory appDomainFactory;
 		ITextTemplatingAppDomain templatingAppDomain;
 		ITextTemplatingAssemblyResolver assemblyResolver;
 		ITextTemplatingVariables templatingVariables;
+		IServiceProvider serviceProvider;
 		string applicationBase;
 		
 		public TextTemplatingHost(
 			ITextTemplatingAppDomainFactory appDomainFactory,
 			ITextTemplatingAssemblyResolver assemblyResolver,
 			ITextTemplatingVariables templatingVariables,
+			IServiceProvider serviceProvider,
 			string applicationBase)
 		{
 			this.appDomainFactory = appDomainFactory;
 			this.assemblyResolver = assemblyResolver;
 			this.templatingVariables = templatingVariables;
+			this.serviceProvider = serviceProvider;
 			this.applicationBase = applicationBase;
 		}
 		
@@ -61,6 +64,11 @@ namespace ICSharpCode.TextTemplating
 		string ExpandPath(string path)
 		{
 			return templatingVariables.ExpandVariables(path);
+		}
+		
+		object IServiceProvider.GetService(Type serviceType)
+		{
+			return serviceProvider.GetService(serviceType);
 		}
 	}
 }

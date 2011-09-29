@@ -17,6 +17,7 @@ namespace TextTemplating.Tests
 		FakeTextTemplatingAppDomain fakeTextTemplatingAppDomain;
 		FakeTextTemplatingAssemblyResolver fakeAssemblyResolver;
 		FakeTextTemplatingVariables fakeTextTemplatingVariables;
+		FakeServiceProvider fakeServiceProvider;
 		
 		void CreateHost()
 		{
@@ -30,6 +31,7 @@ namespace TextTemplating.Tests
 			fakeTextTemplatingAppDomain = fakeTextTemplatingAppDomainFactory.FakeTextTemplatingAppDomain;
 			fakeAssemblyResolver = host.FakeTextTemplatingAssemblyResolver;
 			fakeTextTemplatingVariables = host.FakeTextTemplatingVariables;
+			fakeServiceProvider = host.FakeServiceProvider;
 		}
 		
 		void AddTemplateVariableValue(string variableName, string variableValue)
@@ -127,6 +129,19 @@ namespace TextTemplating.Tests
 			string path = host.CallResolvePath("$(SolutionDir)");
 			
 			Assert.AreEqual(@"d:\projects\MySolution\", path);
-		}	
+		}
+		
+		[Test]
+		public void GetService_HostPassedFakeServiceProvider_ReturnsServiceFromFakeServiceProvider()
+		{
+			CreateHost();
+			var expectedService = new StringWriter();
+			fakeServiceProvider.AddService(typeof(StringWriter), expectedService);
+			
+			var hostServiceProvider = host as IServiceProvider;
+			StringWriter service = hostServiceProvider.GetService(typeof(StringWriter)) as StringWriter;
+			
+			Assert.AreEqual(expectedService, service);
+		}
 	}
 }
