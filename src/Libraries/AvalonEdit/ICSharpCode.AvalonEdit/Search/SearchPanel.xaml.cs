@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -13,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Rendering;
 
 namespace ICSharpCode.AvalonEdit.Search
@@ -25,6 +28,11 @@ namespace ICSharpCode.AvalonEdit.Search
 		TextArea textArea;
 		SearchResultBackgroundRenderer renderer;
 		SearchResult currentResult;
+		FoldingManager foldingManager;
+		
+		public bool UseRegex { get { return useRegex.IsChecked == true; } }
+		public bool MatchCase { get { return matchCase.IsChecked == true; } }
+		public bool WholeWords { get { return wholeWords.IsChecked == true; } }
 		
 		public SearchPanel(TextArea textArea)
 		{
@@ -35,32 +43,77 @@ namespace ICSharpCode.AvalonEdit.Search
 			InitializeComponent();
 			
 			textArea.TextView.Layers.Add(this);
+			foldingManager = textArea.GetService(typeof(FoldingManager)) as FoldingManager;
 			
 			renderer = new SearchResultBackgroundRenderer();
 			textArea.TextView.BackgroundRenderers.Add(renderer);
 			textArea.Document.TextChanged += delegate { DoSearch(false); };
+			this.Loaded += delegate { searchTextBox.Focus(); };
 			
-			Dispatcher.Invoke(DispatcherPriority.Input, (Action)(() => searchTextBox.Focus()));
+			useRegex.Checked += delegate { DoSearch(true); };
+			matchCase.Checked += delegate { DoSearch(true); };
+			wholeWords.Checked += delegate { DoSearch(true); };
+			
+			useRegex.Unchecked += delegate { DoSearch(true); };
+			matchCase.Unchecked += delegate { DoSearch(true); };
+			wholeWords.Unchecked += delegate { DoSearch(true); };
 		}
 
 		void SearchTextBoxTextChanged(object sender, TextChangedEventArgs e)
 		{
 			DoSearch(true);
 		}
+		
+		/// <summary>
+		/// Reactivates the SearchPanel by setting the focus on the search box and selecting all text.
+		/// </summary>
+		public void Reactivate()
+		{
+			searchTextBox.Focus();
+			searchTextBox.SelectAll();
+		}
+		
+		public void FindNext()
+		{
+			SearchResult result = null;
+			if (currentResult != null)
+				result = renderer.CurrentResults.GetNextSegment(currentResult);
+			if (result == null)
+				result = renderer.CurrentResults.FirstSegment;
+			if (result != null) {
+				currentResult = result;
+				SetResult(result);
+			}
+		}
+		
+		public void FindPrevious()
+		{
+			SearchResult result = null;
+			if (currentResult != null)
+				result = renderer.CurrentResults.GetPreviousSegment(currentResult);
+			if (result == null)
+				result = renderer.CurrentResults.LastSegment;
+			if (result != null) {
+				currentResult = result;
+				SetResult(result);
+			}
+		}
 
 		void DoSearch(bool changeSelection)
 		{
 			renderer.CurrentResults.Clear();
 			if (!string.IsNullOrEmpty(searchTextBox.Text)) {
-
+				ISearchStrategy strategy = DefaultSearchStrategy.Create(searchTextBox.Text, !MatchCase, UseRegex, WholeWords);
 				currentResult = null;
 				int offset = textArea.Caret.Offset;
-				foreach (var result in FindAll(searchTextBox.Text, textArea.Document)) {
+				if (changeSelection) {
+					textArea.Selection = SimpleSelection.Empty;
+				}
+				foreach (SearchResult result in strategy.FindAll(textArea.Document)) {
 					if (currentResult == null && result.StartOffset >= offset) {
 						currentResult = result;
 						if (changeSelection) {
-							textArea.Caret.Offset = currentResult.StartOffset;
-							textArea.Selection = new SimpleSelection(currentResult.StartOffset, currentResult.EndOffset);
+							SetResult(result);
 						}
 					}
 					renderer.CurrentResults.Add(result);
@@ -68,32 +121,17 @@ namespace ICSharpCode.AvalonEdit.Search
 			}
 			textArea.TextView.InvalidateLayer(KnownLayer.Selection);
 		}
-		
-		IEnumerable<SearchResult> FindAll(string search, TextDocument document)
+
+		void SetResult(SearchResult result)
 		{
-			SearchResult lastResult = FindNext(search, 0, document);
-			while (lastResult != null) {
-				yield return lastResult;
-				lastResult = FindNext(search, lastResult.StartOffset + lastResult.Length, document);
+			textArea.Caret.Offset = currentResult.StartOffset;
+			textArea.Selection = new SimpleSelection(currentResult.StartOffset, currentResult.EndOffset);
+			if (foldingManager != null) {
+				foreach (var folding in foldingManager.GetFoldingsContaining(result.StartOffset))
+					folding.IsFolded = false;
 			}
 		}
 		
-		SearchResult FindNext(string search, int index, TextDocument document)
-		{
-			int result = document.Text.IndexOf(search, index, StringComparison.OrdinalIgnoreCase);
-			if (result > -1)
-				return new SearchResult { StartOffset = result, Length = search.Length };
-			return null;
-		}
-		
-		SearchResult FindPrev(string search, int index, TextDocument document)
-		{
-			int result = document.GetText(0, index).LastIndexOf(search, StringComparison.OrdinalIgnoreCase);
-			if (result > -1)
-				return new SearchResult { StartOffset = result, Length = search.Length };
-			return null;
-		}
-
 		void SearchLayerKeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Escape) {
@@ -105,28 +143,6 @@ namespace ICSharpCode.AvalonEdit.Search
 		{
 			textArea.TextView.Layers.Remove(this);
 			textArea.TextView.BackgroundRenderers.Remove(renderer);
-		}
-		
-		void PrevClick(object sender, RoutedEventArgs e)
-		{
-			if (currentResult != null) {
-				var result = FindPrev(searchTextBox.Text, currentResult.StartOffset, textArea.Document);
-				if (result != null) {
-					currentResult = result;
-					textArea.Selection = new SimpleSelection(currentResult.StartOffset, currentResult.EndOffset);
-				}
-			}
-		}
-		
-		void NextClick(object sender, RoutedEventArgs e)
-		{
-			if (currentResult != null) {
-				var result = FindNext(searchTextBox.Text, currentResult.EndOffset, textArea.Document);
-				if (result != null) {
-					currentResult = result;
-					textArea.Selection = new SimpleSelection(currentResult.StartOffset, currentResult.EndOffset);
-				}
-			}
 		}
 	}
 }

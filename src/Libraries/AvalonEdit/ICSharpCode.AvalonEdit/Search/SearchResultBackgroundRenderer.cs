@@ -14,10 +14,6 @@ using ICSharpCode.AvalonEdit.Rendering;
 
 namespace ICSharpCode.AvalonEdit.Search
 {
-	class SearchResult : TextSegment
-	{
-	}
-	
 	class SearchResultBackgroundRenderer : IBackgroundRenderer
 	{
 		TextSegmentCollection<SearchResult> currentResults = new TextSegmentCollection<SearchResult>();

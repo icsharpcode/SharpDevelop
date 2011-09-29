@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Search;
 
@@ -41,6 +43,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, ExecuteUndo, CanExecuteUndo));
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, ExecuteRedo, CanExecuteRedo));
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, ExecuteFind));
+			this.CommandBindings.Add(new CommandBinding(SearchCommands.FindNext, ExecuteFindNext));
+			this.CommandBindings.Add(new CommandBinding(SearchCommands.FindPrevious, ExecuteFindPrevious));
 		}
 		
 		internal static KeyBinding CreateFrozenKeyBinding(ICommand command, ModifierKeys modifiers, Key key)
@@ -109,7 +113,25 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		void ExecuteFind(object sender, ExecutedRoutedEventArgs e)
 		{
-			new SearchPanel(TextArea);
+			var panel = TextArea.TextView.Layers.OfType<SearchPanel>().FirstOrDefault();
+			if (panel == null)
+				new SearchPanel(TextArea);
+			else
+				panel.Reactivate();
+		}
+		
+		void ExecuteFindNext(object sender, ExecutedRoutedEventArgs e)
+		{
+			var panel = TextArea.TextView.Layers.OfType<SearchPanel>().FirstOrDefault();
+			if (panel != null)
+				panel.FindNext();
+		}
+		
+		void ExecuteFindPrevious(object sender, ExecutedRoutedEventArgs e)
+		{
+			var panel = TextArea.TextView.Layers.OfType<SearchPanel>().FirstOrDefault();
+			if (panel != null)
+				panel.FindPrevious();
 		}
 	}
 }
