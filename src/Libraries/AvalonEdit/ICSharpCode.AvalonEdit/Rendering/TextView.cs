@@ -1612,6 +1612,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		/// <summary>
 		/// Gets the text view position from the specified visual position.
+		/// If the position is within a character, it is rounded to the next character boundary.
 		/// </summary>
 		/// <param name="visualPosition">The position in WPF device-independent pixels relative
 		/// to the top left corner of the document.</param>
@@ -1625,6 +1626,26 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (line == null)
 				return null;
 			int visualColumn = line.GetVisualColumn(visualPosition);
+			int documentOffset = line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
+			return new TextViewPosition(document.GetLocation(documentOffset), visualColumn);
+		}
+		
+		/// <summary>
+		/// Gets the text view position from the specified visual position.
+		/// If the position is inside a character, the position in front of the character is returned.
+		/// </summary>
+		/// <param name="visualPosition">The position in WPF device-independent pixels relative
+		/// to the top left corner of the document.</param>
+		/// <returns>The logical position, or null if the position is outside the document.</returns>
+		public TextViewPosition? GetPositionFloor(Point visualPosition)
+		{
+			VerifyAccess();
+			if (this.Document == null)
+				throw ThrowUtil.NoDocumentAssigned();
+			VisualLine line = GetVisualLineFromVisualTop(visualPosition.Y);
+			if (line == null)
+				return null;
+			int visualColumn = line.GetVisualColumnFloor(visualPosition);
 			int documentOffset = line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
 			return new TextViewPosition(document.GetLocation(documentOffset), visualColumn);
 		}

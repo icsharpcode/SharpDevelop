@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.IO;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.TextTemplating
@@ -10,22 +11,33 @@ namespace ICSharpCode.TextTemplating
 	{
 		IProject project;
 		IAssemblyParserService assemblyParserService;
+		ITextTemplatingPathResolver pathResolver;
 		
 		public TextTemplatingAssemblyResolver(
 			IProject project,
-			IAssemblyParserService assemblyParserService)
+			IAssemblyParserService assemblyParserService,
+			ITextTemplatingPathResolver pathResolver)
 		{
 			this.project = project;
 			this.assemblyParserService = assemblyParserService;
+			this.pathResolver = pathResolver;
 		}
 		
 		public TextTemplatingAssemblyResolver(IProject project)
-			: this(project, new TextTemplatingAssemblyParserService())
+			: this(
+				project,
+				new TextTemplatingAssemblyParserService(),
+				new TextTemplatingPathResolver())
 		{
 		}
 		
 		public string Resolve(string assemblyReference)
 		{
+			assemblyReference = ResolvePath(assemblyReference);
+			if (Path.IsPathRooted(assemblyReference)) {
+				return assemblyReference;
+			}
+			
 			string resolvedAssemblyFileName = ResolveAssemblyFromProject(assemblyReference);
 			if (resolvedAssemblyFileName == null) {
 				resolvedAssemblyFileName = ResolveAssemblyFromGac(assemblyReference);
@@ -34,6 +46,11 @@ namespace ICSharpCode.TextTemplating
 				return resolvedAssemblyFileName;
 			}
 			return assemblyReference;
+		}
+		
+		string ResolvePath(string assemblyReference)
+		{
+			return pathResolver.ResolvePath(assemblyReference);
 		}
 		
 		string ResolveAssemblyFromProject(string assemblyReference)

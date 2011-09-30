@@ -21,7 +21,8 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-    xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+	xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+	TextOptions.TextFormattingMode="Display"
 	Title="AvalonEdit.Sample" Height="500" Width="700"
 	>
 	<DockPanel>

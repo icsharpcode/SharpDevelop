@@ -51,7 +51,7 @@
 		
 	</RuleSet>
 
-	<RuleSet name="DirectiveBlock">
+	<RuleSet name="DirectiveBlock" ignoreCase="true">
 		<Keywords color="DirectiveKeywords">
 			<Word>template</Word>
 			<Word>parameter</Word>

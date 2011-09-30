@@ -16,8 +16,10 @@ namespace ICSharpCode.TextTemplating
 			var appDomainFactory = new TextTemplatingAppDomainFactory();
 			string applicationBase = GetAssemblyBaseLocation();
 			var assemblyResolver = new TextTemplatingAssemblyResolver(project);
-			var host = new TextTemplatingHost(appDomainFactory, assemblyResolver, applicationBase);
-			return host;
+			var textTemplatingVariables = new TextTemplatingVariables();
+			var serviceProvider = new TextTemplatingServiceProvider();
+			var context = new TextTemplatingHostContext(project);
+			return new TextTemplatingHost(context, applicationBase);
 		}
 		
 		string GetAssemblyBaseLocation()

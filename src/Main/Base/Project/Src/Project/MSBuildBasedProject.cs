@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using ICSharpCode.Core;
@@ -137,21 +138,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		volatile string mscorlibPath;
-		
-		/// <summary>
-		/// Gets the path to mscorlib.
-		/// This property is set only after ResolveAssemblyReferences() is called.
-		/// </summary>
-		public string MscorlibPath {
-			get { return mscorlibPath; }
-		}
-		
 		public override void ResolveAssemblyReferences()
 		{
-			string mscorlib;
-			MSBuildInternals.ResolveAssemblyReferences(this, null, out mscorlib);
-			this.mscorlibPath = mscorlib;
+			MSBuildInternals.ResolveAssemblyReferences(this);
+		}
+		
+		public override IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
+		{
+			return MSBuildInternals.ResolveAssemblyReferences(this);
 		}
 		
 		#region CreateProjectItem
