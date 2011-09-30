@@ -631,5 +631,10 @@ namespace Mono.CSharp
 		{
 			return null;
 		}
+
+		public virtual object Visit (Await awaitExpr)
+		{
+			return null;
+		}
 	}
 }
