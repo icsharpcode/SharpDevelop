@@ -97,7 +97,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		{
 			CSharpParser parser = new CSharpParser();
 			var members = parser.ParseTypeMembers(new StringReader(expr));
-			
+			if (parser.HasErrors)
+				parser.ErrorPrinter.Errors.ForEach (err => Console.WriteLine (err.Message));
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
 			AttributedNode m = members.Single();
