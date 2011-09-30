@@ -2,9 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Web.Services.Discovery;
 using System.Windows.Forms;
+using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -174,6 +176,47 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			return webReferencesNode;
 		}
 	}
+	
+	
+	
+	public class AddServiceReferenceToProject: AbstractMenuCommand
+	{
+		private static string NodePath = "//system.serviceModel//client//endpoint";
+		
+		public override void Run()
+		{
+			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
+			var f = CompilableProject.GetAppConfigFile(node.Project,false);
+			
+			var configFile = LoadConfigDocument(f);
+			
+			var endPoint = configFile.SelectSingleNode(NodePath).Attributes["address"].Value;
+				
+			ProcessStartInfo startInfo = new ProcessStartInfo("IExplore.exe");
+			startInfo.WindowStyle = ProcessWindowStyle.Normal;
+			startInfo.Arguments = endPoint;
+			Process.Start(startInfo);
+		}
+		
+		
+		static XmlDocument LoadConfigDocument(string fileName)
+        {
+            XmlDocument doc = null;
+            try
+            {
+                doc = new XmlDocument();
+                
+                doc.Load(fileName);
+                return doc;
+            }
+            catch (System.IO.FileNotFoundException e)
+            {
+                throw new Exception("No configuration file found.", e);
+            }
+        } 
+	}
+	
+	
 	
 	public class RefreshReference : AbstractMenuCommand
 	{
