@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		);
 		public static readonly RoutedCommand FindPrevious = new RoutedCommand(
 			"FindPrevious", typeof(SearchPanel),
-			new InputGestureCollection { new KeyGesture(Key.F3, ModifierKeys.Control) }
+			new InputGestureCollection { new KeyGesture(Key.F3, ModifierKeys.Shift) }
 		);
 	}
 	
