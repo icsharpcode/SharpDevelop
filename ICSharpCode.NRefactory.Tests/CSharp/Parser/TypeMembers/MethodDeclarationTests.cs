@@ -356,7 +356,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 					}});
 		}
 		
-		[Test, Ignore("async/await not yet supported")]
+		[Test]
 		public void AsyncMethod()
 		{
 			ParseUtilCSharp.AssertTypeMember(
@@ -369,7 +369,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 				});
 		}
 		
-		[Test, Ignore("async/await not yet supported")]
+		[Test, Ignore("parser bug, reported upstream.")]
 		public void AsyncAsyncAsync()
 		{
 			ParseUtilCSharp.AssertTypeMember(
