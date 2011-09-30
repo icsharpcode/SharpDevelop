@@ -102,21 +102,27 @@ namespace ICSharpCode.AvalonEdit.Search
 		void DoSearch(bool changeSelection)
 		{
 			renderer.CurrentResults.Clear();
+			currentResult = null;
+			messageView.Visibility = Visibility.Collapsed;
 			if (!string.IsNullOrEmpty(searchTextBox.Text)) {
-				ISearchStrategy strategy = DefaultSearchStrategy.Create(searchTextBox.Text, !MatchCase, UseRegex, WholeWords);
-				currentResult = null;
-				int offset = textArea.Caret.Offset;
-				if (changeSelection) {
-					textArea.Selection = SimpleSelection.Empty;
-				}
-				foreach (SearchResult result in strategy.FindAll(textArea.Document)) {
-					if (currentResult == null && result.StartOffset >= offset) {
-						currentResult = result;
-						if (changeSelection) {
-							SetResult(result);
-						}
+				try {
+					ISearchStrategy strategy = DefaultSearchStrategy.Create(searchTextBox.Text, !MatchCase, UseRegex, WholeWords);
+					int offset = textArea.Caret.Offset;
+					if (changeSelection) {
+						textArea.Selection = SimpleSelection.Empty;
 					}
-					renderer.CurrentResults.Add(result);
+					foreach (SearchResult result in strategy.FindAll(textArea.Document)) {
+						if (currentResult == null && result.StartOffset >= offset) {
+							currentResult = result;
+							if (changeSelection) {
+								SetResult(result);
+							}
+						}
+						renderer.CurrentResults.Add(result);
+					}
+				} catch (SearchPatternException ex) {
+					messageView.Text = "Error: " + ex.Message;
+					messageView.Visibility = Visibility.Visible;
 				}
 			}
 			textArea.TextView.InvalidateLayer(KnownLayer.Selection);

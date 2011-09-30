@@ -31,6 +31,8 @@ namespace ICSharpCode.AvalonEdit.Search
 	
 		public static ISearchStrategy Create(string searchPattern, bool ignoreCase, bool useRegularExpressions, bool matchWholeWords)
 		{
+			if (searchPattern == null)
+				throw new ArgumentNullException("searchPattern");
 			RegexOptions options = RegexOptions.Compiled;
 			if (ignoreCase)
 				options |= RegexOptions.IgnoreCase;
@@ -38,8 +40,12 @@ namespace ICSharpCode.AvalonEdit.Search
 				searchPattern = Regex.Escape(searchPattern);
 			if (matchWholeWords)
 				searchPattern = "\\b" + searchPattern + "\\b";
-			Regex pattern = new Regex(searchPattern, options);
-			return new DefaultSearchStrategy(pattern);
+			try {
+				Regex pattern = new Regex(searchPattern, options);
+				return new DefaultSearchStrategy(pattern);
+			} catch (ArgumentException ex) {
+				throw new SearchPatternException(ex.Message, ex);
+			}
 		}
 		
 		public IEnumerable<ISearchResult> FindAll(ITextSource document)
