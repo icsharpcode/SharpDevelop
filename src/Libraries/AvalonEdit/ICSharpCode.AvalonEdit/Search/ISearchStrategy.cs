@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+
 using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Search
@@ -20,11 +22,22 @@ namespace ICSharpCode.AvalonEdit.Search
 		
 	}
 	
-	[Serializable]
-	public class SearchPatternException : Exception
+	public class SearchPatternException : Exception, ISerializable
 	{
-		public SearchPatternException(string message, Exception exception)
-			: base(message, exception)
+		public SearchPatternException()
+		{
+		}
+
+	 	public SearchPatternException(string message) : base(message)
+		{
+		}
+
+		public SearchPatternException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+
+		// This constructor is needed for serialization.
+		protected SearchPatternException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

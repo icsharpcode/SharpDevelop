@@ -51,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.Search
 				try {
 					strategy = SearchStrategyFactory.Create(searchPattern, !MatchCase, UseRegex, WholeWords);
 					DoSearch(true);
-				} catch (SearchPatternException ex) {
+				} catch (SearchPatternException) {
 					if (throwException) throw;
 				}
 			}
