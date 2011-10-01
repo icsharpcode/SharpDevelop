@@ -869,10 +869,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (VisualLinesChanged != null)
 				VisualLinesChanged(this, EventArgs.Empty);
 			
-			return new Size(
-				canHorizontallyScroll ? Math.Min(availableSize.Width, maxWidth) : maxWidth,
-				canVerticallyScroll ? Math.Min(availableSize.Height, heightTreeHeight) : heightTreeHeight
-			);
+			return new Size(Math.Min(availableSize.Width, maxWidth), Math.Min(availableSize.Height, heightTreeHeight));
 		}
 		
 		/// <summary>
@@ -1278,6 +1275,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		void SetScrollOffset(Vector vector)
 		{
+			if (!canHorizontallyScroll)
+				vector.X = 0;
+			if (!canVerticallyScroll)
+				vector.Y = 0;
+			
 			if (!scrollOffset.IsClose(vector)) {
 				scrollOffset = vector;
 				if (ScrollOffsetChanged != null)
