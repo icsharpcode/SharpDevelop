@@ -25,8 +25,4 @@ namespace ICSharpCode.AvalonEdit.Search
 			new InputGestureCollection { new KeyGesture(Key.F3, ModifierKeys.Shift) }
 		);
 	}
-	
-	class SearchResult : TextSegment, ISearchResult
-	{
-	}
 }

@@ -34,12 +34,35 @@ namespace ICSharpCode.AvalonEdit.Search
 		public bool MatchCase { get { return matchCase.IsChecked == true; } }
 		public bool WholeWords { get { return wholeWords.IsChecked == true; } }
 		
+		string searchPattern;
+		ISearchStrategy strategy;
+		
+		public string SearchPattern {
+			get { return searchPattern; }
+			set {
+				searchPattern = value;
+				UpdateSearch();
+			}
+		}
+
+		void UpdateSearch(bool throwException = true)
+		{
+			if (!string.IsNullOrEmpty(searchPattern)) {
+				try {
+					strategy = SearchStrategyFactory.Create(searchPattern, !MatchCase, UseRegex, WholeWords);
+					DoSearch(true);
+				} catch (SearchPatternException ex) {
+					if (throwException) throw;
+				}
+			}
+		}
+		
 		public SearchPanel(TextArea textArea)
 		{
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
 			this.textArea = textArea;
-			
+			DataContext = this;
 			InitializeComponent();
 			
 			textArea.TextView.Layers.Add(this);
@@ -50,18 +73,13 @@ namespace ICSharpCode.AvalonEdit.Search
 			textArea.Document.TextChanged += delegate { DoSearch(false); };
 			this.Loaded += delegate { searchTextBox.Focus(); };
 			
-			useRegex.Checked += delegate { DoSearch(true); };
-			matchCase.Checked += delegate { DoSearch(true); };
-			wholeWords.Checked += delegate { DoSearch(true); };
+			useRegex.Checked += delegate { UpdateSearch(false); };
+			matchCase.Checked += delegate { UpdateSearch(false); };
+			wholeWords.Checked += delegate { UpdateSearch(false); };
 			
-			useRegex.Unchecked += delegate { DoSearch(true); };
-			matchCase.Unchecked += delegate { DoSearch(true); };
-			wholeWords.Unchecked += delegate { DoSearch(true); };
-		}
-
-		void SearchTextBoxTextChanged(object sender, TextChangedEventArgs e)
-		{
-			DoSearch(true);
+			useRegex.Unchecked += delegate { UpdateSearch(false); };
+			matchCase.Unchecked += delegate { UpdateSearch(false); };
+			wholeWords.Unchecked += delegate { UpdateSearch(false); };
 		}
 		
 		/// <summary>
@@ -98,31 +116,26 @@ namespace ICSharpCode.AvalonEdit.Search
 				SetResult(result);
 			}
 		}
+		
+		ToolTip messageView = new ToolTip { Placement = PlacementMode.Bottom };
 
 		void DoSearch(bool changeSelection)
 		{
 			renderer.CurrentResults.Clear();
 			currentResult = null;
-			messageView.Visibility = Visibility.Collapsed;
-			if (!string.IsNullOrEmpty(searchTextBox.Text)) {
-				try {
-					ISearchStrategy strategy = DefaultSearchStrategy.Create(searchTextBox.Text, !MatchCase, UseRegex, WholeWords);
-					int offset = textArea.Caret.Offset;
-					if (changeSelection) {
-						textArea.Selection = SimpleSelection.Empty;
-					}
-					foreach (SearchResult result in strategy.FindAll(textArea.Document)) {
-						if (currentResult == null && result.StartOffset >= offset) {
-							currentResult = result;
-							if (changeSelection) {
-								SetResult(result);
-							}
+			if (!string.IsNullOrEmpty(SearchPattern)) {
+				int offset = textArea.Caret.Offset;
+				if (changeSelection) {
+					textArea.Selection = SimpleSelection.Empty;
+				}
+				foreach (SearchResult result in strategy.FindAll(textArea.Document)) {
+					if (currentResult == null && result.StartOffset >= offset) {
+						currentResult = result;
+						if (changeSelection) {
+							SetResult(result);
 						}
-						renderer.CurrentResults.Add(result);
 					}
-				} catch (SearchPatternException ex) {
-					messageView.Text = "Error: " + ex.Message;
-					messageView.Visibility = Visibility.Visible;
+					renderer.CurrentResults.Add(result);
 				}
 			}
 			textArea.TextView.InvalidateLayer(KnownLayer.Selection);
@@ -140,8 +153,21 @@ namespace ICSharpCode.AvalonEdit.Search
 		
 		void SearchLayerKeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.Key == Key.Escape) {
-				CloseClick(sender, e);
+			switch (e.Key) {
+				case Key.Enter:
+					try {
+						messageView.IsOpen = false;
+						messageView.Content = null;
+						UpdateSearch();
+					} catch (SearchPatternException ex) {
+						messageView.Content = "Error: " + ex.Message;
+						messageView.PlacementTarget = searchTextBox;
+						messageView.IsOpen = true;
+					}
+					break;
+				case Key.Escape:
+					CloseClick(sender, e);
+					break;
 			}
 		}
 		
@@ -149,6 +175,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		{
 			textArea.TextView.Layers.Remove(this);
 			textArea.TextView.BackgroundRenderers.Remove(renderer);
+			messageView.IsOpen = false;
 		}
 	}
 }

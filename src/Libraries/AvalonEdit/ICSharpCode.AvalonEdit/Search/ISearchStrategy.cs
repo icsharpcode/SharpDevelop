@@ -20,9 +20,11 @@ namespace ICSharpCode.AvalonEdit.Search
 		
 	}
 	
+	[Serializable]
 	public class SearchPatternException : Exception
 	{
-		public SearchPatternException(string message, Exception exception) : base(message, exception)
+		public SearchPatternException(string message, Exception exception)
+			: base(message, exception)
 		{
 		}
 	}
