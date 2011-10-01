@@ -10,7 +10,17 @@ namespace ICSharpCode.TextTemplating
 	{
 		public static bool IsDirectoryVariable(string name)
 		{
+			return EndsWithDir(name) || IsAddInPath(name);
+		}
+		
+		static bool EndsWithDir(string name)
+		{
 			return name.EndsWith("Dir", StringComparison.OrdinalIgnoreCase);
+		}
+		
+		static bool IsAddInPath(string name)
+		{
+			return name.StartsWith("addinpath:", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public static string AppendTrailingSlashIfMissing(string variableValue)

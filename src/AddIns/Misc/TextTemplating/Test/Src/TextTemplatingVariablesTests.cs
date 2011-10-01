@@ -237,5 +237,29 @@ namespace TextTemplating.Tests
 			string expectedResult = @"d:\projects\MyProject\bin\Debug\Test.dll";
 			Assert.AreEqual(expectedResult, result);
 		}
+		
+		[Test]
+		public void ExpandVariables_AddInPathHasNoTrailingSlash_AddInPathPropertyIsExpandedWithTrailingSlash()
+		{
+			CreateTextTemplatingVariables();
+			AddProperty("addinpath:ICSharpCode.MyAddIn", @"d:\SD\AddIns\MyAddIn");
+			
+			string result = variables.ExpandVariables(@"$(addinpath:ICSharpCode.MyAddIn)MyAddIn.dll");
+			
+			string expectedResult = @"d:\SD\AddIns\MyAddIn\MyAddIn.dll";
+			Assert.AreEqual(expectedResult, result);
+		}
+		
+		[Test]
+		public void ExpandVariables_AddInPathInUpperCaseWithoutTrailingSlash_AddInPathPropertyIsExpandedWithTrailingSlash()
+		{
+			CreateTextTemplatingVariables();
+			AddProperty("ADDINPATH:ICSharpCode.MyAddIn", @"d:\SD\AddIns\MyAddIn");
+			
+			string result = variables.ExpandVariables(@"$(ADDINPATH:ICSharpCode.MyAddIn)MyAddIn.dll");
+			
+			string expectedResult = @"d:\SD\AddIns\MyAddIn\MyAddIn.dll";
+			Assert.AreEqual(expectedResult, result);
+		}
 	}
 }
