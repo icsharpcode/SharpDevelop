@@ -9,7 +9,7 @@ using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class DTE
+	public class DTE : MarshalByRefObject
 	{
 		IPackageManagementProjectService projectService;
 		IPackageManagementFileService fileService;
