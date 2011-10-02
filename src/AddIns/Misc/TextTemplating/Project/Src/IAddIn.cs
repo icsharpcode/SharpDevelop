@@ -2,11 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace ICSharpCode.TextTemplating
 {
-	public interface ITextTemplatingAssemblyResolver : IDisposable
+	public interface IAddIn
 	{
-		string ResolvePath(string assemblyReference);
+		string PrimaryIdentity { get; }
+		
+		IEnumerable<IAddInRuntime> GetRuntimes();
 	}
 }

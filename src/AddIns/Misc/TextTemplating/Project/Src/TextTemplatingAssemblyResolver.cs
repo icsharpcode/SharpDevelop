@@ -9,83 +9,32 @@ namespace ICSharpCode.TextTemplating
 {
 	public class TextTemplatingAssemblyResolver : ITextTemplatingAssemblyResolver
 	{
-		IProject project;
-		IAssemblyParserService assemblyParserService;
-		ITextTemplatingPathResolver pathResolver;
-		
-		public TextTemplatingAssemblyResolver(
-			IProject project,
-			IAssemblyParserService assemblyParserService,
-			ITextTemplatingPathResolver pathResolver)
-		{
-			this.project = project;
-			this.assemblyParserService = assemblyParserService;
-			this.pathResolver = pathResolver;
-		}
+		ITextTemplatingAssemblyPathResolver assemblyPathResolver;
+		ITextTemplatingHostAppDomainAssemblyResolver appDomainAssemblyResolver;
 		
 		public TextTemplatingAssemblyResolver(IProject project)
 			: this(
-				project,
-				new TextTemplatingAssemblyParserService(),
-				new TextTemplatingPathResolver())
+				new TextTemplatingAssemblyPathResolver(project),
+				new TextTemplatingHostAppDomainAssemblyResolver())
 		{
 		}
 		
-		public string Resolve(string assemblyReference)
+		public TextTemplatingAssemblyResolver(
+			ITextTemplatingAssemblyPathResolver assemblyPathResolver,
+			ITextTemplatingHostAppDomainAssemblyResolver appDomainAssemblyResolver)
 		{
-			assemblyReference = ResolvePath(assemblyReference);
-			if (Path.IsPathRooted(assemblyReference)) {
-				return assemblyReference;
-			}
-			
-			string resolvedAssemblyFileName = ResolveAssemblyFromProject(assemblyReference);
-			if (resolvedAssemblyFileName == null) {
-				resolvedAssemblyFileName = ResolveAssemblyFromGac(assemblyReference);
-			}
-			if (resolvedAssemblyFileName != null) {
-				return resolvedAssemblyFileName;
-			}
-			return assemblyReference;
+			this.assemblyPathResolver = assemblyPathResolver;
+			this.appDomainAssemblyResolver = appDomainAssemblyResolver;
 		}
 		
-		string ResolvePath(string assemblyReference)
+		public string ResolvePath(string assemblyReference)
 		{
-			return pathResolver.ResolvePath(assemblyReference);
+			return assemblyPathResolver.ResolvePath(assemblyReference);
 		}
 		
-		string ResolveAssemblyFromProject(string assemblyReference)
+		public void Dispose()
 		{
-			foreach (ReferenceProjectItem refProjectItem in project.GetItemsOfType(ItemType.Reference)) {
-				if (IsMatch(refProjectItem, assemblyReference)) {
-					return refProjectItem.FileName;
-				}
-			}
-			return null;
-		}
-		
-		bool IsMatch(ReferenceProjectItem refProjectItem, string assemblyReference)
-		{
-			return String.Equals(refProjectItem.Include, assemblyReference, StringComparison.InvariantCultureIgnoreCase);
-		}
-		
-		string ResolveAssemblyFromGac(string assemblyReference)
-		{
-			IReflectionProjectContent projectContent = GetProjectContent(assemblyReference);
-			if (projectContent != null) {
-				return projectContent.AssemblyLocation;
-			}
-			return null;
-		}
-		
-		IReflectionProjectContent GetProjectContent(string assemblyReference)
-		{
-			var reference = new ReferenceProjectItem(project, assemblyReference);
-			return GetProjectContent(reference);
-		}
-		
-		IReflectionProjectContent GetProjectContent(ReferenceProjectItem refProjectItem)
-		{
-			return assemblyParserService.GetReflectionProjectContentForReference(refProjectItem);
+			appDomainAssemblyResolver.Dispose();
 		}
 	}
 }

@@ -16,8 +16,8 @@ namespace TextTemplating.Tests.Helpers
 
 		public TestableTextTemplatingHost(string applicationBase)
 			: this(
-				new FakeTextTemplatingAppDomainFactory(), 
-				new FakeTextTemplatingAssemblyResolver(), 
+				new FakeTextTemplatingAppDomainFactory(),
+				new FakeTextTemplatingAssemblyResolver(),
 				new FakeTextTemplatingVariables(),
 				new FakeServiceProvider(),
 				applicationBase)
@@ -31,7 +31,11 @@ namespace TextTemplating.Tests.Helpers
 			FakeServiceProvider fakeServiceProvider,
 			string applicationBase)
 			: this(
-				new TextTemplatingHostContext(appDomainFactory, assemblyResolver, textTemplatingVariables, fakeServiceProvider),
+				new TextTemplatingHostContext(
+					appDomainFactory,
+					assemblyResolver,
+					textTemplatingVariables,
+					fakeServiceProvider),
 				applicationBase)
 		{
 			FakeTextTemplatingAppDomainFactory = appDomainFactory;
@@ -43,6 +47,7 @@ namespace TextTemplating.Tests.Helpers
 		public TestableTextTemplatingHost(TextTemplatingHostContext context, string applicationBase)
 			: base(context, applicationBase)
 		{
+			HostContext = context;
 		}
 
 		public string CallResolveAssemblyReference(string assemblyReference)

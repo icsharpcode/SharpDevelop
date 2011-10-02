@@ -6,17 +6,8 @@ using ICSharpCode.TextTemplating;
 
 namespace TextTemplating.Tests.Helpers
 {
-	public class FakeTextTemplatingAssemblyResolver : ITextTemplatingAssemblyResolver
+	public class FakeTextTemplatingHostAppDomainAssemblyResolver : ITextTemplatingHostAppDomainAssemblyResolver
 	{
-		public string AssembyReferencePassedToResolvePath;
-		public string ResolvePathReturnValue = String.Empty;
-		
-		public string ResolvePath(string assemblyReference)
-		{
-			this.AssembyReferencePassedToResolvePath = assemblyReference;
-			return ResolvePathReturnValue;
-		}
-		
 		public bool IsDisposeCalled;
 		
 		public void Dispose()

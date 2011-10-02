@@ -18,6 +18,7 @@ namespace TextTemplating.Tests
 		FakeTextTemplatingAssemblyResolver fakeAssemblyResolver;
 		FakeTextTemplatingVariables fakeTextTemplatingVariables;
 		FakeServiceProvider fakeServiceProvider;
+		TextTemplatingHostContext hostContext;
 		
 		void CreateHost()
 		{
@@ -32,6 +33,7 @@ namespace TextTemplating.Tests
 			fakeAssemblyResolver = host.FakeTextTemplatingAssemblyResolver;
 			fakeTextTemplatingVariables = host.FakeTextTemplatingVariables;
 			fakeServiceProvider = host.FakeServiceProvider;
+			hostContext = host.HostContext;
 		}
 		
 		void AddTemplateVariableValue(string variableName, string variableValue)
@@ -108,14 +110,14 @@ namespace TextTemplating.Tests
 			CreateHost();
 			host.CallResolveAssemblyReference("MyReference");
 			
-			Assert.AreEqual("MyReference", fakeAssemblyResolver.AssembyReferencePassedToResolve);
+			Assert.AreEqual("MyReference", fakeAssemblyResolver.AssembyReferencePassedToResolvePath);
 		}
 		
 		[Test]
 		public void ResolveAssemblyReference_PassedMyAssemblyReference_ReturnsFileNameReturnedFromAssemblyResolverResolveMethod()
 		{
 			CreateHost();
-			fakeAssemblyResolver.ResolveReturnValue = @"d:\projects\references\MyReference.dll";
+			fakeAssemblyResolver.ResolvePathReturnValue = @"d:\projects\references\MyReference.dll";
 			string result = host.CallResolveAssemblyReference("MyReference");
 			
 			Assert.AreEqual(@"d:\projects\references\MyReference.dll", result);
@@ -142,6 +144,16 @@ namespace TextTemplating.Tests
 			StringWriter service = hostServiceProvider.GetService(typeof(StringWriter)) as StringWriter;
 			
 			Assert.AreEqual(expectedService, service);
+		}
+		
+		[Test]
+		public void Dispose_DisposeCalledAfterProvideTemplatingAppDomainCalled_DisposesAssemblyResolver()
+		{
+			CreateHost();
+			host.ProvideTemplatingAppDomain("test");
+			host.Dispose();
+			
+			Assert.IsTrue(fakeAssemblyResolver.IsDisposeCalled);
 		}
 	}
 }

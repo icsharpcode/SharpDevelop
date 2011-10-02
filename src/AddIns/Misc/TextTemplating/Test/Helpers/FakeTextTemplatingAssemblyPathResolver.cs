@@ -6,22 +6,15 @@ using ICSharpCode.TextTemplating;
 
 namespace TextTemplating.Tests.Helpers
 {
-	public class FakeTextTemplatingAssemblyResolver : ITextTemplatingAssemblyResolver
+	public class FakeTextTemplatingAssemblyPathResolver : ITextTemplatingAssemblyPathResolver
 	{
-		public string AssembyReferencePassedToResolvePath;
-		public string ResolvePathReturnValue = String.Empty;
+		public string AssemblyReferencePassedToResolvePath;
+		public string ResolvePathReturnValue;
 		
 		public string ResolvePath(string assemblyReference)
 		{
-			this.AssembyReferencePassedToResolvePath = assemblyReference;
+			AssemblyReferencePassedToResolvePath = assemblyReference;
 			return ResolvePathReturnValue;
-		}
-		
-		public bool IsDisposeCalled;
-		
-		public void Dispose()
-		{
-			IsDisposeCalled = true;
 		}
 	}
 }

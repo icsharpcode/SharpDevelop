@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Reflection;
 using Mono.TextTemplating;
 
 namespace ICSharpCode.TextTemplating
@@ -24,6 +25,7 @@ namespace ICSharpCode.TextTemplating
 				templatingAppDomain.Dispose();
 				templatingAppDomain = null;
 			}
+			context.Dispose();
 		}
 		
 		public override AppDomain ProvideTemplatingAppDomain(string content)

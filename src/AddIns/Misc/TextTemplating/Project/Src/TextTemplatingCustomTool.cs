@@ -13,12 +13,8 @@ namespace ICSharpCode.TextTemplating
 		
 		protected TextTemplatingHost CreateTextTemplatingHost(IProject project)
 		{
-			var appDomainFactory = new TextTemplatingAppDomainFactory();
-			string applicationBase = GetAssemblyBaseLocation();
-			var assemblyResolver = new TextTemplatingAssemblyResolver(project);
-			var textTemplatingVariables = new TextTemplatingVariables();
-			var serviceProvider = new TextTemplatingServiceProvider();
 			var context = new TextTemplatingHostContext(project);
+			string applicationBase = GetAssemblyBaseLocation();
 			return new TextTemplatingHost(context, applicationBase);
 		}
 		

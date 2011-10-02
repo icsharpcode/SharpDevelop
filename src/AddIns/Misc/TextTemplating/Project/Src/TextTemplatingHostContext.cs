@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.TextTemplating
 {
-	public class TextTemplatingHostContext
+	public class TextTemplatingHostContext : IDisposable
 	{
 		ITextTemplatingAppDomainFactory appDomainFactory;
 		ITextTemplatingAssemblyResolver assemblyResolver;
@@ -51,7 +51,12 @@ namespace ICSharpCode.TextTemplating
 		
 		public string ResolveAssemblyReference(string assemblyReference)
 		{
-			return assemblyResolver.Resolve(assemblyReference);
+			return assemblyResolver.ResolvePath(assemblyReference);
+		}
+		
+		public void Dispose()
+		{
+			assemblyResolver.Dispose();
 		}
 	}
 }

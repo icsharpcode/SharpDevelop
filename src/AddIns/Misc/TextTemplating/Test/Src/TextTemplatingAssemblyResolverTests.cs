@@ -14,165 +14,45 @@ namespace TextTemplating.Tests
 	public class TextTemplatingAssemblyResolverTests
 	{
 		TextTemplatingAssemblyResolver resolver;
-		IProject project;
-		FakeAssemblyParserService fakeAssemblyParserService;
-		FakeTextTemplatingPathResolver fakePathResolver;
+		FakeTextTemplatingAssemblyPathResolver fakeAssemblyPathResolver;
+		FakeTextTemplatingHostAppDomainAssemblyResolver fakeHostAppDomainAssemblyResolver;
 		
 		void CreateResolver()
 		{
-			project = ProjectHelper.CreateProject();
-			fakeAssemblyParserService = new FakeAssemblyParserService();
-			fakePathResolver = new FakeTextTemplatingPathResolver();
-			resolver = new TextTemplatingAssemblyResolver(project, fakeAssemblyParserService, fakePathResolver);
-		}
-		
-		ReferenceProjectItem AddReferenceToProject(string referenceName)
-		{
-			ReferenceProjectItem projectItem = new ReferenceProjectItem(project, referenceName);
-			ProjectService.AddProjectItem(project, projectItem);
-			return projectItem;
-		}
-
-		IProject GetProjectPassedToAssemblyParserService()
-		{
-			return ReferenceProjectItemPassedToGetReflectionProjectContentForReference.Project;
-		}
-		
-		ReferenceProjectItem ReferenceProjectItemPassedToGetReflectionProjectContentForReference {
-			get { return fakeAssemblyParserService.ItemPassedToGetReflectionProjectContentForReference; }
-		}
-		
-		ItemType GetReferenceItemTypePassedToAssemblyParserService()
-		{
-			return ReferenceProjectItemPassedToGetReflectionProjectContentForReference.ItemType;
+			fakeAssemblyPathResolver = new FakeTextTemplatingAssemblyPathResolver();
+			fakeHostAppDomainAssemblyResolver = new FakeTextTemplatingHostAppDomainAssemblyResolver();
+			resolver = new TextTemplatingAssemblyResolver(
+				fakeAssemblyPathResolver,
+				fakeHostAppDomainAssemblyResolver);
 		}
 		
 		[Test]
-		public void Resolve_ProjectHasNoReferences_ReturnsAssemblyReferencePassedToMethod()
+		public void ResolvePath_PathPassed_PathPassedToAssemblyPathResolver()
 		{
 			CreateResolver();
-			fakeAssemblyParserService.FakeReflectionProjectContent = null;
-			string result = resolver.Resolve("Test");
+			resolver.ResolvePath("Test");
 			
-			Assert.AreEqual("Test", result);
+			Assert.AreEqual("Test", fakeAssemblyPathResolver.AssemblyReferencePassedToResolvePath);
 		}
 		
 		[Test]
-		public void Resolve_ProjectHasOneReferenceToTestAssemblyWithHintPathSet_ReturnsFullPathToTestAssembly()
+		public void ResolvePath_PathPassed_ReturnAssemblyPathFromAssemblyPathResolver()
 		{
 			CreateResolver();
-			ReferenceProjectItem reference = AddReferenceToProject("test");
-			string expectedFileName = @"d:\projects\MyProject\lib\Test.dll";
-			reference.HintPath = expectedFileName;
+			string expectedPath = @"d:\test\MyAssembly.dll";
+			fakeAssemblyPathResolver.ResolvePathReturnValue = expectedPath;
+			string path = resolver.ResolvePath("Test");
 			
-			string result = resolver.Resolve("Test");
-			
-			Assert.AreEqual(expectedFileName, result);
-		}
-
-		[Test]
-		public void Resolve_AssemblyReferenceNameIsInDifferentCase_ReturnsFullPathToTestAssembly()
-		{
-			CreateResolver();
-			ReferenceProjectItem reference = AddReferenceToProject("test");
-			string expectedFileName = @"d:\projects\MyProject\lib\Test.dll";
-			reference.HintPath = expectedFileName;
-			
-			string result = resolver.Resolve("TEST");
-			
-			Assert.AreEqual(expectedFileName, result);
+			Assert.AreEqual(expectedPath, path);
 		}
 		
 		[Test]
-		public void Resolve_ProjectHasOneReferenceToTestAssemblyWithFileNameSet_ReturnsFullPathToTestAssembly()
+		public void Dispose_DisposeCalled_DisposesHostAppDomainAssemblyResolver()
 		{
 			CreateResolver();
-			ReferenceProjectItem reference = AddReferenceToProject("Test");
-			string expectedFileName = @"d:\projects\MyProject\lib\Test.dll";
-			reference.FileName = expectedFileName;
+			resolver.Dispose();
 			
-			string result = resolver.Resolve("Test");
-			
-			Assert.AreEqual(expectedFileName, result);
-		}
-		
-		[Test]
-		public void Resolve_ProjectHasNoReferencesAndAssemblyReferenceInGac_ReturnsFullPathToAssemblyFoundFromAssemblyParserService()
-		{
-			CreateResolver();
-			string expectedFileName = @"c:\Windows\System32\Gac\System.Data.dll";
-			fakeAssemblyParserService.FakeReflectionProjectContent.AssemblyLocation = expectedFileName;
-			
-			string result = resolver.Resolve("System.Data");
-			
-			Assert.AreEqual(expectedFileName, result);
-		}
-		
-		[Test]
-		public void Resolve_ProjectHasNoReferencesAndAssemblyReferenceInGac_ReferenceItemPassedToAssemblyParserServiceUsesProject()
-		{
-			CreateResolver();
-			string result = resolver.Resolve("System.Data");
-			IProject expectedProject = GetProjectPassedToAssemblyParserService();
-			
-			Assert.AreEqual(project, expectedProject);
-		}
-		
-		[Test]
-		public void Resolve_ProjectHasNoReferencesAndAssemblyReferenceInGac_ReferenceItemPassedToAssemblyParserServiceIsReference()
-		{
-			CreateResolver();
-			string result = resolver.Resolve("System.Data");
-			ItemType type = GetReferenceItemTypePassedToAssemblyParserService();
-			
-			Assert.AreEqual(ItemType.Reference, type);
-		}
-		
-		[Test]
-		public void Resolve_ProjectHasNoReferencesAndAssemblyReferenceInGac_ReferenceItemIncludePassedToAssemblyParserServiceIsAssemblyNameToResolve()
-		{
-			CreateResolver();
-			string result = resolver.Resolve("System.Data");
-			string referenceInclude = ReferenceProjectItemPassedToGetReflectionProjectContentForReference.Include;
-			
-			Assert.AreEqual("System.Data", referenceInclude);
-		}
-		
-		[Test]
-		public void Resolve_ProjectHasNoReferencesAndAssemblyReferenceNotFoundInGac_ReturnsAssemblyReferencePassedToMethod()
-		{
-			CreateResolver();
-			fakeAssemblyParserService.FakeReflectionProjectContent = null;
-			
-			string result = resolver.Resolve("System.Data");
-			
-			Assert.AreEqual("System.Data", result);
-		}
-		
-		[Test]
-		public void Resolve_AssemblyReferenceHasTemplateVariable_ReturnsExpandedAssemblyReferenceFileName()
-		{
-			CreateResolver();
-			string path = @"$(SolutionDir)lib\Test.dll";
-			string expectedPath = @"d:\projects\MyProject\lib\Test.dll";
-			fakePathResolver.AddPath(path, expectedPath);
-			
-			string resolvedPath = resolver.Resolve(path);
-			
-			Assert.AreEqual(expectedPath, resolvedPath);
-		}
-		
-		[Test]
-		public void Resolve_AssemblyReferenceHasTemplateVariable_AssemblyParserServiceIsNotUsed()
-		{
-			CreateResolver();
-			string path = @"$(SolutionDir)lib\Test.dll";
-			string expectedPath = @"d:\projects\MyProject\lib\Test.dll";
-			fakePathResolver.AddPath(path, expectedPath);
-			
-			string result = resolver.Resolve(path);
-			
-			Assert.IsFalse(fakeAssemblyParserService.IsGetReflectionProjectContentForReferenceCalled);
+			Assert.IsTrue(fakeHostAppDomainAssemblyResolver.IsDisposeCalled);
 		}
 	}
 }
