@@ -10,33 +10,45 @@ using ICSharpCode.AvalonEdit.Document;
 namespace ICSharpCode.AvalonEdit.Search
 {
 	/// <summary>
-	/// Description of ISearchStrategy.
+	/// Basic interface for search algorithms.
 	/// </summary>
 	public interface ISearchStrategy
 	{
+		/// <summary>
+		/// Finds all matches for a predicate in the given ITextSource.
+		/// </summary>
+		/// <remarks>This method is thread-safe.</remarks>
 		IEnumerable<ISearchResult> FindAll(ITextSource document);
 	}
 	
+	/// <summary>
+	/// Represents a search result.
+	/// </summary>
 	public interface ISearchResult : ISegment
 	{
 		
 	}
 	
+	/// <inheritdoc/>
 	public class SearchPatternException : Exception, ISerializable
 	{
+		/// <inheritdoc/>
 		public SearchPatternException()
 		{
 		}
-
-	 	public SearchPatternException(string message) : base(message)
+		
+		/// <inheritdoc/>
+		public SearchPatternException(string message) : base(message)
 		{
 		}
-
+		
+		/// <inheritdoc/>
 		public SearchPatternException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
 
 		// This constructor is needed for serialization.
+		/// <inheritdoc/>
 		protected SearchPatternException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}

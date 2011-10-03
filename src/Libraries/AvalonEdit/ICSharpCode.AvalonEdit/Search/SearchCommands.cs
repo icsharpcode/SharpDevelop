@@ -14,12 +14,22 @@ using ICSharpCode.AvalonEdit.Rendering;
 
 namespace ICSharpCode.AvalonEdit.Search
 {
+	/// <summary>
+	/// Search commands for AvalonEdit.
+	/// </summary>
 	public static class SearchCommands
 	{
+		/// <summary>
+		/// Finds the next occurrence in the file.
+		/// </summary>
 		public static readonly RoutedCommand FindNext = new RoutedCommand(
 			"FindNext", typeof(SearchPanel),
 			new InputGestureCollection { new KeyGesture(Key.F3) }
 		);
+		
+		/// <summary>
+		/// Finds the previous occurrence in the file.
+		/// </summary>
 		public static readonly RoutedCommand FindPrevious = new RoutedCommand(
 			"FindPrevious", typeof(SearchPanel),
 			new InputGestureCollection { new KeyGesture(Key.F3, ModifierKeys.Shift) }

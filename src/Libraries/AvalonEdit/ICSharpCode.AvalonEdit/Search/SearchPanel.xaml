@@ -16,7 +16,7 @@
 					<Popup StaysOpen="False">
 						<Border Background="White" BorderBrush="DimGray" BorderThickness="1">
 							<StackPanel Orientation="Vertical">
-								<CheckBox x:FieldModifier="private" x:Name="matchCase" Content="Match case" Margin="3"  />
+								<CheckBox x:FieldModifier="private" x:Name="matchCase" Content="Match case" Margin="3" />
 								<CheckBox x:FieldModifier="private" x:Name="wholeWords" Content="Match whole words" Margin="3" />
 								<CheckBox x:FieldModifier="private" x:Name="useRegex" Content="Use Regular Expressions" Margin="3" />
 							</StackPanel>
@@ -30,10 +30,11 @@
 			<Button Margin="3" Height="24" Width="24" Command="local:SearchCommands.FindNext" ToolTip="Find Next (F3)">
 				<Image Width="16" Height="16" Stretch="Fill" Source="next.png" />
 			</Button>
-			<Button Click="CloseClick" HorizontalAlignment="Right" VerticalAlignment="Top" Height="16" Width="16">
+			<Button Click="CloseClick" Height="16" Width="16" HorizontalAlignment="Right" VerticalAlignment="Top"
+			        VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
 				<Grid>
-					<Line X1="2" Y1="2" X2="8" Y2="8" Stroke="Black" StrokeThickness="1" />
-					<Line X1="8" Y1="2" X2="2" Y2="8" Stroke="Black" StrokeThickness="1" />
+					<Line X1="0" Y1="0" X2="8" Y2="8" Stroke="Black" StrokeThickness="1" />
+					<Line X1="8" Y1="0" X2="0" Y2="8" Stroke="Black" StrokeThickness="1" />
 				</Grid>
 			</Button>
 		</StackPanel>
