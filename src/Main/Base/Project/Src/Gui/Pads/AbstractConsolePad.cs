@@ -458,10 +458,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get { return pad.WordWrap; }
 			set { pad.WordWrap = value; }
 		}
-		
-		public override void Run()
-		{
-			IsChecked = !IsChecked;
-		}
 	}
 }

@@ -2,26 +2,21 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Media;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace ICSharpCode.Core.Presentation
 {
-	sealed class ToolBarCheckBox : CheckBox, IStatusUpdate
+	sealed class MenuCheckBox : CoreMenuItem
 	{
-		readonly Codon codon;
-		readonly object caller;
 		BindingExpressionBase isCheckedBinding;
 		
-		public ToolBarCheckBox(Codon codon, object caller)
+		public MenuCheckBox(UIElement inputBindingOwner, Codon codon, object caller)
+			: base(codon, caller)
 		{
-			ToolTipService.SetShowOnDisabled(this, true);
-			
-			this.codon = codon;
-			this.caller = caller;
 			this.Command = CommandWrapper.GetCommand(codon, caller, true);
 			CommandWrapper wrapper = this.Command as CommandWrapper;
 			if (wrapper != null) {
@@ -30,29 +25,17 @@ namespace ICSharpCode.Core.Presentation
 					isCheckedBinding = SetBinding(IsCheckedProperty, new Binding("IsChecked") { Source = cmd, Mode = BindingMode.OneWay });
 				}
 			}
-
-			this.Content = ToolBarService.CreateToolBarItemContent(codon);
-			if (codon.Properties.Contains("name")) {
-				this.Name = codon.Properties["name"];
-			}
-			UpdateText();
 			
-			SetResourceReference(FrameworkElement.StyleProperty, ToolBar.CheckBoxStyleKey);
-		}
-		
-		public void UpdateText()
-		{
-			if (codon.Properties.Contains("tooltip")) {
-				this.ToolTip = StringParser.Parse(codon.Properties["tooltip"]);
+			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
+				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
+				MenuCommand.AddGestureToInputBindingOwner(inputBindingOwner, kg, this.Command, null);
+				this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			}
 		}
 		
-		public void UpdateStatus()
+		public override void UpdateStatus()
 		{
-			if (codon.GetFailedAction(caller) == ConditionFailedAction.Exclude)
-				this.Visibility = Visibility.Collapsed;
-			else
-				this.Visibility = Visibility.Visible;
+			base.UpdateStatus();
 			if (isCheckedBinding != null)
 				isCheckedBinding.UpdateTarget();
 		}
