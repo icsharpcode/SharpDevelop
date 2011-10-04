@@ -521,9 +521,35 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Inserts text.
 		/// </summary>
+		/// <param name="offset">The offset at which the text is inserted.</param>
+		/// <param name="text">The new text.</param>
+		/// <remarks>
+		/// Anchors positioned exactly at the insertion offset will move according to their movement type.
+		/// For AnchorMovementType.Default, they will move behind the inserted text.
+		/// The caret will also move behind the inserted text.
+		/// </remarks>
 		public void Insert(int offset, string text)
 		{
-			Replace(offset, 0, text);
+			Replace(offset, 0, text, null);
+		}
+		
+		/// <summary>
+		/// Inserts text.
+		/// </summary>
+		/// <param name="offset">The offset at which the text is inserted.</param>
+		/// <param name="text">The new text.</param>
+		/// <param name="defaultAnchorMovementType">
+		/// Anchors positioned exactly at the insertion offset will move according to the anchor's movement type.
+		/// For AnchorMovementType.Default, they will move according to the movement type specified by this parameter.
+		/// The caret will also move according to the <paramref name="defaultAnchorMovementType"/> parameter.
+		/// </param>
+		public void Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
+		{
+			if (defaultAnchorMovementType == AnchorMovementType.BeforeInsertion) {
+				Replace(offset, 0, text, OffsetChangeMappingType.KeepAnchorBeforeInsertion);
+			} else {
+				Replace(offset, 0, text, null);
+			}
 		}
 		
 		/// <summary>
@@ -537,6 +563,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Removes text.
 		/// </summary>
+		/// <param name="offset">Starting offset of the text to be removed.</param>
+		/// <param name="length">Length of the text to be removed.</param>
 		public void Remove(int offset, int length)
 		{
 			Replace(offset, length, string.Empty);
@@ -557,6 +585,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Replaces text.
 		/// </summary>
+		/// <param name="offset">The starting offset of the text to be replaced.</param>
+		/// <param name="length">The length of the text to be replaced.</param>
+		/// <param name="newText">The new text.</param>
 		public void Replace(int offset, int length, string text)
 		{
 			Replace(offset, length, text, null);
@@ -924,11 +955,6 @@ namespace ICSharpCode.AvalonEdit.Document
 			#endif
 		}
 		#endregion
-		
-		void IDocument.Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
-		{
-			throw new NotImplementedException();
-		}
 		
 		#region Service Provider
 		IServiceProvider serviceProvider;

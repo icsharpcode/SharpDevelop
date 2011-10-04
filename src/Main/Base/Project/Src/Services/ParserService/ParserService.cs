@@ -687,9 +687,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 					lock (this) {
 						if (cachedParseInformation != null && bufferVersion != null && bufferVersion.BelongsToSameDocumentAs(fileContentVersion)) {
 							if (bufferVersion.CompareAge(fileContentVersion) >= 0) {
-								TaskCompletionSource<ParseInformation> tcs = new TaskCompletionSource<ParseInformation>();
-								tcs.SetResult(cachedParseInformation);
-								return tcs.Task;
+								return TaskFromResult(cachedParseInformation);
 							}
 						}
 					}
@@ -1182,7 +1180,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			var entry = GetFileEntry(fileName, true);
 			if (entry.parser == null)
-				return NullTask<ResolveResult>();
+				return TaskFromResult<ResolveResult>(null);
 			return entry.ParseAsync(fileContent).ContinueWith(
 				delegate (Task<ParseInformation> parseInfoTask) {
 					var parseInfo = parseInfoTask.Result;
@@ -1198,10 +1196,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}, cancellationToken);
 		}
 		
-		static Task<T> NullTask<T>() where T : class
+		static Task<T> TaskFromResult<T>(T result)
 		{
 			TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
-			tcs.SetResult(null);
+			tcs.SetResult(result);
 			return tcs.Task;
 		}
 	}
