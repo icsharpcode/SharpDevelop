@@ -4,7 +4,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
@@ -148,7 +147,7 @@ namespace SearchAndReplace
 			if (node != null) {
 				foreach (Codon codon in node.Codons) {
 					if (codon.Id == id) {
-						return MenuCommand.ParseShortcut(codon.Properties["shortcut"]);
+						return (Keys)new KeysConverter().ConvertFromInvariantString(codon.Properties["shortcut"].Replace('|', '+'));
 					}
 				}
 			}

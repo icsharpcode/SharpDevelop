@@ -71,22 +71,6 @@ namespace ICSharpCode.Core.WinForms
 			
 		}
 		
-		public static Keys ParseShortcut(string shortcutString)
-		{
-			Keys shortCut = Keys.None;
-			if (shortcutString.Length > 0) {
-				try {
-					foreach (string key in shortcutString.Split('|')) {
-						shortCut  |= (System.Windows.Forms.Keys)Enum.Parse(typeof(System.Windows.Forms.Keys), key);
-					}
-				} catch (Exception ex) {
-					MessageService.ShowException(ex);
-					return System.Windows.Forms.Keys.None;
-				}
-			}
-			return shortCut;
-		}
-		
 		public MenuCommand(Codon codon, object caller, bool createCommand)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
@@ -98,9 +82,6 @@ namespace ICSharpCode.Core.WinForms
 			}
 			
 			UpdateText();
-			if (codon.Properties.Contains("shortcut")) {
-				ShortcutKeys =  ParseShortcut(codon.Properties["shortcut"]);
-			}
 		}
 		
 		public MenuCommand(string label, EventHandler handler) : this(label)

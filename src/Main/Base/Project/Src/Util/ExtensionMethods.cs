@@ -424,33 +424,6 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Translates a WinForms menu to WPF.
-		/// </summary>
-		public static ICollection TranslateToWpf(this ToolStripItem[] items)
-		{
-			return items.OfType<ToolStripMenuItem>().Select(item => TranslateMenuItemToWpf(item)).ToList();
-		}
-		
-		static System.Windows.Controls.MenuItem TranslateMenuItemToWpf(ToolStripMenuItem item)
-		{
-			var r = new System.Windows.Controls.MenuItem();
-			r.Header = MenuService.ConvertLabel(item.Text);
-			r.InputGestureText = MenuService.ConvertKeys(item.ShortcutKeys);
-			//r.InputGestureText = new KeyGesture(Key.F6).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
-			if (item.ImageIndex >= 0)
-				r.Icon = ClassBrowserIconService.GetImageByIndex(item.ImageIndex).CreateImage();
-			if (item.DropDownItems.Count > 0) {
-				foreach (ToolStripMenuItem subItem in item.DropDownItems) {
-					r.Items.Add(TranslateMenuItemToWpf(subItem));
-				}
-			} else {
-				r.Click += delegate { item.PerformClick(); };
-			}
-			r.IsChecked = item.Checked;
-			return r;
-		}
-		
-		/// <summary>
 		/// Returns the index of the first element for which <paramref name="predicate"/> returns true.
 		/// If none of the items in the list fits the <paramref name="predicate"/>, -1 is returned.
 		/// </summary>
@@ -467,7 +440,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Adds item to the list if the item is not null.
 		/// </summary>
-		public static void AddIfNotNull<T>(this IList<T> list, T itemToAdd)
+		public static void AddIfNotNull<T>(this IList<T> list, T itemToAdd) where T : class
 		{
 			if (itemToAdd != null)
 				list.Add(itemToAdd);
