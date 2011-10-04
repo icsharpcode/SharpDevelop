@@ -341,6 +341,7 @@
     <Compile Include="Src\Internal\Doozers\IOptionPanelDescriptor.cs" />
     <Compile Include="Src\Services\File\FileService.cs" />
     <Compile Include="Src\Services\File\FileEventArgs.cs" />
+    <Compile Include="Src\Services\MimeTypeDetection.cs" />
     <Compile Include="Src\Services\ParserService\AssemblyParserService.cs" />
     <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
