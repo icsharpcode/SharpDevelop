@@ -29,6 +29,25 @@ namespace ICSharpCode.AvalonEdit.Search
 		
 	}
 	
+	/// <summary>
+	/// Defines supported search modes.
+	/// </summary>
+	public enum SearchType
+	{
+		/// <summary>
+		/// Standard search
+		/// </summary>
+		Normal,
+		/// <summary>
+		/// RegEx search
+		/// </summary>
+		RegEx,
+		/// <summary>
+		/// Wildcard search
+		/// </summary>
+		Wildcard
+	}
+	
 	/// <inheritdoc/>
 	public class SearchPatternException : Exception, ISerializable
 	{
