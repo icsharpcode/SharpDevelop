@@ -1,13 +1,15 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace SearchAndReplace
@@ -38,7 +40,7 @@ namespace SearchAndReplace
 		public static bool IsWholeWordAt(IDocument document, int offset, int length)
 		{
 			return (offset - 1 < 0 || !IsWordPart(document.GetCharAt(offset - 1))) &&
-			       (offset + length + 1 >= document.TextLength || !IsWordPart(document.GetCharAt(offset + length)));
+				(offset + length + 1 >= document.TextLength || !IsWordPart(document.GetCharAt(offset + length)));
 		}
 		
 		public static ISearchStrategy CreateSearchStrategy(SearchStrategyType type)
@@ -89,25 +91,22 @@ namespace SearchAndReplace
 			}
 		}
 		
-		static List<string> excludedFileExtensions;
-		
 		public static bool IsSearchable(string fileName)
 		{
-			if (fileName == null)
+			const int BUFFER_LENGTH = 4 * 1024;
+			
+			if (!File.Exists(fileName))
 				return false;
 			
-			if (excludedFileExtensions == null) {
-				excludedFileExtensions = AddInTree.BuildItems<string>("/AddIns/DefaultTextEditor/Search/ExcludedFileExtensions", null, false);
-			}
-			string extension = Path.GetExtension(fileName);
-			if (extension != null) {
-				foreach (string excludedExtension in excludedFileExtensions) {
-					if (String.Compare(excludedExtension, extension, true) == 0) {
-						return false;
-					}
+			using (var stream = File.OpenRead(fileName)) {
+				string mime = "text/plain";
+				if (stream.Length > 0) {
+					stream.Position = 0;
+					mime = MimeTypeDetection.FindMimeType(new BinaryReader(stream).ReadBytes(BUFFER_LENGTH));
 				}
+				
+				return mime.StartsWith("text/", StringComparison.OrdinalIgnoreCase);
 			}
-			return true;
 		}
 	}
 }
