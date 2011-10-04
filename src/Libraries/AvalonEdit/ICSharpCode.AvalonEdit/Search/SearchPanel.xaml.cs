@@ -169,6 +169,7 @@ namespace ICSharpCode.AvalonEdit.Search
 				foreach (var folding in foldingManager.GetFoldingsContaining(result.StartOffset))
 					folding.IsFolded = false;
 			}
+			textArea.Caret.BringCaretToView();
 		}
 		
 		void SearchLayerKeyDown(object sender, KeyEventArgs e)
