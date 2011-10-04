@@ -56,11 +56,6 @@
 		             icon    = "Icons.16x16.FindIcon"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
 		             class   = "SearchAndReplace.Find"/>
-		
-		<ToolbarItem id      = "FindComboBox"
-		             type    = "ComboBox"
-		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
-		             class   = "SearchAndReplace.FindComboBox"/>
 	</Path>
 	
 	<!-- File extensions that should not be searched since they are not opened
