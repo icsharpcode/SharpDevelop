@@ -13,12 +13,12 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
@@ -206,6 +206,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			codeEditorView.TextArea.Caret.PositionChanged += TextAreaCaretPositionChanged;
 			codeEditorView.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
+			codeEditorView.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(codeEditorView.TextArea));
 			
 			textView.BackgroundRenderers.Add(textMarkerService);
 			textView.LineTransformers.Add(textMarkerService);

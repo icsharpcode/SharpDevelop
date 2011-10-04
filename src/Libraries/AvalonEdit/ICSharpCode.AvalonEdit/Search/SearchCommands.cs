@@ -35,4 +35,44 @@ namespace ICSharpCode.AvalonEdit.Search
 			new InputGestureCollection { new KeyGesture(Key.F3, ModifierKeys.Shift) }
 		);
 	}
+	
+	/// <summary>
+	/// TextAreaInputHandler that registers all search-related commands.
+	/// </summary>
+	public class SearchInputHandler : TextAreaInputHandler
+	{
+		/// <summary>
+		/// Creates a new SearchInputHandler and registers the search-related commands.
+		/// </summary>
+		public SearchInputHandler(TextArea textArea)
+			: base(textArea)
+		{
+			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, ExecuteFind));
+			this.CommandBindings.Add(new CommandBinding(SearchCommands.FindNext, ExecuteFindNext));
+			this.CommandBindings.Add(new CommandBinding(SearchCommands.FindPrevious, ExecuteFindPrevious));
+		}
+		
+		void ExecuteFind(object sender, ExecutedRoutedEventArgs e)
+		{
+			var panel = TextArea.TextView.Layers.OfType<SearchPanel>().FirstOrDefault();
+			if (panel == null)
+				new SearchPanel(TextArea);
+			else
+				panel.Reactivate();
+		}
+		
+		void ExecuteFindNext(object sender, ExecutedRoutedEventArgs e)
+		{
+			var panel = TextArea.TextView.Layers.OfType<SearchPanel>().FirstOrDefault();
+			if (panel != null)
+				panel.FindNext();
+		}
+		
+		void ExecuteFindPrevious(object sender, ExecutedRoutedEventArgs e)
+		{
+			var panel = TextArea.TextView.Layers.OfType<SearchPanel>().FirstOrDefault();
+			if (panel != null)
+				panel.FindPrevious();
+		}
+	}
 }
