@@ -1624,7 +1624,6 @@
 		</MenuItem> <!-- end DEBUG menu -->
 		
 		<MenuItem id = "Search" label = "${res:XML.MainMenu.SearchMenu}" type="Menu">
-			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
 				<MenuItem id = "ToggleBookmark"
 				          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
