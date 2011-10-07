@@ -860,5 +860,13 @@ class B
 			Assert.AreEqual("T", m.Parameters[0].Type.Resolve(context).Name);
 			Assert.AreEqual("X", m.Parameters[1].Type.Resolve(context).Name);
 		}
+		
+		[Test]
+		public void InheritingInnerClassShouldNotCauseStackOverflow() 
+		{
+			string program = @"class Test : $Test.Base$, Test.ITest { public class Base {} interface ITest {} }";
+			var result = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("Test.Base", result.Type.FullName);
+		}
 	}
 }
