@@ -5,6 +5,7 @@ using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Search
 {
@@ -16,7 +17,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// <summary>
 		/// Creates a default ISearchStrategy with the given parameters.
 		/// </summary>
-		public static ISearchStrategy Create(string searchPattern, bool ignoreCase, bool matchWholeWords, SearchType searchType)
+		public static ISearchStrategy Create(string searchPattern, bool ignoreCase, bool matchWholeWords, SearchMode mode)
 		{
 			if (searchPattern == null)
 				throw new ArgumentNullException("searchPattern");
@@ -24,11 +25,11 @@ namespace ICSharpCode.AvalonEdit.Search
 			if (ignoreCase)
 				options |= RegexOptions.IgnoreCase;
 			
-			switch (searchType) {
-				case SearchType.Normal:
+			switch (mode) {
+				case SearchMode.Normal:
 					searchPattern = Regex.Escape(searchPattern);
 					break;
-				case SearchType.Wildcard:
+				case SearchMode.Wildcard:
 					searchPattern = ConvertWildcardsToRegex(searchPattern);
 					break;
 			}

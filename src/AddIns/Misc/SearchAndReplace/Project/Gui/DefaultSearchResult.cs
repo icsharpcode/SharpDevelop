@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
+using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Search;
@@ -117,6 +118,71 @@ namespace SearchAndReplace
 		public ISearchResult CreateSearchResult(string title, IEnumerable<SearchResultMatch> matches)
 		{
 			return new DefaultSearchResult(title, matches);
+		}
+		
+		public ISearchResult CreateSearchResult(string title, IObservable<SearchResultMatch> matches)
+		{
+			var osr = new ObserverSearchResult(title);
+			osr.Registration = matches.Subscribe(osr);
+			return osr;
+		}
+	}
+	
+	public class ObserverSearchResult : ISearchResult, IObserver<SearchResultMatch>
+	{
+		List<SearchResultMatch> matches;
+		Button stopButton;
+		SearchRootNode rootNode;
+		
+		public ObserverSearchResult(string title)
+		{
+			Text = title;
+			matches = new List<SearchResultMatch>();
+			rootNode = new SearchRootNode(title, matches);
+		}
+		
+		public string Text { get; private set; }
+		public IDisposable Registration { get; set; }
+		
+		static ResultsTreeView resultsTreeViewInstance;
+		
+		public object GetControl()
+		{
+			WorkbenchSingleton.AssertMainThread();
+			if (resultsTreeViewInstance == null)
+				resultsTreeViewInstance = new ResultsTreeView();
+			rootNode.GroupResultsByFile(ResultsTreeView.GroupResultsByFile);
+			resultsTreeViewInstance.ItemsSource = new object[] { rootNode };
+			return resultsTreeViewInstance;
+		}
+		
+		public IList GetToolbarItems()
+		{
+			stopButton = new Button { Content = "Stop" };
+			stopButton.Click += delegate { if (Registration != null) Registration.Dispose(); };
+			
+			return new ArrayList { stopButton };
+		}
+		
+		void IObserver<SearchResultMatch>.OnNext(SearchResultMatch value)
+		{
+			matches.Add(value);
+		}
+		
+		void IObserver<SearchResultMatch>.OnError(Exception error)
+		{
+			MessageService.ShowException(error);
+			OnCompleted();
+		}
+		
+		void OnCompleted()
+		{
+			stopButton.Visibility = Visibility.Collapsed;
+		}
+		
+		void IObserver<SearchResultMatch>.OnCompleted()
+		{
+			OnCompleted();
 		}
 	}
 }

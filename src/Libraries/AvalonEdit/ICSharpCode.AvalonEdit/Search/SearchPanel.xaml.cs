@@ -52,7 +52,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		void UpdateSearch()
 		{
 			messageView.IsOpen = false;
-			strategy = SearchStrategyFactory.Create(searchPattern ?? "", !MatchCase, WholeWords, UseRegex ? SearchType.RegEx : SearchType.Normal);
+			strategy = SearchStrategyFactory.Create(searchPattern ?? "", !MatchCase, WholeWords, UseRegex ? SearchMode.RegEx : SearchMode.Normal);
 			DoSearch(true);
 		}
 		

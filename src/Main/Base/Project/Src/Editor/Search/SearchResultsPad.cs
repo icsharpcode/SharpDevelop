@@ -104,9 +104,29 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			ShowSearchResults(CreateSearchResult(title, matches));
 		}
 		
+		public void ShowSearchResults(string title, IObservable<SearchResultMatch> matches)
+		{
+			ShowSearchResults(CreateSearchResult(title, matches));
+		}
+		
 		public event EventHandler SearchResultsShown;
 		
 		public static ISearchResult CreateSearchResult(string title, IEnumerable<SearchResultMatch> matches)
+		{
+			if (title == null)
+				throw new ArgumentNullException("title");
+			if (matches == null)
+				throw new ArgumentNullException("matches");
+			foreach (ISearchResultFactory factory in AddInTree.BuildItems<ISearchResultFactory>("/SharpDevelop/Pads/SearchResultPad/Factories", null, false)) {
+				ISearchResult result = factory.CreateSearchResult(title, matches);
+				if (result != null)
+					return result;
+			}
+			return new DummySearchResult { Text = title };
+		}
+		
+		
+		public static ISearchResult CreateSearchResult(string title, IObservable<SearchResultMatch> matches)
 		{
 			if (title == null)
 				throw new ArgumentNullException("title");

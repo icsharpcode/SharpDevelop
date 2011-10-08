@@ -12,13 +12,13 @@ namespace SearchAndReplace
 		public static void SetSearchPattern()
 		{
 			// Get Highlighted value and set it to FindDialog.searchPattern
-			ITextEditor textArea = SearchReplaceUtilities.GetActiveTextEditor();
-			if (textArea != null) {
-				string selectedText = textArea.SelectedText;
-				if (selectedText != null && selectedText.Length > 0 && !IsMultipleLines(selectedText)) {
-					SearchOptions.CurrentFindPattern = selectedText;
-				}
-			}
+//			ITextEditor textArea = SearchReplaceUtilities.GetActiveTextEditor();
+//			if (textArea != null) {
+//				string selectedText = textArea.SelectedText;
+//				if (selectedText != null && selectedText.Length > 0 && !IsMultipleLines(selectedText)) {
+//					SearchOptions.CurrentFindPattern = selectedText;
+//				}
+//			}
 		}
 		
 		public override void Run()
@@ -38,7 +38,7 @@ namespace SearchAndReplace
 		public override void Run()
 		{
 			if (SearchOptions.CurrentFindPattern.Length > 0) {
-				SearchReplaceManager.FindNext(null);
+//				SearchReplaceManager.FindNext(null);
 			} else {
 				Find find = new Find();
 				find.Run();
@@ -65,34 +65,34 @@ namespace SearchAndReplace
 	{
 		public override void Run()
 		{
-			ITextEditor textArea = SearchReplaceUtilities.GetActiveTextEditor();
-			if (textArea == null) {
-				return;
-			}
-			
-			// Determine what text we should search for.
-			string textToFind;
-			
-			string selectedText = textArea.SelectedText;
-			if (selectedText.Length > 0) {
-				if (Find.IsMultipleLines(selectedText)) {
-					// Locate the nearest word at the selection start.
-					textToFind = textArea.Document.GetWordAt(textArea.SelectionStart);
-				} else {
-					// Search for selected text.
-					textToFind = selectedText;
-				}
-			} else {
-				textToFind = textArea.Document.GetWordAt(textArea.Caret.Offset);
-			}
-			
-			if (textToFind != null && textToFind.Length > 0) {
-				SearchOptions.CurrentFindPattern = textToFind;
-				if (SearchOptions.DocumentIteratorType == DocumentIteratorType.CurrentSelection) {
-					SearchOptions.DocumentIteratorType = DocumentIteratorType.CurrentDocument;
-				}
-				SearchReplaceManager.FindNext(null);
-			}
+//			ITextEditor textArea = SearchReplaceUtilities.GetActiveTextEditor();
+//			if (textArea == null) {
+//				return;
+//			}
+//			
+//			// Determine what text we should search for.
+//			string textToFind;
+//			
+//			string selectedText = textArea.SelectedText;
+//			if (selectedText.Length > 0) {
+//				if (Find.IsMultipleLines(selectedText)) {
+//					// Locate the nearest word at the selection start.
+//					textToFind = textArea.Document.GetWordAt(textArea.SelectionStart);
+//				} else {
+//					// Search for selected text.
+//					textToFind = selectedText;
+//				}
+//			} else {
+//				textToFind = textArea.Document.GetWordAt(textArea.Caret.Offset);
+//			}
+//			
+//			if (textToFind != null && textToFind.Length > 0) {
+//				SearchOptions.CurrentFindPattern = textToFind;
+//				if (SearchOptions.DocumentIteratorType == SearchMode.CurrentSelection) {
+//					SearchOptions.DocumentIteratorType = SearchMode.CurrentDocument;
+//				}
+//				SearchReplaceManager.FindNext(null);
+//			}
 		}
 	}
 	

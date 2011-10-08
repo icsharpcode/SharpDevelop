@@ -2,16 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
 
 namespace SearchAndReplace
 {
-	public enum SearchStrategyType {
-		Normal,
-		RegEx,
-		Wildcard
-	}
-	
 	public static class SearchOptions
 	{
 		const string searchPropertyKey = "SearchAndReplaceProperties";
@@ -141,20 +136,20 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public static DocumentIteratorType DocumentIteratorType {
+		public static SearchTarget DocumentIteratorType {
 			get {
-				return properties.Get("DocumentIteratorType", DocumentIteratorType.CurrentDocument);
+				return properties.Get("DocumentIteratorType", SearchTarget.CurrentDocument);
 			}
 			set {
-				if (!Enum.IsDefined(typeof(DocumentIteratorType), value))
+				if (!Enum.IsDefined(typeof(SearchTarget), value))
 					throw new ArgumentException("invalid enum value");
 				properties.Set("DocumentIteratorType", value);
 			}
 		}
 		
-		public static SearchStrategyType SearchStrategyType {
+		public static SearchMode SearchStrategyType {
 			get {
-				return properties.Get("SearchStrategyType", SearchStrategyType.Normal);
+				return properties.Get("SearchStrategyType", SearchMode.Normal);
 			}
 			set {
 				properties.Set("SearchStrategyType", value);

@@ -18,7 +18,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// Finds all matches for a predicate in the given ITextSource.
 		/// </summary>
 		/// <remarks>This method is thread-safe.</remarks>
-		IEnumerable<ISearchResult> FindAll(ITextSource document);
+		IEnumerable<ISearchResult> FindAll(ITextSource document, ISegment selection = null);
 	}
 	
 	/// <summary>
@@ -32,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.Search
 	/// <summary>
 	/// Defines supported search modes.
 	/// </summary>
-	public enum SearchType
+	public enum SearchMode
 	{
 		/// <summary>
 		/// Standard search
