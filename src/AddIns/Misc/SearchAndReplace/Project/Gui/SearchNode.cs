@@ -58,7 +58,7 @@ namespace SearchAndReplace
 		
 		protected abstract object CreateText();
 		
-		protected void InvalidateText()
+		protected internal void InvalidateText()
 		{
 			cachedText = null;
 			OnPropertyChanged("Text");

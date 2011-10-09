@@ -132,7 +132,7 @@ namespace SearchAndReplace
 				}
 			} else {
 				var results = SearchManager.FindAll(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.DocumentIteratorType, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
-				SearchResultsPad.Instance.ShowSearchResults("Search", results);
+				SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
 			}
 		}
 		

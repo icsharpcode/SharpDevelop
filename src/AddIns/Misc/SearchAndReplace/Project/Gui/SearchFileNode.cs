@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Documents;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Search;
@@ -13,11 +14,12 @@ namespace SearchAndReplace
 {
 	class SearchFileNode : SearchNode
 	{
-		FileName fileName;
+		public FileName FileName { get; private set; }
+
 		
-		public SearchFileNode(FileName fileName, SearchResultNode[] resultNodes)
+		public SearchFileNode(FileName fileName, System.Collections.Generic.List<SearchResultNode> resultNodes)
 		{
-			this.fileName = fileName;
+			this.FileName = fileName;
 			this.Children = resultNodes;
 			this.IsExpanded = true;
 		}
@@ -26,15 +28,15 @@ namespace SearchAndReplace
 		{
 			return new TextBlock {
 				Inlines = {
-					new Bold(new Run(Path.GetFileName(fileName))),
-					new Run(StringParser.Parse(" (${res:MainWindow.Windows.SearchResultPanel.In} ") + Path.GetDirectoryName(fileName) + ")")
+					new Bold(new Run(Path.GetFileName(FileName))),
+					new Run(StringParser.Parse(" (${res:MainWindow.Windows.SearchResultPanel.In} ") + Path.GetDirectoryName(FileName) + ")")
 				}
 			};
 		}
 		
 		public override void ActivateItem()
 		{
-			FileService.OpenFile(fileName);
+			FileService.OpenFile(FileName);
 		}
 	}
 }
