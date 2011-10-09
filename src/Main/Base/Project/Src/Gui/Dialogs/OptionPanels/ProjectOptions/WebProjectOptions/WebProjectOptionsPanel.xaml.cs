@@ -140,10 +140,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				ProjectUrl.Text = string.Empty;
 				data.WebServer = WebServer.None;
 				UseLocalIIS.IsChecked = false;
-			}
-			else {
+			} else {
 				StatusLabel.Text = string.Empty;
-				ProjectUrl.Text = @"http://localhost/" + ProjectService.CurrentProject.Name;
+				ProjectUrl.Text = string.Format("{0}/{1}", CompilableProject.LocalHost, ProjectService.CurrentProject.Name);
 			}
 			
 			data.ProjectUrl = ProjectUrl.Text;
@@ -197,7 +196,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			WebProjectDebugData data = new WebProjectDebugData();
 			data.WebServer = WebServer.IISExpress;
 			data.Port = PortTextBox.Text;
-			data.ProjectUrl = string.Format(@"http://localhost:{0}/" + ProjectService.CurrentProject.Name, PortTextBox.Text);
+			data.ProjectUrl = string.Format(@"{0}:{1}/{2}", CompilableProject.LocalHost, PortTextBox.Text, ProjectService.CurrentProject.Name);
 			CurrentProjectDebugData = data;
 		}
 	}

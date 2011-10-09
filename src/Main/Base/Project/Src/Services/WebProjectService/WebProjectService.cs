@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	public enum IISVersion
 	{
 		None = 0,
-		IISExpress,
+		IISExpress = 4,
 		IIS5 = 5,
 		IIS6,
 		IIS7,
@@ -157,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static bool IsIISInstalled {
 			get {
-				return (int)IISVersion > 4;
+				return (int)IISVersion >= 4;
 			}
 		}
 		
@@ -191,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		/// <param name="virtualDirectoryName">Virtual directory name.</param>
 		/// <param name="virtualDirectoryPath">Physical path.</param>
-		/// <returns></returns>
+		/// <returns>Error string or string null = no errors.</returns>
 		public static string CreateVirtualDirectory(string virtualDirectoryName, string physicalDirectoryPath)
 		{
 			try {
