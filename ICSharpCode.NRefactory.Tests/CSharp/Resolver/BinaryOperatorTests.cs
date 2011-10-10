@@ -83,13 +83,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void StringPlusNull()
 		{
 			ResolveResult left = MakeResult(typeof(string));
-			var rr = (BinaryOperatorResolveResult)resolver.ResolveBinaryOperator(
+			var rr = (OperatorResolveResult)resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Add, left, MakeConstant(null));
 			AssertType(typeof(string), rr);
-			Assert.AreSame(left, rr.Left);
-			Assert.AreEqual("System.String", rr.Right.Type.FullName);
-			Assert.IsTrue(rr.Right.IsCompileTimeConstant);
-			Assert.IsNull(rr.Right.ConstantValue);
+			Assert.AreSame(left, rr.Operands[0]);
+			Assert.AreEqual("System.String", rr.Operands[1].Type.FullName);
+			Assert.IsTrue(rr.Operands[1].IsCompileTimeConstant);
+			Assert.IsNull(rr.Operands[1].ConstantValue);
 		}
 		
 		[Test]

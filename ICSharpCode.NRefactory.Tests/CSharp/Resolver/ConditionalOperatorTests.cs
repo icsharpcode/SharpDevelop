@@ -33,11 +33,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		                  Conversion conditionConv, Conversion trueConv, Conversion falseConv,
 		                  Type expectedResultType)
 		{
-			var corr = (ConditionalOperatorResolveResult)resolver.ResolveConditional(condition, trueExpr, falseExpr);
+			var corr = (OperatorResolveResult)resolver.ResolveConditional(condition, trueExpr, falseExpr);
 			AssertType(expectedResultType, corr);
-			AssertConversion(corr.Condition, condition, conditionConv, "Condition Conversion");
-			AssertConversion(corr.True, trueExpr, trueConv, "True Conversion");
-			AssertConversion(corr.False, falseExpr, falseConv, "False Conversion");
+			AssertConversion(corr.Operands[0], condition, conditionConv, "Condition Conversion");
+			AssertConversion(corr.Operands[1], trueExpr, trueConv, "True Conversion");
+			AssertConversion(corr.Operands[2], falseExpr, falseConv, "False Conversion");
 		}
 		
 		[Test]
@@ -57,14 +57,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ResolveResult condition = MakeResult(typeof(bool));
 			ResolveResult trueExpr = MakeResult(typeof(string));
-			var result = (ConditionalOperatorResolveResult)resolver.ResolveConditional(
+			var result = (OperatorResolveResult)resolver.ResolveConditional(
 				condition, trueExpr, MakeConstant(null));
 			AssertType(typeof(string), result);
-			AssertConversion(result.Condition, condition, Conversion.IdentityConversion, "Condition Conversion");
-			AssertConversion(result.True, trueExpr, Conversion.IdentityConversion, "True Conversion");
-			Assert.IsTrue(result.False.IsCompileTimeConstant);
-			Assert.IsNull(result.False.ConstantValue);
-			Assert.AreEqual("System.String", result.False.Type.FullName);
+			AssertConversion(result.Operands[0], condition, Conversion.IdentityConversion, "Condition Conversion");
+			AssertConversion(result.Operands[1], trueExpr, Conversion.IdentityConversion, "True Conversion");
+			Assert.IsTrue(result.Operands[2].IsCompileTimeConstant);
+			Assert.IsNull(result.Operands[2].ConstantValue);
+			Assert.AreEqual("System.String", result.Operands[2].Type.FullName);
 		}
 		
 		[Test]
@@ -72,14 +72,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ResolveResult condition = MakeResult(typeof(bool));
 			ResolveResult falseExpr = MakeResult(typeof(string));
-			var result = (ConditionalOperatorResolveResult)resolver.ResolveConditional(
+			var result = (OperatorResolveResult)resolver.ResolveConditional(
 				condition, MakeConstant(null), falseExpr);
 			AssertType(typeof(string), result);
-			AssertConversion(result.Condition, condition, Conversion.IdentityConversion, "Condition Conversion");
-			Assert.IsTrue(result.True.IsCompileTimeConstant);
-			Assert.IsNull(result.True.ConstantValue);
-			Assert.AreEqual("System.String", result.True.Type.FullName);
-			AssertConversion(result.False, falseExpr, Conversion.IdentityConversion, "False Conversion");
+			AssertConversion(result.Operands[0], condition, Conversion.IdentityConversion, "Condition Conversion");
+			Assert.IsTrue(result.Operands[1].IsCompileTimeConstant);
+			Assert.IsNull(result.Operands[1].ConstantValue);
+			Assert.AreEqual("System.String", result.Operands[1].Type.FullName);
+			AssertConversion(result.Operands[2], falseExpr, Conversion.IdentityConversion, "False Conversion");
 		}
 		
 		[Test]

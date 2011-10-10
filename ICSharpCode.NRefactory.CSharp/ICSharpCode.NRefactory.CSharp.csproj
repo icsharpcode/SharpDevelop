@@ -294,7 +294,6 @@
     <Compile Include="Resolver\MemberTypeOrNamespaceReference.cs" />
     <Compile Include="Resolver\MethodGroupResolveResult.cs" />
     <Compile Include="Resolver\NodeListResolveVisitorNavigator.cs" />
-    <Compile Include="Resolver\OperatorResolveResult.cs" />
     <Compile Include="Resolver\OverloadResolution.cs" />
     <Compile Include="Resolver\OverloadResolutionErrors.cs" />
     <Compile Include="Resolver\ResolveAtLocation.cs" />

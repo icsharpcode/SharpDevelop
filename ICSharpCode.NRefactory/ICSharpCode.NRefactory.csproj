@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</ProjectGuid>
@@ -88,6 +88,7 @@
     <Compile Include="Semantics\LocalResolveResult.cs" />
     <Compile Include="Semantics\MemberResolveResult.cs" />
     <Compile Include="Semantics\NamespaceResolveResult.cs" />
+    <Compile Include="Semantics\OperatorResolveResult.cs" />
     <Compile Include="Semantics\ResolveResult.cs" />
     <Compile Include="Semantics\TypeOfResolveResult.cs" />
     <Compile Include="Semantics\TypeResolveResult.cs" />

@@ -1059,10 +1059,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ResolveResult leftResult = Resolve(left);
 				ResolveResult rightResult = Resolve(right);
 				ResolveResult rr = resolver.ResolveBinaryOperator(binaryOperatorExpression.Operator, leftResult, rightResult);
-				BinaryOperatorResolveResult borr = rr as BinaryOperatorResolveResult;
-				if (borr != null) {
-					ProcessConversionResult(left, borr.Left as ConversionResolveResult);
-					ProcessConversionResult(right, borr.Right as ConversionResolveResult);
+				OperatorResolveResult orr = rr as OperatorResolveResult;
+				if (orr != null && orr.Operands.Count == 2) {
+					ProcessConversionResult(left, orr.Operands[0] as ConversionResolveResult);
+					ProcessConversionResult(right, orr.Operands[1] as ConversionResolveResult);
 				} else {
 					InvocationResolveResult irr = rr as InvocationResolveResult;
 					if (irr != null && irr.Arguments.Count == 2) {
@@ -1099,11 +1099,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Expression falseExpr = conditionalExpression.FalseExpression;
 				
 				ResolveResult rr = resolver.ResolveConditional(Resolve(condition), Resolve(trueExpr), Resolve(falseExpr));
-				ConditionalOperatorResolveResult corr = rr as ConditionalOperatorResolveResult;
-				if (corr != null) {
-					ProcessConversionResult(condition, corr.Condition as ConversionResolveResult);
-					ProcessConversionResult(trueExpr, corr.True as ConversionResolveResult);
-					ProcessConversionResult(falseExpr, corr.False as ConversionResolveResult);
+				OperatorResolveResult corr = rr as OperatorResolveResult;
+				if (corr != null && corr.Operands.Count == 3) {
+					ProcessConversionResult(condition, corr.Operands[0] as ConversionResolveResult);
+					ProcessConversionResult(trueExpr, corr.Operands[1] as ConversionResolveResult);
+					ProcessConversionResult(falseExpr, corr.Operands[2] as ConversionResolveResult);
 				}
 				return rr;
 			} else {
@@ -1368,9 +1368,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Expression expr = unaryOperatorExpression.Expression;
 				ResolveResult input = Resolve(expr);
 				ResolveResult rr = resolver.ResolveUnaryOperator(unaryOperatorExpression.Operator, input);
-				UnaryOperatorResolveResult uorr = rr as UnaryOperatorResolveResult;
-				if (uorr != null) {
-					ProcessConversionResult(expr, uorr.Input as ConversionResolveResult);
+				OperatorResolveResult uorr = rr as OperatorResolveResult;
+				if (uorr != null && uorr.Operands.Count == 1) {
+					ProcessConversionResult(expr, uorr.Operands[0] as ConversionResolveResult);
 				} else {
 					InvocationResolveResult irr = rr as InvocationResolveResult;
 					if (irr != null && irr.Arguments.Count == 1) {
