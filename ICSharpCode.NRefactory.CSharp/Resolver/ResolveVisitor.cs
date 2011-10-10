@@ -1700,8 +1700,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return body.Parent; }
 			}
 			
-			internal override AstNode Body {
+			internal override AstNode BodyExpression {
 				get { return body; }
+			}
+			
+			public override ResolveResult Body {
+				get {
+					if (body is Expression) {
+						Analyze();
+						if (returnValues.Count == 1)
+							return returnValues[0];
+					}
+					return visitor.voidResult;
+				}
 			}
 			
 			public ExplicitlyTypedLambda(IList<IParameter> parameters, bool isAnonymousMethod, bool isAsync, CSharpResolver storedContext, ResolveVisitor visitor, AstNode body)
@@ -1833,6 +1844,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			readonly List<IParameter> parameters = new List<IParameter>();
 			
 			internal LambdaTypeHypothesis winningHypothesis;
+			internal ResolveResult bodyResult;
 			internal readonly ResolveVisitor parentVisitor;
 			
 			internal override bool IsUndecided {
@@ -1848,7 +1860,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
-			internal override AstNode Body {
+			internal override AstNode BodyExpression {
 				get {
 					if (selectClause != null)
 						return selectClause.Expression;
@@ -1857,11 +1869,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
+			public override ResolveResult Body {
+				get { return bodyResult; }
+			}
+			
 			private ImplicitlyTypedLambda(ResolveVisitor parentVisitor)
 			{
 				this.parentVisitor = parentVisitor;
 				this.storedContext = parentVisitor.resolver.Clone();
 				this.parsedFile = parentVisitor.parsedFile;
+				this.bodyResult = parentVisitor.voidResult;
 			}
 			
 			public ImplicitlyTypedLambda(LambdaExpression lambda, ResolveVisitor parentVisitor)
@@ -2043,7 +2060,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				
-				visitor.AnalyzeLambda(lambda.Body, lambda.IsAsync, out success, out isValidAsVoidMethod, out inferredReturnType, out returnExpressions, out returnValues);
+				visitor.AnalyzeLambda(lambda.BodyExpression, lambda.IsAsync, out success, out isValidAsVoidMethod, out inferredReturnType, out returnExpressions, out returnValues);
 				visitor.resolver.PopBlock();
 				Log.Unindent();
 				Log.WriteLine("Finished analyzing " + ToString());
@@ -2081,6 +2098,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					throw new InvalidOperationException("Trying to merge conflicting hypotheses");
 				
 				lambda.winningHypothesis = this;
+				if (lambda.BodyExpression is Expression && returnValues.Count == 1) {
+					lambda.bodyResult = returnValues[0];
+				}
 				
 				Log.WriteLine("Applying return type {0} to implicitly-typed lambda {1}", returnType, lambda.LambdaExpression);
 				if (lambda.IsAsync)
@@ -2111,7 +2131,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					b.Append(lambda.Parameters[i].Name);
 				}
 				b.Append(") => ");
-				b.Append(lambda.Body.ToString());
+				b.Append(lambda.BodyExpression.ToString());
 				b.Append(']');
 				return b.ToString();
 			}
@@ -2123,7 +2143,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			internal abstract bool IsUndecided { get; }
 			internal abstract AstNode LambdaExpression { get; }
-			internal abstract AstNode Body { get; }
+			internal abstract AstNode BodyExpression { get; }
 			
 			internal abstract void EnforceMerge(ResolveVisitor parentVisitor);
 		}
@@ -2923,6 +2943,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override bool HasParameterList {
 				get { return true; }
+			}
+			
+			public override ResolveResult Body {
+				get { return bodyExpression; }
 			}
 			
 			public override IType GetInferredReturnType(IType[] parameterTypes)
