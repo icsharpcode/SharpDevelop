@@ -366,7 +366,6 @@
     <Compile Include="Xml\TrackedSegmentCollection.cs">
       <DependentUpon>AXmlParser.cs</DependentUpon>
     </Compile>
-    <Compile Include="Xml\ExtensionMethods.cs" />
     <Compile Include="Xml\FilteredCollection.cs" />
     <Compile Include="Xml\IAXmlVisitor.cs" />
     <Compile Include="Xml\MergedCollection.cs" />

@@ -60,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <inheritdoc/>
 		public override IEnumerable<AXmlObject> GetSelfAndAllChildren()
 		{
-			return (new AXmlObject[] { this }).Flatten(
+			return NRefactory.Utils.TreeTraversal.PreOrder(this,
 				delegate(AXmlObject i) {
 					AXmlContainer container = i as AXmlContainer;
 					if (container != null)
