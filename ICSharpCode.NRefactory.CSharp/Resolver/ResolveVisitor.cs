@@ -1033,8 +1033,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				ResolveResult left = Resolve(assignmentExpression.Left);
-				ResolveAndProcessConversion(assignmentExpression.Right, left.Type);
-				return new ResolveResult(left.Type);
+				ResolveResult right = Resolve(assignmentExpression.Right);
+				ProcessConversion(assignmentExpression.Right, right, left.Type);
+				var op = AssignmentExpression.GetLinqNodeType(assignmentExpression.Operator, resolver.CheckForOverflow);
+				return new OperatorResolveResult(left.Type, op, left, right);
 			} else {
 				ScanChildren(assignmentExpression);
 				return null;
