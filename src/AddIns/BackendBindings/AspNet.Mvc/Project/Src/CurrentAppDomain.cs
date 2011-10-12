@@ -2,15 +2,18 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextTemplating;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public interface IMvcTextTemplateHostFactory
+	public class CurrentAppDomain : ITextTemplatingAppDomain
 	{
-		IMvcTextTemplateHost CreateMvcTextTemplateHost(
-			IMvcProject project,
-			IMvcTextTemplateHostAppDomain appDomain);
+		public AppDomain AppDomain {
+			get { return AppDomain.CurrentDomain; }
+		}
+		
+		public void Dispose()
+		{
+		}
 	}
 }

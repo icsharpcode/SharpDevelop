@@ -61,6 +61,8 @@
     <Compile Include="Src\AddMvcViewToProjectViewModel.cs" />
     <Compile Include="Src\BooleanToVisibilityConverter.cs" />
     <Compile Include="Src\CloseDialogBehaviour.cs" />
+    <Compile Include="Src\CurrentAppDomain.cs" />
+    <Compile Include="Src\CurrentAppDomainFactory.cs" />
     <Compile Include="Src\DelegateCommand.cs" />
     <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\IAddMvcItemToProjectView.cs" />
@@ -73,8 +75,10 @@
     <Compile Include="Src\IMvcProject.cs" />
     <Compile Include="Src\IMvcProjectContent.cs" />
     <Compile Include="Src\IMvcTextTemplateHost.cs" />
+    <Compile Include="Src\IMvcTextTemplateHostAppDomain.cs" />
     <Compile Include="Src\IMvcTextTemplateHostFactory.cs" />
     <Compile Include="Src\IMvcTextTemplateRepository.cs" />
+    <Compile Include="Src\IMvcTextTemplateHostAppDomainFactory.cs" />
     <Compile Include="Src\IMvcViewFileGenerator.cs" />
     <Compile Include="Src\ISelectedFolderNodeInProjectsView.cs" />
     <Compile Include="Src\ISelectedMvcFolder.cs" />
@@ -101,9 +105,12 @@
     <Compile Include="Src\MvcProjectContent.cs" />
     <Compile Include="Src\MvcProjectFile.cs" />
     <Compile Include="Src\MvcProjectRazorFile.cs" />
+    <Compile Include="Src\MvcTextTemplateAssemblyResolver.cs" />
     <Compile Include="Src\MvcTextTemplateCriteria.cs" />
     <Compile Include="Src\MvcTextTemplateFileName.cs" />
     <Compile Include="Src\MvcTextTemplateHost.cs" />
+    <Compile Include="Src\MvcTextTemplateHostAppDomain.cs" />
+    <Compile Include="Src\MvcTextTemplateHostAppDomainFactory.cs" />
     <Compile Include="Src\MvcTextTemplateHostFactory.cs" />
     <Compile Include="Src\MvcTextTemplateLanguage.cs" />
     <Compile Include="Src\MvcTextTemplateLanguageConverter.cs" />

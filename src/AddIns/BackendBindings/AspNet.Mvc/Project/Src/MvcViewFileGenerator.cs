@@ -13,14 +13,16 @@ namespace ICSharpCode.AspNet.Mvc
 		public MvcViewFileGenerator()
 			: this(
 				new MvcTextTemplateHostFactory(),
-				new MvcTextTemplateRepository())
+				new MvcTextTemplateRepository(),
+				new MvcTextTemplateHostAppDomainFactory())
 		{
 		}
 		
 		public MvcViewFileGenerator(
 			IMvcTextTemplateHostFactory hostFactory,
-			MvcTextTemplateRepository textTemplateRepository)
-			: base(hostFactory)
+			MvcTextTemplateRepository textTemplateRepository,
+			IMvcTextTemplateHostAppDomainFactory appDomainFactory)
+			: base(hostFactory, appDomainFactory)
 		{
 			this.textTemplateRepository = textTemplateRepository;
 			

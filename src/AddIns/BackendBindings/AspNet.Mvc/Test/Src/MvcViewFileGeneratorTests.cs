@@ -17,6 +17,7 @@ namespace AspNet.Mvc.Tests
 		MvcTextTemplateRepository templateRepository;
 		FakeMvcTextTemplateHostFactory fakeHostFactory;
 		FakeMvcTextTemplateHost fakeHost;
+		FakeMvcTextTemplateAppDomainFactory fakeAppDomainFactory;
 		
 		void CreateTemplateRepository(string templateRootDirectory)
 		{
@@ -33,7 +34,8 @@ namespace AspNet.Mvc.Tests
 		{
 			fakeHostFactory = new FakeMvcTextTemplateHostFactory();
 			fakeHost = fakeHostFactory.FakeMvcTextTemplateHost;
-			generator = new MvcViewFileGenerator(fakeHostFactory, templateRepository);
+			fakeAppDomainFactory = new FakeMvcTextTemplateAppDomainFactory();
+			generator = new MvcViewFileGenerator(fakeHostFactory, templateRepository, fakeAppDomainFactory);
 			projectUsedByGenerator = new FakeMvcProject();
 			generator.Project = projectUsedByGenerator;
 			ProjectPassedToGeneratorIsCSharpProject();
@@ -266,6 +268,30 @@ namespace AspNet.Mvc.Tests
 			string fileName = fakeHost.InputFilePassedToProcessTemplate;
 			
 			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void GenerateFile_CSharpEmptyViewTemplate_AppDomainIsDisposed()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			GenerateFile();
+			bool disposed = fakeAppDomainFactory.FakeAppDomain.IsDisposed;
+			
+			Assert.IsTrue(disposed);
+		}
+		
+		[Test]
+		public void GenerateFile_CSharpEmptyViewTemplate_MvcTextTemplateHostIsCreatedWithAppDomain()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			GenerateFile();
+			
+			IMvcTextTemplateHostAppDomain appDomain = fakeHostFactory.AppDomainPassedToCreateMvcTextTemplateHost;
+			FakeMvcTextTemplateAppDomain expectedAppDomain = fakeAppDomainFactory.FakeAppDomain;
+			
+			Assert.AreEqual(expectedAppDomain, appDomain);
 		}
 	}
 }

@@ -4,16 +4,21 @@
 using System;
 using System.CodeDom.Compiler;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.TextTemplating;
 
 namespace ICSharpCode.AspNet.Mvc
 {
 	public abstract class MvcFileGenerator
 	{
 		IMvcTextTemplateHostFactory hostFactory;
+		IMvcTextTemplateHostAppDomainFactory appDomainFactory;
 		
-		public MvcFileGenerator(IMvcTextTemplateHostFactory hostFactory)
+		public MvcFileGenerator(
+			IMvcTextTemplateHostFactory hostFactory,
+			IMvcTextTemplateHostAppDomainFactory appDomainFactory)
 		{
 			this.hostFactory = hostFactory;
+			this.appDomainFactory = appDomainFactory;
 		}
 		
 		public MvcTextTemplateLanguage TemplateLanguage { get; set; }
@@ -21,14 +26,21 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public void GenerateFile(MvcFileName fileName)
 		{
-			using (IMvcTextTemplateHost host = CreateHost()) {
-				GenerateFile(host, fileName);
+			using (IMvcTextTemplateHostAppDomain appDomain = CreateAppDomain()) {
+				using (IMvcTextTemplateHost host = CreateHost(appDomain)) {
+					GenerateFile(host, fileName);
+				}
 			}
 		} 
 		
-		IMvcTextTemplateHost CreateHost()
+		IMvcTextTemplateHostAppDomain CreateAppDomain()
 		{
-			return hostFactory.CreateMvcTextTemplateHost(Project);
+			return appDomainFactory.CreateAppDomain();
+		}
+		
+		IMvcTextTemplateHost CreateHost(IMvcTextTemplateHostAppDomain appDomain)
+		{
+			return hostFactory.CreateMvcTextTemplateHost(Project, appDomain);
 		}
 		
 		void GenerateFile(IMvcTextTemplateHost host, MvcFileName fileName)

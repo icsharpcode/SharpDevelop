@@ -10,11 +10,13 @@ namespace AspNet.Mvc.Tests.Helpers
 	public class FakeMvcTextTemplateHostFactory : IMvcTextTemplateHostFactory
 	{
 		public IMvcProject ProjectPassedToCreateMvcTextTemplateHost;
+		public IMvcTextTemplateHostAppDomain AppDomainPassedToCreateMvcTextTemplateHost;
 		public FakeMvcTextTemplateHost FakeMvcTextTemplateHost = new FakeMvcTextTemplateHost();
 		
-		public IMvcTextTemplateHost CreateMvcTextTemplateHost(IMvcProject project)
+		public IMvcTextTemplateHost CreateMvcTextTemplateHost(IMvcProject project, IMvcTextTemplateHostAppDomain appDomain)
 		{
 			ProjectPassedToCreateMvcTextTemplateHost = project;
+			AppDomainPassedToCreateMvcTextTemplateHost = appDomain;
 			return FakeMvcTextTemplateHost;
 		}
 	}

@@ -62,6 +62,8 @@
     <Compile Include="Helpers\FakeMvcParserService.cs" />
     <Compile Include="Helpers\FakeMvcProject.cs" />
     <Compile Include="Helpers\FakeMvcProjectContent.cs" />
+    <Compile Include="Helpers\FakeMvcTextTemplateAppDomain.cs" />
+    <Compile Include="Helpers\FakeMvcTextTemplateAppDomainFactory.cs" />
     <Compile Include="Helpers\FakeMvcTextTemplateHost.cs" />
     <Compile Include="Helpers\FakeMvcTextTemplateHostFactory.cs" />
     <Compile Include="Helpers\FakeMvcTextTemplateRepository.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="Src\MvcModelClassViewModelTests.cs" />
     <Compile Include="Src\MvcProjectRazorFileTests.cs" />
     <Compile Include="Src\MvcProjectTests.cs" />
+    <Compile Include="Src\MvcTextTemplateAssemblyResolverTests.cs" />
     <Compile Include="Src\MvcTextTemplateHostTests.cs" />
     <Compile Include="Src\MvcTextTemplateRepositoryTests.cs" />
     <Compile Include="Src\MvcViewFileNameTests.cs" />
