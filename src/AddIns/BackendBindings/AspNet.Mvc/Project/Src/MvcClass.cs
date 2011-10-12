@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
@@ -38,6 +39,21 @@ namespace ICSharpCode.AspNet.Mvc
 				return baseClass.FullyQualifiedName;
 			}
 			return String.Empty;
+		}
+		
+		public string AssemblyLocation {
+			get { return GetAssemblyLocation(); }
+		}
+		
+		string GetAssemblyLocation()
+		{
+			IProject project = GetProject();
+			return project.OutputAssemblyFullPath;
+		}
+		
+		IProject GetProject()
+		{
+			return c.ProjectContent.Project as IProject;
 		}
 	}
 }

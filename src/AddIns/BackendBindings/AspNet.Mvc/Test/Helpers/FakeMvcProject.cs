@@ -17,6 +17,7 @@ namespace AspNet.Mvc.Tests.Helpers
 		}
 		
 		public string RootNamespace { get; set; }
+		public string OutputAssemblyFullPath { get; set; }
 
 		public bool SaveCalled;
 		
@@ -44,16 +45,18 @@ namespace AspNet.Mvc.Tests.Helpers
 		
 		public List<FakeMvcClass> ModelClasses = new List<FakeMvcClass>();
 		
-		public void AddModelClassToProject(string @namespace, string name)
+		public FakeMvcClass AddModelClassToProject(string @namespace, string name)
 		{
 			var fakeClass = new FakeMvcClass(@namespace, name);
 			ModelClasses.Add(fakeClass);
+			return fakeClass;
 		}
 		
-		public void AddModelClassToProject(string fullyQualifiedName)
+		public FakeMvcClass AddModelClassToProject(string fullyQualifiedName)
 		{
 			var fakeClass = new FakeMvcClass(fullyQualifiedName);
 			ModelClasses.Add(fakeClass);
+			return fakeClass;
 		}
 		
 		public int GetModelClassesCallCount;

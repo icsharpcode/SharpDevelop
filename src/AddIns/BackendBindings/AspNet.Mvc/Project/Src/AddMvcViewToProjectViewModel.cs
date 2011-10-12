@@ -240,6 +240,7 @@ namespace ICSharpCode.AspNet.Mvc
 			viewGenerator.IsContentPage	= IsContentPage;
 			viewGenerator.MasterPageFile = GetMasterPageFile();
 			viewGenerator.ModelClassName = GetModelClassName();
+			viewGenerator.ModelClassAssemblyLocation = GetModelClassAssemblyLocation();
 			viewGenerator.PrimaryContentPlaceHolderId = GetPrimaryContentPlaceHolderId();
 			viewGenerator.Project = selectedViewFolder.Project;
 			viewGenerator.Template = selectedViewTemplate;
@@ -260,6 +261,16 @@ namespace ICSharpCode.AspNet.Mvc
 					return SelectedModelClass.FullName;
 				}
 				return ModelClassName.Trim();
+			}
+			return String.Empty;
+		}
+		
+		string GetModelClassAssemblyLocation()
+		{
+			if (IsStronglyTypedView) {
+				if (SelectedModelClass != null) {
+					return SelectedModelClass.AssemblyLocation;
+				}
 			}
 			return String.Empty;
 		}

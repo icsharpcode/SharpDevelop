@@ -96,14 +96,14 @@ namespace AspNet.Mvc.Tests
 			viewModel.SelectedViewEngine = GetViewEngineFromViewModel("Razor");
 		}
 		
-		void AddModelClassToProject(string ns, string name)
+		FakeMvcClass AddModelClassToProject(string ns, string name)
 		{
-			fakeProject.AddModelClassToProject(ns, name);
+			return fakeProject.AddModelClassToProject(ns, name);
 		}
 		
-		void AddModelClassToProject(string fullyQualifiedClassName)
+		FakeMvcClass AddModelClassToProject(string fullyQualifiedClassName)
 		{
-			fakeProject.AddModelClassToProject(fullyQualifiedClassName);
+			return fakeProject.AddModelClassToProject(fullyQualifiedClassName);
 		}
 		
 		[Test]
@@ -1387,6 +1387,39 @@ namespace AspNet.Mvc.Tests
 			MvcViewTextTemplate template = viewModel.SelectedViewTemplate;
 			
 			Assert.AreEqual(emptyTemplate, template);
+		}
+		
+		[Test]
+		public void AddMvcView_ModelClassSelected_ModelClassAssemblyLocationIsSetInGenerator()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			FakeMvcClass fakeClass = AddModelClassToProject("ICSharpCode.MyProject.MyModel");
+			fakeClass.AssemblyLocation = @"d:\projects\MyProject\bin\MyProject.dll";
+			viewModel.IsStronglyTypedView = true;
+			viewModel.SelectedModelClass = viewModel.ModelClasses.First();
+			viewModel.AddMvcView();
+			
+			string assemblyLocation = fakeViewGenerator.ModelClassAssemblyLocation;
+			
+			Assert.AreEqual(@"d:\projects\MyProject\bin\MyProject.dll", assemblyLocation);
+		}
+		
+		[Test]
+		public void AddMvcView_ModelClassSelectedAndThenIsStrongTypedViewIsSetToFalse_ModelClassAssemblyLocationIsNotSetInGenerator()
+		{
+			CreateViewModel();
+			CSharpProjectSelected();
+			FakeMvcClass fakeClass = AddModelClassToProject("ICSharpCode.MyProject.MyModel");
+			fakeClass.AssemblyLocation = @"d:\projects\MyProject\bin\MyProject.dll";
+			viewModel.IsStronglyTypedView = true;
+			viewModel.SelectedModelClass = viewModel.ModelClasses.First();
+			viewModel.IsStronglyTypedView = false;
+			viewModel.AddMvcView();
+			
+			string assemblyLocation = fakeViewGenerator.ModelClassAssemblyLocation;
+			
+			Assert.AreEqual(String.Empty, assemblyLocation);
 		}
 	}
 }

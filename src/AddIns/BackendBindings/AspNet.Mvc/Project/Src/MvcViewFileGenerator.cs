@@ -27,12 +27,14 @@ namespace ICSharpCode.AspNet.Mvc
 			this.textTemplateRepository = textTemplateRepository;
 			
 			ModelClassName = String.Empty;
+			ModelClassAssemblyLocation = String.Empty;
 			MasterPageFile = String.Empty;
 			PrimaryContentPlaceHolderId = String.Empty;
 			Template = new MvcViewTextTemplate();
 		}
 		
 		public string ModelClassName { get; set; }
+		public string ModelClassAssemblyLocation { get; set; }
 		public bool IsContentPage { get; set; }
 		public string MasterPageFile { get; set; }
 		public string PrimaryContentPlaceHolderId { get; set; }
@@ -49,6 +51,7 @@ namespace ICSharpCode.AspNet.Mvc
 			host.MasterPageFile = MasterPageFile;
 			host.PrimaryContentPlaceHolderID = PrimaryContentPlaceHolderId;
 			host.ViewDataTypeName = ModelClassName;
+			host.ViewDataTypeAssemblyLocation = ModelClassAssemblyLocation;
 			
 			var viewFileName = fileName as MvcViewFileName;
 			host.IsPartialView = viewFileName.IsPartialView;

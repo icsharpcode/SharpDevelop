@@ -76,7 +76,9 @@
     <Compile Include="Helpers\MvcViewTextTemplateCollectionAssert.cs" />
     <Compile Include="Helpers\TestableAddMvcControllerToProjectCommand.cs" />
     <Compile Include="Helpers\TestableAddMvcViewToProjectCommand.cs" />
+    <Compile Include="Helpers\TestableMvcTextTemplateHost.cs" />
     <Compile Include="Helpers\TestableProject.cs" />
+    <Compile Include="Helpers\TestableProjectContent.cs" />
     <Compile Include="Helpers\TestableSelectedMvcViewFolder.cs" />
     <Compile Include="Src\AddMvcControllerToProjectCommandTests.cs" />
     <Compile Include="Src\AddMvcControllerToProjectViewModelTests.cs" />

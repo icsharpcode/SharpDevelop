@@ -23,5 +23,6 @@ namespace AspNet.Mvc.Tests.Helpers
 		public string Name { get; set; }
 		public string Namespace { get; set; }
 		public string BaseClassFullName { get; set; }
+		public string AssemblyLocation { get; set; }
 	}
 }

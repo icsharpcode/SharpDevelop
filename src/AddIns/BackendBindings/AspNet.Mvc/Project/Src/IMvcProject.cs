@@ -12,6 +12,7 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		IProject Project { get; }
 		string RootNamespace { get; }
+		string OutputAssemblyFullPath { get; }
 		
 		void Save();
 		MvcTextTemplateLanguage GetTemplateLanguage();

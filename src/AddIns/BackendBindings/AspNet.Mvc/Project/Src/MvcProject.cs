@@ -28,6 +28,10 @@ namespace ICSharpCode.AspNet.Mvc
 			get { return Project.RootNamespace; }
 		}
 		
+		public string OutputAssemblyFullPath {
+			get { return Project.OutputAssemblyFullPath; }
+		}
+		
 		public void Save()
 		{
 			Project.Save();

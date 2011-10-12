@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
 using NUnit.Framework;
 
@@ -10,11 +11,11 @@ namespace AspNet.Mvc.Tests
 	[TestFixture]
 	public class MvcTextTemplateHostTests
 	{
-		MvcTextTemplateHost host;
+		TestableMvcTextTemplateHost host;
 		
 		void CreateHost()
 		{
-			host = new MvcTextTemplateHost(null, null, null);
+			host = new TestableMvcTextTemplateHost();
 		}
 		
 		[Test]
@@ -98,6 +99,16 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
+		public void ViewDataTypeAssemblyLocation_SetToNull_ReturnsEmptyString()
+		{
+			CreateHost();
+			host.ViewDataTypeAssemblyLocation = null;
+			string location = host.ViewDataTypeAssemblyLocation;
+			
+			Assert.AreEqual(String.Empty, location);
+		}
+		
+		[Test]
 		public void MasterPageFile_SetToNull_ReturnsEmptyString()
 		{
 			CreateHost();
@@ -115,6 +126,51 @@ namespace AspNet.Mvc.Tests
 			string id = host.PrimaryContentPlaceHolderID;
 			
 			Assert.AreEqual(String.Empty, id);
+		}
+		
+		[Test]
+		public void ViewDataType_ViewDataTypeAssemblyLocationIsSet_ViewDataTypeAssemblyLocationUsedToLoadAssembly()
+		{
+			CreateHost();
+			host.AssemblyToReturnFromLoadAssemblyFrom = typeof(String).Assembly;
+			string expectedFileName = @"d:\test\bin\test.dll";
+			host.ViewDataTypeAssemblyLocation = expectedFileName;
+			host.ViewDataTypeName = "System.String";
+			
+			Type type = host.ViewDataType;
+			
+			string fileName = host.FileNamePassedToLoadAssemblyFrom;
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void ViewDataType_ViewDataTypeNameIsSystemString_StringTypeReturned()
+		{
+			CreateHost();
+			host.AssemblyToReturnFromLoadAssemblyFrom = typeof(String).Assembly;
+			host.ViewDataTypeName = "System.String";
+			
+			Type type = host.ViewDataType;
+			
+			Assert.AreEqual("System.String", type.FullName);
+		}
+		
+		[Test]
+		public void ViewDataType_CalledTwice_AssemblyLoadedOnlyOnce()
+		{
+			CreateHost();
+			host.AssemblyToReturnFromLoadAssemblyFrom = typeof(String).Assembly;
+			host.ViewDataTypeName = "System.String";
+			
+			host.ViewDataTypeAssemblyLocation = @"d:\test\bin\test.dll";
+			
+			Type type = host.ViewDataType;
+			
+			host.FileNamePassedToLoadAssemblyFrom = null;
+			type = host.ViewDataType;
+			
+			Assert.IsNull(host.FileNamePassedToLoadAssemblyFrom);
 		}
 	}
 }

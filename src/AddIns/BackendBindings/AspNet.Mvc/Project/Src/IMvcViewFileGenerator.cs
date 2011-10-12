@@ -10,6 +10,7 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		IMvcProject Project { get; set; }
 		string ModelClassName { get; set; }
+		string ModelClassAssemblyLocation { get; set; }
 		bool IsContentPage { get; set; }
 		string MasterPageFile { get; set; }
 		string PrimaryContentPlaceHolderId { get; set; }

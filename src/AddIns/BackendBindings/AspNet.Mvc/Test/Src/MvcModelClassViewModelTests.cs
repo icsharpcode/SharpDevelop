@@ -61,5 +61,14 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual("MyClass", text);
 		}
+		
+		[Test]
+		public void AssemblyLocation_ClassHasAssemblyLocation_ReturnsClassAssemblyLocation()
+		{
+			CreateViewModel("Test.MyClass");
+			fakeClass.AssemblyLocation = "TestAssemblyLocation";
+			
+			Assert.AreEqual("TestAssemblyLocation", viewModel.AssemblyLocation);
+		}
 	}
 }

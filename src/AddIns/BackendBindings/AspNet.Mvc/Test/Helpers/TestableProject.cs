@@ -12,6 +12,7 @@ namespace AspNet.Mvc.Tests.Helpers
 	public class TestableProject : CompilableProject
 	{
 		string language = "C#";
+		string outputAssemblyFullPath = String.Empty;
 		
 		public TestableProject(ProjectCreateInformation createInfo)
 			: base(createInfo)
@@ -62,6 +63,15 @@ namespace AspNet.Mvc.Tests.Helpers
 			projectItem.FileName = fileName;
 			ProjectService.AddProjectItem(this, projectItem);
 			return projectItem;
+		}
+		
+		public override string OutputAssemblyFullPath {
+			get { return outputAssemblyFullPath; }
+		}
+		
+		public void SetOutputAssemblyFullPath(string path)
+		{
+			outputAssemblyFullPath = path;
 		}
 	}
 }

@@ -71,5 +71,17 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual("ICSharpCode.BaseClass", name);
 		}
+		
+		[Test]
+		public void AssemblyLocation_ProjectHasOutputAssemblyPath_ReturnsProjectOutputAssemblyPath()
+		{
+			CreateClass("ICSharpCode.TestClass");
+			string expectedOutputAssemblyLocation = @"d:\test\bin\debug\test.dll";
+			fakeClass.TestableProject.SetOutputAssemblyFullPath(expectedOutputAssemblyLocation);
+			
+			string assemblyLocation = mvcClass.AssemblyLocation;
+			
+			Assert.AreEqual(expectedOutputAssemblyLocation, assemblyLocation);
+		}
 	}
 }

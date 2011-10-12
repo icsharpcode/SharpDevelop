@@ -15,6 +15,7 @@ namespace ICSharpCode.AspNet.Mvc
 		string ViewName { get; set; }
 		bool IsPartialView { get; set; }
 		string ViewDataTypeName { get; set; }
+		string ViewDataTypeAssemblyLocation { get; set; }
 		bool IsContentPage { get; set; }
 		string MasterPageFile { get; set; }
 		string PrimaryContentPlaceHolderID { get; set; }

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Reflection;
 using ICSharpCode.TextTemplating;
 
 namespace ICSharpCode.AspNet.Mvc
@@ -10,6 +11,8 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		string viewName = String.Empty;
 		string viewDataTypeName = String.Empty;
+		string viewDataTypeAssemblyLocation = String.Empty;
+		Type viewDataType;
 		string @namespace = String.Empty;
 		string masterPageFile = String.Empty;
 		string primaryContentPlaceHolderID = String.Empty;
@@ -52,6 +55,31 @@ namespace ICSharpCode.AspNet.Mvc
 		public string ViewDataTypeName {
 			get { return viewDataTypeName; }
 			set { viewDataTypeName = UseEmptyStringIfNull(value); }
+		}
+		
+		public string ViewDataTypeAssemblyLocation {
+			get { return viewDataTypeAssemblyLocation; }
+			set { viewDataTypeAssemblyLocation = UseEmptyStringIfNull(value); }
+		}
+		
+		public Type ViewDataType {
+			get {
+				if (viewDataType == null) {
+					viewDataType = GetViewDataType();
+				}
+				return viewDataType;
+			}
+		}
+		
+		Type GetViewDataType()
+		{
+			Assembly assembly = LoadAssemblyFrom(ViewDataTypeAssemblyLocation);
+			return assembly.GetType(ViewDataTypeName);
+		}
+		
+		protected virtual Assembly LoadAssemblyFrom(string fileName)
+		{
+			return Assembly.LoadFrom(fileName);
 		}
 		
 		public string ControllerName {

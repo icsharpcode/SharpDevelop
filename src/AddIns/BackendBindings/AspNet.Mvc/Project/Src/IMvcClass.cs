@@ -11,5 +11,6 @@ namespace ICSharpCode.AspNet.Mvc
 		string Name { get; }
 		string Namespace { get; }
 		string BaseClassFullName { get; }
+		string AssemblyLocation { get; }
 	}
 }

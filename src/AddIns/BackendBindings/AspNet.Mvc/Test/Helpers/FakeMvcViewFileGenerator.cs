@@ -11,6 +11,7 @@ namespace AspNet.Mvc.Tests.Helpers
 	{
 		public IMvcProject Project { get; set; }
 		public string ModelClassName { get; set; }
+		public string ModelClassAssemblyLocation { get; set; }
 		public bool IsContentPage { get; set; }
 		public string MasterPageFile { get; set; }
 		public string PrimaryContentPlaceHolderId { get; set; }

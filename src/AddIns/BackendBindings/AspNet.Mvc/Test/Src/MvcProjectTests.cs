@@ -256,5 +256,17 @@ namespace AspNet.Mvc.Tests
 			
 			MvcProjectFileAssert.AreEqual(expectedFileName, fileName);
 		}
+		
+		[Test]
+		public void OutputAssemblyFullPath_ProjectOutputAssemblyIsSet_ReturnsProjectOutputAssemblyFullPath()
+		{
+			CreateProject(@"d:\projects\AspNetMvcProject\MyProject.csproj");
+			string expectedAssemblyPath = @"d:\projects\AspNetMvcProject\bin\MyProject.dll";
+			testableProject.SetOutputAssemblyFullPath(expectedAssemblyPath);
+			
+			string assemblyPath = project.OutputAssemblyFullPath;
+			
+			Assert.AreEqual(expectedAssemblyPath, assemblyPath);
+		}
 	}
 }

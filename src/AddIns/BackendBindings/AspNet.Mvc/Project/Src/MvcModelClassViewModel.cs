@@ -38,5 +38,9 @@ namespace ICSharpCode.AspNet.Mvc
 		public string FullName {
 			get { return mvcClass.FullName; }
 		}
+		
+		public string AssemblyLocation {
+			get { return mvcClass.AssemblyLocation; }
+		}
 	}
 }

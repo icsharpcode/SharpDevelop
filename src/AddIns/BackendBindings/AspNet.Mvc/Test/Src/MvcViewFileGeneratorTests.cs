@@ -293,5 +293,27 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(expectedAppDomain, appDomain);
 		}
+		
+		[Test]
+		public void GenerateFile_ModelClassAssemblyLocationIsSet_MvcTextTemplateHostHasViewDataTypeAssemblyLocationSetToModelClassAssemblyLocation()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			generator.ModelClassAssemblyLocation = @"d:\projects\MyProject\bin\debug\MyProject.dll";
+			GenerateFile();
+			
+			string assemblyLocation = fakeHost.ViewDataTypeAssemblyLocation;
+			
+			Assert.AreEqual(@"d:\projects\MyProject\bin\debug\MyProject.dll", assemblyLocation);
+		}
+		
+		[Test]
+		public void ModelClassAssemblyLocation_DefaultValue_ReturnsEmptyString()
+		{
+			CreateGenerator();
+			string assemblyLocation = generator.ModelClassAssemblyLocation;
+			
+			Assert.AreEqual(String.Empty, assemblyLocation);
+		}
 	}
 }
