@@ -15,6 +15,7 @@ namespace ICSharpCode.AspNet.Mvc
 		string OutputAssemblyFullPath { get; }
 		
 		void Save();
+		bool IsVisualBasic();
 		MvcTextTemplateLanguage GetTemplateLanguage();
 		IEnumerable<IMvcClass> GetModelClasses();
 		

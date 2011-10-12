@@ -38,6 +38,11 @@ namespace AspNet.Mvc.Tests.Helpers
 			TemplateLanguageToReturnFromGetTemplateLanguage = MvcTextTemplateLanguage.VisualBasic;
 		}
 		
+		public bool IsVisualBasic()
+		{
+			return TemplateLanguageToReturnFromGetTemplateLanguage == MvcTextTemplateLanguage.VisualBasic; 
+		}
+		
 		public MvcTextTemplateLanguage GetTemplateLanguage()
 		{
 			return TemplateLanguageToReturnFromGetTemplateLanguage;

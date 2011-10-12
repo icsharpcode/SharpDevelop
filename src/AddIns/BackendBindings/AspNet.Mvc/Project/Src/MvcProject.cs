@@ -24,6 +24,11 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public IProject Project { get; private set; }
 		
+		public bool IsVisualBasic()
+		{
+			return GetTemplateLanguage().IsVisualBasic();
+		}
+		
 		public string RootNamespace {
 			get { return Project.RootNamespace; }
 		}

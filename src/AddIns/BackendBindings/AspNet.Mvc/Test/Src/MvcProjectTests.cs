@@ -268,5 +268,27 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.AreEqual(expectedAssemblyPath, assemblyPath);
 		}
+		
+		[Test]
+		public void IsVisualBasic_ProjectIsVisualBasic_ReturnsTrue()
+		{
+			CreateProject();
+			testableProject.SetLanguage(MvcTextTemplateLanguageConverter.VisualBasicProjectLanguage);
+			
+			bool result = project.IsVisualBasic();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void IsVisualBasic_ProjectIsCSharp_ReturnsFalse()
+		{
+			CreateProject();
+			testableProject.SetLanguage("C#");
+			
+			bool result = project.IsVisualBasic();
+			
+			Assert.IsFalse(result);
+		}
 	}
 }

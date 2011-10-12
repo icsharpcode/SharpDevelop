@@ -82,7 +82,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		bool IsVisualBasicClassFromMyNamespace()
 		{
-			if (project.GetTemplateLanguage().IsVisualBasic()) {
+			if (project.IsVisualBasic()) {
 				return FullName.Contains(".My.");
 			}
 			return false;
