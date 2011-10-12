@@ -13,12 +13,42 @@ namespace AspNet.Mvc.Tests
 	public class MvcClassTests
 	{
 		MvcClass mvcClass;
+		FakeMvcProject fakeProject;
 		FakeClass fakeClass;
+		
+		void CreateCSharpProject()
+		{
+			fakeProject = new FakeMvcProject();
+			fakeProject.SetCSharpAsTemplateLanguage();
+		}
+		
+		void CreateVisualBasicProject()
+		{
+			fakeProject = new FakeMvcProject();
+			fakeProject.SetVisualBasicAsTemplateLanguage();
+		}
 		
 		void CreateClass(string name)
 		{
+			CreateClassWithCSharpProject(name);
+		}
+		
+		void CreateClassWithCSharpProject(string name)
+		{
+			CreateCSharpProject();
+			CreateClass(name, fakeProject);
+		}
+		
+		void CreateClass(string name, FakeMvcProject fakeProject)
+		{
 			fakeClass = new FakeClass(name);
-			mvcClass = new MvcClass(fakeClass);
+			mvcClass = new MvcClass(fakeClass, fakeProject);
+		}
+		
+		void CreateClassWithVisualBasicProject(string name)
+		{
+			CreateVisualBasicProject();
+			CreateClass(name, fakeProject);
 		}
 		
 		void AddBaseClass(string name)
@@ -82,6 +112,64 @@ namespace AspNet.Mvc.Tests
 			string assemblyLocation = mvcClass.AssemblyLocation;
 			
 			Assert.AreEqual(expectedOutputAssemblyLocation, assemblyLocation);
+		}
+		
+		[Test]
+		public void IsModelClass_ClassNameIsTest_ReturnsTrue()
+		{
+			CreateClass("Test");
+			bool result = mvcClass.IsModelClass();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void IsModelClass_BaseClassIsMvcController_ReturnsFalse()
+		{
+			CreateClass("ICSharpCode.FooController");
+			AddBaseClass("System.Web.Mvc.Controller");
+			
+			bool result = mvcClass.IsModelClass();
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsModelClass_HttpApplicationDerivedClass_ReturnsFalse()
+		{
+			CreateClass("ICSharpCode.MvcApplication");
+			AddBaseClass("System.Web.HttpApplication");
+			
+			bool result = mvcClass.IsModelClass();
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsModelClass_VisualBasicProjectAndClassIsVisualBasicMyApplication_ReturnsFalse()
+		{
+			CreateClassWithVisualBasicProject("VbApp.My.MyApplication");
+			bool result = mvcClass.IsModelClass();
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsModelClass_VisualBasicProjectAndClassIsVisualBasicMySettings_ReturnsFalse()
+		{
+			CreateClassWithVisualBasicProject("TestVisualBasicApp.My.MySettings");
+			bool result = mvcClass.IsModelClass();
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsModelClass_CSharpProjectAndClassIsMySettings_ReturnsFalse()
+		{
+			CreateClassWithCSharpProject("TestApp.My.MySettings");
+			bool result = mvcClass.IsModelClass();
+			
+			Assert.IsTrue(result);
 		}
 	}
 }

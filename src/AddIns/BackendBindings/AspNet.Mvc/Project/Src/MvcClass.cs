@@ -10,10 +10,12 @@ namespace ICSharpCode.AspNet.Mvc
 	public class MvcClass : IMvcClass
 	{
 		IClass c;
+		IMvcProject project;
 		
-		public MvcClass(IClass c)
+		public MvcClass(IClass c, IMvcProject project)
 		{
 			this.c = c;
+			this.project = project;
 		}
 		
 		public string FullName {
@@ -54,6 +56,36 @@ namespace ICSharpCode.AspNet.Mvc
 		IProject GetProject()
 		{
 			return c.ProjectContent.Project as IProject;
+		}
+		
+		public bool IsModelClass()
+		{
+			if (IsBaseClassMvcController()) {
+				return false;
+			} else if (IsHttpApplication()) {
+				return false;
+			} else if (IsVisualBasicClassFromMyNamespace()) {
+				return false;
+			}
+			return true;
+		}
+		
+		bool IsHttpApplication()
+		{
+			return BaseClassFullName == "System.Web.HttpApplication";
+		}
+		
+		bool IsBaseClassMvcController()
+		{
+			return BaseClassFullName == "System.Web.Mvc.Controller";
+		}
+		
+		bool IsVisualBasicClassFromMyNamespace()
+		{
+			if (project.GetTemplateLanguage().IsVisualBasic()) {
+				return FullName.Contains(".My.");
+			}
+			return false;
 		}
 	}
 }

@@ -12,7 +12,7 @@ namespace ICSharpCode.AspNet.Mvc
 		public IMvcProjectContent GetProjectContent(IMvcProject project)
 		{
 			IProjectContent projectContent = GetProjectContentFromParser(project);
-			return new MvcProjectContent(projectContent);
+			return new MvcProjectContent(projectContent, project);
 		}
 		
 		IProjectContent GetProjectContentFromParser(IMvcProject mvcProject)

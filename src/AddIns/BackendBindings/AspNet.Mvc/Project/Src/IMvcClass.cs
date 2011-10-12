@@ -12,5 +12,7 @@ namespace ICSharpCode.AspNet.Mvc
 		string Namespace { get; }
 		string BaseClassFullName { get; }
 		string AssemblyLocation { get; }
+		
+		bool IsModelClass();
 	}
 }

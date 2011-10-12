@@ -89,58 +89,14 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void GetModelClasses_ControllerClassInProject_ControllerClassNotReturnedInModelClasses()
+		public void GetModelClasses_OneClassInProjectIsNotModelClass_ReturnNoModelClasses()
 		{
 			CreateLocator();
-			AddModelClassWithBaseClass("System.Web.Mvc.Controller", "ICSharpCode.FooController");
-			GetModelClasses();
+			FakeMvcClass fakeClass = AddModelClass("MyNamespace.MyClass");
+			fakeClass.SetIsNotModelClass();
 			int count = GetModelClassCount();
-			
-			Assert.AreEqual(0, count);
-		}
-		
-		[Test]
-		public void GetModelClasses_HttpApplicationDerivedClassInProject_ClassNotReturnedInModelClasses()
-		{
-			CreateLocator();
-			AddModelClassWithBaseClass("System.Web.HttpApplication", "ICSharpCode.MvcApplication");
-			GetModelClasses();
-			int count = GetModelClassCount();
-			
-			Assert.AreEqual(0, count);
-		}
-		
-		[Test]
-		public void GetModelClasses_VisualBasicProjectAndMyApplicationClassInProject_ClassNotReturnedInModelClasses()
-		{
-			CreateLocator();
-			UseVisualBasicProject();
-			AddModelClass("VbApp.My.MyApplication");
-			int count = GetModelClassCount();
-			
-			Assert.AreEqual(0, count);	
-		}
-		
-		[Test]
-		public void GetModelClasses_VisualBasicProjectAndMySettingsClassInProject_ClassNotReturnedInModelClasses()
-		{
-			CreateLocator();
-			UseVisualBasicProject();
-			AddModelClass("TestVisualBasicApp.My.MySettings");
-			int count = GetModelClassCount();
-			
-			Assert.AreEqual(0, count);	
-		}
-		
-		[Test]
-		public void GetModelClasses_CSharpProjectAndMyApplicationClassInProject_ClassIsReturnedInModelClasses()
-		{
-			CreateLocator();
-			UseCSharpProject();
-			AddModelClass("TestApp.My.MySettings");
-			string modelClassName = GetFirstModelClassName();
 				
-			Assert.AreEqual("TestApp.My.MySettings", modelClassName);
+			Assert.AreEqual(0, count);
 		}
 	}
 }

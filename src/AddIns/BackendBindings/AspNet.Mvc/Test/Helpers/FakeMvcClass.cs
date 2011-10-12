@@ -8,6 +8,8 @@ namespace AspNet.Mvc.Tests.Helpers
 {
 	public class FakeMvcClass : IMvcClass
 	{
+		bool isModelClass = true;
+		
 		public FakeMvcClass(string fullName)
 		{
 			this.FullName = fullName;
@@ -24,5 +26,15 @@ namespace AspNet.Mvc.Tests.Helpers
 		public string Namespace { get; set; }
 		public string BaseClassFullName { get; set; }
 		public string AssemblyLocation { get; set; }
+		
+		public void SetIsNotModelClass()
+		{
+			isModelClass = false;	
+		}
+		
+		public bool IsModelClass()
+		{
+			return isModelClass;
+		}
 	}
 }
