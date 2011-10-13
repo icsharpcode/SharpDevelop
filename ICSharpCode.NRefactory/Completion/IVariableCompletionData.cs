@@ -1,5 +1,5 @@
 // 
-// ICompletionDataFactory.cs
+// IVariableCompletionData.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -28,22 +28,11 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.Completion
 {
-	public interface ICompletionDataFactory
+	public interface IVariableCompletionData : ICompletionData
 	{
-		ICompletionData CreateEntityCompletionData (IEntity entity);
-		
-		/// <summary>
-		/// Creates a generic completion data.
-		/// </summary>
-		/// <returns>
-		/// The title of the completion data
-		/// </param>
-		/// <param name='description'>
-		/// The description of the literal.
-		/// </param>
-		/// <param name='insertText'>
-		/// The insert text. If null, title is taken.
-		/// </param>
-		ICompletionData CreateLiteralCompletionData (string title, string description, string insertText = null);
+		IVariable Variable {
+			get;
+		}
 	}
 }
+
