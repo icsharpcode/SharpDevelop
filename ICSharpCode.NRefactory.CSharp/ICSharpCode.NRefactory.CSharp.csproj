@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{53DCA265-3C3C-42F9-B647-F72BA678122B}</ProjectGuid>
@@ -7,7 +7,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.NRefactory.CSharp</RootNamespace>
     <AssemblyName>ICSharpCode.NRefactory.CSharp</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -15,7 +14,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
@@ -302,7 +301,12 @@
     <Compile Include="Resolver\SimpleTypeOrNamespaceReference.cs" />
     <Compile Include="Resolver\TypeInference.cs" />
     <Compile Include="Resolver\UsingScope.cs" />
+    <Compile Include="Completion\CompletionDataWrapper.cs" />
     <Compile Include="Completion\CSharpCompletionEngine.cs" />
+    <Compile Include="Completion\CSharpCompletionEngineBase.cs" />
+    <Compile Include="Completion\CSharpParameterCompletionEngine.cs" />
+    <Compile Include="Completion\ICompletionDataFactory.cs" />
+    <Compile Include="Completion\IParameterCompletionDataFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -311,4 +315,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Folder Include="Completion\" />
+  </ItemGroup>
 </Project>
