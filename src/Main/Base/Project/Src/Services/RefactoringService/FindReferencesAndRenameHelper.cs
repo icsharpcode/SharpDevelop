@@ -5,10 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -371,7 +373,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (list == null) return;
 			List<SearchResultMatch> results = new List<SearchResultMatch>(list.Count);
 			foreach (Reference r in list) {
-				SearchResultMatch res = new SearchResultMatch(GetDocumentInformation(r.FileName), r.Offset, r.Length);
+				var document = new TextDocument(DocumentUtilitites.GetTextSource(ParserService.GetParseableFileContent(r.FileName)));
+				var start = document.GetLocation(r.Offset).ToLocation();
+				var end = document.GetLocation(r.Offset + r.Length).ToLocation();
+				SearchResultMatch res = new SearchResultMatch(new FileName(r.FileName), start, end, SearchResultsPad.CreateInlineBuilder(start, end, document, Path.GetExtension(r.FileName)));
 				results.Add(res);
 			}
 			SearchResultsPad.Instance.ShowSearchResults(title, results);

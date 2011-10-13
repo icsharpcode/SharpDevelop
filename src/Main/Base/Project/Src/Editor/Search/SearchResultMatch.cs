@@ -2,37 +2,37 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Windows;
+using System.Windows.Media;
+
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Editor.Search
 {
 	public class SearchResultMatch
 	{
-		ProvidedDocumentInformation providedDocumentInformation;
-		int    offset;
-		int    length;
-		
-		public ProvidedDocumentInformation ProvidedDocumentInformation {
-			set { providedDocumentInformation = value; }
-		}
+		FileName fileName;
+		Location startLocation;
+		Location endLocation;
+		HighlightedInlineBuilder builder;
 		
 		public FileName FileName {
-			get {
-				return providedDocumentInformation.FileName;
-			}
+			get { return fileName; }
 		}
 		
-		public int Offset {
-			get {
-				return offset;
-			}
+		public Location StartLocation {
+			get { return startLocation; }
 		}
 		
-		public int Length {
-			get {
-				return length;
-			}
+		public Location EndLocation {
+			get { return endLocation; }
+		}
+		
+		public HighlightedInlineBuilder Builder {
+			get { return builder; }
 		}
 		
 		public virtual string TransformReplacePattern(string pattern)
@@ -40,42 +40,12 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			return pattern;
 		}
 		
-		public IDocument CreateDocument()
+		public SearchResultMatch(FileName fileName, Location startLocation, Location endLocation, HighlightedInlineBuilder builder)
 		{
-			return providedDocumentInformation.Document;
-		}
-		
-		public SearchResultMatch(int offset, int length)
-		{
-			if (length < 0)
-				throw new ArgumentOutOfRangeException("length");
-			if (offset < 0)
-				throw new ArgumentOutOfRangeException("offset");
-			this.offset   = offset;
-			this.length   = length;
-		}
-		
-		public SearchResultMatch(ProvidedDocumentInformation providedDocumentInformation, int offset, int length)
-		{
-			if (providedDocumentInformation == null)
-				throw new ArgumentNullException("providedDocumentInformation");
-			if (length < 0)
-				throw new ArgumentOutOfRangeException("length");
-			if (offset < 0)
-				throw new ArgumentOutOfRangeException("offset");
-			this.providedDocumentInformation = providedDocumentInformation;
-			this.offset   = offset;
-			this.length   = length;
-		}
-		
-		public virtual Location GetStartPosition(IDocument document)
-		{
-			return document.OffsetToPosition(Math.Min(Offset, document.TextLength));
-		}
-		
-		public virtual Location GetEndPosition(IDocument document)
-		{
-			return document.OffsetToPosition(Math.Min(Offset + Length, document.TextLength));
+			this.fileName = fileName;
+			this.startLocation = startLocation;
+			this.endLocation = endLocation;
+			this.builder = builder;
 		}
 		
 		/// <summary>
@@ -89,26 +59,14 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		
 		public override string ToString()
 		{
-			return String.Format("[{3}: FileName={0}, Offset={1}, Length={2}]",
-			                     FileName, Offset, Length,
+			return String.Format("[{3}: FileName={0}, StartLocation={1}, EndLocation={2}]",
+			                     fileName, startLocation, endLocation,
 			                     GetType().Name);
 		}
 	}
 	
 	public class SimpleSearchResultMatch : SearchResultMatch
 	{
-		Location position;
-		
-		public override Location GetStartPosition(IDocument doc)
-		{
-			return position;
-		}
-		
-		public override Location GetEndPosition(IDocument doc)
-		{
-			return position;
-		}
-		
 		string displayText;
 		
 		public override string DisplayText {
@@ -117,10 +75,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			}
 		}
 		
-		public SimpleSearchResultMatch(ProvidedDocumentInformation providedDocumentInformation, string displayText, Location position)
-			: base(providedDocumentInformation, 0, 0)
+		public SimpleSearchResultMatch(FileName fileName, Location position, string displayText)
+			: base(fileName, position, position, new HighlightedInlineBuilder(displayText))
 		{
-			this.position = position;
 			this.displayText = displayText;
 		}
 	}

@@ -18,12 +18,21 @@ namespace ICSharpCode.AvalonEdit.Search
 			this.searchPattern = searchPattern;
 		}
 		
-		public IEnumerable<ISearchResult> FindAll(ITextSource document, ISegment selection = null)
+		public IEnumerable<ISearchResult> FindAll(ITextSource document, int offset, int length)
 		{
 			foreach (Match result in searchPattern.Matches(document.Text)) {
-				if (selection == null || (selection.Offset <= result.Index && selection.EndOffset >= (result.Index + result.Length)))
+				if (offset <= result.Index && (offset + length) >= (result.Index + result.Length))
 					yield return new SearchResult { StartOffset = result.Index, Length = result.Length };
 			}
+		}
+		
+		public ISearchResult FindNext(ITextSource document, int offset, int length)
+		{
+			var result = searchPattern.Match(document.Text, offset, length);
+			if (result != null && result.Success)
+				return new SearchResult { StartOffset = result.Index, Length = result.Length };
+			
+			return null;
 		}
 	}
 	

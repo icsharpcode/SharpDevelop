@@ -16,7 +16,7 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
-
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
@@ -594,7 +594,7 @@ namespace ICSharpCode.SharpDevelop
 			return newContent;
 		}
 		
-#region Dom, AST, Editor, Document		
+		#region Dom, AST, Editor, Document
 		public static Location GetStart(this DomRegion region)
 		{
 			return new Location(region.BeginColumn, region.BeginLine);
@@ -620,6 +620,16 @@ namespace ICSharpCode.SharpDevelop
 		{
 			editor.Select(editor.Document.PositionToOffset(editor.Caret.Position), 0);
 		}
-#endregion		
+		
+		public static Location ToLocation(this TextLocation loc)
+		{
+			return new Location(loc.Column, loc.Line);
+		}
+		
+		public static TextLocation ToTextLocation(this Location loc)
+		{
+			return new TextLocation(loc.Line, loc.Column);
+		}
+		#endregion
 	}
 }

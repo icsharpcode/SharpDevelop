@@ -148,7 +148,7 @@ namespace ICSharpCode.AvalonEdit.Search
 				if (changeSelection) {
 					textArea.Selection = SimpleSelection.Empty;
 				}
-				foreach (SearchResult result in strategy.FindAll(textArea.Document)) {
+				foreach (SearchResult result in strategy.FindAll(textArea.Document, 0, textArea.Document.TextLength)) {
 					if (currentResult == null && result.StartOffset >= offset) {
 						currentResult = result;
 						if (changeSelection) {

@@ -15,10 +15,16 @@ namespace ICSharpCode.AvalonEdit.Search
 	public interface ISearchStrategy
 	{
 		/// <summary>
-		/// Finds all matches for a predicate in the given ITextSource.
+		/// Finds all matches in the given ITextSource and the given range.
 		/// </summary>
-		/// <remarks>This method is thread-safe.</remarks>
-		IEnumerable<ISearchResult> FindAll(ITextSource document, ISegment selection = null);
+		/// <remarks>This method is thread-safe. Implementers must guarantee this!</remarks>
+		IEnumerable<ISearchResult> FindAll(ITextSource document, int offset, int length);
+		
+		/// <summary>
+		/// Finds the next match in the given ITextSource and the given range.
+		/// </summary>
+		/// <remarks>This method is thread-safe. Implementers must guarantee this!</remarks>
+		ISearchResult FindNext(ITextSource document, int offset, int length);
 	}
 	
 	/// <summary>
