@@ -8,8 +8,10 @@ using System.Web.Services.Discovery;
 using System.Windows.Forms;
 using System.Xml;
 
+using Gui.Dialogs.ReferenceDialog;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
 {
@@ -178,44 +180,94 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	}
 	
 	
-	
-	public class AddServiceReferenceToProject: AbstractMenuCommand
+	public class ShowServiceInBrowser: AbstractMenuCommand
 	{
 		private static string NodePath = "//system.serviceModel//client//endpoint";
 		
 		public override void Run()
 		{
+			//	hack try  url fvoid  = LoadConfigDocument(f);
 			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
 			var f = CompilableProject.GetAppConfigFile(node.Project,false);
-			
-			var configFile = LoadConfigDocument(f);
-			
-			var endPoint = configFile.SelectSingleNode(NodePath).Attributes["address"].Value;
+			if (!String.IsNullOrEmpty(f))
+			{
 				
-			ProcessStartInfo startInfo = new ProcessStartInfo("IExplore.exe");
-			startInfo.WindowStyle = ProcessWindowStyle.Normal;
-			startInfo.Arguments = endPoint;
-			Process.Start(startInfo);
+		var configFile = LoadConfigDocument(f);
+			var endPoint = configFile.SelectSingleNode(NodePath).Attributes["address"].Value;
+				ProcessStartInfo startInfo = new ProcessStartInfo("IExplore.exe");
+				startInfo.WindowStyle = ProcessWindowStyle.Normal;
+				startInfo.Arguments = endPoint;
+
+				Process.Start(startInfo);
+				
+				
+				
+			} else
+			{
+				MessageService.ShowError("No app.config File found");
+			}
 		}
 		
-		
 		static XmlDocument LoadConfigDocument(string fileName)
-        {
-            XmlDocument doc = null;
-            try
-            {
-                doc = new XmlDocument();
-                
-                doc.Load(fileName);
-                return doc;
-            }
-            catch (System.IO.FileNotFoundException e)
-            {
-                throw new Exception("No configuration file found.", e);
-            }
-        } 
+		{
+			XmlDocument doc = null;
+			try
+			{
+				doc = new XmlDocument();
+				
+				doc.Load(fileName);
+				return doc;
+			}
+			catch (System.IO.FileNotFoundException e)
+			{
+				throw new Exception("No configuration file found.", e);
+			}
+		}
 	}
+
 	
+	public class AddServiceReferenceToProject: AbstractMenuCommand
+	{
+//		private static string NodePath = "//system.serviceModel//client//endpoint";
+		
+		public override void Run()
+		{
+			AbstractProjectBrowserTreeNode node = Owner as AbstractProjectBrowserTreeNode;
+			IProject project = (node != null) ? node.Project : ProjectService.CurrentProject;
+			if (project == null) {
+				return;
+			}
+			
+			var vm = new AddServiceReferenceViewModel(project);
+			AddServiceReferenceDialog o = new AddServiceReferenceDialog();
+			o.DataContext = vm;
+			o.Owner = WorkbenchSingleton.MainWindow;
+			var b = o.ShowDialog();
+			
+			
+			if (b == true) {
+				
+				/*
+				AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
+				var f = CompilableProject.GetAppConfigFile(node.Project,false);
+				
+//			IProject project = (node != null) ? node.Project : ProjectService.CurrentProject;
+				
+				
+				CompilableProject project = ProjectService.CurrentProject as CompilableProject;
+				
+				var wpo =  WebProjectsOptions.Instance.GetWebProjectOptions(ProjectService.CurrentProject.Name);
+				
+				
+				
+				var s1 = project.AssemblyName;
+				var s2 = project.CreateStartInfo();
+				
+				var ss = s1 + s2;
+				*/
+			}
+		}
+	}
 	
 	
 	public class RefreshReference : AbstractMenuCommand

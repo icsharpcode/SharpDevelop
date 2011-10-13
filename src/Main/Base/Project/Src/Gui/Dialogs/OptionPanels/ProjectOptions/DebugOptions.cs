@@ -79,6 +79,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
+		
+		public override bool StorePanelContents()
+        {
+//            SaveWpfSettings();
+            return base.StorePanelContents();
+        }
+ 
+		
 		void UpdateEnabledStates(object sender, EventArgs e)
 		{
 			Get<TextBox>("startExternalProgram").Enabled = Get<Button>("startExternalProgramBrowse").Enabled = Get<RadioButton>("startExternalProgram").Checked;
