@@ -195,105 +195,22 @@ namespace SearchAndReplace
 		{
 			if (string.IsNullOrEmpty(pattern))
 				return null;
-			var tmp = GenerateFileList(target, baseDirectory, filter, searchSubdirs).ToList();
-			var active = GetActiveTextEditor();
-			if (active != null) {
-				int index = tmp.FindIndex(fn => fn.Equals(active.FileName));
-				if (index > 0) {
-					var item = tmp[index];
-					tmp.RemoveAt(index);
-					tmp.Insert(0, item);
-				}
-			}
-			var files = tmp.ToArray();
-			bool isNewSearch = currentSearchRegion == null || !currentSearchRegion.IsSameState(files, pattern, ignoreCase, matchWholeWords, mode, target, baseDirectory, filter, searchSubdirs);
-			if (isNewSearch)
-				currentSearchRegion = CreateSearchRegion(files, pattern, ignoreCase, matchWholeWords, mode, target, baseDirectory, filter, searchSubdirs);
+			var files = GenerateFileList(target, baseDirectory, filter, searchSubdirs).ToArray();
+			if (currentSearchRegion == null || !currentSearchRegion.IsSameState(files, pattern, ignoreCase, matchWholeWords, mode,
+			                                                                    target, baseDirectory, filter, searchSubdirs))
+				currentSearchRegion = SearchRegion.CreateSearchRegion(files, pattern, ignoreCase, matchWholeWords, mode,
+				                                                      target, baseDirectory, filter, searchSubdirs);
 			if (currentSearchRegion == null)
 				return null;
-			if (currentSearchRegion.Files.Length == 0)
-				return null;
-			if (currentSearchRegion.CurrentFile < 0 || currentSearchRegion.CurrentFile >= currentSearchRegion.Files.Length)
-				currentSearchRegion.CurrentFile = 0;
-			
-			ParseableFileContentFinder finder = new ParseableFileContentFinder();
-			while (currentSearchRegion.CurrentFile < currentSearchRegion.Files.Length) {
-				FileName currentFile = currentSearchRegion.Files[currentSearchRegion.CurrentFile];
-				var buffer = finder.Create(currentFile);
-				
-				if (buffer == null) {
-					currentSearchRegion.Repeat = false;
-					currentSearchRegion.CurrentFile++;
-					continue;
-				}
-				
-				int offset, length;
-				if (currentSearchRegion.LastSearchOffset < 0) {
-					if (currentSearchRegion.Selection == null)
-						offset = currentSearchRegion.SearchStart.Offset;
-					else
-						offset = Math.Max(currentSearchRegion.Selection.Offset, currentSearchRegion.SearchStart.Offset);
-				} else
-					offset = currentSearchRegion.LastSearchOffset;
-				if (currentSearchRegion.Selection == null)
-					length = buffer.TextLength - offset;
-				else
-					length = currentSearchRegion.Selection.EndOffset - offset;
-				
-				var document = new TextDocument(DocumentUtilitites.GetTextSource(buffer));
-				var result = currentSearchRegion.Strategy.FindNext(DocumentUtilitites.GetTextSource(buffer), offset, length);
-				
-				if (result != null)
-					currentSearchRegion.LastSearchOffset = result.EndOffset;
-				
-				if (currentSearchRegion.Repeat && currentFile.Equals(currentSearchRegion.SearchStart.FileName) && currentSearchRegion.LastSearchOffset >= currentSearchRegion.SearchStart.Offset) {
-					currentSearchRegion = null;
-					return null;
-				}
-				
-				if (result != null) {
-					var start = document.GetLocation(result.Offset).ToLocation();
-					var end = document.GetLocation(result.EndOffset).ToLocation();
-					return new SearchResultMatch(currentFile, start, end, SearchResultsPad.CreateInlineBuilder(start, end, document, Path.GetExtension(currentFile)));
-				}
-				currentSearchRegion.CurrentFile++;
-				currentSearchRegion.LastSearchOffset = 0;
-				
-				if (currentSearchRegion.CurrentFile >= currentSearchRegion.Files.Length) {
-					currentSearchRegion.Repeat = true;
-					currentSearchRegion.CurrentFile = 0;
-				}
-			}
-			
-			return null;
-		}
-		
-		static SearchRegion CreateSearchRegion(FileName[] files, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode, SearchTarget target, string baseDirectory, string filter, bool searchSubdirs)
-		{
-			ITextEditor editor = GetActiveTextEditor();
-			if (editor != null) {
-				var document = new TextDocument(DocumentUtilitites.GetTextSource(editor.Document));
-				AnchorSegment selection = null;
-				if (target == SearchTarget.CurrentSelection)
-					selection = new AnchorSegment(document, editor.SelectionStart, editor.SelectionLength);
-				return new SearchRegion(files, selection, new PermanentAnchor(editor.FileName, editor.Caret.Line, editor.Caret.Column), pattern, ignoreCase, matchWholeWords, mode, target, baseDirectory, filter, searchSubdirs);
-			}
-			
-			return null;
+			var result = currentSearchRegion.FindNext();
+			if (result == null)
+				currentSearchRegion = null;
+			return result;
 		}
 		
 		class SearchRegion
 		{
 			FileName[] files;
-			
-			public int CurrentFile { get; set; }
-			public int LastSearchOffset { get; set; }
-			public bool Repeat { get; set; }
-			
-			public FileName[] Files {
-				get { return files; }
-			}
-			
 			AnchorSegment selection;
 			
 			public AnchorSegment Selection {
@@ -317,14 +234,104 @@ namespace SearchAndReplace
 				}
 			}
 			
-			public SearchRegion(FileName[] files, AnchorSegment selection, PermanentAnchor searchStart, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode, SearchTarget target, string baseDirectory, string filter, bool searchSubdirs)
+			IEnumerator<SearchResultMatch> enumerator;
+			ParseableFileContentFinder finder = new ParseableFileContentFinder();
+			
+			public SearchResultMatch FindNext()
+			{
+				if (enumerator == null)
+					enumerator = RunSearch();
+				if (enumerator.MoveNext())
+					return enumerator.Current;
+				
+				return null;
+			}
+			
+			IEnumerator<SearchResultMatch> RunSearch()
+			{
+				int startIndex = files.FindIndex(file => file.Equals(searchStart.FileName));
+				int endIndex = files.Length - 1;
+				int index = startIndex;
+				bool processSecondPart = false;
+				
+				while (index <= endIndex) {
+					FileName file = files[index];
+					ITextBuffer buffer = finder.Create(file);
+					
+					if (buffer == null) {
+						processSecondPart = false;
+						index++;
+						continue;
+					}
+					
+					var document = new TextDocument(DocumentUtilitites.GetTextSource(buffer));
+					ICSharpCode.AvalonEdit.Search.ISearchResult result;
+					var editor = GetActiveTextEditor();
+					int searchOffset = 0;
+					
+					if (!processSecondPart && file.Equals(searchStart.FileName))
+						searchOffset = searchStart.Offset;
+					if (editor != null && files.Equals(editor.FileName))
+						searchOffset = editor.Caret.Offset;
+					
+					do {
+						int length;
+						if (Selection != null && file.Equals(searchStart.FileName)) {
+							searchOffset = Math.Max(Selection.Offset, searchOffset);
+							length = Selection.EndOffset - searchOffset;
+						} else {
+							length = buffer.TextLength - searchOffset;
+						}
+						
+						if (length > 0 && (searchOffset + length) <= buffer.TextLength)
+							result = currentSearchRegion.Strategy.FindNext(DocumentUtilitites.GetTextSource(buffer), searchOffset, length);
+						else
+							result = null;
+						
+						if (result != null)
+							searchOffset = result.EndOffset;
+						
+						if (processSecondPart && file.Equals(SearchStart.FileName) && searchOffset >= SearchStart.Offset) {
+							yield break;
+						}
+						
+						if (result != null) {
+							var start = document.GetLocation(result.Offset).ToLocation();
+							var end = document.GetLocation(result.EndOffset).ToLocation();
+							yield return new SearchResultMatch(file, start, end, null);
+						}
+					} while (result != null);
+					
+					index++;
+					if (!processSecondPart && index > endIndex) {
+						processSecondPart = true;
+						index = 0;
+						endIndex = startIndex;
+					}
+				}
+			}
+			
+			public static SearchRegion CreateSearchRegion(FileName[] files, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode, SearchTarget target, string baseDirectory, string filter, bool searchSubdirs)
+			{
+				ITextEditor editor = GetActiveTextEditor();
+				if (editor != null) {
+					var document = new TextDocument(DocumentUtilitites.GetTextSource(editor.Document));
+					AnchorSegment selection = null;
+					if (target == SearchTarget.CurrentSelection)
+						selection = new AnchorSegment(document, editor.SelectionStart, editor.SelectionLength);
+					return new SearchRegion(files, selection, new PermanentAnchor(editor.FileName, editor.Caret.Line, editor.Caret.Column), pattern, ignoreCase, matchWholeWords, mode, target, baseDirectory, filter, searchSubdirs);
+				}
+				
+				return null;
+			}
+			
+			SearchRegion(FileName[] files, AnchorSegment selection, PermanentAnchor searchStart, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode, SearchTarget target, string baseDirectory, string filter, bool searchSubdirs)
 			{
 				if (files == null)
 					throw new ArgumentNullException("files");
 				this.files = files;
 				this.selection = selection;
 				this.searchStart = searchStart;
-				this.LastSearchOffset = -1;
 				this.pattern = pattern;
 				this.ignoreCase = ignoreCase;
 				this.matchWholeWords = matchWholeWords;
