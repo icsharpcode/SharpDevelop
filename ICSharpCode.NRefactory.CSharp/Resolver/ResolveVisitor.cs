@@ -202,8 +202,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// to the correct state.
 		/// Otherwise, use <c>resolver.Scan(compilationUnit); var result = resolver.GetResolveResult(node);</c>
 		/// instead.
+		/// --
+		/// This method now is internal, because it is difficult to use correctly.
+		/// Users of the public API should use Scan()+GetResolveResult() instead.
 		/// </summary>
-		public ResolveResult Resolve(AstNode node)
+		internal ResolveResult Resolve(AstNode node)
 		{
 			if (node == null || node.IsNull)
 				return errorResult;
@@ -296,7 +299,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					Log.WriteLine("  Data not found.");
 				}
 			}
-			if (expr != null && conversion != Conversion.IdentityConversion)
+			if (expr != null && !expr.IsNull && conversion != Conversion.IdentityConversion)
 				navigator.ProcessConversion(expr, rr, conversion, targetType);
 		}
 		
@@ -2415,6 +2418,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					type = MakeVarTypeReference(foreachStatement.InExpression, true);
 				}
 			} else {
+				Scan(foreachStatement.InExpression);
 				type = ResolveType(foreachStatement.VariableType);
 			}
 			IVariable v = resolver.AddVariable(type, MakeRegion(foreachStatement.VariableNameToken), foreachStatement.VariableName);
