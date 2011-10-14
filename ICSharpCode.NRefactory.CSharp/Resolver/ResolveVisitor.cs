@@ -579,7 +579,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult VisitFieldOrEventDeclaration(AttributedNode fieldOrEventDeclaration)
 		{
 			int initializerCount = fieldOrEventDeclaration.GetChildrenByRole(FieldDeclaration.Roles.Variable).Count;
-			ResolveResult result = null;
 			for (AstNode node = fieldOrEventDeclaration.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == FieldDeclaration.Roles.Variable) {
 					if (resolver.CurrentTypeDefinition != null) {
@@ -591,18 +590,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						resolver.CurrentMember = members.FirstOrDefault(f => f.Region.IsInside(node.StartLocation));
 					}
 					
-					if (resolverEnabled && initializerCount == 1) {
-						result = Resolve(node);
-					} else {
-						Scan(node);
-					}
+					Scan(node);
 					
 					resolver.CurrentMember = null;
 				} else {
 					Scan(node);
 				}
 			}
-			return result;
+			return voidResult;
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitVariableInitializer(VariableInitializer variableInitializer, object data)
@@ -2478,15 +2473,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						result = new LocalResolveResult(v, type.Resolve(resolver.Context));
 						StoreResult(vi, result);
 					}
-					return result;
-				} else {
-					return null;
 				}
 			} else {
 				ITypeReference type = MakeTypeReference(variableDeclarationStatement.Type);
 
-				int initializerCount = variableDeclarationStatement.Variables.Count;
-				ResolveResult result = null;
 				for (AstNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
 					if (node.Role == VariableDeclarationStatement.Roles.Variable) {
 						VariableInitializer vi = (VariableInitializer)node;
@@ -2496,18 +2486,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							cv = TypeSystemConvertVisitor.ConvertConstantValue(type, vi.Initializer, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.CurrentUsingScope);
 						}
 						resolver.AddVariable(type, MakeRegion(vi), vi.Name, cv);
-						
-						if (resolverEnabled && initializerCount == 1) {
-							result = Resolve(node);
-						} else {
-							Scan(node);
-						}
-					} else {
-						Scan(node);
 					}
+					Scan(node);
 				}
-				return result;
 			}
+			return voidResult;
 		}
 		#endregion
 		
