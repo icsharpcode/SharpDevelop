@@ -179,6 +179,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return false; }
 			}
 			
+			public override ResolveResult Body {
+				get { throw new NotImplementedException(); }
+			}
+			
 			public override IType GetInferredReturnType(IType[] parameterTypes)
 			{
 				Assert.AreEqual(expectedParameterTypes, parameterTypes, "Parameters types passed to " + this);

@@ -145,7 +145,7 @@ class TestClass {
 			Assert.AreEqual("System.Int32", lrr.Type.ReflectionName);
 		}
 		
-		[Test, Ignore("Fails due to parser problem")]
+		[Test]
 		public void LambdaInInferred2DArrayInitializer()
 		{
 			string program = @"using System;

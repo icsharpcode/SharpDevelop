@@ -235,6 +235,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// This method implements the logic that causes applicable methods in derived types to hide
 		/// all methods in base types.
 		/// </summary>
+		/// <param name="methodLists">The methods, grouped by declaring type. Base types must come first in the list.</param>
 		public void AddMethodLists(IList<MethodListWithDeclaringType> methodLists)
 		{
 			if (methodLists == null)

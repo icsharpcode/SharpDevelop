@@ -154,6 +154,7 @@
     <Compile Include="CSharp\Resolver\LambdaTests.cs" />
     <Compile Include="CSharp\Resolver\LinqTests.cs" />
     <Compile Include="CSharp\Resolver\LocalTypeInferenceTests.cs" />
+    <Compile Include="CSharp\Resolver\MemberLookupTests.cs" />
     <Compile Include="CSharp\Resolver\NameLookupTests.cs" />
     <Compile Include="CSharp\Resolver\ObjectCreationTests.cs" />
     <Compile Include="CSharp\Resolver\ResolveAtLocationTests.cs" />
@@ -177,6 +178,7 @@
     <Compile Include="TypeSystem\SerializedCecilLoaderTests.cs" />
     <Compile Include="TypeSystem\StructureTests.cs" />
     <Compile Include="TypeSystem\TestInterningProvider.cs" />
+    <Compile Include="TypeSystem\TypeParameterTests.cs" />
     <Compile Include="TypeSystem\TypeSystemTests.cs" />
     <Compile Include="TypeSystem\TypeSystemTests.TestCase.cs" />
     <EmbeddedResource Include="TypeSystem\TypeSystemTests.TestCase.cs" />

@@ -866,6 +866,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			public override TypeKind Kind {
 				get { return TypeKind.TypeParameter; }
 			}
+			
+			IType ITypeParameter.GetEffectiveBaseClass(ITypeResolveContext context)
+			{
+				return KnownTypeReference.Object.Resolve(context);
+			}
+			
+			IEnumerable<IType> ITypeParameter.GetEffectiveInterfaceSet(ITypeResolveContext context)
+			{
+				return EmptyList<IType>.Instance;
+			}
 		}
 		#endregion
 		
