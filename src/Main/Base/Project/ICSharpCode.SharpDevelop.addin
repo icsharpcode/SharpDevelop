@@ -314,12 +314,12 @@
 				          label = "Show Service in Browser"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowServiceInBrowser"/>
 			</Condition>
-			<!--
+			
 			<Condition name = "WriteableProject">
 				<MenuItem id    = "AddServiceReference"
 				          label = "Add Service Reference"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
-			</Condition>-->
+			</Condition>
 			<MenuItem id = "AddSeparator" type = "Separator"/>
 		</Condition>
 		

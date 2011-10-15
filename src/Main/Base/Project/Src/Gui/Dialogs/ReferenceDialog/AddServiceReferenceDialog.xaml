@@ -12,40 +12,98 @@
 	Width="500"
 	Title="{Binding Title}">
 	
-	<Grid Name="grid">
+	<Grid Name="grid" ShowGridLines="True">
 		<Grid.RowDefinitions>
 			<RowDefinition
 				Height="1*" />
+			<RowDefinition Height="3*"></RowDefinition>
 			<RowDefinition
 				Height="Auto" />
 		</Grid.RowDefinitions>
 		
 		<Grid Grid.Row="0">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="30"></RowDefinition>
+				<RowDefinition Height="40"></RowDefinition>
 				<RowDefinition Height="Auto"></RowDefinition>
 			</Grid.RowDefinitions>
 			
-			<TextBox  Grid.Row="0" Text="Bla bla bla"></TextBox>
+			<TextBox  Grid.Row="0"
+			         TextWrapping="Wrap"
+			         Text="To see a list of available services on an specific Server,
+			enter a service URL and click Go.To browse for available services cklick Discover"
+			></TextBox>
+			
 			<Grid Grid.Row="1" ShowGridLines="True">
+
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"></RowDefinition>
+				</Grid.RowDefinitions>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="300"></ColumnDefinition>
 					<ColumnDefinition></ColumnDefinition>
 				</Grid.ColumnDefinitions>
-				<TextBox Grid.Column="0" Background="Yellow" Margin="2,4,2,4"></TextBox>
+
+<!-- editable combo
+http://stackoverflow.com/questions/582232/wpf-editable-combobox
+http://stackoverflow.com/questions/3373239/wpf-editable-combobox
+ -->	
+				<ComboBox Grid.Column="0" Margin="0,4,12,12"
+				          IsEditable="True"
+				          ItemsSource="{Binding MruServices}"
+				          IsSynchronizedWithCurrentItem="True"
+				          LostFocus="Cbo_LostFocus"
+				          SelectedItem="{Binding SelectedService, UpdateSourceTrigger=PropertyChanged}">
+				</ComboBox>
 				
-				<widgets:UniformGridWithSpacing Columns="2" Grid.Column="1" HorizontalAlignment="Center">
+				<widgets:UniformGridWithSpacing Columns="2" Grid.Column="1" Margin="0,4,12,12" HorizontalAlignment="Center">
 					<Button 
 						Content="Go"
+						Command="{Binding GoCommand}"
 						Style="{x:Static core:GlobalStyles.ButtonStyle}" />
 					<Button
 						Content="Discover"
-						Style="{x:Static core:GlobalStyles.ButtonStyle}" />
+						Command="{Binding DiscoverCommand}"
+						Style="{x:Static core:GlobalStyles.ButtonStyle}"/>
 				</widgets:UniformGridWithSpacing>
 			</Grid>
 		</Grid>
 		
-		<widgets:UniformGridWithSpacing Columns="2" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Margin="0,4,12,12">
+		<!-- Main Area -->
+		<Grid Grid.Row="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="100"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+<!--			http://www.c-sharpcorner.com/UploadFile/mahesh/WPFTreeView08202008231544PM/WPFTreeView.aspx-->
+			<TreeView  HorizontalAlignment="Left"
+			          
+			          VerticalAlignment="Top" >
+				
+				<TreeViewItem Header="Cold Drinks">
+					
+					<TreeViewItem Header="Coke"></TreeViewItem>
+					
+					<TreeViewItem Header="Pepsi"></TreeViewItem>
+					
+					<TreeViewItem Header="Orange Juice"></TreeViewItem>
+					
+					<TreeViewItem Header="Milk"></TreeViewItem>
+					
+					<TreeViewItem Header="Iced Tea"></TreeViewItem>
+					
+					<TreeViewItem Header="Mango Shake"></TreeViewItem>
+				
+				</TreeViewItem>
+			
+			</TreeView>
+			
+			
+			<GridSplitter Grid.Column="0" Width="2" />
+			<Label Background="Green" Grid.Column="1"/>
+		</Grid>
+
+		
+		<widgets:UniformGridWithSpacing Columns="2" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" Margin="0,4,12,12">
 			<Button
 				Content="{core:Localize Global.OKButtonText}"
 				IsDefault="True"
