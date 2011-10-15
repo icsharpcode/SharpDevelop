@@ -15,6 +15,13 @@ using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
 {
+	// Dummy class to avoid the build errors after updating the ICSharpCode.Decompiler version.
+	// TODO: get rid of this & fix debugging decompiled files
+	public class DecompileInformation {
+		public dynamic LocalVariables;
+		public dynamic CodeMappings;
+	}
+	
 	/// <summary>
 	/// Stores the decompilation information.
 	/// </summary>
@@ -73,9 +80,10 @@ namespace ICSharpCode.ILSpyAddIn
 				DecompilerContext context = new DecompilerContext(type.Module);
 				AstBuilder astBuilder = new AstBuilder(context);
 				astBuilder.AddType(type);
-				astBuilder.GenerateCode(new PlainTextOutput());
+				DebuggerTextOutput output = new DebuggerTextOutput(new PlainTextOutput());
+				astBuilder.GenerateCode(output);
 				
-				int token = type.MetadataToken.ToInt32();
+				/*int token = type.MetadataToken.ToInt32();
 				var info = new DecompileInformation {
 					CodeMappings = astBuilder.CodeMappings,
 					LocalVariables = astBuilder.LocalVariables,
@@ -83,7 +91,7 @@ namespace ICSharpCode.ILSpyAddIn
 				};
 				
 				// save the data
-				DebugInformation.AddOrUpdate(token, info, (k, v) => info);
+				DebugInformation.AddOrUpdate(token, info, (k, v) => info);*/
 			} catch {
 				return;
 			}
@@ -104,7 +112,7 @@ namespace ICSharpCode.ILSpyAddIn
 				if (instruction == null)
 					continue;
 				
-				ilRanges = new [] { instruction.ILInstructionOffset.From, instruction.ILInstructionOffset.To };
+				ilRanges = new int[] { instruction.ILInstructionOffset.From, instruction.ILInstructionOffset.To };
 				memberToken = instruction.MemberMapping.MetadataToken;
 				return true;
 			}
