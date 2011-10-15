@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
@@ -18,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	public class EntityBookmark : IBookmark
 	{
 		IEntity entity;
+		IDocumentLine line;
 		
 		public IEntity Entity {
 			get {
@@ -25,9 +27,13 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public EntityBookmark(IEntity entity)
+		public EntityBookmark(IEntity entity, IDocument document)
 		{
 			this.entity = entity;
+			int lineNr = entity.Region.BeginLine;
+			if (document != null && lineNr > 0 && lineNr < document.LineCount) {
+				this.line = document.GetLineByNumber(lineNr);
+			}
 		}
 		
 		public const string ContextMenuPath = "/SharpDevelop/ViewContent/TextEditor/EntityContextMenu";
@@ -37,7 +43,12 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		}
 		
 		public int LineNumber {
-			get { return entity.Region.BeginLine; }
+			get {
+				if (line != null && !line.IsDeleted)
+					return line.LineNumber;
+				else
+					return entity.Region.BeginLine;
+			}
 		}
 		
 		public virtual void MouseDown(MouseButtonEventArgs e)

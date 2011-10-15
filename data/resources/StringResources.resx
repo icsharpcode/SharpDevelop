@@ -1519,6 +1519,9 @@ To create/manipulate a ActiveX/COM object, drag a class within a TypeLib/Control
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>Waiting for Application to Start</value>
   </data>
+  <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
+    <value>Code Quality Analysis</value>
+  </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Insert reference to explicit method; press tab or enter again to insert a new method stub.</value>
   </data>
@@ -5164,7 +5167,7 @@ Goto 'Options-&gt;Visual Style' and change the current language ambience.</value
     <value>ASP.NET/IIS (Express) worker process ({0}) was not found.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>There's no Project Url specified or external program. Check the web server at Project Properties -&amp;gt; Debug tab.</value>
+    <value>There's no Project Url specified or external program. Check the web server at Project Properties - Debug tab.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
     <value>Server port:</value>
@@ -6546,6 +6549,12 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Set as St&amp;artUp Project</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
+    <value>View in browser</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
+    <value>The project is not a web project.</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>New Folder</value>

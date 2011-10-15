@@ -1477,6 +1477,9 @@ Om een ActiveX/COM object te maken/manipuleren, sleep een klasse uit een type-bi
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>Wacht op starten van de toepassing</value>
   </data>
+  <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
+    <value>Code kwaliteit analyse</value>
+  </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Voeg referentie naar expliciete methode in, druk opnieuw de TAB of Enter om een nieuwe methode stub in te voegen.</value>
   </data>
@@ -7136,6 +7139,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Leeg bestand</value>
   </data>
+  <data name="Templates.File.Exception.Description" xml:space="preserve">
+    <value>Maakt een nieuwe uitzonderings klasse aan.</value>
+  </data>
   <data name="Templates.File.Exception.Name" xml:space="preserve">
     <value>Uitzondering</value>
   </data>
@@ -7267,6 +7273,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>ASP.NET Web Formulier</value>
+  </data>
+  <data name="Templates.File.WebHandler.Description" xml:space="preserve">
+    <value>Maakt een ASP.NET Webhandler aan met achterliggende code.</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>ASP.NET behandelaar</value>

@@ -214,8 +214,7 @@ namespace ICSharpCode.Core.Presentation
 				case "Separator":
 					return new ConditionalSeparator(codon, descriptor.Caller, false);
 				case "CheckBox":
-					return "CheckBox";
-					//return new MenuCheckBox(codon, descriptor.Caller);
+					return new MenuCheckBox(context.InputBindingOwner, codon, descriptor.Caller);
 				case "Item":
 				case "Command":
 					return new MenuCommand(context.InputBindingOwner, codon, descriptor.Caller, createCommand, context.ActivationMethod);

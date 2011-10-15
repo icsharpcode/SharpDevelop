@@ -133,7 +133,7 @@
     <Compile Include="Src\INode.cs" />
     <Compile Include="Src\Instruction.cs" />
     <Compile Include="Src\IValue.cs" />
-    <Compile Include="Src\MainWindowTranslationModel.cs" />
+    <Compile Include="Src\MainWindowModel.cs" />
     <Compile Include="Src\NodeIconService.cs" />
     <Compile Include="Src\IDependency.cs" />
     <Compile Include="Src\MetricsReader.cs" />
@@ -142,9 +142,12 @@
     <Compile Include="Src\Relationship.cs" />
     <Compile Include="Src\RelationshipType.cs" />
     <Compile Include="Src\Type.cs" />
+    <Compile Include="Src\Utility\ComboBoxWithCommand.cs" />
     <Compile Include="Src\Utility\DoubleKeyDictionary.cs" />
     <Compile Include="Src\Utility\IColorizer.cs" />
     <Compile Include="Src\Utility\Helper.cs" />
+    <Compile Include="Src\Utility\Localizeable\EnumToFriendlyNameConverter.cs" />
+    <Compile Include="Src\Utility\Localizeable\LocalizableDescriptionAttribute.cs" />
     <Compile Include="Src\Utility\Matrix.cs" />
     <Compile Include="Src\Utility\RelayCommand.cs" />
     <Compile Include="Src\Utility\ViewModelBase.cs" />
@@ -252,6 +255,10 @@
       <Private>True</Private>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
+    <ProjectReference Include="TreeMaps\TreeMaps.csproj">
+      <Project>{3ED2897F-1A8A-4106-89D2-4D342860D480}</Project>
+      <Name>TreeMaps</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="CodeQualityAnalysis.addin">
@@ -260,6 +267,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Utility" />
+    <Folder Include="Src\Utility\Localizeable" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

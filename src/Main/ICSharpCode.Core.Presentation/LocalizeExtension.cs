@@ -107,5 +107,4 @@ namespace ICSharpCode.Core.Presentation
 			return true;
 		}
 	}
-
 }

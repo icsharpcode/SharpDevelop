@@ -2,24 +2,20 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Reflection;
 using Mono.TextTemplating;
 
 namespace ICSharpCode.TextTemplating
 {
-	public class TextTemplatingHost : TemplateGenerator, ITextTemplatingHost
+	public class TextTemplatingHost : TemplateGenerator, ITextTemplatingHost, IServiceProvider
 	{
-		ITextTemplatingAppDomainFactory appDomainFactory;
 		ITextTemplatingAppDomain templatingAppDomain;
-		ITextTemplatingAssemblyResolver assemblyResolver;
+		TextTemplatingHostContext context;
 		string applicationBase;
 		
-		public TextTemplatingHost(
-			ITextTemplatingAppDomainFactory appDomainFactory,
-			ITextTemplatingAssemblyResolver assemblyResolver,
-			string applicationBase)
+		public TextTemplatingHost(TextTemplatingHostContext context, string applicationBase)
 		{
-			this.appDomainFactory = appDomainFactory;
-			this.assemblyResolver = assemblyResolver;
+			this.context = context;
 			this.applicationBase = applicationBase;
 		}
 		
@@ -29,6 +25,7 @@ namespace ICSharpCode.TextTemplating
 				templatingAppDomain.Dispose();
 				templatingAppDomain = null;
 			}
+			context.Dispose();
 		}
 		
 		public override AppDomain ProvideTemplatingAppDomain(string content)
@@ -41,12 +38,28 @@ namespace ICSharpCode.TextTemplating
 
 		void CreateAppDomain()
 		{
-			templatingAppDomain = appDomainFactory.CreateTextTemplatingAppDomain(applicationBase);
+			templatingAppDomain = context.CreateTextTemplatingAppDomain(applicationBase);
 		}
 		
 		protected override string ResolveAssemblyReference(string assemblyReference)
 		{
-			return assemblyResolver.Resolve(assemblyReference);
+			return context.ResolveAssemblyReference(assemblyReference);
+		}
+		
+		protected override string ResolvePath(string path)
+		{
+			path = ExpandPath(path);
+			return base.ResolvePath(path);
+		}
+		
+		string ExpandPath(string path)
+		{
+			return context.ExpandTemplateVariables(path);
+		}
+		
+		object IServiceProvider.GetService(Type serviceType)
+		{
+			return context.GetService(serviceType);
 		}
 	}
 }

@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Bookmarks;
 
@@ -40,7 +42,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public event EventHandler RedrawRequested;
 		
-		public void UpdateClassMemberBookmarks(IParsedFile parseInfo)
+		public void UpdateClassMemberBookmarks(IParsedFile parseInfo, IDocument document)
 		{
 			for (int i = bookmarks.Count - 1; i >= 0; i--) {
 				if (bookmarks[i] is EntityBookmark)
@@ -49,22 +51,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (parseInfo == null)
 				return;
 			foreach (ITypeDefinition c in parseInfo.TopLevelTypeDefinitions) {
-				AddEntityBookmarks(c);
+				AddEntityBookmarks(c, document);
 			}
 		}
 		
-		void AddEntityBookmarks(ITypeDefinition c)
+		void AddEntityBookmarks(ITypeDefinition c, IDocument document)
 		{
 			if (c.IsSynthetic) return;
 			if (!c.Region.IsEmpty) {
-				bookmarks.Add(new EntityBookmark(c));
+				bookmarks.Add(new EntityBookmark(c, document));
 			}
 			foreach (ITypeDefinition innerClass in c.NestedTypes) {
-				AddEntityBookmarks(innerClass);
+				AddEntityBookmarks(innerClass, document);
 			}
 			foreach (IMember m in c.Members) {
 				if (m.Region.IsEmpty || m.IsSynthetic) continue;
-				bookmarks.Add(new EntityBookmark(m));
+				bookmarks.Add(new EntityBookmark(m, document));
 			}
 		}
 	}

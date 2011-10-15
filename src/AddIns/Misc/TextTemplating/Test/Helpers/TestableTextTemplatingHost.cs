@@ -10,11 +10,16 @@ namespace TextTemplating.Tests.Helpers
 	{
 		public FakeTextTemplatingAppDomainFactory FakeTextTemplatingAppDomainFactory;
 		public FakeTextTemplatingAssemblyResolver FakeTextTemplatingAssemblyResolver;
+		public FakeTextTemplatingVariables FakeTextTemplatingVariables;
+		public FakeServiceProvider FakeServiceProvider;
+		public TextTemplatingHostContext HostContext;
 
 		public TestableTextTemplatingHost(string applicationBase)
 			: this(
-				new FakeTextTemplatingAppDomainFactory(), 
-				new FakeTextTemplatingAssemblyResolver(), 
+				new FakeTextTemplatingAppDomainFactory(),
+				new FakeTextTemplatingAssemblyResolver(),
+				new FakeTextTemplatingVariables(),
+				new FakeServiceProvider(),
 				applicationBase)
 		{
 		}
@@ -22,16 +27,37 @@ namespace TextTemplating.Tests.Helpers
 		public TestableTextTemplatingHost(
 			FakeTextTemplatingAppDomainFactory appDomainFactory,
 			FakeTextTemplatingAssemblyResolver assemblyResolver,
+			FakeTextTemplatingVariables textTemplatingVariables,
+			FakeServiceProvider fakeServiceProvider,
 			string applicationBase)
-			: base(appDomainFactory, assemblyResolver, applicationBase)
+			: this(
+				new TextTemplatingHostContext(
+					appDomainFactory,
+					assemblyResolver,
+					textTemplatingVariables,
+					fakeServiceProvider),
+				applicationBase)
 		{
 			FakeTextTemplatingAppDomainFactory = appDomainFactory;
 			FakeTextTemplatingAssemblyResolver = assemblyResolver;
+			FakeTextTemplatingVariables = textTemplatingVariables;
+			FakeServiceProvider = fakeServiceProvider;
+		}
+		
+		public TestableTextTemplatingHost(TextTemplatingHostContext context, string applicationBase)
+			: base(context, applicationBase)
+		{
+			HostContext = context;
 		}
 
 		public string CallResolveAssemblyReference(string assemblyReference)
 		{
 			return base.ResolveAssemblyReference(assemblyReference);
+		}
+		
+		public string CallResolvePath(string path)
+		{
+			return base.ResolvePath(path);
 		}
 	}
 }

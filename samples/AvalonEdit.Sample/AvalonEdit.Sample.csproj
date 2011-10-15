@@ -13,6 +13,9 @@
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
     <DebugSymbols>True</DebugSymbols>
@@ -93,10 +96,6 @@
     <Resource Include="Images\Save.png" />
     <Resource Include="Images\Undo.png" />
     <Resource Include="Images\WordWrap.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Images" />
-    <Folder Include="Images" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CustomHighlighting.xshd" />

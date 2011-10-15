@@ -8,7 +8,7 @@ using System.IO;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ProjectItems : IEnumerable<ProjectItem>
+	public class ProjectItems : MarshalByRefObject, IEnumerable<ProjectItem>
 	{
 		Project project;
 		IPackageManagementFileService fileService;

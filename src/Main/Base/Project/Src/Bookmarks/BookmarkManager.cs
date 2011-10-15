@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -27,6 +28,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
 			
+			WorkbenchSingleton.AssertMainThread();
+			
 			List<SDBookmark> marks = new List<SDBookmark>();
 			
 			foreach (SDBookmark mark in bookmarks) {
@@ -40,6 +43,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public static void AddMark(SDBookmark bookmark)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			if (bookmark == null) return;
 			if (bookmarks.Contains(bookmark)) return;
 			if (bookmarks.Exists(b => IsEqualBookmark(b, bookmark))) return;
@@ -62,12 +66,14 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public static void RemoveMark(SDBookmark bookmark)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			bookmarks.Remove(bookmark);
 			OnRemoved(new BookmarkEventArgs(bookmark));
 		}
 		
 		public static void Clear()
 		{
+			WorkbenchSingleton.AssertMainThread();
 			while (bookmarks.Count > 0) {
 				SDBookmark b = bookmarks[bookmarks.Count - 1];
 				bookmarks.RemoveAt(bookmarks.Count - 1);
@@ -96,6 +102,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public static List<SDBookmark> GetProjectBookmarks(ICSharpCode.SharpDevelop.Project.IProject project)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			List<SDBookmark> projectBookmarks = new List<SDBookmark>();
 			foreach (SDBookmark mark in bookmarks) {
 				if (mark.IsSaved && mark.FileName != null) {
@@ -109,6 +116,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		                                  Predicate<SDBookmark> canToggle,
 		                                  Func<TextLocation, SDBookmark> bookmarkFactory)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			foreach (SDBookmark bookmark in GetBookmarks(editor.FileName)) {
 				if (canToggle(bookmark) && bookmark.LineNumber == line) {
 					BookmarkManager.RemoveMark(bookmark);
@@ -125,6 +133,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			if (match == null)
 				throw new ArgumentNullException("Predicate is null!");
+			WorkbenchSingleton.AssertMainThread();
 			
 			for(int index = bookmarks.Count - 1; index >= 0; --index){
 				SDBookmark bookmark = bookmarks[index];

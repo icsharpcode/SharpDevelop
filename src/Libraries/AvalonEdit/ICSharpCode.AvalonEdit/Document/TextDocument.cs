@@ -587,7 +587,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		/// <param name="offset">The starting offset of the text to be replaced.</param>
 		/// <param name="length">The length of the text to be replaced.</param>
-		/// <param name="newText">The new text.</param>
+		/// <param name="text">The new text.</param>
 		public void Replace(int offset, int length, string text)
 		{
 			Replace(offset, length, text, null);

@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="ICSharpCode.AvalonEdit.Search.SearchPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.Search" FocusManager.IsFocusScope="True" PreviewKeyDown="SearchLayerKeyDown">
+	<Border Background="White" BorderBrush="DimGray" BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Top" Cursor="Arrow">
+		<StackPanel Orientation="Horizontal">
+			<TextBox x:FieldModifier="private" Name="searchTextBox" Focusable="True" Width="100" Height="24" Margin="3,3,3,0" PreviewKeyDown="SearchLayerKeyDown" AcceptsTab="True">
+				<TextBox.Text>
+					<Binding Path="SearchPattern" UpdateSourceTrigger="PropertyChanged">
+						<Binding.ValidationRules>
+							<ExceptionValidationRule />
+						</Binding.ValidationRules>
+					</Binding>
+				</TextBox.Text>
+			</TextBox>
+			<local:DropDownButton Height="24">
+				<local:DropDownButton.DropDownContent>
+					<Popup StaysOpen="False">
+						<Border Background="White" BorderBrush="DimGray" BorderThickness="1">
+							<StackPanel Orientation="Vertical">
+								<CheckBox x:FieldModifier="private" x:Name="matchCase" Content="Match case" Margin="3" />
+								<CheckBox x:FieldModifier="private" x:Name="wholeWords" Content="Match whole words" Margin="3" />
+								<CheckBox x:FieldModifier="private" x:Name="useRegex" Content="Use Regular Expressions" Margin="3" />
+							</StackPanel>
+						</Border>
+					</Popup>
+				</local:DropDownButton.DropDownContent>
+			</local:DropDownButton>
+			<Button Margin="3" Height="24" Width="24" Command="local:SearchCommands.FindPrevious" ToolTip="Find Next (Shift+F3)">
+				<Image Width="16" Height="16" Stretch="Fill" Source="prev.png" />
+			</Button>
+			<Button Margin="3" Height="24" Width="24" Command="local:SearchCommands.FindNext" ToolTip="Find Next (F3)">
+				<Image Width="16" Height="16" Stretch="Fill" Source="next.png" />
+			</Button>
+			<Button Click="CloseClick" Height="16" Width="16" HorizontalAlignment="Right" VerticalAlignment="Top"
+			        VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+				<Grid>
+					<Line X1="0" Y1="0" X2="8" Y2="8" Stroke="Black" StrokeThickness="1" />
+					<Line X1="8" Y1="0" X2="0" Y2="8" Stroke="Black" StrokeThickness="1" />
+				</Grid>
+			</Button>
+		</StackPanel>
+	</Border>
+</UserControl>

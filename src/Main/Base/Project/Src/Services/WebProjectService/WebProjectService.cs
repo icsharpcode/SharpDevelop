@@ -5,8 +5,8 @@ using System;
 using System.EnterpriseServices.Internal;
 using System.IO;
 using System.Reflection;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Parser;
 using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -14,11 +14,12 @@ namespace ICSharpCode.SharpDevelop.Project
 	public enum IISVersion
 	{
 		None = 0,
+		IISExpress = 4,
 		IIS5 = 5,
 		IIS6,
 		IIS7,
-		IISExpress,
-		IIS_Future
+		IIS8,
+		IIS_Future = 100
 	}
 	
 	public enum WebServer
@@ -49,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets &quot;iisexpress&quot; string.
 		/// </summary>
-		public const string IIS_EXPRESS_PROCESS_NAME = "iisexpress"; 
+		public const string IIS_EXPRESS_PROCESS_NAME = "iisexpress";
 		
 		/// <summary>
 		/// Gets &quot;aspnet_wp&quot; string.
@@ -155,7 +156,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static bool IsIISInstalled {
 			get {
-				return (int)IISVersion > 4;
+				return (int)IISVersion >= 4;
 			}
 		}
 		
@@ -189,12 +190,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		/// <param name="virtualDirectoryName">Virtual directory name.</param>
 		/// <param name="virtualDirectoryPath">Physical path.</param>
-		/// <returns></returns>
+		/// <returns>Error string or string null = no errors.</returns>
 		public static string CreateVirtualDirectory(string virtualDirectoryName, string physicalDirectoryPath)
 		{
 			try {
+				string iisNotFoundError = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
 				if (!IsIISInstalled)
-					return ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+					return iisNotFoundError;
 				
 				string error;
 				
@@ -208,20 +210,26 @@ namespace ICSharpCode.SharpDevelop.Project
 						          virtualDirectoryName,
 						          out error);
 						break;
-						
+					case IISVersion.None:
+						return iisNotFoundError;
 					default:
-						// TODO: find a better way to create IIS 7 applications without Microsoft.Web.Administration.ServerManager
+						// TODO: find a better way to create IIS applications without Microsoft.Web.Administration.ServerManager
 						string name = "/" + virtualDirectoryName;
-						// load from GAC - IIS7 is installed
-						Assembly webAdministrationAssembly;
+						// load from GAC
+						Assembly webAdministrationAssembly = null;
 						try {
-							// iis 7
-							webAdministrationAssembly = Assembly.Load("Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
+							// iis installed
+							foreach(var assembly in GacInterop.GetGacAssemblyFullNames()) {
+								if (assembly.ShortName == "Microsoft.Web.Administration") {
+									webAdministrationAssembly = Assembly.Load(assembly.FullName);
+									break;
+								}
+							}
+						} catch {
+							return iisNotFoundError;
 						}
-						catch {
-							// iis express
-							webAdministrationAssembly = Assembly.Load("Microsoft.Web.Administration, Version=7.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
-						}
+						if (webAdministrationAssembly == null)
+							return iisNotFoundError;
 						
 						// use dynamic because classic reflection is way TOO ugly
 						dynamic manager = webAdministrationAssembly.CreateInstance("Microsoft.Web.Administration.ServerManager");

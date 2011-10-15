@@ -1,7 +1,7 @@
 ﻿<SyntaxDefinition
 	xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"
 	name="TextTemplating"
-	extensions=".tt;.t4">
+	extensions=".tt;.t4;.ttinclude">
 	
 	<Color name="TemplateBlockStartEndTags" foreground="Black" background="Yellow" />
 	<Color name="DirectiveKeywords" foreground="Brown" fontWeight="bold" />
@@ -51,7 +51,7 @@
 		
 	</RuleSet>
 
-	<RuleSet name="DirectiveBlock">
+	<RuleSet name="DirectiveBlock" ignoreCase="true">
 		<Keywords color="DirectiveKeywords">
 			<Word>template</Word>
 			<Word>parameter</Word>

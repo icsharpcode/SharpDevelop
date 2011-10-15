@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ItemOperations
+	public class ItemOperations : MarshalByRefObject
 	{
 		IPackageManagementFileService fileService;
 		
