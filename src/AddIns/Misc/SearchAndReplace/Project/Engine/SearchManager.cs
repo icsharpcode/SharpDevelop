@@ -1,17 +1,13 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Siegfried
- * Date: 06.10.2011
- * Time: 21:33
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Search;
@@ -19,7 +15,6 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -27,7 +22,7 @@ using ICSharpCode.SharpDevelop.Project;
 namespace SearchAndReplace
 {
 	/// <summary>
-	/// Description of SearchManager.
+	/// Provides all search actions: find next, find all, mark all, mark result
 	/// </summary>
 	public class SearchManager
 	{
@@ -212,28 +207,8 @@ namespace SearchAndReplace
 		{
 			FileName[] files;
 			AnchorSegment selection;
-			
-			public AnchorSegment Selection {
-				get { return selection; }
-			}
-			
 			PermanentAnchor searchStart;
-			
-			public PermanentAnchor SearchStart {
-				get { return searchStart; }
-			}
-			
 			ISearchStrategy strategy;
-			
-			public ISearchStrategy Strategy {
-				get {
-					if (strategy == null)
-						strategy = SearchStrategyFactory.Create(pattern, ignoreCase, matchWholeWords, mode);
-					
-					return strategy;
-				}
-			}
-			
 			IEnumerator<SearchResultMatch> enumerator;
 			ParseableFileContentFinder finder = new ParseableFileContentFinder();
 			
@@ -276,22 +251,22 @@ namespace SearchAndReplace
 					
 					do {
 						int length;
-						if (Selection != null && file.Equals(searchStart.FileName)) {
-							searchOffset = Math.Max(Selection.Offset, searchOffset);
-							length = Selection.EndOffset - searchOffset;
+						if (selection != null && file.Equals(searchStart.FileName)) {
+							searchOffset = Math.Max(selection.Offset, searchOffset);
+							length = selection.EndOffset - searchOffset;
 						} else {
 							length = buffer.TextLength - searchOffset;
 						}
 						
 						if (length > 0 && (searchOffset + length) <= buffer.TextLength)
-							result = currentSearchRegion.Strategy.FindNext(DocumentUtilitites.GetTextSource(buffer), searchOffset, length);
+							result = strategy.FindNext(DocumentUtilitites.GetTextSource(buffer), searchOffset, length);
 						else
 							result = null;
 						
 						if (result != null)
 							searchOffset = result.EndOffset;
 						
-						if (processSecondPart && file.Equals(SearchStart.FileName) && searchOffset >= SearchStart.Offset) {
+						if (processSecondPart && file.Equals(searchStart.FileName) && searchOffset >= searchStart.Offset) {
 							yield break;
 						}
 						
@@ -319,7 +294,7 @@ namespace SearchAndReplace
 					AnchorSegment selection = null;
 					if (target == SearchTarget.CurrentSelection)
 						selection = new AnchorSegment(document, editor.SelectionStart, editor.SelectionLength);
-					return new SearchRegion(files, selection, new PermanentAnchor(editor.FileName, editor.Caret.Line, editor.Caret.Column), pattern, ignoreCase, matchWholeWords, mode, target, baseDirectory, filter, searchSubdirs);
+					return new SearchRegion(files, selection, new PermanentAnchor(editor.FileName, editor.Caret.Line, editor.Caret.Column), pattern, ignoreCase, matchWholeWords, mode, target, baseDirectory, filter, searchSubdirs) { strategy = SearchStrategyFactory.Create(pattern, ignoreCase, matchWholeWords, mode) };
 				}
 				
 				return null;
