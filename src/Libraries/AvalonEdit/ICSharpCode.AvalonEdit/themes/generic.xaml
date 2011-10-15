@@ -4,6 +4,7 @@
 	<ResourceDictionary.MergedDictionaries>
 		<ResourceDictionary Source="/ICSharpCode.AvalonEdit;component/TextEditor.xaml" />
 		<ResourceDictionary Source="/ICSharpCode.AvalonEdit;component/Search/DropDownButton.xaml" />
+		<ResourceDictionary Source="/ICSharpCode.AvalonEdit;component/Search/SearchPanel.xaml" />
 		<ResourceDictionary Source="/ICSharpCode.AvalonEdit;component/CodeCompletion/CompletionList.xaml" />
 		<ResourceDictionary Source="/ICSharpCode.AvalonEdit;component/CodeCompletion/InsightWindow.xaml" />
 	</ResourceDictionary.MergedDictionaries>

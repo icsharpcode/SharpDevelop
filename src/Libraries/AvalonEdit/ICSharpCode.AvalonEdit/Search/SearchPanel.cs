@@ -21,71 +21,114 @@ using ICSharpCode.AvalonEdit.Rendering;
 
 namespace ICSharpCode.AvalonEdit.Search
 {
-	/// <summary>
-	/// Interaction logic for SearchPanel.xaml
-	/// </summary>
-	public partial class SearchPanel : UserControl
+	public class SearchPanel : Control
 	{
 		TextArea textArea;
 		SearchResultBackgroundRenderer renderer;
 		SearchResult currentResult;
 		FoldingManager foldingManager;
+		TextBox searchTextBox;
+		SearchPanelAdorner adorner;
 		
-		bool UseRegex { get { return useRegex.IsChecked == true; } }
-		bool MatchCase { get { return matchCase.IsChecked == true; } }
-		bool WholeWords { get { return wholeWords.IsChecked == true; } }
+		public static readonly DependencyProperty UseRegexProperty =
+			DependencyProperty.Register("UseRegex", typeof(bool), typeof(SearchPanel),
+			                            new FrameworkPropertyMetadata(false, SearchPatternChangedCallback));
 		
-		string searchPattern;
+		public bool UseRegex {
+			get { return (bool)GetValue(UseRegexProperty); }
+			set { SetValue(UseRegexProperty, value); }
+		}
+		
+		public static readonly DependencyProperty MatchCaseProperty =
+			DependencyProperty.Register("MatchCase", typeof(bool), typeof(SearchPanel),
+			                            new FrameworkPropertyMetadata(false, SearchPatternChangedCallback));
+		
+		public bool MatchCase {
+			get { return (bool)GetValue(MatchCaseProperty); }
+			set { SetValue(MatchCaseProperty, value); }
+		}
+		
+		public static readonly DependencyProperty WholeWordsProperty =
+			DependencyProperty.Register("WholeWords", typeof(bool), typeof(SearchPanel),
+			                            new FrameworkPropertyMetadata(false, SearchPatternChangedCallback));
+		
+		public bool WholeWords {
+			get { return (bool)GetValue(WholeWordsProperty); }
+			set { SetValue(WholeWordsProperty, value); }
+		}
+		
+		public static readonly DependencyProperty SearchPatternProperty =
+			DependencyProperty.Register("SearchPattern", typeof(string), typeof(SearchPanel),
+			                            new FrameworkPropertyMetadata("", SearchPatternChangedCallback));
+		
+		public string SearchPattern {
+			get { return (string)GetValue(SearchPatternProperty); }
+			set { SetValue(SearchPatternProperty, value); }
+		}
+		
+		static SearchPanel()
+		{
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(SearchPanel), new FrameworkPropertyMetadata(typeof(SearchPanel)));
+		}
+		
 		ISearchStrategy strategy;
 		
-		/// <summary>
-		/// Gets/sets the content of the search box and the search string.
-		/// </summary>
-		public string SearchPattern {
-			get { return searchPattern; }
-			set {
-				searchPattern = value;
-				UpdateSearch();
+		static void SearchPatternChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			SearchPanel panel = d as SearchPanel;
+			if (panel != null) {
+				panel.ValidateSearchText();
+				panel.UpdateSearch();
 			}
 		}
 
 		void UpdateSearch()
 		{
 			messageView.IsOpen = false;
-			strategy = SearchStrategyFactory.Create(searchPattern ?? "", !MatchCase, WholeWords, UseRegex ? SearchMode.RegEx : SearchMode.Normal);
+			strategy = SearchStrategyFactory.Create(SearchPattern ?? "", !MatchCase, WholeWords, UseRegex ? SearchMode.RegEx : SearchMode.Normal);
 			DoSearch(true);
 		}
 		
 		/// <summary>
-		/// Creates a new SearchPanel and attaches it to a text area.
+		/// Creates a new SearchPanel.
 		/// </summary>
-		public SearchPanel(TextArea textArea)
+		public SearchPanel()
+		{
+		}
+		
+		public void Attach(TextArea textArea)
 		{
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
 			this.textArea = textArea;
+			var layer = AdornerLayer.GetAdornerLayer(textArea);
+			adorner = new SearchPanelAdorner(textArea, this);
+			if (layer != null)
+				layer.Add(adorner);
 			DataContext = this;
-			InitializeComponent();
 			
-			textArea.TextView.Layers.Add(this);
 			foldingManager = textArea.GetService(typeof(FoldingManager)) as FoldingManager;
 			
 			renderer = new SearchResultBackgroundRenderer();
 			textArea.TextView.BackgroundRenderers.Add(renderer);
 			textArea.Document.TextChanged += delegate { DoSearch(false); };
-			this.Loaded += delegate { searchTextBox.Focus(); };
+			KeyDown += SearchLayerKeyDown;
 			
-			useRegex.Checked     += ValidateSearchText;
-			matchCase.Checked    += ValidateSearchText;
-			wholeWords.Checked   += ValidateSearchText;
-			
-			useRegex.Unchecked   += ValidateSearchText;
-			matchCase.Unchecked  += ValidateSearchText;
-			wholeWords.Unchecked += ValidateSearchText;
+			this.CommandBindings.Add(new CommandBinding(SearchCommands.FindNext, (sender, e) => FindNext()));
+			this.CommandBindings.Add(new CommandBinding(SearchCommands.FindPrevious, (sender, e) => FindPrevious()));
+			this.CommandBindings.Add(new CommandBinding(SearchCommands.CloseSearchPanel, (sender, e) => Close()));
 		}
 		
-		void ValidateSearchText(object sender, RoutedEventArgs e)
+		public override void OnApplyTemplate()
 		{
+			base.OnApplyTemplate();
+			searchTextBox = Template.FindName("PART_searchTextBox", this) as TextBox;
+		}
+		
+		void ValidateSearchText()
+		{
+			if (searchTextBox == null)
+				return;
 			var be = searchTextBox.GetBindingExpression(TextBox.TextProperty);
 			try {
 				Validation.ClearInvalid(be);
@@ -101,6 +144,8 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// </summary>
 		public void Reactivate()
 		{
+			if (searchTextBox == null)
+				return;
 			searchTextBox.Focus();
 			searchTextBox.SelectAll();
 		}
@@ -182,25 +227,61 @@ namespace ICSharpCode.AvalonEdit.Search
 						FindPrevious();
 					else
 						FindNext();
-					var error = Validation.GetErrors(searchTextBox).FirstOrDefault();
-					if (error != null) {
-						messageView.Content = "Error: " + error.ErrorContent;
-						messageView.PlacementTarget = searchTextBox;
-						messageView.IsOpen = true;
+					if (searchTextBox != null) {
+						var error = Validation.GetErrors(searchTextBox).FirstOrDefault();
+						if (error != null) {
+							messageView.Content = "Error: " + error.ErrorContent;
+							messageView.PlacementTarget = searchTextBox;
+							messageView.IsOpen = true;
+						}
 					}
 					break;
 				case Key.Escape:
 					e.Handled = true;
-					CloseClick(sender, e);
+					Close();
 					break;
 			}
 		}
 		
-		void CloseClick(object sender, RoutedEventArgs e)
+		/// <summary>
+		/// Closes the SearchPanel.
+		/// </summary>
+		public void Close()
 		{
-			textArea.TextView.Layers.Remove(this);
+			var layer = AdornerLayer.GetAdornerLayer(textArea);
+			if (layer != null)
+				layer.Remove(adorner);
 			textArea.TextView.BackgroundRenderers.Remove(renderer);
 			messageView.IsOpen = false;
+		}
+	}
+	
+	class SearchPanelAdorner : Adorner
+	{
+		SearchPanel panel;
+		
+		public SearchPanelAdorner(TextArea textArea, SearchPanel panel)
+			: base(textArea)
+		{
+			this.panel = panel;
+			AddVisualChild(panel);
+		}
+		
+		protected override int VisualChildrenCount {
+			get { return 1; }
+		}
+
+		protected override Visual GetVisualChild(int index)
+		{
+			if (index != 0)
+				throw new ArgumentOutOfRangeException();
+			return panel;
+		}
+		
+		protected override Size ArrangeOverride(Size finalSize)
+		{
+			panel.Arrange(new Rect(new Point(0, 0), finalSize));
+			return new Size(panel.ActualWidth, panel.ActualHeight);
 		}
 	}
 }
