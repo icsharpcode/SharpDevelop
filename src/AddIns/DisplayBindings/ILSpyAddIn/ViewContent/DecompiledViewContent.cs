@@ -175,6 +175,7 @@ namespace ICSharpCode.ILSpyAddIn
 			// save decompilation data
 			decompiledType = typeDefinition;
 			
+			/*
 			int token = decompiledType.MetadataToken.ToInt32();
 			var info = new DecompileInformation {
 				CodeMappings = astBuilder.CodeMappings,
@@ -184,6 +185,7 @@ namespace ICSharpCode.ILSpyAddIn
 			
 			// save the data
 			DebuggerDecompilerService.DebugInformation.AddOrUpdate(token, info, (k, v) => info);
+			*/
 		}
 		
 		void OnDecompilationFinished(StringWriter output)
