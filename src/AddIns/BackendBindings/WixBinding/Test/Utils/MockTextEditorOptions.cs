@@ -50,5 +50,11 @@ namespace WixBinding.Tests.Utils
 		}
 		
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged { add { } remove { } }
+		
+		public string FontFamily {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

@@ -85,6 +85,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 			public bool UnderlineErrors {
 				get { return true; }
 			}
+			
+			public string FontFamily {
+				get {
+					return "Consolas";
+				}
+			}
 		}
 	}
 }

@@ -8,9 +8,11 @@
  */
 using System;
 using System.Drawing;
+using System.Linq;
+
+using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.Globals;
 using iTextSharp.text.pdf;
-using System.Linq;
 
 namespace ICSharpCode.Reports.Core.Exporter
 {
@@ -46,10 +48,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 					                      style.DisplayRectangle);
 				}
 				Items.ForEach(item =>item.DrawItem(graphics));
-//				foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in Items)
-//				{
-//					baseExportColumn.DrawItem(graphics);
-//				}
 			}
 		}
 		

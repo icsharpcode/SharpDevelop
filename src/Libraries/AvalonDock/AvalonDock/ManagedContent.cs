@@ -269,7 +269,9 @@ namespace AvalonDock
             {
                 _dragEnabledArea.MouseRightButtonDown += (s, e) =>
                     {
-                        if (!e.Handled)
+                        // HACK: WPF still calls MouseRightButtonDown even if this managed content was just closed,
+                        // causing an exception (SD-1858). So avoid handling this event if the ManagedContent was unloaded.
+                        if (!e.Handled && this.IsLoaded)
                         {
                             Activate();
                             if (_dragEnabledArea.ContextMenu == null)
@@ -400,7 +402,9 @@ namespace AvalonDock
         {
             base.OnMouseDown(e);
 
-            if (!e.Handled)
+            // HACK: WPF still calls MouseRightButtonDown even if this managed content was just closed,
+            // causing an exception (SD-1858). So avoid handling this event if the ManagedContent was unloaded.
+            if (!e.Handled && this.IsLoaded)
             {
                 Activate();
                 //FocusManager.SetFocusedElement(Content as DependencyObject, DefaultElement);

@@ -158,5 +158,9 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public DateTime? LastUpdated { get; set; }
+		public bool IsLatestVersion { get; set; }
+		public Nullable<DateTimeOffset> Published { get; set; }
+		public string ReleaseNotes { get; set; }
+		public string Copyright { get; set; }
 	}
 }

@@ -67,7 +67,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 		{
 			if (alreadyCalled) {
 				alreadyCalled = false;
-				actions();
+				// thread-safety: copy delegate reference into local variable
+				var actions = this.actions;
+				if (actions != null)
+					actions();
 			}
 		}
 		
@@ -90,12 +93,14 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public static RepoChangeWatcher AddWatch(string repositoryRoot, Action action)
 		{
 			RepoChangeWatcher watcher;
-			if (!watchers.TryGetValue(repositoryRoot, out watcher)) {
-				watcher = new RepoChangeWatcher(repositoryRoot);
-				watchers.Add(repositoryRoot, watcher);
+			lock (watchers) {
+				if (!watchers.TryGetValue(repositoryRoot, out watcher)) {
+					watcher = new RepoChangeWatcher(repositoryRoot);
+					watchers.Add(repositoryRoot, watcher);
+				}
+				
+				watcher.actions += action;
 			}
-			
-			watcher.actions += action;
 			return watcher;
 		}
 		
@@ -103,12 +108,14 @@ namespace ICSharpCode.SharpDevelop.Editor
 		
 		public void ReleaseWatch(Action action)
 		{
-			actions -= action;
-			if (actions == null && !disposed) {
-				WorkbenchSingleton.MainWindow.Activated -= MainWindowActivated;
-				watchers.Remove(watcher.Path);
-				this.watcher.Dispose();
-				disposed = true;
+			lock (watchers) {
+				actions -= action;
+				if (actions == null && !disposed) {
+					WorkbenchSingleton.MainWindow.Activated -= MainWindowActivated;
+					watchers.Remove(watcher.Path);
+					this.watcher.Dispose();
+					disposed = true;
+				}
 			}
 		}
 	}

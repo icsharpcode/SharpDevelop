@@ -8,13 +8,20 @@ namespace TextTemplating.Tests.Helpers
 {
 	public class FakeTextTemplatingAssemblyResolver : ITextTemplatingAssemblyResolver
 	{
-		public string AssembyReferencePassedToResolve;
-		public string ResolveReturnValue = String.Empty;
+		public string AssembyReferencePassedToResolvePath;
+		public string ResolvePathReturnValue = String.Empty;
 		
-		public string Resolve(string assemblyReference)
+		public string ResolvePath(string assemblyReference)
 		{
-			this.AssembyReferencePassedToResolve = assemblyReference;
-			return ResolveReturnValue;
+			this.AssembyReferencePassedToResolvePath = assemblyReference;
+			return ResolvePathReturnValue;
+		}
+		
+		public bool IsDisposeCalled;
+		
+		public void Dispose()
+		{
+			IsDisposeCalled = true;
 		}
 	}
 }

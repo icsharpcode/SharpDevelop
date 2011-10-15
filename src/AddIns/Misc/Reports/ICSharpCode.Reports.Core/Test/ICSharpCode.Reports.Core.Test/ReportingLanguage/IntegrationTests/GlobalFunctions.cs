@@ -58,28 +58,6 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		
 		
 		[Test]
-		
-		#region Template for Resolution
-/*		
-//			const string expression = "PageNumber()";
-//			var compiler = new ReportingLanguageCompiler();
-//			IExpression compiled = compiler.CompileExpression<string>(expression);
-			
-//			var context = new ExpressionContext(null);
-//			context.ResolveUnknownVariable += VariableStore;
-            
-			
-//			context.ResolveUnknownVariable += (sender, args) =>
-//                                                  {
-//                                                      Assert.That(args.VariableName, Is.EqualTo("pagenumber"));
-//                                                      //args.VariableValue = 123.456;
-//                                                  };
-            //Assert.That(compiled.Evaluate(context), Is.EqualTo("15"));
-            Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo("15"));
-            //this.evaluator.Evaluate(expression)
-  */          
-		#endregion
-		
 		public void Can_Compile_PageNumber_AsFunction()
 		{
 			const string expression = "=PageNumber()";
@@ -98,7 +76,6 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		[Test]
 		public void UnknownFunction_ErrorMessage()
 		{
-			
 			const string expression = "=TotalWrongFunction()";
 			string s  = this.evaluator.Evaluate(expression);
 			Assert.That(s.Contains("TotalWrongFunction"));

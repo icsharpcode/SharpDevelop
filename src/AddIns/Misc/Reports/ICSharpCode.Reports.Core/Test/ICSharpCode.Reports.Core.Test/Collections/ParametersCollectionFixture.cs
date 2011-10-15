@@ -109,26 +109,6 @@ namespace ICSharpCode.Reports.Core.Test.Basics
 			Assert.AreEqual(System.Data.DbType.String,bp.DataType);
 		}
 		
-		
-		[Test]
-		public void ExtractAllSqlParameters ()
-		{
-			ParameterCollection p = this.CollectionWithSQLParameters();
-			p.Add(new SqlParameter ("sql",System.Data.DbType.String,"SqlParameter2"));
-			System.Collections.Generic.List<SqlParameter> pp = p.ExtractSqlParameters();
-			Assert.IsNotNull(pp);
-			Assert.AreEqual(2,pp.Count);
-			SqlParameter p1 = pp[0];
-			//p.Add(new SqlParameter ("p2",System.Data.DbType.String,"Parameter2"));
-			Assert.AreEqual("p2",p1.ParameterName);
-			Assert.AreEqual("Parameter2",p1.ParameterValue);
-			Assert.AreEqual(System.Data.DbType.String,p1.DataType);
-//			p.Add(new SqlParameter ("sql",System.Data.DbType.String,"SqlParameter2"));
-			SqlParameter p2 = pp[1];
-			Assert.AreEqual("sql",p2.ParameterName);
-			Assert.AreEqual("SqlParameter2",p2.ParameterValue);
-			Assert.AreEqual(System.Data.DbType.String,p2.DataType);
-		}
 		#endregion
 		
 		[Test]

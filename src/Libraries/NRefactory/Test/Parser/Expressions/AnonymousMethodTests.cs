@@ -55,5 +55,12 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			//Assert.AreEqual(1, ame.Body.Children.Count);
 			//Assert.IsTrue(ame.Body.Children[0] is ReturnStatement);
 		}
+		
+		[Test]
+		public void AsyncSimpleAnonymousMethod()
+		{
+			AnonymousMethodExpression ame = Parse("async delegate { }");
+			Assert.IsTrue(ame.IsAsync);
+		}
 	}
 }

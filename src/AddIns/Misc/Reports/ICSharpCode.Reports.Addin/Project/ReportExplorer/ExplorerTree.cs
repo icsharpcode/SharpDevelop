@@ -5,12 +5,12 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.SharpDevelop;
-
+using ICSharpCode.Reports.Core.BaseClasses;
 namespace ICSharpCode.Reports.Addin
 {
 	
@@ -19,9 +19,11 @@ namespace ICSharpCode.Reports.Addin
 	/// </summary>
 	internal class ExplorerTree:TreeView,INotifyPropertyChanged
 	{
-		private const string sortColumnMenu = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnSortTreeNode";
+		private const string sortColumnMenuPath = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnSortTreeNode";
 		private const string sectionContextMenu = "/SharpDevelopReports/ContextMenu/FieldsExplorer/SectionTreeNode";
 		private const string parameterEditorMenu = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ParameterNode";
+		private const string groupContextMenuPath ="/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnGroupTreeNode";
+		
 		private SectionNode nodeRoot;
 		private SectionNode nodeModel;
 
@@ -130,7 +132,7 @@ namespace ICSharpCode.Reports.Addin
 		{
 			SortColumnNode sortNode = new SortColumnNode (node.Text,
 			                                              ExplorerTree.ascendingIcon,
-			                                              ExplorerTree.sortColumnMenu);
+			                                              ExplorerTree.sortColumnMenuPath);
 
 			sortNode.SortDirection = ListSortDirection.Ascending;
 			this.SelectedNode = sortNode;
@@ -147,7 +149,7 @@ namespace ICSharpCode.Reports.Addin
 		{
 			this.nodeSorting.Nodes.Clear();
 			GroupColumnNode groupNode = new GroupColumnNode(node.Text,ExplorerTree.ascendingIcon,
-			                                                ExplorerTree.sortColumnMenu);
+			                                                ExplorerTree.sortColumnMenuPath);
 			groupNode.SortDirection = ListSortDirection.Ascending;
 			this.SelectedNode = groupNode;
 			sectionNode.Nodes.Add(groupNode);
@@ -284,37 +286,44 @@ namespace ICSharpCode.Reports.Addin
 		
 		
 		#region FillTree
-		
-		private void SetSortColumns()
-		{
-			this.nodeSorting.Nodes.Clear();
-			SortColumnNode scn = null;
-			foreach (SortColumn sc in this.reportModel.ReportSettings.SortColumnsCollection){
-				if (sc.SortDirection == ListSortDirection.Ascending) {
-					scn  = new SortColumnNode (sc.ColumnName,ascendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnSortTreeNode");
-				} else {
-					scn = new SortColumnNode (sc.ColumnName,descendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnSortTreeNode");
-				}
-				this.nodeSorting.Nodes.Add(scn);
-			}
-		}
-		
+	
 		private void SetGroupColumns()
 		{
-			this.nodeGrouping.Nodes.Clear();
-			GroupColumnNode groupNode = null;
 			foreach (GroupColumn groupColumn in this.reportModel.ReportSettings.GroupColumnsCollection)
 			{
+				var groupNode  = new GroupColumnNode(groupColumn.ColumnName,groupContextMenuPath);
 				if (groupColumn.SortDirection  == ListSortDirection.Ascending) {
-					groupNode  = new GroupColumnNode (groupColumn.ColumnName,ascendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnGroupTreeNode");
+					groupNode.ImageIndex  = ascendingIcon;
 				} else {
-					groupNode  = new GroupColumnNode (groupColumn.ColumnName,descendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnGroupTreeNode");
+					groupNode.ImageIndex = descendingIcon;
 				}
 				this.nodeGrouping.Nodes.Add(groupNode);
+				foreach (var p in this.reportModel.ReportSettings.AvailableFieldsCollection.Where(p => (p.ColumnName != groupColumn.ColumnName))) 
+				{
+					var cn = new ColumnNode(p.ColumnName,columnIcon);
+					groupNode.Nodes.Add(cn);
+				}
 			}
-					
 		}
 			
+		
+		public  void BuildTree () 
+		{
+			this.BeginUpdate();
+			this.nodeAvailableFields.Nodes.Clear();
+			this.nodeSorting.Nodes.Clear();
+			this.nodeGrouping.Nodes.Clear();
+			this.nodeParams.Nodes.Clear();	
+			this.reportModel.ReportSettings.AvailableFieldsCollection.ForEach(SetAvailableFields);
+			this.reportModel.ReportSettings.SortColumnsCollection.ForEach(SetSortColumns);
+			SetGroupColumns();
+			this.reportModel.ReportSettings.ParameterCollection.ForEach(SetParams);
+//			SetFunctions();
+			this.ExpandAll();
+			this.EndUpdate();
+		}
+		
+		
 		private void SetAvailableFields (AbstractColumn af)
 		{
 			ColumnNode node = new ColumnNode(af.ColumnName,columnIcon);
@@ -324,31 +333,30 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		private void SetParameters ()
+		private void SetSortColumns (AbstractColumn column)
 		{
-			this.nodeParams.Nodes.Clear();		
-			foreach (BasicParameter p in this.reportModel.ReportSettings.ParameterCollection)
-			{
+			SortColumn sortColumn = column as SortColumn;
+			
+			if (sortColumn != null) {
+				var  sortColumnNode = new SortColumnNode (sortColumn.ColumnName,sortColumnMenuPath);
+
+				if (sortColumn.SortDirection == ListSortDirection.Ascending) {
+					sortColumnNode.ImageIndex = ascendingIcon;
+				} else {
+					sortColumnNode.ImageIndex = descendingIcon;
+				}
+				this.nodeSorting.Nodes.Add(sortColumnNode);
+			}
+			
+		}
+		
+		private void SetParams (BasicParameter p)
+		{
 				string s = String.Format(System.Globalization.CultureInfo.CurrentCulture,
 				                         "{0}[{1}]",p.ParameterName,p.ParameterValue);
 				ParameterNode node = new ParameterNode(s,columnIcon);
 				this.nodeParams.Nodes.Add(node);
-			}
 		}
-		
-		
-		public  void BuildTree () 
-		{
-			this.BeginUpdate();
-			this.reportModel.ReportSettings.AvailableFieldsCollection.ForEach(SetAvailableFields);
-			SetSortColumns();
-			SetGroupColumns();
-			SetParameters();
-//			SetFunctions();
-			this.ExpandAll();
-			this.EndUpdate();
-		}
-		
 		
 		#endregion
 		
@@ -371,18 +379,19 @@ namespace ICSharpCode.Reports.Addin
 			nodeAvailableFields.ContextMenuAddinTreePath = String.Empty;
 			this.nodeModel.Nodes.Add(this.nodeAvailableFields);
 			
-	
+			nodeGrouping = new SectionNode (ResourceService.GetString("SharpReport.FieldsExplorer.Grouping"));
+			nodeGrouping.ImageIndex = folderClosed;
+			nodeGrouping.SelectedImageIndex = folderOpen;
+			nodeGrouping.ContextMenuAddinTreePath = ExplorerTree.sectionContextMenu;
+			this.nodeModel.Nodes.Add(this.nodeGrouping);
+			
 			nodeSorting = new SectionNode (ResourceService.GetString("SharpReport.FieldsExplorer.Sorting"));
 			nodeSorting.ImageIndex = folderClosed;
 			nodeSorting.SelectedImageIndex = folderOpen;
 			nodeSorting.ContextMenuAddinTreePath = ExplorerTree.sectionContextMenu;
 			this.nodeModel.Nodes.Add(this.nodeSorting);
 			
-			nodeGrouping = new SectionNode (ResourceService.GetString("SharpReport.FieldsExplorer.Grouping"));
-			nodeGrouping.ImageIndex = folderClosed;
-			nodeGrouping.SelectedImageIndex = folderOpen;
-			nodeGrouping.ContextMenuAddinTreePath = ExplorerTree.sectionContextMenu;
-			this.nodeModel.Nodes.Add(this.nodeGrouping);
+			
 			
 			nodeFunction = new TreeNode(ResourceService.GetString("SharpReport.FieldsExplorer.Functions"));
 			nodeFunction.ImageIndex = folderClosed;
@@ -393,7 +402,6 @@ namespace ICSharpCode.Reports.Addin
 			nodeParams.ImageIndex = folderClosed;
 			nodeParams.SelectedImageIndex = folderOpen;
 			nodeParams.ContextMenuAddinTreePath = ExplorerTree.parameterEditorMenu;
-			
 			
 			this.nodeModel.Nodes.Add(this.nodeParams);
 			this.nodeRoot.Nodes.Add(nodeModel);

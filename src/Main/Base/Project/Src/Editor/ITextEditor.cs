@@ -153,6 +153,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets whether errors should be underlined.
 		/// </summary>
 		bool UnderlineErrors { get; }
+		
+		/// <summary>
+		/// Gets the name of the currently used font.
+		/// </summary>
+		string FontFamily { get; }
 	}
 	
 	public interface ITextEditorCaret

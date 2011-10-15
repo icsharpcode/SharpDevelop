@@ -40,6 +40,8 @@ namespace HexEditor
 		int underscorewidth, underscorewidth3, fontheight;
 		bool insertmode, hexinputmode, selectionmode, handled, moved;
 		
+		public bool Initializing { get; set; }
+		
 		Point oldMousePos = new Point(0,0);
 		
 		Rectangle[] selregion;
@@ -297,7 +299,7 @@ namespace HexEditor
 			get { return bytesPerLine; }
 			set {
 				if (value < 1) value = 1;
-				if (value > CalculateMaxBytesPerLine()) value = CalculateMaxBytesPerLine();
+				if (!Initializing && value > CalculateMaxBytesPerLine()) value = CalculateMaxBytesPerLine();
 				bytesPerLine = value;
 				UpdateViews();
 				

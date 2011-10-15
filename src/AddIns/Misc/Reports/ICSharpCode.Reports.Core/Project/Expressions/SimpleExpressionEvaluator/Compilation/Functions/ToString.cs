@@ -28,7 +28,7 @@ $Log: /CoreServices/Hsi/ExpressionEvaluator/Parser/Functions/ToString.cs $
 #endregion
 
 using System;
-
+using System.Globalization;
 
 namespace SimpleExpressionEvaluator.Compilation.Functions
 {
@@ -51,7 +51,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions
                 Array.Copy(args, 1, newArgs, 0, nTarget);
                 try
                 {
-                    return String.Format(strFormat, newArgs);
+                    return String.Format(CultureInfo.CurrentCulture, strFormat, newArgs);
                 }
                 catch (Exception ex)
                 {

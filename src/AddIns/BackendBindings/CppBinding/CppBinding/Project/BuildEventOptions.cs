@@ -14,6 +14,7 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.CppBinding.Project
 {
+	/*
 	/// <summary>
 	/// Description of BuildEventOptions.
 	/// </summary>
@@ -32,5 +33,5 @@ namespace ICSharpCode.CppBinding.Project
 			ComboBox runPostBuildEventComboBox = Get<ComboBox>("runPostBuildEvent");
 			runPostBuildEventComboBox.Enabled = false;
 		}
-	}
+	}*/
 }

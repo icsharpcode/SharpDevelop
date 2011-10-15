@@ -41,17 +41,20 @@ namespace SharpReportSamples
 			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("PushModel-IList");
 			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Provider Independent");
 			System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Customized");
-			System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Sample Reports", new System.Windows.Forms.TreeNode[] {
+			System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("StoredProcedure");
+			System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Sample Reports", new System.Windows.Forms.TreeNode[] {
 									treeNode1,
 									treeNode2,
 									treeNode3,
 									treeNode4,
-									treeNode5});
+									treeNode5,
+									treeNode6});
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.label1 = new System.Windows.Forms.Label();
 			this.previewControl1 = new ICSharpCode.Reports.Core.ReportViewer.PreviewControl();
 			this.menuStrip2 = new System.Windows.Forms.MenuStrip();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -93,10 +96,12 @@ namespace SharpReportSamples
 			treeNode4.Text = "Provider Independent";
 			treeNode5.Name = "CustomizedNode";
 			treeNode5.Text = "Customized";
-			treeNode6.Name = "Customized";
-			treeNode6.Text = "Sample Reports";
+			treeNode6.Name = "StoredProcedure";
+			treeNode6.Text = "StoredProcedure";
+			treeNode7.Name = "Customized";
+			treeNode7.Text = "Sample Reports";
 			this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-									treeNode6});
+									treeNode7});
 			this.treeView1.Size = new System.Drawing.Size(148, 444);
 			this.treeView1.TabIndex = 0;
 			this.treeView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.TreeView1MouseDoubleClick);
@@ -144,6 +149,7 @@ namespace SharpReportSamples
 			this.Text = "SharpReportSamples";
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
 			this.splitContainer1.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();

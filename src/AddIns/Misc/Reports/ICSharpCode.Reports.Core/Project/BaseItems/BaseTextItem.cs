@@ -67,7 +67,7 @@ namespace ICSharpCode.Reports.Core
 			style.ContentAlignment = this.contentAlignment;
 			style.FormatString = this.formatString;
 			style.DataType = this.dataType;
-			style.RightToLeft = this.RightToLeft;
+			style.RightToLeft = this.RTL;
 			
 			return style;
 		}
@@ -184,7 +184,7 @@ namespace ICSharpCode.Reports.Core
 		public virtual StringFormat StringFormat {
 			get {
 				var sf = TextDrawer.BuildStringFormat (this.StringTrimming,this.ContentAlignment);
-				if (this.RightToLeft == System.Windows.Forms.RightToLeft.Yes) {
+				if (this.RTL == System.Windows.Forms.RightToLeft.Yes) {
 					sf.FormatFlags = sf.FormatFlags | StringFormatFlags.DirectionRightToLeft;
 				}
 				return sf;
@@ -192,8 +192,7 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		public System.Windows.Forms.RightToLeft RightToLeft {get;set;}
-		
+		public System.Windows.Forms.RightToLeft RTL {get;set;}
 		
 		#region IExpression
 		

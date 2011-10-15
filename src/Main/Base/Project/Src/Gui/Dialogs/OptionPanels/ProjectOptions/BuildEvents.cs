@@ -7,27 +7,23 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class BuildEvents : AbstractXmlFormsProjectOptionPanel
+	partial class BuildEvents : ProjectOptionPanel
 	{
-		public override void LoadPanelContents()
+		public BuildEvents()
 		{
-			SetupFromXmlResource("ProjectOptions.BuildEvents.xfrm");
-			
-			InitializeHelper();
-			baseDirectory = Path.GetDirectoryName(project.OutputAssemblyFullPath);
-			
-			ConfigurationGuiBinding b;
-			
-			b = helper.BindString("preBuildEventTextBox", "PreBuildEvent", TextBoxEditMode.EditRawProperty);
-			b.CreateLocationButton("preBuildEventTextBox");
-			
-			b = helper.BindString("postBuildEventTextBox", "PostBuildEvent", TextBoxEditMode.EditRawProperty);
-			b.CreateLocationButton("postBuildEventTextBox");
-			
-			b = helper.BindEnum<RunPostBuildEvent>("runPostBuildEventComboBox", "RunPostBuildEvent");
-			b.CreateLocationButton("runPostBuildEventComboBox");
-			
-			helper.AddConfigurationSelector(this);
+			InitializeComponent();
+		}
+		
+		public ProjectProperty<string> PreBuildEvent {
+			get { return GetProperty("PreBuildEvent", "", TextBoxEditMode.EditRawProperty); }
+		}
+		
+		public ProjectProperty<string> PostBuildEvent {
+			get { return GetProperty("PostBuildEvent", "", TextBoxEditMode.EditRawProperty); }
+		}
+		
+		public ProjectProperty<RunPostBuildEvent> RunPostBuildEvent {
+			get { return GetProperty("RunPostBuildEvent", Project.RunPostBuildEvent.OnBuildSuccess); }
 		}
 	}
 }

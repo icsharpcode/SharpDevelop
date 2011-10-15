@@ -3,8 +3,9 @@
 
 using System;
 using System.Windows.Forms;
-using NUnit.Framework;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Interfaces;
+using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Dialogs
 {

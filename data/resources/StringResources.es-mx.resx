@@ -5778,6 +5778,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.SetCurrentStatement" xml:space="preserve">
     <value>Establecer la instrucción actual</value>
   </data>
+  <data name="MainWindow.Windows.Debug.StopDebugging.Message" xml:space="preserve">
+    <value>¿Quiere detener la depuración?</value>
+  </data>
   <data name="MainWindow.Windows.Debug.StopProcessDialog.Message" xml:space="preserve">
     <value>¿Desasociar del proceso o terminarlo?</value>
   </data>
@@ -8122,15 +8125,6 @@ Error al iniciar:</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Usuario:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>¡Debería estar atento a nuevas versiones de SharpDevelop y decirle a sus amigos lo bueno que es para crear programas en C#!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>¿Que puede abrir la ventana de plantillas de código con Ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>¿Que puedes escribir "? nombre=...;" (C#) o "Dim nombre As ?=..." (VB) y SharpDevelop reemplazará el símbolo de interrogación por el tipo de "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Opciones del búfer</value>

@@ -9,6 +9,7 @@ using ICSharpCode.Reports.Addin.Dialogs;
 using ICSharpCode.Reports.Addin.TypeProviders;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Dialogs;
 using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin
@@ -138,16 +139,20 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
+		#endregion
+		
+		#region RighToLeft
 		
 		[Category("Appearance")]
-		public override System.Windows.Forms.RightToLeft RightToLeft {
+		public  System.Windows.Forms.RightToLeft RTL
+		{
 			get { return base.RightToLeft; }
 			set { base.RightToLeft = value; }
 		}
-		
-		
+
 		#endregion
 		
+		#region DataType
 		
 		[Browsable(true),
 		 Category("Databinding"),
@@ -157,6 +162,7 @@ namespace ICSharpCode.Reports.Addin
 
 		public string DataType {get;set;}
 		
+		#endregion
 		
 		#region Expression
 		
@@ -168,6 +174,7 @@ namespace ICSharpCode.Reports.Addin
 		public string Expression {get;set;}
 		
 		#endregion
+		
 		
 		#region CanGrow/CanShrink
 		

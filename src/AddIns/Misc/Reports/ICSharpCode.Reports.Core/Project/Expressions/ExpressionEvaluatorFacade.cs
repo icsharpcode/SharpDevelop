@@ -94,7 +94,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		
 		static void WriteLogMessage(Exception e)
 		{
-			Console.WriteLine("");
+			Console.WriteLine("-----LogMessage---------");
 			Console.WriteLine("ExpressionEvaluatorFacade.Evaluate");
 			Console.WriteLine(e.Message);
             Console.WriteLine(e.TargetSite);

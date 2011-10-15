@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Dialogs;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -68,9 +69,17 @@ namespace ICSharpCode.Reports.Addin.Commands
 		
 		public override void Run()
 		{
-			if (model.ReportSettings.ParameterCollection != null && model.ReportSettings.ParameterCollection.Count > 0) {
-				using (ParameterDialog dlg = new ParameterDialog(model.ReportSettings.ParameterCollection)){
-					dlg.ShowDialog();
+			if (model.ReportSettings.SqlParameters.Count > 0) {
+				using (ParameterDialog paramDialog = new ParameterDialog(model.ReportSettings.SqlParameters))
+				{
+					paramDialog.ShowDialog();
+					if (paramDialog.DialogResult == System.Windows.Forms.DialogResult.OK) {
+						foreach (SqlParameter bp in paramDialog.SqlParameterCollection)
+						{
+							var p = model.ReportSettings.SqlParameters.Find (bp.ParameterName);
+							p.ParameterValue = bp.ParameterValue;
+						}
+					}
 				}
 			}
 		}

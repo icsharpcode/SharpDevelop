@@ -42,6 +42,13 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("TargetMethod", ident.Identifier);
 			Assert.AreEqual(1, ident.TypeArguments.Count);
 		}
+		
+		[Test]
+		public void AsyncIsIdentifier()
+		{
+			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("async");
+			Assert.AreEqual("async", ident.Identifier);
+		}
 		#endregion
 		
 		#region VB.NET

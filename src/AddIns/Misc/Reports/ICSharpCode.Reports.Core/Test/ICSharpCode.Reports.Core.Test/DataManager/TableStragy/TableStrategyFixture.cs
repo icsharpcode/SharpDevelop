@@ -19,7 +19,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		[Test]
 		public void TableStrategy_CanInit()
 		{
-			var ts = new ICSharpCode.Reports.Core.TableStrategy(this.table,new ReportSettings());
+			var ts = new ICSharpCode.Reports.Core.ListStrategy.TableStrategy(this.table,new ReportSettings());
 			Assert.That(ts != null);
 		}
 		
@@ -30,7 +30,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		public void CanGroup_All_Elements_are_GroupComparer ()
 		{
 			GroupColumn groupComparer = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
-			ICSharpCode.Reports.Core.TableStrategy tableStrategy = GroupTableStrategyFactory (groupComparer);
+			ICSharpCode.Reports.Core.ListStrategy.TableStrategy tableStrategy = GroupTableStrategyFactory (groupComparer);
 			tableStrategy.Bind();
 			foreach (BaseComparer element in tableStrategy.IndexList) 
 			{
@@ -120,7 +120,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 			reportSettings.SortColumnsCollection.Add(sc);
 			reportSettings.SortColumnsCollection.Add(sc1);
 			
-			var tableStrategy = new ICSharpCode.Reports.Core.TableStrategy(this.table,reportSettings);
+			var tableStrategy = new ICSharpCode.Reports.Core.ListStrategy.TableStrategy(this.table,reportSettings);
 			string v1 = String.Empty;
 			
 			foreach (BaseComparer element in tableStrategy.IndexList) {
@@ -136,20 +136,20 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		
 		#region Setup/TearDown
 		
-		private ICSharpCode.Reports.Core.TableStrategy SortTableStrategyFactory (SortColumn sortColumn)
+		private ICSharpCode.Reports.Core.ListStrategy.TableStrategy SortTableStrategyFactory (SortColumn sortColumn)
 		{
 			var reportSettings = new ReportSettings();
 			reportSettings.SortColumnsCollection.Add(sortColumn);
-			var tableStrategy = new ICSharpCode.Reports.Core.TableStrategy(this.table,reportSettings);
+			var tableStrategy = new ICSharpCode.Reports.Core.ListStrategy.TableStrategy(this.table,reportSettings);
 			return tableStrategy;
 		}
 		
 		
-		private ICSharpCode.Reports.Core.TableStrategy GroupTableStrategyFactory (GroupColumn sortColumn)
+		private ICSharpCode.Reports.Core.ListStrategy.TableStrategy GroupTableStrategyFactory (GroupColumn sortColumn)
 		{
 			var reportSettings = new ReportSettings();
 			reportSettings.GroupColumnsCollection.Add(sortColumn);
-			var tableStrategy = new ICSharpCode.Reports.Core.TableStrategy(this.table,reportSettings);
+			var tableStrategy = new ICSharpCode.Reports.Core.ListStrategy.TableStrategy(this.table,reportSettings);
 			return tableStrategy;
 		}
 		

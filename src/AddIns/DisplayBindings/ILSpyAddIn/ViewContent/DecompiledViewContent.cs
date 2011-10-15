@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -15,6 +16,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
 using Mono.Cecil;
 
@@ -55,7 +57,7 @@ namespace ICSharpCode.ILSpyAddIn
 			string shortTypeName = fullTypeName.Substring(fullTypeName.LastIndexOf('.') + 1);
 			this.TitleName = "[" + shortTypeName + "]";
 			
-			this.InfoTip = string.Format("{0}{1}{2}.cs", assemblyFile, " in ", fullTypeName);
+			this.InfoTip = tempFileName;
 			
 			Thread thread = new Thread(DecompilationThread);
 			thread.Name = "Decompiler (" + shortTypeName + ")";
@@ -96,8 +98,9 @@ namespace ICSharpCode.ILSpyAddIn
 			BookmarkManager.Added -= BookmarkManager_Added;
 			BookmarkManager.Removed -= BookmarkManager_Removed;
 			if (decompiledType != null) {
-				DecompileInformation data;
-				DebuggerDecompilerService.DebugInformation.TryRemove(decompiledType.MetadataToken.ToInt32(), out data);
+				List<MemberMapping> data;
+				if (DebuggerDecompilerService.DebugInformation.TryRemove(decompiledType.MetadataToken.ToInt32(), out data))
+					data.Clear();
 				data = null;
 			}
 			base.Dispose();
@@ -134,7 +137,10 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			try {
 				StringWriter writer = new StringWriter();
-				RunDecompiler(assemblyFile, fullTypeName, new PlainTextOutput(writer), cancellation.Token);
+				RunDecompiler(assemblyFile,
+				              fullTypeName, 
+				              new DebuggerTextOutput(new PlainTextOutput(writer)), 
+				              cancellation.Token);
 				if (!cancellation.IsCancellationRequested) {
 					WorkbenchSingleton.SafeThreadAsyncCall(OnDecompilationFinished, writer);
 				}
@@ -175,14 +181,13 @@ namespace ICSharpCode.ILSpyAddIn
 			// save decompilation data
 			decompiledType = typeDefinition;
 			
-			int token = decompiledType.MetadataToken.ToInt32();
-			var info = new DecompileInformation {
-				CodeMappings = astBuilder.CodeMappings,
-				LocalVariables = astBuilder.LocalVariables,
-				DecompiledMemberReferences = astBuilder.DecompiledMemberReferences
-			};
-			
+			var debuggerOutput = textOutput as DebuggerTextOutput;
+			if (debuggerOutput == null)
+				return;
+
 			// save the data
+			int token = decompiledType.MetadataToken.ToInt32();
+			var info = debuggerOutput.DebuggerMemberMappings;
 			DebuggerDecompilerService.DebugInformation.AddOrUpdate(token, info, (k, v) => info);
 		}
 		
@@ -197,7 +202,7 @@ namespace ICSharpCode.ILSpyAddIn
 			JumpToEntity(this.jumpToEntityTagWhenDecompilationFinished);
 			
 			// update UI
-			UpdateIconMargin(output.ToString());
+			UpdateIconMargin();
 			
 			// fire events
 			OnDecompilationFinished(EventArgs.Empty);
@@ -205,9 +210,11 @@ namespace ICSharpCode.ILSpyAddIn
 		#endregion
 		
 		#region Update UI
-		void UpdateIconMargin(string text)
+		void UpdateIconMargin()
 		{
-			codeView.IconBarManager.UpdateClassMemberBookmarks(ParserService.ParseFile(tempFileName, new StringTextBuffer(text)));
+			codeView.IconBarManager.UpdateClassMemberBookmarks(
+				ParserService.ParseFile(tempFileName, new AvalonEditDocumentAdapter(codeView.Document, null)),
+				null);
 			
 			// load bookmarks
 			foreach (SDBookmark bookmark in BookmarkManager.GetBookmarks(this.codeView.TextEditor.FileName)) {
@@ -231,25 +238,27 @@ namespace ICSharpCode.ILSpyAddIn
 				return;
 			
 			// get debugging information
-			DecompileInformation debugInformation = (DecompileInformation)DebuggerDecompilerService.DebugInformation[typeToken];
+			var debugInformation = DebuggerDecompilerService.DebugInformation[typeToken];
 			int methodToken = decompilerService.DebugStepInformation.Item1;
 			int ilOffset = decompilerService.DebugStepInformation.Item2;
 			int line;
+			
+			var mapping = debugInformation.Where(m => m.MetadataToken == methodToken).FirstOrDefault();
+			if (mapping == null)
+				return;
+			
 			MemberReference member;
-			if (debugInformation.CodeMappings == null || !debugInformation.CodeMappings.ContainsKey(methodToken))
-				return;
-			
-			debugInformation.CodeMappings[methodToken].GetInstructionByTokenAndOffset(methodToken, ilOffset, out member, out line);
-			
-			// if the codemappings are not built
-			if (line <= 0) {
-				DebuggerService.CurrentDebugger.StepOver();
-				return;
+			if (mapping.GetInstructionByTokenAndOffset(ilOffset, out member, out line)) {
+				// if the codemappings are not built
+				if (line <= 0) {
+					DebuggerService.CurrentDebugger.StepOver();
+					return;
+				}
+				
+				// jump to line - scoll and unfold
+				this.UpdateCurrentLineBookmark(line);
+				this.JumpToLineNumber(line);
 			}
-			
-			// jump to line - scoll and unfold
-			this.UpdateCurrentLineBookmark(line);
-			this.JumpToLineNumber(line);
 		}
 		
 		public void JumpToLineNumber(int lineNumber)

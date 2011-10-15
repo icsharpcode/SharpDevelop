@@ -9,14 +9,5 @@ using System.Reflection;
 // change them to the information which is associated with the assembly
 // you compile.
 
-[assembly: AssemblyTitle("Reflector AddIn")]
-[assembly: AssemblyDescription("Reflector AddIn for SharpDevelop")]
-
-#if DEBUG
-[assembly: AssemblyConfiguration("Debug")]
-#else
-[assembly: AssemblyConfiguration("Release")]
-#endif
-
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyTitle("ILSpy AddIn")]
+[assembly: AssemblyDescription("ILSpy AddIn for SharpDevelop")]

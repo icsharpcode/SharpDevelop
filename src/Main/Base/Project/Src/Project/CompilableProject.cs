@@ -31,6 +31,8 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public abstract class CompilableProject : MSBuildBasedProject, IUpgradableProject
 	{
+		public const string LocalHost = "http://localhost";
+		
 		#region Static methods
 		/// <summary>
 		/// Gets the file extension of the assembly created when building a project
@@ -206,8 +208,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected override ParseProjectContent CreateProjectContent()
 		{
 			ParseProjectContent newProjectContent = new ParseProjectContent(this);
-			var mscorlib = AssemblyParserService.GetRegistryForReference(new ReferenceProjectItem(this, "mscorlib")).Mscorlib;
-			newProjectContent.AddReferencedContent(mscorlib);
 			return newProjectContent;
 		}
 		
@@ -286,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			switch (this.StartAction) {
 				case StartAction.Project:
 					if (IsWebProject)
-						return new ProcessStartInfo("http://localhost");
+						return new ProcessStartInfo(LocalHost);
 					
 					return CreateStartInfo(this.OutputAssemblyFullPath);
 				case StartAction.Program:

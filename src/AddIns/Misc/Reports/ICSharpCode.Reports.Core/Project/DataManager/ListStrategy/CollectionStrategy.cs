@@ -15,7 +15,8 @@ using SimpleExpressionEvaluator.Utilities;
 /// Access to Data is allway's done by using the 'IndexList'
 /// </summary>
 
-namespace ICSharpCode.Reports.Core {
+namespace ICSharpCode.Reports.Core.ListStrategy
+{
 	
 	internal sealed class CollectionStrategy : BaseListStrategy {
 		

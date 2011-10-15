@@ -143,5 +143,21 @@ namespace ICSharpCode.PackageManagement
 				return hasDependencies.Value;
 			}
 		}
+		
+		public bool IsLatestVersion {
+			get { return package.IsLatestVersion; }
+		}
+		
+		public Nullable<DateTimeOffset> Published {
+			get { return package.Published; }
+		}
+		
+		public string ReleaseNotes {
+			get { return package.ReleaseNotes; }
+		}
+		
+		public string Copyright {
+			get { return package.Copyright; }
+		}
 	}
 }

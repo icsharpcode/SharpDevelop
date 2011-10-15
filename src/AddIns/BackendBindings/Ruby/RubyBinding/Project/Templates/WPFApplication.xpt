@@ -28,7 +28,7 @@
 		<PropertyGroup configuration="Release" escapeValue="false">
 			<OutputType>WinExe</OutputType>
 			<MainFile>Application.rb</MainFile>
-			<StartArguments>--disable-gems Application.py</StartArguments>
+			<StartArguments>--disable-gems Application.rb</StartArguments>
 			<StartWorkingDirectory>.\</StartWorkingDirectory>
 			<StartAction>Program</StartAction>
 			<StartProgram>${addinpath:ICSharpCode.RubyBinding}\ir.exe</StartProgram>

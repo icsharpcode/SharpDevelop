@@ -224,7 +224,7 @@ namespace ICSharpCode.Decompiler.ILAst
 			
 			ILBlock ilMethod = new ILBlock();
 			ILAstBuilder astBuilder = new ILAstBuilder();
-			ilMethod.Body = astBuilder.Build(method, true);
+			ilMethod.Body = astBuilder.Build(method, true, context);
 			ILAstOptimizer optimizer = new ILAstOptimizer();
 			optimizer.Optimize(context, ilMethod, ILAstOptimizationStep.YieldReturn);
 			return ilMethod;
@@ -634,13 +634,14 @@ namespace ICSharpCode.Decompiler.ILAst
 				case ILCode.Ldc_I4:
 					return new SymbolicValue(SymbolicValueType.IntegerConstant, (int)expr.Operand);
 				case ILCode.Ceq:
+				case ILCode.Cne:
 					left = Eval(expr.Arguments[0]);
 					right = Eval(expr.Arguments[1]);
 					if (left.Type != SymbolicValueType.State || right.Type != SymbolicValueType.IntegerConstant)
 						throw new YieldAnalysisFailedException();
 					// bool: (state + left.Constant == right.Constant)
 					// bool: (state == right.Constant - left.Constant)
-					return new SymbolicValue(SymbolicValueType.StateEquals, unchecked ( right.Constant - left.Constant ));
+					return new SymbolicValue(expr.Code == ILCode.Ceq ? SymbolicValueType.StateEquals : SymbolicValueType.StateInEquals, unchecked(right.Constant - left.Constant));
 				case ILCode.LogicNot:
 					SymbolicValue val = Eval(expr.Arguments[0]);
 					if (val.Type == SymbolicValueType.StateEquals)

@@ -175,6 +175,7 @@ namespace NRefactoryASTGenerator.Ast
 		List<ParameterDeclarationExpression> parameters;
 		BlockStatement body;
 		bool hasParameterList;
+		bool isAsync;
 	}
 	
 	[IncludeMember("public Location ExtendedEndLocation { get; set; }")]
@@ -183,6 +184,7 @@ namespace NRefactoryASTGenerator.Ast
 		Statement statementBody;
 		Expression expressionBody;
 		TypeReference returnType;
+		bool isAsync;
 	}
 	
 	class CheckedExpression : Expression {

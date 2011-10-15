@@ -285,16 +285,21 @@ namespace ICSharpCode.SharpDevelop
 				Properties memento = GetMemento(newView);
 				using (Stream sourceStream = OpenRead()) {
 					IViewContent oldView = currentView;
+					bool success = false;
 					try {
 						currentView = newView;
 						// don't reset fileData if the file is untitled, because OpenRead() wouldn't be able to read it otherwise
 						if (this.IsUntitled == false)
 							fileData = null;
 						newView.Load(this, sourceStream);
-					} catch {
-						// stay with old view in case of exceptions
-						currentView = oldView;
-						throw;
+						success = true;
+					} finally {
+						// Use finally instead of catch+rethrow so that the debugger
+						// breaks at the original crash location.
+						if (!success) {
+							// stay with old view in case of exceptions
+							currentView = oldView;
+						}
 					}
 				}
 				RestoreMemento(newView, memento);

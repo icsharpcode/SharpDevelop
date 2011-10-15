@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Dialogs;
 
 namespace ICSharpCode.Reports.Addin.Commands
 {
@@ -47,9 +48,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 		}
 	}
 	
-	
-	
-	
+
 	public class ClearSelectedNodeCommand : AbstractCommand
 	{
 		public override void Run()
@@ -68,21 +67,14 @@ namespace ICSharpCode.Reports.Addin.Commands
 		{
 			ReportExplorerPad pad = this.Owner as ReportExplorerPad;
 			if (pad != null) {
-				ParameterCollection par = pad.ReportModel.ReportSettings.ParameterCollection;
-				
-				using (ParameterDialog paramDialog = new ParameterDialog(par)) {
+				using (ParameterDialog paramDialog = new ParameterDialog(pad.ReportModel.ReportSettings.SqlParameters)) {
 					paramDialog.ShowDialog();
 					if (paramDialog.DialogResult == System.Windows.Forms.DialogResult.OK) {
-						/*
-						foreach (BasicParameter bp in e.Collection as ParameterCollection){
-							r.ReportModel.ReportSettings.ParameterCollection.Add (bp);
-						}
-						*/
-						foreach (BasicParameter bp in new System.Collections.ArrayList(paramDialog.Collection))
+						foreach (SqlParameter bp in paramDialog.SqlParameterCollection)
 						{
-							if (bp.ParameterName != null) 
+							if (bp.ParameterName != null)
 							{
-								pad.ReportModel.ReportSettings.ParameterCollection.Add (bp);
+								pad.ReportModel.ReportSettings.SqlParameters.Add (bp);
 							}
 						}
 						pad.RefreshParameters();

@@ -30,5 +30,11 @@ namespace ICSharpCode.Scripting.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public string FontFamily {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

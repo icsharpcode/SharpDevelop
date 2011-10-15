@@ -38,6 +38,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (!disposed) {
 				changeWatcher.ChangeOccurred -= ChangeOccurred;
+				changeWatcher.Dispose();
 				disposed = true;
 			}
 		}
@@ -49,8 +50,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			if (textView != null && textView.VisualLinesValid) {
 				var zeroLineInfo = changeWatcher.GetChange(0);
-				
-				Debug.Assert(zeroLineInfo.Change == ChangeType.None || zeroLineInfo.Change == ChangeType.Deleted);
 				
 				foreach (VisualLine line in textView.VisualLines) {
 					Rect rect = new Rect(0, line.VisualTop - textView.ScrollOffset.Y, 5, line.Height);
@@ -202,7 +201,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					differ.editor.Visibility = Visibility.Collapsed;
 					differ.copyButton.Visibility = Visibility.Collapsed;
 				} else {
-					var baseDocument = new TextDocument(changeWatcher.BaseDocument.Text);
+					var baseDocument = new TextDocument(DocumentUtilitites.GetTextSource(changeWatcher.BaseDocument));
 					if (differ.editor.SyntaxHighlighting != null) {
 						var mainHighlighter = new DocumentHighlighter(baseDocument, differ.editor.SyntaxHighlighting.MainRuleSet);
 						var popupHighlighter = differ.editor.TextArea.GetService(typeof(IHighlighter)) as DocumentHighlighter;

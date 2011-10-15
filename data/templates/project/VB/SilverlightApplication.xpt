@@ -25,6 +25,12 @@
 			<Reference Include="System.Net" />
 			<Reference Include="System.Xml" />
 			<Reference Include="System.Windows.Browser" />
+			
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Diagnostics" />
 		</ProjectItems>
 		
 		<PropertyGroup escapeValue="False">
@@ -55,15 +61,15 @@
 		</PropertyGroup>
 		
 		<PropertyGroup configuration="Debug" escapeValue="false">
-			<DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+			<DefineConstants>DEBUG,TRACE,SILVERLIGHT</DefineConstants>
 		</PropertyGroup>
 		
 		<PropertyGroup configuration="Release" escapeValue="false">
-			<DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+			<DefineConstants>TRACE,SILVERLIGHT</DefineConstants>
 		</PropertyGroup>
 		
 		<Imports clear="True">
-			<Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v4.0\Microsoft.Silverlight.CSharp.targets" />
+			<Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v4.0\Microsoft.Silverlight.VisualBasic.targets" />
 		</Imports>		
 		
 		<Files>
@@ -111,16 +117,14 @@ Public Partial Class App
 	Private Sub Application_UnhandledException(sender As Object, e As ApplicationUnhandledExceptionEventArgs)
 		If Not System.Diagnostics.Debugger.IsAttached Then
 			e.Handled = True
-			Deployment.Current.Dispatcher.BeginInvoke(Function() Do
-				ReportErrorToDOM(e)
-			End Function)
+			Deployment.Current.Dispatcher.BeginInvoke(Sub() ReportErrorToDOM(e))
 		End If
 	End Sub
 
 	Private Sub ReportErrorToDOM(e As ApplicationUnhandledExceptionEventArgs)
 		Try
 			Dim errorMsg As String = e.ExceptionObject.Message + e.ExceptionObject.StackTrace
-			errorMsg = errorMsg.Replace(""""C, "'"C).Replace(vbCr & vbLf, "\n")
+			errorMsg = errorMsg.Replace(""""C, "'"C).Replace(vbCrLf, "\n")
 
 			System.Windows.Browser.HtmlPage.Window.Eval("throw new Error(""Unhandled Error in Silverlight Application " & errorMsg & """);")
 		Catch generatedExceptionName As Exception

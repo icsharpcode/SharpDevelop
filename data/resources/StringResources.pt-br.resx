@@ -6986,15 +6986,6 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Usuário:</value>
   </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Que você deveria buscar novas versões do SharpDevelop e contar como é bom escrever aplicativos com ele!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Que você pode abrir a janela do Assistente de Modelos (templates) com Ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Voce pode digitar "? name = ...;" (C#) ou "Dim name As ? = ..." (VB) e o SharpDevelop substituirá a interrogação com o tipo de "..."?</value>
-  </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Opções</value>
   </data>

@@ -7017,15 +7017,6 @@ Došlo k chybě při spuštění:</value>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Uživatel:</value>
   </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Můžete očekávat vylepšené verze SharpDevelop a mezitím říci svým známým o tomto editoru pro psaní báječných programů v jazyce C#!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Můžete otevřít okno s šablonami doplňování kódu pomocí Ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Můžete napsat "? name = ...;" (C#) nebo "Dim name As ? = ..." (VB) a SharpDevelop nahradí otazník typem výrazu "..."?</value>
-  </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Možnosti editoru</value>
   </data>

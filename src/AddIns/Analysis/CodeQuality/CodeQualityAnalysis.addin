@@ -9,6 +9,7 @@
 	</Manifest>
 	
 	<Runtime>
+		<Import assembly = "TreeMaps.dll"/>
 		<Import assembly = "CodeQualityAnalysis.exe"/>
 	</Runtime>
 

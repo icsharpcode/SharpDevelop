@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using ICSharpCode.Core;
@@ -139,7 +140,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void ResolveAssemblyReferences()
 		{
-			MSBuildInternals.ResolveAssemblyReferences(this, null);
+			MSBuildInternals.ResolveAssemblyReferences(this);
+		}
+		
+		public override IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
+		{
+			return MSBuildInternals.ResolveAssemblyReferences(this);
 		}
 		
 		#region CreateProjectItem

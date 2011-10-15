@@ -115,7 +115,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 					str = dec.ToString (format,CultureInfo.CurrentCulture);
 					
 				} catch (System.FormatException e) {
-						string s = String.Format(CultureInfo.InvariantCulture,"\tDecimalValue < {0} > {1}",toFormat,e.Message);
+					throw e;
 				}
 				return str;
 			} else {
@@ -134,7 +134,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				                           DateTimeFormatInfo.CurrentInfo);
 				
 				return str.Trim();
-			} catch (System.FormatException) {
+			} catch (System.FormatException ) {
 //					string s = String.Format("< {0} > {1}",toFormat,e.Message);
 //					System.Console.WriteLine("\t\tDateValue {0}",s);
 			}

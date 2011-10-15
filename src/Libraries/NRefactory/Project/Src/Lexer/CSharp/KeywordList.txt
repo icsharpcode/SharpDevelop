@@ -174,11 +174,13 @@ LambdaArrow = "=>"
 "join"
 "on"
 "equals"
+"async"
+"await"
 
 #Sets
 
 # When changing IdentifierTokens, ensure you also change the "Identifier" production in cs.ATG
-IdentifierTokens(Identifier, "partial", "where", "get", "set", "add", "remove", "yield", "select", "group", "by", "into", "from", "ascending", "descending", "orderby", "let", "join", "on", "equals")
+IdentifierTokens(Identifier, "partial", "where", "get", "set", "add", "remove", "yield", "select", "group", "by", "into", "from", "ascending", "descending", "orderby", "let", "join", "on", "equals", "async", "await")
 
 OverloadableUnaryOp("-", "!", "~", "++", "--", "true", "false")
 OverloadableBinaryOp("+", "-", "*", "/", "%", "&", "|", "^", "<<", "==", "!=", ">", "<", ">=", "<=")
@@ -201,11 +203,11 @@ KCCTypeDeclarationStart("public", "internal", @TypeDeclarationKW, @KCCClassModif
 KCCMemberVisibilityModifiers("protected", "private", "public", "internal")
 SimpleTypeName(@TypeKW, @IdentifierTokens, "void")
 GlobalLevel("namespace", "using", "extern", @KCCTypeDeclarationStart)
-ExpressionStart("base", "delegate", "false", "new", "null", "sizeof", "this", "true", "typeof", "checked", "unchecked", "from", "default")
+ExpressionStart("base", "delegate", "false", "new", "null", "sizeof", "this", "true", "typeof", "checked", "unchecked", "from", "default", "await")
 ExpressionContent("as", "is", "out", "ref", "in")
 # interfaces cannot have inner classes etc., the only keyword (expect for type names) that may appear in them is "event"
 InterfaceLevel("event")
-TypeLevel(@KCCTypeDeclarationStart, @KCCMemberVisibilityModifiers, "const", "event", "explicit", "extern", "fixed", "implicit", "new", "operator", "override", "readonly", "virtual", "volatile")
+TypeLevel(@KCCTypeDeclarationStart, @KCCMemberVisibilityModifiers, "const", "event", "explicit", "extern", "fixed", "implicit", "new", "operator", "override", "readonly", "virtual", "volatile", "async")
 StatementStart(@ExpressionStart, @ExpressionContent, "break", "case", "catch", "checked", "unchecked", "const", "continue", "default", "do", "else", "finally", "fixed", "for", "foreach", "goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", "using", "while", "yield")
 QueryExpressionClauseStart("from", "let", "where", "join", "orderby", "group", "select")
 InPropertyDeclaration(@KCCMemberVisibilityModifiers, "get", "set")

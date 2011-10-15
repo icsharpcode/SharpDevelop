@@ -90,6 +90,11 @@ namespace ICSharpCode.Reports.Addin
 	{
 		ListSortDirection listSortDirection;
 		
+		public SortColumnNode(string nodeName,string contextMenuPath):this(nodeName,0,contextMenuPath)
+		{
+			
+		}
+		
 		public SortColumnNode(string nodeName,int imageIndex,string contextMenuPath):base(nodeName,contextMenuPath)
 		{
 			this.ImageIndex = imageIndex;
@@ -107,6 +112,10 @@ namespace ICSharpCode.Reports.Addin
 	
 	internal class GroupColumnNode:SortColumnNode
 	{
+		public  GroupColumnNode (string nodeName,string contextMenuPath):this(nodeName,0,contextMenuPath)
+		{
+			
+		}
 		public GroupColumnNode (string nodeName,int imageIndex,string contextMenuPath):base(nodeName,imageIndex,contextMenuPath)
 		{
 			

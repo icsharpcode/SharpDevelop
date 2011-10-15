@@ -6711,15 +6711,6 @@ O erro no início foi:</value>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Utilizador:</value>
   </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Deve verificar se existem novas versões do SharpDevelop e dizer a todos os seus amigos quão bom é o SharpDevelop e quão agradável é escrever programas com ele!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>É possivel abrir a janela de finalização de modelos batendo Ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Que pode escrever "? nome = ...;" (C#) ou "Dim nome As ? = ..." (VB) e o SharpDevelop irá substituir o ponto de interrugação com o tipo de "..."?</value>
-  </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Opções do Buffer</value>
   </data>

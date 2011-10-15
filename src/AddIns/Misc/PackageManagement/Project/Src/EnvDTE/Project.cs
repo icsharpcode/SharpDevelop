@@ -11,7 +11,7 @@ using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Project
+	public class Project : MarshalByRefObject
 	{
 		IPackageManagementProjectService projectService;
 		IPackageManagementFileService fileService;

@@ -62,7 +62,7 @@ namespace ICSharpCode.Decompiler.ILAst
 		
 		/// <summary> Immutable </summary>
 		class VariableSlot
-		{			
+		{
 			public readonly ByteCode[] StoredBy;    // One of those
 			public readonly bool       StoredByAll; // Overestimate which is useful for exceptional control flow.
 			
@@ -224,10 +224,13 @@ namespace ICSharpCode.Decompiler.ILAst
 		// Virtual instructions to load exception on stack
 		Dictionary<ExceptionHandler, ByteCode> ldexceptions = new Dictionary<ExceptionHandler, ILAstBuilder.ByteCode>();
 		
-		public List<ILNode> Build(MethodDefinition methodDef, bool optimize)
+		DecompilerContext context;
+		
+		public List<ILNode> Build(MethodDefinition methodDef, bool optimize, DecompilerContext context)
 		{
 			this.methodDef = methodDef;
 			this.optimize = optimize;
+			this.context = context;
 			
 			if (methodDef.Body.Instructions.Count == 0) return new List<ILNode>();
 			
@@ -260,7 +263,7 @@ namespace ICSharpCode.Decompiler.ILAst
 					EndOffset   = inst.Next != null ? inst.Next.Offset : methodDef.Body.CodeSize,
 					Code        = code,
 					Operand     = operand,
-					PopCount    = inst.GetPopDelta(),
+					PopCount    = inst.GetPopDelta(methodDef),
 					PushCount   = inst.GetPushDelta()
 				};
 				if (prefixes != null) {
@@ -336,9 +339,10 @@ namespace ICSharpCode.Decompiler.ILAst
 				
 				// Calculate new variable state
 				VariableSlot[] newVariableState = VariableSlot.CloneVariableState(byteCode.VariablesBefore);
-				if (byteCode.Code == ILCode.Stloc) {
+				if (byteCode.Code == ILCode.Stloc || byteCode.Code == ILCode.Ldloca) {
 					int varIndex = ((VariableReference)byteCode.Operand).Index;
-					newVariableState[varIndex] = new VariableSlot(byteCode);
+					newVariableState[varIndex] = byteCode.Code == ILCode.Stloc || byteCode.Next.Code == ILCode.Initobj ?
+						new VariableSlot(byteCode) : new VariableSlot(newVariableState[varIndex].StoredBy.Union(byteCode), false);
 				}
 				
 				// After the leave, finally block might have touched the variables
@@ -351,7 +355,7 @@ namespace ICSharpCode.Decompiler.ILAst
 				if (!byteCode.Code.IsUnconditionalControlFlow()) {
 					if (exceptionHandlerStarts.Contains(byteCode.Next)) {
 						// Do not fall though down to exception handler
-						// It is invalid IL as per ECMA-335 §12.4.2.8.1, but some obfuscators produce it						
+						// It is invalid IL as per ECMA-335 §12.4.2.8.1, but some obfuscators produce it
 					} else {
 						branchTargets.Add(byteCode.Next);
 					}
@@ -520,8 +524,12 @@ namespace ICSharpCode.Decompiler.ILAst
 				
 				for(int variableIndex = 0; variableIndex < varCount; variableIndex++) {
 					// Find all stores and loads for this variable
-					List<ByteCode> stores = body.Where(b => b.Code == ILCode.Stloc && b.Operand is VariableDefinition && b.OperandAsVariable.Index == variableIndex).ToList();
-					List<ByteCode> loads  = body.Where(b => (b.Code == ILCode.Ldloc || b.Code == ILCode.Ldloca) && b.Operand is VariableDefinition && b.OperandAsVariable.Index == variableIndex).ToList();
+					var stores = body.Where(b => (b.Code == ILCode.Stloc || b.Code == ILCode.Ldloca) && b.Operand is VariableDefinition && b.OperandAsVariable.Index == variableIndex).ToList();
+					// ldloca on an uninitialized variable or followed by initobj isn't considered a load
+					var loads = body.Where(b =>
+						(b.Code == ILCode.Ldloc || (b.Code == ILCode.Ldloca && b.Next.Code != ILCode.Initobj &&
+							(b.VariablesBefore[variableIndex].StoredBy.Length != 0 || b.VariablesBefore[variableIndex].StoredByAll)))
+						&& b.Operand is VariableDefinition && b.OperandAsVariable.Index == variableIndex).ToList();
 					TypeReference varType = methodDef.Body.Variables[variableIndex].VariableType;
 					
 					List<VariableInfo> newVars;
@@ -529,8 +537,7 @@ namespace ICSharpCode.Decompiler.ILAst
 					bool isPinned = methodDef.Body.Variables[variableIndex].IsPinned;
 					// If the variable is pinned, use single variable.
 					// If any of the loads is from "all", use single variable
-					// If any of the loads is ldloca, fallback to single variable as well
-					if (isPinned || loads.Any(b => b.VariablesBefore[variableIndex].StoredByAll || b.Code == ILCode.Ldloca)) {
+					if (isPinned || loads.Any(b => b.VariablesBefore[variableIndex].StoredByAll)) {
 						newVars = new List<VariableInfo>(1) { new VariableInfo() {
 							Variable = new ILVariable() {
 								Name = "var_" + variableIndex,
@@ -542,7 +549,12 @@ namespace ICSharpCode.Decompiler.ILAst
 						}};
 					} else {
 						// Create a new variable for each store
-						newVars = stores.Select(st => new VariableInfo() {
+						newVars = stores.Where(st =>
+						{
+							if (st.Code == ILCode.Stloc || st.Next.Code == ILCode.Initobj) return true;
+							var storedBy = st.VariablesBefore[variableIndex].StoredBy;
+							return storedBy.Length == 0 || storedBy[0] == st;
+						}).Select(st => new VariableInfo() {
 							Variable = new ILVariable() {
 						    		Name = "var_" + variableIndex + "_" + st.Offset.ToString("X2"),
 						    		Type = varType,
@@ -579,14 +591,16 @@ namespace ICSharpCode.Decompiler.ILAst
 							} else if (storedBy.Length == 1) {
 								VariableInfo newVar = newVars.Single(v => v.Stores.Contains(storedBy[0]));
 								newVar.Loads.Add(load);
+								if (load.Code == ILCode.Ldloca) newVar.Stores.Add(load);
 							} else {
-								List<VariableInfo> mergeVars = newVars.Where(v => v.Stores.Union(storedBy).Any()).ToList();
+								List<VariableInfo> mergeVars = newVars.Where(v => v.Stores.Intersect(storedBy).Any()).ToList();
 								VariableInfo mergedVar = new VariableInfo() {
 									Variable = mergeVars[0].Variable,
 									Stores = mergeVars.SelectMany(v => v.Stores).ToList(),
 									Loads  = mergeVars.SelectMany(v => v.Loads).ToList()
 								};
 								mergedVar.Loads.Add(load);
+								if (load.Code == ILCode.Ldloca) mergedVar.Stores.Add(load);
 								newVars = newVars.Except(mergeVars).ToList();
 								newVars.Add(mergedVar);
 							}
@@ -628,6 +642,10 @@ namespace ICSharpCode.Decompiler.ILAst
 			}
 			foreach (ParameterDefinition p in methodDef.Parameters) {
 				this.Parameters.Add(new ILVariable { Type = p.ParameterType, Name = p.Name, OriginalParameter = p });
+			}
+			if (this.Parameters.Count > 0 && (methodDef.IsSetter || methodDef.IsAddOn || methodDef.IsRemoveOn)) {
+				// last parameter must be 'value', so rename it
+				this.Parameters.Last().Name = "value";
 			}
 			foreach (ByteCode byteCode in body) {
 				ParameterDefinition p;
@@ -701,8 +719,9 @@ namespace ICSharpCode.Decompiler.ILAst
 						};
 						// Handle the automatically pushed exception on the stack
 						ByteCode ldexception = ldexceptions[eh];
-						if (ldexception.StoreTo.Count == 0) {
-							throw new Exception("Exception should be consumed by something");
+						if (ldexception.StoreTo == null || ldexception.StoreTo.Count == 0) {
+							// Exception is not used
+							catchBlock.ExceptionVariable = null;
 						} else if (ldexception.StoreTo.Count == 1) {
 							ILExpression first = catchBlock.Body[0] as ILExpression;
 							if (first != null &&
@@ -711,7 +730,10 @@ namespace ICSharpCode.Decompiler.ILAst
 							    first.Arguments[0].Operand == ldexception.StoreTo[0])
 							{
 								// The exception is just poped - optimize it all away;
-								catchBlock.ExceptionVariable = null;
+								if (context.Settings.AlwaysGenerateExceptionVariableForCatchBlocks)
+									catchBlock.ExceptionVariable = new ILVariable() { Name = "ex_" + eh.HandlerStart.Offset.ToString("X2"), IsGenerated = true };
+								else
+									catchBlock.ExceptionVariable = null;
 								catchBlock.Body.RemoveAt(0);
 							} else {
 								catchBlock.ExceptionVariable = ldexception.StoreTo[0];
@@ -778,7 +800,7 @@ namespace ICSharpCode.Decompiler.ILAst
 					StackSlot slot = byteCode.StackBefore[i];
 					expr.Arguments.Add(new ILExpression(ILCode.Ldloc, slot.LoadFrom));
 				}
-			
+				
 				// Store the result to temporary variable(s) if needed
 				if (byteCode.StoreTo == null || byteCode.StoreTo.Count == 0) {
 					ast.Add(expr);
@@ -808,15 +830,34 @@ namespace ICSharpCode.Decompiler.ILAst
 			list.RemoveRange(start, count);
 			return ret;
 		}
+
+		public static T[] Union<T>(this T[] a, T b)
+		{
+			if (a.Length == 0)
+				return new[] { b };
+			if (Array.IndexOf(a, b) >= 0)
+				return a;
+			var res = new T[a.Length + 1];
+			Array.Copy(a, res, a.Length);
+			res[res.Length - 1] = b;
+			return res;
+		}
 		
 		public static T[] Union<T>(this T[] a, T[] b)
 		{
+			if (a == b)
+				return a;
 			if (a.Length == 0)
 				return b;
 			if (b.Length == 0)
 				return a;
-			if (a.Length == 1 && b.Length == 1 && a[0].Equals(b[0]))
-				return a;
+			if (a.Length == 1) {
+				if (b.Length == 1)
+					return a[0].Equals(b[0]) ? a : new[] { a[0], b[0] };
+				return b.Union(a[0]);
+			}
+			if (b.Length == 1)
+				return a.Union(b[0]);
 			return Enumerable.Union(a, b).ToArray();
 		}
 	}

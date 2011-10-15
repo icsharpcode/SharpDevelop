@@ -2,10 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class DTE
+	public class DTE : MarshalByRefObject
 	{
 		IPackageManagementProjectService projectService;
 		IPackageManagementFileService fileService;
@@ -27,11 +31,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public Solution Solution {
 			get {
-				if (projectService.OpenSolution != null) {
+				if (IsSolutionOpen) {
 					return new Solution(projectService.OpenSolution);
 				}
 				return null;
 			}
+		}
+		
+		bool IsSolutionOpen {
+			get { return projectService.OpenSolution != null; }
 		}
 		
 		public ItemOperations ItemOperations { get; private set; }
@@ -40,6 +48,22 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			var properties = new DTEProperties();
 			return properties.GetProperties(category, page);
+		}
+		
+		public object ActiveSolutionProjects {
+			get { return GetProjectsInSolution().ToArray(); }
+		}
+		
+		IEnumerable<object> GetProjectsInSolution()
+		{
+			foreach (SD.MSBuildBasedProject msbuildProject in GetOpenMSBuildProjects()) {
+				yield return new Project(msbuildProject);
+			}
+		}
+		
+		IEnumerable<SD.IProject> GetOpenMSBuildProjects()
+		{
+			return projectService.GetOpenProjects();
 		}
 	}
 }

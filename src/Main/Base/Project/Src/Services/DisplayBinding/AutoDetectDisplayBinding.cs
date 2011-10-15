@@ -48,9 +48,12 @@ namespace ICSharpCode.SharpDevelop
 			const int BUFFER_LENGTH = 4 * 1024;
 			
 			using (var stream = file.OpenRead()) {
-				foreach (var codon in codons) {
+				string mime = "text/plain";
+				if (stream.Length > 0) {
 					stream.Position = 0;
-					string mime = FindMimeType(new BinaryReader(stream).ReadBytes(BUFFER_LENGTH));
+					mime = FindMimeType(new BinaryReader(stream).ReadBytes(BUFFER_LENGTH));
+				}
+				foreach (var codon in codons) {
 					stream.Position = 0;
 					double value = codon.Binding.AutoDetectFileContent(file.FileName, stream, mime);
 					if (value > max) {
@@ -72,7 +75,7 @@ namespace ICSharpCode.SharpDevelop
 				const int FMFD_ENABLEMIMESNIFFING = 0x00000002;
 				IntPtr mimeout;
 				int result = FindMimeFromData(IntPtr.Zero, null, b, buffer.Length, null, FMFD_ENABLEMIMESNIFFING, out mimeout, 0);
-	
+				
 				if (result != 0)
 					throw Marshal.GetExceptionForHR(result);
 				string mime = Marshal.PtrToStringUni(mimeout);

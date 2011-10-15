@@ -49,11 +49,17 @@ namespace ICSharpCode.SettingsEditor
 		
 		public SettingsDocument(XmlElement settingsFile, ISettingsEntryHost host)
 		{
+			if (settingsFile == null)
+				throw new ArgumentNullException("settingsFile");
+			if (host == null)
+				throw new ArgumentNullException("host");
 			generatedClassNamespace = settingsFile.GetAttribute("GeneratedClassNamespace");
 			generatedClassName = settingsFile.GetAttribute("GeneratedClassName");
 			this.UseMySettingsClassName = "true".Equals(settingsFile.GetAttribute("UseMySettingsClassName"), StringComparison.OrdinalIgnoreCase);
 			
 			XmlElement settings = settingsFile["Settings"];
+			if (settings == null)
+				throw new FormatException("Not a settings file.");
 			
 			foreach (XmlNode node in settings.ChildNodes) {
 				if (node is XmlElement) {

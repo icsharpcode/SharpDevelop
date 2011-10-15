@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 		{
 			referencedContents = new List<IProjectContent> {
 				SharedProjectContentRegistryForTests.Instance.Mscorlib,
-				SharedProjectContentRegistryForTests.Instance.GetProjectContentForReference("System", "System")
+				SharedProjectContentRegistryForTests.Instance.GetProjectContentForReference("System", typeof(Uri).Module.FullyQualifiedName)
 			};
 		}
 		

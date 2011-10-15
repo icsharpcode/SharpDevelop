@@ -142,34 +142,40 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 
 		public bool CanInsert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)
 		{
-			var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
 			var placementBehavior = DesignItem.GetBehavior<IPlacementBehavior>();
-			if(operation!=null)
-				return placementBehavior.CanEnterContainer(operation);
+			if (placementBehavior == null)
+				return false;
+			var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
+			if (operation != null) {
+				bool canEnter = placementBehavior.CanEnterContainer(operation);
+				operation.Abort();
+				return canEnter;
+			}
 			return false;
 		}
 
 		public void Insert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)
 		{
-			if (copy) {
-				nodes = nodes.Select(n => OutlineNode.Create(n.DesignItem.Clone()));
-			}
-			else {
-				foreach (var node in nodes) {
-					node.DesignItem.Remove();
+			using (var moveTransaction = DesignItem.Context.OpenGroup("Item moved in outline view", nodes.Select(n => n.DesignItem).ToList())) {
+				if (copy) {
+					nodes = nodes.Select(n => OutlineNode.Create(n.DesignItem.Clone())).ToList();
+				} else {
+					foreach (var node in nodes) {
+						node.DesignItem.Remove();
+					}
 				}
-			}
 
-			var index = after == null ? 0 : Children.IndexOf(after) + 1;
+				var index = after == null ? 0 : Children.IndexOf(after) + 1;
 
-			var content = DesignItem.ContentProperty;
-			if (content.IsCollection) {
-				foreach (var node in nodes) {
-					content.CollectionElements.Insert(index++, node.DesignItem);
+				var content = DesignItem.ContentProperty;
+				if (content.IsCollection) {
+					foreach (var node in nodes) {
+						content.CollectionElements.Insert(index++, node.DesignItem);
+					}
+				} else {
+					content.SetValue(nodes.First().DesignItem);
 				}
-			}
-			else {
-				content.SetValue(nodes.First().DesignItem);
+				moveTransaction.Commit();
 			}
 		}
 

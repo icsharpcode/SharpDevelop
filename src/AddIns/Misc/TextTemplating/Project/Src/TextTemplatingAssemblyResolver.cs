@@ -2,32 +2,39 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.IO;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.TextTemplating
 {
 	public class TextTemplatingAssemblyResolver : ITextTemplatingAssemblyResolver
 	{
-		IProject project;
+		ITextTemplatingAssemblyPathResolver assemblyPathResolver;
+		ITextTemplatingHostAppDomainAssemblyResolver appDomainAssemblyResolver;
 		
 		public TextTemplatingAssemblyResolver(IProject project)
+			: this(
+				new TextTemplatingAssemblyPathResolver(project),
+				new TextTemplatingHostAppDomainAssemblyResolver())
 		{
-			this.project = project;
 		}
 		
-		public string Resolve(string assemblyReference)
+		public TextTemplatingAssemblyResolver(
+			ITextTemplatingAssemblyPathResolver assemblyPathResolver,
+			ITextTemplatingHostAppDomainAssemblyResolver appDomainAssemblyResolver)
 		{
-			foreach (ReferenceProjectItem refProjectItem in project.GetItemsOfType(ItemType.Reference)) {
-				if (IsMatch(refProjectItem, assemblyReference)) {
-					return refProjectItem.FileName;
-				}
-			}
-			return assemblyReference;
+			this.assemblyPathResolver = assemblyPathResolver;
+			this.appDomainAssemblyResolver = appDomainAssemblyResolver;
 		}
 		
-		bool IsMatch(ReferenceProjectItem refProjectItem, string assemblyReference)
+		public string ResolvePath(string assemblyReference)
 		{
-			return String.Equals(refProjectItem.Include, assemblyReference, StringComparison.InvariantCultureIgnoreCase);
+			return assemblyPathResolver.ResolvePath(assemblyReference);
+		}
+		
+		public void Dispose()
+		{
+			appDomainAssemblyResolver.Dispose();
 		}
 	}
 }

@@ -86,8 +86,11 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			if (reportModel.DataModel == GlobalEnums.PushPullModel.FormSheet) {
 				RunFormSheet(reportModel);
 			} else {
+				ReportEngine.CheckForParameters(reportModel, parameters);
 				var dataManager = DataManagerFactory.CreateDataManager(reportModel, parameters);
+				
 				RunReport(reportModel,dataManager);
+				
 			}
 		}
 

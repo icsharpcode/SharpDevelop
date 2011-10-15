@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Media;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using RadioBinding = System.Collections.Generic.KeyValuePair<ICSharpCode.SharpDevelop.Project.StartAction, System.Windows.Forms.RadioButton>;
 
@@ -59,16 +60,23 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (ProjectService.CurrentProject is CompilableProject) {
 				bool isWebProject = ((CompilableProject)ProjectService.CurrentProject).IsWebProject;
 				if (isWebProject) {
+					GroupBox winFormsGroupBox = new GroupBox();
+					
+					winFormsGroupBox.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.Server");
+					winFormsGroupBox.Location = new System.Drawing.Point(8,240);
+					winFormsGroupBox.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
+					winFormsGroupBox.Size = new System.Drawing.Size(460,200);
+					
+					Controls.Add(winFormsGroupBox);
+					
 					ElementHost host = new ElementHost();
-					host.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
-					host.Height = 175;
-					host.Width = 550;
-					host.Top = 240;
-					host.Left = 8;					
+					host.Top = 30;
+					host.Left = 10;	
+					host.AutoSize = true;
 					host.Child = new WebProjectOptionsPanel(this);
-					Controls.Add(host);
+					winFormsGroupBox.Controls.Add(host);			
 				}
-			}		
+			}
 		}
 		
 		void UpdateEnabledStates(object sender, EventArgs e)
@@ -77,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			Get<TextBox>("startBrowserInURL").Enabled    = Get<RadioButton>("startBrowserInURL").Checked;
 		}
 		
-		public void SetStartAction(StartAction action) 
+		public void SetStartAction(StartAction action)
 		{
 			switch(action) {
 				case StartAction.Project:

@@ -6785,15 +6785,6 @@ Program:</value>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Kullanıcı:</value>
   </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Yeni SharpDevelop sürümlerini inceleyip sonrada bütün millete SharpDevelop'ın ne kadar iyi olduğunu anlatabilir ve onunla etkileyici programlar yazabilirsiniz!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Ctrl+J ile şablon tamamlama penceresini açabilirsiniz.</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>"? isim = ...;" (C#) yada "Dim isim As ? = ..." (VB) yazıp, SharpDevelop'ın soru işaretini "..."? türüyle değiştirmesini sağlayabilirsiniz.</value>
-  </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Ara Bellek Seçenekleri</value>
   </data>

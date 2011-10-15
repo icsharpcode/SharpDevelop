@@ -5,6 +5,7 @@ using System;
 
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 [assembly: CLSCompliant(false)]
 [assembly: StringFreezing()]
@@ -21,6 +22,11 @@ using System.Runtime.CompilerServices;
 [assembly: Dependency("System.Drawing", LoadHint.Always)]
 [assembly: Dependency("System.Xml", LoadHint.Always)]
 [assembly: Dependency("System.Windows.Forms", LoadHint.Always)]
+
+[assembly: ThemeInfo(
+    ResourceDictionaryLocation.SourceAssembly, //where theme specific resource dictionaries are located
+    ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
+)]
 
 [assembly: AssemblyTitle("SharpDevelopBase")]
 [assembly: AssemblyDescription("The base add-in of SharpDevelop")]

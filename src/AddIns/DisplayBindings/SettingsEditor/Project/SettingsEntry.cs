@@ -53,6 +53,8 @@ namespace ICSharpCode.SettingsEditor
 		{
 			if (element == null)
 				throw new ArgumentNullException("element");
+			if (element["Value"] == null)
+				throw new FormatException("Not a settings file.");
 			description = element.GetAttribute("Description");
 			if (!bool.TryParse(element.GetAttribute("GenerateDefaultValueInCode"), out generateDefaultValueInCode))
 				generateDefaultValueInCode = GenerateDefaultValueInCodeDefault;

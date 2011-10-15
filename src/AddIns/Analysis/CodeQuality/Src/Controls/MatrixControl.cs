@@ -3,19 +3,27 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.CodeQualityAnalysis.Utility;
 using System.Drawing.Drawing2D;
 using System.Windows;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Interop;
+using PointF = System.Drawing.PointF;
 
 namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
-	public class MatrixControl<TValue> : FrameworkElement, IScrollInfo
+	public class MatrixControl<TMatrix, TItem, TValue> : FrameworkElement, IScrollInfo
+		where TValue : IValue
+		where TMatrix : Matrix<TItem, TValue>
 	{
+		public event EventHandler<HoveredCellEventArgs<TValue>> HoveredCellChanged;
+		
 		private Dictionary<string, ImageSource> imgs = new Dictionary<string, ImageSource>();
-		private Coords currentCell = new Coords(-1, -1);
+		private Coords currentCell = new Coords(0, 0);
 		private string font;
 
 		private bool canHorizontalScroll = true;
@@ -27,31 +35,84 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		// will be loaded from Matrix
 		private int matrixWidth = 0;
 		private int matrixHeight = 0;
-
-		private Matrix<TValue> matrix;
 		
-		public Matrix<TValue> Matrix
-		{
-			get { return matrix; }
-			set
-			{
-				matrix = value;
-
-				matrixHeight = Matrix.HeaderRows.Count;
-				matrixWidth = Matrix.HeaderColumns.Count;
-			}
-		}
+		private int fontSize = 0;
+		private int penSize = 0;
+		
+		
+		protected int PageSizeWidth { get; set; }
+		protected int PageSizeHeight { get; set; }
+		
+		public TMatrix Matrix { get; set; }
 		
 		public int CellHeight { get; set; }
 
 		public int CellWidth { get; set; }
 		
+		public HoveredCell<TValue> HoveredCell { get; set; }
+		
+		public bool RenderZeroes { get; set; }
+		
+		public IColorizer<TValue> Colorizer { get; set; }
+		
 		public MatrixControl()
 		{
-			CellHeight = CellWidth = 36;
-			matrixWidth = 20;
-			matrixHeight = 20;
+			CellHeight = CellWidth = 18;
+			matrixWidth = 0;
+			matrixHeight = 0;
+			fontSize = CellHeight / 3;
+			penSize = 1;
 			font = "Verdana";
+			
+			HoveredCell = new HoveredCell<TValue>();
+		}
+		
+		public void SetVisibleItems(HeaderType type, ICollection<TItem> visibleItems)
+		{
+			Matrix.SetVisibleItems(type, visibleItems);
+			
+			matrixHeight = Matrix.HeaderRows.Count;
+			matrixWidth = Matrix.HeaderColumns.Count;
+			
+			bool changedCoords = false;
+			if (currentCell.X > matrixHeight) {
+				currentCell = new Coords(matrixHeight - 1, currentCell.Y);
+				changedCoords = true;
+			}
+			
+			if (currentCell.Y > matrixWidth) {
+				currentCell = new Coords(currentCell.X, matrixWidth - 1);
+				changedCoords = true;
+			}
+			
+			if (changedCoords) {
+				SetHoveredCell();
+			}
+			
+			if (matrixHeight >= 0 && matrixWidth >= 0)
+				InvalidateVisual();
+		}
+		
+		public void HighlightLine(HeaderType type, INode node)
+		{
+			var items = type == HeaderType.Columns ? Matrix.HeaderColumns : Matrix.HeaderRows;
+			for (int i = 0; i < items.Count; i++) {
+				if (items[i].Value.Equals(node)) {
+					if (currentCell.X == i && type == HeaderType.Rows)
+						return;
+					if (currentCell.Y == i && type == HeaderType.Columns)
+						return;
+							
+					currentCell = type == HeaderType.Columns ?
+									new Coords(i, currentCell.Y) :
+									new Coords(currentCell.X, i);
+					
+					SetHoveredCell();
+					InvalidateVisual();
+					
+					return;
+				}
+			}
 		}
 		
 		protected override void OnMouseMove(System.Windows.Input.MouseEventArgs e)
@@ -59,14 +120,37 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			base.OnMouseMove(e);
 			
 			var point = e.GetPosition(this);
-			if (point.X < matrixWidth * CellWidth && point.Y < matrixHeight * CellHeight)
+			if (point.X < matrixWidth * CellWidth
+			    && point.Y < matrixHeight * CellHeight)
 				currentCell = new Coords(
 					(int)((point.X + offset.X) / CellWidth),
 					(int)((point.Y + offset.Y) / CellHeight));
-			else
-				currentCell = new Coords(-1, -1);
+			// else // if we are out of matrix just use last cell
+			//	currentCell = new Coords(-1, -1);
 			
-			InvalidateVisual();
+			if (currentCell.X != HoveredCell.RowIndex ||
+			    currentCell.Y != HoveredCell.ColumnIndex)
+			{
+				InvalidateVisual();
+				SetHoveredCell();
+			}
+		}
+		
+		protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+		{
+			base.OnMouseDown(e);
+			Relationship relationship = HoveredCell.Value as Relationship;
+			Console.WriteLine("To: " + relationship.To.Name);
+			Console.WriteLine("From:" + relationship.From.Name);
+		}
+		
+		protected void SetHoveredCell()
+		{
+			HoveredCell.RowIndex = currentCell.Y;
+			HoveredCell.ColumnIndex = currentCell.X;
+			HoveredCell.Value = Matrix[HoveredCell.RowIndex, HoveredCell.ColumnIndex];
+			if (HoveredCellChanged != null)
+				HoveredCellChanged(this, new HoveredCellEventArgs<TValue>(HoveredCell));
 		}
 		
 		protected override void OnRender(DrawingContext drawingContext)
@@ -78,10 +162,15 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			var maxHeight = ((int) viewport.Height / CellHeight) + 1;
 
 			// how many cells we will draw
-			var cellsHorizontally = maxWidth > matrixWidth ? matrixWidth : maxWidth;
-			var cellsVertically = maxHeight > matrixHeight ? matrixHeight : maxHeight;
+			// sometimes happens when half of cell is hidden in scroll so text isnt drawn
+			// so lets drawn one more cell
+			var cellsHorizontally = maxWidth >= matrixWidth ? matrixWidth : maxWidth + 1;
+			var cellsVertically = maxHeight >= matrixHeight ? matrixHeight : maxHeight + 1;
 			
-			// number of cell which will be drawn
+			PageSizeWidth = cellsHorizontally;
+			PageSizeHeight = cellsVertically;
+			
+			// number of cell which arent visible
 			var scaledOffsetX = (int)offset.X / CellWidth;
 			var scaledOffsetY = (int)offset.Y / CellHeight;
 
@@ -92,27 +181,33 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			// background
 			var background = new Rect(0, 0, cellsHorizontally * CellWidth, cellsVertically * CellHeight);
 			var backgroundColor = new SolidColorBrush(Colors.Yellow);
+			backgroundColor.Freeze();
 			drawingContext.DrawRectangle(backgroundColor, null, background);
 			
+			var currentXLine = (currentCell.X - scaledOffsetX) * CellWidth - offsetDiffX;
+			var currentYLine = (currentCell.Y - scaledOffsetY) * CellHeight - offsetDiffY;
+
 			// hovering
 			if (currentCell.X >= 0 || currentCell.Y >= 0) {
 				
-				// hover x line
+				// hover y line
 				var rect = new Rect(0,
-				                (currentCell.Y - scaledOffsetY) * CellHeight - offsetDiffY,
-				                CellWidth * cellsVertically,
-				                CellHeight);
+				                    currentYLine,
+				                    CellWidth * cellsHorizontally,
+				                    CellHeight);
 				
 				var brush = new SolidColorBrush(Colors.GreenYellow);
+				brush.Freeze();
 				drawingContext.DrawRectangle(brush, null, rect);
 				
-				// hover y line
-				rect = new Rect((currentCell.X - scaledOffsetX) * CellWidth - offsetDiffX,
+				// hover x line
+				rect = new Rect(currentXLine,
 				                0,
 				                CellWidth,
-				                CellHeight * cellsHorizontally);
+				                CellHeight * cellsVertically);
 				
 				brush = new SolidColorBrush(Colors.GreenYellow);
+				brush.Freeze();
 				drawingContext.DrawRectangle(brush, null, rect);
 				
 				// hover cell
@@ -123,11 +218,56 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 					CellHeight);
 
 				brush = new SolidColorBrush(Colors.Red);
+				brush.Freeze();
 				drawingContext.DrawRectangle(brush, null, rect);
 			}
 			
+			// text
+			for (int i = 0; i < cellsHorizontally; i++) {
+				for (int j = 0; j < cellsVertically; j++) { // dont draw text in unavailables places
+					int rowIndex = j + scaledOffsetY;
+					int columnIndex = i + scaledOffsetX;
+					
+					// adjust scales
+					rowIndex = rowIndex >= Matrix.HeaderRows.Count ? rowIndex - 1 : rowIndex;
+					columnIndex = columnIndex >= Matrix.HeaderColumns.Count ? columnIndex - 1 : columnIndex;
+					
+					var value = Matrix[rowIndex, columnIndex];
+					
+					if (Colorizer != null) {
+						var rect = new Rect(
+							i * CellWidth - offsetDiffX,
+							j * CellHeight - offsetDiffY,
+							CellWidth,
+							CellHeight);
+
+						SolidColorBrush brush = null;
+						if ((i * CellWidth - offsetDiffX) == currentXLine ||
+						    ((j * CellHeight - offsetDiffY) == currentYLine)) {
+							var color = Colors.GreenYellow;
+							if (currentCell.X == i && currentCell.Y == j) {
+								color = color.MixedWith(Colors.Red);
+							}
+							brush = Colorizer.GetColorBrushMixedWith(color, value);
+							
+							
+						}
+						else
+							brush = Colorizer.GetColorBrush(value);
+						
+						drawingContext.DrawRectangle(brush, null, rect);
+					}
+					
+					if (!RenderZeroes && value != null && value.Text != "0") // rendering zeroes would be distracting
+						drawingContext.DrawImage(
+							CreateText(value.Text),
+							new Rect(i * CellWidth - offsetDiffX, j * CellHeight - offsetDiffY, CellWidth, CellHeight));
+				}
+			}
+			
 			// grid
-			var pen = new Pen(Brushes.Black, 1);
+			var pen = new Pen(Brushes.Black, penSize);
+			pen.Freeze();
 
 			// grid x
 			for (int i = 0; i <= cellsHorizontally; i++)
@@ -141,23 +281,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 				                        new Point(0, i * CellHeight - offsetDiffY),
 				                        new Point(cellsHorizontally * CellHeight,
 				                                  i * CellHeight - offsetDiffY));
-
-			// sometimes happens when half of cell is hidden in scroll so text isnt drawn
-			// so lets drawn one more cell
-			cellsHorizontally = maxWidth > matrixWidth ? matrixWidth : maxWidth + 1;
-			cellsVertically = maxHeight > matrixHeight ? matrixHeight : maxHeight + 1;
-
-			// text
-			for (int i = 0; i < cellsHorizontally; i++)
-				for (int j = 0; j < cellsVertically; j++)
-					drawingContext.DrawImage(
-						CreateText((i + scaledOffsetX) * (j + scaledOffsetY)),
-						new Rect(i * CellWidth - offsetDiffX, j * CellHeight - offsetDiffY, CellWidth, CellHeight));
-		}
-		
-		public ImageSource CreateText(int number)
-		{
-			return CreateText(number.ToString());
 		}
 		
 		public ImageSource CreateText(string text)
@@ -170,21 +293,25 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			g.SmoothingMode = SmoothingMode.AntiAlias;
 			g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 			
-			var fontOjb = new System.Drawing.Font(font, 12);
+			var fontOjb = new System.Drawing.Font(font, fontSize);
 			
 			var size = g.MeasureString(text, fontOjb);
 			
 			var spanWidth = (CellWidth - size.Width) / 2;
 			var spanHeight = (CellHeight - size.Height) / 2;
 			
-			g.DrawString(text, fontOjb, System.Drawing.Brushes.Black, new System.Drawing.PointF(spanWidth, spanHeight));
+			g.DrawString(text, fontOjb, System.Drawing.Brushes.Black, new PointF(spanWidth, spanHeight));
 			g.Dispose();
 			
-			var img = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(bmp.GetHbitmap(),
-			                                                                       IntPtr.Zero,
-			                                                                       Int32Rect.Empty,
-			                                                                       BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height));
+			var bitmap = bmp.GetHbitmap();
+			var img = Imaging.CreateBitmapSourceFromHBitmap(bitmap,
+			                                                IntPtr.Zero,
+			                                                Int32Rect.Empty,
+			                                                BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height));
+			img.Freeze();
 			imgs.Add(text, img);
+			
+			Helper.DeleteObject(bitmap);
 			
 			return img;
 		}
@@ -254,75 +381,75 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 
 		public void LineUp()
 		{
-			SetVerticalOffset(VerticalOffset - 1);
+			SetVerticalOffset(VerticalOffset - CellHeight);
 		}
 		
 		public void LineDown()
 		{
-			SetVerticalOffset(VerticalOffset + 1);
+			SetVerticalOffset(VerticalOffset + CellHeight);
 		}
 		
 		public void LineLeft()
 		{
-			SetHorizontalOffset(HorizontalOffset - 1);
+			SetHorizontalOffset(HorizontalOffset - CellWidth);
 		}
 		
 		public void LineRight()
 		{
-			SetHorizontalOffset(HorizontalOffset + 1);
+			SetHorizontalOffset(HorizontalOffset + CellWidth);
 		}
 		
 		public void PageUp()
 		{
-			SetVerticalOffset(VerticalOffset - CellHeight);
+			SetVerticalOffset(VerticalOffset - CellHeight * PageSizeHeight);
 		}
 		
 		public void PageDown()
 		{
-			SetVerticalOffset(VerticalOffset + CellHeight);
+			SetVerticalOffset(VerticalOffset + CellHeight * PageSizeHeight);
 		}
 		
 		public void PageLeft()
 		{
-			SetHorizontalOffset(HorizontalOffset - CellWidth);
+			SetHorizontalOffset(HorizontalOffset - CellWidth * PageSizeWidth);
 		}
 		
 		public void PageRight()
 		{
-			SetHorizontalOffset(HorizontalOffset + CellWidth);
+			SetHorizontalOffset(HorizontalOffset + CellWidth * PageSizeWidth);
 		}
 		
 		public void MouseWheelUp()
 		{
-			SetVerticalOffset(VerticalOffset - 4);
+			SetVerticalOffset(VerticalOffset - CellHeight);
 		}
 		
 		public void MouseWheelDown()
 		{
-			SetVerticalOffset(VerticalOffset + 4);
+			SetVerticalOffset(VerticalOffset + CellHeight);
 		}
 		
 		public void MouseWheelLeft()
 		{
-			SetVerticalOffset(HorizontalOffset - 4);
+			SetVerticalOffset(HorizontalOffset - CellWidth);
 		}
 		
 		public void MouseWheelRight()
 		{
-			SetVerticalOffset(HorizontalOffset + 4);
+			SetVerticalOffset(HorizontalOffset + CellWidth);
 		}
 		
 		public void SetHorizontalOffset(double offset)
 		{
 			if (offset == this.offset.X) return;
-			this.offset.X = offset;
+			this.offset.X = Math.Round(offset / CellWidth) * CellWidth;
 			InvalidateVisual();
 		}
 		
 		public void SetVerticalOffset(double offset)
 		{
 			if (offset == this.offset.Y) return;
-			this.offset.Y = offset;
+			this.offset.Y = Math.Round(offset / CellHeight) * CellHeight;
 			InvalidateVisual();
 		}
 		
@@ -374,6 +501,23 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 				X = x;
 				Y = y;
 			}
+		}
+	}
+	
+	public class HoveredCell<TValue>
+	{
+		public int RowIndex { get; set; }
+		public int ColumnIndex { get; set; }
+		public TValue Value { get; set; }
+	}
+	
+	public class HoveredCellEventArgs<TValue> : EventArgs
+	{
+		public HoveredCell<TValue> HoveredCell { get; set; }
+		
+		public HoveredCellEventArgs(HoveredCell<TValue> cell)
+		{
+			HoveredCell = cell;
 		}
 	}
 }

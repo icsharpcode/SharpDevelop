@@ -39,7 +39,7 @@ namespace ICSharpCode.Reports.Core {
 				throw new ArgumentNullException("graphics");
 			}
 			using (Pen p = baseline.CreatePen(baseline.Thickness)) {
-				Rectangle r = System.Drawing.Rectangle.Inflate(rectangle,1,1);
+//				Rectangle r = System.Drawing.Rectangle.Inflate(rectangle,1,1);
 				graphics.DrawRectangle (p,rectangle);
 			}
 		}

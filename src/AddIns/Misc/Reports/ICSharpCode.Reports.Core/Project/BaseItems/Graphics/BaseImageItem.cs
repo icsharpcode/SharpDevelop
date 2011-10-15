@@ -68,7 +68,7 @@ namespace ICSharpCode.Reports.Core {
 			try {
 				Image im;
 				string absFileName = this.AbsoluteFileName;
-				System.Diagnostics.Trace.WriteLine(String.Format("<CORE.LoadImage > {0}",absFileName));
+//				System.Diagnostics.Trace.WriteLine(String.Format("<CORE.LoadImage > {0}",absFileName));
 				if (!String.IsNullOrEmpty(absFileName) && File.Exists(absFileName)) {
 					im = Image.FromFile (this.AbsoluteFileName);
 				} else {
@@ -172,7 +172,7 @@ namespace ICSharpCode.Reports.Core {
 			set {
 				imageFileName = value;
 				this.imageSource = GlobalEnums.ImageSource.File;
-				System.Diagnostics.Trace.WriteLine(String.Format("<CORE.BaseImage> ImageFilename {0}",Path.GetFullPath(this.imageFileName)));
+//				System.Diagnostics.Trace.WriteLine(String.Format("<CORE.BaseImage> ImageFilename {0}",Path.GetFullPath(this.imageFileName)));
 			}
 		}
 		

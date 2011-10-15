@@ -29,10 +29,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 				PropertyPad.Grid.HelpVisible = value;
 			}
 		}
-		
-		public override void Run()
-		{
-			PropertyPad.Grid.HelpVisible = !PropertyPad.Grid.HelpVisible;
-		}
 	}
 }

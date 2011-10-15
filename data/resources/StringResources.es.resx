@@ -5782,6 +5782,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.SetCurrentStatement" xml:space="preserve">
     <value>Establecer línea actual</value>
   </data>
+  <data name="MainWindow.Windows.Debug.StopDebugging.Message" xml:space="preserve">
+    <value>¿Quiere detener la depuración?</value>
+  </data>
   <data name="MainWindow.Windows.Debug.StopProcessDialog.Message" xml:space="preserve">
     <value>¿Desasociar del proceso o terminarlo?</value>
   </data>
@@ -8063,7 +8066,7 @@ Error mientras se iniciaba:</value>
     <value>Creación automática de código</value>
   </data>
   <data name="XML.MainMenu.ToolMenu.InsColor" xml:space="preserve">
-    <value>Insertar color...</value>
+    <value>Insertar Color...</value>
   </data>
   <data name="XML.MainMenu.ToolMenu.InsGUID" xml:space="preserve">
     <value>Insertar nuevo &amp;GUID</value>
@@ -8127,15 +8130,6 @@ Error mientras se iniciaba:</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Usuario:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>¡Estar atento a nuevas versiones de SharpDevelop y contar a todos sus amigos como es de bueno SharpDevelop para escribir programas impresionantes en C# y VB.Net!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>¿Que puedes abrir la ventana de completar plantillas usando ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>¿Que puedes tipear "? name =...;" (C#) o "Dim name As ? =..." (VB) y SharpDevelop sustituirá el signo de interrogación con el tipo de "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Opciones de Búfer</value>

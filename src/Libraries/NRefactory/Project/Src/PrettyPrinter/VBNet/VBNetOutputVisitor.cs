@@ -2370,6 +2370,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.AddressOf);
 					TrackedVisit(unaryOperatorExpression.Expression, data);
 					return null;
+				case UnaryOperatorType.Await:
+					outputFormatter.PrintText("Await ");
+					TrackedVisit(unaryOperatorExpression.Expression, data);
+					return null;
 				default:
 					Error("unknown unary operator: " + unaryOperatorExpression.Op.ToString(), unaryOperatorExpression.StartLocation);
 					outputFormatter.PrintText(unaryOperatorExpression.Op.ToString());

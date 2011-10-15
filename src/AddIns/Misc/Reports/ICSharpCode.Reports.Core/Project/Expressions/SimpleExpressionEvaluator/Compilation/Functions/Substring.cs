@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Globalization;
 
 namespace SimpleExpressionEvaluator.Compilation.Functions
 {
@@ -23,7 +24,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions
 			  }
 			   string str = args[0].ToString();
 			   if (args.Length == 2) {
-			   	 var start = Convert.ToInt32(args[1]);
+			   	 var start = Convert.ToInt32(args[1],CultureInfo.CurrentCulture);
 			   return str.Substring(start);
 			   }
 			   else if (args.Length == 3) {

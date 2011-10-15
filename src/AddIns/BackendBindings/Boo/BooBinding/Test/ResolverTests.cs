@@ -51,7 +51,7 @@ namespace Grunwald.BooBinding.Tests
 			lastPC = pc;
 			HostCallback.GetCurrentProjectContent = delegate { return pc; };
 			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
+			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference("System.Windows.Forms", typeof(System.Windows.Forms.Form).Module.FullyQualifiedName));
 			pc.ReferencedContents.Add(booLangPC);
 			ICompilationUnit cu = new BooParser().Parse(pc, fileName, new StringTextBuffer(prog));
 			ParserService.RegisterParseInformation(fileName, cu);

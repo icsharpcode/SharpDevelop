@@ -2,30 +2,28 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
-using ICSharpCode.Reports.Core;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.Dialogs
 {
 	
 	public  class ParameterDialog : System.Windows.Forms.Form
 	{
-		private ParameterCollection collection;
+		private SqlParameterCollection collection;
 		
-		public ParameterDialog(ParameterCollection collection):this()
+		public ParameterDialog(SqlParameterCollection collection)
 		{
+			InitializeComponent();
 			this.collection = collection;
 			this.dataGrid1.DataSource = this.collection;
 		}
 		
-		public ParameterDialog()
-		{
-			InitializeComponent();
-		}
 
-		public ParameterCollection Collection {
-			get { return collection; }
+		public SqlParameterCollection SqlParameterCollection {
+			get {
+				return this.collection;
+			}
 		}
+		
 		
 		#region Designer generated
 		

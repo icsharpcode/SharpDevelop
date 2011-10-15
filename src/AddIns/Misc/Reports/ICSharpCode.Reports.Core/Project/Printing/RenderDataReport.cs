@@ -159,12 +159,6 @@ namespace ICSharpCode.Reports.Core {
 		
 			ITableContainer tableContainer = base.CurrentSection.Items[0] as ITableContainer;
 			
-			IBaseRenderer r = PrintRendererFactory.CreateRenderer(base.CurrentSection.Items[0],nav,base.SinglePage,base.Layout,CurrentSection);
-			if ( r != null) {
-//				r.Render(tableContainer,rpea,Evaluator);
-			}
-			
-			
 			// branch to render table's etc
 			if (tableContainer != null)
 			{

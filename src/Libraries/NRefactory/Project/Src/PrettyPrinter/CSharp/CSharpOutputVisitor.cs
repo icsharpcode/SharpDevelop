@@ -2458,6 +2458,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				case UnaryOperatorType.AddressOf:
 					outputFormatter.PrintToken(Tokens.BitwiseAnd);
 					break;
+				case UnaryOperatorType.Await:
+					outputFormatter.PrintToken(Tokens.Await);
+					outputFormatter.Space();
+					break;
 				default:
 					Error(unaryOperatorExpression, String.Format("Unknown unary operator {0}", unaryOperatorExpression.Op));
 					return null;

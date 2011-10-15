@@ -428,9 +428,6 @@ namespace ICSharpCode.FormsDesigner.Commands
 				
 			}
 		}
-		public override void Run()
-		{
-		}
 	}
 	#endregion
 

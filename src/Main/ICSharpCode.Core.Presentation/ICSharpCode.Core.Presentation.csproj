@@ -72,6 +72,7 @@
     </Compile>
     <Compile Include="ExtendedPopup.cs" />
     <Compile Include="GlobalStyles.cs" />
+    <Compile Include="Menu\MenuCheckBox.cs" />
     <Compile Include="RestrictDesiredSize.cs" />
     <Compile Include="SortableGridViewColumn.cs" />
     <Compile Include="ConditionalSeparator.cs" />

@@ -281,13 +281,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			AbstractProject.filesToOpenAfterSolutionLoad.Clear();
 			try {
 				string file = GetPreferenceFileName(openSolution.FileName);
-				Properties properties;
+				Properties properties = null;
 				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
-					properties = Properties.Load(file);
-				} else {
-					properties = new Properties();
+					try {
+						properties = Properties.Load(file);
+					} catch (IOException) {
+					} catch (UnauthorizedAccessException) {
+					} catch (XmlException) {
+						// ignore errors about inaccessible or malformed files
+					}
 				}
-				(openSolution.Preferences as IMementoCapable).SetMemento(properties);
+				(openSolution.Preferences as IMementoCapable).SetMemento(properties ?? new Properties());
 			} catch (Exception ex) {
 				MessageService.ShowException(ex);
 			}
@@ -322,7 +326,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (IProject project in openSolution.Projects) {
 				string file = GetPreferenceFileName(project.FileName);
 				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
-					project.SetMemento(Properties.Load(file));
+					Properties properties = null;
+					try {
+						properties = Properties.Load(file);
+					} catch (IOException) {
+					} catch (UnauthorizedAccessException) {
+					} catch (XmlException) {
+						// ignore errors about inaccessible or malformed files
+					}
+					if (properties != null)
+						project.SetMemento(properties);
 				}
 			}
 		}
@@ -490,7 +503,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			string fullFileName = GetPreferenceFileName(openSolution.FileName);
 			if (FileUtility.IsValidPath(fullFileName)) {
+				#if DEBUG
+				memento.Save(fullFileName);
+				#else
 				FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
+				#endif
 			}
 			
 			foreach (IProject project in OpenSolution.Projects) {
@@ -499,7 +516,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				fullFileName = GetPreferenceFileName(project.FileName);
 				if (FileUtility.IsValidPath(fullFileName)) {
+					#if DEBUG
+					memento.Save(fullFileName);
+					#else
 					FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
+					#endif
 				}
 			}
 		}

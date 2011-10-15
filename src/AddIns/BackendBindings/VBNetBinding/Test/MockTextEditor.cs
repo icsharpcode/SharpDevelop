@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
+using System.Linq;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
@@ -35,9 +35,9 @@ namespace ICSharpCode.VBNetBinding.Tests
 			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
 			
 			Dictionary<string, string> referencedAssemblies = new Dictionary<string, string>() {
-				{ "System", null },
-				{ "System.Core", null },
-				{ "Microsoft.VisualBasic", null }
+				{ "System", typeof(Uri).Module.FullyQualifiedName },
+				{ "System.Core", typeof(Enumerable).Module.FullyQualifiedName },
+				{ "Microsoft.VisualBasic", typeof(Microsoft.VisualBasic.Constants).Module.FullyQualifiedName }
 			};
 			foreach (var assembly in referencedAssemblies) {
 				IProjectContent referenceProjectContent = AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference(assembly.Key, assembly.Value ?? assembly.Key);

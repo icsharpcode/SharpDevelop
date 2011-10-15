@@ -227,6 +227,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 							Name = variableName,
 							Initializer = m1.Get<Expression>("initializer").Single().Detach()
 						}.CopyAnnotationsFrom(node.Expression)
+							.WithAnnotation(m1.Get<AstNode>("variable").Single().Annotation<ILVariable>())
 					}
 				}.CopyAnnotationsFrom(node);
 			} else {
@@ -382,7 +383,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				VariableName = itemVar.Identifier,
 				InExpression = m.Get<Expression>("collection").Single().Detach(),
 				EmbeddedStatement = newBody
-			};
+			}.WithAnnotation(itemVarDecl.Variables.Single().Annotation<ILVariable>());
 			if (foreachStatement.InExpression is BaseReferenceExpression) {
 				foreachStatement.InExpression = new ThisReferenceExpression().CopyAnnotationsFrom(foreachStatement.InExpression);
 			}
@@ -471,10 +472,12 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			// We just care that we can move it in front of the loop:
 			if (declarationPoint != loop)
 				return null;
-			
-			ForeachStatement foreachStatement = new ForeachStatement();
-			foreachStatement.VariableType = itemVarDecl.Type.Clone();
-			foreachStatement.VariableName = itemVar.Identifier;
+
+			ForeachStatement foreachStatement = new ForeachStatement
+			{
+				VariableType = itemVarDecl.Type.Clone(),
+				VariableName = itemVar.Identifier,
+			}.WithAnnotation(itemVarDecl.Variables.Single().Annotation<ILVariable>());
 			BlockStatement body = new BlockStatement();
 			foreachStatement.EmbeddedStatement = body;
 			((BlockStatement)node.Parent).Statements.InsertBefore(node, foreachStatement);
@@ -980,34 +983,6 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			}
 			// Since the tryFinally instance is not changed, we can continue in the visitor as usual, so return null
 			return null;
-		}
-		#endregion
-		
-		#region Pattern Matching Helpers
-		sealed class TypePattern : Pattern
-		{
-			readonly string ns;
-			readonly string name;
-			
-			public TypePattern(Type type)
-			{
-				this.ns = type.Namespace;
-				this.name = type.Name;
-			}
-			
-			public override bool DoMatch(INode other, Match match)
-			{
-				AstNode o = other as AstNode;
-				if (o == null)
-					return false;
-				TypeReference tr = o.Annotation<TypeReference>();
-				return tr != null && tr.Namespace == ns && tr.Name == name;
-			}
-			
-			public override S AcceptVisitor<T, S>(IPatternAstVisitor<T, S> visitor, T data)
-			{
-				throw new NotImplementedException();
-			}
 		}
 		#endregion
 	}

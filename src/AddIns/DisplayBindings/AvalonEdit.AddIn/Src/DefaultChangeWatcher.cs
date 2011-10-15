@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.AvalonEdit.AddIn.MyersDiff;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
@@ -23,6 +22,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		IDocument baseDocument;
 		IDocumentVersionProvider usedProvider;
 		IDisposable watcher;
+		Core.FileName currentFileName;
 		
 		public event EventHandler ChangeOccurred;
 		
@@ -40,29 +40,32 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void Initialize(IDocument document)
 		{
-			if (changeList != null && changeList.Any())
-				return;
-			
-			this.document = document;
-			this.textDocument = (TextDocument)document.GetService(typeof(TextDocument));
-			this.changeList = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
-			
-			InitializeBaseDocument();
-			
-			if (usedProvider != null) {
-				string fileName = ((ITextEditor)document.GetService(typeof(ITextEditor))).FileName;
-				watcher = usedProvider.WatchBaseVersionChanges(fileName, HandleBaseVersionChanges);
+			if (this.document == null) {
+				this.document = document;
+				this.textDocument = (TextDocument)document.GetService(typeof(TextDocument));
+				this.changeList = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
 			}
 			
-			SetupInitialFileState(false);
+			var fileName = ((ITextEditor)document.GetService(typeof(ITextEditor))).FileName;
 			
-			this.textDocument.LineTrackers.Add(this);
-			this.textDocument.UndoStack.PropertyChanged += UndoStackPropertyChanged;
+			InitializeBaseDocument();
+			if (watcher != null)
+				watcher.Dispose();
+			
+			if (usedProvider != null)
+				watcher = usedProvider.WatchBaseVersionChanges(fileName, HandleBaseVersionChanges);
+			
+			SetupInitialFileState(fileName != currentFileName);
+			currentFileName = fileName;
+			
+			if (!this.textDocument.LineTrackers.Contains(this)) {
+				this.textDocument.LineTrackers.Add(this);
+				this.textDocument.UndoStack.PropertyChanged += UndoStackPropertyChanged;
+			}
 		}
 		
 		void HandleBaseVersionChanges(object sender, EventArgs e)
 		{
-			ICSharpCode.Core.LoggingService.Info("HandleBaseVersionChanges");
 			InitializeBaseDocument();
 			SetupInitialFileState(true);
 		}

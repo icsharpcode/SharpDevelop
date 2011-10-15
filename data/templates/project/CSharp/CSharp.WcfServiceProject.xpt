@@ -17,7 +17,7 @@
 
 	<!-- Actions -->
 	<Actions>
-		<Open filename="ServiceCalculator.svc.cs"/>
+		<Open filename="Service.svc.cs"/>
 	</Actions>
 
 	<Project language="C#">
@@ -42,12 +42,12 @@
 		
 		<Files>
 			<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
-			<File name="ServiceCalculator.svc">
+			<File name="Service.svc">
 <![CDATA[
-<%@ServiceHost language="C#" Debug="true" Service="${StandardNamespace}.ServiceCalculator"%>
+<%@ServiceHost language="C#" Debug="true" Service="${StandardNamespace}.Service"%>
 ]]>
 			</File>
-			<File name="ServiceCalculator.svc.cs" DependentUpon="ServiceCalculator.svc">
+			<File name="Service.svc.cs" DependentUpon="Service.svc">
 <![CDATA[${StandardHeader.C#}
 using System;
 using System.ServiceModel;
@@ -55,35 +55,17 @@ using System.ServiceModel;
 namespace ${StandardNamespace}
 {
 	[ServiceContract]
-	public interface ICalculator
+	public interface IService
 	{
 	   [OperationContract]
-	   double Add(double n1, double n2);
-	   [OperationContract]
-	   double Subtract(double n1, double n2);
-	   [OperationContract]
-	   double Multiply(double n1, double n2);
-	   [OperationContract]
-	   double Divide(double n1, double n2);
+	   void MyOperation();
 	}
 	
-	public class ServiceCalculator : ICalculator
+	public class Service : IService
 	{
-	   public double Add(double n1, double n2)
+	   public void MyOperation()
 	   {
-		  return n1 + n2;
-	   }
-	   public double Subtract(double n1, double n2)
-	   {
-		  return n1 - n2;
-	   }
-	   public double Multiply(double n1, double n2)
-	   {
-		  return n1 * n2;
-	   }
-	   public double Divide(double n1, double n2)
-	   {
-		  return n1 / n2;
+		  // implement the operation
 	   }
 	} 
 }
@@ -94,12 +76,10 @@ namespace ${StandardNamespace}
 <configuration>
   <system.serviceModel>
     <services>
-      <!-- This section is optional with the default configuration model introduced in .NET Framework 4 -->
-      <service name="${StandardNamespace}.ServiceCalculator">
-        <!-- This endpoint is exposed at the base address provided by host: http://localhost/${ProjectName}/ServiceCalculator.svc  -->
+      <service name="${StandardNamespace}.Service">
         <endpoint address=""
                   binding="wsHttpBinding"
-                  contract="${StandardNamespace}.ICalculator" />
+                  contract="${StandardNamespace}.IService" />
       </service>
     </services>
   </system.serviceModel>

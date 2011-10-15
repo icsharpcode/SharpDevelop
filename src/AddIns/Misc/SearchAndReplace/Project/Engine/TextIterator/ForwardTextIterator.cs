@@ -83,6 +83,12 @@ namespace SearchAndReplace
 		{
 			Debug.Assert(numChars > 0);
 			
+			// HACK : ignore files with length 1 (fixes SD-1815)
+			if (document.TextLength == 1) {
+				state = TextIteratorState.Done;
+				return false;
+			}
+			
 			switch (state) {
 				case TextIteratorState.Resetted:
 					if (document.TextLength == 0) {

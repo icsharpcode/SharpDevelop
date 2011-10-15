@@ -2,8 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using NUnit.Framework;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Interfaces;
+using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Dialogs
 {

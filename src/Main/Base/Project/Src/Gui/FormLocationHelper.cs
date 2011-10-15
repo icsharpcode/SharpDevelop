@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (isResizable) {
 				form.Bounds = Validate(PropertyService.Get(propertyName, GetDefaultBounds(form)));
 			} else {
-				form.Location = Validate(PropertyService.Get(propertyName, GetDefaultLocation(form)), form.Size);
+				form.Location = Validate(new System.Drawing.Rectangle(PropertyService.Get(propertyName, GetDefaultLocation(form)), form.Size)).Location;
 			}
 			form.Closing += delegate {
 				if (isResizable) {
@@ -41,7 +41,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (isResizable) {
 				Rect bounds = PropertyService.Get(propertyName, GetDefaultBounds(window));
 				bounds.Offset(ownerLocation.X, ownerLocation.Y);
-				bounds = Validate(bounds);
+				window.SourceInitialized += delegate {
+					bounds = Validate(bounds.TransformToDevice(window).ToSystemDrawing())
+						.ToWpf().TransformFromDevice(window);
+				};
 				window.Left = bounds.X;
 				window.Top = bounds.Y;
 				window.Width = bounds.Width;
@@ -50,9 +53,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Size size = new Size(window.ActualWidth, window.ActualHeight);
 				Point location = PropertyService.Get(propertyName, GetDefaultLocation(window));
 				location.Offset(ownerLocation.X, ownerLocation.Y);
-				location = Validate(location, size);
-				window.Left = location.X;
-				window.Top = location.Y;
+				window.SourceInitialized += delegate {
+					var bounds = Validate(new Rect(location, size).TransformToDevice(window).ToSystemDrawing())
+						.ToWpf().TransformFromDevice(window);
+					window.Left = bounds.X;
+					window.Top = bounds.Y;
+				};
 			}
 			window.Closing += delegate {
 				var relativeToOwner = GetLocationRelativeToOwner(window);
@@ -88,35 +94,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return new Point(owner.Left, owner.Top);
 		}
 		
-		public static Rect Validate(Rect bounds)
+		/// <remarks>Requires Pixels!!!</remarks>
+		public static System.Drawing.Rectangle Validate(System.Drawing.Rectangle bounds)
 		{
 			// Check if form is outside the screen and get it back if necessary.
 			// This is important when the user uses multiple screens, a window stores its location
 			// on the secondary monitor and then the secondary monitor is removed.
+			LoggingService.InfoFormatted("Number of screens: {0}", Screen.AllScreens.Length);
+			
 			foreach (var screen in Screen.AllScreens) {
-				var rect = System.Drawing.Rectangle.Intersect(bounds.ToSystemDrawing(), screen.WorkingArea);
+				var rect = System.Drawing.Rectangle.Intersect(bounds, screen.WorkingArea);
+				LoggingService.InfoFormatted("Screen {2}: Validating {0}; intersection {1}", bounds, rect, screen.Bounds);
 				if (rect.Width > 10 && rect.Height > 10)
 					return bounds;
 			}
 			// center on primary screen
+			LoggingService.InfoFormatted("Validating {0}; center on screen", bounds);
 			// TODO : maybe use screen where main window is most visible?
 			var targetScreen = Screen.PrimaryScreen;
-			return new Rect((targetScreen.WorkingArea.Width - bounds.Width) / 2, (targetScreen.WorkingArea.Height - bounds.Height) / 2, bounds.Width, bounds.Height);
-		}
-		
-		static Point Validate(Point location, Size size)
-		{
-			return Validate(new Rect(location, size)).Location;
-		}
-		
-		static System.Drawing.Rectangle Validate(System.Drawing.Rectangle bounds)
-		{
-			return Validate(bounds.ToWpf()).ToSystemDrawing();
-		}
-		
-		static System.Drawing.Point Validate(System.Drawing.Point location, System.Drawing.Size size)
-		{
-			return Validate(location.ToWpf(), size.ToWpf()).ToSystemDrawing();
+			return new System.Drawing.Rectangle((targetScreen.WorkingArea.Width - bounds.Width) / 2, (targetScreen.WorkingArea.Height - bounds.Height) / 2, bounds.Width, bounds.Height);
 		}
 		
 		static System.Drawing.Rectangle GetDefaultBounds(Form form)

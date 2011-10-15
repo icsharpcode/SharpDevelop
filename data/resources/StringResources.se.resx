@@ -417,9 +417,6 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Fil</value>
   </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Rad</value>
-  </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Om</value>
   </data>
@@ -2329,6 +2326,9 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Start</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Rad</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>&amp;Uppdatera</value>
   </data>
@@ -2457,9 +2457,6 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   </data>
   <data name="ICSharpCode.CodeCoverage.EndColumn" xml:space="preserve">
     <value>Slutkolumn</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Rad</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Kunde inte hitta applikationen NCover.
@@ -5381,15 +5378,6 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Användare:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Att du bör hålla utkik efter nya SharpDevelop-versioner,  berätta för dina vänner hur bra SharpDevelop är och skriva snygga C#-program med det!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Att du kan öppna mallkompletteringsfönstret med Ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Anger du "? name = ...;" (C#) eller "Dim name As ? = ..." (VB) kommer SharpDevelop att ersätta frågetecknet med typen "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Buffertinställningar</value>
