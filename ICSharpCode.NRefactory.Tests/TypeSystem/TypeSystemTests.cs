@@ -431,8 +431,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsFalse(type.TypeParameters[0].HasReferenceTypeConstraint);
 			Assert.IsTrue(type.TypeParameters[1].HasReferenceTypeConstraint);
 			
-			Assert.IsTrue(type.TypeParameters[0].IsReferenceType(ctx) == true);
-			Assert.IsTrue(type.TypeParameters[1].IsReferenceType(ctx) == true);
+			Assert.IsNull(type.TypeParameters[0].IsReferenceType(ctx));
+			Assert.AreEqual(true, type.TypeParameters[1].IsReferenceType(ctx));
 		}
 		
 		[Test]

@@ -216,15 +216,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		[NonSerialized]
+		volatile string cachedFullName;
+		
 		public string FullName {
 			get {
-				if (declaringTypeDefinition != null) {
-					return declaringTypeDefinition.FullName + "." + this.name;
-				} else if (string.IsNullOrEmpty(ns)) {
-					return this.name;
-				} else {
-					return this.ns + "." + this.name;
+				string fullName = this.cachedFullName;
+				if (fullName == null) {
+					// Initialize the cache on demand. Because this might happen after the type definition gets frozen,
+					// the initialization must be thread-safe.
+					if (declaringTypeDefinition != null) {
+						fullName = declaringTypeDefinition.FullName + "." + this.name;
+					} else if (string.IsNullOrEmpty(ns)) {
+						fullName = this.name;
+					} else {
+						fullName = this.ns + "." + this.name;
+					}
+					this.cachedFullName = fullName;
 				}
+				return fullName;
 			}
 		}
 		

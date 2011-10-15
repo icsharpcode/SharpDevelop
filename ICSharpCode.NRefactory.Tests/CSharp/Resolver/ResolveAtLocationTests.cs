@@ -68,10 +68,10 @@ class A { void M() {
 			Assert.AreEqual("System.Int32", rr.Type.FullName);
 		}
 		
-		[Test, Ignore("Parser returns incorrect positions")]
+		[Test]
 		public void BaseCtorCall()
 		{
-			var rr = ResolveAtLocation<InvocationResolveResult>(@"using System;
+			var rr = ResolveAtLocation<CSharpInvocationResolveResult>(@"using System;
 class A { public A() : ba$se() {} }");
 			Assert.AreEqual("System.Object..ctor", rr.Member.FullName);
 		}

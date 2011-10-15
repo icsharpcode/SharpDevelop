@@ -1,5 +1,5 @@
 // 
-// ICompletionData.cs
+// IParameterDataProvider.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,30 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.Completion
 {
-	public interface ICompletionData
+	public interface IParameterDataProvider
 	{
-		CompletionCategory CompletionCategory { get; set; }
-		
-		string DisplayText { get; set; }
-
-		string Description { get; set; }
-		
-		string CompletionText { get; set; }
-		
-		DisplayFlags DisplayFlags { get; set; }
-		
-		bool HasOverloads { 
-			get;
+		// Returns the number of methods
+		int OverloadCount { 
+			get; 
 		}
 		
-		IEnumerable<ICompletionData> OverloadedData {
-			get;
-		}
+		// Returns the markup to use to represent the specified method overload
+		// in the parameter information window.
+		string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter);
 		
-		void AddOverload (ICompletionData data);
+		// Returns the text to use to represent the specified parameter
+		string GetParameterMarkup (int overload, int paramIndex);
+		
+		// Returns the number of parameters of the specified method
+		int GetParameterCount (int overload);
 	}
 }
+

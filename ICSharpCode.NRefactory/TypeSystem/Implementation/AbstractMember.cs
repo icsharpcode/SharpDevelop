@@ -146,7 +146,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public bool IsOverridable {
 			get {
-				return (IsVirtual || IsOverride) && !IsSealed;
+				return (IsAbstract || IsVirtual || IsOverride) && !IsSealed;
 			}
 		}
 		

@@ -143,9 +143,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			var rr = resolver.ResolveUnaryOperator(op, input);
 			AssertType(expectedResultType, rr);
-			Assert.AreEqual(typeof(UnaryOperatorResolveResult), rr.GetType());
-			var uorr = (UnaryOperatorResolveResult)rr;
-			AssertConversion(uorr.Input, input, expectedConversion, "Conversion");
+			Assert.AreEqual(typeof(OperatorResolveResult), rr.GetType());
+			var uorr = (OperatorResolveResult)rr;
+			AssertConversion(uorr.Operands[0], input, expectedConversion, "Conversion");
 		}
 		
 		protected void TestOperator(ResolveResult lhs, BinaryOperatorType op, ResolveResult rhs,
@@ -153,10 +153,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			var rr = resolver.ResolveBinaryOperator(op, lhs, rhs);
 			AssertType(expectedResultType, rr);
-			Assert.AreEqual(typeof(BinaryOperatorResolveResult), rr.GetType());
-			var borr = (BinaryOperatorResolveResult)rr;
-			AssertConversion(borr.Left, lhs, expectedLeftConversion, "Left conversion");
-			AssertConversion(borr.Right, rhs, expectedRightConversion, "Right conversion");
+			Assert.AreEqual(typeof(OperatorResolveResult), rr.GetType());
+			var borr = (OperatorResolveResult)rr;
+			AssertConversion(borr.Operands[0], lhs, expectedLeftConversion, "Left conversion");
+			AssertConversion(borr.Operands[1], rhs, expectedRightConversion, "Right conversion");
 		}
 		
 		protected void AssertConversion(ResolveResult conversionResult, ResolveResult expectedRR, Conversion expectedConversion, string text)
@@ -197,7 +197,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			SetUp();
 			
 			CSharpParsedFile parsedFile = new CSharpParsedFile("test.cs", resolver.CurrentUsingScope);
-			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(parsedFile, resolver.CurrentUsingScope, null);
+			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(parsedFile);
 			cu.AcceptVisitor(convertVisitor, null);
 			project.UpdateProjectContent(null, convertVisitor.ParsedFile);
 			

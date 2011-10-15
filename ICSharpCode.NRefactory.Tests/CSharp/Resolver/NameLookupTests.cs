@@ -848,7 +848,7 @@ class B
 			Assert.AreEqual("B.x", mrr.Member.FullName);
 		}
 		
-		[Test, Ignore("Parser produces incorrect positions")]
+		[Test]
 		public void SubstituteClassAndMethodTypeParametersAtOnce()
 		{
 			string program = @"class C<X> { static void M<T>(X a, T b) { $C<T>.M<X>$(b, a); } }";
@@ -859,6 +859,14 @@ class B
 			Assert.AreSame(rr.TypeArguments.Single(), m.TypeArguments.Single());
 			Assert.AreEqual("T", m.Parameters[0].Type.Resolve(context).Name);
 			Assert.AreEqual("X", m.Parameters[1].Type.Resolve(context).Name);
+		}
+		
+		[Test]
+		public void InheritingInnerClassShouldNotCauseStackOverflow() 
+		{
+			string program = @"class Test : $Test.Base$, Test.ITest { public class Base {} interface ITest {} }";
+			var result = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("Test.Base", result.Type.FullName);
 		}
 	}
 }
