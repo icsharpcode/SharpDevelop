@@ -93,6 +93,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CodeCompletion\ICompletionData.cs" />
+    <Compile Include="CodeCompletion\Images\CompletionImage.cs" />
     <Compile Include="CodeCompletion\InsightWindow.cs" />
     <Compile Include="CodeCompletion\IOverloadProvider.cs" />
     <Compile Include="CodeCompletion\OverloadInsightWindow.cs" />
@@ -433,5 +434,35 @@
   <ItemGroup>
     <Resource Include="Search\next.png" />
     <Resource Include="Search\prev.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CodeCompletion\Images" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CodeCompletion\Images\Class.png" />
+    <Resource Include="CodeCompletion\Images\Constructor.png" />
+    <Resource Include="CodeCompletion\Images\Delegate.png" />
+    <Resource Include="CodeCompletion\Images\Enum.png" />
+    <Resource Include="CodeCompletion\Images\EnumValue.png" />
+    <Resource Include="CodeCompletion\Images\Event.png" />
+    <Resource Include="CodeCompletion\Images\ExtensionMethod.png" />
+    <Resource Include="CodeCompletion\Images\Field.png" />
+    <Resource Include="CodeCompletion\Images\FieldReadOnly.png" />
+    <Resource Include="CodeCompletion\Images\Indexer.png" />
+    <Resource Include="CodeCompletion\Images\Interface.png" />
+    <Resource Include="CodeCompletion\Images\Literal.png" />
+    <Resource Include="CodeCompletion\Images\Method.png" />
+    <Resource Include="CodeCompletion\Images\NameSpace.png" />
+    <Resource Include="CodeCompletion\Images\Operator.png" />
+    <Resource Include="CodeCompletion\Images\OverlayInternal.png" />
+    <Resource Include="CodeCompletion\Images\OverlayPrivate.png" />
+    <Resource Include="CodeCompletion\Images\OverlayProtected.png" />
+    <Resource Include="CodeCompletion\Images\OverlayProtectedInternal.png" />
+    <Resource Include="CodeCompletion\Images\OverlayStatic.png" />
+    <Resource Include="CodeCompletion\Images\PInvokeMethod.png" />
+    <Resource Include="CodeCompletion\Images\Property.png" />
+    <Resource Include="CodeCompletion\Images\StaticClass.png" />
+    <Resource Include="CodeCompletion\Images\Struct.png" />
+    <Resource Include="CodeCompletion\Images\VirtualMethod.png" />
   </ItemGroup>
 </Project>

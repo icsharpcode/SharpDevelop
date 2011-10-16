@@ -38,6 +38,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 	}
 	
+	[Obsolete]
 	public static class ClassBrowserIconService
 	{
 		#region WinForms ImageList
