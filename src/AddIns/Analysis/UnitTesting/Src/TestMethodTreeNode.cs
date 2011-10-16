@@ -24,9 +24,9 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Gets the underlying IMethod for this test method.
+		/// Gets the underlying IMember for this test method.
 		/// </summary>
-		public IMethod Method {
+		public IMember Method {
 			get {
 				return testMethod.Method;
 			}

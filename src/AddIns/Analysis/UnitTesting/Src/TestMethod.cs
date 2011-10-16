@@ -12,7 +12,7 @@ namespace ICSharpCode.UnitTesting
 	public class TestMethod
 	{
 		string prefix = String.Empty;
-		IMethod method;
+		IMember method;
 		TestResultType testResultType = TestResultType.None;
 		
 		/// <summary>
@@ -20,7 +20,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public event EventHandler ResultChanged;
 		
-		public TestMethod(IMethod method)
+		public TestMethod(IMember method)
 		{
 			this.method = method;
 		}
@@ -41,16 +41,16 @@ namespace ICSharpCode.UnitTesting
 		/// 
 		/// RootNamespace.DerivedClass.BaseClass.BaseClassMethod
 		/// </param>
-		public TestMethod(string prefix, IMethod method)
+		public TestMethod(string prefix, IMember method)
 		{
 			this.method = method;
 			this.prefix = prefix;
 		}
 		
 		/// <summary>
-		/// Gets the underlying IMethod for this TestMethod.
+		/// Gets the underlying IMember for this TestMethod.
 		/// </summary>
-		public IMethod Method {
+		public IMember Method {
 			get { return method; }
 		}
 		
@@ -58,7 +58,7 @@ namespace ICSharpCode.UnitTesting
 		/// Updates the test method based on new information 
 		/// in the specified IMethod.
 		/// </summary>
-		public void Update(IMethod method)
+		public void Update(IMember method)
 		{
 			this.method = method;
 		}

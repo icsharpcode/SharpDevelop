@@ -90,6 +90,7 @@
     <Compile Include="Project\OverriddenBaseTestMethodTestFixture.cs" />
     <Compile Include="Project\RemovedClassesTestFixture.cs" />
     <Compile Include="Project\TestClassIsTestMethodUsesTestFrameworksTestFixture.cs" />
+    <Compile Include="Project\TestClassWithFieldsDefinedAsTestMembersByTestFrameworkTests.cs" />
     <Compile Include="Project\TestProjectUsesTestFrameworksTestFixture.cs" />
     <Compile Include="Project\TwoBaseClassesWithTestMethodsTestFixture.cs" />
     <Compile Include="Tree\AddNUnitReferenceToProjectTestFixture.cs" />

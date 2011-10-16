@@ -274,10 +274,10 @@ namespace ICSharpCode.UnitTesting
 		TestMethodCollection GetTestMethods(IClass c)
 		{
 			TestMethodCollection testMethods = new TestMethodCollection();
-			foreach (IMethod method in c.Methods) {
-				if (IsTestMethod(method)) {
-					if (!testMethods.Contains(method.Name)) {
-						testMethods.Add(new TestMethod(method));
+			foreach (IMember member in c.AllMembers) {
+				if (IsTestMethod(member)) {
+					if (!testMethods.Contains(member.Name)) {
+						testMethods.Add(new TestMethod(member));
 					}
 				}
 			}
