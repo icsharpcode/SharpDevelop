@@ -26,7 +26,7 @@ namespace UnitTesting.Tests.Frameworks
 			Properties properties = new Properties();
 			properties["id"] = "nunit";
 			properties["class"] = "NUnitTestFramework";
-			properties["supportedProjects"] = ".csproj;.vbproj";
+			properties["supportedProjects"] = fileExtensions;
 			
 			fakeTestFrameworkFactory = new MockTestFrameworkFactory();
 			fakeTestFramework = new MockTestFramework();
@@ -37,14 +37,45 @@ namespace UnitTesting.Tests.Frameworks
 		
 		MockCSharpProject CreateCSharpProjectNotSupportedByTestFramework()
 		{
-			return new MockCSharpProject();
+			var project = new MockCSharpProject();
+			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			return project;
 		}
 		
 		MockCSharpProject CreateCSharpProjectSupportedByTestFramework()
 		{
-			var project = new MockCSharpProject();
+			MockCSharpProject project = CreateCSharpProjectNotSupportedByTestFramework();
 			fakeTestFramework.AddTestProject(project);
 			return project;
+		}
+		
+		MockCSharpProject CreateVisualBasicProjectSupportedByTestFramework()
+		{
+			MockCSharpProject project = CreateCSharpProjectSupportedByTestFramework();
+			project.FileName = @"d:\projects\MyProject\MyProject.vbproj";
+			return project;
+		}
+		
+		[Test]
+		public void IsSupportedProject_CSharpAndVisualBasicProjectsSupportedByDescriptor_ReturnsTrueForCSharpProject()
+		{
+			CreateTestFrameworkDescriptorToSupportProjectFileExtensions(".csproj;.vbproj");
+			MockCSharpProject project = CreateCSharpProjectSupportedByTestFramework();
+			
+			bool supported = descriptor.IsSupportedProject(project);
+			
+			Assert.IsTrue(supported);
+		}
+		
+		[Test]
+		public void IsSupportedProject_CSharpAndVisualBasicProjectsSupportedByDescriptor_ReturnsTrueForVBNetProject()
+		{
+			CreateTestFrameworkDescriptorToSupportProjectFileExtensions(".csproj;.vbproj");
+			MockCSharpProject project = CreateVisualBasicProjectSupportedByTestFramework();
+			
+			bool supported = descriptor.IsSupportedProject(project);
+			
+			Assert.IsTrue(supported);
 		}
 		
 		[Test]
@@ -62,6 +93,82 @@ namespace UnitTesting.Tests.Frameworks
 		{
 			CreateTestFrameworkDescriptorToSupportCSharpProjects();
 			MockCSharpProject project = CreateCSharpProjectSupportedByTestFramework();
+			bool supported = descriptor.IsSupportedProject(project);
+			
+			Assert.IsTrue(supported);
+		}
+		
+		[Test]
+		public void IsSupportedProject_SupportedProjectFileExtensionsInDescriptorContainWhitespace_ReturnsTrueForCSharpProject()
+		{
+			CreateTestFrameworkDescriptorToSupportProjectFileExtensions("  .csproj;  .vbproj  ");
+			MockCSharpProject project = CreateCSharpProjectSupportedByTestFramework();
+			
+			bool supported = descriptor.IsSupportedProject(project);
+			
+			Assert.IsTrue(supported);
+		}
+		
+		[Test]
+		public void IsSupportedProject_SupportedProjectFileExtensionsInDescriptorContainWhitespace_ReturnsTrueForVBNetProject()
+		{
+			CreateTestFrameworkDescriptorToSupportProjectFileExtensions("  .csproj;  .vbproj  ");
+			MockCSharpProject project = CreateVisualBasicProjectSupportedByTestFramework();
+			
+			bool supported = descriptor.IsSupportedProject(project);
+			
+			Assert.IsTrue(supported);
+		}
+		
+		[Test]
+		public void IsSupportedProject_SupportedProjectFileExtensionsInDescriptorAreInUpperCase_ReturnsTrueForCSharpProject()
+		{
+			CreateTestFrameworkDescriptorToSupportProjectFileExtensions(".CSPROJ;.VBPROJ");
+			MockCSharpProject project = CreateCSharpProjectSupportedByTestFramework();
+			
+			bool supported = descriptor.IsSupportedProject(project);
+			
+			Assert.IsTrue(supported);
+		}
+		
+		[Test]
+		public void IsSupportedProject_SupportedProjectFileExtensionInDescriptorAreInUpperCase_ReturnsTrueForVBNetProject()
+		{
+			CreateTestFrameworkDescriptorToSupportProjectFileExtensions(".CSPROJ;.VBPROJ");
+			MockCSharpProject project = CreateVisualBasicProjectSupportedByTestFramework();
+			
+			bool supported = descriptor.IsSupportedProject(project);
+			
+			Assert.IsTrue(supported);
+		}
+		
+		[Test]
+		public void IsSupportedProject_DescriptorSupportsCSharpProjects_ReturnsFalseForVBNetProject()
+		{
+			CreateTestFrameworkDescriptorToSupportProjectFileExtensions(".csproj");
+			MockCSharpProject project = CreateVisualBasicProjectSupportedByTestFramework();
+			
+			bool supported = descriptor.IsSupportedProject(project);
+			
+			Assert.IsFalse(supported);
+		}
+		
+		[Test]
+		public void IsSupportedProject_NullProjectPassed_ReturnsFalse()
+		{
+			CreateTestFrameworkDescriptorToSupportProjectFileExtensions(".csproj");
+			bool supported = descriptor.IsSupportedProject(null);
+			
+			Assert.IsFalse(supported);
+		}
+		
+		[Test]
+		public void IsSupportedProject_DescriptorSupportsCSharpProjects_ReturnsTrueForCSharpProjectFileExtensionInUpperCase()
+		{
+			CreateTestFrameworkDescriptorToSupportProjectFileExtensions(".csproj");
+			MockCSharpProject project = CreateCSharpProjectSupportedByTestFramework();
+			project.FileName = @"d:\projects\MyProject\MyProject.CSPROJ";
+			
 			bool supported = descriptor.IsSupportedProject(project);
 			
 			Assert.IsTrue(supported);

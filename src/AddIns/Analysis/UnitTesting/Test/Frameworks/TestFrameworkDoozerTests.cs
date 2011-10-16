@@ -11,63 +11,79 @@ using UnitTesting.Tests.Utils;
 namespace UnitTesting.Tests.Frameworks
 {
 	[TestFixture]
-	public class TestFrameworkDoozerTestFixture
+	public class TestFrameworkDoozerTests
 	{
+		Properties properties;
 		TestFrameworkDescriptor descriptor;
 		TestFrameworkDoozer doozer;
 		MockTestFramework mockTestFramework;
 		MockTestFrameworkFactory mockTestFrameworkFactory;
 		
-		[SetUp]
-		public void Init()
+		void CreateDoozer()
 		{
-			Properties properties = new Properties();
+			properties = new Properties();
 			properties["id"] = "Default";
 			properties["class"] = "UnitTesting.Tests.Utils.MockTestFramework";
 			Codon codon = new Codon(null, "TestFramework", properties, null);
 			
 			mockTestFrameworkFactory = new MockTestFrameworkFactory();
-			mockTestFramework = new MockTestFramework();
-			mockTestFrameworkFactory.Add("UnitTesting.Tests.Utils.MockTestFramework", mockTestFramework);
+			mockTestFramework = mockTestFrameworkFactory.AddFakeTestFramework("UnitTesting.Tests.Utils.MockTestFramework");
 			
 			doozer = new TestFrameworkDoozer();
 			descriptor = doozer.BuildItem(codon, mockTestFrameworkFactory);
 		}
 		
 		[Test]
-		public void TestFrameworkDescriptorIdIsDefault()
+		public void Id_PropertiesIdIsDefault_ReturnsDefault()
 		{
-			Assert.AreEqual("Default", descriptor.Id);
+			CreateDoozer();
+			properties["id"] = "Default";
+			
+			string id = descriptor.Id;
+			
+			Assert.AreEqual("Default", id);
 		}
 		
 		[Test]
-		public void TestFrameworkDoozerImplementsIDoozer()
+		public void IDoozer_TestFrameworkDoozer_ImplementsIDoozer()
 		{
-			Assert.IsNotNull(doozer as IDoozer);
+			CreateDoozer();
+			IDoozer implementsDoozer = doozer as IDoozer;
+			
+			Assert.IsNotNull(implementsDoozer);
 		}
 		
 		[Test]
-		public void TestFrameworkDoozerDoesNotHandleConditions()
+		public void HandleConditions_TestFrameworkDoozerDoesNotHandleConditions_ReturnsFalse()
 		{
-			Assert.IsFalse(doozer.HandleConditions);
+			CreateDoozer();
+			bool conditions = doozer.HandleConditions;
+			
+			Assert.IsFalse(conditions);
 		}
 		
 		[Test]
-		public void TestFrameworkDescriptorTestFrameworkPropertyReturnsMockTestFrameworkObject()
+		public void TestFramework_TestFrameworkDescriptorTestFrameworkProperty_ReturnsMockTestFrameworkObject()
 		{
-			Assert.IsTrue(descriptor.TestFramework is MockTestFramework);
+			CreateDoozer();
+			bool result = descriptor.TestFramework is MockTestFramework;
+			
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
-		public void TestFrameworkDescriptorTestFrameworkPropertyOnlyCreatesOneObject()
+		public void TestFramework_PropertyAccessTwice_OnlyOneObjectCreated()
 		{
+			CreateDoozer();
 			ITestFramework testFramework = descriptor.TestFramework;
 			testFramework = descriptor.TestFramework;
 			
 			List<string> expectedClassNames = new List<string>();
 			expectedClassNames.Add("UnitTesting.Tests.Utils.MockTestFramework");
 			
-			Assert.AreEqual(expectedClassNames, mockTestFrameworkFactory.ClassNamesPassedToCreateMethod);
+			List<string> classNamesCreated = mockTestFrameworkFactory.ClassNamesPassedToCreateMethod;
+			
+			Assert.AreEqual(expectedClassNames, classNamesCreated);
 		}
 	}
 }

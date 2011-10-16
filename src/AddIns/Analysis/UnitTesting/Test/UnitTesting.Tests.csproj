@@ -70,15 +70,11 @@
     <Compile Include="Frameworks\NUnitTestFrameworkIsTestMethodTests.cs" />
     <Compile Include="Frameworks\NUnitTestFrameworkIsTestProjectTests.cs" />
     <Compile Include="Frameworks\NUnitTestResultFailureTestFixture.cs" />
-    <Compile Include="Frameworks\RegisteredTestFrameworksTestFixture.cs" />
+    <Compile Include="Frameworks\RegisteredTestFrameworksTests.cs" />
     <Compile Include="Frameworks\TestableConditionIsValidForClassNodeTestFixture.cs" />
     <Compile Include="Frameworks\TestableConditionIsValidMethodTestFixture.cs" />
-    <Compile Include="Frameworks\TestFrameworkDescriptorIgnoresProjectFileExtensionWhitespaceTestFixture.cs" />
-    <Compile Include="Frameworks\TestFrameworkDescriptorSupportsCSharpAndVBNetProjectsTestFixture.cs" />
-    <Compile Include="Frameworks\TestFrameworkDescriptorSupportsCSharpProjectsTestFixture.cs" />
-    <Compile Include="Frameworks\TestFrameworkDescriptorSupportsUpperCaseProjectFileExtensionsTestFixture.cs" />
     <Compile Include="Frameworks\TestFrameworkDescriptorTests.cs" />
-    <Compile Include="Frameworks\TestFrameworkDoozerTestFixture.cs" />
+    <Compile Include="Frameworks\TestFrameworkDoozerTests.cs" />
     <Compile Include="Frameworks\TestResultsReaderTests.cs" />
     <Compile Include="Frameworks\NUnitConsoleCommandLineTests.cs" />
     <Compile Include="Frameworks\UnitTestingOptionsPanelTestFixture.cs" />

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 using ICSharpCode.UnitTesting;
 
 namespace UnitTesting.Tests.Utils
@@ -11,10 +12,6 @@ namespace UnitTesting.Tests.Utils
 	{
 		Dictionary<string, ITestFramework> frameworks = new Dictionary<string, ITestFramework>();
 		List<string> classNames = new List<string>();
-		
-		public MockTestFrameworkFactory()
-		{
-		}
 		
 		public void Add(string className, ITestFramework framework)
 		{
@@ -34,6 +31,13 @@ namespace UnitTesting.Tests.Utils
 		
 		public List<string> ClassNamesPassedToCreateMethod {
 			get { return classNames; }
+		}
+		
+		public MockTestFramework AddFakeTestFramework(string className)
+		{
+			var testFramework = new MockTestFramework();
+			Add(className, testFramework);
+			return testFramework;
 		}
 	}
 }
