@@ -149,8 +149,6 @@
     <Compile Include="Src\Utility\Localizeable\EnumToFriendlyNameConverter.cs" />
     <Compile Include="Src\Utility\Localizeable\LocalizableDescriptionAttribute.cs" />
     <Compile Include="Src\Utility\Matrix.cs" />
-    <Compile Include="Src\Utility\RelayCommand.cs" />
-    <Compile Include="Src\Utility\ViewModelBase.cs" />
     <Compile Include="Src\Utility\VisibleMatrix.cs" />
     <Page Include="Resources\GridSplitterTemplate.xaml" />
     <Page Include="Resources\GraphTemplate.xaml">

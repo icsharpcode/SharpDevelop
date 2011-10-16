@@ -13,7 +13,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-
+using ICSharpCode.SharpDevelop.Widgets;
 using ICSharpCode.CodeQualityAnalysis.Controls;
 using ICSharpCode.CodeQualityAnalysis.Utility;
 using ICSharpCode.CodeQualityAnalysis.Utility.Localizeable;
