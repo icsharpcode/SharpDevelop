@@ -12,8 +12,9 @@ namespace ICSharpCode.RubyBinding
 	{
 		public bool IsTestMember(IMember member)
 		{
-			if (member != null) {
-				return member.Name.StartsWith("test");
+			var method = member as IMethod;
+			if (method != null) {
+				return method.Name.StartsWith("test");
 			}
 			return false;
 		}
