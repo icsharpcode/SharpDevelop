@@ -50,6 +50,8 @@ namespace ICSharpCode.UnitTesting
 						return true;
 					}
 				}
+				if (c.DeclaringType != null)
+					return IsTestClass(c.DeclaringType);
 			}
 			return false;
 		}

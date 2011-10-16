@@ -215,7 +215,7 @@ namespace ICSharpCode.UnitTesting
 						testClasses.Add(CreateTestClass(c));
 					}
 				}
-				foreach (IClass innerClass in c.InnerClasses) {
+				foreach (IClass innerClass in new InnerClassEnumerator(c)) {
 					if (IsTestClass(innerClass)) {
 						if (!testClasses.Contains(innerClass.DotNetName)) {
 							testClasses.Add(CreateTestClass(innerClass));

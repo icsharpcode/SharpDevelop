@@ -84,6 +84,7 @@
     <Compile Include="Frameworks\UnitTestingOptionsTestFixture.cs" />
     <Compile Include="Project\AbstractBaseClassWithTestMethodsTestFixture.cs" />
     <Compile Include="Project\BaseTestMethodTestFixture.cs" />
+    <Compile Include="Project\InnerClassInTestFixtureTests.cs" />
     <Compile Include="Project\DuplicateClassNameChangedTestFixture.cs" />
     <Compile Include="Project\InnerClassMethodRenamedTestFixture.cs" />
     <Compile Include="Project\InnerClassNameChangesTestFixture.cs" />
@@ -144,8 +145,12 @@
     <Compile Include="Utils\DerivedRunTestInPadCommand.cs" />
     <Compile Include="Utils\DerivedRunTestWithDebuggerCommand.cs" />
     <Compile Include="Utils\DerivedTestProjectTreeNode.cs" />
-    <Compile Include="Utils\DerivedTestTreeView.cs" />
-    <Compile Include="Utils\DerivedUnitTestingOptionsPanel.cs" />
+    <Compile Include="Utils\DerivedTestTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Utils\DerivedUnitTestingOptionsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Utils\DerivedUnitTestsPad.cs" />
     <Compile Include="Utils\JumpedToFile.cs" />
     <Compile Include="Utils\MockAddInTree.cs" />
@@ -225,7 +230,9 @@
     <Compile Include="Utils\MockProjectContent.cs" />
     <Compile Include="Utils\MockAttribute.cs" />
     <Compile Include="Tree\OneTestClassTestFixture.cs" />
-    <Compile Include="Utils\DummyParserServiceTestTreeView.cs" />
+    <Compile Include="Utils\DummyParserServiceTestTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Project\TestProjectWithOneClassTestFixture.cs" />
     <Compile Include="Project\ClassRootNamespaceTests.cs" />
     <Compile Include="Project\TwoProjectRootNamespacesTestFixture.cs" />
@@ -250,7 +257,6 @@
     <Compile Include="Utils\MockCSharpProject.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Utils\Tests" />
     <ProjectReference Include="..\UnitTesting.csproj">
       <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
       <Name>UnitTesting</Name>
@@ -267,14 +273,10 @@
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
-    <Folder Include="Frameworks" />
-    <Folder Include="Utils" />
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
     </ProjectReference>
-    <Folder Include="Tree" />
-    <Folder Include="Project" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

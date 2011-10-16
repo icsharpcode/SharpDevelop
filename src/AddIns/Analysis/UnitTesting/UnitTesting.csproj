@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\IFileSystem.cs" />
+    <Compile Include="Src\InnerClassEnumerator.cs" />
     <Compile Include="Src\IUnitTestMessageService.cs" />
     <Compile Include="Src\MultipleProjectBuildable.cs" />
     <Compile Include="Src\TestProcessRunnerBaseContext.cs" />
@@ -121,7 +122,9 @@
     <Compile Include="Src\UnitTestCommands.cs" />
     <Compile Include="Src\TestableCondition.cs" />
     <Compile Include="Src\RunningTestsCondition.cs" />
-    <Compile Include="Src\TestTreeView.cs" />
+    <Compile Include="Src\TestTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\NUnitConsoleCommandLine.cs" />
     <Compile Include="Src\AbstractRunTestCommand.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
@@ -140,7 +143,9 @@
     <Compile Include="Src\TestClassTreeNode.cs" />
     <Compile Include="Src\TestMethodTreeNode.cs" />
     <Compile Include="Src\UnitTestingOptions.cs" />
-    <Compile Include="Src\UnitTestingOptionsPanel.cs" />
+    <Compile Include="Src\UnitTestingOptionsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\UnitTestsPad.cs" />
     <EmbeddedResource Include="Resources\Red.png" />
     <EmbeddedResource Include="Resources\Green.png" />
@@ -171,7 +176,6 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Configuration" />
     <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
@@ -182,7 +186,6 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Resources" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="PostBuildEvent.proj" />
