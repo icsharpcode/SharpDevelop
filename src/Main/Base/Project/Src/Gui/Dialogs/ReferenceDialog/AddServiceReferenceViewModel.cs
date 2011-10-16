@@ -11,12 +11,17 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Net;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
+using System.Web.Services.Discovery;
 using System.Windows;
 using System.Windows.Input;
-
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace Gui.Dialogs.ReferenceDialog
 {
@@ -27,11 +32,9 @@ namespace Gui.Dialogs.ReferenceDialog
 	{
 		string header1 = "To see a list of available services on an specific Server, ";
 		string header2 = "enter a service URL and click Go. To browse for available services click Discover";
-		
-		string noUrl = "Please enter he address of the Service.";
-		
-		string discoverMenu ="Services in Solution";
-		
+		string noUrl = "Please enter the address of the Service.";
+//		string discoverMenu ="Services in Solution";
+		Uri discoveryUri;
 		public AddServiceReferenceViewModel(IProject project)
 		{
 			Project = project;
@@ -132,12 +135,15 @@ namespace Gui.Dialogs.ReferenceDialog
 		
 		#region Go
 		
-		public ICommand GoCommand {get; private set;}
+		public System.Windows.Input.ICommand GoCommand {get; private set;}
 		
 		private void ExecuteGo ()
 		{
-			string s = String.Format("<Go> with Service <{0}>",SelectedService);
-			MessageBox.Show (s);
+			if (String.IsNullOrEmpty(SelectedService)) {
+				MessageBox.Show (noUrl);
+			}
+			Uri uri = new Uri(SelectedService);
+			StartDiscovery(uri, new DiscoveryNetworkCredential(CredentialCache.DefaultNetworkCredentials, DiscoveryNetworkCredential.DefaultAuthenticationType));
 		}
 		
 		private bool CanExecuteGo()
@@ -149,7 +155,7 @@ namespace Gui.Dialogs.ReferenceDialog
 		
 		#region Discover
 		
-		public ICommand DiscoverCommand {get;private set;}
+		public System.Windows.Input.ICommand DiscoverCommand {get;private set;}
 		
 		private bool CanExecuteDiscover ()
 		{
@@ -162,209 +168,131 @@ namespace Gui.Dialogs.ReferenceDialog
 		}
 			
 		#endregion
-	}
-	
-	public class ViewModelBase:INotifyPropertyChanged
-	{
-		public ViewModelBase()
+		
+		
+		#region discover service Code from Matt
+		
+			
+		CredentialCache credentialCache = new CredentialCache();
+		WebServiceDiscoveryClientProtocol discoveryClientProtocol;
+		WebReference webReference;
+		
+		delegate DiscoveryDocument DiscoverAnyAsync(string url);
+		delegate void DiscoveredWebServicesHandler(DiscoveryClientProtocol protocol);
+		delegate void AuthenticationHandler(Uri uri, string authenticationType);	
+		
+			
+		void StartDiscovery(Uri uri, DiscoveryNetworkCredential credential)
 		{
+			// Abort previous discovery.
+			StopDiscovery();
+			
+			// Start new discovery.
+			discoveryUri = uri;
+			DiscoverAnyAsync asyncDelegate = new DiscoverAnyAsync(discoveryClientProtocol.DiscoverAny);
+			AsyncCallback callback = new AsyncCallback(DiscoveryCompleted);
+			discoveryClientProtocol.Credentials = credential;
+			IAsyncResult result = asyncDelegate.BeginInvoke(uri.AbsoluteUri, callback, new AsyncDiscoveryState(discoveryClientProtocol, uri, credential));
+		}
+		
+		/// <summary>
+		/// Called after an asynchronous web services search has
+		/// completed.
+		/// </summary>
+		void DiscoveryCompleted(IAsyncResult result)
+		{
+			AsyncDiscoveryState state = (AsyncDiscoveryState)result.AsyncState;
+			WebServiceDiscoveryClientProtocol protocol = state.Protocol;
+			
+			// Check that we are still waiting for this particular callback.
+			bool wanted = false;
+			lock (this) {
+				wanted = Object.ReferenceEquals(discoveryClientProtocol, protocol);
+			}
+			
+			if (wanted) {
+				DiscoveredWebServicesHandler handler = new DiscoveredWebServicesHandler(DiscoveredWebServices);
+				try {
+					DiscoverAnyAsync asyncDelegate = (DiscoverAnyAsync)((AsyncResult)result).AsyncDelegate;
+					DiscoveryDocument doc = asyncDelegate.EndInvoke(result);
+					if (!state.Credential.IsDefaultAuthenticationType) {
+						AddCredential(state.Uri, state.Credential);
+					}
+//					Invoke(handler, new object[] {protocol});
+				} catch (Exception ex) {
+					if (protocol.IsAuthenticationRequired) {
+						HttpAuthenticationHeader authHeader = protocol.GetAuthenticationHeader();
+						AuthenticationHandler authHandler = new AuthenticationHandler(AuthenticateUser);
+//						Invoke(authHandler, new object[] {state.Uri, authHeader.AuthenticationType});
+					} else {
+						LoggingService.Error("DiscoveryCompleted", ex);
+//						Invoke(handler, new object[] {null});
+					}
+				}
+			}
 		}
 		
 		
-		public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            var handler = this.PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
+		/// <summary>
+		/// Stops any outstanding asynchronous discovery requests.
+		/// </summary>
+		void StopDiscovery()
+		{
+			lock (this) {
+				if (discoveryClientProtocol != null) {
+					try {
+						discoveryClientProtocol.Abort();
+					} catch (NotImplementedException) {
+					} catch (ObjectDisposedException) {
+						// Receive this error if the url pointed to a file.
+						// The discovery client will already have closed the file
+						// so the abort fails.
+					}
+					discoveryClientProtocol.Dispose();
+				}
+				discoveryClientProtocol = new WebServiceDiscoveryClientProtocol();
+			}
+		}
 		
 		
-		protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpresssion)
-        {
-            var propertyName = ExtractPropertyName(propertyExpresssion);
-            this.RaisePropertyChanged(propertyName);
-        }
-
+		void AuthenticateUser(Uri uri, string authenticationType)
+		{
+			DiscoveryNetworkCredential credential = (DiscoveryNetworkCredential)credentialCache.GetCredential(uri, authenticationType);
+			if (credential != null) {
+				StartDiscovery(uri, credential);
+			} else {
+				using (UserCredentialsDialog credentialsForm = new UserCredentialsDialog(uri.ToString(), authenticationType)) {
+//					if (DialogResult.OK == credentialsForm.ShowDialog(WorkbenchSingleton.MainWin32Window)) {
+//						StartDiscovery(uri, credentialsForm.Credential);
+//					}
+				}
+			}
+		}
 		
-        protected void RaisePropertyChanged(String propertyName)
-        {
-            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
-        }
-        
-        
-        private static String ExtractPropertyName<T>(Expression<Func<T>> propertyExpresssion)
-        {
-            if (propertyExpresssion == null)
-            {
-                throw new ArgumentNullException("propertyExpresssion");
-            }
-
-            var memberExpression = propertyExpresssion.Body as MemberExpression;
-            if (memberExpression == null)
-            {
-                throw new ArgumentException("The expression is not a member access expression.", "propertyExpresssion");
-            }
-
-            var property = memberExpression.Member as PropertyInfo;
-            if (property == null)
-            {
-                throw new ArgumentException("The member access expression does not access a property.", "propertyExpresssion");
-            }
-
-            var getMethod = property.GetGetMethod(true);
-            if (getMethod.IsStatic)
-            {
-                throw new ArgumentException("The referenced property is a static property.", "propertyExpresssion");
-            }
-
-            return memberExpression.Member.Name;
-        }
+		
+		void AddCredential(Uri uri, DiscoveryNetworkCredential credential)
+		{
+			NetworkCredential matchedCredential = credentialCache.GetCredential(uri, credential.AuthenticationType);
+			if (matchedCredential != null) {
+				credentialCache.Remove(uri, credential.AuthenticationType);
+			}
+			credentialCache.Add(uri, credential.AuthenticationType, credential);
+		}
+		
+		void DiscoveredWebServices(DiscoveryClientProtocol protocol)
+		{
+			if (protocol != null) {
+//				addButton.Enabled = true;
+//				namespaceTextBox.Text = GetDefaultNamespace();
+//				referenceNameTextBox.Text = GetReferenceName();
+//				webServicesView.Add(GetServiceDescriptions(protocol));
+//				webReference = new WebReference(project, discoveryUri.AbsoluteUri, referenceNameTextBox.Text, namespaceTextBox.Text, protocol);
+			} else {
+				webReference = null;
+//				addButton.Enabled = false;
+//				webServicesView.Clear();
+			}
+		}
+		#endregion
 	}
-	
-	
-	public class RelayCommand<T> : ICommand
-    {
-
-        #region Declarations
-
-        readonly Predicate<T> _canExecute;
-        readonly Action<T> _execute;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RelayCommand&lt;T&gt;"/> class and the command can always be executed.
-        /// </summary>
-        /// <param name="execute">The execution logic.</param>
-        public RelayCommand(Action<T> execute)
-            : this(execute, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RelayCommand&lt;T&gt;"/> class.
-        /// </summary>
-        /// <param name="execute">The execution logic.</param>
-        /// <param name="canExecute">The execution status logic.</param>
-        public RelayCommand(Action<T> execute, Predicate<T> canExecute)
-        {
-
-            if (execute == null)
-                throw new ArgumentNullException("execute");
-            _execute = execute;
-            _canExecute = canExecute;
-        }
-
-        #endregion
-
-        #region ICommand Members
-
-        public event EventHandler CanExecuteChanged
-        {
-            add
-            {
-
-                if (_canExecute != null)
-                    CommandManager.RequerySuggested += value;
-            }
-            remove
-            {
-
-                if (_canExecute != null)
-                    CommandManager.RequerySuggested -= value;
-            }
-        }
-
-        [DebuggerStepThrough]
-        public Boolean CanExecute(Object parameter)
-        {
-            return _canExecute == null ? true : _canExecute((T)parameter);
-        }
-
-        public void Execute(Object parameter)
-        {
-            _execute((T)parameter);
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// A command whose sole purpose is to relay its functionality to other objects by invoking delegates. The default return value for the CanExecute method is 'true'.
-    /// </summary>
-    public class RelayCommand : ICommand
-    {
-
-        #region Declarations
-
-        readonly Func<Boolean> _canExecute;
-        readonly Action _execute;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RelayCommand&lt;T&gt;"/> class and the command can always be executed.
-        /// </summary>
-        /// <param name="execute">The execution logic.</param>
-        public RelayCommand(Action execute)
-            : this(execute, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RelayCommand&lt;T&gt;"/> class.
-        /// </summary>
-        /// <param name="execute">The execution logic.</param>
-        /// <param name="canExecute">The execution status logic.</param>
-        public RelayCommand(Action execute, Func<Boolean> canExecute)
-        {
-
-            if (execute == null)
-                throw new ArgumentNullException("execute");
-            _execute = execute;
-            _canExecute = canExecute;
-        }
-
-        #endregion
-
-        #region ICommand Members
-
-        public event EventHandler CanExecuteChanged
-        {
-            add
-            {
-
-                if (_canExecute != null)
-                    CommandManager.RequerySuggested += value;
-            }
-            remove
-            {
-
-                if (_canExecute != null)
-                    CommandManager.RequerySuggested -= value;
-            }
-        }
-
-        [DebuggerStepThrough]
-        public Boolean CanExecute(Object parameter)
-        {
-            return _canExecute == null ? true : _canExecute();
-        }
-
-        public void Execute(Object parameter)
-        {
-            _execute();
-        }
-
-        #endregion
-    }
-    
 }

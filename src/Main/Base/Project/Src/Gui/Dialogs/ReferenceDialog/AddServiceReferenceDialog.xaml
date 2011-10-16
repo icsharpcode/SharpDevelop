@@ -79,8 +79,8 @@ http://stackoverflow.com/questions/3373239/wpf-editable-combobox
 			          
 			          VerticalAlignment="Top" >
 				
-				<TreeViewItem Header="Cold Drinks">
-					
+				<TreeViewItem Header="Service">
+					<!--
 					<TreeViewItem Header="Coke"></TreeViewItem>
 					
 					<TreeViewItem Header="Pepsi"></TreeViewItem>
@@ -92,14 +92,14 @@ http://stackoverflow.com/questions/3373239/wpf-editable-combobox
 					<TreeViewItem Header="Iced Tea"></TreeViewItem>
 					
 					<TreeViewItem Header="Mango Shake"></TreeViewItem>
-				
-				</TreeViewItem>
+				-->
+				</TreeViewItem> 
 			
 			</TreeView>
 			
 			
-			<GridSplitter Grid.Column="0" Width="2" />
-			<Label Background="Green" Grid.Column="1"/>
+			<GridSplitter Grid.Column="0" Width="2" Background="Black"/>
+			<Label Grid.Column="1"/>
 		</Grid>
 
 		
