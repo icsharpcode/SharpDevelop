@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -55,6 +56,7 @@ namespace UnitTesting.Tests.Frameworks
 		{
 			MockCSharpProject project = new MockCSharpProject();
 			project.FileName = @"d:\projects\test\MyProj.csproj";
+			nunitTestFramework.AddTestProject(project);
 			
 			Assert.AreEqual(nunitTestFramework, testFrameworks.GetTestFrameworkForProject(project));
 		}
@@ -64,6 +66,7 @@ namespace UnitTesting.Tests.Frameworks
 		{
 			MockCSharpProject project = new MockCSharpProject();
 			project.FileName = @"d:\projects\test\MyProj.vbproj";
+			mbUnitTestFramework.AddTestProject(project);
 			
 			Assert.AreEqual(mbUnitTestFramework, testFrameworks.GetTestFrameworkForProject(project));
 		}
@@ -72,6 +75,8 @@ namespace UnitTesting.Tests.Frameworks
 		public void IsTestMethodReturnsFalseForUnknownMbUnitFrameworkTestMethod()
 		{
 			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
+			IProject project = method.MockDeclaringType.Project;
+			mbUnitTestFramework.AddTestProject(project);
 			method.MockDeclaringType.MockProjectContent.ProjectAsIProject.FileName = @"d:\projects\test.vbproj";
 			
 			Assert.IsFalse(testFrameworks.IsTestMethod(method));
@@ -81,6 +86,8 @@ namespace UnitTesting.Tests.Frameworks
 		public void IsTestMethodReturnsTrueForKnownMbUnitFrameworkTestMethod()
 		{
 			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
+			IProject project = method.MockDeclaringType.Project;
+			mbUnitTestFramework.AddTestProject(project);
 			method.MockDeclaringType.MockProjectContent.ProjectAsIProject.FileName = @"d:\projects\test.vbproj";
 			
 			mbUnitTestFramework.AddTestMethod(method);
@@ -107,6 +114,7 @@ namespace UnitTesting.Tests.Frameworks
 		public void IsTestClassReturnsFalseForUnknownMbUnitFrameworkTestClass()
 		{
 			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
+			mbUnitTestFramework.AddTestProject(c.Project);
 			c.MockProjectContent.ProjectAsIProject.FileName = @"d:\projects\test.vbproj";
 			
 			Assert.IsFalse(testFrameworks.IsTestClass(c));
@@ -116,8 +124,10 @@ namespace UnitTesting.Tests.Frameworks
 		public void IsTestClassReturnsTrueForKnownMbUnitFrameworkTestClass()
 		{
 			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
+			
 			c.MockProjectContent.ProjectAsIProject.FileName = @"d:\projects\test.vbproj";
 			
+			mbUnitTestFramework.AddTestProject(c.Project);
 			mbUnitTestFramework.AddTestClass(c);
 			
 			Assert.IsTrue(testFrameworks.IsTestClass(c));
@@ -177,6 +187,8 @@ namespace UnitTesting.Tests.Frameworks
 		public void CreateTestRunnerReturnsNewTestRunnerFromCorrectTestFramework()
 		{
 			MockCSharpProject project = new MockCSharpProject();
+			nunitTestFramework.AddTestProject(project);
+			mbUnitTestFramework.AddTestProject(project);
 			project.FileName = @"d:\projects\test.csproj";
 			
 			ITestRunner testRunner = testFrameworks.CreateTestRunner(project);
@@ -197,6 +209,8 @@ namespace UnitTesting.Tests.Frameworks
 		public void CreateTestDebuggerReturnsNewTestRunnerFromCorrectTestFramework()
 		{
 			MockCSharpProject project = new MockCSharpProject();
+			nunitTestFramework.AddTestProject(project);
+			mbUnitTestFramework.AddTestProject(project);
 			project.FileName = @"d:\projects\test.csproj";
 			
 			ITestRunner testDebugger = testFrameworks.CreateTestDebugger(project);
@@ -229,6 +243,7 @@ namespace UnitTesting.Tests.Frameworks
 			MockCSharpProject project = new MockCSharpProject();
 			project.FileName = @"d:\projects\test.csproj";
 			nunitTestFramework.IsBuildNeededBeforeTestRun = false;
+			nunitTestFramework.AddTestProject(project);
 			
 			Assert.IsFalse(testFrameworks.IsBuildNeededBeforeTestRunForProject(project));
 		}

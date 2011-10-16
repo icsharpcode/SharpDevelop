@@ -13,14 +13,19 @@ namespace UnitTesting.Tests.Frameworks
 	public class TestFrameworkDescriptorSupportsCSharpProjectsTestFixture
 	{
 		TestFrameworkDescriptor descriptor;
+		MockTestFramework fakeTestFramework;
 		
 		[SetUp]
 		public void Init()
 		{
 			MockTestFrameworkFactory factory = new MockTestFrameworkFactory();
+			fakeTestFramework = new MockTestFramework();
+			factory.Add("NUnitTestFramework", fakeTestFramework);
+			
 			Properties properties = new Properties();
 			properties["id"] = "nunit";
 			properties["supportedProjects"] = ".csproj";
+			properties["class"] = "NUnitTestFramework";
 			
 			descriptor = new TestFrameworkDescriptor(properties, factory);
 		}
@@ -29,6 +34,7 @@ namespace UnitTesting.Tests.Frameworks
 		public void IsSupportedProjectReturnsTrueForCSharpProject()
 		{
 			MockCSharpProject project = new MockCSharpProject();
+			fakeTestFramework.AddTestProject(project);
 			project.FileName = @"d:\projects\myproj.csproj";
 			
 			Assert.IsTrue(descriptor.IsSupportedProject(project));
@@ -38,6 +44,7 @@ namespace UnitTesting.Tests.Frameworks
 		public void IsSupportedProjectReturnsFalseForVBNetProject()
 		{
 			MockCSharpProject project = new MockCSharpProject();
+			fakeTestFramework.AddTestProject(project);
 			project.FileName = @"d:\projects\myproj.vbproj";
 			
 			Assert.IsFalse(descriptor.IsSupportedProject(project));
@@ -53,6 +60,7 @@ namespace UnitTesting.Tests.Frameworks
 		public void IsSupportedProjectReturnsTrueForCSharpProjectFileExtensionInUpperCase()
 		{
 			MockCSharpProject project = new MockCSharpProject();
+			fakeTestFramework.AddTestProject(project);
 			project.FileName = @"d:\projects\myproj.CSPROJ";
 			
 			Assert.IsTrue(descriptor.IsSupportedProject(project));
