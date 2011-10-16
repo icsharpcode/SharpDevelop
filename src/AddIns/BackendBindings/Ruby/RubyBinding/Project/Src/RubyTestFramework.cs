@@ -10,7 +10,7 @@ namespace ICSharpCode.RubyBinding
 {
 	public class RubyTestFramework : ITestFramework
 	{
-		public bool IsTestMethod(IMember member)
+		public bool IsTestMember(IMember member)
 		{
 			if (member != null) {
 				return member.Name.StartsWith("test");

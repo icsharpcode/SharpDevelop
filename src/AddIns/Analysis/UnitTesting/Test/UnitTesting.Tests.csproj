@@ -234,7 +234,7 @@
     <Compile Include="Project\TestClassWithOneMethodTestFixture.cs" />
     <Compile Include="Tree\SolutionOpenedTestFixture.cs" />
     <Compile Include="Tree\GetProjectsTestFixture.cs" />
-    <Compile Include="Project\GetMethodNameTests.cs" />
+    <Compile Include="Project\TestMemberGetMethodNameTests.cs" />
     <Compile Include="Project\GetQualifiedClassNameTests.cs" />
     <Compile Include="Project\TestClassWithTwoMethodsTestFixture.cs" />
     <Compile Include="Project\ThreeTestMethodsTestResultsTestFixture.cs" />

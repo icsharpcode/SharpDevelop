@@ -97,48 +97,48 @@ namespace UnitTesting.Tests.Frameworks
 		}
 		
 		[Test]
-		public void IsTestMethod_UnknownMbUnitFrameworkTestMethod_ReturnsFalse()
+		public void IsTestMember_UnknownMbUnitFrameworkTestMethod_ReturnsFalse()
 		{
 			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
 			IProject project = method.MockDeclaringType.Project;
 			mbUnitTestFramework.AddTestProject(project);
 			project.FileName = @"d:\projects\test.vbproj";
 			
-			bool result = testFrameworks.IsTestMethod(method);
+			bool result = testFrameworks.IsTestMember(method);
 			
 			Assert.IsFalse(result);
 		}
 		
 		[Test]
-		public void IsTestMethod_KnownMbUnitFrameworkTestMethod_ReturnsTrue()
+		public void IsTestMember_KnownMbUnitFrameworkTestMethod_ReturnsTrue()
 		{
 			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
 			IProject project = method.MockDeclaringType.Project;
 			mbUnitTestFramework.AddTestProject(project);
 			method.MockDeclaringType.MockProjectContent.ProjectAsIProject.FileName = @"d:\projects\test.vbproj";
 			
-			mbUnitTestFramework.AddTestMethod(method);
+			mbUnitTestFramework.AddTestMember(method);
 			
-			bool result = testFrameworks.IsTestMethod(method);
+			bool result = testFrameworks.IsTestMember(method);
 			
 			Assert.IsTrue(result);
 		}
 		
 		[Test]
-		public void IsTestMethod_NoTestFrameworkSupportsProject_DoesNotThrowNullReferenceException()
+		public void IsTestMember_NoTestFrameworkSupportsProject_DoesNotThrowNullReferenceException()
 		{
 			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
 			method.MockDeclaringType.MockProjectContent.ProjectAsIProject.FileName = @"d:\projects\test.unknown";
 			
-			bool result = testFrameworks.IsTestMethod(method);
+			bool result = testFrameworks.IsTestMember(method);
 			
 			Assert.IsFalse(result);
 		}
 		
 		[Test]
-		public void IsTestMethod_NullPassedToMethod_DoesNotThrowException()
+		public void IsTestMember_NullPassedToMethod_DoesNotThrowException()
 		{
-			bool result = testFrameworks.IsTestMethod(null);
+			bool result = testFrameworks.IsTestMember(null);
 
 			Assert.IsFalse(result);
 		}

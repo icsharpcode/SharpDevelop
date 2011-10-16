@@ -414,7 +414,7 @@
     <Compile Include="Testing\PythonStandardLibraryPathTests.cs" />
     <Compile Include="Testing\PythonTestDebuggerRunsSelectedTestMethodTestFixture.cs" />
     <Compile Include="Testing\PythonTestFrameworkIsTestClassTests.cs" />
-    <Compile Include="Testing\PythonTestFrameworkIsTestMethodTests.cs" />
+    <Compile Include="Testing\PythonTestFrameworkIsTestMemberTests.cs" />
     <Compile Include="Testing\PythonTestFrameworkIsTestProjectTests.cs" />
     <Compile Include="Testing\PythonTestResultFailureTestFixture.cs" />
     <Compile Include="Testing\PythonTestResultStackTraceLineNumberOverflowTestFixture.cs" />

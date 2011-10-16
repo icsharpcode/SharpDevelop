@@ -11,8 +11,8 @@ namespace UnitTesting.Tests.Utils
 {
 	public class MockTestFramework : ITestFramework
 	{
-		IMember isTestMethodMemberParameterUsed;
-		List<IMember> testMethods = new List<IMember>();
+		IMember isTestMemberParameterUsed;
+		List<IMember> testMembers = new List<IMember>();
 		IClass isTestClassParameterUsed;
 		List<IClass> testClasses = new List<IClass>();
 		IProject isTestProjectParameterUsed;
@@ -25,19 +25,19 @@ namespace UnitTesting.Tests.Utils
 		{
 		}
 		
-		public bool IsTestMethod(IMember member)
+		public bool IsTestMember(IMember member)
 		{
-			isTestMethodMemberParameterUsed = member;
-			return testMethods.Contains(member);
+			isTestMemberParameterUsed = member;
+			return testMembers.Contains(member);
 		}
 		
-		public IMember IsTestMethodMemberParameterUsed {
-			get { return isTestMethodMemberParameterUsed; }
+		public IMember IsTestMemberParameterUsed {
+			get { return isTestMemberParameterUsed; }
 		}
 		
-		public void AddTestMethod(IMember member)
+		public void AddTestMember(IMember member)
 		{
-			testMethods.Add(member);
+			testMembers.Add(member);
 		}
 		
 		public bool IsTestClass(IClass c)

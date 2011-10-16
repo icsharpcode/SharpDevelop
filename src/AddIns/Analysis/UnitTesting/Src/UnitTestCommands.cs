@@ -69,7 +69,7 @@ namespace ICSharpCode.UnitTesting
 		
 		IMember GetMember(ITestTreeView treeView)
 		{
-			IMember member = treeView.SelectedMethod;
+			IMember member = treeView.SelectedMember;
 			if (member != null) {
 				BaseTestMethod baseTestMethod = member as BaseTestMethod;
 				if (baseTestMethod != null) {

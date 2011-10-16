@@ -2,44 +2,44 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.RubyBinding;
+using ICSharpCode.PythonBinding;
 using NUnit.Framework;
-using RubyBinding.Tests.Utils;
+using PythonBinding.Tests.Utils;
 using UnitTesting.Tests.Utils;
 
-namespace RubyBinding.Tests.Testing
+namespace PythonBinding.Tests.Testing
 {
 	[TestFixture]
-	public class RubyTestFrameworkIsTestMethodTests
+	public class PythonTestFrameworkIsTestMemberTests
 	{
-		RubyTestFramework testFramework;
+		PythonTestFramework testFramework;
 		
 		[SetUp]
 		public void Init()
 		{
-			testFramework = new RubyTestFramework(); 
+			testFramework = new PythonTestFramework(); 
 		}
 		
 		[Test]
-		public void IsTestMethodReturnsTrueForMethodThatStartsWithTest()
+		public void IsTestMemberReturnsTrueForMethodThatStartsWithTest()
 		{
 			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
 			MockMethod method = new MockMethod(c, "testRunThis");
-			Assert.IsTrue(testFramework.IsTestMethod(method));
+			Assert.IsTrue(testFramework.IsTestMember(method));
 		}
 		
 		[Test]
-		public void IsTestMethodReturnsFalseForNull()
+		public void IsTestMemberReturnsFalseForNull()
 		{
-			Assert.IsFalse(testFramework.IsTestMethod(null));
+			Assert.IsFalse(testFramework.IsTestMember(null));
 		}
 		
 		[Test]
-		public void IsTestMethodReturnsFalseForMethodThatDoesNotStartWithTest()
+		public void IsTestMemberReturnsFalseForMethodThatDoesNotStartWithTest()
 		{
 			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
 			MockMethod method = new MockMethod(c, "RunThis");
-			Assert.IsFalse(testFramework.IsTestMethod(method));
+			Assert.IsFalse(testFramework.IsTestMember(method));
 		}
 	}
 }

@@ -9,7 +9,7 @@ namespace UnitTesting.Tests.Utils
 {
 	public static class SelectedTestsHelper
 	{
-		public static SelectedTests CreateSelectedTestMethod()
+		public static SelectedTests CreateSelectedTestMember()
 		{
 			MockCSharpProject project = new MockCSharpProject();
 			
@@ -21,7 +21,7 @@ namespace UnitTesting.Tests.Utils
 			
 			MockTestTreeView treeView = new MockTestTreeView();
 			treeView.SelectedProject = project;
-			treeView.SelectedMethod = methodToTest;
+			treeView.SelectedMember = methodToTest;
 			
 			return new SelectedTests(treeView, null);
 		}

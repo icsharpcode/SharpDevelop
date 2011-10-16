@@ -7,12 +7,12 @@ using ICSharpCode.SharpDevelop.Dom;
 namespace ICSharpCode.UnitTesting
 {
 	/// <summary>
-	/// Represents a method that can be tested. 
+	/// Represents a member that can be tested. 
 	/// </summary>
-	public class TestMethod
+	public class TestMember
 	{
 		string prefix = String.Empty;
-		IMember method;
+		IMember member;
 		TestResultType testResultType = TestResultType.None;
 		
 		/// <summary>
@@ -20,51 +20,51 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public event EventHandler ResultChanged;
 		
-		public TestMethod(IMember method)
+		public TestMember(IMember member)
 		{
-			this.method = method;
+			this.member = member;
 		}
 		
 		/// <summary>
-		/// Creates a new TestMethod instance.
+		/// Creates a new TestMember instance.
 		/// </summary>
 		/// <param name="prefix">The prefix to be added to the
-		/// method name with a dot character. This is specified
-		/// when the test method refers to a base class method. NUnit
+		/// member name with a dot character. This is specified
+		/// when the test member refers to a base class method. NUnit
 		/// refers to base class test methods by prefixing the
 		/// class name to it:
 		///
 		/// [TestFixture]
 		/// public class DerivedClass : BaseClass
 		/// 
-		/// Test method name:
+		/// Test member name:
 		/// 
 		/// RootNamespace.DerivedClass.BaseClass.BaseClassMethod
 		/// </param>
-		public TestMethod(string prefix, IMember method)
+		public TestMember(string prefix, IMember member)
 		{
-			this.method = method;
+			this.member = member;
 			this.prefix = prefix;
 		}
 		
 		/// <summary>
-		/// Gets the underlying IMember for this TestMethod.
+		/// Gets the underlying IMember for this TestMember.
 		/// </summary>
-		public IMember Method {
-			get { return method; }
+		public IMember Member {
+			get { return member; }
 		}
 		
 		/// <summary>
-		/// Updates the test method based on new information 
-		/// in the specified IMethod.
+		/// Updates the test member based on new information 
+		/// in the specified IMember.
 		/// </summary>
-		public void Update(IMember method)
+		public void Update(IMember member)
 		{
-			this.method = method;
+			this.member = member;
 		}
 		
 		/// <summary>
-		/// Gets the test result for this method.
+		/// Gets the test result for this member.
 		/// </summary>
 		public TestResultType Result {
 			get { return testResultType; }
@@ -78,24 +78,24 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Gets the method's name.
+		/// Gets the member's name.
 		/// </summary>
 		public string Name {
 			get {
 				if (prefix.Length > 0) {
-					return String.Concat(prefix, ".", method.Name);
+					return String.Concat(prefix, ".", member.Name);
 				}
-				return method.Name;
+				return member.Name;
 			}
 		}
 		
 		/// <summary>
-		/// Returns the method name from a fully qualified name
+		/// Returns the member name from a fully qualified name
 		/// of the form:
 		/// 
-		/// Namespace.Class.Method
+		/// Namespace.Class.Member
 		/// </summary>
-		public static string GetMethodName(string qualifiedName)
+		public static string GetMemberName(string qualifiedName)
 		{
 			if (qualifiedName != null) {
 				int index = qualifiedName.LastIndexOf('.');
@@ -110,14 +110,14 @@ namespace ICSharpCode.UnitTesting
 		/// Returns the namespace and class name from a fully qualified 
 		/// name of the form:
 		/// 
-		/// Namespace.Class.Method
+		/// Namespace.Class.Member
 		/// </summary>
 		public static string GetQualifiedClassName(string qualifiedName)
 		{
 			if (qualifiedName != null) {
-				int methodIndex = qualifiedName.LastIndexOf('.');
-				if (methodIndex >= 0) {
-					return qualifiedName.Substring(0, methodIndex);
+				int memberIndex = qualifiedName.LastIndexOf('.');
+				if (memberIndex >= 0) {
+					return qualifiedName.Substring(0, memberIndex);
 				}
 			}
 			return null;

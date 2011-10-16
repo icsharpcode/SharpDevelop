@@ -26,7 +26,7 @@ namespace UnitTesting.Tests.Frameworks
 		public void IsTestMethodReturnsFalseWhenMethodHasNoAttributes()
 		{
 			MockMethod mockMethod = MockMethod.CreateMockMethodWithoutAnyAttributes();
-			Assert.IsFalse(testFramework.IsTestMethod(mockMethod));
+			Assert.IsFalse(testFramework.IsTestMember(mockMethod));
 		}
 		
 		[Test]
@@ -34,7 +34,7 @@ namespace UnitTesting.Tests.Frameworks
 		{
 			MockAttribute testAttribute = new MockAttribute("Test");
 			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
-			Assert.IsTrue(testFramework.IsTestMethod(mockMethod));
+			Assert.IsTrue(testFramework.IsTestMember(mockMethod));
 		}
 		
 		[Test]
@@ -42,7 +42,7 @@ namespace UnitTesting.Tests.Frameworks
 		{
 			MockAttribute testAttribute = new MockAttribute("TestAttribute");
 			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
-			Assert.IsTrue(testFramework.IsTestMethod(mockMethod));
+			Assert.IsTrue(testFramework.IsTestMember(mockMethod));
 		}
 
 		[Test]
@@ -50,13 +50,13 @@ namespace UnitTesting.Tests.Frameworks
 		{
 			MockAttribute testAttribute = new MockAttribute("NUnit.Framework.TestAttribute");
 			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
-			Assert.IsTrue(testFramework.IsTestMethod(mockMethod));
+			Assert.IsTrue(testFramework.IsTestMember(mockMethod));
 		}
 		
 		[Test]
 		public void IsTestMethodReturnsFalseWhenMethodIsNull()
 		{
-			Assert.IsFalse(testFramework.IsTestMethod(null));
+			Assert.IsFalse(testFramework.IsTestMember(null));
 		}
 		
 		[Test]
@@ -67,7 +67,7 @@ namespace UnitTesting.Tests.Frameworks
 			MockMethod mockMethod = new MockMethod(mockClass);
 			mockMethod.Attributes.Add(new MockAttribute("Test"));
 			
-			Assert.IsFalse(testFramework.IsTestMethod(mockMethod));
+			Assert.IsFalse(testFramework.IsTestMember(mockMethod));
 		}
 		
 		/// <summary>
@@ -82,7 +82,7 @@ namespace UnitTesting.Tests.Frameworks
 			MockProjectContent mockProjectContent = (MockProjectContent)mockMethod.DeclaringType.ProjectContent;
 			mockProjectContent.Project = null;
 
-			Assert.IsTrue(testFramework.IsTestMethod(mockMethod));
+			Assert.IsTrue(testFramework.IsTestMember(mockMethod));
 		}
 		
 		[Test]
@@ -92,7 +92,7 @@ namespace UnitTesting.Tests.Frameworks
 			mockClass.MockProjectContent.Language = null;
 			MockMethod mockMethod = new MockMethod(mockClass);
 			
-			Assert.IsFalse(testFramework.IsTestMethod(mockMethod));
+			Assert.IsFalse(testFramework.IsTestMember(mockMethod));
 		}
 		
 		[Test]
@@ -103,7 +103,7 @@ namespace UnitTesting.Tests.Frameworks
 			MockParameter mockParameter = new MockParameter();
 			mockMethod.Parameters.Add(mockParameter);
 			
-			Assert.IsFalse(testFramework.IsTestMethod(mockMethod));
+			Assert.IsFalse(testFramework.IsTestMember(mockMethod));
 		}
 	}
 }

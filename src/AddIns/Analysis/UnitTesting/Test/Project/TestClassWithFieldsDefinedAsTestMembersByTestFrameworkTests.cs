@@ -31,18 +31,18 @@ namespace UnitTesting.Tests.Project
 		{
 			var field = new DefaultField(fakeClass, name);
 			fakeClass.Fields.Add(field);
-			fakeRegisteredTestFrameworks.AddTestMethod(field);
+			fakeRegisteredTestFrameworks.AddTestMember(field);
 			
 			return field;
 		}
 		
 		[Test]
-		public void TestMethods_ClassHasOneFieldDefinedAsTestMemberByTestFramework_FirstItemHasSameNameAsField()
+		public void TestMembers_ClassHasOneFieldDefinedAsTestMemberByTestFramework_FirstItemHasSameNameAsField()
 		{
 			CreateTestClass();
 			AddTestFieldDefinedAsTestMemberToClass("MyField");
 			
-			TestMethod testField = testClass.TestMethods[0];
+			TestMember testField = testClass.TestMembers[0];
 			string testFieldName = testField.Name;
 			
 			Assert.AreEqual("MyField", testFieldName);

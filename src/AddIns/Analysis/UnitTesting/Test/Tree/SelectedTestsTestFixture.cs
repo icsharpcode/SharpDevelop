@@ -43,7 +43,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void MethodPropertyMatchesMethodPassedToConstructor()
 		{
-			Assert.AreEqual(method, selectedTests.Method);
+			Assert.AreEqual(method, selectedTests.Member);
 		}
 		
 		[Test]

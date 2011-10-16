@@ -73,7 +73,7 @@ namespace ICSharpCode.UnitTesting
 		/// is considered to be a test method if it contains the NUnit Test attribute.
 		/// If the method has parameters it cannot be a test method.
 		/// </summary>
-		public bool IsTestMethod(IMember member)
+		public bool IsTestMember(IMember member)
 		{
 			if (member == null) {
 				return false;
