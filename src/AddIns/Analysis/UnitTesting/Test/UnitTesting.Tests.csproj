@@ -67,7 +67,7 @@
     <Compile Include="Frameworks\NUnitConsoleExeSelectedTestFixture.cs" />
     <Compile Include="Frameworks\NUnitConsoleProcessStartInfoTestFixture.cs" />
     <Compile Include="Frameworks\NUnitTestFrameworkIsTestClassTests.cs" />
-    <Compile Include="Frameworks\NUnitTestFrameworkIsTestMethodTests.cs" />
+    <Compile Include="Frameworks\NUnitTestFrameworkIsTestMemberTests.cs" />
     <Compile Include="Frameworks\NUnitTestFrameworkIsTestProjectTests.cs" />
     <Compile Include="Frameworks\NUnitTestResultFailureTestFixture.cs" />
     <Compile Include="Frameworks\RegisteredTestFrameworksTests.cs" />

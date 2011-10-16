@@ -18,7 +18,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (project != null) {
 				foreach (ProjectItem projectItem in project.Items) {
-					ReferenceProjectItem referenceProjectItem = projectItem as ReferenceProjectItem;
+					var referenceProjectItem = projectItem as ReferenceProjectItem;
 					if (IsNUnitFrameworkAssemblyReference(referenceProjectItem)) {
 						return true;
 					}
@@ -75,16 +75,20 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public bool IsTestMember(IMember member)
 		{
-			if (member == null) {
-				return false;
+			var method = member as IMethod;
+			if (method != null) {
+				return IsTestMethod(method);
 			}
-			
-			StringComparer nameComparer = GetNameComparer(member.DeclaringType);
+			return false;
+		}
+		
+		bool IsTestMethod(IMethod method)
+		{
+			var nameComparer = GetNameComparer(method.DeclaringType);
 			if (nameComparer != null) {
-				NUnitTestAttributeName testAttribute = new NUnitTestAttributeName("Test", nameComparer);
-				foreach (IAttribute attribute in member.Attributes) {
+				var testAttribute = new NUnitTestAttributeName("Test", nameComparer);
+				foreach (IAttribute attribute in method.Attributes) {
 					if (testAttribute.IsEqual(attribute)) {
-						IMethod method = (IMethod)member;
 						if (method.Parameters.Count == 0) {
 							return true;
 						}
