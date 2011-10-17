@@ -125,13 +125,17 @@ namespace SearchAndReplace
 				this.fileList = fileList;
 				this.monitor = monitor;
 				this.cts = cts;
-				this.count = fileList.Count();
 			}
 			
 			public IDisposable Subscribe(IObserver<SearchResultMatch> observer)
 			{
 				this.observer = observer;
-				var task = new System.Threading.Tasks.Task(delegate { Parallel.ForEach(fileList, new ParallelOptions { CancellationToken = monitor.CancellationToken, MaxDegreeOfParallelism = Environment.ProcessorCount }, fileName => SearchFile(fileName, strategy, monitor.CancellationToken)); });
+				var task = new System.Threading.Tasks.Task(
+					delegate {
+						var list = fileList.ToList();
+						this.count = list.Count;
+						Parallel.ForEach(fileList, new ParallelOptions { CancellationToken = monitor.CancellationToken, MaxDegreeOfParallelism = Environment.ProcessorCount }, fileName => SearchFile(fileName, strategy, monitor.CancellationToken));
+					});
 				task.ContinueWith(t => { if (t.Exception != null) observer.OnError(t.Exception); else observer.OnCompleted(); this.Dispose(); });
 				task.Start();
 				return this;
@@ -139,8 +143,7 @@ namespace SearchAndReplace
 			
 			public void Dispose()
 			{
-				if (!cts.IsCancellationRequested)
-					cts.Cancel();
+				cts.Cancel();
 				monitor.Dispose();
 			}
 			
@@ -150,7 +153,7 @@ namespace SearchAndReplace
 				if (buffer == null)
 					return;
 				
-				if (!MimeTypeDetection.FindMimeType(buffer).StartsWith("text/"))
+				if (!MimeTypeDetection.FindMimeType(buffer).StartsWith("text/", StringComparison.Ordinal))
 					return;
 				var source = DocumentUtilitites.GetTextSource(buffer);
 				TextDocument document = null;
@@ -191,6 +194,8 @@ namespace SearchAndReplace
 			if (string.IsNullOrEmpty(pattern))
 				return null;
 			var files = GenerateFileList(target, baseDirectory, filter, searchSubdirs).ToArray();
+			if (files.Length == 0)
+				return null;
 			if (currentSearchRegion == null || !currentSearchRegion.IsSameState(files, pattern, ignoreCase, matchWholeWords, mode,
 			                                                                    target, baseDirectory, filter, searchSubdirs))
 				currentSearchRegion = SearchRegion.CreateSearchRegion(files, pattern, ignoreCase, matchWholeWords, mode,
@@ -209,81 +214,97 @@ namespace SearchAndReplace
 			AnchorSegment selection;
 			PermanentAnchor searchStart;
 			ISearchStrategy strategy;
-			IEnumerator<SearchResultMatch> enumerator;
-			ParseableFileContentFinder finder = new ParseableFileContentFinder();
+			bool reachedEnd;
 			
 			public SearchResultMatch FindNext()
 			{
-				if (enumerator == null)
-					enumerator = RunSearch();
-				if (enumerator.MoveNext())
-					return enumerator.Current;
+				// Setup search inside current or first file.
+				ParseableFileContentFinder finder = new ParseableFileContentFinder();
+				int index = GetCurrentFileIndex();
+				int startIndex = index;
+				int i = 0;
+				int searchOffset = 0;
 				
+				FileName file = files[index];
+				ITextBuffer buffer = finder.Create(file);
+				SearchResultMatch result = null;
+				TextDocument document = null;
+				
+				// always use the caret position except if there is no editor open,
+				// or we are in the first file and have passed the end of the file (reachedEnd == true).
+				var editor = GetActiveTextEditor();
+				if (editor != null)
+					searchOffset = editor.Caret.Offset;
+				
+				// if the file could be opened, search in it.
+				if (buffer != null) {
+					document = new TextDocument(DocumentUtilitites.GetTextSource(buffer));
+					int length;
+					// if (target == SearchTarget.CurrentSelection) selection will be not null
+					// hence use the selection as search region.
+					if (selection != null) {
+						searchOffset = Math.Max(selection.Offset, searchOffset);
+						length = selection.EndOffset - searchOffset;
+					} else {
+						length = buffer.TextLength - searchOffset;
+					}
+					
+					// try to find a result
+					if (length > 0 && (searchOffset + length) <= buffer.TextLength)
+						result = Find(buffer, file, document, searchOffset, length);
+					
+					// we already passed the end of the file before and have found the first match again, so just stop.
+					if (reachedEnd) {
+						if (file.Equals(searchStart.FileName) && result != null && document.GetOffset(result.StartLocation.ToTextLocation()) >= searchStart.Offset)
+							return null;
+					} else
+						reachedEnd = file.Equals(searchStart.FileName) && result == null;
+				}
+				
+				// try the other files until we find something, or have processed all of them
+				while ((buffer == null || result == null) && i < files.Length) {
+					index = (index + 1) % files.Length;
+					
+					file = files[index];
+					buffer = finder.Create(file);
+					
+					if (buffer == null)
+						continue;
+					
+					document = new TextDocument(DocumentUtilitites.GetTextSource(buffer));
+					searchOffset = 0;
+					int length = buffer.TextLength - searchOffset;
+					
+					// try to find a result
+					result = Find(buffer, file, document, searchOffset, length);
+					
+					// if we have not found anything and are at the start of the file, we started with, just stop
+					if (result != null && reachedEnd && file.Equals(searchStart.FileName)
+					    && document.GetOffset(result.StartLocation.ToTextLocation()) >= searchStart.Offset)
+						return null;
+					i++;
+				}
+				
+				return result;
+			}
+
+			SearchResultMatch Find(ITextBuffer buffer, FileName file, TextDocument document, int searchOffset, int length)
+			{
+				var result = strategy.FindNext(DocumentUtilitites.GetTextSource(buffer), searchOffset, length);
+				if (result != null) {
+					var start = document.GetLocation(result.Offset).ToLocation();
+					var end = document.GetLocation(result.EndOffset).ToLocation();
+					return new SearchResultMatch(file, start, end, null);
+				}
 				return null;
 			}
 			
-			IEnumerator<SearchResultMatch> RunSearch()
+			int GetCurrentFileIndex()
 			{
-				int startIndex = files.FindIndex(file => file.Equals(searchStart.FileName));
-				int endIndex = files.Length - 1;
-				int index = startIndex;
-				bool processSecondPart = false;
-				
-				while (index <= endIndex) {
-					FileName file = files[index];
-					ITextBuffer buffer = finder.Create(file);
-					
-					if (buffer == null) {
-						processSecondPart = false;
-						index++;
-						continue;
-					}
-					
-					var document = new TextDocument(DocumentUtilitites.GetTextSource(buffer));
-					ICSharpCode.AvalonEdit.Search.ISearchResult result;
-					var editor = GetActiveTextEditor();
-					int searchOffset = 0;
-					
-					if (!processSecondPart && file.Equals(searchStart.FileName))
-						searchOffset = searchStart.Offset;
-					if (editor != null && files.Equals(editor.FileName))
-						searchOffset = editor.Caret.Offset;
-					
-					do {
-						int length;
-						if (selection != null && file.Equals(searchStart.FileName)) {
-							searchOffset = Math.Max(selection.Offset, searchOffset);
-							length = selection.EndOffset - searchOffset;
-						} else {
-							length = buffer.TextLength - searchOffset;
-						}
-						
-						if (length > 0 && (searchOffset + length) <= buffer.TextLength)
-							result = strategy.FindNext(DocumentUtilitites.GetTextSource(buffer), searchOffset, length);
-						else
-							result = null;
-						
-						if (result != null)
-							searchOffset = result.EndOffset;
-						
-						if (processSecondPart && file.Equals(searchStart.FileName) && searchOffset >= searchStart.Offset) {
-							yield break;
-						}
-						
-						if (result != null) {
-							var start = document.GetLocation(result.Offset).ToLocation();
-							var end = document.GetLocation(result.EndOffset).ToLocation();
-							yield return new SearchResultMatch(file, start, end, null);
-						}
-					} while (result != null);
-					
-					index++;
-					if (!processSecondPart && index > endIndex) {
-						processSecondPart = true;
-						index = 0;
-						endIndex = startIndex;
-					}
-				}
+				var editor = GetActiveTextEditor();
+				if (editor == null)
+					return 0;
+				return files.FindIndex(file => editor.FileName.Equals(file));
 			}
 			
 			public static SearchRegion CreateSearchRegion(FileName[] files, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode, SearchTarget target, string baseDirectory, string filter, bool searchSubdirs)
@@ -404,7 +425,7 @@ namespace SearchAndReplace
 			void IObserver<SearchResultMatch>.OnNext(SearchResultMatch value)
 			{
 				Interlocked.Increment(ref count);
-				WorkbenchSingleton.SafeThreadCall((Action)delegate { MarkResult(value, false); });
+				WorkbenchSingleton.SafeThreadAsyncCall((Action)delegate { MarkResult(value, false); });
 			}
 			
 			void IObserver<SearchResultMatch>.OnError(Exception error)
