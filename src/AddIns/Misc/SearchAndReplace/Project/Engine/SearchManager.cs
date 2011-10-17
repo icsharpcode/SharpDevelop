@@ -134,7 +134,7 @@ namespace SearchAndReplace
 					delegate {
 						var list = fileList.ToList();
 						this.count = list.Count;
-						Parallel.ForEach(fileList, new ParallelOptions { CancellationToken = monitor.CancellationToken, MaxDegreeOfParallelism = Environment.ProcessorCount }, fileName => SearchFile(fileName, strategy, monitor.CancellationToken));
+						Parallel.ForEach(list, new ParallelOptions { CancellationToken = monitor.CancellationToken, MaxDegreeOfParallelism = Environment.ProcessorCount }, fileName => SearchFile(fileName, strategy, monitor.CancellationToken));
 					});
 				task.ContinueWith(t => { if (t.Exception != null) observer.OnError(t.Exception); else observer.OnCompleted(); this.Dispose(); });
 				task.Start();
@@ -363,8 +363,13 @@ namespace SearchAndReplace
 		
 		public static void MarkAll(IObservable<SearchResultMatch> results)
 		{
-			var marker = new SearchResultMarker();
-			marker.Registration = results.Subscribe(marker);
+			int count = 0;
+			results.ObserveOnUIThread()
+				.Subscribe(
+					match => { count++; MarkResult(match, false); },
+					error => MessageService.ShowException(error),
+					() => ShowMarkDoneMessage(count)
+				);
 		}
 		
 		static void MarkResult(SearchResultMatch result, bool switchToOpenedView = true)
@@ -414,41 +419,6 @@ namespace SearchAndReplace
 		static void ShowNotFoundMessage()
 		{
 			MessageService.ShowMessage("${res:Dialog.NewProject.SearchReplace.SearchStringNotFound}", "${res:Dialog.NewProject.SearchReplace.SearchStringNotFound.Title}");
-		}
-		
-		class SearchResultMarker : IObserver<SearchResultMatch>
-		{
-			public IDisposable Registration { get; set; }
-			
-			int count;
-			
-			void IObserver<SearchResultMatch>.OnNext(SearchResultMatch value)
-			{
-				Interlocked.Increment(ref count);
-				WorkbenchSingleton.SafeThreadAsyncCall((Action)delegate { MarkResult(value, false); });
-			}
-			
-			void IObserver<SearchResultMatch>.OnError(Exception error)
-			{
-				MessageService.ShowException(error);
-				OnCompleted(false);
-			}
-			
-			void OnCompleted(bool success)
-			{
-				WorkbenchSingleton.SafeThreadCall(
-					(Action)delegate {
-						if (Registration != null)
-							Registration.Dispose();
-						if (success)
-							ShowMarkDoneMessage(count);
-					});
-			}
-			
-			void IObserver<SearchResultMatch>.OnCompleted()
-			{
-				OnCompleted(true);
-			}
 		}
 		
 		public static void SelectResult(SearchResultMatch result)

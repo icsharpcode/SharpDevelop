@@ -740,6 +740,7 @@
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
     <Compile Include="Src\Services\WebProjectService\WebProjectService.cs" />
     <Compile Include="Src\Util\FakeXmlViewContent.cs" />
+    <Compile Include="Src\Util\ReactiveExtensions.cs" />
     <Compile Include="Src\Util\TreeNode.cs" />
     <Compile Include="Src\Util\NativeMethods.cs" />
     <Compile Include="Src\Util\ProcessRunnerException.cs" />

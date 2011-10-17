@@ -123,7 +123,7 @@ namespace SearchAndReplace
 		public ISearchResult CreateSearchResult(string title, IObservable<SearchResultMatch> matches)
 		{
 			var osr = new ObserverSearchResult(title);
-			osr.Registration = matches.Subscribe(osr);
+			osr.Registration = matches.ObserveOnUIThread().Subscribe(osr);
 			return osr;
 		}
 	}
@@ -223,7 +223,7 @@ namespace SearchAndReplace
 		
 		void IObserver<SearchResultMatch>.OnNext(SearchResultMatch value)
 		{
-			WorkbenchSingleton.SafeThreadCall((Action)delegate { rootNode.Add(value); });
+			rootNode.Add(value);
 		}
 		
 		void IObserver<SearchResultMatch>.OnError(Exception error)
@@ -234,12 +234,9 @@ namespace SearchAndReplace
 		
 		void OnCompleted()
 		{
-			WorkbenchSingleton.SafeThreadCall(
-				(Action)delegate {
-					stopButton.Visibility = Visibility.Collapsed;
-					if (Registration != null)
-						Registration.Dispose();
-				});
+			stopButton.Visibility = Visibility.Collapsed;
+			if (Registration != null)
+				Registration.Dispose();
 		}
 		
 		void IObserver<SearchResultMatch>.OnCompleted()
