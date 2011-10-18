@@ -17,13 +17,17 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// <summary>
 		/// Finds all matches in the given ITextSource and the given range.
 		/// </summary>
-		/// <remarks>This method is thread-safe. Implementers must guarantee this!</remarks>
+		/// <remarks>
+		/// This method must be implemented thread-safe.
+		/// All segments in the result must be within the given range, and they must be returned in order
+		/// (e.g. if two results are returned, EndOffset of first result must be less than or equal StartOffset of second result).
+		/// </remarks>
 		IEnumerable<ISearchResult> FindAll(ITextSource document, int offset, int length);
 		
 		/// <summary>
 		/// Finds the next match in the given ITextSource and the given range.
 		/// </summary>
-		/// <remarks>This method is thread-safe. Implementers must guarantee this!</remarks>
+		/// <remarks>This method must be implemented thread-safe.</remarks>
 		ISearchResult FindNext(ITextSource document, int offset, int length);
 	}
 	
