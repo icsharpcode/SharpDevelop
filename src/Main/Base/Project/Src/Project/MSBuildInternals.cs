@@ -222,7 +222,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			var query =
 				from msbuildItem in resolvedAssemblyProjectItems
 				let originalInclude = msbuildItem.GetMetadataValue("OriginalItemSpec")
-				join item in referenceProjectItems on originalInclude equals item.Include into referenceItems
+				join item in referenceProjectItems.Where(p => p.ItemType != ItemType.ProjectReference) on originalInclude equals item.Include into referenceItems
 				select new {
 				OriginalInclude = originalInclude,
 				AssemblyName = new DomAssemblyName(msbuildItem.GetMetadataValue("FusionName")),
@@ -232,6 +232,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				ReferenceItems = referenceItems
 			};
 			List<ReferenceProjectItem> resolvedAssemblies = new List<ReferenceProjectItem>();
+			List<ReferenceProjectItem> handledReferenceItems = new List<ReferenceProjectItem>();
 			foreach (var assembly in query) {
 				LoggingService.Debug("Got information about " + assembly.OriginalInclude + "; fullpath=" + assembly.FullPath);
 				foreach (var referenceItem in assembly.ReferenceItems) {
@@ -239,6 +240,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					referenceItem.FileName = assembly.FullPath;
 					referenceItem.Redist = assembly.Redist;
 					referenceItem.DefaultCopyLocalValue = assembly.CopyLocal;
+					handledReferenceItems.Add(referenceItem);
 				}
 				ReferenceProjectItem firstItem = assembly.ReferenceItems.FirstOrDefault();
 				if (firstItem != null) {
@@ -246,6 +248,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else {
 					resolvedAssemblies.Add(new ReferenceProjectItem(baseProject, assembly.OriginalInclude) { FileName = assembly.FullPath });
 				}
+			}
+			// Add any assemblies that weren't resolved yet. This is important - for example, this adds back project references.
+			foreach (var referenceItem in referenceProjectItems.Except(handledReferenceItems)) {
+				resolvedAssemblies.Add(referenceItem);
 			}
 			return resolvedAssemblies;
 		}
