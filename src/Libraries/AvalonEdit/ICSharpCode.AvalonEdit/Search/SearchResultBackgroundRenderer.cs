@@ -29,6 +29,23 @@ namespace ICSharpCode.AvalonEdit.Search
 			}
 		}
 		
+		public SearchResultBackgroundRenderer()
+		{
+			markerBrush = Brushes.LightGreen;
+			markerPen = new Pen(markerBrush, 1);
+		}
+		
+		Brush markerBrush;
+		Pen markerPen;
+		
+		public Brush MarkerBrush {
+			get { return markerBrush; }
+			set {
+				this.markerBrush = value;
+				markerPen = new Pen(markerBrush, 1);
+			}
+		}
+		
 		public void Draw(TextView textView, DrawingContext drawingContext)
 		{
 			if (textView == null)
@@ -48,14 +65,12 @@ namespace ICSharpCode.AvalonEdit.Search
 			
 			foreach (SearchResult result in currentResults.FindOverlappingSegments(viewStart, viewEnd - viewStart)) {
 				BackgroundGeometryBuilder geoBuilder = new BackgroundGeometryBuilder();
-				geoBuilder.AlignToWholePixels = true;
+				geoBuilder.AlignToMiddleOfPixels = true;
 				geoBuilder.CornerRadius = 3;
 				geoBuilder.AddSegment(textView, result);
 				Geometry geometry = geoBuilder.CreateGeometry();
 				if (geometry != null) {
-					SolidColorBrush brush = new SolidColorBrush(Colors.LightGreen);
-					brush.Freeze();
-					drawingContext.DrawGeometry(brush, null, geometry);
+					drawingContext.DrawGeometry(markerBrush, markerPen, geometry);
 				}
 			}
 		}
