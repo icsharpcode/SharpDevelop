@@ -24,9 +24,9 @@ namespace ICSharpCode.AvalonEdit.Search
 	public class SearchPanel : Control
 	{
 		TextArea textArea;
+		TextDocument currentDocument;
 		SearchResultBackgroundRenderer renderer;
 		SearchResult currentResult;
-		FoldingManager foldingManager;
 		TextBox searchTextBox;
 		SearchPanelAdorner adorner;
 		
@@ -64,6 +64,23 @@ namespace ICSharpCode.AvalonEdit.Search
 		public string SearchPattern {
 			get { return (string)GetValue(SearchPatternProperty); }
 			set { SetValue(SearchPatternProperty, value); }
+		}
+		
+		public static readonly DependencyProperty MarkerBrushProperty =
+			DependencyProperty.Register("MarkerBrush", typeof(Brush), typeof(SearchPanel),
+			                            new FrameworkPropertyMetadata(Brushes.LightGreen, MarkerBrushChangedCallback));
+		
+		public Brush MarkerBrush {
+			get { return (Brush)GetValue(MarkerBrushProperty); }
+			set { SetValue(MarkerBrushProperty, value); }
+		}
+		
+		static void MarkerBrushChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			SearchPanel panel = d as SearchPanel;
+			if (panel != null) {
+				panel.renderer.MarkerBrush = (Brush)e.NewValue;
+			}
 		}
 		
 		static SearchPanel()
@@ -107,16 +124,30 @@ namespace ICSharpCode.AvalonEdit.Search
 				layer.Add(adorner);
 			DataContext = this;
 			
-			foldingManager = textArea.GetService(typeof(FoldingManager)) as FoldingManager;
-			
 			renderer = new SearchResultBackgroundRenderer();
 			textArea.TextView.BackgroundRenderers.Add(renderer);
-			textArea.Document.TextChanged += delegate { DoSearch(false); };
+			currentDocument = textArea.Document;
+			currentDocument.TextChanged += textArea_Document_TextChanged;
+			textArea.DocumentChanged += textArea_DocumentChanged;
 			KeyDown += SearchLayerKeyDown;
 			
 			this.CommandBindings.Add(new CommandBinding(SearchCommands.FindNext, (sender, e) => FindNext()));
 			this.CommandBindings.Add(new CommandBinding(SearchCommands.FindPrevious, (sender, e) => FindPrevious()));
 			this.CommandBindings.Add(new CommandBinding(SearchCommands.CloseSearchPanel, (sender, e) => Close()));
+		}
+
+		void textArea_DocumentChanged(object sender, EventArgs e)
+		{
+			if (currentDocument != null)
+				currentDocument.TextChanged -= textArea_Document_TextChanged;
+			currentDocument = textArea.Document;
+			if (currentDocument != null)
+				currentDocument.TextChanged += textArea_Document_TextChanged;
+		}
+
+		void textArea_Document_TextChanged(object sender, EventArgs e)
+		{
+			DoSearch(false);
 		}
 		
 		public override void OnApplyTemplate()
@@ -155,9 +186,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// </summary>
 		public void FindNext()
 		{
-			SearchResult result = null;
-			if (currentResult != null)
-				result = renderer.CurrentResults.GetNextSegment(currentResult);
+			SearchResult result = renderer.CurrentResults.FindFirstSegmentWithStartAfter(textArea.Caret.Offset + 1);
 			if (result == null)
 				result = renderer.CurrentResults.FirstSegment;
 			if (result != null) {
@@ -165,15 +194,15 @@ namespace ICSharpCode.AvalonEdit.Search
 				SetResult(result);
 			}
 		}
-		
+
 		/// <summary>
 		/// Moves to the previous occurrence in the file.
 		/// </summary>
 		public void FindPrevious()
 		{
-			SearchResult result = null;
-			if (currentResult != null)
-				result = renderer.CurrentResults.GetPreviousSegment(currentResult);
+			SearchResult result = renderer.CurrentResults.FindFirstSegmentWithStartAfter(textArea.Caret.Offset);
+			if (result != null)
+				result = renderer.CurrentResults.GetPreviousSegment(result);
 			if (result == null)
 				result = renderer.CurrentResults.LastSegment;
 			if (result != null) {
@@ -210,11 +239,14 @@ namespace ICSharpCode.AvalonEdit.Search
 		{
 			textArea.Caret.Offset = currentResult.StartOffset;
 			textArea.Selection = new SimpleSelection(currentResult.StartOffset, currentResult.EndOffset);
+			var foldingManager = textArea.GetService(typeof(FoldingManager)) as FoldingManager;
 			if (foldingManager != null) {
 				foreach (var folding in foldingManager.GetFoldingsContaining(result.StartOffset))
 					folding.IsFolded = false;
 			}
 			textArea.Caret.BringCaretToView();
+			// show caret even if the editor does not have the Keyboard Focus
+			textArea.Caret.Show();
 		}
 		
 		void SearchLayerKeyDown(object sender, KeyEventArgs e)
@@ -252,6 +284,9 @@ namespace ICSharpCode.AvalonEdit.Search
 			if (layer != null)
 				layer.Remove(adorner);
 			textArea.TextView.BackgroundRenderers.Remove(renderer);
+			textArea.DocumentChanged -= textArea_DocumentChanged;
+			if (currentDocument != null)
+				currentDocument.TextChanged -= textArea_Document_TextChanged;
 			messageView.IsOpen = false;
 		}
 	}
