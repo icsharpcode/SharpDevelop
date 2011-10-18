@@ -3,7 +3,6 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -25,8 +24,7 @@ namespace UnitTesting.Tests.Project
 	/// 		}
 	/// 	}
 	/// }
-	/// 
-	/// In this case the FooBar test is identified via: "A+InnerATest.FooBar".
+	///
 	/// </summary>
 	[TestFixture]
 	public class InnerClassInTestFixtureTests : InnerClassTestFixtureBase
@@ -71,11 +69,28 @@ namespace UnitTesting.Tests.Project
 			AssertTestResultContainsClass(classNestedInInnerClass);
 		}
 
+        [Test]
+        public void TestClassNameShouldBeDotNetNameOfTheDoubleNestedClass()
+        {
+            Assert.AreEqual("A+InnerATest+InnerTestLevel2", TestClassRelatedTo(classNestedInInnerClass).Name);
+        }
+
+        [Test]
+        public void TestClassNamespaceShouldBeValid()
+        {
+            Assert.AreEqual("MyTests", TestClassRelatedTo(classNestedInInnerClass).Namespace);
+        }
+
 		void AssertTestResultContainsClass(IClass clazz)
 		{
-			var count = testProject.TestClasses.Count(c => c.Class == clazz);
-			if (count != 1)
+		    var testClazz = TestClassRelatedTo(clazz);
+			if (testClazz == null)
 				throw new AssertionException(string.Format("Test result should contain class {0}.", clazz.FullyQualifiedName));
 		}
+
+        TestClass TestClassRelatedTo(IClass clazz)
+        {
+            return testProject.TestClasses.SingleOrDefault(c => c.Class == clazz);
+        }
 	}
 }

@@ -90,11 +90,16 @@ namespace ICSharpCode.UnitTesting
 		/// Gets the name of the class.
 		/// </summary>
 		public string Name {
-			get { 
-				if (c.DeclaringType != null) {
-					return String.Concat(c.DeclaringType.Name, "+", c.Name);
+			get
+			{
+				var currentClass = c;
+				var name = c.Name;
+				while(currentClass.DeclaringType != null)
+				{
+					name = String.Concat(currentClass.DeclaringType.Name, "+", name);
+					currentClass = currentClass.DeclaringType;
 				}
-				return c.Name;
+				return name;
 			}
 		}
 		
@@ -109,11 +114,12 @@ namespace ICSharpCode.UnitTesting
 		/// Gets the namespace of this class.
 		/// </summary>
 		public string Namespace {
-			get { 	
-				if (c.DeclaringType != null) {
-					return c.DeclaringType.Namespace;
-				}
-				return c.Namespace;
+			get
+			{
+				var currentClass = c;
+				while (currentClass.DeclaringType != null)
+					currentClass = currentClass.DeclaringType;
+				return currentClass.Namespace;
 			}
 		}
 		
