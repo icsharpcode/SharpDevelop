@@ -212,88 +212,74 @@ namespace SearchAndReplace
 		{
 			FileName[] files;
 			AnchorSegment selection;
-			PermanentAnchor searchStart;
 			ISearchStrategy strategy;
-			bool reachedEnd;
 			
 			public SearchResultMatch FindNext()
 			{
 				// Setup search inside current or first file.
 				ParseableFileContentFinder finder = new ParseableFileContentFinder();
 				int index = GetCurrentFileIndex();
-				int startIndex = index;
 				int i = 0;
 				int searchOffset = 0;
-				
-				FileName file = files[index];
-				ITextBuffer buffer = finder.Create(file);
+
 				SearchResultMatch result = null;
-				TextDocument document = null;
 				
-				// always use the caret position except if there is no editor open,
-				// or we are in the first file and have passed the end of the file (reachedEnd == true).
-				var editor = GetActiveTextEditor();
-				if (editor != null)
-					searchOffset = editor.Caret.Offset;
-				
-				// if the file could be opened, search in it.
-				if (buffer != null) {
-					document = new TextDocument(DocumentUtilitites.GetTextSource(buffer));
+				if (index > -1) {
+					ITextEditor editor = GetActiveTextEditor();
+					if (editor.SelectionLength > 0)
+						searchOffset = editor.SelectionStart + editor.SelectionLength;
+					else
+						searchOffset = editor.Caret.Offset + 1;
+					var document = editor.Document;
+					
 					int length;
-					// if (target == SearchTarget.CurrentSelection) selection will be not null
+					// if (target == SearchTarget.CurrentSelection) selection will not be null
 					// hence use the selection as search region.
 					if (selection != null) {
 						searchOffset = Math.Max(selection.Offset, searchOffset);
 						length = selection.EndOffset - searchOffset;
 					} else {
-						length = buffer.TextLength - searchOffset;
+						length = document.TextLength - searchOffset;
 					}
 					
 					// try to find a result
-					if (length > 0 && (searchOffset + length) <= buffer.TextLength)
-						result = Find(buffer, file, document, searchOffset, length);
-					
-					// we already passed the end of the file before and have found the first match again, so just stop.
-					if (reachedEnd) {
-						if (file.Equals(searchStart.FileName) && result != null && document.GetOffset(result.StartLocation.ToTextLocation()) >= searchStart.Offset)
-							return null;
-					} else
-						reachedEnd = file.Equals(searchStart.FileName) && result == null;
+					if (length > 0 && (searchOffset + length) <= document.TextLength)
+						result = Find(editor.FileName, document, searchOffset, length);
 				}
 				
 				// try the other files until we find something, or have processed all of them
-				while ((buffer == null || result == null) && i < files.Length) {
+				while (result == null && i < files.Length) {
 					index = (index + 1) % files.Length;
 					
-					file = files[index];
-					buffer = finder.Create(file);
+					FileName file = files[index];
+					ITextBuffer buffer = finder.Create(file);
 					
 					if (buffer == null)
 						continue;
-					
-					document = new TextDocument(DocumentUtilitites.GetTextSource(buffer));
-					searchOffset = 0;
-					int length = buffer.TextLength - searchOffset;
+					int length;
+					if (selection != null) {
+						searchOffset = selection.Offset;
+						length = selection.Length;
+					} else {
+						searchOffset = 0;
+						length = buffer.TextLength;
+					}
 					
 					// try to find a result
-					result = Find(buffer, file, document, searchOffset, length);
+					result = Find(file, DocumentUtilitites.LoadReadOnlyDocumentFromBuffer(buffer), searchOffset, length);
 					
-					// if we have not found anything and are at the start of the file, we started with, just stop
-					if (result != null && reachedEnd && file.Equals(searchStart.FileName)
-					    && document.GetOffset(result.StartLocation.ToTextLocation()) >= searchStart.Offset)
-						return null;
 					i++;
 				}
 				
 				return result;
 			}
 
-			SearchResultMatch Find(ITextBuffer buffer, FileName file, TextDocument document, int searchOffset, int length)
+			SearchResultMatch Find(FileName file, IDocument document, int searchOffset, int length)
 			{
-				var result = strategy.FindNext(DocumentUtilitites.GetTextSource(buffer), searchOffset, length);
+				var result = strategy.FindNext(DocumentUtilitites.GetTextSource(document), searchOffset, length);
 				if (result != null) {
-					var start = document.GetLocation(result.Offset).ToLocation();
-					var end = document.GetLocation(result.EndOffset).ToLocation();
+					var start = document.OffsetToPosition(result.Offset);
+					var end = document.OffsetToPosition(result.EndOffset);
 					return new SearchResultMatch(file, start, end, null);
 				}
 				return null;
@@ -303,7 +289,7 @@ namespace SearchAndReplace
 			{
 				var editor = GetActiveTextEditor();
 				if (editor == null)
-					return 0;
+					return -1;
 				return files.FindIndex(file => editor.FileName.Equals(file));
 			}
 			
@@ -315,19 +301,18 @@ namespace SearchAndReplace
 					AnchorSegment selection = null;
 					if (target == SearchTarget.CurrentSelection)
 						selection = new AnchorSegment(document, editor.SelectionStart, editor.SelectionLength);
-					return new SearchRegion(files, selection, new PermanentAnchor(editor.FileName, editor.Caret.Line, editor.Caret.Column), pattern, ignoreCase, matchWholeWords, mode, target, baseDirectory, filter, searchSubdirs) { strategy = SearchStrategyFactory.Create(pattern, ignoreCase, matchWholeWords, mode) };
+					return new SearchRegion(files, selection, pattern, ignoreCase, matchWholeWords, mode, target, baseDirectory, filter, searchSubdirs) { strategy = SearchStrategyFactory.Create(pattern, ignoreCase, matchWholeWords, mode) };
 				}
 				
 				return null;
 			}
 			
-			SearchRegion(FileName[] files, AnchorSegment selection, PermanentAnchor searchStart, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode, SearchTarget target, string baseDirectory, string filter, bool searchSubdirs)
+			SearchRegion(FileName[] files, AnchorSegment selection, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode, SearchTarget target, string baseDirectory, string filter, bool searchSubdirs)
 			{
 				if (files == null)
 					throw new ArgumentNullException("files");
 				this.files = files;
 				this.selection = selection;
-				this.searchStart = searchStart;
 				this.pattern = pattern;
 				this.ignoreCase = ignoreCase;
 				this.matchWholeWords = matchWholeWords;
@@ -349,7 +334,7 @@ namespace SearchAndReplace
 			
 			public bool IsSameState(FileName[] files, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode, SearchTarget target, string baseDirectory, string filter, bool searchSubdirs)
 			{
-				return this.files.OrderBy(f => f.ToString()).SequenceEqual(files.OrderBy(f => f.ToString())) &&
+				return this.files.SequenceEqual(files) &&
 					pattern == this.pattern &&
 					ignoreCase == this.ignoreCase &&
 					matchWholeWords == this.matchWholeWords &&
