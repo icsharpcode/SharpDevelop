@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
-
 using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Search
@@ -28,11 +28,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		
 		public ISearchResult FindNext(ITextSource document, int offset, int length)
 		{
-			var result = searchPattern.Match(document.Text, offset, length);
-			if (result != null && result.Success)
-				return new SearchResult { StartOffset = result.Index, Length = result.Length };
-			
-			return null;
+			return FindAll(document, offset, length).FirstOrDefault();
 		}
 	}
 	
